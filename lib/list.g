@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains some  list types and functions that  have to be  known
 ##  very early in the bootstrap stage (therefore they are not in list.gi)
@@ -16,6 +17,14 @@ Revision.list_g :=
 #############################################################################
 ##
 
+#R  IsPlistRep  . . . . . . . . . . . . . . . . representation of plain lists
+##
+DeclareRepresentationKernel( "IsPlistRep",
+    IsInternalRep, [], IS_OBJECT, IS_PLIST_REP );
+
+
+#############################################################################
+##
 #V  ListsFamily	. . . . . . . . . . . . . . . . . . . . . . . family of lists
 ##
 ListsFamily := NewFamily(  "ListsFamily", IsList );
@@ -26,7 +35,7 @@ ListsFamily := NewFamily(  "ListsFamily", IsList );
 #V  TYPE_LIST_NDENSE_MUTABLE  . . . . . . . . type of non-dense, mutable list
 ##
 TYPE_LIST_NDENSE_MUTABLE := NewType( ListsFamily,
-    IsMutable and IsList and IsInternalRep );
+    IsMutable and IsList and IsPlistRep );
 
 
 #############################################################################
@@ -34,7 +43,7 @@ TYPE_LIST_NDENSE_MUTABLE := NewType( ListsFamily,
 #V  TYPE_LIST_NDENSE_IMMUTABLE	. . . . . . type of non-dense, immutable list
 ##
 TYPE_LIST_NDENSE_IMMUTABLE := NewType( ListsFamily,
-    IsList and IsInternalRep );
+    IsList and IsPlistRep );
 
 
 #############################################################################
@@ -42,14 +51,15 @@ TYPE_LIST_NDENSE_IMMUTABLE := NewType( ListsFamily,
 #V  TYPE_LIST_DENSE_NHOM_MUTABLE  . . . type of dense, non-homo, mutable list
 ##
 TYPE_LIST_DENSE_NHOM_MUTABLE := NewType( ListsFamily,
-    IsMutable and IsList and IsDenseList and IsInternalRep );
+    IsMutable and IsList and IsDenseList and IsPlistRep );
 
 
 #############################################################################
+##
 ##V  TYPE_LIST_DENSE_NHOM_IMMUTABLE  . type of dense, non-homo, immutable list
 ##
 TYPE_LIST_DENSE_NHOM_IMMUTABLE := NewType( ListsFamily,
-    IsList and IsDenseList and IsInternalRep );
+    IsList and IsDenseList and IsPlistRep );
 
 
 #############################################################################
@@ -58,7 +68,7 @@ TYPE_LIST_DENSE_NHOM_IMMUTABLE := NewType( ListsFamily,
 ##
 TYPE_LIST_EMPTY_MUTABLE := NewType( ListsFamily,
     IsMutable and IsList and IsDenseList and IsHomogeneousList
-    and IsEmpty and IsInternalRep );
+    and IsEmpty and IsPlistRep );
 
 
 #############################################################################
@@ -67,7 +77,7 @@ TYPE_LIST_EMPTY_MUTABLE := NewType( ListsFamily,
 ##
 TYPE_LIST_EMPTY_IMMUTABLE := NewType( ListsFamily,
     IsList and IsDenseList and IsHomogeneousList
-    and IsEmpty and IsInternalRep );
+    and IsEmpty and IsPlistRep );
 
 
 #############################################################################
@@ -88,25 +98,38 @@ TYPE_LIST_EMPTY_IMMUTABLE := NewType( ListsFamily,
 ##  10: T_PLIST_TAB_NSORT + IMMUTABLE
 ##  11: T_PLIST_TAB_SSORT
 ##  12: T_PLIST_TAB_SSORT + IMMUTABLE
+##  13: T_PLIST_CYC
+##  14: T_PLIST_CYC       + IMMUTABLE
+##  15: T_PLIST_CYC_NSORT
+##  16: T_PLIST_CYC_NSORT + IMMUTABLE
+##  17: T_PLIST_CYC_SSORT
+##  18: T_PLIST_CYC_SSORT + IMMUTABLE
 ##
 TYPE_LIST_HOM := function ( family, knr )
     local   colls;
 
     colls := CollectionsFamily( family );
-
+    
+    # The Cyclotomic types behave just like the corresponding
+    # homogenous types
+    
+    if knr > 12 then
+        knr := knr -12;
+    fi;
+    
     # T_PLIST_HOM
     if   knr = 1  then
         return NewType( colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_HOM + IMMUTABLE
     elif knr = 2  then
         return NewType( colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_HOM_NSORT
     elif knr = 3  then
@@ -114,7 +137,7 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_HOM_NSORT + IMMUTABLE
     elif knr = 4  then
@@ -122,7 +145,7 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_HOM_SSORT
     elif knr = 5  then
@@ -130,7 +153,7 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsSSortedList and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_HOM_SSORT + IMMUTABLE
     elif knr = 6  then
@@ -138,21 +161,21 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         IsSSortedList and
-                        IsInternalRep );
+                        IsPlistRep );
 
     # T_PLIST_TAB
     elif knr = 7  then
         return NewType( colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                        IsTable and IsInternalRep );
+                        IsTable and IsPlistRep );
 
     # T_PLIST_TAB + IMMUTABLE
     elif knr = 8  then
         return NewType( colls,
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                        IsTable and IsInternalRep );
+                        IsTable and IsPlistRep );
 
     # T_PLIST_TAB_NSORT
     elif knr = 9  then
@@ -160,7 +183,7 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable
-                        and IsInternalRep );
+                        and IsPlistRep );
 
     # T_PLIST_TAB_NSORT + IMMUTABLE
     elif knr = 10  then
@@ -168,21 +191,21 @@ TYPE_LIST_HOM := function ( family, knr )
                         IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
                         Tester(IsSSortedList) and IsTable
-                        and IsInternalRep );
+                        and IsPlistRep );
 
     # T_PLIST_TAB_SSORT
     elif knr = 11  then
         return NewType( colls,
                         IsMutable and IsList and IsDenseList and
                         IsHomogeneousList and IsCollection and
-                        IsSSortedList and IsTable and IsInternalRep );
+                        IsSSortedList and IsTable and IsPlistRep );
 
     # T_PLIST_TAB_SSORT + IMMUTABLE
     elif knr = 12  then
         return NewType( colls,
                         IsList and IsDenseList and IsHomogeneousList
                         and IsCollection and IsSSortedList and IsTable
-                        and IsInternalRep );
+                        and IsPlistRep );
 
     else
         Error( "what?  Unknown kernel number ", knr );
@@ -192,11 +215,31 @@ end;
 
 #############################################################################
 ##
+#M  ASS_LIST( <plist>, <pos>, <obj> ) . . . . . . . . . .  default assignment
+##
+InstallMethod( ASS_LIST,
+    "for plain list and external objects",
+    true,
+    [ IsMutable and IsList and IsPlistRep,
+      IsPosInt,
+      IsObject ],
+    0,
+    ASS_PLIST_DEFAULT );
 
+
+#############################################################################
+##
 #C  IsRange . . . . . . . . . . . . . . . . . . . . . . .  category of ranges
 ##
-IsRange := NewCategoryKernel(
-    "IsRange",
+##  ranges are a special representation for dense duplicate free lists of
+##  integers in arithmetic progression. If a list of integers is in
+##  arithmetic progression, `IsRange' will automatically change its
+##  representation to `IsRange'.
+#T NO !!
+#T this will change!!
+
+#DeclareCategory(IsRange,IsCollection and IsDenseList);
+DeclareCategoryKernel( "IsRange",
     IsCollection and IsDenseList,
     IS_RANGE );
 
@@ -242,8 +285,7 @@ TYPE_RANGE_NSORT_IMMUTABLE := Subtype(
 
 #C  IsBlist . . . . . . . . . . . . . . . . . . . . category of boolean lists
 ##
-IsBlist := NewCategoryKernel(
-    "IsBlist",
+DeclareCategoryKernel( "IsBlist",
     IsHomogeneousList,
     IS_BLIST );
 

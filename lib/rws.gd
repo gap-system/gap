@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains    the   operations for   rewriting   systems.    Any
 ##  implementation of a rewriting system must at least implement methods for
@@ -18,7 +19,7 @@
 ##  An  implementation might  also  want to  implement 'MakeConfluent' and/or
 ##  'ConfluentRws'.
 ##
-##  The generic methods, which are defined in "rwsgen.g", for
+##  The generic methods, which are defined in "rws.gi", for
 ##
 ##    'ReducedAdditiveInverse',
 ##    'ReducedComm',
@@ -61,7 +62,7 @@ Revision.rws_gd :=
 
 #C  IsRewritingSystem( <obj> )
 ##
-IsRewritingSystem := NewCategory(
+DeclareCategory(
     "IsRewritingSystem",
     IsCopyable );
 
@@ -71,7 +72,7 @@ IsRewritingSystem := NewCategory(
 
 #P  IsBuiltFromAdditiveMagmaWithInverses( <obj> )
 ##
-IsBuiltFromAdditiveMagmaWithInverses := NewProperty( 
+DeclareProperty( 
     "IsBuiltFromAdditiveMagmaWithInverses",
     IsObject );
 
@@ -80,7 +81,7 @@ IsBuiltFromAdditiveMagmaWithInverses := NewProperty(
 ##
 #P  IsBuiltFromMagma( <obj> )
 ##
-IsBuiltFromMagma := NewProperty(
+DeclareProperty(
     "IsBuiltFromMagma",
     IsObject );
 
@@ -89,7 +90,7 @@ IsBuiltFromMagma := NewProperty(
 ##
 #P  IsBuiltFromMagmaWithOne( <obj> )
 ##
-IsBuiltFromMagmaWithOne := NewProperty(
+DeclareProperty(
     "IsBuiltFromMagmaWithOne",
     IsObject );
 
@@ -98,7 +99,7 @@ IsBuiltFromMagmaWithOne := NewProperty(
 ##
 #P  IsBuiltFromMagmaWithInverses( <obj> )
 ##
-IsBuiltFromMagmaWithInverses := NewProperty( 
+DeclareProperty( 
     "IsBuiltFromMagmaWithInverses",
     IsObject );
 
@@ -107,7 +108,7 @@ IsBuiltFromMagmaWithInverses := NewProperty(
 ##
 #P  IsBuiltFromGroup( <obj> )
 ##
-IsBuiltFromGroup := NewProperty(
+DeclareProperty(
     "IsBuiltFromGroup",
     IsObject );
 
@@ -142,36 +143,30 @@ InstallTrueMethod( IsBuiltFromMagmaWithInverses, IsBuiltFromGroup );
 ##  NOTE: this is an  attribute  *but* rewriting system   do not  store  this
 ##  attribute because they are mutable.
 ##
-ConfluentRws := NewAttribute(
+DeclareAttribute(
     "ConfluentRws",
     IsRewritingSystem );
 
-SetConfluentRws := Setter(ConfluentRws);
-HasConfluentRws := Tester(ConfluentRws);
 
 
 #############################################################################
 ##
 #A  GeneratorsOfRws( <rws> )
 ##
-GeneratorsOfRws := NewAttribute(
+DeclareAttribute(
     "GeneratorsOfRws",
     IsRewritingSystem );
 
-HasGeneratorsOfRws := Tester( GeneratorsOfRws );
-SetGeneratorsOfRws := Setter( GeneratorsOfRws );
 
 
 #############################################################################
 ##
 #A  NumberGeneratorsOfRws( <rws> )
 ##
-NumberGeneratorsOfRws := NewAttribute(
+DeclareAttribute(
     "NumberGeneratorsOfRws",
     IsRewritingSystem );
 
-HasNumberGeneratorsOfRws := Tester( NumberGeneratorsOfRws );
-SetNumberGeneratorsOfRws := Setter( NumberGeneratorsOfRws );
 
 
 #############################################################################
@@ -181,24 +176,21 @@ SetNumberGeneratorsOfRws := Setter( NumberGeneratorsOfRws );
 ##  NOTE: this is an   attribute *but* rewriting  system  do not store   this
 ##  attribute.
 ##
-Rules := NewAttribute(
+DeclareAttribute(
     "Rules",
     IsRewritingSystem );
 
-SetRules := Setter(Rules);
-HasRules := Setter(Rules);
 
 
 #############################################################################
 ##
 #A  UnderlyingFamily( <rws> )
 ##
-UnderlyingFamily := NewAttribute(
-    "UnderlyingFamily",
-    IsObject );
+#T DeclareAttribute(
+#T     "UnderlyingFamily",
+#T     IsObject );
+#T already in `liefam.gd'
 
-HasUnderlyingFamily := Tester(UnderlyingFamily);
-SetUnderlyingFamily := Setter(UnderlyingFamily);
 
 
 #############################################################################
@@ -209,12 +201,10 @@ SetUnderlyingFamily := Setter(UnderlyingFamily);
 ##  NOTE:  this  is a  property  *but*  rewriting  system  do not store  this
 ##  attribute.
 ##
-IsConfluent := NewProperty(
+DeclareProperty(
     "IsConfluent",
     IsRewritingSystem );
 
-SetIsConfluent := Setter(IsConfluent);
-HasIsConfluent := Tester(IsConfluent);
 
 
 #############################################################################
@@ -222,7 +212,7 @@ HasIsConfluent := Tester(IsConfluent);
 
 #O  AddGenerators( <rws>, <gens> )
 ##
-AddGenerators := NewOperation(
+DeclareOperation(
     "AddGenerators",
     [ IsRewritingSystem and IsMutable, IsHomogeneousList ] );
 
@@ -231,7 +221,7 @@ AddGenerators := NewOperation(
 ##
 #O  MakeConfluent( <rws> )
 ##
-MakeConfluent := NewOperation(
+DeclareOperation(
     "MakeConfluent",
     [ IsRewritingSystem and IsMutable ] );
 
@@ -240,7 +230,7 @@ MakeConfluent := NewOperation(
 ##
 #O  ReduceRules( <rws> )
 ##
-ReduceRules := NewOperation(
+DeclareOperation(
     "ReduceRules",
     [ IsRewritingSystem and IsMutable ] );
 
@@ -250,7 +240,7 @@ ReduceRules := NewOperation(
 
 #O  ReducedAdditiveInverse( <rws>, <obj> )
 ##
-ReducedAdditiveInverse := NewOperation(
+DeclareOperation(
     "ReducedAdditiveInverse",
     [ IsRewritingSystem,
       IsAdditiveElement ] );
@@ -260,7 +250,7 @@ ReducedAdditiveInverse := NewOperation(
 ##
 #O  ReducedComm( <rws>, <left>, <right> )
 ##
-ReducedComm := NewOperation(
+DeclareOperation(
     "ReducedComm",
     [ IsRewritingSystem,
       IsMultiplicativeElement,
@@ -271,7 +261,7 @@ ReducedComm := NewOperation(
 ##
 #O  ReducedConjugate( <rws>, <left>, <right> )
 ##
-ReducedConjugate := NewOperation(
+DeclareOperation(
     "ReducedConjugate", 
     [ IsRewritingSystem,
       IsMultiplicativeElement,
@@ -282,7 +272,7 @@ ReducedConjugate := NewOperation(
 ##
 #O  ReducedDifference( <rws>, <left>, <right> )
 ##
-ReducedDifference := NewOperation(
+DeclareOperation(
     "ReducedDifference", 
     [ IsRewritingSystem,
       IsAdditiveElement,
@@ -293,7 +283,7 @@ ReducedDifference := NewOperation(
 ##
 #O  ReducedForm( <rws>, <obj> )
 ##
-ReducedForm := NewOperation(
+DeclareOperation(
     "ReducedForm", 
     [ IsRewritingSystem,
       IsObject ] );
@@ -303,7 +293,7 @@ ReducedForm := NewOperation(
 ##
 #O  ReducedInverse( <rws>, <obj> )
 ##
-ReducedInverse := NewOperation(
+DeclareOperation(
     "ReducedInverse", 
     [ IsRewritingSystem,
       IsMultiplicativeElement ] );
@@ -313,7 +303,7 @@ ReducedInverse := NewOperation(
 ##
 #O  ReducedLeftQuotient( <rws>, <left>, <right> )
 ##
-ReducedLeftQuotient := NewOperation(
+DeclareOperation(
     "ReducedLeftQuotient",
     [ IsRewritingSystem, 
       IsMultiplicativeElement,
@@ -324,7 +314,7 @@ ReducedLeftQuotient := NewOperation(
 ##
 #O  ReducedOne( <rws> )
 ##
-ReducedOne := NewOperation(
+DeclareOperation(
     "ReducedOne", 
     [ IsRewritingSystem ] );
 
@@ -333,7 +323,7 @@ ReducedOne := NewOperation(
 ##
 #O  ReducedPower( <rws>, <obj>, <pow> )
 ##
-ReducedPower := NewOperation(
+DeclareOperation(
     "ReducedPower",
     [ IsRewritingSystem, 
       IsMultiplicativeElement,
@@ -344,7 +334,7 @@ ReducedPower := NewOperation(
 ##
 #O  ReducedProduct( <rws>, <left>, <right> )
 ##
-ReducedProduct := NewOperation(
+DeclareOperation(
     "ReducedProduct", 
     [ IsRewritingSystem,
       IsMultiplicativeElement, 
@@ -355,7 +345,7 @@ ReducedProduct := NewOperation(
 ##
 #O  ReducedQuotient( <rws>, <left>, <right> )
 ##
-ReducedQuotient := NewOperation(
+DeclareOperation(
     "ReducedQuotient", 
     [ IsRewritingSystem,
       IsMultiplicativeElement,
@@ -366,7 +356,7 @@ ReducedQuotient := NewOperation(
 ##
 #O  ReducedScalarProduct( <rws>, <left>, <right> )
 ##
-ReducedScalarProduct := NewOperation(
+DeclareOperation(
     "ReducedScalarProduct", 
     [ IsRewritingSystem,
       IsScalar,
@@ -377,7 +367,7 @@ ReducedScalarProduct := NewOperation(
 ##
 #O  ReducedSum( <rws>, <left>, <right> )
 ##
-ReducedSum := NewOperation(
+DeclareOperation(
     "ReducedSum",
     [ IsRewritingSystem,
       IsAdditiveElement,
@@ -388,7 +378,7 @@ ReducedSum := NewOperation(
 ##
 #O  ReducedZero( <rws> )
 ##
-ReducedZero := NewOperation(
+DeclareOperation(
     "ReducedZero", 
     [ IsRewritingSystem ] );
 
@@ -398,7 +388,7 @@ ReducedZero := NewOperation(
 
 #V  InfoConfluence
 ##
-InfoConfluence := NewInfoClass("InfoConfluence");
+DeclareInfoClass("InfoConfluence");
 
 
 #############################################################################

@@ -6,11 +6,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file defines the functions for permutations (small and large).
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_permutat_h =
+const char * Revision_permutat_h =
    "@(#)$Id$";
 #endif
 
@@ -83,29 +84,9 @@ extern Obj Array2Perm (
 /****************************************************************************
 **
 
-*F  SetupPermutat() . . . . . . . . . . . initializes the permutation package
-**
-**  Is  called  during  the  initialization  to  initialize  the  permutation
-**  package.
+*F  InitInfoPermutat()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupPermutat ( void );
-
-
-/****************************************************************************
-**
-*F  InitPermutat()  . . . . . . . . . . . initializes the permutation package
-**
-**  Is  called  during  the  initialization  to  initialize  the  permutation
-**  package.
-*/
-extern void InitPermutat ( void );
-
-
-/****************************************************************************
-**
-*F  CheckPermutat() . . . check the initialisation of the permutation package
-*/
-extern void CheckPermutat ( void );
+StructInitInfo * InitInfoPermutat ( void );
 
 
 /****************************************************************************

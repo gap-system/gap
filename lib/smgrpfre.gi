@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for free semigroups.
 ##
@@ -118,7 +119,7 @@ end;
 ##
 #R  IsFreeSemigroupIterator
 ##
-IsFreeSemigroupIterator := NewRepresentation( "IsFreeSemigroupIterator",
+DeclareRepresentation( "IsFreeSemigroupIterator",
     IsIterator,
     [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
 
@@ -278,14 +279,14 @@ end;
 ##
 #R  IsFreeSemigroupEnumerator
 ##
-IsFreeSemigroupEnumerator := NewRepresentation( "FreeSemigroupEnumerator",
+DeclareRepresentation( "IsFreeSemigroupEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
 InstallMethod( \[\],
     "method for enumerator of a free semigroup",
     true,
-    [ IsFreeSemigroupEnumerator, IsInt and IsPosRat ], 0,
+    [ IsFreeSemigroupEnumerator, IsPosInt ], 0,
     function( enum, nr )
     return FreeMonoid_ElementNumber( enum, nr+1 );
     end );
@@ -403,7 +404,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeSemigroup( <name1>, <name2>, ... )
 #F  FreeSemigroup( <names> )
 ##
-FreeSemigroup := function( arg )
+InstallGlobalFunction( FreeSemigroup, function( arg )
 
     local   names,      # list of generators names
             F,          # family of free semigroup element objects
@@ -444,7 +445,7 @@ FreeSemigroup := function( arg )
     SetIsWholeFamily( S, true );
     SetIsTrivial( S, false );
     return S;
-end;
+end );
 
 
 #############################################################################

@@ -127,9 +127,36 @@ in the read-eval-print loop while retaining `Print' to display
 the object completely.
 (The standard method installed for `ViewObj' is `PrintObj'.)
 
+\>PrintTo( <filename>, <obj>, ... )
+
+In {\GAP}~3, it was possible to ``redirect'' the text printed by a
+function to a file by entering the function call as second argument
+to `PrintTo';
+this was used mainly in order to avoid many calls of `AppendTo'.
+In {\GAP}~4, this feature has disappeared.
+One can use streams (see~"ref:Streams") instead.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Changed Variable Names}
+\indextt{AgGroup}
+\indextt{ApplyFunc}
+\indextt{Backtrace}
+\indextt{CharTable}
+\indextt{Denominator}
+\indextt{DepthVector}
+\indextt{Elements}
+\indextt{IsBijection}
+\indextt{IsFunc}
+\indextt{IsMat}
+\indextt{IsRec}
+\indextt{IsSet}
+\indextt{LengthWord}
+\indextt{NOfCyc}
+\indextt{Numerator}
+\indextt{RandomInvertableMat}
+\indextt{RecFields}
+\indextt{X}
 
 A couple of functions changed their name without changing the
 functionality.
@@ -138,18 +165,23 @@ A -- probably incomplete -- list follows
     GAP 3                   GAP 4
 
     AgGroup                 PcGroup            # (also composita)
+    ApplyFunc               CallFuncList
     Backtrace               Where
     CharTable               CharacterTable     # (also composita)
     Denominator             DenominatorRat
+    DepthVector             PositionNot
     Elements                AsListSorted
-    IsBijective             IsBijection
+    IsBijection             IsBijective
     IsFunc                  IsFunction
+    IsMat                   IsMatrix
     IsRec                   IsRecord
     IsSet                   IsSSortedList
+    LengthWord              Length
     NOfCyc                  Conductor
     Numerator               NumeratorRat
     RandomInvertableMat     RandomInvertibleMat
     RecFields               RecNames
+    X                       Indeterminate
 \endtt
 
 See Section~"Compatibility Mode" for a possibility to make the old names
@@ -236,6 +268,8 @@ and~"prg:Mutability and Copyability".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Copy}
+\indextt{StructuralCopy}
+\indextt{ShallowCopy}
 
 The function `Copy' of {\GAP}~3 is not supported in {\GAP}~4.
 This function was used to create a copy <cop> of its argument <obj> with
@@ -492,8 +526,11 @@ mapping was in fact a group homomorphism.
 Moreover, the ``official'' workaround to set some components of the
 mapping record was quite unhandy.
 
-In {\GAP}~4, `GroupHomomorphismByImages' assumes that the desired mapping
-is indeed a group homomorphism, and stores this in the mapping.
+In {\GAP}~4, `GroupHomomorphismByImages' checks whether the desired
+mapping is indeed a group homomorphism; if yes then this property is
+stored in the returned mapping, otherwise `fail' is returned.
+If you want to avoid the checks then you can use
+`GroupHomomorphismByImagesNC'.
 If you want to check whether a general mapping that respects the group
 operations is really a mapping, you can construct it via
 `GroupGeneralMappingByImages' and then call `IsMapping' for it.
@@ -654,6 +691,9 @@ not evaluated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Debugging}
+\indextt{Backtrace}
+\indextt{DownEnv}
+\indextt{Where}
 
 If {\GAP}~4 runs into an error or is interrupted,
 it enters a break loop.
@@ -669,42 +709,42 @@ stack.
 When interrupting, the first line printed by `Where' actually may be
 one level higher, as the following example shows
 \begintt
-    gap> test:= function( n )
-    >    if n > 3 then Error( "!" ); fi; test( n+1 ); end;;
-    gap> test( 1 );
-    Error ! at
-    Error( "!" );
-    Entering break read-eval-print loop,
-    you can 'quit;' to quit to outer loop,
-    or you can return to continue
-    brk> Where();
-    test( n + 1 ); called from
-    test( n + 1 ); called from
-    test( n + 1 ); called from
-    <function>( <arguments> ) called from read-eval-loop
-    brk> n;
-    4
-    brk> DownEnv();
-    brk> n;
-    3
-    brk> Where();
-    test( n + 1 ); called from
-    test( n + 1 ); called from
-    <function>( <arguments> ) called from read-eval-loop
-    brk> DownEnv( 2 );
-    brk> n;
-    1
-    brk> Where();
-    <function>( <arguments> ) called from read-eval-loop
-    brk> DownEnv( -2 );
-    brk> n;
-    3
+gap> test:= function( n )
+>    if n > 3 then Error( "!" ); fi; test( n+1 ); end;;
+gap> test( 1 );
+Error ! at
+Error( "!" );
+Entering break read-eval-print loop,
+you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk> Where();
+test( n + 1 ); called from
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> n;
+4
+brk> DownEnv();
+brk> n;
+3
+brk> Where();
+test( n + 1 ); called from
+test( n + 1 ); called from
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( 2 );
+brk> n;
+1
+brk> Where();
+<function>( <arguments> ) called from read-eval-loop
+brk> DownEnv( -2 );
+brk> n;
+3
 \endtt
 
-% For purposes of debugging, it can be helpful sometimes, to see what
-% information is stored within an object. In {\GAP}~3 this was possible using
-% `RecFields'. {\GAP}~4 permits the same for component objects by
-% `REC_NAMES_ROBJ(<object>)', which will list all components present.
+For purposes of debugging, it can be helpful sometimes, to see what
+information is stored within an object. In {\GAP}~3 this was possible using
+`RecFields'. {\GAP}~4 permits the same for component objects by
+`REC_NAMES_COMOBJ(<object>)', which will list all components present.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -728,27 +768,68 @@ The different files address different aspects of compatibility.
     makes some {\GAP}~3 function names available that were changed
     in {\GAP}~4,
     and provides code for some {\GAP}~3 features that were
-    deliberately left out from the {\GAP}~4 library,
+    deliberately left out from the {\GAP}~4 library.
 
 `compat3b.g' &
-    allows to call functions in operations records, such as
-    `PermGroupOps.Size',
-    and makes accesses such as `<D>.size' and `IsBound( <D>.size )'
-    for domains <D> available (by redirecting this to calls of the
-    appropritae attribute getters resp. testers),
+    implements the availability of ``components'' of domains;
+    besides components that have no meaning for the rest of the {\GAP}~4
+    library, such as `<D>.myInfo', there are components associated to
+    attributes; for example `<D>.size' is redirected to the call of the
+    attribute `Size', `IsBound( <D>.size )' to the call of its tester,
+    and `<D>.size:= <val>' to the call of its setter.
+    (An important special case is the component `operations', see below.)
 
 `compat3c.g' &
     permits to implement your own elements represented as records,
     and using operations records to provide a `Print' method and
-    the basic arithmetic operations,
+    the basic arithmetic operations.
+    When using operations records, it is probably a good idea to
+    use *immutable* operations records; for example, if the results
+    of arithmetic operations are records with operations records then
+    this avoids to create shallow copies of the operations records 
+    in the call to `Immutable' for the results.
+\enditems
 
+The following features are accessible only via starting {\GAP} with
+the command line option `-O'.
+With this option, also the files listed above are read automatically.
+
+\beginitems
 `compat3d.g' &
     provides some {\GAP}~3 functions like `Domain', simulates the
     behaviour of `String' in {\GAP}~4, and replaces `fail' by `false';
-    these changes destroy some of the functionality of {\GAP}~4.
-    A better compatibility in this respect will eventually be achieved
-    via a command line option.
+    these changes destroy parts of the functionality of {\GAP}~4.
 \enditems
+
+Some words concerning the simulation of operations records may be
+necessary.
+
+The operations records of the {\GAP}~3 library, such as `DomainOps'
+and `GroupOps', are available *only* for access to their components,
+whose values are {\GAP}~4 operations; for example, the value of both
+`DomainOps.Size' and `GroupOps.Size' is the operation `Size'.
+So it is *not* possible to delegate from a `Size' method in an
+operations record to `DomainOps.Size'.
+Also it is not possible to change these predefined operations records.
+
+If one wants to install individual methods for a given object <obj>
+via the mechanism of operations records then one can construct a new
+operations record with `OperationsRecord', assign the desired methods
+to components of this record, and then assign the operations record
+to `<obj>.operations'.
+Whenever an operation that is associated with a component <nam> of the
+operations record is called with <obj> as first argument,
+the value of <nam> is chosen as method.
+(In the case of the binary operations `=', `\<', `+', `-', `*', `/',
+`Comm', and `LeftQuotient', this happens also if <obj> is the
+right argument.)
+
+In order to make the translation from {\GAP}~3 code to {\GAP}~4 easier,
+{\GAP} prints the definition of properties associated with
+operations records and the method installations for operations
+corresponding to components of the operations records;
+an example can be found in the file `tst/compat3.tst' of the {\GAP}~4
+distribution.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

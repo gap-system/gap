@@ -6,19 +6,20 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains methods for 'FFE's.
+##  This file contains methods for `FFE's.
 ##  Note that we must distinguish finite fields and fields that consist of
-##  'FFE's.
-##  (The image of the natural embedding of the field 'GF(<q>)' into a field
+##  `FFE's.
+##  (The image of the natural embedding of the field `GF(<q>)' into a field
 ##  of rational functions is of course a finite field but its elements are
-##  not 'FFE's since this would be a property given by their family.)
+##  not `FFE's since this would be a property given by their family.)
 ##
 ##  Special methods for (elements of) general finite fields can be found in
-##  the file 'fieldfin.gi'.
+##  the file `fieldfin.gi'.
 ##
-##  The implementation of elements of rings 'Integers mod <n>' can be found
-##  in the file 'zmodnz.gi'.
+##  The implementation of elements of rings `Integers mod <n>' can be found
+##  in the file `zmodnz.gi'.
 ##
 Revision.ffe_gi :=
     "@(#)$Id$";
@@ -29,7 +30,7 @@ Revision.ffe_gi :=
 #M  DegreeFFE( <vector> )
 ##
 InstallOtherMethod( DegreeFFE,
-    "method for a row vector of FFEs",
+    "for a row vector of FFEs",
     true,
     [ IsRowVector and IsFFECollection ], 0,
     function( list )
@@ -49,7 +50,7 @@ InstallOtherMethod( DegreeFFE,
 #M  DegreeFFE( <matrix> )
 ##
 InstallOtherMethod( DegreeFFE,
-    "method for a matrix of FFEs",
+    "for a matrix of FFEs",
     true,
     [ IsMatrix and IsFFECollColl ], 0,
     function( mat )
@@ -67,8 +68,8 @@ InstallOtherMethod( DegreeFFE,
 #M  LogFFE( <n>, <r> )  . . . . . . . . . . . . . . . . . . . . . for two FFE
 ##
 InstallMethod( LogFFE,
-    "method for two FFEs",
-    IsIdentical,
+    "for two FFEs",
+    IsIdenticalObj,
     [ IsFFE, IsFFE ], 0,
     function( n, r )
     return LogMod( Int( n ), Int( r ), Characteristic( n ) );
@@ -80,7 +81,7 @@ InstallMethod( LogFFE,
 #M  IntVecFFE( <vector> )
 ##
 InstallOtherMethod( IntVecFFE,
-    "method for a row vector of FFEs",
+    "for a row vector of FFEs",
     true,
     [ IsRowVector and IsFFECollection ], 0,
     vector -> List( vector, IntFFE ) );
@@ -90,7 +91,7 @@ InstallOtherMethod( IntVecFFE,
 ##
 #F  FFEFamily( <p> )
 ##
-FFEFamily := function( p )
+InstallGlobalFunction( FFEFamily, function( p )
     local F;
 
     if MAXSIZE_GF_INTERNAL < p then
@@ -127,15 +128,14 @@ FFEFamily := function( p )
     else
 
       # small characteristic
-      # (The list `FAMS_FFE' is used to store types and families.)
-      TYPE_FFE( p );
-      F:= FAMS_FFE[p];
-      SetOne(  F, Z(p)^0 );
-      SetZero( F, 0*Z(p) );
+      # (The list `TYPE_FFE' is used to store the types.)
+      F:= FamilyType( TYPE_FFE( p ) );
+      SetOne(  F, One( Z(p) ) );
+      SetZero( F, Zero( Z(p) ) );
 
     fi;
     return F;
-end;
+end );
 
 
 #############################################################################
@@ -143,7 +143,7 @@ end;
 #M  Zero( <ffe-family> )
 ##
 InstallOtherMethod( Zero,
-    "method for a family of FFEs",
+    "for a family of FFEs",
     true,
     [ IsFFEFamily ], 0,
     function( fam )
@@ -162,7 +162,7 @@ InstallOtherMethod( Zero,
 #M  One( <ffe-family> )
 ##
 InstallOtherMethod( One,
-    "method for a family of FFEs",
+    "for a family of FFEs",
     true,
     [ IsFFEFamily ], 0,
     function( fam )
@@ -183,14 +183,14 @@ InstallOtherMethod( One,
 ##
 #T other construction possibilities?
 ##
-LargeGaloisField := function( arg )
+InstallGlobalFunction( LargeGaloisField, function( arg )
 
     local p, d;
 
     # if necessary split the arguments
     if Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
 
-        # 'LargeGaloisField( p^d )'
+        # `LargeGaloisField( p^d )'
         p := SmallestRootInt( arg[1] );
         d := LogInt( arg[1], p );
 
@@ -206,7 +206,7 @@ LargeGaloisField := function( arg )
     else
       Error( "sorry, large non-prime fields are not yet implemented" );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -217,7 +217,7 @@ end;
 #F  GaloisField( <p>, <pol> )
 #F  GaloisField( <subfield>, <pol> )
 ##
-GaloisField := function ( arg )
+InstallGlobalFunction( GaloisField, function ( arg )
 
     local F,         # the field, result
           p,         # characteristic
@@ -226,15 +226,15 @@ GaloisField := function ( arg )
           B;         # basis of the extension
 
     # if necessary split the arguments
-    if Length( arg ) = 1 and IsInt( arg[1] ) and IsPosRat( arg[1] ) then
+    if Length( arg ) = 1 and IsPosInt( arg[1] ) then
 
-        # 'GF( p^d )'
+        # `GF( p^d )'
         p := SmallestRootInt( arg[1] );
         d := LogInt( arg[1], p );
 
     elif Length( arg ) = 2 then
 
-        # 'GF( p, d )'
+        # `GF( p, d )'
         p := arg[1];
         d := arg[2];
 
@@ -250,7 +250,7 @@ GaloisField := function ( arg )
       # if the degree of the extension is given
       if   IsInt( d ) and 0 < d then
 
-        # 'GF( p, d )' for prime 'p'
+        # `GF( p, d )' for prime `p'
         if MAXSIZE_GF_INTERNAL < p^d then
           return LargeGaloisField( p, d );
         fi;
@@ -259,7 +259,7 @@ GaloisField := function ( arg )
       elif     IsUnivariateLaurentPolynomial( d )
            and DegreeFFE( d.coefficients ) = 1  then
 
-        # 'GF( p, <pol> )' for prime 'p'
+        # `GF( p, <pol> )' for prime `p'
         return FieldExtension( GaloisField( p, 1 ), d );
 
       # if the extension is given by coefficients of an irred. polynomial
@@ -275,17 +275,17 @@ GaloisField := function ( arg )
 
 #T The construction of a field together with a basis is obsolete.
 #T One should construct the basis explicitly.
-        # 'GF( p, <basisvectors> )' for prime 'p'
+        # `GF( p, <basisvectors> )' for prime `p'
         F := GaloisField( GaloisField( p, 1 ), Length( d ) );
 
-        # Check that the vectors in 'd' really form a basis,
+        # Check that the vectors in `d' really form a basis,
         # and construct the basis.
         B:= BasisByGenerators( F, d );
         if B = fail then
           Error( "<extension> is not linearly independent" );
         fi;
 
-        # Note that 'F' is *not* the field stored in the global list!
+        # Note that `F' is *not* the field stored in the global list!
         SetBasisOfDomain( F, B );
         return F;
 
@@ -329,17 +329,17 @@ GaloisField := function ( arg )
 #T The construction of a field together with a basis is obsolete.
       elif IsHomogeneousList( d ) then
 
-        # 'GF( <subfield>, <basisvectors> )'
+        # `GF( <subfield>, <basisvectors> )'
         F := GaloisField( subfield, Length( d ) );
 
-        # Check that the vectors in 'd' really form a basis,
+        # Check that the vectors in `d' really form a basis,
         # and construct the basis.
         B:= BasisByGenerators( F, d );
         if B = fail then
           Error( "<extension> is not linearly independent" );
         fi;
 
-        # Note that 'F' is *not* the field stored in the global list!
+        # Note that `F' is *not* the field stored in the global list!
         SetBasisOfDomain( F, B );
         return F;
 
@@ -382,10 +382,7 @@ GaloisField := function ( arg )
 
     # Return the finite field.
     return F;
-end;
-
-FiniteField := GaloisField;
-GF := GaloisField;
+end );
 
 
 #############################################################################
@@ -393,7 +390,7 @@ GF := GaloisField;
 #M  FieldExtension( <subfield>, <poly> )
 ##
 InstallOtherMethod( FieldExtension,
-    "method for a field of FFEs, and a univ. Laurent polynomial",
+    "for a field of FFEs, and a univ. Laurent polynomial",
     true,
 #T CollPoly
     [ IsField and IsFFECollection, IsUnivariateLaurentPolynomial ], 0,
@@ -434,10 +431,35 @@ InstallOtherMethod( FieldExtension,
 
 #############################################################################
 ##
-#M  PrintObj( <F> ) . . . . . . . . . . . . . . . . . print a field of 'FFE's
+#M  ViewObj( <F> ) . . . . . . . . . . . . . . . . .  view a field of `FFE's
+##
+InstallMethod( ViewObj,
+    "for a field of FFEs",
+    true,
+    [ IsField and IsFFECollection ], 10,
+    function( F )
+    if IsPrimeField( F ) then
+      Print( "GF(", Characteristic( F ), ")" );
+    elif IsPrimeField( LeftActingDomain( F ) ) then
+      Print( "GF(", Characteristic( F ),
+                    "^", DegreeOverPrimeField( F ), ")" );
+    elif F = LeftActingDomain( F ) then
+      Print( "FieldOverItselfByGenerators( ",
+             GeneratorsOfField( F ), " )" );
+    else
+      Print( "AsField( ", LeftActingDomain( F ),
+             ", GF(", Characteristic( F ),
+                      "^", DegreeOverPrimeField( F ), ") )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  PrintObj( <F> ) . . . . . . . . . . . . . . . . . print a field of `FFE's
 ##
 InstallMethod( PrintObj,
-    "method for a field of FFEs",
+    "for a field of FFEs",
     true,
     [ IsField and IsFFECollection ], 10,
     function( F )
@@ -463,7 +485,7 @@ InstallMethod( PrintObj,
 #M  \in( <z> ,<F> ) . . . . . . . .  test if an object lies in a finite field
 ##
 InstallMethod( \in,
-    "method for a FFE, and a field of FFEs",
+    "for a FFE, and a field of FFEs",
     IsElmsColls,
     [ IsFFE, IsField and IsFFECollection ], 0,
     function ( z, F )
@@ -476,8 +498,8 @@ InstallMethod( \in,
 #M  Intersection( <F>, <G> )  . . . . . . . intersection of two finite fields
 ##
 InstallMethod( Intersection2,
-    "method for two fields of FFEs",
-    IsIdentical,
+    "for two fields of FFEs",
+    IsIdenticalObj,
     [ IsField and IsFFECollection, IsField and IsFFECollection ], 0,
     function ( F, G )
     return GF( Characteristic( F ), GcdInt( DegreeOverPrimeField( F ),
@@ -490,7 +512,7 @@ InstallMethod( Intersection2,
 #M  Conjugates( <F>, <z> ) . . . . . . . conjugates of a finite field element
 ##
 InstallMethod( Conjugates,
-    "method for a field of FFEs, and a FFE",
+    "for a field of FFEs, and a FFE",
     IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
@@ -517,12 +539,13 @@ InstallMethod( Conjugates,
     return cnjs;
     end );
 
+
 #############################################################################
 ##
 #F  Norm( <F>, <z> )  . . . . . . . . . . . .  norm of a finite field element
 ##
 InstallMethod( Norm,
-    "method for a field of FFEs, and a FFE",
+    "for a field of FFEs, and a FFE",
     IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
@@ -546,12 +569,13 @@ InstallMethod( Norm,
     return nrm;
     end );
 
+
 #############################################################################
 ##
 #M  Trace( <F>, <z> ) . . . . . . . . . . . . trace of a finite field element
 ##
 InstallMethod( Trace,
-    "method for a field of FFEs, and a FFE",
+    "for a field of FFEs, and a FFE",
     IsCollsElms,
     [ IsField and IsFinite and IsFFECollection, IsFFE ], 0,
     function ( F, z )
@@ -578,12 +602,13 @@ InstallMethod( Trace,
     return trc;
     end );
 
+
 #############################################################################
 ##
 #M  Order( <z> )  . . . . . . . . . . . . . . order of a finite field element
 ##
 InstallMethod( Order,
-    "method for an internal FFE",
+    "for an internal FFE",
     true,
     [ IsFFE and IsInternalRep ], 0,
     function ( z )
@@ -592,7 +617,7 @@ InstallMethod( Order,
             deg;        # degree of <z> over the primefield
 
     # compute the order
-    if z = 0 * z   then
+    if IsZero( z )   then
         ord := 0;
     else
         chr := Characteristic( z );
@@ -604,12 +629,13 @@ InstallMethod( Order,
     return ord;
     end );
 
+
 #############################################################################
 ##
 #M  SquareRoots( <F>, <z> )
 ##
 InstallMethod( SquareRoots,
-    "method for a field of FFEs, and a FFE",
+    "for a field of FFEs, and a FFE",
     IsCollsElms,
     [ IsField, IsFFE ], 0,
     function( F, z )
@@ -624,7 +650,7 @@ InstallMethod( SquareRoots,
 
     else
 
-      # either two solutions in 'F' or no solution
+      # either two solutions in `F' or no solution
       r:= PrimitiveRoot( F );
       z:= LogFFE( z, r ) / 2;
       if IsInt( z ) then
@@ -643,7 +669,7 @@ InstallMethod( SquareRoots,
 #M  Int( <z> ) . . . . . . . . . convert a finite field element to an integer
 ##
 InstallMethod( Int,
-    "method for an internal FFE",
+    "for an internal FFE",
     true,
     [ IsFFE and IsInternalRep ], 0,
     IntFFE );
@@ -654,12 +680,12 @@ InstallMethod( Int,
 #M  String( <ffe> ) . . . . . .  convert a finite field element into a string
 ##
 InstallMethod( String,
-    "method for an internal FFE",
+    "for an internal FFE",
     true,
     [ IsFFE and IsInternalRep ], 0,
     function ( ffe )
     local   str, root;
-    if   ffe = 0 * ffe  then
+    if   IsZero( ffe )  then
         str := Concatenation("0*Z(",String(Characteristic(ffe)),")");
     else
         str := Concatenation("Z(",String(Characteristic(ffe)));
@@ -682,7 +708,7 @@ InstallMethod( String,
 #M  FieldOverItselfByGenerators( <elms> )
 ##
 InstallMethod( FieldOverItselfByGenerators,
-    "method for a collection of FFEs",
+    "for a collection of FFEs",
     true,
     [ IsFFECollection ], 0,
     function( elms )
@@ -718,23 +744,25 @@ InstallMethod( FieldOverItselfByGenerators,
 #M  FieldByGenerators( <F>, <elms> )  . . . . . . . . . . field by generators
 ##
 InstallMethod( FieldByGenerators,
-    "method for two coll. of FFEs, the first a field",
-    IsIdentical,
+    "for two coll. of FFEs, the first a field",
+    IsIdenticalObj,
     [ IsFFECollection and IsField, IsFFECollection ], 0,
     function( subfield, gens )
 
-    local F, d, q, z;
+    local F, d, subd, q, z;
 
     F := Objectify( NewType( FamilyObj( gens ),
                              IsField and IsAttributeStoringRep ),
                     rec() );
 
     d:= DegreeFFE( gens );
-    q:= Characteristic( subfield )^d;
-
-    if d mod DegreeOverPrimeField( subfield ) <> 0 then
-      Error( "<subfield> must be contained in the field of <gens>" );
+    subd:= DegreeOverPrimeField( subfield );
+    if d mod subd <> 0 then
+      d:= LcmInt( d, subd );
+      gens:= Concatenation( gens, GeneratorsOfDivisionRing( subfield ) );
     fi;
+
+    q:= Characteristic( subfield )^d;
 
     SetLeftActingDomain( F, subfield );
     SetIsPrimeField( F, d = 1 );
@@ -763,14 +791,14 @@ InstallMethod( FieldByGenerators,
 #M  DefaultFieldByGenerators( <F>, <elms> ) . . default field containing ffes
 ##
 InstallMethod( DefaultFieldByGenerators,
-    "method for a collection of FFEs that is a list",
+    "for a collection of FFEs that is a list",
     true,
     [ IsFFECollection and IsList ], 0,
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 
 InstallOtherMethod( DefaultFieldByGenerators,
-    "method for a finite field, and a collection of FFEs that is a list",
-    IsIdentical,
+    "for a finite field, and a collection of FFEs that is a list",
+    IsIdenticalObj,
     [ IsField and IsFinite, IsFFECollection and IsList ], 0,
     function( F, gens )
     return GF( F, DegreeFFE( gens ) );
@@ -779,35 +807,52 @@ InstallOtherMethod( DefaultFieldByGenerators,
 
 #############################################################################
 ##
-#M  RingByGenerators( <elms> )  . . . . . . . . . . . . .  ring by generators
-##
-InstallMethod( RingByGenerators,
-    "method for a collection of FFE",
-    true,
-    [ IsFFECollection ], 0,
-    gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
-
-
-#############################################################################
-##
+#M  RingByGenerators( <elms> )  . . . . . . . . . . . . .  for FFE collection
 #M  RingWithOneByGenerators( <elms> ) . . . . . . . . . .  for FFE collection
+#M  DefaultRingByGenerators( <z> )  . . . . . .  default ring containing FFEs
+#M  FLMLORByGenerators( <F>, <elms> ) . . . . . . . . . .  for FFE collection
+#M  FLMLORWithOneByGenerators( <F>, <elms> )  . . . . . .  for FFE collection
 ##
-InstallMethod( RingWithOneByGenerators,
-    "method for a collection of FFE",
+##  In all these cases, the result is in fact a field,
+##  so we may delegate to `GF'.
+##
+RingFromFFE := gens -> GF( Characteristic( gens ), DegreeFFE( gens ) );
+
+InstallMethod( RingByGenerators,
+    "for a collection of FFE",
     true,
     [ IsFFECollection ], 0,
-    gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
+    RingFromFFE );
 
+InstallMethod( RingWithOneByGenerators,
+    "for a collection of FFE",
+    true,
+    [ IsFFECollection ], 0,
+    RingFromFFE );
 
-#############################################################################
-##
-#M  DefaultRingByGenerators( <z> )  . . . . . .  default ring containing ffes
-##
 InstallMethod( DefaultRingByGenerators,
-    "method for a collection of FFE",
+    "for a collection of FFE",
     true,
     [ IsFFECollection and IsList ], 0,
-    gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
+    RingFromFFE );
+
+
+FLMLORFromFFE := function( F, elms )
+    return GF( Characteristic( F ),
+               Lcm( DegreeFFE( elms ), DegreeOverPrimeField( F ) ) );
+end;
+
+InstallMethod( FLMLORByGenerators,
+    "for a field, and a collection of FFE",
+    IsIdenticalObj,
+    [ IsField and IsFFECollection, IsFFECollection ], 0,
+    FLMLORFromFFE );
+
+InstallMethod( FLMLORWithOneByGenerators,
+    "for a field, and a collection of FFE",
+    IsIdenticalObj,
+    [ IsField and IsFFECollection, IsFFECollection ], 0,
+    FLMLORFromFFE );
 
 
 #############################################################################

@@ -5,11 +5,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file defines the functions for computing with finite presentations.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_tietze_h =
+const char * Revision_tietze_h =
    "@(#)$Id$";
 #endif
 
@@ -23,25 +24,9 @@ SYS_CONST char * Revision_tietze_h =
 /****************************************************************************
 **
 
-*F  SetupTietze() . . . . . . . . . . . . . . . initialize the tietze package
+*F  InitInfoTietze()  . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupTietze ( void );
-
-
-/****************************************************************************
-**
-*F  InitTietze()  . . . . . . . . . . . . . . . initialize the tietze package
-**
-**  'InitTietze' initializes the Tietze package.
-*/
-extern void InitTietze ( void );
-
-
-/****************************************************************************
-**
-*F  CheckTietze() . . . . . . . . . . . . . . . initialize the tietze package
-*/
-extern void CheckTietze ( void );
+StructInitInfo * InitInfoTietze ( void );
 
 
 /****************************************************************************

@@ -11,163 +11,30 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  The  files   "system.c" and  "sysfiles.c"  contains all  operating system
 **  dependent  functions.  This file contains  all system dependent functions
 **  except file and stream operations, which are implemented in "sysfiles.c".
 **  The following labels determine which operating system is actually used.
 **
-**  SYS_IS_BSD
-**      For  Berkeley UNIX systems, such as  4.2 BSD,  4.3 BSD,  free 386BSD,
-**      and DEC's Ultrix.
+**  Under UNIX autoconf  is used to check  various features of  the operating
+**  system and the compiler.  Should you have problem compiling GAP check the
+**  file "bin/CPU-VENDOR-OS/config.h" after you have done a
 **
-**  SYS_IS_MAC_MPW
-**      For Apple's Macintosh with the Mac Programmers Workshop compiler.
+**     ./configure ; make config
 **
-**  SYS_IS_MAC_SYC
-**      For  Apple's  Macintosh  with the  Symantec C++ 7.0 (or  Think C 6.0)
-**      compiler.
+**  in the root directory.  And then do a
 **
-**  SYS_IS_MACH
-**      For Mach derived systems, such as NeXT's NextStep.
+**     make compile
 **
-**  SYS_IS_USG
-**      For System V UNIX systems, such as SUN's SunOS 4.0, Hewlett Packard's
-**      HP-UX, Masscomp's RTU, free Linux, and MIPS Risc/OS.
-**
-**  SYS_IS_OS2_EMX
-**      For OS/2 2.x and DOS with the EMX port of the GNU C compiler.
-**
-**  SYS_IS_MSDOS_DJGPP
-**      For MS-DOS with Delories port of the GNU C compiler.
-**
-**  SYS_IS_TOS_GCC2
-**      For Atari's TOS with the port of the GNU C compiler.
-**
-**  SYS_IS_VMS
-**      For DEC's VMS 5.0 or later with the VAX C compiler 3.0 or later.
-**
-**  The following must be set on 64 bit systems:
-**
-**  SYS_IS_64_BIT
-**      For systems having 64 bit pointers.
-**
-**  The following labels determine if and how dynamic loading is supported.
-**
-**  SYS_HAS_DL_LIBRARY
-**      For systems supporting 'dlopen' and 'dlsym'.
-**
-**  Some system functions are broken, use the following to fix this:
-**
-**  SYS_HAS_BROKEN_STRNCAT
-**      Use  this if   your 'strncat'  is   broken.  At least  in  SCO ODT2.0
-**      (SVR3.2) 'strncat' has problems if the len is a multiple of 4.
-**
-**  Not all operating system support the following concepts:
-**
-**  SYS_HAS_SIGNALS
-**      Use this if your system supports signal.   If not set the system will
-**      using polling to check for <ctrl>-C.
-**
-**  SYS_HAS_DL_LIBRARY
-**      Use this if your system supports dynamic loading via 'dlopen'.
-**
-**  SYS_HAS_RLD_LIBRARY
-**      Use this if your system supports dynamic loading via 'rld_load'.
-**
-**  Not all operating system have "the" standard include files:
-**
-**  SYS_TERMIO_H
-**      Use this if your system has no include file "termio.h".
-**
-**  SYS_SGTTY_H
-**      Use this if your system has no include file "sgtty.h".
-**
-**  SYS_SIGNAL_H
-**      Use this if your system has no include file "signal.h".
-**
-**  SYS_STDIO_H
-**      Use this if your system has no include file "stdio.h".
-**
-**  SYS_STDLIB_H
-**      Use this if your system has no include file "stdlib.h".
-**
-**  SYS_UNISTD_H
-**      Use this if your system has no include file "unistd.h".
-**
-**  Also the file contains prototypes for all the system calls and/or library
-**  function used as defined in  ``Harbison & Steele, A C Reference Manual''.
-**
-**  If there is  a prototype in an  include file and it  does not  agree with
-**  this one, then the compiler will signal an  error or warning, and you can
-**  manually check whether the incompatibility is critical or quite harmless.
-**  If there is a prototype in  an include file and it  agrees with this one,
-**  then the compiler will be silent.  If there is no prototype in an include
-**  file, the compiler cannot check, but then the prototype does no harm.
-**
-**  Unfortunately  there can be some incompatibilities with the prototypes in
-**  the  include files.  To overcome this  difficulties  it  is  possible  to
-**  change  or undefine  the prototypes  with  the  following  symbols.  They
-**  should be added to the 'Makefile' if neccessary.
-**
-**  SYS_HAS_ANSI=<ansi>
-**      Some functions have different prototypes in  ANSI and  traditional C.
-**      For compilers that are  ANSI  the default uses the  ANSI  prototypes,
-**      and you use the  traditional prototypes by defining 'SYS_HAS_ANSI=0'.
-**      For  non ANSI compilers the default uses the  traditional prototypes,
-**      and you can use the ANSI prototypes by defining 'SYS_HAS_ANSI=1'.
-**
-**  SYS_HAS_CALLOC_PROTO
-**      Use this to undefine the prototype for 'calloc'.
-**
-**  SYS_HAS_CONST=<const_q>
-**      Some  functions do  not modifiy  some of  their  arguments,  and have
-**      thus  'const' qualifiers  for those  arguments  in their  prototypes.
-**      For compilers that are  ANSI the default uses the  const  qualifiers,
-**      and you can remove the const qualifiers by defining 'SYS_HAS_CONST='.
-**      For compilers that are  not ANSI  the default does not use the  const
-**      qualifiers and you can use them by defining 'SYS_HAS_CONST=const'.
-**
-**  SYS_HAS_STDIO_PROTO
-**      Use this to undefine the prototypes for 'fopen', 'fclose',  'setbuf',
-**      'fgets', and 'fputs'.
-**
-**  SYS_HAS_READ_PROTO
-**      Use this to undefine the prototypes for 'read' and 'write'.
-**
-**  SYS_HAS_EXEC_PROTO
-**      Use this to undefine the prototypes for 'execve'.
-**
-**  SYS_HAS_STRING_PROTO
-**      Use this to undefine the  prototypes  for  'strncat',  'strcmp',  and
-**      'strlen'.
-**
-**  SYS_HAS_IOCTL_PROTO
-**      Use this to undefine the prototype for 'ioctl'.
-**
-**  SYS_HAS_SIG_T=<sig_t>
-**      Use this to define the type of the value returned by signal handlers.
-**      This should be either 'void' (default, ANSI C) or 'int' (older UNIX).
-**
-**  SYS_HAS_SIGNAL_PROTO
-**      Use this to undefine  the  prototypes  for  'signal',  'getpid',  and
-**      'kill'.
-**
-**  SYS_HAS_TIME_PROTO
-**      Use this to undefine the prototypes for 'time', 'times', and
-**      'getrusage'.
-**
-**  SYS_HAS_MALLOC_PROTO
-**      Use this to undefine the prototypes for 'malloc' and 'free'.
-**
-**  SYS_HAS_MISC_PROTO
-**      Use this to undefine the prototypes for 'exit',  'system',  'tmpnam',
-**      'sbrk', 'getenv', 'atoi', 'isatty', and 'ttyname'.  */
+**  to compile and link GAP.
+*/
 #define INCLUDE_DECLARATION_PART
 #include        "system.h"              /* system dependent part           */
 #undef  INCLUDE_DECLARATION_PART
 
-SYS_CONST char * Revision_system_c =
+const char * Revision_system_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -194,30 +61,11 @@ SYS_CONST char * Revision_system_c =
 
 
 #ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
-extern FILE * fopen ( SYS_CONST char *, SYS_CONST char * );
+extern FILE * fopen ( const char *, const char * );
 extern int    fclose ( FILE * );
 extern void   setbuf ( FILE *, char * );
 extern char * fgets ( char *, int, FILE * );
-extern int    fputs ( SYS_CONST char *, FILE * );
-#endif
-
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-
-
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
+extern int    fputs ( const char *, FILE * );
 #endif
 
 
@@ -225,71 +73,6 @@ extern  int             kill ( int, int );
 # define SYS_IS_MAC_MPW             1
 # define SYS_HAS_CALLOC_PROTO       1
 #endif
-
-
-/****************************************************************************
-**
-
-*V  SyFlags . . . . . . . . . . . . . . . . . . . . flags used when compiling
-**
-**  'SyFlags' is the name of the target for which GAP was compiled.
-**
-**  It is
-**
-**      [bsd|mach|usg|os2|msdos|tos|vms|mac] [gcc|emx|djgpp|mpw|syc] [ansi]
-**
-**  It is used in 'InitGap' for the 'VERSYS' variable.
-*/
-SYS_CONST Char SyFlags [] = {
-
-#ifdef SYS_IS_BSD
-    'b', 's', 'd',
-#endif
-
-#ifdef SYS_IS_MACH
-    'm', 'a', 'c', 'h',
-#endif
-
-#ifdef SYS_IS_USG
-    'u', 's', 'g',
-#endif
-
-#ifdef SYS_IS_OS2_EMX
-    'o', 's', '2', ' ', 'e', 'm', 'x',
-#endif
-
-#ifdef SYS_IS_MSDOS_DJGPP
-    'm', 's', 'd', 'o', 's', ' ', 'd', 'j', 'g', 'p', 'p',
-#endif
-
-#ifdef SYS_IS_TOS_GCC2
-    't', 'o', 's', ' ', 'g', 'c', 'c', '2',
-#endif
-
-#ifdef SYS_IS_VMS
-    'v', 'm', 's',
-#endif
-
-#ifdef SYS_IS_MAC_MPW
-    'm', 'a', 'c', ' ', 'm', 'p', 'w',
-#endif
-
-#ifdef SYS_IS_MAC_SYC
-    'm', 'a', 'c', ' ', 's', 'y', 'c',
-#endif
-
-#if __GNUC__
-    ' ', 'g', 'c', 'c',
-#endif
-#if SYS_ANSI
-    ' ', 'a', 'n', 's', 'i',
-#endif
-
-#ifdef SYS_HAS_BROKEN_STRNCAT
-    ' ', 's', 't', 'r', 'n', 'c', 'a', 't',
-#endif
-
-    '\0' };
 
 
 /****************************************************************************
@@ -312,14 +95,6 @@ SYS_CONST Char SyFlags [] = {
 **
 **  This value is passed to 'InitBags'.
 */
-#ifdef  SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
-#endif
-
-#ifndef SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         sizeof(UInt *)
-#endif
-
 UInt SyStackAlign = SYS_STACK_ALIGN;
 
 
@@ -327,11 +102,7 @@ UInt SyStackAlign = SYS_STACK_ALIGN;
 **
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
-#ifndef SYS_ARCH
-  SYS_CONST Char * SyArchitecture = "unknown";
-#else
-  SYS_CONST Char * SyArchitecture = SYS_ARCH;
-#endif
+const Char * SyArchitecture = SYS_ARCH;
 
 
 /****************************************************************************
@@ -607,25 +378,7 @@ Int SyStorMax = 64 * 1024 * 1024L;
 **
 **  Put in this package because the command line processing takes place here.
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-Int SyStorMin = 8 * 1024 * 1024;
-#endif
-
-#if SYS_MSDOS_DJGPP
-Int SyStorMin = 8 * 1024 * 1024;
-#endif
-
-#if SYS_TOS_GCC2
-Int SyStorMin = 0;
-#endif
-
-#if SYS_VMS
-Int SyStorMin = 8 * 1024 * 1024;
-#endif
-
-#if SYS_MAC_MPW || SYS_MAC_SYC
-Int SyStorMin = 0;
-#endif
+Int SyStorMin = SY_STOR_MIN;
 
 
 /****************************************************************************
@@ -674,6 +427,16 @@ static UInt syStackSpace = 64 * 1024;
 static UInt syStackSpace = 64 * 1024;
 #endif
 
+/****************************************************************************
+**
+*V  SyFalseEqFail . . . . .. .compatibility option, identifies false and fail
+**
+** In GAP 3 there was no fail, and false was often used. This flag causes
+** false and fail to be the same value
+*/
+
+UInt SyFalseEqFail = 0;
+
 
 /****************************************************************************
 **
@@ -708,18 +471,16 @@ UInt SyStopTime;
 
 /****************************************************************************
 **
-*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . .  BSD/Mach/DJGPP
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . using `getrusage'
 **
-**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
-**  can use 'getrusage', which gives us a much better resolution.
+**  Use use   'getrusage'  if possible,  because  it gives  us  a much better
+**  resolution. 
 */
-#if SYS_BSD || SYS_MACH || SYS_MSDOS_DJGPP
+#if HAVE_GETRUSAGE
 
-#ifndef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_RESOURCE_H                  /* definition of 'struct rusage'   */
+#ifndef SYS_RESOURCE_H
 # include       <sys/time.h>            /* definition of 'struct timeval'  */
-# include       <sys/resource.h>
+# include       <sys/resource.h>        /* definition of 'struct rusage'   */
 # define SYS_RESOURCE_H
 #endif
 
@@ -740,7 +501,16 @@ UInt SyTime ( void )
 
 #endif
 
-#ifdef SYS_HAS_NO_GETRUSAGE
+
+/****************************************************************************
+**
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . .  BSD/Mach/DJGPP
+**
+**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
+**  can use 'getrusage', which gives us a much better resolution.
+*/
+#if ! HAVE_GETRUSAGE
+#if SYS_BSD || SYS_MACH || SYS_MSDOS_DJGPP
 
 #ifndef SYS_TIMES_H                     /* time functions                  */
 # include       <sys/types.h>
@@ -763,7 +533,6 @@ UInt SyTime ( void )
 }
 
 #endif
-
 #endif
 
 
@@ -883,20 +652,20 @@ UInt SyTime ( void )
 
 #ifndef SYS_HAS_STRING_PROTO            /* ANSI/TRAD decl. from H&S 13     */
 # if SYS_ANSI
-extern  char *          strncat ( char *, SYS_CONST char *, size_t );
-extern  int             strcmp ( SYS_CONST char *, SYS_CONST char * );
-extern  int             strncmp ( SYS_CONST char*, SYS_CONST char*, size_t );
-extern  size_t          strlen ( SYS_CONST char * );
+extern  char *          strncat ( char *, const char *, size_t );
+extern  int             strcmp ( const char *, const char * );
+extern  int             strncmp ( const char*, const char*, size_t );
+extern  size_t          strlen ( const char * );
 # else
-extern  char *          strncat ( char *, SYS_CONST char *, int );
-extern  int             strcmp ( SYS_CONST char *, SYS_CONST char * );
-extern  int             strncmp ( SYS_CONST char *, SYS_CONST char *, int );
-extern  int             strlen ( SYS_CONST char * );
+extern  char *          strncat ( char *, const char *, int );
+extern  int             strcmp ( const char *, const char * );
+extern  int             strncmp ( const char *, const char *, int );
+extern  int             strlen ( const char * );
 # endif
 #endif
 
 UInt SyStrlen (
-    SYS_CONST Char *     str )
+    const Char *         str )
 {
     return strlen( str );
 }
@@ -911,8 +680,8 @@ UInt SyStrlen (
 **  <str2> lexicographically.
 */
 Int SyStrcmp (
-    SYS_CONST Char *    str1,
-    SYS_CONST Char *    str2 )
+    const Char *        str1,
+    const Char *        str2 )
 {
     return strcmp( str1, str2 );
 }
@@ -926,8 +695,8 @@ Int SyStrcmp (
 **  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
 */
 Int SyStrncmp (
-    SYS_CONST Char *    str1,
-    SYS_CONST Char *    str2,
+    const Char *        str1,
+    const Char *        str2,
     UInt                len )
 {
     return strncmp( str1, str2, len );
@@ -949,7 +718,7 @@ Int SyStrncmp (
 
 Char * SyStrncat (
     Char *              dst,
-    SYS_CONST Char *    src,
+    const Char *        src,
     UInt                len )
 {
     Char *              d;
@@ -967,7 +736,7 @@ Char * SyStrncat (
 #else
 Char * SyStrncat (
     Char *              dst,
-    SYS_CONST Char *    src,
+    const Char *        src,
     UInt                len )
 {
     return strncat( dst, src, len );
@@ -1002,8 +771,10 @@ void SyMsgsBags (
     Char                str [32];       /* string buffer                   */
     Char                ch;             /* leading character               */
     UInt                i;              /* loop variable                   */
+    Int                 copynr;         /* copy of <nr>                    */
 
     /* convert <nr> into a string with leading blanks                      */
+    copynr = nr;
     ch = '0';  str[7] = '\0';
     for ( i = 7; i != 0; i-- ) {
         if      ( 0 < nr ) { str[i-1] = '0' + ( nr) % 10;  ch = ' '; }
@@ -1011,6 +782,7 @@ void SyMsgsBags (
         else               { str[i-1] = ch;                ch = ' '; }
         nr = nr / 10;
     }
+    nr = copynr;
 
     /* ordinary full garbage collection messages                           */
     if ( 1 <= SyMsgsFlagBags && full ) {
@@ -1035,10 +807,10 @@ void SyMsgsBags (
     }
 
     /* package (window) mode full garbage collection messages              */
-    if ( full && phase != 0 ) {
+    if ( phase != 0 ) {
         if ( 3 <= phase ) nr *= 1024;
         cmd[0] = '@';
-        cmd[1] = '0' + phase;
+        cmd[1] = ( full ? '0' : ' ' ) + phase;
         cmd[2] = '\0';
         i = 0;
         for ( ; 0 < nr; nr /=10 )
@@ -1094,7 +866,7 @@ void SyMsgsBags (
 **  was 0 or aborts GAP if <need> was 1.  'SyAllocBags' will refuse to extend
 **  the workspace beyond 'SyStorMax' or to reduce it below 'SyStorMin'.
 */
-#if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS
+#if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS||HAVE_SBRK
 
 #ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
 extern  char * sbrk ( int );
@@ -1164,7 +936,7 @@ UInt * * * SyAllocBags (
 **
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
-#if SYS_MACH
+#if SYS_MACH || HAVE_VM_ALLOCATE
 
 #include <mach/mach.h>
 
@@ -1330,11 +1102,11 @@ UInt * * *      SyAllocBags (
 
 /****************************************************************************
 **
-*F  SyAbortBags(<msg>)  . . . . . . . . . . abort GAP in case of an emergency
+*F  SyAbortBags( <msg> )  . . . . . . . . . abort GAP in case of an emergency
 **
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
 */
-void            SyAbortBags (
+void SyAbortBags (
     Char *              msg )
 {
     SyFputs( msg, 3 );
@@ -1406,7 +1178,7 @@ void SyExit (
 **
 *f  SySetGapRootPath( <string> )  . . . . . . . . . . . . . . .  BSG/Mach/USG
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_SLASH_SEPARATOR
 
 void SySetGapRootPath( Char * string )
 {
@@ -1466,7 +1238,7 @@ void sySetGapRCFile ( void )
     if ( i == sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) )
         return;
 
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_DOTGAPRC
     if ( getenv("HOME") != 0 ) {
         SyInitfiles[i][0] = '\0';
         SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
@@ -1474,7 +1246,7 @@ void sySetGapRCFile ( void )
             (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
 #endif
 
-#if SYS_OS2_EMX || SYS_MSDOS_DJGPP || SYS_TOS_GCC2
+#if HAVE_GAPRC
     if ( getenv("HOME") != 0 ) {
         SyInitfiles[i][0] = '\0';
         SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
@@ -1516,8 +1288,8 @@ void sySetGapRCFile ( void )
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 20, 13 */
-extern char *  getenv ( SYS_CONST char * );
-extern int     atoi ( SYS_CONST char * );
+extern char *  getenv ( const char * );
+extern int     atoi ( const char * );
 #endif
 
 
@@ -1609,7 +1381,7 @@ void InitSystem (
 #endif
 
     /* open the standard files                                             */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_VMS
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_VMS || HAVE_TTYNAME
     syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
     if ( isatty( fileno(stdin) ) ) {
         if ( isatty( fileno(stdout) )
@@ -1768,7 +1540,6 @@ void InitSystem (
             break;
 #endif
 
-
         /* '-L', restore a saved workspace                                 */
         case 'L':
             if ( argc < 3 ) {
@@ -1790,6 +1561,11 @@ void InitSystem (
             SyCheckForCompletion = ! SyCheckForCompletion;
             break;
 
+
+	/* '-O', kernel level compatibility mode                       */
+	case 'O':
+	    SyFalseEqFail = ! SyFalseEqFail;
+	    break;
 
         /* '-X' check crc value while reading completion files             */
         case 'X':
@@ -1874,7 +1650,7 @@ void InitSystem (
 
         /* '-h', print a usage help                                        */
         case 'h':
-            goto usage;
+            goto fullusage;
 
         /* '-i' <initname>, changes the name of the init file              */
         case 'i':
@@ -1940,11 +1716,9 @@ void InitSystem (
 
 
         /* '-p', start GAP package mode for output                         */
-#if SYS_BSD || SYS_MACH || SYS_USG
         case 'p':
             SyWindow = ! SyWindow;
             break;
-#endif
 
 
         /* '-q', GAP should be quiet                                       */
@@ -2023,9 +1797,9 @@ void InitSystem (
     if ( SyWindow ) {
         SyLineEdit   = 1;
         SyCTRD       = 1;
-        syWinPut( 0, "@p", "" );
         syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
         syBuf[3].fp = stdout;
+        syWinPut( 0, "@p", "1." );
     }
    
 #if SYS_MAC_SYC
@@ -2118,6 +1892,13 @@ void InitSystem (
 
     /* print a usage message                                               */
 usage:
+ fputs("usage: gap [OPTIONS] [FILES]\n",stderr);
+ fputs("       run the Groups, Algorithms and Programming system,\n",stderr);
+ fputs("       use '-h' option to get help.\n",stderr);
+ fputs("\n",stderr);
+ SyExit( 1 );
+  
+fullusage:
  fputs("usage: gap [OPTIONS] [FILES]\n",stderr);
  fputs("       run the Groups, Algorithms and Programming system.\n",stderr);
  fputs("\n",stderr);

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file provides methods to make records behave as records with
 ##  `operations' component in {\GAP} 3.
@@ -15,42 +16,51 @@ Revision.compat3c_g :=
 
 #############################################################################
 ##
+##  The files `compat3a.g' and `compat3b.g' must have been read before this
+##  file can be read.
+##
+if not IsBound( Revision.compat3b_g ) then
+  ReadLib( "compat3b.g" );
+fi;
+
+
+#############################################################################
+##
 #M  PrintObj( <record> )
 ##
 ##  The record <record> is printed either by printing all its components or,
-##  if the component `operations' of <record> is bound and is a record with
-##  component `Print', this function is called with argument <record>.
+##  if the component `operations' of <record> is bound and has a component
+##  `Print', this function is called with argument <record>.
 ##
 InstallMethod( PrintObj,
-    "record",
+    "for a record, look for entry in `operations'",
     true,
-    [ IsRecord ], 1,  # override the method that ignores `operations'
+    [ IsRecord ], SUM_FLAGS,
     PRINT_PREC );
 
 
 #############################################################################
 ##
 #M  <record> + <object>
+#M  <object> + <record>
+##
+##  Note that `SUM_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \+,
     "record + object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     SUM_PREC );
 
-
-#############################################################################
-##
-#M  <object> + <record>
-##
 InstallOtherMethod( \+,
     "object + record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     SUM_PREC );
 
 
@@ -61,7 +71,8 @@ InstallOtherMethod( \+,
 InstallOtherMethod( Zero,
     "method for a record (expect `operations' component)",
     true,
-    [ IsRecord ], 0,
+    [ IsRecord ],
+    SUM_FLAGS,
     function( record )
     if     IsBound( record.operations )
        and IsBound( record.operations.\* ) then
@@ -76,69 +87,76 @@ InstallOtherMethod( Zero,
 ##
 #M  AdditiveInverse( <record> )
 ##
+##  Note that we cannot simply delegate to multiplication by `-1' since it
+##  may happen that no individual multiplication was installed, and the
+##  generic multiplication would delegate back to `AdditiveInverse'.
+##
 InstallOtherMethod( AdditiveInverse,
     "method for a record (expect `operations' component)",
     true,
-    [ IsRecord ], 0,
+    [ IsRecord ],
+    SUM_FLAGS,
     function( record )
-    if     IsBound( record.operations )
-       and IsBound( record.operations.\* ) then
-      return record.operations.\*( -1, record );
-    else
-      TryNextMethod();
+    if IsBound( record.operations ) then
+      if     IsOperationsRecord( record.operations )
+         and IsBound( record.operations!.COMPONENTS.\* ) then
+        return record.operations.\*( -1, record );
+      elif   IsRecord( record.operations )
+         and IsBound( record.operations.\* ) then
+        return record.operations.\*( -1, record );
+      fi;
     fi;
+    TryNextMethod();
     end );
 
 
 #############################################################################
 ##
 #M  <record> - <object>
+#M  <object> - <record>
+##
+##  Note that `DIFF_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \-,
     "record - object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     DIFF_PREC );
 
-
-#############################################################################
-##
-#M  <object> - <record>
-##
 InstallOtherMethod( \-,
     "object - record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     DIFF_PREC );
 
 
 #############################################################################
 ##
 #M  <record> * <object>
+#M  <object> * <record>
+##
+##  Note that `PROD_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \*,
     "record * object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     PROD_PREC );
 
-
-#############################################################################
-##
-#M  <object> * <record>
-##
 InstallOtherMethod( \*,
     "object * record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     PROD_PREC );
 
 
@@ -146,17 +164,26 @@ InstallOtherMethod( \*,
 ##
 #M  One( <record> )
 ##
+##  Note that we cannot simply delegate to powering by `0' since it
+##  may happen that no individual powering was installed, and the
+##  generic powering would delegate back to `One'.
+##
 InstallOtherMethod( One,
     "method for a record (expect `operations' component)",
     true,
-    [ IsRecord ], 0,
+    [ IsRecord ],
+    SUM_FLAGS,
     function( record )
-    if     IsBound( record.operations )
-       and IsBound( record.operations.\^ ) then
-      return record.operations.\^( record, 0 );
-    else
-      TryNextMethod();
+    if IsBound( record.operations ) then
+      if     IsOperationsRecord( record.operations )
+         and IsBound( record.operations!.COMPONENTS.\^ ) then
+        return record.operations.\^( record, 0 );
+      elif   IsRecord( record.operations )
+         and IsBound( record.operations.\^ ) then
+        return record.operations.\^( record, 0 );
+      fi;
     fi;
+    TryNextMethod();
     end );
 
 
@@ -164,147 +191,151 @@ InstallOtherMethod( One,
 ##
 #M  Inverse( <record> )
 ##
+##  Note that we cannot simply delegate to powering by `-1' since it
+##  may happen that no individual powering was installed, and the
+##  generic powering would delegate back to `Inverse'.
+##
 InstallOtherMethod( Inverse,
     "method for a record (expect `operations' component)",
     true,
-    [ IsRecord ], 0,
+    [ IsRecord ],
+    SUM_FLAGS,
     function( record )
-    if     IsBound( record.operations )
-       and IsBound( record.operations.\^ ) then
-      return record.operations.\^( record, -1 );
-    else
-      TryNextMethod();
+    if IsBound( record.operations ) then
+      if     IsOperationsRecord( record.operations )
+         and IsBound( record.operations!.COMPONENTS.\^ ) then
+        return record.operations.\^( record, -1 );
+      elif   IsRecord( record.operations )
+         and IsBound( record.operations.\^ ) then
+        return record.operations.\^( record, -1 );
+      fi;
     fi;
+    TryNextMethod();
     end );
 
 
 #############################################################################
 ##
 #M  <record> / <object>
+#M  <object> / <record>
+##
+##  Note that `QUO_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \/,
     "record / object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     QUO_PREC );
 
-
-#############################################################################
-##
-#M  <object> / <record>
-##
 InstallOtherMethod( \/,
     "object / record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     QUO_PREC );
 
 
 #############################################################################
 ##
 #M  <record> ^ <object>
+#M  <object> ^ <record>
+##
+##  Note that `POW_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \^,
     "record ^ object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     POW_PREC );
 
-
-#############################################################################
-##
-#M  <object> ^ <record>
-##
 InstallOtherMethod( \^,
     "object ^ record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     POW_PREC );
 
 
 #############################################################################
 ##
 #M  <record> mod <object>
+#M  <object> mod <record>
+##
+##  Note that `MOD_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \mod,
     "record mod object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     MOD_PREC );
 
-
-#############################################################################
-##
-#M  <object> mod <record>
-##
 InstallOtherMethod( \mod,
     "object mod record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     MOD_PREC );
 
 
 #############################################################################
 ##
 #M  LeftQuotient( <record>, <object> )
+#M  LeftQuotient( <object>, <record> )
+##
+##  Note that `LQUO_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( LeftQuotient,
     "record, object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     LQUO_PREC );
 
-
-#############################################################################
-##
-#M  LeftQuotient( <object>, <record> )
-##
 InstallOtherMethod( LeftQuotient,
     "object, record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     LQUO_PREC );
 
 
 #############################################################################
 ##
 #M  Comm( <record>, <object> )
+#M  Comm( <object>, <record> )
+##
+##  Note that `COMM_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( Comm,
     "record, object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     COMM_PREC );
 
-
-#############################################################################
-##
-#M  Comm( <object>, <record> )
-##
 InstallOtherMethod( Comm,
     "object, record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     COMM_PREC );
 
 
@@ -317,59 +348,57 @@ InstallOtherMethod( \in,
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     IN_PREC );
 
 
 #############################################################################
 ##
 #M  <record> = <object>
+#M  <object> = <record>
+##
+##  Note that `EQ_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \=,
     "record = object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     EQ_PREC );
 
-
-#############################################################################
-##
-#M  <object> = <record>
-##
 InstallOtherMethod( \=,
     "object = record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     EQ_PREC );
 
 
 #############################################################################
 ##
 #M  <record> < <object>
+#M  <object> < <record>
+##
+##  Note that `LT_PREC' checks first the right operand for being a record
+##  with `operations' component, and then the left operand.
 ##
 InstallOtherMethod( \<,
     "record < object",
     true,
     [ IsRecord,
       IsObject ],
-    0,
+    SUM_FLAGS,
     LT_PREC );
 
-
-#############################################################################
-##
-#M  <object> < <record>
-##
 InstallOtherMethod( \<,
     "object < record",
     true,
     [ IsObject,
       IsRecord ],
-    0,
+    SUM_FLAGS,
     LT_PREC );
 
 
@@ -386,12 +415,16 @@ InstallRecordMethod1Args := function( opr, compname )
     true,
     [ IsRecord ], 1,  # override method that ignores `operations'
     function( record )
-    if     IsBound( record.operations )
-       and IsBound( record.operations.( compname ) ) then
-      return record.operations.( compname )( record );
-    else
-      TryNextMethod();
+    if IsBound( record.operations ) then
+      if     IsOperationsRecord( record.operations )
+         and IsBound( record.operations!.COMPONENTS.( compname ) ) then
+        return record.operations!.COMPONENTS.( compname )( record );
+      elif   IsRecord( record.operations )
+         and IsBound( record.operations.( compname ) ) then
+        return record.operations.( compname )( record );
+      fi;
     fi;
+    TryNextMethod();
     end );
 end;
 
@@ -412,193 +445,35 @@ InstallRecordMethod1Args( String, "String" );
 
 #############################################################################
 ##
-#F  IsOperationsRecord( <obj> ) . . . . . . . . .  ``category'' test function
+##  In order to allow matrices, groups etc.~of records,
+##  we install the implication that records are scalars.
 ##
-IsOperationsRecord := function( obj )
-    return     IsRecord( obj )
-           and IsBound( obj.name )
-           and IsBound( obj.operations )
-           and IsRecord( obj.operations )
-           and IsBound( obj.operations.name )
-           and obj.operations.name = "OpsOps";
-end;
-
-
-##############################################################################
+##  For convincing the kernel, we need some very ugly hacks.
 ##
-#V  OpsOps
-##
-OpsOps := rec(
-    name  := "OpsOps",
-    Print := function( obj ) Print( obj.name ); end,
-    \=    := function( oprec1, oprec2 )
-               if IsOperationsRecord( oprec1 )  then
-                 if IsOperationsRecord( oprec2 )  then
-                   return oprec1.name = oprec2.name;
-                 else
-                   return false;
-                 fi;
-               elif not IsOperationsRecord( oprec2 )  then
-                 Error( "panic, neither argument is an operations record" );
-               fi;
-             end );
+InstallTrueMethod( IsScalar, IsRecord );
+InstallTrueMethod( IsScalarCollection, IsRecordCollection );
+InstallTrueMethod( IsScalarCollColl, IsRecordCollColl );
 
-OpsOps.operations := OpsOps;
+RecordsFamily!.TYPES_LIST_FAM  := [,,,,,,,,,,,,false]; # list with 12 holes
 
+Fam:= CollectionsFamily( RecordsFamily );
+Fam!.IMP_FLAGS := AND_FLAGS( Fam!.IMP_FLAGS,
+                             FLAGS_FILTER( IsScalarCollection ) );
+Fam!.TYPES_LIST_FAM  := [,,,,,,,,,,,,false]; # list with 12 holes
 
-##############################################################################
-##
-#F  OperationsRecord( <name> )
-#F  OperationsRecord( <name>, <parent>... )
-##
-FinishSubOperationsRecord := function ( sub )
-    local   sup, name;
+Fam:= CollectionsFamily( Fam );
+Fam!.IMP_FLAGS := AND_FLAGS( Fam!.IMP_FLAGS,
+                             FLAGS_FILTER( IsScalarCollColl ) );
 
-    # inherit everything from all finished super operations records
-    while sub.SUPC < Length(sub.SUPS)
-      and IsBound( sub.SUPS[sub.SUPC+1].DONE )
-      and sub.SUPS[sub.SUPC+1].DONE
-    do
-        sup := sub.SUPS[sub.SUPC+1];
-        for  name  in RecNames(sup)  do
-            if not IsBound( sub.(name) )  then
-                sub.(name) := sup.(name);
-            fi;
-        od;
-        sub.SUPC := sub.SUPC + 1;
-    od;
+MakeReadWriteGVar( "TYPE_PREC_MUTABLE" );
+TYPE_PREC_MUTABLE := NewType( RecordsFamily,
+    IS_MUTABLE_OBJ and IsRecord and IsInternalRep );
+MakeReadOnlyGVar( "TYPE_PREC_MUTABLE" );
 
-    # inherit everything from the first unfinished super operations record
-    if sub.SUPC < Length(sub.SUPS)  then
-        sup := sub.SUPS[sub.SUPC+1];
-        for  name  in RecNames(sup)  do
-            if not IsBound( sub.(name) )  then
-                sub.(name) := sup.(name);
-            fi;
-        od;
-    fi;
-
-end;
-
-OperationsRecord := function ( arg )
-    local   sub, sup;
-
-    # make the new operations record
-    sub := rec();
-    sub.name       := arg[1];
-    sub.operations := OpsOps;
-
-    # remember super operations records
-    sub.SUPS := arg{[2..Length(arg)]};
-    sub.SUPC := 0;
-
-    # this operations record is not finished yet
-    sub.DONE := false;
-
-    # register yourself to the super operations records
-    for sup  in sub.SUPS  do
-        if not IsBound( sup.SUBS )  then
-            sup.SUBS := [ sub ];
-        else
-            Add( sup.SUBS, sub );
-        fi;
-    od;
-
-    # inherit as much as can be determined now
-    FinishSubOperationsRecord( sub );
-
-    # return the new operations record
-    return sub;
-end;
-
-FinishOperationsRecord := function ( sup )
-    local   sub;
-
-    # this operations record is finished now
-    sup.DONE := true;
-
-    # for all sub operations records inherit as much as can be determined now
-    if IsBound( sup.SUBS )  then
-        for sub  in sup.SUBS  do
-            FinishSubOperationsRecord( sub );
-        od;
-    fi;
-
-end;
-
-
-#T #############################################################################
-#T ##
-#T #F  PrintRec(<record>)  . . . . . . . . . . . . . . . . . . .  print a record
-#T ##
-#T ##  'PrintRec' must  call 'Print'  so that 'Print'   assigns  the record   to
-#T ##  '~' and  prints for  example 'rec( a := ~  )'  in this  form and does not
-#T ##  go into an  infinite loop 'rec( a  := rec(  a := ...'.   To make  'Print'
-#T ##  do the right   thing, we  assign to '<record>.operation'  the  operations
-#T ##  record 'RecordOps', which contains the appropriate 'Print' function.
-#T ##
-#T PrintRecIgnore := [ "operations", "parent" ];
-#T 
-#T PrintRecIndent := "  ";
-#T 
-#T RecordOps := OperationsRecord( "RecordOps" );
-#T 
-#T RecordOps.Print := function ( record )
-#T     local  len, i, nam, lst, printRecIndent;
-#T     len  := 0;
-#T     for nam in RecNames( record )  do
-#T         if len < Length( nam )  then
-#T             len := Length( nam );
-#T         fi;
-#T         lst := nam;
-#T     od;
-#T     Print( "rec(\n" );
-#T     for nam  in RecNames( record )  do
-#T         if not nam in PrintRecIgnore then
-#T             if not IsRecord( record.(nam) )  then
-#T                 Print( PrintRecIndent, nam );
-#T                 for i  in [Length(nam)..len]  do
-#T                     Print( " " );
-#T                 od;
-#T                 Print( ":= ", record.(nam) );
-#T                 if nam <> lst  then  Print( ",\n" );  fi;
-#T             else
-#T                 Print( PrintRecIndent, nam );
-#T                 for i  in [Length(nam)..len]  do
-#T                     Print( " " );
-#T                 od;
-#T                 Print( ":= " );
-#T                 printRecIndent := PrintRecIndent;
-#T                 PrintRecIndent := Concatenation(PrintRecIndent,"  ");
-#T                 PrintRec( record.(nam) );
-#T                 if nam <> lst  then Print( ",\n" );  fi;
-#T                 PrintRecIndent := printRecIndent;
-#T             fi;
-#T         else
-#T             Print( PrintRecIndent, nam );
-#T             for i  in [Length(nam)..len]  do
-#T                 Print( " " );
-#T             od;
-#T             Print( ":= ..." );
-#T             if nam <> lst  then Print( ",\n" );  fi;
-#T         fi;
-#T     od;
-#T     Print( " )" );
-#T end;
-#T 
-#T PrintRec := function ( record )
-#T     local   operations;
-#T     if IsBound( record.operations )  then
-#T         operations := record.operations;
-#T     fi;
-#T     record.operations := RecordOps;
-#T     Print( record );
-#T     if IsBound( operations )  then
-#T         record.operations := operations;
-#T     else
-#T         Unbind( record.operations );
-#T     fi;
-#T end;
+MakeReadWriteGVar( "TYPE_PREC_IMMUTABLE" );
+TYPE_PREC_IMMUTABLE := NewType( RecordsFamily,
+    IsRecord and IsInternalRep );
+MakeReadOnlyGVar( "TYPE_PREC_IMMUTABLE" );
 
 
 #############################################################################

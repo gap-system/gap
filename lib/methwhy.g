@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file allows some fancy accesses to the method selection
 ##
@@ -75,7 +76,7 @@ ApplicableMethod := function(arg)
   methods:=METHODS_OPERATION(oper,l);
   lent:=4+l; #length of one entry
   if verbos > 0 then 
-    Print("#I  Total :", Length(methods)/lent," entries\n");
+    Print("#I  Total: ", Length(methods)/lent," entries\n");
   fi;
   for i in [1..Length(methods)/lent] do
     nam:=methods[lent*(i-1)+l+4];

@@ -484,27 +484,28 @@ different places in memory are never equal, and if  the object pointed to
 by the  variable  `a' (to be more  precise,  the variable with identifier
 `a')  is  equal to the   object pointed to by  the  variable `b', then we
 should better  say that they  are not only  equal but *identical*. {\GAP}
-provides the function `IsIdentical' to test whether this is the case.
+provides the function `IsIdenticalObj' to test whether this is the case.
 
 \beginexample
-    gap> a:= (1,2);; IsIdentical( a, a );
+    gap> a:= (1,2);; IsIdenticalObj( a, a );
     true
-    gap> b:= (1,2);; IsIdentical( a, b );
+    gap> b:= (1,2);; IsIdenticalObj( a, b );
     false
-    gap> b:= a;; IsIdentical( a, b );
+    gap> b:= a;; IsIdenticalObj( a, b );
     true
 \endexample
 
-\indextt{IsIdentical}%
-\exercise  `IsIdentical' works not   only   for variables, but  also  for
-constants. Try the commands `IsIdentical( -1,  -1 )', `IsIdentical( 2^28,
-2^28 )', `IsIdentical( (1,2), (1,2) )', and explain the outcome.
+\indextt{IsIdenticalObj}%
+\exercise `IsIdenticalObj' works not   only for variables, but  also  for
+xconstants.   Try   the   commands      `IsIdenticalObj'(  -1,  -1    )',
+x`IsIdenticalObj( 2^28, 2^28   )', `IsIdenticalObj( (1,2),  (1,2) )', and
+xexplain the outcome.
 
-\answer `IsIdentical( -1,  -1 )' is  `true'. Small integers like `-1' are
-treated in a  special way,  equal small  integers behave as  if they were
-identical  objects. Integers  larger   than $2^{28}-1$  or  smaller  than
+\answer `IsIdenticalObj(  -1, -1 )' is  `true'.  Small integers like `-1'
+are treated in a special way, equal small integers behave as if they were
+identical  objects. Integers  larger    than $2^{28}-1$ or  smaller  than
 $-2^{28}$ can be nonidentical objects, and calculating such an integer or
-entering it  at the keyboard constructs a  new object. The same holds for
+entering it at the  keyboard constructs a new object.  The same holds for
 the two equal but not identical permutations in the third example.
 
 If  you have done this  exercise, you  will  have experienced that {\GAP}
@@ -517,13 +518,12 @@ class.  For example, if `<a>  = $x^3$' and  `<b> = $x^{-5}$' are words in
 the finitely presented group $\langle  x\mid x^2=1\rangle$, we would have
 `<a> = <b>' in that group.
 
-{\GAP} uses  the   equality operator `=' to  denote   such a mathematical
+{\GAP}   uses  the equality operator  `='  to  denote such a mathematical
 equality, *not* the identity of objects. Hence we often  have `<a> = <b>'
-although `IsIdentical(  <a>, <b> ) = false'.  The operator `=' defines an
-equivalence relation on  the set of  all {\GAP} objects,  and we call the
-corresponding equivalence classes *elements*.
-Phrasing it differently, the  same element may be represented by various
-{\GAP} objects.
+although `IsIdenticalObj( <a>, <b> ) =  false'.  The operator `=' defines
+an equivalence relation on the set of all {\GAP} objects, and we call the
+corresponding  equivalence classes *elements*.   Phrasing it differently,
+the same element may be represented by various {\GAP} objects.
 
 Non-trivial examples of   elements   that are represented by    different
 objects (objects  that really  look different,  not ones  that are merely
@@ -534,7 +534,7 @@ considering composite objects such as lists or domains.
 of lists, assume  that a variable has been  assigned the empty list by `a
 :=  [ ];' and   explain how to  assign  (1)~the same (identical)  object,
 (2)~an equal  object to another variable  `b'. How can someone  else test
-which alternative you chose without using `IsIdentical'?
+which alternative you chose without using `IsIdenticalObj'?
 
 \answer (1)~`b := a;'\quad (2)~`b := [ ];' or `b := ShallowCopy( a );' or
 something similar.\quad  To test whether `b'  is identical to `a', put an
@@ -629,7 +629,7 @@ interaction resumes.
 that contain the substring <topic>.  Then you can decide which section is
 the one you are actually interested in and request this one.
 
-A complete   list  of commands is   available  in Section  "Help" of  the
+A complete   list  of commands is   available  in Section  "ref:Help" of  the
 reference manual.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

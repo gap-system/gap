@@ -20,6 +20,11 @@
 ##  space.
 ##
 #H  $Log$
+#H  Revision 4.2  1998/02/28 12:31:23  gap
+#H  first round in making globals read-only
+#H
+#H      TB
+#H
 #H  Revision 4.1  1997/07/17 15:15:50  fceller
 #H  for version 4
 #H
@@ -812,7 +817,7 @@ IrredSolGroupList := [
 ##
 #F  IrreducibleSolvableGroup(<n>,<p>,<k>) . . . . . . . . extraction function
 ##
-IrreducibleSolvableGroup := function ( n, p, k )
+InstallGlobalFunction( IrreducibleSolvableGroup, function ( n, p, k )
     local
         desc,          # compact description of group
         guard,         # number of guardian of group
@@ -861,7 +866,7 @@ IrreducibleSolvableGroup := function ( n, p, k )
     fi;
     return grp;
 
-end; # IrreducibleSolvableGroup( n, p, k )
+end ); # IrreducibleSolvableGroup( n, p, k )
 
 
 #############################################################################

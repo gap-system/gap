@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the profiling functions.
 ##
@@ -116,7 +117,7 @@ DisplayProfile := function( arg )
         n := [ "count", "self/ms", "sum/ms", "chld/ms", "function" ];
     else
         w := [ 7, 7,  7, 7,  7, -30 ];
-        p := [ 2, 4, -1, 6, -3,   1 ];
+        p := [ 2, 4, -2, 6, -3,   1 ];
         n := [ "count", "self/ms", "chld/ms", "stor/kb", "chld/kb",
                "function" ];
     fi;
@@ -468,9 +469,9 @@ DisplayRevision := function()
 
     for type  in [ source, library, unknown ]  do
         if 0 < Length(type)  then
-            if IsIdentical(type,source)  then
+            if IsIdenticalObj(type,source)  then
                 Print( "Source Files\n" );
-            elif IsIdentical(type,library)  then
+            elif IsIdenticalObj(type,library)  then
                 Print( "Library Files\n" );
             else
                 Print( "Unknown Files\n" );
@@ -514,8 +515,6 @@ DisplayCacheStats := function()
         WITH_IMPS_FLAGS_CACHE_MISS,
         NEW_TYPE_CACHE_HIT,
         NEW_TYPE_CACHE_MISS,
-        Length(AND_FLAGS_CACHE)/3,
-        Length(Set(List(Filtered(AND_FLAGS_CACHE,x->x<>0),HANDLE_OBJ))),
     ] );
 
     names := [
@@ -534,11 +533,9 @@ DisplayCacheStats := function()
         "WITH_IMPS misses",
         "NEW_TYPE hits",
         "NEW_TYPE misses",
-        "AND_FLAGS cache size",
-        "AND_FLAGS flags",
     ];
 
-    pos := [ 1, 2, 3, 16, 17, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15 ];
+    pos := [ 1, 2, 3, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15 ];
 
     if Length(pos) <> Length(names)  then
         Error( "<pos> and <names> have different lengths" );
@@ -594,7 +591,11 @@ STOP_TEST := function( file, fac )
 
     time := Runtime() - START_TIME;
     Print( START_NAME, "\n" );
-    Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
+    if time <> 0 then
+      Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
+    else
+      Print( "GAP4stones: infinity\n" );
+    fi;
 end;
 
 

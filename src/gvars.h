@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the global variables package.
 **
@@ -25,7 +26,7 @@
 **  Otherwise the internal copies reference functions that signal an error.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_gvars_h =
+const char * Revision_gvars_h =
    "@(#)$Id$";
 #endif
 
@@ -125,51 +126,8 @@ extern  Char *          NameGVar (
 **
 **  'GVarName' returns the global variable with the name <name>.
 */
-extern  UInt            GVarName (
-            SYS_CONST Char *              name );
-
-
-/****************************************************************************
-**
-*F  InitCopyGVar(<gvar>,<copy>) . . . .  declare C variable as copy of global
-**
-**  'InitCopyGVar'  makes the C  variable <cvar> at  address <copy> a copy of
-**  <gvar>.
-**
-*F  RemoveCopyFopyInfo( )  . . . remove the information about copies of gvars from
-**                               the workspace
-*F  RestoreCopyFopyInfo( )  . .  restore this information from the copy in the kernel
-**
-**  The Restore function is also intended to be used after loading a saved workspace
-**
-*/
-
-extern  void            InitCopyGVar (
-            Char *              name,
-            Obj *               copy );
-
-extern void RemoveCopyFopyInfo( void );
-
-extern void RestoreCopyFopyInfo( void );
-
-
-/****************************************************************************
-**
-*F  InitFopyGVar(<gvar>,<copy>) . . . .  declare C variable as copy of global
-**
-**  'InitFopyGVar' makes the C variable <cvar> at address <copy> a (function)
-**  copy of   <gvar>.  That means  that whenever  the  value  of  <gvar> is a
-**  function, then <cvar> will reference the same  value (i.e., will hold the
-**  same bag identifier).  When the  value of <gvar> is  not a function, then
-**  <cvar> will reference a function that signals the  error ``<func> must be
-**  a   function''.  When <gvar>  has  no  assigned value,  then <cvar>  will
-**  reference a  function  that  signals  the error  ``<gvar>  must  have  an
-**  assigned value''.
-*/
-
-extern void            InitFopyGVar (
-    Char *                name,
-    Obj *               copy );
+extern UInt GVarName (
+            const Char *              name );
 
 
 /****************************************************************************
@@ -206,9 +164,87 @@ extern UInt completion_gvar (
 /****************************************************************************
 **
 *F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
+*F  MakeReadWriteGVar( <gvar> ) . . . . . . make a global variable read-write
 */
 extern void MakeReadOnlyGVar (
     UInt                gvar );
+
+extern void MakeReadWriteGVar (
+    UInt                gvar );
+
+extern Int IsReadOnlyGVar (
+    UInt                gvar );			   
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * copies and fopies  * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  InitCopyGVar( <name>, <copy> )  . .  declare C variable as copy of global
+**
+**  'InitCopyGVar' makes  the C variable <cvar>  at address  <copy> a copy of
+**  the global variable named <name> (which must be a kernel string).
+**
+**  The function only registers the  information in <CopyAndFopyGVars>.  At a
+**  latter stage one  has to call  'UpdateCopyFopyInfo' to actually enter the
+**  information stored in <CopyAndFopyGVars> into a plain list.
+**
+**  This is OK for garbage collection, but  a real problem  for saving in any
+**  event, this information  does not really want to  be saved  because it is
+**  kernel centred rather than workspace centred.
+**
+**  Accordingly we     provide  two    functions    `RemoveCopyFopyInfo'  and
+**  `RestoreCopyFopyInfo' to  remove  or restore   the  information from  the
+**  workspace.  The  Restore  function is  also   intended to  be used  after
+**  loading a saved workspace
+*/
+extern void InitCopyGVar (
+    const Char *        name ,
+    Obj *               copy );
+
+
+/****************************************************************************
+**
+*F  InitFopyGVar( <name>, <copy> )  . .  declare C variable as copy of global
+**
+**  'InitFopyGVar' makes the C variable <cvar> at address <copy> a (function)
+**  copy  of the  global variable <gvar>,  whose name  is <name>.  That means
+**  that whenever   the value  of   <gvar> is a    function, then <cvar> will
+**  reference the same value (i.e., will hold the same bag identifier).  When
+**  the value  of <gvar>  is not a   function, then  <cvar> will  reference a
+**  function  that signals  the error ``<func>  must be  a function''.   When
+**  <gvar> has no assigned value, then <cvar> will  reference a function that
+**  signals the error ``<gvar> must have an assigned value''.
+*/
+extern void InitFopyGVar (
+    const Char *        name,
+    Obj *               copy );
+
+
+/****************************************************************************
+**
+*F  UpdateCopyFopyInfo()  . . . . . . . . . .  convert kernel info into plist
+*/
+extern void UpdateCopyFopyInfo ( void );
+
+
+/****************************************************************************
+**
+*F  RemoveCopyFopyInfo()  . . . remove the info about copies of gvars from ws
+*/
+extern void RemoveCopyFopyInfo( void );
+
+
+/****************************************************************************
+**
+*F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
+*/
+extern void RestoreCopyFopyInfo( void );
 
 
 /****************************************************************************
@@ -303,25 +339,9 @@ extern void MakeReadOnlyGVar (
 /****************************************************************************
 **
 
-*F  SetupGVars()  . . . . . . . . . . initialize the global variables package
+*F  InitInfoGVars() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupGVars ( void );
-
-
-/****************************************************************************
-**
-*F  InitGVars() . . . . . . . . . . . initialize the global variables package
-**
-**  'InitGVars' initializes the global variables package.
-*/
-extern void InitGVars ( void );
-
-
-/****************************************************************************
-**
-*F  CheckGVars()  .  check the initialisation of the global variables package
-*/
-extern void CheckGVars ( void );
+StructInitInfo * InitInfoGVars ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.ctblmoli_gd :=
     "@(#)$Id$";
@@ -19,7 +20,7 @@ Revision.ctblmoli_gd :=
 ##  where <numer> is the coefficients list of the numerator polynomial
 ##  $p(z)$.
 ##
-CoefficientTaylorSeries := NewOperationArgs( "CoefficientTaylorSeries" );
+DeclareGlobalFunction( "CoefficientTaylorSeries" );
 
 
 #############################################################################
@@ -44,7 +45,7 @@ CoefficientTaylorSeries := NewOperationArgs( "CoefficientTaylorSeries" );
 ##  \[ \frac{1}{\det(z I - D(g))}
 ##               = \frac{P(z)}{\prod_{d\mid n} \Phi_d^{a_d}(z)} \ . \]
 ##
-SummandMolienSeries := NewOperationArgs( "SummandMolienSeries" );
+DeclareGlobalFunction( "SummandMolienSeries" );
 
 
 ##############################################################################
@@ -77,9 +78,7 @@ SummandMolienSeries := NewOperationArgs( "SummandMolienSeries" );
 ##       polynomial summand of the series
 #T       (always zero?)
 ##
-MolienSeriesInfo := NewAttribute( "MolienSeriesInfo", IsRationalFunction );
-SetMolienSeriesInfo := Setter( MolienSeriesInfo );
-HasMolienSeriesInfo := Tester( MolienSeriesInfo );
+DeclareAttribute( "MolienSeriesInfo", IsRationalFunction );
 
 
 #############################################################################
@@ -97,7 +96,7 @@ HasMolienSeriesInfo := Tester( MolienSeriesInfo );
 ##  <psi> and <chi> must be characters of the character table <tbl>,
 ##  the default for <chi> is the trivial character.
 ##
-MolienSeries := NewOperationArgs( "MolienSeries" );
+DeclareGlobalFunction( "MolienSeries" );
 
 
 #############################################################################
@@ -107,7 +106,7 @@ MolienSeries := NewOperationArgs( "MolienSeries" );
 ##  is the <i>-th coefficient of the Molien series <series> computed by
 ##  'MolienSeries'.
 ##
-ValueMolienSeries := NewOperationArgs( "ValueMolienSeries" );
+DeclareGlobalFunction( "ValueMolienSeries" );
 
 
 #############################################################################

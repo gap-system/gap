@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains those functions that are used to construct maps,
 ##  (mostly fusion maps and power maps).
@@ -19,18 +20,18 @@ Revision.ctblmaps_gi :=
 ##
 #F  CharacterString( <char>, <str> )  . . . . .  character information string
 ##
-CharacterString := function( char, str )
+InstallGlobalFunction( CharacterString, function( char, str )
     str:= Concatenation( str, " of degree ", String( char[1] ) );
     ConvertToStringRep( str );
     return str;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Indeterminateness( <paramap> ) . . . . the indeterminateness of a paramap
 ##
-Indeterminateness := function( paramap )
+InstallGlobalFunction( Indeterminateness, function( paramap )
     local prod, i;
     prod:= 1;
     for i in paramap do
@@ -39,7 +40,7 @@ Indeterminateness := function( paramap )
       fi;
     od;
     return prod;
-end;
+end );
 
 
 #############################################################################
@@ -47,7 +48,7 @@ end;
 #F  PrintAmbiguity( <list>, <paramap> ) . . . .  ambiguity of characters with
 #F                                                       respect to a paramap
 ##
-PrintAmbiguity := function( list, paramap )
+InstallGlobalFunction( PrintAmbiguity, function( list, paramap )
     local i, composition;
     for i in list do
       composition:= CompositionMaps( i, paramap );
@@ -56,14 +57,14 @@ PrintAmbiguity := function( list, paramap )
                        x -> IsList( composition[x] ) ),
              "\n" );
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Parametrized( <list> )
 ##
-Parametrized := function( list )
+InstallGlobalFunction( Parametrized, function( list )
     local i, j, parametrized;
     if list = [] then return []; fi;
     parametrized:= [];
@@ -91,14 +92,14 @@ Parametrized := function( list )
       fi;
     od;
     return parametrized;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedMaps( <paramap> )
 ##
-ContainedMaps := function( paramap )
+InstallGlobalFunction( ContainedMaps, function( paramap )
     local i, j, containedmaps, copy;
     i:= 1;
     while i <= Length( paramap ) and
@@ -116,14 +117,14 @@ ContainedMaps := function( paramap )
       od;
       return containedmaps;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Indirected( <character>, <paramap> )
 ##
-Indirected := function( character, paramap )
+InstallGlobalFunction( Indirected, function( character, paramap )
     local i, imagelist, indirected;
     indirected:= [];
     for i in [ 1 .. Length( paramap ) ] do
@@ -139,14 +140,14 @@ Indirected := function( character, paramap )
       fi;
     od;
     return indirected;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ElementOrdersPowerMap( <powermap> )
 ##
-ElementOrdersPowerMap := function( powermap )
+InstallGlobalFunction( ElementOrdersPowerMap, function( powermap )
     local i, primes, elementorders, nccl, bound, newbound, map, pos;
 
     if powermap = [] then
@@ -200,14 +201,14 @@ ElementOrdersPowerMap := function( powermap )
                               x-> IsUnknown( elementorders[x] ) ), "\n" );
     fi;
     return elementorders;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CollapsedMat( <mat>, <maps> )
 ##
-CollapsedMat := function( mat, maps )
+InstallGlobalFunction( CollapsedMat, function( mat, maps )
 
     local i, j, k, nontrivblock, nontrivblocks, row, newblocks, values,
             blocks, pos, minima, fusion;
@@ -265,14 +266,14 @@ CollapsedMat := function( mat, maps )
     return rec( mat:= List( mat, x -> x{ values } ),
 #T do I really need the component 'mat'?
                 fusion:= fusion );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  UpdateMap( <char>, <paramap>, <indirected> )
 ##
-UpdateMap := function( char, paramap, indirected )
+InstallGlobalFunction( UpdateMap, function( char, paramap, indirected )
 
     local i, j, value, fus;
 
@@ -299,14 +300,15 @@ UpdateMap := function( char, paramap, indirected )
       fi;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  NonnegIntScalarProducts( <tbl>, <chars>, <candidate> )
 ##
-NonnegIntScalarProducts := function( tbl, chars, candidate )
+InstallGlobalFunction( NonnegIntScalarProducts,
+    function( tbl, chars, candidate )
 
     local i, sc, classes, order, char, weighted;
 
@@ -321,14 +323,14 @@ NonnegIntScalarProducts := function( tbl, chars, candidate )
       if not IsInt( sc ) or IsNegRat( sc ) then return false; fi;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  IntScalarProducts( <tbl>, <chars>, <candidate> )
 ##
-IntScalarProducts := function( tbl, chars, candidate )
+InstallGlobalFunction( IntScalarProducts, function( tbl, chars, candidate )
 
     local i, classes, order, char, weighted;
 
@@ -342,14 +344,15 @@ IntScalarProducts := function( tbl, chars, candidate )
       if not IsInt( weighted * candidate / order ) then return false; fi;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedSpecialVectors( <tbl>, <chars>, <paracharacter>, <func> )
 ##
-ContainedSpecialVectors := function( tbl, chars, paracharacter, func )
+InstallGlobalFunction( ContainedSpecialVectors,
+    function( tbl, chars, paracharacter, func )
 
     local i, j, x, classes, unknown, images, number, index, direction,
           pos, oldvalue, newvalue, norm, sum, possibilities, order;
@@ -410,34 +413,36 @@ ContainedSpecialVectors := function( tbl, chars, paracharacter, func )
         fi;
       fi;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedPossibleCharacters( <tbl>, <chars>, <paracharacter> )
 ##
-ContainedPossibleCharacters := function(tbl, chars, paracharacter)
+InstallGlobalFunction( ContainedPossibleCharacters,
+    function(tbl, chars, paracharacter)
     return ContainedSpecialVectors( tbl, chars, paracharacter,
                                     NonnegIntScalarProducts );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedPossibleVirtualCharacters( <tbl>, <chars>, <paracharacter> )
 ##
-ContainedPossibleVirtualCharacters :=function( tbl, chars, paracharacter )
+InstallGlobalFunction( ContainedPossibleVirtualCharacters,
+    function( tbl, chars, paracharacter )
     return ContainedSpecialVectors( tbl, chars, paracharacter,
                                     IntScalarProducts );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InitFusion( <subtbl>, <tbl> )
 ##
-InitFusion := function( subtbl, tbl )
+InstallGlobalFunction( InitFusion, function( subtbl, tbl )
 
     local subcentralizers,
           subclasses,
@@ -563,7 +568,7 @@ InitFusion := function( subtbl, tbl )
     od;
 
     return initfusion;
-end;
+end );
 
 
 #############################################################################
@@ -597,7 +602,8 @@ end;
 ##
 ##  ('CheckPermChar' is used as subroutine of 'PossibleClassFusions'.)
 ##
-CheckPermChar := function( subtbl, tbl, fusionmap, permchar )
+InstallGlobalFunction( CheckPermChar,
+    function( subtbl, tbl, fusionmap, permchar )
 
     local centralizers,
           subsize,
@@ -736,14 +742,14 @@ CheckPermChar := function( subtbl, tbl, fusionmap, permchar )
       fi;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MeetMaps( <map1>, <map2> )
 ##
-MeetMaps := function( map1, map2 )
+InstallGlobalFunction( MeetMaps, function( map1, map2 )
 
     local i;      # loop over the classes
 
@@ -781,14 +787,15 @@ MeetMaps := function( map1, map2 )
       fi;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ImproveMaps( <map2>, <map1>, <composition>, <class> )
 ##
-ImproveMaps := function( map2, map1, composition, class )
+InstallGlobalFunction( ImproveMaps,
+    function( map2, map1, composition, class )
 
     local j, map1_i, newvalue;
 
@@ -828,7 +835,7 @@ ImproveMaps := function( map2, map1, composition, class )
       fi;
     fi;
     return 0;                       # no improvement
-end;
+end );
 
 
 #############################################################################
@@ -836,7 +843,7 @@ end;
 #F  CompositionMaps( <paramap2>, <paramap1> )
 #F  CompositionMaps( <paramap2>, <paramap1>, <class> )
 ##
-CompositionMaps := function( arg )
+InstallGlobalFunction( CompositionMaps, function( arg )
 
     local i, j, map1, map2, class, result, newelement;
 
@@ -879,14 +886,14 @@ CompositionMaps := function( arg )
       Error(" usage: CompositionMaps( <map2>, <map1>, <class> ) resp.\n",
             "        CompositionMaps( <map2>, <map1> )" );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ProjectionMap( <fusionmap> ) . . projection corresponding to a fusion map
 ##
-ProjectionMap := function( fusionmap )
+InstallGlobalFunction( ProjectionMap, function( fusionmap )
 
     local i, projection;
 
@@ -895,7 +902,7 @@ ProjectionMap := function( fusionmap )
       projection[ fusionmap[i] ]:= i;
     od;
     return projection;
-end;
+end );
 
 
 #############################################################################
@@ -904,7 +911,7 @@ end;
 #F  CommutativeDiagram( <paramap1>, <paramap2>, <paramap3>, <paramap4>,
 #F                      <improvements> )
 ##
-CommutativeDiagram := function( arg )
+InstallGlobalFunction( CommutativeDiagram, function( arg )
 
     local i, paramap1, paramap2, paramap3, paramap4, imp1, imp2, imp4,
           globalimp1, globalimp2, globalimp3, globalimp4, newimp1, newimp2,
@@ -988,14 +995,15 @@ CommutativeDiagram := function( arg )
                 imp3:= globalimp3,
                 imp4:= globalimp4
                                   );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CheckFixedPoints( <inside1>, <between>, <inside2> )
 ##
-CheckFixedPoints := function( inside1, between, inside2 )
+InstallGlobalFunction( CheckFixedPoints,
+    function( inside1, between, inside2 )
 
     local i, j, improvements, errors, image;
 
@@ -1042,7 +1050,7 @@ CheckFixedPoints := function( inside1, between, inside2 )
             "CheckFixedPoints: no image possible for classes ", errors );
       return fail;
     fi;
-end;
+end );
    
 
 #############################################################################
@@ -1050,7 +1058,7 @@ end;
 #F  TransferDiagram( <inside1>, <between>, <inside2> )
 #F  TransferDiagram( <inside1>, <between>, <inside2>, <improvements> )
 ##
-TransferDiagram := function( arg )
+InstallGlobalFunction( TransferDiagram, function( arg )
 
     local i, inside1, between, inside2, imp1, impb, imp2, globalimp1,
           globalimpb, globalimp2, newimp1, newimpb, newimp2, bet_ins1,
@@ -1137,7 +1145,7 @@ TransferDiagram := function( arg )
       return rec( impinside1:= globalimp1, impbetween:= globalimpb,
                   impinside2:= globalimp2 );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1145,7 +1153,7 @@ end;
 #F  TestConsistencyMaps( <powermap1>, <fusionmap>, <powermap2> )
 #F  TestConsistencyMaps( <powermap1>, <fusionmap>, <powermap2>, <fus_imp> )
 ##
-TestConsistencyMaps := function( arg )
+InstallGlobalFunction( TestConsistencyMaps, function( arg )
 
     local i, j, x, powermap1, powermap2, pos, fusionmap, imp,
           fus_improvements, tr;
@@ -1196,14 +1204,14 @@ TestConsistencyMaps := function( arg )
       i:= ( i mod Length( fus_improvements ) ) + 1;
     od;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InitPowermap( <tbl>, <prime> )
 ##
-InitPowermap := function( tbl, prime )
+InstallGlobalFunction( InitPowermap, function( tbl, prime )
 
     local i, j, k,        # loop variables
           powermap,       # power map for prime 'prime', result
@@ -1376,7 +1384,7 @@ InitPowermap := function( tbl, prime )
     powermap[1]:= 1;
 
     return powermap;
-end;
+end );
 
 
 #############################################################################
@@ -1385,7 +1393,7 @@ end;
 #F  Congruences( <tbl>, <chars>, <prime_powermap>, <prime>, \"quick\" )
 #F  Congruences( <tbl>, <chars>, <prime_powermap>, <prime>, true )
 ##
-Congruences := function( arg )
+InstallGlobalFunction( Congruences, function( arg )
 
     local i, j,
           tbl,       # character table, first argument
@@ -1493,7 +1501,7 @@ Congruences := function( arg )
       return false;
     fi;
     return true;
-end;
+end );
 
 
 #############################################################################
@@ -1502,7 +1510,7 @@ end;
 #F  ConsiderKernels( <tbl>, <chars>, <prime_powermap>, <prime>, \"quick\" )
 #F  ConsiderKernels( <tbl>, <chars>, <prime_powermap>, <prime>, true )
 ##
-ConsiderKernels := function( arg )
+InstallGlobalFunction( ConsiderKernels, function( arg )
 
     local i,
           tbl,
@@ -1595,16 +1603,16 @@ ConsiderKernels := function( arg )
       return false;
     fi;
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  ConsiderSmallerPowermaps( <tbl>, <prime_powermap>, <prime> )
-#F  ConsiderSmallerPowermaps( <tbl>, <prime_powermap>, <prime>, \"quick\" )
-#F  ConsiderSmallerPowermaps( <tbl>, <prime_powermap>, <prime>, true )
+#F  ConsiderSmallerPowerMaps( <tbl>, <prime_powermap>, <prime> )
+#F  ConsiderSmallerPowerMaps( <tbl>, <prime_powermap>, <prime>, \"quick\" )
+#F  ConsiderSmallerPowerMaps( <tbl>, <prime_powermap>, <prime>, true )
 ##
-ConsiderSmallerPowermaps := function( arg )
+InstallGlobalFunction( ConsiderSmallerPowerMaps, function( arg )
 
     local i, j,            # loop variables
           tbl,             # character table
@@ -1624,14 +1632,14 @@ ConsiderSmallerPowermaps := function( arg )
        or ( Length( arg ) = 4
              and arg[4] <> "quick" and not IsBool( arg[4] ) ) then
       Error( "usage: ",
-        "ConsiderSmallerPowermaps(<tbl>,<prime_powermap>,<prime>) resp.\n",
-        "ConsiderSmallerPowermaps(<tbl>,<prime_powermap>,<prime>,\"quick\")");
+        "ConsiderSmallerPowerMaps(<tbl>,<prime_powermap>,<prime>) resp.\n",
+        "ConsiderSmallerPowerMaps(<tbl>,<prime_powermap>,<prime>,\"quick\")");
     fi;
 
     tbl:= arg[1];
     if not HasOrdersClassRepresentatives( tbl ) then
       Info( InfoCharacterTable, 2,
-            "ConsiderSmallerPowermaps: no orders bound, no test" );
+            "ConsiderSmallerPowerMaps: no orders bound, no test" );
       return true;
     fi;
     tbl_orders:= OrdersClassRepresentatives( tbl);
@@ -1710,18 +1718,18 @@ ConsiderSmallerPowermaps := function( arg )
 
     if Length( errors ) <> 0 then
       Info( InfoCharacterTable, 2,
-            "ConsiderSmallerPowermaps: no image possible for classes ",
+            "ConsiderSmallerPowerMaps: no image possible for classes ",
             errors );
       return false;
     fi;
 
     return true;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  PowermapsAllowedBySymmetrisations( <tbl>, <subchars>, <chars>, <pow>,
+#F  PowerMapsAllowedBySymmetrisations( <tbl>, <subchars>, <chars>, <pow>,
 #F                                     <prime>, <parameters> )
 ##
 ##  <parameters> must be a record with fields <maxlen> (int), <contained>,
@@ -1759,8 +1767,8 @@ end;
 ##  If '<parameters>.quick = true', unique minus characters are never
 ##  considered.
 ##
-PowermapsAllowedBySymmetrisations :=
-              function( tbl, subchars, chars, pow, prime, parameters )
+InstallGlobalFunction( PowerMapsAllowedBySymmetrisations,
+    function( tbl, subchars, chars, pow, prime, parameters )
 
     local i, j, x, indeterminateness, numbofposs, lastimproved, minus, indet,
           poss, param, remain, possibilities, improvemap, allowedmaps, rat,
@@ -2006,7 +2014,7 @@ PowermapsAllowedBySymmetrisations :=
     fi;
     return allowedmaps( chars, pow, indeterminateness, numbofposs,
                         powerchars );
-end;
+end );
   
 
 #############################################################################
@@ -2016,7 +2024,7 @@ end;
 InstallOtherMethod( PossiblePowerMaps,
     "method for an ordinary character table and a prime",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     function( ordtbl, prime )
     return PossiblePowerMaps( ordtbl, prime, rec() );
     end );
@@ -2029,7 +2037,7 @@ InstallOtherMethod( PossiblePowerMaps,
 InstallMethod( PossiblePowerMaps,
     "method for an ordinary character table, a prime, and a record",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat, IsRecord ], 0,
+    [ IsOrdinaryTable, IsPosInt, IsRecord ], 0,
     function( ordtbl, prime, arec )
 
     local chars,          # list of characters to be used
@@ -2109,9 +2117,9 @@ InstallMethod( PossiblePowerMaps,
       Info( InfoCharacterTable, 2,
             "PossiblePowerMaps: errors in ConsiderKernels" );
       return [];
-    elif not ConsiderSmallerPowermaps( ordtbl, powermap, prime, quick ) then
+    elif not ConsiderSmallerPowerMaps( ordtbl, powermap, prime, quick ) then
       Info( InfoCharacterTable, 2,
-            "PossiblePowerMaps: errors in ConsiderSmallerPowermaps" );
+            "PossiblePowerMaps: errors in ConsiderSmallerPowerMaps" );
       return [];
     fi;
     
@@ -2150,7 +2158,7 @@ InstallMethod( PossiblePowerMaps,
               "minus-characters" );
         rat:= RationalizedMat( chars );
 
-        poss:= PowermapsAllowedBySymmetrisations( ordtbl, rat, rat, powermap,
+        poss:= PowerMapsAllowedBySymmetrisations( ordtbl, rat, rat, powermap,
                              prime, rec( maxlen:= maxlen,
                                          contained:= ContainedCharacters,
                                          minamb:= minamb,
@@ -2185,7 +2193,7 @@ InstallMethod( PossiblePowerMaps,
     powermap:= [];
     for pow in poss do
       Append( powermap,
-              PowermapsAllowedBySymmetrisations( ordtbl, chars, chars, pow,
+              PowerMapsAllowedBySymmetrisations( ordtbl, chars, chars, pow,
                        prime, rec( maxlen:= maxlen,
                                    contained:= ContainedPossibleCharacters,
                                    minamb:= 1,
@@ -2220,7 +2228,7 @@ InstallMethod( PossiblePowerMaps,
 InstallOtherMethod( PossiblePowerMaps,
     "method for a Brauer character table and a prime",
     true,
-    [ IsBrauerTable, IsInt and IsPosRat ], 0,
+    [ IsBrauerTable, IsPosInt ], 0,
     function( modtbl, prime )
     local ordtbl, poss, fus, inv;
     ordtbl:= OrdinaryCharacterTable( modtbl );
@@ -2242,7 +2250,7 @@ InstallOtherMethod( PossiblePowerMaps,
 InstallMethod( PossiblePowerMaps,
     "method for a Brauer character table, a prime, and a record",
     true,
-    [ IsBrauerTable, IsInt and IsPosRat, IsRecord ], 0,
+    [ IsBrauerTable, IsPosInt, IsRecord ], 0,
     function( modtbl, prime, arec )
     local ordtbl, poss, fus, inv, quick, decompose;
     ordtbl:= OrdinaryCharacterTable( modtbl );
@@ -2274,7 +2282,8 @@ InstallMethod( PossiblePowerMaps,
 ##
 #F  ConsiderTableAutomorphisms( <parafus>, <grp> )
 ##
-ConsiderTableAutomorphisms := function( parafus, grp )
+InstallGlobalFunction( ConsiderTableAutomorphisms,
+    function( parafus, grp )
 
     local i,
           support,
@@ -2397,14 +2406,15 @@ ConsiderTableAutomorphisms := function( parafus, grp )
       i:= i+1;
     od;
     return found;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OrbitFusions( <subtblautomorphisms>, <fusionmap>, <tblautomorphisms> )
 ##
-OrbitFusions := function( subtblautomorphisms, fusionmap, tblautomorphisms )
+InstallGlobalFunction( OrbitFusions,
+    function( subtblautomorphisms, fusionmap, tblautomorphisms )
 
     local i, orb, gen, image;
 
@@ -2429,14 +2439,14 @@ OrbitFusions := function( subtblautomorphisms, fusionmap, tblautomorphisms )
       od;
     od;
     return orb;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OrbitPowerMaps( <powermap>, <matautomorphisms> )
 ##
-OrbitPowerMaps := function( powermap, matautomorphisms )
+InstallGlobalFunction( OrbitPowerMaps, function( powermap, matautomorphisms )
 
     local nccl, orb, gen, image;
 
@@ -2449,7 +2459,7 @@ OrbitPowerMaps := function( powermap, matautomorphisms )
       od;
     od;
     return orb;
-end;
+end );
 
 
 #############################################################################
@@ -2464,8 +2474,8 @@ end;
 ##  and <tblautomorphisms> of the supergroup table.
 ##  The table automorphisms must be both permutation groups.
 ##
-RepresentativesFusions := function( subtblautomorphisms, listoffusionmaps,
-                                    tblautomorphisms )
+InstallGlobalFunction( RepresentativesFusions,
+    function( subtblautomorphisms, listoffusionmaps, tblautomorphisms )
 
     local stable, gens, orbits, orbit;
     
@@ -2549,7 +2559,7 @@ RepresentativesFusions := function( subtblautomorphisms, listoffusionmaps,
     
     # Choose representatives, and return them.
     return List( orbits, x -> x[1] );
-end;
+end );
     
 
 #############################################################################
@@ -2562,7 +2572,8 @@ end;
 ##  character matrix.
 ##  The matrix automorphisms must be a permutation group.
 ##
-RepresentativesPowerMaps := function( listofpowermaps, matautomorphisms )
+InstallGlobalFunction( RepresentativesPowerMaps,
+    function( listofpowermaps, matautomorphisms )
 
     local nccl, stable, gens, orbits, orbit;
     
@@ -2604,7 +2615,7 @@ RepresentativesPowerMaps := function( listofpowermaps, matautomorphisms )
     
     # Choose representatives, and return them.
     return List( orbits, x -> x[1] );
-end;
+end );
     
 
 #############################################################################
@@ -2646,8 +2657,8 @@ end;
 ##
 ##  If '<parameters>.quick = true', unique restrictions are never considered.
 ##
-FusionsAllowedByRestrictions := function( subtbl, tbl, subchars, chars, fus,
-                                          parameters )
+InstallGlobalFunction( FusionsAllowedByRestrictions,
+    function( subtbl, tbl, subchars, chars, fus, parameters )
 
     local x, i, j, indeterminateness, numbofposs, lastimproved, restricted,
           indet, rat, poss, param, remain, possibilities, improvefusion,
@@ -2895,7 +2906,7 @@ FusionsAllowedByRestrictions := function( subtbl, tbl, subchars, chars, fus,
                            fus,
                            indeterminateness,
                            numbofposs );
-end;
+end );
 
 
 #############################################################################
@@ -2904,7 +2915,7 @@ end;
 ##
 InstallOtherMethod( PossibleClassFusions,
     "method for two ordinary character tables",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsOrdinaryTable, IsOrdinaryTable ], 0,
     function( subtbl, tbl )
     return PossibleClassFusions( subtbl, tbl,
@@ -3012,7 +3023,7 @@ InstallMethod( PossibleClassFusions,
     fus:= InitFusion( subtbl, tbl );
     if fus = fail then 
       Info( InfoCharacterTable, 2,
-            "SubgroupFusions: no initialisation possible" );
+            "PossibleClassFusions: no initialisation possible" );
       return [];
     fi;
     Info( InfoCharacterTable, 2,
@@ -3255,7 +3266,8 @@ InstallMethod( PossibleClassFusions,
 ##
 #F  StepModGauss( <matrix>, <moduls>, <nonzerocol>, <col> )
 ##
-StepModGauss := function( matrix, moduls, nonzerocol, col )
+InstallGlobalFunction( StepModGauss,
+    function( matrix, moduls, nonzerocol, col )
 
     local i, k, x, y, z, a, b, c, d, val, stepmodgauss;
 
@@ -3296,14 +3308,14 @@ StepModGauss := function( matrix, moduls, nonzerocol, col )
     stepmodgauss[col]:= z.gcd;
     matrix[1][col]:= 0;
     return stepmodgauss;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ModGauss( <matrix>, <moduls> )
 ##
-ModGauss := function( matrix, moduls )
+InstallGlobalFunction( ModGauss, function( matrix, moduls )
 
     local i, modgauss, nonzerocol, row;
 
@@ -3317,14 +3329,15 @@ ModGauss := function( matrix, moduls )
       nonzerocol[i]:= false;
     od;
     return modgauss;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedDecomposables( <constituents>, <moduls>, <parachar>, <func> )
 ##
-ContainedDecomposables := function( constituents, moduls, parachar, func )
+InstallGlobalFunction( ContainedDecomposables,
+    function( constituents, moduls, parachar, func )
 
     local i, x, matrix, fusion, newmoduls, candidate, classes,
           nonzerocol,
@@ -3593,14 +3606,15 @@ ContainedDecomposables := function( constituents, moduls, parachar, func )
       fi;
     od;
     return possibilities;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ContainedCharacters( <tbl>, <constituents>, <parachar> )
 ##
-ContainedCharacters := function( tbl, constituents, parachar )
+InstallGlobalFunction( ContainedCharacters,
+    function( tbl, constituents, parachar )
     local degree;
     degree:= parachar[1];
     if IsInt( degree ) then
@@ -3611,7 +3625,7 @@ ContainedCharacters := function( tbl, constituents, parachar )
                SizesCentralizers( tbl ),
                parachar,
                chi -> NonnegIntScalarProducts( tbl, constituents, chi ) );
-end;
+end );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file implements the part of the deep thought package which deals
 **  with computing the deep thought polynomials.
@@ -52,7 +53,7 @@
 */
 #include       "system.h"
 
-SYS_CONST char * Revision_dt_c =
+const char * Revision_dt_c =
    "@(#)$Id$";
 
 
@@ -1780,55 +1781,88 @@ Obj    Funcposition(Obj      self,
 /****************************************************************************
 **
 
-*F  SetupDeepThought()  . . . . . . . . . initialize the Deep Thought package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupDeepThought ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
 
+    { "MakeFormulaVector", 2, "tree, presentation",
+      FuncMakeFormulaVector, "src/dt.c:MakeFormulaVector" },
 
-/****************************************************************************
-**
-*F  InitDeepThought() . . . . . . . . . . initialize the Deep Thought package
-**
-**  'InitDeepThought' initializes the Deep Thought package.
-*/
-void InitDeepThought ( void )
-{
+    { "FindNewReps", 4, "tree, representatives, presentation, maximum",
+      FuncFindNewReps, "src/dt.c:FindNewReps" },
 
-    /*  install the internal functions                                      */
-    C_NEW_GVAR_FUNC( "MakeFormulaVector", 2, "tree, presentation",
-                  FuncMakeFormulaVector,
-            "src/dt.c:MakeFormulaVector" );
+    { "UnmarkTree", 1, "tree",
+      FuncUnmarkTree, "src/dt.c:UnmarkTree" },
 
-    C_NEW_GVAR_FUNC( "FindNewReps", 4, "tree, representatives, presentation, maximum",
-                  FuncFindNewReps,
-            "src/dt.c:FindNewReps" );
-
-    C_NEW_GVAR_FUNC( "UnmarkTree", 1, "tree",
-                  FuncUnmarkTree,
-            "src/dt.c:UnmarkTree" );
-
-    C_NEW_GVAR_FUNC( "GetPols", 3, "list, presentation, polynomial",
-                  FuncGetPols,
-            "src/dt.c:GetPols" );
+    { "GetPols", 3, "list, presentation, polynomial",
+      FuncGetPols, "src/dt.c:GetPols" },
     
-    C_NEW_GVAR_FUNC( "DT_evaluation", 1, "vector",
-                  Funcposition,
-            "src/dt.c:DT_evaluation" );
+    { "DT_evaluation", 1, "vector",
+      Funcposition, "src/dt.c:DT_evaluation" },
 
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
+{
     InitFopyGVar( "dt_add" , &Dt_add );
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckDeepThought()   check the initialisation of the Deep Thought package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckDeepThought ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "dt_c",       Revision_dt_c );
-    SET_REVISION( "dt_h",       Revision_dt_h );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoDeepThought() . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "dt",                               /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoDeepThought ( void )
+{
+    module.revision_c = Revision_dt_c;
+    module.revision_h = Revision_dt_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

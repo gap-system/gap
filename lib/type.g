@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file defines the format of families and types.
 ##
@@ -22,9 +23,9 @@ Revision.type_g :=
 ##  Note that the family and the flags list are stored at positions 1 and 2,
 ##  respectively.
 ##
-POS_DATA_TYPE := 3;
-POS_NUMB_TYPE := 4;
-POS_FIRST_FREE_TYPE := 5;
+BIND_GLOBAL( "POS_DATA_TYPE", 3 );
+BIND_GLOBAL( "POS_NUMB_TYPE", 4 );
+BIND_GLOBAL( "POS_FIRST_FREE_TYPE", 5 );
 
 
 #############################################################################
@@ -37,9 +38,9 @@ NEW_TYPE_NEXT_ID := -(2^28);
 #############################################################################
 ##
 
-#F  NewCategoryKernel( <name>, <super>, <filter> )  . . create a new category
+#F  DeclareCategoryKernel( <name>, <super>, <filter> )  create a new category
 ##
-NewCategoryKernel := function ( name, super, cat )
+BIND_GLOBAL( "DeclareCategoryKernel", function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
         FILTERS[ FLAG1_FILTER( cat ) ] := cat;
@@ -47,15 +48,15 @@ NewCategoryKernel := function ( name, super, cat )
         RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
         InstallTrueMethod( super, cat );
     fi;
-    return cat;
-end;
+    BIND_GLOBAL( name, cat );
+end );
 
 
 #############################################################################
 ##
 #F  NewCategory( <name>, <super> )  . . . . . . . . . . create a new category
 ##
-NewCategory := function ( name, super )
+BIND_GLOBAL( "NewCategory", function ( name, super )
     local   cat;
     cat := NEW_FILTER( name );
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
@@ -64,44 +65,72 @@ NewCategory := function ( name, super )
     INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
     InstallTrueMethodNewFilter( super, cat );
     return cat;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  NewRepresentationKernel( <name>, <super>, <slots> [,<req>], <filter> )
+#F  DeclareCategory( <name>, <super> )  . . . . . . . . create a new category
 ##
-NewRepresentationKernel := function ( arg )
-    local   rep;
+BIND_GLOBAL( "DeclareCategory", function ( name, super )
+    BIND_GLOBAL( name, NewCategory( name, super ) );
+end );
+
+
+#############################################################################
+##
+#F  DeclareRepresentationKernel( <name>, <super>, <slots> [,<req>], <filt> )
+##
+BIND_GLOBAL( "DeclareRepresentationKernel", function ( arg )
+    local   rep, filt;
+    if REREADING then
+        for filt in CATS_AND_REPS do
+            if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                Print("#W DeclareRepresentationKernel \"",arg[1],"\" in Reread. ");
+                Print("Change of Super-rep not handled\n");
+                return FILTERS[filt];
+            fi;
+        od;
+    fi;
     if LEN_LIST(arg) = 4  then
         rep := arg[4];
     elif LEN_LIST(arg) = 5  then
         rep := arg[5];
     else
-        Error("usage: NewRepresentation(<name>,<super>,<slots>[,<req>])");
+        Error("usage:DeclareRepresentation(<name>,<super>,<slots>[,<req>])");
     fi;
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
     RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
-    return rep;
-end;
+    BIND_GLOBAL( arg[1], rep );
+end );
+
 
 
 #############################################################################
 ##
 #F  NewRepresentation( <name>, <super>, <slots> [,<req>] )  .  representation
 ##
-NewRepresentation := function ( arg )
-    local   rep;
+BIND_GLOBAL( "NewRepresentation", function ( arg )
+    local   rep, filt;
 
+    if REREADING then
+        for filt in CATS_AND_REPS do
+            if NAME_FUNC(FILTERS[filt]) = arg[1] then
+                Print("#W NewRepresentation \"",arg[1],"\" in Reread. ");
+                Print("Change of Super-rep not handled\n");
+                return FILTERS[filt];
+            fi;
+        od;
+    fi;
     if LEN_LIST(arg) = 3  then
         rep := NEW_FILTER( arg[1] );
     elif LEN_LIST(arg) = 4  then
         rep := NEW_FILTER( arg[1] );
     else
-        Error("usage: NewRepresentation(<name>,<super>,<slots>[,<req>])");
+        Error("usage:NewRepresentation(<name>,<super>,<slots>[,<req>])");
     fi;
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ] := rep;
@@ -109,43 +138,33 @@ NewRepresentation := function ( arg )
     INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
     InstallTrueMethodNewFilter( arg[2], rep );
     return rep;
-end;
+end );
+
+
+#############################################################################
+##
+#F  DeclareRepresentation( <name>, <super>, <slots> [,<req>] )
+##
+BIND_GLOBAL( "DeclareRepresentation", function ( arg )
+    BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewRepresentation, arg ) );
+end );
+
+
 
 #############################################################################
 ##
 
 #R  IsInternalRep
-##
-IsInternalRep := NewRepresentation(
-    "IsInternalRep",
-    IS_OBJECT, [], IS_OBJECT );
-
-
-#############################################################################
-##
 #R  IsPositionalObjectRep
-##
-IsPositionalObjectRep := NewRepresentation(
-    "IsPositionalObjectRep",
-    IS_OBJECT, [], IS_OBJECT );
-
-
-#############################################################################
-##
 #R  IsComponentObjectRep
-##
-IsComponentObjectRep := NewRepresentation(
-    "IsComponentObjectRep",
-    IS_OBJECT, [], IS_OBJECT );
-
-
-#############################################################################
-##
 #R  IsDataObjectRep
 ##
-IsDataObjectRep := NewRepresentation(
-    "IsDataObjectRep",
-    IS_OBJECT, [], IS_OBJECT );
+##  the four basic representations in {\GAP}
+##
+DeclareRepresentation( "IsInternalRep", IS_OBJECT, [], IS_OBJECT );
+DeclareRepresentation( "IsPositionalObjectRep", IS_OBJECT, [], IS_OBJECT );
+DeclareRepresentation( "IsComponentObjectRep", IS_OBJECT, [], IS_OBJECT );
+DeclareRepresentation( "IsDataObjectRep", IS_OBJECT, [], IS_OBJECT );
 
 
 #############################################################################
@@ -161,8 +180,7 @@ IsDataObjectRep := NewRepresentation(
 #T This will be changed eventually, in order to avoid conflicts between
 #T ordinary components and components corresponding to attributes.
 ##
-IsAttributeStoringRep := NewRepresentation(
-    "IsAttributeStoringRep",
+DeclareRepresentation( "IsAttributeStoringRep",
     IsComponentObjectRep, [], IS_OBJECT );
 
 
@@ -209,61 +227,61 @@ InstallAttributeFunction(
 ##
 ##  create the family of all families and the family of all types
 ##
-EMPTY_FLAGS             := FLAGS_FILTER( IS_OBJECT );
+BIND_GLOBAL( "EMPTY_FLAGS", FLAGS_FILTER( IS_OBJECT ) );
 
-IsFamily                := NewCategory( "IsFamily"          , IS_OBJECT );
-IsType                  := NewCategory( "IsType"            , IS_OBJECT );
-IsFamilyOfFamilies      := NewCategory( "IsFamilyOfFamilies", IsFamily );
-IsFamilyOfTypes         := NewCategory( "IsFamilyOfTypes"   , IsFamily );
+DeclareCategory( "IsFamily"          , IS_OBJECT );
+DeclareCategory( "IsType"            , IS_OBJECT );
+DeclareCategory( "IsFamilyOfFamilies", IsFamily );
+DeclareCategory( "IsFamilyOfTypes"   , IsFamily );
 
-IsFamilyDefaultRep      := NewRepresentation( "IsFamilyDefaultRep",
+DeclareRepresentation( "IsFamilyDefaultRep",
                             IsComponentObjectRep,
 #T why not `IsAttributeStoringRep' ?
                             "NAME,REQ_FLAGS,IMP_FLAGS,TYPES,TYPES_LIST_FAM",
                             IsFamily );
 
-IsTypeDefaultRep        := NewRepresentation( "IsTypeDefaultRep",
+DeclareRepresentation( "IsTypeDefaultRep",
                             IsPositionalObjectRep,
                             "", IsType );
 
-FamilyOfFamilies        := rec();
+BIND_GLOBAL( "FamilyOfFamilies", rec() );
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-TypeOfFamilies          := [
+BIND_GLOBAL( "TypeOfFamilies", [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamily and IsFamilyDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ];
+    NEW_TYPE_NEXT_ID ] );
 
 FamilyOfFamilies!.NAME          := "FamilyOfFamilies";
 FamilyOfFamilies!.REQ_FLAGS     := FLAGS_FILTER( IsFamily );
 FamilyOfFamilies!.IMP_FLAGS     := EMPTY_FLAGS;
 FamilyOfFamilies!.TYPES         := [];
-FamilyOfFamilies!.TYPES_LIST_FAM:= [,,,,,,,,,,,,false]; # list with 12 holes
+FamilyOfFamilies!.TYPES_LIST_FAM:= [,,,,,,,,,,,,,,,,,,false]; # list with 18 holes
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-TypeOfFamilyOfFamilies  := [
+BIND_GLOBAL( "TypeOfFamilyOfFamilies", [
       FamilyOfFamilies,
-      WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfFamilies and IsFamilyDefaultRep 
+      WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfFamilies and IsFamilyDefaultRep
                                    and IsAttributeStoringRep
                                     ) ),
     false,
-    NEW_TYPE_NEXT_ID ];
+    NEW_TYPE_NEXT_ID ] );
 
-FamilyOfTypes           := rec();
+BIND_GLOBAL( "FamilyOfTypes", rec() );
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
-TypeOfTypes := [
+BIND_GLOBAL( "TypeOfTypes", [
     FamilyOfTypes,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsType and IsTypeDefaultRep ) ),
     false,
-    NEW_TYPE_NEXT_ID ];
+    NEW_TYPE_NEXT_ID ] );
 
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
 FamilyOfTypes!.REQ_FLAGS        := FLAGS_FILTER( IsType   );
 FamilyOfTypes!.IMP_FLAGS        := EMPTY_FLAGS;
 FamilyOfTypes!.TYPES            := [];
-FamilyOfTypes!.TYPES_LIST_FAM   := [,,,,,,,,,,,,false]; # list with 12 holes
+FamilyOfTypes!.TYPES_LIST_FAM   := [,,,,,,,,,,,,,,,,,,false]; # list with 12 holes
 
 NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
 TypeOfFamilyOfTypes     := [
@@ -284,9 +302,9 @@ SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
 
 #O  CategoryFamily( <elms_filter> ) . . . . . .  category of certain families
 ##
-CATEGORIES_FAMILY := [];
+BIND_GLOBAL( "CATEGORIES_FAMILY", [] );
 
-CategoryFamily  := function ( elms_filter )
+BIND_GLOBAL( "CategoryFamily", function ( elms_filter )
     local    pair, fam_filter, super, flags, name;
 
     name:= "CategoryFamily(";
@@ -313,10 +331,26 @@ CategoryFamily  := function ( elms_filter )
     od;
 
     # Construct the family category.
-    fam_filter := NewCategory( name, super );
+    fam_filter:= NewCategory( name, super );
     ADD_LIST( CATEGORIES_FAMILY, [ elms_filter, fam_filter ] );
     return fam_filter;
-end;
+end );
+
+
+#############################################################################
+##
+#F  DeclareCategoryFamily( <name> )
+##
+##  creates the family category of the category that is bound to the global
+##  variable with name <name>,
+##  and binds it to the global variable with name `<name>Family'.
+##
+BIND_GLOBAL( "DeclareCategoryFamily", function( name )
+    local nname;
+    nname:= SHALLOW_COPY_OBJ( name );
+    APPEND_LIST_INTR( nname, "Family" );
+    BIND_GLOBAL( nname, CategoryFamily( VALUE_GLOBAL( name ) ) );
+end );
 
 
 #############################################################################
@@ -326,7 +360,8 @@ end;
 Subtype := "defined below";
 
 
-NEW_FAMILY := function ( typeOfFamilies, name, req_filter, imp_filter )
+BIND_GLOBAL( "NEW_FAMILY",
+    function ( typeOfFamilies, name, req_filter, imp_filter )
     local   type, pair, family;
 
     # Look whether the category of the desired family can be improved
@@ -346,44 +381,45 @@ NEW_FAMILY := function ( typeOfFamilies, name, req_filter, imp_filter )
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
     family!.TYPES           := [];
-    family!.TYPES_LIST_FAM  := [,,,,,,,,,,,,false]; # list with 12 holes
+    family!.TYPES_LIST_FAM  := [,,,,,,,,,,,,,,,,,,false]; # list with 12 holes
     return family;
-end;
+end );
 
 
-NewFamily2 := function ( typeOfFamilies, name )
+BIND_GLOBAL( "NewFamily2", function ( typeOfFamilies, name )
     return NEW_FAMILY( typeOfFamilies,
                        name,
                        EMPTY_FLAGS,
                        EMPTY_FLAGS );
-end;
+end );
 
 
-NewFamily3 := function ( typeOfFamilies, name, req )
+BIND_GLOBAL( "NewFamily3", function ( typeOfFamilies, name, req )
     return NEW_FAMILY( typeOfFamilies,
                        name,
                        FLAGS_FILTER( req ),
                        EMPTY_FLAGS );
-end;
+end );
 
 
-NewFamily4 := function ( typeOfFamilies, name, req, imp )
+BIND_GLOBAL( "NewFamily4", function ( typeOfFamilies, name, req, imp )
     return NEW_FAMILY( typeOfFamilies,
                        name,
                        FLAGS_FILTER( req ),
                        FLAGS_FILTER( imp ) );
-end;
+end );
 
 
-NewFamily5 := function ( typeOfFamilies, name, req, imp, filter )
+BIND_GLOBAL( "NewFamily5",
+    function ( typeOfFamilies, name, req, imp, filter )
     return NEW_FAMILY( Subtype( typeOfFamilies, filter ),
                        name,
                        FLAGS_FILTER( req ),
                        FLAGS_FILTER( imp ) );
-end;
+end );
 
 
-NewFamily := function ( arg )
+BIND_GLOBAL( "NewFamily", function ( arg )
 
     # NewFamily( <name> )
     if LEN_LIST(arg) = 1  then
@@ -406,7 +442,7 @@ NewFamily := function ( arg )
         Error( "usage: NewFamily( <name>, [ <req> [, <imp> ]] )" );
     fi;
 
-end;
+end );
 
 
 #############################################################################
@@ -440,7 +476,7 @@ end );
 NEW_TYPE_CACHE_MISS  := 0;
 NEW_TYPE_CACHE_HIT   := 0;
 
-NEW_TYPE := function ( typeOfTypes, family, flags, data )
+BIND_GLOBAL( "NEW_TYPE", function ( typeOfTypes, family, flags, data )
     local   hash,  cache,  cached,  type;
 
     # maybe it is in the type cache
@@ -478,38 +514,39 @@ NEW_TYPE := function ( typeOfTypes, family, flags, data )
 
     # return the type
     return type;
-end;
+end );
 
 
-NewType2 := function ( typeOfTypes, family )
+BIND_GLOBAL( "NewType2", function ( typeOfTypes, family )
     return NEW_TYPE( typeOfTypes,
                      family,
                      family!.IMP_FLAGS,
                      false );
-end;
+end );
 
 
-NewType3 := function ( typeOfTypes, family, filter )
+BIND_GLOBAL( "NewType3", function ( typeOfTypes, family, filter )
     return NEW_TYPE( typeOfTypes,
                      family,
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
                      false );
-end;
+end );
 
 
-NewType4 := function ( typeOfTypes, family, filter, data )
+BIND_GLOBAL( "NewType4", function ( typeOfTypes, family, filter, data )
     return NEW_TYPE( typeOfTypes,
                      family,
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         family!.IMP_FLAGS,
                         FLAGS_FILTER(filter) ) ),
                      data );
-end;
+end );
 
 
-NewType5 := function ( typeOfTypes, family, filter, data, stuff )
+BIND_GLOBAL( "NewType5",
+    function ( typeOfTypes, family, filter, data, stuff )
     local   type;
     type := NEW_TYPE( typeOfTypes,
                       family,
@@ -520,10 +557,10 @@ NewType5 := function ( typeOfTypes, family, filter, data, stuff )
     type![ POS_FIRST_FREE_TYPE ] := stuff;
 #T really ??
     return type;
-end;
+end );
 
 
-NewType := function ( arg )
+BIND_GLOBAL( "NewType", function ( arg )
     local   type;
 
     # check the argument
@@ -555,7 +592,7 @@ NewType := function ( arg )
 
     # return the new type
     return type;
-end;
+end );
 
 
 #############################################################################
@@ -590,7 +627,7 @@ end );
 ##
 #F  Subtype( <type>, <filter> )
 ##
-Subtype2 := function ( type, filter )
+BIND_GLOBAL( "Subtype2", function ( type, filter )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
@@ -604,10 +641,10 @@ Subtype2 := function ( type, filter )
         fi;
     od;
     return new;
-end;
+end );
 
 
-Subtype3 := function ( type, filter, data )
+BIND_GLOBAL( "Subtype3", function ( type, filter, data )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
@@ -621,10 +658,11 @@ Subtype3 := function ( type, filter, data )
         fi;
     od;
     return new;
-end;
+end );
 
 
-Subtype := function ( arg )
+Unbind( Subtype );
+BIND_GLOBAL( "Subtype", function ( arg )
 
     # check argument
     if not IsType( arg[1] )  then
@@ -638,14 +676,14 @@ Subtype := function ( arg )
         return Subtype3( arg[1], arg[2], arg[3] );
     fi;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SupType( <type>, <filter> )
 ##
-SupType2 := function ( type, filter )
+BIND_GLOBAL( "SupType2", function ( type, filter )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
@@ -659,10 +697,10 @@ SupType2 := function ( type, filter )
         fi;
     od;
     return new;
-end;
+end );
 
 
-SupType3 := function ( type, filter, data )
+BIND_GLOBAL( "SupType3", function ( type, filter, data )
     local   new, i;
     new := NEW_TYPE( TypeOfTypes,
                      type![1],
@@ -676,10 +714,10 @@ SupType3 := function ( type, filter, data )
         fi;
     od;
     return new;
-end;
+end );
 
 
-SupType := function ( arg )
+BIND_GLOBAL( "SupType", function ( arg )
 
     # check argument
     if not IsType( arg[1] )  then
@@ -693,25 +731,21 @@ SupType := function ( arg )
         return SupType3( arg[1], arg[2], arg[3] );
     fi;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  FamilyType( <K> ) . . . . . . . . . . . . family of objects with type <K>
 ##
-FamilyType := function ( K )
-    return K![1];
-end;
+BIND_GLOBAL( "FamilyType", K -> K![1] );
 
 
 #############################################################################
 ##
 #F  FlagsType( <K> )  . . . . . . . . . . . .  flags of objects with type <K>
 ##
-FlagsType := function ( K )
-    return K![2];
-end;
+BIND_GLOBAL( "FlagsType", K -> K![2] );
 
 
 #############################################################################
@@ -719,70 +753,60 @@ end;
 #F  DataType( <K> ) . . . . . . . . . . . . . . defining data of the type <K>
 #F  SetDataType( <K>, <data> )  . . . . . . set defining data of the type <K>
 ##
-DataType := function ( K )
-    return K![ POS_DATA_TYPE ];
-end;
+BIND_GLOBAL( "DataType", K -> K![ POS_DATA_TYPE ] );
 
-SetDataType := function ( K, data )
+BIND_GLOBAL( "SetDataType", function ( K, data )
     K![ POS_DATA_TYPE ]:= data;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SharedType( <K> ) . . . . . . . . . . . . . . shared data of the type <K>
 ##
-SharedType := function ( K )
-    return K![ POS_DATA_TYPE ];
-end;
+BIND_GLOBAL( "SharedType", K -> K![ POS_DATA_TYPE ] );
 
 
 #############################################################################
 ##
 #F  TypeObj( <obj> )  . . . . . . . . . . . . . . . . . . . type of an object
 ##
-TypeObj := TYPE_OBJ;
+BIND_GLOBAL( "TypeObj", TYPE_OBJ );
 
 
 #############################################################################
 ##
 #F  FamilyObj( <obj> )  . . . . . . . . . . . . . . . . . family of an object
 ##
-FamilyObj := FAMILY_OBJ;
+BIND_GLOBAL( "FamilyObj", FAMILY_OBJ );
 
 
 #############################################################################
 ##
 #F  FlagsObj( <obj> ) . . . . . . . . . . . . . . . . . .  flags of an object
 ##
-FlagsObj := function ( obj )
-    return FlagsType( TypeObj( obj ) );
-end;
+BIND_GLOBAL( "FlagsObj", obj -> FlagsType( TypeObj( obj ) ) );
 
 
 #############################################################################
 ##
 #F  DataObj( <obj> )  . . . . . . . . . . . . . .  defining data of an object
 ##
-DataObj := function ( obj )
-    return DataType( TypeObj( obj ) );
-end;
+BIND_GLOBAL( "DataObj", obj -> DataType( TypeObj( obj ) ) );
 
 
 #############################################################################
 ##
 #F  SharedObj( <obj> )  . . . . . . . . . . . . . .  shared data of an object
 ##
-SharedObj := function ( obj )
-    return SharedType( TypeObj( obj ) );
-end;
+BIND_GLOBAL( "SharedObj", obj -> SharedType( TypeObj( obj ) ) );
 
 
 #############################################################################
 ##
 #F  SetTypeObj( <type>, <obj> )
 ##
-SetTypeObj := function ( type, obj )
+BIND_GLOBAL( "SetTypeObj", function ( type, obj )
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
@@ -793,16 +817,16 @@ SetTypeObj := function ( type, obj )
     fi;
     RunImmediateMethods( obj, type![2] );
     return obj;
-end;
+end );
 
-Objectify := SetTypeObj;
+BIND_GLOBAL( "Objectify", SetTypeObj );
 
 
 #############################################################################
 ##
 #F  ChangeTypeObj( <type>, <obj> )
 ##
-ChangeTypeObj := function ( type, obj )
+BIND_GLOBAL( "ChangeTypeObj", function ( type, obj )
     if not IsType( type )  then
         Error("<type> must be a type");
     fi;
@@ -815,16 +839,17 @@ ChangeTypeObj := function ( type, obj )
     fi;
     RunImmediateMethods( obj, type![2] );
     return obj;
-end;
+end );
 
-ReObjectify := ChangeTypeObj;
+BIND_GLOBAL( "ReObjectify", ChangeTypeObj );
 
 
 #############################################################################
 ##
-#F  SetFilterObj( <obj>, <filter>, <val> )
+#F  SetFilterObj( <obj>, <filter> )
 ##
-SetFilterObj := function ( obj, filter )
+Unbind( SetFilterObj );
+BIND_GLOBAL( "SetFilterObj", function ( obj, filter )
     if IS_POSOBJ( obj ) then
         SET_TYPE_POSOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
         RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
@@ -834,12 +859,20 @@ SetFilterObj := function ( obj, filter )
     elif IS_DATOBJ( obj ) then
         SET_TYPE_DATOBJ( obj, Subtype2( TYPE_OBJ(obj), filter ) );
         RunImmediateMethods( obj, FLAGS_FILTER( filter ) );
+    elif IS_PLIST_REP( obj )  then
+        SET_FILTER_LIST( obj, filter );
+    elif IS_STRING_REP( obj )  then
+        SET_FILTER_LIST( obj, filter );
+    elif IS_BLIST( obj )  then
+        SET_FILTER_LIST( obj, filter );
+    elif IS_RANGE( obj )  then
+        SET_FILTER_LIST( obj, filter );
     else
         Error("cannot set filter for internal object");
     fi;
-end;
+end );
 
-SET_FILTER_OBJ := SetFilterObj;
+BIND_GLOBAL( "SET_FILTER_OBJ", SetFilterObj );
 
 
 
@@ -849,51 +882,59 @@ SET_FILTER_OBJ := SetFilterObj;
 #F  ResetFilterObj( <obj>, <filter> )
 ##
 
-ResetFilterObj := function ( obj, filter )
+BIND_GLOBAL( "ResetFilterObj", function ( obj, filter )
     if IS_POSOBJ( obj ) then
         SET_TYPE_POSOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
     elif IS_COMOBJ( obj ) then
         SET_TYPE_COMOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
     elif IS_DATOBJ( obj ) then
         SET_TYPE_DATOBJ( obj, SupType2( TYPE_OBJ(obj), filter ) );
+    elif IS_PLIST_REP( obj )  then
+        RESET_FILTER_LIST( obj, filter );
+    elif IS_STRING_REP( obj )  then
+        RESET_FILTER_LIST( obj, filter );
+    elif IS_BLIST( obj )  then
+        RESET_FILTER_LIST( obj, filter );
+    elif IS_RANGE( obj )  then
+        RESET_FILTER_LIST( obj, filter );
     else
         Error("cannot reset filter for internal object");
     fi;
-end;
+end );
 
-RESET_FILTER_OBJ := ResetFilterObj;
+BIND_GLOBAL( "RESET_FILTER_OBJ", ResetFilterObj );
 
 
 #############################################################################
 ##
 #F  SetFeatureObj( <obj>, <filter>, <val> )
 ##
-SetFeatureObj := function ( obj, filter, val )
+BIND_GLOBAL( "SetFeatureObj", function ( obj, filter, val )
     if val then
         SetFilterObj( obj, filter );
     else
         ResetFilterObj( obj, filter );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InstallMethodsFunction2( <list> ) . . . . . . function to install methods
 ##
-InstallMethodsFunction2 := function( list )
+BIND_GLOBAL( "InstallMethodsFunction2", function( list )
     return
         function( to, from, func )
             ADD_LIST( list, [ FLAGS_FILTER(to), FLAGS_FILTER(from), func ] );
         end;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  RunMethodsFunction2( <list> ) . . . . func to run through install methods
 ##
-RunMethodsFunction2 := function( list )
+BIND_GLOBAL( "RunMethodsFunction2", function( list )
 
     return
         function( sup, sub )
@@ -928,7 +969,7 @@ RunMethodsFunction2 := function( list )
                 fi;
             od;
         end;
-end;
+end );
 
 
 #############################################################################

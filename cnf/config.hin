@@ -1,0 +1,235 @@
+/****************************************************************************
+**
+*D  user edit-able defines
+*/
+
+/* initial amount of memory if '-m' is not given                           */
+#define SY_STOR_MIN		8 * 1024 * 1024L
+
+
+/****************************************************************************
+**
+*D  debug flags (user edit-able)
+*/
+
+/* define as maximal recursion depth of GAP functions calls                */
+/* #define DEBUG_RECURSION 5000 */
+
+
+/* * * * * * * * * *  saving/loading the workspace * * * * * * * * * * * * */
+
+/* define to get information while restoring                               */
+/* #undef DEBUG_LOADING */
+
+/* define to debug registering of global bags                              */
+/* #undef DEBUG_GLOBAL_BAGS */
+
+/* define to debug registering of function handlers                        */
+/* #undef DEBUG_HANDLER_REGISTRATION */
+
+
+/* * * * * * * * * * * * * debugging GASMAN  * * * * * * * * * * * * * * * */
+
+/* define to create functions PTR_BAG, etc instead of macros               */
+/* #undef DEBUG_FUNCTIONS_BAGS */
+
+/* define to debug the generational aspect of gasman                       */
+/* #undef DEBUG_DEADSONS_BAGS */
+
+/* define to debug masterpointers errors                                   */
+/* #undef DEBUG_MASTERPOINTERS */
+
+
+/****************************************************************************
+**
+*D  architucture
+*/
+
+/* define the name of the architucture                                     */
+#define SYS_ARCH		@SYS_ARCH@
+
+/* define as 1 if the user resource file is ".gaprc"                       */
+#define HAVE_DOTGAPRC		1
+
+/* define as 1 if there is a environment variable $PATH                    */
+#define HAVE_PATH_ENV		1
+
+
+/****************************************************************************
+**
+*D  check for the compiler features
+*/
+
+/* define as size of `long int' in bytes                                   */
+#define SIZEOF_VOID_P		@SIZEOF_VOID_P@
+
+/* define as empty if `const' does not work                                */
+#undef const
+
+/* define as empty if `inline' does not work                                */
+#undef inline
+
+/* define as least offset which is still safe for an unaligned access      */
+#define C_LONG_ALIGN		@C_LONG_ALIGN@
+
+/* define as least offset we have to check the stack for pointer           */
+#define C_STACK_ALIGN           @C_STACK_ALIGN@
+
+/* define as 1 on SPARC architecture to flush register windows */
+#define SPARC                   0
+
+/* define as 1 if you symbols in ".o" files begin with `_'                 */
+#define C_UNDERSCORE_SYMBOLS	0
+
+
+/****************************************************************************
+**
+*D  check for "the" standard include files
+*/
+
+/* define as 1 if you have the include file "termio.h"                     */
+#define HAVE_TERMIO_H		0
+
+/* define as 1 if you have the include file "sgtty.h"                      */
+#define HAVE_SGTTY_H		0
+
+/* define as 1 if you have the include file "signal.h"                     */
+#define HAVE_SIGNAL_H		0
+
+/* define as 1 if you have the include file "stdio.h"                      */
+#define HAVE_STDIO_H		0
+
+/* define as 1 if you have the standard ANSI C header files                */
+#define STDC_HEADERS            0
+
+/* define as 1 if you have the include file "libc.h"                       */
+#define HAVE_LIBC_H 	  	0
+
+/* define as 1 if you have the include file "unistd.h"                     */
+#define HAVE_UNISTD_H		0
+
+
+/****************************************************************************
+**
+*D  define if and how dynamic loading is supported
+*/
+
+/* define as 1 if you have `dlopen' and `dlsym'                            */
+#define HAVE_DLOPEN		0
+
+/* define as 1 if you have `rld_load' and `rld_lockup'                     */
+#define HAVE_RLD_LOAD		0
+
+
+/****************************************************************************
+**
+*D  define if and how the timing functions work
+*/
+
+/* define as 1 if you have `getrusage'                                     */
+#define HAVE_GETRUSAGE		0
+
+/* define as 1 if you have `times' (but not `getrusage')                   */
+#define HAVE_TIMES		0
+
+/* define as 1 if you have the include file "sys/param.h"                  */
+#define HAVE_SYS_PARAM_H	0
+
+/* define as 1 if you have the include file "sys/times.h"                  */
+#define HAVE_SYS_TIMES_H	0
+
+
+/****************************************************************************
+**
+*D  define if and how virtual memory works
+*/
+
+/* define as 1 if you have `vm_allocate'                                   */
+#define HAVE_VM_ALLOCATE	0
+
+/* define as 1 if you have `sbrk' (but not `vm_allocate')                  */
+#define HAVE_SBRK		0
+
+
+/****************************************************************************
+**
+*D  define if and how subprocesses are executed
+*/
+
+/* define as 1 if you have the include file "vfork.h"                      */
+#define HAVE_VFORK_H		0
+
+/* define as 1 if you have `fork'                                          */
+#define HAVE_FORK        	0
+
+/* define as 1 ifyou have `popen'                                          */
+#define HAVE_POPEN		0
+
+/* define vfork as fork if vfork does not work                             */
+#undef vfork
+
+/* define pid_t as int if pid_t does not work                              */
+#undef pid_t
+
+/* define as 1 if you have a POSIX compatible "sys/wait.h"                 */
+#define HAVE_SYS_WAIT_H         0
+
+/* define as 1 if you have `waitpid'                                       */
+#define HAVE_WAITPID		0
+
+/* define as 1 if you have `wait4' (but not waitpid)                       */
+#define HAVE_WAIT4		0
+
+/* define as 1 if you have "union wait"                                    */
+#define HAVE_UNION_WAIT		0
+
+
+/****************************************************************************
+**
+*D  define if and how signal handling works
+*/
+
+/* define as 1 if you have `signal'                                        */
+#define HAVE_SIGNAL		0
+
+/* define as the return type of the signal handler                         */
+#define RETSIGTYPE		@RETSIGTYPE@
+
+/* define as 1 if <RTSIGTYPE> is void                                      */
+#define HAVE_SIGNAL_VOID	0
+
+
+/****************************************************************************
+**
+*D  define if and how standard input/output works
+*/
+
+/* define as 1 if you have `ttyname'                                       */
+#define HAVE_TTYNAME		0
+
+/* define as 1 if you have `strerror'                                      */
+#define HAVE_STRERROR		0
+
+
+/****************************************************************************
+**
+*D  define if and how file access checks work
+*/
+
+/* define as 1 if your directory separator is '/'                          */
+#define HAVE_SLASH_SEPARATOR	1
+
+/* define as 1 if you have `access'                                        */
+#define HAVE_ACCESS		0
+
+/* define as 1 if you have `stat'                                          */
+#define HAVE_STAT		0
+
+/* define as 1 if the macros `S_ISDIR', `S_ISREG' do not work properly     */
+#define STAT_MACROS_BROKEN	0
+
+/* define as 1 if you have `mkdir'                                         */
+#define HAVE_MKDIR              0
+
+/* define as 1 if you have `unlink'                                        */
+#define HAVE_UNLINK             0

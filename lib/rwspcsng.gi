@@ -2,6 +2,9 @@
 ##
 #W  rwspcsng.gi                 GAP Library                      Frank Celler
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This files implement a single collector as representation of a polycyclic
 ##  collector with power/conjugate presentation.
 ##
@@ -19,7 +22,7 @@ Revision.rwspcsng_gi :=
 
 #R  IsSingleCollectorRep( <obj> )
 ##
-IsSingleCollectorRep := NewRepresentation(
+DeclareRepresentation(
     "IsSingleCollectorRep",
     IsPositionalObjectRep, [1..SCP_AVECTOR],
     IsPowerConjugateCollector and IsFinite );
@@ -29,7 +32,7 @@ IsSingleCollectorRep := NewRepresentation(
 ##
 #R  Is8BitsSingleCollectorRep( <obj> )
 ##
-Is8BitsSingleCollectorRep := NewRepresentation(
+DeclareRepresentation(
     "Is8BitsSingleCollectorRep",
     IsSingleCollectorRep, [],
     IsPowerConjugateCollector and IsFinite );
@@ -39,7 +42,7 @@ Is8BitsSingleCollectorRep := NewRepresentation(
 ##
 #R  Is16BitsSingleCollectorRep( <obj> )
 ##
-Is16BitsSingleCollectorRep := NewRepresentation(
+DeclareRepresentation(
     "Is16BitsSingleCollectorRep",
     IsSingleCollectorRep, [],
     IsPowerConjugateCollector and IsFinite );
@@ -49,7 +52,7 @@ Is16BitsSingleCollectorRep := NewRepresentation(
 ##
 #R  Is32BitsSingleCollectorRep( <obj> )
 ##
-Is32BitsSingleCollectorRep := NewRepresentation(
+DeclareRepresentation(
     "Is32BitsSingleCollectorRep",
     IsSingleCollectorRep, [],
     IsPowerConjugateCollector and IsFinite );
@@ -65,8 +68,7 @@ Is32BitsSingleCollectorRep := NewRepresentation(
 ##  will reduce all right hand sides and convert  them into an object of type
 ##  'defaultType'.
 ##
-IsDefaultRhsTypeSingleCollector := NewFilter(
-    "IsDefaultRhsTypeSingleCollector" );
+DeclareFilter( "IsDefaultRhsTypeSingleCollector" );
 
 
 #############################################################################
@@ -441,7 +443,7 @@ end;
 
 #############################################################################
 InstallMethod( SetConjugateNC,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable,
       IsInt,
@@ -453,7 +455,7 @@ InstallMethod( SetConjugateNC,
 
 #############################################################################
 InstallMethod( SetConjugate,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable,
       IsInt,
@@ -523,7 +525,7 @@ end;
 
 #############################################################################
 InstallMethod( SetPowerNC,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable, 
       IsInt,
@@ -534,7 +536,7 @@ InstallMethod( SetPowerNC,
 
 #############################################################################
 InstallMethod( SetPower, 
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
         and IsMutable,
       IsInt,
@@ -546,7 +548,7 @@ function( sc, i, rhs )
 
     # check the family (this cannot be done in install)
     fam := sc![SCP_UNDERLYING_FAMILY];
-    if not IsIdentical( FamilyObj(rhs), fam )  then
+    if not IsIdenticalObj( FamilyObj(rhs), fam )  then
         Error( "<rhs> must lie in the group of <sc>" );
     fi;
 
@@ -712,7 +714,7 @@ end );
 #############################################################################
 InstallMethod( SingleCollector,
     true,
-    [ IsFreeGroup and IsWholeFamily,
+    [ IsFreeGroup and IsGroupOfFamily,
       IsList ],
     0,
 
@@ -738,7 +740,7 @@ end );
 #############################################################################
 InstallMethod( SingleCollector,
     true,
-    [ IsFreeGroup and IsWholeFamily,
+    [ IsFreeGroup and IsGroupOfFamily,
       IsInt ],
     0,
 
@@ -992,7 +994,7 @@ end );
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
       and IsUpToDatePolycyclicCollector,
       IsList,
@@ -1003,7 +1005,7 @@ InstallMethod( CollectWordOrFail,
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
       and IsDefaultRhsTypeSingleCollector and IsUpToDatePolycyclicCollector,
       IsList,
@@ -1014,7 +1016,7 @@ InstallMethod( CollectWordOrFail,
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector and IsUpToDatePolycyclicCollector,
       IsList,
@@ -1025,7 +1027,7 @@ InstallMethod( CollectWordOrFail,
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1148,6 +1150,107 @@ end );
 
 #############################################################################
 ##
+#M  ViewObj( <sc> )
+##
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep ],
+    0,
+
+function( sc )
+    Print( "<<single collector>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep
+          and IsUpToDatePolycyclicCollector ],
+    0,
+
+function( sc )
+    Print( "<<up-to-date single collector>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite
+          and Is8BitsSingleCollectorRep ],
+    0,
+
+function( sc )
+    Print( "<<single collector, 8 Bits>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
+          and IsUpToDatePolycyclicCollector ],
+    0,
+
+function( sc )
+    Print( "<<up-to-date single collector, 8 Bits>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite
+          and Is16BitsSingleCollectorRep ],
+    0,
+
+function( sc )
+    Print( "<<single collector, 16 Bits>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
+          and IsUpToDatePolycyclicCollector ],
+    0,
+
+function( sc )
+    Print( "<<up-to-date single collector, 16 Bits>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite
+          and Is32BitsSingleCollectorRep ],
+    0,
+
+function( sc )
+    Print( "<<single collector, 32 Bits>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
+          and IsUpToDatePolycyclicCollector ],
+    0,
+
+function( sc )
+    Print( "<<up-to-date single collector, 32 Bits>>" );
+end );
+
+
+#############################################################################
+##
 #M  PrintObj( <sc> )
 ##
 
@@ -1161,6 +1264,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<single collector>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1173,6 +1277,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<up-to-date single collector>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1185,6 +1290,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<single collector, 8 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1197,6 +1303,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<up-to-date single collector, 8 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1209,6 +1316,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<single collector, 16 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1221,6 +1329,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<up-to-date single collector, 16 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1233,6 +1342,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<single collector, 32 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1245,6 +1355,7 @@ InstallMethod( PrintObj,
 function( sc )
     Print( "<<up-to-date single collector, 32 Bits>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -1256,7 +1367,7 @@ end );
 
 #############################################################################
 InstallMethod( ReducedComm,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1268,7 +1379,7 @@ InstallMethod( ReducedComm,
 
 #############################################################################
 InstallMethod( ReducedComm,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1280,7 +1391,7 @@ InstallMethod( ReducedComm,
 
 #############################################################################
 InstallMethod( ReducedComm,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1295,7 +1406,7 @@ InstallMethod( ReducedComm,
 #M  ReducedInverse( <sc>, <word> )
 ##
 InstallMethod( ReducedInverse,
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and IsSingleCollectorRep,
       IsAssocWord ],
     0,
@@ -1314,7 +1425,7 @@ end );
 
 #############################################################################
 InstallMethod( ReducedForm,
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector 
           and IsUpToDatePolycyclicCollector,
@@ -1325,7 +1436,7 @@ InstallMethod( ReducedForm,
 
 #############################################################################
 InstallMethod( ReducedForm,
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector 
           and IsUpToDatePolycyclicCollector,
@@ -1336,7 +1447,7 @@ InstallMethod( ReducedForm,
 
 #############################################################################
 InstallMethod( ReducedForm,
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1353,7 +1464,7 @@ InstallMethod( ReducedForm,
 
 #############################################################################
 InstallMethod( ReducedLeftQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1365,7 +1476,7 @@ InstallMethod( ReducedLeftQuotient,
 
 #############################################################################
 InstallMethod( ReducedLeftQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1377,7 +1488,7 @@ InstallMethod( ReducedLeftQuotient,
 
 #############################################################################
 InstallMethod( ReducedLeftQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1409,7 +1520,7 @@ end );
 
 #############################################################################
 InstallMethod( ReducedProduct,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1421,7 +1532,7 @@ InstallMethod( ReducedProduct,
 
 #############################################################################
 InstallMethod( ReducedProduct,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1433,7 +1544,7 @@ InstallMethod( ReducedProduct,
 
 #############################################################################
 InstallMethod( ReducedProduct,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1451,7 +1562,7 @@ InstallMethod( ReducedProduct,
 
 #############################################################################
 InstallMethod( ReducedPower,
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1463,7 +1574,7 @@ InstallMethod( ReducedPower,
 
 #############################################################################
 InstallMethod( ReducedPower,
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1475,7 +1586,7 @@ InstallMethod( ReducedPower,
 
 #############################################################################
 InstallMethod( ReducedPower,
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1493,7 +1604,7 @@ InstallMethod( ReducedPower,
 
 #############################################################################
 InstallMethod( ReducedQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is8BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1505,7 +1616,7 @@ InstallMethod( ReducedQuotient,
 
 #############################################################################
 InstallMethod( ReducedQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is16BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,
@@ -1517,7 +1628,7 @@ InstallMethod( ReducedQuotient,
 
 #############################################################################
 InstallMethod( ReducedQuotient,
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsPowerConjugateCollector and IsFinite and Is32BitsSingleCollectorRep
           and IsDefaultRhsTypeSingleCollector
           and IsUpToDatePolycyclicCollector,

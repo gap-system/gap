@@ -10,7 +10,7 @@
 gap> START_TEST("$Id$");
 
 gap> g:= FreeGroup( "a", "b" );
-Group( [ a, b ], ... )
+<free group on the generators [ a, b ]>
 gap> IsWholeFamily( g );
 true
 gap> IsFinite( g );
@@ -77,7 +77,8 @@ a*b^-2
 gap> IsDoneIterator( iter );
 false
 gap> enum:= Enumerator( g );;
-gap> first50:= List( [ 1 .. 50 ], x -> enum[x] );
+gap> first50:=List( [ 1 .. 50 ], x -> enum[x] );;
+gap> Print(first50,"\n");
 [ <identity> of ..., a, a^-1, b, b^-1, a^2, a^-2, b*a, b^-1*a, a*b, a^-1*b, 
   b*a^-1, b^-1*a^-1, a*b^-1, a^-1*b^-1, b^2, b^-2, a^3, a^-3, b*a^2, 
   b^-1*a^2, a*b*a, a^-1*b*a, b*a^-2, b^-1*a^-2, a*b^-1*a, a^-1*b^-1*a, b^2*a, 
@@ -88,7 +89,7 @@ gap> first50:= List( [ 1 .. 50 ], x -> enum[x] );
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 2180000 );
+gap> STOP_TEST( "grpfree.tst", 2390880 );
 
 #############################################################################
 ##

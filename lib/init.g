@@ -7,16 +7,22 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file initializes GAP.
 ##
 Revision.init_g :=
     "@(#)$Id$";
 
+#############################################################################
+##
+#F  OnBreak( )  . . . . . . . . . function to call at entry to the break loop
+##
+##
+OnBreak := Where;
 
 #############################################################################
 ##
-
 #F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
 ##
 #T  1996/08/07 M.Schoenert 'Ignore' should be in the kernel
@@ -73,7 +79,6 @@ end;
 
 #############################################################################
 ##
-
 #V  InfoRead? . . . . . . . . . . . . . . . . . . . . print what file is read
 ##
 if DEBUG_LOADING           then InfoRead1 := Print;   fi;
@@ -102,11 +107,15 @@ end;
 
 #############################################################################
 ##
-#F  ReadAndCheckFunc( <path> )  . . . . . .  create a read and check function
+#F  ReadAndCheckFunc( <path>[,<libname>] )   create a read and check function
 ##
 ##  'ReadAndCheckFunc' creates a function that  reads in a file named <name>,
 ##  this  name  must   include an extension.     The file  must  also  define
 ##  'Revision.<name_ext>'.
+##  If a second argument 'libname' is given, GAP just prints a warning that 
+##  the library <libname> was not found when the file cannot be read and
+##  returns 'true' or 'false' according to the read status.
+##  This can be used for partial reading of the library.
 ##
 IS_READ_OR_COMPLETE := false;
 
@@ -122,11 +131,20 @@ RANK_FILTER              := Error;	# defined in "filter.g"
 RankFilter               := Error;      # defined in "filter.g"
 
 
-ReadAndCheckFunc := function( path )
+ReadAndCheckFunc := function( arg )
+    local    path,  prefix;
 
-    return function( name )
-        local    ext,  libname;
+    path := IMMUTABLE_COPY_OBJ(arg[1]);
+    if LEN_LIST(arg) = 1  then
+        prefix := IMMUTABLE_COPY_OBJ("");
+    else
+        prefix := IMMUTABLE_COPY_OBJ(arg[2]);
+    fi;
+    return function( arg )
+        local  name,  ext,  libname, error;
 
+	error:=false;
+	name:=arg[1];
         # create a filename from <path> and <name>
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
@@ -138,26 +156,36 @@ ReadAndCheckFunc := function( path )
             RANK_FILTER_LIST_CURRENT := [];
             RANK_FILTER_COUNT := 0;
             ADD_LIST( RANK_FILTER_LIST, RANK_FILTER_LIST_CURRENT );
-            if not READ_GAP_ROOT(libname)  then
-                Error( "the library file '", name, "' must exist and ",
-                       "be readable");
-            fi;
+            error:=not READ_GAP_ROOT(libname);
             Unbind(RANK_FILTER_LIST_CURRENT);
             Unbind(RANK_FILTER_COUNT);
         else
-            if not READ_GAP_ROOT(libname)  then
-                Error( "the library file '", name, "' must exist and ",
-                       "be readable");
-            fi;
+            error:=not READ_GAP_ROOT(libname);
         fi;
 
-        # check the revision entry
-        ext := ReplacedString( name, ".", "_" );
-        if not IsBound(Revision.(ext))  then
-            Print( "#W  revision entry missing in \"", name, "\"\n" );
+	if error then
+	  if LEN_LIST( arg )=1 then
+	    Error( "the library file '", name, "' must exist and ",
+		   "be readable");
+	  else
+	    Print("#W  The library file '",name,"' was not available\n",
+	          "#W  The library of ",arg[2]," is not installed!\n");
+	    return false;
+	  fi;
+	else
+	  # check the revision entry
+          ext := SHALLOW_COPY_OBJ(prefix);
+	  APPEND_LIST_INTR(ext,ReplacedString( name, ".", "_" ));
+	  if not IsBound(Revision.(ext))  then
+	      Print( "#W  revision entry missing in \"", name, "\"\n" );
+	  fi;
         fi;
+
+      if LEN_LIST(arg)>1 then
+	return true;
+      fi;
+
     end;
-
 end;
 
 
@@ -270,6 +298,13 @@ ReadTbl := ReadAndCheckFunc("tbl");
 
 #############################################################################
 ##
+#F  ReadTom( <name> ) . . . . . . . . . . . . . . . . .  table of marks files
+##
+ReadTom := ReadAndCheckFunc("tom");
+
+
+#############################################################################
+##
 #F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
 ##
 ReadSmall := ReadAndCheckFunc("small");
@@ -306,6 +341,33 @@ P := function(a) Print( a, "\n" );  end;
 ReadGapRoot( "lib/version.g" );
 fi;
 
+#############################################################################
+##
+##  Define functions which may not be available to avoid syntax errors
+##
+NONAVAILABLE_FUNC:=function(arg)
+  Error("this function is not available");
+end;
+IdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+SmallGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+AllSmallGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+PrimitiveGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+NrAffinePrimitiveGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
+NrSolvableAffinePrimitiveGroups:=NONAVAILABLE_FUNC; 
+
+#############################################################################
+##
+#V  SMALL_AVAILABLE  variables for data libraries. Will be set during loading
+#V  PRIM_AVAILABLE
+#V  TRANS_AVAILABLE
+#V  TBL_AVAILABLE
+#V  TOM_AVAILABLE
+SMALL_AVAILABLE:=false;
+PRIM_AVAILABLE:=false;
+TRANS_AVAILABLE:=false;
+TBL_AVAILABLE:=false;
+TOM_AVAILABLE:=false;
+
 
 #############################################################################
 ##
@@ -327,6 +389,7 @@ IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 
 ReadOrComplete( "lib/read5.g" );
+
 ReadOrComplete( "lib/read6.g" );
 
 # character theory stuff
@@ -335,6 +398,57 @@ ReadOrComplete( "lib/read7.g" );
 # overloaded operations
 ReadOrComplete( "lib/read8.g" );
 
+
+#############################################################################
+##
+##  Load data libraries
+##  The data libraries which may be absent cannot be completed, therefore
+##  they must be read in here!
+
+#############################################################################
+##
+#X  Read library of groups of order up to 1000 without 512 and 768
+#X  Read identification routine
+##
+SMALL_AVAILABLE:=ReadSmall( "small.gd","small groups" );
+SMALL_AVAILABLE:=SMALL_AVAILABLE and ReadSmall( "smallgrp.g","small groups" );
+SMALL_AVAILABLE:=SMALL_AVAILABLE and ReadSmall( "idgroup.g",
+                                       "small group identification" );
+
+#############################################################################
+##
+#X  Read transitive groups library
+##
+TRANS_AVAILABLE:=ReadTrans( "trans.gd","transitive groups" );
+TRANS_AVAILABLE:= TRANS_AVAILABLE and ReadTrans( "trans.grp",
+                                        "transitive groups" );
+
+#############################################################################
+##
+#X  Read primitive groups library
+##
+PRIM_AVAILABLE:=ReadPrim( "primitiv.gd","primitive groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "irredsol.grp",
+                                     "irreducible solvable groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.gi",
+                                     "primitive groups" );
+PRIM_AVAILABLE:=PRIM_AVAILABLE and ReadPrim( "primitiv.grp",
+                                     "primitive groups" );
+
+#############################################################################
+##
+#X  character table library
+##
+TBL_AVAILABLE:=ReadTbl( "ctadmin.tbd","character tables");
+TBL_AVAILABLE:=TBL_AVAILABLE and ReadTbl( "ctadmin.tbi","character tables");
+
+
+#############################################################################
+##
+#X  table of marks library
+##
+TOM_AVAILABLE:=ReadTom( "tmadmin.tmd","tables of marks");
+TOM_AVAILABLE:=TOM_AVAILABLE and ReadTom( "tmadmin.tmi","tables of marks");
 
 #############################################################################
 ##
@@ -370,6 +484,13 @@ NamesUserGVars := function()
     return Immutable( Filtered( Difference( NamesGVars(), 
         NamesSystemGVars() ), ISB_GVAR ) );
 end;
+
+
+#############################################################################
+##
+##  Deal with compatibility mode via command line option `-O'.
+##
+if false = fail then ReadLib( "compat3d.g" ); fi;
 
 
 #############################################################################

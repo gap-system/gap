@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for rational functions that know that they
 ##  are univariate laurent polynomials.
@@ -15,7 +16,6 @@ Revision.ratfunul_gi :=
 
 #############################################################################
 ##
-
 #M  UnivariateLaurentPolynomialByCoefficients( <fam>, <cofs>, <val>, <ind> )
 ##
 
@@ -148,13 +148,9 @@ end );
 
 
 #############################################################################
-InstallMethod( UnivariatePolynomial,
-    function(a,b,c) return IsCollsElms(a,b); end,
-    [ IsRing,
-      IsRingElementCollection,
-      IsInt and IsPosRat ],
-    0,
-
+InstallMethod( UnivariatePolynomial,"ring,coeffs,ind",
+    function(a,b,c) return IsIdenticalObj(a,b); end,
+    [ IsRing, IsRingElementCollection, IsPosInt ], 0,
 function( r, c, i )
     return UnivariatePolynomialByCoefficients(
         ElementsFamily(FamilyObj(r)), c, i );
@@ -162,13 +158,8 @@ end );
 
 
 #############################################################################
-InstallOtherMethod( UnivariatePolynomial,
-    true,
-    [ IsRing,
-      IsList and IsEmpty,
-      IsInt and IsPosRat ],
-    0,
-
+InstallOtherMethod( UnivariatePolynomial,"ring,[],ind", true,
+    [ IsRing, IsList and IsEmpty, IsPosInt ], 0,
 function( r, c, i )
     return UnivariatePolynomialByCoefficients(
         ElementsFamily(FamilyObj(r)), c, i );
@@ -176,12 +167,8 @@ end );
 
 
 #############################################################################
-InstallOtherMethod( UnivariatePolynomial,
-    true,
-    [ IsRing,
-      IsList ],
-    0,
-
+InstallOtherMethod( UnivariatePolynomial,"ring,coeffs",IsIdenticalObj,
+    [ IsRing, IsList ], 0,
 function( r, c )
     return UnivariatePolynomialByCoefficients(
         ElementsFamily(FamilyObj(r)), c, 1 );
@@ -501,7 +488,7 @@ end;
 
 InstallMethod( \*,
     "uni-laurent * uni-laurent",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsRationalFunction and IsUnivariateLaurentPolynomial,
       IsRationalFunction and IsUnivariateLaurentPolynomial ],
     0,
@@ -565,7 +552,7 @@ end;
 
 InstallMethod( \+,
     "uni-laurent + uni-laurent",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsRationalFunction and IsUnivariateLaurentPolynomial,
       IsRationalFunction and IsUnivariateLaurentPolynomial ],
     0,
@@ -823,7 +810,7 @@ end );
 ##
 #F  BRCIUnivPols( <upol>, <upol> ) test for common base ring and for
 ##                           common indeterminate of UnivariatePolynomials
-BRCIUnivPols := function(f,g)
+InstallGlobalFunction( BRCIUnivPols, function(f,g)
 local dom,x;
   if IsUnivariatePolynomial(f) and IsUnivariatePolynomial(g) then
     x:=IndeterminateNumberOfUnivariateLaurentPolynomial(f);
@@ -835,7 +822,7 @@ local dom,x;
     fi;
   fi;
   return fail;
-end;
+end );
 
 #############################################################################
 ##

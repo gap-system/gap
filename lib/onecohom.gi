@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for operations for the 1-Cohomology
 ##
@@ -18,7 +19,8 @@ Revision.onecohom_gi:=
 #F  TriangulizedGeneratorsByMatrix( <gens>, <M>, <F> ) 
 ##  triangulize and make base
 ##
-TriangulizedGeneratorsByMatrix := function ( gens, M, F )
+InstallGlobalFunction( TriangulizedGeneratorsByMatrix,
+    function ( gens, M, F )
     local   m,  n,  i,  j,  k,  a,  r, z,  z0;
 
     gens := ShallowCopy(gens);
@@ -61,17 +63,19 @@ TriangulizedGeneratorsByMatrix := function ( gens, M, F )
     od;
     return n;
 
-end;
+end );
 
 
 ##  For all following functions, the group is given as second argument to
 ##  allow dispatching after the group type
 
 
-OCAddGeneratorsPcgs := function( ocr,pcgs )
+OCAddGeneratorsPcgs := function( ocr,group )
 local   gens;
 
-    ocr.pcgs:=pcgs;
+    if not IsBound(ocr.pcgs) then
+      ocr.pcgs:=ParentPcgs(NumeratorOfModuloPcgs(ocr.modulePcgs));
+    fi;
 
     Info(InfoCoh,2,"OCAddGenerators2: using standard generators" );
     if IsBound( ocr.pPrimeSet )  then
@@ -83,20 +87,20 @@ local   gens;
 	      "for standard generating set" );
     fi;
 
-    if IsModuloPcgs(ocr.modulePcgs) then
-      gens := pcgs mod NumeratorOfModuloPcgs(ocr.modulePcgs);
-    else
-      gens := pcgs mod ocr.modulePcgs;
+    if not IsBound(ocr.generators) then
+      Info(InfoCoh,2,"setting new generators");
+      ocr.generators := InducedPcgs(ocr.pcgs,group)
+                          mod NumeratorOfModuloPcgs(ocr.modulePcgs);
     fi;
 
-    Info(InfoCoh,2,"OCAddGenerators2: ", Length( gens ), " generators" );
-    ocr.generators := gens;
+    Info(InfoCoh,2,"OCAddGenerators2: ", Length( ocr.generators ),
+      " generators" );
 
     if IsBound( ocr.normalIn )  then
     	if not ForAll(ocr.module, i->i in ocr.normalIn )  then
-    	    gens := InducedPcgsWrtHomePcgs( ocr.normalIn );
+    	    gens := InducedPcgs(ocr.pcgs, ocr.normalIn );
     	else
-	    gens := AsList(InducedPcgsWrtHomePcgs(ocr.normalIn) mod
+	    gens := AsList(InducedPcgs(ocr.pcgs,ocr.normalIn) mod
 	               ocr.modulePcgs);
     	fi;
     	ocr.normalGenerators := gens;
@@ -105,7 +109,7 @@ local   gens;
 end;
 
 OCAddGeneratorsGeneral := function( ocr )
-local  hom,fg,fpi,fpg;
+local  hom,fg,fpi,fpg,nt;
 
   if IsBound( ocr.normalIn )  then
       Error( "normalizing subgroup not allowed in general case" );
@@ -120,21 +124,21 @@ local  hom,fg,fpi,fpg;
     return;
   fi;
 
-  if IsModuloPcgs(ocr.modulePcgs) then
-    hom:=NaturalHomomorphismByNormalSubgroup(ocr.group,
-	   Subgroup(ocr.group,NumeratorOfModuloPcgs(ocr.modulePcgs)));
+  nt:=Subgroup(ocr.group,NumeratorOfModuloPcgs(ocr.modulePcgs));
+  if Index(ocr.group,nt)>500000 then
+    # computing a factor representation may be too hard
+    hom:=false;
   else
-    hom:=NaturalHomomorphismByNormalSubgroup(ocr.group,
-	   Subgroup(ocr.group,ocr.modulePcgs));
+    hom:=NaturalHomomorphismByNormalSubgroup(ocr.group,nt);
+
+    fg:=Image(hom,ocr.group);
+    ocr.factormap:=hom;
   fi;
 
-  fg:=Image(hom,ocr.group);
-  ocr.factormap:=hom;
-
-  if IsSolvableGroup(Range(hom))
+  if hom<>false and (IsSolvableGroup(Range(hom))
      or (IsPermGroup(Range(hom)) and Length(MovedPoints(Range(hom)))*2
                              < Length(MovedPoints(ocr.group)))
-     or (HasIsomorphismFpGroup(fg) and not IsBound(ocr.generators))
+     or (HasIsomorphismFpGroup(fg) and not IsBound(ocr.generators)) )
    then 
     Info(InfoCoh,1,"using factor representation");
     if IsBound(ocr.generators) then
@@ -165,10 +169,12 @@ local  hom,fg,fpi,fpg;
     # add generating system for ocr.module to obtain a presentation of the
     # factor group
 
-    fpi:=GroupHomomorphismByImages(ocr.group,FreeGroupOfFpGroup(Range(fpi)),
-                                  ocr.generators,fpg);
-    ocr.factorpres[2]:=Union(ocr.factorpres[2],List(ocr.modulePcgs,
-		    i->ImagesRepresentative(fpi,i)));
+    fpi:= GroupHomomorphismByImagesNC( ocr.group,
+                                       FreeGroupOfFpGroup(Range(fpi)),
+                                       ocr.generators, fpg );
+    ocr.factorpres[2]:=Union(ocr.factorpres[2],
+                             List(NumeratorOfModuloPcgs(ocr.modulePcgs),
+				  i->ImagesRepresentative(fpi,i)));
   fi;
 
   Info(InfoCoh,1,Length(ocr.generators)," generators, ",
@@ -180,30 +186,32 @@ end;
 ##
 #F  OCAddGenerators( <ocr>, <group> )  . . . . . . . . . add generators, local
 ##
-OCAddGenerators := function(ocr,G)
+InstallGlobalFunction( OCAddGenerators, function(ocr,G)
   if IsBound(ocr.generatorsAdded) then
     return; # avoid duplicate calls
   fi;
   ocr.generatorsAdded:=true;
 
-  # though using the method selection would be nicer, here the dicisions are
+  # though using the method selection would be nicer, here the decisions are
   # that involved we actually have to use a dispatcher
   if IsBound(ocr.inPcComplement) # the pc complement routines interface 
                                  # directly, giving generators that form an 
 				 # pcgs
-     or (not IsBound(ocr.generators) and IsPcGroup(G)) then
-    OCAddGeneratorsPcgs(ocr,InducedPcgsWrtHomePcgs(G));
+     or ((IsPcGroup(G) or
+       (IsBound(ocr.generators) and IsGeneralPcgs(ocr.generators))) 
+       and not IsBound(ocr.factorpres)) then
+    OCAddGeneratorsPcgs(ocr,G);
   else
     OCAddGeneratorsGeneral(ocr);
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OCAddMatrices( <ocr>,<G> ) . . . . . . . . add operation matrices, local
 ##
-OCAddMatrices := function( ocr,G )
+InstallGlobalFunction( OCAddMatrices, function( ocr,G )
 local i,base;
 
     # If <ocr> already has a record component 'matrices', nothing is done.
@@ -222,6 +230,7 @@ local i,base;
 	ocr.char  := RelativeOrderOfPcElement(base, base[1] );
     	ocr.field := GF( ocr.char );
 	ocr.one:=One(ocr.field);
+	ocr.zero:=Zero(ocr.field);
 	# logTable is used by 'NextCentralCO'
 	ocr.logTable := [];
     	for i  in [ 1 .. ocr.char - 1 ]  do
@@ -253,21 +262,21 @@ local i,base;
     	local   wrd,  i;
     	wrd := One(ocr.modulePcgs[1]);
         for i  in [ 1 .. Length( v ) ]  do
-    	    if IntFFE(v[i]) <> 0  then
+    	    if v[i] <> ocr.zero  then
     	    	wrd := wrd * ocr.modulePcgs[i] ^ IntFFE(v[i]);
     	    fi;
     	od;
     	return wrd;
     end;
 
-end;
+end );
 
 #############################################################################
 ##
 #F  OCAddToFunctions( <ocr> ) . . . . . . . . . . add conversion, local
 ##
 ##
-OCAddToFunctions:=function( ocr )
+InstallGlobalFunction( OCAddToFunctions, function( ocr )
     local   base,  dim,  gens;
 
     # Get the module generators.
@@ -285,7 +294,7 @@ OCAddToFunctions:=function( ocr )
             for i  in [ 1 .. Length( c ) / dim ]  do
     	    	w := One(base[1]);
             	for j  in [ 1 .. dim ]  do
-    	    	    if IntFFE(c[k+j]) <> 0  then
+    	    	    if c[k+j] <> ocr.zero  then
     	    	    	w := w * base[j]^IntFFE(c[k+j]);
     	    	    fi;
     	    	od;
@@ -366,38 +375,36 @@ OCAddToFunctions:=function( ocr )
     # As the IGS might be used especially here, first do not bind
     OCAddToFunctions2(ocr,ocr.generators);
 
-end;
+end );
 
-InstallMethod(OCAddToFunctions2,"pc group",true,[IsRecord,IsHomogeneousList
-and IsDuplicateFreeList and IsMultiplicativeElementWithInverseCollection ],
-  0,function( ocr, pcgs )
-local  gens,npcgs;
-
-  if not IsPcgs(pcgs) and not IsModuloPcgs(pcgs) then
-    TryNextMethod();
-  fi;
+InstallMethod(OCAddToFunctions2,"pc group",true,[IsRecord,IsModuloPcgs],
+  2,function( ocr, pcgs )
+local  gens;
 
   gens := ocr.complementGens;
-  npcgs:= PcgsByPcSequence(FamilyObj(gens[1]),
-           Concatenation(gens,DenominatorOfModuloPcgs(ocr.generators)));
+  
 
   if not IsBound( ocr.complementToCocycle )  then
+
+      ocr.origgens:=ocr.generators;
       Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
       if not IsBound( ocr.smallGeneratingSet )  then
 	  ocr.complementToCocycle := function( K )
 	      local   L,  i;
-	      L:=CanonicalPcgs(InducedPcgsByGenerators(npcgs,
-			       GeneratorsOfGroup(K))){[1..Length(gens)]};
+	      # get the generators corresponding to the pcgs
+	      L:=CorrespondingGeneratorsByModuloPcgs(ocr.origgens,
+	                                             GeneratorsOfGroup(K));
 	      for i  in [ 1 .. Length( gens ) ]  do
 		  L[ i ] := LeftQuotient(gens[ i ], L[ i ]);
 	      od;
 	      return ocr.listToCocycle( L );
 	  end;
       else
+	  Error("not yet implemented");
 	  ocr.complementToCocycle := function( K )
 	      local   L,  S,  i,  j;
-	      L:=ShallowCopy(CanonicalPcgs(InducedPcgsByGenerators(npcgs,
-			       GeneratorsOfGroup(K))));
+	      L:=CanonicalPcgs(InducedPcgsByGenerators(ocr.generators,
+			       GeneratorsOfGroup(K)));
 	      S := [];
 	      for i  in [ 1 .. Length( ocr.smallGeneratingSet ) ]  do
 		  j := ocr.smallGeneratingSet[ i ];
@@ -419,15 +426,11 @@ local Ngens;
   if not IsBound( ocr.complementToCocycle )  then
       Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
       if not IsBound( ocr.smallGeneratingSet )  then
-	  if IsModuloPcgs(ocr.modulePcgs) then
-	    Ngens:=NumeratorOfModuloPcgs(ocr.modulePcgs);
-	  else
-	    Ngens:=ocr.modulePcgs;
-	  fi;
+	  Ngens:=NumeratorOfModuloPcgs(ocr.modulePcgs);
 	  ocr.complementToCocycle := function( K )
 	  local   L,i,hom;
 	    # create a homomorphism to decompose into generators
-	    hom:=GroupHomomorphismByImages(ocr.group,K,
+	    hom:= GroupHomomorphismByImagesNC(ocr.group,K,
 	           Concatenation(GeneratorsOfGroup(K),Ngens),
 	           Concatenation(GeneratorsOfGroup(K),List(Ngens,i->One(K))));
 
@@ -450,14 +453,14 @@ end);
 #F  OCAddCentralizer( <ocr>, <B> )  . . . . . . . add centralizer by base <B>
 ##
 OCAddCentralizer := function( ocr, B )
-    ocr.centralizer := Subgroup(ocr.group, List(B,ocr.vectorMap));
+    ocr.centralizer := Group(List(B,ocr.vectorMap),One(ocr.group));
 end;
 
 #############################################################################
 ##
 #F  OCOneCoboundaries( <ocr> )	. . . . . . . . . . one cobounds main routine
 ##
-OCOneCoboundaries := function( ocr )
+InstallGlobalFunction( OCOneCoboundaries, function( ocr )
     local   B,  S,  L,  T,  i,  j;
 
     # Add the important record components for coboundaries.
@@ -504,7 +507,7 @@ OCOneCoboundaries := function( ocr )
     j := 1;
     i := 1;
     while i <= Length(B[2]) and j <= Length(B[2][1])  do
-    	if IntFFE( B[2][i][ j ]) <> 0  then
+    	if B[2][i][ j ] <> ocr.zero  then
     	    ocr.heads[i] := j;
 	    i := i+1;
     	fi;
@@ -518,7 +521,7 @@ OCOneCoboundaries := function( ocr )
     OCAddToFunctions( ocr );
     return ocr.oneCoboundaries;
 
-end;
+end );
 
 
 #############################################################################
@@ -527,7 +530,7 @@ end;
 ##
 ##  Compute a Word n in <ocr.module> such that <c1> ^ n = <c2>.
 ##
-OCConjugatingWord := function( ocr, c1, c2 )
+InstallGlobalFunction( OCConjugatingWord, function( ocr, c1, c2 )
     local   B,  w,  v,  j;
 
     B := ocr.triangulizedBase;
@@ -540,21 +543,17 @@ OCConjugatingWord := function( ocr, c1, c2 )
     od;
     return w;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OCAddRelations( <ocr>,<gens> ) . . . . . . . . . . .  add relations, local
 ##
-InstallMethod(OCAddRelations,"pc group",true,[IsRecord,IsHomogeneousList and
-IsDuplicateFreeList and IsMultiplicativeElementWithInverseCollection ],0,
+InstallMethod(OCAddRelations,"pc group",true,[IsRecord,IsModuloPcgs],0,
 function( ocr, gens  )
     local   H,  p,  w,  r,  i,  j,  k, mpcgs;
 
-  if not IsPcgs(gens) and not IsModuloPcgs(gens) then
-    TryNextMethod();
-  fi;
 
     # If <ocr> has a  record component 'relators', nothing is done.
     if IsBound( ocr.relators )  then
@@ -563,9 +562,6 @@ function( ocr, gens  )
     Info(InfoCoh,2,"OCAddRelations: computes pc-presentation" );
 
     # Construct the factor pcgs
-    if not IsModuloPcgs(ocr.generators) then
-      Error();
-    fi;
 
     mpcgs :=ocr.generators;
 
@@ -662,7 +658,8 @@ function( ocr,G, gens )
     Info(InfoCoh,2,"computes rels for normal complements");
 
     Error("this still has to be fixed!");
-    mpcgs := InducedPcgsWrtHomePcgs(
+
+    mpcgs := InducedPcgsByGeneratorsNC(ocr.pcgs,
                Concatenation(ocr.generators,ocr.modulePcgs)) mod
 	       ocr.modulePcgs;
     # Compute  g_i ^ s_j for all generators s_j in 'normalGenerators' and all
@@ -780,7 +777,7 @@ end);
 ##
 #F  OCEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . . .  local
 ##
-OCEquationMatrix := function( ocr, r, n )
+InstallGlobalFunction( OCEquationMatrix, function( ocr, r, n )
     local   mat,  i,  j,  v,  vv;
 
     Info(InfoCoh,3,"OCEquationMatrix: matrix number ", n );
@@ -835,7 +832,7 @@ OCEquationMatrix := function( ocr, r, n )
     fi;
     return mat;
 
-end;
+end );
 
 
 #############################################################################
@@ -885,7 +882,7 @@ end);
 ##
 #F  OCSmallEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . local
 ##
-OCSmallEquationMatrix := function( ocr, r, n )
+InstallGlobalFunction( OCSmallEquationMatrix, function( ocr, r, n )
     local   mat,  i,  j,  v,  vv;
 
     Info(InfoCoh,3,"OCSmallEquationMatrix: matrix number ", n);
@@ -970,14 +967,14 @@ OCSmallEquationMatrix := function( ocr, r, n )
     fi;
     return mat;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OCEquationVector( <ocr>, <r> )  . . . . . . . . . . . . . . . . . . local
 ##
-OCEquationVector := function( ocr, r )
+InstallGlobalFunction( OCEquationVector, function( ocr, r )
 local   n, i;
 
   # If <r> has   an entry 'conjugated'   the records is  no relator  for  a
@@ -996,18 +993,18 @@ local   n, i;
       n := n * ocr.generators[ r.generators[ i ] ] ^ r.powers[ i ];
   od;
 
-  Assert(1,n in Group(ocr.modulePcgs));
+  #Assert(1,n in Group(ocr.modulePcgs));
 
   return ShallowCopy(ocr.moduleMap( n ));
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OCSmallEquationVector( <ocr>, <r> )	. . . . . . . . . . . . . . . . local
 ##
-OCSmallEquationVector := function( ocr, r )
+InstallGlobalFunction( OCSmallEquationVector, function( ocr, r )
     local   n,  a,  i,  nonSmall,  v,  vv,  j;
 
     # if <r> has  an entry 'conjugated'  the  records  is no relator   for  a
@@ -1070,7 +1067,7 @@ OCSmallEquationVector := function( ocr, r )
 
     return ShallowCopy(n + a);
 
-end;
+end );
 
 
 #############################################################################
@@ -1080,9 +1077,13 @@ end;
 InstallMethod(OCAddComplement,"pc group",true,
   [IsRecord,IsPcGroup,IsListOrCollection],0,
 function( ocr, G, K )
+    ocr.complementGens:=K;
+    Assert(1,ForAll([1..Length(ocr.complementGens)],i->
+             ExponentsOfPcElement(ocr.generators,ocr.complementGens[i])
+             =ExponentsOfPcElement(ocr.generators,ocr.generators[i])));
+
     K:=InducedPcgsByGeneratorsNC(NumeratorOfModuloPcgs(ocr.generators),K);
     ocr.complement := Subgroup( ocr.group, K );
-    ocr.complementGens:=K;
 end);
 
 InstallMethod(OCAddComplement,"generic",true,
@@ -1100,7 +1101,7 @@ end);
 ##  If <onlySplit>, 'OCOneCocycles' returns 'false' as soon  as  possibly  if
 ##  the extension does not split.
 ##
-OCOneCocycles := function( ocr, onlySplit )
+InstallGlobalFunction( OCOneCocycles, function( ocr, onlySplit )
 
     local   cobounds, cocycles,     # base of one coboundaries and cocycles
     	    dim,    	    	    # dimension of module
@@ -1214,10 +1215,10 @@ OCOneCocycles := function( ocr, onlySplit )
         for j  in [ 1 .. Length( RS ) ]  do
             k := 1;
             while RS[j] <> L0  do
-                while IntFFE( RS[j][ k ]) = 0  do
+                while RS[j][ k ] = ocr.zero  do
     	    	    k := k + 1;
     	    	od;
-          if IntFFE( S[k][ k ]) <> 0  then
+          if S[k][ k ] <> ocr.zero  then
                     RR[j] := RR[j] - RS[j][k] * R[k];
                     RS[j] := RS[j] - RS[j][k] * S[k];
                 else
@@ -1227,7 +1228,7 @@ OCOneCocycles := function( ocr, onlySplit )
                     RR[j] := 0 * RR[j];
                 fi;
             od;
-            if IntFFE( RR[ j ] ) <> 0  then
+            if RR[ j ]  <> ocr.zero  then
     	    	Info(InfoCoh,1,"OCOneCocycles: no split extension" );
                 isSplit := false;
                 if onlySplit  then
@@ -1243,15 +1244,15 @@ OCOneCocycles := function( ocr, onlySplit )
     # right side <R> is null, where the diagonal is null.
     Info(InfoCoh,2,"OCOneCocycles: computing nullspace and solution" );
     for i  in [ 1 .. Length(S) ]  do
-        if IntFFE( S[i][ i ]) <> 0  then
+        if S[i][ i ] <> ocr.zero  then
             for k  in [ 1 .. i-1 ]  do
-                if IntFFE( S[k][ i ]) <> 0  then
+                if S[k][ i ] <> ocr.zero  then
                     R[k] := R[k] - S[k][i] * R[i];
                     S[k] := S[k] - S[k][i] * S[i];
                 fi;
             od;
         else
-            if IntFFE( R[ i ]) <> 0  then
+            if R[ i ] <> ocr.zero  then
     	    	Info(InfoCoh,1,"OCOneCocycles: no split extension" );
                 isSplit := false;
                 if onlySplit  then  
@@ -1297,7 +1298,7 @@ OCOneCocycles := function( ocr, onlySplit )
     # System <S> is triangulized,  get the nullspace.
     cocycles := [];
     for i  in [ 1 .. Length( S[1] ) ]  do
-        if IntFFE( S[i][ i ]) = 0  then
+        if  S[i][ i ] = ocr.zero  then
             row := ShallowCopy( L0 );
             for k  in [ 1 .. i-1 ]  do	
     	    	row[k] := S[k][i];
@@ -1343,14 +1344,14 @@ OCOneCocycles := function( ocr, onlySplit )
                " ^ ", Dimension( ocr.oneCocycles ) );
     return ocr.oneCocycles;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #M  OneCoboundaries( <G>, <M> )	. . . . . . . . . . one cobounds of <G> / <M>
 ##
-OneCoboundaries := function(G,M)
+InstallGlobalFunction( OneCoboundaries, function(G,M)
     local   GG,  MM,  f,  ocr,  em;
 
 
@@ -1377,14 +1378,14 @@ OneCoboundaries := function(G,M)
       cocycleToList   := ocr.cocycleToList,
       listToCocycle   := ocr.listToCocycle );
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OneCocycles( <G>, <M> ) . . . . . . . . . . . . one cocycles of <G> / <M>
 ##
-OneCocycles := function( G, M )
+InstallGlobalFunction( OneCocycles, function( G, M )
 local   ocr,erg;
 
   if not IsList(M) then
@@ -1424,17 +1425,19 @@ local   ocr,erg;
 	  oneCoboundaries     := ocr.oneCoboundaries,
 	  oneCocycles         := ocr.oneCocycles,
 	  generators          := ocr.generators,
+	  cocycleToList       := ocr.cocycleToList,
+	  listToCocycle       := ocr.listToCocycle,
 	  isSplitExtension    := false );
   fi;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-ComplementclassesEA:=function(g,n)
+InstallGlobalFunction( ComplementclassesEA, function(g,n)
 local oc,l;
   oc:=OneCocycles(g,n);
   if not oc.isSplitExtension  then
@@ -1451,7 +1454,7 @@ local oc,l;
       return l;
     fi;
   fi;
-end;
+end );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains  the operations   for  induced polycylic  generating
 ##  systems.
@@ -15,41 +16,29 @@ Revision.pcgsind_gd :=
 
 #############################################################################
 ##
-
-#C  IsInducedPcgs
+#C  IsInducedPcgs(<pcgs>)
 ##
-IsInducedPcgs := NewCategory(
-    "IsInducedPcgs",
-    IsPcgs );
+##  is the cateory of induced pcgs.
+DeclareCategory( "IsInducedPcgs", IsPcgs );
 
 
 #############################################################################
 ##
-
 #O  InducedPcgsByPcSequence( <pcgs>, <pcs> )
-##
-InducedPcgsByPcSequence := NewOperation(
-    "InducedPcgsByPcSequence",
-    [ IsPcgs, IsList ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
-
-
-#############################################################################
-##
 #O  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
-InducedPcgsByPcSequenceNC := NewOperation(
-    "InducedPcgsByPcSequenceNC",
-    [ IsPcgs, IsList ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+##  If <pcs> is a list of elements that form an induced pcgs with respect to
+##  <pcgs> this operation returns an induced pcgs with these elements.
+##  The NC version skips argument checks.
+DeclareOperation( "InducedPcgsByPcSequence", [ IsPcgs, IsList ] );
+DeclareOperation( "InducedPcgsByPcSequenceNC", [ IsPcgs, IsList ] );
 
 
 #############################################################################
 ##
-
 #O  InducedPcgsByPcSequenceAndGenerators( <pcgs>, <ind>, <gens> )
 ##
-InducedPcgsByPcSequenceAndGenerators := NewOperation(
+DeclareOperation(
     "InducedPcgsByPcSequenceAndGenerators",
     [ IsPcgs, IsList, IsList ] );
 
@@ -57,26 +46,20 @@ InducedPcgsByPcSequenceAndGenerators := NewOperation(
 #############################################################################
 ##
 #O  InducedPcgsByGenerators( <pcgs>, <gens> )
-##
-InducedPcgsByGenerators := NewOperation(
-    "InducedPcgsByGenerators",
-    [ IsPcgs, IsCollection ] );
-
-
-#############################################################################
-##
 #O  InducedPcgsByGeneratorsNC( <pcgs>, <gens> )
 ##
-InducedPcgsByGeneratorsNC := NewOperation(
-    "InducedPcgsByGeneratorsNC",
-    [ IsPcgs, IsCollection ] );
+##  If <pcs> is a list of generators for a subgroup <U>,
+##  this operation returns an induced pcgs for <U> with respect to <pcgs>.
+##  The NC version skips argument checks.
+DeclareOperation( "InducedPcgsByGenerators", [ IsPcgs, IsCollection ] );
+DeclareOperation( "InducedPcgsByGeneratorsNC", [ IsPcgs, IsCollection ] );
 
 
 #############################################################################
 ##
 #O  InducedPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
 ##
-InducedPcgsByGeneratorsWithImages := NewOperation(
+DeclareOperation(
     "InducedPcgsByGeneratorsWithImages",
     [ IsPcgs, IsCollection, IsCollection ] );
 
@@ -84,7 +67,7 @@ InducedPcgsByGeneratorsWithImages := NewOperation(
 ##
 #O  CanonicalPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
 ##
-CanonicalPcgsByGeneratorsWithImages := NewOperation(
+DeclareOperation(
     "CanonicalPcgsByGeneratorsWithImages",
     [ IsPcgs, IsCollection, IsCollection ] );
 
@@ -93,76 +76,66 @@ CanonicalPcgsByGeneratorsWithImages := NewOperation(
 ##
 #O  AsInducedPcgs( <parent>, <pcgs> )
 ##
-AsInducedPcgs := NewOperation(
+DeclareOperation(
     "AsInducedPcgs",
     [ IsPcgs, IsList ] );
 
 
 #############################################################################
 ##
-
 #A  ParentPcgs( <pcgs> )
 ##
-ParentPcgs := NewAttribute(
-    "ParentPcgs",
-    IsInducedPcgs );
-
-SetParentPcgs := Setter(ParentPcgs);
-HasParentPcgs := Tester(ParentPcgs);
+##  returns the pcgs by which <pcgs> was induced. If <pcgs> was not induced,
+##  it simply returns <pcgs>.
+DeclareAttribute( "ParentPcgs", IsInducedPcgs );
 
 
 #############################################################################
 ##
 #A  CanonicalPcgs( <pcgs> )
 ##
-CanonicalPcgs := NewAttribute(
-    "CanonicalPcgs",
-    IsInducedPcgs );
+##  returns a canonical pcgs derived from the (induced) pcgs <pcgs>.
+DeclareAttribute( "CanonicalPcgs", IsInducedPcgs );
 
 
 #############################################################################
 ##
 #P  IsCanonicalPcgs( <pcgs> )
 ##
-IsCanonicalPcgs := NewProperty(
-    "IsCanonicalPcgs",
-    IsInducedPcgs );
+##  An induced pcgs is canonical if the matrix of the exponent vectors of
+##  the elements of <pcgs> with respect to `ParentPcgs(<pcgs>)' is in normed
+##  echelon form with columns in which a row has its first entry cleared in
+##  the other rows (see \cite{SOGOS}). While a subgroup can have various
+##  induced pcgs with respect to a parent pcgs a canonical pcgs is unique.
+DeclareProperty( "IsCanonicalPcgs", IsInducedPcgs );
 
-SetIsCanonicalPcgs := Setter(IsCanonicalPcgs);
-HasIsCanonicalPcgs := Tester(IsCanonicalPcgs);
 
 
 #############################################################################
 ##
 #P  IsParentPcgsFamilyPcgs( <pcgs> )
 ##
-IsParentPcgsFamilyPcgs := NewProperty(
+DeclareProperty(
     "IsParentPcgsFamilyPcgs",
     IsInducedPcgs );
 
-SetIsParentPcgsFamilyPcgs := Setter(IsParentPcgsFamilyPcgs);
-HasIsParentPcgsFamilyPcgs := Tester(IsParentPcgsFamilyPcgs);
 
 
 #############################################################################
 ##
-
 #A  ElementaryAbelianSubseries( <pcgs> )
 ##
-ElementaryAbelianSubseries := NewAttribute(
+DeclareAttribute(
     "ElementaryAbelianSubseries",
     IsPcgs );
 
-SetElementaryAbelianSubseries := Setter(ElementaryAbelianSubseries);
-HasElementaryAbelianSubseries := Tester(ElementaryAbelianSubseries);
 
 
 #############################################################################
 ##
-
 #O  CanonicalPcElement( <pcgs>, <elm> )
 ##
-CanonicalPcElement := NewOperation(
+DeclareOperation(
     "CanonicalPcElement",
     [ IsInducedPcgs, IsObject ] );
 
@@ -171,7 +144,7 @@ CanonicalPcElement := NewOperation(
 ##
 #O  SiftedPcElement( <pcgs>, <elm> )
 ##
-SiftedPcElement := NewOperation(
+DeclareOperation(
     "SiftedPcElement",
     [ IsInducedPcgs, IsObject ] );
 
@@ -185,7 +158,7 @@ SiftedPcElement := NewOperation(
 ##  their  depths in the new group,  they must be  sorted according to  their
 ##  depths in the old group.
 ##
-HomomorphicCanonicalPcgs := NewOperation(
+DeclareOperation(
     "HomomorphicCanonicalPcgs",
     [ IsPcgs, IsList ] );
 
@@ -199,12 +172,20 @@ HomomorphicCanonicalPcgs := NewOperation(
 ##  their  depths in the new group,  they must be  sorted according to  their
 ##  depths in the old group.
 ##
-HomomorphicInducedPcgs := NewOperation(
+DeclareOperation(
     "HomomorphicInducedPcgs",
     [ IsPcgs, IsList ] );
 
 #############################################################################
 ##
+#O  CorrespondingGeneratorsByModuloPcgs( <mpcgs>, <imgs> )
+##
+##  computes a list of elements in the span of <imgs> that form a cgs with
+##  respect to <mpcgs> (The calculation of induced generating sets is not
+##  possible for some modulo pcgs).
+DeclareGlobalFunction("CorrespondingGeneratorsByModuloPcgs");
 
+#############################################################################
+##
 #E  pcgsind.gd 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

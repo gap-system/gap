@@ -1,0 +1,332 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  alglie.msk                  GAP documentation             Willem de Graaf
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Lie Algebras}
+
+\FileHeader[1]{alglie}
+
+\Declaration{SimpleLieAlgebra}
+
+\beginexample
+gap> SimpleLieAlgebra( "E", 6, Rationals );
+<Lie algebra of dimension 78 over Rationals>
+gap> SimpleLieAlgebra( "A", 6, GF(5) );    
+<Lie algebra of dimension 48 over GF(5)>
+gap> SimpleLieAlgebra( "W", [1,2], GF(5) );
+<Lie algebra of dimension 250 over GF(5)>
+gap> SimpleLieAlgebra( "H", [1,2], GF(5) );
+<Lie algebra of dimension 123 over GF(5)>
+\endexample
+
+\Declaration{RootSystem}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
+<Lie algebra of dimension 14 over Rationals>
+gap> RootSystem( L );
+rec(
+  roots := [ [ 1, -1 ], [ 0, 1 ], [ 1, 0 ], [ 2, -1 ], [ 3, -2 ], [ 3, -1 ], 
+      [ -1, 1 ], [ 0, -1 ], [ -1, 0 ], [ -2, 1 ], [ -3, 2 ], [ -3, 1 ] ],
+  rootvecs := [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12 
+     ],
+  fundroots := [ [ 1, -1 ], [ 0, 1 ] ],
+  cartanmat := [ [ 2, -1 ], [ -3, 2 ] ] )
+\endexample
+
+
+
+\Declaration{LieCentralizer}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );
+<Lie algebra of dimension 14 over Rationals>
+gap> b:= BasisVectors( Basis( L ) );;
+gap> LieCentralizer( L, Subalgebra( L, [ b[1], b[2] ] ) );
+<Lie algebra of dimension 1 over Rationals>
+\endexample
+
+
+
+\Declaration{LieNormalizer}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );             
+<Lie algebra of dimension 14 over Rationals>
+gap> b:= BasisVectors( Basis( L ) );;
+gap> LieNormalizer( L, Subalgebra( L, [ b[1], b[2] ] ) );      
+<Lie algebra of dimension 8 over Rationals>
+\endexample
+
+
+
+\Declaration{IsAbelianLieAlgebra}
+
+\beginexample
+gap> T:= EmptySCTable( 5, 0, "antisymmetric" );;
+gap> L:= LieAlgebraByStructureConstants( Rationals, T );
+<Lie algebra of dimension 5 over Rationals>
+gap> IsAbelianLieAlgebra( L );
+true
+\endexample
+
+
+
+\Declaration{IsNilpotentAlgebra}
+
+\beginexample
+gap> T:= EmptySCTable( 5, 0, "antisymmetric" );;
+gap> L:= LieAlgebraByStructureConstants( Rationals, T );
+<Lie algebra of dimension 5 over Rationals>
+gap> IsNilpotentAlgebra( L );
+true
+\endexample
+
+
+
+\Declaration{IsSolvableAlgebra}
+
+\beginexample
+gap> T:= EmptySCTable( 5, 0, "antisymmetric" );;
+gap> L:= LieAlgebraByStructureConstants( Rationals, T );
+<Lie algebra of dimension 5 over Rationals>
+gap> IsSolvableAlgebra( L );
+true
+\endexample
+
+
+
+\Declaration{IsRestrictedLieAlgebra}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "W", [2], GF(5));
+<Lie algebra of dimension 25 over GF(5)>
+gap> IsRestrictedLieAlgebra( L );
+false
+gap> L:= SimpleLieAlgebra( "W", [1], GF(5));
+<Lie algebra of dimension 5 over GF(5)>
+gap> IsRestrictedLieAlgebra( L );           
+true
+\endexample
+
+
+
+\Declaration{DerivedSeriesOfAlgebra} 
+
+\beginexample
+gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> L:= LieAlgebra( Rationals, mats );;
+gap> DerivedSeries( L );
+[ <Lie algebra over Rationals, with 3 generators>, 
+  <Lie algebra of dimension 1 over Rationals>, 
+  <Lie algebra of dimension 0 over Rationals> ]
+\endexample
+
+\Declaration{LowerCentralSeriesOfAlgebra}
+
+\beginexample
+gap> mats:= [  [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> L:=LieAlgebra( Rationals, mats );;
+gap> LowerCentralSeries( L );
+[ <Lie algebra over Rationals, with 3 generators>, 
+  <Lie algebra of dimension 1 over Rationals> ]
+\endexample
+
+
+
+\Declaration{UpperCentralSeriesOfAlgebra}
+
+\beginexample
+gap> mats:= [  [[ 1, 0 ], [ 0, 0 ]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> L:=LieAlgebra( Rationals, mats );;
+gap> UpperCentralSeries( L );
+[ <two-sided ideal in <Lie algebra of dimension 3 over Rationals>, (
+    1generators)>, <Lie algebra over Rationals, with 0 generators> ]
+\endexample
+
+
+
+\Declaration{LieCentre}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( GF(3), 3 );
+<Lie algebra over GF(3), with 5 generators>
+gap> LieCentre( L );
+<two-sided ideal in <Lie algebra of dimension 9 over GF(3)>, (1generators)>
+\endexample
+
+\Declaration{Derivations}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
+gap> Derivations( Basis( L ) );
+<Lie algebra of dimension 14 over Rationals>
+\endexample
+
+\Declaration{CartanSubalgebra}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
+gap> CartanSubalgebra( L );
+<Lie algebra of dimension 2 over Rationals>
+\endexample
+
+\Declaration{NilRadical}
+
+\beginexample
+gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> L:= LieAlgebra( Rationals, mats );;
+gap> NilRadical( L );
+<two-sided ideal in <Lie algebra of dimension 3 over Rationals>, (
+2generators)>
+\endexample
+
+
+
+\Declaration{SolvableRadical}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> SolvableRadical( L ); 
+<two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (
+1generators)>
+\endexample
+
+
+
+\Declaration{LeviMalcevDecomposition}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
+gap> LeviMalcevDecomposition( L );
+[ <Lie algebra of dimension 24 over Rationals>, 
+  <two-sided ideal in <Lie algebra of dimension 25 over Rationals>, (
+    1generators)> ]
+\endexample
+
+
+
+\Declaration{DirectSumDecomposition}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( Rationals, 5 );; 
+gap> DirectSumDecomposition( L );
+[ <two-sided ideal in <two-sided ideal in <Lie algebra of dimension 
+    25 over Rationals>, (1generators)>, (1generators)>, 
+  <two-sided ideal in <two-sided ideal in <Lie algebra of dimension 
+    25 over Rationals>, (24generators)>, (24generators)> ]
+\endexample
+
+
+
+\Declaration{SemiSimpleType}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "E", 8, Rationals );;
+gap> b:= BasisVectors( Basis( L ) );;
+gap> K:= LieCentralizer( L, Subalgebra( L, [ b[61]+b[79]+b[101]+b[102] ] ) );
+<Lie algebra of dimension 102 over Rationals>
+gap> lev:= LeviDecomposition(K);; 
+gap> SemiSimpleType( lev[1] );
+"B3 A1"
+\endexample
+
+
+
+\Declaration{AdjointMatrix}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> b:= BasisVectors( Basis( L ) );;
+gap> AdjointMatrix( Basis( L ), b[1] );
+[ [ 0, 0, -2 ], [ 0, 0, 0 ], [ 0, 1, 0 ] ]
+\endexample
+
+
+
+\Declaration{AdjointAssociativeAlgebra}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> AdjointAssociativeAlgebra( L, L );
+<algebra of dimension 9 over Rationals>
+gap> AdjointAssociativeAlgebra( L, CartanSubalgebra( L ) );
+<algebra of dimension 3 over Rationals>
+\endexample
+
+
+
+\Declaration{KillingMatrix}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> KillingMatrix( Basis( L ) );
+[ [ 0, 4, 0 ], [ 4, 0, 0 ], [ 0, 0, 8 ] ]
+\endexample
+
+\Declaration{KappaPerp}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> b:= BasisVectors( Basis( L ) );;
+gap> V:= VectorSpace( Rationals, [b[1],b[2]] );;
+gap> KappaPerp( L, V );
+VectorSpace( Rationals, [ v.3 ] )
+\endexample
+
+
+
+\Declaration{IsNilpotentElement}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> b:= BasisVectors( Basis( L ) );;
+gap> IsNilpotentElement( L, b[1] );
+true
+\endexample
+
+
+
+\Declaration{FindSl2}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
+gap> b:= BasisVectors( Basis( L ) );;
+gap> IsNilpotentElement( L, b[1] );
+true
+gap> FindSl2( L, b[1] );
+<Lie algebra of dimension 3 over Rationals>
+\endexample
+
+
+
+\Declaration{NonNilpotentElement}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "G", 2, Rationals );;
+gap> NonNilpotentElement( L );  
+v.13
+gap> IsNilpotentElement( L, last );
+false
+\endexample
+
+
+\Declaration{UniversalEnvelopingAlgebra}
+
+\beginexample
+gap> L:= SimpleLieAlgebra( "A", 1, Rationals );;
+gap> UL:= UniversalEnvelopingAlgebra( L );
+<algebra-with-one of dimension infinity over Rationals>
+gap> g:= GeneratorsOfAlgebraWithOne( UL );
+[ [1*x.1], [1*x.2], [1*x.3] ]
+gap> g[3]^2*g[2]^2*g[1]^2;
+[-4*x.1*x.2*x.3^3+1*x.1^2*x.2^2*x.3^2+2*x.3^3+2*x.3^4]
+\endexample
+
+
+
+

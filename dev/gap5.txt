@@ -5,7 +5,8 @@ Table Of Contents
 
 1) Was weak pointer objects, now implemented
 2) Finalise methods
-
+3) Subgroup inclusions/Lattice
+4) Saving of objects, Marshalling
 
 -----------------------------------------------------------------------------
 
@@ -112,3 +113,137 @@ h) *do not* loop over the linked list 'ToBeFinalised' in order
 i) return to the called NewBag, then the finalising method which called 
    the NewBag, and eventually to the top garbage collection.  This will 
    deal with the new objects on 'ToBeFinalised'.
+
+-----------------------------------------------------------------------------
+
+3) Subgroup inclusions/Lattice
+
+There should be documented functions to compute maximal subgroups/minimal
+supergroups within a lattice. They should provide conjugating elements (when
+only class representatives are stored.)
+Both is essentially (missing the user interface) there for the cyclic
+extension code but still missing if elementary abelian extension is used.
+Probably one should use more clever methods like the SpecialAg code.
+
+-----------------------------------------------------------------------------
+
+4) Saving of objects, Marshalling
+
+This is not a
+yet a full proposal, but only a description of a scheme that I think offers
+a reasonable facility to save several objects together with relations among
+them for later reading by GAP. It will yield a GAP file that when reading in
+creates ``equivalent'' objects to the ones saved (I'm not using ``equal''
+because reading in again a saved file will for example for finitely presented
+groups create *new* objects that are not *equal* to the old ones. It also
+will not save all known attributes and properties. If this is desired the
+``save workspace'' facility must be used).
+
+When saving an object enough context must be saved to create the object.
+That is for a finitely presented group the corresponding free group and the
+relators have to be saved as well. When storing a subgroup the parent has to
+be printed before.
+We have to be careful, however, when saving say several subgroups of an fp
+group. In this situation the parent must be printed only once and all parent
+references must be to this object. Also it may be necessary or desirable to
+assign the parent generators to temporary variables to permit reasonable
+printing of words that generate the subgroups. 
+
+To keep track of relations among the objects and about whether objects have
+been saved already, saving is a multiple stage process:
+
+ctx:=StartSave(<filename>);
+
+initiates saving of objects on the indicated file it returns a ``save
+context'' (an object used for tracking information about things already
+saved). If we agree that at most one save context may be open at any time,
+this may as well be a hidden global variable.
+
+The operation
+
+Save(<ctx>,<obj>,<varname>)
+
+saves the object <obj> in the context <ctx>, using variable name <varname>
+(we cannot obtain a variable name from an object).
+
+EndSave(<ctx>) closes a save context. (Depending on the objects involved, it
+may be necessary to delay the actual writing to the file to this point.
+Before ending a save context it can not be guaranteed that the file is
+usable.)
+
+
+Some more detail:
+
+The save context stores all objects saved with the (temporary) variable name
+under which they were saved. Therefore `Save' first checks if the object
+is already saved in the given context and if yes just adds a corresponding
+variable assignment.
+Otherwise `Save' will call an operation `SaveObj' (same syntax) for which
+suitable methods for all object must be installed.
+`SaveObj' will first `Save' (i.e. save only if not yet done)
+all objects needed for the creation under
+temporary variables (the save context will keep track of the temporary
+variables used) and then print a command that will create the object under
+the indicated variable name, using the objects it depends on saved before.
+(It seems a function `VariableSavedObject(<ctx>,<obj>)' that saves the
+object <obj> if not yet done and returns the variable name under which it
+was saved should be used here.)
+
+  For example if U is a subgroup of an fp group,
+
+  Save(<ctx>,U,"U")
+
+  first calls
+
+  parnam:=VariableSavedObject(<ctx>,Parent(U)) (which recursively saves free
+  group, presentation &c.) and
+  gen:=VariableSavedObject(GeneratorsOfGroup(Parent(U)));
+
+  and then prints via
+
+  AppendTo(ctx.file,varnam":=Subgroup(",parnam,","["    ...&c.
+
+The save routine may want to store some ``small'' known attributes (for
+example a permutation groups size) but for debugging purposes it must be
+possible to switch this feature off.
+
+There are several problems and caveats:
+
+- The temporary variables. Even if we name them to avoid collisions
+  (e.g. "__tV123") the temporary variables that are not explicitly assigned
+  to ``used'' variables remain bound. One could add ``Unbind''
+  commands at the end of the file. Or one starts a save file with a 'local'
+  command.
+- Cyclic references must be broken temporarily when saving objects and then
+  be added later. (This essentially only affects records and lists.)
+  For example:
+
+  A:=[];
+  B:=[A];
+  # added later:
+  A[1]:=B;
+
+  The easiest way to cope with this seems to be to store in the context
+  which objects are currently being saved and to stop recursions when again
+  saving these objects, instead noting in the context the assignment necessary
+  at the end to close the loop again
+  and printing it only after the object itself had been printed.
+- Mutable objects may change during the save process. This must be users
+  responsibility to avoid. (Again this affects only records and lists.)
+- Attributes: An object saved may have been stored as attribute of another
+  saved object. To take care of this, we must check at the end whether any
+  saved object occurs as attribute of another saved object and if yes the
+  appropriate setter command must be added. (This can be done during
+  `EndSave'.) A nice side effect is that it will permit to save selected
+  attributes deliberately.
+  If an object does only occur in another attribute (for example a Sylow
+  subgroup) things get messy. I don't think we should try to deal with such
+  cases (otherwise the search process will take very long and we might end
+  up storing some large attributes that are not really needed). This feature
+  is beyond the simple `save' mechanism and is covered by `SaveWorkspace'.
+- Weak pointers must be ignored.
+
+The save context also seems to be a suitable data structure for marshalling
+(that is transfering objects in small form to another program with
+preserving all relations.) A typical example would be the communication in
+GAPMPI.

@@ -5,12 +5,14 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This module contains the functions to read expressions and statements.
 */
+#include        <string.h>              /* memcpy */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_read_c =
+const char * Revision_read_c =
    "@(#)$Id$";
 
 
@@ -161,6 +163,8 @@ void ReadCallVarAss (
     volatile Obj        nams;           /* list of names of local vars.    */
     volatile Obj        lvars;          /* environment                     */
     volatile UInt       nest  = 0;      /* nesting level of a higher var.  */
+    volatile Obj        lvars0;          /* environment                     */
+    volatile UInt       nest0  = 0;      /* nesting level of a higher var.  */
     volatile UInt       indx  = 0;      /* index of a local variable       */
     volatile UInt       var   = 0;      /* variable                        */
     volatile UInt       level = 0;      /* number of '{}' selectors        */
@@ -196,21 +200,49 @@ void ReadCallVarAss (
     }
 
     /* try to look up the variable on the error stack                      */
-    nest = 0;
-    lvars = ErrorLVars;
-    while ( type == ' ' && lvars != 0 && lvars != BottomLVars ) {
+    /* the outer loop runs up the calling stack, while the inner loop runs
+       up the static definition stack for each call function */
+    lvars0 = ErrorLVars;
+    nest0 = 0;
+    while ( type == ' ' && lvars0 != 0 && lvars0 != BottomLVars) {
+      lvars = lvars0;
+      nest = 0;
+      while ( type == ' ' && lvars != 0 && lvars != BottomLVars ) {
         nams = NAMS_FUNC( PTR_BAG(lvars)[0] );
-        for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
-            if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
-                type = 'd';
-
-                /* Ultrix 4.2 cc get's confused if the UInt is missing     */
-                var = ((UInt)nest << 16) + indx;
-                break;
-            }
+	indx = LEN_LIST( nams );
+	if (indx >= 1024)
+	  {
+	    Pr("Warning; Ignoring local names after 1024th in search for %s\n",
+	       (Int) Value,
+	       0L);
+	    indx = 1023;
+	  }
+        for ( ; 1 <= indx; indx-- ) {
+	  if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
+	    type = 'd';
+	    
+	    /* Ultrix 4.2 cc get's confused if the UInt is missing     */
+	    var = ((UInt) nest0 << 20) + ((UInt)nest << 10) + indx;
+	    break;
+	  }
         }
         lvars = ENVI_FUNC( PTR_BAG( lvars )[0] );
         nest++;
+	if (nest >= 1024)
+	  {
+	    Pr("Warning: abandoning search for %s at 1024th higher frame\n",
+	       (Int)Value,0L);
+	    break;
+	  }
+      }
+      lvars0 = PTR_BAG( lvars0 )[2];
+      nest0++;
+	if (nest0 >= 4096)
+	  {
+	    Pr("Warning: abandoning search for %s 4096 frames up stack\n",
+	       (Int)Value,0L);
+	    break;
+	  }
     }
 
     /* get the variable as a global variable                               */
@@ -251,7 +283,7 @@ void ReadCallVarAss (
     while ( IS_IN( Symbol, S_LPAREN|S_LBRACK|S_LBRACE|S_DOT ) ) {
 
         /* so the prefix was a reference                                   */
-        if ( READ_ERROR() ) {}
+      if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrRefLVar( var );           level=0; }
         else if ( type == 'h' ) { IntrRefHVar( var );           level=0; }
         else if ( type == 'd' ) { IntrRefDVar( var );           level=0; }
@@ -1306,17 +1338,17 @@ void ReadAssert (
     Match( S_COMMA, ",", S_RPAREN|follow );
     ReadExpr( S_RPAREN | S_COMMA | follow, 'r' );
     if ( ! READ_ERROR() ) { IntrAssertAfterCondition(); }
-    if ( Symbol == S_RPAREN )
-      {
-        Match( S_RPAREN, ")", follow );
-        if ( ! READ_ERROR() ) { IntrAssertEnd2Args(); }
-      }
-    else if ( Symbol == S_COMMA )
+    if ( Symbol == S_COMMA )
       {
         Match( S_COMMA, "", 0L);
         ReadExpr( S_RPAREN |  follow, 'r' );
         Match( S_RPAREN, ")", follow );
         if ( ! READ_ERROR() ) { IntrAssertEnd3Args(); }
+      }
+    else
+      {
+	Match( S_RPAREN, ")", follow );
+	if ( ! READ_ERROR() ) { IntrAssertEnd2Args(); }
       }
 }
 
@@ -1659,6 +1691,30 @@ void            ReadQuit (
     if ( ! READ_ERROR() ) { IntrQuit(); }
 }
 
+/****************************************************************************
+**
+*F  ReadQUIT( <follow> )  . . . . . . . . . . . . . . . read a QUIT statement
+**
+**  'ReadQUIT' reads a  QUIT  statement.  In case   of an error it skips  all
+**  symbols up to one contained in <follow>.
+**
+**  <Statement> := 'QUIT' ';'
+*/
+void            ReadQUIT (
+    TypSymbolSet        follow )
+{
+    /* skip the quit symbol                                                */
+    Match( S_QQUIT, "QUIT", follow );
+
+    /* 'quit' is not allowed in functions                                  */
+    if ( CountNams != 0 ) {
+        SyntaxError("'QUIT' must not be used in functions");
+    }
+
+    /* interpret the quit                                                  */
+    if ( ! READ_ERROR() ) { IntrQUIT(); }
+}
+
 
 /****************************************************************************
 **
@@ -1735,10 +1791,11 @@ Obj ReadEvalResult;
 **
 **  It does not expect the  first symbol of its input  already read and  wont
 **  read the  first symbol of the  next  input.
+**
 */
-UInt ReadEvalCommand ( void )
+ExecStatus ReadEvalCommand ( void )
 {
-    UInt                type;
+    ExecStatus          type;
     Obj                 stackNams;
     UInt                countNams;
     UInt                readTop;
@@ -1750,7 +1807,7 @@ UInt ReadEvalCommand ( void )
     Match( Symbol, "", 0UL );
 
     /* if we have hit <end-of-file>, then give up                          */
-    if ( Symbol == S_EOF )  { return 16; }
+    if ( Symbol == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
     Prompt = "> ";
@@ -1787,6 +1844,7 @@ UInt ReadEvalCommand ( void )
     else if (Symbol==S_RETURN    ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_TRYNEXT   ) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
     else if (Symbol==S_QUIT      ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
+    else if (Symbol==S_QQUIT     ) { ReadQUIT(   S_SEMICOLON|S_EOF      ); }
 
     /* otherwise try to read an expression                                 */
     else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
@@ -1811,7 +1869,7 @@ UInt ReadEvalCommand ( void )
     }
     else {
         IntrEnd( 1UL );
-        type = 32;
+        type = STATUS_ERROR;
     }
 
     /* switch back to the old reader context                               */
@@ -1842,7 +1900,7 @@ UInt ReadEvalCommand ( void )
 */
 UInt ReadEvalFile ( void )
 {
-    volatile UInt       type;
+    volatile ExecStatus type;
     volatile Obj        stackNams;
     volatile UInt       countNams;
     volatile UInt       readTop;
@@ -1859,7 +1917,7 @@ UInt ReadEvalFile ( void )
     Match( Symbol, "", 0UL );
 
     /* if we have hit <end-of-file>, then give up                          */
-    if ( Symbol == S_EOF )  { return 16; }
+    if ( Symbol == S_EOF )  { return STATUS_EOF; }
 
     /* print only a partial prompt from now on                             */
     Prompt = "> ";
@@ -1939,7 +1997,7 @@ UInt ReadEvalFile ( void )
     }
     else {
         IntrEnd( 1UL );
-        type = 32;
+        type = STATUS_ERROR;
     }
 
     /* switch back to the old reader context                               */
@@ -1979,36 +2037,44 @@ void            ReadEvalError ( void )
 /****************************************************************************
 **
 
-*F  SetupRead() . . . . . . . . . . . . . . . . . . . . initialize the reader
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupRead ( void )
-{
-}
-
-
-/****************************************************************************
-**
-*F  InitRead()  . . . . . . . . . . . . . . . . . . . . initialize the reader
-**
-**  'InitRead' initializes the reader.
-*/
-void InitRead ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     InitGlobalBag( &ReadEvalResult, "src/read.c:ReadEvalResult" );
     InitGlobalBag( &StackNams,      "src/read.c:StackNams"      );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckRead() . . . . . . . . . . .  check the initialisation of the reader
-**
-**  'InitRead' initializes the reader.
+*F  InitInfoRead()  . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckRead ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "read",                             /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoRead ( void )
 {
-    SET_REVISION( "read_c",     Revision_read_c );
-    SET_REVISION( "read_h",     Revision_read_h );
+    module.revision_c = Revision_read_c;
+    module.revision_h = Revision_read_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration of those functions  that are needed to
 ##  compute and test possible permutation characters.
@@ -27,14 +28,14 @@ Revision.ctblpope_gd :=
 ##
 #F  ClassOrbitCharTable( <tbl>, <cc> )  . . . .  classes of a cyclic subgroup
 ##
-ClassOrbitCharTable := NewOperationArgs( "ClassOrbitCharTable" );
+DeclareGlobalFunction( "ClassOrbitCharTable" );
 
 
 #############################################################################
 ##
 #F  ClassRootsCharTable( <tbl> )  . . . . . . . . nontrivial root of elements
 ##
-ClassRootsCharTable := NewOperationArgs( "ClassRootsCharTable" );
+DeclareGlobalFunction( "ClassRootsCharTable" );
 
 
 #############################################################################
@@ -46,7 +47,7 @@ ClassRootsCharTable := NewOperationArgs( "ClassRootsCharTable" );
 ##  classes with the corresponding subgroup.
 ##  Of course this has to be a nonnegative integer.
 ##
-SubClass := NewOperationArgs( "SubClass" );
+DeclareGlobalFunction( "SubClass" );
 
 
 #############################################################################
@@ -55,7 +56,7 @@ SubClass := NewOperationArgs( "SubClass" );
 ##
 ##  performs CAS test 1 and 2 for permutation characters
 ##
-TestPerm1 := NewOperationArgs( "TestPerm1" );
+DeclareGlobalFunction( "TestPerm1" );
    
 
 #############################################################################
@@ -64,7 +65,7 @@ TestPerm1 := NewOperationArgs( "TestPerm1" );
 ##
 ##  performs CAS test 3, 4, and 5 for permutation characters
 ##
-TestPerm2 := NewOperationArgs( "TestPerm2" );
+DeclareGlobalFunction( "TestPerm2" );
 
 
 #############################################################################
@@ -73,13 +74,13 @@ TestPerm2 := NewOperationArgs( "TestPerm2" );
 ##
 ##  'TestPerm3' performs CAS test 6
 ##
-TestPerm3 := NewOperationArgs( "TestPerm3" );
+DeclareGlobalFunction( "TestPerm3" );
 
 
 #############################################################################
 ##
 #F  Inequalities( <tbl>, <chars>[, <option>] ) . . .
-#F                                            projected system of inequalites
+##                                            projected system of inequalites
 ##
 ##  There are two ways to organize the projection.
 ##  The first is the straight approach which takes the rationalized
@@ -89,7 +90,7 @@ TestPerm3 := NewOperationArgs( "TestPerm3" );
 ##  The other way tries to keep the number of intermediate inequalities
 ##  small by eventually changing the order of characters. --> option "small"
 ##
-Inequalities := NewOperationArgs( "Inequalities" );
+DeclareGlobalFunction( "Inequalities" );
 
 
 #############################################################################
@@ -98,14 +99,14 @@ Inequalities := NewOperationArgs( "Inequalities" );
 ##
 ##  determine possible permutation characters
 ##
-Permut := NewOperationArgs( "Permut" );
+DeclareGlobalFunction( "Permut" );
 
 
 #############################################################################
 ##
 #F  PermBounds( <tbl> , <option> ) . . . . . . .  boundary points for simplex 
 ##
-PermBounds := NewOperationArgs( "PermBounds" );
+DeclareGlobalFunction( "PermBounds" );
 
 
 #############################################################################
@@ -117,7 +118,7 @@ PermBounds := NewOperationArgs( "PermBounds" );
 ##  (This is useful if the multiplicities are expected to be small, and if
 ##  this is forced by high irreducible degrees.)
 ##
-PermComb := NewOperationArgs( "PermComb" );
+DeclareGlobalFunction( "PermComb" );
 
 
 #############################################################################
@@ -134,7 +135,7 @@ PermComb := NewOperationArgs( "PermComb" );
 ##  the other positions of <torso> are unbound;
 ##  at least the degree '<torso>[1]' must be an integer.
 ##
-PermCandidates := NewOperationArgs( "PermCandidates" );
+DeclareGlobalFunction( "PermCandidates" );
 
 
 #############################################################################
@@ -154,7 +155,7 @@ PermCandidates := NewOperationArgs( "PermCandidates" );
 ##  the other positions of <torso> are unbound;
 ##  at least the degree '<torso>[1]' must be an integer.
 ##
-PermCandidatesFaithful := NewOperationArgs( "PermCandidatesFaithful" );
+DeclareGlobalFunction( "PermCandidatesFaithful" );
 
 
 #############################################################################
@@ -164,7 +165,7 @@ PermCandidatesFaithful := NewOperationArgs( "PermCandidatesFaithful" );
 ##  Find all possible permutation characters of the group with character
 ##  table <tbl> by use of an algorithm specified by choice of the arguments.
 ##
-PermChars := NewOperationArgs( "PermChars" );
+DeclareGlobalFunction( "PermChars" );
 
 
 #############################################################################
@@ -199,7 +200,7 @@ PermChars := NewOperationArgs( "PermChars" );
 ##    characters into the irreducible characters of <tbl>,
 ##    given in {\ATLAS} notation.
 ##
-PermCharInfo := NewOperationArgs( "PermCharInfo" );
+DeclareGlobalFunction( "PermCharInfo" );
 
 
 #############################################################################

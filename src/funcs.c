@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the function interpreter package.
 **
@@ -14,10 +15,12 @@
 **
 **  It uses the function call mechanism defined by the calls package.
 */
+#include        <stdio.h>               /* on SunOS, assert.h uses stderr
+					   but does not include stdio.h    */
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_funcs_c =
+const char * Revision_funcs_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -36,8 +39,6 @@ SYS_CONST char * Revision_funcs_c =
 #define INCLUDE_DECLARATION_PART
 #include        "funcs.h"               /* functions                       */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -1127,10 +1128,24 @@ void            ExecEnd (
 /****************************************************************************
 **
 
-*F  SetupFuncs()  . . . . . . . . . . . . . . . . initialize function package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupFuncs ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* make the global variable known to Gasman                            */
+    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
+
+    /* use short cookies to save space in saved workspace                  */
+    InitHandlerFunc( DoExecFunc0args, "i0");
+    InitHandlerFunc( DoExecFunc1args, "i1");
+    InitHandlerFunc( DoExecFunc2args, "i2");
+    InitHandlerFunc( DoExecFunc3args, "i3");
+    InitHandlerFunc( DoExecFunc4args, "i4");
+    InitHandlerFunc( DoExecFunc5args, "i5");
+    InitHandlerFunc( DoExecFunc6args, "i6");
+    InitHandlerFunc( DoExecFuncXargs, "iX");
+
     /* install the evaluators and executors                                */
     ExecStatFuncs [ T_PROCCALL_0ARGS ] = ExecProccall0args;
     ExecStatFuncs [ T_PROCCALL_1ARGS ] = ExecProccall1args;
@@ -1168,46 +1183,37 @@ void SetupFuncs ( void )
     PrintExprFuncs[ T_FUNCCALL_6ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_XARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNC_EXPR      ] = PrintFuncExpr;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitFuncs() . . . . . . . . . . . . . . . . . initialize function package
-**
-**  'InitFuncs' installs the  executing   functions that  are  needed by  the
-**  executor  to execute procedure  calls,  the evaluating functions that are
-**  needed by the  evaluator to evaluate function  calls, and  the evaluating
-**  function that   is   needed  by  the  evaluator to    evaluate   function
-**  expressions.   It  also  installs the printing    functions for procedure
-**  calls, function calls, and function expressions.
+*F  InitInfoFuncs() . . . . . . . . . . . . . . . . . table of init functions
 */
-void InitFuncs ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "funcs",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoFuncs ( void )
 {
-    /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState, "src/funcs.c:ExecState" );
-
-
-    /* Use short cookies to save space in saved workspace                  */
-    InitHandlerFunc( DoExecFunc0args, "i0");
-    InitHandlerFunc( DoExecFunc1args, "i1");
-    InitHandlerFunc( DoExecFunc2args, "i2");
-    InitHandlerFunc( DoExecFunc3args, "i3");
-    InitHandlerFunc( DoExecFunc4args, "i4");
-    InitHandlerFunc( DoExecFunc5args, "i5");
-    InitHandlerFunc( DoExecFunc6args, "i6");
-    InitHandlerFunc( DoExecFuncXargs, "iX");
-}
-
-
-/****************************************************************************
-**
-*F  CheckFuncs()  . . . . .  check the initialisation of the function package
-*/
-void CheckFuncs ( void )
-{
-    SET_REVISION( "funcs_c",    Revision_funcs_c );
-    SET_REVISION( "funcs_h",    Revision_funcs_h );
+    module.revision_c = Revision_funcs_c;
+    module.revision_h = Revision_funcs_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

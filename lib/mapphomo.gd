@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the definitions of properties of mappings preserving
 ##  algebraic structure.
@@ -42,10 +43,7 @@ Revision.mapphomo_gd :=
 ##  '<s1>^<mapp> * <s2>^<mapp> = (<s1>*<s2>)^<mapp>'
 ##  holds for all <s1>, <s2> in $S$.
 ##
-RespectsMultiplication := NewProperty( "RespectsMultiplication",
-    IsGeneralMapping );
-SetRespectsMultiplication := Setter( RespectsMultiplication );
-HasRespectsMultiplication := Tester( RespectsMultiplication );
+DeclareProperty( "RespectsMultiplication", IsGeneralMapping );
 
 
 #############################################################################
@@ -65,9 +63,7 @@ HasRespectsMultiplication := Tester( RespectsMultiplication );
 ##  'One( S )^<mapp> = One( R )'
 ##  holds.
 ##
-RespectsOne := NewProperty( "RespectsOne", IsGeneralMapping );
-SetRespectsOne := Setter( RespectsOne );
-HasRespectsOne := Tester( RespectsOne );
+DeclareProperty( "RespectsOne", IsGeneralMapping );
 
 
 #############################################################################
@@ -87,9 +83,7 @@ HasRespectsOne := Tester( RespectsOne );
 ##  'Inverse( <s> )^<mapp> = Inverse( <s>^<mapp> )'
 ##  holds for all <s> in $S$.
 ##
-RespectsInverses := NewProperty( "RespectsInverses", IsGeneralMapping );
-SetRespectsInverses := Setter( RespectsInverses );
-HasRespectsInverses := Tester( RespectsInverses );
+DeclareProperty( "RespectsInverses", IsGeneralMapping );
 
 
 #############################################################################
@@ -104,15 +98,15 @@ InstallTrueMethod( RespectsOne,
 ##
 #P  IsGroupGeneralMapping( <mapp> )
 #P  IsGroupHomomorphism( <mapp> )
+##  A `GroupGeneralMapping' is a mapping which respects multiplication and
+##  inverses. If it is total and single valued it is called a group
+##  homomorphism.
 ##
-IsGroupGeneralMapping :=
-    IsGeneralMapping and RespectsMultiplication and RespectsInverses;
-SetIsGroupGeneralMapping := Setter( IsGroupGeneralMapping );
-HasIsGroupGeneralMapping := Tester( IsGroupGeneralMapping );
+DeclareSynonymAttr( "IsGroupGeneralMapping",
+    IsGeneralMapping and RespectsMultiplication and RespectsInverses );
 
-IsGroupHomomorphism := IsGroupGeneralMapping and IsMapping;
-SetIsGroupHomomorphism := Setter( IsGroupHomomorphism );
-HasIsGroupHomomorphism := Tester( IsGroupHomomorphism );
+DeclareSynonymAttr( "IsGroupHomomorphism",
+    IsGroupGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -127,13 +121,8 @@ HasIsGroupHomomorphism := Tester( IsGroupHomomorphism );
 ##  (This is a monoid if <mapp> respects multiplication and one,
 ##  and if the source of <mapp> is associative.)
 ##
-KernelOfMultiplicativeGeneralMapping := NewAttribute(
-    "KernelOfMultiplicativeGeneralMapping",
+DeclareAttribute( "KernelOfMultiplicativeGeneralMapping",
     IsGeneralMapping );
-SetKernelOfMultiplicativeGeneralMapping := Setter(
-    KernelOfMultiplicativeGeneralMapping );
-HasKernelOfMultiplicativeGeneralMapping := Tester(
-    KernelOfMultiplicativeGeneralMapping );
 
 
 #############################################################################
@@ -148,13 +137,8 @@ HasKernelOfMultiplicativeGeneralMapping := Tester(
 ##  (This is a monoid if <mapp> respects multiplication and one,
 ##  and if the range of <mapp> is associative.)
 ##
-CoKernelOfMultiplicativeGeneralMapping := NewAttribute(
-    "CoKernelOfMultiplicativeGeneralMapping",
+DeclareAttribute( "CoKernelOfMultiplicativeGeneralMapping",
     IsGeneralMapping );
-SetCoKernelOfMultiplicativeGeneralMapping := Setter(
-    CoKernelOfMultiplicativeGeneralMapping );
-HasCoKernelOfMultiplicativeGeneralMapping := Tester(
-    CoKernelOfMultiplicativeGeneralMapping );
 
 
 #############################################################################
@@ -179,9 +163,7 @@ HasCoKernelOfMultiplicativeGeneralMapping := Tester(
 ##  '<s1>^<mapp> + <s2>^<mapp> = (<s1>+<s2>)^<mapp>'
 ##  holds for all <s1>, <s2> in $S$.
 ##
-RespectsAddition := NewProperty( "RespectsAddition", IsGeneralMapping );
-SetRespectsAddition := Setter( RespectsAddition );
-HasRespectsAddition := Tester( RespectsAddition );
+DeclareProperty( "RespectsAddition", IsGeneralMapping );
 
 
 #############################################################################
@@ -201,9 +183,7 @@ HasRespectsAddition := Tester( RespectsAddition );
 ##  'Zero( S )^<mapp> = Zero( R )'
 ##  holds.
 ##
-RespectsZero := NewProperty( "RespectsZero", IsGeneralMapping );
-SetRespectsZero := Setter( RespectsZero );
-HasRespectsZero := Tester( RespectsZero );
+DeclareProperty( "RespectsZero", IsGeneralMapping );
 
 
 #############################################################################
@@ -223,10 +203,7 @@ HasRespectsZero := Tester( RespectsZero );
 ##  'AdditiveInverse( <s> )^<mapp> = AdditiveInverse( <s>^<mapp> )'
 ##  holds for all <s> in $S$.
 ##
-RespectsAdditiveInverses := NewProperty( "RespectsAdditiveInverses",
-    IsGeneralMapping );
-SetRespectsAdditiveInverses := Setter( RespectsAdditiveInverses );
-HasRespectsAdditiveInverses := Tester( RespectsAdditiveInverses );
+DeclareProperty( "RespectsAdditiveInverses", IsGeneralMapping );
 
 
 #############################################################################
@@ -242,14 +219,11 @@ InstallTrueMethod( RespectsZero,
 #P  IsAdditiveGroupGeneralMapping( <mapp> )
 #P  IsAdditiveGroupHomomorphism( <mapp> )
 ##
-IsAdditiveGroupGeneralMapping :=
-    IsGeneralMapping and RespectsAddition and RespectsAdditiveInverses;
-SetIsAdditiveGroupGeneralMapping := Setter( IsAdditiveGroupGeneralMapping );
-HasIsAdditiveGroupGeneralMapping := Tester( IsAdditiveGroupGeneralMapping );
+DeclareSynonymAttr( "IsAdditiveGroupGeneralMapping",
+    IsGeneralMapping and RespectsAddition and RespectsAdditiveInverses );
 
-IsAdditiveGroupHomomorphism := IsAdditiveGroupGeneralMapping and IsMapping;
-SetIsAdditiveGroupHomomorphism := Setter( IsAdditiveGroupHomomorphism );
-HasIsAdditiveGroupHomomorphism := Tester( IsAdditiveGroupHomomorphism );
+DeclareSynonymAttr( "IsAdditiveGroupHomomorphism",
+    IsAdditiveGroupGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -261,13 +235,7 @@ HasIsAdditiveGroupHomomorphism := Tester( IsAdditiveGroupHomomorphism );
 ##  elements in the source of <mapp> that have the zero of the range in
 ##  their set of images.
 ##
-KernelOfAdditiveGeneralMapping := NewAttribute(
-    "KernelOfAdditiveGeneralMapping",
-    IsGeneralMapping );
-SetKernelOfAdditiveGeneralMapping := Setter(
-    KernelOfAdditiveGeneralMapping );
-HasKernelOfAdditiveGeneralMapping := Tester(
-    KernelOfAdditiveGeneralMapping );
+DeclareAttribute( "KernelOfAdditiveGeneralMapping", IsGeneralMapping );
 
 
 #############################################################################
@@ -279,13 +247,7 @@ HasKernelOfAdditiveGeneralMapping := Tester(
 ##  elements in the source of <mapp> that have the zero of the range in
 ##  their set of images.
 ##
-CoKernelOfAdditiveGeneralMapping := NewAttribute(
-    "CoKernelOfAdditiveGeneralMapping",
-    IsGeneralMapping );
-SetCoKernelOfAdditiveGeneralMapping := Setter(
-    CoKernelOfAdditiveGeneralMapping );
-HasCoKernelOfAdditiveGeneralMapping := Tester(
-    CoKernelOfAdditiveGeneralMapping );
+DeclareAttribute( "CoKernelOfAdditiveGeneralMapping", IsGeneralMapping );
 
 
 #############################################################################
@@ -311,10 +273,7 @@ HasCoKernelOfAdditiveGeneralMapping := Tester(
 ##  '<c> \* <s>^<mapp> = (<c> \* <s>)^<mapp>'
 ##  holds for all <c> in $D$ and <s> in $S$.
 ##
-RespectsScalarMultiplication := NewProperty( "RespectsScalarMultiplication",
-    IsGeneralMapping );
-SetRespectsScalarMultiplication := Setter( RespectsScalarMultiplication );
-HasRespectsScalarMultiplication := Tester( RespectsScalarMultiplication );
+DeclareProperty( "RespectsScalarMultiplication", IsGeneralMapping );
 
 InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 
@@ -324,14 +283,11 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 #P  IsLeftModuleGeneralMapping( <mapp> )
 #P  IsLeftModuleHomomorphism( <mapp> )
 ##
-IsLeftModuleGeneralMapping := IsAdditiveGroupGeneralMapping
-    and RespectsScalarMultiplication;
-SetIsLeftModuleGeneralMapping := Setter( IsLeftModuleGeneralMapping );
-HasIsLeftModuleGeneralMapping := Tester( IsLeftModuleGeneralMapping );
+DeclareSynonymAttr( "IsLeftModuleGeneralMapping",
+    IsAdditiveGroupGeneralMapping and RespectsScalarMultiplication );
 
-IsLeftModuleHomomorphism := IsLeftModuleGeneralMapping and IsMapping;
-SetIsLeftModuleHomomorphism := Setter( IsLeftModuleHomomorphism );
-HasIsLeftModuleHomomorphism := Tester( IsLeftModuleHomomorphism );
+DeclareSynonymAttr( "IsLeftModuleHomomorphism",
+    IsLeftModuleGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -341,8 +297,7 @@ HasIsLeftModuleHomomorphism := Tester( IsLeftModuleHomomorphism );
 ##  is 'true' if <mapp> is an <F>-linear general mapping,
 ##  and 'false' otherwise.
 ##
-IsLinearMapping := NewOperation( "IsLinearMapping",
-    [ IsDomain, IsGeneralMapping ] );
+DeclareOperation( "IsLinearMapping", [ IsDomain, IsGeneralMapping ] );
 
 
 #############################################################################
@@ -356,14 +311,12 @@ IsLinearMapping := NewOperation( "IsLinearMapping",
 #P  IsRingGeneralMapping( <mapp> )
 #P  IsRingHomomorphism( <mapp> )
 ##
-IsRingGeneralMapping := IsGeneralMapping and RespectsMultiplication
-    and IsAdditiveGroupGeneralMapping;
-SetIsRingGeneralMapping := Setter( IsRingGeneralMapping );
-HasIsRingGeneralMapping := Tester( IsRingGeneralMapping );
+DeclareSynonymAttr( "IsRingGeneralMapping",
+    IsGeneralMapping and RespectsMultiplication
+    and IsAdditiveGroupGeneralMapping );
 
-IsRingHomomorphism := IsRingGeneralMapping and IsMapping;
-SetIsRingHomomorphism := Setter( IsRingHomomorphism );
-HasIsRingHomomorphism := Tester( IsRingHomomorphism );
+DeclareSynonymAttr( "IsRingHomomorphism",
+    IsRingGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -371,13 +324,11 @@ HasIsRingHomomorphism := Tester( IsRingHomomorphism );
 #P  IsRingWithOneGeneralMapping( <mapp> )
 #P  IsRingWithOneHomomorphism( <mapp> )
 ##
-IsRingWithOneGeneralMapping := IsRingGeneralMapping and RespectsOne;
-SetIsRingWithOneGeneralMapping := Setter( IsRingWithOneGeneralMapping );
-HasIsRingWithOneGeneralMapping := Tester( IsRingWithOneGeneralMapping );
+DeclareSynonymAttr( "IsRingWithOneGeneralMapping",
+    IsRingGeneralMapping and RespectsOne );
 
-IsRingWithOneHomomorphism := IsRingWithOneGeneralMapping and IsMapping;
-SetIsRingWithOneHomomorphism := Setter( IsRingWithOneHomomorphism );
-HasIsRingWithOneHomomorphism := Tester( IsRingWithOneHomomorphism );
+DeclareSynonymAttr( "IsRingWithOneHomomorphism",
+    IsRingWithOneGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -385,14 +336,11 @@ HasIsRingWithOneHomomorphism := Tester( IsRingWithOneHomomorphism );
 #P  IsAlgebraGeneralMapping( <mapp> )
 #P  IsAlgebraHomomorphism( <mapp> )
 ##
-IsAlgebraGeneralMapping := IsRingGeneralMapping
-    and IsLeftModuleGeneralMapping;
-SetIsAlgebraGeneralMapping := Setter( IsAlgebraGeneralMapping );
-HasIsAlgebraGeneralMapping := Tester( IsAlgebraGeneralMapping );
+DeclareSynonymAttr( "IsAlgebraGeneralMapping",
+    IsRingGeneralMapping and IsLeftModuleGeneralMapping );
 
-IsAlgebraHomomorphism := IsAlgebraGeneralMapping and IsMapping;
-SetIsAlgebraHomomorphism := Setter( IsAlgebraHomomorphism );
-HasIsAlgebraHomomorphism := Tester( IsAlgebraHomomorphism );
+DeclareSynonymAttr( "IsAlgebraHomomorphism",
+    IsAlgebraGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -400,15 +348,11 @@ HasIsAlgebraHomomorphism := Tester( IsAlgebraHomomorphism );
 #P  IsAlgebraWithOneGeneralMapping( <mapp> )
 #P  IsAlgebraWithOneHomomorphism( <mapp> )
 ##
-IsAlgebraWithOneGeneralMapping := IsAlgebraGeneralMapping and RespectsOne;
-SetIsAlgebraWithOneGeneralMapping :=
-    Setter( IsAlgebraWithOneGeneralMapping );
-HasIsAlgebraWithOneGeneralMapping :=
-    Tester( IsAlgebraWithOneGeneralMapping );
+DeclareSynonymAttr( "IsAlgebraWithOneGeneralMapping",
+    IsAlgebraGeneralMapping and RespectsOne );
 
-IsAlgebraWithOneHomomorphism := IsAlgebraWithOneGeneralMapping and IsMapping;
-SetIsAlgebraWithOneHomomorphism := Setter( IsAlgebraWithOneHomomorphism );
-HasIsAlgebraWithOneHomomorphism := Tester( IsAlgebraWithOneHomomorphism );
+DeclareSynonymAttr( "IsAlgebraWithOneHomomorphism",
+    IsAlgebraWithOneGeneralMapping and IsMapping );
 
 
 #############################################################################
@@ -418,10 +362,7 @@ HasIsAlgebraWithOneHomomorphism := Tester( IsAlgebraWithOneHomomorphism );
 ##  A general mapping is a field homomorphism if and only if it is
 ##  a ring homomorphism with source a field.
 ##
-IsFieldHomomorphism := NewProperty( "IsFieldHomomorphism",
-    IsGeneralMapping );
-SetIsFieldHomomorphism := Setter( IsFieldHomomorphism );
-HasIsFieldHomomorphism := Tester( IsFieldHomomorphism );
+DeclareProperty( "IsFieldHomomorphism", IsGeneralMapping );
 
 InstallTrueMethod( IsAlgebraHomomorphism, IsFieldHomomorphism );
 
@@ -436,7 +377,7 @@ InstallEqMethodForMappingsFromGenerators := function( IsStruct,
 
     InstallMethod( \=,
         Concatenation( "method for two s.v. gen. mappings", infostring ),
-        IsIdentical,
+        IsIdenticalObj,
         [ IsGeneralMapping and IsSingleValued and respects,
           IsGeneralMapping and IsSingleValued and respects ],
         0,

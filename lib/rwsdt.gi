@@ -5,6 +5,7 @@
 #H  &(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file implements a deep thought collector as representation of a 
 ##  polycyclic collector with power/conjugate presentation.
@@ -16,7 +17,7 @@ Revision.rwsdt_gi :=
 ##
 #R  IsDeepThoughtCollectorRep( <obj> )
 ##
-IsDeepThoughtCollectorRep := NewRepresentation(
+DeclareRepresentation(
          "IsDeepThoughtCollectorRep",
          IsPositionalObjectRep,   
          [1..PC_DEFAULT_TYPE],
@@ -369,10 +370,10 @@ end
 
 #############################################################################
 ##
-#M  PrintObj( <dtrws> )
+#M  ViewObj( <dtrws> )
 ##
 
-InstallMethod( PrintObj,
+InstallMethod( ViewObj,
     true,
     [ IsDeepThoughtCollectorRep  and  IsPowerConjugateCollector ],
     0,
@@ -384,11 +385,27 @@ end  );
 
 #############################################################################
 ##
+#M  PrintObj( <dtrws> )
+##
+
+InstallMethod( PrintObj,
+    true,
+    [ IsDeepThoughtCollectorRep  and  IsPowerConjugateCollector ],
+    0,
+
+function( dtrws )
+    Print( "<< deep thought collector >>" );
+end  );
+#T install a better `PrintObj' method!
+
+
+#############################################################################
+##
 #M  SetPower( <dtrws>, <i>, <rhs> )
 ##
 
 InstallMethod( SetPower, 
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPowerConjugateCollector and  IsDeepThoughtCollectorRep
         and IsMutable,
       IsInt,
@@ -400,7 +417,7 @@ function( dtrws, i, rhs )
 
     # check the family (this cannot be done in install)
     fam := UnderlyingFamily(dtrws);
-    if not IsIdentical( FamilyObj(rhs), fam )  then
+    if not IsIdenticalObj( FamilyObj(rhs), fam )  then
         Error( "<rhs> must lie in the group of <dtrws>" );
     fi;
 
@@ -459,7 +476,7 @@ end;
 
 
 InstallMethod( SetConjugate,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and  IsDeepThoughtCollectorRep
         and IsMutable,
       IsInt,
@@ -583,7 +600,7 @@ end );
 
 InstallMethod(ReducedProduct,
     "DeepThoughtReducedProduct",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -605,7 +622,7 @@ end   );
 
 InstallMethod(ReducedComm,
     "DeepThoughtReducedComm",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -627,7 +644,7 @@ end   );
 
 InstallMethod(ReducedLeftQuotient,
     "DeepThoughtReducedLeftQuotient",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -649,7 +666,7 @@ end   );
 
 InstallMethod(ReducedPower,
     "DeepThoughtReducedPower",
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -669,7 +686,7 @@ end   );
 
 InstallMethod(ReducedQuotient,
     "DeepThoughtReducedQuotient",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -691,7 +708,7 @@ end   );
 
 InstallMethod(ReducedConjugate,
     "DeepThoughtReducedConjugate",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord,
@@ -713,7 +730,7 @@ end   );
 
 InstallMethod(ReducedInverse,
     "DeepThoughtReducedInverse",
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [IsPowerConjugateCollector and IsDeepThoughtCollectorRep
         and IsUpToDatePolycyclicCollector,
      IsAssocWord],
@@ -736,7 +753,7 @@ end   );
 
 InstallMethod(CollectWordOrFail,
     "DeepThought",
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [IsPowerConjugateCollector  and  IsDeepThoughtCollectorRep,
      IsList,
      IsMultiplicativeElementWithInverse],

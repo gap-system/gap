@@ -1,33 +1,28 @@
-GAP 4 Beta 2
+GAP 4 Beta 3
 ------------
 
 This    file      (ftp://ftp-gap.dcs.st-and.ac.uk/pub/gap/gap4beta/INSTALL)
 contains installation  instructions for the beta releases of GAP 4,
 called GAP 4.beta for short.
 
-The current beta release is Beta 2 of 16-Oct-97.
+The current beta release is Beta 3 of XXX-Feb-98.
 
 At the moment we only support GAP 4.beta under UNIX, it has been tested on
 the following systems:
 
-  'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2
-  'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc
-  'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2
-  'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2
-  'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2
-  'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2
-  'power-ibm-aix-gcc2'        for IBM RS/6000 & AIX with GNU cc 2
-  'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc
-  'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2
-  'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2
+  DECalpha under OSF 3.2 with GNU cc 2, DECstation under Ultrix with cc,
+  HP9000 under HP-UX with GNU cc 2, IBM PC under FreeBSD 2.x with GNU cc 2,
+  IBM PC under Linux with GNU cc 2, IBM PC under NeXTSTEP 3.x with GNU cc 2,
+  IBM RS/6000 & AIX with GNU cc 2, SGI Mips under IRIX 5/6 with cc,
+  Sun Sparc under SunOS with GCC 2, Sun Sparc under Solaris with GCC 2
 
 You  will need a  Pentium   class i386 with  at   least 16 Mbyte  to work
 comfortable with  GAP 4.beta, a 486 is  not recommended although GAP 4.beta
 compiles on such systems.
 
 Porting GAP to  another unix system is not  hard, however.  You need some
-very basic understanding  of C and UNIX,  see "Porting GAP to other  UNIX
-systems".  If you plan to port GAP to a non-UNIX system please contact
+very basic understanding  of C and UNIX,  see "If the configuration fails".
+If you plan to port GAP to a non-UNIX system please contact
 
     gap-trouble@dcs.st-and.ac.uk
 
@@ -57,6 +52,14 @@ Where Y is the number of the beta release.
 You  need  all the above  files, however,  at the  time this document was
 written no ``fixX.tar.gz'' existed.
 
+The directory also contains a file
+
+    tbl4bY.tar.gz       character tables and tables of marks
+
+You do not need this file, but if you don't load it you won't have the
+libraries of character tables and tables of marks. (The character tables
+take about 10MB, the tables of marks take up some 70MB of disk space).
+
 Installation of GAP 4.beta under UNIX
 ------------------------------------
 
@@ -73,20 +76,20 @@ can first install it  in your home directory and when it works move it to
 
 The following  installation example assumes  that  you are installing GAP
 4.beta into the   directory ``/usr/local/lib'' on  a  Pentium  Pro running
-FreeBSD.
+Linux.
 
 In the following text, Y in filenames always stands for the version number
 of the beta release. So you should read for example 'gap4bY.tar.gz' as
- 'gap4b2.tar.gz' or whatever the current version you got is.
+ 'gap4b3.tar.gz' or whatever the current version you got is.
 
 Copy or ftp the  files described in "How  to get GAP 4.beta" into this
-directory.  Unpack the files ``gap4bY.tar.gz'', ``doc4bY.tar.gz'' and any
-``fixX.tar.gz'' into the directory using `gunzip' and `tar'.  If there is
-more  than    one   fix   file,    first  unpack   ``fix1.tar.gz'',  then
-``fix2.tar.gz'', an so on.
+directory.  Unpack the files ``gap4bY.tar.gz'', ``doc4bY.tar.gz'' 
+into the directory using `gunzip' and `tar'. Then go to the gap4bY directory
+created and unpack any ``fixX.tar.gz'' If there is more  than    one   fix 
+file,    first  unpack   ``fix1.tar.gz'',  then ``fix2.tar.gz'', an so on.
 
 Let us assume that there are no  ``fixX.tar.gz'' files, if there were any
-they must be packed *after* ``gap4bY.tar.gz'' and ``doc4bY.tar.gz''.
+they must be unpacked *after* ``gap4bY.tar.gz'' and ``doc4bY.tar.gz''.
 
     you@unix> gunzip gap4bY.tar.gz doc4bY.tar.gz
     you@unix> tar xvf gap4bY.tar
@@ -94,74 +97,56 @@ they must be packed *after* ``gap4bY.tar.gz'' and ``doc4bY.tar.gz''.
     you@unix> tar xvf doc4bY.tar.gz
     ...
 
+If you want to install the character tables and tables of marks:
+    you@unix> tar xvf tbl4bY.tar.gz
+    ...
+
 Change in the directory gap4bY.
 
     you@unix> cd gap4bY
 
-Change   into the  directory ``src'' and    execute `make'  to  see which
-compilation targets are predefined.
+The directories 'tbl', 'tom', 'trans', 'small' and 'prim' contain data
+libraries. If you are short of disk space you can erase some of them,
+but then of course you will not be able to access this data.
 
-    you@unix> make
-    usage: 'make <target>' where target is one of
-    'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2
-    'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc
-    'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2
-    'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2
-				(GNU cc 2.6 comes with FreeBSD 2.0)
-    'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2
-    'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2
-				(GNU cc 2.5.8 comes with NeXTSTEP 3.3)
-    'mips-sgi-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2
-    'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc
-    'power-ibm-aix-gcc2'        for IBM RS/6000 & AIX with GNU cc 2
-    'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2
-    'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2
+Under UNIX, we now use the 'autoconfig' method to take care of system
+dependencies. (See below if this is not working on your machine.)
 
-      targets are listed according to preference, i.e.,
-	'mips-sgi-irix-gcc2' is better than 'mips-sgi-irix-cc'.
+If you are installing GAP on various systems that share a file system and if
+you have installed GAP already on another machine remove the files
+`config.cache' and `config.status'. Run the shell script `configure'.
 
-      additional C compiler and linker flags can be passed with
-	'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',
-	i.e., 'make sparc-sun-sunos-gcc2 COPTS=-g LOPTS=-g.'
+    you@unix> ./configure
+    checking host system type... i686-unknown-linux2.0.27
 
-Choose  the  best matching target.   If nothing matches  precisely, check
-Section  "Porting GAP 4.beta  to other UNIX systems".   In our example the
-right target is 'i386-ibm-freebsd-gcc2'.  Now compile GAP.
+This will automatially detect the machine and compiler target. The make
+process will automatically create an appropriate binary subdirectory.
+It also creates a `Makefile' that can
+be used to compile GAP. Simply call
 
-    you@unix> make i386-ibm-freebsd-gcc2
-    gcc -ansi -Wall -g ...
-    ...
+   you@unix> make
+
+You will get various lines of further configuration messages and the the
+compilation process will start.
 
 The compilation  process creates the object  files and the  executable in
-the directory ``/usr/local/lib/gap4beta/bin/<target>/''.  In our  example
-the          executable       will             be      created         as
-``/usr/local/lib/gap4beta/bin/i386-ibm-freebsd-gcc2/gap''
+the directory ``/usr/local/lib/gap4beta/bin/<target>/'', where <target> is
+the name printed by the first `configure'.  In our  example the executable
+will be created as
+``/usr/local/lib/gap4beta/bin/i686-unknown-linux2.0.27/gap''
+
+The automatic configuration should work on any UNIX system. If it does not,
+please inform us at `gap-trouble@dcs.st-and.ac.uk'.
 
 In order   to    test  your   compilation    `cd'  into   the   directory
 ``/usr/local/lib/gap4beta/'' and execute the newly created executable.
 
-*If you are using a 64 bit maschine, start gap using the '-N' flag.*
-
     you@unix> cd ..
-    you@unix> bin/i386-ibm-freebsd-gcc2/gap
+    you@unix> bin/i686-unknown-linux2.0.27/gap
     BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
 
-    This is a  BETA version  of GAP 4.  Please  do not  redistribute this
-    version or discuss it in the GAP forum.  Use the GAP 4 forum instead.
-    Please report bugs and problems to
-
-		      gap-trouble@dcs.st-and.ac.uk
-
-    quoting  the  Version  below  and  the  machine, operation system, and
-    compiler used.
-
-    BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
-
-    Version:  GAP Release 4 Beta 2
-
-    BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA BETA
-
-    Loading the library, please be patient this may take a while.
+    This is a  BETA version  of GAP 4.
+[... lines deleted]
 
     gap>
 
@@ -195,7 +180,7 @@ to edit this script.
     you@unix> cd ~
     you@unix> gap4beta
 
-A set of test files is provided, running them all  takes some 1000 sec on
+A set of test files is provided, running them all  takes some 20 minutes on
 a Pentium Pro 200 Mhz.  So start with ``combinat.tst'' first.
 
     gap> Filename( DirectoriesLibrary("tst"), "combinat.tst" );
@@ -237,7 +222,10 @@ Now use `Read'  (*not* `ReadTest') to read the  file ``testall.g'' to run
     vspchom.tst            24712           1530    (next ~ 1 sec)
     combinat.tst           24858           1587    (next ~ 1 sec)
     vspcmali.tst           27482           1585    (next ~ 1 sec)
-    ...
+    [more files omitted]
+
+You can ignore warnings from 'weakptr.tst', which stem from garbage
+collections at different times.
 
 The documentation  already contains the  corresponding ``dvi'' files, the
 GAP 4.beta manual is split into  four parts.  Ask your system adminstrator
@@ -253,77 +241,34 @@ Extending GAP 4
     Reference Manual        /usr/local/lib/gap4beta/doc/ext/manual.dvi
 
 
-Porting GAP to other UNIX systems
----------------------------------
 
-As GAP 4.beta is a beta release, fixes  and additions will be  distributed
-more rapidly than with GAP 3. Please check our WEB pages before trying to
-install GAP on machines not mentioned in the beginning.
+If the configuration fails
+--------------------------
 
-    http://www-groups.dcs.st-and.ac.uk/~gap/Info4/bugfixes.html
-    http://www.math.rwth-aachen.de/LDFM/GAP/Info4/bugfixes.html
+The configuration script runs various tests to determine the configuration
+of your system. It produces a file `bin/<architecture>/config.h' which
+contains definitions according to the test results.
+It might be, however, that the tests used don't produce on
+your machin the results they are expected to or that further tests are
+necessary. If this is the case the easiest way is to edit the 'config.h'
+script, remove all object files and call 'make' in the `bin/<architecture>'
+subdirectory. If you have to resort to changing or amending this file,
+please tell us what had to be changed (mail to
+`gap-trouble@dcs.st-and.ac.uk'). If you had to add further definitions
+please also tell what properties of your system these `#define's represent.
 
-In order  to port GAP  to a UNIX  systems not mentioned in the beginning,
-you  will need  an ANSI C   compiler.  Proceed with "Installation  of GAP
-4.beta for UNIX" until you have to select a target.
+If GAP compiles but crashes while reading the library or during a garbage
+collection with a bus error it is possible that the configuration script did
+not guess the permitted pointer alignment correctly. This value is stored
+in the line
 
-Now edit the ``Makefile'' and create a new target  for your machine.  For
-a System V machine a good beginning is:
+#define C_STACK_ALIGN           2
 
-<processor>-<company>-<system>-<compiler>:
-        @(if test ! -d ../bin; then mkdir ../bin; fi; \
-          cd ../bin; \
-          if test ! -d <processor>-<company>-<system>-<compiler>; then \
-              mkdir <processor>-<company>-<system>-<compiler>; \
-          fi; \
-          cd ../bin/<processor>-<company>-<system>-<compiler>; \
-        )
-        @(cd ../bin/<processor>-<company>-<system>-<compiler>; \
-          $(MAKE) -f ../../src/Makefile gap \
-            SRC="../../src" \
-            CC="cc" \
-            LFLAGS="$(LOPTS)" \
-            CFLAGS="$(COPTS) -O" \
-            CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-            CFLAGS_SYS="$(COPTS) \
-                -DSYS_IS_USG \
-                -DSYS_HAS_ANSI=1 \
-                -DSYS_ARCH='\"<processor>-<company>-<system>-<compiler>\"'" \
-        )
+of `config.h'. Increase the value to the next power of 2 (<= 8) and compile
+GAP anew.
 
-For a BSD  machine, replace ``SYS_IS_USG''  be ``SYS_IS_BSD''  and try to
-compile GAP 4.beta.  Most likely you  get warnings or error messages about
-conflicting prototypes in ``system.h'' and some  of your operating system
-files.   Check with functions generate problems  and add the following to
-the list ``CFLAGS_SYS'' (do not forget the prefix ``-D'') above:
+There is still a `Makefile' in the `src' directory, but it is
+not used by the configuration process any longer. 
+As a last resort you might want to try this file, but please still report
+your problems to `gap-trouble'.
 
-SYS_HAS_EXEC_PROTO		execve, fork, vfork
-SYS_HAS_IOCTL_PROTO		ioctl
-SYS_HAS_MALLOC_PROTO		malloc, free
-SYS_HAS_MISC_PROTO		sbrk, exit, getenv, atoi, isatty, ttyname
-SYS_HAS_READ_PROTO		read, write
-SYS_HAS_SIGNAL_PROTO		signal, getpid, kill
-SYS_HAS_STDIO_PROTO		fopen, fclose, setbuf, fgets, fputs
-SYS_HAS_STRING_PROTO		strncat, strcmp, strncmp, strlen
-SYS_HAS_TIME_PROTO		getrusage, times, clock
-
-Another possible source of problems  are missing header files, define the
-following if you  do  not have   the corresponding  header file  and  the
-compiler tries to use it.
-
-SYS_TERMIO_H			termio.h
-SYS_SGTTY_H			sgtty.h
-SYS_SIGNAL_H                    signal.h
-SYS_STDIO_H                     stdio.h
-SYS_STDLIB_H                    stdlib.h
-SYS_UNISTD_H                    unistd.h
-
-If the  compilation succeeds *but* the  linker complains about  a missing
-`vfork',         throw          away        the         compiled     file
-``/usr/local/lib/gap4beta/bin/<target>/sysfile.o''          and       add
-`SYS_HAS_NO_VFORK'.
-
-If you have  compiled and linked GAP 4.beta  successfully  please send the
-corresponding ``Makefile'' entry to
-
-    gap-trouble@dcs.st-and.ac.uk

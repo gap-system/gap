@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for tuples
 ##
@@ -19,24 +20,24 @@ Revision.tuples_gd :=
 #C  IsTuple( <obj> )  . . . . . . . . . . . . . . . . . .  category of tuples
 ##
 
-IsTuple := NewCategory( "IsTuple",
+DeclareCategory( "IsTuple",
     IsDenseList and IsMultiplicativeElementWithInverse );
 
 
 #############################################################################
 ##
-#C  IsTuplesFamily( <family> )  . . . . . . . . . category of tuples families
+#C  IsTupleFamily( <family> ) . . . . . . . . . . category of tuples families
 ##
 
-IsTuplesFamily := CategoryFamily( IsTuple );
+DeclareCategoryFamily( "IsTuple" );
 
 
 #############################################################################
 ##
-#C  IsTuplesCollection( <coll> )  . . . . . .  category of tuples collections
+#C  IsTupleCollection( <coll> )   . . . . . .  category of tuples collections
 ##
 
-IsTuplesCollection := CategoryCollections( IsTuple );
+DeclareCategoryCollections( "IsTuple" );
 
 
 #############################################################################
@@ -45,7 +46,7 @@ IsTuplesCollection := CategoryCollections( IsTuple );
 ##
 ##
   
-TuplesFamily := NewOperation( "TuplesFamily", [ IsCollection ] );
+DeclareOperation( "TuplesFamily", [ IsCollection ] );
 
 
 #############################################################################
@@ -54,20 +55,18 @@ TuplesFamily := NewOperation( "TuplesFamily", [ IsCollection ] );
 ##
 ##
 
-ComponentsOfTuplesFamily := NewAttribute( "ComponentsOfTuplesFamily", 
-                                    IsTuplesFamily);
-SetComponentsOfTuplesFamily := Setter(ComponentsOfTuplesFamily);
-HasComponentsOfTuplesFamily := Tester(ComponentsOfTuplesFamily);
+DeclareAttribute( "ComponentsOfTuplesFamily", IsTupleFamily );
 
 #############################################################################
 ##
 #V  TUPLES_FAMILIES . . . . . . . . . . .  all tuples families so far created
 ##
-##  TUPLES_FAMILIES is a list whose ith component is a list of all i+1 
-##  component tuples families known so far
+##  `TUPLES_FAMILIES' is a list whose $i$-th component is a weak pointer
+##  object containing all currently known $i+1$ component tuples families.
 ##
 
-TUPLES_FAMILIES := [];
+DeclareGlobalVariable( "TUPLES_FAMILIES",
+    "list, at position i the list of known i+1 component tuples families" );
 
 
 #############################################################################
@@ -81,8 +80,8 @@ TUPLES_FAMILIES := [];
 ##                                             and objlist length  
 ##
 
-Tuple := NewOperation( "Tuple", [ IsList ]);
-TupleNC := NewOperation( "TupleNC", [ IsTuplesFamily, IsList ]);
+DeclareOperation( "Tuple", [ IsList ]);
+DeclareOperation( "TupleNC", [ IsTupleFamily, IsList ]);
 
 
 #############################################################################

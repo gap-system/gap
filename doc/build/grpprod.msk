@@ -1,0 +1,195 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  grpprod.msk                 GAP documentation            Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Group Products}
+
+This chapter describes the various group product constructions that are
+possible in {\GAP}.
+Currently the only methods provided for products are for permutation groups
+and pc groups when the product can be naturally represented as a group of the
+same family.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Direct Products}
+
+The direct product of  groups is the cartesian product (of the groups
+considered as element sets) with component-wise multiplication.
+
+\Declaration{DirectProduct}
+{\GAP} will try to choose an efficient representation for the direct
+product. For example the direct product of permutation groups will be a
+permutation group again and the direct product of PC groups will be a PC
+group.
+
+The functions `Embedding' and `Projection' (see "Embeddings and
+Projections") will give the various embeddings of the components in the
+direct product and from the direct product on the components.
+
+\beginexample
+gap> g:=Group((1,2,3),(1,2));;
+gap> d:=DirectProduct(g,g,g);
+Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ], ... )
+gap> Size(d);
+216
+gap> e:=Embedding(d,2);
+2nd embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) 
+ ], ... )
+gap> Image(e,(1,2));
+(4,5)
+gap> Image(Projection(d,2),(1,2,3)(4,5)(8,9)); 
+(1,2)
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Semidirect Products}
+
+The semidirect product of a group <N> with a group <G> acting via a
+homomorphism <alpha> from <G> into the automorphism group of <N> is the
+cartesian product $<G>\times<N>$ with the multiplication
+$(g,n)\cdot(h,m)=(gh,n^{(h\alpha)}m)$.
+
+\Declaration{SemidirectProduct}
+The first `Embedding' into the direct product embeds <G>, the second embeds
+<N>. The function `Projection' returns the projection onto the group <G>.
+\beginexample
+gap> n:=AbelianGroup(IsPcGroup,[2,2]);
+Group( [ f1, f2 ], ... )
+gap> au:=AutomorphismGroup(n);
+Group( [ Pcgs([ f1, f2 ]) -> [ f2, f1 ], Pcgs([ f1, f2 ]) -> [ f2, f1 ], 
+  Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], Pcgs([ f1, f2 ]) -> [ f1, f2 ] ], ... )
+gap> apc:=IsomorphismPcGroup(au);
+[ Pcgs([ f1, f2 ]) -> [ f2, f1 ], Pcgs([ f1, f2 ]) -> [ f2, f1 ], 
+  Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], Pcgs([ f1, f2 ]) -> [ f1, f2 ] ] -> 
+[ f1*f2, f1*f2, f1, <identity> of ... ]
+gap> g:=Image(apc);
+Group( [ f1*f2, f1*f2, f1, <identity> of ... ], ... )
+gap> apci:=InverseGeneralMapping(apc);
+[ f1*f2, f1*f2, f1, <identity> of ... ] -> [ Pcgs([ f1, f2 ]) -> [ f2, f1 ], 
+  Pcgs([ f1, f2 ]) -> [ f2, f1 ], Pcgs([ f1, f2 ]) -> [ f1*f2, f2 ], 
+  Pcgs([ f1, f2 ]) -> [ f1, f2 ] ]
+gap> IsGroupHomomorphism(apci);
+true
+gap> p:=SemidirectProduct(g,apci,n);
+Group( [ f1, f2, f3, f4 ], ... )
+gap> Size(p);
+24
+gap> IsomorphismGroups(p,Group((1,2,3,4),(1,2)));
+[ f1*f3, f2 ] -> [ (1,4,2,3), (2,4,3) ]
+gap> Size(Image(Embedding(p,1)));
+6
+gap> Embedding(p,2);             
+Pcgs([ f1, f2 ]) -> [ f3, f4 ]
+gap> Projection(p);
+Pcgs([ f1, f2, f3, f4 ]) -> [ f1, f2, <identity> of ..., <identity> of ... ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subdirect Products}
+
+The subdirect product of the groups $G$ and $H$ with respect to the
+epimorphisms $\varphi\colon G\to A$ and $\psi\colon H\to A$ (for a common
+group $A$) is the subgroup of the direct product $G\times H$ constsiting of
+the elements $(g,h)$ for which $g\varphi=h\psi$. It is the pull-back of the
+diagram:
+%display{tex}
+$$
+\matrix{
+&&G&\cr
+&&\Big\downarrow&\varphi\cr
+H&\mathop{\longrightarrow}\limits^{\psi}&A&\cr
+}
+$$
+%display{html}
+%There is no diagram in HTML
+%display{text}
+%                   G
+%                   | phi
+%             psi   V
+%          H  --->  A
+%enddisplay
+
+\Declaration{SubdirectProduct}
+The operation `Projections' returns the projections on both groups.
+\beginexample
+gap> g:=Group((1,2,3),(1,2));
+Group( [ (1,2,3), (1,2) ], ... )
+gap> hom:=GroupHomomorphismByImagesNC(g,g,[(1,2,3),(1,2)],[(),(1,2)]);
+[ (1,2,3), (1,2) ] -> [ (), (1,2) ]
+gap> s:=SubdirectProduct(g,g,hom,hom);
+Group( [ (1,2,3), (1,2)(5,6), (4,5,6) ], ... )
+gap> Size(s);
+18
+gap> p:=Projection(s,2);
+2nd projection of Group( [ (1,2,3), (1,2)(5,6), (4,5,6) ], ... )
+gap> Image(p,(1,3,2)(4,5,6));
+(1,2,3)
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Wreath Products}
+
+The wreath product of a group <G> with a permutation group <P> acting on <n>
+points is the semidirect product of the normal subgroup $<G>^n$ with the
+complement <P> which acts by permuting the components.
+
+\Declaration{WreathProduct}
+The operation `Embedding' provides the <n> embeddings of <G> in the wreath
+product, `Embedding(<W>,<n>+1)' is the embedding of <P>. The `Projection' of
+the wreath product provides the projection onto the acting group <P>.
+\beginexample
+gap> g:=Group((1,2,3),(1,2));
+Group( [ (1,2,3), (1,2) ], ... )
+gap> p:=Group((1,2,3));
+Group( [ (1,2,3) ], ... )
+gap> w:=WreathProduct(g,p);
+Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
+  (1,4,7)(2,5,8)(3,6,9) ], ... )
+gap> Size(w);
+648
+gap> Embedding(w,1);
+1st embedding into Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
+  (1,4,7)(2,5,8)(3,6,9) ], ... )
+gap> Image(Embedding(w,3));
+Group( [ (7,8,9), (7,8) ], ... )
+gap> Image(Embedding(w,4));
+Group( [ (1,4,7)(2,5,8)(3,6,9) ], ... )
+gap> Image(Projection(w),(1,4,8,2,6,7,3,5,9));
+(1,2,3)
+\endexample
+
+For permutation groups, `WreathProduct' returns the imprimitive action.
+\Declaration{WreathProductProductAction}
+\beginexample
+gap> w:=WreathProductProductAction(g,p);
+Group( 
+[ ( 1, 2, 3)( 4, 5, 6)( 7, 8, 9)(10,11,12)(13,14,15)(16,17,18)(19,20,21)
+    (22,23,24)(25,26,27), ( 1, 4, 7)( 2, 5, 8)( 3, 6, 9)(10,13,16)(11,14,17)
+    (12,15,18)(19,22,25)(20,23,26)(21,24,27), 
+  ( 1,10,19)( 2,11,20)( 3,12,21)( 4,13,22)( 5,14,23)( 6,15,24)( 7,16,25)
+    ( 8,17,26)( 9,18,27), ( 1, 2)( 4, 5)( 7, 8)(10,11)(13,14)(16,17)(19,20)
+    (22,23)(25,26), ( 1, 4)( 2, 5)( 3, 6)(10,13)(11,14)(12,15)(19,22)(20,23)
+    (21,24), ( 1,10)( 2,11)( 3,12)( 4,13)( 5,14)( 6,15)( 7,16)( 8,17)(9,18), 
+  ( 2,10, 4)( 3,19, 7)( 5,11,13)( 6,20,16)( 8,12,22)( 9,21,25)(15,23,17)
+    (18,24,26) ], ... )
+gap> Size(w);
+648
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Embeddings and Projections}
+
+\>Embedding(<P>,<nr>)
+
+returns the <nr>-th embedding in the group product <P>. The specific meaning
+of this embedding is described in the section for the appropriate product.
+
+\>Projection(<P>[,<nr>])
+
+returns the <nr>-th projection of the group product <P>. The specific
+projection returned is described in the section for the appropriate product.
+

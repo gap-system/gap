@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations for symmetric and alternating
 ##  permutation groups
@@ -20,12 +21,10 @@ Revision.gpprmsya_gd :=
 ##  A   group is a  natural  alternating group if  it is  a permutation group
 ##  acting as alternating group on its moved points.
 ##
-IsNaturalAlternatingGroup := NewProperty(
+DeclareProperty(
     "IsNaturalAlternatingGroup",
     IsPermGroup );
 
-SetIsNaturalAlternatingGroup := Setter(IsNaturalAlternatingGroup);
-HasIsNaturalAlternatingGroup := Tester(IsNaturalAlternatingGroup);
 
 
 #############################################################################
@@ -34,12 +33,10 @@ HasIsNaturalAlternatingGroup := Tester(IsNaturalAlternatingGroup);
 ##
 ##  Such a group is a group isomorphic to a natural alterning group.
 ##
-IsAlternatingGroup := NewProperty(
+DeclareProperty(
     "IsAlternatingGroup",
     IsGroup );
 
-SetIsAlternatingGroup := Setter(IsAlternatingGroup);
-HasIsAlternatingGroup := Tester(IsAlternatingGroup);
 
 
 #############################################################################
@@ -58,12 +55,10 @@ InstallTrueMethod(
 ##  A group is a natural symmetric group if it is  a permutation group acting
 ##  as symmetric group on its moved points.
 ##
-IsNaturalSymmetricGroup := NewProperty(
+DeclareProperty(
     "IsNaturalSymmetricGroup",
     IsPermGroup );
 
-SetIsNaturalSymmetricGroup := Setter(IsNaturalSymmetricGroup);
-HasIsNaturalSymmetricGroup := Tester(IsNaturalSymmetricGroup);
 
 
 #############################################################################
@@ -72,12 +67,10 @@ HasIsNaturalSymmetricGroup := Tester(IsNaturalSymmetricGroup);
 ##
 ##  Such a group is a group isomorphic to a natural symmetric group.
 ##
-IsSymmetricGroup := NewProperty(
+DeclareProperty(
     "IsSymmetricGroup",
     IsGroup );
 
-SetIsSymmetricGroup := Setter(IsSymmetricGroup);
-HasIsSymmetricGroup := Tester(IsSymmetricGroup);
 
 
 #############################################################################

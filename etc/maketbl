@@ -35,6 +35,11 @@
 ##     ALN("<name>",<listofnames>);
 ##     ARC("<name>","<component>",<data>);
 ##
+##  Besides the above calls, and the data itself,
+##  only those {\GAP} library functions are defined also in the check
+##  phase at the end of the 'maketbl' run
+##  (see the end of this file).
+##
 ##  The calls may use several lines of a file.
 ##  The ';' is the last character in its line if and only if it terminates
 ##  a function call.
@@ -56,16 +61,16 @@
 ##  ARC("<name>","projectives",<list>);
 ##      The projection maps from the tables whose names occur at the odd
 ##      positions in <list> to <name> will be stored in the global list
-##      'LIBTABLE.projections'.
+##      'LIBLIST.projections'.
 ##      It is assumed that after the first line of a call, at most one
 ##      table name occurs in each line.
 ##
 ##  ARC("<name>","isSimple",<list>);
-##      The table <name> will occur in the list 'LIBTABLE.simpleInfo'.
+##      The table <name> will occur in the list 'LIBLIST.simpleInfo'.
 ##
 ##  ARC("<name>","extInfo",<list>);
 ##      For simple tables <name>, the info in <list> will be stored in
-##      'LIBTABLE.simpleInfo'.
+##      'LIBLIST.simpleInfo'.
 ##
 
 
@@ -105,6 +110,7 @@ awk -v "PRJ=$PRJFILE" \
          FS = "\""
          i = 1
          jj = 0
+         t = 1
          file = ""
          while ( getline < OUTNAM && $1 !~ /^LIBLIST.firstnames/ ) {
              print $0;
@@ -166,7 +172,7 @@ awk -v "PRJ=$PRJFILE" \
          nam = $2
          k = 4
          while ( k <= NF ) {
-             if ( $k != "," && $k != "" && $k != "\]\);" ) {
+             if ( $k != "," && $k != "" && $k != "]);" ) {
                  setnewname( tolower($k), nam, 0 )
              }
              k++
@@ -178,7 +184,7 @@ awk -v "PRJ=$PRJFILE" \
              getline
              k = 1
              while ( k <= NF ) {
-                 if ( $k != "," && $k != "" && $k != "\]\);" ) {
+                 if ( $k != "," && $k != "" && $k != "]);" ) {
                      setnewname( tolower($k), nam, 0 )
                  }
                  k++
@@ -224,6 +230,13 @@ awk -v "PRJ=$PRJFILE" \
          }
      }
 
+     # Store the info needed for the map to the names of tables of marks.
+     /^ARC\(.*"tomidentifier"/ {
+         tblidents[t] = tolower($2)
+         tomidents[t] = tolower($6)
+         t++
+     }
+
      # Store the source and destination of fusions (just for checks).
      /^ALF/ {
          if ( $2 in fusions ) {
@@ -265,7 +278,7 @@ awk -v "PRJ=$PRJFILE" \
      END {
 
          # Print the list of first names, in lines of length at most 77.
-         line = "LIBLIST.firstnames := \[ "
+         line = "LIBLIST.firstnames := Immutable( [ "
          l = 0
          for ( j = 1; j < i; j++ ) {
 
@@ -283,10 +296,10 @@ awk -v "PRJ=$PRJFILE" \
                  line = "  \"" firstnam[j] "\",";
              }
          }
-         print line " \];\n";
+         print line " ] );\n";
 
          # Print the list of file positions.
-         print( "LIBLIST.filenames := Concatenation\( \[" )
+         print( "LIBLIST.filenames := Immutable( Concatenation( [" )
          m = 0
          nam = filename[1]
          for ( j = 1; j < i; j++ ) {
@@ -300,10 +313,10 @@ awk -v "PRJ=$PRJFILE" \
              }
          }
          print( "  List( [ 1 .. " m " ], x -> " nam " )," )
-         print "  \] \);\n";
+         print "  ] ) );\n";
 
          # Print the list of file names.
-         print( "LIBLIST.files := \[" )
+         print( "LIBLIST.files := Immutable( [" )
          line = " "
          for ( j = 1; j <= jj; j++ ) {
              if ( length( line " \"" files[j] "\"," ) <= 77 ) {
@@ -314,7 +327,7 @@ awk -v "PRJ=$PRJFILE" \
                  line = "  \"" files[j] "\",";
              }
          }
-         print line " \];\n";
+         print line " ] );\n";
 
          # Check whether all components of 'fusions' are valid.
          for ( j in fusions ) {
@@ -333,7 +346,7 @@ awk -v "PRJ=$PRJFILE" \
          }
 
          # Print the list of fusion sources.
-         print( "LIBLIST.fusionsource := \[" )
+         print( "LIBLIST.fusionsource := Immutable( [" )
          for ( j = 1; j < i; j++ ) {
              print( "  [ # fusions to " firstnam[j] )
              line = " "
@@ -347,12 +360,12 @@ awk -v "PRJ=$PRJFILE" \
                      line = "  \"" text[n] "\",";
                  }
              }
-             print line " \],"
+             print line " ],"
          }
-         print "  \];\n";
+         print "  ] );\n";
 
          # Print the list of admissible names.
-         print( "LIBLIST.names := \[" )
+         print( "LIBLIST.names := [" )
          system( "sort " NAMES " > " NAMES2 )
          system( "rm " NAMES )
          name = ""
@@ -374,20 +387,20 @@ awk -v "PRJ=$PRJFILE" \
                      }
                  }
                  else {
-                     # If there was an antry, close it.
+                     # If there was an entry, close it.
                      if ( name != "" ) {
-                         if ( length( line "\],"  ) <= 77 ) {
-                             print( line "\]," )
+                         if ( length( line "],"  ) <= 77 ) {
+                             print( line "]," )
                          }
                          else {
                              print line
-                             print( "  \]," );
+                             print( "  ]," );
                          }
                      }
              
                      # Initialize the new entry.
                      name = $1
-                     line = " \[\"" $1 "\""
+                     line = " [\"" $1 "\""
                      if ( length( line ",\"" $2 "\""  ) <= 77 ) {
                          line = line ",\"" $2 "\""
                      }
@@ -399,7 +412,7 @@ awk -v "PRJ=$PRJFILE" \
              }
          }
          # Print the buffer, close the entry, close the list.
-         print line "\]\n\];\n";
+         print line "]\n];\n";
 
          system( "rm " NAMES2 )
 
@@ -419,6 +432,32 @@ awk -v "PRJ=$PRJFILE" \
          # They shall be sorted according to the ordering of {\GAP},
          # so we leave the sorting to {\GAP}.
          print( "SortParallel( LIBLIST.allnames, LIBLIST.position );\n" )
+
+         # Print the map to the identifiers of tables of marks.
+         print( "TOM_TBL_INFO[1]:= Immutable( [" )
+         line = "  "
+         for ( j = 1; j < t; j++ ) {
+             if ( length( line "\"" tomidents[j] "\"," ) <= 77 ) {
+                 line = line "\"" tomidents[j] "\","
+             }
+             else {
+                 print line;
+                 line = "  \"" tomidents[j] "\",";
+             }
+         }
+         print line " ] );";
+         print( "TOM_TBL_INFO[2]:= Immutable( [" )
+         line = "  "
+         for ( j = 1; j < t; j++ ) {
+             if ( length( line "\"" tblidents[j] "\"," ) <= 77 ) {
+                 line = line "\"" tblidents[j] "\","
+             }
+             else {
+                 print line;
+                 line = "  \"" tblidents[j] "\",";
+             }
+         }
+         print line " ] );\n";
 
      }' $INFILES > $TMPFILE
 
@@ -454,7 +493,7 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
          while ( getline < PRJ > 0 ) {
              projection[$1] = $2
          }
-         print( "LIBLIST.projections := [" )
+         print( "LIBLIST.projections := Immutable( [" )
 
          #  Remove the temporary file.
          system( "rm " PRJ )
@@ -467,7 +506,7 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
 
              # The complete assignment fits in one line.
              if ( $NF != "" && substr( $NF, length($NF) ) == ";" ) {
-                 printf( "  \[\"%s\",\"%s\",ProjectionMap(\n  %s\],\n",
+                 printf( "  [\"%s\",\"%s\",ProjectionMap(\n  %s],\n",
                          $2, $4, substr( $5, 2, length($5)-2 ) )
              }
 
@@ -477,13 +516,13 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
                  # The last character of $5 is '[',
                  # so the following lines contain only text lines.
                  if ( substr( $5, length($5) ) == "[" ) {
-                     printf( "  \[\"%s\",\"%s\",ProjectionMap(\n  %s)\],\n",
+                     printf( "  [\"%s\",\"%s\",ProjectionMap(\n  %s)],\n",
                              $2, $4, substr( $5, 2, length($5)-3 ) )
                  }
     
                  # The following lines contain also parts of <map> .
                  else {
-                     printf( "  \[\"%s\",\"%s\",ProjectionMap(\n  %s\n",
+                     printf( "  [\"%s\",\"%s\",ProjectionMap(\n  %s\n",
                              $2, $4, substr( $5, 2, length($5)-1 ) )
                      getline
 
@@ -496,11 +535,11 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
                          getline
                      }
                      if ( substr( $NF, length($NF) ) == ";" ) {
-                         printf( "  %s\],\n",
+                         printf( "  %s],\n",
                                  substr( $0, 1, length($0)-1 ) )
                      }
                      else {
-                         printf( "  %s)\],\n",
+                         printf( "  %s)],\n",
                                  substr( $0, 1, length($0)-2 ) )
                      }
                  }
@@ -511,7 +550,7 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
      END {
 
            # Close the list 'LIBLIST.projections'.
-           print( "  ];\n" )
+           print( "  ] );\n" )
 
      }' $INFILES >> $OUTFILE
 
@@ -527,7 +566,7 @@ awk -v "PRJ=$PRJFILE" 'BEGIN {
 awk 'BEGIN {
          FS = "\""
          simple = ""
-         print( "LIBLIST.simpleInfo := [" )
+         print( "LIBLIST.simpleInfo := Immutable( [" )
      }
 
      # Print the info about simple groups and their extensions.
@@ -539,16 +578,28 @@ awk 'BEGIN {
 
      /^ARC.*extInfo/ {
           if ( $2 == simple ) {
-              printf( "  \[ \"%s\", \"%s\", \"%s\" \],\n", $6, simple, $8 )
+              printf( "  [ \"%s\", \"%s\", \"%s\" ],\n", $6, simple, $8 )
           }
      }
 
      END {
 
          # Close the list 'LIBLIST.simpleInfo'.
-         print( "  ];\n\n" )
+         print( "  ] );\n\n" )
 
      }' $INFILES >> $OUTFILE
+
+
+#############################################################################
+##
+##  Add the info about sporadic simple groups.
+##
+echo 'LIBLIST.sporadicSimple := Immutable( [' >> $OUTFILE
+echo '  "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3",' >> $OUTFILE
+echo '  "M24", "McL", "He", "Ru", "Suz", "ON", "Co3", "Co2",' >> $OUTFILE
+echo '  "Fi22", "HN", "Ly", "Th", "Fi23", "Co1", "J4", "F3+",' >> $OUTFILE
+echo '  "B", "M" ] );' >> $OUTFILE
+echo ' ' >> $OUTFILE
 
 
 #############################################################################
@@ -613,6 +664,7 @@ echo 'ConstructV4G := function( arg ); end;;' >> $CHECKFILE
 echo 'ConstructGS3 := function( arg ); end;;' >> $CHECKFILE
 echo 'ConstructPermuted := function( arg ); end;;' >> $CHECKFILE
 echo 'ConstructClifford := function( arg ); end;;' >> $CHECKFILE
+echo 'ConstructFactor := function( arg ); end;;' >> $CHECKFILE
 echo 'Concatenation := function( arg ) return 0; end;;' >> $CHECKFILE
 echo 'TransposedMat := function( arg ) return 0; end;;' >> $CHECKFILE
 
@@ -630,6 +682,4 @@ rm $CHECKFILE $CHECKFILE2
 #############################################################################
 ##
 #E  maketbl . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

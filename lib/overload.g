@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration and methods of ``overloaded''
 ##  operations, that is, operations for which the meaning of the result
@@ -28,10 +29,12 @@
 ##  
 ##  The key requirement is that no object ever exists which inherits from
 ##  two types with distinct meanings.
-##  If this ever happens, there *must* be a method installed for the join
+##  Whenever this happens, there *must* be a method installed for the join
 ##  of the relevant categories which decides which meaning applies,
 ##  otherwise the meaning of the operation is at the mercy of the ranking
 ##  system.
+##  Examples for this are `Kernel' and `CoKernel' for general mappings
+##  that respect both addition and  multiplication.
 ##
 ##  The guideline for the implementation is the following.
 ##  Non-qualified operations with one argument aren't attributes or
@@ -57,7 +60,7 @@ Revision.overload_g :=
 ##  is the cokernel of a general mapping that respects multiplicative or
 ##  additive structure (but not both) ...
 ##
-CoKernel := NewOperation( "CoKernel", [ IsObject ] );
+DeclareOperation( "CoKernel", [ IsObject ] );
 
 InstallMethod( CoKernel, true,
     [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
@@ -79,7 +82,7 @@ InstallMethod( CoKernel, true,
 ##
 ##  is the degree of a polynomial, a character ...
 ##
-Degree := NewOperation( "Degree", [ IsObject ] );
+DeclareOperation( "Degree", [ IsObject ] );
 
 InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
 
@@ -88,7 +91,7 @@ InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
 ##
 #O  DerivedSeries( <D> )
 ##
-DerivedSeries := NewOperation( "DerivedSeries", [ IsObject ] );
+DeclareOperation( "DerivedSeries", [ IsObject ] );
 
 InstallMethod( DerivedSeries, true, [ IsAlgebra ], 0,
     DerivedSeriesOfAlgebra );
@@ -102,7 +105,7 @@ InstallMethod( DerivedSeries, true, [ IsGroup   ], 0,
 ##
 ##  is the determinant of a matrix, a linear mapping, a character ...
 ##
-Determinant := NewOperation( "Determinant", [ IsObject ] );
+DeclareOperation( "Determinant", [ IsObject ] );
 
 InstallMethod( Determinant, true, [ IsMatrix ], 0, DeterminantMat );
 InstallMethod( Determinant, true, [ IsClassFunction ], 0,
@@ -113,10 +116,10 @@ InstallMethod( Determinant, true, [ IsClassFunction ], 0,
 ##
 #O  Eigenvalues( <obj> )
 ##
-Eigenvalues := NewOperation( "Eigenvalues", [ IsObject ] );
+DeclareOperation( "Eigenvalues", [ IsObject ] );
 
 InstallOtherMethod( Eigenvalues, true,
-    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    [ IsClassFunction, IsPosInt ], 0,
     EigenvaluesChar );
 
 
@@ -128,11 +131,11 @@ InstallOtherMethod( Eigenvalues, true,
 #O  Induced( <chars>, <tbl> )
 #O  Induced( <subtbl>, <tbl>, <chars> )
 #O  Induced( <subtbl>, <tbl>, <chars>, <specification> )
-#M  Induced( <subtbl>, <tbl>, <chars>, <fusionmap> )
+#O  Induced( <subtbl>, <tbl>, <chars>, <fusionmap> )
 ##
 ##  delegates to 'InducedClassFunction' or ...
 ##
-Induced := NewOperation( "Induced", [ IsObject, IsObject ] );
+DeclareOperation( "Induced", [ IsObject, IsObject ] );
 
 InstallMethod( Induced, true,
     [ IsClassFunctionWithGroup, IsGroup ], 0,
@@ -165,8 +168,34 @@ InstallOtherMethod( Induced, true,
 
 InstallOtherMethod( Induced, true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable,
-      IsHomogeneousList, IsHomogeneousList and IsCyclotomicsCollection ], 0,
+      IsHomogeneousList, IsHomogeneousList and IsCyclotomicCollection ], 0,
     InducedClassFunctions );
+
+
+#############################################################################
+##
+#O  IsIrreducible( <obj> )
+##
+##  is 'true' if <obj> is an irreducible ring element or an irreducible
+##  character or an irreducible module ...
+##
+##  (Note that we must be careful since characters are also ring elements,
+##  and for example linear characters are irreducible as characters but not
+##  as ring elements since they are units.)
+##
+DeclareOperation( "IsIrreducible", [ IsObject ] );
+
+#T InstallMethod( IsIrreducible, true, [ IsAModule ], 0,
+#T     IsIrreducibleModule );
+InstallMethod( IsIrreducible, true, [ IsClassFunction ], 0,
+    IsIrreducibleCharacter );
+InstallMethod( IsIrreducible, true, [ IsRingElement ], 0,
+    function( r )
+    if IsClassFunction( r ) then
+      TryNextMethod();
+    fi;
+    return IsIrreducibleRingElement( r );
+    end );
 
 
 #############################################################################
@@ -176,15 +205,15 @@ InstallOtherMethod( Induced, true,
 ##  is 'true' if <obj> is a monomial group or a monomial character or
 ##  a monomial representation or a monomial matrix or a monomial number ...
 ##
-IsMonomial := NewOperation( "IsMonomial", [ IsObject ] );
+DeclareOperation( "IsMonomial", [ IsObject ] );
 
-InstallMethod( IsMonomial, true, [ IsCharacter ], 0,
+InstallMethod( IsMonomial, true, [ IsClassFunction ], 0,
     IsMonomialCharacter );
 InstallMethod( IsMonomial, true, [ IsGroup ], 0,
     IsMonomialGroup );
 InstallMethod( IsMonomial, true, [ IsMatrix ], 0,
     IsMonomialMatrix );
-InstallMethod( IsMonomial, true, [ IsInt and IsPosRat ], 0,
+InstallMethod( IsMonomial, true, [ IsPosInt ], 0,
     IsMonomialNumber );
 
 
@@ -194,7 +223,7 @@ InstallMethod( IsMonomial, true, [ IsInt and IsPosRat ], 0,
 ##
 ##  is 'true' if <obj> is a nilpotent group or a nilpotent algebra or ...
 ##
-IsNilpotent := NewOperation( "IsNilpotent", [ IsObject ] );
+DeclareOperation( "IsNilpotent", [ IsObject ] );
 
 InstallMethod( IsNilpotent, true, [ IsAlgebra ], 0, IsNilpotentAlgebra );
 InstallMethod( IsNilpotent, true, [ IsGroup   ], 0, IsNilpotentGroup   );
@@ -206,10 +235,14 @@ InstallMethod( IsNilpotent, true, [ IsGroup   ], 0, IsNilpotentGroup   );
 ##
 ##  is 'true' if <obj> is a simple group or a simple algebra or ...
 ##
-IsSimple := NewOperation( "IsSimple", [ IsObject ] );
+DeclareOperation( "IsSimple", [ IsObject ] );
 
 InstallMethod( IsSimple, true, [ IsAlgebra ], 0, IsSimpleAlgebra );
+#T InstallMethod( IsSimple, true, [ IsAModule ], 0,
+#T     IsSimpleModule );
 InstallMethod( IsSimple, true, [ IsGroup   ], 0, IsSimpleGroup   );
+InstallMethod( IsSimple, true, [ IsOrdinaryTable ], 0,
+    IsSimpleCharacterTable );
 
 
 #############################################################################
@@ -218,10 +251,12 @@ InstallMethod( IsSimple, true, [ IsGroup   ], 0, IsSimpleGroup   );
 ##
 ##  is 'true' if <obj> is a solvable group or a solvable algebra or ...
 ##
-IsSolvable := NewOperation( "IsSolvable", [ IsObject ] );
+DeclareOperation( "IsSolvable", [ IsObject ] );
 
 InstallMethod( IsSolvable, true, [ IsAlgebra ], 0, IsSolvableAlgebra );
 InstallMethod( IsSolvable, true, [ IsGroup   ], 0, IsSolvableGroup   );
+InstallMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
+    IsSolvableCharacterTable );
 
 
 #############################################################################
@@ -231,7 +266,7 @@ InstallMethod( IsSolvable, true, [ IsGroup   ], 0, IsSolvableGroup   );
 ##  is 'true' if <obj> is a supersolvable group or a supersolvable algebra
 ##  or ...
 ##
-IsSupersolvable := NewOperation( "IsSupersolvable", [ IsObject ] );
+DeclareOperation( "IsSupersolvable", [ IsObject ] );
 
 InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
 
@@ -240,7 +275,7 @@ InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
 ##
 #O  IsPerfect( <D> )
 ##
-IsPerfect := NewOperation( "IsPerfect", [ IsObject ] );
+DeclareOperation( "IsPerfect", [ IsObject ] );
 
 InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
 
@@ -253,7 +288,7 @@ InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
 ##  additive structure (but not both),
 ##  or the kernel of a character ...
 ##
-Kernel := NewOperation( "Kernel", [ IsObject ] );
+DeclareOperation( "Kernel", [ IsObject ] );
 
 InstallMethod( Kernel, true,
     [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
@@ -275,7 +310,7 @@ InstallMethod( Kernel, true, [ IsClassFunction ], 0, KernelOfCharacter );
 ##
 #O  LowerCentralSeries( <D> )
 ##
-LowerCentralSeries := NewOperation( "LowerCentralSeries", [ IsObject ] );
+DeclareOperation( "LowerCentralSeries", [ IsObject ] );
 
 InstallMethod( LowerCentralSeries, true, [ IsAlgebra ], 0,
     LowerCentralSeriesOfAlgebra );
@@ -292,7 +327,7 @@ InstallMethod( LowerCentralSeries, true, [ IsGroup   ], 0,
 ##
 ##  delegates to 'RestrictedClassFunction' or ...
 ##
-Restricted := NewOperation( "Restricted", [ IsObject, IsObject ] );
+DeclareOperation( "Restricted", [ IsObject, IsObject ] );
 
 Inflated := Restricted;
 
@@ -322,7 +357,7 @@ InstallOtherMethod( Restricted, true,
     RestrictedClassFunctions );
 
 InstallOtherMethod( Restricted, true,
-    [ IsMatrix, IsList and IsCyclotomicsCollection ], 0,
+    [ IsMatrix, IsList and IsCyclotomicCollection ], 0,
     RestrictedClassFunctions );
 
 
@@ -330,7 +365,7 @@ InstallOtherMethod( Restricted, true,
 ##
 #O  UpperCentralSeries( <D> )
 ##
-UpperCentralSeries := NewOperation( "UpperCentralSeries", [ IsObject ] );
+DeclareOperation( "UpperCentralSeries", [ IsObject ] );
 
 InstallMethod( UpperCentralSeries, true, [ IsAlgebra ], 0,
     UpperCentralSeriesOfAlgebra );

@@ -20,7 +20,7 @@ fi;
 ##  <G> is the group in question and <list> is the list packed presentations
 ##  of the posible candidates for <G>
 ##
-IdGroupRandomTest := function( g, c )
+InstallGlobalFunction( IdGroupRandomTest, function( g, c )
     local str1, str2, i, l, l1, l2, r;
 
     # prepare groups for guessing presentations
@@ -47,18 +47,21 @@ IdGroupRandomTest := function( g, c )
 
         Info( InfoIdGroup, 1, Length(l), " ", Length(l1), " ", Length(l2) );
     until false;
-end;
+end );
 
 #############################################################################
 ##
-#F  IdGroupSpecialFp( <G>, <integer> ). . . . . . . . . . . . . . . . . local
+#F  IdGroupSpecialFp( <G>, <integer>, <<cand>> ). . . . . . . . . . . . local
 ##
 ##  Compute a special fingerprint.
 ##
-IdGroupSpecialFp := function( g, i )
-    local p, S, classbound, stanpres;
+InstallGlobalFunction( IdGroupSpecialFp, function( arg )
+    local p, S, classbound, stanpres, elem, celm, roots, j, k, cart, comm,
+          g, i, cand, id, m;
 
-    p := [ 2, 3, 5, 2 ];
+    g := arg[ 1 ];
+    i := arg[ 2 ];
+    p := [ 2, 3, 5, 2, 2,, 2, 2 ];
     S := SylowSubgroup( g, p[ i ] );
 
     if i in [ 1 .. 3 ] then
@@ -66,87 +69,65 @@ IdGroupSpecialFp := function( g, i )
         return fail;
         # compute standard presentation of S and return code without
         # order
-    else 
+
+    elif i = 4 then
         # investigate the operation of g on its 2-sylow subgroup
         # this fingerprint differs 2 frattinifree groups of type 2^6:7
-        return Sum( List( Orbits( g, AsList( S ) ),
+        return Sum( List( Orbits( g, AttributeValueNotSet( AsList, S ) ),
                           x -> Size( Subgroup( g, x ) ) ) );
-    fi;
-end;
 
-#############################################################################
-##
-#F  EvalFpCoc( g, coc, desc ) . . . . . . . . . . . . . . . . . . . . . local
-##
-EvalFpCoc := function( g, coc, desc )
-    local powers, exp, targets, result, i, j, g1, g2, fcd4, pos;
-
-    if desc[ 1 ] = 1 then
-        # test, if g^i in cl(g)
-        return List( coc[ desc[ 2 ] ],
-                     function( x )
-                     if x[ 1 ] ^ desc[ 3 ] in x then return 1; fi; return 0;
-                     end );
-
-    elif desc[ 1 ] = 2 then
-        # test, if cl(g) is root of cl(h)
-        exp := QuoInt( Order( coc[ desc[ 2 ] ][ 1 ][ 1 ] ),
-                       Order( coc[ desc[ 3 ] ][ 1 ][ 1 ] ) );
-        powers := Flat( coc[ desc[ 3 ] ] );
-        return List( coc[ desc[ 2 ] ],
-                     function(x)
-                     if x[ 1 ] ^ exp in powers then return 1; fi; return 0;
-                     end );
-
-    elif desc[ 1 ] = 3 then
-        # test, if cl(g) is power of cl(h)
-        exp := QuoInt( Order( coc[ desc[ 3 ] ][ 1 ][ 1 ] ),
-                       Order( coc[ desc[ 2 ] ][ 1 ][ 1 ] ) );
-        # just one representative for each class of power-candidates
-        powers := List( coc[ desc[ 2 ] ], x -> x[ 1 ] );
-        result := List( powers, x -> 0 );
-        for i in List( Flat( coc[ desc[ 3 ] ] ), x -> x ^ exp ) do
-            for j in [ 1 .. Length( powers ) ] do
-                if i = powers[ j ] then
-                    result[ j ] := result[ j ] + 1;
-                fi;
-            od;
+    elif i = 5 then
+        # look, if the 2-SylowSubgroup has a maximal subgroup of the 
+        # given isomorphism types
+        cand := arg[ 3 ];
+        for m in AttributeValueNotSet( MaximalSubgroups,  S ) do
+            id := IdGroup( m )[ 2 ];
+            if id in cand then
+                return id;
+            fi;
         od;
-        return result;
+        return fail;
 
-    else 
-        # test how often the word [ a, b ] * a^2 is hit
-        targets := List( coc[ desc[ 2 ] ], x -> x[ 1 ] );
-        result := List( targets, x -> 0 );
-        fcd4 := Flat( coc[ desc[ 4 ] ] );
-        for g1 in Flat( coc[ desc[ 3 ] ] ) do
-            for g2 in fcd4 do
-                if desc[ 1 ] = 4 then 
-                    pos := Position( targets, Comm( g1, g2 ) * g1 ^ 2 );
-                else 
-                # desc[ 1 ] = 5
-                    pos := Position( targets, Comm( g1, g2 ) * g1 ^ 3 );
+    else
+        # "7" is used for the groups 128_1597 and 128_1598
+        # "8" is used for the groups 256_7678 and 256_7679
+        elem := AttributeValueNotSet( AsList,  S );
+        celm := [ GeneratorsOfGroup( DerivedSubgroup( S ) )[ 1 ] ];
+        k := 1;
+        while true do
+            roots := Filtered( elem, x -> x ^ 2 = celm[ k ] );
+            k := k + 1;
+            if i = 7 then
+                cart := Cartesian( roots, roots );
+            elif i = 8 then
+                cart := Cartesian( roots, elem );
+            fi;
+            j := 1;
+            while not IsBound( celm[ k ] ) do
+                comm := Comm( cart[ j ][ 1 ], cart[ j ][ 2 ] );
+                if comm <> elem [ 1 ] then
+                    celm[ k ] := comm;
                 fi;
-                if not IsBool( pos ) then
-                    result[ pos ] := result[ pos ] + 1;
-                fi;
+                j := j + 1;
             od;
+            if celm[ 1 ] * celm[ 2 ] = celm[ k ] then
+                return k;
+            fi;
         od;
-        return result;
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  IdSmallGroup( <G> ) . . . . . . . . . . . . . . . . . . . . . . . . local
 ##
-##  Compute identification for <G> where |G| <= 1000 and |G| not in {256, 
-##  512, 768} and |G| consists of more than 3 primes.
+##  Compute identification for <G> where |G| <= 1000 and |G| not in { 256, 
+##  512, 768 } and |G| consists of more than 3 primes.
 ##
-IdSmallGroup := function( G )
+InstallGlobalFunction( IdSmallGroup, function( G )
     local level, branch, indices, fp, elementOrders, setElOrders, l, L, i, j,
           collElOrders, coc, desc, pos, filename, ldesc, Pack, sfp, newcls,
-          classes, classtyps, sclasstyps;
+          classes, classtyps, sclasstyps, asList;
 
     # packs information from a list - with posible loos of information
     Pack := function( list )
@@ -183,7 +164,8 @@ IdSmallGroup := function( G )
             if IsAbelian( G ) then 
                 fp := Pack( AbelianInvariants( G ) );
             else 
-                elementOrders := List( AsList( G ), x -> Order( x ) );
+                asList := AttributeValueNotSet( AsList, G );
+                elementOrders := List( asList, x -> Order( x ) );
                 setElOrders := Set( elementOrders );
                 fp := Pack( setElOrders{[ 2 .. Length( setElOrders ) ]} );
             fi;
@@ -195,7 +177,7 @@ IdSmallGroup := function( G )
 
         elif level = 5 then 
             # on level 5 the tests on conjugacy classes start
-            classes := Orbits( G, AsList( G ) );
+            classes := Orbits( G, asList );
             classtyps := List( classes,
                                x -> [ Order( x[ 1 ] ), Length( x ) ] );
             sclasstyps := Set( classtyps );
@@ -212,11 +194,23 @@ IdSmallGroup := function( G )
             fp := Pack( List( coc{[ 2 .. Length( coc ) ]},
                               x -> [ Length( x[ 1 ] ), Length( x ) ] ) );
 
+        elif IsList( branch ) then 
+            return branch;
+
         elif not IsList( branch.desc ) then
             if branch.desc = 0 then
                 # this special case could apear only on level >= 6
                 fp := IdGroupRandomTest( G, branch.fp );
             
+            elif branch.desc = 5 then
+                # lock up the maximal subgroups of the 2-sylowsubgroup
+                fp := IdGroupSpecialFp( G, 5, branch.fp );
+
+            elif branch.desc = 6 then
+                # groups with a different Length( coc ) are still mixed
+                # cause to the compression modulo 99661
+                fp := Length( coc );
+
             else
                 # use a special fingerprint, apears just for level >= 6
                 fp := IdGroupSpecialFp( G, branch.desc );
@@ -237,7 +231,7 @@ IdSmallGroup := function( G )
                 desc := Reversed( ldesc );
                 
                 # evaluate the test
-                fp := EvalFpCoc( G, coc, desc );
+                fp := EvalFpCoc( coc, desc );
 
                 # split up clusters of classes acording to the result of test
                 sfp := Set( fp );
@@ -259,7 +253,7 @@ IdSmallGroup := function( G )
 
         pos := Position( branch.fp, fp );
         if IsBool( pos ) then
-            Error( "IDGROUP: fatal Error. Please mail group to\n",
+            Error( "IdSmallGroup: fatal Error. Please mail group to\n",
                    "Hans-Ulrich.Besche@math.rwth-aachen.de" );
         fi;
         Add( indices, pos );
@@ -293,7 +287,7 @@ IdSmallGroup := function( G )
 
     # branch is now a integer
     return branch;
-end;
+end );
 
 #############################################################################
 ##
@@ -301,7 +295,7 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p*q*r.
 ##
-IdP1Q1R1Group := function( G )
+InstallGlobalFunction( IdP1Q1R1Group, function( G )
     local  n, p, q, r, s1, s2, s3, typ, PO, A, C, AC, x, s, y, B, BC, id;
 
     # get primes
@@ -401,7 +395,7 @@ IdP1Q1R1Group := function( G )
 
     # remaining typ is pqr
     return id;
-end;
+end );
 
 #############################################################################
 ##
@@ -409,7 +403,7 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p^2*q.
 ##
-IdP2Q1Group := function( G )
+InstallGlobalFunction( IdP2Q1Group, function( G )
     local  n, p, q, id, s1, s2, typ;
 
     # get primes
@@ -465,7 +459,7 @@ IdP2Q1Group := function( G )
     if q mod p = 1 then id := id + 1; fi;
 
     return id;
-end;
+end );
 
 #############################################################################
 ##
@@ -473,7 +467,7 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p*q^2.
 ##
-IdP1Q2Group := function( G )
+InstallGlobalFunction( IdP1Q2Group, function( G )
 
     local  n, p, q, s1, s2, typ, lat, nor, non, x, s, A, B, C, AC, BC, PO, id;
 
@@ -588,7 +582,7 @@ IdP1Q2Group := function( G )
     if ( p <> 2 ) and ( q mod p = 1 ) then id := id + ( p - 1 ) / 2; fi;
 
     return id;
-end;
+end );
 
 #############################################################################
 ##
@@ -596,10 +590,10 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p.
 ##
-IdP1Group := function( G )
+InstallGlobalFunction( IdP1Group, function( G )
 
     return 1;
-end;
+end );
 
 #############################################################################
 ##
@@ -607,13 +601,13 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p^2.
 ##
-IdP2Group := function( G )
+InstallGlobalFunction( IdP2Group, function( G )
 
     if IsCyclic( G ) then
         return 1;
     fi;
     return 2;
-end;
+end );
 
 #############################################################################
 ##
@@ -621,7 +615,7 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p^3.
 ##
-IdP3Group := function( G )
+InstallGlobalFunction( IdP3Group, function( G )
 
     if IsAbelian( G ) then
         if IsCyclic( G ) then
@@ -633,19 +627,19 @@ IdP3Group := function( G )
 
     else 
         if Size( G ) = 8 then
-            if Length(Filtered(AsList(G),x->Order(x)=2)) = 1 then
+            if Length( Filtered( AsList( G ), x-> Order( x ) = 2 ) ) = 1 then
                 return 4;
             fi;
             return 3; 
         fi;
 
-        if Maximum( List( GeneratorsOfGroup(G), x -> Order(x) ) ) =
+        if Maximum( List( GeneratorsOfGroup( G ), x -> Order( x ) ) ) =
                     FactorsInt( Size( G ) )[ 1 ] then
             return 3;
         fi;    
         return 4;
     fi;
-end;
+end );
 
 
 
@@ -655,7 +649,7 @@ end;
 ##
 ##  Compute identification for <G> where |G| = p*q.
 ##
-IdP1Q1Group := function( G )
+InstallGlobalFunction( IdP1Q1Group, function( G )
     local typ, p, q, id;
 
     p := FactorsInt( Size( G ) );
@@ -677,7 +671,7 @@ IdP1Q1Group := function( G )
 
     # typ is pq
     return id;
-end;
+end );
 
 #############################################################################
 ##

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the non-destructive part of the {\GAP} 3 compatibility
 ##  mode,
@@ -44,25 +45,26 @@ AbstractGenerator := function( name )
     fi;
     return NextIterator( AbstractGeneratorIterator );
 end;
+
 #T what about the name of the generator?
+## this would be tediously hard to fix -- would have to alter the
+## "infinite list of names" to allow a finite list of overrides
+## if this was done, it would be worth doing in general -- build a
+##  construct for a (finitely) mutable infinite list 
 
 
 #############################################################################
 ##
-#F  Apply( <list>, <func> ) . . . . . . . .  apply a function to list entries
+#F  ApplyFunc( <func>, <args> ) . . . . . . . . . . . result of function call
 ##
-##  `Apply' applies <func> to every member of <list> and replaces an entry by
-##  the corresponding return value.
-##  Warning:  The previous contents of <list> will be lost.
+ApplyFunc := CallFuncList;
+
+
+#############################################################################
 ##
-Apply := function( list, func )
-    local i;
-
-    for i in [1..Length( list )] do
-        list[i] := func( list[i] );
-    od;
-end;
-
+#F  Base( <G> ) . . . . . . . . . . . result of function call
+##
+Base := BaseOfGroup;
 
 #############################################################################
 ##
@@ -70,7 +72,7 @@ end;
 ##
 CartesianProduct := function ( arg )
     local   i;
-    
+
     # unravel the arguments
     if Length(arg) = 1  and IsList( arg[1] )  then
         arg := ShallowCopy( arg[1] );
@@ -110,7 +112,6 @@ CharFFE := Characteristic;
 #F  CharTableNormalSubgroup( <tbl>, <classes> )
 #F  CharTableIsoclinic( <tbl>, <classes> )
 #F  CharTableQuaternionic( <4n> )
-#F  CharTableSpecialized( <gentbl>, <param> )
 ##
 CharTable := CharacterTable;
 CharTableHead := CharacterTable;
@@ -120,20 +121,32 @@ CharTableFactorGroup := CharacterTableFactorGroup;
 CharTableNormalSubgroup := CharacterTableOfNormalSubgroup;
 CharTableIsoclinic := CharacterTableIsoclinic;
 CharTableQuaternionic := CharacterTableQuaternionic;
-CharTableSpecialized := CharacterTableSpecialized;
 
 
 #############################################################################
 ##
+#F  CharTablePGroup( <G> )
 #F  CharTableSSGroup( <G> )
 ##
-##  In {\GAP} 4, the different methods to compute the irreducible characters
+##  In {\GAP}~4, the different methods to compute the irreducible characters
 ##  of a group are not installed for the computation of the whole character
 ##  table but of its attribute `Irr'.
-##  So the command `CharTableSSGroup' does not make sense anymore.
-##  The calculation of irreducible characters via the algorithm that was used
-##  by `CharTableSSGroup' is available in {\GAP} 4 as `IrrConlon'.
 ##
+##  So the commands `CharTablePGroup' and `CharTableSSGroup' do not
+##  make sense anymore.
+##  One can use `IrrBaumClausen' to cmopute the irreducible characters via
+##  the algorithm of Baum and Clausen, which is a non-recursive form of the
+##  algorithm used by `CharTablePGroup' in {GAP}~3.
+##  The calculation of irreducible characters via the algorithm that was
+##  used by `CharTableSSGroup' is available in {\GAP}~4 as `IrrConlon'.
+##
+CharTablePGroup := function( G )
+    Error( "this function is not supported in GAP 4.\n",
+           "Use `IrrBaumClausen' if you want to compute the irreducible\n",
+           "characters of <G> by an algorithm similar to the one\n",
+           "that was used by `CharTablePGroup' in GAP 3," );
+end;
+
 CharTableSSGroup := function( G )
     Error( "this function is not supported in GAP 4.\n",
            "Use `IrrConlon' if you want to compute the irreducible\n",
@@ -145,15 +158,51 @@ end;
 #############################################################################
 ##
 #F  Character( <tbl>, <values> )
+#F  ClassFunction( <tbl>, <values> )
 ##
 Character := CharacterByValues;
+ClassFunction := ClassFunctionByValues;
 
 
 #############################################################################
 ##
-#F  ClassFunction( <tbl>, <values> )
+#F  CharPol( <F>, <z> ) . . . .  coeffs. of char. polynomial of a field elm.
+#F  CharPol( <z> )
 ##
-ClassFunction := ClassFunctionByValues;
+DeclareOperation( "CharPol", [ IsField, IsScalar ] );
+
+InstallOtherMethod( CharPol,
+    "for a scalar",
+    true,
+    [ IsScalar ], 0,
+    z -> CharPol( DefaultField( z ), z ) );
+
+InstallMethod( CharPol,
+    "for a field, and a scalar",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
+    function( F, z )
+
+    local   pol,        # characteristic polynom of <z> in <F>, result
+            deg,        # degree of <pol>
+            con,        # conjugate of <z> in <F>
+            i;          # loop variable
+
+    # compute the trace simply by multiplying $x-cnj$
+    pol := [ One( F ) ];
+    deg := 0;
+    for con  in Conjugates( F, z )  do
+        pol[deg+2] := pol[deg+1];
+        for i  in Reversed([2..deg+1])  do
+            pol[i] := pol[i-1] -  con * pol[i];
+        od;
+        pol[1] := Zero( F ) - con * pol[1];
+        deg := deg + 1;
+    od;
+
+    # return the coefficients list of the characteristic polynomial
+    return pol;
+    end );
 
 
 #############################################################################
@@ -191,6 +240,13 @@ end;
 
 #############################################################################
 ##
+#F  ConsiderSmallerPowermaps( ... )
+##
+ConsiderSmallerPowermaps := ConsiderSmallerPowerMaps;
+
+
+#############################################################################
+##
 #F  COEFFSCYC( <cyc> )
 ##
 COEFFSCYC := COEFFS_CYC;
@@ -201,6 +257,13 @@ COEFFSCYC := COEFFS_CYC;
 #F  Denominator( <rat> )
 ##
 Denominator := DenominatorRat;
+
+
+#############################################################################
+##
+#F  DepthVector( <vec> )
+##
+DepthVector := vec -> PositionNot( vec, Zero( vec[1] ) );
 
 
 #############################################################################
@@ -230,7 +293,7 @@ Elements := AsListSorted;
 #F  Equivalenceclasses( <list>, <function> )  . calculate equivalence classes
 ##
 #T who invented this name? (fortunately, there is no help section)
-#T (used only in 'agclass.g', with second argument 'IsIdentical')
+#T (used only in 'agclass.g', with second argument 'IsIdenticalObj')
 ##
 ##  returns
 ##
@@ -265,20 +328,6 @@ Equivalenceclasses := function( list, isequal )
     od;
     return rec( classes := ecl, indices := idx );
 end;
-
-
-#############################################################################
-##
-#F  FirstNameCharTable( <tblname> )
-##
-FirstNameCharTable := name -> LibInfoCharacterTable( name ).firstName;
-
-
-#############################################################################
-##
-#F  FileNameCharTable( <tblname> )
-##
-FileNameCharTable  := name -> LibInfoCharacterTable( name ).fileName;
 
 
 #############################################################################
@@ -375,47 +424,115 @@ end;
 
 #############################################################################
 ##
-#F  IsFunc( <list> )
+#F  IsFunc( <obj> )
 ##
 IsFunc := IsFunction;
 
 
 #############################################################################
 ##
-#F  IsRec( <list> )
+#F  IsMat( <obj> )
+##
+IsMat := IsMatrix;
+
+
+#############################################################################
+##
+#F  IsRec( <obj> )
 ##
 IsRec := IsRecord;
 
 
 #############################################################################
 ##
-#F  IsSet( <list> )
+#F  IsSet( <obj> )
 ##
 IsSet := IsSSortedList;
 
 
 #############################################################################
 ##
-#M  List( <obj> ) . . . . . . . . . . . . . . . . . . . . . convert to a list
-#M  List( <perm> )  . . . . . . . . . . . . . . . . . . . . convert to a list
+#M  LengthWord( <word> )
+##
+LengthWord := Length;
+
+
+#############################################################################
+##
+#M  ListOp( <obj> ) . . . . . . . . . . . . . . . . . . . . convert to a list
+#M  ListOp( <perm> )  . . . . . . . . . . . . . . . . . . . convert to a list
 ##
 ##  In this version, <obj> may be a list, or a permutation, or any
-##  object for that a method for 'List' is installed.
+##  object for that a method for `ListOp' is installed.
 ##
 ##  (Note the different behaviour in {\GAP-3} if the argument is a string;
 ##  but fortunately this was never documented.)
 ##
-InstallOtherMethod( List,
+InstallOtherMethod( ListOp,
     "method for a list (compatibility mode)",
     true,
     [ IsList ], 0,
     IdFunc );
 
-InstallOtherMethod( List,
+InstallOtherMethod( ListOp,
     "method for a permutation (compatibility mode)",
     true,
     [ IsPerm ], 0,
     ListPerm );
+
+
+#############################################################################
+##
+#F  MatRepresenatationsPGroup( <G> )  . irred. repr. of a supersolvable group
+##
+MatRepresentationsPGroup := function( G )
+    G:= IrreducibleRepresentations( G );
+    if not IsTrivial( G.kernel ) then
+      Print( "#W  RepresentationsPGroup:not all representations known\n" );
+    fi;
+    return G.representations;
+end;
+
+
+#############################################################################
+##
+#F  MinPol( <F>, <z> )  . . . . coeffs. of min. polynomial of a field element
+#F  MinPol( <z> )
+##
+DeclareOperation( "MinPol", [ IsField, IsScalar ] );
+
+InstallOtherMethod( MinPol,
+    "for a scalar",
+    true,
+    [ IsScalar ], 0,
+    z -> MinPol( DefaultField( z ), z ) );
+
+InstallMethod( MinPol,
+    "for a field, and a scalar",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
+    function( F, z )
+
+    local   pol,        # minimal polynom of <z> in <F>, result
+            deg,        # degree of <pol>
+            con,        # conjugate of <z> in <F>
+            i;          # loop variable
+
+    # compute the trace simply by multiplying $x-cnj$
+    pol := [ One( F ) ];
+    deg := 0;
+    for con  in ListSorted( Conjugates( F, z ) )  do
+        pol[deg+2] := pol[deg+1];
+        for i  in Reversed([2..deg+1])  do
+            pol[i] := pol[i-1] -  con * pol[i];
+        od;
+        pol[1] := Zero( F ) - con * pol[1];
+        deg := deg + 1;
+    od;
+
+    # return the coefficients list of the minimal polynomial
+    return pol;
+    end );
 
 
 #############################################################################
@@ -479,6 +596,19 @@ OrbitPowermaps := OrbitPowerMaps;
 
 #############################################################################
 ##
+#M  Order( <D>, <elm> ) . . . . . . . . . . . . . . two argument order method
+##
+InstallOtherMethod( Order,
+    "two-argument method, ignore first argument",
+    true,
+    [ IsObject, IsObject ], 0,
+    function( D, elm )
+    return Order( elm );
+    end );
+
+
+#############################################################################
+##
 #F  OrderCyc( <cyc> ) . . . . . . . . . . . . . . . . . order of a cyclotomic
 ##
 OrderCyc := Order;
@@ -496,6 +626,29 @@ InstallOtherMethod( PermutationCharacter,
     true,
     [ IsPermGroup ], 0,
     NaturalCharacter );
+
+
+#############################################################################
+##
+#F  Polynomial( <coeffs> )
+#F  Polynomial( <coeffs>, <val> )
+##
+Polynomial := function( arg )
+    local fam;
+    fam:= FamilyObj( One( arg[1] ) );
+    if Length( arg ) = 2 then
+      return UnivariateLaurentPolynomialByCoefficients(fam,arg[2],1);
+    else
+      return UnivariateLaurentPolynomialByCoefficients(fam,arg[2],arg[3],1);
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  Powermap( <tbl>, <p> )
+##
+Powermap := PossiblePowerMaps;
 
 
 #############################################################################
@@ -566,6 +719,13 @@ end;
 
 #############################################################################
 ##
+#F  PowermapsAllowedBySymmetrisations( ... )
+##
+PowermapsAllowedBySymmetrisations := PowerMapsAllowedBySymmetrisations;
+
+
+#############################################################################
+##
 #F  PrintToCAS( <filename>, <tbl> )
 #F  PrintToCAS( <tbl>, <filename> )
 ##
@@ -622,6 +782,36 @@ end;
 
 #############################################################################
 ##
+#F  String( <obj>, <width> )
+##
+InstallOtherMethod( String,
+    "two-argument method, delegate to `FormattedString'",
+    true,
+    [ IsObject, IsInt ], 0,
+    FormattedString );
+
+StringInt    := String;
+StringRat    := String;
+StringCyc    := String;
+StringFFE    := String;
+StringPerm   := String;
+StringAgWord := String;
+StringBool   := String;
+StringList   := String;
+StringRec    := String;
+
+
+#############################################################################
+##
+#F  StrongGenerators( <G> )
+##
+StrongGenerators := function(G)
+  return ShallowCopy(StrongGeneratorsStabChain(StabChainMutable(G)));
+end;
+
+
+#############################################################################
+##
 #F  SubgroupFusions( <tbl> )
 ##
 SubgroupFusions := PossibleClassFusions;
@@ -643,9 +833,67 @@ TestCharTable := IsInternallyConsistent;
 
 #############################################################################
 ##
+#F  TransformingPermutationsCharTables( <tbl> )
+##
+TransformingPermutationsCharTables :=
+    TransformingPermutationsCharacterTables;
+
+
+#############################################################################
+##
 #F  VirtualCharacter( <tbl>, <values> )
 ##
 VirtualCharacter := VirtualCharacterByValues;
+
+
+#############################################################################
+##
+#F  X( <R> )
+##
+X := Indeterminate;
+
+
+#############################################################################
+##
+#F  IsIdentical( <a>,<b> )
+##
+IsIdentical :=IsIdenticalObj;
+
+
+#############################################################################
+##
+#F  Copy( <obj> )
+##
+Copy := StructuralCopy;
+
+#############################################################################
+##
+#F  RandomList( <list> )
+##
+RandomList := Random;
+
+#############################################################################
+##
+#F  ConcatenationString( <strings> )
+##
+ConcatenationString := Concatenation;
+
+#############################################################################
+##
+#F  AllCharTableNames( ... )
+#F  CharTableSpecialized( <gentbl>, <param> )
+#F  FirstNameCharTable( <tblname> )
+#F  FileNameCharTable( <tblname> )
+##
+##  The following functions make sense only if the character table library
+##  is available.
+##
+if TBL_AVAILABLE then
+  AllCharTableNames := AllCharacterTableNames;
+  CharTableSpecialized := CharacterTableSpecialized;
+  FirstNameCharTable := name -> LibInfoCharacterTable( name ).firstName;
+  FileNameCharTable  := name -> LibInfoCharacterTable( name ).fileName;
+fi;
 
 
 #############################################################################

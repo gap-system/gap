@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for rationals.
 ##
@@ -16,9 +17,9 @@ Revision.rational_gi :=
 ##
 #V  Rationals . . . . . . . . . . . . . . . . . . . . . .  field of rationals
 ##
-Rationals := Objectify( NewType(
+InstallValue( Rationals, Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
-    IsRationals ), rec() );
+    IsRationals ), rec() ) );
 SetName( Rationals, "Rationals" );
 SetLeftActingDomain( Rationals, Rationals );
 SetIsPrimeField( Rationals, true );
@@ -36,9 +37,9 @@ SetGeneratorsOfLeftModule( Rationals, [ 1 ] );
 ##
 #V  GaussianRationals . . . . . . . . . . . . . . field of Gaussian rationals
 ##
-GaussianRationals := Objectify( NewType(
+InstallValue( GaussianRationals, Objectify( NewType(
     CollectionsFamily( CyclotomicsFamily ),
-    IsGaussianRationals ), rec() );
+    IsGaussianRationals ), rec() ) );
 SetName( GaussianRationals, "GaussianRationals" );
 SetLeftActingDomain( GaussianRationals, Rationals );
 SetIsPrimeField( GaussianRationals, false );
@@ -83,7 +84,7 @@ InstallMethod( Conjugates, IsCollsElms, [ IsRationals, IsRat ], 0,
 ##
 #R  IsCanonicalBasisRationals
 ##
-IsCanonicalBasisRationals := NewRepresentation( "IsCanonicalBasisRationals",
+DeclareRepresentation( "IsCanonicalBasisRationals",
     IsAttributeStoringRep,
     [] );
 #T is this needed at all?
@@ -134,7 +135,7 @@ InstallMethod( Coefficients,
 ##
 #R  IsRationalsIterator
 ##
-IsRationalsIterator := NewRepresentation( "IsRationalsIterator",
+DeclareRepresentation( "IsRationalsIterator",
     IsIterator,
     [ "structure", "actualn", "up", "sign", "pos", "coprime" ] );
 
@@ -229,7 +230,7 @@ InstallMethod( NextIterator, true, [ IsRationalsIterator ], 0,
 ##
 #R  IsRationalsEnumerator
 ##
-IsRationalsEnumerator := NewRepresentation( "IsRationalsEnumerator",
+DeclareRepresentation( "IsRationalsEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep, [] );
 
 
@@ -302,7 +303,7 @@ InstallMethod( Position, true,
     return number;
     end );
 
-InstallMethod( \[\], true, [ IsRationalsEnumerator, IsPosRat and IsInt ], 0,
+InstallMethod( \[\], true, [ IsRationalsEnumerator, IsPosInt ], 0,
     function( enum, number )
 
     local elm,

@@ -1,0 +1,427 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  matrix.msk                  GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Matrices}
+
+Matrices are represented in {\GAP} by list of row vectors (see "Row Vectors").
+The vectors must all have the same length, and their elements must lie in
+a common field.
+
+Because matrices are just a special case of lists, all operations and
+functions for lists are applicable to matrices also (see chapter
+"Lists"). This especially includes accessing elements of a matrix (see
+"List Elements"), changing elements of a matrix (see "List Assignment"),
+and comparing matrices (see "Comparisons of Lists").
+
+\Declaration{IsMatrix}
+\beginexample
+gap> mat:=[[1,2,3],[4,5,6],[7,8,9]];
+[ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ]
+gap> IsMatrix(mat);
+true
+\endexample
+
+The info class for matrix operations is `InfoMatrix'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Matrices}
+
+\>`<mat> + <scalar>'{scalar to matrix!addition}
+\>`<scalar> + <mat>'{scalar to matrix!addition}
+
+returns the sum of the matrix <mat> and the scalar
+<scalar>. The elements of <mat> and <scalar> must lie in a common field.
+The sum is a new matrix where each entry is the sum of the corresponding
+entry of <mat> and <scalar>.
+
+\>`<mat1> + <mat2>'{matrix!addition}
+
+returns the sum of the two matrices <mat1> and <mat2>,
+which must have the same dimensions and whose elements must lie in a
+common field. The sum is a new matrix where each entry is the sum of the
+corresponding entries of <mat1> and <mat2>.
+
+\>`<mat> - <scalar>'{scalar from matrix!substraction}
+\>`<scalar> - <mat>'{matrix from scalar!subtraction}
+\>`<mat1> - <mat2>'{matrix!subtraction}
+
+The definition for the `-' operator are similar to the above definitions
+for the `+' operator, except that `-' subtracts of course.
+
+\>`<mat> * <scalar>'{scalar product!matrix}
+\>`<scalar> * <mat>'{scalar product!matrix}
+
+returns the product of the matrix <mat> and the scalar
+<scalar>. The elements of <mat> and <scalar> must lie in a common field.
+The product is a new matrix where each entry is the product of the
+corresponding entries of <mat> and <scalar>.
+
+\>`<vec> * <mat>'{product!matrix with vector}
+
+returns the product of the vector <vec> and the matrix
+<mat>. (This is the standard product of a row vector with a matrix.)
+The length of <vec> and the number of rows of <mat> must be
+equal. The elements of <vec> and <mat> must lie in a common field. If
+<vec> is a vector of length <n> and <mat> is a matrix with <n> rows and
+<m> columns, the product is a new vector of length <m>. The element at
+position <i> is the sum of `<vec>[<l>] * <mat>[<l>][<i>]' with <l>
+running from 1 to <n>.
+
+\>`<mat> * <vec>'{product!vector with matrix}
+
+returns the product of the matrix <mat> and the vector
+<vec>. (This is the standard product of a matrix with a column vector.)
+The number of columns of <mat> and the length of <vec> must be
+equal. The elements of <mat> and <vec> must lie in a common field. If
+<mat> is a matrix with <m> rows and <n> columns and <vec> is a vector of
+length <n>, the product is a new vector of length <m>. The element at
+position <i> is the sum of `<mat>[<i>][<l>] * <vec>[<l>]' with <l>
+running from 1 to <n>.
+
+\>`<mat1> * <mat2>'{product!matrices}
+
+This form evaluates to the product of the two matrices <mat1> and <mat2>.
+The number of columns of <mat1> and the number of rows of <mat2> must be
+equal. The elements of <mat1> and <mat2> must lie in a common field. If
+<mat1> is a matrix with <m> rows and <n> columns and <mat2> is a matrix
+with <n> rows and <o> columns, the result is a new matrix with <m> rows
+and <o> columns. The element in row <i> at position <k> of the product
+is the sum of `<mat1>[<i>][<l>] * <mat2>[<l>][<k>]' with <l> running
+from 1 to <n>.
+
+\>`Inverse(<mat>)'{inverse!matrix}
+
+returns the inverse matrix of <mat>, which must be an invertible square
+matrix.
+
+\>`<mat1> / <mat2>'{quotient!matrices}
+\>`<scalar> / <mat>'{quotient!scalar by matrix}
+\>`<mat> / <scalar>'{quotient!matrix by scalar}
+\>`<vec> / <mat>'{quotient!vector by matrix}
+
+In general `<left> / <right>' is defined as `<left> * <right>^-1'.
+Thus in the above forms the right operand must always be invertable.
+
+\>`<mat> ^ <int>'{power!matrix}
+
+returns the <int>-th power of the matrix <mat>. <mat>
+must be a square matrix, <int> must be an integer. If <int> is negative,
+<mat> must be invertible. If <int> is 0, the result is the identity
+matrix, even if <mat> is not invertible.
+
+\>`<mat1> ^ <mat2>'{conjugate!matrix}
+
+returns the conjugate of the matrix <mat1> by the matrix
+<mat2>, i.e., to `<mat2>^-1 * <mat1> * <mat2>'. <mat2> must be
+invertible and <mat1> must be such that these product can be computed.
+
+\>`<vec> ^<mat>'{image!vector under matrix}
+
+This is in every respect equivalent to `<vec> * <mat>'. This
+operations reflects the fact that matrices operate on the vector space by
+multiplication from the right.
+
+\>`<scalar> + <matlist>'{sum!scalar and matrix list}
+\>`<matlist> + <scalar>'{sum!scalar and matrix list}
+\>`<scalar> - <matlist>'{difference!scalar and matrix list}
+\>`<matlist> - <scalar>'{difference!scalar and matrix list}
+\>`<scalar> * <matlist>'{product!scalar and matrix list}
+\>`<matlist> * <scalar>'{product!scalar and matrix list}
+\>`<matlist> / <scalar>'{quotient!scalar and matrix list}
+
+A scalar <scalar> may also be added, subtracted, multiplied with, or
+divide into a whole list of matrices <matlist>. The result is a new list
+of matrices where each matrix is the result of performing the operation
+with the corresponding matrix in <matlist>.
+
+\>`<mat> * <matlist>'{product!matrix with matrixlist}
+\>`<matlist> * <mat>'{product!matrix with matrixlist}
+
+A matrix <mat> may also be multiplied with a whole list of matrices
+<matlist>. The result is a new list of matrices, where each matrix is
+the product of <mat> and the corresponding matrix in <matlist>.
+
+\>`<matlist> / <mat>'{quotient!matrix with matrixlist}
+
+This form evaluates to `<matlist> * <mat>^-1'. <mat> must of course
+be invertable.
+
+\>`<vec> * <matlist>'{product!vector with matrixlist}
+
+returns the product of the vector <vec> and the list of
+matrices <mat>. The length <l> of <vec> and <matlist> must be equal.
+All matrices in <matlist> must have the same dimensions. The elements of
+<vec> and the elements of the matrices in <matlist> must lie in a common
+field. The product is the sum of `<vec>[<i>] * <matlist>[<i>]' with
+<i> running from 1 to <l>.
+
+\>`Comm( <mat1>, <mat2> )'{commutator!matrices}
+
+`Comm' returns the commutator of the matrices <mat1> and <mat2>, i.e.,
+`<mat1>^-1 * <mat2>^-1 * <mat1> * <mat2>'. <mat1> and <mat2>
+must be invertable and such that these product can be computed.
+
+There is one exception to the rule that the operands or their elements
+must lie in common field. It is allowed that one operand is a finite
+field element, a finite field vector, a finite field matrix, or a list of
+finite field matrices, and the other operand is an integer, an integer
+vector, an integer matrix, or a list of integer matrices. In this case
+the integers are interpreted as `<int> * One(<GF>)', where <GF> is the
+finite field (see "Operations for Finite Field Elements").
+
+For all the above operations the result is new immutable list.
+This is the case even if the result is equal to one of the
+operands, e.g., if you add zero to a matrix.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties and attibutes of matrices}
+
+\Declaration{DimensionsMat}
+\beginexample
+gap> DimensionsMat([[1,2,3],[4,5,6]]);
+[ 2, 3 ]
+\endexample
+\Declaration{DefaultFieldOfMatrix}
+\beginexample
+gap> DefaultFieldOfMatrix([[Z(4),Z(8)]]); 
+GF(2^6)
+\endexample
+
+\Declaration{TraceMat}
+\beginexample
+gap> Trace(mat);
+15
+\endexample
+\Declaration{DeterminantMat}
+\beginexample
+gap> DeterminantMat([[1,2],[2,1]]);
+-3
+\endexample
+
+\Declaration{OrderMat}
+\beginexample
+\endexample
+
+\Declaration{IsMonomialMatrix}
+\beginexample
+gap> IsMonomialMatrix([[0,1],[1,0]]);
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Matrix constructions}
+
+\Declaration{IdentityMat}
+\Declaration{NullMat}
+\beginexample
+gap> IdentityMat(3,1);
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+gap> NullMat(3,2,Z(3));
+[ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ]
+\endexample
+\Declaration{EmptyMatrix}
+\beginexample
+gap> EmptyMatrix(5);
+EmptyMatrix( 5 )
+gap> AsList(last);
+[  ]
+\endexample
+
+\Declaration{DiagonalMat}
+\beginexample
+gap> DiagonalMat([1,2,3]); 
+[ [ 1, 0, 0 ], [ 0, 2, 0 ], [ 0, 0, 3 ] ]
+\endexample
+\Declaration{PermutationMat}
+\beginexample
+gap> PermutationMat((1,2,3),4,1);
+[ [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, 1 ] ]
+\endexample
+
+\Declaration{TransposedMat}
+\Declaration{MutableTransposedMat}
+\beginexample
+gap> TransposedMat(mat);
+[ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
+\endexample
+
+\Declaration{KroneckerProduct}
+\beginexample
+gap> KroneckerProduct([[1,2]],[[5,7],[9,2]]);
+[ [ 5, 7, 10, 14 ], [ 9, 2, 18, 4 ] ]
+\endexample
+
+
+\Declaration{ReflectionMat}
+
+\Declaration{PrintArray}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Random matrices}
+
+\Declaration{RandomMat}
+\Declaration{RandomInvertibleMat}
+\Declaration{RandomUnimodularMat}
+\beginexample
+gap> RandomMat(2,3,GF(3));
+[ [ Z(3)^0, Z(3), Z(3)^0 ], [ Z(3), Z(3)^0, Z(3)^0 ] ]
+gap> RandomInvertibleMat(4);
+[ [ -1, 0, 1, -1 ], [ 2, 1, 3, 0 ], [ 1, 4, 0, 2 ], [ -3, 2, 1, 0 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Matrices representing linear equations}
+\index{Gaussian algorithm}
+
+\Declaration{RankMat}
+\beginexample
+gap> RankMat(mat);
+2
+\endexample
+\Declaration{TriangulizeMat}
+\beginexample
+gap> m:=MutableTransposedMat(mat);
+[ [ 1, 4, 7 ], [ 2, 5, 8 ], [ 3, 6, 9 ] ]
+gap> TriangulizeMat(m);m;
+[ [ 1, 0, -1 ], [ 0, 1, 2 ], [ 0, 0, 0 ] ]
+\endexample
+\Declaration{NullspaceMat}
+\beginexample
+gap> NullspaceMat(mat);
+[ [ 1, -2, 1 ] ]
+\endexample
+\Declaration{SolutionMat}
+\beginexample
+gap> SolutionMat(mat,[3,5,7]); 
+[ 5/3, 1/3, 0 ]
+\endexample
+\Declaration{BaseFixedSpace}
+\beginexample
+gap> BaseFixedSpace([[[1,2],[0,1]]]);  
+[ [ 0, 1 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elementary divisors}
+
+\Declaration{ElementaryDivisorsMat}
+\beginexample
+gap> ElementaryDivisorsMat(mat);
+[ 1, 3, 0 ]
+\endexample
+\Declaration{DiagonalizeMat}
+\beginexample
+gap> m:=[[1,2],[2,1]];;
+gap> DiagonalizeMat(m);m;
+[ [ 1, 0 ], [ 0, 3 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Matrices as basis of a row space}
+
+\Declaration{BaseMat}
+\beginexample
+gap> BaseMat(mat);
+[ [ 1, 0, -1 ], [ 0, 1, 2 ] ]
+\endexample
+\Declaration{BaseOrthogonalSpaceMat}
+
+\Declaration{SumIntersectionMat}
+\beginexample
+gap> SumIntersectionMat(mat,[[2,7,6],[5,9,4]]);
+[ [ [ 1, 2, 3 ], [ 0, 1, 2 ], [ 0, 0, 1 ] ], [ [ 1, -3/4, -5/2 ] ] ]
+\endexample
+
+\Declaration{BaseSteinitzVectors}
+\beginexample
+gap> BaseSteinitzVectors(IdentityMat(3,1),[[11,13,15]]);
+rec(
+  factorspace := [ [ 0, 1, 15/13 ], [ 0, 0, 1 ] ],
+  factorzero := [ 0, 0, 0 ],
+  subspace := [ [ 1, 13/11, 15/11 ] ],
+  heads := [ -1, 1, 2 ] )
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Echelonized matrices}
+
+\Declaration{SemiEchelonMat}
+\Declaration{SemiEchelonMatTransformation}
+\beginexample
+gap> SemiEchelonMatTransformation([[1,2,3],[0,0,1]]);
+rec(
+  heads := [ 1, 0, 2 ],
+  vectors := [ [ 1, 2, 3 ], [ 0, 0, 1 ] ],
+  coeffs := [ [ 1, 0 ], [ 0, 1 ] ],
+  relations := [  ] )
+\endexample
+\Declaration{SemiEchelonMats}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Triangular matrices}
+
+\Declaration{DiagonalOfMat}
+\beginexample
+gap> DiagonalOfMat([[1,2],[3,4]]);
+[ 1, 4 ]
+\endexample
+\Declaration{UpperSubdiagonal}
+\beginexample
+gap> UpperSubdiagonal(mat,1);
+[ 2, 6 ]
+\endexample
+\Declaration{DepthOfUpperTriangularMatrix}
+\beginexample
+gap> DepthOfUpperTriangularMatrix([[0,1,2],[0,0,1],[0,0,0]]);
+1
+gap> DepthOfUpperTriangularMatrix([[0,0,2],[0,0,0],[0,0,0]]);  
+2
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Matrices as linear mappings}
+
+\Declaration{JordanDecomposition}
+\beginexample
+gap> JordanDecomposition(mat);
+[ [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ], 
+  [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ] ]
+\endexample
+
+\Declaration{BlownUpMat}
+\Declaration{BlownUpVector}
+\beginexample
+gap> BlownUpMat(Basis(GF(GF(2),2)),[[1,1],[0,1]]);  
+[ [ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2), Z(2)^0 ], 
+  [ 0*Z(2), 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2), 0*Z(2), Z(2)^0 ] ]
+gap> BlownUpVector(Basis(GF(GF(2),2)),[1,1]*Z(2));
+[ Z(2)^0, 0*Z(2), Z(2)^0, 0*Z(2) ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Matrices over finite fields}
+
+\Declaration{InverseMatMod}
+\beginexample
+gap> InverseMatMod([[1,2],[3,4]],5);
+[ [ 3, 1 ], [ 4, 2 ] ]
+\endexample
+
+\Declaration{NullspaceModQ}
+\beginexample
+gap> NullspaceModQ(mat,5);
+[ [ 0, 0, 0 ], [ 1, 3, 1 ], [ 2, 1, 2 ], [ 4, 2, 4 ], [ 3, 4, 3 ] ]
+\endexample
+
+\Declaration{ProjectiveOrder}
+\beginexample
+gap> ProjectiveOrder([[1,4],[5,2]]*Z(11)^0);
+[ 5, Z(11)^5 ]
+\endexample

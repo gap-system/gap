@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for Tietze transformations of presentation
 ##  records (i.e., of presentations of finitely presented groups (fp groups).
@@ -18,39 +19,66 @@ Revision.tietze_gi :=
 #M  AbstractWordTietzeWord( <word>, <fgens> )  . . . .  convert a Tietze word
 #M                                                        to an abstract word
 ##
-##  'AbstractWordTietzeWord'  assumes  <fgens>  to be  a list  of  free group
+##  `AbstractWordTietzeWord'  assumes  <fgens>  to be  a list  of  free group
 ##  generators and  <word> to be a Tietze word in these generators,  i. e., a
 ##  list of positive or negative generator numbers.  It converts <word> to an
 ##  abstract word,
 ##
-AbstractWordTietzeWord := function ( word, fgens )
+InstallGlobalFunction( AbstractWordTietzeWord,
+function ( word, fgens )
+local ind,e,lg,i,num,mex;
 
-    local aword, num;
+   # index the generators
+   ind:=List(fgens,i->GeneratorSyllable(i,1));
 
-    aword := One( fgens[1] );
-    for num in word do
-        if num > 0 then
-            aword := aword * fgens[num];
-        else
-            aword := aword * fgens[-num]^-1;
-        fi;
-    od;
-    return aword;
-end;
+   # first generate an external representation
+   e:=[];
+   mex:=1;
+   lg:=0;
+   i:=0;
+   for num in word do
+     if num<0 then
+       if -num=lg then
+	 # increase exponent
+         e[i]:=e[i]-1;
+	 mex:=Maximum(mex,-e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[ind[-num],-1]);
+	 lg:=-num;
+	 i:=i+2;
+       fi;
+     else
+       if num=lg then
+	 # increase exponent
+         e[i]:=e[i]+1;
+	 mex:=Maximum(mex,e[i]);
+       else
+	 # add new generator/exponent pair
+         Append(e,[ind[num],1]);
+	 lg:=num;
+	 i:=i+2;
+       fi;
+     fi;
+   od;
+   # then build a word from it
+   e:=ObjByExtRep(FamilyObj(fgens[1]),mex,mex,e);
+   return e;
+end );
 
 
 #############################################################################
 ##
 #M  AddGenerator( <Tietze record> )  . . . . . . . . . . . .  add a generator
 ##
-##  'AddGenerator'  extends the given Tietze presentation by a new generator.
+##  `AddGenerator'  extends the given Tietze presentation by a new generator.
 ##
 ##  Let  i  be the smallest positive integer  which has not yet been used  as
-##  a generator number  and for which no component  T.i  exists so far in the
-##  given  Tietze  record  T,  say.  'AddGenerator'  defines  a new  abstract
-##  generator _xi  and adds it, as component T.i, to the given Tietze record.
+##  a generator number  and for which no component  T!.i  exists so far in the
+##  given  Tietze  record  T,  say.  `AddGenerator'  defines  a new  abstract
+##  generator _xi  and adds it, as component T!.i, to the given Tietze record.
 ##
-AddGenerator := function ( T )
+InstallGlobalFunction( AddGenerator, function ( T )
 
     local gen, numgens, tietze;
 
@@ -61,42 +89,42 @@ AddGenerator := function ( T )
     gen := TzNewGenerator( T );
 
     # display a message.
-    if T.printLevel >= 1 then
-        tietze := T.tietze;
+    if TzOptions(T).printLevel >= 1 then
+        tietze := T!.tietze;
         numgens := tietze[TZ_NUMGENS];
         Print( "#I  now the presentation has ", numgens,
             " generators, the new generator is ", gen, "\n");
     fi;
 
     # if there is a tree of generators, delete it.
-    if IsBound( T.tree ) then  Unbind( T.tree );  fi;
+    if IsBound( T!.tree ) then  Unbind( T!.tree );  fi;
 
     # if generator images and preimages are being traced through the
     # Tietze transformations applied to T, delete them.
-    if IsBound( T.imagesOldGens ) then
+    if IsBound( T!.imagesOldGens ) then
         TzUpdateGeneratorImages( T, -1, 0 );
     fi;
 
     tietze[TZ_MODIFIED] := true;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  AddRelator( <Tietze record>, <word> )  . . . . . . . . . .  add a relator
 ##
-##  'AddRelator'  adds the given  relator  to the given  Tietze presentation.
+##  `AddRelator'  adds the given  relator  to the given  Tietze presentation.
 ##
-AddRelator := function ( T, word )
+InstallGlobalFunction( AddRelator, function ( T, word )
 
     local flags, leng, lengths, numrels, rel, rels, tietze;
 
     # check the first argument to be a Tietze record.
     TzCheckRecord( T );
 
-    if T.printLevel >= 3 then  Print( "#I  adding relator ",word,"\n" );  fi;
+    if TzOptions(T).printLevel >= 3 then  Print( "#I  adding relator ",word,"\n" );  fi;
 
-    tietze := T.tietze;
+    tietze := T!.tietze;
     rels := tietze[TZ_RELATORS];
     numrels := tietze[TZ_NUMRELS];
     flags := tietze[TZ_FLAGS];
@@ -117,17 +145,17 @@ AddRelator := function ( T, word )
 
     # if generator images and preimages are being traced through the Tietze
     # transformations applied to T, delete them.
-    if IsBound( T.imagesOldGens ) then
+    if IsBound( T!.imagesOldGens ) then
         TzUpdateGeneratorImages( T, -1, 0 );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  DecodeTree( <Tietze record> )  . . . .  decode a subgroup generators tree
 ##
-##  'DecodeTree'  applies the tree decoding method to a subgroup presentation
+##  `DecodeTree'  applies the tree decoding method to a subgroup presentation
 ##  provided by the  Reduced Reidemeister-Schreier  or by the  Modified Todd-
 ##  Coxeter method.
 ##
@@ -135,34 +163,34 @@ end;
 ##  gens    is the set of generators.
 ##  total   is the total length of all relators.
 ##
-DecodeTree := function ( T )
+InstallGlobalFunction( DecodeTree, function ( T )
 
     local count, decode, looplimit, primary, protected, tietze, trlast;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
-    protected := T.protected;
+    tietze := T!.tietze;
+    protected := TzOptions(T).protected;
 
     # check if there is a tree of generators.
-    if not IsBound( T.tree ) then
+    if not IsBound( T!.tree ) then
         Error( "there is not tree to decode it" );
     fi;
     decode := true;
-    T.protected := Maximum( protected, T.tree[TR_PRIMARY] );
+    TzOptions(T).protected := Maximum( protected, T!.tree[TR_PRIMARY] );
 
     # if generator images are being traced, delete them.
-    if IsBound( T.imagesOldGens ) then
-        Unbind( T.imagesOldGens );
+    if IsBound( T!.imagesOldGens ) then
+        Unbind( T!.imagesOldGens );
     fi;
 
     # substitute substrings by shorter ones.
     TzSearch( T );
 
     # now run our standard strategy and repeat it.
-    looplimit := T.loopLimit;
+    looplimit := TzOptions(T).loopLimit;
     count := 0;
     while count < looplimit and tietze[TZ_TOTAL] > 0 do
 
@@ -182,20 +210,20 @@ DecodeTree := function ( T )
             count := looplimit;
         fi;
 
-        if T.printLevel = 1 then  TzPrintStatus( T, true );  fi;
+        if TzOptions(T).printLevel = 1 then  TzPrintStatus( T, true );  fi;
     od;
 
     # check if the tree decoding has been finished.
-    primary := T.tree[TR_PRIMARY];
-    trlast := T.tree[TR_TREELAST];
+    primary := T!.tree[TR_PRIMARY];
+    trlast := T!.tree[TR_TREELAST];
     if trlast <= primary then
         # if yes, delete the tree ...
-        Unbind( T.tree );
+        Unbind( T!.tree );
         # ... and reinitialize the tracing of generator images images if
         # it had been initialized before.
-        if IsBound( T.preImagesNewGens ) then
+        if IsBound( T!.preImagesNewGens ) then
             TzInitGeneratorImages( T );
-            if T.printLevel > 0 then
+            if TzOptions(T).printLevel > 0 then
                 Print( "#I  Warning: ",
                 "the generator images have been reinitialized\n" );
             fi;
@@ -206,14 +234,14 @@ DecodeTree := function ( T )
             " incomplete !  **********\n\n",
             "#I  hence the isomporphism type of the presented group may",
             " have changed,\n",
-            "#I  you should continue by first calling the 'DecodeTree'",
+            "#I  you should continue by first calling the `DecodeTree'",
             " command again,\n",
             "#I  possibly after changing the Tietze option parameters",
             " appropriately\n\n" );
     fi;
 
-    T.protected := protected;
-end;
+    TzOptions(T).protected := protected;
+end );
 
 
 #############################################################################
@@ -221,15 +249,15 @@ end;
 #M  FpGroupPresentation( <Tietze record> ) . . . .  converts the given Tietze
 #M                                         presentation to a fin. pres. group
 ##
-##  'FpGroupPresentation'  constructs the group  defined by the  given Tietze
+##  `FpGroupPresentation'  constructs the group  defined by the  given Tietze
 ##  presentation and returns the group record.
 ##
-FpGroupPresentation := function ( T )
+InstallGlobalFunction( FpGroupPresentation, function ( T )
 
     local F, G, fgens, gens, frels, numgens, origin, redunds, rels, tietze,
           tzword;
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  converting the Tietze presentation to a group\n" );
     fi;
 
@@ -237,7 +265,7 @@ FpGroupPresentation := function ( T )
     TzCheckRecord( T );
 
     # get some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
     rels := tietze[TZ_RELATORS];
@@ -264,31 +292,31 @@ FpGroupPresentation := function ( T )
 
     # save the generator images, if available.
     origin := rec( );
-    if IsBound( T.imagesOldGens ) then
-        origin.imagesOldGens := Immutable( T.imagesOldGens );
-        origin.preImagesNewGens := Immutable( T.preImagesNewGens );
+    if IsBound( T!.imagesOldGens ) then
+        origin!.imagesOldGens := Immutable( T!.imagesOldGens );
+        origin!.preImagesNewGens := Immutable( T!.preImagesNewGens );
     fi;
     SetTietzeOrigin( G, origin );
     
     return G;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  PresentationFpGroup( <G> [,<print level>] ) . . .  create a Tietze record
 ##
-##  'PresentationFpGroup'  creates a presentation, i.e. a  Tietze record, for
+##  `PresentationFpGroup'  creates a presentation, i.e. a  Tietze record, for
 ##   the given finitely presented group.
 ##
-PresentationFpGroup := function ( arg )
+InstallGlobalFunction( PresentationFpGroup, function ( arg )
 
     local F, G, fggens, freegens, frels, gens, grels, i, invs, lengths,
           numgens, numrels, printlevel, rels, T, tietze, total;
 
     # check the first argument to be a finitely presented group.
     G := arg[1];
-    if not ( IsSubgroupFpGroup( G ) and IsWholeFamily( G ) ) then
+    if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
         Error( "<G> must be a finitely presented group" );
     fi;
 
@@ -299,12 +327,15 @@ PresentationFpGroup := function ( arg )
         Error( "second argument must be an integer" );
     fi;
 
-    # Create the Tietze record.
-    T := rec( );
-    T.isTietze := true;
-    T.operations := PresentationOps;
+    # Create the Presentation.
+    T := Objectify( NewType( PresentationsFamily, 
+                                 IsPresentationDefaultRep
+                             and IsPresentation                            
+                             and IsMutable ),
+                    rec() ); 
     tietze := ListWithIdenticalEntries( TZ_LENGTHTIETZE, 0 );
-    T.tietze := tietze;
+    T!.tietze := tietze;
+    TzOptions(T).printLevel:=printlevel;
 
     # initialize the Tietze stack.
     fggens := FreeGeneratorsOfFpGroup( G );
@@ -330,51 +361,45 @@ PresentationFpGroup := function ( arg )
     tietze[TZ_TOTAL] := total;
     tietze[TZ_STATUS] := [ 0, 0, -1 ];
     tietze[TZ_MODIFIED] := false;
-    T.generators := tietze[TZ_GENERATORS];
-    T.components := [ 1 .. numgens ];
+    T!.generators := tietze[TZ_GENERATORS];
+    T!.components := [ 1 .. numgens ];
     for i in [ 1 .. numgens ] do
-        T.(String( i )) := gens[i];
+        T!.(String( i )) := gens[i];
     od;
-    T.nextFree := numgens + 1;
-    T.identity := Identity( F );
-
-    # initialize the Tietze options by their default values.
-    T.eliminationsLimit := 100;
-    T.expandLimit := 150;
-    T.generatorsLimit := 0;
-    T.lengthLimit := infinity;
-    T.loopLimit := infinity;
-    T.printLevel := printlevel;
-    T.saveLimit := 10;
-    T.searchSimultaneous := 20;
+    T!.nextFree := numgens + 1;
+    T!.identity := Identity( F );
 
     # print the status line.
-    if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+    if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
 
     # handle relators of length 1 or 2, but do not eliminate generators.
-    T.protected := Length( gens );
-    TzHandleLength1Or2Relators( T );
-    T.protected := 0;
+    TzOptions(T).protected := Length( gens );
+    #TzHandleLength1Or2Relators( T );
+    TzOptions(T).protected := 0;
 
     # sort the relators and print the status line.
     TzSort( T );
-    if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+    if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
 
     # return the Tietze record.
     return T;
-end;
+end );
 
 
 #############################################################################
 ##
-#M  PresentationOps.Print( <T> )  . . . .  pretty print a presentation record
+#M  PrintObj( <T> ) . . . . . . . . . . .  pretty print a presentation record
 ##
-PresentationOps.Print := function ( T )
+InstallMethod( PrintObj,
+    "for a presentation in default representation",
+    true,
+    [ IsPresentation and IsPresentationDefaultRep ], 0,
+    function( T )
 
     local numgens, numrels, tietze, total;
 
     # get number of generators, number of relators, and total length.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     numgens := tietze[TZ_NUMGENS] - tietze[TZ_NUMREDUNDS];
     numrels := tietze[TZ_NUMRELS];
     total := tietze[TZ_TOTAL];
@@ -383,7 +408,7 @@ PresentationOps.Print := function ( T )
     Print( "<< presentation with ", numgens, " gens and ", numrels,
         " rels of total length ", total, " >>" );
 
-end;
+end );
 
 
 #############################################################################
@@ -391,7 +416,7 @@ end;
 #M  PresentationViaCosetTable(<G>)  . . . . . . . .  construct a presentation
 #M  PresentationViaCosetTable(<G>,<F>,<words>) . . . . .  for the given group
 ##
-##  'PresentationViaCosetTable'   constructs   a  presentation  for  a  given
+##  `PresentationViaCosetTable'   constructs   a  presentation  for  a  given
 ##  concrete  group.  It applies  John  Cannon's  relations finding algorithm
 ##  which has been described in
 ##
@@ -406,14 +431,14 @@ end;
 ##  If only a group  <G>  has been  specified,  the single stage algorithm is
 ##  applied.
 ##
-##  If the  two stage algorithm  is to  be used,  'PresentationViaCosetTable'
+##  If the  two stage algorithm  is to  be used,  `PresentationViaCosetTable'
 ##  expects a subgroup <H> of <G> to be described by two additional arguments
 ##  <F>  and  <words>,  where  <F>  is a  free group  with the same number of
 ##  generators as  <G>,  and  <words> is a list of words in the generators of
 ##  <F>  which supply  a list of generators of  <H>  if they are evaluated as
 ##  words in the corresponding generators of <G>.
 ##
-PresentationViaCosetTable := function ( arg )
+InstallGlobalFunction( PresentationViaCosetTable, function ( arg )
     local   G,          # given group
             F,          # given or constructed free group
             fgens,      # generators of F
@@ -517,14 +542,14 @@ PresentationViaCosetTable := function ( arg )
     # but do not eliminate any generators
     FP2 := R2.fpGroup;
     P := PresentationFpGroup( FP2, 0 );
-    P.generatorsLimit := ngens;
+    TzOptions(P).generatorsLimit := ngens;
     TzGoGo( P );
-    P.generatorsLimit := 0;
-    P.printLevel := 1;
+    TzOptions(P).generatorsLimit := 0;
+    TzOptions(P).printLevel := 1;
 
     # return the resulting presentation
     return P;
-end;
+end );
 
 
 #############################################################################
@@ -533,20 +558,19 @@ end;
 #M  RelsViaCosetTable(<G>,<cosets>,<F>,<ggens>)  . . . . . . . given concrete
 #M  RelsViaCosetTable(<G>,<cosets>,<F>,<words>,<H>,<R1>)  . . . . . . . group
 ##
-##  'RelsViaCosetTable'  constructs a defining set of relators  for the given
+##  `RelsViaCosetTable'  constructs a defining set of relators  for the given
 ##  concrete group using John Cannon's relations finding algrotithm.
 ##
-##  It is a  subroutine  of function  'PresentationViaCosetTable'.  Hence its
+##  It is a  subroutine  of function  `PresentationViaCosetTable'.  Hence its
 ##  input and output are specifically designed only for this purpose,  and it
 ##  does not check the arguments.
 ##
-RelsViaCosetTable := function ( arg )
+InstallGlobalFunction( RelsViaCosetTable, function ( arg )
     local   G,            # given group
             cosets,       # right cosets of G with respect to H
             F,            # given free group
             words,        # given words for the generators of H
             H,            # subgroup, if specified
-            fam,          # family of H
             F1,           # free group associated to H
             R1,           # record containing an fp group isomorphic to H
             R2,           # record containing an fp group isomorphic to G
@@ -567,7 +591,7 @@ RelsViaCosetTable := function ( arg )
             g, g1,        # loop variables for generator cols
             c,            # loop variable for coset
             rel,          # loop variables for relator
-            app,          # arguments list for 'MakeConsequences'
+            app,          # arguments list for `MakeConsequences'
             index,        # index of the table
             col,          # generator col in auxiliary table
             perm,         # permutations induced by a generator on the cosets
@@ -620,10 +644,9 @@ RelsViaCosetTable := function ( arg )
         helts := AsListSorted( H );
         R1 := arg[6];
         FP1 := R1.fpGroup;
-        fam := ElementsFamily( FamilyObj( FP1 ) );
-        F1 := fam!.freeGroup;
+        F1 := FreeGroupOfFpGroup( FP1 );
         fhgens := GeneratorsOfGroup( F1 );
-        hrels := fam!.relators;
+        hrels := RelatorsOfFpGroup( FP1 );
         # initialize the relators of F2 by the rewritten relators of F1
         rels := List( hrels, rel -> MappedWord( rel, fhgens, words ) );
         # get the Schreier vector for the elements of H
@@ -657,12 +680,9 @@ RelsViaCosetTable := function ( arg )
         Add( tab0, col );
         Add( table, gen );
         order := Order( ggens[i] );
-        if order = 2 then
-            Add( rels, fgens[i]^2 );
-        else
-            col := OnTuples( cosRange, perm^-1 );
-            gen := ListWithIdenticalEntries( index, 0 );
-        fi;
+	Add( rels, fgens[i]^order );
+	col := OnTuples( cosRange, perm^-1 );
+	gen := ListWithIdenticalEntries( index, 0 );
         Add( tab0, col );
         Add( table, gen );
     od;
@@ -705,7 +725,7 @@ RelsViaCosetTable := function ( arg )
     # compute the representatives for the relators
     rels := RelatorRepresentatives( rels );
 
-    # make the structure that is passed to 'MakeConsequences'
+    # make the structure that is passed to `MakeConsequences'
     app := ListWithIdenticalEntries( 11, 0 );
     app[1] := table;
     app[5] := subgroup;
@@ -813,7 +833,7 @@ RelsViaCosetTable := function ( arg )
     R2.actcos := actcos;
     R2.actgen := actgen;
     return R2;
-end;
+end );
 
 
 #############################################################################
@@ -821,10 +841,10 @@ end;
 #M  RemoveRelator( <Tietze record>, <n> ) . . . . . . . . .  remove a relator
 #M                                                        from a presentation
 ##
-##  'RemoveRelator'   removes   the  nth  relator   from  the  given   Tietze
+##  `RemoveRelator'   removes   the  nth  relator   from  the  given   Tietze
 ##  presentation.
 ##
-RemoveRelator := function ( T, n )
+InstallGlobalFunction( RemoveRelator, function ( T, n )
 
     local invs, leng, lengths, num, numgens1, numrels, rels, tietze;
 
@@ -832,7 +852,7 @@ RemoveRelator := function ( T, n )
     TzCheckRecord( T );
 
     # get some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     rels := tietze[TZ_RELATORS];
     numrels := tietze[TZ_NUMRELS];
     lengths := tietze[TZ_LENGTHS];
@@ -845,7 +865,7 @@ RemoveRelator := function ( T, n )
     fi;
 
     # print a message.
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  removing the ", n, "th relator\n" );
     fi;
 
@@ -862,14 +882,14 @@ RemoveRelator := function ( T, n )
     lengths[n] := 0;
     tietze[TZ_TOTAL] := tietze[TZ_TOTAL] - leng;
     TzSort( T );
-    if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+    if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
 
     # if generator images and preimages are being traced through the Tietze
     # transformations applied to T, delete them.
-    if IsBound( T.imagesOldGens ) then
+    if IsBound( T!.imagesOldGens ) then
         TzUpdateGeneratorImages( T, -1, 0 );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -877,15 +897,15 @@ end;
 #M  SimplifiedFpGroup( <FpGroup> ) . . . . . . . . .  sinplify the FpGroup by
 #M                                                     Tietze transformations
 ##
-##  'SimplifiedFpGroup'  returns a group  isomorphic to the given one  with a
+##  `SimplifiedFpGroup'  returns a group  isomorphic to the given one  with a
 ##  presentation which has been tried to simplify via Tietze transformations.
 ##
-SimplifiedFpGroup := function ( G )
+InstallGlobalFunction( SimplifiedFpGroup, function ( G )
 
     local H, T;
 
     # check the given argument to be a finitely presented group.
-    if not ( IsSubgroupFpGroup( G ) and IsWholeFamily( G ) ) then
+    if not ( IsSubgroupFpGroup( G ) and IsGroupOfFamily( G ) ) then
         Error( "argument must be a finitely presented group" );
     fi;
 
@@ -900,7 +920,7 @@ SimplifiedFpGroup := function ( G )
 
     # return the resulting group record.
     return H;
-end;
+end );
 
 
 #############################################################################
@@ -908,54 +928,56 @@ end;
 #M  TietzeWordAbstractWord( <word>, <fgens> ) . . .  convert an abstract word
 #M                                                           to a Tietze word
 ##
-##  'TietzeWordAbstractWord'  assumes  <fgens>  to be a  list  of  free group
+##  `TietzeWordAbstractWord'  assumes  <fgens>  to be a  list  of  free group
 ##  generators  and  <word>  to be an abstract word  in these generators.  It
 ##  converts <word> into a Tietze word, i. e., a list of positive or negative
 ##  generator numbers.
 ##
-TietzeWordAbstractWord := function ( word, generators )
+InstallGlobalFunction( TietzeWordAbstractWord, function ( word, generators )
+local ind,n,i,e,l,g;
 
-    local gen, i, length, pos, tzword;
+  ind:=[];
+  n:=1;
+  for i in generators do
+    ind[GeneratorSyllable(i,1)]:=n;
+    n:=n+1;
+  od;
 
-    length := LengthWord( word );
-    tzword := [ ]; tzword[length] := 0;
-    for i in [ 1 .. length ] do
-        gen := Subword( word, i, i );
-        pos := Position( generators, gen );
-        if pos = fail then
-            pos := Position( generators, gen^-1 );
-            if pos = fail then
-                # print an error message.
-                Error( "given word is not a word in the given generators" );
-            fi;
-            pos := - pos;
-        fi;
-        tzword[i] := pos;
-    od;
-    return tzword;
+  e:=ExtRepOfObj(word);
+  l:=[];
+  for i in [1,3..Length(e)-1] do
+    g:=ind[e[i]];
+    n:=e[i+1];
+    if n<0 then
+      g:=-g;
+      n:=-n;
+    fi;
+    Append(l,ListWithIdenticalEntries(n,g));
+  od;
+  return l;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzCheckRecord( <Tietze record> )  . . . .  check Tietze record components
 ##
-##  'TzCheckRecord'  checks some components of the  given Tietze record to be
+##  `TzCheckRecord'  checks some components of the  given Tietze record to be
 ##  consistent.
 ##
-TzCheckRecord := function ( T )
+InstallGlobalFunction( TzCheckRecord, function ( T )
 
     local tietze;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
     # check the generator lists to be consistent.
-    tietze := T.tietze;
-    if not ( IsIdentical( T.generators, tietze[TZ_GENERATORS] ) ) or
+    tietze := T!.tietze;
+    if not ( IsIdenticalObj( T!.generators, tietze[TZ_GENERATORS] ) ) or
         Length( tietze[TZ_GENERATORS] ) <> tietze[TZ_NUMGENS] then
         Error( "inconsistent generator lists" );
     fi;
@@ -972,7 +994,7 @@ TzCheckRecord := function ( T )
         Error( "inconsistent relators" );
     fi;
 
-end;
+end );
 
 
 #############################################################################
@@ -981,13 +1003,13 @@ end;
 #M  TzEliminate( <Tietze record>, <gen> )  . . . . . eliminates generator gen
 #M  TzEliminate( <Tietze record>, <n> ) . . . . . . . eliminates n generators
 ##
-##  If a generator has been specified,  then  'TzEliminate'  eliminates it if
+##  If a generator has been specified,  then  `TzEliminate'  eliminates it if
 ##  possible, i. e. if it can be isolated in some appropriate relator.  If no
-##  generator  has  been  specified ,   then  'TzEliminate'  eliminates  some
+##  generator  has  been  specified ,   then  `TzEliminate'  eliminates  some
 ##  appropriate  generator  if possible  and if the resulting total length of
-##  the relators will not exceed the parameter T.lengthLimit.
+##  the relators will not exceed the parameter TzOptions(T).lengthLimit.
 ##
-TzEliminate := function ( arg )
+InstallGlobalFunction( TzEliminate, function ( arg )
 
     local eliminations, gennum, n, numgens, numgenslimit, T, tietze;
 
@@ -999,7 +1021,7 @@ TzEliminate := function ( arg )
     # check the first argument to be a Tietze record.
     T := arg[1];
     TzCheckRecord( T );
-    tietze := T.tietze;
+    tietze := T!.tietze;
 
     # get the arguments.
     gennum := 0;
@@ -1027,21 +1049,21 @@ TzEliminate := function ( arg )
 
         # sort the relators and print the status line.
         TzSort( T );
-        if T.printLevel >= 1 then  TzPrintStatus( T, true );  fi;
+        if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
 
     else
 
         # eliminate n generators.
         numgens := tietze[TZ_NUMGENS];
-        eliminations := T.eliminationsLimit;
-        numgenslimit := T.generatorsLimit;
-        T.eliminationsLimit := n;
-        T.generatorsLimit := numgens - n;
+        eliminations := TzOptions(T).eliminationsLimit;
+        numgenslimit := TzOptions(T).generatorsLimit;
+        TzOptions(T).eliminationsLimit := n;
+        TzOptions(T).generatorsLimit := numgens - n;
         TzEliminateGens( T );
-        T.eliminationsLimit := eliminations;
-        T.generatorsLimit := numgenslimit;
+        TzOptions(T).eliminationsLimit := eliminations;
+        TzOptions(T).generatorsLimit := numgenslimit;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1049,28 +1071,28 @@ end;
 #M  TzEliminateFromTree( <Tietze record> ) . .  eliminates the last generator
 #M                                                              from the tree
 ##
-##  'TzEliminateFromTree'  eliminates  the  last  Tietze  generator.  If that
+##  `TzEliminateFromTree'  eliminates  the  last  Tietze  generator.  If that
 ##  generator cannot be isolated in any Tietze relator,  then it's definition
 ##  is  taken  from  the tree  and added  as an  additional  Tietze  relator,
 ##  extending  the  set  of  Tietze generators  appropriately,  if necessary.
 ##  However,  the elimination  will not be  performed  if the resulting total
 ##  length of the relators  cannot be guaranteed  to not exceed the parameter
-##  T.lengthLimit.
+##  TzOptions(T).lengthLimit.
 ##
-TzEliminateFromTree := function ( T )
+InstallGlobalFunction( TzEliminateFromTree, function ( T )
 
     local exp, factor, flags, gen, gens, i, invnum, invs, leng, length,
           lengths, num, numgens, numrels, occRelNum, occur, occTotal, pair,
           pair1, pointers, pos, pptrtr, primary, ptr, rel, rels, space,
           spacelimit, tietze, tree, treelength, treeNums, trlast, word;
 
-    # check the first argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the first argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
     # get some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
     invs := tietze[TZ_INVERSES];
@@ -1080,14 +1102,14 @@ TzEliminateFromTree := function ( T )
     lengths := tietze[TZ_LENGTHS];
 
     # get some more local variables.
-    tree := T.tree;
+    tree := T!.tree;
     treelength := tree[TR_TREELENGTH];
     primary := tree[TR_PRIMARY];
     trlast := tree[TR_TREELAST];
     treeNums := tree[TR_TREENUMS];
     pointers := tree[TR_TREEPOINTERS];
 
-    spacelimit := T.lengthLimit;
+    spacelimit := TzOptions(T).lengthLimit;
     tietze[TZ_MODIFIED] := false;
     occTotal := 0;
 
@@ -1118,7 +1140,7 @@ TzEliminateFromTree := function ( T )
     if occur[3][1] > 1 then
 
         # print a message.
-        if T.printLevel >= 2 then
+        if TzOptions(T).printLevel >= 2 then
             Print( "#I  adding relator from tree position ", trlast, "\n" );
         fi;
 
@@ -1141,7 +1163,7 @@ TzEliminateFromTree := function ( T )
                 invs := tietze[TZ_INVERSES];
                 treeNums[numgens] := ptr;
                 pointers[ptr] := treelength + numgens;
-                if T.printLevel >= 2 then
+                if TzOptions(T).printLevel >= 2 then
                     Print( "#I  adding generator ", gens[numgens],
                     " from tree position ", ptr, "\n" );
                 fi;
@@ -1232,7 +1254,7 @@ TzEliminateFromTree := function ( T )
         word := Concatenation( rel{ [pos+1..length] }, rel{ [1..pos-1] } );
 
         # replace all occurrences of gen by word^-1.
-        if T.printLevel >= 2 then
+        if TzOptions(T).printLevel >= 2 then
             Print( "#I  eliminating ", gens[num], " = " );
             if gen > 0 then
                 Print( AbstractWordTietzeWord( word, gens )^-1, "\n");
@@ -1252,30 +1274,30 @@ TzEliminateFromTree := function ( T )
         od;
         tree[TR_TREELAST] := trlast;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzEliminateGen( <Tietze record>, <n> ) . . . eliminates the nth generator
 ##
-##  'TzEliminateGen' eliminates the Tietze generator tietze[TZ_GENERATORS][n]
+##  `TzEliminateGen' eliminates the Tietze generator tietze[TZ_GENERATORS][n]
 ##  if possible, i. e. if that generator can be isolated  in some appropriate
 ##  Tietze relator.  However,  the elimination  will not be  performed if the
 ##  resulting total length of the relators cannot be guaranteed to not exceed
-##  the parameter T.lengthLimit.
+##  the parameter TzOptions(T).lengthLimit.
 ##
-TzEliminateGen := function ( T, num )
+InstallGlobalFunction( TzEliminateGen, function ( T, num )
 
     local gen, gens, invs, length, lengths, numgens, numrels, occRelNum,
           occur, occTotal, pos, rel, rels, space, spacelimit, tietze, word;
 
-    # check the first argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the first argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
-    spacelimit := T.lengthLimit;
+    tietze := T!.tietze;
+    spacelimit := TzOptions(T).lengthLimit;
 
     tietze[TZ_MODIFIED] := false;
 
@@ -1305,8 +1327,8 @@ TzEliminateGen := function ( T, num )
 
             # if there is a tree of generators and if the generator to be
             # deleted is not the last generator, then delete the tree.
-            if num < numgens and IsBound( T.tree ) then
-                Unbind( T.tree );
+            if num < numgens and IsBound( T!.tree ) then
+                Unbind( T!.tree );
             fi;
 
             # find the substituting word.
@@ -1322,7 +1344,7 @@ TzEliminateGen := function ( T, num )
                 rel{ [1..pos-1] } );
 
             # replace all occurrences of gen by word^-1.
-            if T.printLevel >= 2 then
+            if TzOptions(T).printLevel >= 2 then
                 Print( "#I  eliminating ", gens[num], " = " );
                 if gen > 0 then
                     Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
@@ -1333,7 +1355,7 @@ TzEliminateGen := function ( T, num )
             TzSubstituteGen( tietze, -gen, word );
 
             # update the generator images, if available.
-            if IsBound( T.imagesOldGens ) then
+            if IsBound( T!.imagesOldGens ) then
                 if gen > 0 then  word := -1 * Reversed( word );  fi;
                 TzUpdateGeneratorImages( T, num, word );
             fi;
@@ -1344,35 +1366,35 @@ TzEliminateGen := function ( T, num )
             tietze[TZ_MODIFIED] := true;
         fi;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzEliminateGen1( <Tietze record> )  . . . . . . .  eliminates a generator
 ##
-##  'TzEliminateGen1'  tries to  eliminate a  Tietze generator:  If there are
+##  `TzEliminateGen1'  tries to  eliminate a  Tietze generator:  If there are
 ##  Tietze generators which occur just once in certain Tietze relators,  then
 ##  one of them is chosen  for which the product of the length of its minimal
 ##  defining word  and the  number of its  occurrences  is minimal.  However,
 ##  the elimination  will not be performed  if the resulting  total length of
 ##  the  relators   cannot  be  guaranteed   to  not  exceed   the  parameter
-##  T.lengthLimit.
+##  TzOptions(T).lengthLimit.
 ##
-TzEliminateGen1 := function ( T )
+InstallGlobalFunction( TzEliminateGen1, function ( T )
 
     local gen, gens, i, invs, ispace, j, length, lengths, modified, num,
           numgens, numrels, occur, occMultiplicities, occRelNum, occRelNums,
           occTotals, pos, protected, rel, rels, space, spacelimit, tietze,
           total, word;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
-    protected := T.protected;
-    spacelimit := T.lengthLimit;
+    tietze := T!.tietze;
+    protected := TzOptions(T).protected;
+    spacelimit := TzOptions(T).lengthLimit;
 
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
@@ -1406,8 +1428,8 @@ TzEliminateGen1 := function ( T )
 
         # if there is a tree of generators and if the generator to be deleted
         # is not the last generator, then delete the tree.
-        if num < numgens and IsBound( T.tree ) then
-            Unbind( T.tree );
+        if num < numgens and IsBound( T!.tree ) then
+            Unbind( T!.tree );
         fi;
 
         # find the substituting word.
@@ -1423,7 +1445,7 @@ TzEliminateGen1 := function ( T )
         word := Concatenation( rel{ [pos+1..length] }, rel{ [1..pos-1] } );
 
         # replace all occurrences of gen by word^-1.
-        if T.printLevel >= 2 then
+        if TzOptions(T).printLevel >= 2 then
             Print( "#I  eliminating ", gens[num], " = " );
             if gen > 0 then
                 Print( AbstractWordTietzeWord( word, gens )^-1, "\n" );
@@ -1434,7 +1456,7 @@ TzEliminateGen1 := function ( T )
         TzSubstituteGen( tietze, -gen, word );
 
         # update the generator images, if available.
-        if IsBound( T.imagesOldGens ) then
+        if IsBound( T!.imagesOldGens ) then
             if gen > 0 then  word := -1 * Reversed( word );  fi;
             TzUpdateGeneratorImages( T, num, word );
         fi;
@@ -1446,32 +1468,32 @@ TzEliminateGen1 := function ( T )
     fi;
 
     tietze[TZ_MODIFIED] := modified;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzEliminateGens( <Tietze record> [, <decode>] )  .  Eliminates generators
 ##
-##  'TzEliminateGens'  repeatedly eliminates generators from the presentation
+##  `TzEliminateGens'  repeatedly eliminates generators from the presentation
 ##  of the given group until at least one  of  the  following  conditions  is
 ##  violated:
 ##
 ##  (1) The  current  number of  generators  is greater  than  the  parameter
-##      T.generatorsLimit.
+##      TzOptions(T).generatorsLimit.
 ##  (2) The   number   of   generators   eliminated   so  far  is  less  than
-##      the parameter T.eliminationsLimit.
+##      the parameter TzOptions(T).eliminationsLimit.
 ##  (3) The  total length of the relators  has not yet grown  to a percentage
-##      greater than the parameter T.expandLimit.
+##      greater than the parameter TzOptions(T).expandLimit.
 ##  (4) The  next  elimination  will  not  extend the total length to a value
-##      greater than the parameter T.lengthLimit.
+##      greater than the parameter TzOptions(T).lengthLimit.
 ##
 ##  If a  second argument  has been  specified,  then it is  assumed  that we
 ##  are in the process of decoding a tree.
 ##
 ##  If not, then the function will not eliminate any protected generators.
 ##
-TzEliminateGens := function ( arg )
+InstallGlobalFunction( TzEliminateGens, function ( arg )
 
     local bound, decode, maxnum, modified, num, redundantsLimit, T, tietze;
 
@@ -1484,21 +1506,21 @@ TzEliminateGens := function ( arg )
     T := arg[1];
     TzCheckRecord( T );
 
-    if T.printLevel >= 3 then  Print( "#I  eliminating generators\n" );  fi;
+    if TzOptions(T).printLevel >= 3 then  Print( "#I  eliminating generators\n" );  fi;
 
     # get the second argument.
     decode := Length( arg ) = 2;
 
-    tietze := T.tietze;
+    tietze := T!.tietze;
     redundantsLimit := 5;
-    maxnum := T.eliminationsLimit;
-    bound := tietze[TZ_TOTAL] * (T.expandLimit / 100);
+    maxnum := TzOptions(T).eliminationsLimit;
+    bound := tietze[TZ_TOTAL] * (TzOptions(T).expandLimit / 100);
     modified := false;
     tietze[TZ_MODIFIED] := true;
     num := 0;
     while  tietze[TZ_MODIFIED]  and  num < maxnum  and
         tietze[TZ_TOTAL] <= bound and
-        tietze[TZ_NUMGENS] - tietze[TZ_NUMREDUNDS] > T.generatorsLimit  do
+        tietze[TZ_NUMGENS] - tietze[TZ_NUMREDUNDS] > TzOptions(T).generatorsLimit  do
         if decode then
             TzEliminateFromTree( T );
         else
@@ -1518,33 +1540,33 @@ TzEliminateGens := function ( arg )
         TzHandleLength1Or2Relators( T );
         # sort the relators and print the status line.
         TzSort( T );
-        if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+        if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzFindCyclicJoins( <Tietze record> )  . . . . . . handle cyclic subgroups
 ##
-##  'TzFindCyclicJoins'  searches for  power and commutator relators in order
+##  `TzFindCyclicJoins'  searches for  power and commutator relators in order
 ##  to find  pairs of generators  which  generate a  common  cyclic subgroup.
 ##  It uses these pairs to introduce new relators,  but it does not introduce
-##  any new generators as is done by 'TzSubstituteCyclicJoins'.
+##  any new generators as is done by `TzSubstituteCyclicJoins'.
 ##
-TzFindCyclicJoins := function ( T )
+InstallGlobalFunction( TzFindCyclicJoins, function ( T )
 
     local e, exp, exponents, fac, flags, gen, gens, ggt, i, invs, j, k, l,
           length, lengths, n, newstart, next, num, numgens, numrels, prev,
           powers, rel, rels, tietze, word;
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  searching for cyclic joins\n" );
     fi;
 
     # check the given argument to be a Tietze record.
     TzCheckRecord( T );
-    tietze := T.tietze;
+    tietze := T!.tietze;
     tietze[TZ_MODIFIED] := false;
 
     # start the routine and repeat it whenever a generator has been
@@ -1668,7 +1690,7 @@ TzFindCyclicJoins := function ( T )
                             + lengths[j];
                          flags[j] := 1;
                          tietze[TZ_MODIFIED] := true;
-                         if T.printLevel >= 3 then  Print(
+                         if TzOptions(T).printLevel >= 3 then  Print(
                             "#I  rels[",j,"] reduced to ",rels[j],"\n" );
                          fi;
                       fi;
@@ -1693,7 +1715,7 @@ TzFindCyclicJoins := function ( T )
                       fi;
 
                       # eliminate a generator if it is possible and allowed.
-                      if n <> 0 and T.generatorsLimit < numgens then
+                      if n <> 0 and TzOptions(T).generatorsLimit < numgens then
                          TzEliminate( T );
                          tietze[TZ_MODIFIED] := true;
                          j := numrels;
@@ -1715,32 +1737,32 @@ TzFindCyclicJoins := function ( T )
         TzHandleLength1Or2Relators( T );
         # sort the relators and print the status line.
         TzSort( T );
-        if T.printLevel >= 1 then  TzPrintStatus( T, true );  fi;
+        if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzGeneratorExponents( <Tietze record> ) . . . list of generator exponents
 ##
-##  'TzGeneratorExponents'  tries to find exponents for the Tietze generators
+##  `TzGeneratorExponents'  tries to find exponents for the Tietze generators
 ##  and return them in a list parallel to the list of the generators.
 ##
-TzGeneratorExponents := function ( T )
+InstallGlobalFunction( TzGeneratorExponents, function ( T )
 
     local exp, exponents, flags, i, invs, j, l, length, lengths, num, num1,
           numgens, numrels, rel, rels, tietze;
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  trying to find generator exponents\n" );
     fi;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
+    tietze := T!.tietze;
 
     numgens := tietze[TZ_NUMGENS];
     rels := tietze[TZ_RELATORS];
@@ -1779,43 +1801,43 @@ TzGeneratorExponents := function ( T )
     od;
 
     return exponents;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzGo( <Tietze record> [, <silent> ) . . . . .  run Tietze transformations
 ##
-##  'TzGo'  automatically  performs  suitable  Tietze transformations  of the
+##  `TzGo'  automatically  performs  suitable  Tietze transformations  of the
 ##  presentation in the given Tietze record.
 ##
 ##  If "silent" is specified as true, then the printing of the status line by
-##  'TzGo' in case of T.printLevel = 1 is suppressed.
+##  `TzGo' in case of TzOptions(T).printLevel = 1 is suppressed.
 ##
 ##  rels    is the set of relators.
 ##  gens    is the set of generators.
 ##  total   is the total length of all relators.
 ##
-TzGo := function ( arg )
+InstallGlobalFunction( TzGo, function ( arg )
 
     local count, looplimit, printstatus, T, tietze;
 
     # get the arguments.
     T := arg[1];
-    printstatus := T.printLevel = 1 and
+    printstatus := TzOptions(T).printLevel = 1 and
         not ( Length( arg ) > 1 and IsBool( arg[2] ) and arg[2] );
 
-    # check the first argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the first argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
+    tietze := T!.tietze;
 
     # substitute substrings by shorter ones.
     TzSearch( T );
 
     # now run our standard strategy and repeat it.
-    looplimit := T.loopLimit;
+    looplimit := TzOptions(T).loopLimit;
     count := 0;
     while count < looplimit and tietze[TZ_TOTAL] > 0 do
 
@@ -1843,38 +1865,36 @@ TzGo := function ( arg )
         if printstatus then  TzPrintStatus( T, true );  fi;
     fi;
 
-end;
-
-SimplifyPresentation := TzGo;
+end );
 
 
 #############################################################################
 ##
 #M  TzGoGo( <Tietze record> ) . . . . .  run the Tietze go command repeatedly
 ##
-##  'TzGoGo'  calls  the 'TzGo' command  again  and again  until it  does not
-##  reduce the presentation any more.  'TzGo' automatically performs suitable
+##  `TzGoGo'  calls  the `TzGo' command  again  and again  until it  does not
+##  reduce the presentation any more.  `TzGo' automatically performs suitable
 ##  Tietze  transformations  of the presentation  in the given Tietze record.
 ##
 ##  rels    is the set of relators.
 ##  gens    is the set of generators.
 ##  total   is the total length of all relators.
 ##
-TzGoGo := function ( T )
+InstallGlobalFunction( TzGoGo, function ( T )
 
     local count, numgens, numrels, silentGo, tietze, total;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
     # initialize the local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     numgens := tietze[TZ_NUMGENS];
     numrels := tietze[TZ_NUMRELS];
     total := tietze[TZ_TOTAL];
-    silentGo := T.printLevel = 1;
+    silentGo := TzOptions(T).printLevel = 1;
     count := 0;
 
     #loop over the Tietze transformations.
@@ -1895,14 +1915,14 @@ TzGoGo := function ( T )
     od;
 
     if silentGo then  TzPrintStatus( T, true );  fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzHandleLength1Or2Relators( <Tietze record> ) . . . handle short relators
 ##
-##  'TzHandleLength1Or2Relators'  searches for  relators of length 1 or 2 and
+##  `TzHandleLength1Or2Relators'  searches for  relators of length 1 or 2 and
 ##  performs suitable Tietze transformations for each of them:
 ##
 ##  Generators occurring in relators of length 1 are eliminated.
@@ -1914,22 +1934,22 @@ end;
 ##  generator with the  larger number is substituted  by the other one in all
 ##  relators and finally eliminated from the set of generators.
 ##
-TzHandleLength1Or2Relators := function ( T )
+InstallGlobalFunction( TzHandleLength1Or2Relators, function ( T )
 
     local absrep2, done, flags, gens, i, idword, invs, j, length, lengths,
           numgens, numgens1, numrels, pointers, protected, ptr, ptr1, ptr2,
           redunds, rels, rep, rep1, rep2, tietze, tracingImages, tree,
           treelength, treeNums;
 
-    if T.printLevel >= 3 then  Print( "#I  handling short relators\n" );  fi;
+    if TzOptions(T).printLevel >= 3 then  Print( "#I  handling short relators\n" );  fi;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
-    protected := T.protected;
-    tracingImages := IsBound( T.imagesOldGens );
+    tietze := T!.tietze;
+    protected := TzOptions(T).protected;
+    tracingImages := IsBound( T!.imagesOldGens );
 
     gens := tietze[TZ_GENERATORS];
     invs := tietze[TZ_INVERSES];
@@ -1944,8 +1964,8 @@ TzHandleLength1Or2Relators := function ( T )
     idword := One( gens[1] );
 
     tree := 0;
-    if IsBound( T.tree ) then
-        tree := T.tree;
+    if IsBound( T!.tree ) then
+        tree := T!.tree;
         treelength := tree[TR_TREELENGTH];
         pointers := tree[TR_TREEPOINTERS];
         treeNums := tree[TR_TREENUMS];
@@ -1981,7 +2001,7 @@ TzHandleLength1Or2Relators := function ( T )
                             pointers[ptr1] := 0;
                             treeNums[rep1] := 0;
                         fi;
-                        if T.printLevel >= 2 then
+                        if TzOptions(T).printLevel >= 2 then
                             Print( "#I  eliminating ", gens[rep1],
                                 " = idword\n" );
                         fi;
@@ -2018,7 +2038,7 @@ TzHandleLength1Or2Relators := function ( T )
                                 pointers[ptr2] := 0;
                                 treeNums[rep2] := 0;
                             fi;
-                            if T.printLevel >= 2 then
+                            if TzOptions(T).printLevel >= 2 then
                                 Print( "#I  eliminating ", gens[rep2],
                                     " = idword\n" );
                             fi;
@@ -2071,11 +2091,11 @@ TzHandleLength1Or2Relators := function ( T )
                                 pointers[ptr2] := ptr1;
                                 treeNums[absrep2] := 0;
                              fi;
-                             if tracingImages or T.printLevel >= 2 then
+                             if tracingImages or TzOptions(T).printLevel >= 2 then
                                 if rep2 > 0 then
                                     rep1 := invs[numgens1+rep1];
                                 fi;
-                                if T.printLevel >= 2 then
+                                if TzOptions(T).printLevel >= 2 then
                                     Print( "#I  eliminating ", gens[absrep2],
                                         " = ", AbstractWordTietzeWord(
                                         [ rep1 ], gens ), "\n");
@@ -2132,7 +2152,16 @@ TzHandleLength1Or2Relators := function ( T )
     if redunds > 0 then  TzRemoveGenerators( T );  fi;
 
     # Print( "#I  total length = ", tietze[TZ_TOTAL], "\n" );
-end;
+end );
+
+
+#############################################################################
+##
+#M  GeneratorsOfPresentation( <P> )
+##
+InstallGlobalFunction(GeneratorsOfPresentation,function(T)
+  return ShallowCopy(T!.generators);
+end);
 
 
 #############################################################################
@@ -2140,49 +2169,68 @@ end;
 #M  TzInitGeneratorImages( T )  . . . . . . . initialize the generator images
 #M                                               under Tietze transformations
 ##
-##  'TzInitGeneratorImages'  expects  T  to  be  a  presentation  record.  It
-##  defines the current generators to be the "old" generators and initializes
-##  two components T.imagesOldGens and T.preImagesNewGens which, at any time,
-##  will contain a list of the images  of the old generators  as Tietze words
-##  in the new ones  or a list of the  preimages of the new generators in the
-##  old ones,  respectively,  under the  isomorphism  defined  by all  Tietze
-##  transformations which then will have been applied to T.
-##
-##  Note:  A subsequent call of the  function DecodeTree  will imply that the
-##  images and preimages  are deleted  and reinitializeed  after decoding the
-##  tree.
-##
-TzInitGeneratorImages := function ( T )
-
-    local numgens;
+InstallGlobalFunction( TzInitGeneratorImages, function ( T )
+local numgens,gens;
 
     # check the argument to be a Tietze record.
     TzCheckRecord( T );
 
     # initialize the lists.
-    numgens := Length( T.generators );
-    T.oldGenerators := ShallowCopy( T.generators );
-    T.imagesOldGens := List( [ 1 .. numgens ], i -> [i] );
-    T.preImagesNewGens := List( [ 1 .. numgens ], i -> [i] );
+    gens:=GeneratorsOfPresentation(T);
+    numgens := Length( gens );
+    T!.oldGenerators := gens;
+    T!.imagesOldGens := List( [ 1 .. numgens ], i -> [i] );
+    T!.preImagesNewGens := List( [ 1 .. numgens ], i -> [i] );
 
-end;
+end );
+
+
+#############################################################################
+##
+#M  OldGeneratorsOfPresentation( <P> )
+##
+InstallGlobalFunction(OldGeneratorsOfPresentation,function(T)
+  return ShallowCopy(T!.oldGenerators);
+end);
+
+
+#############################################################################
+##
+#M  TzImagesOldGens( <P> )
+##
+InstallGlobalFunction(TzImagesOldGens,function(T)
+local g;
+  g:=GeneratorsOfPresentation(T);
+  return List(T!.imagesOldGens,i->AbstractWordTietzeWord(i,g));
+end);
+
+
+#############################################################################
+##
+#M  TzPreImagesNewGens( <P> )
+##
+InstallGlobalFunction(TzPreImagesNewGens,function(T)
+local g;
+  g:=OldGeneratorsOfPresentation(T);
+  return List(T!.preImagesNewGens,i->AbstractWordTietzeWord(i,g));
+end);
 
 
 #############################################################################
 ##
 #M  TzMostFrequentPairs( <Tietze record>, <n> ) . . . .  occurrences of pairs
 ##
-##  'TzMostFrequentPairs'  returns a list  describing the  n  most frequently
+##  `TzMostFrequentPairs'  returns a list  describing the  n  most frequently
 ##  occurruing relator subwords of the form  g1 * g2,  where  g1  and  g2 are
 ##  different generators or their inverses.
 ##
-TzMostFrequentPairs := function ( T, nmax )
+InstallGlobalFunction( TzMostFrequentPairs, function ( T, nmax )
 
     local gens, i, j, k, max, n, numgens, occlist, pairs, tietze;
 
-    # check the first argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the first argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
     # check the second argument.
@@ -2191,7 +2239,7 @@ TzMostFrequentPairs := function ( T, nmax )
     fi;
 
     # intialize some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
     occlist := [ ]; occlist[4*numgens] := 0;
@@ -2251,67 +2299,67 @@ TzMostFrequentPairs := function ( T, nmax )
     fi;
 
     return pairs;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzNewGenerator( <Tietze record> ) . . . . . . . . .  adds a new generator
 ##
-##  'TzNewGenerator'  defines a  new  abstract generator  and adds it  to the
+##  `TzNewGenerator'  defines a  new  abstract generator  and adds it  to the
 ##  given presentation.
 ##
 ##  Let  i  be the smallest positive integer  which has not yet been used  as
-##  a generator number  and for which no component  T.i  exists so far in the
+##  a generator number  and for which no component  T!.i  exists so far in the
 ##  given  Tietze record  T,  say.  A new abstract generator  _xi  is defined
-##  and then added as component  T.i  to the given Tietze record.
+##  and then added as component  T!.i  to the given Tietze record.
 ##
-##  Warning:  'TzNewGenerator'  is  an  internal  subroutine  of  the  Tietze
+##  Warning:  `TzNewGenerator'  is  an  internal  subroutine  of  the  Tietze
 ##  routines.  You should not call it.  Instead, you should call the function
-##  'AddGenerator', if needed.
+##  `AddGenerator', if needed.
 ##
-TzNewGenerator := function ( T )
+InstallGlobalFunction( TzNewGenerator, function ( T )
 
     local freegens, gen, gens, numgens, recnames, new, tietze;
 
     # get some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     freegens := tietze[TZ_FREEGENS];
     gens := tietze[TZ_GENERATORS];
     numgens := tietze[TZ_NUMGENS];
 
     # determine the next free generator number.
-    new := T.nextFree;
-    recnames := RecNames( T );
+    new := T!.nextFree;
+    recnames := REC_NAMES_COMOBJ( T );
     while String( new ) in recnames do  new := new + 1;  od;
-    T.nextFree := new + 1;
+    T!.nextFree := new + 1;
 
     # define the new abstract generator.
     gen := freegens[new];
-    T.(String( new )) := gen;
+    T!.(String( new )) := gen;
 
     # add the new generator to the presentation.
     numgens := numgens + 1;
     gens[numgens] := gen;
-    T.components[numgens] := new;
+    T!.components[numgens] := new;
     tietze[TZ_NUMGENS] := numgens;
     tietze[TZ_INVERSES] := Concatenation( [numgens], tietze[TZ_INVERSES],
         [-numgens] );
 
     return gen;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrint( <Tietze record> [,<list>] ) . print internal Tietze presentation
 ##
-##  'TzPrint'  prints the current generators and relators of the given Tietze
+##  `TzPrint'  prints the current generators and relators of the given Tietze
 ##  record in their  internal representation.  The optional  second parameter
 ##  can be  used  to specify  the numbers  of the  relators  to  be  printed.
 ##  Default: all relators are printed.
 ##
-TzPrint := function ( arg )
+InstallGlobalFunction( TzPrint, function ( arg )
 
     local gens, i, leng, lengths, list, numrels, rels, T, tietze;
 
@@ -2320,7 +2368,7 @@ TzPrint := function ( arg )
     TzCheckRecord( T );
 
     # initialize the local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     rels := tietze[TZ_RELATORS];
     numrels := tietze[TZ_NUMRELS];
@@ -2353,20 +2401,20 @@ TzPrint := function ( arg )
             fi;
         od;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintGeneratorImages( <Tietze record> ) . . . .  print generator images
 ##
-##  'TzPrintGeneratorImages'  assumes that  <T>  is a presentation record for
+##  `TzPrintGeneratorImages'  assumes that  <T>  is a presentation record for
 ##  which the generator images and preimages under the Tietze transformations
 ##  applied to <T> are being traced. It displays the preimages of the current
 ##  generators as  Tietze words in the old generators,  and the images of the
 ##  old generators as Tietze words in the the current generators.
 ##
-TzPrintGeneratorImages := function ( T )
+InstallGlobalFunction( TzPrintGeneratorImages, function ( T )
 
     local i, images;
 
@@ -2374,10 +2422,10 @@ TzPrintGeneratorImages := function ( T )
     TzCheckRecord( T );
 
     # check if generator images are available.
-    if IsBound( T.imagesOldGens ) then
+    if IsBound( T!.imagesOldGens ) then
 
         # display the preimages of the current generators.
-        images := T.preImagesNewGens;
+        images := T!.preImagesNewGens;
         Print( "#I  preimages of current generators as Tietze words",
             " in the old ones:\n" );
         for i in [1 .. Length( images ) ] do
@@ -2385,7 +2433,7 @@ TzPrintGeneratorImages := function ( T )
         od;
 
         # display the images of the old generators.
-        images := T.imagesOldGens;
+        images := T!.imagesOldGens;
         Print( "#I  images of old generators as Tietze words in the",
             " current ones:\n" );
         for i in [1 .. Length( images ) ] do
@@ -2399,19 +2447,19 @@ TzPrintGeneratorImages := function ( T )
 
     fi;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintGenerators( <Tietze record> [,<list>] ) . . . . . print generators
 ##
-##  'TzPrintGenerators'  prints the generators of the given  Tietze presenta-
+##  `TzPrintGenerators'  prints the generators of the given  Tietze presenta-
 ##  tion together with the  number of their occurrences.  The optional second
 ##  parameter  can be used to specify  the numbers  of the  generators  to be
 ##  printed.  Default: all generators are printed.
 ##
-TzPrintGenerators := function ( arg )
+InstallGlobalFunction( TzPrintGenerators, function ( arg )
 
     local gens, i, invs, leng, list, max, min, num, numgens, occur, T,
           tietze;
@@ -2421,7 +2469,7 @@ TzPrintGenerators := function ( arg )
     TzCheckRecord( T );
 
     # initailize some local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     invs := tietze[TZ_INVERSES];
     numgens := tietze[TZ_NUMGENS];
@@ -2490,38 +2538,60 @@ TzPrintGenerators := function ( arg )
             fi;
         od;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintLengths( <Tietze record> )  . . . . . . . .  print relator lengths
 ##
-##  'TzPrintLengths'  prints  a list  of all  relator  lengths  of the  given
+##  `TzPrintLengths'  prints  a list  of all  relator  lengths  of the  given
 ##  presentation record.
 ##
-TzPrintLengths := function ( T )
+InstallGlobalFunction( TzPrintLengths, function ( T )
 
     local tietze;
 
     # check the argument to be a Tietze record.
     TzCheckRecord( T );
-    tietze := T.tietze;
+    tietze := T!.tietze;
 
     # print the list of relator lengths;
     Print( tietze[TZ_LENGTHS], "\n" );
-end;
+end );
+
+
+############################################################################# 
+##
+#M  TzOptions(<P>)
+##
+InstallMethod(TzOptions,"set default values",true,[IsPresentation],0,
+function(P)
+  return rec(
+    # initialize the Tietze options by their default values.
+    eliminationsLimit := 100,
+    expandLimit := 150,
+    generatorsLimit := 0,
+    lengthLimit := infinity,
+    loopLimit := infinity,
+    printLevel := 0,
+    saveLimit := 10,
+    searchSimultaneous := 20,
+    protected:=0
+  );
+end);
+
 
 
 #############################################################################
 ##
 #M  TzPrintOptions( <Tietze record> )  . . . . .  print Tietze record options
 ##
-##  'TzPrintOptions'  prints the  components of a Tietze record,  suppressing
+##  `TzPrintOptions'  prints the  components of a Tietze record,  suppressing
 ##  all those components  which are not options of the Tietze transformations
 ##  routines.
 ##
-TzPrintOptions := function ( T )
+InstallGlobalFunction( TzPrintOptions, function ( T )
 
     local i, len, lst, nam;
 
@@ -2530,7 +2600,7 @@ TzPrintOptions := function ( T )
 
     # determine the maximal name length of the option compoents.
     len  := 0;
-    for nam in RecNames( T )  do
+    for nam in RecNames( TzOptions(T) )  do
         if nam in TzOptionNames  then
             if len < Length( nam )  then
                 len := Length( nam );
@@ -2540,29 +2610,29 @@ TzPrintOptions := function ( T )
     od;
 
     # now print all components of T which are options.
-    for nam  in RecNames( T )  do
+    for nam  in RecNames( TzOptions(T) )  do
         if nam in TzOptionNames  then
             Print( "#I  ", nam );
             for i  in [Length(nam)..len]  do
                 Print( " " );
             od;
-            Print( "= ", T.(nam), "\n" );
+            Print( "= ", TzOptions(T).(nam), "\n" );
         fi;
     od;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintPairs( <Tietze record> [,<n>] ) . . . . print occurrences of pairs
 ##
-##  'TzPrintPairs'  prints the n most often occurring relator subwords of the
+##  `TzPrintPairs'  prints the n most often occurring relator subwords of the
 ##  form  a * b,  where a and b are  different generators  or their inverses,
 ##  together with their numbers of occurrences. The default value of n is 10.
 ##  If n has been specified to be zero, then it is interpreted as "infinity".
 ##
-TzPrintPairs := function ( arg )
+InstallGlobalFunction( TzPrintPairs, function ( arg )
 
     local geni, genj, gens, k, m, n, num, pairs, T, tietze;
 
@@ -2579,7 +2649,7 @@ TzPrintPairs := function ( arg )
     if n = 0 then  n := "infinity";  fi;
 
     # intialize the local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
 
     # determine the n most frequently occurring pairs.
@@ -2600,17 +2670,17 @@ TzPrintPairs := function ( arg )
             "#I  ",m,".  ",num,"  occurrences of  ",geni," * ",genj,"\n" );
         fi;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintPresentation( <Tietze record> ) . . . . . . . . print presentation
 ##
-##  'TzPrintGenerators'  prints the  generators and the  relators of a Tietze
+##  `TzPrintGenerators'  prints the  generators and the  relators of a Tietze
 ##  presentation.
 ##
-TzPrintPresentation := function ( T )
+InstallGlobalFunction( TzPrintPresentation, function ( T )
 
     # check the given argument to be a Tietze record.
     TzCheckRecord( T );
@@ -2625,18 +2695,18 @@ TzPrintPresentation := function ( T )
 
     # print the status line.
     TzPrintStatus( T );
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintRelators( <Tietze record> [,<list>] ) . . . . . . . print relators
 ##
-##  'TzPrintRelators'  prints the relators of the given  Tietze presentation.
+##  `TzPrintRelators'  prints the relators of the given  Tietze presentation.
 ##  The optional second parameter  can be used to specify the  numbers of the
 ##  relators to be printed.  Default: all relators are printed.
 ##
-TzPrintRelators := function ( arg )
+InstallGlobalFunction( TzPrintRelators, function ( arg )
 
     local gens, i, list, numrels, rels, T, tietze;
 
@@ -2645,7 +2715,7 @@ TzPrintRelators := function ( arg )
     TzCheckRecord( T );
 
     # initailize the local variables.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
     rels := tietze[TZ_RELATORS];
     numrels := tietze[TZ_NUMRELS];
@@ -2671,19 +2741,19 @@ TzPrintRelators := function ( arg )
             fi;
         od;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzPrintStatus( <Tietze record> [, <norepeat> ] ) . . .  print status line
 ##
-##  'TzPrintStatus'  prints the number of generators, the number of relators,
+##  `TzPrintStatus'  prints the number of generators, the number of relators,
 ##  and the total length of all relators in the  Tietze  presentation  of the
 ##  given group.  If  "norepeat"  is specified as true,  then the printing is
 ##  suppressed if none of the three values has changed since the last call.
 ##
-TzPrintStatus := function ( arg )
+InstallGlobalFunction( TzPrintStatus, function ( arg )
 
     local norepeat, numgens, numrels, status, T, tietze, total;
 
@@ -2691,11 +2761,11 @@ TzPrintStatus := function ( arg )
     T := arg[1];
     norepeat := Length( arg ) > 1 and IsBool( arg[2] ) and arg[2];
 
-    # check the first argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "first argument must be a Tietze record" );
+    # check the first argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "first argument must be a Presentation" );
     fi;
-    tietze := T.tietze;
+    tietze := T!.tietze;
     total := tietze[TZ_TOTAL];
 
     # get number of generators and number of relators.
@@ -2706,7 +2776,7 @@ TzPrintStatus := function ( arg )
     if not ( status = tietze[TZ_STATUS] and norepeat ) then
 
         # print the Tietze status line.
-        if IsBound( T.name ) then  Print( "#I  ", T.name, " has " );
+        if HasName( T ) then  Print( "#I  ", Name(T), " has " );
         else Print( "#I  there are " );  fi;
         if status[1] = 1 then  Print( status[1], " generator" );
         else  Print( status[1], " generators" );  fi;
@@ -2717,7 +2787,7 @@ TzPrintStatus := function ( arg )
         # save the new status.
         tietze[TZ_STATUS] := status;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -2725,85 +2795,71 @@ end;
 #M  TzRelator( <Tietze record>, <word> ) . . . . . . convert an abstract word
 #M                                                        to a Tietze relator
 ##
-##  'TzRelator' assumes <word> to be an abstract word in the group generators
+##  `TzRelator' assumes <word> to be an abstract word in the group generators
 ##  associated  to the  given  Tietze record,  and  converts it  to a  Tietze
 ##  relator, i.e. a free and cyclically reduced Tietze word.
 ##
-TzRelator := function ( T, word )
-
-    local gen, gens, i, i1, i2, pos, tietze, tzword;
+InstallGlobalFunction( TzRelator, function ( T, word )
+local gens, i1, i2,  tietze;
 
     # get some local variables
-    tietze := T.tietze;
+    tietze := T!.tietze;
     gens := tietze[TZ_GENERATORS];
 
+    # make tietze word from it
+    word:=TietzeWordAbstractWord(word,gens);
     # cyclically reduce the given word
     i1 := 1;
-    i2 := LengthWord( word );
-    while i1 < i2 and Subword( word, i1, i1 ) = Subword( word, i2, i2 )^-1 do
+    i2 := Length( word );
+    while i1 < i2 and word[i1] = -word[i2] do
         i1 := i1 + 1;
         i2 := i2 - 1;
     od;
 
-    # build up the corresponding Tieze word
-    tzword := [ i1 .. i2 ];
-    for i in [ i1 .. i2 ] do
-        gen := Subword( word, i, i );
-        pos := Position( gens, gen );
-        if pos = fail then
-            pos := Position( gens, gen^-1 );
-            if pos = fail then Error(
-               "given relator is not a word in the Tietze generators" );
-            fi;
-            pos := - pos;
-        fi;
-        tzword[i-i1+1] := pos;
-    od;
-
-    return tzword;
-end;
+    return word{[i1..i2]};
+end );
 
 
 #############################################################################
 ##
 #M  TzRemoveGenerators( <Tietze record> ) . . . . Remove redundant generators
 ##
-##  'TzRemoveGenerators'   deletes  the   redundant  Tietze  generators   and
+##  `TzRemoveGenerators'   deletes  the   redundant  Tietze  generators   and
 ##  renumbers  the non-redundant ones  accordingly.  The redundant generators
 ##  are  assumed   to  be   marked   in  the   inverses  list   by  an  entry
 ##  invs[numgens+1-i] <> i.
 ##
-TzRemoveGenerators := function ( T )
+InstallGlobalFunction( TzRemoveGenerators, function ( T )
 
     local comps, gens, i, image, invs, j, newim, numgens, numgens1,
           oldnumgens, pointers, preimages, redunds, tietze, tracingImages,
           tree, treelength, treeNums;
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  renumbering the Tietze generators\n" );
     fi;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
-    tietze := T.tietze;
+    tietze := T!.tietze;
     redunds := tietze[TZ_NUMREDUNDS];
     if redunds = 0 then  return;  fi;
 
-    tracingImages := IsBound( T.imagesOldGens );
-    if tracingImages then  preimages := T.preImagesNewGens;  fi;
-    comps := T.components;
+    tracingImages := IsBound( T!.imagesOldGens );
+    if tracingImages then  preimages := T!.preImagesNewGens;  fi;
+    comps := T!.components;
     gens := tietze[TZ_GENERATORS];
     invs := tietze[TZ_INVERSES];
     numgens := tietze[TZ_NUMGENS];
     numgens1 := numgens + 1;
     tree := 0;
 
-    if IsBound( T.tree ) then
+    if IsBound( T!.tree ) then
 
-        tree := T.tree;
+        tree := T!.tree;
         treelength := tree[TR_TREELENGTH];
         treeNums := tree[TR_TREENUMS];
         pointers := tree[TR_TREEPOINTERS];
@@ -2822,7 +2878,7 @@ TzRemoveGenerators := function ( T )
                     else  invs[numgens1+i] := -j;  fi;
                 fi;
             else
-                Unbind( T.(String(comps[i])) );
+                Unbind( T!.(String(comps[i])) );
                 invs[numgens1-i] := 0;
                 invs[numgens1+i] := 0;
             fi;
@@ -2842,7 +2898,7 @@ TzRemoveGenerators := function ( T )
                     else  invs[numgens1+i] := -j;  fi;
                 fi;
             else
-                Unbind( T.(String(comps[i])) );
+                Unbind( T!.(String(comps[i])) );
                 invs[numgens1-i] := 0;
                 invs[numgens1+i] := 0;
             fi;
@@ -2858,13 +2914,13 @@ TzRemoveGenerators := function ( T )
 
     # update the generator images, if available.
     if tracingImages then
-        for i in [ 1 .. Length( T.imagesOldGens ) ] do
-            image := T.imagesOldGens[i];
+        for i in [ 1 .. Length( T!.imagesOldGens ) ] do
+            image := T!.imagesOldGens[i];
             newim := [];
             for j in [ 1 .. Length( image ) ] do
                 Add( newim, invs[numgens1-image[j]] );
             od;
-            T.imagesOldGens[i] := ReducedRrsWord( newim );
+            T!.imagesOldGens[i] := ReducedRrsWord( newim );
         od;
     fi;
 
@@ -2893,35 +2949,35 @@ TzRemoveGenerators := function ( T )
 
     tietze[TZ_NUMGENS] := numgens;
     tietze[TZ_NUMREDUNDS] := 0;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzSearch( <Tietze record> ) . . . . . . .  search subwords and substitute
 ##
-##  'TzSearch'  searches for  relator subwords  which in some  relator have a
+##  `TzSearch'  searches for  relator subwords  which in some  relator have a
 ##  complement of shorter length  and which occur in other relators, too, and
 ##  uses them to reduce these other relators.
 ##
-TzSearch := function ( T )
+InstallGlobalFunction( TzSearch, function ( T )
 
     local altered, flags, i, flag, j, k, lastj, leng, lengths, lmax, loop,
           maxlen, modified, numrels, oldtotal, rels, save, simultan,
           simultanlimit, tietze;
 
-    if T.printLevel >= 3 then  Print( "#I  searching subwords\n" );  fi;
+    if TzOptions(T).printLevel >= 3 then  Print( "#I  searching subwords\n" );  fi;
 
     # check the given argument to be a Tietze record.
     TzCheckRecord( T );
-    tietze := T.tietze;
-    simultanlimit := T.searchSimultaneous;
+    tietze := T!.tietze;
+    simultanlimit := TzOptions(T).searchSimultaneous;
 
     rels := tietze[TZ_RELATORS];
     lengths := tietze[TZ_LENGTHS];
     flags := tietze[TZ_FLAGS];
     tietze[TZ_MODIFIED] := false;
-    save := T.saveLimit / 100;
+    save := TzOptions(T).saveLimit / 100;
 
     loop := tietze[TZ_TOTAL] > 0;  while loop do
 
@@ -2980,37 +3036,37 @@ TzSearch := function ( T )
                 TzHandleLength1Or2Relators( T );
                 # sort the relators and print the status line.
                 TzSort( T );
-                if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+                if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
             fi;
         fi;
 
         loop := tietze[TZ_TOTAL] < oldtotal and tietze[TZ_TOTAL] > 0 and
                 (oldtotal - tietze[TZ_TOTAL]) / oldtotal >= save;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzSearchEqual( <Tietze record> ) . . . .  search subwords of equal length
 ##
-##  'TzSearchEqual'  searches  for  Tietze relator  subwords  which  in  some
+##  `TzSearchEqual'  searches  for  Tietze relator  subwords  which  in  some
 ##  relator  have a  complement of  equal length  and which  occur  in  other
 ##  relators, too, and uses them to modify these other relators.
 ##
-TzSearchEqual := function ( T )
+InstallGlobalFunction( TzSearchEqual, function ( T )
 
     local altered, equal, i, j, k, lastj, leng, lengths, modified, numrels,
           oldtotal, rels, simultan, simultanlimit, tietze;
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  searching subwords of equal length\n" );
     fi;
 
     # check the given argument to be a Tietze record.
     TzCheckRecord( T );
-    tietze := T.tietze;
-    simultanlimit := T.searchSimultaneous;
+    tietze := T!.tietze;
+    simultanlimit := TzOptions(T).searchSimultaneous;
 
     TzSort( T );
 
@@ -3059,33 +3115,33 @@ TzSearchEqual := function ( T )
             TzHandleLength1Or2Relators( T );
             # sort the relators and print the status line.
             TzSort( T );
-            if T.printLevel >= 2 then  TzPrintStatus( T, true );  fi;
+            if TzOptions(T).printLevel >= 2 then  TzPrintStatus( T, true );  fi;
         fi;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  TzSort( <Tietze record> ) . . . . . . . . . . . . . . . . . sort relators
 ##
-##  'TzSort'  sorts the relators list of the given Tietze Record T, say, and,
+##  `TzSort'  sorts the relators list of the given Tietze Record T, say, and,
 ##  in parallel, the search flags list.  Note:  All relators  of length 0 are
 ##  removed from the list.
 ##
 ##  The sorting algorithm used is the same as in the GAP function Sort.
 ##
-TzSort := function ( T )
+InstallGlobalFunction( TzSort, function ( T )
 
-    if T.printLevel >= 3 then  Print( "#I  sorting the relators\n" );  fi;
+    if TzOptions(T).printLevel >= 3 then  Print( "#I  sorting the relators\n" );  fi;
 
-    # check the given argument to be a Tietze record.
-    if not ( IsBound( T.isTietze ) and T.isTietze ) then
-        Error( "argument must be a Tietze record" );
+    # check the given argument to be a Presentation.
+    if not IsPresentation( T ) then
+        Error( "argument must be a Presentation" );
     fi;
 
-    if T.tietze[TZ_NUMRELS] > 1 then  TzSortC( T.tietze );  fi;
-end;
+    if T!.tietze[TZ_NUMRELS] > 1 then  TzSortC( T!.tietze );  fi;
+end );
 
 
 #############################################################################
@@ -3093,33 +3149,32 @@ end;
 #M  TzSubstitute( <Tietze record>, <word> [, <gen> ] )  . . . . .  substitute
 #M  TzSubstitute( <Tietze record> [, <n> [,<elim> ] ] ) . . . a new generator
 ##
-##  In   its   first   form,   'TzSubstitute'   just   calls   the   function
-##  'TzSubstituteWord'.
+##  In   its   first   form,   `TzSubstitute'   just   calls   the   function
+##  `TzSubstituteWord'.
 ##
-##  In its second form, 'TzSubstitute' first determines the n most frequently
+##  In its second form, `TzSubstitute' first determines the n most frequently
 ##  occurring  relator  subwords  of the form  g1 * g2,  where g1 and g2  are
 ##  different generators  or  their inverses,  and sorts  them by  decreasing
 ##  numbers of occurrences.
 ##
 ##  Let  a * b  be the  last word  in that list,  and let  i  be the smallest
-##  positive integer for which there is no component  T.i so far in the given
-##  Tietze record T, then 'TzSubstitute' adds to the given presentation a new
-##  generator  T.i  and a new relator  T.i^-1 * a * b,  and it  replaces  all
-##  occurrences of  a * b  in the relators by  T.i.  Finally,  if elim = 1 or
+##  positive integer for which there is no component  T!.i so far in the given
+##  Tietze record T, then `TzSubstitute' adds to the given presentation a new
+##  generator  T!.i  and a new relator  T!.i^-1 * a * b,  and it  replaces  all
+##  occurrences of  a * b  in the relators by  T!.i.  Finally,  if elim = 1 or
 ##  elim = 2, it eliminates the generator a or b, respectively.  Otherwise it
-##  eliminates some generator  by just calling  subroutine 'TzEliminateGen1'.
+##  eliminates some generator  by just calling  subroutine `TzEliminateGen1'.
 ##
 ##  The two arguments are optional. If they are specified, then n is expected
 ##  to be a positive integer,  and  elim  is expected to be  0, 1, or 2.  The
 ##  default values are n = 1 and elim = 0.
 ##
-
-TzSubstitute := function ( arg )
+InstallGlobalFunction( TzSubstitute, function ( arg )
 
     local elim, gen, gens, i, invs, j, k, n, narg, numgens, pair, pairs,
           printlevel, T, tietze, word;
 
-    # just call 'TzSubstituteWord' if the second argument is a word.
+    # just call `TzSubstituteWord' if the second argument is a word.
     narg := Length( arg );
     if ( narg = 2 or narg = 3 ) and
         ( IsList( arg[2] ) or IsWord( arg[2] ) ) then
@@ -3159,14 +3214,14 @@ TzSubstitute := function ( arg )
     fi;
 
     # check the number of generators to be at least 2.
-    tietze := T.tietze;
+    tietze := T!.tietze;
     numgens := tietze[TZ_NUMGENS];
     if numgens < 2 then  return;  fi;
 
     # initialize some local variables.
     gens := tietze[TZ_GENERATORS];
     invs := tietze[TZ_INVERSES];
-    printlevel := T.printLevel;
+    printlevel := TzOptions(T).printLevel;
 
     # determine the n most frequently occurring relator subwords of the form
     # g1 * g2, where g1 and g2 are different generators or their inverses,
@@ -3190,49 +3245,49 @@ TzSubstitute := function ( arg )
     # add the word a * b as a new generator.
     gen := TzNewGenerator( T );
     word := AbstractWordTietzeWord( pair, gens );
-    if T.printLevel >= 1 then  Print(
+    if TzOptions(T).printLevel >= 1 then  Print(
         "#I  substituting new generator ",gen," defined by ",word,"\n" );
     fi;
     AddRelator( T, gen^-1 * word );
 
     # if there is a tree of generators, delete it.
-    if IsBound( T.tree ) then  Unbind( T.tree );  fi;
+    if IsBound( T!.tree ) then  Unbind( T!.tree );  fi;
 
     # update the generator preimages, if available.
-    if IsBound( T.imagesOldGens ) then
+    if IsBound( T!.imagesOldGens ) then
         TzUpdateGeneratorImages( T, 0, pair );
     fi;
 
     # replace all relator subwords of the form a * b by the new generator.
-    T.printLevel := 0;
+    TzOptions(T).printLevel := 0;
     TzSearch( T );
-    T.printLevel := printlevel;
+    TzOptions(T).printLevel := printlevel;
 
     #  eliminate a generator.
-    if printlevel = 1 then  T.printLevel := 2;  fi;
+    if printlevel = 1 then  TzOptions(T).printLevel := 2;  fi;
     if elim > 0 then
         TzEliminateGen( T, AbsInt( pair[elim] ) );
     else
         TzEliminateGen1( T );
     fi;
-    T.printLevel := printlevel;
+    TzOptions(T).printLevel := printlevel;
     if tietze[TZ_MODIFIED] then  TzSearch( T );  fi;
     if tietze[TZ_NUMREDUNDS] > 0 then  TzRemoveGenerators( T );  fi;
 
-    if T.printLevel >= 1 then  TzPrintStatus( T, true );  fi;
-end;
+    if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
+end );
 
 
 #############################################################################
 ##
 #M  TzSubstituteCyclicJoins( <Tietze record> ) . . common roots of generators
 ##
-##  'TzSubstituteCyclicJoins'  tries to find pairs of  commuting generators a
+##  `TzSubstituteCyclicJoins'  tries to find pairs of  commuting generators a
 ##  and b, say, such that exponent(a) is prime to exponent(b).  For each such
 ##  pair, their product a * b is substituted as a new generator,  and a and b
 ##  are eliminated.
 ##
-TzSubstituteCyclicJoins := function ( T )
+InstallGlobalFunction( TzSubstituteCyclicJoins, function ( T )
 
     local exp, exp1, exp2, exponents, gen, gen2, gens, i, invs, lengths, n2,
           next, num, num1, num2, numgens, numrels, printlevel, rel, rels,
@@ -3241,13 +3296,13 @@ TzSubstituteCyclicJoins := function ( T )
     # check the given argument to be a Tietze record.
     TzCheckRecord( T );
 
-    if T.printLevel >= 3 then
+    if TzOptions(T).printLevel >= 3 then
         Print( "#I  substituting cyclic joins\n" );
     fi;
 
     # Try to find exponents for the generators.
     exponents := TzGeneratorExponents( T );
-    tietze := T.tietze;
+    tietze := T!.tietze;
     tietze[TZ_MODIFIED] := false;
 
     if Sum( exponents ) = 0 then  return;  fi;
@@ -3262,7 +3317,7 @@ TzSubstituteCyclicJoins := function ( T )
     numrels := tietze[TZ_NUMRELS];
     lengths := tietze[TZ_LENGTHS];
     invs := tietze[TZ_INVERSES];
-    printlevel := T.printLevel;
+    printlevel := TzOptions(T).printLevel;
 
     # Now work off all commutator relators of length 4.
     i := 1;
@@ -3300,21 +3355,21 @@ TzSubstituteCyclicJoins := function ( T )
                 AddRelator( T, gens[num2] * gen^-exp1 );
 
                 # if there is a tree of generators, delete it.
-                if IsBound( T.tree ) then  Unbind( T.tree );  fi;
+                if IsBound( T!.tree ) then  Unbind( T!.tree );  fi;
 
                 # update the generator preimages, if available.
-                if IsBound( T.imagesOldGens ) then
+                if IsBound( T!.imagesOldGens ) then
                     TzUpdateGeneratorImages( T, 0, [ num1, num2 ] );
                 fi;
 
                 # save gens[num2] before eliminating gens[num1] because
                 # its number may change.
                 gen2 := gens[num2];
-                if printlevel = 1 then  T.printLevel := 2;  fi;
+                if printlevel = 1 then  TzOptions(T).printLevel := 2;  fi;
                 TzEliminate( T, gens[num1] );
                 num2 := Position( gens, gen2 );
                 TzEliminate( T, gens[num2] );
-                T.printLevel := printlevel;
+                TzOptions(T).printLevel := printlevel;
                 numgens := tietze[TZ_NUMGENS];
                 numrels := tietze[TZ_NUMRELS];
                 invs := tietze[TZ_INVERSES];
@@ -3332,7 +3387,7 @@ TzSubstituteCyclicJoins := function ( T )
         TzSort( T );
         if printlevel >= 1 then  TzPrintStatus( T, true );  fi;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -3340,7 +3395,7 @@ end;
 #M  TzSubstituteWord( <Tietze record>, <word> ) . . . substitute a given word
 #M                                                         as a new generator
 ##
-##  'TzSubstituteWord'  expects <T> to be a Tietze record  and <word> to be a
+##  `TzSubstituteWord'  expects <T> to be a Tietze record  and <word> to be a
 ##  word in the generators of <T>.  It adds a new generator,  gen say,  and a
 ##  new relator of the form  gen^-1 * <Word>  to <T>.
 ##
@@ -3354,17 +3409,17 @@ end;
 ##  is more or less equivalent to that of
 ##
 ##     AddGenerator( T );
-##     gen := T.generators[Length( T.generators )];
+##     gen := T!.generators[Length( T!.generators )];
 ##     AddRelator( T, gen^-1 * word );
 ##
-##  The  essential  difference  is,  that  'TzSubstituteWord',  as  a  Tietze
+##  The  essential  difference  is,  that  `TzSubstituteWord',  as  a  Tietze
 ##  transformation of T,  saves and updates the lists of generator images and
 ##  preimages, in case they are being traced under the Tietze transformations
-##  applied to T,  whereas a call of the function 'AddGenerator' (which  does
+##  applied to T,  whereas a call of the function `AddGenerator' (which  does
 ##  not perform a Tietze transformation)  will delete  these lists  and hence
 ##  terminate the tracing.
 ##
-TzSubstituteWord := function ( T, word )
+InstallGlobalFunction( TzSubstituteWord, function ( T, word )
 
     local aword, gen, gens, images, tzword;
 
@@ -3373,7 +3428,7 @@ TzSubstituteWord := function ( T, word )
 
     # check the second argument to be an abstract word or a Tietze word in
     # the generators.
-    gens := T.generators;
+    gens := T!.generators;
     if IsList( word ) then
         tzword := ReducedRrsWord( word );
         aword := AbstractWordTietzeWord( tzword, gens );
@@ -3383,19 +3438,19 @@ TzSubstituteWord := function ( T, word )
     fi;
 
     # if generator images and preimages are being traced through the Tietze
-    # transformations of T, save them from being deleted by 'AddGenerator'.
+    # transformations of T, save them from being deleted by `AddGenerator'.
     images := 0;
-    if IsBound( T.imagesOldGens ) then
-        images := T.imagesOldGens;
-        Unbind( T.imagesOldGens );
+    if IsBound( T!.imagesOldGens ) then
+        images := T!.imagesOldGens;
+        Unbind( T!.imagesOldGens );
     fi;
 
     # add a new generator.
     AddGenerator( T );
-    gen := T.generators[Length( T.generators )];
+    gen := T!.generators[Length( T!.generators )];
 
     # add the corresponding relator.
-    if T.printLevel >= 1 then  Print(
+    if TzOptions(T).printLevel >= 1 then  Print(
         "#I  substituting new generator ",gen," defined by ",aword,"\n" );
     fi;
     AddRelator( T, gen^-1 * aword );
@@ -3403,12 +3458,12 @@ TzSubstituteWord := function ( T, word )
     # restore the generator images and update the generator preimages, if
     # available.
     if IsList( images ) then
-        T.imagesOldGens := images;
+        T!.imagesOldGens := images;
         TzUpdateGeneratorImages( T, 0, tzword );
     fi;
 
-    if T.printLevel >= 1 then  TzPrintStatus( T, true );  fi;
-end;
+    if TzOptions(T).printLevel >= 1 then  TzPrintStatus( T, true );  fi;
+end );
 
 
 #############################################################################
@@ -3416,7 +3471,7 @@ end;
 #M  TzUpdateGeneratorImage( T, n, word )  . . . . update the generator images
 #M                                              after a Tietze transformation
 ##
-##  'TzUpdateGeneratorImages'  assumes  that it is called  by a function that
+##  `TzUpdateGeneratorImages'  assumes  that it is called  by a function that
 ##  performs  Tietze transformations  to a presentation record  <T>  in which
 ##  images of the old generators  are being traced as Tietze words in the new
 ##  generators  as well as preimages of the new generators as Tietze words in
@@ -3435,10 +3490,10 @@ end;
 ##  If <n> is less than zero,  it terminates the tracing of generator images,
 ##  i. e., it deletes the corresponding record components of <T>.
 ##
-##  Note: 'TzUpdateGeneratorImages' is considered to be an internal function.
+##  Note: `TzUpdateGeneratorImages' is considered to be an internal function.
 ##  Hence it does not check the arguments.
 ##
-TzUpdateGeneratorImages := function ( T, n, word )
+InstallGlobalFunction( TzUpdateGeneratorImages, function ( T, n, word )
     
     local i, image, invword, j, newim, num, oldnumgens;
 
@@ -3448,21 +3503,21 @@ TzUpdateGeneratorImages := function ( T, n, word )
         newim := [];
         for num in word do
             if num > 0 then
-                Append( newim, T.preImagesNewGens[num] );
+                Append( newim, T!.preImagesNewGens[num] );
             else
-                Append( newim, -1 * Reversed( T.preImagesNewGens[-num] ) );
+                Append( newim, -1 * Reversed( T!.preImagesNewGens[-num] ) );
             fi;
         od;
-        Add( T.preImagesNewGens, ReducedRrsWord( newim ) );
+        Add( T!.preImagesNewGens, ReducedRrsWord( newim ) );
 
     elif n > 0 then
 
         # update the images of the old generators:
         # run through all images and replace the n-th generator by word.
         invword := -1 * Reversed( word );
-        oldnumgens := Length( T.imagesOldGens );
+        oldnumgens := Length( T!.imagesOldGens );
         for i in [ 1 .. oldnumgens ] do
-            image := T.imagesOldGens[i];
+            image := T!.imagesOldGens[i];
             newim := [];
             for j in [ 1 .. Length( image ) ] do
                 if image[j] = n then
@@ -3473,23 +3528,23 @@ TzUpdateGeneratorImages := function ( T, n, word )
                     Add( newim, image[j] );
                 fi;
             od;
-            T.imagesOldGens[i] := ReducedRrsWord( newim );
+            T!.imagesOldGens[i] := ReducedRrsWord( newim );
         od;
 
     else
 
         # terminate the tracing of generator images.
-        Unbind( T.imagesOldGens );
-        Unbind( T.preImagesNewGens );
-        if IsBound( T.oldGenerators ) then
-            Unbind( T.oldGenerators );
+        Unbind( T!.imagesOldGens );
+        Unbind( T!.preImagesNewGens );
+        if IsBound( T!.oldGenerators ) then
+            Unbind( T!.oldGenerators );
         fi;
-        if T.printLevel >= 1 then
+        if TzOptions(T).printLevel >= 1 then
             Print( "#I  terminated the tracing of generator images\n" );
         fi;
 
     fi;
-end;
+end );
 
 
 #############################################################################

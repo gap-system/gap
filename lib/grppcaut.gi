@@ -2,18 +2,11 @@
 ##
 #W  grppcaut.gi                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.grppcaut_gi :=
     "@(#)$Id$";
-
-#############################################################################
-##
-#I InfoAutGrp
-##
-InfoAutGrp := NewInfoClass( "InfoAutGrp" ); SetInfoLevel( InfoAutGrp, 1 );
-InfoMatOrb := NewInfoClass( "InfoMatOrb" ); SetInfoLevel( InfoMatOrb, 1 );
-InfoOverGr := NewInfoClass( "InfoOverGr" ); SetInfoLevel( InfoOverGr, 0 );
-SetInfoLevel( InfoCompPairs, 1 );
-if not IsBound( CHOP ) then CHOP := false; fi;
 
 #############################################################################
 ##
@@ -23,12 +16,16 @@ CheckAuto := function( auto )
     local new;
     new := GroupGeneralMappingByImages( Source(auto), Range(auto),
            auto!.generators, auto!.genimages );
+    if Source( auto ) <> Range( auto ) then 
+        Error("source and range differ");
+    fi;
     if not IsGroupHomomorphism( new ) then
         Error("no group hom");
     fi;
     if not IsInjective( new ) or not IsSurjective( new ) then
         Error("no bijection");
     fi;
+    return true;
 end;
 
 #############################################################################
@@ -66,18 +63,24 @@ end;
 ##
 StabilizerByMatrixOperation := function( C, v, f, cohom )
     local field, modu, bases, l, m, incl, gens, ind, vec, tmp, upp,
-          low, fac, i, o, S, oper;
+          low, fac, i, o, S, oper, g, mat;
 
     # the trivial case 
     if Size( C ) = 1 then return C; fi;
 
-    # gens and opers
+    # choose gens 
     if HasPcgs( C ) then 
         gens := Pcgs( C );
     else 
         gens := GeneratorsOfGroup( C ); 
     fi;
-    oper  := List( gens, x -> f( x, cohom ) );
+
+    # compute matrix operation
+    oper := [];
+    for g in gens do
+        mat := f( cohom, g );
+        Add( oper, mat );
+    od;
 
     # construct module to use meataxe
     if CHOP then
@@ -117,7 +120,7 @@ StabilizerByMatrixOperation := function( C, v, f, cohom )
             else
                 gens := GeneratorsOfGroup( C );
             fi;
-            oper := List( gens, x -> f( x, cohom ) );
+            oper := List( gens, x -> f( cohom, x ) );
         fi;
         upp  := Concatenation( [v], bases[i+1] );
         low  := bases[i];
@@ -144,7 +147,7 @@ TransferPcgsInfo := function( A, pcsA, rels )
     SetRelativeOrders( pcgsA, rels );
     SetOneOfPcgs( pcgsA, One(A) );
     SetPcgs( A, pcgsA );
-    SetFilterObj( A, IsPcgsComputable );
+    SetFilterObj( A, CanEasilyComputePcgs );
 end;
 
 #############################################################################
@@ -217,12 +220,12 @@ InducedActionAutGroup := function( epi, weights, s, n, A )
     # construct words for pcgsM in gensN
     G     := FreeGroup( d );
     gensG := GeneratorsOfGroup( G );
-    free  := GroupHomomorphismByImages( G, N, gensG, gensN );
+    free  := GroupHomomorphismByImagesNC( G, N, gensG, gensN );
     words := List( pcgsM, x -> PreImagesRepresentative( free, x ) );
 
     # compute images of words
     comp := [];
-    if IsPcgsComputable( A ) then
+    if CanEasilyComputePcgs( A ) then
         gensA := Pcgs( A );
     else
         gensA := GeneratorsOfGroup( A );
@@ -239,12 +242,11 @@ InducedActionAutGroup := function( epi, weights, s, n, A )
         tup := Tuple( [aut, mat] );
         Add( comp, tup );
     od; 
-Error("in ind action");
 
     # add size and check solubility
     D := Group( comp, Tuple( [One(A), IdentityMat(Length(pcgsM), field)]));
     SetSize( D, Size( A ) );
-    if IsPcgsComputable( A ) then
+    if CanEasilyComputePcgs( A ) then
         TransferPcgsInfo( D, comp, RelativeOrders( gensA ) );
     fi;
    
@@ -269,8 +271,10 @@ FingerprintMedium := function( G, U )
     id := [w, Size( CommutatorSubgroup( G, U ) )];
 
     # about conjugacy classes
-    cl := ConjugacyClasses( U );
-    Add( id, List( cl, x -> [Size(x), Order(Representative(x))] ) );
+    cl := Orbits( U, AsList( U ), OnPoints );
+    cl := List( cl, x -> [Length(x), Order( x[1] ) ] );
+    Sort( cl );
+    Add( id, cl );
 
     return id;
 end;
@@ -285,7 +289,7 @@ Fingerprint := function ( G, U )
     if not IsBool( MyFingerprint ) then
         return MyFingerprint( G, U );
     fi;
-    if Size( U ) <= 100 then 
+    if Size( U ) <= 100 and SMALL_AVAILABLE then 
         return FingerprintSmall( G, U );
     elif Size( U ) <= 1000 then
         return FingerprintMedium( G, U );
@@ -299,7 +303,7 @@ end;
 #F NormalizingReducedGL( spec, s, n, M )
 ##
 NormalizingReducedGL := function( spec, s, n, M )
-    local G, p, d, field, B, U, hom, pcgs, pcs,
+    local G, p, d, field, B, U, hom, pcgs, pcs, rels, w,
           S, N, L,
           f, P, norm,
           pcgsN, pcgsM, pcgsF, 
@@ -378,22 +382,32 @@ NormalizingReducedGL := function( spec, s, n, M )
     # use operation of G on norm
     orb := Orbits( U, norm, f );
     part := List( orb, x -> List( x, y -> Position( norm, y ) ) );
-    L := BlockStabilizer( L, part );
+
+    # was: L := BlockStabilizer( L, part );
+    part:=List(part,Set);
+    L:=PartitionStabilizerPermGroup(L,part);
     Info( InfoOverGr, 1, "found blocksystem ",part );
 
     # compute normalizer of module
     perms := List( M.generators, x -> Image( hom, x ) );
     V := Subgroup( P, perms );
     L := Normalizer( L, V );
+    Info( InfoOverGr, 1, "computed normalizer of size ", Size(L));
 
     # go back to mat group
-    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentative(hom, x));
-    B := SubgroupNC( S, B );
+    B := List( GeneratorsOfGroup(L), x -> PreImagesRepresentative(hom,x) );
+    w := PrimitiveRoot(field)*IdentityMat( d, field );
+    B := SubgroupNC( S, Concatenation( B, [w] ) );
+
     if IsSolvableGroup( L ) then
         pcgs := List( Pcgs(L), x -> PreImagesRepresentative( hom, x ) );
-        TransferPcgsInfo( B, pcgs, RelativeOrders( Pcgs(L) ) );
+        Add( pcgs, w );
+        rels := ShallowCopy( RelativeOrders( Pcgs(L) ) );
+        Add( rels, p-1 );
+        TransferPcgsInfo( B, pcgs, rels );
     fi;
-    SetSize( B, Size( L ) );
+
+    SetSize( B, Size( L )*(p-1) );
     return B;
 end;
 
@@ -446,7 +460,7 @@ end;
 #F InduciblePairs( C, epi, M )
 ##
 InduciblePairs := function( C, epi, M )
-    local F, Cl, cc, cb, co, cohom, f, c, m, i, o, stab, base, b;
+    local F, Cl, cc, cohom, c, stab, b, base;
 
     if HasSize( C ) and Size( C ) = 1 then return C; fi;
 
@@ -454,28 +468,17 @@ InduciblePairs := function( C, epi, M )
     F := Image( epi );
 
     # get cohomology
-    Cl := CollectorSQ( F, M, false );
-    cc := TwoCocyclesSQ( Cl, F, M );
-    cb := TwoCoboundariesSQ ( Cl, F, M );
-    co := BaseSteinitzVectors( cc, cb ).factorspace;
-
-    Info( InfoAutGrp, 1, " computed cohomology with dim ",Length( co ));
-
-    # get linear operation
-    cohom := rec( group := F, 
-                  module := M,
-                  collector := Cl,
-                  cocycles := cc,
-                  coboundaries := cb,
-                  factor := co );
-    f := LinearOperationFunctionOfCompatiblePairs( C, cohom );
+    cohom := TwoCohomology( F, M );
+    cc := cohom.cohomology;
+    base := Concatenation( cc, cohom.coboundaries );
+    Info( InfoAutGrp, 2, " computed cohomology with dim ",Length( cc ));
 
     # get cocycle
     c := CocycleSQ( epi, M.field );
-    b := SolutionMat( cohom.base, c ){[1..Length( co )]};
+    b := SolutionMat( base, c ){[1..Length( cc )]};
 
     # compute stabilizer of b
-    stab := StabilizerByMatrixOperation( C, b, f, cohom );
+    stab := StabilizerByMatrixOperation( C, b, MatrixOperationOfCP, cohom );
     return stab;
 end;
    
@@ -484,7 +487,7 @@ MatricesOfRelator := function( rel, gens, inv, mats, field, d )
 
     # compute left hand side
     n := Length( mats );
-    m := LengthWord( rel );
+    m := Length( rel );
     L := List( [1..n], x -> NullMat( d, d, field ) );
     while m > 0 do
         s := Subword( rel, 1, 1 );
@@ -549,7 +552,7 @@ LiftInduciblePair := function( epi, ind, M, weight )
     # in the split case this is all to do
     if weight[2] = 1 then
         imgsH := Concatenation( imgsF, imgsN );
-        auto  := GroupHomomorphismByImages( H, H, AsList(pcgsH), imgsH );
+        auto  := GroupHomomorphismByImagesNC( H, H, AsList(pcgsH), imgsH );
     
         SetIsInjective( auto, true );
         SetIsSurjective( auto, true );
@@ -559,8 +562,8 @@ LiftInduciblePair := function( epi, ind, M, weight )
     fi;
 
     # add correction
-    nu := GroupHomomorphismByImages( N, N, AsList( pcsN ), imgsN );
-    P := Image( IsomorphismFpGroupByPcgs( pcgsF, "g" ) );
+    nu := GroupHomomorphismByImagesNC( N, N, AsList( pcsN ), imgsN );
+    P := Range( IsomorphismFpGroupByPcgs( pcgsF, "g" ) );
     gensP := GeneratorsOfGroup( FreeGroupOfFpGroup( P ) );
     invP  := List( gensP, x -> x^-1 );
     relsP := RelatorsOfFpGroup( P );
@@ -597,7 +600,7 @@ LiftInduciblePair := function( epi, ind, M, weight )
 
     # set up automorphisms
     imgsH := Concatenation( imgsF, imgsN );
-    auto  := GroupHomomorphismByImages( H, H, AsList( pcgsH ), imgsH );
+    auto  := GroupHomomorphismByImagesNC( H, H, AsList( pcgsH ), imgsH );
     
     SetIsInjective( auto, true );
     SetIsSurjective( auto, true );
@@ -618,7 +621,7 @@ AutomorphismGroupElAbGroup := function( G, B )
     p := RelativeOrders( pcgs )[1];
     d := Length( pcgs );
 
-    if IsPcgsComputable( B ) then
+    if CanEasilyComputePcgs( B ) then
         mats := Pcgs( B );
     else
         mats := GeneratorsOfGroup( B );
@@ -628,7 +631,7 @@ AutomorphismGroupElAbGroup := function( G, B )
     for mat in mats do
         imgs := List( pcgs, x -> PcElementByExponents( pcgs, 
                             ExponentsOfPcElement( pcgs, x ) * mat ) ); 
-        auto := GroupHomomorphismByImages( G, G, AsList( pcgs ), imgs );
+        auto := GroupHomomorphismByImagesNC( G, G, AsList( pcgs ), imgs );
  
         SetIsInjective( auto, true );
         SetIsSurjective( auto, true );
@@ -652,7 +655,7 @@ end;
 AutomorphismGroupSolvableGroup := function( G )
     local spec, weights, first, m, pcgsU, U, F, pcgsF, A, i, s, n, p, H, 
           pcgsH, pcgsN, N, epi, mats, M, autos, ocr, elms, e, list, imgs,
-          auto, tmp, hom, gens, P, C, B, D, pcsA, rels;
+          auto, tmp, hom, gens, P, C, B, D, pcsA, rels, iso, Aut, inv, xset;
 
     # get LG series
     spec    := SpecialPcgs(G);
@@ -661,7 +664,7 @@ AutomorphismGroupSolvableGroup := function( G )
     m       := Length( spec );
 
     # set up with GL
-    Info( InfoAutGrp, 1, "set up computation for grp with weights ",
+    Info( InfoAutGrp, 2, " set up computation for grp with weights ",
                           weights);
     pcgsU := InducedPcgsByPcSequenceNC( spec, spec{[first[2]..m]} );
     pcgsF := spec mod pcgsU;
@@ -679,23 +682,29 @@ AutomorphismGroupSolvableGroup := function( G )
         s := first[i];
         n := first[i+1];
         p := weights[s][3];
-        Info( InfoAutGrp, 1, "start ",i,"th layer with weight ",weights[s],
+        Info( InfoAutGrp, 2, " start ",i,"th layer with weight ",weights[s],
                              "^", n-s,
                              " and automorphism group of size ",Size(A));
 
         # set up
         if n > Length( spec ) then
             pcgsH := spec;
-            H     := G;   
+            H     := G;
+            ocr   := rec( group := H, generators := spec );
+	    # we will modify the generators later!
         else
             pcgsU := InducedPcgsByPcSequenceNC( spec, spec{[n..m]} );
-            pcgsH := spec mod pcgsU;
-            H     := GroupByPcgs( pcgsH );
+            H     := GroupByPcgs( spec mod pcgsU );
             pcgsH := Pcgs( H );
+            ocr   := rec( group := H, generators := pcgsH );
+	    # we will modify the generators later!
         fi;
         pcgsN := InducedPcgsByPcSequenceNC( pcgsH, pcgsH{[s..n-1]} );
+        ocr.modulePcgs := pcgsN;
+	ocr.generators:=ocr.generators mod NumeratorOfModuloPcgs(pcgsN);
+
         N     := SubgroupByPcgs( H, pcgsN ); 
-        epi := GroupHomomorphismByImages( H, F, AsList( pcgsH ), 
+        epi := GroupHomomorphismByImagesNC( H, F, AsList( pcgsH ), 
                Concatenation( Pcgs(F), List( [s..n-1], x -> One(F) ) ) );
         SetKernelOfMultiplicativeGeneralMapping( epi, N );
 
@@ -705,35 +714,33 @@ AutomorphismGroupSolvableGroup := function( G )
                   
         # compatible / inducible pairs
         if weights[s][2] = 1 then
-            Info( InfoAutGrp, 1," compute reduced gl ");
+            Info( InfoAutGrp, 2," compute reduced gl ");
             B := NormalizingReducedGL( spec, s, n, M );
             D := DirectProduct( A, B ); 
-            Info( InfoAutGrp, 1," compute compatible pairs in group of size ",
+            Info( InfoAutGrp, 2," compute compatible pairs in group of size ",
                                   Size(A), " x ",Size(B));
             C := CompatiblePairs( F, M, D );
         else
-            Info( InfoAutGrp, 1," compute reduced gl ");
+            Info( InfoAutGrp, 2," compute reduced gl ");
             B := NormalizingReducedGL( spec, s, n, M );
             D := DirectProduct( A, B ); 
-            # Info( InfoAutGrp, 1, " compute induced action ");
-            # D := InducedActionAutGroup( epi, weights, s, n, A );
             if weights[s][1] > 1 then
-                Info( InfoAutGrp, 1,
+                Info( InfoAutGrp, 2,
                       " compute compatible pairs in group of size ",
                        Size(A), " x ",Size(B));
                 D := CompatiblePairs( F, M, D );
             fi;
-            Info( InfoAutGrp,1, " compute inducible pairs in a group of size ",
+            Info( InfoAutGrp,2, " compute inducible pairs in a group of size ",
                   Size( D ));
             C := InduciblePairs( D, epi, M );
         fi;
 
 
         # lift
-        Info( InfoAutGrp, 1, " lift back ");
+        Info( InfoAutGrp, 2, " lift back ");
         if Size( C ) = 1 then
             gens := [];
-        elif IsPcgsComputable( C ) then
+        elif CanEasilyComputePcgs( C ) then
             gens := Pcgs( C );
         else
             gens  := GeneratorsOfGroup( C );
@@ -741,14 +748,15 @@ AutomorphismGroupSolvableGroup := function( G )
         autos := List( gens, x -> LiftInduciblePair( epi, x, M, weights[s] ) );
         
         # add H^1
-        Info( InfoAutGrp, 1, " add derivations ");
-        ocr := rec( group := H, modulePcgs := pcgsN );
+        Info( InfoAutGrp, 2, " add derivations ");
+
         elms := BasisVectors( Basis( OCOneCocycles( ocr, false ) ) );
         for e in elms do
             list := ocr.cocycleToList( e );
             imgs := List( [1..s-1], x -> pcgsH[x] * list[x] );
             Append( imgs, pcgsH{[s..n-1]} );
-            auto := GroupHomomorphismByImages( H, H, AsList( pcgsH ), imgs );
+            auto := GroupHomomorphismByImagesNC( H, H,
+                        AsList( pcgsH ), imgs );
            
             SetIsInjective( auto, true );
             SetIsSurjective( auto, true );
@@ -764,16 +772,17 @@ AutomorphismGroupSolvableGroup := function( G )
         if Size(C) = 1 then
             rels := List( [1..Length(elms)], x-> p );
             TransferPcgsInfo( A, autos, rels );
-        elif IsPcgsComputable( C ) then
+        elif CanEasilyComputePcgs( C ) then
             rels := Concatenation( RelativeOrders(gens), 
                                    List( [1..Length(elms)], x-> p ) );
             TransferPcgsInfo( A, autos, rels );
         fi;
 
         # if possible reduce the number of generators of A
-        if Size( F ) <= 1000 and not HasIsPcgsComputable( A ) then
-            Info( InfoAutGrp, 1, " nice the gen set of A ");
-            hom  := OperationHomomorphism( A, AsList( F ) );
+        if Size( F ) <= 1000 and not CanEasilyComputePcgs( A ) then
+            Info( InfoAutGrp, 2, " nice the gen set of A ");
+            xset := ExternalSet( A, AsList( F ) );
+            hom  := OperationHomomorphism( xset, "surjective");
             P    := Image( hom );
             if IsSolvableGroup( P ) then
                 pcsA := List( Pcgs(P), x -> PreImagesRepresentative( hom, x ));
@@ -785,8 +794,147 @@ AutomorphismGroupSolvableGroup := function( G )
             fi;
         fi;
     od; 
-
-    # return
-    if IsPcgsComputable( A ) then SetIsSolvableGroup( A, true ); fi;
     return A;
 end;
+
+#############################################################################
+##
+#F AutomorphismGroupFrattFreeGroup( G )
+##
+AutomorphismGroupFrattFreeGroup := function( G )
+    local F, K, gensF, gensK, gensG, A, 
+          iso, P, gensU, k, aut, U, hom, N, gensN,
+          full, n, imgs, i, m, a, l, new, size, 
+          pr, p, S, pcgsS, T, ocr, elms, e, list, B;
+
+    # create fitting subgroup
+    if HasSocle( G ) and HasSocleComplement( G ) then
+        F := Socle( G );
+        K := SocleComplement( G );
+    else
+        F := FittingSubgroup( G );
+        K := Complementclasses( G, F )[1];
+    fi;
+    gensF := Pcgs( F );
+    gensK := Pcgs( K );
+    gensG := Concatenation( gensK, gensF );
+
+    # create automorhisms
+    Info( InfoAutGrp, 2, " get aut grp of socle ");
+    A := AutomorphismGroupAbelianGroup( F );
+
+    # go over to perm rep
+    Info( InfoAutGrp, 2, " compute perm rep ");
+    iso := IsomorphismPermGroup( A );
+    P   := Image( iso );
+
+    # compute subgroup
+    Info( InfoAutGrp, 2, " compute subgroup ");
+    gensU := [];
+    for k in gensK do
+        imgs := List( gensF, y -> y ^ k );
+        aut := GroupHomomorphismByImagesNC( F, F, gensF, imgs ); 
+        # CheckAuto( aut );
+        Add( gensU, Image( iso, aut ) );
+    od;
+    U := Subgroup( P, gensU );
+    hom := GroupHomomorphismByImagesNC( K, U, gensK, gensU );
+
+
+    # get normalizer
+    Info( InfoAutGrp, 2, " compute normalizer ");
+    N := Normalizer( P, U );
+    gensN := GeneratorsOfGroup( N );
+
+    # create automorphisms of G
+    Info( InfoAutGrp, 2, " compute preimages ");
+    full  := [];
+    for n in gensN do
+        imgs := [];
+        for i in [1..Length(gensK)] do
+            m := gensU[i]^n;
+            a := PreImagesRepresentative( hom, m );
+            Add( imgs, a );
+        od;
+        l := PreImagesRepresentative( iso, n );
+        Append( imgs, List( gensF, x -> Image( l, x ) ) );
+        new := GroupHomomorphismByImagesNC( G, G, gensG, imgs );
+        SetIsInjective( new, true );
+        SetIsSurjective( new, true );
+        SetKernelOfMultiplicativeGeneralMapping(new, TrivialSubgroup(G));
+        Add( full, new );
+    od;
+    size := Size(N);
+
+    # add derivations
+    Info( InfoAutGrp, 2, " add derivations ");
+    pr  := Set( FactorsInt( Size( F ) ) );
+    for p in pr do
+
+        # create subgroup
+        S := SylowSubgroup( F, p );
+        pcgsS := InducedPcgs( gensF, S );
+        T := Subgroup( G, Concatenation( gensK, pcgsS ) );
+        ocr := rec( group := T,
+                    generators := gensK,
+                    modulePcgs := pcgsS );
+
+        # compute 1-cocycles
+        elms := BasisVectors( Basis( OCOneCocycles( ocr, false ) ) );
+        for e in elms do
+            list := ocr.cocycleToList( e );
+            imgs := List( [1..Length(gensK)], x -> gensK[x] * list[x] );
+            Append( imgs, gensF );
+            new := GroupHomomorphismByImagesNC( G, G, gensG, imgs );
+            SetIsInjective( new, true );
+            SetIsSurjective( new, true );
+            SetKernelOfMultiplicativeGeneralMapping(new, TrivialSubgroup(G));
+            Add( full, new );
+        od;
+        size := size * ocr.char^Length(elms);
+    od;
+
+    # create automorphism group
+    B := Group( full, IdentityMapping( G ) );
+    SetSize( B, size );
+
+    return B;
+end;
+
+#############################################################################
+##
+#M AutomorphismGroup( G )
+##
+InstallMethod( AutomorphismGroup, 
+               "finite solvable groups",
+               true,
+               [IsGroup and IsFinite and 
+                CanEasilyComputePcgs],
+               0,
+function( G )
+    local A;
+    if IsAbelian( G ) then TryNextMethod(); fi;
+    A := AutomorphismGroupSolvableGroup(G);
+    SetIsAutomorphismGroup( A, true );
+    SetIsFinite( A, true );
+    return A;
+end );
+             
+#############################################################################
+##
+#M AutomorphismGroup( G )
+##
+InstallMethod( AutomorphismGroup, 
+               "finite frattini free solvable groups",
+               true,
+               [IsGroup and IsFinite and 
+                IsFrattiniFree],
+               0,
+function( G )
+    local A;
+    if IsAbelian( G ) then TryNextMethod(); fi;
+    A := AutomorphismGroupFrattFreeGroup(G);
+    SetIsAutomorphismGroup( A, true );
+    SetIsFinite( A, true );
+    return A;
+end );

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for cosets of pc groups
 ##
@@ -95,7 +96,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
     Hpcgs:=InducedPcgsByGenerators(sp,Concatenation(GeneratorsOfGroup(A),
                                                     kpcgs));
     Hpcgs:=CanonicalPcgs(Hpcgs) mod kpcgs;
-    sff:=SumFactorizationFunctionPcgs(sp,Hpcgs,Npcgs);
+    sff:=SumFactorizationFunctionPcgs(sp,Hpcgs,Npcgs,kpcgs);
 
     #fsn:=Factors(Index(eas[ind-1],eas[ind]));
     dim:=lgf[ind]-lgf[ind-1];
@@ -224,16 +225,15 @@ end);
 ##
 #R  IsRightTransversalPcGroup . . . . . . . . . right transversal of pc group
 ##
-IsRightTransversalPcGroup := NewRepresentation
-    ( "IsRightTransversalPcGroup", IsRightTransversal,
+DeclareRepresentation( "IsRightTransversalPcGroup", IsRightTransversal,
       [ "group", "subgroup", "transversal", "canonReps" ] );
 
 #############################################################################
 ##
 #M  RightTransversal( <G>, <U> ) . . . . . . . . . for pc groups
 ##
-InstallMethod( RightTransversalOp, "PC",IsIdentical,
-        [ IsSolvableGroup, IsGroup ], 100,
+InstallMethod( RightTransversalOp, "PC",IsIdenticalObj,
+        [ CanEasilyComputePcgs, IsGroup ], 100,
 function( G, U )
 local elements, g, u, e, i,t,depths,gens,p;
 
@@ -261,7 +261,7 @@ local elements, g, u, e, i,t,depths,gens,p;
 end);
 
 InstallMethod(\[\],"for Pc groups",true,[IsRightTransversalPcGroup,
-        IsPosRat and IsInt ],0,
+        IsPosInt ],0,
 function(t,num)
   return t!.transversal[num];
 end );

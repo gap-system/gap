@@ -5,11 +5,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the various read-eval-print loops and  related  stuff.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_gap_h =
+const char * Revision_gap_h =
    "@(#)$Id$";
 #endif
 
@@ -69,7 +70,6 @@ extern void ViewObjHandler ( Obj obj );
 
 /****************************************************************************
 **
-
 *F  FuncPrint( <self>, <args> ) . . . . . . . . . . . . . . . .  print <args>
 */
 extern Obj FuncPrint (
@@ -82,7 +82,7 @@ extern Obj FuncPrint (
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 extern void ErrorQuit (
-            SYS_CONST Char *    msg,
+            const Char *        msg,
             Int                 arg1,
             Int                 arg2 );
 
@@ -148,10 +148,10 @@ extern void ErrorQuitNrArgs (
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
 extern Obj ErrorReturnObj (
-            SYS_CONST Char *    msg,
+            const Char *        msg,
             Int                 arg1,
             Int                 arg2,
-            SYS_CONST Char *    msg2 );
+            const Char *        msg2 );
 
 
 /****************************************************************************
@@ -159,15 +159,58 @@ extern Obj ErrorReturnObj (
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 extern void ErrorReturnVoid (
-            SYS_CONST Char *    msg,
+            const Char *        msg,
             Int                 arg1,
             Int                 arg2,
-            SYS_CONST Char *    msg2 );
+            const Char *        msg2 );
+
+/****************************************************************************
+**
+*T  ExecStatus . . . .  type of status values returned by read, eval and exec
+**                      subroutines, explaining why evaluation, or execution
+**                      has terminated.
+**
+**  Values are powers of two, although I do not currently know of any
+**  cirumstances where they can get combined
+**
+** STATUS_END           0    ran off the end of the code 
+** STATUS_RETURN_VAL    1    value returned  
+** STATUS_RETURN_VOID   2    void returned   
+** STATUS_TNM           4    try-next-method 
+** STATUS_QUIT          8    quit command
+** STATUS_EOF          16    End of file 
+** STATUS_ERROR        32    error
+** STATUS_QQUIT        64    QUIT command
+*/
+
+typedef UInt ExecStatus;
+
+#define STATUS_END         0
+#define STATUS_RETURN_VAL  1
+#define STATUS_RETURN_VOID 2
+#define STATUS_TNM         4
+#define STATUS_QUIT        8
+#define STATUS_EOF        16
+#define STATUS_ERROR      32
+#define STATUS_QQUIT      64
+
+
+extern UInt UserHasQuit;
+extern UInt UserHasQUIT;
 
 
 /****************************************************************************
 **
+*F  FuncError( <self>, <args> ) . . . . . . . . . . . . . . . signal an error
+**
+*/
+extern Obj FuncError (
+    Obj                 self,
+    Obj                 args );
 
+
+/****************************************************************************
+**
 *F * * * * * * * * * functions for creating the init file * * * * * * * * * *
 */
 
@@ -249,7 +292,19 @@ extern Obj DoCompleteXargs (
 *F  COMPLETE_FUNC( <func> ) . . . . . . . . . . . . . . . . . complete <func>
 */
 #define COMPLETE_FUNC( func ) \
-    (Complete( BODY_FUNC(func) ))
+    do { \
+        Obj body; \
+        body = BODY_FUNC(func); \
+        if ( TNUM_OBJ(body) == T_FUNCTION ) { \
+            if ( IS_UNCOMPLETED_FUNC(body) ) { \
+                Complete(BODY_FUNC(body)); \
+            } \
+            InstallMethodArgs(func,body); \
+        } \
+        else { \
+            Complete( BODY_FUNC(func) ); \
+        } \
+    } while (0)
 
 
 /****************************************************************************
@@ -329,13 +384,152 @@ extern Obj DoCompleteXargs (
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+
 /****************************************************************************
 **
 
+*F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
+*/
+extern void FillInVersion (
+    StructInitInfo *            module );
+
+
+/****************************************************************************
+**
+*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
+*/
+extern void RequireModule (
+    StructInitInfo *            module,
+    const Char *                required,
+    UInt                        version );
+
+
+/****************************************************************************
+**
+*F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
+*/
+extern void InitBagNamesFromTable (
+    StructBagNames *            tab );
+
+
+/****************************************************************************
+**
+*F  InitClearFiltsTNumsFromTable( <tab> ) . . .  initialise clear filts tnums
+*/
+extern void InitClearFiltsTNumsFromTable (
+    Int *               tab );
+
+
+/****************************************************************************
+**
+*F  InitHasFiltListTNumsFromTable( <tab> )  . . initialise tester filts tnums
+*/
+extern void InitHasFiltListTNumsFromTable (
+    Int *               tab );
+
+
+/****************************************************************************
+**
+*F  InitSetFiltListTNumsFromTable( <tab> )  . . initialise setter filts tnums
+*/
+extern void InitSetFiltListTNumsFromTable (
+    Int *               tab );
+
+
+/****************************************************************************
+**
+*F  InitResetFiltListTNumsFromTable( <tab> )  initialise unsetter filts tnums
+*/
+extern void InitResetFiltListTNumsFromTable (
+    Int *               tab );
+
+
+/****************************************************************************
+**
+*F  InitGVarFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
+*/
+extern void InitGVarFiltsFromTable (
+    StructGVarFilt *    tab );
+
+
+/****************************************************************************
+**
+*F  InitGVarAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
+*/
+extern void InitGVarAttrsFromTable (
+    StructGVarAttr *    tab );
+
+
+/****************************************************************************
+**
+*F  InitGVarPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
+*/
+extern void InitGVarPropsFromTable (
+    StructGVarProp *    tab );
+
+
+/****************************************************************************
+**
+*F  InitGVarOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
+*/
+extern void InitGVarOpersFromTable (
+    StructGVarOper *    tab );
+
+
+/****************************************************************************
+**
+*F  InitGVarFuncsFromTable( <tab> ) . . . . . . . . . . . . . .  new function
+*/
+extern void InitGVarFuncsFromTable (
+    StructGVarFunc *    tab );
+
+
+/****************************************************************************
+**
+*F  InitHdlrFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
+*/
+extern void InitHdlrFiltsFromTable (
+    StructGVarFilt *    tab );
+
+
+/****************************************************************************
+**
+*F  InitHdlrAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
+*/
+extern void InitHdlrAttrsFromTable (
+    StructGVarAttr *    tab );
+
+
+/****************************************************************************
+**
+*F  InitHdlrPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
+*/
+extern void InitHdlrPropsFromTable (
+    StructGVarProp *    tab );
+
+
+/****************************************************************************
+**
+*F  InitHdlrOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
+*/
+extern void InitHdlrOpersFromTable (
+    StructGVarOper *    tab );
+
+
+/****************************************************************************
+**
+*F  InitHdlrFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
+*/
+extern void InitHdlrFuncsFromTable (
+    StructGVarFunc *    tab );
+
+
+/****************************************************************************
+**
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
 extern void ImportGVarFromLibrary(
-            SYS_CONST Char *    name,
+            const Char *        name,
             Obj *               address );
 
 
@@ -344,12 +538,13 @@ extern void ImportGVarFromLibrary(
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
 extern void ImportFuncFromLibrary(
-            SYS_CONST Char *    name,
+            const Char *        name,
             Obj *               address );
 
 
 /****************************************************************************
 **
+
 *V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
 */
 extern Obj Revisions;
@@ -357,22 +552,31 @@ extern Obj Revisions;
 
 /****************************************************************************
 **
-*F  SET_REVISION( <file>, <revision> )
+
+*F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
 */
-#define SET_REVISION( file, revision ) \
-  do { \
-      extern SYS_CONST char * revision; \
-      UInt                    rev_rnam; \
-      Obj                     rev_str; \
-      rev_rnam = RNamName(file); \
-      C_NEW_STRING( rev_str, SyStrlen(revision), revision ); \
-      RESET_FILT_LIST( rev_str, FN_IS_MUTABLE ); \
-      AssPRec( Revisions, rev_rnam, rev_str ); \
-  } while (0)
+extern StructInitInfo * Modules [];
+extern UInt NrModules;
+extern UInt NrBuiltinModules;
 
 
 /****************************************************************************
 **
+*F  RecordLoadedModule( <module> )  . . . . . . . . store module in <Modules>
+**
+**  The filename argument is a C string. A copy of it is taken in some
+**   private space and added to the module info.
+*/
+extern void RecordLoadedModule (
+    StructInitInfo *        module,
+    Char *                  filename );
+
+
+
+
+/****************************************************************************
+**
+
 *F  InitializeGap( <argc>, <argv> ) . . . . . . . . . . . . . . . .  init GAP
 */
 extern void InitializeGap (

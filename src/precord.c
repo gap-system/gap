@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for plain records.
 **
@@ -14,7 +15,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_precord_c =
+const char * Revision_precord_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -24,7 +25,6 @@ SYS_CONST char * Revision_precord_c =
 #include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "gvars.h"               /* global variables                */
-
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
@@ -41,101 +41,7 @@ SYS_CONST char * Revision_precord_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "string.h"              /* strings                         */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-
 #include        "saveload.h"            /* saving and loading              */
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * standard macros for plain records  * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  NEW_PREC( <len> ) . . . . . . . . . . . . . . . . make a new plain record
-**
-**  'NEW_PREC' returns a new plain record with room for <len> components.
-**
-**  'NEW_PREC' is defined in the declaration part of this package as follows
-**
-#define NEW_PREC(len)   NewBag( T_PREC, (len) * 2*sizeof(Obj) + sizeof(Obj) )
-*/
-
-
-/****************************************************************************
-**
-*F  LEN_PREC( <rec> ) . . . . . . . . .  number of components of plain record
-**
-**  'LEN_PREC' returns the number of components of the plain record <rec>.
-**
-**  'LEN_PREC' is defined in the declaration part of this package as follows
-**
-#define LEN_PREC(rec)   ((SIZE_OBJ(rec) - sizeof(Obj)) / (2*sizeof(Obj)))
-*/
-
-
-/****************************************************************************
-**
-*F  SET_RNAM_PREC( <rec>, <i>, <rnam> ) . set name of <i>-th record component
-**
-**  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
-**  record <rec> to the record name <rnam>.
-**
-**  'SET_RNAM_PREC'  is defined  in the declaration  part  of this package as
-**  follows
-**
-#define SET_RNAM_PREC(rec,i,rnam) \
-                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)-1) = (rnam))
-*/
-
-
-/****************************************************************************
-**
-*F  GET_RNAM_PREC( <rec>, <i> ) . . . . . . . name of <i>-th record component
-**
-**  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
-**  the record <rec>.
-**
-**  'GET_RNAM_PREC'  is defined in  the declaration  part of  this package as
-**  follows
-**
-#define GET_RNAM_PREC(rec,i) \
-                        (*(UInt*)(ADDR_OBJ(rec)+2*(i)-1))
-*/
-
-
-/****************************************************************************
-**
-*F  SET_ELM_PREC( <rec>, <i>, <val> ) .  set value of <i>-th record component
-**
-**  'SET_ELM_PREC' sets  the value  of  the  <i>-th  record component of  the
-**  record <rec> to the value <val>.
-**
-**  'SET_ELM_PREC'  is defined  in the declaration   part of this package  as
-**  follows
-**
-#define SET_ELM_PREC(rec,i,val) \
-                        (*(ADDR_OBJ(rec)+2*(i)-0) = (val))
-*/
-
-
-/****************************************************************************
-**
-*F  GET_ELM_PREC( <rec>, <i> ) . . . . . . . value of <i>-th record component
-**
-**  'GET_ELM_PREC' returns the value  of the <i>-th  record component of  the
-**  record <rec>.
-**
-**  'GET_ELM_PREC' is defined in  the  declaration part  of this  package  as
-**  follows
-**
-#define GET_ELM_PREC(rec,i) \
-                        (*(ADDR_OBJ(rec)+2*(i)-0))
-*/
 
 
 /****************************************************************************
@@ -567,7 +473,6 @@ void SortPRec (
 
 *F * * * * * * * * * * * default functions for records  * * * * * * * * * * *
 */
-extern Obj TRY_NEXT_METHOD;
 
 
 /****************************************************************************
@@ -581,6 +486,7 @@ extern Obj TRY_NEXT_METHOD;
 **  Otherwise it return 0.
 */
 UInt OperationsRNam;                    /* 'operations' record name        */
+UInt COMPONENTSRNam;		        /* COMPONENTS record name          */
 
 Obj MethodPRec (
     Obj                 rec,
@@ -592,7 +498,7 @@ Obj MethodPRec (
     UInt                i;              /* loop variable                   */
 
     /* is <rec> a record?                                                  */
-    if ( TNUM_OBJ(rec) != T_PREC && TNUM_OBJ(rec) != T_PREC+IMMUTABLE )
+    if ( ! IS_PREC_REP(rec) )
         return 0;
 
     /* try to get the operations record                                    */
@@ -605,7 +511,24 @@ Obj MethodPRec (
         return 0;
     }
     opers = GET_ELM_PREC( rec, i );
-    if ( TNUM_OBJ( opers ) != T_PREC ) {
+
+    /* check for an Operations Record object */
+    if ( TNUM_OBJ(opers) == T_COMOBJ) 
+      {
+	/* Make use of the fact the Component objects look like Precs */
+	len = LEN_PREC( opers );
+	for ( i = 1; i <= len; i++ ) {
+	  if ( GET_RNAM_PREC( opers, i ) == COMPONENTSRNam )
+            break;
+	}
+	if ( len < i ) {
+	  return 0;
+	}
+	opers = GET_ELM_PREC( opers, i );
+      }
+    
+	 
+    if ( ! IS_PREC_REP(opers) ) {
         return 0;
     }
 
@@ -702,8 +625,7 @@ Obj FuncREC_NAMES (
     UInt                i;              /* loop variable                   */
 
     /* check the argument                                                  */
-    while ( TNUM_OBJ(rec) != T_PREC &&
-            TNUM_OBJ(rec) != T_PREC + IMMUTABLE ) {
+    while ( ! IS_PREC_REP(rec) ) {
         rec = ErrorReturnObj(
             "RecNames: <rec> must be a record (not a %s)",
             (Int)TNAM_OBJ(rec), 0L,
@@ -731,9 +653,9 @@ Obj FuncREC_NAMES (
 
 /****************************************************************************
 **
-*F  FuncREC_NAMES_ROBJ( <self>, <rec> ) . . . record names of a record object
+*F  FuncREC_NAMES_COMOBJ( <self>, <rec> ) . . . record names of a record object
 */
-Obj FuncREC_NAMES_ROBJ (
+Obj FuncREC_NAMES_COMOBJ (
     Obj                 self,
     Obj                 rec )
 {
@@ -1062,9 +984,9 @@ Obj FuncEQ_PREC_DEFAULT (
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
-    if ( TNUM_OBJ(left)!=T_PREC && TNUM_OBJ(left)!=T_PREC+IMMUTABLE )
+    if ( ! IS_PREC_REP(left) )
         return False;
-    if ( TNUM_OBJ(right)!=T_PREC && TNUM_OBJ(right)!=T_PREC+IMMUTABLE )
+    if ( ! IS_PREC_REP(right) )
         return False;
     if ( LEN_PREC(left) != LEN_PREC(right) )
         return False;
@@ -1140,9 +1062,7 @@ Obj FuncLT_PREC_DEFAULT (
     UInt                i;              /* loop variable                   */
 
     /* quick first checks                                                  */
-    if ( ( TNUM_OBJ(left)!=T_PREC && TNUM_OBJ(left)!=T_PREC+IMMUTABLE )
-      || ( TNUM_OBJ(right)!=T_PREC && TNUM_OBJ(right)!=T_PREC+IMMUTABLE ) )
-    {
+    if ( ! IS_PREC_REP(left) || ! IS_PREC_REP(right) ) {
         if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return True;
         if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return False;
     }
@@ -1259,28 +1179,106 @@ void LoadPRec( Obj prec )
 /****************************************************************************
 **
 
-*F  SetupPRecord()  . . . . . . . . . . . . . . initialize the record package
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
-void SetupPRecord ( void )
+static StructBagNames BagNames[] = {
+  { T_PREC,                     "record (plain)"            },
+  { T_PREC +IMMUTABLE,          "record (plain,imm)"        },
+  { T_PREC            +COPYING, "record (plain,copied)"     },
+  { T_PREC +IMMUTABLE +COPYING, "record (plain,imm,copied)" },
+  { -1,                         ""                          }
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "REC_NAMES", 1, "rec",
+      FuncREC_NAMES, "src/precord.c:REC_NAMES" },
+
+    { "REC_NAMES_COMOBJ", 1, "rec obj",
+      FuncREC_NAMES_COMOBJ, "src/precord.c:REC_NAMES_COMOBJ" },
+
+    { "PRINT_PREC", 1, "rec",
+      FuncPRINT_PREC, "src/precord.c:PRINT_PREC" },
+
+    { "PRINT_PREC_DEFAULT", 1, "rec",
+      FuncPRINT_PREC_DEFAULT, "src/precord.c:PRINT_PREC_DEFAULT" },
+
+    { "SUM_PREC", 2, "left, right",
+      FuncSUM_PREC, "src/precord.c:SUM_PREC" },
+
+    { "DIFF_PREC", 2, "left, right",
+      FuncDIFF_PREC, "src/precord.c:DIFF_PREC" },
+
+    { "PROD_PREC", 2, "left, right",
+      FuncPROD_PREC, "src/precord.c:PROD_PREC" },
+
+    { "QUO_PREC", 2, "left, right",
+      FuncQUO_PREC, "src/precord.c:QUO_PREC" },
+
+    { "LQUO_PREC", 2, "left, right",
+      FuncLQUO_PREC, "src/precord.c:LQUO_PREC" },
+
+    { "POW_PREC", 2, "left, right",
+      FuncPOW_PREC, "src/precord.c:POW_PREC" },
+
+    { "MOD_PREC", 2, "left, right",
+      FuncMOD_PREC, "src/precord.c:MOD_PREC" },
+
+    { "COMM_PREC", 2, "left, right",
+      FuncCOMM_PREC, "src/precord.c:COMM_PREC" },
+
+    { "IN_PREC", 2, "left, right",
+      FuncIN_PREC, "src/precord.c:IN_PREC" },
+
+    { "EQ_PREC", 2, "left, right",
+      FuncEQ_PREC, "src/precord.c:EQ_PREC" },
+
+    { "EQ_PREC_DEFAULT",2,"left, right",
+      FuncEQ_PREC_DEFAULT, "src/precord.c:EQ_PREC_DEFAULT" },
+
+    { "LT_PREC", 2, "left, right",
+      FuncLT_PREC, "src/precord.c:LT_PREC" },
+
+    { "LT_PREC_DEFAULT",2,"left, right",
+      FuncLT_PREC_DEFAULT, "src/precord.c:LT_PREC_DEFAULT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    /* install the marking function                                        */
-    InfoBags[         T_PREC                     ].name = "record (plain)";
-    InfoBags[         T_PREC +IMMUTABLE          ].name = "record (plain,imm)";
-    InfoBags[         T_PREC            +COPYING ].name = "record (plain,copied)";
-    InfoBags[         T_PREC +IMMUTABLE +COPYING ].name = "record (plain,imm,copied)";
+    /* check dependencies                                                  */
+    RequireModule( module, "records", 503600000UL );
+
+    /* GASMAN marking functions and GASMAN names                           */
+    InitBagNamesFromTable( BagNames );
 
     InitMarkFuncBags( T_PREC                     , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE          , MarkAllSubBags );
     InitMarkFuncBags( T_PREC            +COPYING , MarkAllSubBags );
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
 
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* Install saving functions                                            */
     SaveObjFuncs[ T_PREC            ] = SavePRec;
     SaveObjFuncs[ T_PREC +IMMUTABLE ] = SavePRec;
     LoadObjFuncs[ T_PREC            ] = LoadPRec;
     LoadObjFuncs[ T_PREC +IMMUTABLE ] = LoadPRec;
-
 
     /* install into record function tables                                 */
     ElmRecFuncs[ T_PREC            ] = ElmPRec;
@@ -1292,13 +1290,11 @@ void SetupPRecord ( void )
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
 
-
     /* install mutability test                                             */
     IsMutableObjFuncs[  T_PREC            ] = IsMutablePRecYes;
     IsMutableObjFuncs[  T_PREC +IMMUTABLE ] = IsMutablePRecNo;
     IsCopyableObjFuncs[ T_PREC            ] = IsCopyablePRecYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = IsCopyablePRecYes;
-
 
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
@@ -1310,23 +1306,12 @@ void SetupPRecord ( void )
     CleanObjFuncs[ T_PREC            +COPYING ] = CleanPRecCopy;
     CleanObjFuncs[ T_PREC +IMMUTABLE +COPYING ] = CleanPRecCopy;
 
-
     /* install printer                                                     */
     PrintObjFuncs[  T_PREC            ] = PrintPRec;
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
-}
 
-
-/****************************************************************************
-**
-*F  InitPRecord() . . . . . . . . . . . . . . . initialize the record package
-**
-**  'InitPRecord' initializes the record package.
-*/
-void InitPRecord ( void )
-{
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_PREC_MUTABLE",   &TYPE_PREC_MUTABLE   );
     ImportGVarFromLibrary( "TYPE_PREC_IMMUTABLE", &TYPE_PREC_IMMUTABLE );
@@ -1334,9 +1319,21 @@ void InitPRecord ( void )
     TypeObjFuncs[ T_PREC            ] = TypePRecMut;
     TypeObjFuncs[ T_PREC +IMMUTABLE ] = TypePRecImm;
 
+    /* return success                                                      */
+    return 0;
+}
 
+
+/****************************************************************************
+<**
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
+*/
+static Int PostRestore (
+    StructInitInfo *    module )
+{
     /* get the appropriate record record name                              */
     OperationsRNam = RNamName( "operations"   );
+    COMPONENTSRNam = RNamName( "COMPONENTS"   );
     PrintRNam      = RNamName( "Print"        );
     EqRNam         = RNamName( "="            );
     LtRNam         = RNamName( "<"            );
@@ -1350,65 +1347,51 @@ void InitPRecord ( void )
     CommRNam       = RNamName( "Comm"         );
     ModRNam        = RNamName( "mod"          );
 
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FUNC( "REC_NAMES", 1L, "rec", FuncREC_NAMES,
-       "src/precord.c:REC_NAMES" );
-    C_NEW_GVAR_FUNC( "REC_NAMES_ROBJ", 1L, "rec obj", FuncREC_NAMES_ROBJ,
-       "src/precord.c:REC_NAMES_ROBJ" );
-
-    C_NEW_GVAR_FUNC( "PRINT_PREC", 1L, "rec", FuncPRINT_PREC,
-       "src/precord.c:PRINT_PREC" );
-    C_NEW_GVAR_FUNC( "PRINT_PREC_DEFAULT", 1L, "rec", FuncPRINT_PREC_DEFAULT,
-       "src/precord.c:PRINT_PREC_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "SUM_PREC", 2L, "left, right", FuncSUM_PREC,
-       "src/precord.c:SUM_PREC" );
-
-    C_NEW_GVAR_FUNC( "DIFF_PREC", 2L, "left, right", FuncDIFF_PREC,
-       "src/precord.c:DIFF_PREC" );
-
-    C_NEW_GVAR_FUNC( "PROD_PREC", 2L, "left, right", FuncPROD_PREC,
-       "src/precord.c:PROD_PREC" );
-
-    C_NEW_GVAR_FUNC( "QUO_PREC", 2L, "left, right", FuncQUO_PREC,
-       "src/precord.c:QUO_PREC" );
-
-    C_NEW_GVAR_FUNC( "LQUO_PREC", 2L, "left, right", FuncLQUO_PREC,
-       "src/precord.c:LQUO_PREC" );
-
-    C_NEW_GVAR_FUNC( "POW_PREC", 2L, "left, right", FuncPOW_PREC,
-       "src/precord.c:POW_PREC" );
-
-    C_NEW_GVAR_FUNC( "MOD_PREC", 2L, "left, right", FuncMOD_PREC,
-       "src/precord.c:MOD_PREC" );
-
-    C_NEW_GVAR_FUNC( "COMM_PREC", 2L, "left, right", FuncCOMM_PREC,
-       "src/precord.c:COMM_PREC" );
-
-    C_NEW_GVAR_FUNC( "IN_PREC", 2L, "left, right", FuncIN_PREC,
-       "src/precord.c:IN_PREC" );
-
-    C_NEW_GVAR_FUNC( "EQ_PREC", 2L, "left, right", FuncEQ_PREC,
-       "src/precord.c:EQ_PREC" );
-    C_NEW_GVAR_FUNC( "EQ_PREC_DEFAULT",2L,"left, right",FuncEQ_PREC_DEFAULT,
-       "src/precord.c:EQ_PREC_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "LT_PREC", 2L, "left, right", FuncLT_PREC,
-       "src/precord.c:LT_PREC" );
-    C_NEW_GVAR_FUNC( "LT_PREC_DEFAULT",2L,"left, right",FuncLT_PREC_DEFAULT,
-       "src/precord.c:LT_PREC_DEFAULT" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckPRecord()  . . . . .  check the initialisation of the record package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckPRecord ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "precord_c",  Revision_precord_c );
-    SET_REVISION( "precord_h",  Revision_precord_h );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return PostRestore( module );
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoPRecord() . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "precord",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoPRecord ( void )
+{
+    module.revision_c = Revision_precord_c;
+    module.revision_h = Revision_precord_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

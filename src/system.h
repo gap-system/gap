@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*W  system.c                    GAP source                   Martin Schoenert
+*W  system.h                    GAP source                   Martin Schoenert
 *W                                                         & Dave Bayer (MAC)
 *W                                                  & Harald Boegeholz (OS/2)
 *W                                                      & Frank Celler (MACH)
@@ -11,11 +11,211 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
 */
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+
+
+/****************************************************************************
+**
+
+*V  autoconf  . . . . . . . . . . . . . . . . . . . . . . . .  use "config.h"
+*/
+#ifdef CONFIG_H
+
+#include "config.h"
+
+/* define stack align for gasman (from "config.h")                         */
+#define SYS_STACK_ALIGN		C_STACK_ALIGN
+
+/* assume all prototypes are there                                         */
+#define SYS_HAS_CALLOC_PROTO
+#define SYS_HAS_EXEC_PROTO
+#define SYS_HAS_IOCTL_PROTO
+#define SYS_HAS_MALLOC_PROTO
+#define SYS_HAS_MEMSET_PROTO
+#define SYS_HAS_MISC_PROTO
+#define SYS_HAS_READ_PROTO
+#define SYS_HAS_SIGNAL_PROTO
+#define SYS_HAS_STDIO_PROTO
+#define SYS_HAS_STRING_PROTO
+#define SYS_HAS_TIME_PROTO
+#define SYS_HAS_WAIT_PROTO
+#define SYS_HAS_WAIT_PROTO
+
+/* check if we are on a 64 bit machine                                     */
+#if SIZEOF_VOID_P == 8
+# define SYS_IS_64_BIT          1
+#endif
+
+/* some compiles define symbols beginning with an underscore               */
+#if C_UNDERSCORE_SYMBOLS
+# define SYS_INIT_DYNAMIC       "_Init__Dynamic"
+#else
+# define SYS_INIT_DYNAMIC       "Init__Dynamic"
+#endif
+
+/* "config.h" will redefine `vfork' to `fork' if necessary                 */
+#define SYS_MY_FORK             vfork
+
+#define SYS_HAS_SIG_T           RETSIGTYPE
+
+/* prefer `vm_allocate' over `sbrk'                                        */
+#if HAVE_VM_ALLOCATE
+# undef  HAVE_SBRK
+# define HAVE_SBRK              0
+#endif
+
+/* prefer "termio.h" over "sgtty.h"                                        */
+#if HAVE_TERMIO_H
+# undef  HAVE_SGTTY_H
+# define HAVE_SGTTY_H           0
+#endif
+
+/* prefer `getrusage' over `times'                                         */
+#if HAVE_GETRUSAGE
+# undef  HAVE_TIMES
+# define HAVE_TIMES             0
+#endif
+
+/* defualt HZ value                                                        */
+#ifndef  HZ
+# define HZ                     50
+#endif
+
+/* prefer `waitpid' over `wait4'                                           */
+#if HAVE_WAITPID
+# undef  HAVE_WAIT4
+# define HAVE_WAIT4             0
+#endif
+
+#endif
+
+
+/****************************************************************************
+**
+*V  no autoconf . . . . . . . . . . . . . . . . . . . . do not use "config.h"
+*/
+#ifndef CONFIG_H
+
+#ifdef  SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
+#endif
+
+#ifndef SYS_ARCH
+# define SYS_ARCH = "unknown";
+#endif
+
+#ifndef SY_STOR_MIN
+# if SYS_MAC_MPW || SYS_MAC_SYC || SYS_TOS_GCC2
+#  define SY_STOR_MIN   0
+# else
+#  define SY_STOR_MIN   8 * 1024 * 1024
+# endif
+#endif
+
+#ifndef SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         sizeof(UInt *)
+#endif
+
+#ifdef SYS_HAS_SIGNALS
+# define HAVE_SIGNAL            1
+#else
+# define HAVE_SIGNAL            0
+#endif
+
+#define HAVE_ACCESS		0
+#define HAVE_STAT		0
+#define HAVE_UNLINK             0
+#define HAVE_MKDIR              0
+#define HAVE_GETRUSAGE		0
+#define HAVE_DOTGAPRC		0
+#define HAVE_GHAPRC             0
+
+#ifdef SYS_IS_BSD
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_GETRUSAGE
+# define HAVE_GETRUSAGE		1
+# undef  HAVE_DOTGAPRC
+# define HAVE_DOTGAPRC          1
+#endif
+
+#ifdef SYS_IS_MACH
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_GETRUSAGE
+# define HAVE_GETRUSAGE		1
+# undef  HAVE_DOTGAPRC
+# define HAVE_DOTGAPRC          1
+#endif
+
+#ifdef SYS_IS_USG
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_DOTGAPRC
+# define HAVE_DOTGAPRC          1
+#endif
+
+#ifdef SYS_IS_OS2_EMX
+# undef  HAVE_ACCESS
+# define HAVE_ACCESS		1
+# undef  HAVE_STAT
+# define HAVE_STAT              1
+# undef  HAVE_UNLINK
+# define HAVE_UNLINK            1
+# undef  HAVE_MKDIR
+# define HAVE_MKDIR             1
+# undef  HAVE_GAPRC
+# define HAVE_GAPRC             1
+#endif
+
+#ifdef SYS_HAS_NO_GETRUSAGE
+# undef  HAVE_GETRUSAGE
+# define HAVE_GETRUSAGE		0
+#endif
+
+#endif
+
+
+/****************************************************************************
+**
+*V  Includes  . . . . . . . . . . . . . . . . . . . . .  include system files
+*/
+#ifdef CONFIG_H
+#endif
+
+
+/****************************************************************************
+**
+
+*V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
+*/
+#ifdef  INCLUDE_DECLARATION_PART
+const char * Revision_system_h =
+   "@(#)$Id$";
+#endif
 
 
 /****************************************************************************
@@ -31,31 +231,6 @@
 # else
 #  define SYS_ANSI      0
 # endif
-#endif
-
-
-/****************************************************************************
-**
-*V  SYS_CONST . . . . . . . . . . . . . . . . . . . . . . . . . constant type
-*/
-#ifdef SYS_HAS_CONST
-# define SYS_CONST      SYS_HAS_CONST
-#else
-# ifdef __STDC__
-#  define SYS_CONST     const
-# else
-#  define SYS_CONST
-# endif
-#endif
-
-
-/****************************************************************************
-**
-*V  Revision_system_h . . . . . . . . . . . . . . . . . . . . revision number
-*/
-#ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_system_h =
-   "@(#)$Id$";
 #endif
 
 
@@ -194,17 +369,18 @@ typedef unsigned long int       UInt;
 
 /****************************************************************************
 **
-*V  SyFlags . . . . . . . . . . . . . . . . . . . . flags used when compiling
-**
-**  'SyFlags' is the name of the target for which GAP was compiled.
-**
-**  It is
-**
-**      [bsd|mach|usg|os2|msdos|tos|vms|mac] [gcc|emx|djgpp|mpw|syc] [ansi]
-**
-**  It is used in 'InitGap' for the 'VERSYS' variable.
+*T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 */
-extern SYS_CONST Char SyFlags [];
+typedef UInt * *        Bag;
+
+
+/****************************************************************************
+**
+*T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
+**
+**  'Obj' is the type of objects.
+*/
+#define Obj             Bag
 
 
 /****************************************************************************
@@ -234,7 +410,7 @@ extern UInt SyStackAlign;
 **
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
-extern SYS_CONST Char * SyArchitecture;
+extern const Char * SyArchitecture;
 
 
 /****************************************************************************
@@ -541,6 +717,17 @@ extern UInt SyWindow;
 
 /****************************************************************************
 **
+*V  SyFalseEqFail . . . . .. .compatibility option, identifies false and fail
+**
+** In GAP 3 there was no fail, and false was often used. This flag causes
+** false and fail to be the same value
+*/
+
+extern UInt SyFalseEqFail;
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
@@ -608,7 +795,7 @@ extern UInt SyTime ( void );
 **  characters in <str> that precede the terminating null character.
 */
 extern UInt SyStrlen (
-            SYS_CONST Char *     str );
+            const Char *     str );
 
 
 /****************************************************************************
@@ -620,8 +807,8 @@ extern UInt SyStrlen (
 **  <str2> lexicographically.
 */
 extern Int SyStrcmp (
-            SYS_CONST Char *    str1,
-            SYS_CONST Char *    str2 );
+            const Char *    str1,
+            const Char *    str2 );
 
 
 /****************************************************************************
@@ -633,8 +820,8 @@ extern Int SyStrcmp (
 **  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
 */
 extern Int SyStrncmp (
-            SYS_CONST Char *    str1,
-            SYS_CONST Char *    str2,
+            const Char *    str1,
+            const Char *    str2,
             UInt                len );
 
 
@@ -649,7 +836,7 @@ extern Int SyStrncmp (
 */
 extern Char * SyStrncat (
             Char *              dst,
-            SYS_CONST Char *    src,
+            const Char *    src,
             UInt                len );
 
 
@@ -719,24 +906,160 @@ extern void SyAbortBags (
 /****************************************************************************
 **
 
-*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * loading of modules * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
 
-*T  StructCompInitInfo  . . . . . . . . . . . . . . . .  compiled modulo info
+*F  MODULE_BUILTIN  . . . . . . . . . . . . . . . . . . . . .  builtin module
+*/
+#define MODULE_BUILTIN          1
+
+
+/****************************************************************************
+**
+*F  MODULE_STATIC . . . . . . . . . . . . . statically loaded compiled module
+*/
+#define MODULE_STATIC           2
+
+
+/****************************************************************************
+**
+*F  MODULE_DYNAMIC  . . . . . . . . . . .  dynamically loaded compiled module
+*/
+#define MODULE_DYNAMIC          3
+
+
+/****************************************************************************
+**
+
+*T  StructInitInfo  . . . . . . . . . . . . . . . . . module init information
+*/
+typedef struct init_info {
+
+    /* type of the module: MODULE_BUILTIN, MODULE_STATIC, MODULE_DYNAMIC   */
+    UInt                type;               
+
+    /* name of the module: filename with ".c" or library filename          */
+    const Char *    name;
+
+    /* revision entry of c file for MODULE_BUILTIN                         */
+    const Char *    revision_c;
+
+    /* revision entry of h file for MODULE_BUILTIN                         */
+    const Char *    revision_h;
+
+    /* version number for MODULE_BUILTIN                                   */
+    UInt                version;
+
+    /* CRC value for MODULE_STATIC or MODULE_DYNAMIC                       */
+    Int                 crc;
+
+    /* initialise kernel data structures                                   */
+    Int              (* initKernel)(struct init_info *);
+
+    /* initialise library data structures                                  */
+    Int              (* initLibrary)(struct init_info *);
+
+    /* sanity check                                                        */
+    Int              (* checkInit)(struct init_info *);
+
+    /* function to call before saving workspace                            */
+    Int              (* preSave)(struct init_info *);
+
+    /* function to call after saving workspace                             */
+    Int              (* postSave)(struct init_info *);
+
+    /* function to call after restoring workspace                          */
+    Int              (* postRestore)(struct init_info *);
+
+    /* filename relative to GAP_ROOT or absolut                            */
+    Char *            filename;
+
+    /* true if the filename is GAP_ROOT relative                           */
+    Int                 isGapRootRelative;
+
+} StructInitInfo;
+
+typedef StructInitInfo* (*InitInfoFunc)(void);
+
+
+/****************************************************************************
+**
+*T  StructBagNames  . . . . . . . . . . . . . . . . . . . . . tnums and names
 */
 typedef struct {
-    UInt4           magic1;
-    Char *          magic2;
-    void            (* link) ( void );
-    Int             (* function1) ( void );
-    Int             (* functions) ( void );
-} StructCompInitInfo;
+    Int                 tnum;
+    const Char *    name;
+} StructBagNames;
 
-typedef StructCompInitInfo * (* CompInitFunc) ( void );
+
+/****************************************************************************
+**
+*T  StructGVarFilt  . . . . . . . . . . . . . . . . . . . . . exported filter
+*/
+typedef struct {
+    const Char *    name;
+    const Char *    argument;
+    Obj *               filter;
+    Obj              (* handler)(/*arguments*/);
+    const Char *    cookie;
+} StructGVarFilt;
+
+
+/****************************************************************************
+**
+*T  StructGVarAttr  . . . . . . . . . . . . . . . . . . .  exported attribute
+*/
+typedef struct {
+    const Char *    name;
+    const Char *    argument;
+    Obj *               attribute;
+    Obj              (* handler)(/*arguments*/);
+    const Char *    cookie;
+} StructGVarAttr;
+
+
+/****************************************************************************
+**
+*T  StructGVarProp  . . . . . . . . . . . . . . . . . . . . exported property
+*/
+typedef struct {
+    const Char *    name;
+    const Char *    argument;
+    Obj *               property;
+    Obj              (* handler)(/*arguments*/);
+    const Char *    cookie;
+} StructGVarProp;
+
+
+/****************************************************************************
+**
+*T  StructGVarOper  . . . . . . . . . . . . . . . . . . .  exported operation
+*/
+typedef struct {
+    const Char *    name;
+    Int                 nargs;
+    const Char *    args;
+    Obj *               operation;
+    Obj              (* handler)(/*arguments*/);
+    const Char *    cookie;
+} StructGVarOper;
+
+
+/****************************************************************************
+**
+*T  StructGVarFunc  . . . . . . . . . . . . . . . . . . . . exported function
+*/
+typedef struct {
+    const Char *    name;
+    Int                 nargs;
+    const Char *    args;
+    Obj              (* handler)(/*arguments*/);
+    const Char *    cookie;
+} StructGVarFunc;
 
 
 /****************************************************************************

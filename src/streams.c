@@ -5,14 +5,16 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 #include        <stdio.h>
+#include        <string.h>              /* memcpy */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_streams_c =
+const char * Revision_streams_c =
    "@(#)$Id$";
 
 
@@ -60,26 +62,34 @@ SYS_CONST char * Revision_streams_c =
 */
 Int READ ( void )
 {
-    UInt                type;
+    ExecStatus                status;
 
 
     /* now do the reading                                                  */
     while ( 1 ) {
         ClearError();
-        type = ReadEvalCommand();
-
+        status = ReadEvalCommand();
+	if (UserHasQuit || UserHasQUIT)
+	  break;
         /* handle return-value or return-void command                      */
-        if ( type == 1 || type == 2 ) {
+        if ( status &(STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr(
                 "'return' must not be used in file read-eval loop",
                 0L, 0L );
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
+        else if ( status  == STATUS_EOF) 
+	  break;
+	else if (status == STATUS_QUIT) {
+	  UserHasQuit = 1;
+	  break;
+	}
+	else if (status == STATUS_QQUIT) {
+	  UserHasQUIT = 1;
+	  break;
+	}
+	
     }
 
     /* close the input file again, and return 'true'                       */
@@ -201,14 +211,14 @@ Int READ_TEST ( void )
 **  search all   directories given   in 'SyGapRootPaths',  check  dynamically
 **  loadable modules and statically linked modules.
 */
+
+
 Int READ_GAP_ROOT ( Char * filename )
 {
     Char                result[256];
     Int                 res;
     UInt                type;
-    UInt                len;
-    StructCompInitInfo* info;
-    Obj                 func;
+    StructInitInfo *    info;
     Obj                 fname;
 
     /* try to find the file                                                */
@@ -225,14 +235,18 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
                 (Int)filename, 0L );
         }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
-        len = SyStrlen(filename);
-        fname = NEW_STRING( len );
-        SyStrncat( CSTR_STRING(fname), filename, len );
-        RecordLoadedModule(fname, info->magic1);
+        info = *(StructInitInfo**)result;
+	res  = info->initKernel(info);
+	if (!SyRestoring) {
+	  UpdateCopyFopyInfo();
+	  res  = res || info->initLibrary(info);
+	}
+	if ( res ) {
+	    Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+	}
+	
+	info->isGapRootRelative = 1;
+        RecordLoadedModule(info, filename);
         return 1;
     }
 
@@ -242,19 +256,22 @@ Int READ_GAP_ROOT ( Char * filename )
             Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
                 (Int)filename, 0L );
         }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
-        len = SyStrlen(filename);
-        fname = NEW_STRING( len );
-        SyStrncat( CSTR_STRING(fname), filename, len );
-        RecordLoadedModule(fname, info->magic1);
+        info = *(StructInitInfo**)result;
+	res  = info->initKernel(info);
+	if (!SyRestoring) {
+	  UpdateCopyFopyInfo();
+	  res  = res || info->initLibrary(info);
+	}
+	if ( res ) {
+	    Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+	}
+	info->isGapRootRelative = 1;
+        RecordLoadedModule(info, filename);
         return 1;
     }
 
     /* ordinary gap file                                                   */
-    else if ( res == 3 ) {
+    else if ( !SyRestoring && (res == 3 || res == 4) ) {
         if ( SyDebugLoading ) {
             Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
                 (Int)filename, 0L );
@@ -263,6 +280,8 @@ Int READ_GAP_ROOT ( Char * filename )
             while ( 1 ) {
                 ClearError();
                 type = ReadEvalCommand();
+		if (UserHasQuit || UserHasQUIT)
+		  break;
                 if ( type == 1 || type == 2 ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
                 }
@@ -520,16 +539,14 @@ Obj FuncPrint (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+        if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
             PrintString1(arg);
         }
         else if ( IS_STRING_REP(arg) ) {
             PrintString1(arg);
         }
         else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
-            PrintFunction( arg );
-            PrintObjFull = 0;
+	  PrintFunction( arg );
         }
         else {
             memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
@@ -582,7 +599,7 @@ Obj FuncPRINT_TO (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+        if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
             PrintString1(arg);
         }
         else if ( IS_STRING_REP(arg) ) {
@@ -648,7 +665,7 @@ Obj FuncPRINT_TO_STREAM (
         /* if an error occurs stop printing                                */
         memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
         if ( ! READ_ERROR() ) {
-            if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+            if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
             }
             else if ( IS_STRING_REP(arg) ) {
@@ -713,7 +730,7 @@ Obj FuncAPPEND_TO (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+        if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
             PrintString1(arg);
         }
         else if ( IS_STRING_REP(arg) ) {
@@ -779,7 +796,7 @@ Obj FuncAPPEND_TO_STREAM (
         /* if an error occurs stop printing                                */
         memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
         if ( ! READ_ERROR() ) {
-            if ( IS_LIST(arg) && 0 < LEN_LIST(arg) && IsStringConv(arg) ) {
+            if ( IS_PLIST(arg) && 0 < LEN_PLIST(arg) && IsStringConv(arg) ) {
                 PrintString1(arg);
             }
             else if ( IS_STRING_REP(arg) ) {
@@ -1347,6 +1364,10 @@ Obj FuncREAD_BYTE_FILE (
             "you can return an integer for <fid>" );
     }
     
+    /* Check if we are at the end of the file.                             */
+    ret = SyIsEndOfFile( INT_INTOBJ(fid) );
+    if( ret == -1 || ret == 1 ) return Fail;
+
     /* call the system dependent function                                  */
     ret = SyGetch( INT_INTOBJ(fid) );
     return ret == -1 ? Fail : INTOBJ_INT(ret);
@@ -1557,197 +1578,207 @@ Obj FuncExecuteProcess (
 /****************************************************************************
 **
 
-*F  SetupStreams(). . . . . . . . . . . . . . . intialize the streams package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupStreams ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "READ", 1L, "filename",
+      FuncREAD, "src/streams.c:READ" },
+
+    { "READ_STREAM", 1L, "stream",
+      FuncREAD_STREAM, "src/sreams.c:READ_STREAM" },
+
+    { "READ_TEST", 1L, "filename", 
+      FuncREAD_TEST, "src/sreams.c:READ_TEST" },
+
+    { "READ_TEST_STREAM", 1L, "stream",
+      FuncREAD_TEST_STREAM, "src/sreams.c:READ_TEST_STREAM" },
+
+    { "READ_AS_FUNC", 1L, "filename",
+      FuncREAD_AS_FUNC, "src/sreams.c:READ_AS_FUNC" },
+
+    { "READ_AS_FUNC_STREAM", 1L, "stream", 
+      FuncREAD_AS_FUNC_STREAM, "src/sreams.c:READ_AS_FUNC_STREAM" },
+
+    { "READ_GAP_ROOT", 1L, "filename",
+      FuncREAD_GAP_ROOT, "src/sreams.c:READ_GAP_ROOT" },
+
+    { "LOG_TO", 1L, "filename", 
+      FuncLOG_TO, "src/sreams.c:LOG_TO" },
+
+    { "LOG_TO_STREAM", 1L, "filename", 
+      FuncLOG_TO_STREAM, "src/sreams.c:LOG_TO_STREAM" },
+
+    { "CLOSE_LOG_TO", 0L, "", 
+      FuncCLOSE_LOG_TO, "src/sreams.c:CLOSE_LOG_TO" },
+
+    { "INPUT_LOG_TO", 1L, "filename", 
+      FuncINPUT_LOG_TO, "src/sreams.c:INPUT_LOG_TO" },
+
+    { "INPUT_LOG_TO_STREAM", 1L, "filename", 
+      FuncINPUT_LOG_TO_STREAM, "src/sreams.c:INPUT_LOG_TO_STREAM" },
+
+    { "CLOSE_INPUT_LOG_TO", 0L, "", 
+      FuncCLOSE_INPUT_LOG_TO, "src/sreams.c:CLOSE_INPUT_LOG_TO" },
+
+    { "OUTPUT_LOG_TO", 1L, "filename", 
+      FuncOUTPUT_LOG_TO, "src/sreams.c:OUTPUT_LOG_TO" },
+
+    { "OUTPUT_LOG_TO_STREAM", 1L, "filename", 
+      FuncOUTPUT_LOG_TO_STREAM, "src/sreams.c:OUTPUT_LOG_TO_STREAM" },
+
+    { "CLOSE_OUTPUT_LOG_TO", 0L, "", 
+      FuncCLOSE_OUTPUT_LOG_TO, "src/sreams.c:CLOSE_OUTPUT_LOG_TO" },
+
+    { "Print", -1L, "args",
+      FuncPrint, "src/streams.c:Print" },
+
+    { "PRINT_TO", -1L, "args",
+      FuncPRINT_TO, "src/streams.c:PRINT_TO" },
+
+    { "PRINT_TO_STREAM", -1L, "args",
+      FuncPRINT_TO_STREAM, "src/streams.c:PRINT_TO_STREAM" },
+
+    { "APPEND_TO", -1L, "args",
+      FuncAPPEND_TO, "src/streams.c:APPEND_TO" },
+
+    { "APPEND_TO_STREAM", -1L, "args",
+      FuncAPPEND_TO_STREAM, "src/streams.c:APPEND_TO_STREAM" },
+
+    { "TmpName", 0L, "",
+      FuncTmpName, "src/streams.c:TmpName" },
+
+    { "TmpDirectory", 0L, "",
+      FuncTmpDirectory, "src/streams.c:TmpDirectory" },
+
+    { "RemoveFile", 1L, "file",
+      FuncRemoveFile, "src/streams.c:RemoveFile" },
+
+    { "LastSystemError", 0L, "", 
+      FuncLastSystemError, "src/sreams.c:LastSystemError" },
+
+    { "IsExistingFile", 1L, "filename", 
+      FuncIsExistingFile, "src/sreams.c:IsExistingFile" },
+
+    { "IsReadableFile", 1L, "filename",
+      FuncIsReadableFile, "src/sreams.c:IsReadableFile" },
+
+    { "IsWritableFile", 1L, "filename",
+      FuncIsWritableFile, "src/sreams.c:IsWritableFile" },
+
+    { "IsExecutableFile", 1L, "filename",
+      FuncIsExecutableFile, "src/sreams.c:IsExecutableFile" },
+
+    { "IsDirectoryPath", 1L, "filename",
+      FuncIsDirectoryPath, "src/sreams.c:IsDirectoryPath" },
+
+    { "CLOSE_FILE", 1L, "fid",
+      FuncCLOSE_FILE, "src/sreams.c:CLOSE_FILE" },
+
+    { "INPUT_TEXT_FILE", 1L, "filename",
+      FuncINPUT_TEXT_FILE, "src/sreams.c:INPUT_TEXT_FILE" },
+
+    { "OUTPUT_TEXT_FILE", 2L, "filename, append",
+      FuncOUTPUT_TEXT_FILE, "src/sreams.c:OUTPUT_TEXT_FILE" },
+
+    { "IS_END_OF_FILE", 1L, "fid",
+      FuncIS_END_OF_FILE, "src/sreams.c:IS_END_OF_FILE" },
+
+    { "POSITION_FILE", 1L, "fid",
+      FuncPOSITION_FILE, "src/sreams.c:POSITION_FILE" },
+
+    { "READ_BYTE_FILE", 1L, "fid",
+      FuncREAD_BYTE_FILE, "src/sreams.c:READ_BYTE_FILE" },
+
+    { "READ_LINE_FILE", 1L, "fid",
+      FuncREAD_LINE_FILE, "src/sreams.c:READ_LINE_FILE" },
+
+    { "SEEK_POSITION_FILE", 2L, "fid, pos",
+      FuncSEEK_POSITION_FILE, "src/sreams.c:SEEK_POSITION_FILE" },
+
+    { "WRITE_BYTE_FILE", 2L, "fid, byte",
+      FuncWRITE_BYTE_FILE, "src/sreams.c:WRITE_BYTE_FILE" },
+
+    { "ExecuteProcess", 5L, "dir, prg, in, out, args",
+      FuncExecuteProcess, "src/sreams.c:ExecuteProcess" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitStreams() . . . . . . . . . . . . . . . intialize the streams package
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void InitStreams ( void )
+static Int PostRestore (
+    StructInitInfo *    module )
 {
     /* file access test functions                                          */
     ErrorNumberRNam  = RNamName("number");
     ErrorMessageRNam = RNamName("message");
 
-    /* streams and files related functions                                 */
-    C_NEW_GVAR_FUNC( "READ", 1L, "filename",
-                  FuncREAD,
-       "src/streams.c:READ" );
-
-    C_NEW_GVAR_FUNC( "READ_STREAM", 1L, "stream",
-                  FuncREAD_STREAM,
-        "src/sreams.c:READ_STREAM" );
-
-    C_NEW_GVAR_FUNC( "READ_TEST", 1L, "filename", 
-                  FuncREAD_TEST,
-        "src/sreams.c:READ_TEST" );
-
-    C_NEW_GVAR_FUNC( "READ_TEST_STREAM", 1L, "stream",
-                  FuncREAD_TEST_STREAM,
-        "src/sreams.c:READ_TEST_STREAM" );
-
-    C_NEW_GVAR_FUNC( "READ_AS_FUNC", 1L, "filename",
-                  FuncREAD_AS_FUNC,
-        "src/sreams.c:READ_AS_FUNC" );
-
-    C_NEW_GVAR_FUNC( "READ_AS_FUNC_STREAM", 1L, "stream", 
-                  FuncREAD_AS_FUNC_STREAM, 
-        "src/sreams.c:READ_AS_FUNC_STREAM" );
-
-    C_NEW_GVAR_FUNC( "READ_GAP_ROOT", 1L, "filename",
-                  FuncREAD_GAP_ROOT,
-        "src/sreams.c:READ_GAP_ROOT" );
-
-    C_NEW_GVAR_FUNC( "LOG_TO", 1L, "filename", 
-                  FuncLOG_TO,
-        "src/sreams.c:LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "LOG_TO_STREAM", 1L, "filename", 
-                  FuncLOG_TO_STREAM,
-        "src/sreams.c:LOG_TO_STREAM" );
-
-    C_NEW_GVAR_FUNC( "CLOSE_LOG_TO", 0L, "", 
-                  FuncCLOSE_LOG_TO,
-        "src/sreams.c:CLOSE_LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "INPUT_LOG_TO", 1L, "filename", 
-                  FuncINPUT_LOG_TO,
-        "src/sreams.c:INPUT_LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "INPUT_LOG_TO_STREAM", 1L, "filename", 
-                  FuncINPUT_LOG_TO_STREAM,
-        "src/sreams.c:INPUT_LOG_TO_STREAM" );
-
-    C_NEW_GVAR_FUNC( "CLOSE_INPUT_LOG_TO", 0L, "", 
-                  FuncCLOSE_INPUT_LOG_TO,
-        "src/sreams.c:CLOSE_INPUT_LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "OUTPUT_LOG_TO", 1L, "filename", 
-                  FuncOUTPUT_LOG_TO,
-        "src/sreams.c:OUTPUT_LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "OUTPUT_LOG_TO_STREAM", 1L, "filename", 
-                  FuncOUTPUT_LOG_TO_STREAM,
-        "src/sreams.c:OUTPUT_LOG_TO_STREAM" );
-
-    C_NEW_GVAR_FUNC( "CLOSE_OUTPUT_LOG_TO", 0L, "", 
-                  FuncCLOSE_OUTPUT_LOG_TO,
-        "src/sreams.c:CLOSE_OUTPUT_LOG_TO" );
-
-    C_NEW_GVAR_FUNC( "Print", -1L, "args",
-                  FuncPrint,
-       "src/streams.c:Print" );
-
-    C_NEW_GVAR_FUNC( "PRINT_TO", -1L, "args",
-                  FuncPRINT_TO,
-       "src/streams.c:PRINT_TO" );
-
-    C_NEW_GVAR_FUNC( "PRINT_TO_STREAM", -1L, "args",
-                  FuncPRINT_TO_STREAM,
-       "src/streams.c:PRINT_TO_STREAM" );
-
-    C_NEW_GVAR_FUNC( "APPEND_TO", -1L, "args",
-                  FuncAPPEND_TO,
-       "src/streams.c:APPEND_TO" );
-
-    C_NEW_GVAR_FUNC( "APPEND_TO_STREAM", -1L, "args",
-                  FuncAPPEND_TO_STREAM,
-       "src/streams.c:APPEND_TO_STREAM" );
-
-    C_NEW_GVAR_FUNC( "TmpName", 0L, "",
-                  FuncTmpName,
-       "src/streams.c:TmpName" );
-
-    C_NEW_GVAR_FUNC( "TmpDirectory", 0L, "",
-                  FuncTmpDirectory,
-       "src/streams.c:TmpDirectory" );
-
-    C_NEW_GVAR_FUNC( "RemoveFile", 1L, "file",
-                  FuncRemoveFile,
-       "src/streams.c:RemoveFile" );
-
-
-    /* file access test functions                                          */
-    C_NEW_GVAR_FUNC( "LastSystemError", 0L, "", 
-                  FuncLastSystemError,
-        "src/sreams.c:LastSystemError" );
-
-    C_NEW_GVAR_FUNC( "IsExistingFile", 1L, "filename", 
-                  FuncIsExistingFile,
-        "src/sreams.c:IsExistingFile" );
-
-    C_NEW_GVAR_FUNC( "IsReadableFile", 1L, "filename",
-                  FuncIsReadableFile,
-        "src/sreams.c:IsReadableFile" );
-
-    C_NEW_GVAR_FUNC( "IsWritableFile", 1L, "filename",
-                  FuncIsWritableFile,
-        "src/sreams.c:IsWritableFile" );
-
-    C_NEW_GVAR_FUNC( "IsExecutableFile", 1L, "filename",
-                  FuncIsExecutableFile,
-        "src/sreams.c:IsExecutableFile" );
-
-    C_NEW_GVAR_FUNC( "IsDirectoryPath", 1L, "filename",
-                  FuncIsDirectoryPath,
-        "src/sreams.c:IsDirectoryPath" );
-
-
-    /* text stream functions                                               */
-    C_NEW_GVAR_FUNC( "CLOSE_FILE", 1L, "fid",
-                  FuncCLOSE_FILE,
-        "src/sreams.c:CLOSE_FILE" );
-
-    C_NEW_GVAR_FUNC( "INPUT_TEXT_FILE", 1L, "filename",
-                  FuncINPUT_TEXT_FILE,
-        "src/sreams.c:INPUT_TEXT_FILE" );
-
-    C_NEW_GVAR_FUNC( "OUTPUT_TEXT_FILE", 2L, "filename, append",
-                  FuncOUTPUT_TEXT_FILE,
-        "src/sreams.c:OUTPUT_TEXT_FILE" );
-
-    C_NEW_GVAR_FUNC( "IS_END_OF_FILE", 1L, "fid",
-                  FuncIS_END_OF_FILE,
-        "src/sreams.c:IS_END_OF_FILE" );
-
-    C_NEW_GVAR_FUNC( "POSITION_FILE", 1L, "fid",
-                  FuncPOSITION_FILE,
-        "src/sreams.c:POSITION_FILE" );
-
-    C_NEW_GVAR_FUNC( "READ_BYTE_FILE", 1L, "fid",
-                  FuncREAD_BYTE_FILE,
-        "src/sreams.c:READ_BYTE_FILE" );
-
-    C_NEW_GVAR_FUNC( "READ_LINE_FILE", 1L, "fid",
-                  FuncREAD_LINE_FILE,
-        "src/sreams.c:READ_LINE_FILE" );
-
-    C_NEW_GVAR_FUNC( "SEEK_POSITION_FILE", 2L, "fid, pos",
-                  FuncSEEK_POSITION_FILE,
-        "src/sreams.c:SEEK_POSITION_FILE" );
-
-    C_NEW_GVAR_FUNC( "WRITE_BYTE_FILE", 2L, "fid, byte",
-                  FuncWRITE_BYTE_FILE,
-        "src/sreams.c:WRITE_BYTE_FILE" );
-
-    /* execution functions                                                 */
-    C_NEW_GVAR_FUNC( "ExecuteProcess", 5L, "dir, prg, in, out, args",
-                  FuncExecuteProcess,
-        "src/sreams.c:ExecuteProcess" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckStreams()  . . . . . check the initialisation of the streams package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckStreams ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return PostRestore( module );
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoStreams() . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "streams" ,                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoStreams ( void )
+{
+    module.revision_c = Revision_streams_c;
+    module.revision_h = Revision_streams_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

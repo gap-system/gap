@@ -5,62 +5,68 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This declares the operations for domains.
 ##
-##  *Domain* is {\GAP}\'s  name  for structured sets.   The ring  of Gaussian
-##  integers  $Z[I]$  is  an  example  of  a  domain,  the group  $D_{12}$ of
-##  symmetries of a regular hexahedron is another.
+
+#1
+##  *Domain* is {\GAP}\pif s  name  for structured sets.   The ring  of
+##  Gaussian integers  $Z[I]$  is  an  example  of  a  domain,  the group
+##  $D_{12}$ of symmetries of a regular hexahedron is another.
 ##
-##  The {\GAP}  library predefines some   domains.  For example  the  ring of
-##  Gaussian integers is  predefined as 'GaussianIntegers' (see  "Gaussians")
-##  and the   field   of rationals   is predefined  as      'Rationals'  (see
-##  "Rationals").   Most domains  are  constructed  by  functions,  which are
-##  called  *domain   constructors*.   For  example  the    group $D_{12}$ is
-##  constructed by the construction 'Group( (1,2,3,4,5,6), (2,6)(3,5) )' (see
-##  "Group") and  the finite  field  with  16  elements   is constructed   by
-##  'GaloisField( 16 )' (see "GaloisField").
+##  The {\GAP}  library predefines some   domains.  For example  the  ring
+##  of Gaussian integers is  predefined as 'GaussianIntegers' (see
+##  "Gaussians") and the   field   of rationals   is predefined  as
+##  'Rationals'  (see "Rationals").   Most domains  are  constructed  by
+##  functions,  which are called  *domain   constructors*.   For  example
+##  the    group $D_{12}$ is constructed by the construction 'Group(
+##  (1,2,3,4,5,6), (2,6)(3,5) )' (see "Group") and  the finite  field  with
+##  16  elements   is constructed   by 'GaloisField( 16 )' (see
+##  "GaloisField").
 ##
-##  The first place where  you need domains  in {\GAP}  is  the  obvious one.
-##  Sometimes you simply want to talk about a  domain.  For  example  if  you
-##  want to compute the size of the group $D_{12}$, you had better be able to
-##  represent this group in a way that the 'Size' function can understand.
+##  The first place where  you need domains  in {\GAP}  is  the  obvious
+##  one.  Sometimes you simply want to talk about a  domain.  For  example
+##  if  you want to compute the size of the group $D_{12}$, you had better
+##  be able to represent this group in a way that the 'Size' function can
+##  understand.
 ##
-##  The second place where you need domains in {\GAP} is when  you want to be
-##  able to specify that an operation or computation takes place in a certain
-##  domain.   For  example suppose  you want   to factor 10    in the ring of
-##  Gaussian integers.  Saying 'Factors( 10 )' will not do, because this will
-##  return the factorization in  the ring of integers '[  2, 5 ]'.  To  allow
-##  operations and  computations to happen in   a specific domain, 'Factors',
-##  and many other functions  as well, accept  this domain as optional  first
-##  argument.   Thus 'Factors( GaussianIntegers,   10 )'  yields  the desired
-##  result '[ 1+E(4), 1-E(4), 2+E(4), 2-E(4) ]'.
+##  The second place where you need domains in {\GAP} is when  you want to
+##  be able to specify that an operation or computation takes place in a
+##  certain domain.   For  example suppose  you want   to factor 10    in
+##  the ring of Gaussian integers.  Saying 'Factors( 10 )' will not do,
+##  because this will return the factorization in  the ring of integers '[
+##  2, 5 ]'.  To  allow operations and  computations to happen in   a
+##  specific domain, 'Factors', and many other functions  as well, accept
+##  this domain as optional  first argument.   Thus 'Factors(
+##  GaussianIntegers,   10 )'  yields  the desired result '[ 1+E(4), 1-E(4),
+##  2+E(4), 2-E(4) ]'.
 ##
-##  Each domain  in  {\GAP} belongs to one  or  more *categories*, which  are
-##  simply sets of objects.  The categories in  which a domain lies determine
-##  the operations that  are  applicable to   this  domain and  its elements.
-##  Examples  of domains are *rings*  (the  functions applicable to a  domain
-##  that  is a  ring  are  described in "Rings"),  *fields*   (see "Fields"),
-##  *groups*  (see "Groups"), *vector spaces*  (see "Vector  Spaces"), and of
-##  course  the category *domains* that   contains all domains (the functions
-##  applicable to any domain are described in this chapter).
+##  Each domain  in  {\GAP} belongs to one  or  more *categories*, which
+##  are simply sets of objects.  The categories in  which a domain lies
+##  determine the operations that  are  applicable to   this  domain and
+##  its elements.  Examples  of domains are *rings*  (the  functions
+##  applicable to a  domain that  is a  ring  are  described in "Rings"),
+##  *fields*   (see "Fields"), *groups*  (see "Groups"), *vector spaces*
+##  (see "Vector  Spaces"), and of course  the category *domains* that
+##  contains all domains (the functions applicable to any domain are
+##  described in this chapter).
 ##
 ##  Equality and comparison of domains is defined as follows.
 ##  
 ##  Two domains are considered equal if and only if the sets of their
 ##  elements as computed by 'AsListSorted' (see "AsListSorted") are equal.
 ##  Thus, in general '=' behaves as if each domain operand were replaced by
-##  its set of elements.
-##  Except  that '=' will also sometimes, but not always, work for infinite
-##  domains, for which it is of course difficult to compute the set of
-##  elements.
-##  Note that this implies that domains with different algebraic structure
-##  may well be equal.
-##  As a special case of this, either operand may also be a proper set, i.e.,
-##  a sorted list without holes or duplicates (see "AsListSorted"), and the
-##  result will be 'true' if and only if the set of elements of the domain
-##  is, as a set, equal to the set.
+##  its set of elements.  Except  that '=' will also sometimes, but not
+##  always, work for infinite domains, for which it is of course difficult
+##  to compute the set of elements.  Note that this implies that domains
+##  with different algebraic structure may well be equal.  As a special case
+##  of this, either operand may also be a proper set, i.e., a sorted list
+##  without holes or duplicates (see "AsListSorted"), and the result will be
+##  'true' if and only if the set of elements of the domain is, as a set,
+##  equal to the set.
 ##  
+
 #T  *No* general ordering of domains via '\<' is defined in {\GAP}-4.
 #T  (But note that the set theoretical subset relation is available via
 #T  'IsSubset'.)
@@ -83,9 +89,7 @@ Revision.domain_gd :=
 ##
 ##  'IsDomain' returns 'true' if <D> is a domain and 'false' otherwise.
 ##
-IsDomain :=
-    NewCategory( "IsDomain",
-        IsCollection );
+DeclareCategory( "IsDomain", IsCollection );
 
 
 #############################################################################
@@ -101,9 +105,7 @@ HasGeneratorsOfDomain := HasAsList;
 ##
 #O  DomainByGenerators(<F>,<generators>)
 ##
-DomainByGenerators := NewOperation( "DomainByGenerators",
-    [ IsFamily, IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+DeclareOperation( "DomainByGenerators", [ IsFamily, IsCollection ] );
 
 
 #############################################################################
@@ -134,7 +136,7 @@ Domain := DomainByGenerators;
 ##  otherwise it cannot be guaranteed that all finalization methods are
 ##  executed.
 ##
-FinalizeDomain := NewOperation( "FinalizeDomain", [ IsDomain ] );
+DeclareOperation( "FinalizeDomain", [ IsDomain ] );
 
 
 #############################################################################
@@ -152,17 +154,18 @@ FinalizeDomain := NewOperation( "FinalizeDomain", [ IsDomain ] );
 ##  After this, <P> is the value of 'Parent( <D> )',
 ##  and 'HasParent( <D> )' is 'true'.
 ##
-ParentAttr := NewAttribute( "Parent", IsDomain );
-SetParent  := Setter( ParentAttr );
-HasParent  := Tester( ParentAttr );
+DeclareAttribute( "Parent", IsDomain );
 
-Parent := function( S )
+BindGlobal( "ParentAttr", Parent );
+MakeReadWriteGlobal( "Parent" );
+UnbindGlobal( "Parent" );
+BindGlobal( "Parent", function( S )
     if HasParent( S ) then
         return ParentAttr( S );
     else
         return S;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -172,7 +175,7 @@ end;
 ##  Enumerators of domains that are not represented as plain lists may be in
 ##  this category.
 ##
-IsDomainEnumerator := NewCategory( "IsDomainEnumerator",
+DeclareCategory( "IsDomainEnumerator",
     IsEnumerator and IsDuplicateFreeList );
 
 
@@ -183,10 +186,7 @@ IsDomainEnumerator := NewCategory( "IsDomainEnumerator",
 ##  An enumerator of a domain can delegate the task to compute its length to
 ##  'Size' for the underlying domain.
 ##
-UnderlyingCollection := NewAttribute( "UnderlyingCollection",
-    IsDomainEnumerator );
-SetUnderlyingCollection := Setter( UnderlyingCollection );
-HasUnderlyingCollection := Tester( UnderlyingCollection );
+DeclareAttribute( "UnderlyingCollection", IsDomainEnumerator );
 
 
 OperationSubdomainRequiredFilters := function( opr )
@@ -238,18 +238,24 @@ end;
 #F  InParentFOA( <name>, <super>, <sub>, <AorP> ) . dispatcher, oper and attr
 ##
 InParentFOA := function( name, superreq, subreq, NewAorP )
-    local str, oper, attr, func;
+    local str, nname, oper, attr, func;
 
     # Create the two-argument operation.
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "Op" );
     oper:= NewOperation( str, [ superreq, subreq ] );
+    BIND_GLOBAL( str, oper );
 
     # Create the attribute or property
     # (for cases where the first argument is the parent of the second).
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "InParent" );
     attr:= NewAorP( str, subreq );
+    BIND_GLOBAL( str, attr );
+    nname:= "Set"; APPEND_LIST_INTR( nname, str );
+    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, str );
+    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
 
     # Create the function that mainly calls the operation,
     # but also checks resp. sets the attribute if the first argument
@@ -261,7 +267,7 @@ InParentFOA := function( name, superreq, subreq, NewAorP )
         fi;
         super := arg[1];
         sub   := arg[2];
-        if HasParent( sub ) and IsIdentical( super, Parent( sub ) ) then
+        if HasParent( sub ) and IsIdenticalObj( super, Parent( sub ) ) then
           if Tester( attr )( sub ) then
             value:= attr( sub );
           else
@@ -273,6 +279,7 @@ InParentFOA := function( name, superreq, subreq, NewAorP )
         fi;
         return value;
     end;
+    BIND_GLOBAL( name, func );
 
     # Install the method for the attribute that calls the operation.
     str:= "method that calls the two-argument operation ";
@@ -280,9 +287,6 @@ InParentFOA := function( name, superreq, subreq, NewAorP )
     APPEND_LIST_INTR( str, "Op" );
     InstallMethod( attr, str, true, [ subreq ], 0,
             D -> oper( Parent( D ), D ) );
- 
-    # Return the triple.
-    return [ func, oper, attr ];
 end;
 
 

@@ -395,8 +395,8 @@ MBT("Co2",2,
 [(10,11)(12,13)],
 [1,1,1,0,0,1,1,0,0,Unknown(3),Unknown(4),Unknown(5),1],
 rec(version:=3,
-date:="14.03.94",
-warning:="#I  irreducible of degree 156538 not yet proved"));
+date:="14.03.94"
+));
 
 MBT("Co2",23,
 TEXT1,

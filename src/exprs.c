@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the expressions package.
 **
@@ -13,7 +14,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_exprs_c =
+const char * Revision_exprs_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -44,8 +45,6 @@ SYS_CONST char * Revision_exprs_c =
 #define INCLUDE_DECLARATION_PART
 #include        "exprs.h"               /* expressions                     */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 
 /****************************************************************************
@@ -1102,24 +1101,29 @@ Obj             EvalListTildeExpr (
 **  '[ [1], ~[1] ]'  requires that the value of  one subexpression is entered
 **  into the list value before the next subexpression is evaluated.
 */
-Obj             ListExpr1 (
+Obj ListExpr1 (
     Expr                expr )
 {
     Obj                 list;           /* list value, result              */
     Int                 len;            /* logical length of the list      */
 
     /* get the length of the list                                          */
-    len = SIZE_EXPR( expr ) / sizeof(Expr);
+    len = SIZE_EXPR(expr) / sizeof(Expr);
 
     /* allocate the list value                                             */
-    list = NEW_PLIST( T_PLIST, len );
+    if ( 0 == len ) {
+        list = NEW_PLIST( T_PLIST_EMPTY, len );
+    }
+    else {
+        list = NEW_PLIST( T_PLIST, len );
+    }
     SET_LEN_PLIST( list, len );
 
     /* return the list                                                     */
     return list;
 }
 
-void            ListExpr2 (
+void ListExpr2 (
     Obj                 list,
     Expr                expr )
 {
@@ -1128,7 +1132,7 @@ void            ListExpr2 (
     Int                 i;              /* loop variable                   */
 
     /* get the length of the list                                          */
-    len = SIZE_EXPR( expr ) / sizeof(Expr);
+    len = SIZE_EXPR(expr) / sizeof(Expr);
 
     /* handle the subexpressions                                           */
     for ( i = 1; i <= len; i++ ) {
@@ -1836,9 +1840,10 @@ void            PrintRecExpr (
 /****************************************************************************
 **
 
-*F  SetupExprs()  . . . . . . . . . . . .  initialize the expressions package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupExprs ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                type;           /* loop variable                   */
 
@@ -1945,30 +1950,37 @@ void SetupExprs ( void )
     PrintExprFuncs[ T_STRING_EXPR    ] = PrintStringExpr;
     PrintExprFuncs[ T_REC_EXPR       ] = PrintRecExpr;
     PrintExprFuncs[ T_REC_TILD_EXPR  ] = PrintRecExpr;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitExprs() . . . . . . . . . . . . .  initialize the expressions package
-**
-**  'InitExprs' initializes the expressions package.
+*F  InitInfoExprs() . . . . . . . . . . . . . . . . . table of init functions
 */
-void InitExprs ( void )
-{
-}
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "exprs",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
 
-
-/****************************************************************************
-**
-*F  CheckExprs()  . . . . check the initialisation of the expressions package
-**
-**  'InitExprs' initializes the expressions package.
-*/
-void CheckExprs ( void )
+StructInitInfo * InitInfoExprs ( void )
 {
-    SET_REVISION( "exprs_c",    Revision_exprs_c );
-    SET_REVISION( "exprs_h",    Revision_exprs_h );
+    module.revision_c = Revision_exprs_c;
+    module.revision_h = Revision_exprs_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

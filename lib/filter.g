@@ -7,6 +7,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file deals with filters.
 ##
@@ -101,6 +102,15 @@ NewFilter := function( arg )
     return filter;
    
 end;
+
+
+#############################################################################
+##
+#F  DeclareFilter( <name> [,<rank>] )
+##
+BIND_GLOBAL( "DeclareFilter", function( arg )
+    BIND_GLOBAL( arg[1], CALL_FUNC_LIST( NewFilter, arg ) );
+end );
 
 
 #############################################################################

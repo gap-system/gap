@@ -5,6 +5,7 @@
 #H  @(#)$Id$ 
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains methods for orbits on subgroups
 ##
@@ -15,15 +16,15 @@ Revision.oprtglat_gi:=
 ##
 #M  GroupOnSubgroupsOrbit(G,H) . . . . . . . . . . . . . . orbit of H under G
 ##
-GroupOnSubgroupsOrbit := function(G,H)
+InstallGlobalFunction( GroupOnSubgroupsOrbit, function(G,H)
   return Enumerator(ConjugacyClassSubgroups(G,H));
-end;
+end );
 
 #############################################################################
 ##
 #M  MinimumGroupOnSubgroupsOrbit(G,H [,N_G(H)]) minimum of orbit of H under G
 ##
-MinimumGroupOnSubgroupsOrbit := function(arg)
+InstallGlobalFunction( MinimumGroupOnSubgroupsOrbit, function(arg)
 local s,i,m,Hc;
   s:=ConjugacyClassSubgroups(arg[1],arg[2]);
   if Length(arg)>2 then
@@ -38,7 +39,7 @@ local s,i,m,Hc;
     fi;
   od;
   return m;
-end;
+end );
 
 InstallMethod(SubgroupsOrbitsAndNormalizers,"generic on list",true,
   [IsGroup,IsList,IsBool],0,

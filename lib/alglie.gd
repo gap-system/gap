@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for Lie algebras.
@@ -13,6 +14,11 @@
 Revision.alglie_gd :=
     "@(#)$Id$";
 
+#1 
+## A Lie algebra is an algebra such that the multiplication satisfies
+## $xx=0$ and $x(yz)+y(zx)+z(xy)=0$ for all $x,y,z$. Usually the product of
+## two elements $x,y$ of a Lie algebra is denoted by $[x,y]$, but in 
+## {\GAP} the product of elements is made by the usual `*'.
 
 #############################################################################
 ##
@@ -21,81 +27,63 @@ Revision.alglie_gd :=
 ##  is 'true' if <L> is a Lie algebra such that each product of elements in
 ##  <L> is zero, and 'false' otherwise.
 ##
-IsAbelianLieAlgebra := NewProperty( "IsAbelianLieAlgebra",
+DeclareProperty( "IsAbelianLieAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetIsAbelianLieAlgebra := Setter( IsAbelianLieAlgebra );
-HasIsAbelianLieAlgebra := Tester( IsAbelianLieAlgebra );
 
 
 #############################################################################
 ##
 #P  IsNilpotentAlgebra( <L> )
 ##
-##  A Lie algebra <L> is defined to be {\em nilpotent} when its lower central
+##  A Lie algebra <L> is defined to be {\it nilpotent} when its lower central
 ##  series reaches the trivial subalgebra.
 ##
-IsNilpotentAlgebra := NewProperty( "IsNilpotentAlgebra",
+DeclareProperty( "IsNilpotentAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetIsNilpotentAlgebra := Setter( IsNilpotentAlgebra );
-HasIsNilpotentAlgebra := Tester( IsNilpotentAlgebra );
 
 
 #############################################################################
 ##
 #P  IsRestrictedLieAlgebra( <L> )
 ##
-##  A Lie algebra <L> is defined to be {\em restricted} when it is defined
+##  A Lie algebra <L> is defined to be {\it restricted} when it is defined
 ##  over a field of characteristic $p \neq 0$, and for every basis element
 ##  $x$ of <L> there exists $y\in <L>$ such that $(ad x)^p = ad y$
 ##  (see Jacobson, p. 190).
 ##
-IsRestrictedLieAlgebra := NewProperty( "IsRestrictedLieAlgebra",
+DeclareProperty( "IsRestrictedLieAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetIsRestrictedLieAlgebra := Setter( IsRestrictedLieAlgebra );
-HasIsRestrictedLieAlgebra := Tester( IsRestrictedLieAlgebra );
 
 
 #############################################################################
 ##
 #P  IsSolvableAlgebra( <L> )
 ##
-##  A Lie algebra <L> is defined to be {\em solvable} when its derived
+##  A Lie algebra <L> is defined to be {\it solvable} when its derived
 ##  series reaches the trivial subalgebra.
 ##
-IsSolvableAlgebra := NewProperty( "IsSolvableAlgebra",
+DeclareProperty( "IsSolvableAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetIsSolvableAlgebra := Setter( IsSolvableAlgebra );
-HasIsSolvableAlgebra := Tester( IsSolvableAlgebra );
-
-
-#############################################################################
-##
-#A  DerivedSeriesOfAlgebra( <L> )
-##
-DerivedSeriesOfAlgebra:= NewAttribute( "DerivedSeriesOfAlgebra",
-    IsAlgebra and IsLieAlgebra );
-SetDerivedSeriesOfAlgebra:= Setter( DerivedSeriesOfAlgebra );
-HasDerivedSeriesOfAlgebra:= Tester( DerivedSeriesOfAlgebra );
 
 
 #############################################################################
 ##
 #A  LowerCentralSeriesOfAlgebra( <L> )
 ##
-LowerCentralSeriesOfAlgebra:= NewAttribute( "LowerCentralSeriesOfAlgebra",
+##  is the lower central series of <L>.  
+##
+DeclareAttribute( "LowerCentralSeriesOfAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetLowerCentralSeriesOfAlgebra:= Setter( LowerCentralSeriesOfAlgebra );
-HasLowerCentralSeriesOfAlgebra:= Tester( LowerCentralSeriesOfAlgebra );
 
 
 #############################################################################
 ##
 #A  UpperCentralSeriesOfAlgebra( <L> )
 ##
-UpperCentralSeriesOfAlgebra:= NewAttribute( "UpperCentralSeriesOfAlgebra",
+##  is the upper central series of <L>.
+##
+DeclareAttribute( "UpperCentralSeriesOfAlgebra",
     IsAlgebra and IsLieAlgebra );
-SetUpperCentralSeriesOfAlgebra:= Setter( UpperCentralSeriesOfAlgebra );
-HasUpperCentralSeriesOfAlgebra:= Tester( UpperCentralSeriesOfAlgebra );
 
 
 #############################################################################
@@ -106,13 +94,9 @@ HasUpperCentralSeriesOfAlgebra:= Tester( UpperCentralSeriesOfAlgebra );
 ##  mapping, that is, the set $\{ a \in L; a x = 0 \forall x \in L \}$.
 ##
 ##  In characteristic 2 this may differ from the usual centre.
-##  (Every Lie algebra in characteristic 2 is abelian.)
 ##
-##  Additionally we know that the centre of a Lie algebra is an ideal.
 ##
-LieCentre:= NewAttribute( "LieCentre", IsAlgebra and IsLieAlgebra );
-SetLieCentre:= Setter( LieCentre );
-HasLieCentre:= Tester( LieCentre );
+DeclareAttribute( "LieCentre", IsAlgebra and IsLieAlgebra );
 
 
 #############################################################################
@@ -133,9 +117,7 @@ HasLieCentre:= Tester( LieCentre );
 ##  The set of derivations of $A$ forms a Lie algebra with product given by
 ##  $(D_1 D_2)(a) = D_1(D_2(a)) - D_2(D_1(a))$.
 ##
-Derivations := NewAttribute( "Derivations", IsBasis );
-SetDerivations := Setter( Derivations );
-HasDerivations := Tester( Derivations );
+DeclareAttribute( "Derivations", IsBasis );
 
 
 #############################################################################
@@ -147,9 +129,7 @@ HasDerivations := Tester( Derivations );
 ##  We have $\kappa_{i,j} = \sum_{k,l=1}^n c_{jkl} c_{ilk}$
 ##  where $c_{ijk}$ are the structure constants w.r.t. <B>.
 ##
-KillingMatrix := NewAttribute( "KillingMatrix", IsBasis );
-SetKillingMatrix := Setter( KillingMatrix );
-HasKillingMatrix := Tester( KillingMatrix );
+DeclareAttribute( "KillingMatrix", IsBasis );
 
 
 #############################################################################
@@ -159,10 +139,8 @@ HasKillingMatrix := Tester( KillingMatrix );
 ##  A Cartan subalgebra of a Lie algebra <L> is defined as a nilpotent
 ##  subalgebra of <L> equal to its own Lie normalizer in <L>.
 ##
-CartanSubalgebra := NewAttribute( "CartanSubalgebra",
+DeclareAttribute( "CartanSubalgebra",
     IsAlgebra and IsLieAlgebra );
-SetCartanSubalgebra := Setter( CartanSubalgebra );
-HasCartanSubalgebra := Tester( CartanSubalgebra );
 
 
 #############################################################################
@@ -182,9 +160,7 @@ HasCartanSubalgebra := Tester( CartanSubalgebra );
 ##  $L$ under this map (if $L$ is restricted).
 ##  Otherwise 'fail' is returned.
 ##
-PthPowerImages := NewAttribute( "PthPowerImages", IsBasis );
-SetPthPowerImages := Setter( PthPowerImages );
-HasPthPowerImages := Tester( PthPowerImages );
+DeclareAttribute( "PthPowerImages", IsBasis );
 
 
 #############################################################################
@@ -198,58 +174,39 @@ HasPthPowerImages := Tester( PthPowerImages );
 ##  In this case this function returns a non nilpotent element of <L>,
 ##  otherwise 'fail' is returned.
 ##
-NonNilpotentElement := NewAttribute( "NonNilpotentElement",
+DeclareAttribute( "NonNilpotentElement",
     IsAlgebra and IsLieAlgebra );
-SetNonNilpotentElement := Setter( NonNilpotentElement );
-HasNonNilpotentElement := Tester( NonNilpotentElement );
 
 
 #############################################################################
 ##
-#A  AdjointAssociativeAlgebra( <L> )
+#A  AdjointAssociativeAlgebra( <L>, <K> )
 ##
-##  is the associative matrix algebra generated by the adjoint matrices of
-##  the Lie algebra <L>.
+##  is the associative matrix algebra (with 1) generated by the 
+##  matrices of the adjoint representation of the subalgebra <K> on the Lie 
+##  algebra <L>.
 ##
-AdjointAssociativeAlgebra := NewAttribute( "AdjointAssociativeAlgebra",
-    IsAlgebra and IsLieAlgebra );
-SetAdjointAssociativeAlgebra := Setter( AdjointAssociativeAlgebra );
-HasAdjointAssociativeAlgebra := Tester( AdjointAssociativeAlgebra );
-
+DeclareOperation( "AdjointAssociativeAlgebra",
+    [IsAlgebra and IsLieAlgebra, IsAlgebra and IsLieAlgebra] );
 
 #############################################################################
 ##
 #A  NilRadical( <L> )
 ##
-##  This function calculates the nil radical $NR( <L> )$ of the Lie algebra
+##  This function calculates the nil radical of the Lie algebra
 ##  <L>.
 ##
-NilRadical := NewAttribute( "NilRadical", IsAlgebra and IsLieAlgebra );
-SetNilRadical := Setter( NilRadical );
-HasNilRadical := Tester( NilRadical );
+DeclareAttribute( "NilRadical", IsAlgebra and IsLieAlgebra );
 
 
 #############################################################################
 ##
 #A  SolvableRadical( <L> )
 ##
-SolvableRadical := NewAttribute( "SolvableRadical",
+##  Returns the solvable radical of the Lie algebra <L>.
+##
+DeclareAttribute( "SolvableRadical",
     IsAlgebra and IsLieAlgebra );
-SetSolvableRadical := Setter( SolvableRadical );
-HasSolvableRadical := Tester( SolvableRadical );
-
-
-#############################################################################
-##
-#A  LeviDecomposition( <L> )
-##
-##  A Levi subalgebra of the Lie algebra <L> is a semisimple subalgebra
-##  complementary to the solvable radical of <L>.
-##
-LeviDecomposition := NewAttribute( "LeviDecomposition",
-    IsAlgebra and IsLieAlgebra );
-SetLeviDecomposition := Setter( LeviDecomposition );
-HasLeviDecomposition := Tester( LeviDecomposition );
 
 
 #############################################################################
@@ -259,29 +216,21 @@ HasLeviDecomposition := Tester( LeviDecomposition );
 ##  This function calculates a list of ideals of the Lie algebra <L> such
 ##  that <L> is equal to their direct sum.
 ##
-DirectSumDecomposition := NewAttribute( "DirectSumDecomposition",
+DeclareAttribute( "DirectSumDecomposition",
     IsAlgebra and IsLieAlgebra );
-SetDirectSumDecomposition := Setter( DirectSumDecomposition );
-HasDirectSumDecomposition := Tester( DirectSumDecomposition );
 
 
 #############################################################################
 ##
 #A  SemiSimpleType( <L> )
 ##
-##  A simple Lie algebra is either an element of the "great" classes
-##  of simple Lie algebas ($A_n$, $B_n$, $C_n$, $D_n$),
-##  or an exceptional algebra ($E_6$, $E_7$, $E_8$, $F_4$, $G_2$).
-##
 ##  Let <L> be a semisimple Lie algebra, i.e., a direct sum of simple
-##  Lie algebras.
+##  Lie algebras. Then 'SemiSimpleType' returns the type of <L>, i.e.,
+##  a string containg the types of the simple summands of <L>.
 ##
-##  'SemiSimpleType' returns ...
 ##
-SemiSimpleType := NewAttribute( "SemiSimpleType",
+DeclareAttribute( "SemiSimpleType",
     IsAlgebra and IsLieAlgebra );
-SetSemiSimpleType := Setter( SemiSimpleType );
-HasSemiSimpleType := Tester( SemiSimpleType );
 
 
 #############################################################################
@@ -292,7 +241,7 @@ HasSemiSimpleType := Tester( SemiSimpleType );
 ##  $\{ a \in L; a \* s = 0 \forall s \in S \}$.
 ##  Here <S> may be a subspace or a subalgebra of <L>.
 ##
-LieCentralizer:= NewOperation( "LieCentralizer",
+DeclareOperation( "LieCentralizer",
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ] );
 
 
@@ -303,10 +252,8 @@ LieCentralizer:= NewOperation( "LieCentralizer",
 ##  is the Lie centralizer of the vector space <S> in its parent Lie algebra
 ##  $L$.
 ##
-LieCentralizerInParent:= NewAttribute( "LieCentralizerInParent",
+DeclareAttribute( "LieCentralizerInParent",
     IsAlgebra and IsLieAlgebra );
-SetLieCentralizerInParent:= Setter( LieCentralizerInParent );
-HasLieCentralizerInParent:= Tester( LieCentralizerInParent );
 
 
 #############################################################################
@@ -316,7 +263,7 @@ HasLieCentralizerInParent:= Tester( LieCentralizerInParent );
 ##  is the normalizer of the subspace <U> in the Lie algebra <L>,
 ##  that is, the set $N_L(U) = \{ x \in L; [x,U] \subset U \}$.
 ##
-LieNormalizer:= NewOperation( "LieNormalizer",
+DeclareOperation( "LieNormalizer",
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ] );
 
 
@@ -327,10 +274,8 @@ LieNormalizer:= NewOperation( "LieNormalizer",
 ##  is the Lie normalizer of the vector space <S> in its parent Lie algebra
 ##  $L$.
 ##
-LieNormalizerInParent:= NewAttribute( "LieNormalizerInParent",
+DeclareAttribute( "LieNormalizerInParent",
     IsAlgebra and IsLieAlgebra );
-SetLieNormalizerInParent:= Setter( LieNormalizerInParent );
-HasLieNormalizerInParent:= Tester( LieNormalizerInParent );
 
 
 #############################################################################
@@ -340,7 +285,7 @@ HasLieNormalizerInParent:= Tester( LieNormalizerInParent );
 ##  is the matrix of the adjoint representation of the element <x> w.r.t.
 ##  the basis <B>.
 ##
-AdjointMatrix := NewOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
+DeclareOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
 
 
 #############################################################################
@@ -354,7 +299,7 @@ AdjointMatrix := NewOperation( "AdjointMatrix", [ IsBasis, IsRingElement ] );
 ##  $U^{\perp}$ is a subspace of <L>, and if <U> is an ideal of <L> then
 ##  $U^{\perp}$ is a subalgebra of <L>.
 ##
-KappaPerp := NewOperation( "KappaPerp",
+DeclareOperation( "KappaPerp",
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ] );
 
 
@@ -362,9 +307,9 @@ KappaPerp := NewOperation( "KappaPerp",
 ##
 #O  IsNilpotentElement( <L>, <x> )
 ##
-##  <x> is nilpotent in <L> if its adjoint matrix $A$ is a nilpotent matrix.
+##  <x> is nilpotent in <L> if its adjoint matrix is a nilpotent matrix.
 ##
-IsNilpotentElement := NewOperation( "IsNilpotentElement",
+DeclareOperation( "IsNilpotentElement",
     [ IsAlgebra and IsLieAlgebra, IsRingElement ] );
 
 
@@ -391,11 +336,9 @@ IsNilpotentElement := NewOperation( "IsNilpotentElement",
 ##  'PowerS' returns the list $[ s_1, \ldots, s_{p-1} ]$ of all s-functions
 ##  as computed by 'PowerSi'.
 ##
-PowerSi := NewOperationArgs( "PowerSi" );
+DeclareGlobalFunction( "PowerSi" );
 
-PowerS := NewAttribute( "PowerS", IsAlgebra and IsLieAlgebra );
-SetPowerS := Setter( PowerS );
-HasPowerS := Tester( PowerS );
+DeclareAttribute( "PowerS", IsAlgebra and IsLieAlgebra );
 
 
 #############################################################################
@@ -406,7 +349,7 @@ HasPowerS := Tester( PowerS );
 ##  This function calculates for an element <x> of $L$ the image $x^{[p]}$
 ##  under the $p$-th power map.
 ##
-PthPowerImage := NewOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
+DeclareOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
 
 
 #############################################################################
@@ -419,7 +362,7 @@ PthPowerImage := NewOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
 ##  If such an algebra exists then it is returned,
 ##  otherwise 'fail' is returned.
 ##
-FindSl2 := NewOperationArgs( "FindSl2" );
+DeclareGlobalFunction( "FindSl2" );
 
 
 ##############################################################################
@@ -429,32 +372,37 @@ FindSl2 := NewOperationArgs( "FindSl2" );
 ##  'RootSystem' calculates the root system of the semisimple Lie algebra
 ##  <L>.
 ##  The output is a record with the following components.
-##
-##  'roots' \: \\
-##       the roots as elements of <L>
-##  'rootvecs' \: \\
-##       the roots as vectors
-##  'fundroots' \: \\
-##       set of fundamental roots
-##  'cartanmat' \: \\
-##       the Cartan matrix of the root system
-##
+##  `roots' (the roots as elements of <L>),
+##  `rootvecs' (the roots as vectors), 
+##  `fundroots' (set of fundamental roots), 
+##  `cartanmat' (the Cartan matrix of the root system)
 ##  The roots are sorted according to increasing height.
 ##
-RootSystem := NewAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
+DeclareAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
 
 
 ##############################################################################
 ##
 #F  SimpleLieAlgebra( <type>, <n>, <F> )
 ##
+##
 ##  This function constructs the simple Lie algebra of type <type> and
 ##  of rank <n> over the field <F>.
 ##
-##  <type> must be one of "A", "B", "C", "D", "E", "F", "G",
-##  "H", "K", "S", "W".
+##  <type> must be one of A, B, C, D, E, F, G,
+##  H, K, S, W. For the types A to G, <n> must be a positive integer.
+##  The last four types only exist over fields of characteristic $p>0$.
+##  If the type is H, then <n> must be a list of positive integers of 
+##  even length.
+##  If the type is K, then <n> must be a list of positive integers of odd 
+##  length.
+##  For the other types, S and W, <n> must be a list of positive integers
+##  of any length. Sometimes the Lie algebra returned by this function
+##  is not simple. Examples are the Lie algebras of type $A_n$ over a field
+##  of charcteristic $p>0$ where $p$ divides $n+1$, and the Lie algebras
+##  of type $K_n$ where $n$ is a list of length 1.
 ##
-SimpleLieAlgebra := NewOperationArgs( "SimpleLieAlgebra" );
+DeclareGlobalFunction( "SimpleLieAlgebra" );
 
 
 #############################################################################
@@ -478,7 +426,7 @@ SimpleLieAlgebra := NewOperationArgs( "SimpleLieAlgebra" );
 ##  normalized, and the monomials are ordered lexicographically.
 ##  This list is the return value.
 ##
-DescriptionOfNormalizedUEAElement := NewOperationArgs(
+DeclareGlobalFunction(
     "DescriptionOfNormalizedUEAElement" );
 
 
@@ -486,11 +434,11 @@ DescriptionOfNormalizedUEAElement := NewOperationArgs(
 ##
 #A  UniversalEnvelopingAlgebra( <L> ) . . . . . . . . . . . for a Lie algebra
 ##
-UniversalEnvelopingAlgebra := NewAttribute(
+##  Returns the universal enveloping algebra of the Lie algebra <L>.
+##
+DeclareAttribute(
     "UniversalEnvelopingAlgebra",
     IsLieAlgebra );
-SetUniversalEnvelopingAlgebra := Setter( UniversalEnvelopingAlgebra );
-HasUniversalEnvelopingAlgebra := Tester( UniversalEnvelopingAlgebra );
 
 
 #############################################################################
@@ -499,12 +447,33 @@ HasUniversalEnvelopingAlgebra := Tester( UniversalEnvelopingAlgebra );
 #F  FreeLieAlgebra( <R>, <rank>, <name> )
 #F  FreeLieAlgebra( <R>, <name1>, <name2>, ... )
 ##
-FreeLieAlgebra := NewOperationArgs( "FreeLieAlgebra" );
+##  Returns the free Lie algebra of rank <rank> over the ring <R>. 
+##  'FreeLieAlgebra( <R>, <name1>, <name2>,...)' returns the free Lie algebra
+##  over <R> with generators named <name1>, <name2>, and so on.
+##  
+DeclareGlobalFunction( "FreeLieAlgebra" );
+
+
+#############################################################################
+##
+#C  IsFamilyElementOfFreeLieAlgebra( <Fam> )
+##
+##  We need this for the normalization method, which takes a family as first
+##  argument.
+##
+DeclareCategory( "IsFamilyElementOfFreeLieAlgebra",
+    IsElementOfMagmaRingModuloRelationsFamily );
 
 
 #############################################################################
 ##
 #E  alglie.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+
+
+
+
 
 
 

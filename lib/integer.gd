@@ -8,43 +8,58 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for integers.
 ##
 Revision.integer_gd :=
     "@(#)$Id$";
 
+#############################################################################
+##
+##  defined in the kernel, just for the manual
+#F  IsInt(<obj>)
+##
+##  tests whether `obj' is an integer
+
+#  DeclareGlobalFunction("IsInt");
+
+
 
 #############################################################################
 ##
+#C  IsIntegers(<obj>)
+##  is the defining category for `Integers'
+DeclareCategory( "IsIntegers", IsEuclideanRing and IsFLMLOR );
 
-#C  IsIntegers  . . . . . . . . . . . . . . . defining category of 'Integers'
+#############################################################################
+##
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
-##
-IsIntegers := NewCategory( "IsIntegers",
-    IsEuclideanRing and IsFLMLOR );
-Integers := "2b defined";
+##  is the ring of integers.
+DeclareGlobalVariable( "Integers", "ring of integers" );
 
 
 #############################################################################
 ##
+#C  IsGaussianIntegers  . . . . . . . defining category of `GaussianIntegers'
+##  is the defining category for `GaussianIntegers'
+DeclareCategory( "IsGaussianIntegers", IsEuclideanRing and IsFLMLOR );
 
-#C  IsGaussianIntegers  . . . . . . . defining category of 'GaussianIntegers'
+#############################################################################
+##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
-##
-IsGaussianIntegers := NewCategory( "IsGaussianIntegers",
-    IsEuclideanRing and IsFLMLOR );
-GaussianIntegers := "2b defined";
+##  is the ring of Gaussian integers. This is the subring $Z[i]$ of the
+##  complex numbers, where $i$ is a root of -1.
+DeclareGlobalVariable( "GaussianIntegers", "ring of Gaussian integers" );
 
 
 #############################################################################
 ##
-
 #V  Primes  . . . . . . . . . . . . . . . . . . . . . .  list of small primes
 ##
-##  'Primes' is a strictly sorted list of the 168 primes less than 1000.
+##  `Primes' is a strictly sorted list of the 168 primes less than 1000.
 ##
-##  This is used in 'IsPrimeInt' and 'FactorsInt' to cast out small primes
+##  This is used in `IsPrimeInt' and `FactorsInt' to cast out small primes
 ##  quickly.
 ##
 Primes := Immutable(
@@ -64,12 +79,12 @@ Primes := Immutable(
 ##
 #V  Primes2 . . . . . . . . . . . . . . . . . . . . . . additional prime list
 ##
-##  'Primes2' contains those primes found by 'IsPrimeInt' that are not in
-##  'Primes'.  'Primes2' is kept sorted, but may contain holes.
+##  `Primes2' contains those primes found by `IsPrimeInt' that are not in
+##  `Primes'.  `Primes2' is kept sorted, but may contain holes.
 ##
-##  'IsPrimeInt' and 'FactorsInt' use this list to  cast out already found
+##  `IsPrimeInt' and `FactorsInt' use this list to  cast out already found
 ##  primes quickly.
-##  If 'IsPrimeInt' is called only for random integers this list would be
+##  If `IsPrimeInt' is called only for random integers this list would be
 ##  quite useless.
 ##  However, users do not behave randomly.
 ##  Instead, it is not uncommon to factor the same integer twice.
@@ -83,7 +98,9 @@ Primes := Immutable(
 ##  $7^n-1$ with $n < 91$, $11^n-1$ with $n < 79$, and $13^n-1$ with $n < 37$
 ##  that are larger than $10^7$.
 ##
-Primes2 := [
+DeclareGlobalVariable( "Primes2",
+    "sorted list of large primes" );
+InstallFlushableValue( Primes2, [
 10047871, 10567201, 10746341, 12112549, 12128131, 12207031, 12323587,
 12553493, 12865927, 13097927, 13264529, 13473433, 13821503, 13960201,
 14092193, 14597959, 15216601, 15790321, 16018507, 18837001, 20381027,
@@ -248,15 +265,14 @@ Primes2 := [
 26828803997912886929710867041891989490486893845712448833,
 153159805660301568024613754993807288151489686913246436306439,
 1051153199500053598403188407217590190707671147285551702341089650185945215953
-];
+] );
 
 
 #############################################################################
 ##
-
 #F  AbsInt( <n> ) . . . . . . . . . . . . . . .  absolute value of an integer
 ##
-##  'AbsInt' returns the absolute value of the integer <n>, i.e., <n> if <n>
+##  `AbsInt' returns the absolute value of the integer <n>, i.e., <n> if <n>
 ##  is positive, -<n> if <n> is negative and 0 if <n> is 0 (see "SignInt").
 ##
 AbsInt :=function ( n )
@@ -264,102 +280,135 @@ AbsInt :=function ( n )
     else            return -n;
     fi;
 end;
-#T attribute 'Abs' ?
+#T attribute `Abs' ?
 #T should be internal method!
 
 
 #############################################################################
 ##
+##  defined in the kernel, just for the manual
+#F  QuoInt(<n>,<m>)
+##
+##  returns the integral part of the quotient <n>/<m>.
+
+#  DeclareGlobalFunction("QuoInt");
+
+#############################################################################
+##
 #F  BestQuoInt( <n>, <m> )
 ##
-##  'BestQuoInt'  returns the best quotient <q>  of the integers <n> and <m>.
-##  This is the quotient such that '<n>-<q>\*<m>' has minimal absolute value.
+##  `BestQuoInt'  returns the best quotient <q>  of the integers <n> and <m>.
+##  This is the quotient such that `<n>-<q>\*<m>' has minimal absolute value.
 ##  If there are two quotients whose remainders have the same absolute value,
 ##  then the quotient with the smaller absolute value is choosen.
 ##
-BestQuoInt := NewOperationArgs( "BestQuoInt" );
+DeclareGlobalFunction( "BestQuoInt" );
 
 
 #############################################################################
 ##
 #F  ChineseRem( <moduli>, <residues> )  . . . . . . . . . . chinese remainder
 ##
-##  'ChineseRem' returns the combination   of   the  <residues>  modulo   the
-##  <moduli>, i.e., the  unique integer <c>  from '[0..Lcm(<moduli>)-1]' such
-##  that  '<c>  = <residues>[i]' modulo '<moduli>[i]'   for  all  <i>, if  it
-##  exists.  If no such combination exists 'ChineseRem' signals an error.
-##  
+##  `ChineseRem' returns the combination   of   the  <residues>  modulo   the
+##  <moduli>, i.e., the  unique integer <c>  from `[0..Lcm(<moduli>)-1]' such
+##  that  `<c>  = <residues>[i]' modulo `<moduli>[i]'   for  all  <i>, if  it
+##  exists.  If no such combination exists `ChineseRem' signals an error.
+##
 ##  Such a combination does exist if and only if
-##  '<residues>[<i>]=<residues>[<k>]'  mod 'Gcd(<moduli>[<i>],<moduli>[<k>])'
+##  `<residues>[<i>]=<residues>[<k>]'  mod `Gcd(<moduli>[<i>],<moduli>[<k>])'
 ##  for every pair <i>, <k>.  Note  that this implies that such a combination
 ##  exists if the  moduli  are pairwise relatively prime.  This is called the
 ##  Chinese remainder theorem.
-##  
-ChineseRem := NewOperationArgs( "ChineseRem" );
+##
+DeclareGlobalFunction( "ChineseRem" );
 
 
 #############################################################################
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-CoefficientsQadic := NewOperationArgs( "CoefficientsQadic" );
+##  returns the <q>-adic representation of the integer <i> as a list <l> of
+##  coefficients. $i=sum_{j=0} q^j\cdot l[j+1]$.
+##
+DeclareGlobalFunction( "CoefficientsQadic" );
 
+#############################################################################
+##
+#F  CoefficientsMultiadic( <ints>, <int> )
+##
+##  returns the multiadic expansion modulo the integers given in <ints>
+##  (ascending order).
+##  It returns a list of coefficients in *reverse* order than <ints>.
+##
+#T  The syntax is quite weird and should be adapted according to
+##  `CoefficientsQadic'.
+DeclareGlobalFunction( "CoefficientsMultiadic" );
 
 #############################################################################
 ##
 #F  DivisorsInt( <n> )  . . . . . . . . . . . . . . .  divisors of an integer
 ##
-##  'DivisorsInt' returns a list of all divisors  of  the  integer  <n>.  The
+##  `DivisorsInt' returns a list of all divisors  of  the  integer  <n>.  The
 ##  list is sorted, so that it starts with 1 and  ends  with <n>.  We  define
-##  that 'Divisors( -<n> ) = Divisors( <n> )'.
+##  that `Divisors( -<n> ) = Divisors( <n> )'.
 ##
-##  Since the  set of divisors of 0 is infinite calling 'DivisorsInt( 0 )'
+##  Since the  set of divisors of 0 is infinite calling `DivisorsInt( 0 )'
 ##  causes an error.
-##  
-##  'DivisorsInt' may call 'FactorsInt' (see "FactorsInt") to obtain the
+##
+##  `DivisorsInt' may call `FactorsInt' (see "FactorsInt") to obtain the
 ##  prime factors.
-##  'Sigma' (see "Sigma") computes the sum, 'Tau' (see "Tau") the number of
+##  `Sigma' (see "Sigma") computes the sum, `Tau' (see "Tau") the number of
 ##  positive divisors.
-##  
-DivisorsInt := NewOperationArgs( "DivisorsInt");
+##
+DeclareGlobalFunction( "DivisorsInt");
 
 
 #############################################################################
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
 ##
-##  'FactorsInt' returns a list of prime factors of the integer <n>.
+##  `FactorsInt' returns a list of prime factors of the integer <n>.
 ##
 ##  If the <i>th power of a prime divides <n> this prime appears <i> times.
 ##  The list is sorted, that is the smallest prime factors come first.
 ##  The first element has the same sign as <n>, the others are positive.
-##  For any integer <n> it holds that 'Product( FactorsInt( <n> ) ) = <n>'.
-##  
-##  Note that 'FactorsInt' uses a probable-primality test (see "IsPrimeInt").
-##  Thus 'FactorsInt' might return a list which contains composite integers.
-##  
-##  The time taken by   'FactorsInt'  is approximately  proportional to   the
+##  For any integer <n> it holds that `Product( FactorsInt( <n> ) ) = <n>'.
+##
+##  Note that `FactorsInt' uses a probable-primality test (see "IsPrimeInt").
+##  Thus `FactorsInt' might return a list which contains composite integers.
+##
+##  The time taken by   `FactorsInt'  is approximately  proportional to   the
 ##  square root of the second largest prime factor  of <n>, which is the last
-##  one that 'FactorsInt'  has to find,   since the largest  factor is simply
+##  one that `FactorsInt'  has to find,   since the largest  factor is simply
 ##  what remains when all others have been removed.  Thus the time is roughly
-##  bounded by  the fourth  root of <n>.   'FactorsInt' is guaranteed to find
+##  bounded by  the fourth  root of <n>.   `FactorsInt' is guaranteed to find
 ##  all factors   less than  $10^6$  and will find  most    factors less than
 ##  $10^{10}$.    If <n>    contains   multiple  factors   larger  than  that
-##  'FactorsInt' may not be able to factor <n> and will then signal an error.
-##  
-FactorsInt := NewOperationArgs( "FactorsInt" );
+##  `FactorsInt' may not be able to factor <n> and will then signal an error.
+##
+##  The general ring operation `Factors' will call `FactorsInt' for
+##  integers.
+##
+DeclareGlobalFunction( "FactorsInt" );
 
 
 #############################################################################
 ##
 #F  Gcdex( <m>, <n> ) . . . . . . . . . . greatest common divisor of integers
 ##
-Gcdex := NewOperationArgs( "Gcdex" );
+##  returns the extended gcd of <m> and <n>. This is a record with
+##  components `gcd' and `coeff1' to `coeff4', such that
+##  $`gcd'=`coeff1'\cdot m+`coeff2'\cdot n$ and
+##  $0=`coeff3'\cdot m+`coeff4'\cdot n$.
+##
+DeclareGlobalFunction( "Gcdex" );
 
 
 #############################################################################
 ##
 #F  IsEvenInt( <n> )  . . . . . . . . . . . . . . . . . . test if <n> is even
+##
+##  tests if the integer <n> is divisible by 2.
 ##
 IsEvenInt := function( n )
     return n mod 2 = 0;
@@ -370,6 +419,8 @@ end;
 ##
 #F  IsOddInt( <n> ) . . . . . . . . . . . . . . . . . . .  test if <n> is odd
 ##
+##  tests if the integer <n> is not divisible by 2.
+##
 IsOddInt := function( n )
     return n mod 2 = 1;
 end;
@@ -379,78 +430,84 @@ end;
 ##
 #F  IsPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . .  test for a prime
 ##
-##  'IsPrimeInt' returns 'false'  if it can  prove that <n>  is composite and
-##  'true' otherwise.
-##  By  convention 'IsPrimeInt(0) = IsPrimeInt(1) = false'
-##  and we define 'IsPrimeInt( -<n> ) = IsPrimeInt( <n> )'.
-##  
-##  'IsPrimeInt' will return  'true' for all   prime $n$.  'IsPrimeInt'  will
-##  return 'false' for all composite $n \< 10^{13}$ and for all composite $n$
+##  `IsPrimeInt' returns `false'  if it can  prove that <n>  is composite and
+##  `true' otherwise.
+##  By  convention `IsPrimeInt(0) = IsPrimeInt(1) = false'
+##  and we define `IsPrimeInt( -<n> ) = IsPrimeInt( <n> )'.
+##
+##  `IsPrimeInt' will return  `true' for all   prime $n$.  `IsPrimeInt'  will
+##  return `false' for all composite $n \< 10^{13}$ and for all composite $n$
 ##  that have   a factor  $p \<  1000$.   So for  integers $n    \< 10^{13}$,
-##  'IsPrimeInt' is  a    proper primality test.    It  is  conceivable  that
-##  'IsPrimeInt' may  return 'true' for some  composite $n > 10^{13}$, but no
-##  such $n$ is currently known.  So for integers $n > 10^{13}$, 'IsPrimeInt'
-##  is a  probable-primality test.  If composites  that fool  'IsPrimeInt' do
+##  `IsPrimeInt' is  a    proper primality test.    It  is  conceivable  that
+##  `IsPrimeInt' may  return `true' for some  composite $n > 10^{13}$, but no
+##  such $n$ is currently known.  So for integers $n > 10^{13}$, `IsPrimeInt'
+##  is a  probable-primality test.  If composites  that fool  `IsPrimeInt' do
 ##  exist,  they would be  extremly rare, and finding one  by  pure chance is
 ##  less likely than finding a bug in {\GAP}.
-##  
-##  'IsPrimeInt' is a deterministic algorithm, i.e., the computations involve
+##
+##  `IsPrimeInt' is a deterministic algorithm, i.e., the computations involve
 ##  no random numbers, and repeated calls will always return the same result.
-##  'IsPrimeInt' first   does trial divisions  by the  primes less than 1000.
+##  `IsPrimeInt' first   does trial divisions  by the  primes less than 1000.
 ##  Then it tests  that  $n$  is a   strong  pseudoprime w.r.t. the base   2.
 ##  Finally it  tests whether $n$ is  a Lucas pseudoprime w.r.t. the smallest
 ##  quadratic nonresidue of  $n$.  A better  description can be found in  the
-##  comment in the library file 'integer.gi'.
-##  
-##  The time taken by 'IsPrimeInt' is approximately proportional to the third
+##  comment in the library file `integer.gi'.
+##
+##  The time taken by `IsPrimeInt' is approximately proportional to the third
 ##  power  of  the number  of  digits of <n>.   Testing numbers  with several
 ##  hundreds digits is quite feasible.
-##  
-IsPrimeInt := NewOperationArgs( "IsPrimeInt" );
+
+##  The general ring operation `IsPrime' will call `IsPrimeInt' for
+##  integers.
+##
+UnbindGlobal( "IsPrimeInt" );
+DeclareGlobalFunction( "IsPrimeInt" );
 
 
 #############################################################################
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
 ##
-##  'IsPrimePowerInt' returns 'true' if the integer <n>  is a prime power and
-##  'false' otherwise.
+##  `IsPrimePowerInt' returns `true' if the integer <n>  is a prime power and
+##  `false' otherwise.
 ##
 ##  $n$ is a *prime power* if there exists a prime $p$ and a positive integer
 ##  $i$ such that $p^i = n$.  If $n$ is negative the  condition is that there
 ##  must exist a negative prime $p$ and an odd positive integer $i$ such that
 ##  $p^i = n$.  1 and -1 are not prime powers.
-##  
-##  Note    that 'IsPrimePowerInt'      uses       'SmallestRootInt'     (see
+##
+##  Note    that `IsPrimePowerInt'      uses       `SmallestRootInt'     (see
 ##  "SmallestRootInt") and a probable-primality test (see "IsPrimeInt").
-##  
-IsPrimePowerInt := NewOperationArgs( "IsPrimePowerInt" );
+##
+DeclareGlobalFunction( "IsPrimePowerInt" );
 
 
 #############################################################################
 ##
 #F  LcmInt( <m>, <n> )  . . . . . . . . . . least common multiple of integers
 ##
-LcmInt := NewOperationArgs( "LcmInt" );
+##  returns the Lcm of the integers <m> and <n>.
+##
+DeclareGlobalFunction( "LcmInt" );
 
 
 #############################################################################
 ##
 #F  LogInt( <n>, <base> ) . . . . . . . . . . . . . . logarithm of an integer
 ##
-##  'LogInt'   returns  the  integer part  of  the logarithm of  the positive
+##  `LogInt'   returns  the  integer part  of  the logarithm of  the positive
 ##  integer  <n> with  respect to   the positive integer   <base>, i.e.,  the
-##  largest  positive integer <exp> such  that $base^{exp}  \<= n$.  'LogInt'
+##  largest  positive integer <exp> such  that $base^{exp}  \<= n$.  `LogInt'
 ##  will signal an error if either <n> or <base> is not positive.
-##  
-LogInt := NewOperationArgs( "LogInt" );
+##
+DeclareGlobalFunction( "LogInt" );
 
 
 #############################################################################
 ##
 #F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
 ##
-##  'MoebiusMu'  computes the value  of  Moebius  inversion function for  the
+##  `MoebiusMu'  computes the value  of  Moebius  inversion function for  the
 ##  integer <n>.   This  is 0 for  integers  which are not squarefree,  i.e.,
 ##  which are divided by a square $r^2$.  Otherwise it is 1 if <n> has a even
 ##  number and -1 if <n> has an odd number of prime factors.
@@ -460,51 +517,56 @@ LogInt := NewOperationArgs( "LogInt" );
 ##  $g(n)=\sum_{d \mid n}{f(d)}$. Then $f(n)=\sum_{d \mid n}{\mu(d) g(n/d)}$.
 ##  As a special case we have  $\phi(n) = \sum_{d  \mid n}{\mu(d) n/d}$ since
 ##  $n = \sum_{d \mid n}{\phi(d)}$ (see "Phi").
-##  
-##  'MoebiusMu' usually   spends  all of   its    time   factoring <n>   (see
+##
+##  `MoebiusMu' usually   spends  all of   its    time   factoring <n>   (see
 ##  "FactorsInt").
 ##
-MoebiusMu := NewOperationArgs( "MoebiusMu" );
+DeclareGlobalFunction( "MoebiusMu" );
 
 
 #############################################################################
 ##
 #F  NextPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . next larger prime
 ##
-##  'NextPrimeInt' returns the smallest prime  which is strictly larger  than
+##  `NextPrimeInt' returns the smallest prime  which is strictly larger  than
 ##  the integer <n>.
 ##
-##  Note  that     'NextPrimeInt'  uses  a    probable-primality  test   (see
+##  Note  that     `NextPrimeInt'  uses  a    probable-primality  test   (see
 ##  "IsPrimeInt").
-##  
-NextPrimeInt := NewOperationArgs( "NextPrimeInt" );
+##
+DeclareGlobalFunction( "NextPrimeInt" );
 
 
 #############################################################################
 ##
 #F  PowerModInt(<r>,<e>,<m>)  . . . . . . power of one integer modulo another
 ##
-PowerModInt := NewOperationArgs( "PowerModInt" );
+##  returns $r^e\pmod{m}$ for integers <r>,<e> and <m> ($e\ge 0$).
+##
+DeclareGlobalFunction( "PowerModInt" );
 
 
 #############################################################################
 ##
 #F  PrevPrimeInt( <n> ) . . . . . . . . . . . . . . .  previous smaller prime
 ##
-##  'PrevPrimeInt' returns the largest prime  which is  strictly smaller than
+##  `PrevPrimeInt' returns the largest prime  which is  strictly smaller than
 ##  the integer <n>.
-##  
-##  Note  that    'PrevPrimeInt'   uses   a  probable-primality    test  (see
+##
+##  Note  that    `PrevPrimeInt'   uses   a  probable-primality    test  (see
 ##  "IsPrimeInt").
-##  
-PrevPrimeInt := NewOperationArgs( "PrevPrimeInt" );
+##
+DeclareGlobalFunction( "PrevPrimeInt" );
 
 
 #############################################################################
 ##
-#F  PrimePowerInt( <n> )  . . . . . . . . . . . . . . . . prime powers of <n>
+#F  PrimePowersInt( <n> ) . . . . . . . . . . . . . . . . prime powers of <n>
 ##
-PrimePowerInt := NewOperationArgs( "PrimePowerInt" );
+##  returns the prime factorization of the integer <n> as a list
+##  $[p_1,e_1,\ldots,p_n,e_n]$ with $n=\prod{i=1}^n p_i^{e_i}$.
+##
+DeclareGlobalFunction( "PrimePowersInt" );
 
 
 #############################################################################
@@ -512,26 +574,26 @@ PrimePowerInt := NewOperationArgs( "PrimePowerInt" );
 #F  RootInt( <n> )  . . . . . . . . . . . . . . . . . . .  root of an integer
 #F  RootInt( <n>, <k> )
 ##
-##  'RootInt' returns the integer part of the <k>th root  of the integer <n>.
+##  `RootInt' returns the integer part of the <k>th root  of the integer <n>.
 ##  If the optional integer argument <k> is not given it defaults to 2, i.e.,
-##  'RootInt' returns the integer part of the square root in this case.
-##  
-##  If  <n> is positive  'RootInt' returns  the  largest positive integer $r$
-##  such that $r^k \<=  n$.  If <n>  is negative and  <k>  is  odd  'RootInt'
-##  returns '-RootInt( -<n>,  <k> )'.  If  <n> is negative   and <k> is  even
-##  'RootInt' will cause an error.  'RootInt' will also cause an error if <k>
+##  `RootInt' returns the integer part of the square root in this case.
+##
+##  If  <n> is positive  `RootInt' returns  the  largest positive integer $r$
+##  such that $r^k \<=  n$.  If <n>  is negative and  <k>  is  odd  `RootInt'
+##  returns `-RootInt( -<n>,  <k> )'.  If  <n> is negative   and <k> is  even
+##  `RootInt' will cause an error.  `RootInt' will also cause an error if <k>
 ##  is 0 or negative.
 ##
-RootInt := NewOperationArgs( "RootInt" );
+DeclareGlobalFunction( "RootInt" );
 
 
 #############################################################################
 ##
 #F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
 ##
-##  'Sigma' returns the sum of the positive divisors of the integer <n>.
+##  `Sigma' returns the sum of the positive divisors of the integer <n>.
 ##
-##  'Sigma' is a multiplicative arithmetic function, i.e., if $n$ and $m$ are
+##  `Sigma' is a multiplicative arithmetic function, i.e., if $n$ and $m$ are
 ##  relative prime we have $\sigma(n m) = \sigma(n) \sigma(m)$.
 ##
 ##  Together with the formula $\sigma(p^e) = (p^{e+1}-1) / (p-1)$ this allows
@@ -545,17 +607,17 @@ RootInt := NewOperationArgs( "RootInt" );
 ##  23209,  44497, 86243, 110503, 132049,  216091, 756839, and 859433.  It is
 ##  not known whether odd  perfect integers  exist, however \cite{BC89}  show
 ##  that any such integer must have at least 300 decimal digits.
-##  
-##  'Sigma' usually spends most of its time factoring <n> (see "FactorsInt").
-##  
-Sigma := NewOperationArgs( "Sigma" );
+##
+##  `Sigma' usually spends most of its time factoring <n> (see "FactorsInt").
+##
+DeclareGlobalFunction( "Sigma" );
 
 
 #############################################################################
 ##
 #F  SignInt( <n> )  . . . . . . . . . . . . . . . . . . .  sign of an integer
 ##
-##  'SignInt' returns the sign of the integer <n>, i.e., 1 if <n> is
+##  `SignInt' returns the sign of the integer <n>, i.e., 1 if <n> is
 ##  positive, -1 if <n> is negative and 0 if <n> is 0 (see "AbsInt").
 ##
 SignInt := function ( n )
@@ -567,7 +629,7 @@ SignInt := function ( n )
         return -1;
     fi;
 end;
-#T attribute 'Sign' (also for e.g. permutations)?
+#T attribute `Sign' (also for e.g. permutations)?
 #T should be internal method!
 
 
@@ -575,40 +637,42 @@ end;
 ##
 #F  SmallestRootInt( <n> )  . . . . . . . . . . . smallest root of an integer
 ##
-##  'SmallestRootInt' returns the smallest root of the integer <n>.
-##  
+##  `SmallestRootInt' returns the smallest root of the integer <n>.
+##
 ##  The  smallest  root of an  integer $n$  is  the  integer $r$  of smallest
 ##  absolute  value for which  a  positive integer $k$ exists such  that $n =
 ##  r^k$.
-##  
-SmallestRootInt := NewOperationArgs( "SmallestRootInt" );
+##
+DeclareGlobalFunction( "SmallestRootInt" );
 
 
 #############################################################################
 ##
 #F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
 ##
-##  'Tau' returns the number of the positive divisors of the integer <n>.
+##  `Tau' returns the number of the positive divisors of the integer <n>.
 ##
-##  'Tau' is a multiplicative arithmetic function, i.e., if $n$ and  $m$  are
+##  `Tau' is a multiplicative arithmetic function, i.e., if $n$ and  $m$  are
 ##  relative prime we have $\tau(n m) = \tau(n) \tau(m)$.
 ##  Together with the formula $\tau(p^e) = e+1$ this allows us to compute
 ##  $\tau(n)$.
-##  'Tau' usually spends most of its time factoring <n> (see "FactorsInt").
+##  `Tau' usually spends most of its time factoring <n> (see "FactorsInt").
 ##
-Tau := NewOperationArgs( "Tau" );
+DeclareGlobalFunction( "Tau" );
 
 
 #############################################################################
 ##
 #F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
 ##
-PrintFactorsInt := NewOperationArgs( "PrintFactorsInt" );
+##  Prints the prime factorization of the integer <n> in human-readable
+##  form.
+##
+DeclareGlobalFunction( "PrintFactorsInt" );
 
 
 #############################################################################
 ##
-
 #E  integer.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

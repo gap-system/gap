@@ -5,7 +5,9 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  School of Mathematical and Computational Sciences,
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 *Y                        University of St Andrews, Scotland
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions that deal with weak pointer objects
 **  A weak pointer object looks like a plain list, except that its entries
@@ -14,7 +16,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_weakptr_c =
+const char * Revision_weakptr_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -33,7 +35,6 @@ SYS_CONST char * Revision_weakptr_c =
 #include        "lists.h"               /* generic lists                   */
 #include        "plist.h"               /* plain lists                     */
 
-#include        "gap.h"                 /* error handling, initialisation  */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "saveload.h"            /* saving and loading              */
 #include        "opers.h"               /* generic operations              */
@@ -343,6 +344,8 @@ Obj TypeWPObj( Obj wp )
 **
 *F  FuncIsWPObj( <self>, <wp>) . . . . . . . Handler for GAP function IsWPObj
 */
+static Obj IsWPObjFilt;
+
 Obj FuncIsWPObj( Obj self, Obj wp)
 {
   return (TNUM_OBJ(wp) == T_WPOBJ) ? True : False;
@@ -517,7 +520,6 @@ void LoadWPObj( Obj wpobj )
 {
   UInt len, i;
   Obj *ptr;
-  Obj x;
   ptr = ADDR_OBJ(wpobj);
   len =   LoadUInt();
   STORE_LEN_WPOBJ(wpobj, len);
@@ -538,84 +540,128 @@ void LoadWPObj( Obj wpobj )
 /****************************************************************************
 **
 
-*F  SetupWeakPtr( )  . . . . . . . . . .  initialize the weak pointer package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupWeakPtr ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IsWPObj", "obj", &IsWPObjFilt,
+      FuncIsWPObj, "src/weakptr.c:IsWPObj" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "WeakPointerObj", 1, "list",
+      FuncWeakPointerObj, "src/weakptr.c:WeakPointerObj" },
+
+    { "LengthWPObj", 1, "wp",
+      FuncLengthWPObj, "src/weakptr.c:LengthWPObj" },
+
+    { "SetElmWPObj", 3, "wp, pos, val",
+      FuncSetElmWPObj, "src/weakptr.c:SetElmWPObj" },
+
+    { "IsBoundElmWPObj", 2, "wp, pos",
+      FuncIsBoundElmWPObj, "src/weakptr.c:IsBoundElmWPObj" },
+
+    { "UnbindElmWPObj", 2, "wp, pos",
+      FuncUnbindElmWPObj, "src/weakptr.c:UnbindElmWPObj" },
+
+    { "ElmWPObj", 2, "wp, pos",
+      FuncElmWPObj, "src/weakptr.c:ElmWPObj" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking and sweeping methods                            */
-    InfoBags[          T_WPOBJ         ].name = "object (weakptr)";
-    InitMarkFuncBags ( T_WPOBJ          , MarkWeakPointerObj  );
-    InitSweepFuncBags( T_WPOBJ          , SweepWeakPointerObj  );
-    InfoBags[          T_WPOBJ +COPYING].name = "object (weakptr, copied)";
-    InitMarkFuncBags ( T_WPOBJ +COPYING , MarkWeakPointerObj  );
-    InitSweepFuncBags( T_WPOBJ+COPYING  , SweepWeakPointerObj  );
+    InfoBags[ T_WPOBJ          ].name = "object (weakptr)";
+    InfoBags[ T_WPOBJ +COPYING ].name = "object (weakptr, copied)";
 
+    InitMarkFuncBags ( T_WPOBJ,          MarkWeakPointerObj   );
+    InitSweepFuncBags( T_WPOBJ,          SweepWeakPointerObj  );
+    InitMarkFuncBags ( T_WPOBJ +COPYING, MarkWeakPointerObj   );
+    InitSweepFuncBags( T_WPOBJ +COPYING, SweepWeakPointerObj  );
+
+    /* typing method                                                       */
+    TypeObjFuncs[ T_WPOBJ ] = TypeWPObj;
+    ImportGVarFromLibrary( "TYPE_WPOBJ", &TYPE_WPOBJ );
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* saving function                                                     */
     SaveObjFuncs[ T_WPOBJ ] = SaveWPObj;
     LoadObjFuncs[ T_WPOBJ ] = LoadWPObj;
     
-
     /* copying functions                                                   */
     CopyObjFuncs[  T_WPOBJ           ] = CopyObjWPObj;
     CopyObjFuncs[  T_WPOBJ + COPYING ] = CopyObjWPObjCopy;
     CleanObjFuncs[ T_WPOBJ           ] = CleanObjWPObj;
     CleanObjFuncs[ T_WPOBJ + COPYING ] = CleanObjWPObjCopy;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitWeakPtr( ) . . . . . . . . . . .  initialize the weak pointer package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Obj IsWPObjFilt;
-
-void InitWeakPtr ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* typing method                                                       */
-    TypeObjFuncs[ T_WPOBJ ] = TypeWPObj;
-    ImportGVarFromLibrary( "TYPE_WPOBJ", &TYPE_WPOBJ );
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-
-    /* install all the GAP functions                                       */
-    C_NEW_GVAR_FUNC( "WeakPointerObj", 1L, "list",
-                  FuncWeakPointerObj,
-       "src/weakptr.c:WeakPointerObj" );
-
-    C_NEW_GVAR_FUNC( "LengthWPObj", 1L, "wp",
-                  FuncLengthWPObj,
-       "src/weakptr.c:LengthWPObj" );
-
-    C_NEW_GVAR_FUNC( "SetElmWPObj", 3L, "wp, pos, val",
-                  FuncSetElmWPObj,
-       "src/weakptr.c:SetElmWPObj" );
-
-    C_NEW_GVAR_FUNC( "IsBoundElmWPObj", 2L, "wp, pos",
-                  FuncIsBoundElmWPObj,
-       "src/weakptr.c:IsBoundElmWPObj" );
-
-    C_NEW_GVAR_FUNC( "UnbindElmWPObj", 2L, "wp, pos",
-                  FuncUnbindElmWPObj,
-       "src/weakptr.c:UnbindElmWPObj" );
-
-    C_NEW_GVAR_FUNC( "ElmWPObj", 2L, "wp, pos",
-                  FuncElmWPObj,
-       "src/weakptr.c:ElmWPObj" );
-
-
-    /* IsWPObj needs to be installed as a filter, rather than a function   */
-    C_NEW_GVAR_FILT( "IsWPObj", "obj", IsWPObjFilt,
-                  FuncIsWPObj,
-       "src/weakptr.c:IsWPObj");
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckWeakPtr( )  . . check the initialisation of the weak pointer package
+*F  InitInfoWeakPtr() . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckWeakPtr ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "weakptr",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoWeakPtr ( void )
 {
+    module.revision_c = Revision_weakptr_c;
+    module.revision_h = Revision_weakptr_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -5,13 +5,14 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for cosets of permutation groups
 ##
 Revision.csetperm_gi:=
   "@(#)$Id$";
 
-InstallMethod( AscendingChainOp, "PermGroup", IsIdentical,
+InstallMethod( AscendingChainOp, "PermGroup", IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,U)
 local np,a,b,c,s,i;

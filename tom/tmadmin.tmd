@@ -1,0 +1,152 @@
+#############################################################################
+##
+#W  tmadmin.tmd          GAP table of marks library           Thomas Merkwitz
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the declarations of all functions snd variables to
+##  handle the table of marks library
+##
+##
+Revision.tmadmin_tmd :=
+    "@(#)$Id$";
+
+#############################################################################
+##
+#V  LIBTOMKNOWN
+##
+##  is a record which controls the loading of library files.
+##  It has the following components:
+##
+##  'ACTUAL' 
+##   the name of the file to be read at the moment
+##   (is set by 'SetActualLibFileName')
+##
+##  'LOADSTATUS'
+##   a record whose components are names of files in the table library,
+##   with value a list whose first entry is one of '"loaded"', '"unloaded"',
+##   '"userloaded"' and whose second entry is an integer, which controls
+##   when the correpsonding tables of marks can be removed from $GAP$
+##   
+##   'MAX' 
+##   $GAP$ remembers maximal 'MAX' of the previously loaded library files.
+##   ( is set to 10 by default)
+##
+##   'UNLOAD'
+##   is it allowed to remove previously loaded library files.
+##   (set to "true" by default). 
+## 
+##   Additionally LIBTOMKNOWN has components which are names of files, that
+##   are already loaded. Here the data of the files is stored.
+##   
+LIBTOMKNOWN:=rec();
+LIBTOMKNOWN.LOADSTATUS:=rec();
+LIBTOMKNOWN.UNLOAD:=true;
+LIBTOMKNOWN.MAX:=10;
+#############################################################################
+##
+#F  TableOfMarksFromLibrary( <string> )
+##
+##  returns the table of marks with name <string>
+DeclareGlobalFunction("TableOfMarksFromLibrary");
+ 
+#############################################################################
+##
+#F  ConvertToLibTom( <record> )
+##
+##  'ConvertToLibraryTableOfMarks' converts a record with components from 
+##  'TableOfMarksComponents' into a library table of marks object with the
+##  corresponding attributes.
+DeclareGlobalFunction("ConvertToLibTom");
+
+#############################################################################
+##
+#F  SetActualLibFileName( <filename> )
+##
+##
+DeclareGlobalFunction("SetActualLibFileName");
+
+#############################################################################
+##
+#F  LIBTOM( <arg> )
+#F  AFLT( <source>, <destination>, <fusion> )
+#F  ACLT( <identifier>, <component>, <value> ) 
+##
+##  The library format of library table of marks is a call to the function
+##  'LIBTOM', with the arguments sorted as in 'TableOfMarksComponents'
+##
+##  Each fusion is added by 'AFLT', any other component of the table must be
+##  added individually via 'ACLT'
+##
+DeclareGlobalFunction("LIBTOM");
+DeclareGlobalFunction("ACLT");
+DeclareGlobalFunction("AFLT");
+
+#############################################################################
+##
+#F
+##  MakeLIBTOMLIST()
+##
+DeclareGlobalFunction("MakeLIBTOMLIST");
+
+#############################################################################
+##
+#F  AllLibTomNames()
+##
+##  all names of library tables.
+DeclareGlobalFunction("AllLibTomNames");
+
+#############################################################################
+##
+#M  NamesLibTom( <string> )
+#M  NamesLibTom( <tom> )
+##
+##  all names of the library table <tom> or of the library table with
+##  name <string>
+NamesLibTom:=NewOperation("NamesLibTom",[IsTableOfMarks and IsLibTomRep]);
+
+#############################################################################
+##
+#M  NotifiedFusionsOfLibTom( <tom> )
+#M  NotifiedFusionsOfLibTom( <string> )
+#M  FusionsOfLibTom( <tom> )
+#M  FusionsOfLibTom( <string> )
+##
+##  Are there any fusions from the library table of marks <tom> or  the
+##  table of marks with name <string> into other liberary tables  marks?
+##  
+##  'NotifiedFusionsOfLibTom' returns the names of all such table of marks.
+##  'FusionsOfLibTom' returns the complete fusion maps. Therefore the 
+##  corresponding library file has to be loaded.
+NotifiedFusionsOfLibTom:=NewOperation("NotifiedFusionsOfLibTom",
+                      [IsTableOfMarks and IsLibTomRep]);
+FusionsOfLibTom:=NewOperation("FusionsOfLibTom",[IsTableOfMarks and IsLibTomRep]);
+
+#############################################################################
+##
+#M  NotifiedFusionsToLibTom( <tom> )
+#M  NotifiedFusionsToLibTom( <string> )
+#M  FusionsToLibTom( <tom> )
+#M  FusionsToLibTom( <string> )
+##
+##  Are there any fusions from other library table of marks to <tom> or the
+##  table of marks with name <string>.
+##
+##  'NofifiedFusionsToLibTom' returns the names of all such table of marks.
+##  'FusionsToLibTom' returns the complete fusion maps. Therefore the 
+##  the correponding library files have to be loaded.
+
+NotifiedFusionsToLibTom:=NewOperation("NotifiedFusionsToLibTom",
+                       [IsTableOfMarks and IsLibTomRep]);
+
+FusionsToLibTom:=NewOperation("FusionsToLibTom",[IsTableOfMarks
+                               and IsLibTomRep]);
+
+#############################################################################
+
+#############################################################################
+##
+#E  tmadmin.tmd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

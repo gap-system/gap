@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations of the arithmetic operations, and the
 ##  declarations of the categories for elements that allow those operations.
@@ -27,19 +28,14 @@ Revision.arith_gd :=
 ##
 #C  IsExtAElement(<obj>)
 ##
-IsExtAElement :=
-    NewCategory( "IsExtAElement",
-        IsObject );
-IsExtAElementCollection :=
-    CategoryCollections( IsExtAElement );
-IsExtAElementCollColl :=
-    CategoryCollections( IsExtAElementCollection );
-IsExtAElementList :=
-    IsExtAElementCollection and IsList;
-IsExtAElementTable :=
-    IsExtAElementCollColl   and IsTable;
-InstallTrueMethod(
-    IsExtAElement,
+DeclareCategory( "IsExtAElement", IsObject );
+DeclareCategoryCollections( "IsExtAElement" );
+DeclareCategoryCollections( "IsExtAElementCollection" );
+DeclareSynonym( "IsExtAElementList",
+    IsExtAElementCollection and IsList );
+DeclareSynonym( "IsExtAElementTable",
+    IsExtAElementCollColl   and IsTable );
+InstallTrueMethod( IsExtAElement,
     IsExtAElementCollection );
 
 
@@ -47,24 +43,17 @@ InstallTrueMethod(
 ##
 #C  IsAdditiveElement(<obj>)
 ##
-IsAdditiveElement :=
-    NewCategory( "IsAdditiveElement",
-        IsExtAElement );
-IsAdditiveElementCollection :=
-    CategoryCollections( IsAdditiveElement );
-IsAdditiveElementCollColl :=
-    CategoryCollections( IsAdditiveElementCollection );
-IsAdditiveElementCollCollColl :=
-    CategoryCollections( IsAdditiveElementCollColl );
-IsAdditiveElementList :=
-    IsAdditiveElementCollection and IsList;
-IsAdditiveElementTable :=
-    IsAdditiveElementCollColl   and IsTable;
-InstallTrueMethod(
-    IsAdditiveElement,
+DeclareCategory( "IsAdditiveElement", IsExtAElement );
+DeclareCategoryCollections( "IsAdditiveElement" );
+DeclareCategoryCollections( "IsAdditiveElementCollection" );
+DeclareCategoryCollections( "IsAdditiveElementCollColl" );
+DeclareSynonym( "IsAdditiveElementList",
+    IsAdditiveElementCollection and IsList );
+DeclareSynonym( "IsAdditiveElementTable",
+    IsAdditiveElementCollColl   and IsTable );
+InstallTrueMethod( IsAdditiveElement,
     IsAdditiveElementList );
-InstallTrueMethod(
-    IsAdditiveElementList,
+InstallTrueMethod( IsAdditiveElementList,
     IsAdditiveElementTable );
 
 
@@ -72,19 +61,14 @@ InstallTrueMethod(
 ##
 #C  IsAdditiveElementWithZero(<obj>)
 ##
-IsAdditiveElementWithZero :=
-    NewCategory( "IsAdditiveElementWithZero",
-        IsAdditiveElement );
-IsAdditiveElementWithZeroCollection :=
-    CategoryCollections( IsAdditiveElementWithZero );
-IsAdditiveElementWithZeroCollColl :=
-    CategoryCollections( IsAdditiveElementWithZeroCollection );
-IsAdditiveElementWithZeroCollCollColl :=
-    CategoryCollections( IsAdditiveElementWithZeroCollColl );
-IsAdditiveElementWithZeroList :=
-    IsAdditiveElementWithZeroCollection and IsList;
-IsAdditiveElementWithZeroTable :=
-    IsAdditiveElementWithZeroCollColl   and IsTable;
+DeclareCategory( "IsAdditiveElementWithZero", IsAdditiveElement );
+DeclareCategoryCollections( "IsAdditiveElementWithZero" );
+DeclareCategoryCollections( "IsAdditiveElementWithZeroCollection" );
+DeclareCategoryCollections( "IsAdditiveElementWithZeroCollColl" );
+DeclareSynonym( "IsAdditiveElementWithZeroList",
+    IsAdditiveElementWithZeroCollection and IsList );
+DeclareSynonym( "IsAdditiveElementWithZeroTable",
+    IsAdditiveElementWithZeroCollColl   and IsTable );
 InstallTrueMethod(
     IsAdditiveElementWithZero,
     IsAdditiveElementWithZeroList );
@@ -97,19 +81,14 @@ InstallTrueMethod(
 ##
 #C  IsAdditiveElementWithInverse(<obj>)
 ##
-IsAdditiveElementWithInverse :=
-    NewCategory( "IsAdditiveElementWithInverse",
-        IsAdditiveElementWithZero );
-IsAdditiveElementWithInverseCollection :=
-    CategoryCollections( IsAdditiveElementWithInverse );
-IsAdditiveElementWithInverseCollColl :=
-    CategoryCollections( IsAdditiveElementWithInverseCollection );
-IsAdditiveElementWithInverseCollCollColl :=
-    CategoryCollections( IsAdditiveElementWithInverseCollColl );
-IsAdditiveElementWithInverseList :=
-    IsAdditiveElementWithInverseCollection and IsList;
-IsAdditiveElementWithInverseTable :=
-    IsAdditiveElementWithInverseCollColl   and IsTable;
+DeclareCategory( "IsAdditiveElementWithInverse", IsAdditiveElementWithZero );
+DeclareCategoryCollections( "IsAdditiveElementWithInverse" );
+DeclareCategoryCollections( "IsAdditiveElementWithInverseCollection" );
+DeclareCategoryCollections( "IsAdditiveElementWithInverseCollColl" );
+DeclareSynonym( "IsAdditiveElementWithInverseList",
+    IsAdditiveElementWithInverseCollection and IsList );
+DeclareSynonym( "IsAdditiveElementWithInverseTable",
+    IsAdditiveElementWithInverseCollColl   and IsTable );
 InstallTrueMethod(
     IsAdditiveElementWithInverse,
     IsAdditiveElementWithInverseList );
@@ -122,17 +101,13 @@ InstallTrueMethod(
 ##
 #C  IsExtLElement(<obj>)
 ##
-IsExtLElement :=
-    NewCategory( "IsExtLElement",
-        IsObject );
-IsExtLElementCollection :=
-    CategoryCollections( IsExtLElement );
-IsExtLElementCollColl :=
-    CategoryCollections( IsExtLElementCollection );
-IsExtLElementList :=
-    IsExtLElementCollection and IsList;
-IsExtLElementTable :=
-    IsExtLElementCollColl   and IsTable;
+DeclareCategory( "IsExtLElement", IsObject );
+DeclareCategoryCollections( "IsExtLElement" );
+DeclareCategoryCollections( "IsExtLElementCollection" );
+DeclareSynonym( "IsExtLElementList",
+    IsExtLElementCollection and IsList );
+DeclareSynonym( "IsExtLElementTable",
+    IsExtLElementCollColl   and IsTable );
 InstallTrueMethod(
     IsExtLElement,
     IsExtLElementCollection );
@@ -142,17 +117,13 @@ InstallTrueMethod(
 ##
 #C  IsExtRElement(<obj>)
 ##
-IsExtRElement :=
-    NewCategory( "IsExtRElement",
-        IsObject );
-IsExtRElementCollection :=
-    CategoryCollections( IsExtRElement );
-IsExtRElementCollColl :=
-    CategoryCollections( IsExtRElementCollection );
-IsExtRElementList :=
-    IsExtRElementCollection and IsList;
-IsExtRElementTable :=
-    IsExtRElementCollColl   and IsTable;
+DeclareCategory( "IsExtRElement", IsObject );
+DeclareCategoryCollections( "IsExtRElement" );
+DeclareCategoryCollections( "IsExtRElementCollection" );
+DeclareSynonym( "IsExtRElementList",
+    IsExtRElementCollection and IsList );
+DeclareSynonym( "IsExtRElementTable",
+    IsExtRElementCollColl   and IsTable );
 InstallTrueMethod(
     IsExtRElement,
     IsExtRElementCollection );
@@ -162,137 +133,156 @@ InstallTrueMethod(
 ##
 #C  IsMultiplicativeElement(<obj>)
 ##
-IsMultiplicativeElement :=
-    NewCategory( "IsMultiplicativeElement",
+DeclareCategory( "IsMultiplicativeElement",
         IsExtLElement and IsExtRElement );
-IsMultiplicativeElementCollection :=
-    CategoryCollections( IsMultiplicativeElement );
-IsMultiplicativeElementCollColl :=
-    CategoryCollections( IsMultiplicativeElementCollection );
-IsMultiplicativeElementCollCollColl :=
-    CategoryCollections( IsMultiplicativeElementCollColl );
-IsMultiplicativeElementList :=
-    IsMultiplicativeElementCollection and IsList;
-IsMultiplicativeElementTable :=
-    IsMultiplicativeElementCollColl   and IsTable;
+DeclareCategoryCollections( "IsMultiplicativeElement" );
+DeclareCategoryCollections( "IsMultiplicativeElementCollection" );
+DeclareCategoryCollections( "IsMultiplicativeElementCollColl" );
+DeclareSynonym( "IsMultiplicativeElementList",
+    IsMultiplicativeElementCollection and IsList );
+DeclareSynonym( "IsMultiplicativeElementTable",
+    IsMultiplicativeElementCollColl   and IsTable );
 
 
 #############################################################################
 ##
 #C  IsMultiplicativeElementWithOne(<obj>)
 ##
-IsMultiplicativeElementWithOne :=
-    NewCategory( "IsMultiplicativeElementWithOne",
+DeclareCategory( "IsMultiplicativeElementWithOne",
         IsMultiplicativeElement );
-IsMultiplicativeElementWithOneCollection :=
-    CategoryCollections( IsMultiplicativeElementWithOne );
-IsMultiplicativeElementWithOneCollColl :=
-    CategoryCollections( IsMultiplicativeElementWithOneCollection );
-IsMultiplicativeElementWithOneCollCollColl :=
-    CategoryCollections( IsMultiplicativeElementWithOneCollColl );
-IsMultiplicativeElementWithOneList :=
-    IsMultiplicativeElementWithOneCollection and IsList;
-IsMultiplicativeElementWithOneTable :=
-    IsMultiplicativeElementWithOneCollColl   and IsTable;
+DeclareCategoryCollections( "IsMultiplicativeElementWithOne" );
+DeclareCategoryCollections( "IsMultiplicativeElementWithOneCollection" );
+DeclareCategoryCollections( "IsMultiplicativeElementWithOneCollColl" );
+DeclareSynonym( "IsMultiplicativeElementWithOneList",
+    IsMultiplicativeElementWithOneCollection and IsList );
+DeclareSynonym( "IsMultiplicativeElementWithOneTable",
+    IsMultiplicativeElementWithOneCollColl   and IsTable );
 
 
 #############################################################################
 ##
 #C  IsMultiplicativeElementWithInverse(<obj>)
 ##
-IsMultiplicativeElementWithInverse :=
-    NewCategory( "IsMultiplicativeElementWithInverse",
+DeclareCategory( "IsMultiplicativeElementWithInverse",
         IsMultiplicativeElementWithOne );
-IsMultiplicativeElementWithInverseCollection :=
-    CategoryCollections( IsMultiplicativeElementWithInverse );
-IsMultiplicativeElementWithInverseCollColl :=
-    CategoryCollections( IsMultiplicativeElementWithInverseCollection );
-IsMultiplicativeElementWithInverseCollCollColl :=
-    CategoryCollections( IsMultiplicativeElementWithInverseCollColl );
-IsMultiplicativeElementWithInverseList :=
-    IsMultiplicativeElementWithInverseCollection and IsList;
-IsMultiplicativeElementWithInverseTable :=
-    IsMultiplicativeElementWithInverseCollColl   and IsTable;
+DeclareCategoryCollections( "IsMultiplicativeElementWithInverse" );
+DeclareCategoryCollections( "IsMultiplicativeElementWithInverseCollection" );
+DeclareCategoryCollections( "IsMultiplicativeElementWithInverseCollColl" );
+DeclareSynonym( "IsMultiplicativeElementWithInverseList",
+    IsMultiplicativeElementWithInverseCollection and IsList );
+DeclareSynonym( "IsMultiplicativeElementWithInverseTable",
+    IsMultiplicativeElementWithInverseCollColl   and IsTable );
 
 
 #############################################################################
 ##
 #C  IsVector(<obj>)
 ##
-IsVector :=
+##  A *vector* is an additive-element-with-inverse that can e multiplied from
+##  the left and right with other objects (not necessarily of the same type).
+##  Examples are cyclotomics, finite field elements,
+##  and of course row vectors (see below).
+##
+##  Note that not all lists of ring elements are regarded as vectors, for
+##  example lists of matrices are not vectors.
+##  This is because although the category `IsAdditiveElementWithInverse' is
+##  implied by the join of its collections category and `IsList', the family
+##  of each list entry may may not imply `IsAdditiveElementWithInverse' for
+##  all its elements.
+##
+DeclareSynonym( "IsVector",
         IsAdditiveElementWithInverse
     and IsExtLElement
-    and IsExtRElement;
-IsVectorCollection :=
+    and IsExtRElement );
+DeclareSynonym( "IsVectorCollection",
         IsAdditiveElementWithInverseCollection
     and IsExtLElementCollection
-    and IsExtRElementCollection;
-IsVectorCollColl :=
+    and IsExtRElementCollection );
+DeclareSynonym( "IsVectorCollColl",
         IsAdditiveElementWithInverseCollColl
     and IsExtLElementCollColl
-    and IsExtRElementCollColl;
-IsVectorList :=
+    and IsExtRElementCollColl );
+DeclareSynonym( "IsVectorList",
         IsAdditiveElementWithInverseList
     and IsExtLElementList
-    and IsExtRElementList;
-IsVectorTable :=
+    and IsExtRElementList );
+DeclareSynonym( "IsVectorTable",
         IsAdditiveElementWithInverseTable
     and IsExtLElementTable
-    and IsExtRElementTable;
+    and IsExtRElementTable );
+
+
+#############################################################################
+##
+#C  IsRowVector(<obj>)
+##
+##  Note that methods for row vectors must be installed with the requirement
+##  `IsRowVector', since `IsVector' may lead to a rank of the method below
+##  that of the default method for row vectors (see file `vecmat.gi').
+##
+##  Note that not all row vectors admit a scalar product via `\*';
+##  for example, matrices are row vectors but the matrix product is defined
+##  in a different way.
+##  For the installation of a scalar product of row vectors, the entries of
+##  the vector must be ring elements; note that the default method expects
+##  the row vectors to lie in `IsRingElementList', and this category may not
+##  be implied by `IsRingElement' for all entries of the row vector
+##  (see the comment for `IsVector').
+##
+DeclareSynonym( "IsRowVector", IsVector and IsHomogeneousList );
 
 
 #############################################################################
 ##
 #C  IsRingElement(<obj>)
 ##
-IsRingElement :=
+DeclareSynonym( "IsRingElement",
         IsAdditiveElementWithInverse
-    and IsMultiplicativeElement;
-IsRingElementCollection :=
+    and IsMultiplicativeElement );
+DeclareSynonym( "IsRingElementCollection",
         IsAdditiveElementWithInverseCollection
-    and IsMultiplicativeElementCollection;
-IsRingElementCollColl :=
+    and IsMultiplicativeElementCollection );
+DeclareSynonym( "IsRingElementCollColl",
         IsAdditiveElementWithInverseCollColl
-    and IsMultiplicativeElementCollColl;
-IsRingElementCollCollColl :=
+    and IsMultiplicativeElementCollColl );
+DeclareSynonym( "IsRingElementCollCollColl",
         IsAdditiveElementWithInverseCollCollColl
-    and IsMultiplicativeElementCollCollColl;
-IsRingElementList :=
+    and IsMultiplicativeElementCollCollColl );
+DeclareSynonym( "IsRingElementList",
         IsAdditiveElementWithInverseList
-    and IsMultiplicativeElementList;
-IsRingElementTable :=
+    and IsMultiplicativeElementList );
+DeclareSynonym( "IsRingElementTable",
         IsAdditiveElementWithInverseTable
-    and IsMultiplicativeElementTable;
+    and IsMultiplicativeElementTable );
 InstallTrueMethod(
     IsRingElement,
     IsRingElementTable );
 
-IsFamilyRingElements :=
-    CategoryFamily( IsRingElement );
+DeclareCategoryFamily( "IsRingElement" );
 
 
 #############################################################################
 ##
 #C  IsRingElementWithOne(<obj>)
 ##
-IsRingElementWithOne :=
+DeclareSynonym( "IsRingElementWithOne",
         IsAdditiveElementWithInverse
-    and IsMultiplicativeElementWithOne;
-IsRingElementWithOneCollection :=
+    and IsMultiplicativeElementWithOne );
+DeclareSynonym( "IsRingElementWithOneCollection",
         IsAdditiveElementWithInverseCollection
-    and IsMultiplicativeElementWithOneCollection;
-IsRingElementWithOneCollColl :=
+    and IsMultiplicativeElementWithOneCollection );
+DeclareSynonym( "IsRingElementWithOneCollColl",
         IsAdditiveElementWithInverseCollColl
-    and IsMultiplicativeElementWithOneCollColl;
-IsRingElementWithOneCollCollColl :=
+    and IsMultiplicativeElementWithOneCollColl );
+DeclareSynonym( "IsRingElementWithOneCollCollColl",
         IsAdditiveElementWithInverseCollCollColl
-    and IsMultiplicativeElementWithOneCollCollColl;
-IsRingElementWithOneList :=
+    and IsMultiplicativeElementWithOneCollCollColl );
+DeclareSynonym( "IsRingElementWithOneList",
         IsAdditiveElementWithInverseList
-    and IsMultiplicativeElementWithOneList;
-IsRingElementWithOneTable :=
+    and IsMultiplicativeElementWithOneList );
+DeclareSynonym( "IsRingElementWithOneTable",
         IsAdditiveElementWithInverseTable
-    and IsMultiplicativeElementWithOneTable;
+    and IsMultiplicativeElementWithOneTable );
 InstallTrueMethod(
     IsRingElementWithOne,
     IsRingElementWithOneTable );
@@ -302,24 +292,24 @@ InstallTrueMethod(
 ##
 #C  IsRingElementWithInverse(<obj>)
 ##
-IsRingElementWithInverse :=
+DeclareSynonym( "IsRingElementWithInverse",
         IsAdditiveElementWithInverse
-    and IsMultiplicativeElementWithInverse;
-IsRingElementWithInverseCollection :=
+    and IsMultiplicativeElementWithInverse );
+DeclareSynonym( "IsRingElementWithInverseCollection",
         IsAdditiveElementWithInverseCollection
-    and IsMultiplicativeElementWithInverseCollection;
-IsRingElementWithInverseCollColl :=
+    and IsMultiplicativeElementWithInverseCollection );
+DeclareSynonym( "IsRingElementWithInverseCollColl",
         IsAdditiveElementWithInverseCollColl
-    and IsMultiplicativeElementWithInverseCollColl;
-IsRingElementWithInverseCollCollColl :=
+    and IsMultiplicativeElementWithInverseCollColl );
+DeclareSynonym( "IsRingElementWithInverseCollCollColl",
         IsAdditiveElementWithInverseCollCollColl
-    and IsMultiplicativeElementWithInverseCollCollColl;
-IsRingElementWithInverseList :=
+    and IsMultiplicativeElementWithInverseCollCollColl );
+DeclareSynonym( "IsRingElementWithInverseList",
         IsAdditiveElementWithInverseList
-    and IsMultiplicativeElementWithInverseList;
-IsRingElementWithInverseTable :=
+    and IsMultiplicativeElementWithInverseList );
+DeclareSynonym( "IsRingElementWithInverseTable",
         IsAdditiveElementWithInverseTable
-    and IsMultiplicativeElementWithInverseTable;
+    and IsMultiplicativeElementWithInverseTable );
 InstallTrueMethod(
     IsRingElementWithInverse,
     IsRingElementWithInverseTable );
@@ -329,42 +319,89 @@ InstallTrueMethod(
 ##
 #C  IsScalar(<obj>)
 ##
-IsScalar           := IsRingElementWithInverse;
-IsScalarCollection := IsRingElementWithInverseCollection;
-IsScalarCollColl   := IsRingElementWithInverseCollColl;
-IsScalarList       := IsRingElementWithInverseList;
-IsScalarTable      := IsRingElementWithInverseTable;
-
-
-#############################################################################
-##
-#C  IsRowVector(<obj>)
-##
-IsRowVector := IsVector and IsHomogeneousList;
+DeclareSynonym( "IsScalar",           IsRingElementWithInverse );
+DeclareSynonym( "IsScalarCollection", IsRingElementWithInverseCollection );
+DeclareSynonym( "IsScalarCollColl",   IsRingElementWithInverseCollColl );
+DeclareSynonym( "IsScalarList",       IsRingElementWithInverseList );
+DeclareSynonym( "IsScalarTable",      IsRingElementWithInverseTable );
 
 
 #############################################################################
 ##
 #C  IsMatrix(<obj>)
 ##
-IsMatrix           := IsRingElementTable;
-IsMatrixCollection := CategoryCollections( IsMatrix );
+##  A *matrix* is a list of lists of equal length whose entries lie in a
+##  common ring.
+##
+##  Note that matrices may have different multiplications,
+##  besides the usual matrix product there is the Lie product.
+##  So there are categories such as `IsOrdinaryMatrix' and `IsLieMatrix'
+##  that describe the matrix product.
+##  One can form the product of two matrices only if they support the same
+##  multiplication.
+##
+##  In order to avoid that a matrix supports more than one multiplication,
+##  appropriate immediate methods are installed (see~`arith.gi').
+##
+DeclareSynonym( "IsMatrix", IsRingElementTable );
+DeclareCategoryCollections( "IsMatrix" );
+
+
+#############################################################################
+##
+#C  IsOrdinaryMatrix(<obj>)
+##
+##  An *ordinary matrix* is a matrix whose multiplication is the ordinary
+##  matrix multiplication.
+##
+##  Each matrix in internal representation is in the category
+##  `IsOrdinaryMatrix',
+##  and arithmetic operations with objects in `IsOrdinaryMatrix' produce
+##  again matrices in `IsOrdinaryMatrix'.
+##
+##  Note that we want that Lie matrices shall be matrices that behave in the
+##  same way as ordinary matrices, except that they have a different
+##  multiplication.
+##  So we must distinguish the different matrix multiplications,
+##  in order to be able to describe the applicability of multiplication,
+##  and also in order to form a matrix of the appropriate type as the
+##  sum, difference etc.~of two matrices which have the same multiplication.
+##
+DeclareCategory( "IsOrdinaryMatrix", IsMatrix );
+DeclareCategoryCollections( "IsOrdinaryMatrix" );
+
+InstallTrueMethod( IsOrdinaryMatrix, IsMatrix and IsInternalRep );
+
+
+#############################################################################
+##
+#C  IsLieMatrix( <mat> )
+##
+##  A *Lie matrix* is a matrix whose multiplication is given by the
+##  Lie bracket.
+##  (Note that a matrix with ordinary matrix multiplication is in the
+##  category `IsOrdinaryMatrix'.)
+##
+##  Each matrix created by `LieObject' is in the category `IsLieMatrix',
+##  and arithmetic operations with objects in `IsLieMatrix' produce
+##  again matrices in `IsLieMatrix'.
+##
+##  (We do not claim that every object in `IsLieMatrix' is also contained in
+##  `IsLieObject', since the former describes the containment in a certain
+##  family and the latter describes a certain matrix multiplication;
+##  probably this distinction is unnecessary.)
+##
+DeclareCategory( "IsLieMatrix", IsMatrix );
 
 
 #############################################################################
 ##
 #C  IsAssociativeElement(<obj>)
-#C                     category of elements belonging to associative families
+##                     category of elements belonging to associative families
 ##
-IsAssociativeElement :=
-    NewCategory( "IsAssociativeElement",
-        IsMultiplicativeElement );
-
-IsAssociativeElementCollection :=
-    CategoryCollections( IsAssociativeElement );
-
-IsAssociativeElementCollColl :=
-    CategoryCollections( IsAssociativeElementCollection );
+DeclareCategory( "IsAssociativeElement", IsMultiplicativeElement );
+DeclareCategoryCollections( "IsAssociativeElement" );
+DeclareCategoryCollections( "IsAssociativeElementCollection" );
 
 
 #############################################################################
@@ -381,85 +418,57 @@ InstallTrueMethod( IsAssociativeElement,
 #############################################################################
 ##
 #C  IsCommutativeElement(<obj>)
-#C                     category of elements belonging to commutative families
+##                     category of elements belonging to commutative families
 ##
-IsCommutativeElement :=
-    NewCategory( "IsCommutativeElement",
-        IsMultiplicativeElement );
-
-IsCommutativeElementCollection :=
-    CategoryCollections( IsCommutativeElement );
+DeclareCategory( "IsCommutativeElement", IsMultiplicativeElement );
+DeclareCategoryCollections( "IsCommutativeElement" );
 
 
 #############################################################################
 ##
 #C  IsFiniteOrderElement(<obj>)
-#C                      category of elements with finite multiplicative order
+##                      category of elements with finite multiplicative order
 ##
-IsFiniteOrderElement :=
-    NewCategory( "IsFiniteOrderElement",
+DeclareCategory( "IsFiniteOrderElement",
         IsMultiplicativeElementWithInverse );
-
-IsFiniteOrderElementCollection :=
-    CategoryCollections( IsFiniteOrderElement );
+DeclareCategoryCollections( "IsFiniteOrderElement" );
 
 
 #############################################################################
 ##
 #C  IsJacobianElement(<obj>)
-#C            category of elements belonging to families with Jacobi identity
+##            category of elements belonging to families with Jacobi identity
 ##
-IsJacobianElement :=
-    NewCategory( "IsJacobianElement",
-        IsRingElement );
-
-IsJacobianElementCollection :=
-    CategoryCollections( IsJacobianElement );
+##  The Jacobi identity for a family $F$ means that
+##  $x * y * z + z * x * y + y * z * x$ is equal to zero for all $x$, $y$,
+##  $z$ in $F$.
+##
+DeclareCategory( "IsJacobianElement", IsRingElement );
+DeclareCategoryCollections( "IsJacobianElement" );
 
 
 #############################################################################
 ##
 #C  IsZeroSquaredElement(<obj>)
-#C                    category of elements belonging to zero squared families
+##                    category of elements belonging to zero squared families
 ##
-IsZeroSquaredElement :=
-    NewCategory( "IsZeroSquaredElement",
-        IsRingElement );
-
-IsZeroSquaredElementCollection :=
-    CategoryCollections( IsZeroSquaredElement );
+DeclareCategory( "IsZeroSquaredElement", IsRingElement );
+DeclareCategoryCollections( "IsZeroSquaredElement" );
 
 
 #############################################################################
 ##
 #P  IsZero(<elm>) . . . . . . . . . . . . . . . . . . . test for zero element
 ##
-IsZero :=
-    NewProperty( "IsZero",
-        IsAdditiveElementWithZero );
-SetIsZero := Setter( IsZero );
-HasIsZero := Tester( IsZero );
+DeclareProperty( "IsZero", IsAdditiveElementWithZero );
 
 
 #############################################################################
 ##
 #P  IsOne(<elm>)  . . . . . . . . . . . . . . . . . . .  test for one element
 ##
-IsOne :=
-    NewProperty( "IsOne",
-        IsMultiplicativeElementWithOne );
-SetIsOne := Setter( IsOne );
-HasIsOne := Tester( IsOne );
+DeclareProperty( "IsOne", IsMultiplicativeElementWithOne );
 
-
-#############################################################################
-##
-#O  '<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
-##
-\+ :=
-    NewOperationKernel( "+",
-        [ IsExtAElement, IsExtAElement ],
-        SUM );
 
 
 #############################################################################
@@ -477,44 +486,37 @@ HasIsOne := Tester( IsOne );
 ##  'Zero' may call 'Representative', but 'Representative' is allowed to
 ##  fetch the zero of a domain <D> only if 'HasZero( <D>) ' is 'true'.
 ##
-Zero :=
-    NewAttributeKernel( "Zero",
-        IsAdditiveElementWithZero,
-        ZERO );
-SetZero := Setter( Zero );
-HasZero := Tester( Zero );
+DeclareAttributeKernel( "Zero", IsAdditiveElementWithZero, ZERO );
+
+
+#############################################################################
+##
+#o  '<elm1>+<elm2>' . . . . . . . . . . . . . . . . . . . sum of two elements
+##
+DeclareOperationKernel( "+", [ IsExtAElement, IsExtAElement ], SUM );
 
 
 #############################################################################
 ##
 #A  AdditiveInverse(<elm>)  . . . . . . . . .  additive inverse of an element
 ##
-AdditiveInverse :=
-    NewAttributeKernel( "AdditiveInverse",
-        IsAdditiveElementWithInverse,
-        AINV );
-SetAdditiveInverse := Setter( AdditiveInverse );
-HasAdditiveInverse := Tester( AdditiveInverse );
+DeclareAttributeKernel( "AdditiveInverse", IsAdditiveElementWithInverse,
+    AINV );
 
 
 #############################################################################
 ##
-#O  '<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
+#o  '<elm1>-<elm2>' . . . . . . . . . . . . . . .  difference of two elements
 ##
-\- :=
-    NewOperationKernel( "-",
-        [ IsExtAElement, IsAdditiveElementWithInverse ],
-        DIFF );
+DeclareOperationKernel( "-", [ IsExtAElement, IsAdditiveElementWithInverse ],
+    DIFF );
 
 
 #############################################################################
 ##
-#O  '<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
+#o  '<elm1>*<elm2>' . . . . . . . . . . . . . . . . . product of two elements
 ##
-\* :=
-    NewOperationKernel( "*",
-        [ IsExtRElement, IsExtLElement ],
-        PROD );
+DeclareOperationKernel( "*", [ IsExtRElement, IsExtLElement ], PROD );
 
 
 #############################################################################
@@ -539,58 +541,52 @@ HasAdditiveInverse := Tester( AdditiveInverse );
 ##  `One' may call `Representative', but `Representative' is allowed to
 ##  fetch the one of a domain <D> only if `HasOne( <D>)' is `true'.
 ##
-One :=
-    NewAttributeKernel( "One",
-        IsMultiplicativeElementWithOne,
-        ONE );
-SetOne := Setter( One );
-HasOne := Tester( One );
+DeclareAttributeKernel( "One", IsMultiplicativeElementWithOne, ONE );
 
-Identity := One;
-SetIdentity := SetOne;
-HasIdentity := HasOne;
+DeclareSynonymAttr( "Identity", One );
 
 
 #############################################################################
 ##
 #A  Inverse(<elm>)  . . . . . . . . . .  multiplicative inverse of an element
 ##
-Inverse :=
-    NewAttributeKernel( "Inverse",
-        IsMultiplicativeElementWithInverse,
-        INV );
-SetInverse := Setter( Inverse );
-HasInverse := Tester( Inverse );
+##  `Inverse' returns the multiplicative inverse of an element <elm>,
+##  that is, an element <inv> such that
+##  `<elm> * <inv> = <inv> * <elm> = One( <elm> )' holds.
+##
+#T  Note the somewhat strange behaviour for mappings whose source and range
+#T  differ!
+#T  (perhaps introduce `InverseMapping'?)
+##
+DeclareAttributeKernel( "Inverse", IsMultiplicativeElementWithInverse,
+    INV );
 
 
 #############################################################################
 ##
-#O  '<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
+#o  '<elm1>/<elm2>' . . . . . . . . . . . . . . . .  quotient of two elements
 ##
-\/ :=
-    NewOperationKernel( "/",
-        [ IsExtRElement, IsMultiplicativeElementWithInverse ],
-        QUO );
+DeclareOperationKernel( "/",
+    [ IsExtRElement, IsMultiplicativeElementWithInverse ],
+    QUO );
 
 
 #############################################################################
 ##
 #O  LeftQuotient(<elm1>,<elm2>) . . . . . . . . left quotient of two elements
 ##
-LeftQuotient :=
-    NewOperationKernel( "LeftQuotient",
-        [ IsMultiplicativeElementWithInverse, IsExtLElement ],
-        LQUO );
+DeclareOperationKernel( "LeftQuotient",
+    [ IsMultiplicativeElementWithInverse, IsExtLElement ],
+    LQUO );
 
 
 #############################################################################
 ##
-#O  '<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
+#o  '<elm1>^<elm2>' . . . . . . . . .  . . . . . . . .  power of two elements
 ##
-\^ :=
-    NewOperationKernel( "^",
-        [ IsMultiplicativeElement, IsMultiplicativeElement ],
-        POW );
+DeclareOperationKernel( "^",
+    [ IsMultiplicativeElement, IsMultiplicativeElement ],
+    POW );
 #T  How is powering defined for nonassociative multiplication ??
 
 
@@ -598,39 +594,38 @@ LeftQuotient :=
 ##
 #O  Comm(<elm1>,<elm2>) . . . . . . . . . . . . .  commutator of two elements
 ##
-Comm :=
-    NewOperationKernel( "Comm",
-        [ IsMultiplicativeElementWithInverse,
-          IsMultiplicativeElementWithInverse ],
-        COMM );
+DeclareOperationKernel( "Comm",
+    [ IsMultiplicativeElementWithInverse,
+      IsMultiplicativeElementWithInverse ],
+    COMM );
 
 
 #############################################################################
 ##
 #O  LieBracket(<elm1>,<elm2>) . . . . . . . . . . lie bracket of two elements
 ##
-LieBracket :=
-    NewOperation( "LieBracket",
-        [ IsRingElement, IsRingElement ] );
+DeclareOperation( "LieBracket", [ IsRingElement, IsRingElement ] );
 
 
 #############################################################################
 ##
-#O  '<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
+#o  '<elm1> mod <elm2>' . . . . . . . . . . . . . . . modulus of two elements
 ##
-\mod :=
-    NewOperationKernel( "mod",
-        [ IsObject, IsObject ],
-        MOD );
+DeclareOperationKernel( "mod", [ IsObject, IsObject ], MOD );
 
 
 #############################################################################
 ##
-#A  Int( <elm> )
+#A  Int( <elm> )  . . . . . . . . . . . . . . . . . .  integer value of <elm>
 ##
-Int :=
-    NewAttribute( "Int",
-        IsScalar );
+DeclareAttribute( "Int", IsScalar );
+
+
+#############################################################################
+##
+#A  Rat( <elm> )  . . . . . . . . . . . . . . . . . . rational value of <elm>
+##
+DeclareAttribute( "Rat", IsScalar );
 
 
 #############################################################################
@@ -638,18 +633,15 @@ Int :=
 #O  Root( <n>, <k> )
 #O  Root( <n> )
 ##
-Root :=
-    NewOperation( "Root",
-        [ IsMultiplicativeElement, IS_INT ] );
+DeclareOperation( "Root", [ IsMultiplicativeElement, IS_INT ] );
 
 
 #############################################################################
 ##
 #O  Log(<elm>,<base>)
 ##
-Log :=
-    NewOperation( "Log",
-        [ IsMultiplicativeElement, IsMultiplicativeElement ] );
+DeclareOperation( "Log",
+    [ IsMultiplicativeElement, IsMultiplicativeElement ] );
 
 
 #############################################################################
@@ -662,29 +654,21 @@ Log :=
 ##  If a domain or a family has a characteristic,  then all its elements must
 ##  have the same characteristic.
 ##
-Characteristic :=
-    NewAttribute( "Characteristic",
-        IsObject );
-SetCharacteristic := Setter( Characteristic );
-HasCharacteristic := Tester( Characteristic );
+DeclareAttribute( "Characteristic", IsObject );
 
 
 #############################################################################
 ##
 #A  Order(<elm>)
 ##
-Order :=
-    NewAttribute( "Order",
-        IsMultiplicativeElementWithOne );
+DeclareAttribute( "Order", IsMultiplicativeElementWithOne );
 
 
 #############################################################################
 ##
 #A  NormedRowVector( <v> )
 ##
-NormedRowVector :=
-    NewAttribute( "NormedRowVector",
-        IsRowVector and IsScalarCollection );
+DeclareAttribute( "NormedRowVector", IsRowVector and IsScalarCollection );
 
 
 #############################################################################
@@ -692,18 +676,14 @@ NormedRowVector :=
 
 #P  IsCommutativeFamily
 ##
-IsCommutativeFamily := NewProperty(
-    "IsCommutativeFamily",
-    IsFamily );
+DeclareProperty( "IsCommutativeFamily", IsFamily );
 
 
 #############################################################################
 ##
 #P  IsSkewFieldFamily
 ##
-IsSkewFieldFamily := NewProperty(
-    "IsSkewFieldFamily",
-    IsFamily );
+DeclareProperty( "IsSkewFieldFamily", IsFamily );
 
 
 #############################################################################
@@ -714,18 +694,10 @@ IsSkewFieldFamily := NewProperty(
 ##  zero-divisors and  the    factorisations of elements into     elements of
 ##  <family> is unique (upto units and ordering)
 ##
-IsUFDFamily := NewProperty(
-    "IsUFDFamily",
-    IsFamily );
-
-SetIsUFDFamily := Setter(IsUFDFamily);
-HasIsUFDFamily := Tester(IsUFDFamily);
+DeclareProperty( "IsUFDFamily", IsFamily );
 
 
 #############################################################################
 ##
-
 #E  arith.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

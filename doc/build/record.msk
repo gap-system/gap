@@ -1,0 +1,434 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  record.msk                  GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Records}
+
+\index{type!records}
+
+*Records* are next to lists the most important way to collect objects
+together. A record is a collection of *components*. Each component has
+a unique *name*, which is an identifier that distinguishes this
+component, and a *value*, which is an object of arbitrary type. We often
+abbreviate *value of a component* to *element*. We also say that a
+record *contains* its elements. You can access and change the elements
+of a record using its name.
+
+Record literals are written by writing down the components in order
+between `rec(' and `)', and separating them by commas `,'. Each
+component consists of the name, the assignment operator `:=', and the
+value. The *empty record*, i.e., the record with no components, is
+written as `rec()'.
+
+\beginexample
+gap> rec( a := 1, b := "2" ); # a record with two components
+rec(
+ a := 1,
+ b := "2" )
+gap> rec( a := 1, b := rec( c := 2 ) ); # record may contain records
+rec(
+ a := 1,
+ b := rec(
+       c := 2 ) ) 
+\endexample
+
+Records usually contain elements of various types, i.e., they are usually
+not homogeneous like lists.
+
+\Declaration{IsRecord}
+\index{test!for records}
+\beginexample
+gap> IsRecord( rec( a := 1, b := 2 ) );
+true
+gap> IsRecord( IsRecord );
+false
+\endexample
+
+\Declaration{RecNames}
+\beginexample
+gap> r := rec( a := 1, b := 2 );;
+gap> RecNames( r );
+[ "a", "b" ] 
+\endexample
+
+Note that you cannot use the string result in the ordinary way to access
+or change a record component. You must use the `<rec>.(<name>)'
+construct (see "Accessing Record Elements" and "Record Assignment").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Accessing Record Elements}
+
+\index{accessing!record elements}
+
+\>`<rec>.<name>'{record!component access}
+
+The above construct evaluates to the value of the record component with
+the name <name> in the record <rec>. Note that the <name> is not
+evaluated, i.e. it is taken literal.
+
+\beginexample
+gap> r := rec( a := 1, b := 2 );;
+gap> r.a;
+1
+gap> r.b;
+2
+\endexample
+
+\>`<rec>.(<name>)'{record!component variable}
+
+This construct is similar to the above construct. The difference is that
+the second operand <name> is evaluated. It must evaluate to a string or
+an integer otherwise an error is signalled. The construct then evaluates
+to the element of the record <rec> whose name is, as a string, equal to
+<name>.
+
+\beginexample
+gap> old := rec( a := 1, b := 2 );;
+gap> new := rec();
+rec(
+   )
+gap> for i in RecNames( old ) do
+>  new.(i) := old.(i);
+> od;
+gap> new;
+rec(
+  a := 1,
+  b := 2 ) 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Record Assignment}
+
+\index{assignment!to a record}
+
+\>`<rec>.<name> := <obj>'{record!component assignement}
+
+The record assignment assigns the object <obj>, which may be an object of
+arbitrary type, to the record component with the name <name>, which must
+be an identifier, of the record <rec>. That means that accessing the
+element with name <name> of the record <rec> will return <obj> after this
+assignment. If the record <rec> has no component with the name <name>,
+the record is automatically extended to make room for the new component.
+
+\beginexample
+gap> r := rec( a := 1, b := 2 );;
+gap> r.a := 10;; r;
+rec(
+  a := 10,
+  b := 2 )
+gap> r.c := 3;; r;
+rec(
+  a := 10,
+  b := 2,
+  c := 3 ) 
+\endexample
+
+Note that assigning to a record changes the record. The ability to
+change an object is only available for lists and records (see "Identical
+Records").
+
+The function `IsBound' (see "IsBound") can be used to test if a record
+has a component with a certain name, the function `Unbind' (see "Unbind")
+can be used to remove a component with a certain name again.
+
+\beginexample
+gap> IsBound(r.a);
+true
+gap> IsBound(r.d);
+false
+gap> Unbind(r.b);r;
+rec(
+  a := 1,
+  c := 3 )
+\endexample
+
+\>`<rec>.(<name>) := <obj>'{record!component variable assignement}
+
+This construct is similar to the above construct. The difference is that
+the second operand <name> is evaluated. It must evaluate to a string or
+an integer otherwise an error is signalled. The construct then assigns
+<obj> to the record component of the record <rec> whose name is, as a
+string, equal to <name>.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identical Records}
+
+With the record assignment (see "Record Assignment") it is possible to
+change a record. The ability to change an object is only available for
+lists and records. This section describes the semantic consequences of
+this fact.
+
+You may think that in the following example the second assignment changes
+the integer, and that therefore the above sentence, which claimed that
+only records and lists can be changed, is wrong.
+
+\begintt
+i := 3;
+i := i + 1;
+\endtt
+
+But in this example not the *integer* `3' is changed by adding one to it.
+Instead the *variable* `i' is changed by assigning the value of `i+1',
+which happens to be `4', to `i'. The same thing happens in the following
+example
+
+\begintt
+r := rec( a := 1 );
+r := rec( a := 1, b := 2 );
+\endtt
+
+The second assignment does not change the first record, instead it
+assigns a new record to the variable `r'. On the other hand, in the
+following example the record is changed by the second assignment.
+
+\begintt
+r := rec( a := 1 );
+r.b := 2;
+\endtt
+
+To understand the difference first think of a variable as a name for an
+object. The important point is that a record can have several names at
+the same time. An assignment `<var> := <record>' means in this
+interpretation that <var> is a name for the object <record>. At the end
+of the following example `r2' still has the value `rec( a := 1 )' as
+this record has not been changed and nothing else has been assigned to
+`r2'.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := r1;
+r1 := rec( a := 1, b := 2 );
+\endtt
+
+But after the following example the record for which `r2' is a name has
+been changed and thus the value of `r2' is now `rec( a := 1, b := 2 )'.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := r1;
+r1.b := 2;
+\endtt
+
+We shall say that two records are *identical* if changing one of them by
+a record assignment also changes the other one. This is slightly
+incorrect, because if *two* records are identical, there are actually
+only two names for *one* record. However, the correct usage would be
+very awkward and would only add to the confusion.  Note that two
+identical records must be equal, because there is only one records with
+two different names. Thus identity is an equivalence relation that is a
+refinement of equality.
+
+Let us now consider under which circumstances two records are identical.
+
+If you enter a record literal then the record denoted by this literal is
+a new record that is not identical to any other record. Thus in the
+following example `r1' and `r2' are not identical, though they are equal
+of course.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := rec( a := 1 );
+\endtt
+
+Also in the following example, no records in the list `l' are identical.
+
+\begintt
+l := [];
+for i in [1..10] do
+  l[i] := rec( a := 1 );
+od;
+\endtt
+
+If you assign a record to a variable no new record is created. Thus the
+record value of the variable on the left hand side and the record on the
+right hand side of the assignment are identical. So in the following
+example `r1' and `r2' are identical records.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := r1;
+\endtt
+
+If you pass a record as argument, the old record and the argument of the
+function are identical. Also if you return a record from a function, the
+old record and the value of the function call are identical. So in the
+following example `r1' and `r2' are identical record
+
+\begintt
+r1 := rec( a := 1 );
+f := function ( r ) return r; end;
+r2 := f( r1 );
+\endtt
+
+The functions `StructuralCopy' and `ShallowCopy' (see "StructuralCopy" and
+"ShallowCopy") accept a record and return a new record that is equal to the
+old record but that is *not* identical to the old record. The difference
+between `StructuralCopy' and `ShallowCopy' is that in the case of
+`ShallowCopy' the corresponding components of the new and the old records
+will be identical, whereas in the case of `StructuralCopy' they will only be
+equal. So in the following example `r1' and `r2' are not identical records.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := Copy( r1 );
+\endtt
+
+If you change a record it keeps its identity. Thus if two records are
+identical and you change one of them, you also change the other, and they
+are still identical afterwards. On the other hand, two records that are
+not identical will never become identical if you change one of them. So
+in the following example both `r1' and `r2' are changed, and are still
+identical.
+
+\begintt
+r1 := rec( a := 1 );
+r2 := r1;
+r1.b := 2;
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Records}
+
+\>`<rec1> = <rec2>'{equality!of records}
+\>`<rec1> \<> <rec2>'{inequality!of records}
+
+Usually two records are considered equal, if for each component of one
+record the other record has a component of the same name with an equal
+value and vice versa.
+
+\beginexample
+gap> rec( a := 1, b := 2 ) = rec( b := 2, a := 1 );
+true
+gap> rec( a := 1, b := 2 ) = rec( a := 2, b := 1 );
+false
+gap> rec( a := 1 ) = rec( a := 1, b := 2 );
+false
+gap> rec( a := 1 ) = 1;
+false
+\endexample
+
+\>`<rec1> \< <rec2>'{ordering!of records}
+\>`<rec1> \<= <rec2>'{ordering!of records}
+
+To compare records we imagine that the components of both records are
+sorted according to their names. Then the records are compared
+lexicographically with unbound elements considered smaller than anything
+else. Precisely one record <rec1> is considered less than another record
+<rec2> if <rec2> has a component with name <name2> and either <rec1> has
+no component with this name or `<rec1>.<name2> \< <rec2>.<name2>' and for
+each component of <rec1> with name `<name1> \< <name2>' <rec2> has a
+component with this name and `<rec1>.<name1> = <rec2>.<name1>'.
+
+\beginexample
+gap> rec( a := 1, b := 2 ) < rec( b := 2, a := 1 );
+false # they are equal
+gap> rec( a := 1, b := 2 ) < rec( a := 2, b := 0 );
+true # the `a' elements are compared first and 1 is less than 2
+gap> rec( a := 1 ) < rec( a := 1, b := 2 );
+true # unbound is less than 2
+gap> rec( a := 1 ) < rec( a := 0, b := 2 );
+false # the `a' elements are compared first and 0 is less than 1
+gap> rec( b := 1 ) < rec( b := 0, a := 2 );
+true # the `a'-s are compared first and unbound is less than 2
+gap> rec( a := 1 ) < 1;
+false # other objects are less than records
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBound and Unbind for records}
+
+\){\fmark `IsBound( <rec>.<name> )'}
+
+`IsBound' returns `true' if the record <rec> has a
+component with the name <name>, which must be an ident and `false'
+otherwise. <rec> must evaluate to a record, otherwise an error is
+signalled.
+
+\beginexample
+gap> r := rec( a := 1, b := 2 );;
+gap> IsBound( r.a );
+true
+gap> IsBound( r.c );
+false
+\endexample
+
+\){\fmark `Unbind( <rec>.<name> )'}
+
+`Unbind' deletes the component with the name <name> in
+the record <rec>. That is, after execution of `Unbind', <rec> no longer
+has a record component with this name. Note that it is not an error to
+unbind a nonexisting record component. <rec> must evaluate to a record,
+otherwise an error is signalled.
+
+\beginexample
+gap> r := rec( a := 1, b := 2 );;
+gap> Unbind( r.a ); r;
+rec(
+b := 2 )
+gap> Unbind( r.c ); r;
+rec(
+ b := 2 )
+\endexample
+
+Note that `IsBound' and `Unbind' are special in that they do not evaluate
+their argument, otherwise `IsBound' would always signal an error when it is
+supposed to return `false' and there would be no way to tell `Unbind' which
+component to remove.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Record access operations}
+
+Internally, record accesses are done using the operations listed in this
+section. For the records implemented in the kernel, kernel methods are
+provided for all these operations but otherwise it is possible to install
+methods for these operations for any object. This
+permits objects to simulate record behavior.
+
+To same memory, records do not store a list of all component names, but only
+numbers identifying the components. There numbers are called *RNams*. {\GAP}
+keeps a list of all RNams that are used and provides functions to translate
+RNams to strings that give the component names and vice versa.
+
+\>NameRNam(<nr>) F
+
+returns a string representing the component name corresponding to the RNam
+<nr>.
+
+\>RNamObj(<str>) F
+\>RNamObj(<int>) F
+
+returns a number (the RNam) corresponding to the string <str>. It is also
+possible to pass a positive integer <int> in which case the decimal expansion of
+<int> is used as a string.
+
+\beginexample
+gap> NameRNam(753); 
+"chappos"
+gap> RNamObj("blubberflutsch");
+1922
+gap> NameRNam(last);
+"blubberflutsch"
+\endexample
+
+The correspondence between Strings and RNams is not predetermined ab initio,
+but RNams are assigned to component names dynamically on a
+``first come, first serve'' basis. Therefore, depending on the version of
+the library you are using and on the assignements done so far, the *same*
+component name may be represented by *different* RNams in different runs of
+{\GAP}.
+
+\> `\\.(<obj>,<rnam>)'{record component!operation}
+\> `IsBound\\.(<obj>,<rnam>)'{record boundness test!operation}
+\> `\\.\\:\\=(<obj>,<rnam>)'{record assignement!operation}
+\> `Unbind\\.(<obj>,<rnam>)'{record unbind!operation}
+
+These operations implement component access, test for element boundness,
+component assignement and removal of the component represented by the RNam
+<rnam>.
+
+The component identifier <rnam> is always declared as `IsPosInt'.

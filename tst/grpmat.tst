@@ -22,11 +22,13 @@ gap> Size( G );
 gap> IsHandledByNiceMonomorphism( G );
 true
 gap> NiceObject( G );
-Group( [ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ], ... )
-gap> pcgs := Pcgs( G );
+Group([ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ])
+gap> pcgs := Pcgs( G );;
+gap> Print(pcgs,"\n");
 Pcgs([ [ [ 0, 1 ], [ -1, 0 ] ], [ [ E(4), 0 ], [ 0, -E(4) ] ], 
   [ [ -1, 0 ], [ 0, -1 ] ] ])
-gap> cl := ConjugacyClasses( G );
+gap> cl := ConjugacyClasses( G );;
+gap> Print(cl,"\n");
 [ ConjugacyClass( Q8, [ [ 1, 0 ], [ 0, 1 ] ] ), 
   ConjugacyClass( Q8, [ [ 0, 1 ], [ -1, 0 ] ] ), 
   ConjugacyClass( Q8, [ [ E(4), 0 ], [ 0, -E(4) ] ] ), 
@@ -39,7 +41,7 @@ gap> Size( AutomorphismGroup( G ) );
 gap> Length(ConjugacyClasses(GL(4,3)));
 78
 
-gap> STOP_TEST( "grpmat.tst", 199830000 );
+gap> STOP_TEST( "grpmat.tst", 1170544762 );
 
 #############################################################################
 ##

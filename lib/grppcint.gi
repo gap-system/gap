@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for the intersection of polycylic groups.
 ##
@@ -33,12 +34,8 @@ GS_SIZE := 20;
 GlasbyCover := function( S, A, B, pcgsK )
     local   Am, Bm, z, i;
 
-    # copy immutable objects
-    A := ShallowCopy( AsList( A ) );
-    B := ShallowCopy( AsList( B ) );
-
     # Decompose the intersection <H> /\ <K> /\ <N>.
-    Am := S.intersection;
+    Am := ShallowCopy( AsList( S.intersection ) );
     Bm := List( Am, x -> x / SiftedPcElement( pcgsK, x ) );
 
     # Now cover the other generators.
@@ -181,20 +178,22 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
             pcgsKmN := InducedPcgsByPcSequenceNC( pcgs, pcgsKmN );
             pcgsKF  := pcgsKmN mod pcgsN;
 
-            sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF );
+            sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF, pcgsN );
 
             # Maybe there is nothing left to stabilize.
             if Length( sum.sum ) = next - start then
-                C := A;
-                D := B;
+                C := ShallowCopy( AsList( A ) );
+                D := ShallowCopy( AsList( B ) );
             else
                 pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{[start..m]} );
                 pcgsR := Concatenation( sum.sum, pcgsN );
                 pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
                 C := GlasbyStabilizer( pcgs, A, B, pcgsS, pcgsR );
+                C := ShallowCopy( AsList( C ) );
                 B := Concatenation( B, pcgsN );
                 B := InducedPcgsByPcSequenceNC( pcgs, B );
                 D := GlasbyShift( C, B );
+                D := ShallowCopy( AsList( D ) );
             fi;
 
             # Now we can cover <C> and <D>.
@@ -206,7 +205,7 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
 
     # <A> is the unnormalized intersection.
     new := InducedPcgsByPcSequence( pcgs, A );
-    U   := SubgroupByPcgs( G, A );
+    U   := SubgroupByPcgs( G, new );
     return U;
 end;
 
@@ -233,7 +232,7 @@ ZassenhausIntersection := function( pcgs, pcgsN, pcgsU )
         ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;
     else
-        new := ExtendedIntersectionSumPcgs( pcgs, pcgsN, pcgsU );
+        new := ExtendedIntersectionSumPcgs( pcgs, pcgsN, pcgsU, true );
         new := InducedPcgsByPcSequence( pcgs, new.intersection );
         ins := SubgroupByPcgs( GroupOfPcgs( pcgs ), new );
         return ins;

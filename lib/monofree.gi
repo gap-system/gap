@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for free monoids.
 ##
@@ -64,14 +65,14 @@ InstallMethod( Iterator,
 ##
 #M  Enumerator( <M> ) . . . . . . . . . . . . .  enumerator for a free monoid
 ##
-IsFreeMonoidEnumerator := NewRepresentation( "IsFreeMonoidEnumerator",
+DeclareRepresentation( "IsFreeMonoidEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
 InstallMethod( \[\],
     "method for enumerator of a free monoid",
     true,
-    [ IsFreeMonoidEnumerator, IsPosRat and IsInt ], 0,
+    [ IsFreeMonoidEnumerator, IsPosInt ], 0,
     FreeMonoid_ElementNumber );
 
 InstallMethod( Position,
@@ -197,7 +198,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeMonoid( <name1>, <name2>, ... )
 #F  FreeMonoid( <names> )
 ##
-FreeMonoid := function( arg )
+InstallGlobalFunction( FreeMonoid, function( arg )
 
     local   names,      # list of generators names
             F,          # family of free monoid element objects
@@ -248,7 +249,7 @@ FreeMonoid := function( arg )
 
     # Return the free monoid.
     return M;
-end;
+end );
 
 
 #############################################################################

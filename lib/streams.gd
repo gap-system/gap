@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for streams.
 ##
@@ -17,72 +18,56 @@ Revision.streams_gd :=
 
 #C  IsClosedStream  . . . . . . . . . . . . . . .  category of closed streams
 ##
-IsClosedStream := NewCategory(
-    "IsClosedStream",
-    IsObject );
+DeclareCategory( "IsClosedStream", IsObject );
 
 
 #############################################################################
 ##
 #C  IsStream  . . . . . . . . . . . . . . . . . . . . . . category of streams
 ##
-IsStream := NewCategory(
-    "IsStream",
-    IsObject );
+DeclareCategory( "IsStream", IsObject );
 
 
 #############################################################################
 ##
 #C  IsInputStream . . . . . . . . . . . . . . . . . category of input streams
 ##
-IsInputStream := NewCategory(
-    "IsInputStream",
-    IsStream );
+DeclareCategory( "IsInputStream", IsStream );
 
 
 #############################################################################
 ##
 #C  IsInputTextStream . . . . . . . . . . . .  category of input text streams
 ##
-IsInputTextStream := NewCategory(
-    "IsInputTextStream",
-    IsInputStream );
+DeclareCategory( "IsInputTextStream", IsInputStream );
 
 
 #############################################################################
 ##
 #C  IsInputTextNone . . . . . . . . . . . category of input text none streams
 ##
-IsInputTextNone := NewCategory(
-    "IsInputStream",
-    IsInputTextStream );
+DeclareCategory( "IsInputTextNone", IsInputTextStream );
 
 
 #############################################################################
 ##
 #C  IsOutputStream  . . . . . . . . . . . . . . .  category of output streams
 ##
-IsOutputStream := NewCategory(
-    "IsOutputStream",
-    IsStream );
+DeclareCategory( "IsOutputStream", IsStream );
 
 
 #############################################################################
 ##
 #C  IsOutputTextStream	. . . . . . . . . . . category of output text streams
 ##
-IsOutputTextStream := NewCategory(
-    "IsOutputTextStream",
-    IsOutputStream );
+DeclareCategory( "IsOutputTextStream", IsOutputStream );
 
 
 #############################################################################
 ##
 #C  IsOutputTextNone  . . . . . . . . .  category of output text none streams
 ##
-IsOutputTextNone := NewCategory(
-    "IsOutputStream",
-    IsOutputTextStream );
+DeclareCategory( "IsOutputTextNone", IsOutputTextStream );
 
 
 #############################################################################
@@ -102,18 +87,14 @@ StreamsFamily := NewFamily( "StreamsFamily" );
 ##  and 'false' otherwise.  Note   that 'IsEndOfStream' might  return 'false'
 ##  even if the next 'ReadByte' fails.
 ##
-IsEndOfStream := NewOperation(
-    "IsEndOfStream",
-    [ IsInputStream ] );
+DeclareOperation( "IsEndOfStream", [ IsInputStream ] );
 
 
 #############################################################################
 ##
 #O  PositionStream( <input-stream> )  . . . . . . . . . . .  current position
 ##
-PositionStream := NewOperation(
-    "PositionStream",
-    [ IsInputStream ] );
+DeclareOperation( "PositionStream", [ IsInputStream ] );
 
 
 #############################################################################
@@ -128,9 +109,7 @@ PositionStream := NewOperation(
 ##  If <stream-in> is  the input stream  of a input/output process, 'ReadAll'
 ##  may also return 'fail' if the process is also trying to read.
 ##
-ReadAll := NewOperation(
-    "ReadAll",
-    [ IsInputTextStream ] );
+DeclareOperation( "ReadAll", [ IsInputTextStream ] );
 
 
 #############################################################################
@@ -138,15 +117,13 @@ ReadAll := NewOperation(
 #O  ReadByte( <input-stream> )	. . . . . . . . . . . . . .  read single byte
 ##
 ##  'ReadByte' returns  one character (returned  as  integer) from  the input
-##  stream <stream-in>.  'ReadByte' waits until a  character is available, it
-##  returns 'fail' is the <input-text-stream> is at the end-of-stream.
+##  stream <stream-in>.  'ReadByte' returns 'fail' if there is no character
+##  available, in particular if it is at the end of a file.
 ##
 ##  If <stream-in> is the input stream of  a input/output process, 'ReadByte'
 ##  may also return 'fail' if the process is also trying to read.
 ##
-ReadByte := NewOperation(
-    "ReadByte",
-    [ IsInputStream ] );
+DeclareOperation( "ReadByte", [ IsInputStream ] );
                     
 
 #############################################################################
@@ -160,54 +137,42 @@ ReadByte := NewOperation(
 ##  If <stream-in> is the input stream of  a input/output process, 'ReadLine'
 ##  may also return 'fail' if the process is also trying to read.
 ##
-ReadLine := NewOperation(
-    "ReadLine",
-    [ IsInputTextStream ] );
+DeclareOperation( "ReadLine", [ IsInputTextStream ] );
 
 
 #############################################################################
 ##
 #O  RewindStream( <input-stream> )  . . . . . . . . . return to the beginning
 ##
-RewindStream := NewOperation(
-    "RewindStream",
-    [ IsInputStream ] );
+DeclareOperation( "RewindStream", [ IsInputStream ] );
 
 
 #############################################################################
 ##
 #O  SeekPositionStream( <input-stream>, <pos> )	. . . .  return to a position
 ##
-SeekPositionStream := NewOperation(
-    "SeekPositionStream",
-    [ IsInputStream, IsInt ] );
+DeclareOperation( "SeekPositionStream", [ IsInputStream, IsInt ] );
 
 
 #############################################################################
 ##
 #O  WriteAll( <output-text-stream>, <string> )  .  write whole string to file
 ##
-WriteAll := NewOperation(
-    "WriteAll",
-    [ IsOutputTextStream, IsList ] );
+DeclareOperation( "WriteAll", [ IsOutputTextStream, IsList ] );
                     
 
 #############################################################################
 ##
 #O  WriteByte( <output-stream>, <byte> )  . . . . . . . . . write single byte
 ##
-WriteByte := NewOperation(
-    "WriteByte",
-    [ IsOutputStream, IsInt ] );
+DeclareOperation( "WriteByte", [ IsOutputStream, IsInt ] );
                     
 
 #############################################################################
 ##
 #O  WriteLine( <output-text-stream>, <string> ) .   write string plus newline
 ##
-WriteLine := NewOperation(
-    "WriteLine",
-    [ IsOutputTextStream, IsList ] );
+DeclareOperation( "WriteLine", [ IsOutputTextStream, IsList ] );
                     
 
 #############################################################################
@@ -215,9 +180,7 @@ WriteLine := NewOperation(
 
 #O  CloseStream( <stream> ) . . . . . . . . . . . . . . . . .  close a stream
 ##
-CloseStream := NewOperation(
-    "CloseStream",
-    [ IsStream ] );
+DeclareOperation( "CloseStream", [ IsStream ] );
 
 
 #############################################################################
@@ -225,68 +188,58 @@ CloseStream := NewOperation(
 
 #O  InputTextString( <string> )	. . . .  create input text stream from string
 ##
-InputTextString := NewOperation(
-    "InputTextString",
-    [ IsString ] );
+DeclareOperation( "InputTextString", [ IsString ] );
 
 
 #############################################################################
 ##
 #O  InputTextFile( <string> ) . . . . . .  create input text stream from file
 ##
-InputTextFile := NewOperation(
-    "InputTextFile",
-    [ IsString ] );
+DeclareOperation( "InputTextFile", [ IsString ] );
 
 
 #############################################################################
 ##
 #O  InputTextNone() . . . . . . . . . . . . . . . . . dummy input text stream
 ##
-InputTextNone := NewOperationArgs(
-    "InputTextNone" );
+UNBIND_GLOBAL( "InputTextNone" );
+DeclareGlobalFunction( "InputTextNone" );
 
 
 #############################################################################
 ##
 #O  InputTextUser() . . . . . . . . . . . . . input text stream from the user
 ##
-InputTextUser := NewOperationArgs(
-    "InputTextUser" );
+DeclareGlobalFunction( "InputTextUser" );
 
 
 #############################################################################
 ##
 #O  OutputTextString( <string>, <append> )  . . . . create output text stream
 ##
-OutputTextString := NewOperation(
-    "OutputTextString",
-    [ IsList, IsBool ] );
+DeclareOperation( "OutputTextString", [ IsList, IsBool ] );
 
 
 #############################################################################
 ##
 #O  OutputTextFile( <string>, <append> )  . . . . . create output text stream
 ##
-OutputTextFile := NewOperation(
-    "OutputTextFile",
-    [ IsList, IsBool ] );
+DeclareOperation( "OutputTextFile", [ IsList, IsBool ] );
 
 
 #############################################################################
 ##
 #O  OutputTextNone()  . . . . . . . . . . . . . . .  dummy output text stream
 ##
-OutputTextNone := NewOperationArgs(
-    "OutputTextNone" );
+UNBIND_GLOBAL( "OutputTextNone" );
+DeclareGlobalFunction( "OutputTextNone" );
 
 
 #############################################################################
 ##
 #O  OutputTextUser()  . . . . . . . . . . . .  output text stream to the user
 ##
-OutputTextUser := NewOperationArgs(
-    "OutputTextUser" );
+DeclareGlobalFunction( "OutputTextUser" );
 
 
 #############################################################################
@@ -330,27 +283,21 @@ end;
 ##
 #O  LogTo( <stream> ) . . . . . . . . . . . . . . . . . . . . log to a stream
 ##
-LogTo := NewOperation(
-    "LogTo",
-    [ IsOutputStream ] );
+DeclareOperation( "LogTo", [ IsOutputStream ] );
 
 
 #############################################################################
 ##
 #O  InputLogTo( <stream> )  . . . . . . . . . . . . . . log input to a stream
 ##
-InputLogTo := NewOperation(
-    "InputLogTo",
-    [ IsOutputStream ] );
+DeclareOperation( "InputLogTo", [ IsOutputStream ] );
 
 
 #############################################################################
 ##
 #O  OutputLogTo( <stream> ) . . . . . . . . . . . . .  log output to a stream
 ##
-OutputLogTo := NewOperation(
-    "OutputLogTo",
-    [ IsOutputStream ] );
+DeclareOperation( "OutputLogTo", [ IsOutputStream ] );
 
 
 #############################################################################

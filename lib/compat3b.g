@@ -5,17 +5,26 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the parts of the {\GAP} 3 compatibility mode that
-##  1) simulate the presence of `operations' records for domains, i.e.,
-##     the access to `<D>.operations.<opr>' for domains <D> and operations
-##     <opr> returns <opr>,
-##  2) simulate the storing of attribute and property values as record
-##     components in domains, i.e.,
-##     `IsBound( <D>.<name> )' and access to `<D>.<name>' are interpreted as
-##     calls to tester resp. getter of the attribute associated to <name>.
-##  3) Simulate the old conversion functions like 'PermGroup'
-##  
+##  This file contains the parts of the {\GAP}~3 compatibility mode that
+##  implement the following.
+##
+##  1) Enable to access attribute and property values via the `\.' operator,
+##     that is, `IsBound( <D>.<name> )' and access to `<D>.<name>' are
+##     interpreted as calls to tester resp. getter of the attribute
+##     associated to <name>.
+##
+##  2) Admit to store/access/unbind ``private'' components of objects,
+##     that is, components for which the {\GAP}~3 library did not provide
+##     dispatcher functions, and for which there are no associated
+##     attributes.
+##
+##  3) The conversion functions `PermGroup', `AgGroup', `FpGroup'
+##     are implemented.
+##
+##  4) Simulate the presence of a {\GAP}~3 `operations' record in an object.
+##
 ##  This file is read only if the user explicitly reads it.
 ##
 Revision.compat3b_g :=
@@ -24,23 +33,71 @@ Revision.compat3b_g :=
 
 #############################################################################
 ##
+##  The file `compat3a.g' must have been read before this file can be read.
+##
+if not IsBound( Revision.compat3a_g ) then
+  ReadLib( "compat3a.g" );
+fi;
+
+
+#############################################################################
+##
+##  1) Enable to access attribute and property values via the `\.' operator,
+##     that is, `IsBound( <D>.<name> )' and access to `<D>.<name>' are
+##     interpreted as calls to tester resp. getter of the attribute
+##     associated to <name>.
+##
+
+#############################################################################
+##
 #A  Generators( <D> )
 ##
 ##  Fetch the right generators, depending on whether <D> is a group, a field,
 ##  a ring, an algebra, a unital algebra.
+##  This attribute will be used for access via `<D>.generators'.
 ##
-Generators := NewAttribute( "Generators", IsDomain );
+DeclareAttribute( "Generators", IsDomain );
 
-InstallMethod( Generators, true, [ IsGroup ], 0,
+InstallMethod( Generators, "for a group", true, [ IsGroup ], 0,
     GeneratorsOfMagmaWithInverses );
-InstallMethod( Generators, true, [ IsField ], 0,
+InstallMethod( Generators, "for a field", true, [ IsField ], 0,
     GeneratorsOfDivisionRing );
-InstallMethod( Generators, true, [ IsRing ], 0,
+InstallMethod( Generators, "for a ring", true, [ IsRing ], 0,
     GeneratorsOfRing );
-InstallMethod( Generators, true, [ IsAlgebra ], 0,
+InstallMethod( Generators, "for an algebra", true, [ IsAlgebra ], 0,
     GeneratorsOfAlgebra );
-InstallMethod( Generators, true, [ IsAlgebraWithOne ], 0,
+InstallMethod( Generators, "for an algebra-with-one", true,
+    [ IsAlgebraWithOne ], 0,
     GeneratorsOfAlgebraWithOne );
+
+
+#############################################################################
+##
+#M  <pol>.coefficients
+#M  <pol>.valuation
+##
+##  We enable the access of coefficients list and valuation of univariate
+##  Laurent polynomials via the new attributes `ULPCoefficients' and
+##  `ULPValuation'.
+##
+DeclareAttribute( "ULPCoefficients",
+    IsUnivariateLaurentPolynomial );
+
+InstallMethod( ULPCoefficients,
+    "for a univariate Laurent polynomial",
+    true,
+    [ IsUnivariateLaurentPolynomial ], 0,
+    pol -> CoefficientsOfUnivariateLaurentPolynomial( pol )[1] );
+
+
+DeclareAttribute( "ULPValuation",
+    IsUnivariateLaurentPolynomial );
+
+InstallMethod( ULPValuation,
+    "for a univariate Laurent polynomial",
+    true,
+    [ IsUnivariateLaurentPolynomial ], 0,
+    pol -> CoefficientsOfUnivariateLaurentPolynomial( pol )[2] );
 
 
 #############################################################################
@@ -48,9 +105,8 @@ InstallMethod( Generators, true, [ IsAlgebraWithOne ], 0,
 #F  AssociateNameAttribute( <name>, <getter> )
 ##
 ##  The value of the attribute or property <getter> for the object <obj>
-#T  with representation 'IsAttributeStoringRep' ?
-##  shall be accessible 
-##  as '<obj>.<name>'.
+#T  with representation `IsAttributeStoringRep' ?
+##  shall be accessible as `<obj>.<name>'.
 ##
 ATTR_GETTERS := [];
 ATTR_SETTERS := [];
@@ -72,48 +128,19 @@ end;
 
 InstallAttributeFunction( AssociateNameWithAttribute );
 
-InstallMethod( ELM_REC,
-    true, [ IsObject, IsObject ], 0,
-    function ( obj, rnam )
-        if IsBound( ATTR_GETTERS[rnam] )  then
-            return ATTR_GETTERS[rnam]( obj );
-        else
-            Error( "`", NameRNam( rnam ), "' is not an attribute" );
-        fi;
-    end );
-
-InstallMethod( ASS_REC,
-    true, [ IsObject, IsObject, IsObject ], 0,
-    function ( obj, rnam, val )
-        if IsBound( ATTR_SETTERS[rnam] )  then
-            ATTR_SETTERS[rnam]( obj, val );
-        else
-            Error("this is not an attribute");
-        fi;
-    end );
-
-InstallMethod( ISB_REC,
-    true, [ IsObject, IsObject ], 0,
-    function ( obj, rnam )
-        if IsBound( ATTR_TESTERS[rnam] )  then
-            return ATTR_TESTERS[rnam]( obj );
-        else
-            Error("this is not an attribute");
-        fi;
-    end );
-
 
 #############################################################################
 ##
-##  Handle some names that have changed.
+##  Handle the cases where component names are not obtained from the name of
+##  the operation by turning the first letter to lowercase.
 ##
 AssociateNameAttribute := function ( name, getter )
     AssociateNameWithAttribute( name, Ignore,
         getter, Setter(getter), Tester(getter), true );
 end;
 
-AssociateNameAttribute( "elements", Elements );
-AssociateNameAttribute( "isAbelian", IsAbelian );
+AssociateNameAttribute( "elements", AsListSorted );
+AssociateNameAttribute( "isAbelian", IsCommutative );
 AssociateNameAttribute( "field", LeftActingDomain );
 
 AssociateNameAttribute( "automorphisms", AutomorphismsOfTable );
@@ -130,17 +157,130 @@ AssociateNameAttribute( "orders", OrdersClassRepresentatives );
 AssociateNameAttribute( "powermap", ComputedPowerMaps );
 AssociateNameAttribute( "prime", UnderlyingCharacteristic );
 AssociateNameAttribute( "text", InfoText );
+AssociateNameAttribute( "identity", One );
+
+AssociateNameAttribute( "coefficients", ULPCoefficients );
+AssociateNameAttribute( "valuation", ULPValuation );
+
+
+#############################################################################
+##
+##  2) Admit to store/access/unbind ``private'' components of objects,
+##     that is, components for which the {\GAP}~3 library did not provide
+##     dispatcher functions, and for which there are no associated
+##     attributes.
+##
+
+#############################################################################
+##
+#A  Compat3Info( <D> )
+##
+##  If <D> is an object in `IsAttributeStoringRep' then the user can store
+##  ``private components of <D>'' via this record.
+##
+DeclareAttribute( "Compat3Info",
+    IsAttributeStoringRep, "mutable" );
+
+
+#############################################################################
+##
+#M  Compat3Info( <D> )
+##
+InstallMethod( Compat3Info,
+    "for an object in `IsAttributeStoringRep'",
+    true,
+    [ IsAttributeStoringRep ], 0,
+    D -> rec() );
+
+
+#############################################################################
+##
+#M  \.( <D>, <name> )
+#M  IsBound\.( <D>, <name> )
+#M  \.\:\=( <D>, <name> )
+#M  Unbind\.( <D>, <name> )
+##
+##  If an attribute is associated to <name> then
+##  access, test for boundedness, and assignment are delegated to the
+##  getter, tester, and setter of this attribute, respectively.
+##  Otherwise it is assumed that the component with name <name> in the
+##  record `Compat3Info( <D> )' is meant.
+##
+InstallMethod( \.,
+    "for two objects (compatibility mode)",
+    true,
+    [ IsObject, IsObject ], 0,
+    function ( obj, rnam )
+      if IsBound( ATTR_GETTERS[rnam] )  then
+
+        # The component is associated to an attribute.
+        return ATTR_GETTERS[rnam]( obj );
+
+      elif HasCompat3Info( obj ) then
+        if IsBound( Compat3Info( obj ).( NameRNam( rnam ) ) ) then
+          return Compat3Info( obj ).( NameRNam( rnam ) );
+        else
+          Error( "component `", NameRNam( rnam ), "' must have a value" );
+        fi;
+      else
+        Error( "`", NameRNam( rnam ), "' is not an attribute" );
+      fi;
+    end );
+
+InstallMethod( ISB_REC,
+    "for two objects (compatibility mode)",
+    true,
+    [ IsObject, IsObject ], 0,
+    function ( obj, rnam )
+      if IsBound( ATTR_TESTERS[rnam] )  then
+        return ATTR_TESTERS[rnam]( obj );
+      else
+        return     HasCompat3Info( obj )
+               and IsBound( Compat3Info( obj ).( NameRNam( rnam ) ) );
+      fi;
+    end );
+
+InstallMethod( ASS_REC,
+    "for three objects (compatibility mode)",
+    true,
+    [ IsObject, IsObject, IsObject ], 0,
+    function ( obj, rnam, val )
+      if IsBound( ATTR_SETTERS[rnam] )  then
+        ATTR_SETTERS[rnam]( obj, val );
+      else
+        Compat3Info( obj ).( NameRNam( rnam ) ):= val;
+      fi;
+    end );
+
+InstallMethod( Unbind\.,
+    "for two objects (compatibility mode)",
+    true,
+    [ IsObject, IsObject ], 0,
+    function( obj, rnam )
+      if IsBound( ATTR_GETTERS[rnam] )  then
+        Error( "cannot unbind attribute values" );
+      elif HasCompat3Info( obj ) then
+        Unbind( Compat3Info( obj ).( NameRNam( rnam ) ) );
+      fi;
+    end );
+
+
+#############################################################################
+##
+##  3) The conversion functions `PermGroup', `AgGroup', `FpGroup'
+##     are implemented.
+##
 
 #############################################################################
 ##
 #A  Comp3BijectionToOldGroup( <D> )
 ##
-##  Attribute to store the old '.bijection' component.
+##  Attribute to store the old `.bijection' component.
 ##
-Comp3BijectionToOldGroup := NewAttribute("Comp3BijectionToOldGroup",IsDomain);
-SetComp3BijectionToOldGroup := Setter(Comp3BijectionToOldGroup);
+DeclareAttribute("Comp3BijectionToOldGroup",IsDomain);
 
 AssociateNameAttribute( "bijection", Comp3BijectionToOldGroup );
+
 
 #############################################################################
 ##
@@ -149,7 +289,7 @@ AssociateNameAttribute( "bijection", Comp3BijectionToOldGroup );
 #F  FpGroup
 ##
 ConversionFunctionFromIsomorphism := function(isomop)
-  return 
+  return
     function(G)
     local isom,img;
       isom:=isomop(G);
@@ -163,35 +303,745 @@ PermGroup := ConversionFunctionFromIsomorphism(IsomorphismPermGroup);
 AgGroup := ConversionFunctionFromIsomorphism(IsomorphismPcGroup);
 FpGroup := ConversionFunctionFromIsomorphism(IsomorphismFpGroup);
 
+
+#############################################################################
+##
+##  4) Simulate the presence of a {\GAP}~3 `operations' record in an object.
+##
+##  The compatibility mode of {GAP}~4 supports the use of such `operations'
+##  records for domains and as components of plain records.
+##
+#F  OperationsRecord( <name>, <parent> )
+#F  OperationsRecord( <name> )
+##
+##  Operations records are created with the function `OperationsRecord'.
+##  <name> is the name of the operations record, the optional argument
+##  <parent> is the operations record from which the components shall be
+##  inherited to the result.
+##  The result <oprec> of `OperationsRecord' is mutable, one can assign
+##  the function <fun> to the component <compname> of <oprec> via
+##
+#M  <oprec>.<compname>:= <fun>
+##
+##  and one can access this value via
+##
+#M  <oprec>.<compname>
+##
+##  Valid values of the second argument <parent> of `OperationsRecord' are
+##  all objects created with `OperationsRecord'.
+##  It is also possible to use a predefined operations records from the
+##  {\GAP}~3 library, such as `DomainOps' and `GroupOps', but note that these
+##  variables are immutable, so one can only access their components but one
+##  cannot change them.
+##
+##  If <oprec> is an object constructed with `OperationsRecord' then one can
+##  assign it to the component `operations' of a plain record or domain <D>
+##  via
+##
+#M  <D>.operations := <oprec>
+##
+##  This has the effect that the functions in <oprec> are made available
+##  as methods for the operations with names given by the component names,
+##  when called with <D> as argument.
+##  Note that it is *not* possible to assign an operations record to the
+##  `operations' component of a domain that has already such a component.
+##
+##  Afterwards one can access <oprec> via
+##
+#M  <D>.operations
+##
+##  so the value of the component <name> of <oprec> is
+##  `<D>.operations.<name>'.
+##
+##  The behaviour of a record <rec> and a domain <D> with `operations'
+##  component is the following.
+##
+##  If the component `<rec>.operations.<name>' is bound, where <name>
+##  is the name of an operation <opr>, then the call `<opr>( <rec> )'
+##  will be translated into `<rec>.operations.<name>( <rec> )'.
+##  If <opr> is an operation with more than one argument and <rec>
+##  is the first argument then the call of <opr> is also translated
+##  into a call of `<rec>.operations.<name>', with the same arguments.
+##  Only the binary operations `\=', `\<', `\+', `\-', `\*', `\/',
+##  `Comm', and `LeftQuotient' behave in a different way.
+##  As in {\GAP}~3, if both operands are records with `operations'
+##  component, the function in the *right* argument is called;
+##  only if there is no such function then the function in the *left*
+##  argument is called.
+##  If the required component is not bound then an error is signalled.
+##
+##  For a *domain* <D> with operations record, this means the following.
+##  If the component `<D>.operations.<name>' is bound, where <name>
+##  is the name of an attribute <attr> such that the value of <attr>
+##  for <D> is not yet known then the call `<attr>( <D> )' is
+##  translated into `<D>.operations.<name>( <D> )', and the result
+##  is stored in <D> as attribute value.
+##  For an operation <opr> that is *not* an attribute, the above
+##  statements about records hold.
+##  If the operations record of <D> does not contain the required component
+##  then the applicable {\GAP}~4 method of highest rank for the operation
+##  is called.
+##
+##  Also if <D> is a domain to which *no* operations record has been
+##  assigned then the access `<D>.operations' is possible.
+##  The result is the immutable object `OPS', the values of its components
+##  are the operations themselves; this object is also the value of the
+##  variables that denote the predefined operations records of the {\GAP}~3
+##  library, such as `DomainOps' and `GroupOps'.
+##  So the call to `<D>.operations.Size( <D> )' will result in the call
+##  `Size( <D> )'.
+##
+##  Note that it is *not* possible to get ``the best applicable method''
+##  for `Size' via `<D>.operations.Size' since this method may call
+##  `TryNextMethod', whereas `<D>.operations.Size( <D> )' should really be
+##  the size of <D>.
+##  Further note that the behaviour of domains can differ from the
+##  usual {\GAP}~4 behaviour only if a user defined operations record
+##  has been assigned to this domain; if no such operations record
+##  has been assigned to it, the possibility to call
+##  `<D>.operations.Size' means only an extension of the syntax.
+##
+
+#############################################################################
+##
+#V  OPERATION_RNAM  . . . . . . . . . . . . cache of operations via `RNamObj'
+#V  RENAMED_OPERATIONS  . . . . . . . . . . . . .  list of renamed operations
+##
+##  Similar to the situation with the access of attribute values via compoent
+##  names, there are cases where the operation name given by `NameFunction'
+##  does not coincide with the component name used in {\GAP}~3 operations
+##  records.
+##
+DeclareGlobalVariable( "OPERATION_RNAM",
+    "list of operations, OPERATION_RNAM[n] = op. with name NameRNam(n)");
+InstallFlushableValue( OPERATION_RNAM, [] );
+
+RENAMED_OPERATIONS := [];
+Add( RENAMED_OPERATIONS, [ "Elements", AsListSorted ] );
+Add( RENAMED_OPERATIONS, [ "IsAbelian", IsCommutative ] );
+Add( RENAMED_OPERATIONS, [ "Print", PrintObj ] );
+Add( RENAMED_OPERATIONS, [ "\=", EQ ] );
+Add( RENAMED_OPERATIONS, [ "\<", LT ] );
+Add( RENAMED_OPERATIONS, [ "\+", SUM ] );
+Add( RENAMED_OPERATIONS, [ "\-", DIFF ] );
+Add( RENAMED_OPERATIONS, [ "\*", PROD ] );
+Add( RENAMED_OPERATIONS, [ "\/", QUO ] );
+Add( RENAMED_OPERATIONS, [ "\^", POW ] );
+Add( RENAMED_OPERATIONS, [ "\in", IN ] );
+Add( RENAMED_OPERATIONS, [ "\mod", MOD ] );
+Add( RENAMED_OPERATIONS, [ "Comm", COMM ] );
+Add( RENAMED_OPERATIONS, [ "LeftQuotient", LQUO ] );
+Add( RENAMED_OPERATIONS, [ "Cgs", Pcgs ] ); # is this correct at all? what about an equivalent to Igs?
+Add( RENAMED_OPERATIONS, [ "AsAlgebra", AsFLMLOR ] );
+Add( RENAMED_OPERATIONS, [ "AsUnitalAlgebra", AsFLMLORWithOne ] );
+Add( RENAMED_OPERATIONS, [ "AsSubalgebra", AsSubFLMLOR ] );
+Add( RENAMED_OPERATIONS, [ "AsUnitalSubalgebra", AsSubFLMLORWithOne ] );
+Add( RENAMED_OPERATIONS, [ "AsVectorSpace", AsLeftModule ] );
+Add( RENAMED_OPERATIONS, [ "CharTable", CharacterTable ] );
+Add( RENAMED_OPERATIONS, [ "One", ONE ] );
+Add( RENAMED_OPERATIONS, [ "PowerMapping", POW ] );
+Add( RENAMED_OPERATIONS, [ "TrivialSubalgebra",
+         TrivialSubadditiveMagmaWithZero ] );
+Add( RENAMED_OPERATIONS, [ "TrivialSubgroup", TrivialSubmagmaWithOne ] );
+Add( RENAMED_OPERATIONS, [ "InverseMapping", InverseGeneralMapping ] );
+
+
+#############################################################################
+##
+#F  OperationByString( <s> )  . . . . . . . . . . . . operation with name <s>
+##
+OperationByString := function( s )
+    local n, p;
+
+    # Treat "\<" in a special way because it is different from "<".
+    if s = "\<" then
+      n:= RNamObj( "<" );
+    else
+      n:= RNamObj( s );
+    fi;
+
+    if not IsBound( OPERATION_RNAM[n] ) then
+
+      p:= PositionProperty( RENAMED_OPERATIONS, i -> i[1] = s );
+      if p <> fail then
+
+        # The name `s' is valid only in {\GAP}~3.
+        OPERATION_RNAM[n]:= RENAMED_OPERATIONS[p][2];
+
+      else
+        p:= PositionProperty( OPERATIONS,
+                i -> IsFunction(i) and NameFunction(i) = s );
+        if p = fail then
+#T also test variables created by DeclareGlobalFunction &c. ?
+          OPERATION_RNAM[n]:= fail;
+        else
+          OPERATION_RNAM[n]:= OPERATIONS[p];
+        fi;
+      fi;
+    fi;
+    return OPERATION_RNAM[n];
+end;
+
+
+#############################################################################
+##
+#R  IsOperationsRecord( <oprec> )
+##
+##  representation for ``operations records''
+##
+DeclareRepresentation( "IsOperationsRecord",
+    IsAttributeStoringRep,
+    [ "FILTER", "COMPONENTS" ] );
+
+
+#############################################################################
+##
+#M  \=( <oprec1>, <oprec2> )
+##
+InstallMethod( \=,
+    "for two operations records",
+    IsIdenticalObj,
+    [ IsOperationsRecord, IsOperationsRecord ], 0,
+    function( oprec1, oprec2 )
+    return     oprec1!.FILTER = oprec2!.FILTER
+           and oprec1!.COMPONENTS = oprec2!.COMPONENTS;
+    end );
+
+
+#############################################################################
+##
+#V  OperationsRecordFamily
+##
+OperationsRecordFamily := NewFamily( "OperationsRecordFamily",
+    IsOperationsRecord );
+
+
 #############################################################################
 ##
 #V  OPS
-#A  Operations( <D> )
 ##
-##  Simulate the presence of an `operations' record in an object.
-##  For that, we define one global variable `OPS' that stands for 
-##  all operations records of {\GAP-3}.
-##  This is a record whose components are the `operations' in the sense of
-##  {\GAP-3},
-##  with values the appropriate operations of {\GAP-4}.
+##  We construct `OPS' directly, without using `OperationsRecord',
+##  since we do not want to install methods with the assignments of
+##  components.
 ##
-##  The access to `<D>.operations' is handled by an attribute 'Operations'
-##  that returns `OPS'.
+##  We do not need components that correspond to operations, i.e. for which
+##  there is an operation with same name or for which there is an entry in
+##  `RENAMED_OPERATIONS'.
 ##
-OPS := rec();
+##  We need components for all {\GAP}~3 dispatchers that correspond to
+##  simple functions in {\GAP}~4.
+##
+OPS := Objectify( NewType( OperationsRecordFamily, IsOperationsRecord ),
+                  rec() );
+SetName( OPS, "OPS" );
+OPS!.FILTER:= IsObject;
+OPS!.COMPONENTS := rec();
 
-Operations := NewAttribute( "Operations", IsObject, "mutable" );
 
-InstallMethod( Operations, true, [ IsObject ], 0, obj -> OPS );
+#############################################################################
+##
+##  Fill `OPS' with those components that are not operations.
+##  Several components that were available in {\GAP}~3 have no analogue in
+##  {\GAP}~4, they show up in the lines starting with a comment sign.
+##
+COPS := OPS!.COMPONENTS;
+
+COPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
+COPS.AffineOperation := function( G, x, y, z )
+   return AffineOperation( GeneratorsOfGroup( G ), x, y, z); end;
+# COPS.AgGroup := AgGroup;
+# COPS.AgSubgroup := AgSubgroup;
+COPS.Agemo := Agemo;
+COPS.Algebra := Algebra;
+COPS.AlgebraHomomorphismByImages := AlgebraHomomorphismByImages;
+# COPS.AsModule := AsModule;
+# COPS.AsSubmodule := AsSubmodule;
+COPS.AscendingChain := AscendingChain;
+COPS.Basis := Basis;
+COPS.Blocks := Blocks;
+# COPS.CanonicalCosetElement := CanonicalCosetElement;
+# COPS.CanonicalRepresentative := CanonicalRepresentative;
+COPS.Centralizer := Centralizer;
+COPS.CharPol := CharPol;
+COPS.CharacterDegrees := CharacterDegrees;
+COPS.Closure := Closure;
+# COPS.CollectorlessFactorGroup := CollectorlessFactorGroup;
+# COPS.CompanionMatrix := CompanionMatrix;
+# COPS.Complement := Complement;
+# COPS.Components := Components;
+# COPS.CompositionFactors := CompositionFactors;
+# COPS.CompositionLength := CompositionLength;
+COPS.CompositionMapping := CompositionMapping;
+# COPS.CompositionSubgroup := CompositionSubgroup;
+# COPS.Constituents := Constituents;
+COPS.CoprimeComplement := OCCoprimeComplement;
+COPS.Core := Core;
+COPS.Cosets := RightCosets;
+COPS.Cycle := Cycle;
+COPS.CycleLength := CycleLength;
+COPS.CycleLengths := CycleLengths;
+COPS.Cycles := Cycles;
+COPS.CyclicGroup := CyclicGroup;
+COPS.DefaultField := DefaultField;
+COPS.DefaultRing := DefaultRing;
+# COPS.DefectApproximation := DefectApproximation;
+COPS.Denominator := Denominator;
+# COPS.Depth := Depth;
+COPS.DihedralGroup := DihedralGroup;
+COPS.DirectProduct := DirectProduct;
+COPS.DoubleCosets := DoubleCosets;
+# COPS.DualMatGroupSagGroup := DualMatGroupSagGroup;
+# COPS.DualModuleDescrSagGroup := DualModuleDescrSagGroup;
+COPS.ElementaryAbelianGroup := ElementaryAbelianGroup;
+# COPS.EmbeddedPolynomial := EmbeddedPolynomial;
+# COPS.Enumeration := Enumeration;
+# COPS.EquivalenceTest := EquivalenceTest;
+# COPS.ExponentAgWord := ExponentAgWord;
+# COPS.Exponents := Exponents;
+# COPS.ExponentsAgWord := ExponentsAgWord;
+COPS.ExtraspecialGroup := ExtraspecialGroup;
+# COPS.Factorization := Factorization;
+COPS.Field := Field;
+COPS.Fingerprint := Fingerprint;
+# COPS.FixedSubmodule := FixedSubmodule;
+# COPS.FpAlgebra := FpAlgebra;
+# COPS.FpGroup := FpGroup;
+COPS.FusionConjugacyClasses := FusionConjugacyClasses;
+# COPS.GaloisType := GaloisType;
+COPS.Gcd := Gcd;
+COPS.GcdRepresentation := GcdRepresentation;
+COPS.GeneralLinearGroup := GeneralLinearGroup;
+COPS.GeneralUnitaryGroup := GeneralUnitaryGroup;
+COPS.Group := Group;
+COPS.GroupHomomorphismByImages := GroupHomomorphismByImages;
+COPS.HallSubgroup := HallSubgroup;
+# COPS.Igs := Igs;
+COPS.Index := Index;
+COPS.Intersection := Intersection;
+# COPS.InvariantSubspace := InvariantSubspace;
+# COPS.IrreducibilityTest := IrreducibilityTest;
+# COPS.IrreducibleGeneratingSet := IrreducibleGeneratingSet;
+# COPS.IsAutomorphism := IsAutomorphism;
+COPS.IsBijection := IsBijection;
+COPS.IsCommutativeRing := IsCommutative and IsRing;
+# COPS.IsConsistent := IsConsistent;
+# COPS.IsEndomorphism := IsEndomorphism;
+# COPS.IsEpimorphism := IsEpimorphism;
+# COPS.IsEquivalent := IsEquivalent;
+# COPS.IsEquivalentOperation := IsEquivalentOperation;
+# COPS.IsFaithful := IsFaithful;
+# COPS.IsFixpointFree := IsFixpointFree;
+COPS.IsGroupHomomorphism := IsGroupHomomorphism;
+# COPS.IsHomomorphism := IsHomomorphism;
+# COPS.IsIsomorphism := IsIsomorphism;
+COPS.IsMapping := IsMapping;
+# COPS.IsMonomorphism := IsMonomorphism;
+COPS.IsNormal := IsNormal;
+# COPS.IsNormalExtension := IsNormalExtension;
+# COPS.IsNormalized := IsNormalized;
+COPS.IsPNilpotent := IsPNilpotent;
+# COPS.IsParent := IsParent;
+COPS.IsPrimitive := IsPrimitive;
+COPS.IsRegular := IsRegular;
+# COPS.IsSemiEchelonBasis := IsSemiEchelonBasis;
+COPS.IsSemiRegular := IsSemiRegular;
+# COPS.IsSubalgebra := IsSubalgebra;
+# COPS.IsSubspace := IsSubspace;
+COPS.IsTransitive := IsTransitive;
+# COPS.KernelAlgebraHomomorphism := KernelAlgebraHomomorphism;
+# COPS.KernelFieldHomomorphism := KernelFieldHomomorphism;
+# COPS.KernelGroupHomomorphism := KernelGroupHomomorphism;
+# COPS.Lattice := Lattice;
+# COPS.LaurentPolynomialRing := LaurentPolynomialRing;
+COPS.Lcm := Lcm;
+# COPS.LeadingExponent := LeadingExponent;
+# COPS.LeftCoset := LeftCoset;
+# COPS.LeftCosets := LeftCosets;
+# COPS.LeftTransversal := LeftTransversal;
+# COPS.MatGroupSagGroup := MatGroupSagGroup;
+COPS.MaximalBlocks := MaximalBlocks;
+# COPS.MaximalElement := MaximalElement;
+# COPS.MergedCgs := MergedCgs;
+# COPS.MergedIgs := MergedIgs;
+COPS.MinPol := MinPol;
+# COPS.MinpolFactors := MinpolFactors;
+# COPS.Module := Module;
+# COPS.ModuleDescrSagGroup := ModuleDescrSagGroup;
+# COPS.NaturalHomomorphism := NaturalHomomorphism;
+# COPS.NaturalModule := NaturalModule;
+COPS.NormalClosure := NormalClosure;
+# COPS.Normalize := Normalize;
+# COPS.NormalizeIgs := NormalizeIgs;
+# COPS.Normalized := Normalized;
+COPS.Normalizer := Normalizer;
+COPS.NumberConjugacyClasses := NumberConjugacyClasses;
+COPS.Omega := Omega;
+# COPS.OnCanonicalCosetElements := OnCanonicalCosetElements;
+COPS.OneCoboundaries := OneCoboundaries;
+COPS.OneCocycles := OneCocycles;
+COPS.Operation := Operation;
+COPS.OperationHomomorphism := OperationHomomorphism;
+COPS.Orbit := Orbit;
+COPS.OrbitLength := OrbitLength;
+COPS.OrbitLengths := OrbitLengths;
+COPS.Orbits := Orbits;
+COPS.PCentralSeries := PCentralSeries;
+COPS.PCore := PCore;
+COPS.Parent := Parent;
+# COPS.PermGroup := PermGroup;
+COPS.Permutation := Permutation;
+# COPS.PolyhedralGroup := PolyhedralGroup;
+COPS.Polynomial := Polynomial;
+# COPS.ProperSubmodule := ProperSubmodule;
+COPS.PRump := PRump;
+# COPS.Radical := Radical;
+COPS.Rank := Rank;
+# COPS.ReducedAgWord := ReducedAgWord;
+# COPS.RelativeOrder := RelativeOrder;
+# COPS.Representation := Representation;
+COPS.RepresentativeOperation := RepresentativeOperation;
+# COPS.RepresentativesOperation := RepresentativesOperation;
+COPS.RightCosets := RightCosets;
+COPS.RightTransversal := RightTransversal;
+COPS.Ring := Ring;
+COPS.SemiEchelonBasis := SemiEchelonBasis;
+# COPS.SetPrintLevel := SetPrintLevel;
+# COPS.SmallestGenerators := SmallestGenerators;
+# COPS.SpaceCoset := SpaceCoset;
+COPS.SpecialLinearGroup := SpecialLinearGroup;
+COPS.SpecialUnitaryGroup := SpecialUnitaryGroup;
+COPS.StabChain := StabChain;
+COPS.Stabilizer := Stabilizer;
+# COPS.StandardBasis := StandardBasis;
+# COPS.StructureConjugacyClasses := StructureConjugacyClasses;
+COPS.Subalgebra := Subalgebra;
+COPS.Subgroup := Subgroup;
+COPS.Submodule := Submodule;
+COPS.SubnormalSeries := SubnormalSeries;
+COPS.Subspace := Subspace;
+# COPS.SylowComplements := SylowComplements;
+COPS.SylowSubgroup := SylowSubgroup;
+COPS.SymmetricGroup := SymmetricGroup;
+COPS.SymplecticGroup := SymplecticGroup;
+# COPS.SystemNormalizer := SystemNormalizer;
+COPS.Transitivity := Transitivity;
+# COPS.Transposed := Transposed;
+COPS.Union := Union;
+COPS.UnitalAlgebra := AlgebraWithOne;
+COPS.UnitalSubalgebra := SubalgebraWithOne;
+# COPS.Weight := Weight;
+
+OPS := Immutable( OPS );
 
 
+#############################################################################
+##
+#F  OperationsRecord( <name> )
+#F  OperationsRecord( <name>, <parent> )
+##
+##  The returned object <oprec> is a component object with components
+##  `FILTER' and `COMPONENTS'.
+##  The former is the property associated with <oprec>,
+##  the latter is a plain record whose components are the ones that had been
+##  explicitly assigned to <oprec>.
+##  *Note* that there will be for example no component `"Size"' in <oprec>
+##  unless either <oprec> inherited it or it was explicitly assigned.
+##  Nevertheless it is always possible to fetch `<oprec>.Size', which is
+##  the operation `Size' itself if `<oprec>!.COMPONENTS' has no component
+##  `"Size"'.
+##
+OperationsRecord := function( arg )
 
+    local name,     # name of the operations record, first argument
+          prop,     # new property associated with the operations record
+          oprec,    # the operations record, result
+          parent;   # operations record from which the new one shall inherit
+
+    # Create the property that is associated with the new operations record.
+    name:= arg[1];
+    prop:= NewProperty( Concatenation( "Has", name ), IsObject );
+    Print( "Has", name, " := NewProperty( \"Has", name,
+           "\", IsObject );\n" );
+
+    # Create the new operations record.
+    oprec:= Objectify( NewType( OperationsRecordFamily,
+                                IsOperationsRecord ),
+                       rec() );
+    SetName( oprec,name );
+    oprec!.FILTER:= prop;
+
+    # Handle inheritance.
+    if Length( arg ) = 2 then
+
+      parent:= arg[2];
+      if not IsOperationsRecord( parent ) then
+        Error( "<parent> must be an operations record" );
+      elif not IsIdenticalObj( parent, OPS ) then
+
+        # Copy the methods of the parent.
+        oprec!.COMPONENTS:= ShallowCopy( parent!.COMPONENTS );
+
+        # Handle inheritance also on the level of filters.
+        InstallTrueMethod( arg[2]!.FILTER, prop );
+        Print( "# Every object with `", NameFunction( prop ),
+               "' shall have also `", NameFunction( parent!.FILTER ),
+               "'.\n",
+               "InstallTrueMethod( ", NameFunction( parent!.FILTER ),
+               ", ", NameFunction( prop ), " );\n" );
+
+      else
+
+        oprec!.COMPONENTS:= rec();
+
+      fi;
+
+    else
+      oprec!.COMPONENTS:= rec();
+    fi;
+
+    return oprec;
+end;
+
+
+#############################################################################
+##
+#O  Operations( <obj> )
+##
+DeclareAttribute( "Operations", IsObject, "mutable" );
+
+InstallMethod( SetOperations,
+    "for object with `OPS', allow to set another value",
+    true,
+    [ IsObject and HasOperations, IsOperationsRecord ], 0,
+    function( obj, oprec )
+    if IsIdenticalObj( Operations( obj ), OPS ) then
+      ResetFilterObj( obj, HasOperations );
+    fi;
+    TryNextMethod();
+    end );
+
+InstallMethod( Operations,
+    "for any object without `operations', return `OPS'",
+    true,
+    [ IsObject ], 0,
+    obj -> OPS );
+
+
+#############################################################################
+##
+#M  <obj>.operations := <oprec> . . . . . . . . . . . . . .  set `operations'
+##
+VALUE_RNAM_OPERATIONS := RNamObj( "operations" );
+
+InstallMethod( \.\:\=,
+    "set `operations' component of object in `IsAttributeStoringRep'",
+    true,
+    [ IsObject, IsPosInt, IsOperationsRecord ], 100,
+    function( obj, n, oprec )
+
+    # Check whether the desired component is really `operations'.
+    if n <> VALUE_RNAM_OPERATIONS then
+      TryNextMethod();
+    fi;
+
+    # Force setting the operations record,
+    # and mark `obj' to make the methods of the operations record applicable.
+    SetOperations( obj, oprec );
+    Setter( oprec!.FILTER )( obj, true );
+    end );
+
+
+#############################################################################
+##
+#M  \.( <oprec>, <name> ) . . . . . . . . . . . . . .  for operations records
+##
+##  First it is checked whether `<oprec>.COMPONENTS' has a component <name>.
+##  If not then it is checked whether <name> is an admissible name of an
+##  operation.
+##
+InstallMethod( \.,
+    "for operations record and positive integer",
+    true,
+    [ IsOperationsRecord, IsPosInt ], 0,
+    function( oprec, n )
+    local op;
+    n:= NameRNam( n );
+    if IsBound( oprec!.COMPONENTS.( n ) ) then
+      return oprec!.COMPONENTS.( n );
+    elif not IsIdenticalObj( oprec, OPS )
+         and IsBound( OPS!.COMPONENTS.( n ) ) then
+      return OPS!.COMPONENTS.( n );
+    else
+      op:= OperationByString( n );
+      if op = fail then
+        Error( "no operation with name `", n, "'" );
+      else
+        return op;
+      fi;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsBound\.( <oprec>, <name> )  . . . . . . . . . .  for operations records
+##
+InstallMethod( IsBound\.,
+    "for operations record and positive integer",
+    true,
+    [ IsOperationsRecord, IsPosInt ], 0,
+    function( oprec, n )
+    n:= NameRNam( n );
+    if IsBound( oprec!.COMPONENTS.( n ) ) then
+      return true;
+    elif not IsIdenticalObj( oprec, OPS )
+         and IsBound( OPS!.COMPONENTS.( n ) ) then
+      return true;
+    else
+      op:= OperationByString( n );
+      if op = fail then
+        return false;
+      else
+        return true;
+      fi;
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  \.\:\=( <oprec>, <name>, <val> )  . . . . . . . .  for operations records
+##
+InstallMethod( \.\:\=,
+    "for operations record, positive integer, and function",
+    true,
+    [ IsOperationsRecord, IsPosInt, IsObject ], 0,
+    function( oprec, n, method )
+    local op, nargs, flags, flagsnames, i;
+
+    # Store `method' in the record.
+    n:= NameRNam( n );
+    oprec!.COMPONENTS.( n ):= method;
+
+    # Install a method for the operation.
+    op:= OperationByString( n );
+    if op <> fail then
+
+      # We must know the number of arguments.
+      nargs:= NARG_FUNC( method );
+      if nargs < 0 then
+        Error( "currently no `arg' functions permitted" );
+      fi;
+
+      # Construct the list of requirements for the method.
+      # In general we expect the object with operations record `oprec'
+      # to be the first operand.
+      # For the other operands, we do not require anything.
+      flags:=[ oprec!.FILTER ];
+      flagsnames:= Concatenation( "[ ", NameFunction( oprec!.FILTER ) );
+      for i in [ 2 .. nargs ] do
+        Add( flags, IsObject );
+        Append( flagsnames, ", IsObject" );
+      od;
+      Append( flagsnames, " ]" );
+
+      # Add the leading backslash of the operation name if necessary.
+      if n in [ "=", "<", "+", "-", "*", "/", "^", "mod", "in" ] then
+        n:= Concatenation( "\\", n );
+      fi;
+
+      # Install the method.
+      # Note that we call `InstallOtherMethod' in order to avoid
+      # the error message, even if `InstallMethod' would work.
+      # Also note that we use the rank `SUM_FLAGS' in order to override
+      # (hopefully) all methods for objects without operations record.
+      InstallOtherMethod( op,
+          Concatenation( "for object with `", Name( oprec ), "' as first argument" ),
+          true,
+          flags, SUM_FLAGS,
+          method );
+
+      # Print the method installation.
+      Print( "# If the following method installation matches the",
+             " requirements\n",
+             "# of the operation `", NameFunction( op ), "' then",
+             " `InstallMethod' should be used.\n",
+             "# It might be useful to replace the rank `SUM_FLAGS' by `0'.\n",
+             "InstallOtherMethod( ", NameFunction( op ), ",\n",
+             "    \"for object with `", Name( oprec ), "' as first argument\",\n",
+             "    true,\n",
+             "    ", flagsnames, ", SUM_FLAGS,\n",
+             "    ", oprec, ".", n , " );\n\n" );
+
+      # Note the different behaviour of the binary infix operations
+      # `\=', `\<', `\+', `\-', `\*', `\/', `\^', `\mod', `LeftQuotient',
+      # and `Comm', which check first the right operand and then the left;
+      # in particular, we install an appropriate second method in these cases.
+      if op in [ \=, \<, \+, \-, \*, \/, \^, \mod, LeftQuotient, Comm ] then
+
+        # Install the second method.
+        InstallOtherMethod( op,
+            Concatenation( "for object with `", Name( oprec ), "' as second argument" ),
+            true,
+            [ IsObject, oprec!.FILTER ], SUM_FLAGS + 1,
+            method );
+
+        # Print the method installation.
+        Print( "# For binary infix operators, a second method is installed\n",
+               "# for the case that the object with `", Name( oprec ),
+               "' is the right operand;\n",
+               "# since this case has priority on GAP 3, the method is\n",
+               "# installed with higher rank `SUM_FLAGS + 1'.\n",
+               "InstallOtherMethod( ", NameFunction( op ), "\n",
+               "    \"for object with `", Name( oprec ), "' as second argument\",\n",
+               "    true,\n",
+               "    [ IsObject, ", NameFunction( oprec!.FILTER ), " ], SUM_FLAGS + 1,\n",
+               "    ", oprec, ".", n, " );\n\n" );
+      fi;
+
+    fi;
+    end);
+
+
+#############################################################################
+##
+#F  RecFields( <oprec> )
+##
+##  For an operations record, `RecFields' is the return value of `RecNames'
+##  when called with `<oprec>!.COMPONENTS'.
+##
+RecFields := function( obj )
+    if IsOperationsRecord( obj ) then
+      return RecNames( obj!.COMPONENTS );
+    elif IsRecord( obj ) then
+      return RecNames( obj );
+    else
+      Error( "<obj> must be a record" );
+    fi;
+end;
+
+#############################################################################
+##
+#F  IsRec( <oprec> )
+##
+##  true records and component objects may be considered as `GAP3-records'.
+##
+IsRec := obj -> IsRecord(obj) or IsComponentObjectRep(obj);
+
+
+#############################################################################
+##
+##  Make the predefined operations record of {\GAP}~3 available, all with
+##  value `OPS'.
+##
 AgGroupHomomorphismOps := OPS;
 AgGroupOps := OPS;
 AlgebraElementsOps := OPS;
 AlgebraHomomorphismByImagesOps := OPS;
 AlgebraHomomorphismOps := OPS;
 AlgebraOps := OPS;
+AlternatingPermGroupOps := OPS;
+BasisClassFunctionsSpaceOps := OPS;
 BasisMatAlgebraOps := OPS;
 BasisQuotientRowSpaceOps := OPS;
 BasisRowSpaceOps := OPS;
@@ -203,6 +1053,8 @@ CharTableOps := OPS;
 CharacterOps := OPS;
 ClassFunctionOps := OPS;
 ClassFunctionsOps := OPS;
+CliffordRecordOps := OPS;
+CliffordTableOps := OPS;
 CompositionAlgebraHomomorphismOps := OPS;
 CompositionFieldHomomorphismOps := OPS;
 CompositionGroupHomomorphismOps := OPS;
@@ -253,6 +1105,7 @@ MatGroupOps := OPS;
 MatricesOps := OPS;
 ModuleCosetOps := OPS;
 ModuleOps := OPS;
+MolienSeriesOps := OPS;
 NFAutomorphismOps := OPS;
 NullAlgebraOps := OPS;
 NumberFieldOps := OPS;
@@ -260,11 +1113,13 @@ NumberRingOps := OPS;
 OperationHomomorphismAlgebraOps := OPS;
 OperationHomomorphismModuleOps := OPS;
 OperationHomomorphismUnitalAlgebraOps := OPS;
+OpsOps := OPS;
 PermAutomorphismGroupOps := OPS;
 PermGroupHomomorphismByImagesOps := OPS;
 PermGroupHomomorphismByImagesPermGroupOps := OPS;
 PermGroupOps := OPS;
 PreliminaryLatticeOps := OPS;
+PresentationOps := OPS;
 ProjectionDirectProductOps := OPS;
 ProjectionDirectProductPermGroupOps := OPS;
 ProjectionSemidirectProductOps := OPS;
@@ -290,6 +1145,7 @@ StandardBasisMatAlgebraOps := OPS;
 StandardBasisModuleOps := OPS;
 SubdirectProductOps := OPS;
 SubdirectProductPermGroupOps := OPS;
+SymmetricPermGroupOps := OPS;
 TransConstHomomorphismOps := OPS;
 UnitalAlgebraHomomorphismOps := OPS;
 UnitalAlgebraOps := OPS;
@@ -298,352 +1154,6 @@ VectorSpaceOps := OPS;
 VirtualCharacterOps := OPS;
 WreathProductElementOps := OPS;
 WreathProductOps := OPS;
-
-
-OPS.AbelianInvariants := AbelianInvariants;
-# OPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
-OPS.AffineOperation := function(G,x,y,z)
-   return AffineOperation(GeneratorsOfGroup(G),x,y,z);
-end;
-# OPS.AgGroup := AgGroup;
-# OPS.AgSubgroup := AgSubgroup;
-OPS.Agemo := Agemo;
-OPS.Algebra := Algebra;
-# OPS.AlgebraHomomorphismByImages := AlgebraHomomorphismByImages;
-# OPS.AlgebraicExtension := AlgebraicExtension;
-OPS.AsAlgebra := AsAlgebra;
-OPS.AsGroup := AsGroup;
-# OPS.AsModule := AsModule;
-OPS.AsRing := AsRing;
-OPS.AsSpace := AsVectorSpace;
-OPS.AsSubalgebra := AsSubalgebra;
-OPS.AsSubgroup := AsSubgroup;
-# OPS.AsSubmodule := AsSubmodule;
-OPS.AsSubspace := AsSubspace;
-OPS.AsUnitalAlgebra := AsAlgebraWithOne;
-OPS.AsUnitalSubalgebra := AsSubalgebraWithOne;
-# OPS.AscendingChain := AscendingChain;
-# OPS.Associates := Associates;
-# OPS.AutomorphismGroup := AutomorphismGroup;
-OPS.Base := Base;
-OPS.Basis := Basis;
-# OPS.BergerCondition := BergerCondition;
-OPS.Blocks := Blocks;
-OPS.CanonicalBasis := CanonicalBasis;
-# OPS.CanonicalCosetElement := CanonicalCosetElement;
-# OPS.CanonicalRepresentative := CanonicalRepresentative;
-OPS.Centralizer := Centralizer;
-OPS.Centre := Centre;
-OPS.Cgs := Pcgs;
-# OPS.CharPol := CharPol;
-OPS.CharTable := CharacterTable;
-OPS.CharacterDegrees := CharacterDegrees;
-OPS.CharacteristicPolynomial := CharacteristicPolynomial;
-OPS.ChiefSeries := ChiefSeries;
-OPS.Closure := Closure;
-OPS.Coefficients := Coefficients;
-# OPS.CollectorlessFactorGroup := CollectorlessFactorGroup;
-OPS.Comm := Comm;
-OPS.CommutatorFactorGroup := CommutatorFactorGroup;
-OPS.CommutatorSubgroup := CommutatorSubgroup;
-# OPS.CompanionMatrix := CompanionMatrix;
-# OPS.Complement := Complement;
-# OPS.Complementclasses := Complementclasses;
-# OPS.Components := Components;
-# OPS.CompositionFactors := CompositionFactors;
-# OPS.CompositionLength := CompositionLength;
-OPS.CompositionMapping := CompositionMapping;
-OPS.CompositionSeries := CompositionSeries;
-# OPS.CompositionSubgroup := CompositionSubgroup;
-OPS.ConjugacyClass := ConjugacyClass;
-OPS.ConjugacyClasses := ConjugacyClasses;
-OPS.ConjugacyClassesMaximalSubgroups := ConjugacyClassesMaximalSubgroups;
-OPS.ConjugacyClassesPerfectSubgroups := ConjugacyClassesPerfectSubgroups;
-OPS.ConjugacyClassesSubgroups := ConjugacyClassesSubgroups;
-OPS.ConjugateSubgroup := ConjugateSubgroup;
-OPS.ConjugateSubgroups := ConjugateSubgroups;
-OPS.Conjugates := Conjugates;
-# OPS.Constituents := Constituents;
-# OPS.CoprimeComplement := CoprimeComplement;
-OPS.Core := Core;
-# OPS.Cosets := Cosets;
-OPS.Cycle := Cycle;
-OPS.CycleLength := CycleLength;
-OPS.CycleLengths := CycleLengths;
-OPS.Cycles := Cycles;
-# OPS.CyclicGroup := CyclicGroup;
-OPS.DefaultField := DefaultField;
-OPS.DefaultRing := DefaultRing;
-# OPS.DefectApproximation := DefectApproximation;
-OPS.Degree := Degree;
-# OPS.DegreeOperation := DegreeOperation;
-# OPS.Denominator := Denominator;
-# OPS.Depth := Depth;
-# OPS.Derivative := Derivative;
-OPS.DerivedSeries := DerivedSeriesOfGroup;
-OPS.DerivedSubgroup := DerivedSubgroup;
-# OPS.Determinant := Determinant;
-OPS.Difference := Difference;
-# OPS.DihedralGroup := DihedralGroup;
-OPS.Dimension := Dimension;
-OPS.DimensionsLoewyFactors := DimensionsLoewyFactors;
-# OPS.DirectProduct := DirectProduct;
-OPS.Display := Display;
-# OPS.DoubleCoset := DoubleCoset;
-# OPS.DoubleCosets := DoubleCosets;
-# OPS.DualMatGroupSagGroup := DualMatGroupSagGroup;
-# OPS.DualModuleDescrSagGroup := DualModuleDescrSagGroup;
-# OPS.Eigenvalues := Eigenvalues;
-# OPS.ElementaryAbelianGroup := ElementaryAbelianGroup;
-OPS.ElementaryAbelianSeries := ElementaryAbelianSeries;
-OPS.Elements := Elements;
-# OPS.EmbeddedPolynomial := EmbeddedPolynomial;
-OPS.Embedding := Embedding;
-# OPS.Enumeration := Enumeration;
-# OPS.EquivalenceTest := EquivalenceTest;
-OPS.EuclideanDegree := EuclideanDegree;
-OPS.EuclideanQuotient := EuclideanQuotient;
-OPS.EuclideanRemainder := EuclideanRemainder;
-# OPS.EulerianFunction := EulerianFunction;
-OPS.Exponent := Exponent;
-# OPS.ExponentAgWord := ExponentAgWord;
-# OPS.Exponents := Exponents;
-# OPS.ExponentsAgWord := ExponentsAgWord;
-# OPS.ExtraspecialGroup := ExtraspecialGroup;
-OPS.FactorGroup := FactorGroup;
-# OPS.Factorization := Factorization;
-OPS.Factors := Factors;
-OPS.Field := Field;
-# OPS.Fingerprint := Fingerprint;
-OPS.FittingSubgroup := FittingSubgroup;
-# OPS.FixedSubmodule := FixedSubmodule;
-OPS.FpAlgebra := FpAlgebra;
-# OPS.FpGroup := FpGroup;
-OPS.FrattiniSubgroup := FrattiniSubgroup;
-OPS.FusionConjugacyClasses := FusionConjugacyClasses;
-OPS.GaloisGroup := GaloisGroup;
-# OPS.GaloisType := GaloisType;
-OPS.Gcd := Gcd;
-# OPS.GcdRepresentation := GcdRepresentation;
-# OPS.GeneralLinearGroup := GeneralLinearGroup;
-# OPS.GeneralUnitaryGroup := GeneralUnitaryGroup;
-OPS.Group := Group;
-OPS.GroupHomomorphismByImages := GroupHomomorphismByImages;
-OPS.HallSubgroup := HallSubgroup;
-OPS.IdentityMapping := IdentityMapping;
-# OPS.Igs := Igs;
-OPS.ImagesRepresentative := ImagesRepresentative;
-OPS.Indeterminate := Indeterminate;
-OPS.Index := Index;
-OPS.Induced := Induced;
-# OPS.InertiaSubgroup := InertiaSubgroup;
-OPS.Int := Int;
-OPS.InterpolatedPolynomial := InterpolatedPolynomial;
-OPS.Intersection := Intersection;
-OPS.InvariantForm := InvariantForm;
-# OPS.InvariantSubspace := InvariantSubspace;
-OPS.InverseMapping := InverseMapping;
-# OPS.IrreducibilityTest := IrreducibilityTest;
-# OPS.IrreducibleGeneratingSet := IrreducibleGeneratingSet;
-OPS.IsAbelian := IsAbelian;
-# OPS.IsAlgebraHomomorphism := IsAlgebraHomomorphism;
-OPS.IsAssociated := IsAssociated;
-# OPS.IsAutomorphism := IsAutomorphism;
-OPS.IsBijection := IsBijection;
-OPS.IsCentral := IsCentral;
-OPS.IsCommutativeRing := IsCommutativeRing;
-OPS.IsConjugate := IsConjugate;
-# OPS.IsConsistent := IsConsistent;
-OPS.IsCyclic := IsCyclic;
-OPS.IsElementaryAbelian := IsElementaryAbelian;
-# OPS.IsEndomorphism := IsEndomorphism;
-# OPS.IsEpimorphism := IsEpimorphism;
-# OPS.IsEquivalent := IsEquivalent;
-# OPS.IsEquivalentOperation := IsEquivalentOperation;
-OPS.IsEuclideanRing := IsEuclideanRing;
-# OPS.IsFaithful := IsFaithful;
-OPS.IsFieldHomomorphism := IsFieldHomomorphism;
-OPS.IsFinite := IsFinite;
-# OPS.IsFixpointFree := IsFixpointFree;
-OPS.IsGroupHomomorphism := IsGroupHomomorphism;
-# OPS.IsHomomorphism := IsHomomorphism;
-OPS.IsInjective := IsInjective;
-OPS.IsIntegralRing := IsIntegralRing;
-# OPS.IsIrreducible := IsIrreducible;
-# OPS.IsIsomorphism := IsIsomorphism;
-OPS.IsMapping := IsMapping;
-OPS.IsMonomial := IsMonomial;
-# OPS.IsMonomorphism := IsMonomorphism;
-OPS.IsNilpotent := IsNilpotent;
-OPS.IsNormal := IsNormal;
-# OPS.IsNormalExtension := IsNormalExtension;
-# OPS.IsNormalized := IsNormalized;
-OPS.IsPNilpotent := IsPNilpotent;
-# OPS.IsParent := IsParent;
-OPS.IsPerfect := IsPerfect;
-OPS.IsPrime := IsPrime;
-OPS.IsPrimitive := IsPrimitive;
-OPS.IsRegular := IsRegular;
-# OPS.IsSemiEchelonBasis := IsSemiEchelonBasis;
-OPS.IsSemiRegular := IsSemiRegular;
-OPS.IsSimple := IsSimple;
-OPS.IsSolvable := IsSolvable;
-# OPS.IsSubalgebra := IsSubalgebra;
-OPS.IsSubgroup := IsSubgroup;
-OPS.IsSubnormal := IsSubnormal;
-OPS.IsSubset := IsSubset;
-# OPS.IsSubspace := IsSubspace;
-OPS.IsSurjective := IsSurjective;
-OPS.IsTransitive := IsTransitive;
-OPS.IsTrivial := IsTrivial;
-OPS.IsUniqueFactorizationRing := IsUniqueFactorizationRing;
-OPS.IsUnit := IsUnit;
-OPS.IsZero := IsZero;
-OPS.JenningsSeries := JenningsSeries;
-OPS.Kernel := Kernel;
-# OPS.KernelAlgebraHomomorphism := KernelAlgebraHomomorphism;
-# OPS.KernelFieldHomomorphism := KernelFieldHomomorphism;
-# OPS.KernelGroupHomomorphism := KernelGroupHomomorphism;
-OPS.KroneckerProduct := KroneckerProduct;
-# OPS.Lattice := Lattice;
-OPS.LatticeSubgroups := LatticeSubgroups;
-# OPS.LaurentPolynomialRing := LaurentPolynomialRing;
-OPS.Lcm := Lcm;
-# OPS.LeadingCoefficient := LeadingCoefficient;
-# OPS.LeadingExponent := LeadingExponent;
-# OPS.LeftCoset := LeftCoset;
-# OPS.LeftCosets := LeftCosets;
-# OPS.LeftTransversal := LeftTransversal;
-OPS.LinearCombination := LinearCombination;
-# OPS.LinearOperation := LinearOperation;
-OPS.LowerCentralSeries := LowerCentralSeriesOfGroup;
-# OPS.MatGroupSagGroup := MatGroupSagGroup;
-OPS.MaximalBlocks := MaximalBlocks;
-# OPS.MaximalElement := MaximalElement;
-OPS.MaximalNormalSubgroups := MaximalNormalSubgroups;
-OPS.MaximalSubgroups := MaximalSubgroups;
-# OPS.MergedCgs := MergedCgs;
-# OPS.MergedIgs := MergedIgs;
-# OPS.MinPol := MinPol;
-# OPS.MinimalGeneratingSet := MinimalGeneratingSet;
-OPS.MinimalPolynomial := MinimalPolynomial;
-# OPS.MinpolFactors := MinpolFactors;
-# OPS.Module := Module;
-# OPS.ModuleDescrSagGroup := ModuleDescrSagGroup;
-# OPS.NaturalHomomorphism := NaturalHomomorphism;
-# OPS.NaturalModule := NaturalModule;
-OPS.Norm := Norm;
-OPS.NormalClosure := NormalClosure;
-OPS.NormalIntersection := NormalIntersection;
-OPS.NormalSubgroups := NormalSubgroups;
-# OPS.Normalize := Normalize;
-# OPS.NormalizeIgs := NormalizeIgs;
-# OPS.Normalized := Normalized;
-OPS.Normalizer := Normalizer;
-OPS.NormedVectors := NormedVectors;
-OPS.NumberConjugacyClasses := NumberConjugacyClasses;
-OPS.Omega := Omega;
-# OPS.OnCanonicalCosetElements := OnCanonicalCosetElements;
-OPS.One := One;
-# OPS.OneCoboundaries := OneCoboundaries;
-# OPS.OneCocycles := OneCocycles;
-OPS.Operation := Operation;
-OPS.OperationHomomorphism := OperationHomomorphism;
-OPS.Orbit := Orbit;
-OPS.OrbitLength := OrbitLength;
-OPS.OrbitLengths := OrbitLengths;
-OPS.Orbits := Orbits;
-OPS.Order := Order;
-OPS.PCentralSeries := PCentralSeries;
-OPS.PCore := PCore;
-# OPS.PRump := PRump;
-OPS.Parent := Parent;
-# OPS.PermGroup := PermGroup;
-OPS.Permutation := Permutation;
-OPS.PermutationCharacter := PermutationCharacter;
-# OPS.PolyhedralGroup := PolyhedralGroup;
-# OPS.Polynomial := Polynomial;
-OPS.PolynomialRing := PolynomialRing;
-OPS.PowerMapping := PowerMapping;
-OPS.PowerMod := PowerMod;
-OPS.PreImagesRepresentative := PreImagesRepresentative;
-# OPS.PrefrattiniSubgroup := PrefrattiniSubgroup;
-OPS.Print := Print;
-OPS.Projection := Projection;
-# OPS.ProperSubmodule := ProperSubmodule;
-OPS.Quotient := Quotient;
-OPS.QuotientMod := QuotientMod;
-OPS.QuotientRemainder := QuotientRemainder;
-# OPS.Radical := Radical;
-OPS.Random := Random;
-# OPS.Rank := Rank;
-# OPS.RationalClass := RationalClass;
-OPS.RationalClasses := RationalClasses;
-# OPS.ReducedAgWord := ReducedAgWord;
-# OPS.RelativeOrder := RelativeOrder;
-# OPS.Representation := Representation;
-OPS.Representative := Representative;
-OPS.RepresentativeOperation := RepresentativeOperation;
-# OPS.RepresentativesOperation := RepresentativesOperation;
-OPS.RepresentativesPerfectSubgroups := RepresentativesPerfectSubgroups;
-OPS.Restricted := Restricted;
-# OPS.RightCoset := RightCoset;
-# OPS.RightCosets := RightCosets;
-# OPS.RightTransversal := RightTransversal;
-OPS.Ring := Ring;
-OPS.ScalarProduct := ScalarProduct;
-OPS.SemiEchelonBasis := SemiEchelonBasis;
-# OPS.SemidirectProduct := SemidirectProduct;
-# OPS.SetPrintLevel := SetPrintLevel;
-OPS.SiftedVector := SiftedVector;
-OPS.Size := Size;
-OPS.SizesConjugacyClasses := SizesConjugacyClasses;
-# OPS.SmallestGenerators := SmallestGenerators;
-# OPS.SpaceCoset := SpaceCoset;
-# OPS.SpecialLinearGroup := SpecialLinearGroup;
-# OPS.SpecialUnitaryGroup := SpecialUnitaryGroup;
-OPS.StabChain := StabChain;
-OPS.Stabilizer := Stabilizer;
-OPS.StandardAssociate := StandardAssociate;
-# OPS.StandardBasis := StandardBasis;
-OPS.String := String;
-# OPS.StructureConjugacyClasses := StructureConjugacyClasses;
-OPS.Subalgebra := Subalgebra;
-# OPS.SubdirectProduct := SubdirectProduct;
-OPS.Subgroup := Subgroup;
-# OPS.Submodule := Submodule;
-OPS.SubnormalSeries := SubnormalSeries;
-OPS.Subspace := Subspace;
-OPS.SupersolvableResiduum := SupersolvableResiduum;
-# OPS.SylowComplements := SylowComplements;
-OPS.SylowSubgroup := SylowSubgroup;
-OPS.SylowSystem := SylowSystem;
-OPS.SymmetricGroup := SymmetricGroup;
-# OPS.SymplecticGroup := SymplecticGroup;
-# OPS.SystemNormalizer := SystemNormalizer;
-# OPS.TableOfMarks := TableOfMarks;
-OPS.Trace := Trace;
-OPS.Transitivity := Transitivity;
-# OPS.Transposed := Transposed;
-OPS.TrivialSubalgebra := TrivialSubalgebra;
-OPS.TrivialSubgroup := TrivialSubgroup;
-OPS.Union := Union;
-OPS.UnitalAlgebra := AlgebraWithOne;
-OPS.UnitalSubalgebra := SubalgebraWithOne;
-OPS.Units := Units;
-OPS.UpperCentralSeries := UpperCentralSeriesOfGroup;
-# OPS.Weight := Weight;
-# OPS.WreathProduct := WreathProduct;
-OPS.Zero := Zero;
-OPS.\* := \*;
-OPS.\+ := \+;
-OPS.\- := \-;
-OPS.\/ := \/;
-OPS.\< := \<;
-OPS.\= := \=;
-OPS.\^ := \^;
-OPS.\in := \in;
-OPS.\mod := \mod;
 
 
 #############################################################################

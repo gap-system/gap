@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This   file contains  the operations  for  groups   defined by  rewriting
 ##  systems.
@@ -23,7 +24,7 @@ Revision.rwsgrp_gd :=
 
 #C  IsElementsFamilyByRws .  category of elements family constructed with RWS
 ##
-IsElementsFamilyByRws := NewCategory(
+DeclareCategory(
     "IsElementsFamilyByRws",
     IsFamily );
 
@@ -32,7 +33,7 @@ IsElementsFamilyByRws := NewCategory(
 ##
 #O  MultiplicativeElementsWithInversesFamilyByRws( <rws> )  . . . this family
 ##
-MultiplicativeElementsWithInversesFamilyByRws := NewOperation(
+DeclareOperation(
     "MultiplicativeElementsWithInversesFamilyByRws",
     [ IsRewritingSystem ] );
 
@@ -43,7 +44,7 @@ MultiplicativeElementsWithInversesFamilyByRws := NewOperation(
 
 #C  IsMultiplicativeElementWithInverseByRws . . .  category of these elements
 ##
-IsMultiplicativeElementWithInverseByRws := NewCategory(
+DeclareCategory(
     "IsMultiplicativeElementWithInverseByRws",
     IsMultiplicativeElementWithInverse );
 
@@ -52,7 +53,7 @@ IsMultiplicativeElementWithInverseByRws := NewCategory(
 ##
 #O  ElementByRws( <fam>, <elm> )  . . . . . . . . . construct such an element
 ##
-ElementByRws := NewOperation(
+DeclareOperation(
     "ElementByRws",
     [ IsElementsFamilyByRws, IsObject ] );
 
@@ -61,9 +62,10 @@ ElementByRws := NewOperation(
 ##
 #O  UnderlyingElement( <elm> )
 ##
-UnderlyingElement := NewOperation(
-    "UnderlyingElement",
-    [ IsObject ] );
+##  Let <elm> be an element of a group whose elements are represented as
+##  words with further properties. Then `UnderlyingElement' returns the word
+##  from the free group that is used as a representative for <elm>.
+DeclareOperation( "UnderlyingElement", [ IsObject ] );
 
 
 #############################################################################
@@ -81,7 +83,7 @@ RunGroupByRwsMethods    := RunMethodsFunction2(GROUPBYRWS_METHODS);
 
 #O  GroupByRws( <rws> ) . . . . . . . . . . . .  construct a group from a RWS
 ##
-GroupByRws := NewOperation(
+DeclareOperation(
     "GroupByRws",
     [ IsRewritingSystem ] );
 
@@ -90,7 +92,7 @@ GroupByRws := NewOperation(
 ##
 #O  GroupByRwsNC( <rws> ) . . . . . . . . . . .  construct a group from a RWS
 ##
-GroupByRwsNC := NewOperation(
+DeclareOperation(
     "GroupByRwsNC",
     [ IsRewritingSystem ] );
 

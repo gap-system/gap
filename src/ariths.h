@@ -6,11 +6,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the  arithmetic  operations  package.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_ariths_h =
+const char * Revision_ariths_h =
    "@(#)$Id$";
 #endif
 
@@ -606,27 +607,9 @@ extern void InstallModObject ( Int );
 /****************************************************************************
 **
 
-*F  SetupAriths() . . . . . . .  initialize the arithmetic operations package
-**
-**  'InitAriths' initializes the arithmetic operations package.
+*F  InitInfoAriths()  . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupAriths ( void );
-
-
-/****************************************************************************
-**
-*F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
-**
-**  'InitAriths' initializes the arithmetic operations package.
-*/
-extern void InitAriths ( void );
-
-
-/****************************************************************************
-**
-*F  CheckAriths() . check initialisation of the arithmetic operations package
-*/
-extern void CheckAriths ( void );
+StructInitInfo * InitInfoAriths ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions that deal with ranges.
 **
@@ -50,7 +51,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_range_c =
+const char * Revision_range_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -63,8 +64,6 @@ SYS_CONST char * Revision_range_c =
 
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "ariths.h"              /* basic arithmetic                */
 
@@ -1041,9 +1040,9 @@ Int             IsRange (
 **  a range and 'false' otherwise.  A range is a list without holes such that
 **  the elements are  consecutive integers.
 */
-Obj             IsRangeFilt;
+Obj IsRangeFilt;
 
-Obj             IsRangeHandler (
+Obj FuncIS_RANGE (
     Obj                 self,
     Obj                 obj )
 {
@@ -1184,6 +1183,28 @@ Obj Range3Check (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
+*F  FuncIS_RANGE_REP( <self>, <obj> ) . . . . . test if value is in range rep
+*/
+Obj IsRangeRepFilt;
+
+Obj FuncIS_RANGE_REP (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (IS_RANGE( obj ) ? True : False);
+}
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -1191,19 +1212,229 @@ Obj Range3Check (
 /****************************************************************************
 **
 
-*F  SetupRange() . . . . . . . . . . . . . . . . initialize the range package
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
-void SetupRange ( void )
+static StructBagNames BagNames[] = {
+  { T_RANGE_NSORT,                     "list (range,nsort)"            },
+  { T_RANGE_NSORT +IMMUTABLE,          "list (range,nsort,imm)"        },
+  { T_RANGE_SSORT,                     "list (range,ssort)"            },
+  { T_RANGE_SSORT +IMMUTABLE,          "list (range,ssort,imm)"        },
+  { T_RANGE_NSORT            +COPYING, "list (range,nsort,copied)"     },
+  { T_RANGE_NSORT +IMMUTABLE +COPYING, "list (range,nsort,imm,copied)" },
+  { T_RANGE_SSORT            +COPYING, "list (range,ssort,copied)"     },
+  { T_RANGE_SSORT +IMMUTABLE +COPYING, "list (range,ssort,imm,copied)" },
+  { -1,                                ""                              }
+};
+
+
+/****************************************************************************
+**
+*V  ClearFiltsTab . . . . . . . . . . . . . . . . . . . .  clear filter tnums
+*/
+static Int ClearFiltsTab [] = {
+    T_RANGE_NSORT,           T_RANGE_NSORT,
+    T_RANGE_NSORT+IMMUTABLE, T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_SSORT,           T_RANGE_SSORT,
+    T_RANGE_SSORT+IMMUTABLE, T_RANGE_SSORT+IMMUTABLE,
+    -1,                      -1
+};
+
+
+/****************************************************************************
+**
+*V  HasFiltTab  . . . . . . . . . . . . . . . . . . . . .  tester filter tnum
+*/
+static Int HasFiltTab [] = {
+
+    /* nsort mutable range                                                 */
+    T_RANGE_NSORT,              FN_IS_MUTABLE,  1,
+    T_RANGE_NSORT,              FN_IS_EMPTY,    0,
+    T_RANGE_NSORT,              FN_IS_DENSE,    1,
+    T_RANGE_NSORT,              FN_IS_NDENSE,   0,
+    T_RANGE_NSORT,              FN_IS_HOMOG,    1,
+    T_RANGE_NSORT,              FN_IS_NHOMOG,   0,
+    T_RANGE_NSORT,              FN_IS_TABLE,    0,
+    T_RANGE_NSORT,              FN_IS_SSORT,    0,
+    T_RANGE_NSORT,              FN_IS_NSORT,    1,
+
+    /* nsort immutable range                                               */
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    0,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
+
+    /* ssort mutable range                                                 */
+    T_RANGE_SSORT,              FN_IS_MUTABLE,  1,
+    T_RANGE_SSORT,              FN_IS_EMPTY,    0,
+    T_RANGE_SSORT,              FN_IS_DENSE,    1,
+    T_RANGE_SSORT,              FN_IS_NDENSE,   0,
+    T_RANGE_SSORT,              FN_IS_HOMOG,    1,
+    T_RANGE_SSORT,              FN_IS_NHOMOG,   0,
+    T_RANGE_SSORT,              FN_IS_TABLE,    0,
+    T_RANGE_SSORT,              FN_IS_SSORT,    1,
+    T_RANGE_SSORT,              FN_IS_NSORT,    0,
+
+    /* ssort immutable range                                               */
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    0,
+
+    -1,                         -1,             -1
+};
+
+
+/****************************************************************************
+**
+*V  SetFiltTab  . . . . . . . . . . . . . . . . . . . . .  setter filter tnum
+*/
+static Int SetFiltTab [] = {
+
+    /* nsort mutable range                                                 */
+    T_RANGE_NSORT,              FN_IS_MUTABLE,  T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_EMPTY,    -1,
+    T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_NDENSE,   -1,
+    T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_NHOMOG,   -1,
+    T_RANGE_NSORT,              FN_IS_TABLE,    -1,
+    T_RANGE_NSORT,              FN_IS_SSORT,    -1,
+    T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
+
+    /* nsort immutable range                                               */
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_NSORT,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    -1,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
+
+    /* ssort mutable range                                                 */
+    T_RANGE_SSORT,              FN_IS_MUTABLE,  T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NDENSE,   -1,
+    T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NHOMOG,   -1,
+    T_RANGE_SSORT,              FN_IS_TABLE,    -1,
+    T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NSORT,    -1,
+
+    /* ssort immutable range                                               */
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_SSORT,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    -1,
+
+
+    -1,                         -1,             -1
+
+};
+
+
+/****************************************************************************
+**
+*V  ResetFiltTab  . . . . . . . . . . . . . . . . . . .  unsetter filter tnum
+*/
+static Int ResetFiltTab [] = {
+
+    /* nsort mutable range                                                 */
+    T_RANGE_NSORT,              FN_IS_MUTABLE,  T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT,              FN_IS_EMPTY,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_DENSE,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_NDENSE,   T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_HOMOG,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_NHOMOG,   T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_TABLE,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_SSORT,    T_RANGE_NSORT,
+    T_RANGE_NSORT,              FN_IS_NSORT,    T_RANGE_NSORT,
+
+    /* nsort immutable range                                               */
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_NSORT+IMMUTABLE,
+    T_RANGE_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_RANGE_NSORT+IMMUTABLE,
+
+    /* ssort mutable range                                                 */
+    T_RANGE_SSORT,              FN_IS_MUTABLE,  T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT,              FN_IS_EMPTY,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_DENSE,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NDENSE,   T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_HOMOG,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NHOMOG,   T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_TABLE,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_SSORT,    T_RANGE_SSORT,
+    T_RANGE_SSORT,              FN_IS_NSORT,    T_RANGE_SSORT,
+
+    /* ssort immutable range                                               */
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NDENSE,   T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_TABLE,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_RANGE_SSORT+IMMUTABLE,
+    T_RANGE_SSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST_SSORT+IMMUTABLE,
+
+    -1,                         -1,             -1
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
+*/
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_RANGE", "obj", &IsRangeFilt,
+      FuncIS_RANGE, "src/range.c:IS_RANGE" },
+
+    { "IS_RANGE_REP", "obj", &IsRangeRepFilt,
+      FuncIS_RANGE_REP, "src/range.c:IS_RANGE_REP" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    /* install the marking functions                                       */
-    InfoBags[           T_RANGE_NSORT                     ].name = "list (range,nsort)";
-    InfoBags[           T_RANGE_NSORT +IMMUTABLE          ].name = "list (range,nsort,imm)";
-    InfoBags[           T_RANGE_SSORT                     ].name = "list (range,ssort)";
-    InfoBags[           T_RANGE_SSORT +IMMUTABLE          ].name = "list (range,ssort,imm)";
-    InfoBags[           T_RANGE_NSORT            +COPYING ].name = "list (range,nsort,copied)";
-    InfoBags[           T_RANGE_NSORT +IMMUTABLE +COPYING ].name = "list (range,nsort,imm,copied)";
-    InfoBags[           T_RANGE_SSORT            +COPYING ].name = "list (range,ssort,copied)";
-    InfoBags[           T_RANGE_SSORT +IMMUTABLE +COPYING ].name = "list (range,ssort,imm,copied)";
+    /* check dependencies                                                  */
+    RequireModule( module, "lists", 403600000UL );
+
+    /* GASMAN marking functions and GASMAN names                           */
+    InitBagNamesFromTable( BagNames );
 
     InitMarkFuncBags(   T_RANGE_NSORT                     , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_NSORT +IMMUTABLE          , MarkAllSubBags );
@@ -1214,6 +1445,26 @@ void SetupRange ( void )
     InitMarkFuncBags(   T_RANGE_SSORT            +COPYING , MarkAllSubBags );
     InitMarkFuncBags(   T_RANGE_SSORT +IMMUTABLE +COPYING , MarkAllSubBags );
 
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
+                           &TYPE_RANGE_NSORT_MUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_MUTABLE",
+                           &TYPE_RANGE_SSORT_MUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_IMMUTABLE",
+                           &TYPE_RANGE_NSORT_IMMUTABLE );
+
+    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
+                           &TYPE_RANGE_SSORT_IMMUTABLE );
+
+    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
+    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
+    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
+    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
 
     /* Saving functions */
     SaveObjFuncs[T_RANGE_NSORT            ] = SaveRange;
@@ -1224,7 +1475,6 @@ void SetupRange ( void )
     LoadObjFuncs[T_RANGE_NSORT +IMMUTABLE ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT            ] = LoadRange;
     LoadObjFuncs[T_RANGE_SSORT +IMMUTABLE ] = LoadRange;
-
 
     /* install the copy methods                                            */
     CopyObjFuncs [ T_RANGE_NSORT                     ] = CopyRange;
@@ -1244,13 +1494,17 @@ void SetupRange ( void )
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE          ] = CleanRange;
     CleanObjFuncs[ T_RANGE_SSORT +IMMUTABLE +COPYING ] = CleanRangeCopy;
 
-
     /* install the print method                                            */
     PrintObjFuncs[ T_RANGE_NSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = PrintRange;
     PrintObjFuncs[ T_RANGE_SSORT            ] = PrintRange;
     PrintObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = PrintRange;
 
+    /* initialise list tables                                              */
+    InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
+    InitHasFiltListTNumsFromTable  ( HasFiltTab    );
+    InitSetFiltListTNumsFromTable  ( SetFiltTab    );
+    InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
     /* install the comparison methods                                      */
     EqFuncs[ T_RANGE_NSORT ][ T_RANGE_NSORT ] = EqRange;
@@ -1261,7 +1515,6 @@ void SetupRange ( void )
     LtFuncs[ T_RANGE_NSORT ][ T_RANGE_SSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_NSORT ] = LtRange;
     LtFuncs[ T_RANGE_SSORT ][ T_RANGE_SSORT ] = LtRange;
-
 
     /* install the list functions in the tables                            */
     LenListFuncs    [ T_RANGE_NSORT            ] = LenRange;
@@ -1332,50 +1585,58 @@ void SetupRange ( void )
     PlainListFuncs  [ T_RANGE_NSORT +IMMUTABLE ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT            ] = PlainRange;
     PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
+
+    /* initialise list tables                                              */
+    InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
+    InitHasFiltListTNumsFromTable  ( HasFiltTab    );
+    InitSetFiltListTNumsFromTable  ( SetFiltTab    );
+    InitResetFiltListTNumsFromTable( ResetFiltTab  );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitRange() . . . . . . . . . . . . . . . .  initialize the range package
-**
-**  'InitRange' initializes the range package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitRange ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_MUTABLE",
-                           &TYPE_RANGE_NSORT_MUTABLE );
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
 
-    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_MUTABLE",
-                           &TYPE_RANGE_SSORT_MUTABLE );
-
-    ImportGVarFromLibrary( "TYPE_RANGE_NSORT_IMMUTABLE",
-                           &TYPE_RANGE_NSORT_IMMUTABLE );
-
-    ImportGVarFromLibrary( "TYPE_RANGE_SSORT_IMMUTABLE",
-                           &TYPE_RANGE_SSORT_IMMUTABLE );
-
-    TypeObjFuncs[ T_RANGE_NSORT            ] = TypeRangeNSortMutable;
-    TypeObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = TypeRangeNSortImmutable;
-    TypeObjFuncs[ T_RANGE_SSORT            ] = TypeRangeSSortMutable;
-    TypeObjFuncs[ T_RANGE_SSORT +IMMUTABLE ] = TypeRangeSSortImmutable;
-
-
-    /* install the internal function                                       */
-    C_NEW_GVAR_FILT( "IS_RANGE", "obj", IsRangeFilt, IsRangeHandler,
-         "src/range.c:IS_RANGE" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckRange()  . . . . . . . check the initialisation of the range package
+*F  InitInfoRange() . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckRange ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "range",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoRange ( void )
 {
-    SET_REVISION( "range_c",    Revision_range_c );
-    SET_REVISION( "range_h",    Revision_range_h );
+    module.revision_c = Revision_range_c;
+    module.revision_h = Revision_range_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

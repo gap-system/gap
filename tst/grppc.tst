@@ -57,9 +57,14 @@ gap> List( sys, Size );
 [ 4, 7 ]
 gap> List(sys,i->Length(AsList(i)));
 [ 4, 7 ]
+gap> G := SmallGroup( 144, 183 );;
+gap> F := FittingSubgroup( G );;
+gap> S := SylowSubgroup( F, 2 );;
+gap> Length(Complementclasses( G, S ));
+1
 
 # that's all, folks
-gap> STOP_TEST( "grppc.tst", 46360000 );
+gap> STOP_TEST( "grppc.tst", 17634147 );
 
 #############################################################################
 ##

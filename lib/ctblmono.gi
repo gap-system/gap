@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the functions dealing with monomiality questions for
 ##  solvable groups.
@@ -275,7 +276,7 @@ InstallMethod( IsBergerCondition,
 ##
 #F  TestHomogeneous( <chi>, <N> )
 ##
-TestHomogeneous := function( chi, N )
+InstallGlobalFunction( TestHomogeneous, function( chi, N )
 
     local G,        # the group of <chi>
           t,        # character table of 'G'
@@ -294,7 +295,7 @@ TestHomogeneous := function( chi, N )
     if IsList( N ) then
       cl:= N;
     else
-      cl:= ClassesNormalSubgroup( UnderlyingGroup( chi ), N );
+      cl:= ClassesOfNormalSubgroup( UnderlyingGroup( chi ), N );
     fi;
 
     G:= UnderlyingGroup( chi );
@@ -335,7 +336,7 @@ TestHomogeneous := function( chi, N )
       od;
 
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -482,7 +483,7 @@ InstallMethod( IsPrimitiveCharacter,
 ##  contains a character of a maximal normal subgroup from that <chi> is
 ##  induced.
 ##
-TestInducedFromNormalSubgroup := function( arg )
+InstallGlobalFunction( TestInducedFromNormalSubgroup, function( arg )
 
     local sizeN,      # size of <N>
           sizefactor, # size of $G / <N>$
@@ -605,7 +606,7 @@ TestInducedFromNormalSubgroup := function( arg )
 
         fi;
 
-        cl:= ClassesNormalSubgroup( UnderlyingGroup( chi ), N );
+        cl:= ClassesOfNormalSubgroup( UnderlyingGroup( chi ), N );
 
         # Check whether the character vanishes outside <N>.
         for i in [ 2 .. Length( values ) ] do
@@ -648,7 +649,7 @@ TestInducedFromNormalSubgroup := function( arg )
                   comment   := "all irreducibles of <N> checked" );
 
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -922,7 +923,7 @@ InstallOtherMethod( IsSubnormallyMonomial,
 InstallMethod( IsMonomialNumber,
     "method for a positive integer",
     true,
-    [ IsPosRat and IsInt ], 0,
+    [ IsPosInt ], 0,
     function( n )
 
     local factors,   # list of prime factors of 'n'
@@ -1695,7 +1696,7 @@ InstallMethod( IsMonomialCharacter,
 #T 
 #T           # Is the restriction of 'chi' to 'N' irreducible?
 #T           # This means we can choose $H = G$.
-#T           n:= ClassesNormalSubgroup( G, N );
+#T           n:= ClassesOfNormalSubgroup( G, N );
 #T           fus:= FusionConjugacyClasses( N, G );
 #T           norm:= Sum( n, c -> SizesConjugacyClasses( CharacterTable( G ) )[c] * chi[c]
 #T                                         * GaloisCyc( chi[c], -1 ), 0 );
@@ -2043,7 +2044,7 @@ InstallMethod( IsMinimalNonmonomial,
 ##
 #F  MinimalNonmonomialGroup( <p>, <factsize> )
 ##
-MinimalNonmonomialGroup := function( p, factsize )
+InstallGlobalFunction( MinimalNonmonomialGroup, function( p, factsize )
 
     local K,          # free group
           Kgens,      # free generators of 'K'
@@ -2452,7 +2453,7 @@ MinimalNonmonomialGroup := function( p, factsize )
     ConvertToStringRep( name );
     SetName( K, name );
     return K;
-end;
+end );
 
 
 #############################################################################

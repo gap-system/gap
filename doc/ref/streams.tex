@@ -32,7 +32,7 @@ implicit under VMS), and  the behaviour  for nonprintable characters   is
 undefined.  *Binary streams* do not translate the `end-of-line' character
 and allow nonprintable characters.
 
-Note that binary streams are *not* yet implemented.
+Note that binary streams are *@not yet implemented@*.
 
 Whereas it   is cheap to append  to  a stream, streams  do consume system
 resources, only a limited amount can be open at any time, therefore it is
@@ -60,7 +60,7 @@ the characters from the file <name-file>.
 \>OutputTextFile( <name-file>, <append> )
 
 returns  an output stream  in the category `IsOutputTextFile' that writes
-received characters  to the file   <file-name>.  If <append> is  `false',
+received characters  to the file   <name-file>.  If <append> is  `false',
 then the  file is emptied first,  otherwise received characters are added
 at the end of the list.
 
@@ -174,7 +174,7 @@ It is an error to  try to read  characters from or  write characters to a
 closed  stream.   Closing a  stream tells  the {\GAP}   kernel and/or the
 operating system kernel  that the file is  no longer needed.  This may be
 necessary  because  the {\GAP} kernel  and/or  the  operating  system may
-impose a limit on how may streams may be open simultaneously.
+impose a limit on how many streams may be open simultaneously.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Input Stream Operations}
@@ -196,7 +196,7 @@ reads the input-text-stream as function and returns this function.
 
 \>ReadTest( <input-text-stream> )!{for streams}
 
-reads the input-text-stream as  test input until `end-of-stream' occurrs.
+reads the input-text-stream as  test input until `end-of-stream' occurs.
 See "File Operations" for details.
 
 *Example*

@@ -5,8 +5,9 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains some methods applicable objects in general.
+##  This file contains some methods applicable to objects in general.
 ##
 Revision.object_gi :=
     "@(#)$Id$";
@@ -15,10 +16,11 @@ Revision.object_gi :=
 #############################################################################
 ##
 
-#M  '<obj1> = <obj2>'
+#M  '<obj1> = <obj2>' . . . . . . . . . . . for objects in different families
 ##
 InstallMethod( \=,
-    IsNotIdentical,
+    "for two objects in different families",
+    IsNotIdenticalObj,
     [ IsObject,
       IsObject ],
     0,
@@ -29,7 +31,116 @@ InstallMethod( \=,
 ##
 #M  \=( <fam1>, <fam2> )  . . . . . . . . . . . . . . . . .  for two families
 ##
-InstallMethod( \=, true, [ IsFamily, IsFamily], 0, IS_IDENTICAL_OBJ );
+InstallMethod( \=,
+     "for two families: delegate to `IsIdenticalObj'",
+     true,
+     [ IsFamily, IsFamily], 0,
+     IS_IDENTICAL_OBJ );
+
+
+#############################################################################
+##
+#M  \<( <obj1>, <obj2> )  . . . . . . . for two objects in different families
+##
+##  The ordering via `<' is defined for operands <obj1> and <obj2> in
+##  *different* families only if both <obj1> and <obj2> lie in filters among
+##  `IsCyclotomic', `IsFFE', `IsPerm', `IsBool', `IsChar', and `IsList',
+##  where two lists are comparable only if their entries are again objects
+##  in the listed filters.
+##
+##  For other objects, {\GAP} does *not* provide an ordering via `<'.
+##  The reason for this is that a total ordering of all {\GAP} objects
+##  would be hard to maintain when new kinds of objects are introduced,
+##  and such a total ordering is hardly used in its full generality.
+##
+##  However, for objects in the filters listed above, the ordering via `<'
+##  has turned out to be useful.
+##  For example, one can form sorted lists containing integers and nested
+##  lists of integers, and then search in them using `PositionSorted'.
+##
+##  Of course it is possible to define an ordering via `<' also for objects
+##  in certain other filters, by installing appropriate methods for `\<'.
+##  But this may lead to problems at least as soon as one loads {\GAP} code
+##  in which the same is done, under the assumption that one is completely
+##  free to define an ordering for objects other than the ones for which the
+##  ``official'' {\GAP} provides already an ordering.
+##
+##  In {\GAP}, the following rules hold for the comparison of objects in
+##  different families.
+##  - cyclotomics are smaller than finite field elements,
+##  - finite field elements in different characteristics are compared
+##    via their characteristics,
+##  - finite field elements are smaller than permutations,
+##  - permutations are smaller than Booleans (`true', `false', and `fail'),
+##  - Booleans are smaller than characters (such as `'a''),
+##  - characters are smaller than lists
+##
+TO_COMPARE := [
+    [ IsCyclotomic, "cyclotomic" ],
+    [ IsFFE,        "finite field element" ],
+    [ IsPerm,       "permutation" ],
+    [ IsBool,       "boolean" ],
+    [ IsChar,       "character" ],
+    [ IsList,       "list" ],
+                                              ];
+for i in [ 1 .. Length( TO_COMPARE ) ] do
+  for j in [ 1 .. Length( TO_COMPARE ) ] do
+    if i <> j then
+      if i < j then func:= ReturnTrue; else func:= ReturnFalse; fi;
+      infostr:= "for a ";
+      APPEND_LIST_INTR( infostr, TO_COMPARE[i][2] );
+      APPEND_LIST_INTR( infostr, ", and a " );
+      APPEND_LIST_INTR( infostr, TO_COMPARE[j][2] );
+      InstallMethod( \<, infostr, true,
+          [ TO_COMPARE[i][1], TO_COMPARE[j][1] ], 0, func );
+    fi;
+  od;
+od;
+
+InstallMethod( \<,
+    "for two finite field elements in different characteristic",
+    IsNotIdenticalObj,
+    [ IsFFE, IsFFE ], 0,
+    function( z1, z2 )
+    return Characteristic( z1 ) < Characteristic( z2 );
+    end );
+
+InstallMethod( \<,
+    "for two small lists, possibly in different families",
+    true,
+    [ IsList and IsSmallList, IsList and IsSmallList ], 0,
+    LT_LIST_LIST_DEFAULT );
+
+LT_LIST_LIST_FINITE := function( list1, list2 )
+    
+    local len, i;
+    
+    # We ask for being small in order to catch the default methods
+    # directly in the next call if possible.
+    if IsSmallList( list1 ) and IsSmallList( list2 ) then
+      return LT_LIST_LIST_DEFAULT( list1, list2 );
+    else
+        
+      len:= Minimum( Length( list1 ), Length( list2 ) );
+      i:= 1;                      
+      while i <= len do
+        if list1[i] < list2[i] then
+          return true;
+        elif list2[i] < list1[i] then
+          return false;
+        fi;
+        i:= i+1;
+      od;
+      return len < Length( list2 );
+
+    fi;
+end;
+
+InstallMethod( \<,
+    "for two finite lists, possibly in different families",
+    true,
+    [ IsList, IsList ], 0,
+    LT_LIST_LIST_FINITE );
 
 
 #############################################################################
@@ -37,9 +148,10 @@ InstallMethod( \=, true, [ IsFamily, IsFamily], 0, IS_IDENTICAL_OBJ );
 #M  FormattedString( <obj>, <width> )  . . . . . convert object into a string
 ##
 InstallMethod( FormattedString,
+    "for an object, and a positive integer",
     true,
     [ IsObject,
-      IsPosRat and IsInt ],
+      IsPosInt ],
     0,
 
 function( str, n )
@@ -69,6 +181,7 @@ end );
 
 
 InstallMethod( FormattedString,
+    "for an object, and a negative integer",
     true,
     [ IsObject,
       IsNegRat and IsInt ],
@@ -105,6 +218,7 @@ end );
 #M  PrintObj( <obj> )
 ##
 InstallMethod( PrintObj,
+    "for an object with name",
     true,
     [ HasName ],
     SUM_FLAGS,
@@ -112,6 +226,7 @@ InstallMethod( PrintObj,
 
 
 InstallMethod( PrintObj,
+    "default for an object",
     true,
     [ IsObject ],
     0,
@@ -120,9 +235,22 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewObj( <obj> )  . . . . . . . . . . . . . . . . for an object with name
+##
+InstallMethod( ViewObj,
+    "for an object with name",
+    true,
+    [ HasName ],
+    SUM_FLAGS,
+    function ( obj )  Print( Name( obj ) ); end );
+
+
+#############################################################################
+##
 #M  ShallowCopy( <obj> )  . . . . . . . . . . . . . . . shallow copy of <obj>
 ##
 InstallMethod( ShallowCopy,
+    "for a (not copyable) object",
     true,
     [ IsObject ],
     0,
@@ -152,6 +280,7 @@ InstallMethod( IsInternallyConsistent,
 #M  KnownAttributesOfObject( <object> ) . . . . . list of names of attributes
 ##
 InstallMethod( KnownAttributesOfObject,
+    "for an object",
     true,
     [ IsObject ],
     0,
@@ -176,6 +305,7 @@ end );
 #M  KnownPropertiesOfObject( <object> ) . . . . . list of names of properties
 ##
 InstallMethod( KnownPropertiesOfObject,
+    "for an object",
     true,
     [ IsObject ],
     0,
@@ -201,6 +331,7 @@ end );
 #M  KnownTruePropertiesOfObject( <object> )  list of names of true properties
 ##
 InstallMethod( KnownTruePropertiesOfObject,
+    "for an object",
     true,
     [ IsObject ],
     0,
@@ -225,6 +356,7 @@ end );
 #M  CategoriesOfObject( <object> )  . . . . . . . list of names of categories
 ##
 InstallMethod( CategoriesOfObject,
+    "for an object",
     true,
     [ IsObject ],
     0,
@@ -249,6 +381,7 @@ end );
 #M  RepresentationsOfObject( <object> ) . .  list of names of representations
 ##
 InstallMethod( RepresentationsOfObject,
+    "for an object",
     true,
     [ IsObject ],
     0,

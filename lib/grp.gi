@@ -8,6 +8,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for groups.
 ##
@@ -24,7 +25,7 @@ ClosureSubgroup := OperationSubdomain( "ClosureSubgroup",
 ##
 InstallImmediateMethod( IsFinitelyGeneratedGroup,
     IsGroup and HasGeneratorsOfGroup, 0,
-    G -> Length( GeneratorsOfGroup( G ) ) < infinity );
+    G -> IsFinite( GeneratorsOfGroup( G ) ) );
 
 
 #############################################################################
@@ -71,7 +72,7 @@ InstallMethod( IsElementaryAbelian,
     "generic method for groups",
     true, [ IsGroup ], 0,
     function ( G )
-    local   isEla,      # 'true' if <G> is elementary abelian, result
+    local   isEla,      # `true' if <G> is elementary abelian, result
 	    i,		# loop
             p;          # order of one generator of <G>
 
@@ -107,12 +108,6 @@ InstallMethod( IsElementaryAbelian,
 
     fi;
     end );
-
-
-#############################################################################
-##
-#M  IsMonomialGroup( <G> )  . . . . . . . . . . . test if a group is monomial
-##
 
 
 #############################################################################
@@ -343,10 +338,10 @@ InstallMethod( AsGroup,
 
 #############################################################################
 ##
-#M  ChiefSeries( <G> )  . . . . . . . .  delegate to 'ChiefSeriesUnderAction'
+#M  ChiefSeries( <G> )  . . . . . . . .  delegate to `ChiefSeriesUnderAction'
 ##
 InstallMethod( ChiefSeries,
-    "method for a group (delegate to 'ChiefSeriesUnderAction'",
+    "method for a group (delegate to `ChiefSeriesUnderAction'",
     true,
     [ IsGroup ], 0,
     G -> ChiefSeriesUnderAction( G, G ) );
@@ -453,7 +448,7 @@ InstallMethod( DerivedSeriesOfGroup,
             "DerivedSeriesOfGroup: may not stop for infinite group <G>" );
     fi;
 
-    # compute the series by repeated calling of 'DerivedSubgroup'
+    # compute the series by repeated calling of `DerivedSubgroup'
     S := [ G ];
     Info( InfoGroup, 2, "DerivedSeriesOfGroup: step ", Length(S) );
     D := DerivedSubgroup( G );
@@ -540,7 +535,7 @@ InstallMethod( DerivedSubgroup,
 ##
 InstallOtherMethod( ElementaryAbelianSeries,
     "method for lists",
-    true, [ IsList ], 0,
+    true, [ IsList and IsFinite], 0,
     function( G )
 
     local i, A, f;
@@ -565,13 +560,19 @@ InstallOtherMethod( ElementaryAbelianSeries,
 
 InstallMethod( ElementaryAbelianSeries,
     "generic method for groups",
-    true, [ IsGroup ], 0,
+    true, [ IsGroup and IsFinite], 0,
     function( G )
     local f;
 
     # compute an elementary series if it is not known
     if not IsSolvableGroup( G )  then
       Error( "<G> must be solvable" );
+    fi;
+
+    # there is a method for pcgs computable groups we should use if
+    # applicable, in this case redo
+    if CanEasilyComputePcgs(G) then
+      return ElementaryAbelianSeries(G);
     fi;
 
     f := IsomorphismPcGroup( G );
@@ -589,6 +590,19 @@ InstallMethod( Exponent,
     "generic method for groups",
     true, [ IsGroup ], 0,
     G -> Lcm( List( ConjugacyClasses(G), x -> Order(Representative(x)) ) ) );
+
+InstallMethod( Exponent,
+    "method for abelian groups with generators",
+    true, [ IsGroup and IsAbelian and HasGeneratorsOfGroup], 0,
+    function( G )
+    G:= GeneratorsOfGroup( G );
+    if IsEmpty( G ) then
+      return 1;
+    else
+      return Lcm( List( G, Order ) );
+    fi;
+    end );
+
 
 #############################################################################
 ##
@@ -663,7 +677,7 @@ InstallMethod( LowerCentralSeriesOfGroup,
           "LowerCentralSeriesOfGroup: may not stop for infinite group <G>" );
     fi;
 
-    # compute the series by repeated calling of 'CommutatorSubgroup'
+    # compute the series by repeated calling of `CommutatorSubgroup'
     S := [ G ];
     Info( InfoGroup, 2, "LowerCentralSeriesOfGroup: step ", Length(S) );
     C := DerivedSubgroup( G );
@@ -700,7 +714,7 @@ InstallMethod( NrConjugacyClasses,
 ##
 #M  Omega( <G>, <p> [, <n> ] )  . . . . . . . . . .  omega of a <p>-group <G>
 ##
-Omega := function( arg )
+InstallGlobalFunction( Omega, function( arg )
     local   G,  p,  n,  known;
     
     G := arg[1];
@@ -719,7 +733,7 @@ Omega := function( arg )
         known[ n ] := OmegaOp( G, p, n );
     fi;
     return known[ n ];
-end;
+end );
 
 
 #############################################################################
@@ -727,16 +741,16 @@ end;
 #M  OmegaOp( <G>, <p>, <n> )  . . . . . . . . .  for an abelian <p>-group <G>
 ##
 #T the code should be cleaned,
-#T especially one should avoid the many unnecessary calls of 'Difference'
+#T especially one should avoid the many unnecessary calls of `Difference'
 InstallMethod( OmegaOp,
     "method for a p-group (abelian)",
     true,
-    [ IsGroup, IsPosRat and IsInt, IsPosRat and IsInt ], 0,
+    [ IsGroup, IsPosInt, IsPosInt ], 0,
     function( G, p, n )
 
-    local pcgs,   # PCGS of 'G'
+    local pcgs,   # PCGS of `G'
           i, j, rel, rl, rc, ng, ml, mc, m, k, q,
-          one;    # identity of 'G'
+          one;    # identity of `G'
 
     if not IsAbelian( G ) or n <> 1  then
       TryNextMethod();
@@ -749,7 +763,7 @@ InstallMethod( OmegaOp,
     pcgs:= Pcgs( G );
     ng:= ShallowCopy( pcgs );
 
-    # 'rel' is the relation matrix of 'G'.
+    # `rel' is the relation matrix of `G'.
     rel:= List( ng, x -> ShallowCopy( AdditiveInverse(
                              ExponentsOfPcElement( pcgs, x^p ) ) ) );
     for i in [ 1 .. Length( rel ) ] do
@@ -764,11 +778,11 @@ InstallMethod( OmegaOp,
     while 1 < Length( rl ) do
 
       # find empty column, find min entry
-      m:= AbsInt( Maximum( rel[ rl[1] ] ) ) + 1;
+      m:= Maximum( List( rel[rl[1]], AbsInt ) ) + 1;
       for i in rl do
         for j in rc do
           if rel[i][j] <> 0 and AbsInt( rel[i][j] ) < m then
-            # 'rel[ml][mc]' is minimal entry of 'rel'
+            # `rel[ml][mc]' is minimal entry of `rel'
             ml:= i;
             mc:= j;
             m:= AbsInt( rel[i][j] );
@@ -930,7 +944,7 @@ InstallMethod( GeneratorsSmallest,
 ##  The component `ds' describes a series such that any composition series
 ##  through `ds' from <G> down to the residuum is a chief series.
 ## 
-SupersolvableResiduumDefault := function( G )
+InstallGlobalFunction( SupersolvableResiduumDefault, function( G )
 
     local ssr,         # supersolvable residuum
           ds,          # component `ds' of the result
@@ -1110,7 +1124,7 @@ SupersolvableResiduumDefault := function( G )
 
     # Return the result.
     return rec( ssr:= ssr, ds:= ds );
-end;
+end );
 
 
 #############################################################################
@@ -1228,7 +1242,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
     function ( G )
     local   S,          # upper central series of <G>, result
             C,          # centre
-            hom;        # homomorphisms of <G> to '<G>/<C>'
+            hom;        # homomorphisms of <G> to `<G>/<C>'
 
     # print out a warning for infinite groups
     if not IsFinite( G )  then
@@ -1236,7 +1250,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
           "UpperCentralSeriesOfGroup: may not stop for infinite group <G>");
     fi;
 
-    # compute the series by repeated calling of 'CommutatorSubgroup'
+    # compute the series by repeated calling of `CommutatorSubgroup'
     S := [ TrivialSubgroup( G ) ];
     Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
     C := Centre( G );
@@ -1255,7 +1269,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
 ##
 #M  Agemo( <G>, <p> [, <n> ] )  . . . . . . . . . .  agemo of a <p>-group <G>
 ##
-Agemo := function( arg )
+InstallGlobalFunction( Agemo, function( arg )
     local   G,  p,  n,  known;
     
     G := arg[1];
@@ -1274,11 +1288,11 @@ Agemo := function( arg )
         known[ n ] := AgemoOp( G, p, n );
     fi;
     return known[ n ];
-end;
+end );
 
 InstallMethod( AgemoOp,
     "generic method for groups",
-    true, [ IsGroup, IsPosRat and IsInt, IsPosRat and IsInt ], 0,
+    true, [ IsGroup, IsPosInt, IsPosInt ], 0,
     function( G, p, n )
 
     local   C,  q;
@@ -1302,7 +1316,7 @@ InstallMethod( ComputedAgemos, true, [ IsGroup ], 0, G -> [  ] );
 ##
 #M  AgemoAbove( <G>, <C>, <p> ) . . . . . . . . . . . . . . . . . . . . local
 ##
-AgemoAbove := function( G, C, p )
+InstallGlobalFunction( AgemoAbove, function( G, C, p )
     local   A;
 
 #T     # if we know the agemo,  return
@@ -1315,12 +1329,12 @@ AgemoAbove := function( G, C, p )
     if IsSubgroup( C, DerivedSubgroup(G) )  then
         return SubgroupNC( G, List( GeneratorsOfGroup( G ), x -> x^p ) );
 
-    # otherwise use 'Agemo'
+    # otherwise use `Agemo'
     else
         Info( InfoGroup, 2, "computing conjugacy classes for agemo" );
         return Agemo( G, p );
     fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -1328,9 +1342,14 @@ end;
 ##
 InstallMethod( AsSubgroup,
     "generic method for groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, U )
     local S;
+    # test if the parent is already alright
+    if HasParent(U) and IsIdenticalObj(Parent(U),G) then
+      return U;
+    fi;
+
     if not IsSubset( G, U ) then
       return fail;
     fi;
@@ -1345,9 +1364,9 @@ InstallMethod( AsSubgroup,
 ##
 #F  ClosureGroupDefault( <G>, <elm> ) . . . . . closure of group with element
 ##
-ClosureGroupDefault := function( G, elm )
+InstallGlobalFunction( ClosureGroupDefault, function( G, elm )
 
-    local   C,          # closure '\< <G>, <obj> \>', result
+    local   C,          # closure `\< <G>, <obj> \>', result
             gens,       # generators of <G>
             gen,        # generator of <G> or <C>
             Celements,  # intermediate list of elements
@@ -1410,7 +1429,7 @@ ClosureGroupDefault := function( G, elm )
 
     # return the closure
     return C;
-end;
+end );
 
 
 #############################################################################
@@ -1462,10 +1481,10 @@ InstallMethod( ClosureGroup,
 ##
 InstallMethod( ClosureGroup,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
 
-    local   C,   # closure '\< <G>, <H> \>', result
+    local   C,   # closure `\< <G>, <H> \>', result
             gen; # generator of <G> or <C>
 
     C:= G;
@@ -1477,14 +1496,14 @@ InstallMethod( ClosureGroup,
 
 InstallMethod( ClosureGroup,
     "method for two groups, the bigger conatining the whole family",
-    IsIdentical, [ IsGroup and IsWholeFamily, IsGroup ], 100,
+    IsIdenticalObj, [ IsGroup and IsWholeFamily, IsGroup ], 100,
     function( G, H )
     return G;
     end );
     
 InstallMethod( ClosureGroup,
     "method for group and element list",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup,
       IsList and IsMultiplicativeElementWithInverseCollection ], 0,
     function( G, gens )
@@ -1511,7 +1530,7 @@ end );
 ##
 InstallMethod( CommutatorSubgroup,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( U, V )
     local   C, u, v, c;
 
@@ -1530,7 +1549,7 @@ InstallMethod( CommutatorSubgroup,
 
 #############################################################################
 ##
-#M  '\^( <G>, <g> )
+#M  \^( <G>, <g> )
 ##
 InstallOtherMethod( \^,
     "generic method for groups and element",
@@ -1563,12 +1582,12 @@ ConjugateSubgroup := OperationSubdomain( "ConjugateSubgroup",
 ##
 InstallMethod( CoreOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, U )
 
     local   C,          # core of <U> in <G>, result
             i,          # loop variable
-            gens;       # generators of 'G'
+            gens;       # generators of `G'
 
     Info( InfoGroup, 1,
           "Core: of ", GroupString(U,"U"), " in ", GroupString(G,"G") );
@@ -1608,7 +1627,7 @@ InstallMethod( CoreOp,
 ##
 InstallMethod( FactorGroup,
     "generic method for two groups",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup, IsGroup ], 0,
     function( G, N )
     return ImagesSource( NaturalHomomorphismByNormalSubgroup( G, N ) );
@@ -1616,7 +1635,7 @@ InstallMethod( FactorGroup,
 
 InstallOtherMethod( \/,
     "generic method for two groups",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup, IsGroup ], 0,
     FactorGroup );
 
@@ -1627,19 +1646,23 @@ InstallOtherMethod( \/,
 ##
 InstallMethod( IndexOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
     if not IsSubset( G, H ) then
       Error( "<H> must be contained in <G>" );
     fi;
     return Size( G ) / Size( H );
-#T 'IndexNC' without check whether 'H' is really contained in 'G' ?
+#T `IndexNC' without check whether `H' is really contained in `G' ?
     end );
 
 #############################################################################
 ##
 #M  IsConjugate( <G>, <x>, <y> )
 ##
+InstallMethod(IsConjugate,true,[IsGroup,IsObject,IsObject],0,
+function(g,x,y)
+  return RepresentativeOperation(g,x,y,OnPoints)<>fail;
+end);
 
 #############################################################################
 ##
@@ -1647,7 +1670,7 @@ InstallMethod( IndexOp,
 ##
 InstallMethod( IsNormalOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
     return ForAll(GeneratorsOfGroup(G),
              i->ForAll(GeneratorsOfGroup(H),j->j^i in H));
@@ -1696,7 +1719,7 @@ InstallMethod( Length, true, [ IsRightTransversal ], 0,
 ##
 InstallMethod( NormalClosureOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, N )
     local   gensG,      # generators of the group <G>
             genG,       # one generator of the group <G>
@@ -1747,7 +1770,7 @@ InstallMethod( NormalClosureOp,
 ##
 InstallMethod( NormalIntersection,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H ) return Intersection2( G, H ); end );
 
 
@@ -1758,7 +1781,7 @@ InstallMethod( NormalIntersection,
 ##
 InstallMethod( NormalizerOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, U )
     local   N;          # normalizer of <U> in <G>, result
 
@@ -1788,7 +1811,7 @@ InstallMethod( NormalizerOp,
 ##
 InstallMethod( NrConjugacyClassesInSupergroup,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( U, G )
     return Number( ConjugacyClasses( U ), C -> Representative( C ) in G );
     end );
@@ -1800,7 +1823,7 @@ InstallMethod( NrConjugacyClassesInSupergroup,
 ##
 InstallMethod( PCentralSeriesOp,
     "generic method for group and prime",
-    true, [ IsGroup, IsPosRat and IsInt ], 0,
+    true, [ IsGroup, IsPosInt ], 0,
     function( G, p )
     local   i,  L,  C,  S,  N,  P;
 
@@ -1824,7 +1847,7 @@ InstallMethod( PCentralSeriesOp,
 ##
 InstallMethod( PRumpOp,
     "generic method for group and prime",
-    true, [ IsGroup, IsPosRat and IsInt ], 0,
+    true, [ IsGroup, IsPosInt ], 0,
 function( G, p )
     local  C, gens, V;
 
@@ -1841,12 +1864,12 @@ end);
 ##
 #M  PCoreOp( <G>, <p> ) . . . . . . . . . . . . . . . . . . p-core of a group
 ##
-##  'PCore' returns the <p>-core of the group <G>, i.e., the  largest  normal
+##  `PCore' returns the <p>-core of the group <G>, i.e., the  largest  normal
 ##  <p> subgroup of <G>.  This is the core of the <p> Sylow subgroups.
 ##
 InstallMethod( PCoreOp,
     "generic method for group and prime",
-    true, [ IsGroup, IsPosRat and IsInt ], 0,
+    true, [ IsGroup, IsPosInt ], 0,
     function ( G, p )
     return Core( G, SylowSubgroup( G, p ) );
     end );
@@ -1865,7 +1888,7 @@ InstallMethod( PCoreOp,
 ##
 InstallMethod( SubnormalSeriesOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, U )
     local   S,          # subnormal series of <U> in <G>, result
             C;          # normal closure of <U> in <G> resp. <C>
@@ -1874,7 +1897,7 @@ InstallMethod( SubnormalSeriesOp,
           "SubnormalSeries: of ", GroupString(U,"U"), " in ",
           GroupString(G,"G") );
 
-    # compute the subnormal series by repeated calling of 'NormalClosure'
+    # compute the subnormal series by repeated calling of `NormalClosure'
     #N 9-Dec-91 fceller: we could use a subnormal series of the parent
     S := [ G ];
     Info( InfoGroup, 2, "SubnormalSeries: step ", Length(S) );
@@ -1898,11 +1921,11 @@ InstallMethod( SubnormalSeriesOp,
 ##
 InstallMethod( SylowSubgroupOp,
     "generic method for group and prime",
-    true, [ IsGroup, IsPosRat and IsInt ], 0,
+    true, [ IsGroup, IsPosInt ], 0,
     function ( G, p )
     local   S,          # Sylow <p> subgroup of <G>, result
             r,          # random element of <G>
-            ord;        # order of 'r'
+            ord;        # order of `r'
 
     # repeat until <S> is the full Sylow <p> subgroup
     S := TrivialSubgroup( G );
@@ -1934,7 +1957,7 @@ InstallMethod( SylowSubgroupOp,
 InstallMethod( SylowSubgroupOp,
     "method for a nilpotent group, and a prime",
     true,
-    [ IsGroup and IsNilpotentGroup, IsPosRat and IsInt ], 0,
+    [ IsGroup and IsNilpotentGroup, IsPosInt ], 0,
     function( G, p )
     local gens, g, ord;
 
@@ -1959,7 +1982,7 @@ InstallMethod( SylowSubgroupOp,
 ##
 InstallMethod( \=,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, H )
     if IsFinite( G )  then
       if IsFinite( H )  then
@@ -1986,10 +2009,10 @@ InstallMethod( \=,
 ##
 InstallMethod( IsCentral,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function ( G, U )
-    local   Ggens,      # group generators of 'G'
-            one,        # identity of 'U'
+    local   Ggens,      # group generators of `G'
+            one,        # identity of `U'
             g,          # one generator of <G>
             u;          # one generator of <U>
 
@@ -2004,10 +2027,10 @@ InstallMethod( IsCentral,
         od;
     od;
 
-    # all generators of <U> are fixed, return 'true'
+    # all generators of <U> are fixed, return `true'
     return true;
     end );
-#T compare method in 'mgmgen.g'!
+#T compare method in `mgmgen.g'!
 
 #############################################################################
 ##
@@ -2015,7 +2038,7 @@ InstallMethod( IsCentral,
 ##
 InstallMethod( IsSubset,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
     if GeneratorsOfGroup( G ) = GeneratorsOfGroup( H )
 #T be more careful:
@@ -2043,7 +2066,7 @@ InstallMethod( IsSubset,
 ##
 InstallMethod( Intersection2,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
 
 #T use more parent info?
@@ -2112,7 +2135,7 @@ InstallMethod( CentralizerOp,
 
 InstallMethod( CentralizerOp,
     "generic method for two groups",
-    IsIdentical, [ IsGroup, IsGroup ], 0,
+    IsIdenticalObj, [ IsGroup, IsGroup ], 0,
     function( G, H )
 
     local C,    # iterated stabilizer
@@ -2129,7 +2152,7 @@ InstallMethod( CentralizerOp,
 ##
 #F  IsomorphismTypeFiniteSimpleGroup( <G> ) . . . . . . . . . ismorphism type
 ##
-IsomorphismTypeFiniteSimpleGroup := function (G)
+InstallGlobalFunction( IsomorphismTypeFiniteSimpleGroup, function (G)
     local   size,       # size of <G>
             size2,      # size of simple group
             p,          # dominant prime of <size>
@@ -2622,20 +2645,72 @@ IsomorphismTypeFiniteSimpleGroup := function (G)
 
     # or a new simple group is found
     return "A new simple group, whoaw";
-end;
+end );
+
 
 #############################################################################
 ##
 #M  PrintObj( <G> )
 ##
-InstallMethod( PrintObj, true, [ IsGroup and HasGeneratorsOfGroup ], 0,
-    function( G )
-    Print( "Group( ", GeneratorsOfGroup( G ), ", ... )" );
-    end );
-
-InstallMethod( PrintObj, true, [ IsGroup ], 0,
+InstallMethod( PrintObj,
+    "for a group",
+    true,
+    [ IsGroup ], 0,
     function( G )
     Print( "Group( ... )" );
+    end );
+
+InstallMethod( PrintObj,
+    "for a group with generators",
+    true,
+    [ IsGroup and HasGeneratorsOfGroup ], 0,
+    function( G )
+    if IsEmpty( GeneratorsOfGroup( G ) ) then
+      Print( "Group( ", One( G ), " )" );
+    else
+      Print( "Group( ", GeneratorsOfGroup( G ), " )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . . .  view a group
+##
+InstallMethod( ViewObj,
+    "for a group",
+    true,
+    [ IsGroup ], 0,
+    function( G )
+    Print( "<group>" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a group with generators",
+    true,
+    [ IsGroup and HasGeneratorsOfMagmaWithInverses ], 0,
+    function( G )
+    if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
+      Print( "<trivial group>" );
+    else
+      Print( "<group with ",
+             Length( GeneratorsOfMagmaWithInverses( G ) ),
+             " generators>" );
+    fi;
+    end );
+
+InstallMethod( ViewObj,
+    "for a group with generators and size",
+    true,
+    [ IsGroup and HasGeneratorsOfMagmaWithInverses and HasSize], 0,
+    function( G )
+    if IsEmpty( GeneratorsOfMagmaWithInverses( G ) ) then
+      Print( "<trivial group>" );
+    else
+      Print( "<group of size ",Size(G)," with ",
+             Length( GeneratorsOfMagmaWithInverses( G ) ),
+             " generators>" );
+    fi;
     end );
 
 
@@ -2714,7 +2789,7 @@ InstallMethod( IsCommutative,
 #F  Group( <gen>, ... )
 #F  Group( <gens>, <id> )
 ##
-Group := function( arg )
+InstallGlobalFunction( Group, function( arg )
 
     if Length( arg ) = 1 and IsDomain( arg[1] ) then
       Error( "no longer supported ..." );
@@ -2743,17 +2818,7 @@ Group := function( arg )
 
     # no argument given, error
     Error("usage: Group(<gen>,...), Group(<gens>), Group(<D>)");
-end;
-
-
-#############################################################################
-##
-#F  Subgroup( <G>, <gens> ) . . . . . . . subgroup of <G> generated by <gens>
-#F  SubgroupNC( <G>, <gens> )
-##
-Subgroup := SubmagmaWithInverses;
-
-SubgroupNC := SubmagmaWithInversesNC;
+end );
 
 
 #############################################################################
@@ -2781,7 +2846,7 @@ function( g )
         p := f[1];
         x := Length( Filtered( f, y -> y = p ) );
         q := p ^ x;
-        r := o / p;
+        r := o / q;
         gcd := Gcdex ( q, r );
         split := PrimePowerComponents( g ^ (gcd.coeff1 * q) );
         return Concatenation( split, [ g ^ (gcd.coeff2 * r) ] );
@@ -2797,7 +2862,7 @@ InstallMethod( PrimePowerComponent,
     "generic method",
     true,
     [ IsMultiplicativeElement,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( g, p )
@@ -2820,7 +2885,7 @@ end );
 ##
 #M  \.   Access to generators
 ##
-InstallMethod(\.,"group generators",true,[IsGroup,IsPosRat and IsInt],0,
+InstallMethod(\.,"group generators",true,[IsGroup,IsPosInt],0,
 function(g,n)
   g:=GeneratorsOfGroup(g);
   n:=NameRNam(n);
@@ -2835,7 +2900,7 @@ end);
 ##
 #F  NormalSubgroups( <G> )  . . . . . . . . . . . normal subgroups of a group
 ##
-NormalSubgroupsAbove:=function (G,N,avoid)
+InstallGlobalFunction( NormalSubgroupsAbove, function (G,N,avoid)
 local   R,         # normal subgroups above <N>,result
 	C,         # one conjugacy class of <G>
 	g,         # representative of a conjugacy class of <G>
@@ -2868,7 +2933,7 @@ local   R,         # normal subgroups above <N>,result
     # return the list of normal subgroups
     return R;
 
-end;
+end );
 
 InstallMethod(NormalSubgroups,"generic class union",true,[IsGroup],0,
 function (G)
@@ -2949,7 +3014,7 @@ end);
 ##
 #M  \<(G,H) comparison of two groups by the list of their smallest generators
 ##
-InstallMethod(\<,"groups by smallest generating sets",IsIdentical,
+InstallMethod(\<,"groups by smallest generating sets",IsIdenticalObj,
   [IsGroup,IsGroup],0,
 function(a,b)
  return GeneratorsSmallest(a)<GeneratorsSmallest(b);
@@ -2960,7 +3025,8 @@ end);
 ##
 #F  PowerMapOfGroupWithInvariants( <G>, <n>, <ccl>, <invariants> )
 ##
-PowerMapOfGroupWithInvariants := function( G, n, ccl, invariants )
+InstallGlobalFunction( PowerMapOfGroupWithInvariants,
+    function( G, n, ccl, invariants )
 
     local reps,      # list of representatives
           ord,       # list of representative orders
@@ -2971,10 +3037,10 @@ PowerMapOfGroupWithInvariants := function( G, n, ccl, invariants )
           candord,   # order of the power
           cand,      # candidates for the power class
           len,       # no. of candidates for the power class
-          j,         # loop over 'cand'
+          j,         # loop over `cand'
           c,         # one candidate
           pow,       # power of a representative
-          powinv;    # invariants of 'pow'
+          powinv;    # invariants of `pow'
 
     reps := List( ccl, Representative );
     ord  := List( reps, Order );
@@ -3033,7 +3099,7 @@ PowerMapOfGroupWithInvariants := function( G, n, ccl, invariants )
 
     # Return the power map.
     return map;
-end;
+end );
 
 
 #############################################################################
@@ -3086,7 +3152,7 @@ InstallMethod( PowerMapOfGroup,
 #M  KnowsHowToDecompose(<G>,<gens>)      test whether the group can decompose 
 ##                                       into the generators
 ##
-InstallMethod(KnowsHowToDecompose,"generic: just small groups",IsIdentical,
+InstallMethod(KnowsHowToDecompose,"generic: just small groups",IsIdenticalObj,
   [IsGroup,IsList],0,
 function(G,l)
   return Size(G)<1000;
@@ -3102,16 +3168,96 @@ end);
 ##
 #M  HasAbelianFactorGroup(<G>,<N>)   test whether G/N is abelian
 ##
-HasAbelianFactorGroup := function(G,N)
+InstallGlobalFunction(HasAbelianFactorGroup,function(G,N)
 local gen;
-  gen:=GeneratorsOfGroup(G);
+  gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
   return ForAll([1..Length(gen)],
                 i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N));
+end);
+
+#############################################################################
+##
+#M  HasElementaryAbelianFactorGroup(<G>,<N>)   test whether G/N is el. abelian
+##
+InstallGlobalFunction(HasElementaryAbelianFactorGroup,function(G,N)
+local gen,p;
+  if not HasAbelianFactorGroup(G,N) then
+    return false;
+  fi;
+  gen:=Filtered(GeneratorsOfGroup(G),i->not i in N);
+  p:=First([2..Order(gen[1])],i->gen[1]^i in N);
+  return IsPrime(p) and ForAll(gen{[2..Length(gen)]},i->i^p in N);
+end);
+
+
+#############################################################################
+##
+#M  PseudoRandom( <group> ) . . . . . . . . pseudo random elements of a group
+##
+Group_InitPseudoRandom := function( grp, len, scramble )
+    local   gens,  seed,  i;
+
+    # we need at least as many seeds as generators
+    gens := GeneratorsOfGroup(grp);
+    if 0 = Length(gens)  then
+        SetPseudoRandomSeed( grp, [[]] );
+        return;
+    fi;
+    len := Maximum( len, Length(gens), 2 );
+
+    # add random generators
+    seed := ShallowCopy(gens);
+    for i  in [ Length(gens)+1 .. len ]  do
+        seed[i] := Random(gens);
+    od;
+    SetPseudoRandomSeed( grp, [seed] );
+
+    # scramble seed
+    for i  in [ 1 .. scramble ]  do
+        PseudoRandom(grp);
+    od;
+
 end;
+
+
+InstallMethod( PseudoRandom,
+    "product replacement",
+    true,
+    [ IsGroup and HasGeneratorsOfGroup ],
+    0,
+
+function( grp )
+    local   seed,  i,  j;
+
+    # set up the seed
+    if not HasPseudoRandomSeed(grp)  then
+        i := Length(GeneratorsOfGroup(grp));
+        Group_InitPseudoRandom( grp, i+10, Maximum( i*10, 100 ) );
+    fi;
+    seed := PseudoRandomSeed(grp);
+    if 0 = Length(seed[1])  then
+        return One(grp);
+    fi;
+
+    # construct the next element
+    i := Random([ 1 .. Length(seed[1]) ]);
+
+    repeat
+        j := Random([ 1 .. Length(seed[1]) ]);
+    until i <> j;
+
+    if Random([true,false])  then
+        seed[1][j] := seed[1][i] * seed[1][j];
+    else
+        seed[1][j] := seed[1][j] * seed[1][i];
+    fi;
+
+    return seed[1][j];
+
+end );
+
 
 #############################################################################
 ##
 #E  grp.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

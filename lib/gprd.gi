@@ -5,6 +5,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.gprd_gi :=
     "@(#)$Id$";
 
@@ -12,7 +15,7 @@ Revision.gprd_gi :=
 ##
 #F  DirectProduct( <arg> )
 ##
-DirectProduct := function( arg )
+InstallGlobalFunction(DirectProduct,function( arg )
     local   grps;
     
     if IsList( arg[1] )  then  grps := arg[1];
@@ -24,13 +27,13 @@ DirectProduct := function( arg )
     else
         return DirectProductOfGroups( grps );
     fi;
-end;
+end);
 
 #############################################################################
 ##
 #M  DirectProductOfGroups( list )
 ##
-DirectProductOfGroups := function( list )
+InstallGlobalFunction(DirectProductOfGroups,function( list )
     local ids, tup, first, i, G, gens, g, new, D;
 
     ids := List( list, x -> One( x ) );
@@ -53,7 +56,7 @@ DirectProductOfGroups := function( list )
                                   embeddings := [],
                                   projections := [] ) );
     return D;
-end;        
+end);        
 
 #############################################################################
 ##
@@ -74,7 +77,7 @@ end );
 InstallMethod( Embedding,
         "of group and integer",
          true, 
-         [ IsGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
+         [ IsGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
     local info, G, imgs, hom, gens;
@@ -89,7 +92,7 @@ InstallMethod( Embedding,
     G := info.groups[i];
     gens := GeneratorsOfGroup( G );
     imgs := GeneratorsOfGroup( D ){[info.first[i] .. info.first[i+1]-1]};
-    hom  := GroupHomomorphismByImages( G, D, gens, imgs );
+    hom  := GroupHomomorphismByImagesNC( G, D, gens, imgs );
     SetIsInjective( hom, true );
 
     # store information
@@ -104,7 +107,7 @@ end );
 InstallMethod( Projection,
         "of group and integer",
          true, 
-         [ IsGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
+         [ IsGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
     local info, G, imgs, hom, N, list, gens;
@@ -122,7 +125,7 @@ InstallMethod( Projection,
                List( [1..info.first[i]-1], x -> One( G ) ),
                GeneratorsOfGroup( G ),
                List( [info.first[i+1]..Length(gens)], x -> One(G)));
-    hom := GroupHomomorphismByImages( D, G, gens, imgs );
+    hom := GroupHomomorphismByImagesNC( D, G, gens, imgs );
     N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
                            [info.first[i+1]..Length(gens)])});
     SetIsSurjective( hom, true );
@@ -154,21 +157,10 @@ end );
 
 #############################################################################
 ##
-#M  IsPcgsComputable( <D> )
-##
-InstallMethod( IsPcgsComputable, "for direct products", true, 
-               [IsGroup and HasDirectProductInfo], 
-               SUM_FLAGS,
-function( D )
-    return ForAll( DirectProductInfo( D ).groups, IsPcgsComputable );
-end );
-
-#############################################################################
-##
 #M  Pcgs( <D> )
 ##
 InstallMethod( Pcgs, "for direct products", true, 
-               [IsGroup and IsPcgsComputable and HasDirectProductInfo], 
+               [IsGroup and CanEasilyComputePcgs and HasDirectProductInfo], 
                SUM_FLAGS,
 function( D )
     local info, pcs, i, pcgs, emb, rels, one, new, g;
@@ -197,7 +189,7 @@ end );
 ##
 #F InnerSubdirectProducts2( D, U, V ) . . . . . . . . . .up to conjugacy in D
 ##
-InnerSubdirectProducts2 := function( D, U, V )
+InstallGlobalFunction(InnerSubdirectProducts2,function( D, U, V )
     local normsU, normsV, div, fac, Syl, NormU, orb, NormV, pairs, i, j,
           homU, homV, iso, subdir, gensU, gensV, N, UN, M, VM, Aut, gamma,
           P, NormUN, autU, n, alpha, NormVM, autV, reps, rep, gens, r, g, h,
@@ -282,7 +274,7 @@ InnerSubdirectProducts2 := function( D, U, V )
             gens := List( gensU, x -> Image( pair[1], x ) );
             imgs := List( gensU, x -> Image( pair[1], x^n ) );
             if gens <> imgs then
-                alpha := GroupHomomorphismByImages( UN, UN, gens, imgs );
+                alpha := GroupHomomorphismByImagesNC( UN, UN, gens, imgs );
                 SetFilterObj( alpha, IsMultiplicativeElementWithInverse );
                 Add( autU, Image( gamma, alpha ) );
             fi;
@@ -296,7 +288,7 @@ InnerSubdirectProducts2 := function( D, U, V )
             gens := List( gensV, x -> Image( pair[2], x ) );
             imgs := List( gensV, x -> Image( pair[2], x^n ) );
             if gens <> imgs then
-                alpha := GroupHomomorphismByImages( VM, VM, gens, imgs );
+                alpha := GroupHomomorphismByImagesNC( VM, VM, gens, imgs );
                 alpha := iso * alpha * InverseGeneralMapping( iso );
                 SetFilterObj( alpha, IsMultiplicativeElementWithInverse );
                 Add( autV, Image( gamma, alpha ) );
@@ -329,13 +321,13 @@ InnerSubdirectProducts2 := function( D, U, V )
 
     # return
     return subdir;
-end;
+end);
 
 #############################################################################
 ##
 #F InnerSubdirectProducts( D, list ) . . . . . . .iterated subdirect products
 ##
-InnerSubdirectProducts := function( P, list )
+InstallGlobalFunction(InnerSubdirectProducts,function( P, list )
     local subdir, i, U, tmp, S, new;
     subdir := [list[1]];
     for i in [2..Length(list)] do
@@ -348,13 +340,13 @@ InnerSubdirectProducts := function( P, list )
         subdir := tmp;
     od;
     return subdir;
-end;
+end);
 
 #############################################################################
 ##
 #F SubdirectProducts( S, T ) . . . . . . . . . . . up to conjugacy in parents
 ##
-SubdirectProducts := function( S, T )
+InstallGlobalFunction(SubdirectProducts,function( S, T )
     local G, H, D, emb1, emb2, U, V, subdir, info, i, tmp;
 
     # go over to direct product
@@ -381,14 +373,7 @@ SubdirectProducts := function( S, T )
     od;
          
     return subdir;
-end;
-#############################################################################
-##
+end);
 
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
+
 #############################################################################

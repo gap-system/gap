@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for vector spaces.
 ##
@@ -14,24 +15,25 @@
 Revision.vspc_gd :=
     "@(#)$Id$";
 
+#1
+##  Vector spaces are free left modules over a field. 
 
 #############################################################################
 ##
-#C  IsLeftOperatorRing
+#C  IsLeftOperatorRing(<R>)
 ##
-IsLeftOperatorRing :=     IsLeftOperatorAdditiveGroup
-                      and IsRing
-                      and IsAssociativeLOpDProd;
+DeclareSynonym( "IsLeftOperatorRing",
+    IsLeftOperatorAdditiveGroup and IsRing and IsAssociativeLOpDProd );
 #T really?
 
 
 #############################################################################
 ##
-#C  IsLeftOperatorRingWithOne
+#C  IsLeftOperatorRingWithOne(<R>)
 ##
-IsLeftOperatorRingWithOne :=     IsLeftOperatorAdditiveGroup
-                             and IsRingWithOne
-                             and IsAssociativeLOpDProd;
+DeclareSynonym( "IsLeftOperatorRingWithOne",
+    IsLeftOperatorAdditiveGroup and IsRingWithOne
+    and IsAssociativeLOpDProd );
 #T really?
 
 
@@ -46,9 +48,10 @@ IsLeftOperatorRingWithOne :=     IsLeftOperatorAdditiveGroup
 ##
 ##  (Vector spaces in {\GAP} are always left vector spaces.)
 ##
-IsLeftVectorSpace := IsLeftModule and IsLeftActedOnByDivisionRing;
+DeclareSynonym( "IsLeftVectorSpace",
+    IsLeftModule and IsLeftActedOnByDivisionRing );
 
-IsVectorSpace := IsLeftVectorSpace;
+DeclareSynonym( "IsVectorSpace", IsLeftVectorSpace );
 
 InstallTrueMethod( IsFreeLeftModule,
     IsLeftModule and IsLeftActedOnByDivisionRing );
@@ -61,26 +64,29 @@ InstallTrueMethod( IsFreeLeftModule,
 ##  A vector space is Gaussian if it allows Gaussian elimination;
 ##  this is used for row vector spaces and matrix vector spaces.
 ##
-IsGaussianSpace := NewCategory( "IsGaussianSpace", IsVectorSpace );
+DeclareCategory( "IsGaussianSpace", IsVectorSpace );
+
+InstallTrueMethod( IsGaussianSpace,
+    IsFreeLeftModule and IsFullMatrixModule );
 
 
 #############################################################################
 ##
-#P  IsDivisionRing( <D> )
+#C  IsDivisionRing( <D> )
 ##
 ##  A division ring in {\GAP} is a nontrivial associative algebra <D> with a
 ##  multiplicative inverse for each nonzero element.
-##
+##  In GAP every division ring is a vector space over a division ring
+##  (probably over itself).
 ##  Note that being a division ring is thus not a property that a ring can
 ##  get, because a ring is usually not represented as a vector space.
 ##
-IsDivisionRing :=     IsMagmaWithInversesIfNonzero
-                  and IsLeftOperatorRing
-                  and IsLeftVectorSpace
-                  and IsNonTrivial
-                  and IsAssociative;
-SetIsDivisionRing := Setter( IsDivisionRing );
-HasIsDivisionRing := Tester( IsDivisionRing );
+DeclareSynonymAttr( "IsDivisionRing",
+        IsMagmaWithInversesIfNonzero
+    and IsLeftOperatorRing
+    and IsLeftVectorSpace
+    and IsNonTrivial
+    and IsAssociative );
 
 
 #############################################################################
@@ -88,54 +94,60 @@ HasIsDivisionRing := Tester( IsDivisionRing );
 #A  GeneratorsOfLeftVectorSpace( <V> )
 #A  GeneratorsOfVectorSpace( <V> )
 ##
-GeneratorsOfLeftVectorSpace := GeneratorsOfLeftOperatorAdditiveGroup;
-SetGeneratorsOfLeftVectorSpace := SetGeneratorsOfLeftOperatorAdditiveGroup;
-HasGeneratorsOfLeftVectorSpace := HasGeneratorsOfLeftOperatorAdditiveGroup;
+##  returns a set of elements of <V> that spans <V>.
+##
+DeclareSynonymAttr( "GeneratorsOfLeftVectorSpace",
+    GeneratorsOfLeftOperatorAdditiveGroup );
 
-GeneratorsOfVectorSpace := GeneratorsOfLeftOperatorAdditiveGroup;
-SetGeneratorsOfVectorSpace := SetGeneratorsOfLeftOperatorAdditiveGroup;
-HasGeneratorsOfVectorSpace := HasGeneratorsOfLeftOperatorAdditiveGroup;
+DeclareSynonymAttr( "GeneratorsOfVectorSpace",
+    GeneratorsOfLeftOperatorAdditiveGroup );
 
 
 #############################################################################
 ##
 #A  CanonicalBasis( <V> )
 ##
-CanonicalBasis := NewAttribute( "CanonicalBasis", IsFreeLeftModule );
-SetCanonicalBasis := Setter( CanonicalBasis );
-HasCanonicalBasis := Tester( CanonicalBasis );
+##  Returns a \"triangular\" basis of <V> (i.e., the $i$-th basis
+##  vector of this basis has zero's until position $i$). 
+##  
+DeclareAttribute( "CanonicalBasis", IsFreeLeftModule );
 
 
 #############################################################################
 ##
 #A  NormedVectors( <V> )  . . . . . . . list of normed vectors in a space <V>
 ##
+##  returns a list of the normed vectors in <V>.
 ##  (This function makes only sense for Gaussian vector spaces.)
 ##
-NormedVectors := NewAttribute( "NormedVectors", IsGaussianSpace );
+DeclareAttribute( "NormedVectors", IsGaussianSpace );
 
 
 #############################################################################
 ##
 #A  TrivialSubspace( <V> )
+## 
+##  returns the subspace of <V> generated by the zero vector of <V>
 ##
-TrivialSubspace := TrivialSubmodule;
-SetTrivialSubspace := SetTrivialSubmodule;
-HasTrivialSubspace := HasTrivialSubmodule;
+DeclareSynonymAttr( "TrivialSubspace", TrivialSubmodule );
 
 
 #############################################################################
 ##
 #O  AsSubspace( <V>, <U> )  . . . . . . . . . . . view <U> as subspace of <V>
 ##
-AsSubspace := NewOperation( "AsSubspace", [ IsVectorSpace, IsVectorSpace ] );
+##  If the vector space <U> happens to be contained in the vector
+##  space <V>, then it can be viewed as subspace of <V>. This function
+##  returns that subspace.
+##
+DeclareOperation( "AsSubspace", [ IsVectorSpace, IsVectorSpace ] );
 
 
 #############################################################################
 ##
 #O  AsVectorSpace( <F>, <D> ) . . . . . . . . .  view <D> as <F>-vector space
 ##
-AsVectorSpace := AsLeftModule;
+DeclareSynonym( "AsVectorSpace", AsLeftModule );
 
 
 #############################################################################
@@ -145,22 +157,27 @@ AsVectorSpace := AsLeftModule;
 #F  VectorSpace( <F>, <gens>, "basis" )
 #F  VectorSpace( <F>, <gens>, <zero>, "basis" )
 ##
-VectorSpace := FreeLeftModule;
+##  is the vector space over the field <F> spanned by the elements in
+##  <gens>. The optional argument <zero> can be used to specify the
+##  null element of the space. The argument `\"basis\"' can be used if
+##  the generators in <gens> are known to form a basis of the vector space
+##  (i.e., if they are known to be linearly independent). 
+##
+DeclareSynonym( "VectorSpace", FreeLeftModule );
 
 
 #############################################################################
 ##
 #F  Subspace( <V>, <gens> ) . . . . . . . subspace of <V> generated by <gens>
-##
-##  is the vector space generated by <gens>, with parent space <V>.
-##
 #F  Subspace( <V>, <gens>, "basis" )
-##
-##  is the subspace of <V> for that <gens> is a list of basis vectors.
-##  It is *not* checked whether <gens> really are linearly independent
+##  
+##  is the subspace of the vector space <V> spanned by <gens>.
+##  If the elements of <gens> are known to be linearly independent, then
+##  the optional argumant `\"basis\"' may be added. In this case
+##  it is *not* checked whether <gens> really are linearly independent
 ##  and whether all in <gens> lie in <V>.
 ##
-Subspace := Submodule;
+DeclareSynonym( "Subspace", Submodule );
 
 
 #############################################################################
@@ -168,10 +185,10 @@ Subspace := Submodule;
 #F  SubspaceNC( <V>, <gens> )
 #F  SubspaceNC( <V>, <gens>, "basis" )
 ##
-##  'SubspaceNC' does the same as 'Subspace', except that it does not check
+##  `SubspaceNC' does the same as `Subspace', except that it does not check
 ##  whether all in <gens> lie in <V>.
 ##
-SubspaceNC := SubmoduleNC;
+DeclareSynonym( "SubspaceNC", SubmoduleNC );
 
 
 #############################################################################
@@ -194,29 +211,31 @@ SubspaceNC := SubmoduleNC;
 ##  two algebras, two algebras-with-one, two left ideals, two right ideals,
 ##  two two-sided ideals.
 ##
-Intersection2Spaces := NewOperationArgs( "Intersection2Spaces" );
+DeclareGlobalFunction( "Intersection2Spaces" );
 
 
 #############################################################################
 ##
 #F  FullRowSpace( <F>, <n> )
 ##
-FullRowSpace := FullRowModule;
+##  Is the $n$-dimensional vector space $F^n$.
+## 
+DeclareSynonym( "FullRowSpace", FullRowModule );
 
 
 #############################################################################
 ##
 #C  IsSubspacesVectorSpace( <D> )
 ##
-IsSubspacesVectorSpace := NewCategory( "IsSubspacesVectorSpace",
-    IsDomain );
+DeclareCategory( "IsSubspacesVectorSpace", IsDomain );
 
 
 #############################################################################
 ##
 #M  IsFinite( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
-##  We allow subspaces domains in 'IsSubspacesVectorSpace' only for finite
+##  Returns `true' if <D> is finite.
+##  We allow subspaces domains in `IsSubspacesVectorSpace' only for finite
 ##  vector spaces.
 ##
 InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
@@ -227,8 +246,8 @@ InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 #O  SubspacesDim( <V>, <dim> )
 #A  SubspacesAll( <V> )
 ##
-SubspacesDim := NewOperation( "SubspacesDim", [ IsVectorSpace, IS_INT ] );
-SubspacesAll := NewAttribute( "SubspacesAll", IsVectorSpace );
+DeclareOperation( "SubspacesDim", [ IsVectorSpace, IS_INT ] );
+DeclareAttribute( "SubspacesAll", IsVectorSpace );
 
 
 #############################################################################
@@ -236,9 +255,10 @@ SubspacesAll := NewAttribute( "SubspacesAll", IsVectorSpace );
 #F  Subspaces( <V> )
 #F  Subspaces( <V>, <k> )
 ##
-##  is the domain of (<k>-dimensional) subspaces of <V>.
+##  is the domain of (<k>-dimensional) subspaces of the finite vector space
+##  <V>.
 ##
-Subspaces := NewOperationArgs( "Subspaces" );
+DeclareGlobalFunction( "Subspaces" );
 
 
 #############################################################################
@@ -250,13 +270,10 @@ Subspaces := NewOperationArgs( "Subspaces" );
 ##  and if $f( a + b ) = f(a) + f(b)$ and $f( s \* a ) = s \* f(a)$ hold
 ##  for all elements $a$, $b$ in the source of $f$ and $s \in D$.
 ##
-IsVectorSpaceHomomorphism := NewProperty( "IsVectorSpaceHomomorphism",
-                                          IsGeneralMapping );
+DeclareProperty( "IsVectorSpaceHomomorphism", IsGeneralMapping );
 
 
 #############################################################################
 ##
 #E  vspc.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

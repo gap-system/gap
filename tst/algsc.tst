@@ -76,7 +76,7 @@ gap> Dimension( s );
 4
 
 gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
-VectorSpace( Rationals, [ v.2+v.4, 0*v.1, v.1, v.1+(2)*v.2+(3)*v.3+(4)*v.4 ] )
+<vector space over Rationals, with 4 generators>
 gap> Dimension( v );
 3
 
@@ -175,12 +175,13 @@ true
 gap> IsAbelianLieAlgebra( s1 );
 true
 gap> LieCentre( s1 );
-<Lie algebra of dimension 1 over Rationals>
+<two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
+ )>
 
 gap> LieCentralizer( l1, s1 );
 <Lie algebra of dimension 4 over Rationals>
 gap> ps:= ProductSpace( l1, s1 );
-VectorSpace( Rationals, [ v.4, v.3, v.6, v.5, v.9, v.8 ] )
+<vector space of dimension 6 over Rationals>
 gap> LieCentralizer( l1, ps );
 <Lie algebra of dimension 0 over Rationals>
 gap> LieNormalizer( l1, ps );
@@ -189,11 +190,11 @@ gap> LieNormalizer( l1, ps );
 # use AsAlgebra etc.
 
 gap> KappaPerp( l1, ps );
-VectorSpace( Rationals, [ v.1, v.2, v.7, v.8, v.9, v.10 ] )
+<vector space of dimension 6 over Rationals>
 
 gap> b:= Basis( l1 );
 CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
-gap> AdjointMatrix( b, gens[1] );
+gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
@@ -201,15 +202,15 @@ gap> AdjointMatrix( b, gens[1] );
   [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 
 gap> der:= Derivations( b );
-<Lie algebra over Rationals>
+<Lie algebra of dimension 11 over Rationals>
 gap> IsLieAlgebra( der );
 true
 gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
-0
+11
 
-gap> KillingMatrix( b );
+gap> Print(KillingMatrix( b ),"\n");
 [ [ -24, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 24, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 12, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -12, 0, 0, 0, 0 ], 
   [ 0, 0, 12, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, -12, 0, 0, 0, 0, 0, 0 ], 
@@ -228,7 +229,7 @@ false
 gap> NonNilpotentElement( l1 );
 v.1
 
-gap> AdjointBasis( b );
+gap> Print(AdjointBasis( b ),"\n");
 Basis( VectorSpace( Rationals, 
 [ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
       [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -445,8 +446,8 @@ false
 gap> Dimension( l2 );
 15
 gap> ucs:= UpperCentralSeriesOfAlgebra( l2 );
-[ <Lie algebra of dimension 1 over Rationals>, 
-  <Lie algebra over Rationals, with 0 generators> ]
+[ <two-sided ideal in <Lie algebra of dimension 15 over Rationals>,
+      (dimension 1)>, <Lie algebra over Rationals, with 0 generators> ]
 gap> lcs:= LowerCentralSeriesOfAlgebra( l2 );
 [ <Lie algebra of dimension 15 over Rationals>, 
   <Lie algebra of dimension 14 over Rationals> ]
@@ -457,9 +458,12 @@ false
 gap> IsAbelianLieAlgebra( l2 );
 false
 gap> LieCentre( l2 );
-<Lie algebra of dimension 1 over Rationals>
+<two-sided ideal in <Lie algebra of dimension 15 over Rationals>, (dimension 1
+ )>
 
-gap> gens:= GeneratorsOfAlgebra( l2 );
+
+gap> gens:= GeneratorsOfAlgebra( l2 );;
+gap> Print(gens,"\n");
 [ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
   v.15 ]
 
@@ -474,26 +478,27 @@ true
 gap> IsAbelianLieAlgebra( s2 );
 true
 gap> LieCentre( s2 );
-<Lie algebra of dimension 1 over Rationals>
+<two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
+ )>
 
 gap> LieCentralizer( l2, s2 );
 <Lie algebra of dimension 9 over Rationals>
 gap> ps:= ProductSpace( l2, s2 );
-VectorSpace( Rationals, [ v.5, v.6, v.1, v.9, v.10, v.13 ] )
+<vector space of dimension 6 over Rationals>
 gap> LieCentralizer( l2, ps );
 <Lie algebra of dimension 1 over Rationals>
 gap> LieNormalizer( l2, ps );
 <Lie algebra of dimension 10 over Rationals>
 
-gap> KappaPerp( l2, ps );
-VectorSpace( Rationals, [ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3, 
-  v.4+(-1/2)*v.11+(3/2)*v.12, v.5+(2/3)*v.14+(-1/3)*v.15, 
-  v.6+(2)*v.14+(-1)*v.15, v.7+(-1/9)*v.14+(-1/9)*v.15, 
+gap> Print( KappaPerp( l2, ps ), "\n" );
+VectorSpace( Rationals, [ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3,
+  v.4+(-1/2)*v.11+(3/2)*v.12, v.5+(2/3)*v.14+(-1/3)*v.15,
+  v.6+(2)*v.14+(-1)*v.15, v.7+(-1/9)*v.14+(-1/9)*v.15,
   v.8+(-1/3)*v.14+(2/3)*v.15, v.9, v.10, v.13+(-8/3)*v.14+(4/3)*v.15 ] )
 
 gap> b:= Basis( l2 );
 CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )
-gap> AdjointMatrix( b, gens[1] );
+gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, -2, -6, 0, 0, 0, 0, 0, 0, 8, 4, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -511,15 +516,15 @@ gap> AdjointMatrix( b, gens[1] );
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 
 gap> der:= Derivations( b );
-<Lie algebra of dimension 1 over Rationals>
+<Lie algebra of dimension 17 over Rationals>
 gap> IsLieAlgebra( der );
 true
 gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
-1
+17
 
-gap> KillingMatrix( b );
+gap> Print(KillingMatrix( b ),"\n");
 [ [ 0, -8, 0, -24, 0, 0, 0, 0, 0, 0, 48, 32, 0, 0, 0 ], 
   [ -8, 0, -8, 0, 0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 0 ], 
   [ 0, -8, 0, -8, 0, 0, 0, 0, 0, 0, 32, 16, 0, 0, 0 ], 
@@ -630,14 +635,18 @@ true
 gap> IsAbelianLieAlgebra( s3 );
 true
 gap> LieCentre( s3 );
-<Lie algebra of dimension 1 over Rationals>
+<two-sided ideal in <Lie algebra of dimension 1 over Rationals>, (dimension 1
+ )>
 
 gap> LieCentralizer( l3, s3 );
 <Lie algebra of dimension 10 over Rationals>
-gap> ps:= ProductSpace( l3, s3 );
+gap> ps:= ProductSpace( l3, s3 );;
+gap> Print( ps, "\n" );
 VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
 gap> LieCentralizer( l3, ps );
-<Lie algebra of dimension 4 over Rationals>
+<two-sided ideal in <Lie algebra of dimension 14 over Rationals>, (dimension 4
+ )>
+
 gap> LieNormalizer( l3, ps );
 <Lie algebra of dimension 14 over Rationals>
 
@@ -646,7 +655,7 @@ gap> KappaPerp( l3, ps );
 
 gap> b:= Basis( l3 );
 CanonicalBasis( <Lie algebra of dimension 14 over Rationals> )
-gap> AdjointMatrix( b, gens[1] );
+gap> Print(AdjointMatrix( b, gens[1] ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -1, -1, -1 ], 
   [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -663,15 +672,15 @@ gap> AdjointMatrix( b, gens[1] );
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
 
 gap> der:= Derivations( b );
-<Lie algebra of dimension 1 over Rationals>
+<Lie algebra of dimension 14 over Rationals>
 gap> IsLieAlgebra( der );
 true
 gap> IsMatrixSpace( der );
 true
 gap> Dimension( der );
-1
+14
 
-gap> KillingMatrix( b );
+gap> Print(KillingMatrix( b ),"\n");
 [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
   [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
@@ -705,17 +714,17 @@ v.11
 gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
 <algebra over Rationals, with 0 generators>
 gap> z:= Zero( t );
-<zero of zero s.c. algebra>
+<zero of trivial s.c. algebra>
 gap> Random( t );
-<zero of zero s.c. algebra>
+<zero of trivial s.c. algebra>
 gap> b:= Basis( t );
 CanonicalBasis( <algebra of dimension 0 over Rationals> )
 gap> coeff:= Coefficients( b, z );
 <empty row vector>
 gap> LinearCombination( b, coeff );
-<zero of zero s.c. algebra>
+<zero of trivial s.c. algebra>
 gap> LinearCombination( b, [] );
-<zero of zero s.c. algebra>
+<zero of trivial s.c. algebra>
 gap> c:= Centre( t );
 <algebra of dimension 0 over Rationals>
 gap> c = t;
@@ -723,7 +732,7 @@ true
 
 
 #############################################################################
-gap> STOP_TEST( "algsc.tst", 735240000 );
+gap> STOP_TEST( "algsc.tst", 867313307 );
 
 
 #############################################################################

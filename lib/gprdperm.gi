@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.gprdperm_gi :=
     "@(#)$Id$";
 
@@ -11,7 +14,7 @@ Revision.gprdperm_gi :=
 ##
 #F  DirectProductOfPermGroups( <grps> ) . . . . direct product of perm groups
 ##
-DirectProductOfPermGroups := function( grps )
+InstallGlobalFunction( DirectProductOfPermGroups, function( grps )
     local   oldgrps,  olds,  news,  perms,  gens,
             deg,  grp,  old,  new,  perm,  gen,  D, info;
     
@@ -51,7 +54,7 @@ DirectProductOfPermGroups := function( grps )
 
     SetDirectProductInfo( D, info );
     return D;
-end;
+end );
 
 #############################################################################
 ##
@@ -68,8 +71,7 @@ end );
 ##
 #R  IsEmbeddingDirectProductPermGroup( <hom> )  .  embedding of direct factor
 ##
-IsEmbeddingDirectProductPermGroup := NewRepresentation
-    ( "IsEmbeddingDirectProductPermGroup",
+DeclareRepresentation( "IsEmbeddingDirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
       IsSPGeneralMapping, [ "component" ] );
@@ -78,8 +80,7 @@ IsEmbeddingDirectProductPermGroup := NewRepresentation
 ##
 #R  IsEmbeddingWreathProductPermGroup( <hom> )  .  embedding of wreath factor
 ##
-IsEmbeddingWreathProductPermGroup := NewRepresentation
-    ( "IsEmbeddingWreathProductPermGroup",
+DeclareRepresentation( "IsEmbeddingWreathProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsInjective and
       IsSPGeneralMapping, [ "component" ] );
@@ -90,7 +91,7 @@ IsEmbeddingWreathProductPermGroup := NewRepresentation
 ##
 InstallMethod( Embedding, true,
       [ IsPermGroup and HasDirectProductInfo,
-        IsPosRat and IsInt ], 0,
+        IsPosInt ], 0,
     function( D, i )
     local   emb, info;
     info := DirectProductInfo( D );
@@ -156,21 +157,39 @@ InstallMethod( ImagesSource, true, [ IsEmbeddingDirectProductPermGroup ], 0,
     return I;
 end );
 
+
+#############################################################################
+##
+#M  ViewObj( <emb> )  . . . . . . . . . . . . . . . . . . . .  view embedding
+##
+InstallMethod( ViewObj,
+    "for embedding into direct product",
+    true,
+    [ IsEmbeddingDirectProductPermGroup ], 0,
+    function( emb )
+    Print( Ordinal( emb!.component ), " embedding into " );
+    View( Range( emb ) );
+end );
+
+
 #############################################################################
 ##
 #M  PrintObj( <emb> ) . . . . . . . . . . . . . . . . . . . . print embedding
 ##
-InstallMethod( PrintObj, true, [ IsEmbeddingDirectProductPermGroup ], 0,
+InstallMethod( PrintObj,
+    "for embedding into direct product",
+    true,
+    [ IsEmbeddingDirectProductPermGroup ], 0,
     function( emb )
-    Print( Ordinal( emb!.component ), " embedding into ", Range( emb ) );
+    Print( "Embedding( ", Range( emb ), ", ", emb!.component, " )" );
 end );
+
 
 #############################################################################
 ##
 #R  IsProjectionDirectProductPermGroup( <hom> ) projection onto direct factor
 ##
-IsProjectionDirectProductPermGroup := NewRepresentation
-    ( "IsProjectionDirectProductPermGroup",
+DeclareRepresentation( "IsProjectionDirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsSurjective and
       IsSPGeneralMapping, [ "component" ] );
@@ -181,7 +200,7 @@ IsProjectionDirectProductPermGroup := NewRepresentation
 ##
 InstallMethod( Projection, true,
       [ IsPermGroup and HasDirectProductInfo,
-        IsPosRat and IsInt ], 0,
+        IsPosInt ], 0,
     function( D, i )
     local   prj, info;
     info := DirectProductInfo( D );
@@ -251,14 +270,33 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
     return K;
 end );
 
+
+#############################################################################
+##
+#M  ViewObj( <prj> )  . . . . . . . . . . . . . . . . . . . . view projection
+##
+InstallMethod( ViewObj,
+    "for projection from a direct product",
+    true,
+    [ IsProjectionDirectProductPermGroup ], 0,
+    function( prj )
+    Print( Ordinal( prj!.component ), " projection of " );
+    View( Source( prj ) );
+end );
+
+
 #############################################################################
 ##
 #M  PrintObj( <prj> ) . . . . . . . . . . . . . . . . . . .  print projection
 ##
-InstallMethod( PrintObj, true, [ IsProjectionDirectProductPermGroup ], 0,
+InstallMethod( PrintObj,
+    "for projection from a direct product",
+    true,
+    [ IsProjectionDirectProductPermGroup ], 0,
     function( prj )
-    Print( Ordinal( prj!.component ), " projection of ", Source( prj ) );
+    Print( "Projection( ", Source( prj ), ", ", prj!.component, " )" );
 end );
+
 
 #############################################################################
 ##
@@ -324,8 +362,7 @@ end );
 ##
 #R  IsProjectionSubdirectProductPermGroup( <hom> )  .  projection onto factor
 ##
-IsProjectionSubdirectProductPermGroup := NewRepresentation
-    ( "IsProjectionSubdirectProductPermGroup",
+DeclareRepresentation( "IsProjectionSubdirectProductPermGroup",
       IsAttributeStoringRep and
       IsGroupHomomorphism and IsSurjective and
       IsSPGeneralMapping, [ "component" ] );
@@ -336,7 +373,7 @@ IsProjectionSubdirectProductPermGroup := NewRepresentation
 ##
 InstallMethod( Projection, true,
       [ IsPermGroup and HasSubdirectProductInfo,
-        IsPosRat and IsInt ], 0,
+        IsPosInt ], 0,
     function( S, i )
     local   prj, info;
     info := SubdirectProductInfo( S );
@@ -425,14 +462,33 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
              info.perms[ i ] ) );
 end );
 
+
+#############################################################################
+##
+#M  ViewObj( <prj> )  . . . . . . . . . . . . . . . . . . . . view projection
+##
+InstallMethod( ViewObj,
+    "for projection from subdirect product",
+    true,
+    [ IsProjectionSubdirectProductPermGroup ], 0,
+    function( prj )
+    Print( Ordinal( prj!.component ), " projection of " );
+    View( Source( prj ) );
+end );
+
+
 #############################################################################
 ##
 #M  PrintObj( <prj> ) . . . . . . . . . . . . . . . . . . .  print projection
 ##
-InstallMethod( PrintObj, true, [ IsProjectionSubdirectProductPermGroup ], 0,
+InstallMethod( PrintObj,
+    "for projection from subdirect product",
+    true,
+    [ IsProjectionSubdirectProductPermGroup ], 0,
     function( prj )
-    Print( Ordinal( prj!.component ), " projection of ", Source( prj ) );
+    Print( "Projection( ", Source( prj ), ", ", prj!.component, " )" );
 end );
+
 
 #############################################################################
 ##
@@ -549,7 +605,7 @@ end );
 ##
 InstallMethod( Embedding, true,
   [ IsPermGroup and HasWreathProductInfo,
-    IsPosRat and IsInt ], 0,
+    IsPosInt ], 0,
 function( W, i )
     local   emb, info;
     info := WreathProductInfo( W );
@@ -561,9 +617,9 @@ function( W, i )
 		     IsEmbeddingWreathProductPermGroup ),
 		     rec( component := i ) );
     elif i=info.degI+1 then
-      emb:=GroupHomomorphismByImages(info.I,W,GeneratorsOfGroup(info.I),
-                                     info.hgens);
-      emb:=GroupHomomorphismByImages(info.groups[2],W,
+      emb:= GroupHomomorphismByImagesNC(info.I,W,GeneratorsOfGroup(info.I),
+                                        info.hgens);
+      emb:= GroupHomomorphismByImagesNC(info.groups[2],W,
              GeneratorsOfGroup(info.groups[2]),
              List(GeneratorsOfGroup(info.groups[2]),
 	          i->ImageElm(emb,ImageElm(info.alpha,i))));
@@ -613,13 +669,30 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
            ^ (info.perms[ emb!.component ] ^ -1);
 end );
 
+
+#############################################################################
+##
+#M  ViewObj( <emb> )  . . . . . . . . . . . . . . . . . . . .  view embedding
+##
+InstallMethod( ViewObj,
+    "for embedding into wreath product",
+    true,
+    [ IsEmbeddingWreathProductPermGroup ], 0,
+    function( emb )
+    Print( Ordinal( emb!.component ), " embedding into ", Range( emb ) );
+end );
+
+
 #############################################################################
 ##
 #M  PrintObj( <emb> ) . . . . . . . . . . . . . . . . . . . . print embedding
 ##
-InstallMethod( PrintObj, true, [ IsEmbeddingWreathProductPermGroup ], 0,
+InstallMethod( PrintObj,
+    "for embedding into wreath product",
+    true,
+    [ IsEmbeddingWreathProductPermGroup ], 0,
     function( emb )
-    Print( Ordinal( emb!.component ), " embedding into ", Range( emb ) );
+    Print( "Embedding( ", Range( emb ), ", ", emb!.component, " )" );
 end );
 
 
@@ -643,7 +716,7 @@ end);
 ##
 #F  WreathProductProductAction( <G>, <H> )   wreath product in product action
 ##
-WreathProductProductAction := function( G, H )
+InstallGlobalFunction( WreathProductProductAction, function( G, H )
     local  W,  domG,  domI,  map,  I,  deg,  n,  N,  gens,  gen,  i,  list,
            p,  adic,  q,  Val,  val,  rans;
     
@@ -719,14 +792,6 @@ WreathProductProductAction := function( G, H )
     fi;
 
     return W;
-end;
+end );
 
-#############################################################################
-
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 #############################################################################

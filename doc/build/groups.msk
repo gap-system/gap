@@ -1,0 +1,822 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  groups.msk                  GAP documentation            Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Groups}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating groups}
+
+\Declaration{Group}
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));
+Group( [ (1,2,3,4), (1,2) ], ... )
+\endexample
+
+\Declaration{AsGroup}
+\beginexample
+gap> AsGroup([(1,2)]);           
+fail
+gap> AsGroup([(),(1,2)]);
+Group( [ (1,2) ], ... )
+\endexample
+
+\Declaration{ClosureGroup}
+\beginexample
+gap> ClosureGroup(g,(1,5));
+Group( [ (1,2,3,4), (1,2), (1,5) ], ... )
+\endexample
+\Methods
+
+\Declaration{ClosureGroupDefault}
+
+\Declaration{ConjugateGroup}
+\beginexample
+gap> ConjugateGroup(g,(1,5));
+Group( [ (2,3,4,5), (2,5) ], ... )
+\endexample
+\Methods
+
+\Declaration{ConjugateSubgroups}
+
+
+\FileHeader{grp}[2]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroups}
+
+\Declaration{Subgroup}
+\beginexample
+gap> u:=Subgroup(g,[(1,2,3),(1,2)]);
+Group( [ (1,2,3), (1,2) ], ... )
+\endexample
+
+\Declaration{Index}
+\beginexample
+gap> Index(g,u);
+4
+\endexample
+
+\Declaration{IndexInWholeGroup}
+
+\Declaration{Parent}
+
+\Declaration{AsSubgroup}
+\beginexample
+gap> v:=AsSubgroup(g,Group((1,2,3),(1,4)));
+Group( [ (1,2,3), (1,4) ], ... )
+gap> Parent(v);
+Group( [ (1,2,3,4), (1,2) ], ... )
+\endexample
+
+\Declaration{IsSubgroup}
+\beginexample
+gap> IsSubgroup(g,u);
+true
+gap> v:=Group((1,2,3),(1,2));    
+Group( [ (1,2,3), (1,2) ], ... )
+gap> u=v; 
+true
+gap> IsSubgroup(g,v);
+true
+\endexample
+
+\Declaration{IsNormal}
+\beginexample
+gap> IsNormal(g,u);
+false
+\endexample
+
+\Declaration{IsSubnormal}
+\beginexample
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Cosets and transversals}
+\index{right cosets}
+
+\Declaration{RightTransversal}
+
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;u:=Subgroup(g,[(1,2,3),(1,2)]);;
+gap> rt:=RightTransversal(g,u);
+RightTransversal(Group([(1,2,3,4),(1,2)],...),Group([(1,2,3),(1,2)],...))
+gap> Length(rt);
+4
+gap> Position(rt,(1,2,3));
+fail
+gap> PositionCanonical(rt,(1,2,3));
+1
+gap> rt[1];
+()
+\endexample
+
+\Declaration{RightCoset}
+\beginexample
+gap> c:=RightCoset(u,(2,3,4));
+RightCoset(Group( [ (1,2,3), (1,2) ], ... ),(2,3,4))
+gap> ActingDomain(c);
+Group( [ (1,2,3), (1,2) ], ... )
+gap> Size(c);
+6
+gap> AsList(c);
+[ (2,3,4), (1,4,2), (1,3)(2,4), (2,4), (1,4,2,3), (1,3,4,2) ]
+\endexample
+
+\Declaration{RightCosets}
+\beginexample
+gap> RightCosets(g,u);
+[ RightCoset(Group( [ (1,2,3), (1,2) ], ... ),()), 
+  RightCoset(Group( [ (1,2,3), (1,2) ], ... ),(1,2)(3,4)), 
+  RightCoset(Group( [ (1,2,3), (1,2) ], ... ),(1,3)(2,4)), 
+  RightCoset(Group( [ (1,2,3), (1,2) ], ... ),(1,4)(2,3)) ]
+\endexample
+
+\Declaration{CanonicalRightCosetElement}
+\beginexample
+gap> CanonicalRightCosetElement(u,(2,4,3));
+(3,4)
+\endexample
+
+\Declaration{IsRightCoset}
+
+\index{left cosets}
+{\GAP} does not provide left cosets as a separate data type, but as the left
+coset $gU$ consists of exactly the inverses of the elements of the right
+coset $ug^{-1}$ calculations with left cosets can be emulated using right
+cosets by inverting the representatives.
+
+\Declaration{DoubleCoset}
+\Declaration{RepresentativesContainedRightCosets}
+\beginexample
+gap> c:=DoubleCoset(u,(2,4),v);             
+DoubleCoset(Group( [ (1,2,3), (1,2) ], ... ),(2,4),Group( [ (3,4) ], ... ))
+gap> (1,2,3) in c;
+false
+gap> (2,3,4) in c;
+true
+gap> LeftActingDomain(c);
+Group( [ (1,2,3), (1,2) ], ... )
+gap> RightActingDomain(c);
+Group( [ (3,4) ], ... )
+gap> RepresentativesContainedRightCosets(c);
+[ (2,3,4) ]
+\endexample
+
+\Declaration{DoubleCosets}
+\beginexample
+gap> dc:=DoubleCosets(g,u,v);
+[ DoubleCoset(Group( [ (1,2,3), (1,2) ], ... ),(),Group( [ (3,4) ], ... )), 
+  DoubleCoset(Group( [ (1,2,3), (1,2) ], ... ),(2,3,4),Group( 
+    [ (3,4) ], ... )), DoubleCoset(Group( [ (1,2,3), (1,2) ], ... ),
+    (1,2,3,4),Group( [ (3,4) ], ... )) ]
+gap> List(dc,Representative);
+[ (), (2,3,4), (1,2,3,4) ]
+\endexample
+
+\Declaration{IsDoubleCoset}
+
+The information function for coset and double coset operations is
+`InfoCoset'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Specific and parametrized subgroups}
+
+\Declaration{TrivialSubgroup}
+\beginexample
+gap> TrivialSubgroup(g);
+Group( [  ], ... )
+\endexample
+
+\Declaration{DerivedSubgroup}
+\Methods
+\Declaration{CommutatorSubgroup}
+\Methods
+\beginexample
+gap> DerivedSubgroup(g);
+Group( [ (1,3,2), (1,4,3) ], ... )
+gap> CommutatorSubgroup(g,last); 
+Group( [ (1,3,4), (1,2,3), (1,2,3), (1,4,2) ], ... )
+\endexample
+
+\Declaration{FittingSubgroup}
+\beginexample
+gap> FittingSubgroup(g);
+Group( [ (), (1,2)(3,4), (1,4)(2,3) ], ... )
+\endexample
+\Methods
+
+\Declaration{FrattiniSubgroup}
+\beginexample
+gap> FrattiniSubgroup(g);
+Group( [  ], ... )
+\endexample
+\Methods
+
+\Declaration{PrefrattiniSubgroup}
+\beginexample
+\endexample
+\Methods
+
+\Declaration{RadicalGroup}
+\beginexample
+gap> RadicalGroup(DirectProduct(SymmetricGroup(5),Group((1,2,3))));
+Group( [ ( 6, 7, 8) ], ... )
+\endexample
+\Methods
+
+\Declaration{SupersolvableResiduum}
+\beginexample
+gap> SupersolvableResiduum(g);
+Group( [ (), (1,2)(3,4), (1,3)(2,4), (1,4)(2,3) ], ... )
+\endexample
+\Methods
+
+\Declaration{SylowSubgroup}
+\beginexample
+gap> SylowSubgroup(g,2);
+Group( [ (3,4), (1,2), (1,3)(2,4) ], ... )
+\endexample
+\Methods
+
+\Declaration{SylowComplement}
+\Methods
+
+\Declaration{HallSubgroup}
+\Methods
+
+\Declaration{SylowSystem}
+\beginexample
+gap> g:=SmallGroup(60,10);
+Group( [ f1, f2, f3, f4 ], ... )
+gap> SylowSystem(g);
+[ Group( [ f1, f2 ], ... ), Group( [ f3 ], ... ), Group( [ f4 ], ... ) ]
+gap> List(last,Size);
+[ 4, 3, 5 ]
+\endexample
+\Methods
+
+\Declaration{ComplementSystem}
+\beginexample
+gap> ComplementSystem(g);
+[ Group( [ f3, f4 ], ... ), Group( [ f1, f2, f4 ], ... ), Group( 
+[ f1, f2, f3 ], ... ) ]
+gap> List(last,Size);
+[ 15, 20, 12 ]
+\endexample
+\Methods
+
+\Declaration{HallSystem}
+\beginexample
+gap> HallSystem(g);
+[ Group( [  ], ... ), Group( [ f1, f2 ], ... ), Group( 
+[ f1, f2, f3 ], ... ), Group( [ f1, f2, f3, f4 ], ... ), Group( 
+[ f1, f2, f4 ], ... ), Group( [ f3 ], ... ), Group( 
+[ f3, f4 ], ... ), Group( [ f4 ], ... ) ]
+gap> List(last,Size);
+[ 1, 4, 12, 60, 20, 3, 15, 5 ]
+\endexample
+\Methods
+
+\Declaration{Omega}
+\Methods
+
+\Declaration{Agemo}
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Action on elements and subgroups}
+
+\Declaration{Centralizer}
+\beginexample
+gap> Centralizer(g,Subgroup(g,[(1,2)]));
+Group( [ (3,4), (1,2) ], ... )
+gap> Centralizer(g,(1,2,3));
+Group( [ (1,2,3) ], ... )
+\endexample
+\Methods
+
+\Declaration{Normalizer}
+\beginexample
+gap> Normalizer(g,Subgroup(g,[(1,2,3)]));
+Group( [ (1,2,3), (2,3) ], ... )
+\endexample
+\Methods
+
+`RepresentativeOperation' can be used to obtain conjugating elements.
+
+\Declaration{IsConjugate}
+\beginexample
+gap> RepresentativeOperation(g,(1,2),(3,4));
+(1,3)(2,4)
+gap> IsConjugate(g,Group((1,2,3,4),(1,3)),Group((1,3,2,4),(1,2)));
+true
+\endexample
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Normal structure}
+
+\Declaration{Core}
+\beginexample
+gap> Core(g,Subgroup(g,[(1,2,3,4)]));   
+Group( [  ], ... )
+\endexample
+\Methods
+
+\Declaration{NormalClosure}
+\beginexample
+gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
+Group( [ (1,2,3), (2,3,4) ], ... )
+\endexample
+\Methods
+
+\Declaration{Complementclasses}
+\beginexample
+gap> Complementclasses(g,Group((1,2)(3,4),(1,3)(2,4)));
+[ Group( [ (3,4), (2,4,3) ], ... ) ]
+\endexample
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Group Properties}
+
+Some of the properties can be defined not only for groups but also for other
+structures. In this case the name got an added `Group' to distinguish it.
+
+\Declaration{IsCyclic}
+\Declaration{IsElementaryAbelian}
+\Declaration{IsNilpotentGroup}
+\Declaration{IsPerfectGroup}
+\Declaration{IsSimpleGroup}
+\Declaration{IsSolvableGroup}
+\Declaration{IsSupersolvableGroup}
+\Declaration{IsMonomialGroup}
+
+\Declaration{IsFinitelyGeneratedGroup}
+\Declaration{IsSubsetLocallyFiniteGroup}
+
+The following are mathematical properties, but not {\GAP} `Properties' as
+they are depending on a parameter:
+
+\Declaration{IsPSolvable}
+
+\Declaration{IsPNilpotent}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Group Attributes}
+
+\Declaration{AbelianInvariants}
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2),(5,6));
+Group( [ (1,2,3,4), (1,2), (5,6) ], ... )
+gap> AbelianInvariants(g);
+[ 2, 2 ]
+\endexample
+\Methods
+
+\Declaration{Exponent}
+\beginexample
+gap> Exponent(g);
+12
+\endexample
+
+\Declaration{EulerianFunction}
+\Methods
+
+\Declaration{PRump}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroup series}
+
+In group theory many subgroup series are considered and {\GAP} provides
+commands to compute them. In the following sections, there is always a
+series $G=U_1>U_2>\cdots>U_m=\langle1\rangle$ of subgroups considered.
+A series also may stop without reaching $G$ or $\langle1\rangle$.
+
+A series is called ``subnormal'' if every $U_{i+1}$ is normal in $U_i$.
+
+A series of normal subgroups is called ``central'' if $U_i/U_{i+1}$ is
+central in $G/U_{i+1}$.
+
+We call a series ``refinable'' if intermediate subgroups can be added to
+the series without destroying the properties of the series.
+
+\FileHeader[1]{grp}
+
+\Declaration{ChiefSeries}
+\Requirements
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;
+gap> ChiefSeries(g);
+[ Group( [ (1,2,3,4), (1,2) ], ... ), 
+  Group( [ (2,4,3), (1,4)(2,3), (1,2)(3,4) ], ... ), 
+  Group( [ (1,2)(3,4), (1,3)(2,4) ], ... ), Group( [  ], ... ) ]
+\endexample
+
+\Declaration{ChiefSeriesUnderAction}
+
+\Declaration{ChiefSeriesThrough}
+
+\Declaration{CompositionSeries}
+\Methods
+
+\Declaration{DisplayCompositionSeries}
+\beginexample
+gap> CompositionSeries(g);
+[ Group( [ (3,4), (2,4,3), (1,4)(2,3), (1,2)(3,4) ], ... ), 
+  Group( [ (2,4,3), (1,4)(2,3), (1,2)(3,4) ], ... ), 
+  Group( [ (1,4)(2,3), (1,2)(3,4) ], ... ), Group( [ (1,2)(3,4) ], ... ), 
+  Group( [  ], ... ) ]
+gap> DisplayCompositionSeries(g);
+Group
+ | Z(2)
+Group
+ | Z(3)
+Group
+ | Z(2)
+Group
+ | Z(2)
+Group
+\endexample
+
+\Declaration{DerivedSeriesOfGroup}
+\Declaration{DerivedLength}
+\beginexample
+gap> List(DerivedSeriesOfGroup(g),Size);
+[ 24, 12, 4, 1 ]
+gap> DerivedLength(g);
+3
+\endexample
+
+\Declaration{ElementaryAbelianSeries}
+\beginexample
+\endexample
+\Methods
+
+\Declaration{DimensionsLoewyFactors}
+
+\Declaration{JenningsSeries}
+
+\Declaration{LowerCentralSeriesOfGroup}
+
+\Declaration{UpperCentralSeriesOfGroup}
+
+\Declaration{PCentralSeries}
+
+\Declaration{SubnormalSeries}
+
+\Declaration{AscendingChain}
+
+\Declaration{IntermediateGroup}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Factor Groups}
+
+\Declaration{NaturalHomomorphismByNormalSubgroup}
+\Declaration{FactorGroup}
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;n:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
+gap> hom:=NaturalHomomorphismByNormalSubgroup(g,n);
+[ (3,4), (2,4,3), (1,2)(3,4), (1,3)(2,4) ] -> 
+[ f1, f2, <identity> of ..., <identity> of ... ]
+gap> FactorGroup(g,n);
+Group( [ f1, f2 ], ... )
+\endexample
+
+\Declaration{CommutatorFactorGroup}
+\beginexample
+gap> CommutatorFactorGroup(g);
+Group( [ f1 ], ... )
+\endexample
+
+\Declaration{HasAbelianFactorGroup}
+\beginexample
+gap> HasAbelianFactorGroup(g,n);
+false
+gap> HasAbelianFactorGroup(DerivedSubgroup(g),n);  
+true
+\endexample
+
+\Declaration{CentralizerModulo}
+\beginexample
+gap> CentralizerModulo(g,n,(1,2));
+Group( [ (3,4), (1,4)(2,3), (1,3)(2,4) ], ... )
+\endexample
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Conjugacy Classes}
+
+\Declaration{ConjugacyClass}
+\Methods
+\Declaration{ConjugacyClasses}
+\Methods
+\Declaration{NrConjugacyClasses}
+\Methods
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;                                        
+gap> NrConjugacyClasses(g);
+5
+gap> cl:=ConjugacyClasses(g);
+[ ConjugacyClass( Group( [ (1,2,3,4), (1,2) ], ... ), () ), 
+  ConjugacyClass( Group( [ (1,2,3,4), (1,2) ], ... ), (3,4) ), 
+  ConjugacyClass( Group( [ (1,2,3,4), (1,2) ], ... ), (2,3,4) ), 
+  ConjugacyClass( Group( [ (1,2,3,4), (1,2) ], ... ), (1,2)(3,4) ), 
+  ConjugacyClass( Group( [ (1,2,3,4), (1,2) ], ... ), (1,2,3,4) ) ]
+gap> Representative(cl[3]);
+(2,3,4)
+gap> Size(Centralizer(cl[5]));
+4
+gap> Size(cl[2]);
+6
+\endexample
+
+\Declaration{IsConjugacyClassGroupRep}
+
+\Declaration{OrdersClassRepresentatives}
+\Methods
+\Declaration{SizesCentralizers}
+\Methods
+\Declaration{SizesConjugacyClasses}
+\Methods
+\beginexample
+gap> OrdersClassRepresentatives(g);
+[ 1, 2, 3, 2, 4 ]
+gap> SizesCentralizers(g);
+[ 24, 4, 3, 8, 4 ]
+gap> SizesConjugacyClasses(g);
+[ 1, 6, 8, 3, 6 ]
+\endexample
+
+\Declaration{RationalClass}
+\Declaration{RationalClasses}
+\beginexample
+gap> RationalClasses(DerivedSubgroup(g));
+[ RationalClass( Group( [ (1,3,2), (2,4,3) ], ... ), () ), 
+  RationalClass( Group( [ (1,3,2), (2,4,3) ], ... ), (1,3)(2,4) ), 
+  RationalClass( Group( [ (1,3,2), (2,4,3) ], ... ), (2,3,4) ) ]
+\endexample
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sets of Subgroups}
+\FileHeader{grplatt}
+
+\Declaration{ConjugacyClassSubgroups}
+\Requirements
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;IsNaturalSymmetricGroup(g);;
+gap> cl:=ConjugacyClassSubgroups(g,Subgroup(g,[(1,2)]));
+ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),Group( [ (1,2) ], ... ))
+gap> Size(cl);
+6
+gap> cl[4];
+Group( [ (2,4) ], ... )
+\endexample
+
+\Declaration{IsConjugacyClassSubgroupsRep}
+
+\Declaration{ConjugacyClassesSubgroups}
+\Requirements
+\beginexample
+gap> ConjugacyClassesSubgroups(g);
+[ ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),Group( 
+[  ], ... )), ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),Group( 
+[ (1,2)(3,4) ], ... )), ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),
+#I [omitted]
+ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),Sym( [ 1 .. 4 ] )) ]
+\endexample
+\Methods
+
+\Declaration{ConjugacyClassesMaximalSubgroups}
+\Requirements
+\beginexample
+gap> ConjugacyClassesMaximalSubgroups(g);
+[ ConjugacyClassSubgroups(Sym([1..4]),Group( 
+[ (2,4,3), (1,4)(2,3), (1,2)(3,4) 
+ ], ... )), ConjugacyClassSubgroups(Sym([1..4]),Group( 
+[ (3,4), (1,4)(2,3), (1,2)(3,4) 
+ ], ... )), ConjugacyClassSubgroups(Sym([1..4]),Group( [ (3,4), (2,4,3) 
+ ], ... )) ]
+\endexample
+
+\Declaration{MaximalSubgroupClassReps}
+\Requirements
+\beginexample
+gap> MaximalSubgroupClassReps(g);   
+[ Group( [ (2,4,3), (1,4)(2,3), (1,2)(3,4) ], ... ), Group( 
+[ (3,4), (1,4)(2,3), (1,2)(3,4) ], ... ), Group( [ (3,4), (2,4,3) 
+ ], ... ) ]
+\endexample
+\Methods
+
+\Declaration{MaximalSubgroups}
+\Requirements
+\beginexample
+gap> MaximalSubgroups(Group((1,2,3),(1,2)));
+[ Group( [ (1,2,3) ], ... ), Group( [ (2,3) ], ... ), Group( 
+[ (1,3) ], ... ), Group( [ (1,2) ], ... ) ]
+\endexample
+
+\Declaration{NormalSubgroups}
+\Requirements
+\beginexample
+gap> NormalSubgroups(g);
+[Group([],...),Group([(1,2)(3,4),(1,3)(2,4)],...),
+Group([(2,4,3),(1,4)(2,3),(1,2)(3,4)],...),Sym([1..4])]
+\endexample
+\Methods
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroup lattice}
+
+\Declaration{LatticeSubgroups}
+\Requirements
+\beginexample
+gap> g:=SymmetricGroup(4);;
+gap> l:=LatticeSubgroups(g);
+LatticeSubgroups(Sym( [ 1 .. 4 ] ),# 11 classes, 30 subgroups)
+\endexample
+\Methods
+
+\Declaration{MaximalSubgroupsLattice}
+\Requirements
+\beginexample
+gap> MaximalSubgroupsLattice(l);
+[ [  ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], [ [ 1, 1 ] ], 
+  [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ] ], [ [ 3, 1 ], [ 3, 6 ], [ 2, 1 ] ], 
+  [ [ 2, 1 ] ], [ [ 4, 1 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ] ], 
+  [ [ 7, 1 ], [ 6, 1 ], [ 5, 1 ] ], 
+  [ [ 5, 1 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
+  [ [ 10, 1 ], [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 8, 1 ], [ 8, 2 ], [ 8, 3 ], 
+      [ 8, 4 ] ] ]
+gap> last[6];
+[ [ 3, 1 ], [ 3, 6 ], [ 2, 1 ] ]
+gap> u1:=Representative(ConjugacyClassesSubgroups(l)[6]);
+Group( [ (3,4), (1,2) ], ... )
+gap> u2:=ConjugacyClassesSubgroups(l)[3][1];;
+gap> u3:=ConjugacyClassesSubgroups(l)[3][6];;
+gap> u4:=ConjugacyClassesSubgroups(l)[2][1];;
+gap> IsSubgroup(u1,u2);IsSubgroup(u1,u3);IsSubgroup(u1,u4);
+true
+true
+true
+\endexample
+
+\Declaration{MinimalSupergroupsLattice}
+\Requirements
+\beginexample
+gap> MinimalSupergroupsLattice(l); 
+[ [ [ 2, 1 ], [ 2, 2 ], [ 2, 3 ], [ 3, 1 ], [ 3, 2 ], [ 3, 3 ], [ 3, 4 ], 
+      [ 3, 5 ], [ 3, 6 ], [ 4, 1 ], [ 4, 2 ], [ 4, 3 ], [ 4, 4 ] ], 
+  [ [ 5, 1 ], [ 6, 1 ], [ 7, 1 ] ], [ [ 6, 1 ], [ 8, 1 ], [ 8, 2 ] ], 
+  [ [ 8, 1 ], [ 10, 1 ] ], [ [ 9, 1 ], [ 9, 2 ], [ 9, 3 ], [ 10, 1 ] ], 
+  [ [ 9, 1 ] ], [ [ 9, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], [ [ 11, 1 ] ], 
+  [  ] ]
+gap> last[3];
+[ [ 6, 1 ], [ 8, 1 ], [ 8, 2 ] ]
+gap> u5:=ConjugacyClassesSubgroups(l)[8][1];
+Group( [ (2,4,3), (3,4) ], ... )
+gap> u6:=ConjugacyClassesSubgroups(l)[8][2];
+Group( [ (1,3,4), (3,4) ], ... )
+gap> IsSubgroup(u5,u2);
+true
+gap> IsSubgroup(u6,u2);
+true
+\endexample
+
+\Declaration{ConjugacyClassesPerfectSubgroups}
+\Requirements
+\beginexample
+gap> ConjugacyClassesPerfectSubgroups(g);
+[ ConjugacyClassSubgroups(Sym( [ 1 .. 4 ] ),Group( [  ], ... )) ]
+\endexample
+
+\Declaration{RepresentativesPerfectSubgroups}
+\Requirements
+\beginexample
+gap> m11:=TransitiveGroup(11,6);
+M(11)
+gap> RepresentativesPerfectSubgroups(m11);
+[ Group( [ ( 1, 2)( 4,11)( 5, 8)( 9,10), ( 1, 5, 4)( 2, 6,10)( 3,11, 9) 
+ ], ... ), Group( [ ( 1, 2)( 4,11)( 5, 8)( 9,10), 
+  ( 1, 7, 3)( 2, 9,10)( 4, 8, 6) ], ... ), Group( 
+[ ( 1, 7)( 2, 5)( 3, 4)( 6, 8), ( 1, 2,10)( 3, 7, 9)( 4, 5, 6), 
+  ( 1, 9, 2)( 4, 6, 7)( 5,10, 8) ], ... ), Group( 
+[ ( 1, 2)( 4,11)( 5, 8)( 9,10), ( 1,10,11)( 2, 7, 6)( 3, 8, 9) 
+ ], ... ), M(11), Group( [  ], ... ) ]
+\endexample
+
+\Declaration{InvariantSubgroupsElementaryAbelianGroup}
+\Requirements
+
+\beginexample
+gap> g:=Group((1,2,3),(4,5,6),(7,8,9));
+Group( [ (1,2,3), (4,5,6), (7,8,9) ], ... )
+gap> hom:=GroupHomomorphismByImages(g,g,[(1,2,3),(4,5,6),(7,8,9)], 
+> [(7,8,9),(1,2,3),(4,5,6)]);
+[ (1,2,3), (4,5,6), (7,8,9) ] -> [ (7,8,9), (1,2,3), (4,5,6) ]
+gap> u:=InvariantSubgroupsElementaryAbelianGroup(g,[hom]);
+[ Group( [  ], ... ), Group( [ (1,2,3)(4,5,6)(7,8,9) ], ... ), Group( 
+[ (1,3,2)(7,8,9), (1,3,2)(4,5,6) ], ... ), Group( 
+[ (7,8,9), (4,5,6), (1,2,3) ], ... ) ]
+\endexample
+
+\Declaration{InvariantElementaryAbelianSeries}
+\Requirements
+\beginexample
+gap> g:=Group((1,2,3,4),(1,3));
+Group( [ (1,2,3,4), (1,3) ], ... )
+gap> hom:=GroupHomomorphismByImages(g,g,GeneratorsOfGroup(g),
+> [(1,4,3,2),(1,4)(2,3)]);
+[ (1,2,3,4), (1,3) ] -> [ (1,4,3,2), (1,4)(2,3) ]
+gap> InvariantElementaryAbelianSeries(g,[hom]);
+[ Group( [ (1,2,3,4), (1,3) ], ... ), Group( [ (1,3)(2,4) ], ... ), Group( 
+[  ], ... ) ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Specific methods for Subgroup Lattice computations}
+
+\Declaration{LatticeByCyclicExtension}
+\beginexample
+gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4)));;
+gap> l:=LatticeByCyclicExtension(g,function(G)
+> return Size(G) in [1,2,3,6];end);
+LatticeSubgroups(Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
+  (10,11,12), (10,11), ( 1, 4, 7,10)( 2, 5, 8,11)( 3, 6, 9,12) ], ... ),# 
+47 classes, 2628 subgroups)
+\endexample
+
+\Declaration{SubgroupsSolvableGroup}
+\beginexample
+gap> g:=Group((1,2,3),(1,2),(4,5,6),(4,5),(7,8,9),(7,8));                   
+Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ], ... )
+gap> hom:=GroupHomomorphismByImages(g,g,                                    
+> [(1,2,3),(1,2),(4,5,6),(4,5),(7,8,9),(7,8)],
+> [(4,5,6),(4,5),(7,8,9),(7,8),(1,2,3),(1,2)]);
+[ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8) ] -> 
+[ (4,5,6), (4,5), (7,8,9), (7,8), (1,2,3), (1,2) ]
+gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom]));;
+gap> List(l,Size);
+[ 1, 3, 9, 27, 54, 2, 6, 18, 108, 4, 216, 8 ]
+gap> Length(ConjugacyClassesSubgroups(g)); # to compare
+162
+\endexample
+
+\Declaration{SizeConsiderFunction}
+\Requirements
+\beginexample
+gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom],    
+> consider:=SizeConsiderFunction(6)));;
+gap> List(l,Size);
+[ 1, 3, 9, 27, 54, 6, 18, 108, 216 ]
+\endexample
+
+\Declaration{ExactSizeConsiderFunction}
+\Requirements
+\beginexample
+gap> l:=SubgroupsSolvableGroup(g,rec(actions:=[hom],
+> consider:=ExactSizeConsiderFunction(6)));;
+gap> List(l,Size);
+[ 1, 3, 9, 27, 54, 6, 108, 216 ]
+\endexample
+
+\Declaration{InfoPcSubgroup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special generating sets}
+
+\Declaration{GeneratorsSmallest}
+\Methods
+\beginexample
+gap> GeneratorsSmallest(g);
+[ (3,4), (2,3), (1,2) ]
+\endexample
+
+\Declaration{MinimalGeneratingSet}
+\Methods
+\beginexample
+gap> MinimalGeneratingSet(g);
+[ (2,4,3), (1,4,2,3) ]
+\endexample
+
+\Declaration{SmallGeneratingSet}
+\Methods
+\beginexample
+gap> SmallGeneratingSet(g);
+[ (1,4,2,3), (2,4,3) ]
+\endexample
+
+\Declaration{IndependentGeneratorsOfAbelianGroup}
+\beginexample
+gap> g:=AbelianGroup(IsPermGroup,[15,14,22,78]);;
+gap> List(IndependentGeneratorsOfAbelianGroup(g),Order);
+[ 2, 2, 2, 3, 3, 5, 7, 11, 13 ]
+\endexample

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for matrix groups over finite field.
 ##
@@ -17,11 +18,11 @@ Revision.grpffmat_gi :=
 
 #R  IsGeneralLinearGroupWithFormRep . . . isometry group of non-singular form
 ##
-IsGeneralLinearGroupWithFormRep := NewRepresentation
-    ( "IsGeneralLinearGroupWithFormRep", IsMatrixGroup, [ "form" ] );
+DeclareRepresentation( "IsGeneralLinearGroupWithFormRep",
+    IsMatrixGroup, [ "form" ] );
 
-IsGeneralUnitaryGroupWithFormRep := NewRepresentation
-    ( "IsGeneralUnitaryGroupWithFormRep", IsMatrixGroup, [ "form" ] );
+DeclareRepresentation( "IsGeneralUnitaryGroupWithFormRep",
+    IsMatrixGroup, [ "form" ] );
 
 #############################################################################
 ##
@@ -91,7 +92,7 @@ end );
 ##
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
-NicomorphismOfFFEMatrixGroup := function( grp )
+InstallGlobalFunction( NicomorphismOfFFEMatrixGroup, function( grp )
     local   field,  dim,  V,  xset,  nice;
     
     field := FieldOfMatrixGroup( grp );
@@ -104,11 +105,11 @@ NicomorphismOfFFEMatrixGroup := function( grp )
     else
         xset := ExternalSubset( grp, V, One( grp ) );
     fi;
-    SetBase( xset, One( grp ) );
+    SetBaseOfGroup( xset, One( grp ) );
     nice := OperationHomomorphism( xset,"surjective" );
     SetIsInjective( nice, true );
     return nice;
-end;
+end );
 
 InstallMethod( NiceMonomorphism,
     "falling back on GL",
@@ -141,7 +142,7 @@ end );
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . .  via nicomorphism
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsFFEMatrixGroup, IsFFEMatrixGroup ], 0,
     function( G, N )
     local   nice;

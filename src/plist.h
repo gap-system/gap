@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions that deal with plain lists.
 **
@@ -22,7 +23,7 @@
 **  installed in the appropriate tables by 'InitPlist'.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_plist_h =
+const char * Revision_plist_h =
    "@(#)$Id$";
 #endif
 
@@ -143,6 +144,17 @@ extern  Int             GrowPlist (
 /****************************************************************************
 **
 
+*F  AssPlistEmpty( <list>, <pos>, <val> ) . . . . .  assignment to empty list
+*/
+extern void AssPlistEmpty (
+    Obj                 list,
+    Int                 pos,
+    Obj                 val );
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -150,25 +162,9 @@ extern  Int             GrowPlist (
 /****************************************************************************
 **
 
-*F  SetupPlist(). . . . . . . . . . . . . . initialize the plain list package
+*F  InitInfoPlist() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupPlist ( void );
-
-
-/****************************************************************************
-**
-*F  InitPlist() . . . . . . . . . . . . . . initialize the plain list package
-**
-**  Is called during  the  initialization  to  initialize  the  list package.
-*/
-extern void InitPlist ( void );
-
-
-/****************************************************************************
-**
-*F  CheckPlist()  . . . .  check the initialisation of the plain list package
-*/
-extern void CheckPlist ( void );
+StructInitInfo * InitInfoPlist ( void );
 
 
 /****************************************************************************

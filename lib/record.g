@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for records.
 ##  Compared to {\GAP} 3, where records were used to represent domains and
@@ -26,82 +27,78 @@ Revision.record_g :=
 
 #############################################################################
 ##
-
 #C  IsRecord  . . . . . . . . . . . . . . . . . . . . . . category of records
+#C  IsRecordCollection
+#C  IsRecordCollColl
 ##
-IsRecord := NewCategoryKernel(
-    "IsRecord",
-    IsObject,
-    IS_REC );
+DeclareCategoryKernel( "IsRecord", IsObject, IS_REC );
+DeclareCategoryCollections( "IsRecord" );
+DeclareCategoryCollections( "IsRecordCollection" );
 
 
 #############################################################################
 ##
-
 #V  RecordsFamily . . . . . . . . . . . . . . . . . . . . . family of records
 ##
-RecordsFamily := NewFamily(  "RecordsFamily", IS_REC );
+BIND_GLOBAL( "RecordsFamily", NewFamily(  "RecordsFamily", IS_REC ) );
 
 
 #############################################################################
 ##
 #V  TYPE_PREC_MUTABLE . . . . . . . . . . . type of a mutable internal record
 ##
-TYPE_PREC_MUTABLE := NewType( RecordsFamily,
-    IS_MUTABLE_OBJ and IS_REC and IsInternalRep );
+BIND_GLOBAL( "TYPE_PREC_MUTABLE",
+    NewType( RecordsFamily, IS_MUTABLE_OBJ and IS_REC and IsInternalRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_PREC_IMMUTABLE . . . . . . . .  type of an immutable internal record
 ##
-TYPE_PREC_IMMUTABLE := NewType( RecordsFamily,
-    IS_REC and IsInternalRep );
+BIND_GLOBAL( "TYPE_PREC_IMMUTABLE",
+    NewType( RecordsFamily, IS_REC and IsInternalRep ) );
 
 
 #############################################################################
 ##
-
-#O  \.( <rec>, <name> )	. . . . . . . . . . . . . . . . get a component value
+#o  \.( <rec>, <name> )	. . . . . . . . . . . . . . . . get a component value
 ##
-\. := NewOperationKernel( "ELM_REC", [ IsObject, IsObject ], ELM_REC );
+DeclareOperationKernel( ".", [ IsObject, IsObject ], ELM_REC );
 
 
 #############################################################################
 ##
-#O  IsBound\.( <rec>, <name> )  . . . . . . . . . . . . . .  test a component
+#o  IsBound\.( <rec>, <name> )  . . . . . . . . . . . . . .  test a component
 ##
-IsBound\. := NewOperationKernel( "ISB_REC", 
-    [ IsObject, IsObject ], ISB_REC );
+DeclareOperationKernel( "IsBound.", [ IsObject, IsObject ], ISB_REC );
 
 
 #############################################################################
 ##
-#O  \.\:\=( <rec>, <name>, <val> )  . . . . . . . . . . . . .  assign a value
+#o  \.\:\=( <rec>, <name>, <val> )  . . . . . . . . . . . . .  assign a value
 ##
-\.\:\= := NewOperationKernel( "ASS_REC", 
-    [ IsObject, IsObject, IsObject ], ASS_REC );
+DeclareOperationKernel( ".:=", [ IsObject, IsObject, IsObject ], ASS_REC );
 
 
 #############################################################################
 ##
-#O  Unbind\.( <rec>, <name> ) . . . . . . . . . . . . . . .  unbind component
+#o  Unbind\.( <rec>, <name> ) . . . . . . . . . . . . . . .  unbind component
 ##
-Unbind\. := NewOperationKernel( "UNB_REC", [ IsObject, IsObject ], UNB_REC );
+DeclareOperationKernel( "Unbind.", [ IsObject, IsObject ], UNB_REC );
 
 
 #############################################################################
 ##
-
-#F  RecNames  . . . . . . . . . . . . . . . . . . . . . . names of components
+#F  RecNames(<obj>)
 ##
-RecNames := REC_NAMES;
+##  returns a list of strings corresponding to the names of the record
+##  components of the record <rec>.
+DeclareSynonym( "RecNames", REC_NAMES );
 
 
 #############################################################################
 ##
-
-#M  PrintObj( <record> )
+#m  PrintObj( <record> )
 ##
 ##  The record <record> is printed by printing all its components.
 ##
@@ -115,7 +112,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#M  String( <record> )  . . . . . . . . . . . . . . . . . . . .  for a record
+#m  String( <record> )  . . . . . . . . . . . . . . . . . . . .  for a record
 ##
 InstallMethod( String,
     "record",
@@ -145,11 +142,11 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#M  <record> = <record>
+#m  <record> = <record>
 ##
 InstallMethod( \=,
     "record = record",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsRecord, IsRecord ],
     0,
     EQ_PREC );
@@ -157,11 +154,11 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  <record> < <record>
+#m  <record> < <record>
 ##
 InstallMethod( \<,
     "record < record",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsRecord, IsRecord ],
     0,
     LT_PREC );
@@ -169,7 +166,6 @@ InstallMethod( \<,
 
 #############################################################################
 ##
-
 #E  record.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

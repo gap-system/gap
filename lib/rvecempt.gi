@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.rvecempt_gi :=
     "@(#)$Id$";
@@ -14,7 +15,7 @@ Revision.rvecempt_gi :=
 ##
 #R  IsEmptyRowVectorRep( <obj> )
 ##
-IsEmptyRowVectorRep := NewRepresentation( "IsEmptyRowVectorRep",
+DeclareRepresentation( "IsEmptyRowVectorRep",
     IsPositionalObjectRep and IsConstantTimeAccessList,
     [] );
 
@@ -24,7 +25,7 @@ IsEmptyRowVectorRep := NewRepresentation( "IsEmptyRowVectorRep",
 #M  EmptyRowVector( <F> ) . . . . . . . . . . . . . . . . . . .  for a family
 ##
 InstallMethod( EmptyRowVector,
-    "method for a family",
+    "for a family",
     true,
     [ IsFamily ], 0,
     function( F )
@@ -38,10 +39,10 @@ InstallMethod( EmptyRowVector,
 
 #############################################################################
 ##
-#M  PrintObj( <emptyvec> )  . . . . . . . . . . . . . .  for empty row vector
+#M  ViewObj( <emptyvec> ) . . . . . . . . . . . . . . .  for empty row vector
 ##
-InstallMethod( PrintObj,
-    "method for an empty row vector",
+InstallMethod( ViewObj,
+    "for an empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( emptyvec )
@@ -54,7 +55,7 @@ InstallMethod( PrintObj,
 #M  Length( <emptyvec> )  . . . . . . . . . . . . . . .  for empty row vector
 ##
 InstallMethod( Length,
-    "method for an empty row vector",
+    "for an empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     emptyvec -> 0 );
@@ -65,10 +66,10 @@ InstallMethod( Length,
 #M  IsBound\[\]( <emptyvec>, <pos> ) . for empty row vector, and pos. integer
 ##
 InstallMethod( IsBound\[\],
-    "method for an empty row vector, and a positive integer",
+    "for an empty row vector, and a positive integer",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
-      IsInt and IsPosRat ], 0,
+      IsPosInt ], 0,
     function( emptyvec, pos )
     return false;
     end );
@@ -79,7 +80,7 @@ InstallMethod( IsBound\[\],
 #M  ShallowCopy( <emptyvec> ) . . . . . . . . . . . . for an empty row vector
 ##
 InstallMethod( ShallowCopy,
-    "method for an empty row vector",
+    "for an empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( emptyvec )
@@ -93,8 +94,8 @@ InstallMethod( ShallowCopy,
 #M  \=( <emptyvec>, <coll> )  . . . . . . for empty row vector and collection
 ##
 InstallMethod( \=,
-    "method for an empty row vector, and a collection in the same family",
-    IsIdentical,
+    "for an empty row vector, and a collection in the same family",
+    IsIdenticalObj,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep, IsCollection ], 0,
     function( emptyvec, coll )
     return IsEmpty( coll );
@@ -106,8 +107,8 @@ InstallMethod( \=,
 #M  \=( <coll>, <emptyvec> )  . . . . . . for collection and empty row vector
 ##
 InstallMethod( \=,
-    "method for a collection, and an empty row vector in the same family",
-    IsIdentical,
+    "for a collection, and an empty row vector in the same family",
+    IsIdenticalObj,
     [ IsCollection, IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( coll, emptyvec )
     return IsEmpty( coll );
@@ -126,8 +127,8 @@ InstallMethod( \=,
 #M  \+( <emptyvec>, <emptyvec> )  . . . . . . . . . for two empty row vectors
 ##
 InstallMethod( \+,
-    "method for two empty row vectors in the same family",
-    IsIdentical,
+    "for two empty row vectors in the same family",
+    IsIdenticalObj,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( emptyvec1, emptyvec2 )
@@ -140,7 +141,7 @@ InstallMethod( \+,
 #M  AdditiveInverse( <emptyvec> ) . . . . . . . . . . .  for empty row vector
 ##
 InstallMethod( AdditiveInverse,
-    "method for empty row vector",
+    "for empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     IdFunc );
@@ -151,7 +152,7 @@ InstallMethod( AdditiveInverse,
 #M  Zero( <emptyvec> )  . . . . . . . . . . . . . . . .  for empty row vector
 ##
 InstallMethod( Zero,
-    "method for empty row vector",
+    "for empty row vector",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     IdFunc );
@@ -162,7 +163,7 @@ InstallMethod( Zero,
 #M  \*( <coeff>, <emptyvec> ) . . . .  for mult. element and empty row vector
 ##
 InstallMethod( \*,
-    "method for multiplicative element, and empty row vector",
+    "for multiplicative element, and empty row vector",
     IsElmsColls,
     [ IsMultiplicativeElement,
       IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
@@ -176,7 +177,7 @@ InstallMethod( \*,
 #M  \*( <emptyvec>, <coeff> ) . . . .  for empty row vector and mult. element
 ##
 InstallMethod( \*,
-    "method for empty row vector, and multiplicative element",
+    "for empty row vector, and multiplicative element",
     IsCollsElms,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsMultiplicativeElement ], 0,
@@ -190,7 +191,7 @@ InstallMethod( \*,
 #M  \*( <int>, <emptyvec> ) . . . . . . . . for integer, and empty row vector
 ##
 InstallMethod( \*,
-    "method for integer, and empty row vector",
+    "for integer, and empty row vector",
     true,
     [ IsInt, IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( int, emptyvec )
@@ -203,7 +204,7 @@ InstallMethod( \*,
 #M  \*( <emptyvec>, <int> ) . . . . . . . . for empty row vector, and integer
 ##
 InstallMethod( \*,
-    "method for empty row vector, and integer",
+    "for empty row vector, and integer",
     true,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep, IsInt ], 0,
     function( emptyvec, int )
@@ -216,8 +217,8 @@ InstallMethod( \*,
 #M  \*( <emptyvec>, <emptyvec> )  . . . . . . . . . for two empty row vectors
 ##
 InstallMethod( \*,
-    "method for two empty row vectors in the same family",
-    IsIdentical,
+    "for two empty row vectors in the same family",
+    IsIdenticalObj,
     [ IsRowVector and IsEmpty and IsEmptyRowVectorRep,
       IsRowVector and IsEmpty and IsEmptyRowVectorRep ], 0,
     function( emptyvec1, emptyvec2 )
@@ -228,6 +229,4 @@ InstallMethod( \*,
 #############################################################################
 ##
 #E  rvecempt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

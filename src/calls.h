@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file  declares the functions of the  generic function call mechanism
 **  package.
@@ -41,7 +42,7 @@
 **  with no profiling, the overhead is only a couple of instructions.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_calls_h =
+const char * Revision_calls_h =
    "@(#)$Id$";
 #endif
 
@@ -109,6 +110,13 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 #define ENVI_FUNC(func)         (*            (ADDR_OBJ(func) +14     ) )
 #define FEXS_FUNC(func)         (*            (ADDR_OBJ(func) +15     ) )
 #define SIZE_FUNC               (16*sizeof(Bag))
+
+
+/****************************************************************************
+**
+*F  IS_FUNC( <obj> )  . . . . . . . . . . . . . check if object is a function
+*/
+#define IS_FUNC(obj)    (TNUM_OBJ(obj) == T_FUNCTION)
 
 
 /****************************************************************************
@@ -252,13 +260,13 @@ typedef Obj (* ObjFunc) (/*arguments*/);
 */
 extern void InitHandlerFunc (
      ObjFunc            hdlr,
-     SYS_CONST Char *   cookie );
+     const Char *       cookie );
 
-extern SYS_CONST Char * CookieOfHandler(
-       ObjFunc hdlr );
+extern const Char * CookieOfHandler(
+     ObjFunc            hdlr );
 
 extern ObjFunc HandlerOfCookie (
-     SYS_CONST Char *   cookie );
+     const Char *       cookie );
 
 extern void SortHandlers( UInt byWhat );
 
@@ -293,9 +301,9 @@ extern Obj NewFunction (
             ObjFunc             hdlr );
     
 extern Obj NewFunctionC (
-            SYS_CONST Char *    name,
+            const Char *        name,
             Int                 narg,
-            SYS_CONST Char *    nams,
+            const Char *        nams,
             ObjFunc             hdlr );
     
 extern Obj NewFunctionT (
@@ -309,9 +317,9 @@ extern Obj NewFunctionT (
 extern Obj NewFunctionCT (
             UInt                type,
             UInt                size,
-            SYS_CONST Char *    name,
+            const Char *        name,
             Int                 narg,
-            SYS_CONST Char *    nams,
+            const Char *        nams,
             ObjFunc             hdlr );
     
 
@@ -335,16 +343,16 @@ extern void PrintFunction (
 
 /****************************************************************************
 **
-*F  CallFuncListHandler( <self>, <func>, <list> ) . . . . . . call a function
+*F  FuncCALL_FUNC_LIST( <self>, <func>, <list> )  . . . . . . call a function
 **
-**  'CallFuncListHandler' implements the internal function 'CallFuncList'.
+**  'FuncCALL_FUNC_LIST' implements the internal function 'CallFuncList'.
 **
 **  'CallFuncList( <func>, <list> )'
 **
 **  'CallFuncList' calls the  function <func> with the arguments list <list>,
 **  i.e., it is equivalent to '<func>( <list>[1], <list>[2]... )'.
 */
-extern Obj CallFuncListHandler (
+extern Obj FuncCALL_FUNC_LIST (
     Obj                 self,
     Obj                 func,
     Obj                 list );
@@ -359,25 +367,9 @@ extern Obj CallFuncListHandler (
 /****************************************************************************
 **
 
-*F  SetupCalls()  . . . . . . . . . . . . . . . . initialize the call package
+*F  InitInfoCalls() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupCalls ( void );
-
-
-/****************************************************************************
-**
-*F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
-**
-**  'InitCalls' initializes the call package.
-*/
-extern void InitCalls ();
-
-
-/****************************************************************************
-**
-*F  CheckCalls()  . . . . . . .  check the initialisation of the call package
-*/
-extern void CheckCalls ( void );
+StructInitInfo * InitInfoCalls ( void );
 
 
 /****************************************************************************

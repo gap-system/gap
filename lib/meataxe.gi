@@ -7,7 +7,9 @@
 #H  @(#)$Id$ 
 ##
 #Y  Copyright 1994 -- School of Mathematical Sciences, ANU   
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the 'Smash'-MeatAxe modified for GAP4 and using the 
 ##  standard MeatAxe interface.  It defines the MeatAxe SMTX.
@@ -15,24 +17,32 @@
 Revision.meataxe_gi:=
   "@(#)$Id$";
 
-GModuleByMats:=function(l,f)
-local dim,m;
+GModuleByMats:=function(arg)
+local l,f,dim,m;
+  l:=arg[1];
+  f:=arg[Length(arg)];
   if ForAny(l,i->Length(i)<>Length(i[1])) or
     Length(Set(List(l,Length)))>1 then
     Error("<l> must be a list of square matrices of the same dimension");
   fi;
-  dim:=Length(l[1][1]);
-
   m:=rec(field:=f,
-         dimension:=dim,
-	 generators:=l,
-	 isMTXModule:=true
-	 );
+	 isMTXModule:=true);
+  if Length(l)>0 then
+    dim:=Length(l[1][1]);
+  elif Length(arg)=2 then
+    Error("if no generators are given the dimension must be given explicitly");
+  else
+    dim:=arg[2];
+    l:=[IdentityMat(dim,f)];
+    m.smashMeataxe:=rec(isZeroGens:=true);
+  fi;
+  m.dimension:=dim;
+  m.generators:=l;
 
   return m;
 end;
 
-InfoMeatAxe:=NewInfoClass("InfoMeatAxe");
+DeclareInfoClass("InfoMeatAxe");
 
 SMTX:=rec(name:="The Smash MeatAxe");
 MTX:=SMTX;
@@ -64,6 +74,12 @@ SMTX.IsMTXModule:=function(module)
          IsBound(module.dimension);
 end;
 
+SMTX.IsZeroGens:=function(module)
+  return IsBound(module.smashMeataxe)
+     and IsBound(module.smashMeataxe.isZeroGens)
+     and module.smashMeataxe.isZeroGens=true;
+end;
+
 SMTX.Dimension:=function(module)
   return module.dimension;
 end;
@@ -73,7 +89,11 @@ SMTX.Field:=function(module)
 end;
 
 SMTX.Generators:=function(module)
-  return module.generators;
+  if SMTX.IsZeroGens(module) then
+    return [];
+  else
+    return module.generators;
+  fi;
 end;
 
 SMTX.SetIsIrreducible:=function(module,b)
@@ -433,14 +453,17 @@ SMTX.InducedActionSubmoduleNB := function ( module, sub )
    dim := SMTX.Dimension(module);
    F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
-                                sub,dim,subdim,One(F),1);
+   ans:=SMTX.SubQuotActions(module.generators,sub,dim,subdim,One(F),1);
 
    if ans=fail then
      return fail;
    fi;
 
-   smodule := GModuleByMats (ans.smatrices,F);
+   if SMTX.IsZeroGens(module) then
+     smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
+   else
+     smodule := GModuleByMats (ans.smatrices,F);
+   fi;
    return smodule;
 end;
 
@@ -458,7 +481,7 @@ local nb,ans,dim,subdim,smodule,F;
    dim := SMTX.Dimension(module);
    F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
+   ans:=SMTX.SubQuotActions(module.generators,
                                 sub,dim,subdim,One(F),1);
 
    if ans=fail then
@@ -466,7 +489,11 @@ local nb,ans,dim,subdim,smodule,F;
    fi;
 
    # conjugate the matrices to correspond to given sub
-   smodule := GModuleByMats (List(ans.smatrices,i->i^nb),F);
+   if SMTX.IsZeroGens(module) then
+     smodule:=GModuleByMats([],Length(ans.smatrices[1]),F);
+   else
+    smodule := GModuleByMats (List(ans.smatrices,i->i^nb),F);
+   fi;
    return smodule;
 end;
 
@@ -504,7 +531,7 @@ local module,sub,  ans, dim, subdim, F,qmodule;
 
    F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
+   ans:=SMTX.SubQuotActions(module.generators,
                                 sub,dim,subdim,One(F),2);
 
    if ans=fail then
@@ -518,7 +545,11 @@ local module,sub,  ans, dim, subdim, F,qmodule;
      ans.qmatrices:=List(ans.qmatrices,i->i^sub);
    fi;
 
-   qmodule := GModuleByMats (ans.qmatrices, F);
+   if SMTX.IsZeroGens(module) then
+     qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
+   else
+    qmodule := GModuleByMats (ans.qmatrices, F);
+   fi;
    return qmodule;
 
 end;
@@ -541,7 +572,7 @@ local ans, dim, subdim, F,qmodule;
 
    F:=SMTX.Field(module);
 
-   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
+   ans:=SMTX.SubQuotActions(module.generators,
                                 sub,dim,subdim,One(F),2);
 
    if ans=fail then
@@ -551,7 +582,11 @@ local ans, dim, subdim, F,qmodule;
    # fetch new basis
    sub:=ans.nbasis{[Length(sub)+1..module.dimension]};
 
-   qmodule := GModuleByMats (ans.qmatrices, F);
+   if SMTX.IsZeroGens(module) then
+     qmodule:=GModuleByMats([],Length(ans.qmatrices[1]),F);
+   else
+    qmodule := GModuleByMats (ans.qmatrices, F);
+   fi;
    return [qmodule,sub];
 
 end;
@@ -588,7 +623,7 @@ local module,sub,typ,ans,dim,subdim,F,one,erg;
    dim := SMTX.Dimension(module);
    F := SMTX.Field(module); one := One (F);
 
-   erg:=SMTX.SubQuotActions(SMTX.Generators(module),
+   erg:=SMTX.SubQuotActions(module.generators,
                                 sub,dim,subdim,one,typ);
 
    if erg=fail then
@@ -598,13 +633,25 @@ local module,sub,typ,ans,dim,subdim,F,one,erg;
    ans:=[];
 
    if IsBound(erg.smatrices) then
-     Add(ans,GModuleByMats(erg.smatrices, F));
+     if SMTX.IsZeroGens(module) then
+       Add(ans,GModuleByMats([],Length(erg.smatrices[1]), F));
+     else
+       Add(ans,GModuleByMats(erg.smatrices, F));
+     fi;
    fi;
    if IsBound(erg.qmatrices) then
-     Add(ans,GModuleByMats(erg.qmatrices, F));
+     if SMTX.IsZeroGens(module) then
+       Add(ans,GModuleByMats([],Length(erg.qmatrices[1]), F));
+     else
+       Add(ans,GModuleByMats(erg.qmatrices, F));
+     fi;
    fi;
    if IsBound(erg.nmatrices) then
-     Add(ans,GModuleByMats(erg.nmatrices, F));
+     if SMTX.IsZeroGens(module) then
+       Add(ans,GModuleByMats([],Length(erg.nmatrices[1]), F));
+     else
+       Add(ans,GModuleByMats(erg.nmatrices, F));
+     fi;
    fi;
    if IsBound(erg.nbasis) then
      Add(ans,erg.nbasis);
@@ -692,7 +739,7 @@ SMTX.IrreducibilityTest := function ( module )
       return Error ("Argument of IsIrreducible is not a module.");
    fi;
 
-   matrices := ShallowCopy(SMTX.Generators(module));
+   matrices := ShallowCopy(module.generators);
    dim := SMTX.Dimension(module);
    ngens := Length (matrices);
    orig_ngens := ngens;
@@ -982,7 +1029,7 @@ SMTX.RandomIrreducibleSubGModule := function ( module )
       # Only the actual algebra element and its nullspace have to be recomputed
       # This code is essentially from IsomorphismGModule 
       dim:=SMTX.Dimension(submodule2);
-      matrices:=ShallowCopy(SMTX.Generators(submodule2));
+      matrices:=ShallowCopy(submodule2.generators);
       ngens:=Length (matrices);
       for genpair in el[1] do
          ngens := ngens + 1;
@@ -1033,7 +1080,7 @@ SMTX.GoodElementGModule := function ( module )
    # nothing else to do.
 
    dim := SMTX.Dimension(module);
-   matrices:=ShallowCopy(SMTX.Generators(module));
+   matrices:=ShallowCopy(module.generators);
    ngens := Length (matrices);
    orig_ngens := ngens;
    F:=SMTX.Field(module);
@@ -1344,7 +1391,7 @@ AbsoluteIrreducibilityTest := function ( module )
    dim := SMTX.Dimension(module);
    F := SMTX.Field(module);
    q := Size (F);
-   matrices := SMTX.Generators(module);
+   matrices := module.generators;
 
    # M acts irreducibly on N, which is canonically defined with respect to M
    # as the nullspace of fac (M), where fac is a factor of the char poly of M.
@@ -1429,7 +1476,7 @@ AbsoluteIrreducibilityTest := function ( module )
             C := [];
          until Length (C0) = e;
 	 Info(InfoMeatAxe,2,"Found one.");
-         basisB := basisBN * basisN;
+         basisB := ShallowCopy(basisBN * basisN);
       else
          C0 := M0;
          basisB := ShallowCopy(basisN);
@@ -1687,11 +1734,11 @@ SMTX.Distinguish := function ( cf, i )
          lcf, lf, x, y, wno, deg, trying, N, fact, R;
 
    lcf := Length (cf);
-   ngens := Length (SMTX.Generators (cf[1][1]));
+   ngens := Length (cf[1][1].generators);
    orig_ngens := ngens;
    F := SMTX.Field (cf[1][1]);
    R := PolynomialRing (F);
-   matsi := ShallowCopy(SMTX.Generators (cf[i][1]));
+   matsi := ShallowCopy(cf[i][1].generators);
    dimi := SMTX.Dimension (cf[i][1]);
 
    #First check that the existing nullspace has dim. 1 over centralising field. 
@@ -1705,7 +1752,7 @@ SMTX.Distinguish := function ( cf, i )
    fact := SMTX.AlgElCharPolFac(cf[i][1]);
    for j in [1..lcf] do
       if j <> i and found then
-         mats := ShallowCopy(SMTX.Generators (cf[j][1]));
+         mats := ShallowCopy(cf[j][1].generators);
          dim := SMTX.Dimension(cf[j][1]);
          for genpair in el[1] do
             ngens := ngens + 1;
@@ -1806,7 +1853,7 @@ SMTX.Distinguish := function ( cf, i )
          #see if the matrix is nonsingular.
          for j in [1..lcf] do
             if j <> i and found then
-               mats := ShallowCopy(SMTX.Generators (cf[j][1]));
+               mats := ShallowCopy(cf[j][1].generators);
                dim := SMTX.Dimension(cf[j][1]);
                ngens := orig_ngens;
                for genpair in el[1] do
@@ -1851,13 +1898,13 @@ SMTX.MinimalSubGModule := function ( module, cf, i )
       return Error ("First argument is not a module.");
    fi;
 
-   ngens := Length (SMTX.Generators (module));
+   ngens := Length (module.generators);
    orig_ngens := ngens;
    F := SMTX.Field (module);
 
    #Apply the alg. el. of factor i to module
    el := SMTX.AlgEl(cf[i][1]);
-   mats := ShallowCopy(SMTX.Generators(module));
+   mats := ShallowCopy(module.generators);
    dim := SMTX.Dimension(module);
    for genpair in el[1] do
       ngens := ngens + 1;
@@ -1932,8 +1979,8 @@ SMTX.IsomorphismComp := function (module1, module2, action)
    Info(InfoMeatAxe,2,
         "Checking nullspace 1-dimensional over centralising field.");
    SMTX.GoodElementGModule (module1);
-   matrices1 := SMTX.Generators (module1);
-   matrices2 := ShallowCopy(SMTX.Generators (module2));
+   matrices1 := module1.generators;
+   matrices2 := ShallowCopy(module2.generators);
    ngens := Length (matrices1);
    orig_ngens := ngens;
    if ngens <> Length (matrices2) then
@@ -2067,8 +2114,8 @@ SMTX.Homomorphisms := function (m1, m2)
       return Error ("Second argument is not a module.");
    fi;
 
-   mats1 := SMTX.Generators (m1);
-   mats2 := ShallowCopy(SMTX.Generators (m2));
+   mats1 := m1.generators;
+   mats2 := ShallowCopy(m2.generators);
    ngens := Length (mats1);
    if ngens <> Length (mats2) then
       return Error ("GModules have different numbers of generators.");
@@ -2310,7 +2357,7 @@ SMTX.SortHomGModule := function (m1, m2, homs)
    F := SMTX.Field (m1);
    zero := Zero (F);
 
-   mats1 := SMTX.Generators (m1);  mats2 := SMTX.Generators (m2);
+   mats1 := m1.generators;  mats2 := m2.generators;
    dim1 := SMTX.Dimension (m1);  dim2 := SMTX.Dimension (m2);
    ngens := Length (mats1);
    centmat := SMTX.CentMat(m1);
@@ -2599,8 +2646,13 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin;
 end;
 
 SMTX.DualModule:=function(module)
-  return GModuleByMats(List(SMTX.Generators(module),i->TransposedMat(i)^-1),
-                       SMTX.Field(module));
+  if SMTX.IsZeroGens(module) then
+    return GModuleByMats([],module.dimension,SMTX.Field(module));
+  else
+    return GModuleByMats(List(SMTX.Generators(module),i->TransposedMat(i)^-1),
+			module.dimension,
+			SMTX.Field(module));
+  fi;
 end;
 
 SMTX.DualizedBasis:=function(module,sub)
@@ -2620,7 +2672,8 @@ local a,u,i,nb;
   u:=SMTX.BasesMinimalSubmodules(a[1]);
   nb:=a[2];
   nb:=nb{[Length(sub)+1..Length(nb)]}; # the new basis part
-  nb:=List(u,i->Concatenation(sub,List(i,j->LinearCombinationVecs(nb,j))));
+  nb:=List(u,i->Concatenation( List( sub, ShallowCopy ),
+                               List(i,j->LinearCombinationVecs(nb,j))));
   u:=[];
   for i in nb do
     TriangulizeMat(i);

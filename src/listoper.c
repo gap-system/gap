@@ -5,13 +5,14 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains  the functions of the  package with the operations for
 **  generic lists.
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_listoper_c =
+const char * Revision_listoper_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -381,13 +382,13 @@ Obj             ZeroListDefaultHandler (
 **
 **  'AInvListDefault' is a generic function for the additive inverse.
 */
-Obj             AInvList (
+Obj AInvList (
     Obj                 list )
 {
     return (*AInvFuncs[XTNum(list)])( list );
 }
 
-Obj             AInvListDefault (
+Obj AInvListDefault (
     Obj                 list )
 {
     Obj                 res;
@@ -402,7 +403,7 @@ Obj             AInvListDefault (
 
     /* enter the additive inverses everywhere                              */
     for ( i = 1; i <= len; i++ ) {
-        elm = ELM_PLIST( list, i );
+        elm = ELM_LIST( list, i );
         elm = AINV( elm );
         SET_ELM_PLIST( res, i, elm );
         CHANGED_BAG( res );
@@ -412,7 +413,7 @@ Obj             AInvListDefault (
     return res;
 }
 
-Obj             AInvListDefaultHandler (
+Obj AInvListDefaultHandler (
     Obj                 self,
     Obj                 list )
 {
@@ -1092,7 +1093,70 @@ Obj             CommList (
 /****************************************************************************
 **
 
-*F  SetupListOper() . . . . . . . . .  initialize the generic list operations
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "EQ_LIST_LIST_DEFAULT", 2, "listL, listR",
+      EqListListHandler, "src/listoper.c:EQ_LIST_LIST_DEFAULT" },
+
+    { "LT_LIST_LIST_DEFAULT", 2, "listL, listR",
+      LtListListHandler, "src/listoper.c:LT_LIST_LIST_DEFAULT" },
+
+    { "IN_LIST_DEFAULT", 2, "obj, list",
+      InListDefaultHandler, "src/listoper.c:IN_LIST_DEFAULT" },
+
+    { "SUM_SCL_LIST_DEFAULT", 2, "listL, listR",
+      SumSclListHandler, "src/listoper.c:SUM_SCL_LIST_DEFAULT" },
+
+    { "SUM_LIST_SCL_DEFAULT", 2, "listL, listR",
+      SumListSclHandler, "src/listoper.c:SUM_LIST_SCL_DEFAULT" },
+
+    { "SUM_LIST_LIST_DEFAULT", 2, "listL, listR",
+      SumListListHandler, "src/listoper.c:SUM_LIST_LIST_DEFAULT" },
+
+    { "ZERO_LIST_DEFAULT", 1, "list",
+      ZeroListDefaultHandler, "src/listoper.c:ZERO_LIST_DEFAULT" },
+
+    { "AINV_LIST_DEFAULT", 1, "list",
+      AInvListDefaultHandler, "src/listoper.c:AINV_LIST_DEFAULT" },
+
+    { "DIFF_SCL_LIST_DEFAULT", 2, "listL, listR",
+      DiffSclListHandler, "src/listoper.c:DIFF_SCL_LIST_DEFAULT" },
+
+    { "DIFF_LIST_SCL_DEFAULT", 2, "listL, listR",
+      DiffListSclHandler, "src/listoper.c:DIFF_LIST_SCL_DEFAULT" },
+
+    { "DIFF_LIST_LIST_DEFAULT", 2, "listL, listR",
+      DiffListListHandler, "src/listoper.c:DIFF_LIST_LIST_DEFAULT" },
+
+    { "PROD_SCL_LIST_DEFAULT", 2, "listL, listR",
+      ProdSclListHandler, "src/listoper.c:PROD_SCL_LIST_DEFAULT" },
+
+    { "PROD_LIST_SCL_DEFAULT", 2, "listL, listR",
+      ProdListSclHandler, "src/listoper.c:PROD_LIST_SCL_DEFAULT" },
+
+    { "PROD_LIST_LIST_DEFAULT", 2, "listL, listR",
+      ProdListListHandler, "src/listoper.c:PROD_LIST_LIST_DEFAULT" },
+
+    { "ONE_MATRIX", 1, "list",
+      OneMatrixHandler, "src/listoper.c:ONE_MATRIX" },
+
+    { "INV_MATRIX", 1, "list",
+      InvMatrixHandler, "src/listoper.c:INV_MATRIX" },
+
+    { "POW_MATRIX_INT", 2, "list, int",
+      PowMatrixIntHandler, "src/listoper.c:POW_MATRIX_INT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 **
 **  C = constant, R = record, L = list,   X = extrnl, V = virtual
 **
@@ -1101,15 +1165,19 @@ Obj             CommList (
 **
 ** 0    0    1    1    2    2    3    3    4    4    5    5    6    6
 ** 0    5    0    5    0    5    0    5    0    5    0    5    0    5
-** CCCCCCCCCCCCRRLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLXXXXVVV
+** CCCCCCCCCCCCRRLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLXXXXVVV
 */
-Char * CAT =
-  "ssssssss----ssiiiiiiiieeiiiiiiiiiiiivvvvvvvvvvvvvvvv-----------------mm]";
+static Char * CAT =
+  "ssssssss----ssiiiiiiiieeiiiiiiiiiiiivvvvvvvvvv-----------------mm]";
 
-void SetupListOper ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* check that <CAT> is consistent with the number LAST_VIRTUAL_TNUM    */
     if ( CAT[LAST_VIRTUAL_TNUM+1] != ']' ) {
@@ -1230,95 +1298,52 @@ void SetupListOper ( void )
             
         }
     }
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitListOper()  . . . . . . . . .  initialize the generic list operations
-**
-**  'InitListOper' initializes the generic list operations.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitListOper ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    C_NEW_GVAR_FUNC( "EQ_LIST_LIST_DEFAULT", 2, "listL, listR",
-                      EqListListHandler,
-      "src/listoper.c:EQ_LIST_LIST_DEFAULT" );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "LT_LIST_LIST_DEFAULT", 2, "listL, listR",
-                      LtListListHandler,
-      "src/listoper.c:LT_LIST_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "IN_LIST_DEFAULT", 2, "obj, list",
-                      InListDefaultHandler,
-      "src/listoper.c:IN_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "SUM_SCL_LIST_DEFAULT", 2, "listL, listR",
-                      SumSclListHandler,
-      "src/listoper.c:SUM_SCL_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "SUM_LIST_SCL_DEFAULT", 2, "listL, listR",
-                      SumListSclHandler,
-      "src/listoper.c:SUM_LIST_SCL_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "SUM_LIST_LIST_DEFAULT", 2, "listL, listR",
-                      SumListListHandler,
-      "src/listoper.c:SUM_LIST_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "ZERO_LIST_DEFAULT", 1, "list",
-                      ZeroListDefaultHandler,
-      "src/listoper.c:ZERO_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "AINV_LIST_DEFAULT", 1, "list",
-                      AInvListDefaultHandler,
-      "src/listoper.c:AINV_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "DIFF_SCL_LIST_DEFAULT", 2, "listL, listR",
-                      DiffSclListHandler,
-      "src/listoper.c:DIFF_SCL_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "DIFF_LIST_SCL_DEFAULT", 2, "listL, listR",
-                      DiffListSclHandler,
-      "src/listoper.c:DIFF_LIST_SCL_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "DIFF_LIST_LIST_DEFAULT", 2, "listL, listR",
-                      DiffListListHandler,
-      "src/listoper.c:DIFF_LIST_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "PROD_SCL_LIST_DEFAULT", 2, "listL, listR",
-                      ProdSclListHandler,
-      "src/listoper.c:PROD_SCL_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "PROD_LIST_SCL_DEFAULT", 2, "listL, listR",
-                      ProdListSclHandler,
-      "src/listoper.c:PROD_LIST_SCL_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "PROD_LIST_LIST_DEFAULT", 2, "listL, listR",
-                      ProdListListHandler,
-      "src/listoper.c:PROD_LIST_LIST_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "ONE_MATRIX", 1, "list",
-                      OneMatrixHandler,
-      "src/listoper.c:ONE_MATRIX" );
-
-    C_NEW_GVAR_FUNC( "INV_MATRIX", 1, "list",
-                      InvMatrixHandler,
-      "src/listoper.c:INV_MATRIX" );
-
-    C_NEW_GVAR_FUNC( "POW_MATRIX_INT", 2, "list, int",
-                      PowMatrixIntHandler,
-      "src/listoper.c:POW_MATRIX_INT" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckListOper() . check the initialisation of the generic list operations
+*F  InitInfoListOper()  . . . . . . . . . . . . . . . table of init functions
 */
-void CheckListOper ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "listoper",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoListOper ( void )
 {
-    SET_REVISION( "listoper_c", Revision_listoper_c );
-    SET_REVISION( "listoper_h", Revision_listoper_h );
+    module.revision_c = Revision_listoper_c;
+    module.revision_h = Revision_listoper_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

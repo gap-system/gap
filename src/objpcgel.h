@@ -5,9 +5,10 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_objpcgel_h =
+const char * Revision_objpcgel_h =
    "@(#)$Id$";
 #endif
 
@@ -60,23 +61,9 @@ SYS_CONST char * Revision_objpcgel_h =
 **
 
 
-*F  SetupPcElements() . . . . . . .  initialize the pc group elements package
+*F  InitInfoPcElements()  . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupPcElements ( void );
-
-
-/****************************************************************************
-**
-*F  InitPcElements()  . . . . . . .  initialize the pc group elements package
-*/
-extern void InitPcElements ( void );
-
-
-/****************************************************************************
-**
-*F  CheckPcElements() . check initialisation of the pc group elements package
-*/
-extern void CheckPcElements ( void );
+StructInitInfo * InitInfoPcElements ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation part of functions and data around
 ##  Conway polynomials.
@@ -17,7 +18,7 @@ Revision.polyconw_gi :=
 ##
 #F  PowerModEvalPol( <f>, <g>, <xpownmodf> )
 ##
-PowerModEvalPol := function( f, g, xpownmodf )
+InstallGlobalFunction( PowerModEvalPol, function( f, g, xpownmodf )
 
     local l,    # length of coefficients of 'g'
           res,  # result
@@ -32,7 +33,7 @@ PowerModEvalPol := function( f, g, xpownmodf )
       ShrinkCoeffs( res );
     od;
     return res;
-end;
+end );
 
 
 ############################################################################
@@ -397,7 +398,7 @@ CONWAYPOLYNOMIALS := Immutable( CONWAYPOLYNOMIALS );
 ##
 #F  ConwayPol( <p>, <n> ) . . . . . <n>-th Conway polynomial in charact. <p>
 ##
-ConwayPol := function( p, n )
+InstallGlobalFunction( ConwayPol, function( p, n )
 
     local F,          # 'GF(p)'
           eps,        # $(-1)^n$ in 'F'
@@ -561,19 +562,19 @@ ConwayPol := function( p, n )
 
     # Return the coefficients list.
     return cpol;
-end;
+end );
 
 
 ############################################################################
 ##
 #F  ConwayPolynomial( <p>, <n> ) .  <n>-th Conway polynomial in charact. <p>
 ##
-ConwayPolynomial := function( p, n )
+InstallGlobalFunction( ConwayPolynomial, function( p, n )
     if not IsPrimeInt( p ) or not IsInt( n ) or not n > 0 then
       Error( "<p> must be a prime, <n> a positive integer" );
     fi;
     return UnivariatePolynomial( Rationals, ConwayPol( p, n ) );
-end;
+end );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for matrix groups.
 ##
@@ -28,12 +29,10 @@ InstallTrueMethod( IsHandledByNiceMonomorphism, IsMatrixGroup and IsFinite );
 ##
 ##  A field containing all the matrix entries.
 ##
-DefaultFieldOfMatrixGroup := NewAttribute(
+DeclareAttribute(
     "DefaultFieldOfMatrixGroup",
     IsMatrixGroup );
 
-SetDefaultFieldOfMatrixGroup := Setter(DefaultFieldOfMatrixGroup);
-HasDefaultFieldOfMatrixGroup := Tester(DefaultFieldOfMatrixGroup);
 
 InstallSubsetMaintainedMethod( DefaultFieldOfMatrixGroup,
         IsMatrixGroup and HasDefaultFieldOfMatrixGroup, IsMatrixGroup );
@@ -45,12 +44,10 @@ InstallSubsetMaintainedMethod( DefaultFieldOfMatrixGroup,
 ##
 ##  The dimension of the matrix group.
 ##
-DimensionOfMatrixGroup := NewAttribute(
+DeclareAttribute(
     "DimensionOfMatrixGroup",
     IsMatrixGroup );
 
-SetDimensionOfMatrixGroup := Setter(DimensionOfMatrixGroup);
-HasDimensionOfMatrixGroup := Tester(DimensionOfMatrixGroup);
 
 InstallSubsetMaintainedMethod( DimensionOfMatrixGroup,
         IsMatrixGroup and HasDimensionOfMatrixGroup, IsMatrixGroup );
@@ -64,22 +61,18 @@ InstallSubsetMaintainedMethod( DimensionOfMatrixGroup,
 ##  be used        if  one *really*   needs     the    smallest   field,  use
 ##  'DefaultFieldOfMatrixGroup' to get (for example) the characteristic.
 ##
-FieldOfMatrixGroup := NewAttribute(
+DeclareAttribute(
     "FieldOfMatrixGroup",
     IsMatrixGroup );
 
-SetFieldOfMatrixGroup := Setter(FieldOfMatrixGroup);
-HasFieldOfMatrixGroup := Tester(FieldOfMatrixGroup);
 
 
 #############################################################################
 ##
 #P  IsGeneralLinearGroup( <matgrp> )
 ##
-IsGeneralLinearGroup := NewProperty( "IsGeneralLinearGroup",
+DeclareProperty( "IsGeneralLinearGroup",
                                 IsMatrixGroup );
-SetIsGeneralLinearGroup := Setter( IsGeneralLinearGroup );
-HasIsGeneralLinearGroup := Tester( IsGeneralLinearGroup );
 
 
 #############################################################################

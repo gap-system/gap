@@ -1,0 +1,107 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  grppc.msk                   GAP documentation            Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{PcGroups}
+
+PcGroups are groups given by a finite polycyclic presentation. The
+generators in such a presentation form a pcgs for the group. Arithmetic in
+such groups is performed using a collection process and is thus much quicker
+than for ordinary finitely presented groups. This collection process also
+permits to bring every element in a normal form.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing PcGroups}
+
+\Declaration{PcGroupFpGroup}
+\beginexample
+gap> f:=FreeGroup("a","b","c","d");;a:=f.1;;b:=f.2;;c:=f.3;;d:=f.4;;         
+gap> rels:=[a^2,b^3,c^2,d^2,Comm(b,a)/b,Comm(c,a)/d,Comm(d,a),
+> Comm(c,b)/(c*d),Comm(d,b)/c,Comm(d,c)];
+[ a^2, b^3, c^2, d^2, b^-1*a^-1*b*a*b^-1, c^-1*a^-1*c*a*d^-1, d^-1*a^-1*d*a, 
+  c^-1*b^-1*c*b*d^-1*c^-1, d^-1*b^-1*d*b*c^-1, d^-1*c^-1*d*c ]
+gap> g:=f/rels; 
+Group( [ a, b, c, d ], ... )
+gap> p:=PcGroupFpGroup(g);
+Group( [ a, b, c, d ], ... )
+gap> p.1=g.1;
+false
+gap> g.2*g.1;
+b*a
+gap> p.2*p.1;
+a*b^2
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Words in Finite Polycyclic Groups}
+
+Elements of PcGroups are displayed as words in the generators which are in
+normal form, that is they are a product of the generators corresponding to
+the exponent vector with respect to the pcgs formed by the generators.
+
+\>`<pcword>=<pcword>'{equality!pcwords}
+
+Two words in a PcGroup are equal if and only if they correspond to the same
+exponent vector.
+
+\>`<pcword>\<<pcword>'{smaller!pcwords}
+
+The words are sorted by their exponent vectors. This yields a pure
+lexicographical ordering.
+
+\beginexample
+gap> AsListSorted(p);
+[ <identity> of ..., a, a*b, a*b*c, a*b*c*d, a*b*d, a*b^2, a*b^2*c, 
+  a*b^2*c*d, a*b^2*d, a*c, a*c*d, a*d, b, b*c, b*c*d, b*d, b^2, b^2*c, 
+  b^2*c*d, b^2*d, c, c*d, d ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Pcgs for PcGroups}
+
+PcGroups immediately posess a distinguished Pcgs given by the policyclic
+presentation.
+
+\Declaration{FamilyPcgs}
+\Declaration{IsFamilyPcgs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Computing an isomorphic PcGroup for a finite group}
+
+\Declaration{IsomorphismPcGroup}
+
+\beginexample
+gap> g:=Group((1,2,3),(2,3,4));;
+gap> iso:=IsomorphismPcGroup(g);
+Pcgs([ (2,4,3), (1,3)(2,4), (1,2)(3,4) ]) -> [ f1, f2, f3 ]
+gap> p:=Image(iso);
+Group( [ f1, f2, f3 ], ... )
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Saving a PcGroup}
+
+As printing a polycyclic group does not display the presentation, one cannot
+simply print a PcGroup to a file to save it.
+
+\Declaration{GapInputPcGroup}
+
+\beginexample
+ap> s:=GapInputPcGroup(p,"G");;
+gap> PrintTo("savefile",s);
+gap> Read("savefile");
+A group of order 12 has been defined.
+It is called G
+gap> G;
+Group( [ f1, f2, f3 ], ... )
+gap> G=p;
+false
+gap> IsomorphismGroups(p,G);
+[ f1, f2 ] -> [ f1, f3 ]
+\endexample
+

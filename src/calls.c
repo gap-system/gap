@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for the function call mechanism package.
 **
@@ -34,7 +35,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_calls_c =
+const char * Revision_calls_c =
    "@(#)$Id$";
 
 
@@ -290,7 +291,7 @@ Obj DoFail0args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 0L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -307,7 +308,7 @@ Obj DoFail1args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 1L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -325,7 +326,7 @@ Obj DoFail2args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 2L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -344,7 +345,7 @@ Obj DoFail3args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 3L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -364,7 +365,7 @@ Obj DoFail4args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 4L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -385,7 +386,7 @@ Obj DoFail5args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 5L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -407,7 +408,7 @@ Obj DoFail6args (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), 6L,
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -424,7 +425,7 @@ Obj DoFailXargs (
         "Function: number of arguments must be %d (not %d)",
         NARG_FUNC( self ), LEN_LIST( args ),
         "you can return a list of arguments" );
-    return CallFuncListHandler( (Obj)0, self, argx );
+    return FuncCALL_FUNC_LIST( (Obj)0, self, argx );
 }
 
 
@@ -889,7 +890,7 @@ Obj DoProfXargs (
 
 typedef struct {
     ObjFunc             hdlr;
-    SYS_CONST Char *    cookie;
+    const Char *        cookie;
 }
 TypeHandlerInfo;
 
@@ -900,12 +901,20 @@ static UInt NHandlerFuncs = 0;
  
 void InitHandlerFunc (
     ObjFunc             hdlr,
-    SYS_CONST Char *    cookie )
+    const Char *        cookie )
 {
     if ( NHandlerFuncs >= MAX_HANDLERS ) {
         Pr( "No room left for function handler\n", 0L, 0L );
         SyExit(1);
     }
+#ifdef DEBUG_HANDLER_REGISTRATION
+    {
+      UInt i;
+      for (i = 0; i < NHandlerFuncs; i++)
+        if (!SyStrcmp(HandlerFuncs[i].cookie, cookie))
+          Pr("Duplicate cookie %s\n", (Int)cookie, 0L);
+    }
+#endif
     HandlerFuncs[NHandlerFuncs].hdlr   = hdlr;
     HandlerFuncs[NHandlerFuncs].cookie = cookie;
     HandlerSortingStatus = 0; /* no longer sorted by handler or cookie */
@@ -956,19 +965,21 @@ void CheckAllHandlers(
 }
 
 
-static int IsLessHandlerInfo( TypeHandlerInfo *h1, 
-                              TypeHandlerInfo *h2,
-                              UInt byWhat)
+static int IsLessHandlerInfo (
+    TypeHandlerInfo *           h1, 
+    TypeHandlerInfo *           h2,
+    UInt                        byWhat )
 {
-  switch(byWhat) {
-  case 1:
-    return h1->hdlr < h2->hdlr;
-  case 2:
-    return SyStrcmp(h1->cookie, h2->cookie) < 0;
-  default:
-    ErrorQuit("Invalid sort mode %u", byWhat,0L);
-    return 0; /* please lint */
-  }
+    switch (byWhat) {
+        case 1:
+            /* cast to please Irix CC and HPUX CC */
+            return (UInt)(h1->hdlr) < (UInt)(h2->hdlr);
+        case 2:
+            return SyStrcmp(h1->cookie, h2->cookie) < 0;
+        default:
+            ErrorQuit( "Invalid sort mode %u", byWhat, 0L );
+            return 0; /* please lint */
+    }
 }
 
 void SortHandlers( UInt byWhat )
@@ -998,42 +1009,38 @@ void SortHandlers( UInt byWhat )
   return;
 }
 
-
-SYS_CONST Char * CookieOfHandler(
-       ObjFunc hdlr )
+const Char * CookieOfHandler (
+    ObjFunc             hdlr )
 {
-  UInt i, top, bottom, middle;
-  if (HandlerSortingStatus != 1)
-    {
-      for (i = 0; i < NHandlerFuncs; i++)
-        {
-          if (hdlr == HandlerFuncs[i].hdlr)
-            return HandlerFuncs[i].cookie;
+    UInt                i, top, bottom, middle;
+
+    if ( HandlerSortingStatus != 1 ) {
+        for ( i = 0; i < NHandlerFuncs; i++ ) {
+            if ( hdlr == HandlerFuncs[i].hdlr )
+                return HandlerFuncs[i].cookie;
         }
-      ErrorQuit("No Cookie for Handler", 0L, 0L);
-      return (Char *)0L;
+        ErrorQuit( "No Cookie for Handler", 0L, 0L );
+        return (Char *)0L;
     }
-  else
-    {
-      top = NHandlerFuncs;
-      bottom = 0;
-      while (top >= bottom) {
-        middle = (top + bottom)/2;
-        if (hdlr < HandlerFuncs[middle].hdlr)
-          top = middle-1;
-        else if (hdlr > HandlerFuncs[middle].hdlr)
-          bottom = middle+1;
-        else
-          return HandlerFuncs[middle].cookie;
-      }
-      ErrorQuit("No Cookie for Handler", 0L, 0L);
-      return (Char *)0L;
+    else {
+        top = NHandlerFuncs;
+        bottom = 0;
+        while ( top >= bottom ) {
+            middle = (top + bottom)/2;
+            if ( (UInt)(hdlr) < (UInt)(HandlerFuncs[middle].hdlr) )
+                top = middle-1;
+            else if ( (UInt)(hdlr) > (UInt)(HandlerFuncs[middle].hdlr) )
+                bottom = middle+1;
+            else
+                return HandlerFuncs[middle].cookie;
+        }
+        ErrorQuit( "No Cookie for Handler", 0L, 0L );
+        return (Char *)0L;
     }
 }
-                                      
-                       
+
 ObjFunc HandlerOfCookie(
-       SYS_CONST Char * cookie )
+       const Char * cookie )
 {
   UInt i,top,bottom,middle;
   Int res;
@@ -1044,7 +1051,8 @@ ObjFunc HandlerOfCookie(
           if (SyStrcmp(cookie, HandlerFuncs[i].cookie) == 0)
             return HandlerFuncs[i].hdlr;
         }
-      ErrorQuit("No Handler for Cookie", 0L, 0L);
+      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
+      SyExit(1);
       return (ObjFunc)0L;
     }
   else
@@ -1061,7 +1069,8 @@ ObjFunc HandlerOfCookie(
         else
           return HandlerFuncs[middle].hdlr;
       }
-      ErrorQuit("No Handler for Cookie", 0L, 0L);
+      Pr("Function Handler %s Missing from Kernel\n", (Int)cookie, 0L);
+      SyExit(1);
       return (ObjFunc)0L;
     }
 }
@@ -1098,9 +1107,9 @@ Obj NewFunction (
 **  <nams> as C strings.
 */
 Obj NewFunctionC (
-    SYS_CONST Char *    name,
+    const Char *        name,
     Int                 narg,
-    SYS_CONST Char *    nams,
+    const Char *        nams,
     ObjFunc             hdlr )
 {
     return NewFunctionCT( T_FUNCTION, SIZE_FUNC, name, narg, nams, hdlr );
@@ -1187,9 +1196,9 @@ Obj NewFunctionT (
 Obj NewFunctionCT (
     UInt                type,
     UInt                size,
-    SYS_CONST Char *    name_c,
+    const Char *        name_c,
     Int                 narg,
-    SYS_CONST Char *    nams_c,
+    const Char *        nams_c,
     ObjFunc             hdlr )
 {
     Obj                 name_o;         /* name as an object               */
@@ -1260,12 +1269,12 @@ Obj TypeFunction (
 }
 
 
+
 /****************************************************************************
 **
 *F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
 **
-**  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
-**  'PrintObjFull' is false.
+
 */
 void PrintFunction (
     Obj                 func )
@@ -1294,13 +1303,6 @@ void PrintFunction (
     }
     Pr(" %<)",0L,0L);
 
-    /* print the function in the short form                                */
-    if ( PrintObjFull == 0 ) {
-        Pr(" ...%4< ",0L,0L);
-    }
-
-    /* print the function in the long form                                 */
-    else {
         Pr("\n",0L,0L);
 
         /* print the locals                                                */
@@ -1331,9 +1333,7 @@ void PrintFunction (
             SWITCH_TO_OLD_LVARS( oldLVars );
         }
         Pr("%4<\n",0L,0L);
-
-    }
-
+    
     /* print 'end'                                                         */
     Pr("end",0L,0L);
 }
@@ -1341,9 +1341,9 @@ void PrintFunction (
 
 /****************************************************************************
 **
-*F  IsFunctionHandler( <self>, <func> ) . . . . . . . . . . test for function
+*F  FuncIS_FUNCTION( <self>, <func> ) . . . . . . . . . . . test for function
 **
-**  'IsFunctionHandler' implements the internal function 'IsFunction'.
+**  'FuncIS_FUNCTION' implements the internal function 'IsFunction'.
 **
 **  'IsFunction( <func> )'
 **
@@ -1352,7 +1352,7 @@ void PrintFunction (
 */
 Obj IsFunctionFilt;
 
-Obj IsFunctionHandler (
+Obj FuncIS_FUNCTION (
     Obj                 self,
     Obj                 obj )
 {
@@ -1370,9 +1370,9 @@ Obj IsFunctionHandler (
 
 /****************************************************************************
 **
-*F  CallFunctionHandler( <self>, <args> ) . . . . . . . . . . call a function
+*F  FuncCALL_FUNC( <self>, <args> ) . . . . . . . . . . . . . call a function
 **
-**  'CallFunctionHandler' implements the internal function 'CallFunction'.
+**  'FuncCALL_FUNC' implements the internal function 'CallFunction'.
 **
 **  'CallFunction( <func>, <arg1>... )'
 **
@@ -1381,7 +1381,7 @@ Obj IsFunctionHandler (
 */
 Obj CallFunctionOper;
 
-Obj CallFunctionHandler (
+Obj FuncCALL_FUNC (
     Obj                 self,
     Obj                 args )
 {
@@ -1456,9 +1456,9 @@ Obj CallFunctionHandler (
 
 /****************************************************************************
 **
-*F  CallFuncListHandler( <self>, <func>, <list> ) . . . . . . call a function
+*F  FuncCALL_FUNC_LIST( <self>, <func>, <list> )  . . . . . . call a function
 **
-**  'CallFuncListHandler' implements the internal function 'CallFuncList'.
+**  'FuncCALL_FUNC_LIST' implements the internal function 'CallFuncList'.
 **
 **  'CallFuncList( <func>, <list> )'
 **
@@ -1467,7 +1467,7 @@ Obj CallFunctionHandler (
 */
 Obj CallFuncListOper;
 
-Obj CallFuncListHandler (
+Obj FuncCALL_FUNC_LIST (
     Obj                 self,
     Obj                 func,
     Obj                 list )
@@ -1555,7 +1555,7 @@ Obj FuncNAME_FUNC (
     Obj                 func )
 {
     Obj                 name;
-    SYS_CONST char *    deflt = "unknown";
+    const char *        deflt = "unknown";
 
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         name = NAME_FUNC(func);
@@ -1610,6 +1610,7 @@ Obj FuncNAMS_FUNC (
     Obj                 self,
     Obj                 func )
 {
+  Obj nams;
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         if ( IS_UNCOMPLETED_FUNC(func) )  {
             COMPLETE_FUNC(func);
@@ -1618,7 +1619,8 @@ Obj FuncNAMS_FUNC (
                 return 0;
             }
         }
-        return NAMS_FUNC(func);
+        nams = NAMS_FUNC(func);
+	return (nams != (Obj)0) ? nams : Fail;
     }
     else {
         return DoOperation1Args( self, func );
@@ -1830,11 +1832,11 @@ Obj FuncUNPROFILE_FUNC(
 
 /****************************************************************************
 **
-*F  SaveFunction( <func> )                           save a function
+
+*F  SaveFunction( <func> )  . . . . . . . . . . . . . . . . . save a function
 **
 */
-
-void SaveFunction( Obj func)
+void SaveFunction ( Obj func )
 {
   UInt i;
   for (i = 0; i <= 7; i++)
@@ -1853,11 +1855,10 @@ void SaveFunction( Obj func)
 
 /****************************************************************************
 **
-*F  LoadFunction( <func> )                           Load a function
+*F  LoadFunction( <func> )  . . . . . . . . . . . . . . . . . load a function
 **
 */
-
-void LoadFunction( Obj func)
+void LoadFunction ( Obj func )
 {
   UInt i;
   for (i = 0; i <= 7; i++)
@@ -1884,90 +1885,98 @@ void LoadFunction( Obj func)
 /****************************************************************************
 **
 
-*F  SetupCalls()  . . . . . . . . . . . . . . . . initialize the call package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupCalls ( void )
-{
-    /* install the marking functions                                       */
-    InfoBags[         T_FUNCTION ].name = "function";
-    InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
+static StructGVarFilt GVarFilts [] = {
 
+    { "IS_FUNCTION", "obj", &IsFunctionFilt, 
+      FuncIS_FUNCTION, "src/calls.c:IS_FUNCTION" },
 
-    /* and the saving function */
-    SaveObjFuncs[ T_FUNCTION ] = SaveFunction;
+    { 0 }
 
-
-    /* install the printer                                                 */
-    PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
-}
+};
 
 
 /****************************************************************************
 **
-*F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
-**
-**  'InitCalls' initializes the call package.
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
 */
-void InitCalls ( void )
+static StructGVarOper GVarOpers [] = {
+
+    { "CALL_FUNC", -1, "args", &CallFunctionOper,
+      FuncCALL_FUNC, "src/calls.c:CALL_FUNC" },
+
+    { "CALL_FUNC_LIST", 2, "func, list", &CallFuncListOper,
+      FuncCALL_FUNC_LIST, "src/calls.c:CALL_FUNC_LIST" },
+
+    { "NAME_FUNC", 1, "func", &NAME_FUNC_Oper,
+      FuncNAME_FUNC, "src/calls.c:NAME_FUNC" },
+
+    { "NARG_FUNC", 1, "func", &NARG_FUNC_Oper,
+      FuncNARG_FUNC, "src/calls.c:NARG_FUNC" },
+
+    { "NAMS_FUNC", 1, "func", &NAMS_FUNC_Oper,
+      FuncNAMS_FUNC, "src/calls.c:NAMS_FUNC" },
+
+    { "PROF_FUNC", 1, "func", &PROF_FUNC_Oper,
+      FuncPROF_FUNC, "src/calls.c:PROF_FUNC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "CLEAR_PROFILE_FUNC", 1, "func",
+      FuncCLEAR_PROFILE_FUNC, "src/calls.c:CLEAR_PROFILE_FUNC" },
+
+    { "IS_PROFILED_FUNC", 1, "func",
+      FuncIS_PROFILED_FUNC, "src/calls.c:IS_PROFILED_FUNC" },
+
+    { "PROFILE_FUNC", 1, "func",
+      FuncPROFILE_FUNC, "src/calls.c:PROFILE_FUNC" },
+
+    { "UNPROFILE_FUNC", 1, "func",
+      FuncUNPROFILE_FUNC, "src/calls.c:UNPROFILE_FUNC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* install the marking functions                                       */
+    InfoBags[ T_FUNCTION ].name = "function";
+    InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
+
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
     ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
     TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrOpersFromTable( GVarOpers );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'IS_FUNCTION' filter                           */
-    C_NEW_GVAR_FILT( "IS_FUNCTION", "obj", IsFunctionFilt, IsFunctionHandler,
-         "src/calls.c:IS_FUNCTION" );
+    /* and the saving function                                             */
+    SaveObjFuncs[ T_FUNCTION ] = SaveFunction;
+    LoadObjFuncs[ T_FUNCTION ] = LoadFunction;
 
-
-    /* make and install the 'CALL_FUNC' operation                          */
-    C_NEW_GVAR_OPER( "CALL_FUNC", -1, "args",
-                     CallFunctionOper, CallFunctionHandler,
-         "src/calls.c:CALL_FUNC" );
-
-
-    /* make and install the 'CALL_FUNC_LIST' operation                     */
-    C_NEW_GVAR_OPER( "CALL_FUNC_LIST", 2L, "func, list",
-                     CallFuncListOper, CallFuncListHandler,
-         "src/calls.c:CALL_FUNC_LIST" );
-
-
-    /* make and install the 'NAME_FUNC' etc. operations                    */
-    C_NEW_GVAR_OPER( "NAME_FUNC", 1L, "func", NAME_FUNC_Oper,
-                  FuncNAME_FUNC,
-         "src/calls.c:NAME_FUNC" );
-
-    C_NEW_GVAR_OPER( "NARG_FUNC", 1L, "func", NARG_FUNC_Oper,
-                  FuncNARG_FUNC,
-         "src/calls.c:NARG_FUNC" );
-
-    C_NEW_GVAR_OPER( "NAMS_FUNC", 1L, "func", NAMS_FUNC_Oper,
-                  FuncNAMS_FUNC,
-         "src/calls.c:NAMS_FUNC" );
-
-    C_NEW_GVAR_OPER( "PROF_FUNC", 1L, "func", PROF_FUNC_Oper,
-                  FuncPROF_FUNC,
-         "src/calls.c:PROF_FUNC" );
-
-
-    /* make and install the profile functions                              */
-    C_NEW_GVAR_FUNC( "CLEAR_PROFILE_FUNC", 1L, "func",
-                  FuncCLEAR_PROFILE_FUNC,
-         "src/calls.c:CLEAR_PROFILE_FUNC" );
-
-    C_NEW_GVAR_FUNC( "IS_PROFILED_FUNC", 1L, "func",
-                  FuncIS_PROFILED_FUNC,
-         "src/calls.c:IS_PROFILED_FUNC" );
-
-    C_NEW_GVAR_FUNC( "PROFILE_FUNC", 1L, "func",
-                  FuncPROFILE_FUNC,
-         "src/calls.c:PROFILE_FUNC" );
-
-    C_NEW_GVAR_FUNC( "UNPROFILE_FUNC", 1L, "func",
-                  FuncUNPROFILE_FUNC,
-         "src/calls.c:UNPROFILE_FUNC" );
-
+    /* install the printer                                                 */
+    PrintObjFuncs[ T_FUNCTION ] = PrintFunction;
 
     /* initialise all 'Do<Something><N>args' handlers, give the most       */
     /* common ones short cookies to save space in in the saved workspace   */
@@ -1996,17 +2005,54 @@ void InitCalls ( void )
     InitHandlerFunc( DoProf5args, "p5" );
     InitHandlerFunc( DoProf6args, "p6" );
     InitHandlerFunc( DoProfXargs, "pX" );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckCalls()  . . . . . . .  check the initialisation of the call package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckCalls ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "calls_c",    Revision_calls_c );
-    SET_REVISION( "calls_h",    Revision_calls_h );
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarOpersFromTable( GVarOpers );
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoCalls() . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "calls",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoCalls ( void )
+{
+    module.revision_c = Revision_calls_c;
+    module.revision_h = Revision_calls_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

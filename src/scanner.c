@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the scanner, which is responsible for
 **  all input and output processing.
@@ -26,7 +27,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_scanner_c =
+const char * Revision_scanner_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -137,6 +138,7 @@ SYS_CONST char * Revision_scanner_c =
 #define S_BREAK         ((1UL<<29)+0)
 #define S_RETURN        ((1UL<<29)+1)
 #define S_QUIT          ((1UL<<29)+2)
+#define S_QQUIT         ((1UL<<29)+3)
 
 #define S_SEMICOLON     ((1UL<<30))
 
@@ -1608,6 +1610,8 @@ void GetIdent ( void )
     case 256*'u'+'l': if(!SyStrcmp(Value,"until"))   Symbol=S_UNTIL;   break;
     case 256*'w'+'e': if(!SyStrcmp(Value,"while"))   Symbol=S_WHILE;   break;
     case 256*'q'+'t': if(!SyStrcmp(Value,"quit"))    Symbol=S_QUIT;    break;
+    case 256*'Q'+'T': if(!SyStrcmp(Value,"QUIT"))    Symbol=S_QQUIT;   break;
+
     case 256*'I'+'d': if(!SyStrcmp(Value,"IsBound")) Symbol=S_ISBOUND; break;
     case 256*'U'+'d': if(!SyStrcmp(Value,"Unbind"))  Symbol=S_UNBIND;  break;
     case 256*'T'+'d': if(!SyStrcmp(Value,"TryNextMethod"))
@@ -1662,6 +1666,8 @@ void GetInt ( void )
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
             else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
             else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
+            else if ( *In == '>'  && i < sizeof(Value)-1 )  Value[i] = '\01';
+            else if ( *In == '<'  && i < sizeof(Value)-1 )  Value[i] = '\02';
             else if ( *In == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
             else if (                i < sizeof(Value)-1 )  Value[i] = *In;
         }
@@ -1727,6 +1733,8 @@ void GetStr ( void )
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
             else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
             else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
+            else if ( *In == '>'  && i < sizeof(Value)-1 )  Value[i] = '\01';
+            else if ( *In == '<'  && i < sizeof(Value)-1 )  Value[i] = '\02';
             else if ( *In == 'c'  && i < sizeof(Value)-1 )  Value[i] = '\03';
             else if (                i < sizeof(Value)-1 )  Value[i] = *In;
         }
@@ -1780,6 +1788,8 @@ void GetChar ( void )
         else if ( *In == 't'  )  Value[0] = '\t';
         else if ( *In == 'r'  )  Value[0] = '\r';
         else if ( *In == 'b'  )  Value[0] = '\b';
+        else if ( *In == '>'  )  Value[0] = '\01';
+        else if ( *In == '<'  )  Value[0] = '\02';
         else if ( *In == 'c'  )  Value[0] = '\03';
         else                     Value[0] = *In;
     }
@@ -2179,11 +2189,11 @@ void PutChr (
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 void Pr (
-    SYS_CONST Char *    format,
+    const Char *    format,
     Int                 arg1,
     Int                 arg2 )
 {
-    SYS_CONST Char *    p;
+    const Char *    p;
     Char *              q;
     Int                 prec,  n;
     Char                fill;
@@ -2228,19 +2238,31 @@ void Pr (
             /* '%s' print a string                                         */
             else if ( *p == 's' ) {
 
-                /* compute how many characters this identifier requires    */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    prec--;
-                }
+	      /* handle the case of a missing argument                     */
+	        if (arg1 == 0)
+		  {
+		    PutChr('<');
+		    PutChr('n');
+		    PutChr('u');
+		    PutChr('l');
+		    PutChr('l');
+		    PutChr('>');
+		  }
+		else
+		  {
+		    /* compute how many characters this identifier requires    */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      prec--;
+		    }
+		    
+		    /* if wanted push an appropriate number of <space>-s       */
+		    while ( prec-- > 0 )  PutChr(' ');
 
-                /* if wanted push an appropriate number of <space>-s       */
-                while ( prec-- > 0 )  PutChr(' ');
-
-                /* print the string                                        */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    PutChr( *q );
-                }
-
+		    /* print the string                                        */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      PutChr( *q );
+		    }
+		  }
                 /* on to the next argument                                 */
                 arg1 = arg2;
             }
@@ -2248,32 +2270,49 @@ void Pr (
             /* '%S' print a string with the necessary escapes              */
             else if ( *p == 'S' ) {
 
-                /* compute how many characters this identifier requires    */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if      ( *q == '\n'  ) { prec -= 2; }
-                    else if ( *q == '\t'  ) { prec -= 2; }
-                    else if ( *q == '\r'  ) { prec -= 2; }
-                    else if ( *q == '\b'  ) { prec -= 2; }
-                    else if ( *q == '\03' ) { prec -= 2; }
-                    else if ( *q == '"'   ) { prec -= 2; }
-                    else if ( *q == '\\'  ) { prec -= 2; }
-                    else                    { prec -= 1; }
-                }
+	      /* handle the case of a missing argument                     */
+	        if (arg1 == 0)
+		  {
+		    PutChr('<');
+		    PutChr('n');
+		    PutChr('u');
+		    PutChr('l');
+		    PutChr('l');
+		    PutChr('>');
+		  }
+		else
+		  {
+		    /* compute how many characters this identifier requires    */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if      ( *q == '\n'  ) { prec -= 2; }
+		      else if ( *q == '\t'  ) { prec -= 2; }
+		      else if ( *q == '\r'  ) { prec -= 2; }
+		      else if ( *q == '\b'  ) { prec -= 2; }
+		      else if ( *q == '\01' ) { prec -= 2; }
+		      else if ( *q == '\02' ) { prec -= 2; }
+		      else if ( *q == '\03' ) { prec -= 2; }
+		      else if ( *q == '"'   ) { prec -= 2; }
+		      else if ( *q == '\\'  ) { prec -= 2; }
+		      else                    { prec -= 1; }
+		    }
 
-                /* if wanted push an appropriate number of <space>-s       */
-                while ( prec-- > 0 )  PutChr(' ');
+		    /* if wanted push an appropriate number of <space>-s       */
+		    while ( prec-- > 0 )  PutChr(' ');
 
-                /* print the string                                        */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
-                    else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
-                    else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
-                    else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
-                    else if ( *q == '\03' ) { PutChr('\\'); PutChr('c');  }
-                    else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
-                    else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
-                    else                    { PutChr( *q );               }
-                }
+		    /* print the string                                        */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
+		      else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
+		      else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
+		      else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
+		      else if ( *q == '\01' ) { PutChr('\\'); PutChr('>');  }
+		      else if ( *q == '\02' ) { PutChr('\\'); PutChr('<');  }
+		      else if ( *q == '\03' ) { PutChr('\\'); PutChr('c');  }
+		      else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
+		      else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
+		      else                    { PutChr( *q );               }
+		    }
+		  }
 
                 /* on to the next argument                                 */
                 arg1 = arg2;
@@ -2282,34 +2321,52 @@ void Pr (
             /* '%C' print a string with the necessary C escapes            */
             else if ( *p == 'C' ) {
 
-                /* compute how many characters this identifier requires    */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if      ( *q == '\n'  ) { prec -= 2; }
-                    else if ( *q == '\t'  ) { prec -= 2; }
-                    else if ( *q == '\r'  ) { prec -= 2; }
-                    else if ( *q == '\b'  ) { prec -= 2; }
-                    else if ( *q == '\03' ) { prec -= 3; }
-                    else if ( *q == '"'   ) { prec -= 2; }
-                    else if ( *q == '\\'  ) { prec -= 2; }
-                    else                    { prec -= 1; }
-                }
+	      /* handle the case of a missing argument                     */
+	        if (arg1 == 0)
+		  {
+		    PutChr('<');
+		    PutChr('n');
+		    PutChr('u');
+		    PutChr('l');
+		    PutChr('l');
+		    PutChr('>');
+		  }
+		else
+		  {
+		    /* compute how many characters this identifier requires    */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if      ( *q == '\n'  ) { prec -= 2; }
+		      else if ( *q == '\t'  ) { prec -= 2; }
+		      else if ( *q == '\r'  ) { prec -= 2; }
+		      else if ( *q == '\b'  ) { prec -= 2; }
+		      else if ( *q == '\01' ) { prec -= 3; }
+		      else if ( *q == '\02' ) { prec -= 3; }
+		      else if ( *q == '\03' ) { prec -= 3; }
+		      else if ( *q == '"'   ) { prec -= 2; }
+		      else if ( *q == '\\'  ) { prec -= 2; }
+		      else                    { prec -= 1; }
+		    }
 
-                /* if wanted push an appropriate number of <space>-s       */
-                while ( prec-- > 0 )  PutChr(' ');
-
-                /* print the string                                        */
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
-                    else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
-                    else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
-                    else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
-                    else if ( *q == '\03' ) { PutChr('\\'); PutChr('0');
-                                              PutChr('3');                }
-                    else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
-                    else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
-                    else                    { PutChr( *q );               }
-                }
-
+		    /* if wanted push an appropriate number of <space>-s       */
+		    while ( prec-- > 0 )  PutChr(' ');
+		    
+		    /* print the string                                        */
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
+		      else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
+		      else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
+		      else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
+		      else if ( *q == '\01' ) { PutChr('\\'); PutChr('0');
+		      PutChr('1');                }
+		      else if ( *q == '\02' ) { PutChr('\\'); PutChr('0');
+		      PutChr('2');                }
+		      else if ( *q == '\03' ) { PutChr('\\'); PutChr('0');
+		      PutChr('3');                }
+		      else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
+		      else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
+		      else                    { PutChr( *q );               }
+		    }
+		  }
                 /* on to the next argument                                 */
                 arg1 = arg2;
             }
@@ -2317,55 +2374,67 @@ void Pr (
             /* '%I' print an identifier                                    */
             else if ( *p == 'I' ) {
 
-                /* compute how many characters this identifier requires    */
-                q = (Char*)arg1;
-                if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-                  || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-                  || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-                  || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-                  || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-                  || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-                  || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-                  || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-                  || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-                  || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-                  || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-                  || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-                    prec--;
-                }
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
+	      /* handle the case of a missing argument                     */
+	        if (arg1 == 0)
+		  {
+		    PutChr('<');
+		    PutChr('n');
+		    PutChr('u');
+		    PutChr('l');
+		    PutChr('l');
+		    PutChr('>');
+		  }
+		else
+		  {
+		    /* compute how many characters this identifier requires    */
+		    q = (Char*)arg1;
+		    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+			 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+			 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+			 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+			 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+			 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+			 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+			 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+			 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+			 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+			 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+			 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+		      prec--;
+		    }
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
                         prec--;
-                    }
-                    prec--;
-                }
+		      }
+		      prec--;
+		    }
 
-                /* if wanted push an appropriate number of <space>-s       */
-                while ( prec-- > 0 ) { PutChr(' '); }
+		    /* if wanted push an appropriate number of <space>-s       */
+		    while ( prec-- > 0 ) { PutChr(' '); }
 
-                /* print the identifier                                    */
-                q = (Char*)arg1;
-                if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
-                  || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
-                  || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
-                  || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
-                  || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
-                  || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
-                  || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
-                  || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
-                  || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
-                  || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
-                  || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
-                  || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
-                    PutChr( '\\' );
-                }
-                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
-                    if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
+		    /* print the identifier                                    */
+		    q = (Char*)arg1;
+		    if ( !SyStrcmp(q,"and")      || !SyStrcmp(q,"break")
+			 || !SyStrcmp(q,"do")       || !SyStrcmp(q,"elif")
+			 || !SyStrcmp(q,"else")     || !SyStrcmp(q,"end")
+			 || !SyStrcmp(q,"fi")       || !SyStrcmp(q,"for")
+			 || !SyStrcmp(q,"function") || !SyStrcmp(q,"if")
+			 || !SyStrcmp(q,"in")       || !SyStrcmp(q,"local")
+			 || !SyStrcmp(q,"mod")      || !SyStrcmp(q,"not")
+			 || !SyStrcmp(q,"od")       || !SyStrcmp(q,"or")
+			 || !SyStrcmp(q,"repeat")   || !SyStrcmp(q,"return")
+			 || !SyStrcmp(q,"then")     || !SyStrcmp(q,"until")
+			 || !SyStrcmp(q,"while")    || !SyStrcmp(q,"quit")
+			 || !SyStrcmp(q,"IsBound")  || !SyStrcmp(q,"IsBound")) {
+		      PutChr( '\\' );
+		    }
+		    for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+		      if ( ! IsAlpha(*q) && ! IsDigit(*q) && *q != '_' ) {
                         PutChr( '\\' );
-                    }
-                    PutChr( *q );
-                }
-
+		      }
+		      PutChr( *q );
+		    }
+		  }
                 /* on to the next argument                                 */
                 arg1 = arg2;
             }
@@ -2422,41 +2491,30 @@ void Pr (
 /****************************************************************************
 **
 
-*F  SetupScanner()  . . . . . . . . . . . . .  initialize the scanner package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupScanner ( void )
+static Char Cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
+
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     Int                 ignore;
+    Int                 i;
 
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 
     InputLog  = 0;  OutputLog  = 0;
     TestInput = 0;  TestOutput = 0;
-}
-
-
-/****************************************************************************
-**
-*F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
-**
-**  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
-**  current input file to '*stdin*' and current output  file  to  '*stdout*'.
-*/
-void InitScanner ( void )
-{
-    Int                 i;
-    static Char         cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 
     /* initialize cookies for streams                                      */
     for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
-        cookie[i][0] = 's';  cookie[i][1] = 't';  cookie[i][2] = 'r';
-        cookie[i][3] = 'e';  cookie[i][4] = 'a';  cookie[i][5] = 'm';
-        cookie[i][6] = ' ';  cookie[i][7] = '0'+i;
-        cookie[i][8] = '\0';
-        InitGlobalBag(&(InputFiles[i].stream), &(cookie[i][0]));
+        Cookie[i][0] = 's';  Cookie[i][1] = 't';  Cookie[i][2] = 'r';
+        Cookie[i][3] = 'e';  Cookie[i][4] = 'a';  Cookie[i][5] = 'm';
+        Cookie[i][6] = ' ';  Cookie[i][7] = '0'+i;
+        Cookie[i][8] = '\0';
+        InitGlobalBag(&(InputFiles[i].stream), &(Cookie[i][0]));
     }
-
 
     /* tell GASMAN about the global bags                                   */
     InitGlobalBag(&(logFile.stream),        "src/scanner.c:logFile"        );
@@ -2467,17 +2525,37 @@ void InitScanner ( void )
     /* import functions from the library                                   */
     ImportFuncFromLibrary( "ReadLine", &ReadLineFunc );
     ImportFuncFromLibrary( "WriteAll", &WriteAllFunc );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckScanner()  . . . . . check the initialisation of the scanner package
+*F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckScanner ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "scanner",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoScanner ( void )
 {
-    SET_REVISION( "scanner_c",  Revision_scanner_c );
-    SET_REVISION( "scanner_h",  Revision_scanner_h );
+    module.revision_c = Revision_scanner_c;
+    module.revision_h = Revision_scanner_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -7,6 +7,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file defines operations and such.
 ##
@@ -21,14 +22,14 @@ Revision.oper_g :=
 ##
 ##  a list of filter numbers of categories and representations
 ##
-CATS_AND_REPS := [];
+BIND_GLOBAL( "CATS_AND_REPS", [] );
 
 
 #############################################################################
 ##
 #V  CONSTRUCTORS
 ##
-CONSTRUCTORS := [];
+BIND_GLOBAL( "CONSTRUCTORS", [] );
 
 
 #############################################################################
@@ -36,11 +37,11 @@ CONSTRUCTORS := [];
 #V  IMMEDIATES
 ##
 ##  is a list  that  contains at position   <i> the description of all  those
-##  immediate methods for that 'FILTERS[<i>]' belongs to the requirements.
+##  immediate methods for that `FILTERS[<i>]' belongs to the requirements.
 ##
-##  So   each entry of  'IMMEDIATES'  is a  zipped list,  where 6 consecutive
+##  So   each entry of  `IMMEDIATES'  is a  zipped list,  where 6 consecutive
 ##  positions  are ..., and the  position of  the  method itself  in the list
-##  'IMMEDIATE_METHODS'.
+##  `IMMEDIATE_METHODS'.
 ##
 ##  Note:
 ##  1. If a method requires two filters $F_1$ and $F_2$ such that $F_1$
@@ -53,7 +54,7 @@ CONSTRUCTORS := [];
 ##     methods is acquired information.
 ##  
 ##
-IMMEDIATES := [];
+BIND_GLOBAL( "IMMEDIATES", [] );
 
 
 #############################################################################
@@ -62,28 +63,28 @@ IMMEDIATES := [];
 ##
 ##  is a list of functions that are installed as immediate methods.
 ##
-IMMEDIATE_METHODS := [];
+BIND_GLOBAL( "IMMEDIATE_METHODS", [] );
 
 
 #############################################################################
 ##
 #V  NUMBERS_PROPERTY_GETTERS
 ##
-NUMBERS_PROPERTY_GETTERS := [];
+BIND_GLOBAL( "NUMBERS_PROPERTY_GETTERS", [] );
 
 
 #############################################################################
 ##
 #V  OPERATIONS
 ##
-OPERATIONS := [];
+BIND_GLOBAL( "OPERATIONS", [] );
 
 
 #############################################################################
 ##
 #V  SUM_FLAGS
 ##
-SUM_FLAGS := 2000;
+BIND_GLOBAL( "SUM_FLAGS", 2000 );
 
 
 #############################################################################
@@ -91,8 +92,8 @@ SUM_FLAGS := 2000;
 
 #V  IGNORE_IMMEDIATE_METHODS
 ##
-##  is usually 'false'.  Only inside a call of 'RunImmediateMethods' it is
-##  set to 'true', which causes that 'RunImmediateMethods' does not suffer
+##  is usually `false'.  Only inside a call of `RunImmediateMethods' it is
+##  set to `true', which causes that `RunImmediateMethods' does not suffer
 ##  from recursion.
 ##
 IGNORE_IMMEDIATE_METHODS := false;
@@ -109,7 +110,7 @@ WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
 
-CLEAR_HIDDEN_IMP_CACHE := function( filter )
+BIND_GLOBAL( "CLEAR_HIDDEN_IMP_CACHE", function( filter )
     local   i, flags;
 
     flags := FLAGS_FILTER(filter);
@@ -121,10 +122,11 @@ CLEAR_HIDDEN_IMP_CACHE := function( filter )
           fi;
       fi;
     od;
-end;
+end );
 
 
-WITH_HIDDEN_IMPS_FLAGS := function ( flags )
+Unbind( WITH_HIDDEN_IMPS_FLAGS );
+BIND_GLOBAL( "WITH_HIDDEN_IMPS_FLAGS", function ( flags )
     local   with,  changed,  imp,  hash;
 
     hash := 2 * ( HASH_FLAGS(flags) mod 1009 ) + 1;
@@ -154,21 +156,22 @@ WITH_HIDDEN_IMPS_FLAGS := function ( flags )
     WITH_HIDDEN_IMPS_FLAGS_CACHE[hash  ] := flags;
     WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1] := with;
     return with;
-end;
+end );
+
 
 
 #############################################################################
 ##
 #F  InstallHiddenTrueMethod( <filter>, <filters> )
 ##
-InstallHiddenTrueMethod := function ( filter, filters )
+BIND_GLOBAL( "InstallHiddenTrueMethod", function ( filter, filters )
     local   imp;
 
     imp := [];
     imp[1] := FLAGS_FILTER( filter );
     imp[2] := FLAGS_FILTER( filters );
     ADD_LIST( HIDDEN_IMPS, imp );
-end;
+end );
 
 
 #############################################################################
@@ -181,12 +184,12 @@ WITH_IMPS_FLAGS_COUNT      := 0;
 WITH_IMPS_FLAGS_CACHE_HIT  := 0;
 WITH_IMPS_FLAGS_CACHE_MISS := 0;
 
-CLEAR_IMP_CACHE := function()
+BIND_GLOBAL( "CLEAR_IMP_CACHE", function()
     WITH_IMPS_FLAGS_CACHE := [];
-end;
+end );
 
 
-WITH_IMPS_FLAGS := function ( flags )
+BIND_GLOBAL( "WITH_IMPS_FLAGS", function ( flags )
     local   with,  changed,  imp,  hash,  hash2,  i;
 
     hash := HASH_FLAGS(flags) mod 11001;
@@ -225,14 +228,14 @@ WITH_IMPS_FLAGS := function ( flags )
     WITH_IMPS_FLAGS_CACHE[hash2  ] := flags;
     WITH_IMPS_FLAGS_CACHE[hash2+1] := with;
     return with;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InstallTrueMethod( <to>, <from> )
 ##
-InstallTrueMethod := function ( filter, filters )
+BIND_GLOBAL( "InstallTrueMethod", function ( filter, filters )
     local   imp;
 
     imp := [];
@@ -244,7 +247,7 @@ InstallTrueMethod := function ( filter, filters )
     # clear the caches because we do not if <filters> is new
     CLEAR_HIDDEN_IMP_CACHE( filters );
     CLEAR_IMP_CACHE();
-end;
+end );
 
 
 #############################################################################
@@ -252,24 +255,25 @@ end;
 #F  InstallTrueMethodNewFilter( <to>, <from> )
 ##
 ##  If <from> is a new filter than  it cannot occur in  the cache.  Therefore
-##  we do not flush the cache.  <from> should a basic  filter not an 'and' of
+##  we do not flush the cache.  <from> should a basic  filter not an `and' of
 ##  filters. This should only be used in the "type.g".
 ##
-InstallTrueMethodNewFilter := function ( filter, filters )
+BIND_GLOBAL( "InstallTrueMethodNewFilter", function ( filter, filters )
     local   imp;
     imp := [];
     imp[1] := FLAGS_FILTER( filter );
     imp[2] := FLAGS_FILTER( filters );
     ADD_LIST( IMPLICATIONS, imp );
     InstallHiddenTrueMethod( filter, filters );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  INSTALL_IMMEDIATE_METHOD( <oper>, <name>, <filter>, <rank>, <method> )
 ##
-INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
+BIND_GLOBAL( "INSTALL_IMMEDIATE_METHOD",
+    function( oper, name, filter, rank, method )
 
     local   flags,
             relev,
@@ -277,7 +281,9 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
             rflags,
             wif,
             ignore,
-            j;
+            j,
+            k,
+            replace;
 
     # Check whether <oper> really is an operation.
     if not IS_OPERATION(oper)  then
@@ -288,7 +294,7 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
     if    FLAGS_FILTER(oper) <> false
       and (method = true or method = RETURN_TRUE)
     then
-        Error( "use 'InstallTrueMethod' for <oper>" );
+        Error( "use `InstallTrueMethod' for <oper>" );
     fi;
 
     # Find the requirements.
@@ -322,20 +328,20 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
       # Get the implications of this filter.
       wif:= WITH_IMPS_FLAGS( FLAGS_FILTER( FILTERS[i] ) );
 
-      # If the filter is implied by one in 'relev', ignore it.
-      # Otherwise add it to 'relev', and remove all those that
+      # If the filter is implied by one in `relev', ignore it.
+      # Otherwise add it to `relev', and remove all those that
       # are implied by the new filter.
       ignore:= false;
       for j  in [ 1 .. LEN_LIST( relev ) ]  do
           if IsBound( rflags[j] ) then
               if IS_SUBSET_FLAGS( rflags[j], wif ) then
 
-                  # 'FILTERS[i]' is implied by one in 'relev'.
+                  # `FILTERS[i]' is implied by one in `relev'.
                   ignore:= true;
                   break;
               elif IS_SUBSET_FLAGS( wif, rflags[j] ) then
 
-                  # 'FILTERS[i]' implies one in 'relev'.
+                  # `FILTERS[i]' implies one in `relev'.
                   Unbind( relev[j]  );
                   Unbind( rflags[j] );
               fi;
@@ -347,7 +353,7 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
       fi;
     od;
 
-    # We install the method for the requirements in 'relev'.
+    # We install the method for the requirements in `relev'.
     ADD_LIST( IMMEDIATE_METHODS, method );
 
     for j  in relev  do
@@ -360,10 +366,29 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
       while i < LEN_LIST(IMMEDIATES[j]) and rank < IMMEDIATES[j][i+5]  do
           i := i + 7;
       od;
-
+      
+      # Now is a good time to see if the method is already there 
+      if REREADING then
+          replace := false;
+          k := i;
+          while k < LEN_LIST(IMMEDIATES[j]) and 
+            rank = IMMEDIATES[j][k+5] do
+              if name = IMMEDIATES[j][k+7] and 
+                 oper = IMMEDIATES[j][k+1] and
+                 FLAGS_FILTER( filter ) = IMMEDIATES[j][k+4] then
+                  replace := true;
+                  i := k;
+                  break;
+              fi;
+              k := k+7;
+          od;
+      fi;
+      
       # push the other functions back
-      IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]+7}
-          := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
+      if not REREADING or not replace then
+          IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]+7}
+            := IMMEDIATES[j]{[i+1..LEN_LIST(IMMEDIATES[j])]};
+      fi;
 
       # install the new method
       IMMEDIATES[j][i+1] := oper;
@@ -376,7 +401,7 @@ INSTALL_IMMEDIATE_METHOD := function( oper, name, filter, rank, method )
 
     od;
 
-end;
+end );
 
 
 #############################################################################
@@ -386,7 +411,7 @@ end;
 ##  installs  <method>  as  immediate  method for <opr>,   which  must  be an
 ##  operation of one argument, with requirement <filter> and rank <rank>.
 ##
-InstallImmediateMethod := function( arg )
+BIND_GLOBAL( "InstallImmediateMethod", function( arg )
     local   name;
 
     if LEN_LIST(arg) = 4  then
@@ -395,7 +420,7 @@ InstallImmediateMethod := function( arg )
     elif LEN_LIST(arg) = 5  then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -404,20 +429,20 @@ end;
 ##
 TRACE_IMMEDIATE_METHODS := false;
 
-TraceImmediateMethods := function( flag )
+BIND_GLOBAL( "TraceImmediateMethods", function( flag )
     if flag  then
         TRACE_IMMEDIATE_METHODS := true;
     else
         TRACE_IMMEDIATE_METHODS := false;
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  RunImmediateMethods( <obj>, <flags> )
 ##
-##  applies immediate  methods  for the   object <obj>  for that  the  'true'
+##  applies immediate  methods  for the   object <obj>  for that  the  `true'
 ##  position in the Boolean list <flags> mean  that the corresponding filters
 ##  have been found out recently.   So possible consequences of other filters
 ##  are not checked.
@@ -425,14 +450,14 @@ end;
 RUN_IMMEDIATE_METHODS_CHECKS := 0;
 RUN_IMMEDIATE_METHODS_HITS   := 0;
 
-RunImmediateMethods := function ( obj, flags )
+BIND_GLOBAL( "RunImmediateMethods", function ( obj, flags )
 
-    local   flagspos,   # list of 'true' positions in 'flags'
+    local   flagspos,   # list of `true' positions in `flags'
             tried,      # list of numbers of methods that have been used
-            type,       # type of 'obj', used to notice type changes
-            j,          # loop over 'flagspos'
-            imm,        # immediate methods for filter 'j'
-            i,          # loop over 'imm'
+            type,       # type of `obj', used to notice type changes
+            j,          # loop over `flagspos'
+            imm,        # immediate methods for filter `j'
+            i,          # loop over `imm'
             res,        # result of an immediate method
             newflags;   # newly  found filters
 
@@ -444,16 +469,16 @@ RunImmediateMethods := function ( obj, flags )
     type     := TYPE_OBJ( obj );
     flags    := type![2];
 
-    # Check the immediate methods for all in 'flagspos'.
+    # Check the immediate methods for all in `flagspos'.
     # (Note that new information is handled via appending to that list.)
     for j  in flagspos  do
 
         # Loop over those immediate methods
-        # - that require 'flags[j]' to be 'true',
-        # - that are applicable to 'obj',
-        # - whose result is not yet known to 'obj',
+        # - that require `flags[j]' to be `true',
+        # - that are applicable to `obj',
+        # - whose result is not yet known to `obj',
         # - that have not yet been tried in this call of 
-        #   'RunImmediateMethods'.
+        #   `RunImmediateMethods'.
 
         if IsBound( IMMEDIATES[j] ) then
             imm := IMMEDIATES[j];
@@ -482,9 +507,9 @@ RunImmediateMethods := function ( obj, flags )
                         RUN_IMMEDIATE_METHODS_HITS :=
                             RUN_IMMEDIATE_METHODS_HITS+1;
                               
-                        # If 'obj' has noticed the new information,
+                        # If `obj' has noticed the new information,
                         # add the numbers of newly known filters to
-                        # 'flagspos', in order to call their immediate
+                        # `flagspos', in order to call their immediate
                         # methods later.
                         if not IS_IDENTICAL_OBJ( TYPE_OBJ(obj), type ) then
 
@@ -501,15 +526,16 @@ RunImmediateMethods := function ( obj, flags )
 
         fi;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
-INSTALL_METHOD_FLAGS := function( opr, info, rel, flags, rank, method )
-    local   methods,  narg,  i,  k,  tmp;
+BIND_GLOBAL( "INSTALL_METHOD_FLAGS",
+    function( opr, info, rel, flags, rank, method )
+    local   methods,  narg,  i,  k,  tmp, replace, match, j;
     
     # add the number of filters required for each argument
     if opr in CONSTRUCTORS  then
@@ -526,15 +552,50 @@ INSTALL_METHOD_FLAGS := function( opr, info, rel, flags, rank, method )
     narg := LEN_LIST( flags );
     methods := METHODS_OPERATION( opr, narg );
 
+    # set the name
+    if info = false  then
+        info := NAME_FUNC(opr);
+    else
+        k := SHALLOW_COPY_OBJ(NAME_FUNC(opr));
+        APPEND_LIST_INTR( k, ": " );
+        APPEND_LIST_INTR( k, info );
+        info := k;
+        CONV_STRING(info);
+    fi;
+    
     # find the place to put the new method
     i := 0;
     while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
         i := i + (narg+4);
     od;
 
+    # Now is a good time to see if the method is already there 
+    if REREADING then
+        replace := false;
+        k := i;
+        while k < LEN_LIST(methods) and 
+          rank = methods[k+narg+3] do
+            if info = methods[k+narg+4] then
+               
+                # ForAll not available
+                match := false;
+                for j in [1..narg] do
+                    match := match and methods[k+j+1] = flags[j];
+                od;
+                if match then
+                    replace := true;
+                    i := k;
+                    break;
+                fi;
+            fi;
+            k := k+narg+4;
+        od;
+    fi;
     # push the other functions back
-    methods{[i+1..LEN_LIST(methods)]+(narg+4)}
-        := methods{[i+1..LEN_LIST(methods)]};
+    if not REREADING or not replace then
+        methods{[i+1..LEN_LIST(methods)]+(narg+4)}
+          := methods{[i+1..LEN_LIST(methods)]};
+    fi;
 
     # install the new method
     if   rel = true  then
@@ -545,12 +606,14 @@ INSTALL_METHOD_FLAGS := function( opr, info, rel, flags, rank, method )
         if CHECK_INSTALL_METHOD  then
             tmp := NARG_FUNC(rel);
             if tmp <> AINV(1) and tmp <> narg  then
-                Error("<rel> must accept ", narg, " arguments");
+                Error(NAME_FUNC(opr),": <famrel> must accept ",
+		      narg, " arguments");
             fi;
         fi;
         methods[i+1] := rel;
     else
-        Error( "<rel> must be a function, 'true', or 'false'" );
+        Error(NAME_FUNC(opr),
+	      ": <famrel> must be a function, `true', or `false'" );
     fi;
 
     # install the filters
@@ -567,43 +630,37 @@ INSTALL_METHOD_FLAGS := function( opr, info, rel, flags, rank, method )
         if CHECK_INSTALL_METHOD  then
             tmp := NARG_FUNC(method);
             if tmp <> AINV(1) and tmp <> narg  then
-               Error("<method> must accept ", narg, " arguments");
+               Error(NAME_FUNC(opr),": <method> must accept ",
+	             narg, " arguments");
            fi;
        fi;
         methods[i+(narg+2)] := method;
 	if CHECK_INSTALL_METHOD  then
             tmp := NARG_FUNC(method);
             if tmp <> AINV(1) and tmp <> narg  then
-               Error( "<method> must accept ", narg, " arguments" );
+               Error(NAME_FUNC(opr),"<method> must accept ",
+	             narg, " arguments" );
             fi;
         fi;
     else
-        Error( "<method> must be a function, 'true', or 'false'" );
+        Error(NAME_FUNC(opr),
+	      ": <method> must be a function, `true', or `false'" );
     fi;
     methods[i+(narg+3)] := rank;
 
-    # set the name
-    if info = false  then
-        info := NAME_FUNC(opr);
-    else
-        k := SHALLOW_COPY_OBJ(NAME_FUNC(opr));
-        APPEND_LIST_INTR( k, ": " );
-        APPEND_LIST_INTR( k, info );
-        info := k;
-        CONV_STRING(info);
-    fi;
     methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
 
     # flush the cache
     CHANGED_METHODS_OPERATION( opr, narg );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  INSTALL_METHOD( <oper>, ... ) . . . . . . . . install a method for <oper>
 ##
-INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
+BIND_GLOBAL( "INSTALL_METHOD",
+    function( opr, info, rel, filters, rank, method, check )
     local   tmp,  tmp2,  req,  i,  imp,  flags;
     
     # check whether <opr> really is an operation
@@ -617,12 +674,12 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
       and LEN_LIST(filters) = 1
       and (method = true or method = RETURN_TRUE)
     then
-        Error( "use 'InstallTrueMethod' for <opr>" );
+        Error(NAME_FUNC(opr), ": use `InstallTrueMethod' for <opr>" );
     fi;
 
     # check <info>
     if info <> false and not IS_STRING(info)  then
-        Error( "<info> must be a string or 'false'" );
+        Error(NAME_FUNC(opr), ": <info> must be a string or `false'" );
     fi;
     
     # compute the flags lists for the filters
@@ -668,45 +725,46 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     fi;
     
     INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InstallMethod( <opr>, <relation>, <filters>, <rank>, <method> )
 ##
-InstallMethod := function ( arg )
+BIND_GLOBAL( "InstallMethod", function ( arg )
     if 6 = LEN_LIST(arg)  then
         INSTALL_METHOD(arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],true);
     elif 5 = LEN_LIST(arg)  then
         INSTALL_METHOD(arg[1],false,arg[2],arg[3],arg[4],arg[5],true);
     else
-        Error("usage: InstallMethod( <opr>, <rel>, <fil>, <rk>, <method> )");
+      Error("usage: InstallMethod( <opr>, <rel>, <fil>, <rk>, <method>) for ",
+	NAME_FUNC(arg[1]));
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InstallOtherMethod( <opr>, <relation>, <filters>, <rank>, <method> )
 ##
-InstallOtherMethod := function ( arg )
+BIND_GLOBAL( "InstallOtherMethod", function ( arg )
     if 6 = LEN_LIST(arg)  then
         INSTALL_METHOD(arg[1],arg[2],arg[3],arg[4],arg[5],arg[6],false);
     elif 5 = LEN_LIST(arg)  then
         INSTALL_METHOD(arg[1],false,arg[2],arg[3],arg[4],arg[5],false);
     else
         Error( "usage: InstallOtherMethod( <opr>, <rel>, <fil>, <rk>, ",
-               "<method> )" );
+               "<method> ) for ",NAME_FUNC(arg[1]) );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  NewOperation( <name>, <filters> )
 ##
-NewOperation := function ( name, filters )
+BIND_GLOBAL( "NewOperation", function ( name, filters )
     local   oper,  filt,  i;
 
     oper := NEW_OPERATION( name );
@@ -717,31 +775,14 @@ NewOperation := function ( name, filters )
     ADD_LIST( OPERATIONS, oper );
     ADD_LIST( OPERATIONS, filt );
     return oper;
-end;
-
-
-#############################################################################
-##
-#F  NewOperationKernel( <name>, <filter>, <kernel-oper> )
-##
-NewOperationKernel := function ( name, filters, oper )
-    local   filt,  i;
-
-    filt := [];
-    for i  in filters  do
-        ADD_LIST( filt, FLAGS_FILTER(i) );
-    od;
-    ADD_LIST( OPERATIONS, oper );
-    ADD_LIST( OPERATIONS, filt );
-    return oper;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  NewConstructor( <name>, <filters> )
 ##
-NewConstructor := function ( name, filters )
+BIND_GLOBAL( "NewConstructor", function ( name, filters )
     local   oper,  filt,  i;
 
     oper := NEW_CONSTRUCTOR( name );
@@ -753,14 +794,49 @@ NewConstructor := function ( name, filters )
     ADD_LIST( OPERATIONS,   oper );
     ADD_LIST( OPERATIONS,   filt );
     return oper;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  NewConstructorKernel( <name>, <filter>, <kernel-oper> )
+#F  DeclareOperation( <name>, <filters> )
 ##
-NewConstructorKernel := function ( name, filters, oper )
+BIND_GLOBAL( "DeclareOperation", function ( name, filters )
+    BIND_GLOBAL( name, NewOperation( name, filters ) );
+end );
+
+
+#############################################################################
+##
+#F  DeclareOperationKernel( <name>, <filters>, <kernel-oper> )
+##
+BIND_GLOBAL( "DeclareOperationKernel", function ( name, filters, oper )
+    local   filt,  i;
+
+    filt := [];
+    for i  in filters  do
+        ADD_LIST( filt, FLAGS_FILTER(i) );
+    od;
+    ADD_LIST( OPERATIONS, oper );
+    ADD_LIST( OPERATIONS, filt );
+    BIND_GLOBAL( name, oper );
+end );
+
+
+#############################################################################
+##
+#F  DeclareConstructor( <name>, <filters> )
+##
+BIND_GLOBAL( "DeclareConstructor", function ( name, filters )
+    BIND_GLOBAL( name, NewConstructor( name, filters ) );
+end );
+
+
+#############################################################################
+##
+#F  DeclareConstructorKernel( <name>, <filter>, <kernel-oper> )
+##
+BIND_GLOBAL( "DeclareConstructorKernel", function ( name, filters, oper )
     local   filt,  i;
 
     filt := [];
@@ -770,56 +846,46 @@ NewConstructorKernel := function ( name, filters, oper )
     ADD_LIST( CONSTRUCTORS, oper );
     ADD_LIST( OPERATIONS,   oper );
     ADD_LIST( OPERATIONS,   filt );
-    return oper;
-end;
-
-
-#############################################################################
-##
-#F  NewOperationArgs( <name> )
-##
-NewOperationArgs := function ( name )
-    return function ( arg )
-        Error( "no method found for operation '", name, "'" );
-    end;
-end;
+    BIND_GLOBAL( name, oper );
+end );
 
 
 #############################################################################
 ##
 #F  InstallAttributeFunction( <func> )  . . . run function for each attribute
 ##
-##  'InstallAttributeFunction' installs <func>, so that
-##  '<func>( <name>, <filter>, <getter>, <setter>, <tester>, <mutflag> )'
+##  `InstallAttributeFunction' installs <func>, so that
+##  `<func>( <name>, <filter>, <getter>, <setter>, <tester>, <mutflag> )'
 ##  is called for each attribute.
 ##
-ATTRIBUTES := [];
+BIND_GLOBAL( "ATTRIBUTES", [] );
 
-ATTR_FUNCS := [];
+BIND_GLOBAL( "ATTR_FUNCS", [] );
 
-InstallAttributeFunction := function ( func )
+BIND_GLOBAL( "InstallAttributeFunction", function ( func )
     local   attr;
     for attr in ATTRIBUTES do
         func( attr[1], attr[2], attr[3], attr[4], attr[5], attr[6] );
     od;
     ADD_LIST( ATTR_FUNCS, func );
-end;
+end );
 
-RUN_ATTR_FUNCS := function ( name, filter, getter, setter, tester, mutflag )
+BIND_GLOBAL( "RUN_ATTR_FUNCS",
+    function ( name, filter, getter, setter, tester, mutflag )
     local    func;
     for func in ATTR_FUNCS do
         func( name, filter, getter, setter, tester, mutflag );
     od;
     ADD_LIST( ATTRIBUTES, [ name, filter, getter, setter, tester, mutflag ] );
-end;
+end );
 
 
 #############################################################################
 ##
-#F  NewAttributeKernel( <name>, <filter>, <getter> )  . . . . . new attribute
+#F  DeclareAttributeKernel( <name>, <filter>, <getter> )  . . . new attribute
 ##
-NewAttributeKernel := function ( name, filter, getter )
-    local   setter,  tester;
+BIND_GLOBAL( "DeclareAttributeKernel", function ( name, filter, getter )
+    local setter, tester, nname;
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -847,9 +913,13 @@ NewAttributeKernel := function ( name, filter, getter )
     # store the ranks
     RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
 
-    # and return the getter
-    return getter;
-end;
+    # and make the assignments
+    BIND_GLOBAL( name, getter );
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, setter );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, tester );
+end );
 
 
 #############################################################################
@@ -860,11 +930,18 @@ end;
 ##  with the property <filter>.  If the optional third argument is given then
 ##  there are  two possibilities.  Either it is  an integer <rank>,  then the
 ##  attribute tester has this rank.  Or it  is the string "mutable", then the
-##  value of the attribute shall be mutable.
+##  values of the attribute shall be mutable; more precisely, when a value of
+##  such a mutable attribute is set then this value itself is stored, not an
+##  immutable copy of it.
+##  (So it is the user's responsibility to set an object that is in fact
+##  mutable.)
+#T in the current implementation, one can overwrite values of mutable
+#T attributes; is this really intended?
+#T if yes then it should be documented!
 ##
 ##  If no third argument is given then the rank of the tester is 1.
 ##
-NewAttribute := function ( arg )
+BIND_GLOBAL( "NewAttribute", function ( arg )
     local   name, filter, mutflag, getter, setter, tester;
 
     # construct getter, setter and tester
@@ -915,7 +992,23 @@ NewAttribute := function ( arg )
 
     # and return the getter
     return getter;
-end;
+end );
+
+
+#############################################################################
+##
+#F  DeclareAttribute( <name>, <filter> [,"mutable"] [,<rank>] ) new attribute
+##
+BIND_GLOBAL( "DeclareAttribute", function ( arg )
+    local attr, name, nname;
+    attr:= CALL_FUNC_LIST( NewAttribute, arg );
+    name:= arg[1];
+    BIND_GLOBAL( name, attr );
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+end );
 
 
 #############################################################################
@@ -923,9 +1016,9 @@ end;
 #M  default attribute getter and setter methods
 ##
 ##  There are the following three default getter methods.  The first requires
-##  only 'IsObject', and signals what categories the attribute requires.  The
+##  only `IsObject', and signals what categories the attribute requires.  The
 ##  second requires the category part  of the attribute's requirements, tests
-##  the property  getters of the  requirements, and -if  they  are 'true' and
+##  the property  getters of the  requirements, and -if  they  are `true' and
 ##  afterwards  stored in  the object-  calls the  attribute operation again.
 ##  The third requires  the  attribute's requirements,  and  signals that  no
 ##  method was found.
@@ -933,7 +1026,7 @@ end;
 ##  The default setter method does nothing.
 ##
 ##  Note that we do *not* install any  default getter method for an attribute
-##  that requires only   'IsObject'.  (The error  message  is printed by  the
+##  that requires only   `IsObject'.  (The error  message  is printed by  the
 ##  method selection in this case.)  Also the second and third default method
 ##  are  installed   only if the   property  getter  part of  the attribute's
 ##  requirements is nontrivial.
@@ -960,12 +1053,16 @@ InstallAttributeFunction(
                 fi;
             od;
             if not hascats then
-                Error( "argument for '", name,
-                       "' must have categories '", filt, "'" );
+                Error( "argument for `", name,
+                       "' must have categories `", filt, "'" );
             else
                 Error( "no method found for operation ", name );
             fi;
-            end
+	    # catch `return'
+	    repeat
+	      Error("you cannot use `return;' here, use `quit;'");
+	    until false;
+	  end
         );
 
         cats  := IS_OBJECT;
@@ -987,6 +1084,10 @@ InstallAttributeFunction(
               for prop in props do
                 if not ( prop( obj ) and Tester( prop )( obj ) ) then
                   Error( "<obj> must have the properties in <props>" );
+		  # catch `return'
+		  repeat
+		    Error("you cannot use `return;' here, use `quit;'");
+		  until false;
                 fi;
               od;
               return getter( obj );
@@ -1014,10 +1115,10 @@ InstallAttributeFunction(
 
 #############################################################################
 ##
-#F  NewPropertyKernel( <name>, <filter>, <getter> ) . . . . . .  new property
+#F  DeclarePropertyKernel( <name>, <filter>, <getter> ) . . . .  new property
 ##
-NewPropertyKernel := function ( name, filter, getter )
-    local   setter,  tester;
+BIND_GLOBAL( "DeclarePropertyKernel", function ( name, filter, getter )
+    local setter, tester, nname;
 
     # construct setter and tester
     setter := SETTER_FILTER( getter );
@@ -1053,9 +1154,13 @@ NewPropertyKernel := function ( name, filter, getter )
     RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
     RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
 
-    # and return the getter
-    return getter;
-end;
+    # and make the assignments
+    BIND_GLOBAL( name, getter );
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, setter );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, tester );
+end );
 
 
 #############################################################################
@@ -1066,7 +1171,7 @@ end;
 ##  with property <filter>.  If  the optional argument  <rank> is  given then
 ##  the property getter has this rank, otherwise its rank is 1.
 ##
-NewProperty := function ( arg )
+BIND_GLOBAL( "NewProperty", function ( arg )
     local   name, filter, getter, setter, tester;
 
     name   := arg[1];
@@ -1113,7 +1218,23 @@ NewProperty := function ( arg )
 
     # and return the getter
     return getter;
-end;
+end );
+
+
+#############################################################################
+##
+#F  DeclareProperty( <name>, <filter> [,<rank>] ) . . . . . . .  new property
+##
+BIND_GLOBAL( "DeclareProperty", function ( arg )
+    local prop, name, nname;
+    prop:= CALL_FUNC_LIST( NewProperty, arg );
+    name:= arg[1];
+    BIND_GLOBAL( name, prop );
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, SETTER_FILTER( prop ) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, TESTER_FILTER( prop ) );
+end );
 
 
 #############################################################################
@@ -1121,7 +1242,7 @@ end;
 
 #F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
-InstallAtExit := function( func )
+BIND_GLOBAL( "InstallAtExit", function( func )
 
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
@@ -1133,14 +1254,28 @@ InstallAtExit := function( func )
     fi;
     ADD_LIST( AT_EXIT_FUNCS, func );
 
-end;
+end );
 
 
 #############################################################################
 ##
 #O  ViewObj( <obj> )  . . . . . . . . . . . . . . . . . . . .  view an object
 ##
-ViewObj := NewOperation( "ViewObj", [ IS_OBJECT ] );
+##  `ViewObj' prints information about the object <obj>.
+##  This information is thought to be short and human readable,
+##  in particular *not* necessarily detailed enough for defining <obj>,
+##  an in general *not* {\GAP} readable.
+##
+##  More detailed information can be obtained by `PrintObj',
+##  and {\GAP} readable data can be produced with `SaveObj'.
+##
+##DeclareOperation( "ViewObj", [ IS_OBJECT ] );
+
+##ViewObj := VIEW_OBJ;
+
+DeclareOperationKernel( "ViewObj",
+    [ IS_OBJECT ],
+    VIEW_OBJ );
 
 
 #############################################################################
@@ -1159,27 +1294,43 @@ InstallMethod( ViewObj,
 ##
 #F  View( <obj1>, ... ) . . . . . . . . . . . . . . . . . . . .  view objects
 ##
-View := function( arg )
+BIND_GLOBAL( "View", function( arg )
     local   obj;
 
     for obj  in arg  do
         ViewObj(obj);
     od;
-end;
+end );
+
+#############################################################################
+##
+#F  ViewLength( <len> )
+##
+##  `View' will usually display objects in short form if they would need
+##  more than <len> lines. The standard is 3
+##
+VIEWLEN:=3;
+BIND_GLOBAL("ViewLength",function(arg)
+  if LEN_LIST(arg)=0 then
+    return VIEWLEN;
+  else
+    VIEWLEN:=arg[1];
+  fi;
+end);
 
 
 #############################################################################
 ##
 #O  TeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . . . TeX an object
 ##
-TeXObj := NewOperation( "TeXObj", [ IS_OBJECT ] );
+DeclareOperation( "TeXObj", [ IS_OBJECT ] );
 
 
 #############################################################################
 ##
 #F  TeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . . . TeX objects
 ##
-TeX := function( arg )
+BIND_GLOBAL( "TeX", function( arg )
     local   str,  res,  obj;
 
     str := "";
@@ -1190,21 +1341,21 @@ TeX := function( arg )
     od;
     CONV_STRING(str);
     return str;
-end;
+end );
 
 
 #############################################################################
 ##
 #O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
 ##
-LaTeXObj := NewOperation( "LaTeXObj", [ IS_OBJECT ] );
+DeclareOperation( "LaTeXObj", [ IS_OBJECT ] );
 
 
 #############################################################################
 ##
 #F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
 ##
-LaTeX := function( arg )
+BIND_GLOBAL( "LaTeX", function( arg )
     local   str,  res,  obj;
 
     str := "";
@@ -1215,15 +1366,14 @@ LaTeX := function( arg )
     od;
     CONV_STRING(str);
     return str;
-end;
+end );
 
 
 #############################################################################
 ##
-
 #F  TraceMethods( <method1>, ... )
 ##
-TraceMethods := function( arg )
+BIND_GLOBAL( "TraceMethods", function( arg )
     local   fun;
 
     if IS_LIST(arg[1])  then
@@ -1233,14 +1383,14 @@ TraceMethods := function( arg )
         TRACE_METHODS(fun);
     od;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  UntraceMethods( <method1>, ... )
 ##
-UntraceMethods := function( arg )
+BIND_GLOBAL( "UntraceMethods", function( arg )
     local   fun;
 
     if IS_LIST(arg[1])  then
@@ -1250,11 +1400,73 @@ UntraceMethods := function( arg )
         UNTRACE_METHODS(fun);
     od;
 
-end;
+end );
 
 
 #############################################################################
 ##
+#F  DeclareGlobalFunction( <name>, <info> ) . .  create a new global function
+#F  InstallGlobalFunction( <oper>, <func> ) . . . . install a global function
+##
+##  Global functions of the {\GAP} library must be distinguished from other
+##  global variables (see `variable.g') because of the completion mechanism.
+##
+BIND_GLOBAL( "DeclareGlobalFunction", function( arg )
+    local   name;
 
+    name := arg[1];
+    BIND_GLOBAL( name, NEW_OPERATION_ARGS( name ) );
+end );
+
+BIND_GLOBAL( "InstallGlobalFunction", function( arg )
+    local   oper,  info,  func;
+
+    if LEN_LIST(arg) = 3  then
+        oper := arg[1];
+        info := arg[2];
+        func := arg[3];
+    else
+        oper := arg[1];
+        func := arg[2];
+    fi;
+    INSTALL_METHOD_ARGS( oper, func );
+end );
+
+#############################################################################
+##
+#F  RedispatchOnCondition(<oper>,<fampred>,<reqs>,<cond>,<val>)
+##
+##  This function installs a method for operation <oper> under the
+##  conditions <fampred> and <reqs> which has value <val>.
+##  If not all the filters in <cond> are already known,
+##  they are explicitly tested and if they are fulfilled the operation is
+##  dispatched again. Otherwise the method exist with `TryNextMethod'. This
+##  can be used to enforce tests like `IsFinite' in situations when all
+##  existing methods require this property.
+##  <cond> may have unbound entries in which case the corresponding argument
+##  is ignored.
+CallFuncList:="2b defined";
+BIND_GLOBAL("RedispatchOnCondition",function(oper,fampred,reqs,cond,val)
+local re,i;
+  InstallOtherMethod(oper,"fallback method to test conditions",
+                     fampred,reqs,val,
+  function(arg)
+    re:=false;
+    for i in [1..LEN_LIST(reqs)] do
+      re:=re or (IsBound(cond[i]) and (not Tester(cond[i])(arg[i]))
+        and cond[i](arg[i])); # force test
+    od;
+    if re then
+      # at least one property was found out, redispatch
+      return CallFuncList(oper,arg);
+    else
+      TryNextMethod(); # all filters hold already, go away
+    fi;
+  end);
+
+end);
+
+#############################################################################
+##
 #E  oper.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

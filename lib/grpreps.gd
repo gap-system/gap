@@ -2,6 +2,9 @@
 ##
 #W  grpreps.gd                  GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.grpreps_gd :=
     "@(#)$Id$";
 
@@ -9,7 +12,7 @@ Revision.grpreps_gd :=
 ##
 #O  AbsolutIrreducibleModules( <G>, <F>, <dim> )
 ##
-AbsolutIrreducibleModules := NewOperation( 
+DeclareOperation( 
      "AbsolutIrreducibleModules",
      [ IsGroup, IsField, IsInt ] );
 
@@ -17,7 +20,7 @@ AbsolutIrreducibleModules := NewOperation(
 ##
 #O  IrreducibleModules( <G>, <F>, <dim> )
 ##
-IrreducibleModules := NewOperation( 
+DeclareOperation( 
      "IrreducibleModules",
      [ IsGroup, IsField, IsInt ] );
 
@@ -25,9 +28,9 @@ IrreducibleModules := NewOperation(
 ##
 #O  RegularModule( <G>, <F> )
 ##
-RegularModule := NewOperation( 
+DeclareOperation( 
      "RegularModule",
      [ IsGroup, IsField ] );
 
 #############################################################################
-RegularModuleByGens := NewOperationArgs( "RegularModuleByGens" );
+DeclareGlobalFunction( "RegularModuleByGens" );

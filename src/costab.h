@@ -7,11 +7,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for coset tables.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_costab_h =
+const char * Revision_costab_h =
    "@(#)$Id$";
 #endif
 
@@ -25,23 +26,9 @@ SYS_CONST char * Revision_costab_h =
 /****************************************************************************
 **
 
-*F  SetupCosetTable() . . . . . . . . . .  initialize the coset table package
+*F  InitInfoCosetTable() . . . . . . . . . . . . . .  table of init functions
 */
-extern void SetupCosetTable ( void );
-
-
-/****************************************************************************
-**
-*F  InitCosetTable()  . . . . . . . . . .  initialize the coset table package
-*/
-extern void InitCosetTable ( void );
-
-
-/****************************************************************************
-**
-*F  CheckCosetTable() . . check the initialisation of the coset table package
-*/
-extern void CheckCosetTable ( void );
+StructInitInfo * InitInfoCosetTable ( void );
 
 
 /****************************************************************************

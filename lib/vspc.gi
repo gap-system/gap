@@ -5,18 +5,12 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for vector spaces.
 ##
 Revision.vspc_gi :=
     "@(#)$Id$";
-
-
-VectorSpace := FreeLeftModule;
-FullRowSpace := FullRowModule;
-Subspace := Submodule;
-SubspaceNC := SubmoduleNC;
-#T to be removed when 'InstallMethodArgs' works
 
 
 #############################################################################
@@ -49,7 +43,7 @@ InstallMethod( IsLeftActedOnByDivisionRing,
     true,
     [ IsExtLSet and IsLeftActedOnByRing ], 0,
     function( M )
-    if IsIdentical( M, LeftActingDomain( M ) ) then
+    if IsIdenticalObj( M, LeftActingDomain( M ) ) then
       TryNextMethod();
     else
       return IsDivisionRing( LeftActingDomain( M ) );
@@ -62,7 +56,7 @@ InstallMethod( IsLeftActedOnByDivisionRing,
 #F  Subspaces( <V> )
 #F  Subspaces( <V>, <k> )
 ##
-Subspaces := function( arg )
+InstallGlobalFunction( Subspaces, function( arg )
     if   Length( arg ) = 1 and IsVectorSpace( arg[1] ) then
       return SubspacesAll( arg[1] );
     elif Length( arg ) = 2 and IsVectorSpace( arg[1] )
@@ -71,7 +65,7 @@ Subspaces := function( arg )
     else
       Error( "usage: Subspaces( <V> ) resp. Subspaces( <V>, <dim> )" );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -80,7 +74,7 @@ end;
 ##
 InstallMethod( AsSubspace,
     "method for two vector spaces",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsVectorSpace, IsVectorSpace ], 0,
     function( V, W )
     local newW, feature;
@@ -186,6 +180,40 @@ InstallMethod( AsLeftModule,
 
 #############################################################################
 ##
+#M  ViewObj( <V> )  . . . . . . . . . . . . . . . . . . . view a vector space
+##
+##  print left acting domain, if known also dimension or no. of generators
+##
+InstallMethod( ViewObj,
+    "for vector space with known generators",
+    true,
+    [ IsVectorSpace and HasGeneratorsOfLeftModule ], 0,
+    function( V )
+    Print( "<vector space over ", LeftActingDomain( V ), ", with ",
+           Length( GeneratorsOfLeftModule( V ) ), " generators>" );
+    end );
+
+InstallMethod( ViewObj,
+    "for vector space with known dimension",
+    true,
+    [ IsVectorSpace and HasDimension ],
+    1, # override method for known generators
+    function( V )
+    Print( "<vector space of dimension ", Dimension( V ),
+           " over ", LeftActingDomain( V ), ">" );
+    end );
+
+InstallMethod( ViewObj,
+    "for vector space",
+    true,
+    [ IsVectorSpace ], 0,
+    function( V )
+    Print( "<vector space over ", LeftActingDomain( V ), ">" );
+    end );
+
+
+#############################################################################
+##
 #M  PrintObj( <V> ) . . . . . . . . . . . . . . . . . . .  for a vector space
 ##
 InstallMethod( PrintObj,
@@ -218,7 +246,7 @@ InstallMethod( PrintObj,
 ##
 InstallOtherMethod( \/,
     "method for vector space and collection",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsVectorSpace, IsCollection ], 0,
     function( V, vectors )
     if IsVectorSpace( vectors ) then
@@ -230,7 +258,7 @@ InstallOtherMethod( \/,
 
 InstallOtherMethod( \/,
     "generic method for two vector spaces",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsVectorSpace, IsVectorSpace ], 0,
     function( V, W )
     return ImagesSource( NaturalHomomorphismBySubspace( V, W ) );
@@ -241,7 +269,8 @@ InstallOtherMethod( \/,
 ##
 #M  Intersection2Spaces( <AsStruct>, <Substruct>, <Struct> )
 ##
-Intersection2Spaces := function( AsStructure, Substructure, Structure )
+InstallGlobalFunction( Intersection2Spaces,
+    function( AsStructure, Substructure, Structure )
     return function( V, W )
 
     local inters,  # intersection, result
@@ -278,7 +307,7 @@ Intersection2Spaces := function( AsStructure, Substructure, Structure )
 
       # Construct the intersection space, if possible with a parent.
       if     HasParent( V ) and HasParent( W )
-         and IsIdentical( Parent( V ), Parent( W ) ) then
+         and IsIdenticalObj( Parent( V ), Parent( W ) ) then
         inters:= Substructure( Parent( V ), inters, "basis" );
       elif IsEmpty( inters ) then
         inters:= TrivialSubspace( V );
@@ -297,7 +326,7 @@ Intersection2Spaces := function( AsStructure, Substructure, Structure )
       TryNextMethod();
     fi;
     end;
-end;
+end );
 
 
 #############################################################################
@@ -306,7 +335,7 @@ end;
 ##
 InstallMethod( Intersection2,
     "method for two vector spaces",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsVectorSpace, IsVectorSpace ], 0,
     Intersection2Spaces( AsLeftModule, SubspaceNC, VectorSpace ) );
 
@@ -353,7 +382,7 @@ InstallMethod( ClosureLeftModule,
 ##  or the string '\"all\"', which means that the domain contains all
 ##  subspaces of <V>).
 ##
-IsSubspacesVectorSpaceDefaultRep := NewRepresentation(
+DeclareRepresentation(
     "IsSubspacesVectorSpaceDefaultRep",
     IsComponentObjectRep,
     [ "dimension", "structure" ] );
@@ -500,7 +529,7 @@ InstallMethod( Enumerator,
 ##  uses the subspaces iterator for full row spaces and the mechanism of
 ##  associated row spaces.
 ##
-IsSubspacesSpaceIterator := NewRepresentation( "IsSubspacesSpaceIterator",
+DeclareRepresentation( "IsSubspacesSpaceIterator",
     IsComponentObjectRep and IsIterator,
     [ "structure", "basis", "associatedIterator" ] );
 

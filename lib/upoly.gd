@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials
@@ -12,52 +13,34 @@
 Revision.upoly_gd:=
   "@(#)$Id$";
 
-
-#############################################################################
-##
-#I  InfoPoly
-##
-InfoPoly := NewInfoClass( "InfoPoly" );
-
-
-#############################################################################
-##
-#O  Value( <upol>, <elm> )
-#O  Value( <upol>, <elm>, <one> )
-##
-##  The optional third argument <one> is a multiplicative neutral element
-##  that shall be taken instead of the zero-th power of <elm>.
-##
-Value := NewOperation("Value",[IsRationalFunction,IsRingElement]);
-
-
-#############################################################################
-##
-#O  LeadingCoefficient( <upol> )
-##
-LeadingCoefficient := NewOperation("LeadingCoefficient",
-                      [IsUnivariateLaurentPolynomial]);
-
 #############################################################################
 ##
 #A  IrrFacsPol( <f> ) . . . lists of irreducible factors of polynomial over
 ##                        diverse rings
 ##
-IrrFacsPol := NewAttribute("IrrFacsPol",IsPolynomial,"mutable");
-#SetIrrFacsPol := Setter(IrrFacsPol);
-
-#############################################################################
+##  is used to store irreducible factorizations of the polynomial <f>. This
+##  attribute is a list of the form [[<ring>,<factors>],...] where <factors> is
+##  a list of the irreducible factors of <f> over <ring>.
 ##
-#O  Derivative( <upol> )
-##
-Derivative := NewOperation("Derivative",[IsUnivariateLaurentPolynomial]);
+DeclareAttribute("IrrFacsPol",IsPolynomial,"mutable");
 
 #############################################################################
 ##
 #O  FactorsSquarefree( <pring>, <upol> )
 ##
-FactorsSquarefree := NewOperation("FactorsSquarefree",[IsPolynomialRing,
+##  returns a squarefree factorization of <upoly> over the ring <pring>.
+##  this function is used by factoring algorithms.
+DeclareOperation("FactorsSquarefree",[IsPolynomialRing,
                                        IsUnivariatePolynomial]);
+
+#############################################################################
+##
+#F  RootsOfUPol(<upol>) . . . . . . . . . . . . . . . . roots of a polynomial
+##
+##  This function returns a list of all roots of the univariate polynomial
+##  <upol> in its default domain.
+##
+DeclareGlobalFunction("RootsOfUPol");
 
 #############################################################################
 ##
@@ -65,7 +48,9 @@ FactorsSquarefree := NewOperation("FactorsSquarefree",[IsPolynomialRing,
 ##
 ##  global list encoding cyclotomic polynomials by their coefficients lists
 ##
-CYCLOTOMICPOLYNOMIALS := [];
+DeclareGlobalVariable( "CYCLOTOMICPOLYNOMIALS",
+    "list, at position n the coefficient list of the n-th cycl. pol." );
+InstallFlushableValue( CYCLOTOMICPOLYNOMIALS, [] );
 
 
 #############################################################################
@@ -75,7 +60,7 @@ CYCLOTOMICPOLYNOMIALS := [];
 ##  is the coefficients list of the <n>-th cyclotomic polynomial over
 ##  the rationals.
 ##
-CyclotomicPol := NewOperationArgs( "CyclotomicPol" );
+DeclareGlobalFunction( "CyclotomicPol" );
 
 
 #############################################################################
@@ -84,7 +69,7 @@ CyclotomicPol := NewOperationArgs( "CyclotomicPol" );
 ##
 ##  is the <n>-th cyclotomic polynomial over the ring <F>.
 ##
-CyclotomicPolynomial := NewOperationArgs( "CyclotomicPolynomial" );
+DeclareGlobalFunction( "CyclotomicPolynomial" );
 
 
 #############################################################################

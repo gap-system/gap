@@ -10,6 +10,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.integer_gi :=
     "@(#)$Id$";
@@ -20,9 +21,10 @@ Revision.integer_gi :=
 
 #V  Integers  . . . . . . . . . . . . . . . . . . . . .  ring of the integers
 ##
-Integers := Objectify( NewType( CollectionsFamily( CyclotomicsFamily ),
+InstallValue( Integers, Objectify( NewType(
+    CollectionsFamily( CyclotomicsFamily ),
     IsIntegers and IsAttributeStoringRep ),
-    rec() );
+    rec() ) );
 
 SetName( Integers, "Integers" );
 SetIsLeftActedOnByDivisionRing( Integers, false );
@@ -37,9 +39,10 @@ SetUnits( Integers, [ -1, 1 ] );
 ##
 #V  GaussianIntegers  . . . . . . . . . . . . . . . ring of Gaussian integers
 ##
-GaussianIntegers := Objectify( NewType( CollectionsFamily(CyclotomicsFamily),
+InstallValue( GaussianIntegers, Objectify( NewType(
+    CollectionsFamily(CyclotomicsFamily),
     IsGaussianIntegers and IsAttributeStoringRep ),
-    rec() );
+    rec() ) );
 
 SetLeftActingDomain( GaussianIntegers, Integers );
 SetName( GaussianIntegers, "GaussianIntegers" );
@@ -55,7 +58,7 @@ SetUnits( GaussianIntegers, [ -1, 1, -E(4), E(4) ] );
 
 #R  IsCanonicalBasisIntegersRep
 ##
-IsCanonicalBasisIntegersRep := NewRepresentation(
+DeclareRepresentation(
     "IsCanonicalBasisIntegersRep",
     IsAttributeStoringRep,
     [] );
@@ -111,7 +114,6 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-
 #F  BestQuoInt( <n>, <m> )
 ##
 ##  'BestQuoInt' returns the best quotient <q> of the integers  <n> and  <m>.
@@ -119,7 +121,7 @@ InstallMethod( Coefficients,
 ##  If there are two quotients whose remainders have the same absolute value,
 ##  then the quotient with the smaller absolute value is choosen.
 ##
-BestQuoInt := function ( n, m )
+InstallGlobalFunction(BestQuoInt,function ( n, m )
     if   0 <= m  and 0 <= n  then
         return QuoInt( n + QuoInt( m - 1, 2 ), m );
     elif 0 <= m  then
@@ -129,14 +131,14 @@ BestQuoInt := function ( n, m )
     else
         return QuoInt( n + QuoInt( m + 1, 2 ), m );
     fi;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  ChineseRem( <moduli>, <residues> )  . . . . . . . . . . chinese remainder
 ##
-ChineseRem := function ( moduli, residues )
+InstallGlobalFunction(ChineseRem,function ( moduli, residues )
     local   i, c, l, g;
 
     # combine the residues modulo the moduli
@@ -156,14 +158,14 @@ ChineseRem := function ( moduli, residues )
     # reduce c into the range [0..l-1]
     c := c mod l;
     return c;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  CoefficientsQadic( <i>, <q> ) . . . . . .  <q>-adic representation of <i>
 ##
-CoefficientsQadic := function( i, q )
+InstallGlobalFunction(CoefficientsQadic,function( i, q )
     local   v;
 
     # represent the integer <i> as <q>-adic number
@@ -173,7 +175,22 @@ CoefficientsQadic := function( i, q )
         i := QuoInt( i, q );
     od;
     return v;
-end;
+end);
+
+
+#############################################################################
+##
+#F CoefficientsMultiadic( ints, int )
+##
+InstallGlobalFunction(CoefficientsMultiadic, function( ints, int )
+    local vec, i;
+    vec := List( ints, x -> 0 );
+    for i in Reversed( [1..Length(ints)] ) do
+        vec[i] := RemInt( int, ints[i] );
+        int := QuoInt( int, ints[i] );
+    od;
+    return vec;
+end);
 
 
 #############################################################################
@@ -183,7 +200,7 @@ end;
 DivisorsSmall :=
     Immutable( [,[1],[1,2],[1,3],[1,2,4],[1,5],[1,2,3,6],[1,7]] );
 
-DivisorsInt := function ( n )
+InstallGlobalFunction(DivisorsInt,function ( n )
     local  divisors, factors, divs;
 
     # make <n> it nonnegative, handle trivial cases, and get prime factors
@@ -203,7 +220,7 @@ DivisorsInt := function ( n )
     divisors := divs( 1, 1 );
     Sort( divisors );
     return Immutable(divisors);
-end;
+end);
 
 
 #############################################################################
@@ -331,7 +348,7 @@ end;
 #############################################################################
 ##
 #F  FactorsInt( <n> ) . . . . . . . . . . . . . . prime factors of an integer
-FactorsInt := function ( n )
+InstallGlobalFunction(FactorsInt,function ( n )
     local  sign,  factors,  p,  tmp;
 
     # make $n$ positive and handle trivial cases
@@ -375,14 +392,14 @@ FactorsInt := function ( n )
     Sort( factors );
     factors[1] := sign * factors[1];
     return factors;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Gcdex( <m>, <n> ) . . . . . . . . . . greatest common divisor of integers
 ##
-Gcdex := function ( m, n )
+InstallGlobalFunction(Gcdex,function ( m, n )
     local   f, g, h, fm, gm, hm, q;
     if 0 <= m  then f:=m; fm:=1; else f:=-m; fm:=-1; fi;
     if 0 <= n  then g:=n; gm:=0; else g:=-n; gm:=0;  fi;
@@ -399,7 +416,7 @@ Gcdex := function ( m, n )
         return rec( gcd := f, coeff1 := fm, coeff2 := (f - fm * m) / n,
                               coeff3 := gm, coeff4 := (0 - gm * m) / n );
     fi;
-end;
+end);
 
 
 #############################################################################
@@ -454,7 +471,7 @@ TraceModQF := function ( p, k, n )
     return trc;
 end;
 
-IsPrimeInt := function ( n )
+InstallGlobalFunction(IsPrimeInt,function ( n )
     local  p, e, o, x, i, d;
 
     # make $n$ positive and handle trivial cases
@@ -514,36 +531,36 @@ IsPrimeInt := function ( n )
 
     # $n$ is not a prime
     return false;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  IsPrimePowerInt( <n> )  . . . . . . . . . . . test for a power of a prime
 ##
-IsPrimePowerInt := function ( n )
+InstallGlobalFunction(IsPrimePowerInt,function ( n )
     return IsPrimeInt( SmallestRootInt( n ) );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  LcmInt( <m>, <n> )  . . . . . . . . . . least common multiple of integers
 ##
-LcmInt := function ( n, m )
+InstallGlobalFunction(LcmInt,function ( n, m )
     if m = 0  and n = 0  then
         return 0;
     else
         return AbsInt( m / GcdInt( m, n ) * n );
     fi;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  LogInt( <n>, <base> ) . . . . . . . . . . . . . . logarithm of an integer
 ##
-LogInt := function ( n, base )
+InstallGlobalFunction(LogInt,function ( n, base )
     local   log;
 
     # check arguments
@@ -560,14 +577,14 @@ LogInt := function ( n, base )
     end;
 
     return log( base );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  MoebiusMu( <n> )  . . . . . . . . . . . . . .  Moebius inversion function
 ##
-MoebiusMu := function ( n )
+InstallGlobalFunction(MoebiusMu,function ( n )
     local  factors;
 
     if n < 0  then n := -n;  fi;
@@ -577,14 +594,14 @@ MoebiusMu := function ( n )
     factors := FactorsInt( n );
     if factors <> Set( factors )  then return 0;  fi;
     return (-1) ^ Length(factors);
-end;
+end);
 
 
 #############################################################################
 ##
 #F  NextPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . next larger prime
 ##
-NextPrimeInt := function ( n )
+InstallGlobalFunction(NextPrimeInt,function ( n )
     if   -3 = n             then n := -2;
     elif -3 < n  and n < 2  then n :=  2;
     elif n mod 2 = 0        then n := n+1;
@@ -596,14 +613,14 @@ NextPrimeInt := function ( n )
         fi;
     od;
     return n;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  PowerModInt(<r>,<e>,<m>)  . . . . . . power of one integer modulo another
 ##
-PowerModInt := function ( r, e, m )
+InstallGlobalFunction(PowerModInt,function ( r, e, m )
     local   pow, f;
 
     # handle special cases
@@ -636,7 +653,7 @@ PowerModInt := function ( r, e, m )
 
     # return the power
     return pow;
-end;
+end);
 
 
 #############################################################################
@@ -646,7 +663,7 @@ end;
 ##  'PrevPrimeInt' returns the largest prime  which is strictly smaller  than
 ##  the integer <n>.
 ##
-PrevPrimeInt := function ( n )
+InstallGlobalFunction(PrevPrimeInt,function ( n )
     if    3 = n             then n :=  2;
     elif -2 < n  and n < 3  then n := -2;
     elif n mod 2 = 0        then n := n-1;
@@ -658,14 +675,14 @@ PrevPrimeInt := function ( n )
         fi;
     od;
     return n;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  PrimePowerInt( <n> )  . . . . . . . . . . . . . . . . prime powers of <n>
 ##
-PrimePowersInt := function( n )
+InstallGlobalFunction(PrimePowersInt,function( n )
     local   p,  pows,  lst;
 
     if n = 1  then
@@ -683,7 +700,7 @@ PrimePowersInt := function( n )
     od;
     return pows;
 
-end;
+end);
 
 
 #############################################################################
@@ -691,7 +708,7 @@ end;
 #F  RootInt( <n> )  . . . . . . . . . . . . . . . . . . .  root of an integer
 #F  RootInt( <n>, <k> )
 ##
-RootInt := function ( arg )
+InstallGlobalFunction(RootInt,function ( arg )
     local   n, k, r, s, t;
 
     # get the arguments
@@ -719,14 +736,14 @@ RootInt := function ( arg )
 
     # and thats the integer part of the root
     return r;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Sigma( <n> )  . . . . . . . . . . . . . . . sum of divisors of an integer
 ##
-Sigma := function ( n )
+InstallGlobalFunction(Sigma,function ( n )
     local  sigma, p, q, k;
 
     # make <n> it nonnegative, handle trivial cases
@@ -747,14 +764,14 @@ Sigma := function ( n )
     od;
 
     return sigma;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  SmallestRootInt( <n> )  . . . . . . . . . . . smallest root of an integer
 ##
-SmallestRootInt := function ( n )
+InstallGlobalFunction(SmallestRootInt,function ( n )
     local   k, r, s, p, l, q;
 
     # check the argument
@@ -789,14 +806,14 @@ SmallestRootInt := function ( n )
     od;
 
     return s * n;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Tau( <n> )  . . . . . . . . . . . . . .  number of divisors of an integer
 ##
-Tau := function ( n )
+InstallGlobalFunction(Tau,function ( n )
     local  tau, p, q, k;
 
     # make <n> it nonnegative, handle trivial cases
@@ -817,18 +834,17 @@ Tau := function ( n )
     od;
 
     return tau;
-end;
+end);
 
 
 #############################################################################
 ##
-
 #M  DefaultRingByGenerators( <elms> ) default ring generated by some integers
 ##
 InstallMethod( DefaultRingByGenerators,
     "method that catches the cases of `Integers' and `GaussianIntegers'",
     true,
-    [ IsCyclotomicsCollection ], SUM_FLAGS,
+    [ IsCyclotomicCollection ], SUM_FLAGS,
     function ( elms )
     if ForAll( elms, IsInt ) then
       return Integers;
@@ -847,7 +863,7 @@ InstallMethod( DefaultRingByGenerators,
 ##  $a_n = \frac{n}{2}$ if $n$ is even, and
 ##  $a_n = \frac{1-n}{2}$ otherwise.
 ##
-IsIntegersEnumerator := NewRepresentation( "IsIntegersEnumerator",
+DeclareRepresentation( "IsIntegersEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep, [] );
 
 InstallMethod( Enumerator,
@@ -865,7 +881,7 @@ InstallMethod( Enumerator,
 InstallMethod( \[\],
     "method for enumerator of `Integers'",
     true,
-    [ IsIntegersEnumerator, IsPosRat and IsInt ], 0,
+    [ IsIntegersEnumerator, IsPosInt ], 0,
     function( e, n )
     if n mod 2 = 0 then
       return n / 2;
@@ -960,9 +976,9 @@ InstallMethod( GcdOp,
 
 #############################################################################
 ##
-#M  IsIrreducible( Integers, <n> )
+#M  IsIrreducibleRingElement( Integers, <n> )
 ##
-InstallMethod( IsIrreducible,
+InstallMethod( IsIrreducibleRingElement,
     "method for integers",
     true,
     [ IsIntegers, IsInt ], 0,
@@ -992,7 +1008,7 @@ InstallMethod( IsPrime,
 ##  $a_n = \frac{n}{2}$ if $n$ is even, and $a_n = \frac{1-n}{2}$
 ##  otherwise.
 ##
-IsIntegersIterator := NewRepresentation( "IsIntegersIterator",
+DeclareRepresentation( "IsIntegersIterator",
     IsIterator,
     [ "structure", "counter" ] );
 
@@ -1120,7 +1136,7 @@ InstallMethod( QuotientRemainder,
 ##
 InstallOtherMethod( Random,
     "method for two integers",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsInt,
       IsInt ],
     0,
@@ -1182,7 +1198,7 @@ InstallMethod( Random,
 InstallMethod( DefaultRingByGenerators,
     "method that treats the cases of 'Integers' and 'GaussianIntegers'",
     true,
-    [ IsCyclotomicsCollection ], SUM_FLAGS,
+    [ IsCyclotomicCollection ], SUM_FLAGS,
     function ( elms )
     if ForAll( elms, IsInt ) then
       return Integers;
@@ -1228,7 +1244,7 @@ InstallMethod( StandardAssociate,
 ##
 InstallOtherMethod( Valuation,
     "method for two integers",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsInt,
       IsInt ],
     0,
@@ -1267,7 +1283,7 @@ InstallMethod( \in,
 ##
 ##  'PrintFactorsInt'  prints the prime decomposition of the given integer n.
 ##
-PrintFactorsInt := function ( n )
+InstallGlobalFunction(PrintFactorsInt,function ( n )
     local decomp, i;
 
     if -4 < n and n < 4 then
@@ -1289,7 +1305,7 @@ PrintFactorsInt := function ( n )
             fi;
         od;
     fi;
-end;
+end);
 
 
 #############################################################################

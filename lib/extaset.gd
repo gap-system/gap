@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for external additive sets.
 ##
@@ -20,7 +21,7 @@ Revision.extaset_gd :=
 ##  Since the operator '\+' in {\GAP} is commutative we do not distinguish
 ##  actions from left and right.
 ##
-IsExtASet := NewCategory( "IsExtASet", IsDomain and IsAdditiveElement );
+DeclareCategory( "IsExtASet", IsDomain and IsAdditiveElement );
 
 
 #############################################################################
@@ -30,7 +31,7 @@ IsExtASet := NewCategory( "IsExtASet", IsDomain and IsAdditiveElement );
 ##  is 'true' iff $a \+ ( x \+ y ) = ( a \+ x ) \+ y$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsAssociativeAOpDSum := NewCategory( "IsAssociativeAOpDSum", IsExtASet );
+DeclareCategory( "IsAssociativeAOpDSum", IsExtASet );
 
 
 #############################################################################
@@ -40,7 +41,7 @@ IsAssociativeAOpDSum := NewCategory( "IsAssociativeAOpDSum", IsExtASet );
 ##  is 'true' iff $a \+ ( b \+ x ) = ( a \+ b ) \+ x$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsAssociativeAOpESum := NewCategory( "IsAssociativeAOpESum", IsExtASet );
+DeclareCategory( "IsAssociativeAOpESum", IsExtASet );
 
 
 #############################################################################
@@ -51,26 +52,22 @@ IsAssociativeAOpESum := NewCategory( "IsAssociativeAOpESum", IsExtASet );
 ##  that is, $z \+ x = x$ for $x \in D$.
 #T necessary?
 ##
-IsTrivialAOpEZero := NewCategory( "IsTrivialAOpEZero", IsExtASet );
+DeclareCategory( "IsTrivialAOpEZero", IsExtASet );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfExtASet( <D> )
 ##
-GeneratorsOfExtASet := NewAttribute( "GeneratorsOfExtASet", IsExtASet );
-SetGeneratorsOfExtASet := Setter( GeneratorsOfExtASet );
-HasGeneratorsOfExtASet := Tester( GeneratorsOfExtASet );
+DeclareAttribute( "GeneratorsOfExtASet", IsExtASet );
 
 
 #############################################################################
 ##
 #A  AdditivelyActingDomain( <D> )
 ##
-AdditivelyActingDomain := NewAttribute( "AdditivelyActingDomain",
+DeclareAttribute( "AdditivelyActingDomain",
     IsExtASet );
-SetAdditivelyActingDomain := Setter( AdditivelyActingDomain );
-HasAdditivelyActingDomain := Tester( AdditivelyActingDomain );
 
 
 #############################################################################

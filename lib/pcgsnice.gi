@@ -4,18 +4,8 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.3  1997/10/14 10:36:09  ahulpke
-#H  Moved the generic method for 'Pcgs' (which got too high due to the Value for
-#H  'IsFinite') down in the hierarchy. Added some installation messages. Told
-#H  automorphism groups to be finite. AH
-#H
-#H  Revision 4.2  1997/04/09 07:05:18  htheisse
-#H  added flag `IsPrimeOrdersPcgs' for pcgs by nice monomorphisms
-#H
-#H  Revision 4.1  1997/04/08 12:39:40  htheisse
-#H  added methods for pcgs by nice monomorphism
-#H
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.pcgsnice_gi :=
     "@(#)$Id$";
@@ -56,7 +46,7 @@ AttributeMethodByNiceMonomorphismCollElm( DepthOfPcElement,
 InstallOtherMethod( DepthOfPcElement, true,
         [ IsPcgs and IsHandledByNiceMonomorphism,
           IsMultiplicativeElementWithInverse,
-          IsPosRat and IsInt ], 0,
+          IsPosInt ], 0,
     function( pcgs, g, depth )
     return DepthOfPcElement( NiceObject( pcgs ),
                    ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
@@ -80,7 +70,7 @@ AttributeMethodByNiceMonomorphismCollElm( ExponentsOfPcElement,
 InstallOtherMethod( ExponentsOfPcElement, true,
         [ IsPcgs and IsHandledByNiceMonomorphism,
           IsMultiplicativeElementWithInverse,
-          IsList and IsCyclotomicsCollection ], 0,
+          IsList and IsCyclotomicCollection ], 0,
     function( pcgs, g, poss )
     return ExponentsOfPcElement( NiceObject( pcgs ),
                    ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
@@ -102,20 +92,13 @@ end );
 InstallMethod( ExponentOfPcElement, "via nicoemorphism", true,
         [ IsPcgs and IsHandledByNiceMonomorphism,
           IsMultiplicativeElementWithInverse,
-          IsPosRat and IsInt ], 0,
+          IsPosInt ], 0,
     function( pcgs, g, pos )
     return ExponentOfPcElement( NiceObject( pcgs ),
                    ImagesRepresentative( NiceMonomorphism( pcgs ), g ),
                    pos );
 end );
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

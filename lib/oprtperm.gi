@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.oprtperm_gi :=
     "@(#)$Id$";
 
@@ -35,8 +38,9 @@ InstallOtherMethod( OrbitOp,
     if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
     fi;
-    if HasStabChain( G )  and  IsInBasicOrbit( StabChainAttr( G ), pnt )  then
-        return StabChainImmAttr( G ).orbit;
+    if HasStabChainMutable( G )
+       and IsInBasicOrbit( StabChainMutable( G ), pnt ) then
+        return StabChainImmutable( G ).orbit;
     else
         return Immutable( OrbitPerms( oprs, pnt ) );
     fi;
@@ -75,7 +79,7 @@ end );
 ##
 InstallMethod( OrbitsOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], RANK_SOLV,
@@ -120,7 +124,7 @@ end );
 ##
 InstallMethod( BlocksOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection, IsList and IsEmpty,
+        [ IsGroup, IsList and IsCyclotomicCollection, IsList and IsEmpty,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], RANK_SOLV,
@@ -404,8 +408,8 @@ end );
 ##
 InstallMethod( BlocksOp,
         "G, ints, seed, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
-          IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicCollection,
+          IsList and IsCyclotomicCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], RANK_SOLV,
@@ -523,7 +527,7 @@ end );
 ##
 InstallOtherMethod( MinimalBlocksOp,
         "G, domain, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], RANK_SOLV,
@@ -880,21 +884,23 @@ InstallMethod( EarnsOp,
         TryNextMethod();
     fi;
     
-    # Try a shortcut for solvable groups (or if a solvable normal subgroup is
-    # found).
-    if DefaultStabChainOptions.tryPcgs  then
-        pcgs := TryPcgsPermGroup( G, false, false, true );
-        if not IsPcgs( pcgs )  then
-            pcgs := pcgs[ 1 ];
-        fi;
-        if not IsEmpty( pcgs )  then
-            return ElementaryAbelianSeries( pcgs )
-                   [ Length( ElementaryAbelianSeries( pcgs ) ) - 1 ];
-        fi;
-    fi;
+#    # Try a shortcut for solvable groups (or if a solvable normal subgroup is
+#    # found).
+#    if DefaultStabChainOptions.tryPcgs  then
+#        pcgs := TryPcgsPermGroup( G, false, false, true );
+#        if not IsPcgs( pcgs )  then
+#            pcgs := pcgs[ 1 ];
+#        fi;
+#T why do we know, that this will give us the EARNS and not just a smaller
+# one? AH
+#        if not IsEmpty( pcgs )  then
+#            return ElementaryAbelianSeries( pcgs )
+#                   [ Length( ElementaryAbelianSeries( pcgs ) ) - 1 ];
+#        fi;
+#    fi;
     
     fac := FactorsInt( n );  p := fac[ 1 ];  d := Length( fac );
-    alpha := BasePoint( StabChainAttr( G ) );
+    alpha := BasePoint( StabChainMutable( G ) );
     G1 := Stabilizer( G, alpha );
     
     # If <G> is regular, it must be cyclic of prime order.
@@ -984,7 +990,7 @@ end );
 ##
 InstallMethod( TransitivityOp,
         "G, ints, gens, perms, opr", true,
-        [ IsPermGroup, IsList and IsCyclotomicsCollection,
+        [ IsPermGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList,
           IsFunction ], RANK_SOLV,
@@ -1008,7 +1014,7 @@ end );
 ##
 InstallMethod( IsSemiRegularOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], RANK_SOLV,
@@ -1257,7 +1263,7 @@ InstallOtherMethod( StabilizerOp,
         while IsBound( S.orbit )  and  S.orbit[ 1 ] in base  do
             S := S.stabilizer;
         od;
-        if IsIdentical( S, K )  then  K := G;
+        if IsIdenticalObj( S, K )  then  K := G;
                                 else  K := GroupStabChain( G, S, true );  fi;
                             
     # standard operation on (lists of) permutations, take the centralizer
@@ -1276,6 +1282,28 @@ InstallOtherMethod( StabilizerOp,
     elif opr = OnSets  and ForAll( d, IsInt )  then
         K := RepOpSetsPermGroup( G, d );
 
+    # operation on sets of sets (true partitions)
+    elif opr = OnSetsSets and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
+        K := PartitionStabilizerPermGroup( G, d );
+
+    #T OnSetTuples?
+
+    # operation on tuples of sets
+    elif opr = OnTuplesSets 
+      and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
+	K:=G;
+	for S in d do
+	  K:=Stabilizer(K,S,OnSets);
+	od;
+
+    # operation on tuples of tuples
+    elif opr = OnTuplesTuples 
+      and IsList(d) and ForAll(d,i->ForAll(i,IsInt)) then
+	K:=G;
+	for S in d do
+	  K:=Stabilizer(K,S,OnTuples);
+	od;
+
     # other operation
     else
         TryNextMethod();
@@ -1289,7 +1317,7 @@ end );
 ##
 #F  StabilizerOfBlockNC( <G>, <B> )  . . . . block stabilizer for perm groups
 ##
-StabilizerOfBlockNC := function(G,B)
+InstallGlobalFunction( StabilizerOfBlockNC, function(G,B)
 local S,j;
   S:=StabChainOp(G,rec(base:=[B[1]],reduced:=false));
   S:=StructuralCopy(S);
@@ -1306,7 +1334,40 @@ local S,j;
       fi;
   od;
   return GroupStabChain(G,S.stabilizer,true);
-end;
+end );
+
+
+#############################################################################
+##
+#O  OnSetsSets(<set>,<g>)
+##
+InstallGlobalFunction( OnSetsSets, function(e,g)
+  return Set(List(e,i->OnSets(i,g)));
+end );
+
+#############################################################################
+##
+#O  OnSetsTuples(<set>,<g>)
+##
+InstallGlobalFunction( OnSetsTuples, function(e,g)
+  return Set(List(e,i->OnTuples(i,g)));
+end );
+
+#############################################################################
+##
+#O  OnTuplesSets(<set>,<g>)
+##
+InstallGlobalFunction( OnTuplesSets, function(e,g)
+  return List(e,i->OnSets(i,g));
+end );
+
+#############################################################################
+##
+#O  OnTuplesTuples(<set>,<g>)
+##
+InstallGlobalFunction( OnTuplesTuples, function(e,g)
+  return List(e,i->OnTuples(i,g));
+end );
 
 
 #############################################################################

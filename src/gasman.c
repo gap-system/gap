@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains  the functions of  Gasman,  the  GAP  storage manager.
 **
@@ -111,7 +112,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_gasman_c =
+const char * Revision_gasman_c =
    "@(#)$Id$";
 
 
@@ -119,16 +120,8 @@ SYS_CONST char * Revision_gasman_c =
 #include        "gasman.h"              /* garbage collector               */
 #undef  INCLUDE_DECLARATION_PART
 
-#ifdef DEBUG_DEADSONS_BAGS
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
-#include        "code.h"                /* coder                           */
-#else
-#ifdef DEBUG_GLOBAL_BAGS
-#include        "objects.h"             /* objects                         */
-#include        "scanner.h"             /* scanner                         */
-#endif
-#endif
 
 
 /****************************************************************************
@@ -466,6 +459,8 @@ void InitSweepFuncBags (
 *F  MarkNoSubBags(<bag>)  . . . . . . . . marking function that marks nothing
 *F  MarkOneSubBags(<bag>) . . . . . .  marking function that marks one subbag
 *F  MarkTwoSubBags(<bag>) . . . . . . marking function that marks two subbags
+*F  MarkThreeSubBags(<bag>) . . . . marking function that marks three subbags
+*F  MarkFourSubBags(<bag>)  . . . .  marking function that marks four subbags
 *F  MarkAllSubBags(<bag>) . . . . . .  marking function that marks everything
 **
 **  'InitMarkFuncBags', 'MarkNoSubBags', 'MarkOneSubBags',  'MarkTwoSubBags',
@@ -519,6 +514,32 @@ void MarkTwoSubBags (
     sub = PTR_BAG(bag)[0];
     MARK_BAG( sub );
     sub = PTR_BAG(bag)[1];
+    MARK_BAG( sub );
+}
+
+void MarkThreeSubBags (
+    Bag                 bag )
+{
+    Bag                 sub;            /* one subbag identifier           */
+    sub = PTR_BAG(bag)[0];
+    MARK_BAG( sub );
+    sub = PTR_BAG(bag)[1];
+    MARK_BAG( sub );
+    sub = PTR_BAG(bag)[2];
+    MARK_BAG( sub );
+}
+
+void MarkFourSubBags (
+    Bag                 bag )
+{
+    Bag                 sub;            /* one subbag identifier           */
+    sub = PTR_BAG(bag)[0];
+    MARK_BAG( sub );
+    sub = PTR_BAG(bag)[1];
+    MARK_BAG( sub );
+    sub = PTR_BAG(bag)[2];
+    MARK_BAG( sub );
+    sub = PTR_BAG(bag)[3];
     MARK_BAG( sub );
 }
 
@@ -608,14 +629,14 @@ TNumGlobalBags GlobalBags;
 **  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
 **  be matched up after loading a saved workspace.
 */
-
 static UInt GlobalSortingStatus = 0;
+Int WarnInitGlobalBag = 0;
 
 extern TNumAbortFuncBags   AbortFuncBags;
 
 void InitGlobalBag (
     Bag *               addr,
-    SYS_CONST Char *    cookie )
+    const Char *        cookie )
 {
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
@@ -625,14 +646,18 @@ void InitGlobalBag (
 #ifdef DEBUG_GLOBAL_BAGS
     {
       UInt i;
-      for (i = 0; i < GlobalBags.nr; i++)
-        if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
-          if (GlobalBags.addr[i] == addr)
-            Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
-          else
-            Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+      if (cookie != NULL)
+	for (i = 0; i < GlobalBags.nr; i++)
+          if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
+	    if (GlobalBags.addr[i] == addr)
+	      Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
+	    else
+	      Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
     }
-#endif    
+#endif
+    if ( WarnInitGlobalBag ) {
+        Pr( "#W  global bag '%s' initialized\n", (Int)cookie, 0L );
+    } 
     GlobalBags.addr[GlobalBags.nr] = addr;
     GlobalBags.cookie[GlobalBags.nr] = cookie;
     GlobalBags.nr++;
@@ -641,14 +666,21 @@ void InitGlobalBag (
 
 
 
-static int IsLessGlobal( SYS_CONST Char *cookie1, 
-			 SYS_CONST Char *cookie2,
-			      UInt byWhat)
+static Int IsLessGlobal (
+    const Char *	cookie1, 
+    const Char *	cookie2,
+    UInt 		byWhat )
 {
   if (byWhat != 2)
     {
       (*AbortFuncBags)("can only sort globals by cookie");
     }
+  if (cookie1 == 0L && cookie2 == 0L)
+    return 0;
+  if (cookie1 == 0L)
+    return -1;
+  if (cookie2 == 0L)
+    return 1;
   return SyStrcmp(cookie1, cookie2) < 0;
 }
 
@@ -656,7 +688,7 @@ static int IsLessGlobal( SYS_CONST Char *cookie1,
 
 void SortGlobals( UInt byWhat )
 {
-  SYS_CONST Char *tmpcookie;
+  const Char *tmpcookie;
   Bag * tmpaddr;
   UInt len, h, i, k;
   if (byWhat != 2)
@@ -675,13 +707,13 @@ void SortGlobals( UInt byWhat )
       tmpaddr = GlobalBags.addr[i];
       k = i;
       while ( h <= k && IsLessGlobal(tmpcookie,
-				     GlobalBags.cookie[k-h],
-				     byWhat))
-	{
-	  GlobalBags.cookie[k] = GlobalBags.cookie[k-h];
-	  GlobalBags.addr[k] = GlobalBags.addr[k-h];
-	  k -= h;
-	}
+                                     GlobalBags.cookie[k-h],
+                                     byWhat))
+        {
+          GlobalBags.cookie[k] = GlobalBags.cookie[k-h];
+          GlobalBags.addr[k] = GlobalBags.addr[k-h];
+          k -= h;
+        }
       GlobalBags.cookie[k] = tmpcookie;
       GlobalBags.addr[k] = tmpaddr;
     }
@@ -692,19 +724,24 @@ void SortGlobals( UInt byWhat )
 }
 
 
-		       
+                       
 Bag * GlobalByCookie(
-       SYS_CONST Char * cookie )
+       const Char * cookie )
 {
   UInt i,top,bottom,middle;
   Int res;
+  if (cookie == 0L)
+    {
+      Pr("Panic -- 0L cookie passed to GlobalByCookie\n",0L,0L);
+      SyExit(2);
+    }
   if (GlobalSortingStatus != 2) 
     {
       for (i = 0; i < GlobalBags.nr; i++)
-	{
-	  if (SyStrcmp(cookie, GlobalBags.cookie[i]) == 0)
-	    return GlobalBags.addr[i];
-	}
+        {
+          if (SyStrcmp(cookie, GlobalBags.cookie[i]) == 0)
+            return GlobalBags.addr[i];
+        }
       return (Bag *)0L;
     }
   else
@@ -712,19 +749,19 @@ Bag * GlobalByCookie(
       top = GlobalBags.nr;
       bottom = 0;
       while (top >= bottom) {
-	middle = (top + bottom)/2;
-	res = SyStrcmp(cookie,GlobalBags.cookie[middle]);
-	if (res < 0)
-	  top = middle-1;
-	else if (res > 0)
-	  bottom = middle+1;
-	else
-	  return GlobalBags.addr[middle];
+        middle = (top + bottom)/2;
+        res = SyStrcmp(cookie,GlobalBags.cookie[middle]);
+        if (res < 0)
+          top = middle-1;
+        else if (res > 0)
+          bottom = middle+1;
+        else
+          return GlobalBags.addr[middle];
       }
       return (Bag *)0L;
     }
 }
-				      
+                                      
 
 static Bag NextMptrRestoring;
 extern TNumAllocFuncBags       AllocFuncBags;
@@ -737,14 +774,14 @@ void StartRestoringBags( UInt nBags, UInt maxSize)
   if ((EndBags - MptrBags) < target)
     {
       newmem  = (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags)),
-				 0);
+                                 0);
       if (newmem == 0)
-	{
-	  target = nBags + maxSize; /* absolute requirement */
-	  if ((EndBags - MptrBags) < target)
-	    (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags)), 1);
-	}
-      EndBags += target;
+        {
+          target = nBags + maxSize; /* absolute requirement */
+          if ((EndBags - MptrBags) < target)
+            (*AllocFuncBags)(sizeof(Bag)*(target- (EndBags - MptrBags)), 1);
+        }
+      EndBags = MptrBags + target;
     }
   OldBags = MptrBags + nBags + (EndBags - MptrBags - nBags - maxSize)/8;
   AllocBags = OldBags;
@@ -761,7 +798,16 @@ Bag NextBagRestoring( UInt sizetype)
   ((UInt *)AllocBags)[0] = sizetype;
   ((Bag *)AllocBags)[1] = NextMptrRestoring;
   NextMptrRestoring++;
-  AllocBags += WORDS_BAG(sizetype >> 8);
+#ifdef DEBUG_LOADING
+  if ((Bag *)NextMptrRestoring >= OldBags)
+    (*AbortFuncBags)("Overran Masterpointer area");
+#endif
+  AllocBags += WORDS_BAG(sizetype >> 8) + 2;
+#ifdef DEBUG_LOADING
+  if (AllocBags > EndBags)
+    (*AbortFuncBags)("Overran data area");
+#endif
+  /* The 2 is for the sizetype and link words */
   return bag;
 }
 
@@ -1432,6 +1478,7 @@ jmp_buf RegsBags;
 
 /* solaris */
 #ifdef SPARC
+#if SPARC
         asm("           .globl  SparcStackFuncBags              ");
         asm("   SparcStackFuncBags:                             ");
         asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
@@ -1439,15 +1486,18 @@ jmp_buf RegsBags;
         asm("           retl                                    ");
         asm("           nop                                     ");
 #endif
+#endif
 
 /* sunos */
 #ifdef SPARC
+#if SPARC
         asm("           .globl  _SparcStackFuncBags             ");
         asm("   _SparcStackFuncBags:                            ");
         asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
         asm("           mov     %sp,%o0                         ");
         asm("           retl                                    ");
         asm("           nop                                     ");
+#endif
 #endif
 
 void GenStackFuncBags ()
@@ -1488,10 +1538,10 @@ Bag OldMarkedBags;
 linked from weak pointer objects but whose bag bodies have been
 collected.  Two values are used so that old masterpointers of this
 kind can be reclaimed after a full garbage collection. The values must
-not look like valid pointers */
+not look like valid pointers, and should be congruent to 1 mod sizeof(Bag) */
 
 Bag * NewWeakDeadBagMarker = (Bag *)1L;
-Bag * OldWeakDeadBagMarker = (Bag *)5L;
+Bag * OldWeakDeadBagMarker = (Bag *)(sizeof(Bag) + 1L);
 
 
 
@@ -1550,7 +1600,7 @@ again:
            in it */
         {
           Bag * t;
-          t = NewWeakDeadBagMarker;
+          t = OldWeakDeadBagMarker;
           OldWeakDeadBagMarker = NewWeakDeadBagMarker;
           NewWeakDeadBagMarker = t;
         }
@@ -1576,7 +1626,9 @@ again:
     else {
         setjmp( RegsBags );
 #ifdef  SPARC
+#if SPARC
         SparcStackFuncBags();
+#endif
 #endif
         GenStackFuncBags();
     }
@@ -1667,46 +1719,46 @@ again:
             }
 
             /* dead or half-dead (only weakly pointed to bag               */
-	    /* here the usual check using UNMARKED_DEAD etc. is not
-	       safe, because we are looking at the bag body rather
-	       than its identifier, and a wrong guess for the bag
-	       status can involve following a misaligned pointer. It
-	       may cause bus errors or actual mistakes.
+            /* here the usual check using UNMARKED_DEAD etc. is not
+               safe, because we are looking at the bag body rather
+               than its identifier, and a wrong guess for the bag
+               status can involve following a misaligned pointer. It
+               may cause bus errors or actual mistakes.
 
-	       Instead we look directly at the value in the link word
-	       and check its least significant bits */
-	    
+               Instead we look directly at the value in the link word
+               and check its least significant bits */
+            
             else if ( ((UInt)(src[1])) % sizeof(Bag) == 0 ||
-		      ((UInt)(src[1])) % sizeof(Bag) == 2 )
-	      {
+                      ((UInt)(src[1])) % sizeof(Bag) == 2 )
+              {
 #ifdef DEBUG_MASTERPOINTERS
-		if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 && 
-		       PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+2)  ||
-		      (((UInt)(src[1])) % sizeof(Bag) == 2 &&
-		       PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+2))
-		  {
-		    (*AbortFuncBags)("incorrectly marked bag");
-		  }
+                if  ( (((UInt)(src[1])) % sizeof(Bag) == 0 && 
+                       PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+2)  ||
+                      (((UInt)(src[1])) % sizeof(Bag) == 2 &&
+                       PTR_BAG( UNMARKED_HALFDEAD(src[1])) != src+2))
+                  {
+                    (*AbortFuncBags)("incorrectly marked bag");
+                  }
 #endif
 
                 /* call freeing function                                   */
                 if ( TabFreeFuncBags[ *(UInt*)src & 0xFFL ] != 0 )
-		  (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[1] );
-		
+                  (*TabFreeFuncBags[ *(UInt*)src & 0xFFL ])( src[1] );
+                
                 /* advance src                                             */
                 src += 2 + WORDS_BAG( *(UInt*)src >> 8 ) ;
-		
-	      }
-	    
+                
+              }
+            
 
             /* live bag                                                    */
             else if ( ((UInt)(src[1])) % sizeof(Bag) == 1 )
-	      {
+              {
 #ifdef DEBUG_MASTERPOINTERS
-		if  ( PTR_BAG( UNMARKED_ALIVE(src[1]) ) != src+2 )
-		  {
-		    (*AbortFuncBags)("incorrectly marked bag");
-		  }
+                if  ( PTR_BAG( UNMARKED_ALIVE(src[1]) ) != src+2 )
+                  {
+                    (*AbortFuncBags)("incorrectly marked bag");
+                  }
 #endif
 
                 /* advance src                                             */
@@ -1742,13 +1794,13 @@ again:
 
         /* dead bag                                                        */
 
-	else if ( ((UInt)(src[1])) % sizeof(Bag) == 0 )
-	  {
+        else if ( ((UInt)(src[1])) % sizeof(Bag) == 0 )
+          {
 #ifdef DEBUG_MASTERPOINTERS
-	    if  ( PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+2 )
-	      {
-		(*AbortFuncBags)("incorrectly marked bag");
-	      }
+            if  ( PTR_BAG( UNMARKED_DEAD(src[1]) ) != src+2 )
+              {
+                (*AbortFuncBags)("incorrectly marked bag");
+              }
 #endif
             last = src;  type = 'd';
 
@@ -1773,13 +1825,13 @@ again:
         }
 
         /* half-dead bag                                                   */
-	else if ( ((UInt)(src[1])) % sizeof(Bag) == 2 )
-	  {
+        else if ( ((UInt)(src[1])) % sizeof(Bag) == 2 )
+          {
 #ifdef DEBUG_MASTERPOINTERS
-	    if  ( PTR_BAG( UNMARKED_HALFDEAD(src[1]) ) != src+2 )
-	      {
-		(*AbortFuncBags)("incorrectly marked bag");
-	      }
+            if  ( PTR_BAG( UNMARKED_HALFDEAD(src[1]) ) != src+2 )
+              {
+                (*AbortFuncBags)("incorrectly marked bag");
+              }
 #endif
             last = src;  type = 'h';
 
@@ -1795,9 +1847,9 @@ again:
 #endif
 
             /* don't free the identifier                                   */
-	    if (((UInt)UNMARKED_HALFDEAD(src[1])) % 4 != 0)
-	      (*AbortFuncBags)("align error in halfdead bag");
-					      
+            if (((UInt)UNMARKED_HALFDEAD(src[1])) % 4 != 0)
+              (*AbortFuncBags)("align error in halfdead bag");
+                                              
            *(Bag**)(UNMARKED_HALFDEAD(src[1])) = NewWeakDeadBagMarker;
            nrHalfDeadBags ++;
 
@@ -1807,13 +1859,13 @@ again:
         }
 
         /* live bag                                                        */
-	else if ( ((UInt)(src[1])) % sizeof(Bag) == 1 )
-	  {
+        else if ( ((UInt)(src[1])) % sizeof(Bag) == 1 )
+          {
 #ifdef DEBUG_MASTERPOINTERS
-	    if  ( PTR_BAG( UNMARKED_ALIVE(src[1]) ) != src+2 )
-	      {
-		(*AbortFuncBags)("incorrectly marked bag");
-	      }
+            if  ( PTR_BAG( UNMARKED_ALIVE(src[1]) ) != src+2 )
+              {
+                (*AbortFuncBags)("incorrectly marked bag");
+              }
 #endif
             last = src;  type = 'l';
 
@@ -2036,13 +2088,13 @@ void CheckMasterPointers( void )
   Bag *ptr;
   for (ptr = MptrBags; ptr < OldBags; ptr++)
     {
-      if (*ptr != (Bag)0 &&		/* bottom of free chain */
-	  *ptr != (Bag)NewWeakDeadBagMarker &&
-	  *ptr != (Bag)OldWeakDeadBagMarker &&
-	  (((Bag *)*ptr < MptrBags &&
-	    (Bag *)*ptr > AllocBags) ||
-	   (UInt)(*ptr) % sizeof(Bag) != 0))
-	(*AbortFuncBags)("Bad master pointer detected in check");
+      if (*ptr != (Bag)0 &&             /* bottom of free chain */
+          *ptr != (Bag)NewWeakDeadBagMarker &&
+          *ptr != (Bag)OldWeakDeadBagMarker &&
+          (((Bag *)*ptr < MptrBags &&
+            (Bag *)*ptr > AllocBags) ||
+           (UInt)(*ptr) % sizeof(Bag) != 0))
+        (*AbortFuncBags)("Bad master pointer detected in check");
     }
 }
 
@@ -2139,7 +2191,7 @@ UInt TNUM_BAG (
     return (*(*(bag)-2) & 0xFFL);
 }
 
-SYS_CONST Char * TNAM_BAG (
+const Char * TNAM_BAG (
     Bag                 bag )
 {
     return InfoBags[ (*(*(bag)-2) & 0xFFL) ].name;

@@ -2,35 +2,37 @@
 ##
 #W  grpprmcs.gd                 GAP library                       Akos Seress
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 #H  @(#)$Id$
 ##
 Revision.grpprmcs_gd :=
     "@(#)$Id$";
 
-DisplayCompositionSeries := NewOperationArgs( "DisplayCompositionSeries" );
-NonPerfectCSPG := NewOperationArgs( "NonPerfectCSPG" );
-PerfectCSPG := NewOperationArgs( "PerfectCSPG" );
-CasesCSPG := NewOperationArgs( "CasesCSPG" );
-FindNormalCSPG := NewOperationArgs( "FindNormalCSPG" );
-FindRegularNormalCSPG := NewOperationArgs( "FindRegularNormalCSPG" );
-NinKernelCSPG := NewOperationArgs( "NinKernelCSPG" );
-RegularNinKernelCSPG := NewOperationArgs( "RegularNinKernelCSPG" );
-NormalizerStabCSPG := NewOperationArgs( "NormalizerStabCSPG" );
-TransStabCSPG := NewOperationArgs( "TransStabCSPG" );
-PullbackKernelCSPG := NewOperationArgs( "PullbackKernelCSPG" );
-PullbackCSPG := NewOperationArgs( "PullbackCSPG" );
-CosetRepAsWord := NewOperationArgs( "CosetRepAsWord" );
-ImageInWord := NewOperationArgs( "ImageInWord" );
-SiftAsWord := NewOperationArgs( "SiftAsWord" );
-InverseAsWord := NewOperationArgs( "InverseAsWord" );
-RandomElmAsWord := NewOperationArgs( "RandomElmAsWord" );
-CentralizerNormalCSPG := NewOperationArgs( "CentralizerNormalCSPG" );
-CentralizerNormalTransCSPG := NewOperationArgs( "CentralizerNormalTransCSPG" );
-CentralizerTransSymmCSPG := NewOperationArgs( "CentralizerTransSymmCSPG" );
-IntersectionNormalClosurePermGroup := NewOperationArgs( "IntersectionNormalClosurePermGroup" );
-ActionAbelianCSPG := NewOperationArgs( "ActionAbelianCSPG" );
-ImageOnAbelianCSPG := NewOperationArgs( "ImageOnAbelianCSPG" );
-ChiefSeriesPermGroup := NewOperationArgs( "ChiefSeriesPermGroup" );
+DeclareGlobalFunction( "NonPerfectCSPG" );
+DeclareGlobalFunction( "PerfectCSPG" );
+DeclareGlobalFunction( "CasesCSPG" );
+DeclareGlobalFunction( "FindNormalCSPG" );
+DeclareGlobalFunction( "FindRegularNormalCSPG" );
+DeclareGlobalFunction( "NinKernelCSPG" );
+DeclareGlobalFunction( "RegularNinKernelCSPG" );
+DeclareGlobalFunction( "NormalizerStabCSPG" );
+DeclareGlobalFunction( "TransStabCSPG" );
+DeclareGlobalFunction( "PullbackKernelCSPG" );
+DeclareGlobalFunction( "PullbackCSPG" );
+DeclareGlobalFunction( "CosetRepAsWord" );
+DeclareGlobalFunction( "ImageInWord" );
+DeclareGlobalFunction( "SiftAsWord" );
+DeclareGlobalFunction( "InverseAsWord" );
+DeclareGlobalFunction( "RandomElmAsWord" );
+DeclareGlobalFunction( "CentralizerNormalCSPG" );
+DeclareGlobalFunction( "CentralizerNormalTransCSPG" );
+DeclareGlobalFunction( "CentralizerTransSymmCSPG" );
+DeclareGlobalFunction( "IntersectionNormalClosurePermGroup" );
+DeclareGlobalFunction( "ActionAbelianCSPG" );
+DeclareGlobalFunction( "ImageOnAbelianCSPG" );
+DeclareGlobalFunction( "ChiefSeriesPermGroup" );
 
 #############################################################################
 ##

@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This    file contains the  functions that    construct and modify ordered
 ##  partitions. These  functions  are used in  the backtrack  algorithms  for
 ##  permutation groups.
@@ -432,14 +435,5 @@ CollectedPartition := function( P, size )
     return Partition( C );
 end;
 
-#############################################################################
-##
 
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             gap
-##  mode:             outline-minor
-##  outline-regexp:   "#[AEFTV]"
-##  fill-column:      77
-##  End:
 #############################################################################

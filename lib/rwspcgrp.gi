@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file   contains  the methods  for  groups  defined  by  a polycyclic
 ##  collector.
@@ -158,7 +159,7 @@ end );
 
 #R  IsNBitsPcWordRep
 ##
-IsNBitsPcWordRep := NewRepresentation(
+DeclareRepresentation(
     "IsNBitsPcWordRep",
     IsDataObjectRep, [] );
 
@@ -222,7 +223,7 @@ end );
 ##
 InstallMethod( Comm,
     "generic method for n bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -237,7 +238,7 @@ InstallMethod( Comm,
 ##
 InstallMethod( LeftQuotient,
     "generic method for n bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -252,7 +253,7 @@ InstallMethod( LeftQuotient,
 ##
 InstallMethod( \/,
     "generic method for n bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -267,7 +268,7 @@ InstallMethod( \/,
 ##
 InstallMethod( \*,
     "generic method for n bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -282,7 +283,7 @@ InstallMethod( \*,
 ##
 InstallMethod( \^,
     "generic method for n bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -310,7 +311,7 @@ InstallMethod( \^,
 
 #R  Is8BitsPcWordRep
 ##
-Is8BitsPcWordRep := NewRepresentation(
+DeclareRepresentation(
     "Is8BitsPcWordRep",
     IsNBitsPcWordRep, [] );
 
@@ -444,7 +445,7 @@ end );
 ##
 InstallMethod( \=,
     "for 8 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -459,7 +460,7 @@ InstallMethod( \=,
 ##
 InstallMethod( \<,
     "method for 8 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -473,7 +474,7 @@ InstallMethod( \<,
 
 #R  Is16BitsPcWordRep
 ##
-Is16BitsPcWordRep := NewRepresentation(
+DeclareRepresentation(
     "Is16BitsPcWordRep",
     IsNBitsPcWordRep, [] );
 
@@ -607,7 +608,7 @@ end );
 ##
 InstallMethod( \=,
     "for 16 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -622,7 +623,7 @@ InstallMethod( \=,
 ##
 InstallMethod( \<,
     "for 8 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -636,7 +637,7 @@ InstallMethod( \<,
 
 #R  Is32BitsPcWordRep
 ##
-Is32BitsPcWordRep := NewRepresentation(
+DeclareRepresentation(
     "Is32BitsPcWordRep",
     IsNBitsPcWordRep, [] );
 
@@ -770,7 +771,7 @@ end );
 ##
 InstallMethod( \=,
     "for 32 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -785,7 +786,7 @@ InstallMethod( \=,
 ##
 InstallMethod( \<,
     "for 32 bits pc word rep",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep, 
       IsMultiplicativeElementWithInverseByPolycyclicCollector
@@ -1100,7 +1101,7 @@ end );
 #############################################################################
 InstallMethod( PolycyclicFactorGroup,
     "for free group, list using ' PolycyclicFactorGroupByRelators'",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsFreeGroup,
       IsHomogeneousList ],
     0,

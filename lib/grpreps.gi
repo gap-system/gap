@@ -2,6 +2,9 @@
 ##
 #W  grpreps.gi                  GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.grpreps_gi :=
     "@(#)$Id$";
 
@@ -9,7 +12,7 @@ Revision.grpreps_gi :=
 ##
 #M RegularModule( <G>, <F> ) . . . . . . . . . . .right regular F-module of G
 ##
-RegularModuleByGens := function( G, gens, F )
+InstallGlobalFunction( RegularModuleByGens, function( G, gens, F )
     local mats, elms, d, zero, i, mat, j, o;
     mats := List( gens, x -> false );
     elms := AsList( G );
@@ -24,7 +27,7 @@ RegularModuleByGens := function( G, gens, F )
         mats[i] := mat;
     od;
     return GModuleByMats( mats, F );
-end;
+end );
 
 InstallMethod( RegularModule,
     "generic method for groups",

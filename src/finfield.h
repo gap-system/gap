@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the  functions  to compute  with elements  from  small
 **  finite fields.
@@ -49,7 +50,7 @@
 **  order of the finite field minus one.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_finfield_h =
+const char * Revision_finfield_h =
    "@(#)$Id$";
 #endif
 
@@ -400,25 +401,9 @@ extern  Obj             TypeFFE (
 /****************************************************************************
 **
 
-*F  SetupFinfield() . . . . . . . . . . . initialize the finite field package
+*F  InitInfoFinfield()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupFinfield ( void );
-
-
-/****************************************************************************
-**
-*F  InitFinfield()  . . . . . . . . . . . initialize the finite field package
-**
-**  'InitFinfield' initializes the finite field package.
-*/
-extern void InitFinfield ( void );
-
-
-/****************************************************************************
-**
-*F  CheckFinfield() . .  check the initialisation of the finite field package
-*/
-extern void CheckFinfield ( void );
+StructInitInfo * InitInfoFinfield ( void );
 
 
 /****************************************************************************

@@ -28,45 +28,31 @@ Codes1000 := [];
 
 #############################################################################
 ##
-#F CoefficientsMultiadic
-##
-CoefficientsMultiadic := function( list, c )
-    local v, i;
-    v := List( list, x -> false );
-    for i in Reversed([1..Length(list)]) do
-        v[i] := RemInt( c, list[i] );
-        c := QuoInt( c, list[i] );
-    od;
-    return v;
-end; 
-
-#############################################################################
-##
 #F PermGroupCode( c, size ) . . . . . . . . . . . .look up permgroup in table
 ##
-PermGroupCode := function( c, size )
+InstallGlobalFunction( PermGroupCode, function( c, size )
     local tab, g;
     tab  := PermGroupTable[ size ][ -c ];
     g    := Group( tab.gens, () );
     return g;
-end;
+end );
 
 #############################################################################
 ##
 #F GroupCode( c, size ) . . . . . . . . . . . . . . . . . . . . . . . .decode
 ##
-GroupCode := function( c, size )
+InstallGlobalFunction( GroupCode, function( c, size )
     if c >= 0 then
         return PcGroupCode( c, size );
     fi;
     return PermGroupCode( c, size );
-end;
+end );
 
 #############################################################################
 ##
 #F LoadSmallGroups( list ) . . . . . . . . . . . . . . . . . . . .load groups
 ##
-LoadSmallGroups := function( list )
+InstallGlobalFunction( LoadSmallGroups, function( list )
     local new, get, loaded, i, tab, j, str;
 
     # filter the one we know already
@@ -129,24 +115,24 @@ LoadSmallGroups := function( list )
             Table1000[i] := Codes1000[i];
         od;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #F UnloadSmallGroups( list ) . . . . . . . . . . . . . . . . . .unbind groups
 ##
-UnloadSmallGroups := function( list )
+InstallGlobalFunction( UnloadSmallGroups, function( list )
     local i;
     for i in list do
         Unbind( Table1000[i] );
     od;
-end;
+end );
 
 #############################################################################
 ##
 #F SmallGroup( size, nr ) . . . . . . . . . . .construct group from catalogue
 ##
-SmallGroup := function( size, nr )
+InstallGlobalFunction( SmallGroup, function( size, nr )
     local g;
 
     if size in [ 512, 768 ] then
@@ -167,13 +153,13 @@ SmallGroup := function( size, nr )
     # get the group
     g := GroupCode( Table1000[ size ][ nr ], size );
     return g;
-end;
+end );
 
 #############################################################################
 ##
 #F AllSmallGroups( size ) . . . . . . . . . . construct groups from catalogue
 ##
-AllSmallGroups := function( size )
+InstallGlobalFunction( AllSmallGroups, function( size )
 
     if size in [ 512, 768 ] then
         Error( "AllSmallGroups: sizes 512 and 768 are not available" );
@@ -186,13 +172,13 @@ AllSmallGroups := function( size )
         LoadSmallGroups( [size] );
     fi;
     return List( [1..Length(Table1000[size])], x -> SmallGroup(size,x) );
-end;
+end );
 
 #############################################################################
 ##
 #F NumberSmallGroups( size ) . . . . . . . . . . . . . . . . number of groups
 ##
-NumberSmallGroups := function( size )
+InstallGlobalFunction( NumberSmallGroups, function( size )
 
     if size in [ 512, 768 ] then
         Error( "NumberSmallGroups: sizes 512 and 768 are not available" );
@@ -205,5 +191,5 @@ NumberSmallGroups := function( size )
         LoadSmallGroups( [size] );
     fi;
     return Length( List( Table1000[size] ) );
-end;
+end );
 

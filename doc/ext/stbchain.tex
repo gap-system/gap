@@ -927,7 +927,7 @@ the  product of two automorphisms, because   this product must again have
 the    right kind. We    also have to write  a    function which uses the
 enumerators to apply such an automorphism to positive integers.
 \begintt
-InstallMethod( \*, IsIdentical,
+InstallMethod( \*, IsIdenticalObj,
         [ IsPermOnEnumeratorDefaultRep, IsPermOnEnumeratorDefaultRep ], 0,
     function( a, b )
     perm := a!.perm * b!.perm;

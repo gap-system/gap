@@ -135,7 +135,7 @@ gap> ZumbroichBase( 12, 3 );
 [ 0, 3 ]
 gap> ZumbroichBase( 12, 4 );
 [ 4, 8 ]
-gap> ZumbroichBase( 45, 1 );
+gap> Print(ZumbroichBase( 45, 1 ),"\n");
 [ 1, 2, 3, 6, 7, 8, 11, 12, 16, 17, 19, 21, 24, 26, 28, 29, 33, 34, 37, 38, 
   39, 42, 43, 44 ]
 gap> ZumbroichBase( 10, 1 );
@@ -194,17 +194,17 @@ gap> Coefficients( c, E( 8) );
 fail
 
 gap> c:= Basis( AsField( GaussianRationals, NF( 12, [ 5 ] ) ) );
-CanonicalBasis( GaussianRationals )
+CanonicalBasis( AsField( GaussianRationals, CF(4) ) )
 gap> BasisVectors( c );
-[ 1, E(4) ]
+[ 1 ]
 gap> Coefficients( c, E(12) );
 fail
 gap> Coefficients( c, E(12)+E(12)^5 );
-[ 0, 1 ]
-gap> 
+[ E(4) ]
+
 gap> c:= Basis( AsField( NF( 5, [ 4 ] ), CF(15) ) );
 CanonicalBasis( AsField( NF(5,[ 1, 4 ]), CF(15) ) )
-gap> BasisVectors( c );
+gap> Print(BasisVectors( c ),"\n");
 [ -1/15*E(15)+2/15*E(15)^2+2/5*E(15)^4-2/15*E(15)^7+8/15*E(15)^8+1/15*E(15)^11
      +7/15*E(15)^13+3/5*E(15)^14, 
   2/5*E(15)+8/15*E(15)^2-1/15*E(15)^4+7/15*E(15)^7+2/15*E(15)^8+3/5*E(15)^11
@@ -213,7 +213,7 @@ gap> BasisVectors( c );
      +8/15*E(15)^13+2/5*E(15)^14, 
   3/5*E(15)+7/15*E(15)^2+1/15*E(15)^4+8/15*E(15)^7-2/15*E(15)^8+2/5*E(15)^11
      +2/15*E(15)^13-1/15*E(15)^14 ]
-gap> Coefficients( c, E(15) );
+gap> Print(Coefficients( c, E(15) ),"\n");
 [ 3*E(5)+E(5)^2+E(5)^3+3*E(5)^4, -3*E(5)-3*E(5)^4, 
   -3*E(5)-2*E(5)^2-2*E(5)^3-3*E(5)^4, 3*E(5)+3*E(5)^4 ]
 gap> Coefficients( c, E( 5) );
@@ -265,7 +265,7 @@ gap> Order( aut );
 
 gap> ImageElm( aut, E(45) );
 E(45)^2
-gap> ImagesSet( aut, Conjugates( f, E(45) ) );
+gap> Print(ImagesSet( aut, Conjugates( f, E(45) ) ),"\n");
 [ -E(45)-E(45)^16, -E(45)^2-E(45)^17, -E(45)^7-E(45)^37, -E(45)^8-E(45)^38, 
   -E(45)^11-E(45)^26, -E(45)^19-E(45)^34, -E(45)^28-E(45)^43, 
   -E(45)^29-E(45)^44, E(45)^44, E(45)^43, E(45)^38, E(45)^37, E(45)^34, 
@@ -276,7 +276,7 @@ E(45)^2
 
 gap> PreImageElm( aut, E(45) );
 -E(45)^8-E(45)^38
-gap> PreImagesSet( aut, Conjugates( f, E(45) ) );
+gap> Print(PreImagesSet( aut, Conjugates( f, E(45) ) ),"\n");
 [ -E(45)-E(45)^16, -E(45)^2-E(45)^17, -E(45)^7-E(45)^37, -E(45)^8-E(45)^38, 
   -E(45)^11-E(45)^26, -E(45)^19-E(45)^34, -E(45)^28-E(45)^43, 
   -E(45)^29-E(45)^44, E(45)^44, E(45)^43, E(45)^38, E(45)^37, E(45)^34, 
@@ -302,7 +302,7 @@ gap> aut^3;
 ANFAutomorphism( CF(45), 8 )
 
 gap> g:= GaloisGroup( f );
-Group( [ ANFAutomorphism( CF(45), 11 ), ANFAutomorphism( CF(45), 37 ) ], ... )
+<group with 2 generators>
 gap> Size( g );
 24
 gap> IsAbelian( g );

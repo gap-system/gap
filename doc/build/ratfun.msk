@@ -1,0 +1,489 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  ratfun.msk                  GAP documentation            Alexander Hulpke
+%A                                                           Frank Celler
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Polynomials and Rational Functions}
+
+Let $R$ be a commutative ring-with-one. We call a free associative
+algebra $A$ over $R$ a *polynomial ring* over $R$. The free generators of
+$A$ are called *indeterminates*, they are usually denoted by
+$x_1,x_2,\ldots$. The number of indeterminates is called the *rank* of $A$.
+The elements of $A$ are called *polynomials*. Products of
+indeterminates and ring elements are called *monomials*, every
+polynomial can be expressed as a finite sum of monomials in a form like
+$r_{1,0}x_1+r_{1,1}x_1x_2+r_{0,1}x_2+\cdots$ with $r_{i,j}\in R$.
+
+A polynomial ring of rank 1 is called *univariate* polynomial ring, its
+elements are univariate polynomials. Polynomial rings of smaller rank
+naturally embed in rings of higher rank; if $S$ is a subring of $R$ then a
+polynomial ring over $S$ naturally embeds in a polynomial ring over $R$ of
+the same rank.
+
+In {\GAP} therefore the family of a polynomial depends only on the family of
+the coefficients, all polynomials whose coefficients lie in the same family
+are compatible.
+Internally, indeterminates are represented by positive integers, but it is
+possible to give names to them to have them printed in a nicer way. Beware,
+however that there is not necessarily any relation between the way an
+indeterminate is called and the way it is printed. See section
+"Indeterminates" for details.
+
+If $R$ is an integral domain, $A$ is an integral domain as well and one can
+therefore form its quotient field $Q$. This field is called a *field of
+rational functions*. Again $A$ embeds naturally into $Q$ and {\GAP} will
+perform this embedding implicitly, in fact implementing the ring of rational
+functions over $R$. To avoid problems with leading
+coefficients, however, $R$ must be a unique factorization domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The external representation of polynomials}
+
+To explain polynomials in {\GAP} in full it is necessary to show how they
+actually are created from scratch. This is the purpose of this section. If
+you want to work with polynomials you will probably never call these
+commands, but start with indeterminates. In this case you can safely skip
+this section.
+
+\Declaration{RationalFunctionsFamily}
+\Declaration{IsRationalFunctionsFamily}
+\FileHeader{ratfun}[1]
+
+\beginexample
+gap> fam:=RationalFunctionsFamily(FamilyObj(1));    
+NewFamily( "RationalFunctionsFamily(...)", [ 586, 588 ], 
+[ 81, 84, 88, 92, 96, 99, 102, 106, 110, 586, 588 ] )
+gap> p:=ObjByExtRep(fam,[0,[[1,2],1,[2,1,3,7],3]]);
+x_1^2+3*x_2*x_3^7
+gap> ExtRepOfObj((p+1)/p);
+[ 0, [ [  ], 1, [ 1, 2 ], 1, [ 2, 1, 3, 7 ], 3 ], 
+  [ [ 1, 2 ], 1, [ 2, 1, 3, 7 ], 3 ] ]
+\endexample
+
+{\GAP} does *not* embed the base ring in the polynomial ring. While
+multiplication and addition of base ring elements to rational functions
+return the obvious results, polynomials and rational functions are not
+equal.
+\beginexample
+gap> 1=p^0;
+false
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparison of rational functions}
+
+\>`<f> = <g>'{comparison!rational functions}
+
+Two rational functions <f> and <g> are equal if the product
+$`Numerator'(<f>)*`Denominator'(<g>)$ equals
+$`Numerator'(<g>)*`Denominator'(<f>)$.
+
+\beginexample
+gap> x:=Indeterminate(Rationals,1);;y:=Indeterminate(Rationals,2);;
+gap> f:=3+x*y+x^5;g:=5+x^2*y+x*y^2;
+3+x_1*x_2+x_1^5
+5+x_1^2*x_2+x_1*x_2^2
+gap> a:=g/f;
+(5+x_1^2*x_2+x_1*x_2^2)/(3+x_1*x_2+x_1^5)
+gap> b:=(g*f)/(f^2);
+(15+5*x_1*x_2+3*x_1^2*x_2+3*x_1*x_2^2+5*x_1^5+x_1^3*x_2^2+x_1^2*x_2^3+x_1^7*x_
+2+x_1^6*x_2^2)/(9+6*x_1*x_2+x_1^2*x_2^2+6*x_1^5+2*x_1^6*x_2+x_1^10)
+gap> a=b;
+true
+\endexample
+
+\>`<f> \< <g>'{smaller!rational functions}
+
+The ordering of rational functions is defined in several steps. Monomials
+(products of indeterminates) are sorted first by total-degree and then
+lexicographically. Products of monomials with ring elements (``terms'') are
+compared first by their monomials and then by their coefficients.
+
+\beginexample
+gap> x<y; 
+true
+gap> x^2*y<x*y^2;                  
+true
+gap> x*y<x^2*y;
+true
+gap> x^2*y < 5* y*x^2;
+true
+\endexample
+Polynomials are compared by comparing the largest terms in turn until they
+differ. 
+\beginexample
+gap> x+y<y;
+false
+gap> x<x+1;
+true
+\endexample
+Rational functions are compared by comparing
+$`Numerator'(<f>)*`Denominator'(<g>)$ with
+$`Numerator'(<g>)*`Denominator'(<f>)$. (As the ordering of monomials is
+nvariant under multiplication this is independent of common factors in
+numerator and denominator!)
+\beginexample
+gap> f/g<g/f;
+false
+gap> f/g<(g*g)/(f*g);
+false
+\endexample
+
+For univariate polynomials this reduces to an ordering first by total degree
+and then lexicographically on the coefficients.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Indeterminates}
+
+\FileHeader{ringpoly}[2]
+
+\Declaration{Indeterminate}
+\beginexample
+gap> a:=Indeterminate(GF(3));
+x_1
+gap> x:=Indeterminate(GF(3),"x");
+x
+gap> Indeterminate(GF(3),"x")=x;
+false
+gap> y:=Indeterminate(GF(3),"y");z:=Indeterminate(GF(3),"X");
+y
+X
+gap> Indeterminate(GF(3),3);
+y
+gap> Indeterminate(GF(3),[y,z]);   
+x
+\endexample
+
+\Declaration{IndeterminateNumberOfUnivariateLaurentPolynomial}
+\beginexample
+gap> IndeterminateNumberOfUnivariateLaurentPolynomial(z);
+4
+\endexample
+
+\Declaration{IndeterminateName}
+There is a special method installed for `SetName' that will assign a name to
+an indeterminate.
+\beginexample
+gap> IndeterminateName(FamilyObj(x),3);
+"y"
+gap> HasIndeterminateName(FamilyObj(x),5);
+false
+gap> a:=Indeterminate(GF(3),5);
+x_5
+gap> SetName(a,"ah");
+gap> a^5+a;
+ah+ah^5
+gap> SetIndeterminateName(FamilyObj(x),10,"bla");
+gap> Indeterminate(GF(3),10);
+bla
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polynomial Rings}
+
+While polynomials depend only on the family of the coefficients, polynomial
+rings $A$ are defined over a base ring $R$. A polynomial is an element of
+$A$ if and only if all its coefficents are contained in $R$. Besides
+providing domains and an easy way to create polynomials, polynomial rings
+can affect the behavior of operations like factorization into irreducibles.
+
+\Declaration{PolynomialRing}
+\Declaration{IndeterminatesOfPolynomialRing}
+\Declaration{CoefficientsRing}
+\beginexample
+gap> r:=PolynomialRing(Rationals);
+<algebra-with-one over Rationals, with 1 generators>
+gap>  r:=PolynomialRing(Rationals,3);
+PolynomialRing(..., [ x_1, x_2, x_3 ])
+gap> IndeterminatesOfPolynomialRing(r);
+[ x_1, x_2, x_3 ]
+gap> r2:=PolynomialRing(Rationals,[5,7,12]);
+PolynomialRing(..., [ x_5, x_7, x_12 ])
+gap> CoefficientsRing(r);
+Rationals
+gap> r:=PolynomialRing(Rationals,3);
+PolynomialRing(..., [ x_1, x_2, x_3 ])
+gap> r2:=PolynomialRing(Rationals,3,IndeterminatesOfPolynomialRing(r));
+PolynomialRing(..., [ x_4, x_5, x_6 ])
+gap> r:=PolynomialRing(Rationals,["x","y","z","z2"]);                           
+PolynomialRing(..., [ x, y, z, z2 ])
+\endexample
+
+\Declaration{IsPolynomialRing}
+\Declaration{IsFiniteFieldPolynomialRing}
+\Declaration{IsRationalsPolynomialRing}
+
+\beginexample
+gap> IsPolynomialRing(r);
+true
+gap> IsFiniteFieldPolynomialRing(r);
+false
+gap> IsRationalsPolynomialRing(r);  
+true
+\endexample
+
+\Declaration{IsPolynomial}
+\Declaration{NumeratorOfRationalFunction}
+\Declaration{DenominatorOfRationalFunction}
+\beginexample
+gap> x:=IndeterminatesOfPolynomialRing(r)[1];;
+gap> y:=IndeterminatesOfPolynomialRing(r)[2];;
+gap> IsPolynomial((x*y+x^2)/y);
+false
+gap> DenominatorOfRationalFunction((x*y+x^2)/y);
+y
+gap> NumeratorOfRationalFunction((x*y+x^2)/y);  
+x*y+x^2
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Multivariate polynomials}
+
+\Declaration{Value}
+\beginexample
+gap> Value(x*y+y+x^7,[5,7,99]);
+78167
+\endexample
+
+\Declaration{Resultant}
+\beginexample
+gap> Resultant(x^4+y,y^4+x,1);
+y+y^16
+gap> Resultant(x^4+y,y^4+x,2);
+x+x^16
+\endexample
+
+\Declaration{OnIndeterminates}
+\beginexample
+gap> OnIndeterminates(x^7*y+x*y^4,(1,17)(2,28)); 
+x_17*x_28^4+x_17^7*x_28
+gap> Stabilizer(Group((1,2,3,4),(1,2)),x*y,OnIndeterminates);
+Group( [ (1,2), (3,4), (), (1,2)(3,4) ], ... )
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polynomials as univariate polynomials in one indeterminate}
+
+\Declaration{DegreeIndeterminate}
+\beginexample
+gap> f:=x^5+3*x*y+9*y^7+4*y^5*x+3*y+2;
+2+3*y+3*x*y+x^5+4*x*y^5+9*y^7
+gap> DegreeIndeterminate(f,1);
+5
+gap> DegreeIndeterminate(f,y);
+7
+\endexample
+
+\Declaration{PolynomialCoefficientsOfPolynomial}
+\beginexample
+gap> PolynomialCoefficientsOfPolynomial(f,2);
+[ 2+x^5, 3+3*x, 0, 0, 0, 4*x, 0, 9 ]
+\endexample
+
+\Declaration{LeadingCoefficient}
+\Declaration{LeadingMonomial}
+\beginexample
+gap> LeadingCoefficient(f,1);
+1
+gap> LeadingCoefficient(f,2);
+9
+gap> LeadingMonomial(f);
+[ 2, 7 ]
+gap> LeadingCoefficient(f);                  
+9
+\endexample
+
+\Declaration{Derivative}
+\Declaration{Discriminant}
+\beginexample
+gap> Derivative(f,2);
+3+3*x+20*x*y^4+63*y^6
+gap> Discriminant(f,1);
+50000+300000*y+675000*y^2+675000*y^3+253125*y^4+62208*y^5+900000*y^7+
+4050000*y^8+6489720*y^9+3037500*y^10+1105920*y^13+6075000*y^14+18225000*y^15+
+13668750*y^16+1474560*y^17+19208040*y^21+27337500*y^22+262144*y^25+20503125*y^
+28
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Univariate Polynomials}
+
+Some of the operations are actually defined on the larger domain of Laurent
+polynomials (see "Laurent Polynomials"). For this section you can simply
+ignore the word ``Laurent'' if it occurs in a description.
+
+\Declaration{UnivariatePolynomialRing}
+\Declaration{IsUnivariatePolynomialRing}
+\beginexample
+gap> r:=UnivariatePolynomialRing(Rationals,"x");
+<algebra-with-one over Rationals, with 1 generators>
+gap> r2:=PolynomialRing(Rationals,["q"]); 
+<algebra-with-one over Rationals, with 1 generators>
+gap> IsUnivariatePolynomialRing(r);
+true
+gap> IsUnivariatePolynomialRing(r2);
+false
+\endexample
+
+\Declaration{UnivariatePolynomial}
+\Declaration{UnivariatePolynomialByCoefficients}
+\Declaration{CoefficientsOfUnivariatePolynomial}
+\Declaration{LeadingCoefficient}
+\Declaration{DegreeOfUnivariateLaurentPolynomial}
+\Declaration{IndeterminateOfUnivariateLaurentPolynomial}
+See also "IndeterminateNumberOfUnivariateLaurentPolynomial".
+\beginexample
+gap> p:=UnivariatePolynomial(Rationals,[1,2,3,4],1);
+1+2*x+3*x^2+4*x^3
+gap> CoefficientsOfUnivariatePolynomial(p);
+[ 1, 2, 3, 4 ]
+gap> LeadingCoefficient(p);
+4
+gap> DegreeOfUnivariateLaurentPolynomial(p);
+3
+gap> IndeterminateNumberOfUnivariateLaurentPolynomial(p);
+1
+gap> IndeterminateOfUnivariateLaurentPolynomial(p);      
+x
+\endexample
+
+\Declaration{UnivariatePolynomialByCoefficients}
+\beginexample
+gap> UnivariatePolynomialByCoefficients(FamilyObj(1),[9,2,3,4],73);
+9+2*x_73+3*x_73^2+4*x_73^3
+\endexample
+
+\Declaration{IsUnivariatePolynomial}
+\Declaration{IsUnivariateRationalFunction}
+
+Recall that some functions for multivariate polynomials permit a different
+syntax for univariate polynomials which drops the requirement to specify the
+indeterminate. Examples are
+`Value',`Discriminant',`Derivative',`LeadingCoefficient' and
+`LeadingMonomial':
+\beginexample
+gap> Value(p,Z(5));
+Z(5)^2
+\endexample
+\Declaration{Derivative}
+\beginexample
+gap> Derivative(p);
+2+6*x+12*x^2
+\endexample
+
+\Declaration{RootsOfUPol}
+\beginexample
+gap> RootsOfUPol(50-45*x-6*x^2+x^3);
+[ 10, 1, -5 ]
+\endexample
+
+\Declaration{IntegerPolynomial}
+
+\Declaration{BRCIUnivPols}
+\beginexample
+gap> BRCIUnivPols(x^4+x+1,y^2);
+fail
+gap> BRCIUnivPols(x^4+x+1,x^2);
+[ NewFamily( "CyclotomicsFamily", [ 151 ], [ 82, 85, 89, 93, 97, 100, 103, 
+      107, 111, 120, 123, 151 ] ), 1 ]
+\endexample
+
+The info class for univariate polynomials is `InfoPoly'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Characteristic polynomials}
+
+\Declaration{CharacteristicPolynomial}
+\Declaration{MinimalPolynomial}
+\beginexample
+gap> MinimalPolynomial(Rationals,[[2,0],[0,2]]);
+-2+x
+gap> CharacteristicPolynomial(Rationals,[[2,0],[0,2]],2);
+4-4*y+y^2
+\endexample
+
+\Declaration{CyclotomicPol}
+\Declaration{CyclotomicPolynomial}
+\beginexample
+gap> CyclotomicPolynomial(Rationals,5);
+1+x+x^2+x^3+x^4
+gap> CyclotomicPol(5);                 
+[ 1, 1, 1, 1, 1 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polynomial factorization}
+
+{\GAP} provides methods to factorize univariate polynomials over finite
+fields and over the field of rational numbers.
+
+\>Factors([<R>,]<upoly>[,<opt>])!{of univariate polynomial}
+
+returns a list of the irreducible factors of the univariate polynomial
+<upoly> in the ring <R>.
+
+Over the rationals, it is possible to pass a recors <opt> as a third
+argument. This record can contain the following components:
+\beginitems
+`onlydegs'&is a set of positive integers. The factorization assumes
+that all irreducible factors have a degree in this set.
+
+`stopdegs'&is a set of positive integers. The factorization will stop once a
+factor of degree in `stopdegs' has been found and will return the
+factorization found so far.
+\enditems
+
+\Declaration{FactorsSquarefree}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Laurent Polynomials}
+
+A univariate polynomial can be written in the form $r_0+r_1x+\cdots+r_nx^n$
+with $r_i\in R$.  Formally, there is no reason to start with 0, if $m$ is an
+integer, we can consider objects of the form
+$r_mx^m+r_{m+1}x^{m+1}+\cdots+r_nx^n$. We call these *Laurent polynomials*.
+Laurent polynomials also can be considered as quotients of a univariate
+polynomial by a power of the indeterminate.
+The addition and multiplication of univariate polynomials extends to Laurent
+polynomials (though evaluation at points may pose problems) and many
+functions for univariate polynomials extend to laurent polynomials (or
+extended versions for laurent polynomials exist.
+
+\Declaration{IsUnivariateLaurentPolynomial}
+\Declaration{IsLaurentPolynomial}
+
+\Declaration{UnivariateLaurentPolynomialByCoefficients}
+\Declaration{CoefficientsOfUnivariateLaurentPolynomial}
+\beginexample
+gap> p:=UnivariateLaurentPolynomialByCoefficients(FamilyObj(1),
+> [1,2,3,4,5],-2);
+x^-2+2*x^-1+3+4*x+5*x^2
+gap> NumeratorOfRationalFunction(p);DenominatorOfRationalFunction(p);
+1+2*x+3*x^2+4*x^3+5*x^4
+x^2
+gap> CoefficientsOfUnivariateLaurentPolynomial(p*p);
+[ [ 1, 4, 10, 20, 35, 44, 46, 40, 25 ], -4 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Polynomial Reduction}
+
+\Declaration{PolynomialReduction}
+
+The polynomial reduction requires an ordering on monomials. This must be a
+function that takes two monomials (in the form of lists as described in "The
+external representation of polynomials") and returns whether one is smaller
+than the other. Currently two admissible orderings are available:
+
+\Declaration{MonomialRevLexico_Less}
+\Declaration{MonomialTotalDegree_Less}
+
+At the moment {\GAP} does not contain any facilities to compute
+Gr{\accent127 o}bner
+bases.

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the expressions package.
 **
@@ -12,7 +13,7 @@
 **  expressions to their values and prints expressions.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_exprs_h =
+const char * Revision_exprs_h =
    "@(#)$Id$";
 #endif
 
@@ -155,27 +156,9 @@ extern  void            (* PrintExprFuncs [256] ) ( Expr expr );
 /****************************************************************************
 **
 
-*F  SetupExprs()  . . . . . . . . . . . .  initialize the expressions package
+*F  InitInfoExprs() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupExprs ( void );
-
-
-/****************************************************************************
-**
-*F  InitExprs() . . . . . . . . . . . . .  initialize the expressions package
-**
-**  'InitExprs' initializes the expressions package.
-*/
-extern void InitExprs ( void );
-
-
-/****************************************************************************
-**
-*F  CheckExprs()  . . . . check the initialisation of the expressions package
-**
-**  'InitExprs' initializes the expressions package.
-*/
-extern void CheckExprs ( void );
+StructInitInfo * InitInfoExprs ( void );
 
 
 /****************************************************************************

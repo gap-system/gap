@@ -7,6 +7,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains (representation dependent)
 ##
@@ -37,8 +38,7 @@ Revision.mapprep_gi :=
 ##  Note that this representation does *not* decide whether <map> is
 ##  a positional or a component object.
 ##
-IsDefaultGeneralMappingRep := NewRepresentation(
-    "IsDefaultGeneralMappingRep",
+DeclareRepresentation( "IsDefaultGeneralMappingRep",
     IsGeneralMapping and HasSource and HasRange,
     [] );
 #T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping', 
@@ -49,11 +49,12 @@ IsDefaultGeneralMappingRep := NewRepresentation(
 ##
 #F  TypeOfDefaultGeneralMapping( <source>, <range>, <filter> )
 ##
-TypeOfDefaultGeneralMapping := function( source, range, filter )
+InstallGlobalFunction( TypeOfDefaultGeneralMapping,
+    function( source, range, filter )
     local Type;
 
     # Do a cheap test whether the general mapping has equal source and range.
-    if IsIdentical( source, range ) then
+    if IsIdenticalObj( source, range ) then
       filter:= filter and IsEndoGeneralMapping;
     fi;
 
@@ -68,14 +69,16 @@ TypeOfDefaultGeneralMapping := function( source, range, filter )
 
     # Return the type.
     return Type;
-end;
+end );
 
 
 #############################################################################
 ##
 #M  Range( <map> )
 ##
-InstallMethod( Range, true,
+InstallMethod( Range,
+    "for default general mapping",
+    true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
     2*SUM_FLAGS + 1,  # higher than the system getter!
     map -> DataType( TypeObj( map ) )[2] );
@@ -85,7 +88,9 @@ InstallMethod( Range, true,
 ##
 #M  Source( <map> )
 ##
-InstallMethod( Source, true,
+InstallMethod( Source,
+    "for default general mapping",
+    true,
     [ IsGeneralMapping and IsDefaultGeneralMappingRep ],
     2*SUM_FLAGS + 1,  # higher than the system getter!
     map -> DataType( TypeObj( map ) )[1] );
@@ -100,7 +105,7 @@ InstallMethod( Source, true,
 ##
 #R  IsCompositionMappingRep( <map> )
 ##
-IsCompositionMappingRep := NewRepresentation( "IsCompositionMappingRep",
+DeclareRepresentation( "IsCompositionMappingRep",
     IsGeneralMapping and IsAttributeStoringRep, [ "map1", "map2" ] );
 #T better list object?
 
@@ -110,7 +115,7 @@ IsCompositionMappingRep := NewRepresentation( "IsCompositionMappingRep",
 #M  CompositionMapping2( <map2>, <map1> ) . . . . .  for two general mappings
 ##
 InstallMethod( CompositionMapping2,
-    "method for two general mappings",
+    "for two general mappings",
     FamSource1EqFamRange2,
     [ IsGeneralMapping, IsGeneralMapping ], 0,
     function( map2, map1 )
@@ -166,7 +171,7 @@ InstallMethod( CompositionMapping2,
 #M  IsInjective( <map> )  . . . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( IsInjective,
-    "method for a composition mapping",
+    "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 0,
     function( com )
@@ -189,7 +194,7 @@ InstallMethod( IsInjective,
 #M  IsSingleValued( <map> )   . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( IsSingleValued,
-    "method for a composition mapping",
+    "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 0,
     function( com )
@@ -212,7 +217,7 @@ InstallMethod( IsSingleValued,
 #M  IsSurjective( <map> ) . . . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( IsSurjective,
-    "method for a composition mapping",
+    "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 0,
     function( com )
@@ -230,7 +235,7 @@ InstallMethod( IsSurjective,
 #M  IsTotal( <map> )  . . . . . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( IsTotal,
-    "method for a composition mapping",
+    "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 0,
     function( com )
@@ -248,7 +253,7 @@ InstallMethod( IsTotal,
 #M  ImagesElm( <map>, <elm> ) . . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( ImagesElm,
-    "method for a composition mapping, and an element",
+    "for a composition mapping, and an element",
     FamSourceEqFamElm,
     [ IsCompositionMappingRep, IsObject ], 0,
     function( com, elm )
@@ -267,7 +272,7 @@ InstallMethod( ImagesElm,
 #M  ImagesSet( <map>, <elms> )  . . . . . . . . . . . for composition mapping
 ##
 InstallMethod( ImagesSet,
-    "method for a composition mapping, and an collection",
+    "for a composition mapping, and an collection",
     CollFamSourceEqFamElms,
     [ IsCompositionMappingRep, IsCollection ], 0,
     function ( com, elms )
@@ -286,7 +291,7 @@ InstallMethod( ImagesSet,
 #M  ImagesRepresentative( <map>, <elm> )  . . . . . . for composition mapping
 ##
 InstallMethod( ImagesRepresentative,
-    "method for a composition mapping, and an element",
+    "for a composition mapping, and an element",
     FamSourceEqFamElm,
     [ IsCompositionMappingRep, IsObject ], 0,
     function( com, elm )
@@ -318,7 +323,7 @@ InstallMethod( ImagesRepresentative,
 #M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . for composition mapping
 ##
 InstallMethod( PreImagesElm,
-    "method for a composition mapping, and an element",
+    "for a composition mapping, and an element",
     FamRangeEqFamElm,
     [ IsCompositionMappingRep, IsObject ], 0,
     function( com, elm )
@@ -337,7 +342,7 @@ InstallMethod( PreImagesElm,
 #M  PreImagesSet( <map>, <elm> )  . . . . . . . . . . for composition mapping
 ##
 InstallMethod( PreImagesSet,
-    "method for a composition mapping, and an collection",
+    "for a composition mapping, and an collection",
     CollFamRangeEqFamElms,
     [ IsCompositionMappingRep, IsCollection ], 0,
     function( com, elms )
@@ -356,7 +361,7 @@ InstallMethod( PreImagesSet,
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . for composition mapping
 ##
 InstallMethod( PreImagesRepresentative,
-    "method for a composition mapping, and an element",
+    "for a composition mapping, and an element",
     FamRangeEqFamElm,
     [ IsCompositionMappingRep, IsObject ], 0,
     function( com, elm )
@@ -388,7 +393,7 @@ InstallMethod( PreImagesRepresentative,
 #M  KernelOfAdditiveGeneralMapping( <map> ) . . . . . for composition mapping
 ##
 InstallMethod( KernelOfAdditiveGeneralMapping,
-    "method for a composition mapping that resp. add. and add.inv.",
+    "for a composition mapping that resp. add. and add.inv.",
     true,
     [ IsGeneralMapping and IsCompositionMappingRep
       and RespectsAddition and RespectsAdditiveInverses ], 0,
@@ -407,7 +412,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
 #M  CoKernelOfAdditiveGeneralMapping( <map> ) . . . . for composition mapping
 ##
 InstallMethod( CoKernelOfAdditiveGeneralMapping,
-    "method for a composition mapping that resp. add. and add.inv.",
+    "for a composition mapping that resp. add. and add.inv.",
     true,
     [ IsGeneralMapping and IsCompositionMappingRep
       and RespectsAddition and RespectsAdditiveInverses ], 0,
@@ -426,7 +431,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
 #M  KernelOfMultiplicativeGeneralMapping( <map> ) . . for composition mapping
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
-    "method for a composition mapping that resp. mult. and inv.",
+    "for a composition mapping that resp. mult. and inv.",
     true,
     [ IsGeneralMapping and IsCompositionMappingRep
       and RespectsMultiplication and RespectsInverses ], 0,
@@ -445,7 +450,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
 #M  CoKernelOfMultiplicativeGeneralMapping( <map> ) . for composition mapping
 ##
 InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
-    "method for a composition mapping that resp. mult. and inv.",
+    "for a composition mapping that resp. mult. and inv.",
     true,
     [ IsGeneralMapping and IsCompositionMappingRep
       and RespectsMultiplication and RespectsInverses ], 0,
@@ -461,10 +466,23 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
 
 #############################################################################
 ##
+#M  ViewObj( <map> )  . . . . . . . . . . . . . . . . for composition mapping
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . for composition mapping
 ##
+InstallMethod( ViewObj,
+    "for a composition mapping",
+    true,
+    [ IsCompositionMappingRep ], 100,
+    function( com )
+    Print( "CompositionMapping( " );
+    View( com!.map1 );
+    Print( ", " );
+    View( com!.map2 );
+    Print( " )" );
+    end );
+ 
 InstallMethod( PrintObj,
-    "method for a composition mapping",
+    "for a composition mapping",
     true,
     [ IsCompositionMappingRep ], 100,
     function( com )
@@ -481,8 +499,7 @@ InstallMethod( PrintObj,
 ##
 #R  IsMappingByFunctionRep( <map> )
 ##
-IsMappingByFunctionRep := NewRepresentation(
-    "IsMappingByFunctionRep",
+DeclareRepresentation( "IsMappingByFunctionRep",
     IsNonSPGeneralMapping and IsMapping and IsAttributeStoringRep,
     [ "fun" ] );
 #T really attribute storing ??
@@ -492,8 +509,7 @@ IsMappingByFunctionRep := NewRepresentation(
 ##
 #R  IsMappingByFunctionWithInverseRep( <map> )
 ##
-IsMappingByFunctionWithInverseRep := NewRepresentation(
-    "IsMappingByFunctionWithInverseRep",
+DeclareRepresentation( "IsMappingByFunctionWithInverseRep",
         IsMappingByFunctionRep
     and IsBijective,
 #T 1996/10/10 fceller where to put non-reps, 4th position?
@@ -505,7 +521,7 @@ IsMappingByFunctionWithInverseRep := NewRepresentation(
 #F  MappingByFunction( <D>, <E>, <fun> )  . . . . .  create map from function
 #F  MappingByFunction( <D>, <E>, <fun>, <invfun> )
 ##
-MappingByFunction := function ( arg )
+BindGlobal( "MappingByFunction", function ( arg )
     local   map;        # mapping <map>, result
 
     # no inverse function given
@@ -535,7 +551,7 @@ MappingByFunction := function ( arg )
 
     # return the mapping
     return map;
-end;
+end );
 
 
 #############################################################################
@@ -543,7 +559,7 @@ end;
 #M  ImageElm( <map>, <elm> )  . . . . . . . . . . . . for mapping by function
 ##
 InstallMethod( ImageElm,
-    "method for mapping by function",
+    "for mapping by function",
     FamSourceEqFamElm,
     [ IsMappingByFunctionRep, IsObject ], 0,
     function ( map, elm )
@@ -556,7 +572,7 @@ InstallMethod( ImageElm,
 #M  ImagesElm( <map>, <elm> ) . . . . . . . . . . . . for mapping by function
 ##
 InstallMethod( ImagesElm,
-    "method for mapping by function",
+    "for mapping by function",
     FamSourceEqFamElm,
     [ IsMappingByFunctionRep, IsObject ], 0,
     function ( map, elm )
@@ -569,7 +585,7 @@ InstallMethod( ImagesElm,
 #M  ImagesRepresentative( <map>, <elm> )  . . . . . . for mapping by function
 ##
 InstallMethod( ImagesRepresentative,
-    "method for mapping by function",
+    "for mapping by function",
     FamSourceEqFamElm,
     [ IsMappingByFunctionRep, IsObject ], 0,
     function ( map, elm )
@@ -582,7 +598,7 @@ InstallMethod( ImagesRepresentative,
 #M  PreImageElm( <map>, <elm> ) . . . . . . . . . . . for mapping by function
 ##
 InstallMethod( PreImageElm,
-    "method for mapping by function",
+    "for mapping by function",
     FamRangeEqFamElm,
     [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
     function ( map, elm )
@@ -595,7 +611,7 @@ InstallMethod( PreImageElm,
 #M  PreImagesElm( <map>, <elm> )  . . . . . . . . . . for mapping by function
 ##
 InstallMethod( PreImagesElm,
-    "method for mapping by function",
+    "for mapping by function",
     FamRangeEqFamElm,
     [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
     function ( map, elm )
@@ -608,7 +624,7 @@ InstallMethod( PreImagesElm,
 #M  PreImagesRepresentative( <map>, <elm> ) . . . . . for mapping by function
 ##
 InstallMethod( PreImagesRepresentative,
-    "method for mapping by function",
+    "for mapping by function",
     FamRangeEqFamElm,
     [ IsMappingByFunctionWithInverseRep, IsObject ], 0,
     function ( map, elm )
@@ -621,7 +637,7 @@ InstallMethod( PreImagesRepresentative,
 #M  InverseGeneralMapping( <map> )  . . . . . . . . . for mapping by function
 ##
 InstallMethod( InverseGeneralMapping,
-    "method for mapping by function",
+    "for mapping by function",
     true,
     [ IsMappingByFunctionWithInverseRep ], 0,
     function ( map )
@@ -635,10 +651,25 @@ InstallMethod( InverseGeneralMapping,
 
 #############################################################################
 ##
+#M  ViewObj( <map> )  . . . . . . . . . . . . . . . . for mapping by function
 #M  PrintObj( <map> ) . . . . . . . . . . . . . . . . for mapping by function
 ##
+InstallMethod( ViewObj,
+    "for mapping by function",
+    true,
+    [ IsMappingByFunctionRep ], 0,
+    function ( map )
+    Print( "GeneralMappingByFunction( " );
+    View( Source( map ) );
+    Print( ", " );
+    View( Range( map ) );
+    Print( ", " );
+    View( map!.fun );
+    Print( " )" );
+    end );
+
 InstallMethod( PrintObj,
-    "method for mapping by function",
+    "for mapping by function",
     true,
     [ IsMappingByFunctionRep ], 0,
     function ( map )
@@ -650,10 +681,27 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewObj( <map> )  . . . . . . . . .  for mapping by function with inverse
 #M  PrintObj( <map> ) . . . . . . . . .  for mapping by function with inverse
 ##
+InstallMethod( ViewObj,
+    "for mapping by function with inverse",
+    true,
+    [ IsMappingByFunctionWithInverseRep ], 0,
+    function ( map )
+    Print( "MappingByFunction( " );
+    View( Source( map ) );
+    Print( ", " );
+    View( Range( map ) );
+    Print( ", " );
+    View( map!.fun );
+    Print( ", " );
+    View( map!.invFun );
+    Print( " )" );
+    end );
+
 InstallMethod( PrintObj,
-    "method for mapping by function with inverse",
+    "for mapping by function with inverse",
     true,
     [ IsMappingByFunctionWithInverseRep ], 0,
     function ( map )
@@ -677,8 +725,7 @@ InstallMethod( PrintObj,
 ##  So we need this flag to avoid infinite recursion when a question is
 ##  delegated to the inverse of a mapping.
 ##
-IsInverseGeneralMappingRep := NewRepresentation(
-    "IsInverseGeneralMappingRep",
+DeclareRepresentation( "IsInverseGeneralMappingRep",
     IsNonSPGeneralMapping,
     [] );
 
@@ -703,7 +750,7 @@ InstallImmediateMethod( InverseGeneralMapping,
 #M  InverseGeneralMapping( <map> ) . . . . . . . . . .  for a general mapping
 ##
 InstallMethod( InverseGeneralMapping,
-    "method for a general mapping",
+    "for a general mapping",
     true,
     [ IsGeneralMapping ], 0,
     function ( map )
@@ -951,8 +998,19 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
+#M  ViewObj( <invmap> ) . . . . . . . . . . . . . . . . . .  for inv. mapping
 #M  PrintObj( <invmap> )  . . . . . . . . . . . . . . . . .  for inv. mapping
 ##
+InstallMethod( ViewObj,
+    "for an inverse mapping",
+    true,
+    [ IsGeneralMapping and IsInverseGeneralMappingRep ], 100,
+    function ( inv )
+    Print( "InverseGeneralMapping( " );
+    View( InverseGeneralMapping( inv ) );
+    Print( " )" );
+    end );
+
 InstallMethod( PrintObj,
     "for an inverse mapping",
     true,
@@ -980,7 +1038,7 @@ InstallMethod( PrintObj,
 ##  An identity mapping whose source has a nice structure gets the properties
 ##  to respect this structure.
 ##
-ImmediateImplicationsIdentityMapping := function( idmap )
+BindGlobal( "ImmediateImplicationsIdentityMapping", function( idmap )
 
     local source;
 
@@ -1013,7 +1071,7 @@ ImmediateImplicationsIdentityMapping := function( idmap )
 	fi;
       fi;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1021,7 +1079,7 @@ end;
 #M  IdentityMapping( <D> )  . . . . . . . .  identity mapping of a collection
 ##
 InstallMethod( IdentityMapping,
-    "method for a collection",
+    "for a collection",
     true,
     [ IsCollection ], 0,
     function( D )
@@ -1050,7 +1108,7 @@ InstallMethod( IdentityMapping,
 #M  \^( <idmap>, <n> )  . . . . . . . . . .  for identity mapping and integer
 ##
 InstallMethod( \^,
-    "method for identity mapping and integer",
+    "for identity mapping and integer",
     true,
     [ IsGeneralMapping and IsOne, IsInt ], SUM_FLAGS,
     function ( id, n )
@@ -1063,7 +1121,7 @@ InstallMethod( \^,
 #M  ImageElm( <idmap>, <elm> )  . . . . . .  for identity mapping and element
 ##
 InstallMethod( ImageElm,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1076,7 +1134,7 @@ InstallMethod( ImageElm,
 #M  ImagesElm( <idmap>, <elm> )  . . . . . . for identity mapping and element
 ##
 InstallMethod( ImagesElm,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1089,7 +1147,7 @@ InstallMethod( ImagesElm,
 #M  ImagesSet( <idmap>, <coll> ) . . . .  for identity mapping and collection
 ##
 InstallMethod( ImagesSet,
-    "method for identity mapping and collection",
+    "for identity mapping and collection",
     CollFamSourceEqFamElms,
     [ IsGeneralMapping and IsOne, IsCollection ], SUM_FLAGS,
     function ( id, elms )
@@ -1102,7 +1160,7 @@ InstallMethod( ImagesSet,
 #M  ImagesRepresentative( <idmap>, <elm> )   for identity mapping and element
 ##
 InstallMethod( ImagesRepresentative,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1115,7 +1173,7 @@ InstallMethod( ImagesRepresentative,
 #M  PreImageElm( <idmap>, <elm> )   . . . .  for identity mapping and element
 ##
 InstallMethod( PreImageElm,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1128,7 +1186,7 @@ InstallMethod( PreImageElm,
 #M  PreImagesElm( <idmap>, <elm> )  . . . .  for identity mapping and element
 ##
 InstallMethod( PreImagesElm,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1141,7 +1199,7 @@ InstallMethod( PreImagesElm,
 #M  PreImagesSet( <idmap>, <coll> ) . . . for identity mapping and collection
 ##
 InstallMethod( PreImagesSet,
-    "method for identity mapping and collection",
+    "for identity mapping and collection",
     CollFamRangeEqFamElms,
     [ IsGeneralMapping and IsOne, IsCollection ], SUM_FLAGS,
     function ( id, elms )
@@ -1154,7 +1212,7 @@ InstallMethod( PreImagesSet,
 #M  PreImagesRepresentative( <idmap>, <elm> )
 ##
 InstallMethod( PreImagesRepresentative,
-    "method for identity mapping and object",
+    "for identity mapping and object",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsOne, IsObject ], SUM_FLAGS,
     function ( id, elm )
@@ -1164,14 +1222,25 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
+#M  ViewObj( <idmap> )  . . . . . . . . . . . . . . . .  for identity mapping
 #M  PrintObj( <idmap> ) . . . . . . . . . . . . . . . .  for identity mapping
 ##
-InstallMethod( PrintObj,
-    "method for identity mapping",
+InstallMethod( ViewObj,
+    "for identity mapping",
     true,
     [ IsGeneralMapping and IsOne ], SUM_FLAGS,
     function ( id )
-    Print( "IdentityMapping( ", Source( id )," )" );
+    Print( "IdentityMapping( " );
+    View( Source( id ) );
+    Print( " )" );
+    end );
+
+InstallMethod( PrintObj,
+    "for identity mapping",
+    true,
+    [ IsGeneralMapping and IsOne ], SUM_FLAGS,
+    function ( id )
+    Print( "IdentityMapping( ", Source( id ), " )" );
     end );
 
 
@@ -1180,7 +1249,7 @@ InstallMethod( PrintObj,
 #M  CompositionMapping2( <map>, <idmap> ) .  for gen. mapping and id. mapping
 ##
 InstallMethod( CompositionMapping2,
-    "method for general mapping and identity mapping",
+    "for general mapping and identity mapping",
     FamSource1EqFamRange2,
     [ IsGeneralMapping, IsGeneralMapping and IsOne ],
     SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
@@ -1194,7 +1263,7 @@ InstallMethod( CompositionMapping2,
 #M  CompositionMapping2( <idmap>, <map> ) .  for id. mapping and gen. mapping
 ##
 InstallMethod( CompositionMapping2,
-    "method for identity mapping and general mapping",
+    "for identity mapping and general mapping",
     FamSource1EqFamRange2,
     [ IsGeneralMapping and IsOne, IsGeneralMapping ],
     SUM_FLAGS + 1,  # should be higher than the rank for a zero mapping
@@ -1217,7 +1286,7 @@ InstallMethod( CompositionMapping2,
 ##  A zero mapping whose source has a nice structure gets the properties
 ##  to respect this structure.
 ##
-ImmediateImplicationsZeroMapping := function( zeromap )
+BindGlobal( "ImmediateImplicationsZeroMapping", function( zeromap )
 
     local source;
 
@@ -1249,7 +1318,7 @@ ImmediateImplicationsZeroMapping := function( zeromap )
     if IsLeftModule( source ) then
       SetRespectsScalarMultiplication( zeromap, true );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1260,7 +1329,7 @@ end;
 ##  This is independent of the structure of <source> and <range>.
 ##
 InstallMethod( ZeroMapping,
-    "method for collection and additive-magma-with-zero",
+    "for collection and additive-magma-with-zero",
     true,
     [ IsCollection, IsAdditiveMagmaWithZero ], 0,
     function( S, R )
@@ -1287,9 +1356,9 @@ InstallMethod( ZeroMapping,
 #M  \^( <zeromap>, <n> )  . . . . . . . for zero mapping and positive integer
 ##
 InstallMethod( \^,
-    "method for zero mapping and positive integer",
+    "for zero mapping and positive integer",
     true,
-    [ IsGeneralMapping and IsZero, IsInt and IsPosRat ], SUM_FLAGS,
+    [ IsGeneralMapping and IsZero, IsPosInt ], SUM_FLAGS,
     function( zero, n )
     if Zero( Source( zero ) ) in Range( zero ) then
       return zero;
@@ -1304,7 +1373,7 @@ InstallMethod( \^,
 #M  ImagesSource( <zeromap> ) . . . . . . . . . . . . . . .  for zero mapping
 ##
 InstallMethod( ImagesSource,
-    "method for zero mapping",
+    "for zero mapping",
     true,
     [ IsGeneralMapping and IsZero ], SUM_FLAGS,
     function( zero )
@@ -1321,7 +1390,7 @@ InstallMethod( ImagesSource,
 #M  ImageElm( <zeromap>, <elm> )  . . . . . . .  for zero mapping and element
 ##
 InstallMethod( ImageElm,
-    "method for zero mapping and object",
+    "for zero mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
@@ -1334,7 +1403,7 @@ InstallMethod( ImageElm,
 #M  ImagesElm( <zeromap>, <elm> )  . . . . . . . for zero mapping and element
 ##
 InstallMethod( ImagesElm,
-    "method for zero mapping and object",
+    "for zero mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
@@ -1347,7 +1416,7 @@ InstallMethod( ImagesElm,
 #M  ImagesSet( <zeromap>, <coll> ) . . . . .  for zero mapping and collection
 ##
 InstallMethod( ImagesSet,
-    "method for zero mapping and collection",
+    "for zero mapping and collection",
     CollFamSourceEqFamElms,
     [ IsGeneralMapping and IsZero, IsCollection ], SUM_FLAGS,
     function( zero, elms )
@@ -1360,7 +1429,7 @@ InstallMethod( ImagesSet,
 #M  ImagesRepresentative( <zeromap>, <elm> )  .  for zero mapping and element
 ##
 InstallMethod( ImagesRepresentative,
-    "method for zero mapping and object",
+    "for zero mapping and object",
     FamSourceEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
@@ -1373,7 +1442,7 @@ InstallMethod( ImagesRepresentative,
 #M  PreImagesElm( <zeromap>, <elm> )  . . . . .  for zero mapping and element
 ##
 InstallMethod( PreImagesElm,
-    "method for zero mapping and object",
+    "for zero mapping and object",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
@@ -1390,7 +1459,7 @@ InstallMethod( PreImagesElm,
 #M  PreImagesSet( <zeromap>, <elms> ) . . . . for zero mapping and collection
 ##
 InstallMethod( PreImagesSet,
-    "method for zero mapping and collection",
+    "for zero mapping and collection",
     CollFamRangeEqFamElms,
     [ IsGeneralMapping and IsZero, IsCollection ], SUM_FLAGS,
     function( zero, elms )
@@ -1407,7 +1476,7 @@ InstallMethod( PreImagesSet,
 #M  PreImagesRepresentative( <zeromap>, <elm> )
 ##
 InstallMethod( PreImagesRepresentative,
-    "method for zero mapping and object",
+    "for zero mapping and object",
     FamRangeEqFamElm,
     [ IsGeneralMapping and IsZero, IsObject ], SUM_FLAGS,
     function( zero, elm )
@@ -1421,10 +1490,23 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
+#M  ViewObj( <zeromap> )  . . . . . . . . . . . . . . . . .  for zero mapping
 #M  PrintObj( <zeromap> ) . . . . . . . . . . . . . . . . .  for zero mapping
 ##
+InstallMethod( ViewObj,
+    "for zero mapping",
+    true,
+    [ IsGeneralMapping and IsZero ], SUM_FLAGS,
+    function( zero )
+    Print( "ZeroMapping( " );
+    View( Source( zero ) );
+    Print( ", " );
+    View( Range( zero ) );
+    Print( " )" );
+    end );
+
 InstallMethod( PrintObj,
-    "method for zero mapping",
+    "for zero mapping",
     true,
     [ IsGeneralMapping and IsZero ], SUM_FLAGS,
     function( zero )
@@ -1437,7 +1519,7 @@ InstallMethod( PrintObj,
 #M  CompositionMapping2( <map>, <zeromap> ) for gen. mapping and zero mapping
 ##
 InstallMethod( CompositionMapping2,
-    "method for general mapping and zero mapping",
+    "for general mapping and zero mapping",
     FamSource1EqFamRange2,
     [ IsGeneralMapping, IsGeneralMapping and IsZero ], SUM_FLAGS,
     function( map, zero )
@@ -1450,7 +1532,7 @@ InstallMethod( CompositionMapping2,
 #M  CompositionMapping2( <zeromap>, <map> ) for zero mapping and gen. mapping
 ##
 InstallMethod( CompositionMapping2,
-    "method for zero mapping and single-valued gen. mapping that resp. zero",
+    "for zero mapping and single-valued gen. mapping that resp. zero",
     FamSource1EqFamRange2,
     [ IsGeneralMapping and IsZero,
       IsGeneralMapping and IsSingleValued and RespectsZero ],
@@ -1465,7 +1547,7 @@ InstallMethod( CompositionMapping2,
 #M  IsInjective( <zeromap> )  . . . . . . . . . . . . . . .  for zero mapping
 ##
 InstallMethod( IsInjective,
-    "method for zero mapping",
+    "for zero mapping",
     true,
     [ IsGeneralMapping and IsZero ], 0,
     zero -> Size( Source( zero ) ) = 1 );
@@ -1476,7 +1558,7 @@ InstallMethod( IsInjective,
 #M  IsSurjective( <zeromap> ) . . . . . . . . . . . . . . .  for zero mapping
 ##
 InstallMethod( IsSurjective,
-    "method for zero mapping",
+    "for zero mapping",
     true,
     [ IsGeneralMapping and IsZero ], 0,
     zero -> Size( Range( zero ) ) = 1 );
@@ -1485,6 +1567,4 @@ InstallMethod( IsSurjective,
 #############################################################################
 ##
 #E  mapprep.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

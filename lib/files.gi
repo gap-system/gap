@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for files and directories.
 ##
@@ -17,7 +18,7 @@ Revision.files_gi :=
 
 #R  IsDirectoryRep  . . . . . . . . . . default representation of a directory
 ##
-IsDirectoryRep := NewRepresentation(
+DeclareRepresentation(
     "IsDirectoryRep",
     IsPositionalObjectRep,
     [] );
@@ -61,6 +62,21 @@ end );
 
 #############################################################################
 ##
+#M  ViewObj( <directory> )  . . . . . . . . . . . . . view a directory object
+##
+InstallMethod( ViewObj,
+    "default directory rep",
+    true,
+    [ IsDirectoryRep ],
+    0,
+        
+function( obj )
+    Print( "dir(\"", obj![1] ,"\")" );
+end );
+
+
+#############################################################################
+##
 #M  PrintObj( <directory> ) . . . . . . . . . . . .  print a directory object
 ##
 InstallMethod( PrintObj,
@@ -70,7 +86,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "dir(\"", obj![1] ,"\")" );
+    Print( "Directory(\"", obj![1] ,"\")" );
 end );
 
 
@@ -177,7 +193,7 @@ InstallMethod( ReadAsFunction,
 
 #M  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
-Edit := function( name )
+InstallGlobalFunction( Edit, function( name )
     local   editor,  ret;
 
     editor := Filename( DirectoriesSystemPrograms(), EDITOR );
@@ -190,14 +206,14 @@ Edit := function( name )
         Error( "editor returned ", ret );
     fi;
     Read(name);
-end;
+end );
 
 
 #############################################################################
 ##
 #M  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##
-CreateCompletionFiles := function( arg )
+InstallGlobalFunction( CreateCompletionFiles, function( arg )
     local   path,  input,  i,  com,  read,  j,  crc;
 
     # get the path to the output
@@ -268,13 +284,13 @@ CreateCompletionFiles := function( arg )
             );
         od;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #M  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
 ##
-CheckCompletionFiles := function()
+InstallGlobalFunction( CheckCompletionFiles, function()
     local   dirs,  file,  com,  stream,  next,  pos,  fname,  crc,  
             lfile,  new,  nook;
 
@@ -327,7 +343,7 @@ CheckCompletionFiles := function()
         CloseStream(stream);
     od;
     return nook;
-end;
+end );
 
 
 #############################################################################

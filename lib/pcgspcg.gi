@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file   contains the methods  for polycylic  generating systems of pc
 ##  groups.
@@ -18,7 +19,7 @@ Revision.pcgspcg_gi :=
 
 #R  IsUnsortedPcgsRep
 ##
-IsUnsortedPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsUnsortedPcgsRep",
     IsPcgsDefaultRep, [] );
 
@@ -42,7 +43,7 @@ function( efam, pcs )
     local   rws,  pfa,  pcgs,  pag,  id,  g,  dg,  i,  new,  ord;
 
     # quick check
-    if not IsIdentical( efam, ElementsFamily(FamilyObj(pcs)) )  then
+    if not IsIdenticalObj( efam, ElementsFamily(FamilyObj(pcs)) )  then
         Error( "elements family of <pcs> does not match <efam>" );
     fi;
 
@@ -113,7 +114,7 @@ function( efam, pcs )
     local   pcgs,  rws;
 
     # quick check
-    if not IsIdentical( efam, ElementsFamily(FamilyObj(pcs)) )  then
+    if not IsIdenticalObj( efam, ElementsFamily(FamilyObj(pcs)) )  then
         Error( "elements family of <pcs> does not match <efam>" );
     fi;
 
@@ -318,7 +319,7 @@ InstallMethod( ExponentOfPcElement,
     function(a,b,c) return IsCollsElms(a,b); end,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     100,
     8Bits_ExponentOfPcElement );
 
@@ -392,7 +393,7 @@ InstallMethod( ExponentOfPcElement,
     function(a,b,c) return IsCollsElms(a,b); end,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     100,
     16Bits_ExponentOfPcElement );
 
@@ -466,7 +467,7 @@ InstallMethod( ExponentOfPcElement,
     function(a,b,c) return IsCollsElms(a,b); end,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     100,
     32Bits_ExponentOfPcElement );
 
@@ -552,7 +553,7 @@ InstallMethod( ExponentOfPcElement,
     function(a,b,c) return IsCollsElms(a,b); end,
     [ IsPcgs and IsUnsortedPcgsRep,
       IsObject,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, elm, pos )

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for files and directories.
 ##
@@ -17,7 +18,7 @@ Revision.files_gd :=
 
 #C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
 ##
-IsDirectory := NewCategory(
+DeclareCategory(
     "IsDirectory",
     IsObject );
 
@@ -34,7 +35,7 @@ DirectoriesFamily := NewFamily( "DirectoriesFamily" );
 
 #O  Directory( <string> ) . . . . . . . . . . . . . . .  new directory object
 ##
-Directory := NewOperation(
+DeclareOperation(
     "Directory",
     [ IsString ] );
 
@@ -43,7 +44,7 @@ Directory := NewOperation(
 ##
 #O  Filename( <list>, <string> )  . . . . . . . . . . . . . . . . find a file
 ##
-Filename := NewOperation(
+DeclareOperation(
     "Filename",
     [ IsList, IsString ] );
 
@@ -52,7 +53,7 @@ Filename := NewOperation(
 ##
 #O  Read( <string> )  . . . . . . . . . . . . . . . . . . . . . . read a file
 ##
-Read := NewOperation(
+DeclareOperation(
     "Read",
     [ IsString ] );
 
@@ -61,7 +62,7 @@ Read := NewOperation(
 ##
 #O  ReadTest( <string> )  . . . . . . . . . . . . . . . . .  read a test file
 ##
-ReadTest := NewOperation(
+DeclareOperation(
     "ReadTest",
     [ IsString ] );
 
@@ -70,7 +71,7 @@ ReadTest := NewOperation(
 ##
 #O  ReadAsFunction( <string> )  . . . . . . . . . . . read a file as function
 ##
-ReadAsFunction := NewOperation(
+DeclareOperation(
     "ReadAsFunction",
     [ IsString ] );
 
@@ -292,7 +293,7 @@ EDITOR := "vi";
 ##
 #O  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
 ##
-Edit := NewOperationArgs("Edit");
+DeclareGlobalFunction("Edit");
 
 
 #############################################################################
@@ -300,14 +301,14 @@ Edit := NewOperationArgs("Edit");
 
 #O  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##
-CreateCompletionFiles := NewOperationArgs("CreateCompletionFiles");
+DeclareGlobalFunction("CreateCompletionFiles");
 
 
 #############################################################################
 ##
 #O  CheckCompletionFiles()  . . . . . . . . . . .  check the completion files
 ##
-CheckCompletionFiles := NewOperationArgs("CheckCompletionFiles");
+DeclareGlobalFunction("CheckCompletionFiles");
 
 
 #############################################################################

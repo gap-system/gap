@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
@@ -26,12 +27,10 @@ NICE_FLAGS := SUM_FLAGS-1;
 
 #A  NiceMonomorphism( <obj> )
 ##
-NiceMonomorphism := NewAttribute(
+DeclareAttribute(
     "NiceMonomorphism",
     IsObject );
 
-SetNiceMonomorphism := Setter(NiceMonomorphism);
-HasNiceMonomorphism := Tester(NiceMonomorphism);
 
 InstallSubsetMaintainedMethod( NiceMonomorphism,
         IsGroup and HasNiceMonomorphism, IsGroup );
@@ -40,24 +39,20 @@ InstallSubsetMaintainedMethod( NiceMonomorphism,
 ##
 #A  NiceObject( <obj> )
 ##
-NiceObject := NewAttribute(
+DeclareAttribute(
     "NiceObject",
     IsObject );
 
-SetNiceObject := Setter(NiceObject);
-HasNiceObject := Tester(NiceObject);
 
 
 #############################################################################
 ##
 #P  IsHandledByNiceMonomorphism( <obj> )
 ##
-IsHandledByNiceMonomorphism := NewProperty(
+DeclareProperty(
     "IsHandledByNiceMonomorphism",
     IsObject );
 
-SetIsHandledByNiceMonomorphism := Setter(IsHandledByNiceMonomorphism);
-HasIsHandledByNiceMonomorphism := Tester(IsHandledByNiceMonomorphism);
 
 InstallSubsetMaintainedMethod( IsHandledByNiceMonomorphism,
     IsHandledByNiceMonomorphism and IsGroup,
@@ -67,7 +62,7 @@ InstallSubsetMaintainedMethod( IsHandledByNiceMonomorphism,
 ##
 #O  GroupByNiceMonomorphism( <nice>, <grp> )
 ##
-GroupByNiceMonomorphism := NewOperation(
+DeclareOperation(
     "GroupByNiceMonomorphism",
     [ IsGroupHomomorphism, IsGroup ] );
 
@@ -115,11 +110,11 @@ AttributeMethodByNiceMonomorphismCollColl := function( oper, par )
     # install the method
     InstallOtherMethod( oper,
         "handled by nice monomorphism",
-        IsIdentical,
+        IsIdenticalObj,
         par,
         NICE_FLAGS,
         function( obj1, obj2 )
-            if not IsIdentical( NiceMonomorphism(obj1),
+            if not IsIdenticalObj( NiceMonomorphism(obj1),
                                 NiceMonomorphism(obj2) )
             then
                 TryNextMethod();
@@ -262,13 +257,13 @@ GroupMethodByNiceMonomorphismCollColl := function( oper, par )
     # install the method
     InstallOtherMethod( oper,
         "handled by nice monomorphism",
-        IsIdentical,
+        IsIdenticalObj,
         par,
         NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  img;
             nice := NiceMonomorphism(obj1);
-            if not IsIdentical( nice, NiceMonomorphism(obj2) )  then
+            if not IsIdenticalObj( nice, NiceMonomorphism(obj2) )  then
                 TryNextMethod();
             fi;
             img := oper( NiceObject(obj1), NiceObject(obj2) );
@@ -387,7 +382,7 @@ SubgroupMethodByNiceMonomorphismCollColl := function( oper, par )
     # install the method
     InstallOtherMethod( oper,
         "handled by nice monomorphism",
-        IsIdentical,
+        IsIdenticalObj,
         par,
         NICE_FLAGS,
         function( obj1, obj2 )
@@ -553,13 +548,13 @@ GroupSeriesMethodByNiceMonomorphismCollColl := function( oper, par )
     # install the method
     InstallOtherMethod( oper,
         "handled by nice monomorphism",
-        IsIdentical,
+        IsIdenticalObj,
         par,
         NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  list,  i;
             nice := NiceMonomorphism(obj1);
-            if not IsIdentical( nice, NiceMonomorphism(obj2) )  then
+            if not IsIdenticalObj( nice, NiceMonomorphism(obj2) )  then
                 TryNextMethod();
             fi;
             list := ShallowCopy(oper(NiceObject(obj1),NiceObject(obj2)));

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  Hash tables module, implementation part. 
 ##
@@ -17,7 +18,7 @@ Revision.hash_gi :=
 #I   InfoHashTables . . . . . . . . . . . . . . . . . . . . . . . . InfoClass
 ##
 
-InfoHashTables := NewInfoClass("InfoHashTables");
+DeclareInfoClass("InfoHashTables");
 
 
 
@@ -84,9 +85,9 @@ end);
 ##  The structure and interpretation of table is representation dependent
 ##
 
-IsHashTable := NewRepresentation("IsListHashTable",
-                            IsComponentObjectRep, 
-                           [ "source", "range", "hashFunc", "entries", "table" ]);
+DeclareRepresentation("IsHashTable",
+    IsComponentObjectRep, 
+    [ "source", "range", "hashFunc", "entries", "table" ]);
 
 
 #############################################################################
@@ -108,24 +109,30 @@ InstallMethod(Range, true, [IsHashTable and IsGeneralMapping],
 
 #############################################################################
 ##
-#M  PrintObj( <ht> )                                         printing methods
+#M  ViewObj( <ht> )                                          printing methods
 ##
 #N  Is there a nicer way of installing a method for immutable objects only?
 ##
 
-InstallMethod(PrintObj, true, 
+InstallMethod( ViewObj,
+    "for mutable flexible hash table",
+    true, 
         [IsHashTable and IsFlexibleGeneralMapping and IsMutable], 0,
         function(ht)
     Print("<<flexible hash table -- ",ht!.entries," entries>>");
 end);
     
-InstallMethod(PrintObj, true, 
+InstallMethod( ViewObj,
+    "for mutable extensible hash table",
+    true, 
         [IsHashTable and IsExtensibleGeneralMapping and IsMutable], 0,
         function(ht)
     Print("<<extensible hash table -- ",ht!.entries," entries>>");
 end);
     
-InstallMethod(PrintObj, true, [IsHashTable and IsGeneralMapping], 0,
+InstallMethod( ViewObj,
+    "for immutable hash table",
+    true, [IsHashTable and IsGeneralMapping], 0,
         function(ht)
     if not IsMutable(ht) then
         Print("<<immutable hash table -- ",ht!.entries," entries>>");
@@ -133,6 +140,24 @@ InstallMethod(PrintObj, true, [IsHashTable and IsGeneralMapping], 0,
         TryNextMethod();
     fi;
 end);
+
+
+#############################################################################
+##
+#M  PrintObj( <ht> )                                         printing methods
+##
+#N  Is there a nicer way of installing a method for immutable objects only?
+##
+
+InstallMethod( PrintObj,
+    "for a hash table",
+    true, 
+    [ IsHashTable ], 0,
+    function(ht)
+    Print( "HashTable( ", ht!.source, ", ", ht!.range, ", ",
+           ht!.hashFunc, " )" );
+    end);
+#T how to print a function call that constructs an isomorphic hash table?
 
 
 #############################################################################
@@ -181,8 +206,7 @@ ListHashParams := rec(
 ##
 ##
 
-IsListHashTable := NewRepresentation("IsListHashTable",
-                            IsHashTable, []);
+DeclareRepresentation("IsListHashTable", IsHashTable, []);
 
 #############################################################################
 ##
@@ -195,7 +219,9 @@ IsListHashTable := NewRepresentation("IsListHashTable",
 ##
 
 
-InstallMethod(ShrinkableHashTable, true, [IsCollection, IsCollection, IsFunction], 0,
+InstallMethod(ShrinkableHashTable,
+    true,
+    [IsCollection, IsCollection, IsFunction], 0,
         function(source, range, hash)
     local sourcefam, rangefam;
     sourcefam := ElementsFamily(FamilyObj(source));
@@ -322,7 +348,7 @@ end);
 #M  AddImageNC( <ht>, <pt>, <im> )                  add an image non-checking
 ##
 
-InstallMethod(AddImage, FamMapFamSourceFamRange,
+InstallMethod(AddImageNC, FamMapFamSourceFamRange,
   [ IsList and IsExtensibleGeneralMapping and IsMutable, 
     IsObject, IsObject], 0,
   function(ht, obj, val)
@@ -561,7 +587,7 @@ FlatHashParams := rec(
 ##
 ##
 
-IsFlatHashTable := NewRepresentation("IsFlatHashTable",
+DeclareRepresentation("IsFlatHashTable",
                             IsHashTable, ["tabSize"]);
 
 #############################################################################
@@ -581,7 +607,7 @@ InstallMethod(SingleValuedHashTable, true, [IsCollection, IsCollection, IsFuncti
     Info(InfoHashTables, 1, "Creating a list hash table");
     Info(InfoHashTables, 2, "Source: ", source, " Range: ",range);
     sourcefam := ElementsFamily(FamilyObj(source));
-    rangefam := ElementsFamily(FamilyObj(source));
+    rangefam := ElementsFamily(FamilyObj(range));
     obj := Objectify(NewType(GeneralMappingsFamily(sourcefam, rangefam), 
                    IsExtensiblePartialMapping and IsFlatHashTable and
                    HasSource and HasRange and IsMutable),
@@ -669,38 +695,6 @@ InstallMethod(ImagesElm,
     return Immutable([]);
 end);
 
-#############################################################################
-##
-#M  ImageElm( <ht>, <obj> )                                  look up a point
-##
-
-InstallMethod(ImagesElm, 
-        FamSourceEqFamElm,
-        [ IsFlatHashTable and IsGeneralMapping and IsSingleValued, IsObject], 
-        0,
-        function(ht, obj)
-    local h             # hash value of object 
-          , table       # local copy of hash table
-          , size        # local copy of table size
-          ;
-    Info(InfoHashTables,3,"Looking up ",obj," in hash table");
-    h := ht!.hashFunc(obj);
-    if h = fail then 
-        return fail;
-    fi;
-    table := ht!.table;
-    size  := ht!.tabSize;
-    h := h mod size;
-    while IsBound(table[2*h+1]) do
-        if table[2*h+1] = obj then
-            Info(InfoHashTables,3,"Found ",table[2*h+2]);
-            return Immutable([table[2*h+2]]);
-        fi;
-        h := (h+1) mod size;
-    od;
-    Info(InfoHashTables,3,"Nothing Found");
-    return Immutable([]);
-end);
 
 
 #############################################################################
@@ -815,43 +809,6 @@ InstallMethod(SetImage, FamMapFamSourceFamRange,
     return ht;
 end);
 
-#############################################################################
-##
-#M  SetImageNC( <ht>, <pt>, <im> )    change an image in a mutable hash table
-##
-
-InstallMethod(SetImage, FamMapFamSourceFamRange,
-  [ IsFlatHashTable and IsExtensiblePartialMapping and IsMutable, 
-    IsObject, IsObject], 0,
-  function(ht, obj, val)
-    local h
-          ,table
-          ,size
-          ;
-    Info(InfoHashTables,3,"Setting ", obj, "->", val, " in flat hash table");
-    h := ht!.hashFunc(obj);
-    Assert(2, h <> fail);
-    Assert(2, val in ht!.range);
-    table := ht!.table;
-    size := ht!.tabSize;
-    h := h mod size;
-    while IsBound(table[2*h+1]) do
-        if table[2*h+1] = obj then
-            table[2*h+2] := Immutable(val);
-            return ht;
-        fi;
-        h := (h+1) mod size;
-    od;
-    table[2*h+1] := Immutable(obj);
-    table[2*h+2] := Immutable(val);
-    ht!.entries := ht!.entries + 1;
-    if ht!.tabSize < ht!.entries * FlatHashParams.HASH_GROW_MARGIN then
-        ResizeFlatHashTable(ht, 
-                1+Int(ht!.tabSize*FlatHashParams.HASH_GROW_FACTOR));
-    fi;
-    return ht;
-end);
-    
 
 #############################################################################
 ##
@@ -920,6 +877,4 @@ end);
 #############################################################################
 ##
 #E  hash.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

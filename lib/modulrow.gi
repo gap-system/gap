@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for *row modules*, that is,
 ##  free left modules consisting of row vectors.
@@ -22,7 +23,7 @@ Revision.modulrow_gi :=
 #M  LeftModuleByGenerators( <R>, <mat> )  . . . . . .  construct a row module
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for ring and matrix (elements in the same family)",
+    "for ring and matrix (elements in the same family)",
     IsElmsColls,
     [ IsRing, IsMatrix ], 0,
     function( R, mat )
@@ -48,7 +49,7 @@ InstallMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <R>, <mat>, <zero> )  . .  construct a row module
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for ring, matrix (over the ring), and row vector",
+    "for ring, matrix (over the ring), and row vector",
     true,
 #T explicit 2nd argument above!
     [ IsRing, IsHomogeneousList, IsRowVector ], 0,
@@ -57,9 +58,9 @@ InstallOtherMethod( LeftModuleByGenerators,
 
     # Check whether this method is the right one.
     if not (     HasCollectionsFamily( FamilyObj( R ) )
-             and IsIdentical( FamilyObj( R ), FamilyObj( zero ) )
+             and IsIdenticalObj( FamilyObj( R ), FamilyObj( zero ) )
              and (    IsEmpty( mat )
-                   or IsIdentical( CollectionsFamily( FamilyObj( R ) ),
+                   or IsIdenticalObj( CollectionsFamily( FamilyObj( R ) ),
                                    FamilyObj( mat ) ) ) ) then
       TryNextMethod();
     fi;
@@ -82,7 +83,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 ##
 #F  FullRowModule( <R>, <n> )
 ##
-FullRowModule := function( R, n )
+InstallGlobalFunction( FullRowModule, function( R, n )
 
     local M;   # the free module record, result
 
@@ -110,7 +111,7 @@ FullRowModule := function( R, n )
     M!.vectordim:= n;
 
     return M;
-end;
+end );
 
 
 #############################################################################
@@ -118,7 +119,7 @@ end;
 #M  \^( <R>, <n> )  . . . . . . . . . . . . . . . full row module over a ring
 ##
 InstallOtherMethod( \^,
-    "method for ring and integer (delegate to 'FullRowModule')",
+    "for ring and integer (delegate to 'FullRowModule')",
     true,
     [ IsRing, IsInt ], 0,
     FullRowModule );
@@ -129,7 +130,7 @@ InstallOtherMethod( \^,
 #M  IsFullRowModule( M )
 ##
 InstallMethod( IsFullRowModule,
-    "method for free row module that is a row module",
+    "for free left module that is a row module",
     true,
     [ IsFreeLeftModule and IsRowModuleRep ], 0,
     M ->     Dimension( M ) = M!.vectordim
@@ -142,7 +143,7 @@ InstallMethod( IsFullRowModule,
 #M  Dimension( <M> )
 ##
 InstallMethod( Dimension,
-    "method for full row module",
+    "for full row module",
     true,
     [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
     M -> M!.vectordim );
@@ -153,7 +154,7 @@ InstallMethod( Dimension,
 #M  Random( <M> )
 ##
 InstallMethod( Random,
-    "method for full row module",
+    "for full row module",
     true,
     [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
     function( M )
@@ -168,9 +169,24 @@ InstallMethod( Random,
 #M  GeneratorsOfLeftModule( <V> )
 ##
 InstallMethod( GeneratorsOfLeftModule,
-    "method for full row module",
+    "for full row module",
     true, [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
     M -> IdentityMat( M!.vectordim, LeftActingDomain( M ) ) );
+
+
+#############################################################################
+##
+#M  ViewObj( <M> )
+##
+InstallMethod( ViewObj,
+    "for full row module",
+    true,
+    [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
+    function( M )
+    Print( "( " );
+    View( LeftActingDomain( M ) );
+    Print( "^", M!.vectordim, " )" );
+    end );
 
 
 #############################################################################
@@ -178,8 +194,9 @@ InstallMethod( GeneratorsOfLeftModule,
 #M  PrintObj( <M> )
 ##
 InstallMethod( PrintObj,
-    "method for full row module",
-    true, [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
+    "for full row module",
+    true,
+    [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], 0,
     function( M )
     Print( "( ", LeftActingDomain( M ), "^", M!.vectordim, " )" );
     end );
@@ -190,7 +207,7 @@ InstallMethod( PrintObj,
 #M  \in( <v>, <V> )
 ##
 InstallMethod( \in,
-    "method for full row module",
+    "for full row module",
     IsElmsColls,
     [ IsRowVector, IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ],
     0,
@@ -205,7 +222,7 @@ InstallMethod( \in,
 #M  BasisVectors( <B> ) . . . . .  for a canonical basis of a full row module
 ##
 InstallMethod( BasisVectors,
-    "method for canonical basis of a full row module",
+    "for canonical basis of a full row module",
     true,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ], 0,
     function( B )
@@ -218,7 +235,9 @@ InstallMethod( BasisVectors,
 ##
 #M  CanonicalBasis( <V> )
 ##
-InstallMethod( CanonicalBasis, true,
+InstallMethod( CanonicalBasis,
+    "for a full row module",
+    true,
     [ IsFreeLeftModule and IsFullRowModule ], 0,
     function( V )
     local B;
@@ -238,7 +257,7 @@ InstallMethod( CanonicalBasis, true,
 #M  Coefficients( <B>, <v> )  . .  for a canonical basis of a full row module
 ##
 InstallMethod( Coefficients,
-    "method for canonical basis of a full row module",
+    "for canonical basis of a full row module",
     IsCollsElms,
     [ IsBasis and IsCanonicalBasisFullRowModule, IsRowVector ], 0,
     function( B, v )
@@ -255,10 +274,21 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
+#M  IsCanonicalBasisFullRowModule( <B> )  . . . . . . . . . . . . for a basis
+##
+InstallMethod( IsCanonicalBasisFullRowModule,
+    "for a basis",
+    true,
+    [ IsBasis ], 0,
+    B ->     IsFullRowModule( UnderlyingLeftModule( B ) )
+         and IsCanonicalBasis( B ) );
+
+
+#############################################################################
+##
 #R  IsEnumeratorOfFiniteFullRowModuleRep( <iter> )
 ##
-IsEnumeratorOfFiniteFullRowModuleRep := NewRepresentation(
-    "IsEnumeratorOfFiniteFullRowModuleRep",
+DeclareRepresentation( "IsEnumeratorOfFiniteFullRowModuleRep",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "coeffsenum", "q", "zerovector" ] );
 
@@ -268,7 +298,7 @@ IsEnumeratorOfFiniteFullRowModuleRep := NewRepresentation(
 #M  Position( <enum>, <elm>, 0 )  .  for enumerator of finite full row module
 ##
 InstallOtherMethod( Position,
-    "method for enumerator via canonical basis of a finite full row module",
+    "for enumerator via canonical basis of a finite full row module",
     true,
 #T ?
 #T    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsRowVector,
@@ -289,10 +319,10 @@ InstallOtherMethod( Position,
 #M  \[\]( <enum>, <n> ) . . . . . .  for enumerator of finite full row module
 ##
 InstallMethod( \[\],
-    "method for enumerator via canonical basis of a finite full row module",
+    "for enumerator via canonical basis of a finite full row module",
     true,
     [ IsList and IsEnumeratorOfFiniteFullRowModuleRep,
-      IsPosRat and IsInt ], 0,
+      IsPosInt ], 0,
     function( e, n )
     local v, i;
     v:= ShallowCopy( e!.zerovector );
@@ -311,8 +341,7 @@ InstallMethod( \[\],
 ##
 #R  IsEnumeratorOfInfiniteFullRowModuleRep( <iter> )
 ##
-IsEnumeratorOfInfiniteFullRowModuleRep := NewRepresentation(
-    "IsEnumeratorOfInfiniteFullRowModuleRep",
+DeclareRepresentation( "IsEnumeratorOfInfiniteFullRowModuleRep",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "dim", "coeffsenum" ] );
 
@@ -322,7 +351,7 @@ IsEnumeratorOfInfiniteFullRowModuleRep := NewRepresentation(
 #M  Position( <enum>, <elm>, 0 )  . .  for enumerator of inf. full row module
 ##
 InstallOtherMethod( Position,
-    "method for enumerator via canonical basis of an inf. full row module",
+    "for enumerator via canonical basis of an inf. full row module",
     true,
     [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep, IsRowVector,
       IsZeroCyc ], 0,
@@ -395,10 +424,10 @@ InstallOtherMethod( Position,
 #M  \[\]( <enum>, <n> ) . . . . .  for enumerator of infinite full row module
 ##
 InstallMethod( \[\],
-    "method for enumerator via canonical basis of a inf. full row module",
+    "for enumerator via canonical basis of a inf. full row module",
     true,
     [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep,
-      IsPosRat and IsInt ], 0,
+      IsPosInt ], 0,
     function( enum, N )
 
     local n,
@@ -467,7 +496,7 @@ InstallMethod( \[\],
 #M  EnumeratorByBasis( <B> )  . . . .  for canonical basis of full row module
 ##
 InstallMethod( EnumeratorByBasis,
-    "method for enumerator via canonical basis of a full row module",
+    "for enumerator via canonical basis of a full row module",
     true,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ], 0,
     function( B )
@@ -513,8 +542,7 @@ InstallMethod( EnumeratorByBasis,
 ##
 #R  IsIteratorOfFiniteFullRowModuleRep( <iter> )
 ##
-IsIteratorOfFiniteFullRowModuleRep := NewRepresentation(
-    "IsIteratorOfFiniteFullRowModuleRep",
+DeclareRepresentation( "IsIteratorOfFiniteFullRowModuleRep",
     IsComponentObjectRep,
     [ "dimension", "counter", "position", "q", "limit", "ringelements" ] );
 
@@ -524,7 +552,7 @@ IsIteratorOfFiniteFullRowModuleRep := NewRepresentation(
 #M  NextIterator( <iter> )  . . . . .  for iterator of finite full row module
 ##
 InstallMethod( NextIterator,
-    "method for iterator w.r.t. canonical basis of finite full row module",
+    "for iterator w.r.t. canonical basis of finite full row module",
     true,
     [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ], 0,
     function( iter )
@@ -547,7 +575,9 @@ InstallMethod( NextIterator,
 ##
 #M  IsDoneIterator( <iter> )  . . . .  for iterator of finite full row module
 ##
-InstallMethod( IsDoneIterator, true,
+InstallMethod( IsDoneIterator,
+    "for iterator w.r.t. canonical basis of finite full row module",
+    true,
     [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ], 0,
     iter -> iter!.counter = iter!.limit );
 
@@ -556,8 +586,7 @@ InstallMethod( IsDoneIterator, true,
 ##
 #R  IsIteratorOfInfiniteFullRowModuleRep( <iter> )
 ##
-IsIteratorOfInfiniteFullRowModuleRep := NewRepresentation(
-    "IsIteratorOfInfiniteFullRowModuleRep",
+DeclareRepresentation( "IsIteratorOfInfiniteFullRowModuleRep",
     IsComponentObjectRep,
     [ "dim", "maxentry", "vector", "coeffsenum" ] );
 
@@ -567,7 +596,7 @@ IsIteratorOfInfiniteFullRowModuleRep := NewRepresentation(
 #M  NextIterator( <iter> )  . . . . .  for iterator of finite full row module
 ##
 InstallMethod( NextIterator,
-    "method for iterator w.r.t. canonical basis of infinite full row module",
+    "for iterator w.r.t. canonical basis of infinite full row module",
     true,
     [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ], 0,
     function( iter )
@@ -639,7 +668,9 @@ InstallMethod( NextIterator,
 ##
 #M  IsDoneIterator( <iter> )  . . . .  for iterator of finite full row module
 ##
-InstallMethod( IsDoneIterator, true,
+InstallMethod( IsDoneIterator,
+    "for iterator w.r.t. canonical basis of finite full row module",
+    true,
     [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ], 0,
     ReturnFalse );
 
@@ -649,7 +680,7 @@ InstallMethod( IsDoneIterator, true,
 #M  IteratorByBasis( <B> )  . . . . . . for canon. basis of a full row module
 ##
 InstallMethod( IteratorByBasis,
-    "method for canonical basis of a full row module",
+    "for canonical basis of a full row module",
     true,
     [ IsBasis and IsCanonicalBasisFullRowModule ],
     0,
@@ -721,7 +752,7 @@ InstallMethod( IteratorByBasis,
 #M  BasisOfDomain( <M> )  . . . . . . . . . . . . . . . . for full row module
 ##
 InstallMethod( BasisOfDomain,
-    "method for full row module",
+    "for full row module",
     true,
     [ IsFreeLeftModule and IsRowModuleRep and IsFullRowModule ], SUM_FLAGS,
     CanonicalBasis );
@@ -730,6 +761,4 @@ InstallMethod( BasisOfDomain,
 #############################################################################
 ##
 #E  modulrow.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

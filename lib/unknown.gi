@@ -4,10 +4,11 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  implements the  arithmetic  for unknown values,  unknowns for
-##  short.  Unknowns  are written as 'Unknown(<n>)'  where  <n> is an integer
+##  short.  Unknowns  are written as `Unknown(<n>)'  where  <n> is an integer
 ##  that distingishes  different unknowns.  Every unknown stands for a fixed,
 ##  well defined, but unknown  scalar value,  i.e., an  unknown  integer,  an
 ##  unknown rational, or an unknown cyclotomic.
@@ -29,27 +30,28 @@ Revision.unknown_gi :=
 
 #############################################################################
 ##
-#R  IsUnknown( <obj> )
+#R  IsUnknownDefaultRep( <obj> )
 ##
-##  'IsUnknown' returns 'true' if the object <obj> is known to be unknown
-##  and  'false' otherwise.
-##
-IsUnknown := NewRepresentation( "IsUnknown",
-    IsPositionalObjectRep and IsCyclotomic, [] );
+DeclareRepresentation( "IsUnknownDefaultRep",
+    IsPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
 ##
 #V  UnknownsType
 ##
-UnknownsType := NewType( CyclotomicsFamily, IsUnknown );
+UnknownsType := NewType( CyclotomicsFamily,
+    IsUnknown and IsUnknownDefaultRep );
 
 
 #############################################################################
 ##
 #M  Unknown( <n> )  . . . . . . . . . . . . . . . . . .  construct an unknown
 ##
-InstallMethod( Unknown, true, [ IsPosRat and IsInt ], 0,
+InstallMethod( Unknown,
+    "for positive integer",
+    true,
+    [ IsPosInt ], 0,
     function( n )
     if LargestUnknown < n then
       LargestUnknown:= n;
@@ -62,7 +64,10 @@ InstallMethod( Unknown, true, [ IsPosRat and IsInt ], 0,
 ##
 #M  Unknown( )  . . . . . . . . . . . . . . . . . . . construct a new unknown
 ##
-InstallOtherMethod( Unknown, true, [],             0,
+InstallOtherMethod( Unknown,
+    "for empty argument",
+    true,
+    [], 0,
     function()
     LargestUnknown:= LargestUnknown + 1;
     return Objectify( UnknownsType, [ LargestUnknown ] );
@@ -73,9 +78,12 @@ InstallOtherMethod( Unknown, true, [],             0,
 ##
 #M  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . .  print an unknown
 ##
-##  prints the unknown <obj> in the form 'Unknown(<n>)'.
+##  prints the unknown <obj> in the form `Unknown(<n>)'.
 ##
-InstallMethod( PrintObj, true, [ IsUnknown ],   0,
+InstallMethod( PrintObj,
+    "for unknown in default representation",
+    true,
+    [ IsUnknown and IsUnknownDefaultRep ],   0,
     function( obj )
     Print( "Unknown(", obj![1], ")" );
     end );
@@ -83,47 +91,75 @@ InstallMethod( PrintObj, true, [ IsUnknown ],   0,
 
 #############################################################################
 ##
-#M  '<x> = <y>' . . . . . . . . . . .  . . . . test if two unknowns are equal
+#M  `<x> = <y>' . . . . . . . . . . .  . . . . test if two unknowns are equal
 ##
-##  is 'true' if the two unknowns <x> and <y> are equal,
-##  and 'false' otherwise.
+##  is `true' if the two unknowns <x> and <y> are equal,
+##  and `false' otherwise.
 ##
 ##  Note that two unknowns with different <n> are assumed to be different.
 ##  I dont like this at all.
 ##
-InstallMethod( \=, true, [ IsUnknown, IsCyc     ], 0, ReturnFalse );
-InstallMethod( \=, true, [ IsCyc    , IsUnknown ], 0, ReturnFalse );
-InstallMethod( \=, true, [ IsUnknown, IsUnknown ], 0,
+InstallMethod( \=,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
+    ReturnFalse );
+
+InstallMethod( \=,
+    "for cyclotomic and unknown",
+    true,
+    [ IsCyc, IsUnknown ], 0,
+    ReturnFalse );
+
+InstallMethod( \=,
+    "for two unknowns in default representation",
+    true,
+    [ IsUnknown and IsUnknownDefaultRep,
+      IsUnknown and IsUnknownDefaultRep ], 0,
     function( x, y ) return x![1] = y![1]; end );
 
 
 #############################################################################
 ##
-#M  '<x> \< <y>'  . . . . . . . . .  test if one unknown is less than another
+#M  `<x> \< <y>'  . . . . . . . . .  test if one unknown is less than another
 ##
-##  is 'true' if the unknown <x> is less than the unknown <y>,
-##  and 'false' otherwise.
+##  is `true' if the unknown <x> is less than the unknown <y>,
+##  and `false' otherwise.
 ##
 ##  Note that two unknowns with different <n> are assumed to be different.
 ##  I dont like this at all.
 ##
-InstallMethod( \<, true, [ IsUnknown, IsCyc     ], 0, ReturnFalse );
-InstallMethod( \<, true, [ IsCyc    , IsUnknown ], 0, ReturnTrue  );
-InstallMethod( \<, true, [ IsUnknown, IsUnknown ], 0,
+InstallMethod( \<,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
+    ReturnFalse );
+
+InstallMethod( \<,
+    "for cyclotomic and unknown",
+    true,
+    [ IsCyc, IsUnknown ], 0,
+    ReturnTrue );
+
+InstallMethod( \<,
+    "for two unknowns in default representation",
+    true,
+    [ IsUnknown and IsUnknownDefaultRep,
+      IsUnknown and IsUnknownDefaultRep ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 
 #############################################################################
 ##
-#M  '<x> + <y>' . . . . . . . . . . . . . . . . . . . . . sum of two unknowns
+#M  `<x> + <y>' . . . . . . . . . . . . . . . . . . . . . sum of two unknowns
 ##
 ##  is the sum of the two unknowns <x> and <y>.
 ##  Either operand may also be a known scalar value.
 ##
-InstallMethod( \+, true, [ IsUnknown, IsUnknown ], 0,
-    function( x, y ) return Unknown(); end );
-
-InstallMethod( \+, true, [ IsUnknown, IsCyc     ], 0,
+InstallMethod( \+,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
     function( x, y )
     if y = 0 then
       return x;
@@ -132,7 +168,10 @@ InstallMethod( \+, true, [ IsUnknown, IsCyc     ], 0,
     fi;
     end );
 
-InstallMethod( \+, true, [ IsCyc    , IsUnknown ], 0,
+InstallMethod( \+,
+    "for cyclotomic and unknown",
+    true,
+    [ IsCyc, IsUnknown ], 0,
     function( x, y )
     if x = 0 then
       return y;
@@ -141,15 +180,24 @@ InstallMethod( \+, true, [ IsCyc    , IsUnknown ], 0,
     fi;
     end );
 
+InstallMethod( \+,
+    "for two unknowns",
+    true,
+    [ IsUnknown, IsUnknown ], 0,
+    function( x, y ) return Unknown(); end );
+
 
 #############################################################################
 ##
-#M  '<x> - <y>' . . . . . . . . . . . . . . . . .  difference of two unknowns
+#M  `<x> - <y>' . . . . . . . . . . . . . . . . .  difference of two unknowns
 ##
 ##  is the difference of the two unknowns <x> and <y>.
 ##  Either operand may also be a known scalar value.
 ##
-InstallMethod( \-, true, [ IsUnknown, IsCyc     ], 0,
+InstallMethod( \-,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
     function( x, y )
     if y = 0 then
       return x;
@@ -158,12 +206,19 @@ InstallMethod( \-, true, [ IsUnknown, IsCyc     ], 0,
     fi;
     end );
 
-InstallMethod( \-, true, [ IsCyc    , IsUnknown ], 0,
+InstallMethod( \-,
+    "for cyclotomic and unknown",
+    true,
+    [ IsCyc, IsUnknown ], 0,
     function( x, y )
     return Unknown();
     end );
 
-InstallMethod( \-, true, [ IsUnknown, IsUnknown ], 0,
+InstallMethod( \-,
+    "for two unknowns in default representation",
+    true,
+    [ IsUnknown and IsUnknownDefaultRep,
+      IsUnknown and IsUnknownDefaultRep ], 0,
     function( x, y )
     if x![1] = y![1] then
       return 0;
@@ -175,12 +230,15 @@ InstallMethod( \-, true, [ IsUnknown, IsUnknown ], 0,
 
 #############################################################################
 ##
-#M  '<x> \* <y>'  . . . . . . . . . . . . . . . . . . product of two unknowns
+#M  `<x> \* <y>'  . . . . . . . . . . . . . . . . . . product of two unknowns
 ##
 ##  is the product of the two unknowns <x> and <y>.
 ##  Either operand may also be a known scalar value.
 ##
-InstallMethod( \*, true, [ IsUnknown, IsCyc     ], 0,
+InstallMethod( \*,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
     function( x, y )
     if y = 0 then
       return 0;
@@ -191,7 +249,10 @@ InstallMethod( \*, true, [ IsUnknown, IsCyc     ], 0,
     fi;
     end );
 
-InstallMethod( \*, true, [ IsCyc    , IsUnknown ], 0,
+InstallMethod( \*,
+    "for cyclotomic and unknown",
+    true,
+    [ IsCyc, IsUnknown ], 0,
     function( x, y )
     if x = 0 then
       return 0;
@@ -202,7 +263,10 @@ InstallMethod( \*, true, [ IsCyc    , IsUnknown ], 0,
     fi;
     end );
 
-InstallMethod( \*, true, [ IsUnknown, IsUnknown ], 0,
+InstallMethod( \*,
+    "for two unknowns",
+    true,
+    [ IsUnknown, IsUnknown ], 0,
     function( x, y )
     return Unknown();
     end );
@@ -210,13 +274,16 @@ InstallMethod( \*, true, [ IsUnknown, IsUnknown ], 0,
 
 #############################################################################
 ##
-#M  '<x> / <y>' . . . . . . . . . . . . . . . . . .  quotient of two unknowns
+#M  `<x> / <y>' . . . . . . . . . . . . . . . . . .  quotient of two unknowns
 ##
 ##  is the quotient of the unknown <x> and the scalar <y>.
 ##  <y> must not be zero, and must not be an unknown,
 ##  because the unknown could stand for zero.
 ##
-InstallMethod( \/, true, [ IsUnknown, IsCyc ], 0,
+InstallMethod( \/,
+    "for unknown and cyclotomic",
+    true,
+    [ IsUnknown, IsCyc ], 0,
     function( x, y )
     if y = 0 then
       Error( "divisor must be nonzero" );
@@ -230,13 +297,16 @@ InstallMethod( \/, true, [ IsUnknown, IsCyc ], 0,
 
 #############################################################################
 ##
-#M  '<x> \^ <y>'  . . . . . . . . . . . . . . . . . . . . power of an unknown
+#M  `<x> \^ <y>'  . . . . . . . . . . . . . . . . . . . . power of an unknown
 ##
 ##  is the unknown <x> raised to the integer power <y>.
 ##  If <y> is 0, the result is the integer 1.
 ##  <y> must not be less than 0, because <x> could stand for 0.
 ##
-InstallMethod( \^, true, [ IsUnknown, IsPosRat and IsInt ], 0,
+InstallMethod( \^,
+    "for unknown and positive integer",
+    true,
+    [ IsUnknown, IsPosInt ], 0,
     function( x, y )
     if 1 < y then
       return Unknown();
@@ -245,8 +315,16 @@ InstallMethod( \^, true, [ IsUnknown, IsPosRat and IsInt ], 0,
     fi;
     end );
 
-InstallMethod( One, true, [ IsUnknown ], 0,
-    unknown -> 1 );
+
+#############################################################################
+##
+#M  String( <unknown> ) . . . . . . . . . . . . . . . . . . .  for an unknown
+##
+InstallMethod( String,
+    "for an unknown in default representation",
+    true,
+    [ IsUnknown and IsUnknownDefaultRep ], 0,
+    unknown -> Concatenation( "Unknown(", String( unknown![1] ), ")" ) );
 
 
 #############################################################################

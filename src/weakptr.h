@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions that deal with weak pointer objects
 **       it has to interwork somewhat closely with GASMAN.
@@ -16,7 +17,7 @@
 **
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_weakptr_h =
+const char * Revision_weakptr_h =
    "@(#)$Id$";
 #endif
 
@@ -31,23 +32,9 @@ SYS_CONST char * Revision_weakptr_h =
 /****************************************************************************
 **
 
-*F  SetupWeakPtr( )  . . . . . . . . . .  initialize the weak pointer package
+*F  InitInfoWeakPtr() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupWeakPtr ( void );
-
-
-/****************************************************************************
-**
-*F  InitWeakPtr( ) . . . . . . . . . . .  initialize the weak pointer package
-*/
-extern void InitWeakPtr ( void );
-
-
-/****************************************************************************
-**
-*F  CheckWeakPtr( )  . . check the initialisation of the weak pointer package
-*/
-extern void CheckWeakPtr ( void );
+StructInitInfo * InitInfoWeakPtr ( void );
 
 
 /****************************************************************************

@@ -1,0 +1,316 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  string.msk                  GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Strings and Characters}
+
+A *character* is simply an object in {\GAP} that represents an arbitrary
+character from the character set of the operating system. Character
+literals can be entered in {\GAP} by enclosing the character in
+*singlequotes* `{'}'.
+
+\index{type!strings}
+\index{doublequotes}
+
+\beginexample
+gap> `a';
+`a'
+gap> `*';
+`*'
+\endexample
+
+A *string* is simply a dense list of characters. Strings are used mainly
+in filenames and error messages. A string literal can either be entered
+simply as the list of characters or by writing the characters between
+*doublequotes* `\"'. {\GAP} will always output strings in the latter
+format.
+
+\beginexample
+gap> s1 := ['H','a','l','l','o',' `,'w','o','r','l','d','.'];
+"Hallo world."
+gap> s2 := "Hallo world.";
+"Hallo world."
+gap> s1 = s2;
+true
+gap> s3 := "";
+"" # the empty string
+gap> s3 = [];
+true 
+\endexample
+
+Note that a string is just a special case of a list. So everything that
+is possible for lists (see "Lists") is also possible for strings. Thus
+you can access the characters in such a string (see "List Elements"),
+test for membership (see "In"), etc. You can even assign to such a
+string (see "List Assignment"). Of course unless you assign a character
+in such a way that the list stays dense, the resulting list will no
+longer be a string.
+
+\beginexample
+gap> Length( s2 );
+12
+gap> s2[2];
+`a'
+gap> `e' in s2;
+false
+gap> s2[2] := `e';; s2;
+"Hello world." 
+\endexample
+
+If a string is displayed as result of an evaluation (see "Main Loop"), it
+is displayed with enclosing doublequotes. However, if a string is
+displayed by `Print', `PrintTo', or `AppendTo' (see "Print", "PrintTo",
+"AppendTo") the enclosing doublequotes are dropped.
+
+\beginexample
+gap> s2;
+"Hello world."
+gap> Print( s2 );
+Hello world.gap>
+\endexample
+
+\Declaration{IsChar}
+\Declaration{IsString}
+
+\beginexample
+gap> IsString( "Hello world.\n" );
+true
+gap> IsString( "123" );
+true
+gap> IsString( 123 );
+false
+gap> IsString( [ `1', `2', `3' ] );
+true
+gap> IsString( [ `1', `2', , `4' ] );
+false # strings must be dense
+gap> IsString( [ `1', `2', 3 ] );
+false # strings must only contain characters
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Characters}
+
+\index{backslash}\index{special character sequences}
+There are a number of *special character sequences* that can be used
+between the single quote of a character literal or between the
+doublequotes of a string literal to specify characters, which may
+otherwise be inaccessible. They consist of two characters. The first is
+a backslash $\backslash$. The second may be any character. The meaning
+is given in the following list
+
+\beginitems
+`n':& *newline character*. This is the character that, at least on
+    UNIX systems, separates lines in a text file. Printing of this
+    character in a string has the effect of moving the cursor down
+    one line and back to the beginning of the line.
+
+`\"':& *doublequote character*. Inside a string a doublequote must be
+      escaped by the backslash, because it is otherwise interpreted as
+      end of the string.
+
+`{'}':& *singlequote character*. Inside a character a singlequote must
+     escaped by the backslash, because it is otherwise interpreted as
+     end of the character.
+
+$\backslash$:& *backslash character*. Inside a string a backslash must
+     be escaped by another backslash, because it is otherwise
+     interpreted as first character of an escape sequence.
+
+`b':& *backspace character*. Printing this character should have the
+     effect of moving the cursor back one character. Whether it works
+     or not is system dependent and should not be relied upon.
+
+`r':& *carriage return character*. Printing this character should have
+     the effect of moving the cursor back to the beginning of the same
+     line. Whether this works or not is again system dependent.
+
+`c':& *flush character*. This character is not printed. Its purpose
+     is to flush the output queue. Usually {\GAP} waits until it sees
+     a <newline> before it prints a string. If you want to display a
+     string that does not include this character use $\backslash c$.
+
+other:& For any other character the backslash is simply ignored.
+\enditems
+
+Again, if the line is displayed as result of an evaluation, those escape
+sequences are displayed in the same way that they are input. They are
+displayed in their special way only by `Print', `PrintTo', or `AppendTo'.
+
+\beginexample
+gap> "This is one line.\nThis is another line.\n";
+"This is one line.\nThis is another line.\n"
+gap> Print( last );
+This is one line.
+This is another line.
+\endexample
+
+It is not allowed to enclose a <newline> inside the string. You can use
+the special character sequence $\backslash n$ to write strings that
+include <newline> characters. If, however, a string is too long to fit
+on a single line it is possible to *continue* it over several lines. In
+this case the last character of each line, except the last must be a
+backslash. Both backslash and <newline> are thrown away. Note that the
+same continuation mechanism is available for identifiers and integers.
+
+\beginexample
+gap> "This is a very long string that does not fit on a line \
+gap> and is therefore continued on the next line.";
+"This is a very long string that does not fit on a line and is therefo\
+re continued on the next line."
+# note that the output is also continued, but at a different place 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Strings}%
+
+\>`<string1> = <string2>'{comparison!strings}
+\>`<string1> \<> <string2>'{comparison!strings}
+
+The equality operator `=' returns to `true' if the two strings
+<string1> and <string2> are equal and `false' otherwise. The inequality
+operator `\<>' returns `true' if the two strings <string1> and <string2>
+are not equal and `false' otherwise.
+
+\beginexample
+gap> "Hello world.\n" = "Hello world.\n";
+true
+gap> "Hello World.\n" = "Hello world.\n";
+false # string comparison is case sensitive
+gap> "Hello world." = "Hello world.\n";
+false # the first string has no <newline>
+gap> "Goodbye world.\n" = "Hello world.\n";
+false
+gap> [ `a', `b' ] = "ab";
+true
+\endexample
+
+\>`<string1> \< <string2>'{comparison!strings}
+
+The ordering of strings is lexicographically according to the order
+implied by the underlying, system dependent, character set.
+
+\beginexample
+gap> "Hello world.\n" < "Hello world.\n";
+false # the strings are equal
+gap> "Hello World.\n" < "Hello world.\n";
+true # in ASCII uppercase letters come before lowercase letters
+gap> "Hello world." < "Hello world.\n";
+true # prefixes are always smaller
+gap> "Goodbye world.\n" < "Hello world.\n";
+true # `G' comes before `H', in ASCII at least
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations to produce strings}
+
+\index{convert!to a string}
+\Declaration{String}
+
+\beginexample
+gap> String(123);String([1,2,3]);
+"123"
+"[ 1, 2, 3 ]"
+\endexample
+
+\Declaration{StringPP}
+\beginexample
+gap> StringPP(40320);
+"2^7*3^2*5*7"
+\endexample
+
+\Declaration{WordAlp}
+\beginexample
+gap> List([0..5],i->WordAlp("abc",i));
+[ "", "a", "b", "c", "aa", "ab" ]
+\endexample
+
+\Declaration{LowercaseString}
+\beginexample
+gap> LowercaseString("This Is UpperCase");
+"this is uppercase"
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations to evaluate strings}
+
+\){\fmark Int(<str>)}\index{evaluation!strings}
+\){\fmark Rat(<str>)}
+\index{Val}
+
+return an integer, respectively a rational as represented by <str>. Both
+methods return `fail' if illegal characters occur. (The methods only
+evaluate numbers but do *not* perform arithmetic!)
+
+\beginexample
+gap> Int("12345")+1;
+12346
+gap> Int("123/45");
+fail
+gap> Int("1+2");
+fail
+gap> Int("-12"); 
+-12
+gap> Rat("123/45");
+41/15
+\endexample
+
+\Declaration{Ordinal}
+\beginexample
+gap> Ordinal(2);
+"2nd"
+gap> Ordinal(21);
+"21st"
+gap> Ordinal(33);
+"33rd"
+gap> Ordinal(-33);
+"-33th"
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Calendar arithmetic}
+
+\FileHeader{string}[2]
+
+\Declaration{DaysInYear}
+\Declaration{DaysInMonth}
+\beginexample
+gap> DaysInYear(1998);
+365
+gap> DaysInMonth(3,1998);
+31
+\endexample
+
+\Declaration{DMYDay}
+\Declaration{DayDMY}
+\Declaration{WeekDay}
+\Declaration{StringDate}
+\beginexample
+gap> DayDMY([1,1,1970]);DayDMY([2,1,1970]);
+0
+1
+gap> DMYDay(12345);
+[ 20, 10, 2003 ]
+gap> WeekDay([11,3,1998]);
+"Wed"
+gap> StringDate([11,3,1998]);
+"11-Mar-1998"
+\endexample
+
+\Declaration{HMSMSec}
+\Declaration{SecHMSM}
+\Declaration{StringTime}
+\beginexample
+gap> HMSMSec(Factorial(10));
+[ 1, 0, 28, 800 ]
+gap> SecHMSM([1,10,5,13]);
+4205013
+gap> StringTime([1,10,5,13]);
+" 1:10:05.013"
+\endexample
+

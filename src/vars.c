@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of variables package.
 **
@@ -17,7 +18,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_vars_c =
+const char * Revision_vars_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -49,66 +50,7 @@ SYS_CONST char * Revision_vars_c =
 #include        "exprs.h"               /* expressions                     */
 #include        "stats.h"               /* statements                      */
 
-#include        "gap.h"                 /* error handling, initialisation  */
 #include        "saveload.h"            /* saving and loading              */
-
-
-/****************************************************************************
-**
-
-*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
-**
-**  'T_LVARS' is the type of bags used to store values of local variables.
-**
-**  'T_LVARS' is defined in the declaration part of this package as follows
-**
-#define T_LVARS                 174
-*/
-
-
-/****************************************************************************
-**
-
-*F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
-**
-**  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
-**  for  the function    <func>,   with <narg> arguments    and  <nloc> local
-**  variables.  The old local variables bag is saved in <old>.
-**
-**  'SWITCH_TO_NEW_LVARS' is defined in the  declaration part of this package
-**  as follows
-**
-#define SWITCH_TO_NEW_LVARS(func,narg,nloc,old)                             \
-                        do {                                                \
-                            (old) = CurrLVars;                              \
-                            CHANGED_BAG( (old) );                           \
-                            CurrLVars = NewBag( T_LVARS,                    \
-                                                sizeof(Obj)*(3+narg+nloc) );\
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
-                            CURR_FUNC = (func);                             \
-                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
-                            SET_BRK_CALL_FROM( old );                       \
-                        } while ( 0 )
-*/
-
-
-/****************************************************************************
-**
-*F  SWITCH_TO_OLD_LVARS( <old> )  . . .  switch to an old local variables bag
-**
-**  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
-**
-**  'SWITCH_TO_NEW_LVARS' is defined in the  declaration part of this package
-**  as follows
-**
-#define SWITCH_TO_OLD_LVARS(old)                                            \
-                        do {                                                \
-                            CHANGED_BAG( CurrLVars );                       \
-                            CurrLVars = (old);                              \
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
-                            PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
-                        } while ( 0 )
-*/
 
 
 /****************************************************************************
@@ -123,7 +65,7 @@ SYS_CONST char * Revision_vars_c =
 **  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
 **  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
 */
-Bag             CurrLVars;
+Bag CurrLVars;
 
 
 /****************************************************************************
@@ -135,7 +77,7 @@ Bag             CurrLVars;
 **  have to check for the bottom, slowing it down.
 **
 */
-Bag             BottomLVars;
+Bag BottomLVars;
 
 
 /****************************************************************************
@@ -148,103 +90,12 @@ Bag             BottomLVars;
 **  Since   a   garbage collection may  move   this  bag  around, the pointer
 **  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
 */
-Obj *           PtrLVars;
+Obj * PtrLVars;
 
 
 /****************************************************************************
 **
 
-*F  CURR_FUNC . . . . . . . . . . . . . . . . . . . . . . .  current function
-**
-**  'CURR_FUNC' is the function that is currently executing.
-**
-**  This  is  in this package,  because  it is stored   along  with the local
-**  variables in the local variables bag.
-**
-**  'CURR_FUNC' is defined in the declaration part of this package as follows
-**
-#define CURR_FUNC       (PtrLVars[0])
-*/
-
-
-/****************************************************************************
-**
-*F  BRK_CALL_TO() . . . . . . . . . expr. which was called from current frame
-*F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
-**
-**  'BRK_CALL_TO'  and 'SET_BRK_CALL_TO' are defined  in the declaration part
-**  of this package as follows
-**
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   (PtrLVars[1])
-#define SET_BRK_CALL_TO(expr)           (PtrLVars[1] = (expr))
-#endif
-#ifdef  NO_BRK_CALLS
-#define BRK_CALL_TO()
-#define SET_BRK_CALL_TO(expr)
-#endif
-*/
-
-
-/****************************************************************************
-**
-*F  BRK_CALL_FROM() . . . . . . . . .  frame from which this frame was called
-*F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
-**
-**  'BRK_CALL_FROM' and  'SET_BRK_CALL_FROM' are defined  in the  declaration
-**  part of this package as follows
-**
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_FROM()                 (PtrLVars[2])
-#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
-#endif
-#ifdef  NO_BRK_CALLS
-#define BRK_CALL_FROM()
-#define SET_BRK_CALL_FROM(lvars)
-#endif
-*/
-
-
-/****************************************************************************
-**
-
-*F  ASS_LVAR( <lvar>, <val> ) . . . . . . . . . . .  assign to local variable
-**
-**  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
-**
-**  'ASS_LVAR' is defined in the declaration part of this package as follows
-**
-#define ASS_LVAR(lvar,val) \
-    do { PtrLVars[(lvar)+2] = (val); CHANGED_BAG((lvar)); } while (0)
-*/
-
-
-/****************************************************************************
-**
-*F  OBJ_LVAR( <lvar> )  . . . . . . . . . . . . . . . value of local variable
-**
-**  'OBJ_LVAR' returns the value of the local variable <lvar>.
-**
-**  'OBJ_LVAR' is defined in the declaration part of this package as follows
-**
-#define OBJ_LVAR(lvar)          (PtrLVars[(lvar)+2])
-*/
-
-
-/****************************************************************************
-**
-*F  NAME_LVAR( <lvar> ) . . . . . . . . . . . . . . .  name of local variable
-**
-**  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
-**
-**  'NAME_LVAR' is defined in the declaration part of this package as follows
-**
-#define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC, lvar )
-*/
-
-
-/****************************************************************************
-**
 *F  ObjLVar(<lvar>) . . . . . . . . . . . . . . . . value of a local variable
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
@@ -2840,12 +2691,12 @@ void            PrintIsbComObjExpr (
 *F  VarsBeforeCollectBags() . . . . . . . . actions before garbage collection
 *F  VarsAfterCollectBags()  . . . . . . . .  actions after garbage collection
 */
-void            VarsBeforeCollectBags ( void )
+void VarsBeforeCollectBags ( void )
 {
     CHANGED_BAG( CurrLVars );
 }
 
-void            VarsAfterCollectBags ( void )
+void VarsAfterCollectBags ( void )
 {
     PtrLVars = PTR_BAG( CurrLVars );
     PtrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
@@ -2902,21 +2753,24 @@ void LoadLVars( Obj lvars )
 /****************************************************************************
 **
 
-*F  SetupVars() . . . . . . . . . . . . . . . .  initialize variables package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupVars ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                i;              /* loop variable                   */
 
-    /* install the marking functions for local variables bag               */
-    InfoBags[         T_LVARS          ].name = "values bag";
-    InitMarkFuncBags( T_LVARS          , MarkAllSubBags );
+    /* make 'CurrLVars' known to Gasman                                    */
+    InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
+    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
 
+    /* install the marking functions for local variables bag               */
+    InfoBags[ T_LVARS ].name = "values bag";
+    InitMarkFuncBags( T_LVARS, MarkAllSubBags );
 
     /* and the save restore functions */
     SaveObjFuncs[ T_LVARS ] = SaveLVars;
     LoadObjFuncs[ T_LVARS ] = LoadLVars;
-
 
     /* install executors, evaluators, and printers for local variables     */
     ExecStatFuncs [ T_ASS_LVAR       ] = ExecAssLVar;
@@ -2971,7 +2825,6 @@ void SetupVars ( void )
 
     PrintExprFuncs[ T_ISB_LVAR       ] = PrintIsbLVar;
 
-
     /* install executors, evaluators, and printers for higher variables    */
     ExecStatFuncs [ T_ASS_HVAR       ] = ExecAssHVar;
     ExecStatFuncs [ T_UNB_HVAR       ] = ExecUnbHVar;
@@ -2982,7 +2835,6 @@ void SetupVars ( void )
     PrintExprFuncs[ T_REF_HVAR       ] = PrintRefHVar;
     PrintExprFuncs[ T_ISB_HVAR       ] = PrintIsbHVar;
 
-
     /* install executors, evaluators, and printers for global variables    */
     ExecStatFuncs [ T_ASS_GVAR       ] = ExecAssGVar;
     ExecStatFuncs [ T_UNB_GVAR       ] = ExecUnbGVar;
@@ -2992,7 +2844,6 @@ void SetupVars ( void )
     PrintStatFuncs[ T_UNB_GVAR       ] = PrintUnbGVar;
     PrintExprFuncs[ T_REF_GVAR       ] = PrintRefGVar;
     PrintExprFuncs[ T_ISB_GVAR       ] = PrintIsbGVar;
-
 
     /* install executors, evaluators, and printers for list elements       */
     ExecStatFuncs [ T_ASS_LIST       ] = ExecAssList;
@@ -3016,7 +2867,6 @@ void SetupVars ( void )
     PrintExprFuncs[ T_ELMS_LIST_LEV  ] = PrintElmsList;
     PrintExprFuncs[ T_ISB_LIST       ] = PrintIsbList;
 
-
     /* install executors, evaluators, and printers for record elements     */
     ExecStatFuncs [ T_ASS_REC_NAME   ] = ExecAssRecName;
     ExecStatFuncs [ T_ASS_REC_EXPR   ] = ExecAssRecExpr;
@@ -3035,7 +2885,6 @@ void SetupVars ( void )
     PrintExprFuncs[ T_ISB_REC_NAME   ] = PrintIsbRecName;
     PrintExprFuncs[ T_ISB_REC_EXPR   ] = PrintIsbRecExpr;
 
-
     /* install executors, evaluators, and printers for list elements       */
     ExecStatFuncs [ T_ASS_POSOBJ       ] = ExecAssPosObj;
     ExecStatFuncs [ T_UNB_POSOBJ       ] = ExecUnbPosObj;
@@ -3045,7 +2894,6 @@ void SetupVars ( void )
     PrintStatFuncs[ T_UNB_POSOBJ       ] = PrintUnbPosObj;
     PrintExprFuncs[ T_ELM_POSOBJ       ] = PrintElmPosObj;
     PrintExprFuncs[ T_ISB_POSOBJ       ] = PrintIsbPosObj;
-
 
     /* install executors, evaluators, and printers for record elements     */
     ExecStatFuncs [ T_ASS_COMOBJ_NAME  ] = ExecAssComObjName;
@@ -3065,48 +2913,74 @@ void SetupVars ( void )
     PrintExprFuncs[ T_ISB_COMOBJ_NAME  ] = PrintIsbComObjName;
     PrintExprFuncs[ T_ISB_COMOBJ_EXPR  ] = PrintIsbComObjExpr;
 
-
     /* install before and after actions for garbage collections            */
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitVars()  . . . . . . . . . . . . . . . .  initialize variables package
-**
-**  'InitVars' initializes the variables package.
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void InitVars ( void )
+static Int PostRestore (
+    StructInitInfo *    module )
+{
+    CurrLVars = BottomLVars;
+    SWITCH_TO_OLD_LVARS( BottomLVars );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
     Obj                 tmp;
 
-    /* make 'CurrLVars' known to Gasman                                    */
-    InitGlobalBag( &CurrLVars,   "src/vars.c:CurrLVars"   );
-    InitGlobalBag( &BottomLVars, "src/vars.c:BottomLVars" );
-    if ( ! SyRestoring ) {
-        BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
-        CurrLVars   = BottomLVars;
-        tmp = NewFunctionC( "bottom", 0, "", 0 );
-        PTR_BAG(BottomLVars)[0] = tmp;
-        tmp = NewBag( T_BODY, 0 );
-        BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
-        SWITCH_TO_OLD_LVARS( BottomLVars );
-    }
-    else {
-        Pr( "#W  check `InitVars' in \"vars.c\"\n", 0L, 0L );
-    }
+    BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+    tmp = NewFunctionC( "bottom", 0, "", 0 );
+    PTR_BAG(BottomLVars)[0] = tmp;
+    tmp = NewBag( T_BODY, 0 );
+    BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
+
+    /* return success                                                      */
+    return PostRestore( module );
 }
 
 
 /****************************************************************************
 **
-*F  CheckVars() . . . . . . check the initialisation of the variables package
+*F  InitInfoVars()  . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckVars ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "vars",                             /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoVars ( void )
 {
-    SET_REVISION( "vars_c",     Revision_vars_c );
-    SET_REVISION( "vars_h",     Revision_vars_h );
+    module.revision_c = Revision_vars_c;
+    module.revision_h = Revision_vars_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

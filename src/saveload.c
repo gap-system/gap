@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions concerned with saving and loading
 **  the workspace. There are support functions in gasman.c and elsewhere
@@ -12,7 +13,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_saveload_c =
+const char * Revision_saveload_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -35,58 +36,82 @@ SYS_CONST char * Revision_saveload_c =
 **
 ** Temporary Stuff which will probably be revised to tie in with sysfiles
 */
-#include <stdio.h>
 
-static FILE * SaveFile = NULL;
 
-static void OpenForSave( Obj fname ) 
+static Int SaveFile = -1;
+
+static Int OpenForSave( Obj fname ) 
 {
-  if (SaveFile)
-    ErrorQuit("Already saving",0L,0L);
-  SaveFile = fopen(CSTR_STRING(fname), "wb");
-  if (!SaveFile)
-    ErrorQuit("Panic: Couldn't open file %s ",(UInt)CSTR_STRING(fname),0L);
+  if (SaveFile != -1)
+    {
+      Pr("Already saving",0L,0L);
+      return 1;
+    }
+  SaveFile = SyFopen(CSTR_STRING(fname), "wb");
+  if (SaveFile == -1)
+    {
+      Pr("Couldn't open file %s to save workspace",
+	 (UInt)CSTR_STRING(fname),0L);
+      return 1;
+    }
+  return 0;
 }
 
 
 static void CloseAfterSave( void )
 {
-  if (!SaveFile)
-    ErrorQuit("Not saving",0L,0L);
-  fclose(SaveFile);
-  SaveFile = NULL;
+  if (SaveFile == -1)
+    {
+      Pr("Internal error -- this should never happen",0L,0L);
+      SyExit(2);
+    }
+  SyFclose(SaveFile);
+  SaveFile = -1;
 }
 
-static FILE *LoadFile;
+static Int LoadFile = -1;
 
 
-static void OpenForLoad( Obj fname ) 
+static void OpenForLoad( Char *fname ) 
 {
-  if (LoadFile)
-    ErrorQuit("Already saving",0L,0L);
-  LoadFile = fopen(CSTR_STRING(fname), "rb");
-  if (!LoadFile)
-    ErrorQuit("Panic: Couldn't open file %s ",(UInt)CSTR_STRING(fname),0L);
+  if (LoadFile != -1)
+    {
+      Pr("Internal error -- this should never happen\n",0L,0L);
+      SyExit(2);
+    }
+  LoadFile = SyFopen(fname, "rb");
+  if (LoadFile == -1)
+    {
+      Pr("Couldn't open saved workspace %s\n",(Int)fname,0L);
+      SyExit(1);
+    }
 }
 
 
 static void CloseAfterLoad( void )
 {
   if (!LoadFile)
-    ErrorQuit("Not saving",0L,0L);
-  fclose(LoadFile);
-  LoadFile = NULL;
+    {
+      Pr("Internal error -- this should never happen\n",0L,0L);
+      SyExit(2);
+    }
+  SyFclose(LoadFile);
+  LoadFile = -1;
 }
 
-#define SAVE_BYTE( byte ) (fputc((int) (byte), SaveFile))
+#define SAVE_BYTE( byte )  do {SyPutc(SaveFile, (byte));} while (0)
 
-
-UInt1 LOAD_BYTE ( void )
+static Char * LoadByteErrorMessage = "Unexpected End of File in Load\n";
+			     
+inline UInt1 LOAD_BYTE ( void )
 {
   int c;
-  c = fgetc(LoadFile);
+  c = SyGetc(LoadFile);
   if (c == EOF)
-    ErrorQuit("Unexpected End of File in Load", 0L, 0L );
+    {
+      Pr(LoadByteErrorMessage, 0L, 0L );
+      SyExit(2);
+    }
   return c;
 }
 
@@ -138,7 +163,7 @@ UInt4 LoadUInt4 ( void )
 }
 
 
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
 
 void SaveUInt8( UInt8 data )
 {
@@ -239,7 +264,7 @@ void LoadCStr( Char *buf, UInt maxsize)
     }
   if (c != '\0')
     {
-      Pr("Buffer overflow reading workspace",0L,0L);
+      Pr("Buffer overflow reading workspace\n",0L,0L);
       SyExit(1);
     }
 }
@@ -296,17 +321,11 @@ ObjFunc LoadHandler( )
 }
 
 
-static UInt NextSaveIndex;
+/***************************************************************************
+**
+**  Bag level saving routines
+*/
 
-static void AddSaveIndex( Bag bag)
-{
-  PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
-}
-
-static void RemoveSaveIndex( Bag bag)
-{
-  PTR_BAG(bag)[-1] = bag;
-}
 
 
 static void SaveBagData (Bag bag)
@@ -319,12 +338,7 @@ static void SaveBagData (Bag bag)
 
 }
 
-/* temporary fudge */
 
-static Bag NextBagRestoring(  UInt sizetype)
-{
-  return (Bag) 0;
-}
 
 static void LoadBagData ( )
 {
@@ -333,6 +347,20 @@ static void LoadBagData ( )
   
   /* Recover the sizetype word */
   sizetype=LoadUInt();
+
+#ifdef DEBUG_LOADING
+  {
+    UInt size, type;
+    size = sizetype >> 8;
+    type = sizetype &0xFF;
+    if (InfoBags[type].name == NULL)
+      {
+        Pr("Bad type %d, size %d\n",type,size);
+        exit(1);
+      }
+  }
+  
+#endif  
 
   /* Get GASMAN to set up the bag for me */
   bag = NextBagRestoring( sizetype );
@@ -344,62 +372,17 @@ static void LoadBagData ( )
 }
 
 
-#define MAX_LOADED_MODULE_INFO 10000
-
-static Char LoadedModuleInfo[MAX_LOADED_MODULE_INFO];
-static Char *EndLoadedModuleInfo;
-static UInt NLoadedModules;
-
-
-void RecordLoadedModule( Obj filename, UInt4 crc )
-{
-  UInt len = SyStrlen(CSTR_STRING(filename));
-  if (EndLoadedModuleInfo + len +1 >= LoadedModuleInfo + MAX_LOADED_MODULE_INFO)
-    ErrorQuit("Panic: No room to record loaded module %d %s", 
-              NLoadedModules,
-              (Int)CSTR_STRING(filename));
-  SyStrncat(EndLoadedModuleInfo, CSTR_STRING(filename), len+1);
-  EndLoadedModuleInfo += len+1;
-  *EndLoadedModuleInfo = '\0';
-  NLoadedModules++;
-  return;
-}
-
-Obj FuncLoadedModules( Obj self )
-{
-  Obj list, str;
-  UInt i,len;
-  Char *name;
-  list = NEW_PLIST(T_PLIST_HOM+IMMUTABLE, NLoadedModules);
-  name = LoadedModuleInfo;
-  for (i = 1; i <= NLoadedModules; i++)
-    {
-      len = SyStrlen(name);
-      str = NEW_STRING(len + 1);
-      RetypeBag(str, T_STRING+IMMUTABLE);
-      *CSTR_STRING(str) = '\0';
-      SyStrncat(CSTR_STRING(str), name, len+1);
-      name += len+1;
-      SET_ELM_PLIST(list,i,str);
-      CHANGED_BAG(list);
-    }
-  SET_LEN_PLIST(list,NLoadedModules);
-  if (NLoadedModules == 0)
-    RetypeBag(list,T_PLIST_EMPTY+IMMUTABLE);
-  return list;
-}
-
 /***************************************************************************
 **
 
-*F  WriteSaveHeader( )
+*F  WriteSaveHeader() . . . . .  and utility functions, and loading functions
 **
 */
 
 static void WriteEndiannessMarker( void )
 {
   UInt x;
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
   x = 0x0102030405060708L;
 #else
   x = 0x01020304L;
@@ -408,7 +391,7 @@ static void WriteEndiannessMarker( void )
   SAVE_BYTE(((UInt1 *)&x)[1]);
   SAVE_BYTE(((UInt1 *)&x)[2]);
   SAVE_BYTE(((UInt1 *)&x)[3]);
-#if SYS_IS_64BIT
+#if SYS_IS_64_BIT
   SAVE_BYTE(((UInt1 *)&x)[4]);
   SAVE_BYTE(((UInt1 *)&x)[5]);
   SAVE_BYTE(((UInt1 *)&x)[6]);
@@ -423,52 +406,29 @@ static void CheckEndiannessMarker( void )
   ((UInt1 *)&x)[1] = LOAD_BYTE();
   ((UInt1 *)&x)[2] = LOAD_BYTE();
   ((UInt1 *)&x)[3] = LOAD_BYTE();
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
   ((UInt1 *)&x)[4] = LOAD_BYTE();
   ((UInt1 *)&x)[5] = LOAD_BYTE();
   ((UInt1 *)&x)[6] = LOAD_BYTE();
   ((UInt1 *)&x)[7] = LOAD_BYTE();
   if (x != 0x0102030405060708L)
-    ErrorQuit("Saved workspace with incompatible byte order %d",x,0L);
 #else
   if (x != 0x01020304L)
-    ErrorQuit("Saved workspace with incompatible byte order %d",x,0L);
 #endif  
-}
-
-static void WriteSaveHeader( void )
-{
-  UInt i;
-  Char *name;
-#ifdef SYS_IS_64BIT
-  SaveCStr( "GAP 4.0 beta 64 bit");
-#else
-  SaveCStr("GAP 4.0 beta 32 bit");
-#endif
-  WriteEndiannessMarker();
-  
-  SaveCStr("Counts and Sizes");
-  SaveUInt(NLoadedModules);
-  SaveUInt(GlobalBags.nr);
-  SaveUInt(NextSaveIndex);
-  SaveUInt(AllocBags - OldBags);
-  
-  SaveCStr("Loaded Modules");
-
-  name = LoadedModuleInfo;
-  for (i = 1; i <= NLoadedModules; i++)
     {
-      SaveCStr(name);
-      name += SyStrlen(name) + 1;
-    }
-
-  SaveCStr("Kernel to WS refs");
-  for (i = 0; i < GlobalBags.nr; i++)
-    {
-      SaveCStr((Char *)GlobalBags.cookie[i]);
-      SaveSubObj(*(GlobalBags.addr[i]));
+      Pr("Saved workspace with incompatible byte order\n",0L,0L);
+      SyExit(1);
     }
 }
+
+
+/***************************************************************************
+**
+**  Find Bags -- a useful debugging tool -- scan for a bag of specified
+**   type and size and return it to the GAP level. Could be a problem
+**  if the bag is not a valid GAP object -- eg a local variables bag or
+**  a functions body.
+*/
 
 
 static UInt fb_minsize, fb_maxsize, fb_tnum;
@@ -497,7 +457,7 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
 
 /***************************************************************************
 **
-*F  SaveWorkspace( <fname> )  . . . . . save the workspace to the named file
+*F  SaveWorkspace( <fname> )  . . . . .  save the workspace to the named file
 **
 **  'SaveWorkspace' is the entry point to the workspace saving. It is not
 **  installed as a GAP function, but instead as a keyword, so that we can be
@@ -509,14 +469,75 @@ Obj FuncFindBag( Obj self, Obj minsize, Obj maxsize, Obj tnum )
 **  The return value is either True or Fail
 */
 
+static UInt NextSaveIndex;
+
+static void AddSaveIndex( Bag bag)
+{
+  PTR_BAG(bag)[-1] = (Obj)NextSaveIndex++;
+}
+
+static void RemoveSaveIndex( Bag bag)
+{
+  PTR_BAG(bag)[-1] = bag;
+}
+static void WriteSaveHeader( void )
+{
+  UInt i;
+  UInt globalcount = 0;
+#ifdef SYS_IS_64_BIT
+  SaveCStr( "GAP 4.0 beta 64 bit");
+#else
+  SaveCStr("GAP 4.0 beta 32 bit");
+#endif
+  WriteEndiannessMarker();
+  
+  SaveCStr("Counts and Sizes");
+  SaveUInt(NrModules - NrBuiltinModules);
+  for (i = 0; i < GlobalBags.nr; i++)
+    if (GlobalBags.cookie[i] != NULL)
+      globalcount++;
+  SaveUInt(globalcount);
+  SaveUInt(NextSaveIndex);
+  SaveUInt(AllocBags - OldBags);
+  
+  SaveCStr("Loaded Modules");
+
+  for ( i = NrBuiltinModules; i < NrModules; i++)
+    {
+      SaveUInt(Modules[i]->isGapRootRelative);
+      SaveCStr(Modules[i]->filename);
+    }
+
+  SaveCStr("Kernel to WS refs");
+  for (i = 0; i < GlobalBags.nr; i++)
+    {
+      if (GlobalBags.cookie[i] != NULL)
+	{
+	  SaveCStr((Char *)GlobalBags.cookie[i]);
+	  SaveSubObj(*(GlobalBags.addr[i]));
+	}
+    }
+}
+
 
 Obj SaveWorkspace( Obj fname )
 {
 
-  /* Clean the copy and fopy info (which includes kernel refs) 
-     out of the workspace */
-  RemoveCopyFopyInfo( );
-
+  Int i;
+  if (!IsStringConv(fname))
+    ErrorQuit("usage: SaveWorkspace( <filename> )",0,0);
+  
+  for (i = 0; i < NrModules; i++)
+    if (Modules[i]->preSave != NULL &&
+        (*(Modules[i]->preSave))(Modules[i]))
+      {
+        Pr("Failed to save workspace -- problem reported in %s\n",
+           (Int)Modules[i]->name, 0L);
+        for ( i--; i >= 0; i--)
+          (*(Modules[i]->postSave))(Modules[i]);
+        return Fail;
+      }
+  
   /* Do a full garbage collection */
   CollectBags( 0, 1);
   
@@ -525,21 +546,24 @@ Obj SaveWorkspace( Obj fname )
   CallbackForAllBags( AddSaveIndex );
 
   /* Now do the work */
-  OpenForSave( fname );
-  WriteSaveHeader();
-  SaveCStr("Bag data");
-  SortHandlers( 1 ); /* Sort by address to speed up CookieOfHandler */
-  CallbackForAllBags( SaveBagData );
-  CloseAfterSave();
-  
+  if (!OpenForSave( fname ))
+    {
+      WriteSaveHeader();
+      SaveCStr("Bag data");
+      SortHandlers( 1 ); /* Sort by address to speed up CookieOfHandler */
+      CallbackForAllBags( SaveBagData );
+      CloseAfterSave();
+    }
+      
   /* Finally, reset all the link words */
   CallbackForAllBags( RemoveSaveIndex );
   
-  /* And reset the Copy and Fopy info, using the kernel copy */
-  RestoreCopyFopyInfo ();
+  /* Restore situation by calling all post-save methods */
+  for (i = 0; i < NrModules; i++)
+    if (Modules[i]->postSave != NULL)
+      (*(Modules[i]->preSave))(Modules[i]);
 
-  /* Not all working yet */
-  return Fail;
+  return True;
 }
 
 
@@ -547,32 +571,135 @@ Obj SaveWorkspace( Obj fname )
 
 /***************************************************************************
 **
-*F  LoadWorkspace( <fname> )  . . . . . load the workspace to the named file
+*F  LoadWorkspace( <fname> )  . . . . .  load the workspace to the named file
 **
 **  'LoadWorkspace' is the entry point to the workspace saving. It is not
-**  installed as a GAP function, but instead as a keyword, so that we can be
-**  sure it is only being called from the top-most prompt level
+**  installed as a GAP function, but instead called from InitGap when the
+**  -L commad-line flag is given
+**
 **  The file saveload.tex in the dev directory describes the saved format
 **  in more detail. Most of the work will be done from inside GASMAN, because
 **  we need to fiddle with Bag internals somewhat
 **
-**  It may return Fail, in the original workspace, True, in the new workspace
-**  or abort the system if an error arises too late to be safely averted
 */
 
-static Obj IsReadableFile;
 
-Obj LoadWorkspace( Obj fname )
+void LoadWorkspace( Char * fname )
 {
-  Obj fileok;
-  fileok = CALL_1ARGS(IsReadableFile, fname);
-  if (fileok == True)
-    return False;
-  else if (fileok == False)
-    return Fail;
-  else
-    ErrorQuit("Panic: invalid return from IsReadable",0L,0L);  
-  return 0; /* please lint */
+  UInt nMods, nGlobs, nBags, i, maxSize, isGapRootRelative;
+  UInt globalcount = 0;
+  Char buf[256];
+  Obj * glob;
+
+  /* Open saved workspace  */
+  OpenForLoad( fname );
+
+  /* Check file header */
+  /* this and its opposite number in saving should use proper version
+     information */
+  LoadCStr(buf,256);
+#ifdef SYS_IS_64_BIT             
+  if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
+#else
+  if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
+#endif
+    {
+      Pr("Header is bad\n",0L,0L);
+      SyExit(1);
+    }
+  CheckEndiannessMarker();
+  
+  LoadCStr(buf,256);
+  if (SyStrcmp(buf,"Counts and Sizes") != 0)
+    {
+      Pr("Bad divider\n",0L,0L);
+      SyExit(1);
+    }
+  
+  nMods = LoadUInt();
+  nGlobs = LoadUInt();
+  nBags = LoadUInt();
+  maxSize = LoadUInt();
+
+  /* Make sure there is enough room, and signal GASMAN that
+     we are starting a restore */
+  StartRestoringBags(nBags, maxSize);
+
+  /* The restoring kernel must have at least as many compiled modules
+     as the saving one. */
+  LoadCStr(buf,256);
+  if (SyStrcmp(buf,"Loaded Modules") != 0)
+    {
+      Pr("Bad divider\n",0L,0L);
+      SyExit(1);
+    }
+
+  for (i = 0; i < nMods; i++)
+    {
+      isGapRootRelative = LoadUInt();
+      LoadCStr(buf,256);
+      if (isGapRootRelative)
+        READ_GAP_ROOT( buf);
+      else
+        SyLoadModule(buf);
+                                /* does this work for user static modules
+                                  -- are they even possible?*/
+    }
+
+  /* Now the kernel variables that point into the workspace */
+  LoadCStr(buf,256);
+  if (SyStrcmp(buf,"Kernel to WS refs") != 0)
+    {
+      Pr("Bad divider\n",0L,0L);
+      SyExit(1);
+    }
+  SortGlobals(2);               /* globals by cookie for quick
+                                 lookup */
+  for (i = 0; i < GlobalBags.nr; i++)
+    {
+      if (GlobalBags.cookie[i] != NULL)
+	globalcount++;
+      else
+	*(GlobalBags.addr[i]) = (Bag) 0;
+    }
+  if (nGlobs != globalcount)
+    {
+      Pr("Wrong number of global bags in saved workspace %d %d\n",
+         nGlobs, globalcount);
+      SyExit(1);
+    }
+  for (i = 0; i < globalcount; i++)
+    {
+      LoadCStr(buf,256);
+      glob = GlobalByCookie(buf);
+      if (glob == (Obj *)0)
+        {
+          Pr("Global object cookie from workspace not found in kernel %s\n",
+             (Int)buf,0L);
+          SyExit(1);
+        }
+      *glob = LoadSubObj();
+#ifdef DEBUG_LOADING
+      Pr("Restored global %s\n",(Int)buf,0L);
+#endif
+    }
+
+  LoadCStr(buf,256);
+  if (SyStrcmp(buf,"Bag data") != 0)
+    {
+      Pr("Bad divider\n",0L,0L);
+      SyExit(1);
+    }
+  
+  SortHandlers(2);
+  for (i = 0; i < nBags; i++)
+    LoadBagData();
+
+  FinishedRestoringBags();
+
+  /* Post restore methods are called elsewhere */
+  
+  CloseAfterLoad();
 }
 
 #include        "finfield.h"            /* finite fields and ff elements   */
@@ -589,18 +716,12 @@ static void PrSavedObj( UInt x)
 
 Obj FuncDumpWorkspace( Obj self, Obj fname )
 {
-  Obj fileok;
-  UInt nMods, nGlobs, nBags, i;
+  UInt nMods, nGlobs, nBags, i, relative;
   Char buf[256];
-  fileok = CALL_1ARGS(IsReadableFile, fname);
-  if (fileok == False)
-    return Fail;
-  else if (fileok != True)
-    ErrorQuit("Panic: invalid return from IsReadable",0L,0L);  
-  OpenForLoad( fname );
+  OpenForLoad( CSTR_STRING(fname) );
   LoadCStr(buf,256);
   Pr("Header string: %s\n",(Int) buf, 0L);
-#ifdef SYS_IS_64BIT
+#ifdef SYS_IS_64_BIT
   if (SyStrcmp(buf,"GAP 4.0 beta 64 bit") != 0)
 #else
   if (SyStrcmp(buf,"GAP 4.0 beta 32 bit") != 0)
@@ -621,6 +742,11 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
     ErrorQuit("Bad divider",0L,0L);
   for (i = 0; i < nMods; i++)
     {
+      relative = LoadUInt();
+      if (relative)
+	Pr("GAP root relative ", 0L, 0L);
+      else
+	Pr("absolute ", 0L, 0L);
       LoadCStr(buf,256);
       Pr("  %s\n",(Int)buf,0L);
     }
@@ -638,15 +764,6 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
   Pr("Divider string: %s\n",(Int)buf,0L);
   if (SyStrcmp(buf,"Bag data") != 0)
     ErrorQuit("Bad divider",0L,0L);
-#if 0
-  for (i = 0; i < nBags; i++)
-    {
-      sizetype = LoadUInt();
-      Pr("Size %d type %s\n",sizetype >> 8, (Int)InfoBags[sizetype & 0xFF].name);
-      if (LoadUInt() != 0xFFFFFFFF)
-        ErrorQuit("Something saved in a bag body\n",0L,0L);
-    }
-#endif
   CloseAfterLoad();
   return (Obj) 0;
 }
@@ -662,52 +779,82 @@ Obj FuncDumpWorkspace( Obj self, Obj fname )
 /****************************************************************************
 **
 
-*F  SetupSaveLoad( void ) . . . . . . . .  initialize the save/load workspace
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupSaveLoad( void )
-{
-}
-               
+static StructGVarFunc GVarFuncs [] = {
+
+    { "DumpWorkspace", 1, "fname", 
+      FuncDumpWorkspace, "src/saveload.c:DumpWorkspace" },
+
+    { "FindBag", 3, "minsize, maxsize, tnum", 
+      FuncFindBag, "src/saveload.c:FindBag" },
+
+    { 0 }
+
+};
+
 
 /****************************************************************************
 **
-*F  InitSaveLoad( void )  . . . . . . . .  initialize the save/load workspace
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitSaveLoad ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-  /* Initialize Fopys of file handling and other functions */
-  InitFopyGVar( "IsReadableFile", &IsReadableFile );
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
 
-  /* Create dummy variable, to support tab-completion */
-  (void)GVarName("SaveWorkspace");
-
-  /* Clean up the setup for RecordLoadedModule */
-  NLoadedModules = 0;
-  *LoadedModuleInfo = '\0';
-  EndLoadedModuleInfo = LoadedModuleInfo;
-
-  C_NEW_GVAR_FUNC( "LoadedModules", 0, "", 
-                FuncLoadedModules,
-    "src/saveload.c:LoadedModules" );
-
-  C_NEW_GVAR_FUNC( "DumpWorkspace", 1, "fname", 
-                FuncDumpWorkspace, 
-    "src/saveload.c:DumpWorkspace" );
-
-  C_NEW_GVAR_FUNC( "FindBag", 3, "minsize, maxsize, tnum", 
-                FuncFindBag,
-    "src/saveload.c:FindBag"  );
+    /* return success                                                      */
+    return 0;
 }
-               
+
 
 /****************************************************************************
 **
-*F  CheckSaveLoad( void ) check the initialisation of the save/load workspace
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckSaveLoad ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
+    /* Create dummy variable, to support tab-completion */
+    (void)GVarName("SaveWorkspace");
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
-               
+
+
+/****************************************************************************
+**
+*F  InitInfoSaveLoad()  . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "saveload",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoSaveLoad ( void )
+{
+    module.revision_c = Revision_saveload_c;
+    module.revision_h = Revision_saveload_h;
+    FillInVersion( &module );
+    return &module;
+}
+
 
 /****************************************************************************
 **

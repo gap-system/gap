@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the immediate interpreter package.
 **
@@ -15,7 +16,7 @@
 **  coder.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_intrprtr_h =
+const char * Revision_intrprtr_h =
    "@(#)$Id$";
 #endif
 
@@ -306,6 +307,15 @@ extern  void            IntrReturnVoid ( void );
 **  when the reader encounters a 'quit;'.
 */
 extern  void            IntrQuit ( void );
+
+/****************************************************************************
+**
+*F  IntrQUIT()  . . . . . . . . . . . . . . . . . .  interpret QUIT-statement
+**
+**  'IntrQUIT' is the  action to interpret   a QUIT-statement.  It  is called
+**  when the reader encounters a 'QUIT;'.
+*/
+extern  void            IntrQUIT ( void );
 
 
 /****************************************************************************
@@ -829,25 +839,9 @@ extern void              IntrSaveWSEnd ( void );
 /****************************************************************************
 **
 
-*F  SetupIntrprtr() . . . . . . . . . . . . . . .  initialize the interpreter
+*F  InitInfoIntrprtr()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupIntrprtr ( void );
-
-
-/****************************************************************************
-**
-*F  InitIntrprtr()  . . . . . . . . . . . . . . .  initialize the interpreter
-**
-**  'InitIntrprtr' initializes the interpreter.
-*/
-extern void InitIntrprtr ( void );
-
-
-/****************************************************************************
-**
-*F  CheckIntrprtr() . . . . . . . check the initialisation of the interpreter
-*/
-extern void CheckIntrprtr ( void );
+StructInitInfo * InitInfoIntrprtr ( void );
 
 
 /****************************************************************************

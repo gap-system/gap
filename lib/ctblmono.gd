@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations of the functions dealing with
 ##  monomiality questions for solvable groups.
@@ -18,7 +19,7 @@ Revision.ctblmono_gd :=
 ##
 #V  InfoMonomial
 ##
-InfoMonomial := NewInfoClass( "InfoMonomial" );
+DeclareInfoClass( "InfoMonomial" );
 
 
 #############################################################################
@@ -29,9 +30,7 @@ InfoMonomial := NewInfoClass( "InfoMonomial" );
 ##  derived length of groups $<G> / \ker(\chi)$ for $\chi\in Irr(<G>)$ with
 ##  $\chi(1)$ at most the <i>-th irreducible degree of <G>.
 ##
-Alpha := NewAttribute( "Alpha", IsGroup );
-SetAlpha := Setter( Alpha );
-HasAlpha := Tester( Alpha );
+DeclareAttribute( "Alpha", IsGroup );
 
 
 #############################################################################
@@ -41,9 +40,7 @@ HasAlpha := Tester( Alpha );
 ##  is the list '[ 1, alp[2] - alp[1], ..., alp[<n>] - alp[<n>-1] ]',
 ##  where 'alp = Alpha( <G> )'.
 ##
-Delta := NewAttribute( "Delta", IsGroup );
-SetDelta := Setter( Delta );
-HasDelta := Tester( Delta );
+DeclareAttribute( "Delta", IsGroup );
 
 
 #############################################################################
@@ -65,9 +62,7 @@ HasDelta := Tester( Delta );
 ##  In the case that 'false' is returned 'InfoMonomial' tells about the
 ##  degree for that the inequality is violated.
 ##
-IsBergerCondition := NewProperty( "IsBergerCondition", IsGroup );
-SetIsBergerCondition := Setter( IsBergerCondition );
-HasIsBergerCondition := Tester( IsBergerCondition );
+DeclareProperty( "IsBergerCondition", IsGroup );
 
 BergerCondition := IsBergerCondition;
 #T compat3!
@@ -83,7 +78,7 @@ BergerCondition := IsBergerCondition;
 ##
 ##  <N> may be given also as list of conjugacy class positions w.r. to $G$.
 ##
-TestHomogeneous := NewOperationArgs( "TestHomogeneous" );
+DeclareGlobalFunction( "TestHomogeneous" );
 
 
 #############################################################################
@@ -105,9 +100,7 @@ TestHomogeneous := NewOperationArgs( "TestHomogeneous" );
 ##  *Note* that for solvable groups, quasiprimitivity is the same as
 ##  primitivity.
 ##
-TestQuasiPrimitive := NewAttribute( "TestQuasiPrimitive", IsCharacter );
-SetTestQuasiPrimitive := Setter( TestQuasiPrimitive );
-HasTestQuasiPrimitive := Tester( TestQuasiPrimitive );
+DeclareAttribute( "TestQuasiPrimitive", IsCharacter );
 
 
 #############################################################################
@@ -118,9 +111,7 @@ HasTestQuasiPrimitive := Tester( TestQuasiPrimitive );
 ##  i.e., restricts homogeneously to every normal subgroup of $G$,
 ##  and 'false' otherwise.
 ##
-IsQuasiPrimitive := NewProperty( "IsQuasiPrimitive", IsCharacter );
-SetIsQuasiPrimitive := Setter( IsQuasiPrimitive );
-HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
+DeclareProperty( "IsQuasiPrimitive", IsCharacter );
 
 
 #############################################################################
@@ -130,9 +121,7 @@ HasIsQuasiPrimitive := Tester( IsQuasiPrimitive );
 ##  is 'true' if the character <chi> is induced from a linear character of a
 ##  subgroup, and 'false' otherwise.
 ##
-IsMonomialCharacter := NewProperty( "IsMonomialCharacter", IsCharacter );
-SetIsMonomialCharacter := Setter( IsMonomialCharacter );
-HasIsMonomialCharacter := Tester( IsMonomialCharacter );
+DeclareProperty( "IsMonomialCharacter", IsCharacter );
 
 
 #############################################################################
@@ -142,9 +131,7 @@ HasIsMonomialCharacter := Tester( IsMonomialCharacter );
 ##  is 'true' if the character <chi> is not induced from any proper subgroup,
 ##  and 'false' otherwise.
 ##
-IsPrimitiveCharacter := NewProperty( "IsPrimitiveCharacter", IsCharacter );
-SetIsPrimitiveCharacter := Setter( IsPrimitiveCharacter );
-HasIsPrimitiveCharacter := Tester( IsPrimitiveCharacter );
+DeclareProperty( "IsPrimitiveCharacter", IsCharacter );
 
 
 #############################################################################
@@ -171,7 +158,7 @@ HasIsPrimitiveCharacter := Tester( IsPrimitiveCharacter );
 ##
 #T problem! (attr.?)
 ##
-TestInducedFromNormalSubgroup := NewOperationArgs(
+DeclareGlobalFunction(
     "TestInducedFromNormalSubgroup" );
 
 
@@ -182,10 +169,8 @@ TestInducedFromNormalSubgroup := NewOperationArgs(
 ##  is 'true' if the character <chi> of the group $G$ is induced from a
 ##  normal subgroup of $G$, and 'false' otherwise.
 ##
-IsInducedFromNormalSubgroup := NewProperty( "IsInducedFromNormalSubgroup",
+DeclareProperty( "IsInducedFromNormalSubgroup",
     IsCharacter );
-SetIsInducedFromNormalSubgroup := Setter( IsInducedFromNormalSubgroup );
-HasIsInducedFromNormalSubgroup := Tester( IsInducedFromNormalSubgroup );
 
 
 #############################################################################
@@ -201,10 +186,8 @@ HasIsInducedFromNormalSubgroup := Tester( IsInducedFromNormalSubgroup );
 ##  in the case that 'isSubnormallyMonomial' is 'false' there is also
 ##  a component 'character' that is not a SM character.
 ##
-TestSubnormallyMonomial := NewAttribute( "TestSubnormallyMonomial",
+DeclareAttribute( "TestSubnormallyMonomial",
     IsGroup );
-SetTestSubnormallyMonomial := Setter( TestSubnormallyMonomial );
-HasTestSubnormallyMonomial := Tester( TestSubnormallyMonomial );
 
 
 #############################################################################
@@ -212,10 +195,8 @@ HasTestSubnormallyMonomial := Tester( TestSubnormallyMonomial );
 #P  IsSubnormallyMonomial( <G> )
 #P  IsSubnormallyMonomial( <chi> )
 ##
-IsSubnormallyMonomial := NewProperty( "IsSubnormallyMonomial",
+DeclareProperty( "IsSubnormallyMonomial",
     IsGroup );
-SetIsSubnormallyMonomial := Setter( IsSubnormallyMonomial );
-HasIsSubnormallyMonomial := Tester( IsSubnormallyMonomial );
 
 
 #############################################################################
@@ -252,7 +233,7 @@ HasIsSubnormallyMonomial := Tester( IsSubnormallyMonomial );
 ##  nonmonomial groups that can occur as subgroup or factor group of
 ##  the group with order $n$.
 ##
-IsMonomialNumber := NewAttribute( "IsMonomialNumber", IsInt and IsPosRat );
+DeclareAttribute( "IsMonomialNumber", IsPosInt );
 
 
 #############################################################################
@@ -265,9 +246,7 @@ IsMonomialNumber := NewAttribute( "IsMonomialNumber", IsInt and IsPosRat );
 ##
 ##  The function sets the 'isMonomial' flag if (non)monomiality was proved.
 ##
-TestMonomialQuick := NewAttribute( "TestMonomialQuick", IsCharacter );
-SetTestMonomialQuick := Setter( TestMonomialQuick );
-HasTestMonomialQuick := Tester( TestMonomialQuick );
+DeclareAttribute( "TestMonomialQuick", IsCharacter );
 
 
 #############################################################################
@@ -305,9 +284,7 @@ HasTestMonomialQuick := Tester( TestMonomialQuick );
 ##  of character orbits are monomial.
 #T used e.g. by 'Irr' for supersolvable groups, function 'IrrConlon'!
 ##
-TestMonomial := NewAttribute( "TestMonomial", IsCharacter );
-SetTestMonomial := Setter( TestMonomial );
-HasTestMonomial := Tester( TestMonomial );
+DeclareAttribute( "TestMonomial", IsCharacter );
 
 
 #############################################################################
@@ -337,7 +314,8 @@ HasTestMonomial := Tester( TestMonomial );
 ##
 ##  *Note* that it is not checked whether $G$ is SM.
 ##
-TestRelativelySM := NewOperationArgs( "TestRelativelySM" );
+#T DeclareGlobalFunction( "TestRelativelySM" );
+#T up to now no function is installed
 
 
 #############################################################################
@@ -351,9 +329,7 @@ TestRelativelySM := NewOperationArgs( "TestRelativelySM" );
 ##
 ##  <G> must be subnormally monomial.  (This is *not* checked.)
 ##
-IsRelativelySM := NewProperty( "IsRelativelySM", IsGroup );
-SetIsRelativelySM := Setter( IsRelativelySM );
-HasIsRelativelySM := Tester( IsRelativelySM );
+DeclareProperty( "IsRelativelySM", IsGroup );
 
 
 #############################################################################
@@ -363,9 +339,7 @@ HasIsRelativelySM := Tester( IsRelativelySM );
 ##  is 'true' if the group <G> is a minimal nonmonomial group, and
 ##  'false' otherwise.
 ##
-IsMinimalNonmonomial := NewProperty( "IsMinimalNonmonomial", IsGroup );
-SetIsMinimalNonmonomial := Setter( IsMinimalNonmonomial );
-HasIsMinimalNonmonomial := Tester( IsMinimalNonmonomial );
+DeclareProperty( "IsMinimalNonmonomial", IsGroup );
 
 
 #############################################################################
@@ -381,7 +355,7 @@ HasIsMinimalNonmonomial := Tester( IsMinimalNonmonomial );
 ##  in the case that <factsize> is twice an odd prime; in all other cases
 ##  <p> is the (unique) prime that divides the order of $F(K)$.
 ##
-MinimalNonmonomialGroup := NewOperationArgs( "MinimalNonmonomialGroup" );
+DeclareGlobalFunction( "MinimalNonmonomialGroup" );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the   methods for polycylic generating  systems modulo
 ##  another such system.
@@ -18,7 +19,7 @@ Revision.pcgsmodu_gi :=
 
 #R  IsModuloPcgsRep
 ##
-IsModuloPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsModuloPcgsRep",
     IsPcgsDefaultRep,
     [ "moduloDepths", "moduloMap", "numerator", "denominator",
@@ -29,7 +30,7 @@ IsModuloPcgsRep := NewRepresentation(
 ##
 #R  IsModuloTailPcgsRep
 ##
-IsModuloTailPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsModuloTailPcgsRep",
     IsModuloPcgsRep,
     [ "moduloDepths", "moduloMap", "numerator", "denominator",
@@ -44,7 +45,7 @@ IsModuloTailPcgsRep := NewRepresentation(
 InstallMethod( IsBound\[\],
     true,
     [ IsModuloPcgs,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, pos )
@@ -101,7 +102,7 @@ end );
 InstallMethod( \[\],
     true,
     [ IsModuloPcgs and IsModuloPcgsRep,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, pos )
@@ -227,8 +228,8 @@ end );
 ##
 #M  <pcgs1> mod <induced-pcgs2>
 ##
-InstallMethod( MOD,
-    IsIdentical,
+InstallMethod( MOD,"parent pcgs mod induced pcgs",
+    IsIdenticalObj,
     [ IsPcgs,
       IsInducedPcgs ],
     0,
@@ -244,8 +245,8 @@ end );
 ##
 #M  <pcgs1> mod <pcgs2>
 ##
-InstallMethod( MOD,
-    IsIdentical,
+InstallMethod( MOD,"two parent pcgs",
+    IsIdenticalObj,
     [ IsPcgs,
       IsPcgs ],
     0,
@@ -262,8 +263,8 @@ end );
 ##
 #M  <induced-pcgs1> mod <induced-pcgs2>
 ##
-InstallMethod( MOD,
-    IsIdentical,
+InstallMethod( MOD,"two induced pcgs",
+    IsIdenticalObj,
     [ IsInducedPcgs,
       IsInducedPcgs ],
     0,
@@ -280,8 +281,8 @@ end );
 ##
 #M  <modulo-pcgs1> mod <modulo-pcgs2>
 ##
-InstallMethod( MOD,
-    IsIdentical,
+InstallMethod( MOD,"two modulo pcgs",
+    IsIdenticalObj,
     [ IsModuloPcgs,
       IsModuloPcgs ],
     0,
@@ -293,6 +294,22 @@ function( pcgs, modulo )
     return NumeratorOfModuloPcgs(pcgs) mod NumeratorOfModuloPcgs(modulo);
 end );
 
+
+#############################################################################
+##
+#M  <(induced)pcgs1> mod <(induced)pcgs 2>
+##
+InstallMethod( MOD,"two induced pcgs",
+    IsIdenticalObj, [ IsPcgs, IsPcgs ], 0,
+function( pcgs, modulo )
+
+  # enforce the same parent pcgs
+  if ParentPcgs(modulo) <> ParentPcgs(pcgs)  then
+    modulo:=InducedPcgsByGeneratorsNC(ParentPcgs(pcgs),AsList(modulo));
+  fi;
+
+  return ModuloPcgsByPcSequenceNC( ParentPcgs(pcgs), pcgs, modulo );
+end);
 
 #############################################################################
 ##
@@ -327,7 +344,7 @@ InstallOtherMethod( ExponentOfPcElement,
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
     [ IsModuloPcgs,
       IsObject,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, elm, pos )
@@ -341,7 +358,7 @@ end );
 ##
 InstallOtherMethod( ExponentsOfPcElement,
     "pcgs modulo pcgs with positions, falling back to ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsModuloPcgs,
       IsObject,
       IsList ],
@@ -433,7 +450,7 @@ InstallOtherMethod( PcElementByExponents,
     "generic method",
     true,
     [ IsModuloPcgs,
-      IsRowVector and IsCyclotomicsCollection ],
+      IsRowVector and IsCyclotomicCollection ],
     0,
 
 function( pcgs, list )
@@ -511,7 +528,7 @@ InstallOtherMethod( PcElementByExponents,
     true,
     [ IsModuloPcgs,
       IsList,
-      IsRowVector and IsCyclotomicsCollection ],
+      IsRowVector and IsCyclotomicCollection ],
     0,
 
 function( pcgs, basis, list )
@@ -591,7 +608,10 @@ InstallOtherMethod( RelativeOrderOfPcElement,
     IsCollsElms,
     [ IsModuloPcgs and IsPrimeOrdersPcgs,
       IsObject ],
-    0,
+    # as we fall back on the code for pcgs, we must be sure that the method
+    # has lower value
+    SIZE_FLAGS(FLAGS_FILTER(IsModuloPcgs))
+    -SIZE_FLAGS(FLAGS_FILTER(IsModuloPcgs and IsPrimeOrdersPcgs)),
 
 function( pcgs, elm )
     return RelativeOrderOfPcElement( NumeratorOfModuloPcgs(pcgs), elm );
@@ -711,14 +731,50 @@ end );
 #M  GroupOfPcgs( <modulo-pcgs> )
 ##
 InstallOtherMethod( GroupOfPcgs,
-    true,
-    [ IsModuloPcgs ],
-    0,
+  true,
+  [ IsModuloPcgs ],
+  0,
 
 function( pcgs )
-    return GroupOfPcgs( NumeratorOfModuloPcgs( pcgs ) );
+  return GroupOfPcgs( NumeratorOfModuloPcgs( pcgs ) );
 end );
 
+#############################################################################
+##
+#M  NumeratorOfModuloPcgs( <pcgs> )
+##
+InstallMethod(NumeratorOfModuloPcgs,"for pcgs",true,[IsPcgs],0,
+function(pcgs)
+if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
+  TryNextMethod();
+fi;
+return pcgs;
+end);
+
+
+#############################################################################
+##
+#M  DenominatorOfModuloPcgs( <pcgs> )
+##
+InstallMethod(DenominatorOfModuloPcgs,"for pcgs",true,[IsPcgs],0,
+function(pcgs)
+if IsModuloPcgs(pcgs) and not IsPcgs(pcgs) then
+  TryNextMethod();
+fi;
+return InducedPcgsByGeneratorsNC(pcgs,[]);
+end);
+
+
+
+#############################################################################
+##
+#M  ModuloPcgs( <G>,<H> )
+##
+InstallMethod(ModuloPcgs,"for groups",IsIdenticalObj,[IsGroup,IsGroup],0,
+function(G,H)
+  G:=InducedPcgsWrtHomePcgs(G);
+  return G mod InducedPcgs(G,H);
+end);
 
 #############################################################################
 ##

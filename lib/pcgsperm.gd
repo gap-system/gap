@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.pcgsperm_gd :=
     "@(#)$Id$";
 
@@ -14,37 +17,30 @@ Revision.pcgsperm_gd :=
 ##  The `RelativeOrders' are a defining attribute of a  perm group pcgs. They
 ##  cannot be calculcated via `PcSeries' and `Size'.
 ##
-IsPcgsPermGroupRep := NewRepresentation( "IsPcgsPermGroupRep",
+DeclareRepresentation( "IsPcgsPermGroupRep",
     IsPcgsDefaultRep, [ "group", "stabChain" ] );
 
 #############################################################################
 ##
 #R  IsModuloPcgsPermGroupRep  . . . . . .  pcgs of factor group of perm group
 ##
-IsModuloPcgsPermGroupRep := NewRepresentation( "IsModuloPcgsPermGroupRep",
+DeclareRepresentation( "IsModuloPcgsPermGroupRep",
     IsPcgsPermGroupRep,
     [ "group", "stabChain", "series", "denominator" ] );
 
-WordVector := NewOperationArgs( "WordVector" );
-WordNumber := NewOperationArgs( "WordNumber" );
-EconomicCopy := NewOperationArgs( "EconomicCopy" );
-AddNormalizingElementPcgs := NewOperationArgs( "AddNormalizingElementPcgs" );
-ExtendSeriesPermGroup := NewOperationArgs( "ExtendSeriesPermGroup" );
-TryPcgsPermGroup := NewOperationArgs( "TryPcgsPermGroup" );
-PcgsStabChainSeries := NewOperationArgs( "PcgsStabChainSeries" );
-ExponentsOfPcElementPermGroup := NewOperationArgs( "ExponentsOfPcElementPermGroup" );
-PcGroupPcgs := NewOperationArgs( "PcGroupPcgs" );
-SolvableNormalClosurePermGroup := NewOperationArgs( "SolvableNormalClosurePermGroup" );
-TailOfPcgsPermGroup := NewOperationArgs( "TailOfPcgsPermGroup" );
-PcgsMemberPcSeriesPermGroup := NewOperationArgs( "PcgsMemberPcSeriesPermGroup" );
+DeclareGlobalFunction( "WordVector" );
+DeclareGlobalFunction( "WordNumber" );
+DeclareGlobalFunction( "AddNormalizingElementPcgs" );
+DeclareGlobalFunction( "ExtendSeriesPermGroup" );
+DeclareGlobalFunction( "TryPcgsPermGroup" );
+DeclareGlobalFunction( "PcgsStabChainSeries" );
+DeclareGlobalFunction( "ExponentsOfPcElementPermGroup" );
+DeclareGlobalFunction( "PcGroupPcgs" );
+DeclareGlobalFunction( "SolvableNormalClosurePermGroup" );
+DeclareGlobalFunction( "TailOfPcgsPermGroup" );
+DeclareGlobalFunction( "PcgsMemberPcSeriesPermGroup" );
 
 #############################################################################
 ##
-
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
-#############################################################################
+#E  pcgsperm.gd
+##  

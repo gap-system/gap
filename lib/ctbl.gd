@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the definition of categories of character table like
 ##  objects, and their properties, attributes, operations, and functions.
@@ -19,9 +20,9 @@ Revision.ctbl_gd :=
 #T TODO:
 ##
 #T introduce fusion objects!
-
-#T 'CharTable' produces HUGE amounts of garbage
-#T (e.g., for 'SolvableGroup( "Q8+Q8" )' compute all tables for normal
+##
+#T `CharTable' produces HUGE amounts of garbage
+#T (e.g., for `SolvableGroup( "Q8+Q8" )' compute all tables for normal
 #T subgroups; it is a big difference with what initial workspace GAP was
 #T started ...)
 
@@ -30,7 +31,7 @@ Revision.ctbl_gd :=
 ##
 #V  InfoCharacterTable
 ##
-InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
+DeclareInfoClass( "InfoCharacterTable" );
 
 
 #############################################################################
@@ -46,19 +47,19 @@ InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
 #C  IsBrauerTable( <obj> )
 #C  IsCharacterTableInProgress( <obj> )
 ##
-##  Every character table like object lies in the category
-##  'IsNearlyCharacterTable'.
+##  Every ``character table like object'' lies in the category
+##  `IsNearlyCharacterTable'.
 ##  There are four important subcategories,
-##  namely the *ordinary* tables in 'IsOrdinaryTable',
-##  the *Brauer* tables in 'IsBrauerTable',
-##  the union of these two, in 'IsCharacterTable',
-##  and the *incomplete ordinary* tables in 'IsCharacterTableInProgress'.
+##  namely the *ordinary* tables in `IsOrdinaryTable',
+##  the *Brauer* tables in `IsBrauerTable',
+##  the union of these two, in `IsCharacterTable',
+##  and the *incomplete ordinary* tables in `IsCharacterTableInProgress'.
 ##
 ##  We want to distinguish ordinary and Brauer tables because Brauer tables
 ##  may delegate tasks to the underlying ordinary table, for example the
 ##  computation of power maps.
 ##
-##  Furthermore, 'IsOrdinaryTable' and 'IsBrauerTable' denote
+##  Furthermore, `IsOrdinaryTable' and `IsBrauerTable' denote
 ##  tables that provide enough information to compute all power maps
 ##  and irreducible characters (and in the case of Brauer tables to get the
 ##  ordinary table), for example because the underlying group is known
@@ -67,7 +68,7 @@ InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
 ##  ordinary tables that cannot be asked for all power maps or all
 ##  irreducible characters.
 ##
-##  The latter ``table like objects'' are in 'IsCharacterTableInProgress'.
+##  The latter ``table like objects'' are in `IsCharacterTableInProgress'.
 ##  These are first of all *mutable* objects.
 ##  So *nothing is stored automatically* on such a table,
 ##  since otherwise one has no control of side-effects when
@@ -77,22 +78,36 @@ InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
 ##
 ##  Several attributes for groups are valid also for their character tables.
 ##  These are on one hand those that have the same meaning and can be
-##  read off resp. computed from the character table (think of tables or
-##  incomplete tables that have no access to a group), such as 'Size',
-##  'Irr', 'IsAbelian'.
-##  On the other hand, there are attributes such as 'SizesCentralizers',
-##  'SizesConjugacyClasses', 'OrdersClassRepresentatives' that coincide
-##  with the attributes for groups in the case of ordinary tables but refer
-##  to the $p$-regular conjugacy classes in the case of Brauer tables in
-##  characteristic $p$.
+##  read off resp.~computed from the character table (think of tables or
+##  incomplete tables that have no access to a group), such as `Size',
+##  `Irr', `IsAbelian'.
+##
+##  On the other hand, there are attributes whose meaning for character
+##  tables is different from the meaning for groups, such as
+##  `SizesCentralizers', `SizesConjugacyClasses', and
+##  `OrdersClassRepresentatives'.
+##  In the case of ordinary character tables, these attributes mean
+##  information relative to the *conjugacy classes stored in the table*,
+##  in the case of Brauer tables in characteristic $p$ they refer to the
+##  $p$-regular conjugacy classes.
+##
+##  It should be emphasized that the value of the attribute
+##  `ConjugacyClasses' for a character table and its underlying group may
+##  be different w.r.t. ordering of the classes.
+##  One reason for this is that otherwise we would not be allowed to
+##  use a library table as character table of a group for which the
+##  conjugacy classes are known already.
+##  (Another, less important reason is that we can use the same group as
+##  underlying group of tables that differ only w.r.t. the ordering of
+##  classes.)
 ##
 ##  Attributes and properties that are *defined* for groups but are valid
 ##  also for tables:
 ##
 ##  For an ordinary character table with underlying group, the group has
-##  priority over the table, i.e., if the table is asked for 'Irr( <tbl> )',
+##  priority over the table, i.e., if the table is asked for `Irr( <tbl> )',
 ##  say, it may delegate this task to the group, but if the group is asked
-##  for 'Irr( <G> )', it must not ask its table.
+##  for `Irr( <G> )', it must not ask its table.
 ##  Only if a group knows its ordinary table and if this table knows the
 ##  value of an attribute then the group may fetch this value from its
 ##  ordinary character table.
@@ -112,22 +127,19 @@ InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
 #T more restrictive, e.g., only via explicit assignments?)
 ##
 ##  Conversely, if an attribute is defined for character tables but is valid
-##  also for groups (for example 'TrivialCharacter'), the group may ask the
+##  also for groups (for example `TrivialCharacter'), the group may ask the
 ##  table but the table must not ask the group.
-##  The same holds also for operations, e.g., 'InducedClassFunction'.
+##  The same holds also for operations, e.g., `InducedClassFunction'.
 ##
-IsNearlyCharacterTable := NewCategory( "IsNearlyCharacterTable", IsObject );
+DeclareCategory( "IsNearlyCharacterTable", IsObject );
 
-IsCharacterTable := NewCategory( "IsCharacterTable",
-    IsNearlyCharacterTable );
+DeclareCategory( "IsCharacterTable", IsNearlyCharacterTable );
 
-IsOrdinaryTable := NewCategory( "IsOrdinaryTable",
-    IsCharacterTable );
+DeclareCategory( "IsOrdinaryTable", IsCharacterTable );
 
-IsBrauerTable := NewCategory( "IsBrauerTable",
-    IsCharacterTable );
+DeclareCategory( "IsBrauerTable", IsCharacterTable );
 
-IsCharacterTableInProgress := NewCategory( "IsCharacterTableInProgress",
+DeclareCategory( "IsCharacterTableInProgress",
     IsNearlyCharacterTable and IsMutable );
 
 
@@ -137,8 +149,28 @@ IsCharacterTableInProgress := NewCategory( "IsCharacterTableInProgress",
 ##
 ##  All character table like objects belong to the same family.
 ##
-NearlyCharacterTablesFamily := NewFamily( "NearlyCharacterTablesFamily",
-    IsNearlyCharacterTable );
+BindGlobal( "NearlyCharacterTablesFamily",
+    NewFamily( "NearlyCharacterTablesFamily", IsNearlyCharacterTable ) );
+
+
+#############################################################################
+##
+#P  IsSimpleCharacterTable( <tbl> )
+##
+##  is `true' if the underlying group of the character table <tbl> is
+##  simple.
+##
+DeclareProperty( "IsSimpleCharacterTable", IsNearlyCharacterTable );
+
+
+#############################################################################
+##
+#P  IsSolvableCharacterTable( <tbl> )
+##
+##  is `true' if the underlying group of the character table <tbl> is
+##  solvable.
+##
+DeclareProperty( "IsSolvableCharacterTable", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -151,15 +183,16 @@ NearlyCharacterTablesFamily := NewFamily( "NearlyCharacterTablesFamily",
 ##  and the construction of derived tables (direct products, factors etc.)
 ##  by library functions.
 ##
-##  'SupportedOrdinaryTableInfo' is a list that contains at position $2i-1$
+##  `SupportedOrdinaryTableInfo' is a list that contains at position $2i-1$
 ##  an attribute getter function, and at position $2i$ the name of this
 ##  attribute.
 ##  This allows to set components with these names as attribute values.
 ##
-##  Supported attributes must be created using 'NewAttributeSuppCT'.
+##  Supported attributes that are not contained in the list as initialized
+##  below must be created using `DeclareAttributeSuppCT'.
 ##
 SupportedOrdinaryTableInfo := [
-    IsSimpleGroup,                "IsSimpleGroup",
+    IsSimpleCharacterTable,       "IsSimpleCharacterTable",
     OrdersClassRepresentatives,   "OrdersClassRepresentatives",
     SizesCentralizers,            "SizesCentralizers",
     SizesConjugacyClasses,        "SizesConjugacyClasses",
@@ -171,19 +204,25 @@ SupportedBrauerTableInfo := ShallowCopy( SupportedOrdinaryTableInfo );
 
 #############################################################################
 ##
-#F  NewAttributeSuppCT( <name>, <filter> )
-#F  NewAttributeSuppCT( <name>, <filter>, "mutable" )
+#F  DeclareAttributeSuppCT( <name>, <filter> )
+#F  DeclareAttributeSuppCT( <name>, <filter>, "mutable" )
 ##
-NewAttributeSuppCT := function( arg )
-    if Length( arg ) = 2 then
-      attr:= NewAttribute( arg[1], arg[2] );
-    else
-      attr:= NewAttribute( arg[1], arg[2], arg[3] );
-    fi;
+BindGlobal( "DeclareAttributeSuppCT", function( arg )
+    local attr, name, nname;
+
+    # Make the attribute as `DeclareAttribute' does.
+    attr:= CallFuncList( NewAttribute, arg );
+    name:= arg[1];               
+    BIND_GLOBAL( name, attr );
+    nname:= "Set"; APPEND_LIST_INTR( nname, name );
+    BIND_GLOBAL( nname, SETTER_FILTER( attr ) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, name );                          
+    BIND_GLOBAL( nname, TESTER_FILTER( attr ) );
+
+    # Do the additional magic.
     Append( SupportedOrdinaryTableInfo, [ attr, arg[1] ] );
     Append( SupportedBrauerTableInfo, [ attr, arg[1] ] );
-    return attr;
-end;
+end );
 
 
 #############################################################################
@@ -197,37 +236,34 @@ end;
 #F  CharacterDegrees( <G> )
 #F  CharacterDegrees( <tbl> )
 ##
-##  In the first two forms, 'CharacterDegrees' returns a collected list of
+##  In the first two forms, `CharacterDegrees' returns a collected list of
 ##  the degrees of the absolutely irreducible characters of the group <G>,
 ##  in characteristic <p> resp. zero.
 ##
-##  In the third form, 'CharacterDegrees' returns a collected list of the
+##  In the third form, `CharacterDegrees' returns a collected list of the
 ##  degrees of the absolutely irreducible characters of the (ordinary or
 ##  Brauer) character table <tbl>.
 ##
 #A  CharacterDegreesAttr( <G> )
 #A  CharacterDegreesAttr( <tbl> )
 ##
-##  is the attribute for storing the character degrees computed by
-##  'CharacterDegrees'.
+##  `CharacterDegreesAttr' is the attribute for storing the character degrees
+##  computed by `CharacterDegrees'.
 ##
-#O  CharacterDegreesOp( <G>, <char> )
+#O  CharacterDegreesOp( <G>, <p> )
 ##
-##  is the operation called by 'CharacterDegrees' for that methods can be
+##  is the operation called by `CharacterDegrees' for that methods can be
 ##  installed.
 ##  (For the tables, one can call the attribute directly.)
 ##
-CharacterDegrees := NewOperationArgs( "CharacterDegrees" );
+DeclareGlobalFunction( "CharacterDegrees" );
 
-CharacterDegreesAttr := NewAttribute( "CharacterDegreesAttr", IsGroup );
-SetCharacterDegreesAttr := Setter( CharacterDegreesAttr );
-HasCharacterDegreesAttr := Tester( CharacterDegreesAttr );
+DeclareAttribute( "CharacterDegreesAttr", IsGroup );
 
 InstallIsomorphismMaintainedMethod( CharacterDegreesAttr,
     IsGroup and HasCharacterDegreesAttr, IsGroup );
 
-CharacterDegreesOp := NewOperation( "CharacterDegreesOp",
-    [ IsGroup, IsInt ] );
+DeclareOperation( "CharacterDegreesOp", [ IsGroup, IsInt ] );
 
 
 #############################################################################
@@ -237,10 +273,10 @@ CharacterDegreesOp := NewOperation( "CharacterDegreesOp",
 #O  CharacterTable( <G> ) . . . . . . . . . . ordinary char. table of a group
 #O  CharacterTable( <name> )  . . . . . . . . . library table with given name
 ##
-##  This dispatches to 'OrdinaryCharacterTable', 'BrauerCharacterTable',
-##  or 'CharacterTableFromLibrary'.
+##  This dispatches to `OrdinaryCharacterTable', `BrauerCharacterTable',
+##  or `CharacterTableFromLibrary'.
 ##
-CharacterTable := NewOperation( "CharacterTable", [ IsGroup, IsInt ] );
+DeclareOperation( "CharacterTable", [ IsGroup, IsInt ] );
 
 
 #############################################################################
@@ -251,10 +287,7 @@ CharacterTable := NewOperation( "CharacterTable", [ IsGroup, IsInt ] );
 ##  For Brauer character tables without underlying group, the value of this
 ##  attribute must be stored.
 ##
-OrdinaryCharacterTable := NewAttribute(
-    "OrdinaryCharacterTable", IsGroup );
-SetOrdinaryCharacterTable := Setter( OrdinaryCharacterTable );
-HasOrdinaryCharacterTable := Tester( OrdinaryCharacterTable );
+DeclareAttribute( "OrdinaryCharacterTable", IsGroup );
 
 Append( SupportedBrauerTableInfo, [
     OrdinaryCharacterTable, "OrdinaryCharacterTable",
@@ -269,24 +302,23 @@ Append( SupportedBrauerTableInfo, [
 ##
 #O  BrauerCharacterTable( <G>, <p> )
 ##
-##  'BrauerCharacterTable' returns the <p>-modular character table of the
+##  `BrauerCharacterTable' returns the <p>-modular character table of the
 ##  ordinary character table <ordtbl>.
-##  If the first argument is a group <G>, 'BrauerCharacterTable' delegates
+##  If the first argument is a group <G>, `BrauerCharacterTable' delegates
 ##  to the ordinary character table of <G>.
 ##
-##  The Brauer tables that were computed already by 'BrauerCharacterTable'
-##  are stored as value of the attribute 'ComputedBrauerCharacterTables'
+##  The Brauer tables that were computed already by `BrauerCharacterTable'
+##  are stored as value of the attribute `ComputedBrauerCharacterTables'
 ##  (at position $p$ for characteristic $p$).
 ##  Methods for the computation of Brauer tables can be installed for
-##  the operation 'BrauerCharacterTableOp'.
+##  the operation `BrauerCharacterTableOp'.
 ##
-BrauerCharacterTable := NewOperationArgs( "BrauerCharacterTable" );
+DeclareGlobalFunction( "BrauerCharacterTable" );
 
-BrauerCharacterTableOp := NewOperation( "BrauerCharacterTableOp",
-    [ IsOrdinaryTable, IsInt and IsPosRat ] );
+DeclareOperation( "BrauerCharacterTableOp", [ IsOrdinaryTable, IsPosInt ] );
 
-ComputedBrauerCharacterTables := NewAttribute(
-    "ComputedBrauerCharacterTables", IsOrdinaryTable, "mutable" );
+DeclareAttribute( "ComputedBrauerCharacterTables",
+    IsOrdinaryTable, "mutable" );
 
 
 #############################################################################
@@ -295,21 +327,19 @@ ComputedBrauerCharacterTables := NewAttribute(
 #A  Irr( <ordtbl> )
 #A  Irr( <modtbl> )
 ##
-##  In the first two forms, 'Irr' returns the list of all complex ordinary
+##  In the first two forms, `Irr' returns the list of all complex ordinary
 ##  absolutely irreducible characters of the finite group <G> resp.
 ##  of the ordinary character table <ordtbl>.
 ##
-##  In the third form, 'Irr' returns the absolutely irreducible Brauer
+##  In the third form, `Irr' returns the absolutely irreducible Brauer
 ##  characters of the Brauer character table <modtbl>.
-##  (Note that 'IBr' is just a function that is defined for two arguments,
+##  (Note that `IBr' is just a function that is defined for two arguments,
 ##  a group and a prime;
-##  Called with a Brauer table, 'IBr' calls 'Irr'.)
+##  Called with a Brauer table, `IBr' calls `Irr'.)
 ##
 ##  ('Irr' may delegate back to the group <G>.)
 ##
-Irr := NewAttributeSuppCT( "Irr", IsGroup );
-SetIrr := Setter( Irr );
-HasIrr := Tester( Irr );
+DeclareAttributeSuppCT( "Irr", IsGroup );
 
 
 #############################################################################
@@ -317,15 +347,15 @@ HasIrr := Tester( Irr );
 #F  IBr( <G>, <p> )
 #F  IBr( <modtbl> )
 ##
-##  'IBr' returns the list of <p>-modular absolutely irreducible Brauer
+##  `IBr' returns the list of <p>-modular absolutely irreducible Brauer
 ##  characters of the group <G>.
-##  (This is done by delegation to 'Irr' for the Brauer table in question.)
+##  (This is done by delegation to `Irr' for the Brauer table in question.)
 ##
 ##  If the only argument is a Brauer character table <modtbl>,
-##  'IBr' calls 'Irr( <modtbl> )'.
+##  `IBr' calls `Irr( <modtbl> )'.
 ##  ('Irr' may delegate back to <G>.)
 ##
-IBr := NewOperationArgs( "IBr" );
+DeclareGlobalFunction( "IBr" );
 
 
 #############################################################################
@@ -343,29 +373,25 @@ IBr := NewOperationArgs( "IBr" );
 ##
 ##  For a class function <psi>, this belongs to the defining data, and is
 ##  stored in the family of class functions.
-##  (We cannot use the attribute 'Characteristic' to denote this, since
+##  (We cannot use the attribute `Characteristic' to denote this, since
 ##  of course each Brauer character is an element of characteristic zero
 ##  in the sense of {\GAP}.)
 ##
-UnderlyingCharacteristic := NewAttributeSuppCT( "UnderlyingCharacteristic",
+DeclareAttributeSuppCT( "UnderlyingCharacteristic",
     IsNearlyCharacterTable );
-SetUnderlyingCharacteristic := Setter( UnderlyingCharacteristic );
-HasUnderlyingCharacteristic := Tester( UnderlyingCharacteristic );
 
 
 #############################################################################
 ##
 #A  BlocksInfo( <tbl> )
 ##
-##  If <tbl> is a Brauer character table then the value of 'BlocksInfo'
+##  If <tbl> is a Brauer character table then the value of `BlocksInfo'
 ##  is a list of records, the $i$-th entry containing information about
 ##  the $i$-th block.
 ##
 ##  If <tbl> is an ordinary character table then ...
 ##
-BlocksInfo := NewAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable );
-SetBlocksInfo := Setter( BlocksInfo );
-HasBlocksInfo := Tester( BlocksInfo );
+DeclareAttributeSuppCT( "BlocksInfo", IsNearlyCharacterTable, "mutable" );
 
 
 #############################################################################
@@ -379,12 +405,22 @@ HasBlocksInfo := Tester( BlocksInfo );
 ##
 ##  The entries of the list are sorted according to increasing length.
 ##
-ClassPositionsOfNormalSubgroups := NewAttribute(
-    "ClassPositionsOfNormalSubgroups", IsOrdinaryTable );
-SetClassPositionsOfNormalSubgroups := Setter(
-    ClassPositionsOfNormalSubgroups );
-HasClassPositionsOfNormalSubgroups := Tester(
-    ClassPositionsOfNormalSubgroups );
+DeclareAttribute( "ClassPositionsOfNormalSubgroups", IsOrdinaryTable );
+
+
+#############################################################################
+##
+#A  ClassesOfDerivedSubgroup( <ordtbl> )
+##
+DeclareAttribute( "ClassesOfDerivedSubgroup", IsOrdinaryTable );
+
+
+#############################################################################
+##
+#O  ClassesOfNormalClosure( <ordtbl>, <classes> )
+##
+DeclareOperation( "ClassesOfNormalClosure",
+    [ IsOrdinaryTable, IsHomogeneousList and IsCyclotomicCollection ] );
 
 
 #############################################################################
@@ -395,25 +431,19 @@ HasClassPositionsOfNormalSubgroups := Tester(
 ##  character.
 ##
 ##  Usual entries are 
-##  'classparam'
+##  `classparam'
 ##
 #T remove this, better store the info in the irred. characters themselves
-#T ('IrredInfo' is used in 'Display' and '\*' methods)
+#T ('IrredInfo' is used in `Display' and `\*' methods)
 ##
-IrredInfo := NewAttributeSuppCT( "IrredInfo",
-    IsNearlyCharacterTable, "mutable" );
-SetIrredInfo := Setter( IrredInfo );
-HasIrredInfo := Tester( IrredInfo );
+DeclareAttributeSuppCT( "IrredInfo", IsNearlyCharacterTable, "mutable" );
 
 
 #############################################################################
 ##
 #A  ClassParameters( <tbl> )
 ##
-ClassParameters := NewAttributeSuppCT( "ClassParameters",
-    IsNearlyCharacterTable );
-SetClassParameters := Setter( ClassParameters );
-HasClassParameters := Tester( ClassParameters );
+DeclareAttributeSuppCT( "ClassParameters", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -426,15 +456,12 @@ HasClassParameters := Tester( ClassParameters );
 ##  fusion.
 ##
 ##  This attribute is bound only if <tbl> was obtained from another table
-##  by permuting the classes (commands 'CharacterTableWithSortedClasses' or
-##  'SortedCharacterTable').
+##  by permuting the classes (commands `CharacterTableWithSortedClasses' or
+##  `SortedCharacterTable').
 ##  It is necessary because the original table and the sorted table have the
 ##  same identifier, and hence the same fusions are valid for the two tables.
 ##
-ClassPermutation := NewAttributeSuppCT( "ClassPermutation",
-    IsNearlyCharacterTable );
-SetClassPermutation := Setter( ClassPermutation );
-HasClassPermutation := Tester( ClassPermutation );
+DeclareAttributeSuppCT( "ClassPermutation", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -443,9 +470,7 @@ HasClassPermutation := Tester( ClassPermutation );
 ##
 #T allow class names (optional) such as in the ATLAS ?
 ##
-ClassNames := NewAttribute( "ClassNames", IsNearlyCharacterTable );
-SetClassNames := Setter( ClassNames );
-HasClassNames := Tester( ClassNames );
+DeclareAttribute( "ClassNames", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -454,9 +479,7 @@ HasClassNames := Tester( ClassNames );
 ##
 #T is a more general attribute?
 ##
-DisplayOptions := NewAttribute( "DisplayOptions", IsNearlyCharacterTable );
-SetDisplayOptions := Setter( DisplayOptions );
-HasDisplayOptions := Tester( DisplayOptions );
+DeclareAttribute( "DisplayOptions", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -472,12 +495,10 @@ HasDisplayOptions := Tester( DisplayOptions );
 ##  For tables constructed from groups, an identifier is constructed.
 #T only valid for the current session!
 #T if one would take the group itself as identifier,
-#T one would have to compare identifiers only via 'IsIdentical',
+#T one would have to compare identifiers only via `IsIdenticalObj',
 #T and this is the wrong approach for strings!
 ##
-Identifier := NewAttributeSuppCT( "Identifier", IsNearlyCharacterTable );
-SetIdentifier := Setter( Identifier );
-HasIdentifier := Tester( Identifier );
+DeclareAttributeSuppCT( "Identifier", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -486,18 +507,14 @@ HasIdentifier := Tester( Identifier );
 ##
 ##  is a string with information about <tbl>.
 ##
-InfoText := NewAttributeSuppCT( "InfoText", IsNearlyCharacterTable );
-SetInfoText := Setter( InfoText );
-HasInfoText := Tester( InfoText );
+DeclareAttributeSuppCT( "InfoText", IsNearlyCharacterTable );
 
 
 #############################################################################
 ##
 #A  InverseClasses( <tbl> )
 ##
-InverseClasses := NewAttribute( "InverseClasses", IsNearlyCharacterTable );
-SetInverseClasses := Setter( InverseClasses );
-HasInverseClasses := Tester( InverseClasses );
+DeclareAttribute( "InverseClasses", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -508,9 +525,7 @@ HasInverseClasses := Tester( InverseClasses );
 ##  This is known usually only for library tables.
 #T meaningful also for tables with group?
 ##
-Maxes := NewAttributeSuppCT( "Maxes", IsNearlyCharacterTable );
-SetMaxes := Setter( Maxes );
-HasMaxes := Tester( Maxes );
+DeclareAttributeSuppCT( "Maxes", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -520,21 +535,16 @@ HasMaxes := Tester( Maxes );
 ##  is the list of identifiers of all those tables that are known to have
 ##  fusions into <tbl> stored.
 ##
-NamesOfFusionSources := NewAttributeSuppCT( "NamesOfFusionSources",
+DeclareAttributeSuppCT( "NamesOfFusionSources",
     IsNearlyCharacterTable, "mutable" );
-SetNamesOfFusionSources := Setter( NamesOfFusionSources );
-HasNamesOfFusionSources := Tester( NamesOfFusionSources );
 
 
 #############################################################################
 ##
 #A  AutomorphismsOfTable( <tbl> )
 ##
-AutomorphismsOfTable := NewAttributeSuppCT( "AutomorphismsOfTable",
-    IsNearlyCharacterTable );
-SetAutomorphismsOfTable := Setter( AutomorphismsOfTable );
-HasAutomorphismsOfTable := Tester( AutomorphismsOfTable );
-#T use 'GlobalPartitionClasses' in 'TableAutomorphisms' ?
+DeclareAttributeSuppCT( "AutomorphismsOfTable", IsNearlyCharacterTable );
+#T use `GlobalPartitionClasses' in `TableAutomorphisms' ?
 #T AutomorphismGroup( <tbl> ) ??
 
 
@@ -544,15 +554,14 @@ HasAutomorphismsOfTable := Tester( AutomorphismsOfTable );
 #O  Indicator( <tbl>, <characters>, <n> )
 #O  Indicator( <modtbl>, 2 )
 ##
-##  If <tbl> is an ordinary character table then 'Indicator' returns the
+##  If <tbl> is an ordinary character table then `Indicator' returns the
 ##  list of <n>-th Frobenius-Schur indicators of <characters>
-##  or 'Irr( <tbl> )'.
+##  or `Irr( <tbl> )'.
 ##
 ##  If <tbl> is a Brauer table in characteristic $\not= 2$, and $<n> = 2$
-##  then 'Indicator' returns the second indicator.
+##  then `Indicator' returns the second indicator.
 ##
-Indicator := NewOperation( "Indicator",
-    [ IsNearlyCharacterTable, IsInt and IsPosRat ] );
+DeclareOperation( "Indicator", [ IsNearlyCharacterTable, IsPosInt ] );
 
 
 #############################################################################
@@ -562,7 +571,7 @@ Indicator := NewOperation( "Indicator",
 #O  InducedCyclic( <tbl>, <classes> )
 #O  InducedCyclic( <tbl>, <classes>, \"all\" )
 ##
-##  'InducedCyclic' calculates characters induced up from cyclic subgroups
+##  `InducedCyclic' calculates characters induced up from cyclic subgroups
 ##  of the character table <tbl> to <tbl>.
 ##
 ##  If `"all"` is specified, all irreducible characters of those subgroups
@@ -572,9 +581,9 @@ Indicator := NewOperation( "Indicator",
 ##  by these classes are considered, otherwise all classes of <tbl> are
 ##  considered.
 ##
-##  'InducedCyclic' returns a set of characters.
+##  `InducedCyclic' returns a set of characters.
 ##
-InducedCyclic := NewOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
+DeclareOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
 
 
 #############################################################################
@@ -583,11 +592,9 @@ InducedCyclic := NewOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
 ##
 ##  Note that only the ordinary character table stores the underlying group,
 ##  the class functions can notify knowledge of the group via the
-##  category 'IsClassFunctionWithGroup'.
+##  category `IsClassFunctionWithGroup'.
 ##
-UnderlyingGroup := NewAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable );
-SetUnderlyingGroup := Setter( UnderlyingGroup );
-HasUnderlyingGroup := Tester( UnderlyingGroup );
+DeclareAttributeSuppCT( "UnderlyingGroup", IsOrdinaryTable );
 
 
 #############################################################################
@@ -603,7 +610,7 @@ HasUnderlyingGroup := Tester( UnderlyingGroup );
 ##  so the power maps and irreducibles of <tbl1> and <tbl2> may be computed
 ##  in order to construct the direct product.
 ##
-CharacterTableDirectProduct := NewOperation( "CharacterTableDirectProduct",
+DeclareOperation( "CharacterTableDirectProduct",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
 
 
@@ -615,7 +622,7 @@ CharacterTableDirectProduct := NewOperation( "CharacterTableDirectProduct",
 ##  of those irreducible characters of <tbl> that contain <classes> in their
 ##  kernel.
 ##
-CharacterTableFactorGroup := NewOperation( "CharacterTableFactorGroup",
+DeclareOperation( "CharacterTableFactorGroup",
     [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
 
@@ -627,8 +634,7 @@ CharacterTableFactorGroup := NewOperation( "CharacterTableFactorGroup",
 ##  for table of groups $2.G.2$, the character table of the isoclinic group
 ##  (see ATLAS, Chapter 6, Section 7)
 ##
-CharacterTableIsoclinic := NewOperation( "CharacterTableIsoclinic",
-    [ IsNearlyCharacterTable ] );
+DeclareOperation( "CharacterTableIsoclinic", [ IsNearlyCharacterTable ] );
 
 
 #############################################################################
@@ -646,8 +652,7 @@ CharacterTableIsoclinic := NewOperation( "CharacterTableIsoclinic",
 ##  If the classes in <classes> need not to be split then the result is a
 ##  proper character table.
 ##
-CharacterTableOfNormalSubgroup := NewOperationArgs(
-    "CharacterTableOfNormalSubgroup" );
+DeclareGlobalFunction( "CharacterTableOfNormalSubgroup" );
 
 
 #############################################################################
@@ -656,8 +661,7 @@ CharacterTableOfNormalSubgroup := NewOperationArgs(
 ##
 ##  is the character table of the quaternionic group of order <4n>
 ##
-CharacterTableQuaternionic := NewOperationArgs(
-    "CharacterTableQuaternionic" );
+DeclareGlobalFunction( "CharacterTableQuaternionic" );
 
 
 #############################################################################
@@ -667,17 +671,8 @@ CharacterTableQuaternionic := NewOperationArgs(
 ##  is the table of the Brauer table in characteristic <p> corresp. to
 ##  the ordinary table <tbl>.
 ##
-CharacterTableRegular := NewOperation( "CharacterTableRegular",
-    [ IsNearlyCharacterTable, IsInt and IsPosRat ] );
-
-
-#############################################################################
-##
-#O  CharacterTableSpecialized( <tbl>, <q> )
-##
-CharacterTableSpecialized := NewOperation( "CharacterTableSpecialized",
-    [ IsCharacterTable, IsInt and IsPosRat ] );
-#T is a generic table in 'IsCharacterTable' ?
+DeclareOperation( "CharacterTableRegular",
+    [ IsNearlyCharacterTable, IsPosInt ] );
 
 
 #############################################################################
@@ -689,46 +684,44 @@ CharacterTableSpecialized := NewOperation( "CharacterTableSpecialized",
 ##  
 ##  The optional record <options> may have the following components\:
 ##  
-##  'chars':\\
+##  `chars':\\
 ##       a list of characters of <tbl> which will be restricted to <subtbl>,
 ##       (see "FusionsAllowedByRestrictions");
-##       the default is '<tbl>.irreducibles'
+##       the default is `<tbl>.irreducibles'
 ##  
-##  'subchars':\\
+##  `subchars':\\
 ##       a list of characters of <subtbl> which are constituents of the
-##       retrictions of 'chars', the default is '<subtbl>.irreducibles'
+##       retrictions of `chars', the default is `<subtbl>.irreducibles'
 ##  
-##  'fusionmap':\\
+##  `fusionmap':\\
 ##       a (parametrized) map which is an approximation of the desired map
 ##  
-##  'decompose':\\
-##       a boolean; if 'true', the restrictions of 'chars' must have all
-##       constituents in 'subchars', that will be used in the algorithm;
-##       if 'subchars' is not bound and '<subtbl>.irreducibles' is complete,
-##       the default value of 'decompose' is 'true', otherwise 'false'
+##  `decompose':\\
+##       a boolean; if `true', the restrictions of `chars' must have all
+##       constituents in `subchars', that will be used in the algorithm;
+##       if `subchars' is not bound and `<subtbl>.irreducibles' is complete,
+##       the default value of `decompose' is `true', otherwise `false'
 ##  
-##  'permchar':\\
+##  `permchar':\\
 ##       a permutaion character; only those fusions are computed which
 ##       afford that permutation character
 ##  
-##  'quick':\\
-##       a boolean; if 'true', the subroutines are called with the option
-##       '\"quick\"'; especially, a unique map will be returned immediately
-##       without checking all symmetrisations; the default value is 'false'
+##  `quick':\\
+##       a boolean; if `true', the subroutines are called with the option
+##       `\"quick\"'; especially, a unique map will be returned immediately
+##       without checking all symmetrisations; the default value is `false'
 ##  
-##  'parameters':\\
-##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
-##       the subroutine 'FusionsAllowedByRestrictions'\:
+##  `parameters':\\
+##       a record with fields `maxamb', `minamb' and `maxlen' which control
+##       the subroutine `FusionsAllowedByRestrictions'\:
 ##       It only uses characters with actual indeterminateness up to
-##       'maxamb', tests decomposability only for characters with actual
-##       indeterminateness at least 'minamb' and admits a branch only
-##       according to a character if there is one with at most 'maxlen'
+##       `maxamb', tests decomposability only for characters with actual
+##       indeterminateness at least `minamb' and admits a branch only
+##       according to a character if there is one with at most `maxlen'
 ##       possible restrictions.
 ##
-PossibleClassFusions := NewOperation( "PossibleClassFusions",
+DeclareOperation( "PossibleClassFusions",
     [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ] );
-
-SubgroupFusions := PossibleClassFusions;
 
 
 #############################################################################
@@ -743,40 +736,38 @@ SubgroupFusions := PossibleClassFusions;
 ##  
 ##  The optional record <options> may have the following components\:
 ##  
-##  'chars':\\
+##  `chars':\\
 ##       a list of characters which are used for the check of kernels
 ##       (see "ConsiderKernels"), the test of congruences (see "Congruences")
 ##       and the test of scalar products of symmetrisations
 ##       (see "PowerMapsAllowedBySymmetrisations");
-##       the default is '<tbl>.irreducibles'
+##       the default is `<tbl>.irreducibles'
 ##  
-##  'powermap':\\
+##  `powermap':\\
 ##       a (parametrized) map which is an approximation of the desired map
 ##  
-##  'decompose':\\
-##       a boolean; if 'true', the symmetrisations of 'chars' must have all
-##       constituents in 'chars', that will be used in the algorithm;
-##       if 'chars' is not bound and 'Irr( <tbl> )' is known,
-##       the default value of 'decompose' is 'true', otherwise 'false'
+##  `decompose':\\
+##       a boolean; if `true', the symmetrisations of `chars' must have all
+##       constituents in `chars', that will be used in the algorithm;
+##       if `chars' is not bound and `Irr( <tbl> )' is known,
+##       the default value of `decompose' is `true', otherwise `false'
 ##  
-##  'quick':\\
-##       a boolean; if 'true', the subroutines are called with the option
-##       '\"quick\"'; especially, a unique map will be returned immediately
-##       without checking all symmetrisations; the default value is 'false'
+##  `quick':\\
+##       a boolean; if `true', the subroutines are called with the option
+##       `\"quick\"'; especially, a unique map will be returned immediately
+##       without checking all symmetrisations; the default value is `false'
 ##  
-##  'parameters':\\
-##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
-##       the subroutine 'PowerMapsAllowedBySymmetrisations'\:
+##  `parameters':\\
+##       a record with fields `maxamb', `minamb' and `maxlen' which control
+##       the subroutine `PowerMapsAllowedBySymmetrisations'\:
 ##       It only uses characters with actual indeterminateness up to
-##       'maxamb', tests decomposability only for characters with actual
-##       indeterminateness at least 'minamb' and admits a branch only
-##       according to a character if there is one with at most 'maxlen'
+##       `maxamb', tests decomposability only for characters with actual
+##       indeterminateness at least `minamb' and admits a branch only
+##       according to a character if there is one with at most `maxlen'
 ##       possible minus-characters.
 ##
-PossiblePowerMaps := NewOperation( "PossiblePowerMaps",
+DeclareOperation( "PossiblePowerMaps",
     [ IsCharacterTable, IsInt, IsRecord ] );
-
-Powermap := PossiblePowerMaps;
 
 
 #############################################################################
@@ -786,12 +777,12 @@ Powermap := PossiblePowerMaps;
 #O  FusionConjugacyClassesOp( <H>, <G> )
 #A  ComputedClassFusions( <tbl> )
 ##
-##  In the first form, 'FusionConjugacyClasses' returns the fusion of
+##  In the first form, `FusionConjugacyClasses' returns the fusion of
 ##  conjugacy classes between the character tables <tbl1> and <tbl2>.
 ##  (If one of the tables is a Brauer table, it may delegate to its
 ##  ordinary table.)
 ##
-##  In the second form, 'FusionConjugacyClasses' returns the fusion of
+##  In the second form, `FusionConjugacyClasses' returns the fusion of
 ##  conjugacy classes between the group <h> and its supergroup <G>;
 ##  this is done by delegating to the ordinary character tables of <H> and
 ##  <G>.
@@ -799,29 +790,27 @@ Powermap := PossiblePowerMaps;
 ##  the groups delegate to the tables; of course the method for tables
 ##  with group will be allowed to use the groups.)
 ##
-##  If no class fusion exists, 'fail' is returned.
+##  If no class fusion exists, `fail' is returned.
 ##  If the class fusion is not uniquely determined then an error is
 ##  signalled.
 ##
-##  The class fusions that were computed already by 'FusionConjugacyClasses'
-##  are stored as value of the attribute 'ComputedClassFusions'
+##  The class fusions that were computed already by `FusionConjugacyClasses'
+##  are stored as value of the attribute `ComputedClassFusions'
 ##  (a list of class fusions)
 #T records or fusion objects?
 ##
 ##  Methods for the computation of class fusions can be installed for
-##  the operation 'FusionConjugacyClassesOp'.
+##  the operation `FusionConjugacyClassesOp'.
 ##
-##  (see also 'GetFusionMap', 'StoreFusion')
+##  (see also `GetFusionMap', `StoreFusion')
 ##
-FusionConjugacyClasses := NewOperationArgs( "FusionConjugacyClasses" );
+DeclareGlobalFunction( "FusionConjugacyClasses" );
 
-FusionConjugacyClassesOp := NewOperation( "FusionConjugacyClassesOp",
+DeclareOperation( "FusionConjugacyClassesOp",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
 
-ComputedClassFusions := NewAttributeSuppCT( "ComputedClassFusions",
+DeclareAttributeSuppCT( "ComputedClassFusions",
     IsNearlyCharacterTable, "mutable" );
-SetComputedClassFusions := Setter( ComputedClassFusions );
-HasComputedClassFusions := Tester( ComputedClassFusions );
 
 
 #############################################################################
@@ -830,28 +819,28 @@ HasComputedClassFusions := Tester( ComputedClassFusions );
 #F  GetFusionMap( <source>, <destination>, <specification> )
 ##
 ##  For ordinary character tables <source> and <destination>,
-##  'GetFusionMap( <source>, <destination> )' returns the 'map' component of
-##  the fusion stored on the table <source> that has the 'name' component
+##  `GetFusionMap( <source>, <destination> )' returns the `map' component of
+##  the fusion stored on the table <source> that has the `name' component
 ##  <destination>,
-##  and 'GetFusionMap( <source>, <destination>, <specification> )' fetches
-##  that fusion that additionally has the 'specification' component
+##  and `GetFusionMap( <source>, <destination>, <specification> )' fetches
+##  that fusion that additionally has the `specification' component
 ##  <specification>.
 ##
 ##  If <source> and <destination> are Brauer tables,
-##  'GetFusionMap' looks whether a fusion map between the ordinary tables
+##  `GetFusionMap' looks whether a fusion map between the ordinary tables
 ##  is stored; if so then the fusion map between <source> and <destination>
 ##  is stored on <source>, and then returned.
 ##
-##  If no appropriate fusion is found, 'fail' is returned.
+##  If no appropriate fusion is found, `fail' is returned.
 ##
-##  (For the computation of class fusions, see 'FusionConjugacyClasses'.)
+##  (For the computation of class fusions, see `FusionConjugacyClasses'.)
 ##
 ##  Note that the stored fusion map may differ from the entered map if the
-##  table <destination> has a 'ClassPermutation'.
+##  table <destination> has a `ClassPermutation'.
 ##  So one should not fetch fusion maps directly via access to
-##  'ComputedFusionMaps'.
+##  `ComputedFusionMaps'.
 ##
-GetFusionMap := NewOperationArgs( "GetFusionMap" );
+DeclareGlobalFunction( "GetFusionMap" );
 
 
 #############################################################################
@@ -860,17 +849,17 @@ GetFusionMap := NewOperationArgs( "GetFusionMap" );
 #F  StoreFusion( <source>, <fusionmap>, <destination> )
 ##
 ##  The record <fusion> is stored on <source> if no ambiguity arises.
-##  'Identifier( <source> )' is added to 'NamesFusionSource( <destination> )'.
+##  `Identifier( <source> )' is added to `NamesFusionSource( <destination> )'.
 ##
 ##  If a list <fusionmap> is entered, the same holds for
-##  '<fusion> = rec( map:= <fusionmap> )'.
+##  `<fusion> = rec( map:= <fusionmap> )'.
 ##
 ##  Note that the stored fusion map may differ from the entered map if the
-##  table <destination> has a 'ClassPermutation'.
+##  table <destination> has a `ClassPermutation'.
 ##  So one should not fetch fusion maps directly via access to
-##  'ComputedFusionMaps'.
+##  `ComputedFusionMaps'.
 ##
-StoreFusion := NewOperationArgs( "StoreFusion" );
+DeclareGlobalFunction( "StoreFusion" );
 
 
 #############################################################################
@@ -879,11 +868,11 @@ StoreFusion := NewOperationArgs( "StoreFusion" );
 ##
 ##  <n> must be a positive integer, and <tbl> a nearly character table.
 ##  If the power maps for all prime divisors of <n> are stored in
-##  'ComputedPowerMaps' of <tbl> then 'PowerMapByComposition' returns the
+##  `ComputedPowerMaps' of <tbl> then `PowerMapByComposition' returns the
 ##  <n>-th power map of <tbl>.
-##  Otherwise 'fail' is returned.
+##  Otherwise `fail' is returned.
 ##  
-PowerMapByComposition := NewOperationArgs( "PowerMapByComposition" );
+DeclareGlobalFunction( "PowerMapByComposition" );
 
 
 #############################################################################
@@ -896,48 +885,45 @@ PowerMapByComposition := NewOperationArgs( "PowerMapByComposition" );
 #O  PowerMapOp( <tbl>, <n>, <class> )
 #A  ComputedPowerMaps( <tbl> )
 ##
-##  In the first form, 'PowerMap' returns the <n>-th power map of the
+##  In the first form, `PowerMap' returns the <n>-th power map of the
 ##  character table <tbl>.
-##  In the second form, 'PowerMap' returns the <n>-th power map of the
+##  In the second form, `PowerMap' returns the <n>-th power map of the
 ##  group <G>; this is done by delegating to the ordinary character table
 ##  of <G>.
 ##
-##  The power maps that were computed already by 'PowerMap'
-##  are stored as value of the attribute 'ComputedPowerMaps'
+##  The power maps that were computed already by `PowerMap'
+##  are stored as value of the attribute `ComputedPowerMaps'
 ##  (the $n$-th power map at position $n$).
 ##  Methods for the computation of power maps can be installed for
-##  the operation 'PowerMapOp'.
+##  the operation `PowerMapOp'.
 ##
-PowerMap := NewOperationArgs( "PowerMap" );
+DeclareGlobalFunction( "PowerMap" );
 
-PowerMapOp := NewOperation( "PowerMapOp",
-    [ IsNearlyCharacterTable, IsInt ] );
+DeclareOperation( "PowerMapOp", [ IsNearlyCharacterTable, IsInt ] );
 
-ComputedPowerMaps := NewAttributeSuppCT( "ComputedPowerMaps",
+DeclareAttributeSuppCT( "ComputedPowerMaps",
     IsNearlyCharacterTable, "mutable" );
-SetComputedPowerMaps := Setter( ComputedPowerMaps );
-HasComputedPowerMaps := Tester( ComputedPowerMaps );
 
 
 #############################################################################
 ##
 #F  InverseMap( <paramap> ) . . . . . . . . . . inverse of a parametrized map
 ##
-##  'InverseMap( <paramap> )[i]' is the unique preimage or the set of all
-##  preimages of 'i' under <paramap>, if there are any;
+##  `InverseMap( <paramap> )[i]' is the unique preimage or the set of all
+##  preimages of `i' under <paramap>, if there are any;
 ##  otherwise it is unbound.
 ##
-##  We have 'CompositionMaps( <paramap>, InverseMap( <paramap> ) )'
+##  We have `CompositionMaps( <paramap>, InverseMap( <paramap> ) )'
 ##  the identity map.
 ##
-InverseMap := NewOperationArgs( "InverseMap" );
+DeclareGlobalFunction( "InverseMap" );
 
 
 #############################################################################
 ##
 #F  NrPolyhedralSubgroups( <tbl>, <c1>, <c2>, <c3>)  . # polyhedral subgroups
 ##
-NrPolyhedralSubgroups := NewOperationArgs( "NrPolyhedralSubgroups" );
+DeclareGlobalFunction( "NrPolyhedralSubgroups" );
 
 
 #############################################################################
@@ -945,13 +931,13 @@ NrPolyhedralSubgroups := NewOperationArgs( "NrPolyhedralSubgroups" );
 #F  ConvertToOrdinaryTable( <record> )  . . . . create character table object
 #F  ConvertToOrdinaryTableNC( <record> )  . . . create character table object
 ##
-##  The components listed in 'SupportedOrdinaryTableInfo' are used to set
+##  The components listed in `SupportedOrdinaryTableInfo' are used to set
 ##  properties and attributes.
 ##  All other components will simply become components of the record object.
 ##  
-ConvertToOrdinaryTable := NewOperationArgs( "ConvertToOrdinaryTable" );
+DeclareGlobalFunction( "ConvertToOrdinaryTable" );
 
-ConvertToOrdinaryTableNC := NewOperationArgs( "ConvertToOrdinaryTableNC" );
+DeclareGlobalFunction( "ConvertToOrdinaryTableNC" );
 
 
 #############################################################################
@@ -959,16 +945,35 @@ ConvertToOrdinaryTableNC := NewOperationArgs( "ConvertToOrdinaryTableNC" );
 #F  ConvertToBrauerTable( <record> ) . . . . . . . create Brauer table object
 #F  ConvertToBrauerTableNC( <record> ) . . . . . . create Brauer table object
 ##
-##  The components listed in 'SupportedBrauerTableInfo' are used to set
+##  The components listed in `SupportedBrauerTableInfo' are used to set
 ##  properties and attributes.
 ##  All other components will simply become components of the record object.
 ##  
-ConvertToBrauerTable := NewOperationArgs( "ConvertToBrauerTable" );
+DeclareGlobalFunction( "ConvertToBrauerTable" );
 
-ConvertToBrauerTableNC := NewOperationArgs( "ConvertToBrauerTableNC" );
+DeclareGlobalFunction( "ConvertToBrauerTableNC" );
 
 
 #T ConvertToTableInProgress ???
+
+
+#############################################################################
+##
+#F  ConvertToLibraryCharacterTableNC( <record> )
+##
+##  converts the record <record> into a library character table (ordinary or
+##  modular).
+##  No consistency checks are made, and <record> is not copied.
+##
+##  <record> must have one of the components `isGenericTable' or
+##  `underlyingCharacteristic'.
+##
+##  The components listed in `SupportedOrdinaryTableInfo' are used to set
+##  properties and attributes.
+##  All other components will simply become components of the record object.
+##  
+DeclareGlobalFunction( "ConvertToLibraryCharacterTableNC" );
+
 
 #############################################################################
 ##
@@ -977,29 +982,14 @@ ConvertToBrauerTableNC := NewOperationArgs( "ConvertToBrauerTableNC" );
 ##  prints the supported information about the character table <tbl>,
 ##  as assignment to the variable with name <varname>.
 ##
-PrintCharacterTable := NewOperationArgs( "PrintCharacterTable" );
-
-
-#############################################################################
-##
-#F  TableAutomorphisms( <name> )
-##
-TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
-
-
-#############################################################################
-##
-#F  TransformingPermutationsCharacterTables( <name> )
-##
-TransformingPermutationsCharacterTables := NewOperationArgs(
-    "TransformingPermutationsCharacterTables" );
+DeclareGlobalFunction( "PrintCharacterTable" );
 
 
 #############################################################################
 ##
 #F  ClassStructureCharTable(<tbl>,<classes>)  . gener. class mult. coefficent
 ##
-ClassStructureCharTable := NewOperationArgs( "ClassStructureCharTable" );
+DeclareGlobalFunction( "ClassStructureCharTable" );
 
 
 #############################################################################
@@ -1008,10 +998,9 @@ ClassStructureCharTable := NewOperationArgs( "ClassStructureCharTable" );
 #F                                     . . . matrix of class mult coefficents
 ##
 ##  is a matrix <M> of structure constants where
-##  '<M>[j][k] = ClassMultiplicationCoefficient( <tbl>, <class>, j, k )'
+##  `<M>[j][k] = ClassMultiplicationCoefficient( <tbl>, <class>, j, k )'
 ##
-MatClassMultCoeffsCharTable := NewOperationArgs(
-    "MatClassMultCoeffsCharTable" );
+DeclareGlobalFunction( "MatClassMultCoeffsCharTable" );
 
 
 #############################################################################
@@ -1021,7 +1010,7 @@ MatClassMultCoeffsCharTable := NewOperationArgs(
 ##  An element $x$ is real iff it is conjugate to its inverse
 ##  $x^-1 = x^{o(x)-1}$.
 ##
-RealClassesCharTable := NewOperationArgs( "RealClassesCharTable" );
+DeclareGlobalFunction( "RealClassesCharTable" );
 
 
 #############################################################################
@@ -1039,13 +1028,13 @@ RealClassesCharTable := NewOperationArgs( "RealClassesCharTable" );
 ##  For the succession of characters in the result, see "SortedCharacters".
 ##
 ##  The result has all those attributes and properties of <tbl> that are
-##  stored in 'SupportedOrdinaryTableInfo'.
+##  stored in `SupportedOrdinaryTableInfo'.
 ##
 ##  The result will *not* be a library table, even if <tbl> is,
 ##  and it will *not* have an underlying group.
 ##
-CharacterTableWithSortedCharacters := NewOperation(
-    "CharacterTableWithSortedCharacters", [ IsNearlyCharacterTable ] );
+DeclareOperation( "CharacterTableWithSortedCharacters",
+    [ IsNearlyCharacterTable ] );
 
 
 #############################################################################
@@ -1058,8 +1047,8 @@ CharacterTableWithSortedCharacters := NewOperation(
 ##  by the other arguments.
 ##
 ##  There are three possibilities to sort characters\:\ 
-##  They can be sorted according to ascending norms (parameter '\"norm\"'),
-##  to ascending degree (parameter '\"degree\"'),
+##  They can be sorted according to ascending norms (parameter `\"norm\"'),
+##  to ascending degree (parameter `\"degree\"'),
 ##  or both (no third parameter),
 ##  i.e., characters with same norm are sorted according to ascending degree,
 ##  and characters with smaller norm precede those with bigger norm.
@@ -1069,8 +1058,8 @@ CharacterTableWithSortedCharacters := NewOperation(
 ##  The trivial character, if contained in <chars>, will always be sorted to
 ##  the first position.
 ##
-SortedCharacters := NewOperation(
-    "SortedCharacters", [ IsNearlyCharacterTable, IsHomogeneousList ] );
+DeclareOperation( "SortedCharacters",
+    [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
 
 #############################################################################
@@ -1094,13 +1083,13 @@ SortedCharacters := NewOperation(
 ##  result are sorted by application of this permutation.
 ##
 ##  The result has all those attributes and properties of <tbl> that are
-##  stored in 'SupportedOrdinaryTableInfo'.
+##  stored in `SupportedOrdinaryTableInfo'.
 ##
 ##  The result will *not* be a library table, even if <tbl> is,
 ##  and it will *not* have an underlying group.
 ##
-CharacterTableWithSortedClasses := NewOperation(
-    "CharacterTableWithSortedClasses", [ IsNearlyCharacterTable ] );
+DeclareOperation( "CharacterTableWithSortedClasses",
+    [ IsNearlyCharacterTable ] );
 
 
 #############################################################################
@@ -1114,7 +1103,7 @@ CharacterTableWithSortedClasses := NewOperation(
 ##
 ##  The first form sorts the classes at positions contained in the list
 ##  <kernel> to the beginning, and sorts all characters in
-##  'Irr( <tbl> )' such that the first characters are those that contain
+##  `Irr( <tbl> )' such that the first characters are those that contain
 ##  <kernel> in their kernel.
 ##
 ##  The second form does the same successively for all kernels $k_i$ in
@@ -1125,11 +1114,11 @@ CharacterTableWithSortedClasses := NewOperation(
 ##  modulo the normal subgroup formed by the classes whose positions are
 ##  contained in the list <kernel>;
 ##  <F> must be permutation equivalent to the table <facttbl> (in the
-##  sense of "TransformingPermutationsCharacterTables"), otherwise 'fail' is
+##  sense of "TransformingPermutationsCharacterTables"), otherwise `fail' is
 ##  returned.  The classes of <tbl> are sorted such that the preimages
 ##  of a class of <F> are consecutive, and that the succession of
 ##  preimages is that of <facttbl>.
-##  'Irr( <tbl> )' is sorted as by 'SortCharTable( <tbl>, <kernel> )'.
+##  `Irr( <tbl> )' is sorted as by `SortCharTable( <tbl>, <kernel> )'.
 ##
 ##  (*Note* that the transformation is only unique up to table automorphisms
 ##  of <F>, and this need not be unique up to table automorphisms of <tbl>.)
@@ -1139,14 +1128,14 @@ CharacterTableWithSortedClasses := NewOperation(
 ##  by any relevant property is not changed.
 ##
 ##  The result has at most those attributes and properties of <tbl> that are
-##  stored in 'SupportedOrdinaryTableInfo'.
+##  stored in `SupportedOrdinaryTableInfo'.
 ##  If <tbl> is a library table then the components of <tbl> that are stored
-##  in 'SupportedLibraryTableComponents' are components of <tbl>.
+##  in `SupportedLibraryTableComponents' are components of <tbl>.
 ##
-##  The 'ClassPermutation' value of <tbl> is changed if necessary,
+##  The `ClassPermutation' value of <tbl> is changed if necessary,
 ##  see "Conventions for Character Tables".
 ##
-SortedCharacterTable := NewOperationArgs( "SortedCharacterTable" );
+DeclareGlobalFunction( "SortedCharacterTable" );
 
 
 #############################################################################
@@ -1155,9 +1144,9 @@ SortedCharacterTable := NewOperationArgs( "SortedCharacterTable" );
 ##
 ##  is a string that encodes the CAS library format of the character table
 ##  <tbl>.
-##  The used line length is 'SizeScreen()[1]'.
+##  The used line length is `SizeScreen()[1]'.
 ##
-CASString := NewOperationArgs( "CASString" );
+DeclareGlobalFunction( "CASString" );
 
 
 #############################################################################
@@ -1166,15 +1155,104 @@ CASString := NewOperationArgs( "CASString" );
 ##
 ##  compute the irreducible characters of a supersolvable group using
 ##  Conlon's algorithm.
-##  The monomiality information (attribute 'TestMonomial') for each
+##  The monomiality information (attribute `TestMonomial') for each
 ##  irreducible character is known.
 ##
-IrrConlon := NewOperationArgs( "IrrConlon" );
+DeclareGlobalFunction( "IrrConlon" );
+
+
+#############################################################################
+##
+##  The following representation is used for the character table library.
+##  As the library refers to it, it has to be given in a library file not
+##  to enforce installing the character tables library.
+
+#############################################################################
+##
+#V  SupportedLibraryTableComponents
+#R  IsLibraryCharacterTableRep( <tbl> )
+##
+##  Ordinary library tables may have some components that are meaningless for
+##  character tables that know their underlying group.
+##  These components do not justify the introduction of operations to fetch
+##  them.
+##
+##  Library tables are always complete character tables.
+##  Note that in spite of the name, `IsLibraryCharacterTableRep' is used
+##  *not* only for library tables; for example, the direct product of two
+##  tables with underlying groups or a factor table of a character table with
+##  underlying group may be in `IsLibraryCharacterTableRep'.
+##
+BindGlobal( "SupportedLibraryTableComponents", [
+     "basicset",
+     "brauertree",
+     "CAS",
+     "cliffordTable",
+     "construction", 
+     "decinv",
+     "defect",
+     "extInfo",
+     "factorblocks",
+     "factors",
+     "indicator",
+     "isSimple",
+     "projectives",
+     "tomfusion",
+     "tomidentifier",
+    ] );
+
+DeclareRepresentation( "IsLibraryCharacterTableRep", IsAttributeStoringRep,
+    SupportedLibraryTableComponents );
+
+
+#############################################################################
+##
+#R  IsGenericCharacterTableRep( <tbl> )
+##
+##  generic character tables are a special representation of objects since
+##  they provide just some record components.
+##  It might be useful to treat them similar to character table like objects,
+##  for example to display them.
+##  So they belong to the category of nearly character tables.
+##
+DeclareRepresentation( "IsGenericCharacterTableRep", IsNearlyCharacterTable,
+     [
+     "domain",
+     "wholetable",
+     "classparam",
+     "charparam",
+     "specializedname",
+     "size",
+     "centralizers",
+     "orders",
+     "powermap",
+     "classtext",
+     "matrix",
+     "irreducibles",
+     "text",
+     ] );
+
+
+#############################################################################
+##
+#F  BlanklessPrintTo( <stream>, <obj> )
+##
+##  appends <obj> to the output stream <stream>,
+##  thereby trying to avoid unnecessary blanks.
+##  For the subobjects of <obj>, the function `PrintTo' is used.
+##  (So the subobjects are appended only if <stream> is of the appropriate
+##  type.)
+##
+##  If <obj> is a record then the component `text' and strings in an `irr'
+##  list are *not* treated in a special way!
+##
+##  This function is used by the libraries of character tables and of tables
+##  of marks.
+##
+DeclareGlobalFunction( "BlanklessPrintTo" );
 
 
 #############################################################################
 ##
 #E  ctbl.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

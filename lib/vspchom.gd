@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.vspchom_gd :=
     "@(#)$Id$";
@@ -12,19 +13,59 @@ Revision.vspchom_gd :=
 
 #############################################################################
 ##
-#O  LeftModuleGeneralMappingByImages( <S>, <R>, <gens>, <imgs> )
+#O  LeftModuleGeneralMappingByImages( <V>, <W>, <gens>, <imgs> )
 ##
-LeftModuleGeneralMappingByImages := NewOperation(
-    "LeftModuleGeneralMappingByImages",
-    [ IsLeftModule, IsLeftModule, IsList, IsList ] );
+##  is a general mapping from the left $R$-module <V> to the left $R$-module
+##  <W>.
+##  This general mapping is defined by mapping the entries in the list <gens>
+##  (elements of <V>) to the entries in the list <imgs> (elements of <W>),
+##  and taking the $R$-linear closure.
+##
+##  <gens> need not generate <V> as a left $R$-module, and if the
+##  specification does not define a linear mapping then the result will be 
+##  multivalued.
+##  Hence, in general it is not a mapping.
+##
+DeclareOperation( "LeftModuleGeneralMappingByImages",
+    [ IsLeftModule, IsLeftModule, IsHomogeneousList, IsHomogeneousList ] );
 
 
 #############################################################################
 ##
-#O  LeftModuleHomomorphismByImages( <S>, <R>, <gens>, <imgs> )
+#F  LeftModuleHomomorphismByImages( <S>, <R>, <gens>, <imgs> )
 ##
-LeftModuleHomomorphismByImages := NewOperation(
-    "LeftModuleHomomorphismByImages",
+##  `LeftModuleHomomorphismByImages' returns the left module homomorphism
+##  with source <S> and range <R> that is defined by mapping the list <gens>
+##  of generators of <S> to the list <imgs> of images in <R>.
+##
+##  If <gens> does not generate <S> or if the homomorphism does not exist
+##  (i.e., if mapping the generators describes only a multi-valued mapping)
+##  then `fail' is returned.
+##
+##  One can avoid the checks by calling `LeftModuleHomomorphismByImagesNC',
+##  and one can construct multi-valued mappings with
+##  `LeftModuleGeneralMappingByImages'.
+##
+DeclareGlobalFunction( "LeftModuleHomomorphismByImages" );
+
+
+#############################################################################
+##
+#O  LeftModuleHomomorphismByImagesNC( <S>, <R>, <gens>, <imgs> )
+##
+##  `LeftModuleHomomorphismByImagesNC' is the operation that is called by the
+##  function `LeftModuleHomomorphismByImages'.
+##  Its methods may assume that <gens> generates <S> and that the mapping of
+##  <gens> to <imgs> defines a left module homomorphism.
+##  Results are unpredictable if these conditions do not hold.
+##
+##  For creating a possibly multi-valued mapping from <A> to <B> that
+##  respects addition, multiplication, and scalar multiplication,
+##  `LeftModuleGeneralMappingByImages' can be used.
+##
+#T see the comment in the declaration of `GroupHomomorphismByImagesNC'!
+##
+DeclareOperation( "LeftModuleHomomorphismByImagesNC",
     [ IsLeftModule, IsLeftModule, IsList, IsList ] );
 
 
@@ -32,12 +73,7 @@ LeftModuleHomomorphismByImages := NewOperation(
 ##
 #A  AsLeftModuleGeneralMappingByImages( <map> )
 ##
-AsLeftModuleGeneralMappingByImages := NewAttribute(
-    "AsLeftModuleGeneralMappingByImages", IsGeneralMapping );
-SetAsLeftModuleGeneralMappingByImages := Setter(
-    AsLeftModuleGeneralMappingByImages );
-HasAsLeftModuleGeneralMappingByImages := Tester(
-    AsLeftModuleGeneralMappingByImages );
+DeclareAttribute( "AsLeftModuleGeneralMappingByImages", IsGeneralMapping );
 
 
 #############################################################################
@@ -49,62 +85,18 @@ HasAsLeftModuleGeneralMappingByImages := Tester(
 ##  <matrix> being the coefficients vectors of the images of <BS> w.r.t.
 ##  <BR>.
 ##
-LeftModuleHomomorphismByMatrix := NewOperation(
-    "LeftModuleHomomorphismByMatrix",
+DeclareOperation( "LeftModuleHomomorphismByMatrix",
     [ IsBasis, IsMatrix, IsBasis ] );
-
-
-#############################################################################
-##
-#R  IsLinearMappingsSpaceDefaultRep
-##
-##  is the representation of vector spaces of linear mappings
-##  that are handled via nice bases.
-##  The associated basis is computed using the matrices w.r.t. fixed bases
-##  of preimage and image.
-##
-##  'basissource' : \\
-##     basis of the source of each mapping in the space
-##
-##  'basisrange' : \\
-##     basis of the range of each mapping in the space
-##
-##  We have
-##  'List( <V>!.basissource,
-##         x -> Coefficients( <V>!.basisrange,
-##                            ImagesRepresentative( <v>, x ) ) )'
-##  the nice vector of $<v> \in <V>$,
-##  and
-##  'LeftModuleHomomorphismByMatrix( <V>!.basissource,
-##                                   <M>,
-##                                   <V>!.basisrange )'
-##  the ugly vector of the matrix <M>.
-##
-##  (Note that we cannot expect that the elements of the space are
-##  represented via matrices.
-##  If they are, and if the bases are the right ones, we may use the
-##  stored matrices, of course.)
-##
-IsLinearMappingsSpaceDefaultRep := NewRepresentation(
-    "IsLinearMappingsSpaceDefaultRep",
-    IsComponentObjectRep and IsHandledByNiceBasis,
-    [ "basissource", "basisrange" ] );
-
-
-#############################################################################
-##
-#M  IsFiniteDimensional( <A> )  . . . . .  hom FLMLORs are finite dimensional
-##
-InstallTrueMethod( IsFiniteDimensional,
-    IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep );
 
 
 #############################################################################
 ##
 #O  NaturalHomomorphismBySubspace( <V>, <W> ) . . . . . map onto factor space
 ##
-NaturalHomomorphismBySubspace := NewOperation(
-    "NaturalHomomorphismBySubspace",
+##  For a vector space <V> and a subspace <W> of <V>, this function 
+##  returns the natural projection of <V> onto <V>/<W>.
+##
+DeclareOperation( "NaturalHomomorphismBySubspace",
     [ IsLeftModule, IsLeftModule ] );
 
 
@@ -115,9 +107,7 @@ NaturalHomomorphismBySubspace := NewOperation(
 ##  A *full hom module* is a module $Hom_R(V,W)$, for a ring $R$ and two
 ##  left modules $V$, $W$.
 ##
-IsFullHomModule := NewProperty( "IsFullHomModule", IsFreeLeftModule );
-SetIsFullHomModule := Setter( IsFullHomModule );
-HasIsFullHomModule := Tester( IsFullHomModule );
+DeclareProperty( "IsFullHomModule", IsFreeLeftModule );
 
 
 #############################################################################
@@ -131,8 +121,7 @@ HasIsFullHomModule := Tester( IsFullHomModule );
 ##  Note that this is not canonical because it depends on the stored
 ##  bases of source and range.
 ##
-IsPseudoCanonicalBasisFullHomModule := NewProperty(
-    "IsPseudoCanonicalBasisFullHomModule", IsBasis );
+DeclareProperty( "IsPseudoCanonicalBasisFullHomModule", IsBasis );
 
 
 #############################################################################
@@ -141,7 +130,7 @@ IsPseudoCanonicalBasisFullHomModule := NewProperty(
 ##
 ##  is the left module $Hom_F(V,W)$.
 ##
-Hom := NewOperation( "Hom", [ IsRing, IsLeftModule, IsLeftModule ] );
+DeclareOperation( "Hom", [ IsRing, IsLeftModule, IsLeftModule ] );
 
 
 #############################################################################
@@ -150,12 +139,10 @@ Hom := NewOperation( "Hom", [ IsRing, IsLeftModule, IsLeftModule ] );
 ##
 ##  is the left module $End_F(V)$.
 ##
-End := NewOperation( "End", [ IsRing, IsLeftModule ] );
+DeclareOperation( "End", [ IsRing, IsLeftModule ] );
 
 
 #############################################################################
 ##
 #E  vspchom.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

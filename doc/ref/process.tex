@@ -21,7 +21,7 @@ process  terminates.  Then there are  processes that will run in parallel
 to {\GAP} as  subprocesses  and {\GAP} can  communicate and   control the
 processes using streams.
 
-Note that the latter kind of process is *not* yet implemented.
+Note that the latter kind of process is *@not yet implemented@*.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Process}
@@ -89,16 +89,16 @@ list of directories, this is done by `Filename'.
 
 <stream-in>  is the  input stream   that  delivers the characters  to the
 process.   For portability it  should either  be `InputTextNone' (if  the
-process reads  no characters), `InputTextUser' (*@not implemented@*), the
-result  of a call to `InputTextFile'  from which  no characters have been
-read, or the result of a call to `InputTextString'.
+process reads  no characters), `InputTextUser' (*@not yet implemented@*),
+the  result  of a call to `InputTextFile'  from which  no characters have
+been read, or the result of a call to `InputTextString'.
 
 `Process' is  free to consume *all* the  input even if the program itself
 does not require any input at all.
 
 <stream-out> is the output stream  which receives the characters from the
 process.  For portability it should   either be `OutputTextNone' (if  the
-process writes  no  characters), `OutputTextUser' (*@not  implemented@*),
+process writes no characters), `OutputTextUser' (*@not yet implemented@*),
 the result of a call to `OutputTextFile' to which no characters have been
 written, or the result of a call to `OutputTextString'.
 

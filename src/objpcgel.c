@@ -5,10 +5,11 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_objpcgel_c =
+const char * Revision_objpcgel_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -430,118 +431,132 @@ Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
 **
 
 
-*F  SetupPcElements() . . . . . . .  initialize the pc group elements package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupPcElements ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "LessBoxedObj", 2, "lobj, lobj",
+      FuncLessBoxedObj, "src/objpcgel.c:LessBoxedObj" },
+
+    { "EqualBoxedObj", 2, "lobj, lobj",
+      FuncEqualBoxedObj, "src/objpcgel.c:EqualBoxedObj" },
+
+    { "NBitsPcWord_Comm", 2, "n_bits_pcword, n_bits_pcword",
+      FuncNBitsPcWord_Comm, "src/objpcgel.c:NBitsPcWord_Comm" },
+
+    { "NBitsPcWord_Conjugate", 2, "n_bits_pcword, n_bits_pcword",
+      FuncNBitsPcWord_Conjugate, "src/objpcgel.c:NBitsPcWord_Conjugate" },
+
+    { "NBitsPcWord_LeftQuotient", 2, "n_bits_pcword, n_bits_pcword",
+      FuncNBitsPcWord_LeftQuotient, "src/objpcgel.c:NBitsPcWord_LeftQuotient" },
+
+    { "NBitsPcWord_PowerSmallInt", 2, "n_bits_pcword, small_integer",
+      FuncNBitsPcWord_PowerSmallInt, "src/objpcgel.c:NBitsPcWord_PowerSmallInt" },
+
+    { "NBitsPcWord_Product", 2, "n_bits_pcword, n_bits_pcword",
+      FuncNBitsPcWord_Product, "src/objpcgel.c:NBitsPcWord_Product" },
+
+    { "NBitsPcWord_Quotient", 2, "n_bits_pcword, n_bits_pcword",
+      FuncNBitsPcWord_Quotient, "src/objpcgel.c:NBitsPcWord_Quotient" },
+
+    { "8Bits_DepthOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
+      Func8Bits_DepthOfPcElement, "src/objpcgel.c:8Bits_DepthOfPcElement" },
+
+    { "8Bits_ExponentOfPcElement", 3, "8_bits_pcgs, 8_bits_pcword, int",
+      Func8Bits_ExponentOfPcElement, "src/objpcgel.c:8Bits_ExponentOfPcElement" },
+
+    { "8Bits_LeadingExponentOfPcElement", 2, "8_bits_pcgs, 8_bits_word",
+      Func8Bits_LeadingExponentOfPcElement, "src/objpcgel.c:8Bits_LeadingExponentOfPcElement" },
+
+    { "16Bits_DepthOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
+      Func16Bits_DepthOfPcElement, "src/objpcgel.c:16Bits_DepthOfPcElement" },
+
+    { "16Bits_ExponentOfPcElement", 3, "16_bits_pcgs, 16_bits_pcword, int",
+      Func16Bits_ExponentOfPcElement, "src/objpcgel.c:16Bits_ExponentOfPcElement" },
+
+    { "16Bits_LeadingExponentOfPcElement", 2, "16_bits_pcgs, 16_bits_word",
+      Func16Bits_LeadingExponentOfPcElement, "src/objpcgel.c:16Bits_LeadingExponentOfPcElement" },
+
+    { "32Bits_DepthOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
+      Func32Bits_DepthOfPcElement, "src/objpcgel.c:32Bits_DepthOfPcElement" },
+
+    { "32Bits_ExponentOfPcElement", 3, "32_bits_pcgs, 32_bits_pcword, int",
+      Func32Bits_ExponentOfPcElement, "src/objpcgel.c:32Bits_ExponentOfPcElement" },
+
+    { "32Bits_LeadingExponentOfPcElement", 2, "32_bits_pcgs, 32_bits_word",
+      Func32Bits_LeadingExponentOfPcElement, "src/objpcgel.c:32Bits_LeadingExponentOfPcElement" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitPcElements()  . . . . . . .  initialize the pc group elements package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitPcElements ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-
     /* export position numbers 'PCWP_SOMETHING'                            */
-    if ( ! SyRestoring ) {
-        AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
-                 INTOBJ_INT(PCWP_FIRST_ENTRY) );
-        AssGVar( GVarName( "PCWP_NAMES" ),
-                 INTOBJ_INT(PCWP_NAMES) );
-        AssGVar( GVarName( "PCWP_COLLECTOR" ),
-                 INTOBJ_INT(PCWP_COLLECTOR) );
-        AssGVar( GVarName( "PCWP_FIRST_FREE" ),
-                 INTOBJ_INT(PCWP_FIRST_FREE) );
-    }
+    AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
+             INTOBJ_INT(PCWP_FIRST_ENTRY) );
+    AssGVar( GVarName( "PCWP_NAMES" ),
+             INTOBJ_INT(PCWP_NAMES) );
+    AssGVar( GVarName( "PCWP_COLLECTOR" ),
+             INTOBJ_INT(PCWP_COLLECTOR) );
+    AssGVar( GVarName( "PCWP_FIRST_FREE" ),
+             INTOBJ_INT(PCWP_FIRST_FREE) );
 
-    /* methods for boxed objs                                              */
-    C_NEW_GVAR_FUNC( "LessBoxedObj", 2, "lobj, lobj",
-                  FuncLessBoxedObj,
-      "src/objpcgel.c:LessBoxedObj" );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "EqualBoxedObj", 2, "lobj, lobj",
-                  FuncEqualBoxedObj,
-      "src/objpcgel.c:EqualBoxedObj" );
-
-
-    /* finite power conjugate collector words                              */
-    C_NEW_GVAR_FUNC( "NBitsPcWord_Comm", 2,
-                       "n_bits_pcword, n_bits_pcword",
-                  FuncNBitsPcWord_Comm,
-      "src/objpcgel.c:NBitsPcWord_Comm" );
-
-    C_NEW_GVAR_FUNC( "NBitsPcWord_Conjugate", 2, "n_bits_pcword, n_bits_pcword",
-                  FuncNBitsPcWord_Conjugate,
-      "src/objpcgel.c:NBitsPcWord_Conjugate" );
-
-    C_NEW_GVAR_FUNC( "NBitsPcWord_LeftQuotient", 2, "n_bits_pcword, n_bits_pcword",
-                  FuncNBitsPcWord_LeftQuotient,
-      "src/objpcgel.c:NBitsPcWord_LeftQuotient" );
-
-    C_NEW_GVAR_FUNC( "NBitsPcWord_PowerSmallInt", 2, "n_bits_pcword, small_integer",
-                  FuncNBitsPcWord_PowerSmallInt,
-      "src/objpcgel.c:NBitsPcWord_PowerSmallInt" );
-
-    C_NEW_GVAR_FUNC( "NBitsPcWord_Product", 2, "n_bits_pcword, n_bits_pcword",
-                  FuncNBitsPcWord_Product,
-      "src/objpcgel.c:NBitsPcWord_Product" );
-
-    C_NEW_GVAR_FUNC( "NBitsPcWord_Quotient", 2, "n_bits_pcword, n_bits_pcword",
-                  FuncNBitsPcWord_Quotient,
-      "src/objpcgel.c:NBitsPcWord_Quotient" );
-
-
-    /* 8 bits word                                                         */
-    C_NEW_GVAR_FUNC( "8Bits_DepthOfPcElement", 2, "8_bits_pcgs, 8_bits_pcword",
-                  Func8Bits_DepthOfPcElement,
-      "src/objpcgel.c:8Bits_DepthOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "8Bits_ExponentOfPcElement", 3, "8_bits_pcgs, 8_bits_pcword, int",
-                  Func8Bits_ExponentOfPcElement,
-      "src/objpcgel.c:8Bits_ExponentOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "8Bits_LeadingExponentOfPcElement", 2, "8_bits_pcgs, 8_bits_word",
-                  Func8Bits_LeadingExponentOfPcElement,
-      "src/objpcgel.c:8Bits_LeadingExponentOfPcElement" );
-
-    /* 16 bits word                                                        */
-    C_NEW_GVAR_FUNC( "16Bits_DepthOfPcElement", 2, "16_bits_pcgs, 16_bits_pcword",
-                  Func16Bits_DepthOfPcElement,
-      "src/objpcgel.c:16Bits_DepthOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ExponentOfPcElement", 3, "16_bits_pcgs, 16_bits_pcword, int",
-                  Func16Bits_ExponentOfPcElement,
-      "src/objpcgel.c:16Bits_ExponentOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "16Bits_LeadingExponentOfPcElement", 2, "16_bits_pcgs, 16_bits_word",
-                  Func16Bits_LeadingExponentOfPcElement,
-      "src/objpcgel.c:16Bits_LeadingExponentOfPcElement" );
-
-    /* 32 bits word                                                        */
-    C_NEW_GVAR_FUNC( "32Bits_DepthOfPcElement", 2, "32_bits_pcgs, 32_bits_pcword",
-                  Func32Bits_DepthOfPcElement,
-      "src/objpcgel.c:32Bits_DepthOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ExponentOfPcElement", 3, "32_bits_pcgs, 32_bits_pcword, int",
-                  Func32Bits_ExponentOfPcElement,
-      "src/objpcgel.c:32Bits_ExponentOfPcElement" );
-
-    C_NEW_GVAR_FUNC( "32Bits_LeadingExponentOfPcElement", 2, "32_bits_pcgs, 32_bits_word",
-                  Func32Bits_LeadingExponentOfPcElement,
-      "src/objpcgel.c:32Bits_LeadingExponentOfPcElement" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckPcElements() . check initialisation of the pc group elements package
+*F  InitInfoPcElements()  . . . . . . . . . . . . . . table of init functions
 */
-void CheckPcElements ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "objpcgel",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoPcElements ( void )
 {
-    SET_REVISION( "objpcgel_c", Revision_objpcgel_c );
-    SET_REVISION( "objpcgel_h", Revision_objpcgel_h );
+    module.revision_c = Revision_objpcgel_c;
+    module.revision_h = Revision_objpcgel_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

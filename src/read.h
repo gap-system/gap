@@ -5,11 +5,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This module declares the functions to read  expressions  and  statements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_read_h =
+const char * Revision_read_h =
    "@(#)$Id$";
 #endif
 
@@ -63,6 +64,7 @@ extern Obj ReadEvalResult;
 **
 **  It does not expect the  first symbol of its input  already read and  wont
 **  read the  first symbol of the  next  input.
+**
 */
 extern UInt ReadEvalCommand ( void );
 
@@ -96,27 +98,9 @@ extern void ReadEvalError ( void );
 /****************************************************************************
 **
 
-*F  SetupRead() . . . . . . . . . . . . . . . . . . . . initialize the reader
+*F  InitInfoRead()  . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupRead ( void );
-
-
-/****************************************************************************
-**
-*F  InitRead()  . . . . . . . . . . . . . . . . . . . . initialize the reader
-**
-**  'InitRead' initializes the reader.
-*/
-extern void InitRead ( void );
-
-
-/****************************************************************************
-**
-*F  CheckRead() . . . . . . . . . . .  check the initialisation of the reader
-**
-**  'InitRead' initializes the reader.
-*/
-extern void CheckRead ( void );
+StructInitInfo * InitInfoRead ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the coder package.
 **
@@ -12,7 +13,7 @@
 **  expressions.  Its functions are called from the reader.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_code_h =
+const char * Revision_code_h =
    "@(#)$Id$";
 #endif
 
@@ -1205,25 +1206,9 @@ extern  void            CodeAssertEnd3Args ( void );
 /****************************************************************************
 **
 
-*F  SetupCode() . . . . . . . . . . . . . . . .  initialize the coder package
+*F  InitInfoCode() . . . . . . . . . . . . . . . . .  table of init functions
 */
-extern void SetupCode ( void );
-
-
-/****************************************************************************
-**
-*F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
-**
-**  'InitCode' initializes the coder package.
-*/
-extern void InitCode ( void );
-
-
-/****************************************************************************
-**
-*F  CheckCode() . . . . . . . . check the initialisation of the coder package
-*/
-extern void CheckCode ( void );
+StructInitInfo * InitInfoCode ( void );
 
 
 /****************************************************************************

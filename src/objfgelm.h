@@ -5,9 +5,10 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_objfgelm_h =
+const char * Revision_objfgelm_h =
    "@(#)$Id$";
 #endif
 
@@ -148,23 +149,9 @@ SYS_CONST char * Revision_objfgelm_h =
 /****************************************************************************
 **
 
-*F  SetupFreeGroupElements()  . . . initialize the free group element helpers
+*F  InitInfoFreeGroupElements() . . . . . . . . . . . table of init functions
 */
-extern void SetupFreeGroupElements ( void );
-
-
-/****************************************************************************
-**
-*F  InitFreeGroupElements()   . . . initialize the free group element helpers
-*/
-extern void InitFreeGroupElements ( void );
-
-
-/****************************************************************************
-**
-*F  CheckFreeGroupElements()  . . . . .  check the free group element helpers
-*/
-extern void CheckFreeGroupElements ( void );
+StructInitInfo * InitInfoFreeGroupElements ( void );
 
 
 /****************************************************************************

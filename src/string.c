@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions which mainly deal with strings.
 **
@@ -48,7 +49,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_string_c =
+const char * Revision_string_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -160,6 +161,8 @@ void PrintChar (
     else if ( chr == '\t'  )  Pr("'\\t'",0L,0L);
     else if ( chr == '\r'  )  Pr("'\\r'",0L,0L);
     else if ( chr == '\b'  )  Pr("'\\b'",0L,0L);
+    else if ( chr == '\01' )  Pr("'\\>'",0L,0L);
+    else if ( chr == '\02' )  Pr("'\\<'",0L,0L);
     else if ( chr == '\03' )  Pr("'\\c'",0L,0L);
     else if ( chr == '\''  )  Pr("'\\''",0L,0L);
     else if ( chr == '\\'  )  Pr("'\\\\'",0L,0L);
@@ -1131,9 +1134,9 @@ Int IsStringConv (
 **
 
 
-*F  IsStringHandler( <self>, <obj> )  . . . . . . . .  test value is a string
+*F  FuncIS_STRING( <self>, <obj> )  . . . . . . . . .  test value is a string
 */
-Obj IsStringHandler (
+Obj FuncIS_STRING (
     Obj                 self,
     Obj                 obj )
 {
@@ -1181,6 +1184,20 @@ Obj FuncCONV_STRING (
 
 /****************************************************************************
 **
+*F  FuncIS_STRING_REP( <self>, <obj> )  . . . . test if value is a string rep
+*/
+Obj IsStringRepFilt;
+
+Obj FuncIS_STRING_REP (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (IS_STRING_REP( obj ) ? True : False);
+}
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1188,28 +1205,333 @@ Obj FuncCONV_STRING (
 /****************************************************************************
 **
 
-*F  SetupString() . . . . . . . . . . . . . . . .  initializes string package
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
-void SetupString ( void )
+static StructBagNames BagNames[] = {
+  { T_CHAR,                           "character"                      },
+  { T_STRING,                         "list (string)"                  },
+  { T_STRING              +IMMUTABLE, "list (string,imm)"              },
+  { T_STRING      +COPYING,           "list (string,copied)"           },
+  { T_STRING      +COPYING+IMMUTABLE, "list (string,imm,copied)"       },
+  { T_STRING_SSORT,                   "list (string,ssort)"            },
+  { T_STRING_SSORT        +IMMUTABLE, "list (string,ssort,imm)"        },
+  { T_STRING_SSORT+COPYING,           "list (string,ssort,copied)"     },
+  { T_STRING_SSORT+COPYING+IMMUTABLE, "list (string,ssort,imm,copied)" },
+  { T_STRING_NSORT,                   "list (string,nsort)"            },
+  { T_STRING_NSORT        +IMMUTABLE, "list (string,nsort,imm)"        },
+  { T_STRING_NSORT+COPYING,           "list (string,nsort,copied)"     },
+  { T_STRING_NSORT+COPYING+IMMUTABLE, "list (string,nsort,imm,copied)" },
+  { -1,                               ""                               }
+};
+
+
+/****************************************************************************
+**
+*V  ClearFiltsTab . . . . . . . . . . . . . . . . . . . .  clear filter tnums
+*/
+static Int ClearFiltsTab [] = {
+    T_STRING,                 T_STRING,
+    T_STRING      +IMMUTABLE, T_STRING+IMMUTABLE,
+    T_STRING_NSORT,           T_STRING,
+    T_STRING_NSORT+IMMUTABLE, T_STRING+IMMUTABLE,
+    T_STRING_SSORT,           T_STRING,
+    T_STRING_SSORT+IMMUTABLE, T_STRING+IMMUTABLE,
+    -1,                       -1
+};
+
+
+/****************************************************************************
+**
+*V  HasFiltTab  . . . . . . . . . . . . . . . . . . . . .  tester filter tnum
+*/
+static Int HasFiltTab [] = {
+
+    /* mutable string                                                      */
+    T_STRING,                  FN_IS_MUTABLE, 1,
+    T_STRING,                  FN_IS_EMPTY,   0,
+    T_STRING,                  FN_IS_DENSE,   1,
+    T_STRING,                  FN_IS_NDENSE,  0,
+    T_STRING,                  FN_IS_HOMOG,   1,
+    T_STRING,                  FN_IS_NHOMOG,  0,
+    T_STRING,                  FN_IS_TABLE,   0,
+    T_STRING,                  FN_IS_SSORT,   0,
+    T_STRING,                  FN_IS_NSORT,   0,
+
+    /* immutable string                                                    */
+    T_STRING      +IMMUTABLE,  FN_IS_MUTABLE, 0,
+    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   0,
+    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   1,
+    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  0,
+    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   1,
+    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  0,
+    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   0,
+    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   0,
+    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   0,
+
+    /* ssort mutable string                                                */
+    T_STRING_SSORT,            FN_IS_MUTABLE, 1,
+    T_STRING_SSORT,            FN_IS_EMPTY,   0,
+    T_STRING_SSORT,            FN_IS_DENSE,   1,
+    T_STRING_SSORT,            FN_IS_NDENSE,  0,
+    T_STRING_SSORT,            FN_IS_HOMOG,   1,
+    T_STRING_SSORT,            FN_IS_NHOMOG,  0,
+    T_STRING_SSORT,            FN_IS_TABLE,   0,
+    T_STRING_SSORT,            FN_IS_SSORT,   1,
+    T_STRING_SSORT,            FN_IS_NSORT,   0,
+
+    /* ssort immutable string                                              */
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_MUTABLE, 0,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   0,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  0,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  0,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   0,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   0,
+
+    /* nsort mutable string                                                */
+    T_STRING_NSORT,            FN_IS_MUTABLE, 1,
+    T_STRING_NSORT,            FN_IS_EMPTY,   0,
+    T_STRING_NSORT,            FN_IS_DENSE,   1,
+    T_STRING_NSORT,            FN_IS_NDENSE,  0,
+    T_STRING_NSORT,            FN_IS_HOMOG,   1,
+    T_STRING_NSORT,            FN_IS_NHOMOG,  0,
+    T_STRING_NSORT,            FN_IS_TABLE,   0,
+    T_STRING_NSORT,            FN_IS_SSORT,   0,
+    T_STRING_NSORT,            FN_IS_NSORT,   1,
+
+    /* nsort immutable string                                              */
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_MUTABLE, 0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   0,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   1,
+
+    -1,                        -1,            -1
+};
+
+
+/****************************************************************************
+**
+*V  SetFiltTab  . . . . . . . . . . . . . . . . . . . . .  setter filter tnum
+*/
+static Int SetFiltTab [] = {
+
+    /* mutable string                                                      */
+    T_STRING,                  FN_IS_MUTABLE, T_STRING,
+    T_STRING,                  FN_IS_EMPTY,   T_STRING_SSORT,
+    T_STRING,                  FN_IS_DENSE,   T_STRING,
+    T_STRING,                  FN_IS_NDENSE,  -1,
+    T_STRING,                  FN_IS_HOMOG,   T_STRING,
+    T_STRING,                  FN_IS_NHOMOG,  -1,
+    T_STRING,                  FN_IS_TABLE,   -1,
+    T_STRING,                  FN_IS_SSORT,   T_STRING_SSORT,
+    T_STRING,                  FN_IS_NSORT,   T_STRING_NSORT,
+
+    /* immutable string                                                    */
+    T_STRING      +IMMUTABLE,  FN_IS_MUTABLE, T_STRING,
+    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  -1,
+    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  -1,
+    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   -1,
+    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   T_STRING_NSORT+IMMUTABLE,
+
+    /* ssort mutable string                                                */
+    T_STRING_SSORT,            FN_IS_MUTABLE, T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_NDENSE,  -1,
+    T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_NHOMOG,  -1,
+    T_STRING_SSORT,            FN_IS_TABLE,   -1,
+    T_STRING_SSORT,            FN_IS_SSORT,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_NSORT,   -1,
+
+    /* ssort immutable string                                              */
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_MUTABLE, T_STRING_SSORT,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  -1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  -1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   -1,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   -1,
+
+    /* nsort mutable string                                                */
+    T_STRING_NSORT,            FN_IS_MUTABLE, T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_EMPTY,   -1,
+    T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_NDENSE,  -1,
+    T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_NHOMOG,  -1,
+    T_STRING_NSORT,            FN_IS_TABLE,   -1,
+    T_STRING_NSORT,            FN_IS_SSORT,   -1,
+    T_STRING_NSORT,            FN_IS_NSORT,   T_STRING_NSORT,
+
+    /* nsort immutable string                                              */
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_MUTABLE, T_STRING_NSORT,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   -1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  -1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  -1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   -1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   -1,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING_NSORT+IMMUTABLE,
+
+    -1,                        -1,            -1
+
+};
+
+
+/****************************************************************************
+**
+*V  ResetFiltTab  . . . . . . . . . . . . . . . . . . .  unsetter filter tnum
+*/
+static Int ResetFiltTab [] = {
+
+    /* mutable string                                                      */
+    T_STRING,                  FN_IS_MUTABLE, T_STRING      +IMMUTABLE,
+    T_STRING,                  FN_IS_EMPTY,   T_STRING,
+    T_STRING,                  FN_IS_DENSE,   T_STRING,
+    T_STRING,                  FN_IS_NDENSE,  T_STRING,
+    T_STRING,                  FN_IS_HOMOG,   T_STRING,
+    T_STRING,                  FN_IS_NHOMOG,  T_STRING,
+    T_STRING,                  FN_IS_TABLE,   T_STRING,
+    T_STRING,                  FN_IS_SSORT,   T_STRING,
+    T_STRING,                  FN_IS_NSORT,   T_STRING,
+
+    /* immutable string                                                    */
+    T_STRING      +IMMUTABLE,  FN_IS_MUTABLE, T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_EMPTY,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_DENSE,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NDENSE,  T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_HOMOG,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NHOMOG,  T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_TABLE,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_SSORT,   T_STRING      +IMMUTABLE,
+    T_STRING      +IMMUTABLE,  FN_IS_NSORT,   T_STRING      +IMMUTABLE,
+
+    /* ssort mutable string                                                */
+    T_STRING_SSORT,            FN_IS_MUTABLE, T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT,            FN_IS_EMPTY,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_DENSE,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_NDENSE,  T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_HOMOG,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_NHOMOG,  T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_TABLE,   T_STRING_SSORT,
+    T_STRING_SSORT,            FN_IS_SSORT,   T_STRING,
+    T_STRING_SSORT,            FN_IS_NSORT,   T_STRING_SSORT,
+
+    /* ssort immutable string                                              */
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_MUTABLE, T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NDENSE,  T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NHOMOG,  T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_TABLE,   T_STRING_SSORT+IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING      +IMMUTABLE,
+    T_STRING_SSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING_SSORT+IMMUTABLE,
+
+    /* nsort mutable string                                                */
+    T_STRING_NSORT,            FN_IS_MUTABLE, T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT,            FN_IS_EMPTY,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_DENSE,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_NDENSE,  T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_HOMOG,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_NHOMOG,  T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_TABLE,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_SSORT,   T_STRING_NSORT,
+    T_STRING_NSORT,            FN_IS_NSORT,   T_STRING,
+
+    /* nsort immutable string                                              */
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_MUTABLE, T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_EMPTY,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_DENSE,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NDENSE,  T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_HOMOG,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NHOMOG,  T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_TABLE,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_SSORT,   T_STRING_NSORT+IMMUTABLE,
+    T_STRING_NSORT+IMMUTABLE,  FN_IS_NSORT,   T_STRING      +IMMUTABLE,
+
+    -1,                        -1,            -1
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
+*/
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_STRING", "obj", &IsStringFilt,
+      FuncIS_STRING, "src/string.c:IS_STRING" },
+
+    { "IS_STRING_REP", "obj", &IsStringRepFilt,
+      FuncIS_STRING_REP, "src/lists.c:IS_STRING_REP" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "IS_STRING_CONV", 1, "string",
+      FuncIS_STRING_CONV, "src/string.c:IS_STRING_CONV" },
+
+    { "CONV_STRING", 1, "string",
+      FuncCONV_STRING, "src/string.c:CONV_STRING" },
+
+    { "CHAR_INT", 1, "integer",
+      FuncCHAR_INT, "src/string.c:CHAR_INT" },
+
+    { "INT_CHAR", 1, "char",
+      FuncINT_CHAR, "src/string.c:INT_CHAR" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Char CharCookie[256][21];
+
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    Int                 t1, t2;
-    
-    /* install the marking function                                        */
-    InfoBags[ T_CHAR ].name = "character";
+    UInt                t1;
+    UInt                t2;
+    Int                 i, j;
+    Char *              cookie_base = "src/string.c:Char";
+
+    /* check dependencies                                                  */
+    RequireModule( module, "lists", 403600000UL );
+
+    /* GASMAN marking functions and GASMAN names                           */
+    InitBagNamesFromTable( BagNames );
+
     InitMarkFuncBags( T_CHAR , MarkNoSubBags );
-
-    /* Install the saving function                                         */
-    SaveObjFuncs[ T_CHAR ] = SaveChar;
-    LoadObjFuncs[ T_CHAR ] = LoadChar;
-
-
-    /* install the character functions                                     */
-    PrintObjFuncs[ T_CHAR ] = PrintChar;
-    EqFuncs[ T_CHAR ][ T_CHAR ] = EqChar;
-    LtFuncs[ T_CHAR ][ T_CHAR ] = LtChar;
-
-
-    /* install the marking functions                                       */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkOneSubBags );
         InitMarkFuncBags( t1          +IMMUTABLE , MarkOneSubBags );
@@ -1217,218 +1539,46 @@ void SetupString ( void )
         InitMarkFuncBags( t1 +COPYING +IMMUTABLE , MarkOneSubBags );
     }
 
+    /* make all the character constants once and for all                   */
+    for ( i = 0; i < 256; i++ ) {
+        for (j = 0; j < 17; j++ ) {
+            CharCookie[i][j] = cookie_base[j];
+        }
+        CharCookie[i][j++] = '0' + i/100;
+        CharCookie[i][j++] = '0' + (i % 100)/10;
+        CharCookie[i][j++] = '0' + i % 10;
+        CharCookie[i][j++] = '\0';
+        InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
+    }
 
-    /* install the names                                                   */
-    InfoBags[T_STRING                        ].name = "list (string)";
-    InfoBags[T_STRING              +IMMUTABLE].name = "list (string,imm)";
-    InfoBags[T_STRING      +COPYING          ].name = "list (string,copied)";
-    InfoBags[T_STRING      +COPYING+IMMUTABLE].name = "list (string,imm,copied)";
+    /* install the kind method                                             */
+    ImportGVarFromLibrary( "TYPE_CHAR", &TYPE_CHAR );
+    TypeObjFuncs[ T_CHAR ] = TypeChar;
 
-    InfoBags[T_STRING_SSORT                  ].name = "list (string,ssort)";
-    InfoBags[T_STRING_SSORT        +IMMUTABLE].name = "list (string,ssort,imm)";
-    InfoBags[T_STRING_SSORT+COPYING          ].name = "list (string,ssort,copied)";
-    InfoBags[T_STRING_SSORT+COPYING+IMMUTABLE].name = "list (string,ssort,imm,copied)";
+    /* install the kind method                                             */
+    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
+        TypeObjFuncs[ t1            ] = TypeString;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
+    }
 
-    InfoBags[T_STRING_NSORT                  ].name = "list (string,nsort)";
-    InfoBags[T_STRING_NSORT        +IMMUTABLE].name = "list (string,nsort,imm)";
-    InfoBags[T_STRING_NSORT+COPYING          ].name = "list (string,nsort,copied)";
-    InfoBags[T_STRING_NSORT+COPYING+IMMUTABLE].name = "list (string,nsort,imm,copied)";
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
+    /* initialise list tables                                              */
+    InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
+    InitHasFiltListTNumsFromTable  ( HasFiltTab    );
+    InitSetFiltListTNumsFromTable  ( SetFiltTab    );
+    InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
-    /* install the filter and property maps                                */
-    ClearFiltsTNums   [T_STRING                ] = T_STRING;
-    ClearFiltsTNums   [T_STRING      +IMMUTABLE] = T_STRING+IMMUTABLE;
-    ClearFiltsTNums   [T_STRING_NSORT          ] = T_STRING;
-    ClearFiltsTNums   [T_STRING_NSORT+IMMUTABLE] = T_STRING+IMMUTABLE;
-    ClearFiltsTNums   [T_STRING_SSORT          ] = T_STRING;
-    ClearFiltsTNums   [T_STRING_SSORT+IMMUTABLE] = T_STRING+IMMUTABLE;
+    /* Install the saving function                                         */
+    SaveObjFuncs[ T_CHAR ] = SaveChar;
+    LoadObjFuncs[ T_CHAR ] = LoadChar;
 
-    /* mutable string                                                      */
-    HasFiltListTNums  [T_STRING                ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_STRING                ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING                ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING                ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING                ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING                ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING                ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING                ][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_STRING                ][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_STRING                ][FN_IS_MUTABLE] = T_STRING;
-    SetFiltListTNums  [T_STRING                ][FN_IS_EMPTY  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING                ][FN_IS_DENSE  ] = T_STRING;
-    SetFiltListTNums  [T_STRING                ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING                ][FN_IS_HOMOG  ] = T_STRING;
-    SetFiltListTNums  [T_STRING                ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING                ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING                ][FN_IS_SSORT  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING                ][FN_IS_NSORT  ] = T_STRING_NSORT;
-
-    ResetFiltListTNums[T_STRING                ][FN_IS_MUTABLE] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING                ][FN_IS_EMPTY  ] = T_STRING;
-    ResetFiltListTNums[T_STRING                ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING                ][FN_IS_NDENSE ] = T_STRING;
-    ResetFiltListTNums[T_STRING                ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING                ][FN_IS_NHOMOG ] = T_STRING;
-    ResetFiltListTNums[T_STRING                ][FN_IS_TABLE  ] = T_STRING;
-    ResetFiltListTNums[T_STRING                ][FN_IS_SSORT  ] = T_STRING;
-    ResetFiltListTNums[T_STRING                ][FN_IS_NSORT  ] = T_STRING;
-
-    /* immutable string                                                    */
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = T_STRING;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = T_STRING      +IMMUTABLE;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = T_STRING      +IMMUTABLE;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = T_STRING_NSORT+IMMUTABLE;
-
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_MUTABLE] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_EMPTY  ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NDENSE ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NHOMOG ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_TABLE  ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_SSORT  ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING      +IMMUTABLE][FN_IS_NSORT  ] = T_STRING      +IMMUTABLE;
-
-    /* ssort mutable string                                                */
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_SSORT  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT          ][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_MUTABLE] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_EMPTY  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_DENSE  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_HOMOG  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_SSORT  ] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT          ][FN_IS_NSORT  ] = -1;
-
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_MUTABLE] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_EMPTY  ] = T_STRING_SSORT;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NDENSE ] = T_STRING_SSORT;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NHOMOG ] = T_STRING_SSORT;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_TABLE  ] = T_STRING_SSORT;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_SSORT  ] = T_STRING;
-    ResetFiltListTNums[T_STRING_SSORT          ][FN_IS_NSORT  ] = T_STRING_SSORT;
-
-    /* ssort immutable string                                              */
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = 1;
-    HasFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_SSORT;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = -1;
-
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NDENSE ] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_TABLE  ] = T_STRING_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING      +IMMUTABLE;
-    ResetFiltListTNums[T_STRING_SSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING_SSORT+IMMUTABLE;
-
-    /* nsort mutable string                                                */
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT          ][FN_IS_NSORT  ] = 1;
-
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_MUTABLE] = T_STRING_NSORT;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_EMPTY  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_DENSE  ] = T_STRING_NSORT;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_HOMOG  ] = T_STRING_NSORT;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_SSORT  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT          ][FN_IS_NSORT  ] = T_STRING_NSORT;
-
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_MUTABLE] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_EMPTY  ] = T_STRING_NSORT;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NDENSE ] = T_STRING_NSORT;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NHOMOG ] = T_STRING_NSORT;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_TABLE  ] = T_STRING_NSORT;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_SSORT  ] = T_STRING_NSORT;
-    ResetFiltListTNums[T_STRING_NSORT          ][FN_IS_NSORT  ] = T_STRING;
-
-    /* nsort immutable string                                              */
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = 1;
-
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_NSORT;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = T_STRING_NSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_STRING_NSORT+IMMUTABLE;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = -1;
-    SetFiltListTNums  [T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING_NSORT+IMMUTABLE;
-
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NDENSE ] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_TABLE  ] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_SSORT  ] = T_STRING_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_STRING_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_STRING      +IMMUTABLE;
-
+    /* install the character functions                                     */
+    PrintObjFuncs[ T_CHAR ] = PrintChar;
+    EqFuncs[ T_CHAR ][ T_CHAR ] = EqChar;
+    LtFuncs[ T_CHAR ][ T_CHAR ] = LtChar;
 
     /* install the saving method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
@@ -1437,7 +1587,6 @@ void SetupString ( void )
         LoadObjFuncs[ t1            ] = LoadString;
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadString;
     }
-
 
     /* install the copy method                                             */
     for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1++ ) {
@@ -1524,86 +1673,62 @@ void SetupString ( void )
     for ( t1 = FIRST_EXTERNAL_TNUM; t1 <= LAST_EXTERNAL_TNUM; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
     }
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
-**
-**  <CharCookie> is a space for the cookies passed into `InitGlobalBags' with
-**  the  character constants.  This  must be static,  and  different for each
-**  character,   as    the   cookies   are  only  copied    as  pointers   in
-**  `InitGlobalBags'.
-**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-static Char CharCookie[256][21];
-
-void InitString ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    Int                 i, j;
-    Int                 t1;
-    Char *              cookie_base = "src/string.c:Char";
+    Int                 i;
     
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
-        for (j = 0; j < 17; j++)
-            CharCookie[i][j] = cookie_base[j];
-        CharCookie[i][j++] = '0' + i/100;
-        CharCookie[i][j++] = '0' + (i % 100)/10;
-        CharCookie[i][j++] = '0' + i % 10;
-        CharCookie[i][j++] = '\0';
-        InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
-        if ( ! SyRestoring ) {
-            ObjsChar[i] = NewBag( T_CHAR, 1L );
-            *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
-        }
+        ObjsChar[i] = NewBag( T_CHAR, 1L );
+        *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
     }
 
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    /* install the kind method                                             */
-    ImportGVarFromLibrary( "TYPE_CHAR", &TYPE_CHAR );
-    TypeObjFuncs[ T_CHAR ] = TypeChar;
-
-
-    /* install the kind method                                             */
-    for ( t1 = T_STRING; t1 <= T_STRING_SSORT; t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeString;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeString;
-    }
-
-
-    /* install the internal function                                       */
-    C_NEW_GVAR_FILT( "IS_STRING", "obj", IsStringFilt, IsStringHandler,
-        "src/string.c:IS_STRING" );
-
-    C_NEW_GVAR_FUNC( "IS_STRING_CONV", 1L, "string",
-                  FuncIS_STRING_CONV,
-        "src/string.c:IS_STRING_CONV" );
-
-    C_NEW_GVAR_FUNC( "CONV_STRING", 1L, "string",
-                  FuncCONV_STRING,
-        "src/string.c:CONV_STRING" );
-
-    C_NEW_GVAR_FUNC( "CHAR_INT", 1L, "integer",
-                  FuncCHAR_INT,
-        "src/string.c:CHAR_INT" );
-
-    C_NEW_GVAR_FUNC( "INT_CHAR", 1L, "char",
-                  FuncINT_CHAR,
-        "src/string.c:INT_CHAR" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckString() . . . . . .  check the initialisation of the string package
+*F  InitInfoString()  . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckString ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "string",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoString ( void )
 {
-    SET_REVISION( "string_c",   Revision_string_c );
-    SET_REVISION( "string_h",   Revision_string_h );
+    module.revision_c = Revision_string_c;
+    module.revision_h = Revision_string_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

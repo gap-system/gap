@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations of operations for factor group maps
 ##
@@ -26,7 +27,7 @@ InstallMethod(NaturalHomomorphismsPool,true,[IsGroup],0,
 ##       returns false if nothing had been added and 'fail' if adding was
 ##       forbidden
 ##
-AddNaturalHomomorphismsPool:=function(arg)
+InstallGlobalFunction(AddNaturalHomomorphismsPool,function(arg)
 local G,N,op,i,c,p,pool,mustsort,perm;
   G:=arg[1];
   N:=arg[2];
@@ -35,7 +36,11 @@ local G,N,op,i,c,p,pool,mustsort,perm;
   # don't store trivial cases
   if Size(N)=1 or Size(N)=Size(G) then
     Info(InfoFactor,4,"trivial sub");
+    # do we really want the trivial subgroup?
+    if not (HasNaturalHomomorphismsPool(G) and
+      ForAny(NaturalHomomorphismsPool(G).ker,j->Size(j)=1)) then
     return false;
+    fi;
   fi;
 
   pool:=NaturalHomomorphismsPool(G);
@@ -53,7 +58,7 @@ local G,N,op,i,c,p,pool,mustsort,perm;
       AddNaturalHomomorphismsPool(G,c,i);
     od;
     # transfer in numbers list
-    op:=List(p,i->PositionSortedWC(pool.ker,i));
+    op:=List(p,i->PositionSet(pool.ker,i));
     if Length(arg)<4 then
       # add the prices
       c:=Sum(pool.cost{op});
@@ -68,8 +73,10 @@ local G,N,op,i,c,p,pool,mustsort,perm;
       c:=Image(op);
       if IsPcGroup(c) then
 	c:=1;
-      else
+      elif IsPermGroup(c) then
 	c:=NrMovedPoints(c);
+      else
+        c:=Size(c);
       fi;
     fi;
   fi;
@@ -77,7 +84,7 @@ local G,N,op,i,c,p,pool,mustsort,perm;
   # check whether we have already a better operation (or whether this normal
   # subgroup is locked)
 
-  p:=PositionSortedWC(pool.ker,N);
+  p:=PositionSet(pool.ker,N);
   if p=fail then
     if pool.in_code then
       return fail;
@@ -138,7 +145,7 @@ local G,N,op,i,c,p,pool,mustsort,perm;
   fi;
 
   return perm; # if anyone wants to keep the permutation
-end;
+end);
 
 
 #############################################################################
@@ -146,14 +153,14 @@ end;
 #F  LockNaturalHomomorphismsPool(G,N)  . .  store flag to prohibit changes of
 ##                                                               the map to N
 ##
-LockNaturalHomomorphismsPool := function(G,N)
+InstallGlobalFunction(LockNaturalHomomorphismsPool,function(G,N)
 local pool;
   pool:=NaturalHomomorphismsPool(G);
-  N:=PositionSortedWC(pool.ker,N);
+  N:=PositionSet(pool.ker,N);
   if N<>fail then
     pool.lock[N]:=true;
   fi;
-end;
+end);
 
 
 #############################################################################
@@ -161,14 +168,14 @@ end;
 #F  UnlockNaturalHomomorphismsPool(G,N) . . .  clear flag to allow changes of
 ##                                                               the map to N
 ##
-UnlockNaturalHomomorphismsPool := function(G,N)
+InstallGlobalFunction(UnlockNaturalHomomorphismsPool,function(G,N)
 local pool;
   pool:=NaturalHomomorphismsPool(G);
-  N:=PositionSortedWC(pool.ker,N);
+  N:=PositionSet(pool.ker,N);
   if N<>fail then
     pool.lock[N]:=false;
   fi;
-end;
+end);
 
 
 #############################################################################
@@ -176,23 +183,23 @@ end;
 #F  KnownNaturalHomomorphismsPool(G,N) . . . . .  check whether Hom is stored
 ##                                                               (or obvious)
 ##
-KnownNaturalHomomorphismsPool := function(G,N)
+InstallGlobalFunction(KnownNaturalHomomorphismsPool,function(G,N)
   return N=G or Size(N)=1 
-      or PositionSortedWC(NaturalHomomorphismsPool(G).ker,N)<>fail;
-end;
+      or PositionSet(NaturalHomomorphismsPool(G).ker,N)<>fail;
+end);
 
 
 #############################################################################
 ##
 #F  GetNaturalHomomorphismsPool(G,N)  . . . .  get operation for G/N if known
 ##
-GetNaturalHomomorphismsPool:=function(G,N)
+InstallGlobalFunction(GetNaturalHomomorphismsPool,function(G,N)
 local pool,p,h,ise,emb,i,j;
   if not HasNaturalHomomorphismsPool(G) then
     return fail;
   fi;
   pool:=NaturalHomomorphismsPool(G);
-  p:=PositionSortedWC(pool.ker,N);
+  p:=PositionSet(pool.ker,N);
   if p<>fail then
     h:=pool.ops[p];
     if IsList(h) then
@@ -217,9 +224,9 @@ local pool,p,h,ise,emb,i,j;
       emb:=List([1..Length(ise)],i->Embedding(h,i));
       emb:=List(GeneratorsOfGroup(G),
 	   i->Product([1..Length(ise)],j->Image(emb[j],Image(ise[j],i))));
-      ise:=Subgroup(h,emb);
+      ise:=SubgroupNC(h,emb);
 
-      h:=GroupHomomorphismByImages(G,ise,GeneratorsOfGroup(G),emb);
+      h:=GroupHomomorphismByImagesNC(G,ise,GeneratorsOfGroup(G),emb);
       SetKernelOfMultiplicativeGeneralMapping(h,N);
       pool.ops[p]:=h;
     elif IsGroup(h) then
@@ -228,22 +235,22 @@ local pool,p,h,ise,emb,i,j;
     p:=h;
   fi;
   return p;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  DegreeNaturalHomomorphismsPool(G,N) degree for operation for G/N if known
 ##
-DegreeNaturalHomomorphismsPool:=function(G,N)
+InstallGlobalFunction(DegreeNaturalHomomorphismsPool,function(G,N)
 local p,pool;
   pool:=NaturalHomomorphismsPool(G);
-  p:=PositionSortedWC(pool.ker,N);
+  p:=PositionSet(pool.ker,N);
   if p<>fail then
     p:=pool.cost[p];
   fi;
   return p;
-end;
+end);
 
 
 #############################################################################
@@ -251,7 +258,7 @@ end;
 #F  CloseNaturalHomomorphismsPool(<G>[,<N>]) . . calc intersections of known
 ##         operation kernels, don't continue anything whic is smaller than N
 ##
-CloseNaturalHomomorphismsPool:=function(arg)
+InstallGlobalFunction(CloseNaturalHomomorphismsPool,function(arg)
 local G,pool,p,comb,i,c,perm,l,isi;
   G:=arg[1];
   pool:=NaturalHomomorphismsPool(G);
@@ -294,12 +301,13 @@ local G,pool,p,comb,i,c,perm,l,isi;
       fi;
 
       if Length(arg)=1 or IsSubgroup(c,arg[2]) then
-	AddSet(p,PositionSortedWC(pool.ker,c)); # to allow iterated intersections
+	AddSet(p,
+	  PositionSet(pool.ker,c)); # to allow iterated intersections
       fi;
     od;
   until Length(comb)=0; # nothing new was added
   
-end;
+end);
 
 
 #############################################################################
@@ -307,7 +315,7 @@ end;
 #F  FactorCosetOperation( <G>, <U>, [<N>] )  operation on the right cosets Ug
 ##                                        with possibility to indicate kernel
 ##
-FactorCosetOperation:=function(arg)
+DoFactorCosetOperation:=function(arg)
 local G,u,op,h,p,N;
   G:=arg[1];
   u:=arg[2];
@@ -332,6 +340,36 @@ local G,u,op,h,p,N;
   AddNaturalHomomorphismsPool(G,N,h);
   return h;
 end;
+
+InstallMethod(FactorCosetOperation,"by right transversal operation",
+  IsIdenticalObj,[IsGroup,IsGroup],0,
+function(G,U)
+  return DoFactorCosetOperation(G,U);
+end);
+
+InstallOtherMethod(FactorCosetOperation,
+  "by right transversal operation, given kernel",IsFamFamFam,
+  [IsGroup,IsGroup,IsGroup],0,
+function(G,U,N)
+  return DoFactorCosetOperation(G,U,N);
+end);
+
+InstallMethod(FactorCosetOperation,"by right transversal operation, Niceo",
+  IsIdenticalObj,[IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+function(G,U)
+local hom;
+  hom:=NiceMonomorphism(G);
+  return hom*DoFactorCosetOperation(Image(hom,G),Image(hom,U));
+end);
+
+InstallOtherMethod(FactorCosetOperation,
+  "by right transversal operation, given kernel, Niceo",IsFamFamFam,
+  [IsGroup and IsHandledByNiceMonomorphism,IsGroup,IsGroup],0,
+function(G,U,N)
+local hom;
+  hom:=NiceMonomorphism(G);
+  return hom*DoFactorCosetOperation(Image(hom,G),Image(hom,U),Image(hom,N));
+end);
 
 
 #############################################################################
@@ -400,8 +438,8 @@ end);
 #F  ImproveOperationDegreeByBlocks( <G>, <N> , {hom/subgrp} [,forceblocks] )
 ##  extension of <U> in <G> such that   \bigcap U^g=N remains valid
 ##
-ImproveOperationDegreeByBlocks:=function(arg)
-local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
+InstallGlobalFunction(ImproveOperationDegreeByBlocks,function(arg)
+local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo,op;
   G:=arg[1];
   N:=arg[2];
   oh:=arg[3];
@@ -426,7 +464,18 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
 
   # remember that we computed the blocks
   b:=NaturalHomomorphismsPool(G);
-  i:=PositionSortedWC(b.ker,N);
+
+  # special case to use it for improving a permutation representation
+  if Size(N)=1 then
+    Info(InfoFactor,1,"special case for trivial subgroup");
+    b.ker:=[N];
+    b.ops:=[oh];
+    b.cost:=[Length(MovedPoints(Range(oh)))];
+    b.lock:=[false];
+    b.blocksdone:=[false];
+  fi;
+
+  i:=PositionSet(b.ker,N);
   if b.blocksdone[i] then
     return; # we have done it already!
   fi;
@@ -449,7 +498,7 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
       if Length(b)>1 then
 	subo:=ApproximateSuborbitsStabilizerPermGroup(img,dom[1]);
 	subo:=Difference(List(subo,i->i[1]),dom{[1]});
-	if Length(subo)<=500 or fb then
+	if fb<>fail and (Length(subo)<=500 or fb=true) then
 	  Info(InfoFactor,2,"try all seeds");
 	  # if the degree is not too big or if we are desparate then go for
 	  # all blocks
@@ -467,8 +516,9 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
 	      # store action
 	      op:=OperationHomomorphism(img,bb,OnSets);
 	      k:=KernelOfMultiplicativeGeneralMapping(op);
-	      op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
-		 List(gens,i->Image(op,i)));
+	      op:=GroupHomomorphismByImagesNC(G,Range(op),
+                     GeneratorsOfGroup(G),
+		     List(gens,i->Image(op,i)));
 	      SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
 	      AddNaturalHomomorphismsPool(G,
                   KernelOfMultiplicativeGeneralMapping(op),
@@ -491,7 +541,7 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
 	  op:=OperationHomomorphism(img,b,OnSets);
 	  k:=KernelOfMultiplicativeGeneralMapping(op);
 	  # keep action knowledge
-	  op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
+	  op:=GroupHomomorphismByImagesNC(G,Range(op),GeneratorsOfGroup(G),
 	     List(gens,i->Image(op,i)));
 	  SetKernelOfMultiplicativeGeneralMapping(op,PreImages(oh,k));
 	  AddNaturalHomomorphismsPool(G,
@@ -510,8 +560,24 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
   fi;
   Info(InfoFactor,1,"end of blocks search");
   return DegreeNaturalHomomorphismsPool(G,N);
-end;
+end);
 
+#############################################################################
+##
+#F  SmallerDegreePermutationRepresentation( <G> )
+##
+InstallGlobalFunction(SmallerDegreePermutationRepresentation,function(G)
+local H;
+  if not IsTransitive(G,MovedPoints(G)) then
+    Error("need transitive operation");
+  fi;
+  H:=Group(GeneratorsOfGroup(G));
+  if HasSize(G) then
+    SetSize(H,Size(G));
+  fi;
+  ImproveOperationDegreeByBlocks(H,TrivialSubgroup(H),IdentityMapping(H));
+  return GetNaturalHomomorphismsPool(H,TrivialSubgroup(H));
+end);
 
 #############################################################################
 ##
@@ -624,7 +690,7 @@ end;
 ##
 #M  FindOperationKernel(<G>)  . . . . . . . . . . . . . . . . . . . . generic
 ##
-InstallMethod(FindOperationKernel,"generic",IsIdentical,[IsGroup,IsGroup],0,
+InstallMethod(FindOperationKernel,"generic",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,N)
   return GenericFindOperationKernel(G,N);
 end);
@@ -634,7 +700,7 @@ end);
 ##
 #M  FindOperationKernel(<G>)  . . . . . . . . . . . . . . . . . . . . permgrp
 ##
-InstallMethod(FindOperationKernel,"perm",IsIdentical,
+InstallMethod(FindOperationKernel,"perm",IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,N)
 local o,oo,s,i,u,m,v,cnt,comb,bestdeg,dom,blocksdone,p,pool;
@@ -656,14 +722,13 @@ local o,oo,s,i,u,m,v,cnt,comb,bestdeg,dom,blocksdone,p,pool;
     blocksdone:=false;
     # use subgroup that fixes a base of N
     # get orbits of a suitable stabilizer.
-    StabChain(N,rec(reduced:=true));
-    o:=Base(N);
+    o:=BaseOfGroup(N);
     s:=Stabilizer(G,o,OnTuples);
     if Size(s)>1 then
       cnt:=Filtered(Orbits(s,dom),i->Length(i)>1);
       for i in cnt do
 	v:=ClosureGroup(N,Stabilizer(s,i[1]));
-	if not v in o and Size(v)>Size(N) and Index(G,v)<2000 then
+	if Size(v)>Size(N) and Index(G,v)<2000 then
 	  u:=Core(G,v);
 	  AddNaturalHomomorphismsPool(G,u,v,Index(G,v));
 	fi;
@@ -762,6 +827,18 @@ local o,oo,s,i,u,m,v,cnt,comb,bestdeg,dom,blocksdone,p,pool;
 
 end);
 
+#############################################################################
+##
+#M  FindOperationKernel(<G>)  . . . . . . . . . . . . . . . . . . . . generic
+##
+InstallMethod(FindOperationKernel,"Niceo",IsIdenticalObj,
+  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+function(G,N)
+local hom;
+  hom:=NiceMonomorphism(G);
+  return hom*GenericFindOperationKernel(Image(hom,G),Image(hom,N));
+end);
+
 
 #############################################################################
 ##
@@ -770,16 +847,16 @@ end);
 ##  with kernel N. The range of this mapping is a suitable (isomorphic) 
 ##  permutation group (with which we can compute much easier).
 InstallMethod(NaturalHomomorphismByNormalSubgroupOp,
-  "search for operation",IsIdentical,[IsGroup,IsGroup],0,
+  "search for operation",IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,N)
 local h;
 
   # catch the trivial case N=G (N=1 is a separately installed method)
   if Size(N)=Size(G) then
     h:=Group(());
-    h:=GroupHomomorphismByImages(G,h,G.generators,
-                                 List(G.generators,i->h.identity));
-    h.kernelGroupHomomorphism:=G;
+    h:=GroupHomomorphismByImagesNC( G, h, GeneratorsOfGroup( G ),
+                                    List( GeneratorsOfGroup( G ), i -> () ));
+    SetKernelOfMultiplicativeGeneralMapping( h, G );
     return h;
   fi;
 

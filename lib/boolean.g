@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file deals with booleans.
 ##
@@ -15,9 +16,10 @@ Revision.boolean_g :=
 
 #############################################################################
 ##
-#C  IsBool  . . . . . . . . . . . . . . . . . . . . . .  category of booleans
+#C  IsBool(<obj>) . . . . . . . . . . . . . . . . . . .  category of booleans
 ##
-IsBool := NewCategoryKernel( "IsBool", IsObject, IS_BOOL );
+##  tests whether <obj> is `true', `false' or `fail'.
+DeclareCategoryKernel( "IsBool", IsObject, IS_BOOL );
 
 
 #############################################################################
@@ -36,7 +38,7 @@ TYPE_BOOL := NewType( BooleanFamily, IS_BOOL and IsInternalRep );
 
 #############################################################################
 ##
-#M  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
+#m  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
 ##
 InstallMethod( String,
     "method for a boolean",

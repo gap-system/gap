@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the statements package.
 **
@@ -13,7 +14,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_stats_c =
+const char * Revision_stats_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -462,7 +463,7 @@ UInt            ExecFor (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -493,7 +494,7 @@ UInt            ExecFor (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -567,7 +568,7 @@ UInt            ExecFor2 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -601,7 +602,7 @@ UInt            ExecFor2 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -680,7 +681,7 @@ UInt            ExecFor3 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -718,7 +719,7 @@ UInt            ExecFor3 (
             else if ( vart == 'h' )  ASS_HVAR( var, elm );
             else if ( vart == 'g' )  AssGVar(  var, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
             /* test for an interrupt                                       */
             if ( SyIsIntr() ) {
                 ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -812,7 +813,7 @@ UInt            ExecForRange (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -875,7 +876,7 @@ UInt            ExecForRange2 (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -943,7 +944,7 @@ UInt            ExecForRange3 (
         elm = INTOBJ_INT( i );
         ASS_LVAR( lvar, elm );
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1002,7 +1003,7 @@ UInt ExecWhile (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1038,7 +1039,7 @@ UInt ExecWhile2 (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1079,7 +1080,7 @@ UInt ExecWhile3 (
     SET_BRK_CURR_STAT( stat );
     while ( EVAL_BOOL_EXPR( cond ) != False ) {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1139,7 +1140,7 @@ UInt ExecRepeat (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1175,7 +1176,7 @@ UInt ExecRepeat2 (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1216,7 +1217,7 @@ UInt ExecRepeat3 (
     SET_BRK_CURR_STAT( stat );
     do {
 
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
         /* test for an interrupt                                           */
         if ( SyIsIntr() ) {
             ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1406,7 +1407,7 @@ UInt ExecAssert3Args (
 UInt            ExecReturnObj (
     Stat                stat )
 {
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
     if ( SyIsIntr() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1438,7 +1439,7 @@ UInt            ExecReturnObj (
 UInt            ExecReturnVoid (
     Stat                stat )
 {
-#ifndef SYS_HAS_SIGNALS
+#if ! HAVE_SIGNAL
     /* test for an interrupt                                               */
     if ( SyIsIntr() ) {
         ErrorReturnVoid( "user interrupt", 0L, 0L, "you can return" );
@@ -1804,7 +1805,7 @@ void            PrintAssert2Args (
     PrintExpr( ADDR_STAT(stat)[1] );
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<)",0L,0L);
+    Pr(" %2<);",0L,0L);
 }
   
 /****************************************************************************
@@ -1832,7 +1833,7 @@ void            PrintAssert3Args (
     PrintExpr( ADDR_STAT(stat)[2] );
 
     /* print the closing parenthesis                                       */
-    Pr(" %2<)",0L,0L);
+    Pr(" %2<);",0L,0L);
 }
   
 
@@ -1875,11 +1876,25 @@ void            PrintReturnVoid (
 /****************************************************************************
 **
 
-*F  SetupStats()  . . . . . . . . . . . . . initialize the statements package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupStats ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                i;              /* loop variable                   */
+
+    /* make the global bags known to Gasman                                */
+    /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
+    /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
+    /* furthermore, statements are no longer bags                          */
+    /* InitGlobalBag( &CurrStat );                                         */
+
+    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
+
+    /* connect to external functions                                       */
+    ImportFuncFromLibrary( "Iterator",       &ITERATOR );
+    ImportFuncFromLibrary( "IsDoneIterator", &IS_DONE_ITER );
+    ImportFuncFromLibrary( "NextIterator",   &NEXT_ITER );
 
     /* install executors for non-statements                                */
     for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
@@ -1947,43 +1962,38 @@ void SetupStats ( void )
     PrintStatFuncs[ T_ASSERT_3ARGS   ] = PrintAssert3Args;
     PrintStatFuncs[ T_RETURN_OBJ     ] = PrintReturnObj;
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
-}
 
+    /* return success                                                      */
+    return 0;
+}
 
 
 /****************************************************************************
 **
-*F  InitStats() . . . . . . . . . . . . . . initialize the statements package
+*F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
 */
-void InitStats ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "stats",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoStats ( void )
 {
-    /* make the global bags known to Gasman                                */
-    /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
-    /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
-    /* furthermore, statements are no longer bags                          */
-    /* InitGlobalBag( &CurrStat );                                         */
-
-    InitGlobalBag( &ReturnObjStat, "src/stats.c:ReturnObjStat" );
-
-
-    /* connect to external functions                                       */
-    ImportFuncFromLibrary( "Iterator",       &ITERATOR );
-    ImportFuncFromLibrary( "IsDoneIterator", &IS_DONE_ITER );
-    ImportFuncFromLibrary( "NextIterator",   &NEXT_ITER );
+    module.revision_c = Revision_stats_c;
+    module.revision_h = Revision_stats_h;
+    FillInVersion( &module );
+    return &module;
 }
-
-
-
-/****************************************************************************
-**
-*F  CheckStats() . . . . . check the initialisation of the statements package
-*/
-void CheckStats ( void )
-{
-    SET_REVISION( "stats_c",    Revision_stats_c );
-    SET_REVISION( "stats_h",    Revision_stats_h );
-}
-
 
 
 /****************************************************************************

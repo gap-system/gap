@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This file contains functions that  deal with conjugacy topics in solvable
 ##  groups using affine  methods.   These  topics includes   calculating  the
 ##  (rational)   conjugacy classes and centralizers   in solvable groups. The
@@ -20,7 +23,7 @@ Revision.claspcgs_gi :=
 ##  This function creates a record  containing information about a complement
 ##  in <N> to the span of <gens>.
 ##
-SubspaceVectorSpaceGroup := function( N, p, gens )
+InstallGlobalFunction( SubspaceVectorSpaceGroup, function( N, p, gens )
     local   zero,  one,  r,  ran,  n,  nan,  cg,  pos,  Q,  i,  j,  v;
     
     one := One( GF( p ) );  zero := 0 * one;
@@ -113,7 +116,7 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
     fi;
     
     return cg;
-end;
+end );
 
 #############################################################################
 ##
@@ -121,7 +124,8 @@ end;
 ##
 ##  This function returns an element of <G> conjugating <hk1> to <hk2>^<l>.
 ##
-CentralStepConjugatingElement := function( N, h, k1, k2, l, cN )
+InstallGlobalFunction( CentralStepConjugatingElement,
+  function( N, h, k1, k2, l, cN )
     local   v,  conj;
     
     v := ExponentsOfPcElement( N, h ^ -l * h ^ cN * k1 * k2 ^ -l );
@@ -129,7 +133,7 @@ CentralStepConjugatingElement := function( N, h, k1, k2, l, cN )
                     OneOfPcgs( N ), v * N!.subspace.inverse );
     conj := LeftQuotient( conj, cN );
     return conj;
-end;
+end );
 
 #############################################################################
 ##
@@ -140,7 +144,7 @@ end;
 ##  the  ``kernel'' S <  C which plays   the role of  C_G(h)  in lemma 3.1 of
 ##  [Mecky, Neub\"user, Bull. Aust. Math. Soc. 40].
 ##
-KernelHcommaC := function( N, h, C )
+InstallGlobalFunction( KernelHcommaC, function( N, h, C )
     local   i,  tmp,  v;
     
     N!.subspace := SubspaceVectorSpaceGroup( N, RelativeOrders( N )[ 1 ],
@@ -154,13 +158,13 @@ KernelHcommaC := function( N, h, C )
                       N!.subspace.dimensionN + N!.subspace.dimensionC ] } );
     od;
     return tmp;
-end;
+end );
 
 #############################################################################
 ##
 #F  OrderModK( <h>, <mK> )  . . . . . . . . . .  order modulo normal subgroup
 ##
-OrderModK := function( h, mK )
+InstallGlobalFunction( OrderModK, function( h, mK )
     local   ord,  d,  o;
     
     ord := 1;
@@ -172,13 +176,14 @@ OrderModK := function( h, mK )
         d := DepthOfPcElement( mK, h, d + 1 );
     od;
     return ord;
-end;
+end );
     
 #############################################################################
 ##
-#F  CentralStepRatClPGroup( <G>, <N>, <mK>, <mL>, <cl> )  . . . . . . . local
+#F  CentralStepRatClPGroup(<homepcgs>, <G>, <N>, <mK>, <mL>, <cl> )
 ##
-CentralStepRatClPGroup := function( G, N, mK, mL, cl )
+InstallGlobalFunction( CentralStepRatClPGroup,
+    function( home, G, N, mK, mL, cl )
     local  h,           # preimage of `cl.representative' under <hom>
            candexps,    # list of exponent vectors for <h> mod <candidates>
            classes,     # the resulting list of classes
@@ -198,7 +203,7 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
            type,        # the type of the Galois group as subgroup of Z_2^r^*
            i, j, l, c,  # loop variables
            C,  cyc,  xset,  opr,  orb;
-    
+
     p   := RelativeOrders( N )[ 1 ];
     h   := cl.representative;
     ohN := OrderModK( h, mK );
@@ -251,7 +256,7 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
         if IsBound( cl.kernel )  then
             N := cl.kernel;
         else
-            N!.CmodK := InducedPcgsWrtHomePcgs( cl.centralizer ) mod
+            N!.CmodK := InducedPcgs(home, cl.centralizer ) mod
                         DenominatorOfModuloPcgs( N );
             N!.CmodL := ExtendedPcgs( DenominatorOfModuloPcgs( N ),
                                 KernelHcommaC( N, h, N!.CmodK ) );
@@ -294,6 +299,11 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
             # Construct the image of the homomorphism <preimage> -> <K>.
             Q := [  ];
             for i  in [ 1 .. Length( GeneratorsOfGroup( preimage ) ) ]  do
+
+#Assert(2,LeftQuotient(h^Int(GeneratorsOfGroup(preimage)[i]),
+#                      h^preimage!.operators[i]) in 
+#		      Group(NumeratorOfModuloPcgs(N)));
+
                 Add( Q, ExponentsOfPcElement( N, LeftQuotient( h ^
                         Int( GeneratorsOfGroup( preimage )[ i ] ),
                         h ^ preimage!.operators[ i ] ) ) );
@@ -388,6 +398,10 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
             else
                 operator := cl.galoisGroup!.operators[ 1 ];
             fi;
+
+#Assert(2,LeftQuotient(h^Int(preimage),h^operator)*N!.subspace.projection in
+#	 GroupByPcgs(N));
+
             v := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                  ExponentsOfPcElement( N, LeftQuotient( h ^ Int( preimage ),
                          h ^ operator ) ) * N!.subspace.projection );
@@ -440,7 +454,7 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
             od;
             
             C := SubgroupNC( G, N!.CmodL );
-            SetInducedPcgsWrtHomePcgs( C, N!.CmodL );
+#            SetInducedPcgsWrtHomePcgs( C, N!.CmodL );
             c := rec( representative := h * k,
                          centralizer := C,
                          galoisGroup := gal );
@@ -461,13 +475,13 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
         
     fi;
     return classes;
-end;
+end );
 
 #############################################################################
 ##
-#F  CentralStepClEANS( <H>, <U>, <N>, <cl> )  . . . . . . . . . . . . . local
+#F  CentralStepClEANS( <homepcgs>,<H>, <U>, <N>, <cl> )
 ##
-CentralStepClEANS := function( H, U, N, cl )
+InstallGlobalFunction( CentralStepClEANS, function( home,H, U, N, cl )
     local  classes,    # classes to be constructed, the result
            field,      # field over which <N> is a vector space
            h,          # preimage `cl.representative' under <hom>
@@ -477,17 +491,16 @@ CentralStepClEANS := function( H, U, N, cl )
     
     field := GF( RelativeOrders( N )[ 1 ] );
     h := cl.representative;
-    N!.CmodK := InducedPcgsWrtHomePcgs( cl.centralizer ) mod
+    N!.CmodK := InducedPcgs(home, cl.centralizer ) mod
                 DenominatorOfModuloPcgs( N!.capH );
     N!.CmodL := ExtendedPcgs( DenominatorOfModuloPcgs( N!.capH ),
                         KernelHcommaC( N, h, N!.CmodK ) );
     C := SubgroupNC( H, N!.CmodL );
-    SetInducedPcgsWrtHomePcgs( C, N!.CmodL );
     
     classes := [  ];
     if IsBound( cl.candidates )  then
         gens := N!.CmodK{ N!.subspace.needed };
-        if IsIdentical( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
+        if IsIdenticalObj( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
             for c  in cl.candidates  do
                 exp := ExponentsOfPcElement( N, LeftQuotient( h, c ) );
                 MultRowVector( exp, One( field ) );
@@ -518,16 +531,18 @@ CentralStepClEANS := function( H, U, N, cl )
         od;
     fi;
     return classes;
-end;
+end );
 
 #############################################################################
 ##
-#F  CorrectConjugacyClass( <H>, <U>, <h>, <n>, <stab>, <N>, <cNh> )  cf. MN89
+#F  CorrectConjugacyClass( <homepcgs>, <H>,<U>,<h>, <n>, <stab>, <N>, <cNh> )
+##    cf. MN89
 ##
-CorrectConjugacyClass := function( H, U, h, n, stab, N, cNh )
+InstallGlobalFunction( CorrectConjugacyClass, 
+  function( home, H, U, h, n, stab, N, cNh )
     local   cl,  comm,  s,  C;
     
-    stab := ShallowCopy( InducedPcgsWrtHomePcgs( stab ) );
+    stab := ShallowCopy( InducedPcgs(home, stab ) );
     comm := [  ];
     for s  in [ 1 .. Length( stab ) ]  do
         comm[ s ] := ExponentsOfPcElement( N,
@@ -540,17 +555,17 @@ CorrectConjugacyClass := function( H, U, h, n, stab, N, cNh )
     od;
     stab := ExtendedPcgs( cNh, stab );
     C := SubgroupNC( H, stab );
-    SetInducedPcgsWrtHomePcgs( C, stab );
+#    SetInducedPcgsWrtHomePcgs( C, stab );
     cl := rec( representative := h * n,
                   centralizer := C );
     return cl;
-end;
+end );
 
 #############################################################################
 ##
-#F  GeneralStepClEANS( <H>, <U>, <N>, <cl> )  . . . . . . . . . . . . . local
+#F  GeneralStepClEANS( <homepcgs>, <H>, <U>, <N>, <cl> )
 ##
-GeneralStepClEANS := function( H, U, N, cl )
+InstallGlobalFunction( GeneralStepClEANS, function( home, H, U, N, cl )
     local  classes,    # classes to be constructed, the result
            field,      # field over which <N> is a vector space
            h,          # preimage `cl.representative' under <hom>
@@ -579,7 +594,7 @@ GeneralStepClEANS := function( H, U, N, cl )
     
     # Construct matrices for the affine operation on $N/[h,N]$.
     aff := ExtendedVectors( field ^ r );
-    gens := InducedPcgsWrtHomePcgs( C );
+    gens := InducedPcgs(home, C );
     imgs := [  ];
     for c  in gens  do
         if c in GroupOfPcgs( NumeratorOfModuloPcgs( N ) )  then
@@ -601,7 +616,7 @@ GeneralStepClEANS := function( H, U, N, cl )
 
     classes := [  ];
     if IsBound( cl.candidates )  then
-        if IsIdentical( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
+        if IsIdenticalObj( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
             Rep := CanonicalRepresentativeOfExternalSet;
         else
             cl.candidates := [ cl.candidates ];
@@ -619,11 +634,11 @@ GeneralStepClEANS := function( H, U, N, cl )
             if pos = fail  then
                 Add( cls, rep );
                 c := StabilizerOfExternalSet( orb );
-                if IsIdentical( Rep, CanonicalRepresentativeOfExternalSet )
+                if IsIdenticalObj( Rep, CanonicalRepresentativeOfExternalSet )
                    then
                     c := ConjugateSubgroup( c, OperatorOfExternalSet( orb ) );
                 fi;
-                c := CorrectConjugacyClass( H, U, h, rep, c, N, cNh );
+                c := CorrectConjugacyClass( home, H, U, h, rep, c, N, cNh );
             else
                 c := rec( representative := h * rep,
                              centralizer := classes[ pos ].centralizer );
@@ -634,7 +649,7 @@ GeneralStepClEANS := function( H, U, N, cl )
             c.operator := PcElementByExponents( N, N{ N!.subspace.needed },
                                    n * N!.subspace.inverse );
             # Now (h.n)^c.operator = h.k
-            if IsIdentical( Rep, CanonicalRepresentativeOfExternalSet )  then
+            if IsIdenticalObj(Rep,CanonicalRepresentativeOfExternalSet) then
                 c.operator := c.operator * OperatorOfExternalSet( orb );
                 # Now (h.n)^c.operator = h.rep mod [h,N]
                 k := PcElementByExponents( N, N{ N!.subspace.needed },
@@ -651,368 +666,760 @@ GeneralStepClEANS := function( H, U, N, cl )
         for orb  in ExternalOrbitsStabilizers( xset )  do
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                            Representative( orb ){ ran } );
-            c := CorrectConjugacyClass( H, U, h, rep,
+            c := CorrectConjugacyClass( home, H, U, h, rep,
                          StabilizerOfExternalSet( orb ), N, cNh );
             Add( classes, c );
         od;
     fi;
     return classes;
-end;
-    
+end );
+
+
 #############################################################################
 ##
-#F  ClassesSolvableGroup( <H>, <U>, <limit>, <mode> [, <cands> ] )  . . . . .
+#F  ClassesSolvableGroup(<G>, <mode> [,<opt>])  . . . . .
 ##
-##  In this function  classes    are described by  records  with   components
+##  In this function  classes  are described by  records  with   components
 ##  `representative', `centralizer', `galoisGroup' (for rational classes). If
-##  <candidates>  are  given,    their   classes  will   have  a    canonical
+##  <candidates>  are  given,  their   classes  will   have  a  canonical
 ##  `representative' and additional components `operator' and `exponent' (for
 ##  rational classes) such that
-##      (candidate ^ operator) ^ exponent = representative.         (c^o^e=r)
+##    (candidate ^ operator) ^ exponent=representative.     (c^o^e=r)
 ##
-ClassesSolvableGroup := function( arg )
-    local  G,  home,    # the supergroup (of <H> and <U>), the home pcgs
-           U,           # group in which to find the <H>-classes
-	   Upcgs,	# induced Pcgs of U
-           H,  Hp,      # group operating on <U>, a pcgs for <H>
-           limit,       # limit on order of representatives
-           mode,        # LSB: ratCl | power | test :MSB
-           candidates,  # candidates to be replaced by their canonical reps.
-           eas,         # elementary abelian series in <G> through <U>
-           step,        # counter looping over <eas>
-           K,    L,     # members of <eas>
-           Kp,mK,Lp,mL, # induced and modulo pcgs's
-           KcapH,LcapH, # pcgs's of intersections with <H>
-           N,   cent,   # elementary abelian factor, for affine action
-           cls, newcls, # classes in range/source of homomorphism
-	   news,	# new classes obtained in step
-           cl,          # class looping over <cls>
-           opr, exp,    # (candidates[i]^opr[i])^exp[i]=cls[i].representative
-           team,        # team of candidates with same image modulo <K>
-           blist,pos,q, # these control grouping of <cls> into <team>s
-           p,           # prime dividing $|G|$
-           ord,         # order of a rational class modulo <L>
-           new, power,  # auxiliary variables for determination of power tree
-           c,  i;       # loop variables
-    
-    # Get the arguments.
-    H     := arg[ 1 ];  # the operating group
-    U     := arg[ 2 ];  # the group on which <H> acts by conjugation
-    if H = U  then  G := H;
-              else  G := ClosureGroup( H, U );  fi;
-    limit := arg[ 3 ];     # if limit <> true, restricts the classes computed:
-    if limit = true  then  # only classes will be output which have
-        limit := rec( order := infinity,  # rep. order dividing `order'
-                       size := 0 );       # class size dividing `size'
-    fi;
-    mode  := arg[ 4 ];  # explained below whenever it appears
+InstallGlobalFunction(ClassesSolvableGroup, function(arg)
+local  G,  home,  # the group and the home pcgs
+       H,Hp,	# acting group
+       mode,    # LSB: ratCl | power | test :MSB
+       candidates,  # candidates to be replaced by their canonical reps.
+       eas,     # elementary abelian series in <G>
+       step,    # counter looping over <eas>
+       K,  L,   # members of <eas>
+       Kp,mK,Lp,mL, # induced and modulo pcgs's
+       LcapH,KcapH, # intersections
+       N,   cent,   # elementary abelian factor, for affine action
+       cls, newcls, # classes in range/source of homomorphism
+       news,    # new classes obtained in step
+       cl,      # class looping over <cls>
+       opr, exp,  # (candidates[i]^opr[i])^exp[i]=cls[i].representative
+       team,    # team of candidates with same image modulo <K>
+       blist,pos,q, # these control grouping of <cls> into <team>s
+       p,       # prime dividing $|G|$
+       ord,     # order of a rational class modulo <L>
+       new, power,  # auxiliary variables for determination of power tree
+       c,  i,     # loop variables
+       opt,	# options
+       consider, # consider function
+       divi;	# DivisorsInt(Size(G)) (used for Info)
+  
 
-    # <candidates> is a list  of elements whose classes  will be output  (but
-    # with canonical representatives), see comment  above. Or <candidates> is
-    # just one element, from whose output class the  centralizer will be read
-    # off.
-    if Length( arg ) = 5  then  candidates := arg[ 5 ];
-                          else  candidates := false;     fi;
-    
-    # Treat the case of a trivial group.
-    if IsTrivial( U )  then
-        if mode = 4  then  # test conjugacy of two elements
-            return One( U );
-        elif mode mod 2 = 1  then  # rational classes
-            cl := rec( representative := One( G ),
-                          centralizer := G,
-                          galoisGroup := GroupByPrimeResidues( [  ], 1 ) );
-            cl.galoisGroup!.type := 3;
-            cl.galoisGroup!.operators := [  ];
-            cl.isCentral := true;
-            if mode mod 4 = 3  then  # construct the power tree
-                cl.power          := rec( representative := One( G ) );
-                cl.power.operator := One( G );
-                cl.power.exponent := 1;
-            fi;
-        else
-            cl := rec( representative := One( H ),
-                          centralizer := H );
-        fi;
-        if IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
-            cls := List( candidates, c -> cl );
-        elif candidates <> false  then
-            return cl.centralizer;
-        else
-            cls := [ cl ];
-        fi;
-        return cls;
+  G:=arg[1];
+
+  mode :=arg[2];  # explained below whenever it appears
+
+  if Length(arg)=3 then
+    opt:=ShallowCopy(arg[3]);
+    # convert series to pcgs
+    if IsBound(opt.series) and not IsBound(opt.pcgs) then
+      Error("convert series to pcgs!");
     fi;
-    
-    # Calculate a (central)  elementary abelian series  with all pcgs induced
-    # w.r.t. <home>.
-    if not IsPermGroup( G )  then
-        HomePcgs( G );
+  else
+    opt:=rec();
+  fi;
+
+  # <candidates> is a list  of elements whose classes  will be output  (but
+  # with canonical representatives), see comment  above. Or <candidates> is
+  # just one element, from whose output class the  centralizer will be read
+  # off.
+  H:=G;
+  if IsBound(opt.candidates) then
+    candidates:=opt.candidates;
+    if not ForAll(candidates,i->i in G) then
+      G:=ClosureGroup(H,candidates);
     fi;
-    if IsPrimePowerInt( Size( G ) )  then
-        p := FactorsInt( Size( G ) )[ 1 ];
-        eas := PCentralSeries( G, p );
-        cent := ReturnTrue;
-    elif mode mod 2 = 1  then  # rational classes
-        Error( "<G> must be a p-group" );
+  else
+    candidates:=false;
+  fi;
+
+  if IsBound(opt.consider) then
+    consider:=opt.consider;
+  else
+    consider:=true;
+  fi;
+  
+  # Treat the case of a trivial group.
+  if IsTrivial(H) then
+    if mode=4 then  # test conjugacy of two elements
+      return One(G);
+    elif mode mod 2=1 then  # rational classes
+      cl:=rec(representative:=One(G),
+              centralizer:=G,
+              galoisGroup:=GroupByPrimeResidues([], 1));
+      cl.galoisGroup!.type:=3;
+      cl.galoisGroup!.operators:=[];
+      cl.isCentral:=true;
+      if mode mod 4=3 then  # construct the power tree
+        cl.power     :=rec(representative:=One(G));
+        cl.power.operator:=One(G);
+        cl.power.exponent:=1;
+      fi;
     else
-        eas := ElementaryAbelianSeries( G );
-        cent := function( cl, N, L )
-            return ForAll( N, k -> ForAll
-              ( InducedPcgsWrtHomePcgs( cl.centralizer ),
+      cl:=rec(representative:=One(G),
+              centralizer:=H);
+    fi;
+
+    if candidates<>false then
+      cls:=List(candidates, c -> cl);
+    else
+      cls:=[cl];
+    fi;
+
+    return cls;
+  fi;
+  
+  # Calculate a (central)  elementary abelian series  with all pcgs induced
+  # w.r.t. <homepcgs>.
+
+  if IsBound(opt.pcgs) then
+    # we prescribed a series
+    home:=opt.pcgs;
+    eas:=NormalSeriesByPcgs(home);
+    cent:=function(cl, N, L)
+      return ForAll(N, k -> ForAll
+        (InducedPcgs(home,cl.centralizer), c -> Comm(k, c) in L));
+    end;
+  elif IsPrimePowerInt(Size(G)) then
+    p:=FactorsInt(Size(G))[1];
+    home:=PcgsPCentralSeriesPGroup(G);
+    eas:=NormalSeriesByPcgs(home);
+
+    cent:=ReturnTrue;
+  elif mode mod 2=1 then  # rational classes
+    Error("<G> must be a p-group");
+  else
+    home:=PcgsElementaryAbelianSeries(G);
+    eas:=NormalSeriesByPcgs(home);
+    cent:=function(cl, N, L)
+      return ForAll(N, k -> ForAll
+        (InducedPcgs(home,cl.centralizer),
 #T  was: Only those elements form the induced PCGS. The subset seemed to
 #T enforce taking only the elements up, but the ordering of the series used
 #T may be different then the ordering in the PCGS. So this will fail. AH
 #T one might pick the right ones, but this would be almost the same work.
-#T { [ 1 .. Length( InducedPcgsWrtHomePcgs( cl.centralizer ) )
-#T - Length( InducedPcgsWrtHomePcgs( L ) ) ] },
-                   c -> Comm( k, c ) in L ) );
-        end;
-    fi;
-    G := eas[ 1 ];
-    home := HomePcgs( G );
-    Upcgs:=InducedPcgsByGeneratorsNC(home,GeneratorsOfGroup(U));
-    H := AsSubgroup( G, H );
-    Hp := InducedPcgsByGeneratorsNC(home, GeneratorsOfGroup(H));
+#T { [1 .. Length(InducedPcgsWrtHomePcgs(cl.centralizer))
+#T - Length(InducedPcgsWrtHomePcgs(L))] },
+           c -> Comm(k, c) in L));
+    end;
+  fi;
 
-    # Initialize the algorithm for the trivial group.
-    step := 1;
-    while IsSubset( eas[ step + 1 ], U )  do
-        step := step + 1;
-    od;
-    L  := eas[ step ];
-    Lp := InducedPcgsByGeneratorsNC(home,GeneratorsOfGroup( L ));
-    if not (G=H)  then
-        LcapH := NormalIntersectionPcgs( home, Hp, Lp );
+  Info(InfoClasses,1,"Series of sizes ",List(eas,Size));
+
+  if mode<3 and InfoLevel(InfoClasses)>1 then
+    divi:=DivisorsInt(Size(G));
+    Info(InfoClasses,2,"centsiz: ",divi);
+  fi;
+
+  # Initialize the algorithm for the trivial group.
+  step:=1;
+
+  L :=eas[step];
+  Lp:=InducedPcgs(home,L);
+
+  if not IsIdenticalObj( G, H )  then
+    Hp := InducedPcgs(home, H );
+    LcapH := NormalIntersectionPcgs( home, Hp, Lp );
+  fi;
+
+
+  if  mode mod 2=1  # rational classes
+     or candidates<>false then
+    mL:=ModuloPcgsByPcSequenceNC(home, home, Lp);
+  fi;
+
+  if mode mod 2=1 then  # rational classes
+    cl:=rec(representative:=One(G),
+            centralizer:=H,
+            galoisGroup:=GroupByPrimeResidues([], 1));
+    cl.galoisGroup!.type:=3;
+    cl.galoisGroup!.operators:=[];
+    if mode mod 4=3 then  # construct the power tree
+      cl.power     :=rec(representative:=One(G));
+      cl.power.operator:=One(G);
+      cl.power.exponent:=1;
+      cl.power.kernel  :=false;
     fi;
-    if    mode mod 2 = 1  # rational classes
-       or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
-        mL := ModuloPcgsByPcSequenceNC( home, Upcgs, Lp );
-    fi;
-    if     candidates <> false  # centralizer calculation
-       and not IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
-        cl := rec( representative := candidates,
-                      centralizer := H );
-        opr := One( U );
-    elif mode mod 2 = 1  then  # rational classes
-        cl := rec( representative := One( U ),
-                      centralizer := H,
-                      galoisGroup := GroupByPrimeResidues( [  ], 1 ) );
-        cl.galoisGroup!.type := 3;
-        cl.galoisGroup!.operators := [  ];
-        if mode mod 4 = 3  then  # construct the power tree
-            cl.power          := rec( representative := One( U ) );
-            cl.power.operator := One( U );
-            cl.power.exponent := 1;
-            cl.power.kernel   := false;
-        fi;
+  else
+    cl:=rec(representative:=One(G),
+            centralizer:=H);
+  fi;
+
+  if candidates<>false then
+    cls:=List(candidates, c -> cl);
+    opr:=List(candidates, c -> One(G));
+    exp:=ListWithIdenticalEntries(Length(candidates), 1);
+  else
+    cls:=[cl];
+  fi;
+  
+  # Now go back through the factors by all groups in the elementary abelian
+  # series.
+  for step  in [step + 1 .. Length(eas)]  do
+
+    Info(InfoClasses,1,"Step ",step,", ",Length(cls)," classes to lift");
+
+    # We apply the homomorphism principle to the homomorphism G/L -> G/K.
+    # The  actual   computations  are all  done   in <G>,   factors are
+    # represented by modulo pcgs.
+    K :=L;
+    Kp:=Lp;
+    L :=eas[step];
+    Lp:=InducedPcgs(home,L);
+    N :=Kp mod Lp;  # modulo pcgs representing the kernel
+
+    #T What is this? Obviously it is needed somewhere, but it is
+    #T certainly not good programming style. AH
+    SetFilterObj(N, IsPcgs);
+
+    if not IsIdenticalObj(G,H) then
+      KcapH := LcapH;
+      LcapH := NormalIntersectionPcgs(home,Hp,Lp);
+      N!.capH:=KcapH mod LcapH;
+      SetFilterObj( N!.capH, IsPcgs );
     else
-        cl := rec( representative := One( U ),
-                      centralizer := H );
-    fi;
-    if IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
-        cls := List( candidates, c -> cl );
-        opr := List( candidates, c -> One( U ) );
-        exp := ListWithIdenticalEntries( Length( candidates ), 1 );
-    else
-        cls := [ cl ];
+      N!.capH:=N;
     fi;
     
-    # Now go back through the factors by all groups in the elementary abelian
-    # series.
-    for step  in [ step + 1 .. Length( eas ) ]  do
+    # Rational classes or identification of classes.
+    if  mode mod 2=1
+       or candidates<>false then
+      mK:=mL;
+      mL:=ModuloPcgsByPcSequenceNC(home, home, Lp);
+    fi;
 
-        # We apply the homomorphism principle to the homomorphism G/L -> G/K.
-        # The  actual   computations  are all    done   in <G>,   factors are
-        # represented by modulo pcgs.
-        K  := L;
-        Kp := Lp;
-        L  := eas[ step ];
-        Lp := InducedPcgsByGeneratorsNC(home, GeneratorsOfGroup(L) );
-        N  := Kp mod Lp;  # modulo pcgs representing the kernel
-
-	#T What is this? Obviously it is needed somewhere, but it is
-	#T certainly not good programming style. AH
-        SetFilterObj( N, IsPcgs );
-
-        if Size( G ) <> Size( H )  then
-            KcapH   := LcapH;
-            LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
-            N!.capH := KcapH mod LcapH;
-	    #T See above
-            SetFilterObj( N!.capH, IsPcgs );
-        else
-            N!.capH := N;
-        fi;
+    
+    # Identification of classes.
+    if candidates<>false then
+      if   mode=4  # test conjugacy of two elements
+         and not cls[1].representative /
+             cls[2].representative in K then
+        return fail;
+      fi;
+      
+      blist:=BlistList([1 .. Length(cls)], []);
+      pos:=Position(blist, false);
+      while pos<>fail  do
         
-        # Rational classes or identification of classes.
-        if    mode mod 2 = 1
-           or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
-            mK := mL;
-            mL := ModuloPcgsByPcSequenceNC( home, Upcgs, Lp );
-        fi;
-        
-        # Identification of classes.
-        if IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
-            if     mode = 4  # test conjugacy of two elements
-               and not cls[ 1 ].representative /
-                       cls[ 2 ].representative in K  then
-                return fail;
+        # Find a team of candidates with same image under <modK>.
+        cl:=cls[pos];
+        cl.representative:=PcElementByExponents(mK,
+          ExponentsOfPcElement(mK, cl.representative));
+        cl.candidates:=[];
+        team:=[];
+        q:=pos;
+        while q<>fail  do
+          if cls[q].representative /
+             cl.representative in K then
+            c:=candidates[q] ^ opr[q];
+            if mode mod 2=1 then  # rational classes
+              c:=c ^ exp[q];
             fi;
-            
-            blist := BlistList( [ 1 .. Length( cls ) ], [  ] );
-            pos := Position( blist, false );
-            while pos <> fail  do
-                
-                # Find a team of candidates with same image under <modK>.
-                cl := cls[ pos ];
-                cl.representative := PcElementByExponents( mK,
-                    ExponentsOfPcElement( mK, cl.representative ) );
-                cl.candidates := [  ];
-                team := [  ];
-                q := pos;
-                while q <> fail  do
-                    if cls[ q ].representative /
-                       cl.representative in K  then
-                        c := candidates[ q ] ^ opr[ q ];
-                        if mode mod 2 = 1  then  # rational classes
-                            c := c ^ exp[ q ];
-                        fi;
-                        i := PositionSorted( cl.candidates, c );
-                        if    i > Length( cl.candidates )
-                           or cl.candidates[ i ] <> c  then
-                            AddSet( cl.candidates, c );
-                            InsertElmList( team, i, [ q ] );
-                        else
-                            Add( team[ i ], q );
-                        fi;
-                        blist[ q ] := true;
-                    fi;
-                    q := Position( blist, false, q );
-                od;
-
-                # Now   <cl> is   a    class  modulo  <K>  (possibly     with
-                # `<cl>.candidates'  a list of  elements  mapping  into  this
-                # class modulo <K>). Let <newcls>  be  a list of all  classes
-                # modulo <L> that  map to <cl>  modulo <K>  (resp. a list  of
-                # classes to which   the list `<cl>.candidates'   maps modulo
-                # <K>,  together  with   `operator's and   `exponent's  as in
-                # (c^o^e=r)).
-                if mode mod 2 = 1  then  # rational classes
-                    newcls := CentralStepRatClPGroup( H, N, mK, mL, cl );
-                elif cent( cl, N, L )  then
-                    newcls := CentralStepClEANS( H, U, N, cl );
-                else
-                    newcls := GeneralStepClEANS( H, U, N, cl );
-                fi;
-                
-                # Update <cls>, <opr> and <exp>.
-                for i  in [ 1 .. Length( team ) ]  do
-                    for q  in team[ i ]  do
-                        cls[ q ] := newcls[ i ];
-                        opr[ q ] := opr[ q ] * newcls[ i ].operator;
-                        if mode mod 2 = 1  then  # rational classes
-                            ord := OrderModK( cls[ q ].representative, mL );
-                            if ord <> 1  then
-
-                                # For  historical  reasons,   the `exponent's
-                                # returns by `CentralStepRatClPGroup' are the
-                                # inverses of what we need.
-                                exp[ q ] := exp[ q ] /
-                                            newcls[ i ].exponent mod ord;
-                                
-                            fi;
-                        fi;
-                    od;
-                od;
-                
-                pos := Position( blist, false, pos );
-            od;
-
-        elif candidates <> false  then  # centralizer calculation
-            cls[ 1 ].candidates := cls[ 1 ].representative;
-            if cent( cls[ 1 ], N, L )  then
-                cls := CentralStepClEANS( H, U, N, cls[ 1 ] );
+            i:=PositionSorted(cl.candidates, c);
+            if  i > Length(cl.candidates)
+               or cl.candidates[i]<>c then
+              AddSet(cl.candidates, c);
+              InsertElmList(team, i, [q]);
             else
-                cls := GeneralStepClEANS( H, U, N, cls[ 1 ] );
+              Add(team[i], q);
             fi;
-            opr := opr * cls[ 1 ].operator;
-            
-        elif mode mod 2 = 1  then  # rational classes
-            newcls := [  ];
-            for cl  in cls  do
-                if IsBound( cl.power )  then  # construct the power tree
-                    cl.representative := PcElementByExponents( mK,
-                        ExponentsOfPcElement( mK, cl.representative ) );
-                    cl.power.representative := PcElementByExponents( mK,
-                        ExponentsOfPcElement( mK, cl.power.representative ) );
-                fi;
-                new := CentralStepRatClPGroup( H, N, mK, mL, cl );
-                ord := OrderModK( new[ 1 ].representative, mL );
-                if     ord <= limit.order
-                   and (    limit.size = 0
-                         or limit.size mod Size( new[ 1 ] ) = 0 )  then
-                    if IsBound( cl.power )  then  # construct the power tree
-                      if ord = 1  then
-                        power := cl.power;
-                      else
-                        cl.power.candidates := [ ( new[1].representative ^
-                            cl.power.operator ) ^ (p*cl.power.exponent) ];
-                        power := CentralStepRatClPGroup( H, N, mK, mL,
-                                         cl.power )[ 1 ];
-                        power.operator := cl.power.operator
-                                           * power.operator;
-                        power.exponent := cl.power.exponent
-                                           / power.exponent mod ord;
-                      fi;
-                      for c  in new  do
-                        c.power := power;
-                      od;
-                    fi;
-                    Append( newcls, new );
-                fi;
-            od;
-            cls := newcls;
-            
-	else
-	  newcls := [  ];
-	  for cl  in cls  do
-	    if cent( cl, N, L )  then
-		news:=CentralStepClEANS( H, U, N, cl );
-	    else
-		news:=GeneralStepClEANS( H, U, N, cl );
-	    fi;
-	    Assert(1,ForAll(news,
-	                    i->ForAll(GeneratorsOfGroup(i.centralizer),
-			    j->Comm(i.representative,j) in eas[step])));
-	    Append(newcls,news);
-	  od;
-	  cls := newcls;
-	fi;
-    od;
-
-    if mode = 4  then  # test conjugacy of two elements
-        if cls[ 1 ].representative <> cls[ 2 ].representative  then
-            return fail;
-        else
-            return opr[ 1 ] / opr[ 2 ];
-        fi;
-    elif     candidates <> false
-         and not IsIdentical( FamilyObj( U ), FamilyObj( candidates ) )  then
-        # centralizer calculation
-        return ConjugateSubgroup( cls[ 1 ].centralizer, opr ^ -1 );
-    fi;
-    
-    if candidates <> false  then  # add operators (and exponents)
-        for i  in [ 1 .. Length( cls ) ]  do
-            cls[ i ].operator := opr[ i ];
-            if mode mod 2 = 1  then  # rational classes
-                cls[ i ].exponent := exp[ i ];
-            fi;
+            blist[q]:=true;
+          fi;
+          q:=Position(blist, false, q);
         od;
+
+        # Now   <cl> is   a  class  modulo  <K>  (possibly   with
+        # `<cl>.candidates'  a list of  elements  mapping  into  this
+        # class modulo <K>). Let <newcls>  be  a list of all  classes
+        # modulo <L> that  map to <cl>  modulo <K>  (resp. a list  of
+        # classes to which   the list `<cl>.candidates'   maps modulo
+        # <K>,  together  with   `operator's and   `exponent's  as in
+        # (c^o^e=r)).
+        if mode mod 2=1 then  # rational classes
+          newcls:=CentralStepRatClPGroup(home, H, N, mK, mL, cl);
+        elif cent(cl, N, L) then
+          newcls:=CentralStepClEANS(home,H, G, N, cl);
+        else
+          newcls:=GeneralStepClEANS(home, H, G, N, cl);
+        fi;
+        
+        # Update <cls>, <opr> and <exp>.
+        for i  in [1 .. Length(team)]  do
+          for q  in team[i]  do
+            cls[q]:=newcls[i];
+            opr[q]:=opr[q] * newcls[i].operator;
+            if mode mod 2=1 then  # rational classes
+              ord:=OrderModK(cls[q].representative, mL);
+              if ord<>1 then
+
+                # For  historical  reasons,   the `exponent's
+                # returns by `CentralStepRatClPGroup' are the
+                # inverses of what we need.
+                exp[q]:=exp[q] /
+                      newcls[i].exponent mod ord;
+                
+              fi;
+            fi;
+          od;
+        od;
+        
+        pos:=Position(blist, false, pos);
+      od;
+
+    elif mode mod 2=1 then  # rational classes
+      newcls:=[];
+      for cl  in cls  do
+        if IsBound(cl.power) then  # construct the power tree
+          cl.representative:=PcElementByExponents(mK,
+            ExponentsOfPcElement(mK, cl.representative));
+          cl.power.representative:=PcElementByExponents(mK,
+            ExponentsOfPcElement(mK, cl.power.representative));
+        fi;
+        new:=CentralStepRatClPGroup(home, G, N, mK, mL, cl);
+        ord:=OrderModK(new[1].representative, mL);
+
+#  if   ord <= limit.order
+#   and ( limit.size=0
+#       or limit.size mod Size(new[1])=0) then
+
+        if IsBound(cl.power) then  # construct the power tree
+          if ord=1 then
+          power:=cl.power;
+          else
+          cl.power.candidates:=[(new[1].representative ^
+            cl.power.operator) ^ (p*cl.power.exponent)];
+          power:=CentralStepRatClPGroup(home, G, N, mK, mL,
+                   cl.power)[1];
+          power.operator:=cl.power.operator
+                     * power.operator;
+          power.exponent:=cl.power.exponent
+                     / power.exponent mod ord;
+          fi;
+          for c  in new  do
+          c.power:=power;
+          od;
+        fi;
+        Append(newcls, new);
+
+# fi;
+      od;
+      cls:=newcls;
+      
+    else
+      newcls:=[];
+      for cl  in cls  do
+
+	if consider=true or
+	  consider(cl.representative,cl.centralizer,K,L) 
+	  then
+	  if cent(cl, N, L) then
+	    news:=CentralStepClEANS(home,G, G, N, cl);
+	  else
+	    news:=GeneralStepClEANS(home, G, G, N, cl);
+	  fi;
+	  Assert(1,ForAll(news,
+		  i->ForAll(GeneratorsOfGroup(i.centralizer),
+		  j->Comm(i.representative,j) in eas[step])));
+	  Append(newcls,news);
+        fi;
+
+      od;
+      cls:=newcls;
     fi;
-    return cls;
-end;
+
+    if InfoLevel(InfoClasses)>1 then
+      c:=Collected(List(cls,i->Size(i.centralizer)));
+      c:=Concatenation(c,List(divi,i->[i,0])); # to cope with `First'
+      Info(InfoClasses,2,List(divi,i->First(c,j->j[1]=i)[2]));
+    fi;
+  od;
+
+  if mode=4 then  # test conjugacy of two elements
+    if cls[1].representative<>cls[2].representative then
+      return fail;
+    else
+      return opr[1] / opr[2];
+    fi;
+  fi;
+  
+  if candidates<>false then  # add operators (and exponents)
+    for i  in [1 .. Length(cls)]  do
+      cls[i].operator:=opr[i];
+      if mode mod 2=1 then  # rational classes
+        cls[i].exponent:=exp[i];
+      fi;
+    od;
+  fi;
+  return cls;
+end);
+
+InstallGlobalFunction(CentralizerSizeLimitConsiderFunction,function(sz)
+  return function(rep,cen,K,L)
+           return Index(cen,K)<=sz;
+	  end;
+end);
+    
+#    #############################################################################
+#    ##
+#    #F  ClassesSolvableGroup( <H>, <U>, <limit>, <mode> [, <cands> ] )  . . . . .
+#    ##
+#    ##  In this function  classes    are described by  records  with   components
+#   #     ##  `representative', `centralizer', `galoisGroup' (for rational classes). If
+#    ##  <candidates>  are  given,    their   classes  will   have  a    canonical
+#    ##  `representative' and additional components `operator' and `exponent' (for
+#    ##  rational classes) such that
+#    ##      (candidate ^ operator) ^ exponent = representative.         (c^o^e=r)
+#    ##
+#    InstallGlobalFunction( ClassesSolvableGroup, function( arg )
+#        local  G,  home,    # the supergroup (of <H> and <U>), the home pcgs
+#               U,           # group in which to find the <H>-classes
+#    	   Upcgs,	# induced Pcgs of U
+#               H,  Hp,      # group operating on <U>, a pcgs for <H>
+#               limit,       # limit on order of representatives
+#               mode,        # LSB: ratCl | power | test :MSB
+#               candidates,  # candidates to be replaced by their canonical reps.
+#               eas,         # elementary abelian series in <G> through <U>
+#               step,        # counter looping over <eas>
+#               K,    L,     # members of <eas>
+#               Kp,mK,Lp,mL, # induced and modulo pcgs's
+#               KcapH,LcapH, # pcgs's of intersections with <H>
+#               N,   cent,   # elementary abelian factor, for affine action
+#               cls, newcls, # classes in range/source of homomorphism
+#    	   news,	# new classes obtained in step
+#               cl,          # class looping over <cls>
+#               opr, exp,    # (candidates[i]^opr[i])^exp[i]=cls[i].representative
+#               team,        # team of candidates with same image modulo <K>
+#               blist,pos,q, # these control grouping of <cls> into <team>s
+#               p,           # prime dividing $|G|$
+#               ord,         # order of a rational class modulo <L>
+#               new, power,  # auxiliary variables for determination of power tree
+#               c,  i;       # loop variables
+#        
+#        # Get the arguments.
+#        H     := arg[ 1 ];  # the operating group
+#        U     := arg[ 2 ];  # the group on which <H> acts by conjugation
+#        if H = U  then  G := H;
+#                  else  G := ClosureGroup( H, U );  fi;
+#        limit := arg[ 3 ];     # if limit <> true, restricts the classes computed:
+#        if limit = true  then  # only classes will be output which have
+#            limit := rec( order := infinity,  # rep. order dividing `order'
+#                           size := 0 );       # class size dividing `size'
+#        fi;
+#        mode  := arg[ 4 ];  # explained below whenever it appears
+#    
+#        # <candidates> is a list  of elements whose classes  will be output  (but
+#        # with canonical representatives), see comment  above. Or <candidates> is
+#        # just one element, from whose output class the  centralizer will be read
+#        # off.
+#        if Length( arg ) = 5  then  candidates := arg[ 5 ];
+#                              else  candidates := false;     fi;
+#        
+#        # Treat the case of a trivial group.
+#        if IsTrivial( U )  then
+#            if mode = 4  then  # test conjugacy of two elements
+#                return One( U );
+#            elif mode mod 2 = 1  then  # rational classes
+#                cl := rec( representative := One( G ),
+#                              centralizer := G,
+#                              galoisGroup := GroupByPrimeResidues( [  ], 1 ) );
+#                cl.galoisGroup!.type := 3;
+#                cl.galoisGroup!.operators := [  ];
+#                cl.isCentral := true;
+#                if mode mod 4 = 3  then  # construct the power tree
+#                    cl.power          := rec( representative := One( G ) );
+#                    cl.power.operator := One( G );
+#                    cl.power.exponent := 1;
+#                fi;
+#            else
+#                cl := rec( representative := One( H ),
+#                              centralizer := H );
+#            fi;
+#            if IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) )  then
+#                cls := List( candidates, c -> cl );
+#            elif candidates <> false  then
+#                return cl.centralizer;
+#            else
+#                cls := [ cl ];
+#            fi;
+#            return cls;
+#        fi;
+#        
+#        # Calculate a (central)  elementary abelian series  with all pcgs induced
+#        # w.r.t. <home>.
+#        if not IsPermGroup( G )  then
+#            HomePcgs( G );
+#        fi;
+#        if IsPrimePowerInt( Size( G ) )  then
+#            p := FactorsInt( Size( G ) )[ 1 ];
+#            eas := PCentralSeries( G, p );
+#            cent := ReturnTrue;
+#        elif mode mod 2 = 1  then  # rational classes
+#            Error( "<G> must be a p-group" );
+#        else
+#            eas := ElementaryAbelianSeries( G );
+#            cent := function( cl, N, L )
+#                return ForAll( N, k -> ForAll
+#                  ( InducedPcgsWrtHomePcgs( cl.centralizer ),
+#    #T  was: Only those elements form the induced PCGS. The subset seemed to
+#    #T enforce taking only the elements up, but the ordering of the series used
+#    #T may be different then the ordering in the PCGS. So this will fail. AH
+#    #T one might pick the right ones, but this would be almost the same work.
+#    #T { [ 1 .. Length( InducedPcgsWrtHomePcgs( cl.centralizer ) )
+#    #T - Length( InducedPcgsWrtHomePcgs( L ) ) ] },
+#                       c -> Comm( k, c ) in L ) );
+#            end;
+#        fi;
+#        G := eas[ 1 ];
+#        home := HomePcgs( G );
+#        Upcgs:=InducedPcgsByGeneratorsNC(home,GeneratorsOfGroup(U));
+#        H := AsSubgroup( G, H );
+#        Hp := InducedPcgsByGeneratorsNC(home, GeneratorsOfGroup(H));
+#    
+#        # Initialize the algorithm for the trivial group.
+#        step := 1;
+#        while IsSubset( eas[ step + 1 ], U )  do
+#            step := step + 1;
+#        od;
+#        L  := eas[ step ];
+#        Lp := InducedPcgsByGeneratorsNC(home,GeneratorsOfGroup( L ));
+#        if not (G=H)  then
+#            LcapH := NormalIntersectionPcgs( home, Hp, Lp );
+#        fi;
+#        if    mode mod 2 = 1  # rational classes
+#           or IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) ) then
+#            mL := ModuloPcgsByPcSequenceNC( home, Upcgs, Lp );
+#        fi;
+#        if     candidates <> false  # centralizer calculation
+#           and not IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) )  then
+#            cl := rec( representative := candidates,
+#                          centralizer := H );
+#            opr := One( U );
+#        elif mode mod 2 = 1  then  # rational classes
+#            cl := rec( representative := One( U ),
+#                          centralizer := H,
+#                          galoisGroup := GroupByPrimeResidues( [  ], 1 ) );
+#            cl.galoisGroup!.type := 3;
+#            cl.galoisGroup!.operators := [  ];
+#            if mode mod 4 = 3  then  # construct the power tree
+#                cl.power          := rec( representative := One( U ) );
+#                cl.power.operator := One( U );
+#                cl.power.exponent := 1;
+#                cl.power.kernel   := false;
+#            fi;
+#        else
+#            cl := rec( representative := One( U ),
+#                          centralizer := H );
+#        fi;
+#        if IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) )  then
+#            cls := List( candidates, c -> cl );
+#            opr := List( candidates, c -> One( U ) );
+#            exp := ListWithIdenticalEntries( Length( candidates ), 1 );
+#        else
+#            cls := [ cl ];
+#        fi;
+#        
+#        # Now go back through the factors by all groups in the elementary abelian
+#        # series.
+#        for step  in [ step + 1 .. Length( eas ) ]  do
+#    
+#            # We apply the homomorphism principle to the homomorphism G/L -> G/K.
+#            # The  actual   computations  are all    done   in <G>,   factors are
+#            # represented by modulo pcgs.
+#            K  := L;
+#            Kp := Lp;
+#            L  := eas[ step ];
+#            Lp := InducedPcgsByGeneratorsNC(home, GeneratorsOfGroup(L) );
+#            N  := Kp mod Lp;  # modulo pcgs representing the kernel
+#    
+#    	#T What is this? Obviously it is needed somewhere, but it is
+#    	#T certainly not good programming style. AH
+#            SetFilterObj( N, IsPcgs );
+#    
+#            if Size( G ) <> Size( H )  then
+#                KcapH   := LcapH;
+#                LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
+#                N!.capH := KcapH mod LcapH;
+#    	    #T See above
+#                SetFilterObj( N!.capH, IsPcgs );
+#            else
+#                N!.capH := N;
+#            fi;
+#            
+#            # Rational classes or identification of classes.
+#            if    mode mod 2 = 1
+#               or IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) ) then
+#                mK := mL;
+#                mL := ModuloPcgsByPcSequenceNC( home, Upcgs, Lp );
+#            fi;
+#            
+#            # Identification of classes.
+#            if IsIdenticalObj( FamilyObj( G ), FamilyObj( candidates ) )  then
+#                if     mode = 4  # test conjugacy of two elements
+#                   and not cls[ 1 ].representative /
+#                           cls[ 2 ].representative in K  then
+#                    return fail;
+#                fi;
+#                
+#                blist := BlistList( [ 1 .. Length( cls ) ], [  ] );
+#                pos := Position( blist, false );
+#                while pos <> fail  do
+#                    
+#                    # Find a team of candidates with same image under <modK>.
+#                    cl := cls[ pos ];
+#                    cl.representative := PcElementByExponents( mK,
+#                        ExponentsOfPcElement( mK, cl.representative ) );
+#                    cl.candidates := [  ];
+#                    team := [  ];
+#                    q := pos;
+#                    while q <> fail  do
+#                        if cls[ q ].representative /
+#                           cl.representative in K  then
+#                            c := candidates[ q ] ^ opr[ q ];
+#                            if mode mod 2 = 1  then  # rational classes
+#                                c := c ^ exp[ q ];
+#                            fi;
+#                            i := PositionSorted( cl.candidates, c );
+#                            if    i > Length( cl.candidates )
+#                               or cl.candidates[ i ] <> c  then
+#                                AddSet( cl.candidates, c );
+#                                InsertElmList( team, i, [ q ] );
+#                            else
+#                                Add( team[ i ], q );
+#                            fi;
+#                            blist[ q ] := true;
+#                        fi;
+#                        q := Position( blist, false, q );
+#                    od;
+#    
+#                    # Now   <cl> is   a    class  modulo  <K>  (possibly     with
+#                    # `<cl>.candidates'  a list of  elements  mapping  into  this
+#                    # class modulo <K>). Let <newcls>  be  a list of all  classes
+#                    # modulo <L> that  map to <cl>  modulo <K>  (resp. a list  of
+#                    # classes to which   the list `<cl>.candidates'   maps modulo
+#                    # <K>,  together  with   `operator's and   `exponent's  as in
+#                    # (c^o^e=r)).
+#                    if mode mod 2 = 1  then  # rational classes
+#                        newcls := CentralStepRatClPGroup( H, N, mK, mL, cl );
+#                    elif cent( cl, N, L )  then
+#                        newcls := CentralStepClEANS( H, U, N, cl );
+#                    else
+#                        newcls := GeneralStepClEANS( H, U, N, cl );
+#                    fi;
+#                    
+#                    # Update <cls>, <opr> and <exp>.
+#                    for i  in [ 1 .. Length( team ) ]  do
+#                        for q  in team[ i ]  do
+#                            cls[ q ] := newcls[ i ];
+#                            opr[ q ] := opr[ q ] * newcls[ i ].operator;
+#                            if mode mod 2 = 1  then  # rational classes
+#                                ord := OrderModK( cls[ q ].representative, mL );
+#                                if ord <> 1  then
+#    
+#                                    # For  historical  reasons,   the `exponent's
+#                                    # returns by `CentralStepRatClPGroup' are the
+#                                    # inverses of what we need.
+#                                    exp[ q ] := exp[ q ] /
+#                                                newcls[ i ].exponent mod ord;
+#                                    
+#                                fi;
+#                            fi;
+#                        od;
+#                    od;
+#                    
+#                    pos := Position( blist, false, pos );
+#                od;
+#    
+#            elif candidates <> false  then  # centralizer calculation
+#                cls[ 1 ].candidates := cls[ 1 ].representative;
+#                if cent( cls[ 1 ], N, L )  then
+#                    cls := CentralStepClEANS( H, U, N, cls[ 1 ] );
+#                else
+#                    cls := GeneralStepClEANS( H, U, N, cls[ 1 ] );
+#                fi;
+#                opr := opr * cls[ 1 ].operator;
+#                
+#            elif mode mod 2 = 1  then  # rational classes
+#                newcls := [  ];
+#                for cl  in cls  do
+#                    if IsBound( cl.power )  then  # construct the power tree
+#                        cl.representative := PcElementByExponents( mK,
+#                            ExponentsOfPcElement( mK, cl.representative ) );
+#                        cl.power.representative := PcElementByExponents( mK,
+#                            ExponentsOfPcElement( mK, cl.power.representative ) );
+#                    fi;
+#                    new := CentralStepRatClPGroup( H, N, mK, mL, cl );
+#                    ord := OrderModK( new[ 1 ].representative, mL );
+#                    if     ord <= limit.order
+#                       and (    limit.size = 0
+#                             or limit.size mod Size( new[ 1 ] ) = 0 )  then
+#                        if IsBound( cl.power )  then  # construct the power tree
+#                          if ord = 1  then
+#                            power := cl.power;
+#                          else
+#                            cl.power.candidates := [ ( new[1].representative ^
+#                                cl.power.operator ) ^ (p*cl.power.exponent) ];
+#                            power := CentralStepRatClPGroup( H, N, mK, mL,
+#                                             cl.power )[ 1 ];
+#                            power.operator := cl.power.operator
+#                                               * power.operator;
+#                            power.exponent := cl.power.exponent
+#                                               / power.exponent mod ord;
+#                          fi;
+#                          for c  in new  do
+#                            c.power := power;
+#                          od;
+#                        fi;
+#                        Append( newcls, new );
+#                    fi;
+#                od;
+#                cls := newcls;
+#                
+#    	else
+#    	  newcls := [  ];
+#    	  for cl  in cls  do
+#    	    if cent( cl, N, L )  then
+#    		news:=CentralStepClEANS( H, U, N, cl );
+#    	    else
+#    		news:=GeneralStepClEANS( H, U, N, cl );
+#    	    fi;
+#    	    Assert(1,ForAll(news,
+#    	                    i->ForAll(GeneratorsOfGroup(i.centralizer),
+#    			    j->Comm(i.representative,j) in eas[step])));
+#    	    Append(newcls,news);
+#    	  od;
+#    	  cls := newcls;
+#    	fi;
+#        od;
+#    
+#        if mode = 4  then  # test conjugacy of two elements
+#            if cls[ 1 ].representative <> cls[ 2 ].representative  then
+#                return fail;
+#            else
+#                return opr[ 1 ] / opr[ 2 ];
+#            fi;
+#        elif     candidates <> false
+#             and not IsIdenticalObj(FamilyObj(U),FamilyObj(candidates)) then
+#            # centralizer calculation
+#            return ConjugateSubgroup( cls[ 1 ].centralizer, opr ^ -1 );
+#        fi;
+#        
+#        if candidates <> false  then  # add operators (and exponents)
+#            for i  in [ 1 .. Length( cls ) ]  do
+#                cls[ i ].operator := opr[ i ];
+#                if mode mod 2 = 1  then  # rational classes
+#                    cls[ i ].exponent := exp[ i ];
+#                fi;
+#            od;
+#        fi;
+#        return cls;
+#    end );
 
 #############################################################################
 ##
@@ -1025,10 +1432,10 @@ InstallMethod( OperatorOfExternalSet, true,
     local   G,  rep;
     
     G := ActingDomain( cl );
-    if not IsPcgsComputable( G )  then
+    if not CanEasilyComputePcgs( G )  then
         TryNextMethod();
     fi;
-    rep := ClassesSolvableGroup( G, G, true, 0, [ Representative( cl ) ] )
+    rep := ClassesSolvableGroup( G, 0,rec(candidates:=[ Representative(cl)]) )
            [ 1 ];
     if not HasStabilizerOfExternalSet( cl )  then
         SetStabilizerOfExternalSet( cl,
@@ -1038,14 +1445,6 @@ InstallMethod( OperatorOfExternalSet, true,
     return rep.operator;
 end );
         
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
-
 #############################################################################
 ##
 #E  claspcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

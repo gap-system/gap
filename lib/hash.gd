@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  Hash tables module, declarations part. 
 ##
@@ -26,7 +27,7 @@ Revision.hash_gd :=
 ##  We cannot imply IsMutable because Immutable may take it away at any time
 ##
 
-IsExtensibleGeneralMapping := NewCategory("IsExtensibleGeneralMapping", 
+DeclareCategory("IsExtensibleGeneralMapping", 
                                       IsNonSPGeneralMapping 
                                       and IsFinite 
                                       and IsCopyable);	
@@ -39,7 +40,7 @@ IsExtensibleGeneralMapping := NewCategory("IsExtensibleGeneralMapping",
 ##                                     they can be deleted using DeleteImage 
 ##
 
-IsFlexibleGeneralMapping := NewCategory("IsFlexibleGeneralMapping",
+DeclareCategory("IsFlexibleGeneralMapping",
                                                IsExtensibleGeneralMapping);
 
 #############################################################################
@@ -64,7 +65,7 @@ IsFlexiblePartialMapping := IsFlexibleGeneralMapping and IsSingleValued;
 ##  by representation and <srcpt> has an image already
 ##
 
-AddImage := NewOperation("AddImage", 
+DeclareOperation("AddImage", 
                     [ IsExtensibleGeneralMapping and IsMutable, 
                       IsObject, IsObject ]);
 
@@ -76,8 +77,7 @@ AddImage := NewOperation("AddImage",
 ##  This makes two assumptions -- firstly that <srcpt> and <im> are in the 
 ##  source and  range of the map, and secondly that if <map> is required to
 ##  be single-valued then <srcpt> currently has no images under <map>
-
-AddImageNC := NewOperation("AddImageNC", 
+DeclareOperation("AddImageNC", 
                       [ IsExtensibleGeneralMapping and IsMutable, 
                         IsObject, IsObject ]);
 
@@ -86,21 +86,9 @@ AddImageNC := NewOperation("AddImageNC",
 #O  SetImage( <map>, <srcpt>, <im> )  set the image of <srcpt> under the 
 ##                                     extensible single-valued mapping <map>
 ##
-##
-
-SetImage := NewOperation("SetImage", 
-                    [ IsExtensiblePartialMapping and IsMutable, 
-                      IsObject, IsObject ]);
-
-#############################################################################
-##
-#O  SetImageNC( <map>, <srcpt>, <im> )  set the image of <srcpt> under the 
-##                                     extensible single-valued mapping <map>
-##
 ##  This assumes that <srcpt> and <im> are in the source and range 
 ##  respectively
-
-SetImage := NewOperation("SetImage", 
+DeclareOperation("SetImage", 
                     [ IsExtensiblePartialMapping and IsMutable, 
                       IsObject, IsObject ]);
 
@@ -111,8 +99,7 @@ SetImage := NewOperation("SetImage",
 ##
 ##  Raises an error if the pair is not present
 ##
-
-DeleteImage := NewOperation("DeleteImage",  
+DeclareOperation("DeleteImage",  
                        [ IsFlexibleGeneralMapping and IsMutable, 
                          IsObject, IsObject ]);
 
@@ -122,7 +109,7 @@ DeleteImage := NewOperation("DeleteImage",
 ##                                          flexible single-values mapping
 ##
 
-UnSetImage := NewOperation("UnSetImage", 
+DeclareOperation("UnSetImage", 
                       [IsFlexiblePartialMapping and IsMutable, IsObject]);
 
 #############################################################################
@@ -150,7 +137,7 @@ UnSetImage := NewOperation("UnSetImage",
 #T  Supply a selection of general-purpose hash functions
 ##
   
-HashTable := NewOperation("HashTable", [IsCollection, IsCollection, IsFunction]);
+DeclareOperation("HashTable", [IsCollection, IsCollection, IsFunction]);
 
 #############################################################################
 ##
@@ -163,7 +150,7 @@ HashTable := NewOperation("HashTable", [IsCollection, IsCollection, IsFunction])
 ##  See HashTable for the specification of the arguments
 ##
 
-ShrinkableHashTable := NewOperation("ShrinkableHashTable", 
+DeclareOperation("ShrinkableHashTable", 
                                [IsCollection, IsCollection, IsFunction]);
 
 #############################################################################
@@ -177,7 +164,7 @@ ShrinkableHashTable := NewOperation("ShrinkableHashTable",
 ##  See HashTable for the specification of the arguments
 ##
 
-SingleValuedHashTable := NewOperation("SingleValuedHashTable", 
+DeclareOperation("SingleValuedHashTable", 
                                [IsCollection, IsCollection, IsFunction]);
 
 #############################################################################
@@ -191,7 +178,7 @@ SingleValuedHashTable := NewOperation("SingleValuedHashTable",
 ##  See HashTable for the specification of the arguments
 ##
 
-ShrinkableSingleValuedHashTable := NewOperation("ShrinkableSingleValuedHashTable", 
+DeclareOperation("ShrinkableSingleValuedHashTable", 
                                [IsCollection, IsCollection, IsFunction]);
 
 

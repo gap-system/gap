@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the generic operations for cosets.
 ##
@@ -15,14 +16,14 @@ Revision.csetgrp_gi:=
 ##
 #R  IsRightCosetDefaultRep
 ##
-IsRightCosetDefaultRep := NewRepresentation( "IsRightCosetDefaultRep",
+DeclareRepresentation( "IsRightCosetDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset, [] );
 
 #############################################################################
 ##
 #R  IsRightCosetEnumerator
 ##
-IsRightCosetEnumerator := NewRepresentation( "IsRightCosetEnumerator",
+DeclareRepresentation( "IsRightCosetEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "groupEnumerator", "representative" ] );
 
@@ -37,7 +38,7 @@ InstallMethod( HomeEnumerator, true, [ IsRightCoset ], 0,
     return enum;
 end );
 
-InstallMethod( \[\], true, [ IsRightCosetEnumerator, IsPosRat and IsInt ], 0,
+InstallMethod( \[\], true, [ IsRightCosetEnumerator, IsPosInt ], 0,
     function( enum, pos )
     return enum!.groupEnumerator[ pos ] * enum!.representative;
 end );
@@ -53,7 +54,7 @@ end );
 ##
 #R  IsDoubleCosetDefaultRep
 ##
-IsDoubleCosetDefaultRep := NewRepresentation( "IsDoubleCosetDefaultRep",
+DeclareRepresentation( "IsDoubleCosetDefaultRep",
   IsComponentObjectRep and IsAttributeStoringRep and IsDoubleCoset, [] );
 
 InstallMethod(ComputedAscendingChains,"init",true,[IsGroup],0,G->[]);
@@ -62,7 +63,7 @@ InstallMethod(ComputedAscendingChains,"init",true,[IsGroup],0,G->[]);
 ##
 #F  AscendingChain(<G>,<U>) . . . . . . .  chain of subgroups G=G_1>...>G_n=U
 ##
-AscendingChain := function(G,U)
+InstallGlobalFunction( AscendingChain, function(G,U)
 local c,i;
   if not IsSubgroup(G,U) then
     Error("not subgroup");
@@ -76,7 +77,7 @@ local c,i;
   else
     return c[i][2];
   fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -86,7 +87,7 @@ end;
 ##  maximal, it returns fail. This is done by finding minimal blocks for
 ##  the operation of G on the Right Cosets of U.
 ##
-IntermediateGroup := function(G,U)
+InstallGlobalFunction( IntermediateGroup, function(G,U)
 local o,b,img;
 
   if U=G then
@@ -102,7 +103,7 @@ local o,b,img;
     b:=PreImages(o,b);
     return b;
   fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -186,7 +187,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
   return c;
 end;
 
-InstallMethod( AscendingChainOp, "generic", IsIdentical, [IsGroup,IsGroup],0,
+InstallMethod( AscendingChainOp, "generic", IsIdenticalObj, [IsGroup,IsGroup],0,
 function(G,U)
   return RefinedChain(G,[U,G]);
 end);
@@ -214,7 +215,7 @@ local d;
   return d;
 end);
 
-InstallMethod(\=,"DoubleCosets",IsIdentical,[IsDoubleCoset,IsDoubleCoset],0,
+InstallMethod(\=,"DoubleCosets",IsIdenticalObj,[IsDoubleCoset,IsDoubleCoset],0,
 function(a,b)
    return LeftActingDomain(a)=LeftActingDomain(b) and
           RightActingDomain(a)=RightActingDomain(b) and
@@ -247,6 +248,25 @@ local u,v,o,i,j,img;
   return Set(o);
 end);
 
+InstallMethod(\in,"double coset",IsElmsColls,
+  [IsMultiplicativeElementWithInverse,IsDoubleCoset],0,
+function(e,d)
+  return CanonicalRightCosetElement(LeftActingDomain(d),e)
+        in RepresentativesContainedRightCosets(d);
+end);
+
+InstallMethod(Size,"double coset",true,[IsDoubleCoset],0,
+function(d)
+  return
+  Size(LeftActingDomain(d))*Length(RepresentativesContainedRightCosets(d));
+end);
+
+InstallMethod(AsList,"double coset",true,[IsDoubleCoset],0,
+function(d)
+  return Union(List(RepresentativesContainedRightCosets(d),
+                    i->RightCoset(LeftActingDomain(d),i)));
+end);
+
 RightCosetCanonicalRepresentativeDeterminator := 
 function(U,a)
   return [CanonicalRightCosetElement(U,a)];
@@ -260,8 +280,7 @@ local d;
 
   d:=Objectify(RightCosetsDefaultType(FamilyObj(U)),rec());
   SetActingDomain(d,U);
-  # AH
-  # SetFunctionOperation(d,OnLeft);
+  SetFunctionOperation(d,OnLeftInverse);
   SetRepresentative(d,g);
   SetSize(d,Size(U));
   SetCanonicalRepresentativeDeterminatorOfExternalSet(d,
@@ -274,7 +293,7 @@ function(d)
   Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
 end);
 
-InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+InstallMethod(\=,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,
 function(a,b)
   return ActingDomain(a)=ActingDomain(b) and
          Representative(a)/Representative(b) in ActingDomain(a);
@@ -286,7 +305,7 @@ function(a,g)
     return RightCoset( ActingDomain( a ), Representative( a ) * g );
 end);
 
-InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+InstallMethod(\<,"RightCosets",IsIdenticalObj,[IsRightCoset,IsRightCoset],0,
 function(a,b)
   # this comparison is *NOT* necessarily equivalent to a comparison of the 
   # element lists!
@@ -297,19 +316,19 @@ function(a,b)
          <CanonicalRepresentativeOfExternalSet(b);
 end);
 
-DoubleCosets := function(G,U,V)
+InstallGlobalFunction( DoubleCosets, function(G,U,V)
   if not IsSubgroup(G,U) and IsSubgroup(G,V) then
     Error("not subgroups");
   fi;
   return DoubleCosetsNC(G,U,V);
-end;
+end );
 
-RightCosets := function(G,U)
+InstallGlobalFunction( RightCosets, function(G,U)
   if not IsSubgroup(G,U) then
     Error("not subgroups");
   fi;
   return RightCosetsNC(G,U);
-end;
+end );
 
 InstallMethod(CanonicalRightCosetElement,"generic",IsCollsElms,
   [IsGroup,IsObject],0,
@@ -474,32 +493,32 @@ end);
 #M  RightTransversal   generic
 ##
 InstallMethod(RightTransversalOp, "generic, use RightCosets",
-  IsIdentical,[IsGroup,IsGroup],0,
+  IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,U)
   return List(RightCosets(G,U),Representative);
 end);
 
-InstallMethod(RightCosetsNC,"generic: orbit",IsIdentical,
+InstallMethod(RightCosetsNC,"generic: orbit",IsIdenticalObj,
   [IsGroup,IsGroup],0,
 function(G,U)
   return Orbit(G,RightCoset(U,One(U)),OnRight);
 end);
 
 # methods for groups which have a better 'RightTransversal' function
-InstallMethod(RightCosetsNC,"perm groups, use RightTransversal",IsIdentical,
+InstallMethod(RightCosetsNC,"perm groups, use RightTransversal",IsIdenticalObj,
   [IsPermGroup,IsPermGroup],0,
 function(G,U)
   return List(RightTransversal(G,U),i->RightCoset(U,i));
 end);
 
-InstallMethod(RightCosetsNC,"pc groups, use RightTransversal",IsIdentical,
+InstallMethod(RightCosetsNC,"pc groups, use RightTransversal",IsIdenticalObj,
   [IsPcGroup,IsPcGroup],0,
 function(G,U)
   return List(RightTransversal(G,U),i->RightCoset(U,i));
 end);
 
 InstallMethod(RightCosetsNC,"Niceomorphism groups, use RightTransversal",
-  IsIdentical, [IsGroup and IsHandledByNiceMonomorphism,
+  IsIdenticalObj, [IsGroup and IsHandledByNiceMonomorphism,
   IsGroup and IsHandledByNiceMonomorphism],0,
 function(G,U)
   return List(RightTransversal(G,U),i->RightCoset(U,i));

@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains those functions which mainly deal with characters.
 ##
@@ -35,7 +36,7 @@ InstallMethod( DecompositionMatrixAttr,
 #F  DecompositionMatrix( <modtbl> )
 #F  DecompositionMatrix( <modtbl>, <blocknr> )
 ##
-DecompositionMatrix := function( arg )
+InstallGlobalFunction( DecompositionMatrix, function( arg )
 
     local modtbl,    # Brauer character table, first argument
           ordtbl,    # corresponding ordinary table
@@ -52,7 +53,7 @@ DecompositionMatrix := function( arg )
       blocknr := arg[2];
       block   := BlocksInfo( modtbl );
 
-      if     IsInt( blocknr ) and IsPosRat( blocknr )
+      if     IsPosInt( blocknr )
          and blocknr <= Length( block ) then
         block:= block[ blocknr ];
       else
@@ -76,7 +77,7 @@ DecompositionMatrix := function( arg )
     else
       Error( "usage: DecompositionMatrix( <modmodtbl>[, <blocknr>] )" );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -84,7 +85,7 @@ end;
 #F  LaTeXStringDecompositionMatrix( <modtbl> )
 #F  LaTeXStringDecompositionMatrix( <modtbl>, <blocknr> )
 ##
-LaTeXStringDecompositionMatrix := function( arg )
+InstallGlobalFunction( LaTeXStringDecompositionMatrix, function( arg )
 
     local modtbl,    # Brauer character table, first argument
           blocknr,   # number of the block, second argument
@@ -174,7 +175,7 @@ LaTeXStringDecompositionMatrix := function( arg )
 
     # Return the result.
     return str;
-end;
+end );
 
 
 ###############################################################################
@@ -205,7 +206,7 @@ end;
 ##  $\overline{v} = \sum_{i=0}^{m-1} c_i \hat{y}^i$ over $GF(p)$, which
 ##  gives us $\overline{v} = \sum{i=0}^{m-1} c_i y^i$ in $GF( p^m )$.
 ##
-FrobeniusCharacterValue := function( value, p )
+InstallGlobalFunction( FrobeniusCharacterValue, function( value, p )
 
     local n,            # conductor of 'value'
           cf,           # canonical basis of 'CF(n)'
@@ -317,7 +318,7 @@ FrobeniusCharacterValue := function( value, p )
 
     # Return the Frobenius character value.
     return value;
-end;
+end );
 
 
 #############################################################################
@@ -326,7 +327,7 @@ end;
 ##
 InstallMethod( Tensored,
     "method for two lists of class functions",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsList and IsClassFunctionCollection,
       IsList and IsClassFunctionCollection ], 0,
     function( chars1, chars2 )
@@ -359,7 +360,7 @@ InstallOtherMethod( Tensored,
 
 InstallOtherMethod( Tensored,
     "method for two matrices",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMatrix, IsMatrix ], 0,
     function( chars1, chars2 )
     local i, j, k, nccl, tensored, single;
@@ -381,7 +382,7 @@ InstallOtherMethod( Tensored,
 #F  Symmetrisations( <tbl>, <characters>, <Sn> )
 #F  Symmetrisations( <tbl>, <characters>, <n> )
 ##
-Symmetrisations := function( tbl, characters, Sn )
+InstallGlobalFunction( Symmetrisations, function( tbl, characters, Sn )
 
     local i, j, l, n,
           tbl_powermap,     # computed power maps of 'tbl'
@@ -488,16 +489,14 @@ Symmetrisations := function( tbl, characters, Sn )
 
     # Return the symmetrizations.
     return symmetrisations;
-end;
-
-Symmetrizations := Symmetrisations;
+end );
 
 
 #############################################################################
 ##
 #F  SymmetricParts( <tbl>, <character>, <n> )
 ##
-SymmetricParts := function( tbl, characters, n )
+InstallGlobalFunction( SymmetricParts, function( tbl, characters, n )
 
     local i,
           j,
@@ -569,14 +568,14 @@ SymmetricParts := function( tbl, characters, n )
 
     # Return the symmetrizations.
     return symmetricparts;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  AntiSymmetricParts( <tbl>, <character>, <n> )
 ##
-AntiSymmetricParts := function( tbl, characters, n )
+InstallGlobalFunction( AntiSymmetricParts, function( tbl, characters, n )
 
     local i,
           j,
@@ -652,7 +651,7 @@ AntiSymmetricParts := function( tbl, characters, n )
 
     # Return the symmetrizations.
     return antisymmetricparts;
-end;
+end );
 
 
 #############################################################################
@@ -662,7 +661,7 @@ end;
 ##  the (parametrized) character $<character>^{<prime>-}$, defined by
 ##  $\chi^{p-}(g):= ( \chi(g)^p - \chi(g^p) ) / p$
 ##
-MinusCharacter := function( character, prime_powermap, prime )
+InstallGlobalFunction( MinusCharacter, function( character, prime_powermap, prime )
 
     local i, j, minuscharacter, diff, power;
 
@@ -701,7 +700,7 @@ MinusCharacter := function( character, prime_powermap, prime )
       fi;
     od;
     return minuscharacter;
-end;
+end );
 
 
 #############################################################################
@@ -753,7 +752,7 @@ end;
 ##  M51       = L51-L4-L31+L2             L51-L4
 ##  M6        = L6-L4                     L6
 ##
-RefinedSymmetrisations := function( tbl, chars, m, func )
+InstallGlobalFunction( RefinedSymmetrisations, function( tbl, chars, m, func )
 
     local tbl_powermap,           # computed power maps of 'tbl'
           i, classes, components,
@@ -867,14 +866,14 @@ RefinedSymmetrisations := function( tbl, chars, m, func )
     od;
 
     return components;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OrthogonalComponents( <tbl>, <chars>, <m> )
 ##
-OrthogonalComponents := function( tbl, chars, m )
+InstallGlobalFunction( OrthogonalComponents, function( tbl, chars, m )
     if     IsCharacterTable( tbl ) and IsList( chars )
        and IsInt( m ) and 1 < m and m < 7 then
       return RefinedSymmetrisations( tbl, chars, m,
@@ -883,14 +882,14 @@ OrthogonalComponents := function( tbl, chars, m )
       Error( "usage: OrthogonalComponents( <tbl>, <chars>, <m> ) with ",
              "integer 2 <= m <= 6" );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SymplecticComponents( <tbl>, <chars>, <m> )
 ##
-SymplecticComponents := function( tbl, chars, m )
+InstallGlobalFunction( SymplecticComponents, function( tbl, chars, m )
     if     IsCharacterTable( tbl ) and IsList( chars )
        and IsInt( m ) and 1 < m and m < 6 then
       return RefinedSymmetrisations( tbl, chars, m,
@@ -899,7 +898,7 @@ SymplecticComponents := function( tbl, chars, m )
       Error( "usage: SymplecticComponents( <tbl>, <chars>, <m> ) with ",
              "integer 2 <= m <= 5" );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -934,7 +933,7 @@ end;
 ##  lists, where 'block[i] = j' means that the 'i'--th character lies in the
 ##  'j'--th block, and 'defect[j]' is the defect of the 'j'--th block.
 ##
-PrimeBlocks := function( tbl, prime )
+InstallGlobalFunction( PrimeBlocks, function( tbl, prime )
 
     local i, j,
           characters,
@@ -960,7 +959,7 @@ PrimeBlocks := function( tbl, prime )
       Error( "<tbl> must be an ordinary character table, <prime> a prime" );
     fi;
 
-    characters:= Irr( tbl );
+    characters:= List( Irr( tbl ), ValuesOfClassFunction );
     nccl:= Length( characters[1] );
     classes:= SizesConjugacyClasses( tbl );
     tbl_orders:= OrdersClassRepresentatives( tbl );
@@ -1098,7 +1097,7 @@ PrimeBlocks := function( tbl, prime )
 
     # Return the result.
     return primeblocks;
-end;
+end );
 
 
 #############################################################################
@@ -1120,7 +1119,7 @@ end;
 ##  resp.
 ##  $'<scprmatrix>[i][j] = scpr( <tbl>, <reducibles>[j], <reducibles2>[i] )'$.
 ##
-IrreducibleDifferences := function( arg )
+InstallGlobalFunction( IrreducibleDifferences, function( arg )
 
     local i, j, x, tbl, reducibles, irreducibledifferences, scprmatrix,
           reducibles2, diff, norms, norms2;
@@ -1186,7 +1185,7 @@ IrreducibleDifferences := function( arg )
       od;
     fi;
     return irreducibledifferences;
-end;
+end );
 
 
 #############################################################################

@@ -1,0 +1,105 @@
+\Chapter{Rationals}
+
+The *rationals*  form  a very important field.  On the one hand it is the
+quotient field of the integers (see "Integers").  On the other hand it is
+the prime field of the fields of characteristic zero  (see "Number Fields").
+
+The former comment suggests the representation actually used.  A rational
+is  represented   as   a   pair   of  integers,  called  *numerator*  and
+*denominator*.   NumeratorRat  and  denominator are  *reduced*, i.e.,  their
+greatest common divisor is 1.  If  the denominator  is 1, the rational is
+in fact an integer and is represented as such.   The numerator holds  the
+sign of the rational, thus the denominator is always positive.
+
+Because the underlying integer arithmetic can compute with arbitrary size
+integers, the  rational arithmetic is  always  exact, even  for rationals
+whose numerators and denominators have thousands of digits.
+
+\beginexample
+gap> 2/3;
+2/3
+gap> 66/123;
+22/41    # numerator and denominator are made relatively prime
+gap> 17/-13;
+-17/13    # the numerator carries the sign
+gap> 121/11;
+11    # rationals with denominator 1 (after cancelling) are integers
+\endexample
+
+The usual arithmetic operators `+',`-',`*',`/' can be applied to rational
+numbers, `=' tests equality and the comparison operators implement the usual
+ordering.
+
+The {\GAP} object `Rationals' is the field domain  of all rationals.  All
+set  theoretic  functions  and all field function are applicable to this
+domain.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsRat}
+\index{test!for a rational}
+
+\>IsRat( <obj> ) C
+
+`IsRat' returns `true' if <obj>,  which can be  an arbitrary object, is a
+rational and `false' otherwise.   Integers are rationals with denominator
+1,   thus `IsRat' returns  `true' for  integers.   `IsRat' will signal an
+error if <obj> is an unbound variable or a procedure call.
+
+\beginexample
+gap> IsRat( 2/3 );
+true
+gap> IsRat( 17/-13 );
+true
+gap> IsRat( 11 );
+true
+gap> IsRat( IsRat );
+false    # `IsRat' is a function, not a rational 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{NumeratorRat}
+\index{numerator!of a rational}
+
+\>NumeratorRat( <rat> ) F
+
+`NumeratorRat'  returns  the numerator of the rational <rat>.   Because  the
+numerator holds the sign of the rational it may be any integer.  Integers
+are rationals  with  denominator  1, thus  `NumeratorRat'  is  the  identity
+function for integers.
+
+\beginexample
+gap> NumeratorRat( 2/3 );
+2
+gap> NumeratorRat( 66/123 );
+22    # numerator and denominator are made relatively prime
+gap> NumeratorRat( 17/-13 );
+-17    # the numerator holds the sign of the rational
+gap> NumeratorRat( 11 );
+11    # integers are rationals with denominator 1 
+\endexample
+
+`DenominatorRat' (see "DenominatorRat") is the counterpart to `NumeratorRat'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{DenominatorRat}
+\index{denominator!of a rational}
+
+\>DenominatorRat( <rat> ) F
+
+`DenominatorRat' returns the denominator of the rational <rat>.  Because the
+numerator  holds the  sign of  the rational  the denominator  is always a
+positive integer.   Integers are rationals  with  the denominator 1, thus
+`DenominatorRat' returns 1 for integers.
+
+\beginexample
+gap> DenominatorRat( 2/3 );
+3
+gap> DenominatorRat( 66/123 );
+41    # numerator and denominator are made relatively prime
+gap> DenominatorRat( 17/-13 );
+13    # the denominator holds the sign of the rational
+gap> DenominatorRat( 11 );
+1    # integers are rationals with denominator 1 
+\endexample
+
+`NumeratorRat' (see "NumeratorRat") is the counterpart to `DenominatorRat'.

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains  the  declaration  of functions  needed for a  direct
 ##  computation of the character values of  wreath  products of a  group  $G$
@@ -74,42 +75,42 @@ Revision.ctblsymm_gd :=
 ##
 #F  BetaSet( <alpha> )  . . . . . . . . . . . . . . . . . . . . . . beta set.
 ##
-BetaSet := NewOperationArgs( "BetaSet" );
+DeclareGlobalFunction( "BetaSet" );
 
 
 #############################################################################
 ##
 #F  CentralizerWreath( <sub_cen>, <ptuple> )  . . . . centralizer in G wr Sn.
 ##
-CentralizerWreath := NewOperationArgs( "CentralizerWreath" );
+DeclareGlobalFunction( "CentralizerWreath" );
 
 
 #############################################################################
 ##
 #F  PowerWreath( <sub_pm>, <ptuple>, <p> )  . . . . . . power map in G wr Sn.
 ##
-PowerWreath := NewOperationArgs( "PowerWreath" );
+DeclareGlobalFunction( "PowerWreath" );
 
 
 #############################################################################
 ##
 #F  InductionScheme( <n> )  . . . . . . . . . . . . . . . . removal of hooks.
 ##
-InductionScheme := NewOperationArgs( "InductionScheme" );
+DeclareGlobalFunction( "InductionScheme" );
 
 
 #############################################################################
 ##
 #F  MatCharsWreathSymmetric( <tbl>, <n> ) . . .  character matrix of G wr Sn.
 ##
-MatCharsWreathSymmetric := NewOperationArgs( "MatCharsWreathSymmetric" );
+DeclareGlobalFunction( "MatCharsWreathSymmetric" );
 
 
 #############################################################################
 ##
 #F  CharValueSymmetric( <n>, <beta>, <pi> ) . . . . . character value in S_n.
 ##
-CharValueSymmetric := NewOperationArgs( "CharValueSymmetric" );
+DeclareGlobalFunction( "CharValueSymmetric" );
 
 
 #############################################################################
@@ -130,7 +131,7 @@ CharTableAlternating := "2bdefined";
 ##
 #F  CharValueWeylB( <n>, <beta>, <pi> ) . . . . . character value in 2 wr Sn.
 ##
-CharValueWeylB := NewOperationArgs( "CharValueWeylB" );
+DeclareGlobalFunction( "CharValueWeylB" );
 
 
 #############################################################################
@@ -152,14 +153,14 @@ CharTableWeylD := "2bdefined";
 #F  CharValueWreathSymmetric( <sub>, <n>, <beta>, <pi> ) . .
 #F                                        . . . . character value in G wr Sn.
 ##
-CharValueWreathSymmetric := NewOperationArgs( "CharValueWreathSymmetric" );
+DeclareGlobalFunction( "CharValueWreathSymmetric" );
 
 
 #############################################################################
 ##
 #F  CharTableWreathSymmetric( <sub>, <n> )  . . . character table of G wr Sn.
 ##
-CharTableWreathSymmetric := NewOperationArgs( "CharTableWreathSymmetric" );
+DeclareGlobalFunction( "CharTableWreathSymmetric" );
 
 
 #############################################################################

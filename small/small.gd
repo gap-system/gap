@@ -8,25 +8,58 @@ Revision.small_gd :=
 
 InfoIdGroup := NewInfoClass( "InfoIdGroup" );
 
-CoefficientsMultiadic := NewOperationArgs( "CoefficientsMultiadic" );
-PermGroupCode := NewOperationArgs( "PermGroupCode" );
-GroupCode := NewOperationArgs( "GroupCode" );
-LoadSmallGroups := NewOperationArgs( "LoadSmallGroups" );
-UnloadSmallGroups := NewOperationArgs( "UnloadSmallGroups" );
-SmallGroup := NewOperationArgs( "SmallGroup" );
-AllSmallGroups := NewOperationArgs( "AllSmallGroups" );
-NumberSmallGroups := NewOperationArgs( "NumberSmallGroups" );
+UnbindGlobal( "SmallGroup" );
 
-IdGroupRandomTest := NewOperationArgs( "IdGroupRandomTest" );
-IdGroupSpecialFp := NewOperationArgs( "IdGroupSpecialFp" );
-EvalFpCoc := NewOperationArgs( "EvalFpCoc" );
-IdSmallGroup := NewOperationArgs( "IdSmallGroup" );
-IdP1Q1R1Group := NewOperationArgs( "IdP1Q1R1Group" );
-IdP2Q1Group := NewOperationArgs( "IdP2Q1Group" );
-IdP1Q2Group := NewOperationArgs( "IdP1Q2Group" );
-IdP1Group := NewOperationArgs( "IdP1Group" );
-IdP2Group := NewOperationArgs( "IdP2Group" );
-IdP3Group := NewOperationArgs( "IdP3Group" );
-IdP1Q1Group := NewOperationArgs( "IdP1Q1Group" );
+#############################################################################
+##
+#O  SmallGroup(<size>,<i>)
+##
+##  returns the <i>th  group of  order <size> in the catalogue. It will return
+##  an PcGroup, if the group is soluble and a permutation group otherwise.
+DeclareGlobalFunction( "SmallGroup" );
 
-IdGroup := NewAttribute( "IdGroup", IsGroup );
+UnbindGlobal( "AllSmallGroups" );
+DeclareGlobalFunction( "AllSmallGroups" );
+
+#############################################################################
+##
+#O  NumberSmallGroups(<size>)
+##
+##  returns the  number of groups of the order <size>.
+DeclareGlobalFunction( "NumberSmallGroups" );
+
+#############################################################################
+##
+#O  UnloadSmallGroups(<sizes>)
+##
+##  will remove the small groups of the sizes given in <sizes> from memory. The
+##  groups will be loaded again automatically if necessary.
+DeclareGlobalFunction( "UnloadSmallGroups" );
+
+UnbindGlobal( "IdGroup" );
+
+#############################################################################
+##
+#A  IdGroup(<G>)
+##
+##  Let <G> be a group of size at most 1000, but not  of size 256, 512 or 768.
+##  Then `IdGroup( <G> )'  returns a pair `[<size>, <i>]'  meaning  that  <G>
+##  is isomorphic  to the <i>-th group in the catalogue of small groups of
+##  order <size>.
+DeclareAttribute( "IdGroup", IsGroup );
+
+DeclareGlobalFunction( "PermGroupCode" );
+DeclareGlobalFunction( "GroupCode" );
+DeclareGlobalFunction( "LoadSmallGroups" );
+
+DeclareGlobalFunction( "IdGroupRandomTest" );
+DeclareGlobalFunction( "IdGroupSpecialFp" );
+DeclareGlobalFunction( "IdSmallGroup" );
+DeclareGlobalFunction( "IdP1Q1R1Group" );
+DeclareGlobalFunction( "IdP2Q1Group" );
+DeclareGlobalFunction( "IdP1Q2Group" );
+DeclareGlobalFunction( "IdP1Group" );
+DeclareGlobalFunction( "IdP2Group" );
+DeclareGlobalFunction( "IdP3Group" );
+DeclareGlobalFunction( "IdP1Q1Group" );
+

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
@@ -13,21 +14,23 @@ Revision.algfld_gd:=
 
 #############################################################################
 ##
-#C  IsAlgebraicElement   Category for Elements of algebraic extension
+#C  IsAlgebraicElement(<obj>)
 ##
-IsAlgebraicElement := NewCategory( "IsAlgebraicElement", IsScalar);
+##  is the category for elements of an algebraic extension
+DeclareCategory( "IsAlgebraicElement", IsScalar);
 
 #############################################################################
 ##
-#C  IsAlgebraicElementsFamily    Category for Families of Algebraic Elements
+#C  IsAlgebraicElementFamily     Category for Families of Algebraic Elements
 ##
-IsAlgebraicElementsFamily := CategoryFamily( IsAlgebraicElement );
+DeclareCategoryFamily( "IsAlgebraicElement" );
 
 #############################################################################
 ##
-#C  IsAlgebraicExtension    Category for Algebraic Extensions
+#C  IsAlgebraicExtension(<obj>)
 ##
-IsAlgebraicExtension := NewCategory( "IsAlgebraicExtension", IsField );
+##  is the category of algebraic extensions of fields.
+DeclareCategory( "IsAlgebraicExtension", IsField );
 
 
 #############################################################################
@@ -35,21 +38,25 @@ IsAlgebraicExtension := NewCategory( "IsAlgebraicExtension", IsField );
 #A  AlgebraicElementsFamilies    List of AlgElm. families to one poly over
 ##                               different fields
 ##
-AlgebraicElementsFamilies := NewAttribute( "AlgebraicElementsFamilies",
+DeclareAttribute( "AlgebraicElementsFamilies",
   IsUnivariatePolynomial, "mutable" );
 
 #############################################################################
 ##
 #O  AlgebraicElementsFamily   Create Family of alg elms
 ##
-AlgebraicElementsFamily := NewOperation( "AlgebraicElementsFamily",
+DeclareOperation( "AlgebraicElementsFamily",
   [IsField,IsUnivariatePolynomial]);
 
 #############################################################################
 ##
-#O  AlgebraicExtension         of field by polynomial
+#O  AlgebraicExtension(<K>,<f>)
 ##
-AlgebraicExtension := NewOperation( "AlgebraicExtension",
+##  constructs an extension <L> of the field <K> by one root of the irreducible
+##  polynomial <f>, using {\sc Kronecker{\pif}s} construction. <L> is a
+##  field whose `LeftActingDomail' is <K>. The `PrimitiveElement' (see
+##  "PrimitiveElement"). of <L> is a root of <f>.
+DeclareOperation( "AlgebraicExtension",
   [IsField,IsUnivariatePolynomial]);
 
 #############################################################################

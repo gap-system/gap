@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains declarations for subgroup latices
 ##
@@ -40,7 +41,6 @@ local   zuppos,            # set of zuppos,result
 
   # return the set of zuppos
   Sort(zuppos);
-  #IsSet(zuppos);
   return zuppos;
 end);
 
@@ -49,7 +49,7 @@ end);
 ##
 #M  ConjugacyClassSubgroups(<G>,<g>)  . . . . . . . . . . . .  constructor
 ##
-InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsGroup,IsGroup],0,
+InstallMethod(ConjugacyClassSubgroups,IsIdenticalObj,[IsGroup,IsGroup],0,
 function(G,U)
 local filter,cl;
 
@@ -65,16 +65,32 @@ end);
 ##
 #M  <clasa> = <clasb> . . . . . . . . . . . . . . . . . . by conjugacy test
 ##
-InstallMethod( \=, IsIdentical, [ IsConjugacyClassSubgroupsRep,
+InstallMethod( \=, IsIdenticalObj, [ IsConjugacyClassSubgroupsRep,
   IsConjugacyClassSubgroupsRep ], 0,
 function( clasa, clasb )
-  if not IsIdentical(ActingDomain(clasa),ActingDomain(clasb))
+  if not IsIdenticalObj(ActingDomain(clasa),ActingDomain(clasb))
     then TryNextMethod();
   fi;
   return RepresentativeOperation(ActingDomain(clasa),Representative(clasa),
 		 Representative(clasb))<>fail;
 end);
 
+
+#############################################################################
+##
+#M  AsList(<cls>)
+##
+InstallOtherMethod( \[\], "for classes of subgroups",
+  true, [ IsConjugacyClassSubgroupsRep, IsPosInt],0,
+function(c,nr)
+local rep;
+  rep:=Representative(c);
+  if not IsBound(c!.normalizerTransversal) then
+    c!.normalizerTransversal:=
+      RightTransversal(ActingDomain(c),StabilizerOfExternalSet(c));
+  fi;
+  return ConjugateSubgroup(rep,c!.normalizerTransversal[nr]);
+end);
 
 
 #############################################################################
@@ -103,23 +119,19 @@ function(L)
   return L!.conjugacyClassesSubgroups;
 end);
 
-CopiedGroup := function (G)
-local S;
-  S:=Subgroup(Parent(G),GeneratorsOfGroup(G));
-  if IsIdentical(S,G) then
-    Error("Subgroup returned identical object!");
-  fi;
-  return S;
-end;
-
 #############################################################################
 ##
 #F  LatticeByCyclicExtension(<G>[,<func>])  Lattice of subgroups
-##    if func is given, the algorithm will discard all subgroups not
-##    fulfilling <func>, returning probably a pseudolattice.
-##         
 ##
-LatticeByCyclicExtension:=function(arg)
+##  computes the lattice of <G> using the cyclic extension algorithm. If the
+##  function <func> is given, the algorithm will discard all subgroups not
+##  fulfilling <func> (and will also not extend them), returning a partial
+##  lattice. This can be useful to compute only subgroups with certain
+##  properties. Note however that this will *not* necessarily yield all
+##  subgroups that fulfill <func>, but the subgroups whose subgroups used
+##  for the construction also fulfill <func> as well.
+##
+InstallGlobalFunction( LatticeByCyclicExtension, function(arg)
 local   G,		   # group
 	func,		   # test function
         lattice,           # lattice (result)
@@ -143,10 +155,8 @@ local   G,		   # group
 	I,                 # new subgroup found
 	Ielms,             # elements of <I>
 	Izups,             # zuppos blist of <I>
-	Icopy,             # copy of <I>
 	N,                 # normalizer of <I>
 	Nzups,             # zuppos blist of <N>
-	Ncopy,             # copy of <N>
 	Jzups,             # zuppos of a conjugate of <I>
 	Kzups,             # zuppos of a representative in <classes>
 	reps,              # transversal of <N> in <G>
@@ -197,9 +207,7 @@ local   G,		   # group
     perfectNew :=[];
     for i  in [1..Length(perfect)]  do
         I:=perfect[i];
-        Icopy:=CopiedGroup(I);
-        SetSize(I,Size(Icopy));
-        perfectZups[i]:=BlistList(zuppos,AsList(Icopy));
+        perfectZups[i]:=BlistList(zuppos,AttributeValueNotSet(AsList,I));
         perfectNew[i]:=true;
     od;
     Info(InfoLattice,1,"<G> has ",Length(perfect),
@@ -238,18 +246,14 @@ local   G,		   # group
 							   [zuppos[i]]));
                   if func=false or func(I) then
 
-                    Icopy:=CopiedGroup(I);
-                    SetSize(Icopy,Size(H) * zupposPrime[i]);
-                    SetSize(I,Size(Icopy));
+                    SetSize(I,Size(H) * zupposPrime[i]);
 
                     # compute the zuppos blist of <I>
-                    Ielms:=AsList(Icopy);
+                    Ielms:=AttributeValueNotSet(AsList,I);
                     Izups:=BlistList(zuppos,Ielms);
 
                     # compute the normalizer of <I>
-                    N:=Normalizer(G,Icopy);
-                    Ncopy:=CopiedGroup(N);
-                    SetSize(Ncopy,Size(N));
+                    N:=Normalizer(G,I);
 		    #AH 'NormalizerInParent' attribute ?
                     #if IsParent(G)  and not IsBound(I.normalizer)  then
                     #    I.normalizer:=Subgroup(Parent(G),GeneratorsOfGroup(N));
@@ -270,15 +274,15 @@ local   G,		   # group
                     # store the extend by list
                     if l < Length(factors)-1  then
                         classesZups[nrClasses]:=Izups;
-                        Nzups:=BlistList(zuppos,AsList(Ncopy));
+                        Nzups:=BlistList(zuppos,
+			                 AttributeValueNotSet(AsList,N));
                         SubtractBlist(Nzups,Izups);
                         classesExts[nrClasses]:=Nzups;
                     fi;
 
-                    # compute the transversal
-                    reps:=RightTransversal(G,Ncopy);
-                    Unbind(Icopy);
-                    Unbind(Ncopy);
+		    # compute the right transversal
+		    # (but don't store it in the parent)
+		    reps:=RightTransversalOp(G,N);
 
                     # loop over the conjugates of <I>
                     for r  in reps  do
@@ -333,17 +337,13 @@ local   G,		   # group
 
                 # make the new subgroup <I>
                 I:=perfect[i];
-                Icopy:=CopiedGroup(I);
-                SetSize(Icopy,Size(I));
 
                 # compute the zuppos blist of <I>
-                Ielms:=AsList(Icopy);
+                Ielms:=AttributeValueNotSet(AsList,I);
                 Izups:=BlistList(zuppos,Ielms);
 
                 # compute the normalizer of <I>
-                N:=Normalizer(G,Icopy);
-                Ncopy:=CopiedGroup(N);
-                SetSize(Ncopy,Size(N));
+                N:=Normalizer(G,I);
 		# AH: NormalizerInParent ?
                 #if IsParent(G)  and not IsBound(I.normalizer)  then
                 #    I.normalizer:=Subgroup(Parent(G),N.generators);
@@ -364,15 +364,14 @@ local   G,		   # group
                 # store the extend by list
                 if l < Length(factors)-1  then
                     classesZups[nrClasses]:=Izups;
-                    Nzups:=BlistList(zuppos,AsList(Ncopy));
+                    Nzups:=BlistList(zuppos,AttributeValueNotSet(AsList,N));
                     SubtractBlist(Nzups,Izups);
                     classesExts[nrClasses]:=Nzups;
                 fi;
 
-                # compute the transversal
-                reps:=RightTransversal(G,Ncopy);
-                Unbind(Icopy);
-                Unbind(Ncopy);
+		# compute the right transversal
+		# (but don't store it in the parent)
+		reps:=RightTransversalOp(G,N);
 
                 # loop over the conjugates of <I>
                 for r  in reps  do
@@ -447,7 +446,7 @@ local   G,		   # group
 
     # return the lattice
     return lattice;
-end;
+end );
 
 #############################################################################
 ##
@@ -469,6 +468,29 @@ end);
 
 #############################################################################
 ##
+#M  ConjugacyClassesPerfectSubgroups 
+##
+InstallMethod(ConjugacyClassesPerfectSubgroups,"generic",true,[IsGroup],0,
+function(G)
+  return
+    List(RepresentativesPerfectSubgroups(G),i->ConjugacyClassSubgroups(G,i));
+end);
+
+#############################################################################
+##
+#M  PerfectResiduum
+##
+InstallMethod(PerfectResiduum,"for groups",true,
+  [IsGroup],0,
+function(G)
+  while not IsPerfectGroup(G) do
+    G:=DerivedSubgroup(G);
+  od;
+  return G;
+end);
+
+#############################################################################
+##
 #M  RepresentativesPerfectSubgroups  solvable
 ##
 InstallMethod(RepresentativesPerfectSubgroups,"solvable",true,
@@ -482,7 +504,7 @@ end);
 #M  RepresentativesPerfectSubgroups
 ##
 InstallMethod(RepresentativesPerfectSubgroups,"using Holt/Plesken library",
-true,[IsGroup],0,
+  true,[IsGroup],0,
 function(G)
 local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might;
@@ -492,9 +514,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
     PerfGrpLoad(0);
     badsizes := Union(PERFRec.notAvailable,PERFRec.notKnown);
     D:=G;
-    while not IsPerfectGroup(D) do
-      D:=DerivedSubgroup(D);
-    od;
+    D:=PerfectResiduum(D);
     n:=Size(D);
     Info(InfoLattice,1,"The perfect residuum has size ",n);
     if n>=10^6 then
@@ -513,6 +533,7 @@ local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
 
     r:=[];
     for i in un do
+
       l:=NumberPerfectGroups(i);
       if l>0 then
 	for j in [1..l] do
@@ -601,9 +622,7 @@ function (L)
             I,                 # representative of a class
             Ielms,             # elements of <I>
             Izups,             # zuppos blist of <I>
-            Icopy,             # copy of <I>
             N,                 # normalizer of <I>
-            Ncopy,             # copy of <N>
             Jzups,             # zuppos of a conjugate of <I>
             Kzups,             # zuppos of a representative in <classes>
             reps,              # transversal of <N> in <G>
@@ -633,22 +652,19 @@ function (L)
 
         # take the subgroup <I>
         I:=Representative(classes[i]);
-        Icopy:=CopiedGroup(I);
         Info(InfoLattice,2," testing class ",i);
 
         # compute the zuppos blist of <I>
-        Ielms:=AsList(Icopy);
+        Ielms:=AttributeValueNotSet(AsList,I);
         Izups:=BlistList(zuppos,Ielms);
         classesZups[i]:=Izups;
 
         # compute the normalizer of <I>
-        N:=Normalizer(grp,Icopy);
-        Ncopy:=CopiedGroup(N);
+        N:=Normalizer(grp,I);
 
-        # compute the right transversal
-        reps:=RightTransversal(grp,Ncopy);
-        Unbind(Icopy);
-        Unbind(Ncopy);
+	# compute the right transversal
+	# (but don't store it in the parent)
+	reps:=RightTransversalOp(grp,N);
 
         # initialize the counter
         cnt:=0;
@@ -708,13 +724,11 @@ function (L)
             I,                 # representative of a class
             Ielms,             # elements of <I>
             Izups,             # zuppos blist of <I>
-            Icopy,             # copy of <I>
             N,                 # normalizer of <I>
-            Ncopy,             # copy of <N>
             Jzups,             # zuppos of a conjugate of <I>
             Kzups,             # zuppos of a representative in <classes>
             reps,              # transversal of <N> in <G>
-	    grp,	       # the group;
+	    grp,	       # the group
             i,k,l,r;         # loop variables
 
     grp:=L!.group;
@@ -735,21 +749,17 @@ function (L)
 
         # take the subgroup <I>
         I:=Representative(classes[i]);
-        Icopy:=CopiedGroup(I);
 
         # compute the zuppos blist of <I>
-        Ielms:=AsList(Icopy);
+        Ielms:=AttributeValueNotSet(AsList,I);
         Izups:=BlistList(zuppos,Ielms);
         classesZups[i]:=Izups;
 
         # compute the normalizer of <I>
-        N:=Normalizer(grp,Icopy);
-        Ncopy:=CopiedGroup(N);
+        N:=Normalizer(grp,I);
 
-        # compute the right transversal
-        reps:=RightTransversal(grp,Ncopy);
-        Unbind(Icopy);
-        Unbind(Ncopy);
+        # compute the right transversal (but don't store it in the parent)
+        reps:=RightTransversalOp(grp,N);
 
         # initialize the counter
         cnt:=0;
@@ -810,6 +820,17 @@ end);
 #F  MaximalSubgroupClassReps(<G>) . . . . reps of conjugacy classes of
 #F                                                          maximal subgroups
 ##
+InstallMethod(MaximalSubgroupClassReps,"try solvable",true,[IsGroup],1,
+function (G)
+  if CanEasilyComputePcgs(G) # safety to avoid recursion: Methods are
+                             # ill-sorted
+     or not IsSolvableGroup(G) # not usable
+     then
+    TryNextMethod();
+  fi;
+  return MaximalSubgroupClassReps(G); # this will call *another* method
+end);
+
 InstallMethod(MaximalSubgroupClassReps,"using lattice",true,[IsGroup],0,
 function (G)
     local   maxs,lat;
@@ -830,113 +851,258 @@ end);
 
 #############################################################################
 ##
-#M  TableOfMarks(<G>)   . . . . . . . . . . . . . . . . make a table of marks
+#F  ConjugacyClassesMaximalSubgroups(<G>)
 ##
-InstallMethod(TableOfMarks,"cyclic extension",true,[IsGroup],0,
-function (G)
-local   tom,               # table of marks (result)
-	mrks,              # marks for one class
-	ind,               # index of <I> in <N>
-	zuppos,            # generators of prime power order
-	classes,           # list of all classes
-	classesZups,       # zuppos blist of classes
-	I,                 # representative of a class
-	Ielms,             # elements of <I>
-	Izups,             # zuppos blist of <I>
-	Icopy,             # copy of <I>
-	N,                 # normalizer of <I>
-	Ncopy,             # copy of <N>
-	Jzups,             # zuppos of a conjugate of <I>
-	Kzups,             # zuppos of a representative in <classes>
-	reps,              # transversal of <N> in <G>
-	i,k,l,r;         # loop variables
-
-    # compute the lattice,fetch the classes,zuppos,and representatives
-    classes:=ConjugacyClassesSubgroups(G);
-    classesZups:=[];
-
-    # compute a system of generators for the cyclic sgr. of prime power size
-    zuppos:=Zuppos(G);
-
-    # initialize the table of marks
-    Info(InfoLattice,1,"computing table of marks");
-    tom:=rec(subs:=List(classes,c -> []),
-                marks:=List(classes,c -> []));
-
-    # loop over all classes
-    for i  in [1..Length(classes)-1]  do
-
-        # take the subgroup <I>
-        I:=Representative(classes[i]);
-        Icopy:=CopiedGroup(I);
-
-        # compute the zuppos blist of <I>
-        Ielms:=AsList(Icopy);
-        Izups:=BlistList(zuppos,Ielms);
-        classesZups[i]:=Izups;
-
-        # compute the normalizer of <I>
-        N:=Normalizer(G,Icopy);
-        Ncopy:=CopiedGroup(N);
-        ind:=Size(Ncopy) / Size(Icopy);
-        # compute the right transversal
-        reps:=RightTransversal(G,Ncopy);
-        Unbind(Icopy);
-        Unbind(Ncopy);
-
-        # set up the marking list
-        mrks   :=0 * [1..Length(classes)];
-        mrks[1]:=Length(reps) * ind;
-        mrks[i]:=1 * ind;
-
-        # loop over the conjugates of <I>
-        for r  in [1..Length(reps)]  do
-
-            # compute the zuppos blist of the conjugate
-            if reps[r] = One(G) then
-                Jzups:=Izups;
-            else
-                Jzups:=BlistList(zuppos,OnTuples(Ielms,reps[r]));
-            fi;
-
-            # loop over all other (smaller classes)
-            for k  in [2..i-1]  do
-                Kzups:=classesZups[k];
-
-                # test if the <K> is a subgroup of <J>
-                if IsSubsetBlist(Jzups,Kzups)  then
-                    mrks[k]:=mrks[k] + ind;
-                fi;
-
-            od;
-
-        od;
-
-        # compress this line into the table of marks
-        for k  in [1..i]  do
-            if mrks[k] <> 0  then
-                Add(tom.subs[i],k);
-                Add(tom.marks[i],mrks[k]);
-            fi;
-        od;
-        Unbind(Ielms);
-        Unbind(reps);
-        Info(InfoLattice,2,"testing class ",i,", size = ",Size(I),
-	     ", length = ",Size(G) / Size(N),", includes ",
-	     Length(tom.marks[i])," classes");
-
-    od;
-
-    # handle the whole group
-      Info(InfoLattice,2,"testing class ",Length(classes),", size = ",Size(G),
-	   ", length = ",1,", includes ",
-           Length(tom.marks[Length(classes)])," classes");
-    tom.subs[Length(classes)]:=[1..Length(classes)] + 0;
-    tom.marks[Length(classes)]:=0 * [1..Length(classes)] + 1;
-
-    # return the table of marks
-    return tom;
+InstallMethod(ConjugacyClassesMaximalSubgroups,
+ "use MaximalSubgroupClassReps",true,[IsGroup],0,
+function(G)
+  return List(MaximalSubgroupClassReps(G),i->ConjugacyClassSubgroups(G,i));
 end);
+
+#############################################################################
+##
+#F  MaximalSubgroups(<G>)
+##
+InstallMethod(MaximalSubgroups,
+ "expand list",true,[IsGroup],0,
+function(G)
+  return Concatenation(List(ConjugacyClassesMaximalSubgroups(G),AsList));
+end);
+
+#############################################################################
+##
+#F  NormalSubgroupsCalc(<G>) compute normal subgroups for pc or perm groups
+##
+NormalSubgroupsCalc := function (G)
+local nt,nnt,	# normal subgroups
+      cs,	# comp. series
+      M,N,	# nt . in series
+      mpcgs,	# modulo pcgs
+      p,	# prime
+      ocr,	# 1-cohomology record
+      l,	# list
+      vs,	# vector space
+      hom,	# homomorphism
+      jg,	# generator images
+      auts,	# factor automorphisms
+      T,S,C,A,ji,orb,orbi,cllen,r,o,c,inv,cnt,
+      i,j,k;	# loop
+
+  nt:=[G];
+  cs:=ChiefSeries(G);
+
+  for i in [2..Length(cs)] do
+    # we assume that nt contains all normal subgroups above cs[i-1]
+    # we want to lift to G/cs[i]
+    M:=cs[i-1];
+    N:=cs[i];
+
+    # the normal subgroups already known
+    nnt:=ShallowCopy(nt);
+
+    Info(InfoLattice,1,i,":",Index(M,N));
+    if HasAbelianFactorGroup(M,N) then
+      # the modulo pcgs
+      mpcgs:=ModuloPcgs(M,N);
+
+      p:=RelativeOrderOfPcElement(mpcgs,mpcgs[1]);
+
+      for j in Filtered(nt,i->Size(i)>Size(M)) do
+	# test centrality
+	if ForAll(GeneratorsOfGroup(j),
+	          i->ForAll(mpcgs,j->Comm(i,j) in N)) then
+
+	  Info(InfoLattice,2,"factorsize=",Index(j,N),"/",Index(M,N));
+
+	  if HasAbelianFactorGroup(j,N) and
+	    p^(Length(mpcgs)*LogInt(Index(j,M),p))>100 then
+	    l:=fail;  # we will compute the subgroups later
+	  else
+
+	    ocr:=rec(
+		   group:=j,
+		   modulePcgs:=mpcgs
+		 );
+
+	    # we want only normal complements. Therefore the 1-Coboundaries must
+	    # be trivial. We compute these first.
+	    if Dimension(OCOneCoboundaries(ocr))=0 then
+	      l:=[];
+	      OCOneCocycles(ocr,true);
+	      if IsBound(ocr.complement) then
+		l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
+		      BasisVectors(Basis(ocr.oneCoboundaries)));
+		vs:=VectorSpace(LeftActingDomain(ocr.oneCocycles),
+			 l.factorspace,Zero(ocr.oneCocycles));
+		Info(InfoLattice,2,p^Length(l.factorspace)," cocycles");
+
+		# try to catch some solvable cases that look awful
+		if Size(vs)>1000 and Length(Set(Factors(Index(j,N))))<=2
+		  then
+		  l:=fail;
+		else
+		  l:=[];
+		  for k in vs do
+		    k:=ClosureGroup(N,ocr.cocycleToComplement(k));
+		    if IsNormal(G,k) then
+		      Add(l,k);
+		    fi;
+		  od;
+
+		  Info(InfoLattice,2," -> ",Length(l)," normal complements");
+		  nnt:=Concatenation(nnt,l);
+	        fi;
+	      fi;
+	    fi;
+          fi;
+
+          if l=fail then
+	    Info(InfoLattice,1,"using invariant subgroups");
+	    # the factor is abelian, we therefore find this homomorphism
+	    # quick.
+	    hom:=NaturalHomomorphismByNormalSubgroup(j,N);
+	    r:=Image(hom,j);
+	    jg:=List(GeneratorsOfGroup(j),i->Image(hom,i));
+	    # construct the automorphisms
+	    auts:=List(GeneratorsOfGroup(G),
+	      i->GroupHomomorphismByImagesNC(r,r,jg,
+	        List(GeneratorsOfGroup(j),k->Image(hom,k^i))));
+	    l:=SubgroupsSolvableGroup(r,rec(
+	         actions:=auts,
+		 funcnorm:=r,
+	         consider:=ExactSizeConsiderFunction(Index(j,M)),
+		 normal:=true));
+	    Info(InfoLattice,2,"found ",Length(l)," invariant subgroups");
+	    C:=Image(hom,M);
+	    l:=Filtered(l,i->Size(i)=Index(j,M) and Size(Intersection(i,C))=1);
+	    l:=List(l,i->PreImage(hom,i));
+	    l:=Filtered(l,i->IsNormal(G,i));
+	    Info(InfoLattice,1,Length(l)," of these normal");
+	    nnt:=Concatenation(nnt,l);
+          fi;
+
+        fi;
+
+      od;
+      
+    else
+      # nonabelian factor.
+
+      # 1) compute the action for the factor
+
+      # first, we obtain the simple factors T_i/N.
+      # we get these as intersections of the conjugates of the subnormal
+      # subgroup
+      T:=CompositionSeries(M)[2]; # stored attribute
+      hom:=NaturalHomomorphismByNormalSubgroup(M,T);
+      A:=Image(hom,M);
+
+      Info(InfoLattice,2,"Search involution");
+
+      # find involution in M/T
+      repeat
+	repeat
+	  inv:=Random(M);
+	until (Order(inv) mod 2 =0) and not inv in T;
+	o:=First([2..Order(inv)],i->inv^i in T);
+      until (o mod 2 =0);
+      Info(InfoLattice,2,"Element of order ",o);
+      inv:=inv^(o/2); # this is an involution in the factor
+      Assert(1,inv^2 in T and not inv in T);
+
+      S:=Normalizer(G,T); # stabilize first component
+
+      orb:=[inv]; # class representatives in A by preimages in G
+      orbi:=[Image(hom,inv)];
+      cllen:=Index(A,Centralizer(A,orbi[1]));
+      C:=T; #starting centralizer
+      cnt:=1;
+
+      # we have to find at least 1 centralizing element
+      repeat
+
+	# find element that centralizes inv modulo T
+	repeat
+	  r:=Random(S);
+	  c:=Comm(inv,r);
+	  o:=First([1..Order(c)],i->c^i in T);
+	  c:=c^QuoInt(o-1,2);
+	  if o mod 2=1 then
+	    c:=r*c;
+	  else
+	    c:=inv^r*c;
+	  fi;
+
+	  # take care of potential class fusion
+	  if not c in T and c in C then
+	    cnt:=cnt+1;
+	    if cnt=10 then
+
+	      # if we have 10 true centralizing elements that did not
+	      # yield anything new, we assume that classes get fused.
+	      # So we have to test, how much fusion takes place.
+	      # We do this with an orbit algorithm on classes of A
+
+	      for j in orb do
+		for k in SmallGeneratingSet(S) do
+		  j:=j^k;
+		  ji:=Image(hom,j);
+		  if ForAll(orbi,l->RepresentativeOperation(A,l,ji)=fail) then
+		    Add(orb,j);
+		    Add(orbi,ji);
+		  fi;
+		od;
+	      od;
+
+	      # now we have the length
+	      cllen:=cllen*Length(orb);
+	      Info(InfoLattice,1,Length(orb)," classes fuse");
+
+	    fi;
+	  fi;
+
+	until not c in C or Index(S,C)=cllen;
+
+	C:=ClosureGroup(C,c);
+	Info(InfoLattice,2,"New centralizing element of order ",o,
+			   ", Index=",Index(S,C));
+
+      until Index(S,C)<=cllen;
+
+      C:=Core(G,C); #the true centralizer is the core of the involution
+		    # centralizer
+
+      if Size(C)>Size(N) then
+	for j in Filtered(nt,i->Size(i)>Size(M)) do
+	  j:=Intersection(C,j);
+	  if Size(j)>Size(N) and not j in nnt then
+	    Add(nnt,j);
+	  fi;
+	od;
+      fi;
+
+    fi; # else nonabelian
+
+    # the kernel itself
+    Add(nnt,N);
+
+    Info(InfoLattice,1,Length(nnt)-Length(nt),
+          " new normal subgroups (",Length(nnt)," total)");
+    nt:=nnt;
+  od;
+
+  return Reversed(nt); # to stay ascending
+end;
+
+#############################################################################
+##
+#M  NormalSubgroups(<G>)
+##
+InstallMethod(NormalSubgroups,"homomorphism principle pc groups",true,
+  [IsPcGroup],0,NormalSubgroupsCalc);
+
+InstallMethod(NormalSubgroups,"homomorphism principle perm groups",true,
+  [IsPermGroup],0,NormalSubgroupsCalc);
 
 #############################################################################
 ##

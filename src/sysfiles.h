@@ -6,12 +6,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  The  file 'system.c'  declares  all operating system  dependent functions
 **  except file/stream handling which is done in "sysfiles.h".
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_sysfiles_h =
+const char * Revision_sysfiles_h =
    "@(#)$Id$";
 #endif
 
@@ -62,7 +63,7 @@ extern Int4 SyGAPCRC(
 **
 *F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
 */
-extern void * SyLoadModule(
+extern InitInfoFunc SyLoadModule(
             Char *          name );
 
 
@@ -85,8 +86,8 @@ extern void * SyLoadModule(
 */
 extern void syWinPut (
             Int                 fid,
-            SYS_CONST Char *    cmd,
-            SYS_CONST Char *    str );
+            const Char *    cmd,
+            const Char *    str );
 
 
 /****************************************************************************
@@ -100,7 +101,7 @@ extern void syWinPut (
 **  that string.
 */
 extern Char * SyWinCmd (
-            SYS_CONST Char *    str,
+            const Char *    str,
             UInt                len );
 
 
@@ -328,6 +329,32 @@ extern Int SyGetch (
 
 /****************************************************************************
 **
+*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
+**
+**  'SyGetc' reads a character from <fid>, without any translation or
+**   interference
+*/
+
+extern Int SyGetc
+(
+    Int                 fid );
+
+/****************************************************************************
+**
+*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
+**
+**  'SyPutc' writes a character to <fid>, without any translation or
+**   interference
+*/
+
+extern Int SyPutc
+(
+    Int                 fid,
+    Char                c );
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
 */
@@ -515,9 +542,9 @@ extern Char * SyTmpdir ( Char * hint );
 /****************************************************************************
 **
 
-*F  InitSysFiles()  . . . . . . . . . . . . . . . . . initialize the packages
+*F  InitInfoSysFiles()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void InitSysFiles( void );
+StructInitInfo * InitInfoSysFiles ( void );
 
 
 /****************************************************************************

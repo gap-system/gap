@@ -11,6 +11,7 @@
 %%  *text*   set text in emphasized style (i.e. slanted)
 %%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
 %%  "ref"    refer to a label (like "function!for category")
+%%  \pif     sets a single '
 %%  \cite{.} make a citation
 %%  \index{.} \indextt{.} make index entry (\indextt in typewriter style)
 %%
@@ -46,6 +47,8 @@
 %%  \EndOfBook
 %%
 
+\input amssym.tex
+
 % Page dimensions and double column output.
 \hsize 39pc
 \vsize 52pc
@@ -70,6 +73,8 @@
 % Create and initialize new dimensions.
 \newdimen\pagewidth  \newdimen\pageheight  \newdimen\colwidth
 \pagewidth=\hsize    \pageheight=\vsize    \colwidth=3.2truein
+
+\def\pif{\char39}
 
 % This routine is used by \output ; this is different from
 %   the one found in App. E.
@@ -156,7 +161,7 @@
   \catcode`\#=\other     \catcode`\|=\other}
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
- \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}%
+\catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\char35 &1}^^M}%
  \gdef\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active%
    \parindent 0pt \def\_^^M{\allowbreak}\def\${$}\def\`{`}%
    \def\par{\ifvmode\allowbreak\vskip 1pc plus 1pt\else\endgraf\nobreak\fi}%
@@ -207,15 +212,18 @@
 \def\bookref#1:#2"{\def\tempa{#2}\ifx\tempa\empty\printref{\book:#1}\else
   \printbookref#1:#2"\fi}
 \def\printbookref#1:#2:"{\printref{#1:#2}}
-{\catcode`@=11
+{\catcode`@=11%
+%
 \gdef\makelabel#1#2{\expandafter\gdef\csname r@#1\endcsname{#2}}
 \gdef\printref#1{\expandafter\ifx\csname r@#1\endcsname\relax\lqq#1''%
   \immediate\write16{Label `#1' undefined.}\global\labundeftrue
   \else \csname r@#1\endcsname \fi\endgroup}
-\gdef\ov#1#2#3#4{\def\tempa{#2}\def\tempb{for #3}\ifx\tempa\tempb\else
-  \expandafter\ifx\csname r@#1!for #3\endcsname \relax
-  \else \allowbreak\null\nobreak\hskip.5em plus 1fill
-    \hbox{#4$\,\to\,$\csname r@#1!for #3\endcsname.}\fi \fi}}
+% %T currently unused, should go away
+% \gdef\ov#1#2#3#4{\def\tempa{#2}\def\tempb{for #3}\ifx\tempa\tempb\else
+%   \expandafter\ifx\csname r@#1!for #3\endcsname \relax
+%   \else \allowbreak\null\nobreak\hskip.5em plus 1fill
+%     \hbox{#4$\,\to\,$\csname r@#1!for #3\endcsname.}\fi \fi}
+}
 
 % Macros for generating the table of contents.
 \newif\iffirstsec \firstsectrue
@@ -236,12 +244,13 @@
 \newif\iflabchanged
 {\catcode`|=0 \catcode`\\=12 |gdef|bs{\}}
 {\catcode`@=11
- \gdef\label#1{{\ifnum\secno=0 \edef\next{\the\chapno}\else
+ \gdef\label#1{{\catcode`_=11\def_{X}
+ {\ifnum\secno=0 \edef\next{\the\chapno}\else
   \edef\next{\the\chapno.\the\secno}
   \expandafter\ifx\csname r@\book:#1\endcsname\next\else
   \immediate\write16{Label `\book:#1' has changed.}
   \global\labchangedtrue\fi\fi
-  \immediate\write\labelout{\noexpand\makelabel{\book:#1}{\next}}}}
+  \immediate\write\labelout{\noexpand\makelabel{\book:#1}{\next}}}}}
  \gdef\sigel#1{[\expandafter\ifx\csname c@#1\endcsname\relax
   \immediate\write16{Reference `#1' undefined.}\global\labundeftrue
   #1\else \csname c@#1\endcsname\fi]}
@@ -293,9 +302,10 @@
   {\the\pageno}}}
 \def\letter#1{\medskip{\secfont #1}\endgraf\nobreak}
 
-% Macros for generating paragraph headings (e.g., function descriptions).
+%T danger should not be used
 \def\danger{\hang\hangafter=-2 \clubpenalty=10000 \noindent
   \llap{\smash{\manual\char127}\enspace}\ignorespaces}
+% Macros for generating paragraph headings (e.g., function descriptions).
 \def\fmark{\noindent\llap{\manual\char120\rm\enspace}}
 \def\moveup#1{\leavevmode \raise.16ex\hbox{\rm #1}}
 \def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
@@ -323,22 +333,19 @@
 \long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
   \def\|{\vrule\relax}}\fmark\typewriter#1'%
   \ifx#3!\def\next{\suboperation{#2}}
-    \else\overlay{#2}\null \label{#2}%
+    \else\endheaderline \label{#2}%
     \bothindex F{#2}{}{}\let\next=#3\fi\next}
 \long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
   \def\|{\vrule\relax}\fmark\typewriter#1(#2)'}%
   \ifx#3!\def\next{\subfunction{#1}}\else
-    \overlay{#1}\null\label{#1}\bothindex F{#1}{@`#1'}{}%
+    \endheaderline\label{#1}\bothindex F{#1}{@`#1'}{}%
     \let\next=#3\fi\next}
-\def\subfunction#1#2{\overlay{#1}{#2}\label{#1!#2}%
+\def\subfunction#1#2{\endheaderline\label{#1!#2}%
   \bothindex F{#1}{@`#1'}{!#2}}
-\def\suboperation#1#2{\overlay{#1}{#2}\label{#1!#2}%
+\def\suboperation#1#2{\endheaderline\label{#1!#2}%
   \bothindex F{#1}{}{!#2}}
-\def\overlay#1#2{\hskip 0pt plus 1filll{\it
-  \ov{#1}{#2}{groups}{groups}%
-  \ov{#1}{#2}{solvable groups}{solv\thinspace gps}%
-  \ov{#1}{#2}{permutation groups}{perm\thinspace gps}%
-  \ov{#1}{#2}{solvable permutation groups}{solv\thinspace perm\thinspace gps}}}
+
+\def\endheaderline{\hskip 0pt plus 1filll}
 
 % Macro for item lists.
 \catcode`&=\active
@@ -390,9 +397,11 @@
 
 % Miscellaneous macros.
 \def\GAP{{\sf GAP}}
-\def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
 \def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
 \def\C{{\Bbb C}} \def\F{{\Bbb F}}
+
+%T do we want these
+\def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
 
 % Page numbers and running heads.
 \newif\ifheadline
@@ -501,8 +510,9 @@
 
 % explanation at the beginning of the table of contents
 \def\TOCMatter{%
-  \rightline{The pages are numbered chapterwise. This table of contents}
-  \rightline{gives for each section the page number within the chapter.}}
+The pages are numbered chapterwise. This table of contents
+gives for each section the page number within the chapter.
+}
 
 % macros for generating the table of contents
 \newif\iffirstsec\firstsectrue
@@ -511,13 +521,13 @@
 % produce the chapter "Contents"
 \outer\def\TableOfContents{\Chapter{\TOCHeader}
 
-  \TOCMatter
-  \vskip 20pt
-  \begingroup
-  \rigidtrue
-  \let!=\space
-  \inputaux\tocin{}{toc}\vfill\eject
-  \endgroup
+\TOCMatter
+\vskip 20pt
+\begingroup
+\rigidtrue
+\let!=\space
+\inputaux\tocin{}{toc}\vfill\eject
+\endgroup
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -525,8 +535,18 @@
 %F  \TitlePage{<text>}	. . . . . . . . . . . . . . . . generate a title page
 %%
 \long\def\TitlePage#1{%
-  \null\vfill#1\null\vfill
+  \null\vfill#1\null\vfill\eject
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \Colophon{<text>}	. . . . . . . . . . . . . . generate a colophon page
+%%
+\long\def\Colophon#1{\Chapter{}
+
+#1\null\vfill\eject
+}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -595,6 +615,13 @@
   \inputaux\indexin{}{ind}
   \enddoublecolumns
 }
+
+% some often-used LaTeX functions
+\def\frac#1#2{{{#1}\over{#2}}}
+\def\etalchar#1{$^{#1}$}
+
+% nasty trick to cope with the `newcommand' created by bibtex
+\def\newcommand#1#2#3#4#5{}
 %
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

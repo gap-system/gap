@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.pcgsspec_gd :=
     "@(#)$Id$";
@@ -15,7 +16,7 @@ Revision.pcgsspec_gd :=
 
 #V  InfoSpecPcgs
 ##
-InfoSpecPcgs := NewInfoClass( "InfoSpecPcgs" );
+DeclareInfoClass( "InfoSpecPcgs" );
 
 
 #############################################################################
@@ -23,91 +24,72 @@ InfoSpecPcgs := NewInfoClass( "InfoSpecPcgs" );
 
 #P  IsSpecialPcgs
 ##
-IsSpecialPcgs := NewProperty( "IsSpecialPcgs", IsPcgs );
+DeclareProperty( "IsSpecialPcgs", IsPcgs );
 
-SetIsSpecialPcgs := Setter(IsSpecialPcgs);
-HasIsSpecialPcgs := Tester(IsSpecialPcgs);
 
 
 #############################################################################
 ##
 #A  SpecialPcgs( <pcgs> )
 ##
-SpecialPcgs := NewAttribute( "SpecialPcgs",
+DeclareAttribute( "SpecialPcgs",
     IsPcgs );
 
-SetSpecialPcgs := Setter(SpecialPcgs);
-HasSpecialPcgs := Tester(SpecialPcgs);
 
 
 #############################################################################
 ##
 #A  LGWeights( <pcgs> )
 ##
-LGWeights := NewAttribute( "LGWeights", IsPcgs );
-SetLGWeights := Setter(LGWeights);
-HasLGWeights := Tester(LGWeights);
+DeclareAttribute( "LGWeights", IsPcgs );
 
 
 #############################################################################
 ##
 #A  LGLayers( <pcgs> )
 ##
-LGLayers := NewAttribute( "LGLayers", IsPcgs );
-SetLGLayers := Setter(LGLayers);
-HasLGLayers := Tester(LGLayers);
+DeclareAttribute( "LGLayers", IsPcgs );
 
 
 #############################################################################
 ##
 #A  LGFirst( <pcgs> )
 ##
-LGFirst := NewAttribute( "LGFirst", IsPcgs );
-SetLGFirst := Setter(LGFirst);
-HasLGFirst := Tester(LGFirst);
+DeclareAttribute( "LGFirst", IsPcgs );
 
 #############################################################################
 ##
 #A  InducedPcgsWrtSpecialPcgs( <G> )
 ##
-InducedPcgsWrtSpecialPcgs := NewAttribute( "InducedPcgsWrtSpecialPcgs",
+DeclareAttribute( "InducedPcgsWrtSpecialPcgs",
                                             IsGroup );
 
-SetInducedPcgsWrtSpecialPcgs := Setter( InducedPcgsWrtSpecialPcgs );
-HasInducedPcgsWrtSpecialPcgs := Tester( InducedPcgsWrtSpecialPcgs );
 
 #############################################################################
 ##
 #A  CanonicalPcgsWrtSpecialPcgs( <G> )
 ##
-CanonicalPcgsWrtSpecialPcgs := NewAttribute( "CanonicalPcgsWrtSpecialPcgs",
+DeclareAttribute( "CanonicalPcgsWrtSpecialPcgs",
                                               IsGroup );
 
-SetCanonicalPcgsWrtSpecialPcgs := Setter( CanonicalPcgsWrtSpecialPcgs );
-HasCanonicalPcgsWrtSpecialPcgs := Tester( CanonicalPcgsWrtSpecialPcgs );
 
 #############################################################################
 ##
 #P  IsInducedPcgsWrtSpecialPcgs( <pcgs> )
 ##
-IsInducedPcgsWrtSpecialPcgs := NewProperty( "IsInducedPcgsWrtSpecialPcgs",
+DeclareProperty( "IsInducedPcgsWrtSpecialPcgs",
                                              IsPcgs );
 
-SetIsInducedPcgsWrtSpecialPcgs := Setter( IsInducedPcgsWrtSpecialPcgs );
-HasIsInducedPcgsWrtSpecialPcgs := Tester( IsInducedPcgsWrtSpecialPcgs );
 
 #############################################################################
 ##
 #P  IsCanonicalPcgsWrtSpecialPcgs( <pcgs> )
 ##
-IsCanonicalPcgsWrtSpecialPcgs := NewProperty( "IsCanonicalPcgsWrtSpecialPcgs",
+DeclareProperty( "IsCanonicalPcgsWrtSpecialPcgs",
                                                IsPcgs );
 
-SetIsCanonicalPcgsWrtSpecialPcgs := Setter( IsCanonicalPcgsWrtSpecialPcgs );
-HasIsCanonicalPcgsWrtSpecialPcgs := Tester( IsCanonicalPcgsWrtSpecialPcgs );
 
 #############################################################################
 ##
-
 #E  pcgsspec.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

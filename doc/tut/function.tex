@@ -23,7 +23,8 @@ write your own functions.
 In  this section  you will  see  how  to write  functions  in the  {\GAP}
 language.  You will also see  how to use  the `if' statement.   Functions
 may  have  local variables   which are  declared   in an  initial `local'
-statement in the function definition.  Functions may call themselves.
+statement in the function definition. Also loop constructions via
+`while' and `for' are discussed. Functions may call themselves.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Writing Functions}
@@ -87,8 +88,11 @@ with an empty argument list.
 This is however not a typical example as no  value is returned but only a
 string is printed.
 
-A  more useful function is given in the following  example.   We define a
-function `sign' which shall determine the sign of a number.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{If Statements}
+
+In the following example we define a function `sign' which shall determine 
+the sign of a number.
 
 \beginexample
     gap> sign:= function(n)
@@ -148,11 +152,125 @@ integer.   This  function `fib' might  lead to strange  results if called
 with other arguments.  Try to insert the tests in this example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Scope of Variables}
+\Section{Local Variables}
 
-A function   `gcd' that  computes the   greatest  common divisor   of two
-integers  by Euclid's algorithm  will need a variable  in addition to the
-formal arguments.
+In the next example we show an implementation of the function `swap'
+that takes a list and two integers <i> and <j>. The function makes
+a shallow copy of the list and swaps the elements on the positions
+<i> and <j>.
+
+\beginexample
+    gap> swap:= function( list, i, j )
+    >      local copy,c;
+    >      copy:= ShallowCopy( list );
+    >      c:= copy[i];
+    >      copy[i]:= copy[j];
+    >      copy[j]:= c;
+    >      return copy;
+    >      end;
+    function ( list, i, j ) ... end
+    gap> l:= [ 1, 2, 4, 3 ];; c:=9;;
+    gap> swap( l, 3, 4 );
+    [ 1, 2, 3, 4 ]
+    gap> c;
+    9
+\endexample
+ 
+
+The additional  variables `copy'  and `c' are declared as  a  *local*  
+variable in the `local' statement  of the function definition.  The `local' 
+statement, if present, must  be the first  statement of  a function  
+definition. Following the `local' statement there is a list of variables
+separated by commas.
+
+The  variables `copy'  and `c' are indeed local variables, that is local to 
+the function `swap'. They can not be ``seen'' from the main loop; so 
+assignments to local variables will have *no* effect outside the function
+to which they belong. In the main loop we have assigned the value `9' to the
+variable `c'. Now the local nature of `c' in the function `swap' prevents  
+the value of the `c' in the main loop from being overwritten.
+
+We say  that in a given scope an identifier identifies a unique variable.
+A *scope* is a lexical part of a program text.  There is the global scope
+that encloses  the  entire program text, and there are local  scopes that
+range from the `function'  keyword, denoting the beginning of  a function
+definition, to the corresponding `end' keyword.  A local scope introduces
+new  variables, whose identifiers are  given in the formal argument  list
+and the local declaration of the function.  The usage of an identifier in
+a program text refers to  the  variable in  the  innermost scope that has
+this identifier as its name.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{For and While Loops}
+
+\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
+The next function calculates the product of a list of permutations `pp'.
+
+\beginexample
+    gap> product:= function( pp )
+    >        local prod,p;
+    >        prod:= ();        
+    >        for p in pp do
+    >          prod:= prod*p;    
+    >        od;
+    >        return prod;
+    >    end;
+    function ( pp ) ... end
+    gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8), (1,5,7)(2,3,8,6),
+    >           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2)];;
+    gap> product( pp );
+    (1,8,4,2,3,6,5,9)
+\endexample
+
+First a  local variable `prod'  is initialized  to the identity permutation
+`()'. Then the loop variable `p' takes as its value one permutation after
+the other from the list `pp' and is multiplied with  the present value of
+`prod'  resulting in a  new value which  is then assigned  to `prod'. When
+`p' has looped through all elements of `pp', then the result is returned.
+The `for' loop has the following syntax
+
+\)\fmark for <var> in <list> do <statements> od;
+
+The  effect of the `for'  loop  is to execute the <statements> for  every
+element  of  the <list>.   A `for'  loop  is  a  statement  and therefore
+terminated by a semicolon.  The list of <statements>  is enclosed by  the
+keywords `do' and `od'  (reverse  `do').  A `for'  loop returns no value.
+
+The `for' loop can loop over any kind of list, even a list with holes.
+In many programming languages the `for' loop has the form `for <var> from 
+<first> to <last> do <statements> od;' But this is merely a special case of 
+the general `for' loop as defined above where the <list> in the loop body 
+is a range:
+
+\)\fmark for <var> in [<first>..<last>] do <statements>  od;
+
+You can for  instance loop over a range to compute the factorial $n!$
+of the number $n$ in the following way.
+
+\beginexample
+    gap> factorial := function( n )
+    >        local k,fac;                    
+    >        fac:= 1;
+    >        for k in [1..n] do
+    >          fac:= fac*k;
+    >        od;
+    >        return fac;
+    >    end;
+    function ( n ) ... end
+    gap> factorial( 15 );
+    1307674368000
+\endexample
+
+The  `while' loop has the following syntax
+
+\)\fmark while <condition> do <statements>  od; 
+
+The `while'  loop loops over the <statements>  as long as  the 
+<condition> evaluates  to  `true'. Like the `for' loop the `while' loop 
+is terminated by the keyword `od' followed by a semicolon.
+
+As an example we consider a function `gcd' for calculating the greatest 
+common divisor of two integers, using Euclid's algorithm. 
 
 \beginexample
     gap> gcd:= function(a, b)
@@ -169,34 +287,40 @@ formal arguments.
     3
 \endexample
 
-The additional  variable `c'  is declared as  a  *local*  variable in the
-`local' statement  of the function definition.  The `local' statement, if
-present, must  be the first  statement of  a function  definition.   When
-several local variables are  declared in only one  `local' statement they
-are separated by commas.
+You have already seen that list objects may be  changed.   This holds  of
+course also for the  list in a loop body.  In most  cases  you have to be
+careful not  to change this list, but there are situations  where this is
+quite useful.  The following example  shows a quick way  to determine the
+primes smaller than 1000 by a sieve method.  Here we will make use of the
+function `Unbind' to delete entries from a list.
+\beginexample
+    gap> primes:= [];;
+    gap> numbers:= [2..1000];;
+    gap> for p in numbers do
+    >       Add(primes, p);
+    >       for n in numbers do
+    >          if n mod p = 0 then
+    >             Unbind(numbers[n-1]);
+    >          fi;
+    >       od;
+    >    od;
+\endexample
+The inner loop  removes all entries from `numbers' that are  divisible by
+the last detected prime `p'.  This is done by the function `Unbind' which
+deletes the binding of the list position  `numbers[n-1]' to the value `n'
+so that afterwards `numbers[n-1]' no longer has  an  assigned value.  The
+next  element encountered in `numbers'  by the outer  loop necessarily is
+the next prime.
 
-The  variable `c'  is  indeed  a local  variable,  that  is local to  the
-function `gcd'.  If you try  to use the value of `c' in the main loop you
-will see that `c'  has no assigned value unless you have already assigned
-a value to the variable `c'  in  the  main loop.  In this case  the local
-nature of `c' in the function `gcd' prevents  the value of the `c' in the
-main loop from being overwritten.
-
-We say  that in a given scope an identifier identifies a unique variable.
-A *scope* is a lexical part of a program text.  There is the global scope
-that encloses  the  entire program text, and there are local  scopes that
-range from the `function'  keyword, denoting the beginning of  a function
-definition, to the corresponding `end' keyword.  A local scope introduces
-new  variables, whose identifiers are  given in the formal argument  list
-and the local declaration of the function.  The usage of an identifier in
-a program text refers to  the  variable in  the  innermost scope that has
-this identifier as its name.
+In a similar way it is possible to enlarge the list which is looped over.
+This yields a nice and short orbit  algorithm for the  action of a group,
+for example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Recursion}
 
-We  have  already seen recursion  in the  function `fib'  above.  Here is
-another, slightly more complicated example.
+We  have  already seen recursion  in the  function `fib' in "If Statements".
+Here is another, slightly more complicated example.
 
 We will now write  a function to  determine the number of partitions of a
 positive integer.  A partition of a positive integer is a descending list
@@ -258,13 +382,21 @@ recursive solution if this is possible (and it is possible in this case),
 because a function call is not very cheap.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Further information}\null
+\Section{Further information}
 
 The function  syntax is described  in Section "ref:Functions".   The `if'
 statement is described  in more detail in  Section "ref:If".  More  about
 Fibonacci  numbers is found  in  Section "ref:Fibonacci"  and more  about
 partitions in Section "ref:Partitions".
+The `for' loop is described in "ref:For".
+The `while' loop is described in "ref:While".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  function.tex. . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+
+
+
+

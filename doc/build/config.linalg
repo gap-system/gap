@@ -1,0 +1,4 @@
+@msfiles = ("vspc","vector","matrix","matint");
+@gdfiles = ("vspc","listcoef","list","arith","matrix","matint","zlattice","basis","basismut","vspchom");
+$DIR = "../ref";
+$LIB = "../../lib"; 

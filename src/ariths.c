@@ -6,12 +6,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the  arithmetic  operations  package.
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_ariths_c =
+const char * Revision_ariths_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -79,18 +80,6 @@ Obj VerboseZeroObject (
 
 /****************************************************************************
 **
-*F  ZeroHandler( <self>, <obj> )  . . . . . . . . . . . . . . . . call 'ZERO'
-*/
-Obj ZeroHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return ZERO(obj);
-}
-
-
-/****************************************************************************
-**
 *F  InstallZeroObject( <verb> ) . . . . . . . . . . . .  install zero methods
 */
 void InstallZeroObject ( Int verb )
@@ -105,6 +94,18 @@ void InstallZeroObject ( Int verb )
     ZeroFuncs[ T_OBJECT          ] = func;
     ZeroFuncs[ T_PREC            ] = func;
     ZeroFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncZERO( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'ZERO'
+*/
+Obj FuncZERO (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ZERO(obj);
 }
 
 
@@ -142,18 +143,6 @@ Obj VerboseAInvObject (
 
 /****************************************************************************
 **
-*F  AInvHandler( <self>, <obj> )  . . . . . . . . . . . . . . . . call 'AINV'
-*/
-Obj AInvHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return AINV(obj);
-}
-
-
-/****************************************************************************
-**
 *F  InstallAinvObject( <verb> ) . . . . . .  install additive inverse methods
 */
 void InstallAinvObject ( Int verb )
@@ -168,6 +157,18 @@ void InstallAinvObject ( Int verb )
     AInvFuncs[ T_OBJECT          ] = func;
     AInvFuncs[ T_PREC            ] = func;
     AInvFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncAINV( <self>, <obj> ) . . . . . . . . . . . . . . . . . . call 'AINV'
+*/
+Obj FuncAINV (
+    Obj                 self,
+    Obj                 obj )
+{
+    return AINV(obj);
 }
 
 
@@ -205,18 +206,6 @@ Obj VerboseOneObject (
 
 /****************************************************************************
 **
-*F  OneHandler( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'ONE'
-*/
-Obj OneHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return ONE(obj);
-}
-
-
-/****************************************************************************
-**
 *F  InstallOneObject( <verb> )  . . . . . . . . . . . . . install one methods
 */
 void InstallOneObject ( Int verb )
@@ -231,6 +220,18 @@ void InstallOneObject ( Int verb )
     OneFuncs[ T_OBJECT          ] = func;
     OneFuncs[ T_PREC            ] = func;
     OneFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncONE( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'ONE'
+*/
+Obj FuncONE (
+    Obj                 self,
+    Obj                 obj )
+{
+    return ONE(obj);
 }
 
 
@@ -268,18 +269,6 @@ Obj VerboseInvObject (
 
 /****************************************************************************
 **
-*F  InvHandler( <self>, <obj> ) . . . . . . . . . . . . . . . . .  call 'INV'
-*/
-Obj InvHandler (
-    Obj                 self,
-    Obj                 obj )
-{
-    return INV( obj );
-}
-
-
-/****************************************************************************
-**
 *F  InstallInvObject( <verb> )  . . . . . . . . . . . install inverse methods
 */
 void InstallInvObject ( Int verb )
@@ -294,6 +283,18 @@ void InstallInvObject ( Int verb )
     InvFuncs[ T_OBJECT          ] = func;
     InvFuncs[ T_PREC            ] = func;
     InvFuncs[ T_PREC +IMMUTABLE ] = func;
+}
+
+
+/****************************************************************************
+**
+*F  FuncINV( <self>, <obj> )  . . . . . . . . . . . . . . . . . .  call 'INV'
+*/
+Obj FuncINV (
+    Obj                 self,
+    Obj                 obj )
+{
+    return INV( obj );
 }
 
 
@@ -351,19 +352,6 @@ Int VerboseEqObject (
 
 /****************************************************************************
 **
-*F  EqHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'EQ'
-*/
-Obj EqHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (EQ( opL, opR ) ? True : False);
-}
-
-
-/****************************************************************************
-**
 *F  InstallEqObject( <verb> ) . . . . . . . . . .  install comparison methods
 */
 void InstallEqObject ( Int verb )
@@ -388,6 +376,19 @@ void InstallEqObject ( Int verb )
         EqFuncs[ T_PREC            ][ t2 ] = func;
         EqFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
+}
+
+
+/****************************************************************************
+**
+*F  FuncEQ( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'EQ'
+*/
+Obj FuncEQ (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (EQ( opL, opR ) ? True : False);
 }
 
 
@@ -427,19 +428,6 @@ Int VerboseLtObject (
 
 /****************************************************************************
 **
-*F  LtHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'LT'
-*/
-Obj LtHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (LT( opL, opR ) ? True : False);
-}
-
-
-/****************************************************************************
-**
 *F  InstallLtObject( <verb> ) . . . . . . . . . . . install less than methods
 */
 void InstallLtObject ( Int verb )
@@ -464,6 +452,19 @@ void InstallLtObject ( Int verb )
         LtFuncs[ T_PREC            ][ t2 ] = func;
         LtFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
+}
+
+
+/****************************************************************************
+**
+*F  FuncLT( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'LT'
+*/
+Obj FuncLT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (LT( opL, opR ) ? True : False);
 }
 
 
@@ -519,19 +520,6 @@ Int VerboseInObject (
 
 /****************************************************************************
 **
-*F  InHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . . call 'IN'
-*/
-Obj InHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return (IN( opL, opR ) ? True : False);
-}
-
-
-/****************************************************************************
-**
 *F  InstallInObject( <verb> ) . . . . . . . . . . . . . .  install in methods
 */
 void InstallInObject ( Int verb )
@@ -554,6 +542,19 @@ void InstallInObject ( Int verb )
         InFuncs[ t2 ][ T_PREC            ] = func;
         InFuncs[ t2 ][ T_PREC +IMMUTABLE ] = func;
     }
+}
+
+
+/****************************************************************************
+**
+*F  FuncIN( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . . . call 'IN'
+*/
+Obj FuncIN (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return (IN( opL, opR ) ? True : False);
 }
 
 
@@ -599,19 +600,6 @@ Obj VerboseSumObject (
 
 /****************************************************************************
 **
-*F  SumHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'SUM'
-*/
-Obj SumHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return SUM( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  InstallSumObject( <verb> )  . . . . . . . . . . . . . install sum methods
 */
 void InstallSumObject ( Int verb )
@@ -641,6 +629,19 @@ void InstallSumObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncSUM( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'SUM'
+*/
+Obj FuncSUM (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return SUM( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *V  DiffFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of difference methods
 */
@@ -660,21 +661,6 @@ Obj DiffDefault (
     tmp = AINV( opR );
     return SUM( opL, tmp );
 }    
-
-
-/****************************************************************************
-**
-*F  DiffDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'DiffDefault'
-*/
-Obj DiffDefaultFunc;
-
-Obj DiffDefaultHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DiffDefault( opL, opR );
-}
 
 
 /****************************************************************************
@@ -705,19 +691,6 @@ Obj VerboseDiffObject (
 
 /****************************************************************************
 **
-*F  DiffHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'DIFF'
-*/
-Obj DiffHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return DIFF( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  InstallDiffObject( <verb> ) . . . . . . . . .  install difference methods
 */
 void InstallDiffObject ( Int verb )
@@ -742,6 +715,34 @@ void InstallDiffObject ( Int verb )
         DiffFuncs[ T_PREC            ][ t2 ] = func;
         DiffFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
+}
+
+
+/****************************************************************************
+**
+*F  FuncDIFF_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'DiffDefault'
+*/
+Obj DiffDefaultFunc;
+
+Obj FuncDIFF_DEFAULT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DiffDefault( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  FuncDIFF( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'DIFF'
+*/
+Obj FuncDIFF (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return DIFF( opL, opR );
 }
 
 
@@ -781,19 +782,6 @@ Obj VerboseProdObject (
 
 /****************************************************************************
 **
-*F  ProdHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'PROD'
-*/
-Obj ProdHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return PROD( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  InstallProdObject( <verb> ) . . . . . . . . . . . install product methods
 */
 void InstallProdObject ( Int verb )
@@ -823,6 +811,19 @@ void InstallProdObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncPROD( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'PROD'
+*/
+Obj FuncPROD (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return PROD( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *V  QuoFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . table of quotient methods
 */
@@ -840,21 +841,6 @@ Obj QuoDefault (
     Obj                 tmp;
     tmp = INV( opR );
     return PROD( opL, tmp );
-}
-
-
-/****************************************************************************
-**
-*F  QuoDefaultHandler( <self>, <opL>, <opR> ) . . . . . . . call 'QuoDefault'
-*/
-Obj QuoDefaultFunc;
-
-Obj QuoDefaultHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return QuoDefault( opL, opR );
 }
 
 
@@ -881,19 +867,6 @@ Obj VerboseQuoObject (
     Obj                 opR )
 {
     return DoVerboseOperation2Args( QuoOper, opL, opR );
-}
-
-
-/****************************************************************************
-**
-*F  QuoHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'QUO'
-*/
-Obj QuoHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return QUO( opL, opR );
 }
 
 
@@ -928,6 +901,34 @@ void InstallQuoObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncQUO_DEFAULT( <self>, <opL>, <opR> ) . . . . . . . . call 'QuoDefault'
+*/
+Obj QuoDefaultFunc;
+
+Obj FuncQUO_DEFAULT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return QuoDefault( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  FuncQUO( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'QUO'
+*/
+Obj FuncQUO (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return QUO( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *V  LQuoFuncs[ <typeL> ][ <typeR> ] . . . . .  table of left quotient methods
 */
@@ -945,21 +946,6 @@ Obj LQuoDefault (
     Obj                 tmp;
     tmp = INV( opL );
     return PROD( tmp, opR );
-}
-
-
-/****************************************************************************
-**
-*F  LQuoDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'LQuoDefault'
-*/
-Obj LQuoDefaultFunc;
-
-Obj LQuoDefaultHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return LQuoDefault( opL, opR );
 }
 
 
@@ -986,19 +972,6 @@ Obj VerboseLQuoObject (
     Obj                 opR )
 {
     return DoVerboseOperation2Args( LQuoOper, opL, opR );
-}
-
-
-/****************************************************************************
-**
-*F  LQuoHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'LQUO'
-*/
-Obj LQuoHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return LQUO( opL, opR );
 }
 
 
@@ -1033,6 +1006,34 @@ void InstallLQuoObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncLQUO_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'LQuoDefault'
+*/
+Obj LQuoDefaultFunc;
+
+Obj FuncLQUO_DEFAULT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return LQuoDefault( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  FuncLQUO( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'LQUO'
+*/
+Obj FuncLQUO (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return LQUO( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *V  PowFuncs[ <typeL> ][ <typeR> ]  . . . . . . . . .  table of power methods
 */
@@ -1050,21 +1051,6 @@ Obj PowDefault (
     Obj                 tmp;
     tmp = LQUO( opR, opL );
     return PROD( tmp, opR );
-}
-
-
-/****************************************************************************
-**
-*F  PowDefaultHandler( <self>, <opL>, <opR> ) . . . . . . . call 'PowDefault'
-*/
-Obj PowDefaultFunc;
-
-Obj PowDefaultHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return PowDefault( opL, opR );
 }
 
 
@@ -1091,19 +1077,6 @@ Obj VerbosePowObject (
     Obj                 opR )
 {
     return DoVerboseOperation2Args( PowOper, opL, opR );
-}
-
-
-/****************************************************************************
-**
-*F  PowHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'POW'
-*/
-Obj PowHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return POW( opL, opR );
 }
 
 
@@ -1138,6 +1111,34 @@ void InstallPowObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncPOW_DEFAULT( <self>, <opL>, <opR> ) . . . . . . . . call 'PowDefault'
+*/
+Obj PowDefaultFunc;
+
+Obj FuncPOW_DEFAULT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return PowDefault( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  FuncPOW( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'POW'
+*/
+Obj FuncPOW (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return POW( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *V  CommFuncs[ <typeL> ][ <typeR> ] . . . . . . . table of commutator methods
 */
@@ -1157,21 +1158,6 @@ Obj CommDefault (
     tmp1 = PROD( opR, opL );
     tmp2 = PROD( opL, opR );
     return LQUO( tmp1, tmp2 );
-}
-
-
-/****************************************************************************
-**
-*F  CommDefaultHandler( <self>, <opL>, <opR> )  . . . . .  call 'CommDefault'
-*/
-Obj CommDefaultFunc;
-
-Obj CommDefaultHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return CommDefault( opL, opR );
 }
 
 
@@ -1203,19 +1189,6 @@ Obj VerboseCommObject (
 
 /****************************************************************************
 **
-*F  CommHandler( <self>, <opL>, <opR> ) . . . . . . . . . . . . . call 'COMM'
-*/
-Obj CommHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return COMM( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  InstallCommObject( <verb> ) . . . . . . . . .  install commutator methods
 */
 void InstallCommObject ( Int verb )
@@ -1240,6 +1213,34 @@ void InstallCommObject ( Int verb )
         CommFuncs[ T_PREC            ][ t2 ] = func;
         CommFuncs[ T_PREC +IMMUTABLE ][ t2 ] = func;
     }
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOMM_DEFAULT( <self>, <opL>, <opR> )  . . . . . .  call 'CommDefault'
+*/
+Obj CommDefaultFunc;
+
+Obj FuncCOMM_DEFAULT (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return CommDefault( opL, opR );
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOMM( <self>, <opL>, <opR> )  . . . . . . . . . . . . . . call 'COMM'
+*/
+Obj FuncCOMM (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return COMM( opL, opR );
 }
 
 
@@ -1280,19 +1281,6 @@ Obj VerboseModObject (
 
 /****************************************************************************
 **
-*F  ModHandler( <self>, <opL>, <opR> )  . . . . . . . . . . . . .  call 'MOD'
-*/
-Obj ModHandler (
-    Obj                 self,
-    Obj                 opL,
-    Obj                 opR )
-{
-    return MOD( opL, opR );
-}
-
-
-/****************************************************************************
-**
 *F  InstallModObject( <verb> )  . . . . . . . . . . . install the mod methods
 */
 void InstallModObject ( Int verb )
@@ -1322,6 +1310,19 @@ void InstallModObject ( Int verb )
 
 /****************************************************************************
 **
+*F  FuncMOD( <self>, <opL>, <opR> ) . . . . . . . . . . . . . . .  call 'MOD'
+*/
+Obj FuncMOD (
+    Obj                 self,
+    Obj                 opL,
+    Obj                 opR )
+{
+    return MOD( opL, opR );
+}
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1329,15 +1330,112 @@ void InstallModObject ( Int verb )
 /****************************************************************************
 **
 
-*F  SetupAriths() . . . . . . .  initialize the arithmetic operations package
-**
-**  'InitAriths' initializes the arithmetic operations package.
+*V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
 */
-void SetupAriths ( void )
+static StructGVarAttr GVarAttrs [] = {
+
+    { "ZERO", "op", &ZeroAttr,
+      FuncZERO, "src/ariths.c:ZERO" },
+
+    { "AINV", "op", &AInvAttr,
+      FuncAINV, "src/ariths.c:AINV" },
+
+    { "ONE", "op", &OneAttr,
+      FuncONE, "src/ariths.c:ONE" },
+
+    { "INV", "op", &InvAttr,
+      FuncINV, "src/ariths.c:INV" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    { "EQ", 2, "opL, opR", &EqOper,
+      FuncEQ, "src/ariths.c:EQ" },
+
+    { "LT", 2, "opL, opR", &LtOper,
+      FuncLT, "src/ariths.c:LT" },
+
+    { "IN", 2, "opL, opR", &InOper,
+      FuncIN, "src/ariths.c:IN" },
+
+    { "SUM", 2, "opL, opR", &SumOper,
+      FuncSUM, "src/ariths.c:SUM" },
+
+    { "DIFF", 2, "opL, opR", &DiffOper,
+      FuncDIFF, "src/ariths.c:DIFF" },
+
+    { "PROD", 2, "opL, opR", &ProdOper,
+      FuncPROD, "src/ariths.c:PROD" },
+
+    { "QUO", 2, "opL, opR", &QuoOper,
+      FuncQUO, "src/ariths.c:QUO" },
+
+    { "LQUO", 2, "opL, opR", &LQuoOper,
+      FuncLQUO, "src/ariths.c:LQUO" },
+
+    { "POW", 2, "opL, opR", &PowOper,
+      FuncPOW, "src/ariths.c:POW" },
+
+    { "COMM", 2, "opL, opR", &CommOper,
+      FuncCOMM, "src/ariths.c:COMM" },
+
+    { "MOD", 2, "opL, opR", &ModOper,
+      FuncMOD, "src/ariths.c:MOD" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "COMM_DEFAULT", 2, "opL, opR",
+      FuncCOMM_DEFAULT, "src/ariths.c:COMM_DEFAULT" },
+
+    { "POW_DEFAULT", 2, "opL, opR",
+      FuncPOW_DEFAULT, "src/ariths.c:POW_DEFAULT" },
+
+    { "LQUO_DEFAULT", 2, "opL, opR",
+      FuncLQUO_DEFAULT, "src/ariths.c:LQUO_DEFAULT" },
+
+    { "QUO_DEFAULT", 2, "opL, opR",
+      FuncQUO_DEFAULT, "src/ariths.c:QUO_DEFAULT" },
+
+    { "DIFF_DEFAULT", 2, "opL, opR",
+      FuncDIFF_DEFAULT, "src/ariths.c:DIFF_DEFAULT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                t1;             /* type of left  operand           */
     UInt                t2;             /* type of right operand           */
 
+    /* init filters and functions                                          */
+    InitHdlrAttrsFromTable( GVarAttrs );
+    InitHdlrOpersFromTable( GVarOpers );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make and install the 'ZERO' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1345,13 +1443,11 @@ void SetupAriths ( void )
     }
     InstallZeroObject(0);
 
-
     /* make and install the 'AINV' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         AInvFuncs[t1] = AInvObject;
     }
     InstallAinvObject(0);
-
 
     /* make and install the 'ONE' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1359,13 +1455,11 @@ void SetupAriths ( void )
     }
     InstallOneObject(0);
 
-
     /* make and install the 'INV' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         InvFuncs[t1] = InvObject;
     }
     InstallInvObject(0);
-
 
     /* make and install the 'EQ' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1375,7 +1469,6 @@ void SetupAriths ( void )
     }
     InstallEqObject(0);
 
-
     /* make and install the 'LT' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1383,7 +1476,6 @@ void SetupAriths ( void )
         }
     }
     InstallLtObject(0);
-
 
     /* make and install the 'IN' comparison operation                      */
     for ( t1 = FIRST_REAL_TNUM; t1 <= LAST_VIRTUAL_TNUM; t1++ ) {
@@ -1393,7 +1485,6 @@ void SetupAriths ( void )
     }
     InstallInObject(0);
 
-
     /* make and install the 'SUM' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1401,7 +1492,6 @@ void SetupAriths ( void )
         }
     }
     InstallSumObject(0);
-
 
     /* make and install the 'DIFF' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1411,7 +1501,6 @@ void SetupAriths ( void )
     }
     InstallDiffObject(0);
 
-
     /* make and install the 'PROD' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1419,7 +1508,6 @@ void SetupAriths ( void )
         }
     }
     InstallProdObject(0);
-
 
     /* make and install the 'QUO' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1429,7 +1517,6 @@ void SetupAriths ( void )
     }
     InstallQuoObject(0);
 
-
     /* make and install the 'LQUO' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1437,7 +1524,6 @@ void SetupAriths ( void )
         }
     }
     InstallLQuoObject(0);
-
 
     /* make and install the 'POW' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
@@ -1447,7 +1533,6 @@ void SetupAriths ( void )
     }
     InstallPowObject(0);
 
-
     /* make and install the 'COMM' arithmetic operation                    */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1456,7 +1541,6 @@ void SetupAriths ( void )
     }
     InstallCommObject(0);
 
-
     /* make and install the 'MOD' arithmetic operation                     */
     for ( t1 = FIRST_REAL_TNUM;  t1 <= LAST_VIRTUAL_TNUM;  t1++ ) {
         for ( t2 = FIRST_REAL_TNUM;  t2 <= LAST_VIRTUAL_TNUM;  t2++ ) {
@@ -1464,111 +1548,54 @@ void SetupAriths ( void )
         }
     }
     InstallModObject(0);
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitAriths()  . . . . . . .  initialize the arithmetic operations package
-**
-**  'InitAriths' initializes the arithmetic operations package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitAriths ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* make and install the 'ZERO' arithmetic operation                    */
-    C_NEW_GVAR_ATTR( "ZERO", "op", ZeroAttr, ZeroHandler,
-        "src/ariths.c:ZERO" );
+    /* init filters and functions                                          */
+    InitGVarAttrsFromTable( GVarAttrs );
+    InitGVarOpersFromTable( GVarOpers );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-
-    /* make and install the 'AINV' arithmetic operation                    */
-    C_NEW_GVAR_ATTR( "AINV", "op", AInvAttr, AInvHandler,
-        "src/ariths.c:AINV" );
-
-
-    /* make and install the 'ONE' arithmetic operation                     */
-    C_NEW_GVAR_ATTR( "ONE", "op", OneAttr, OneHandler,
-        "src/ariths.c:ONE" );
-
-
-    /* make and install the 'INV' arithmetic operation                     */
-    C_NEW_GVAR_ATTR( "INV", "op", InvAttr, InvHandler,
-        "src/ariths.c:INV" );
-
-
-    /* make and install the 'EQ' comparison operation                      */
-    C_NEW_GVAR_OPER( "EQ", 2L, "opL, opR", EqOper, EqHandler,
-        "src/ariths.c:EQ" );
-
-
-    /* make and install the 'LT' comparison operation                      */
-    C_NEW_GVAR_OPER( "LT", 2L, "opL, opR", LtOper, LtHandler,
-        "src/ariths.c:LT" );
-
-
-    /* make and install the 'IN' comparison operation                      */
-    C_NEW_GVAR_OPER( "IN", 2L, "opL, opR", InOper, InHandler,
-        "src/ariths.c:IN" );
-
-
-    /* make and install the 'SUM' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "SUM", 2L, "opL, opR", SumOper, SumHandler,
-        "src/ariths.c:SUM" );
-
-
-    /* make and install the 'DIFF' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "DIFF", 2L, "opL, opR", DiffOper, DiffHandler,
-        "src/ariths.c:DIFF" );
-    C_NEW_GVAR_FUNC( "DIFF_DEFAULT", 2L, "opL, opR", DiffDefaultHandler,
-        "src/ariths.c:DIFF_DEFAULT" );
-
-
-    /* make and install the 'PROD' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "PROD", 2L, "opL, opR", ProdOper, ProdHandler,
-        "src/ariths.c:PROD" );
-
-
-    /* make and install the 'QUO' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "QUO", 2L, "opL, opR", QuoOper, QuoHandler,
-        "src/ariths.c:QUO" );
-    C_NEW_GVAR_FUNC( "QUO_DEFAULT", 2L, "opL, opR", QuoDefaultHandler,
-        "src/ariths.c:QUO_DEFAULT" );
-
-
-    /* make and install the 'LQUO' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "LQUO", 2L, "opL, opR", LQuoOper, LQuoHandler,
-        "src/ariths.c:LQUO" );
-    C_NEW_GVAR_FUNC( "LQUO_DEFAULT", 2L, "opL, opR", LQuoDefaultHandler,
-        "src/ariths.c:LQUO_DEFAULT" );
-
-
-    /* make and install the 'POW' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "POW", 2L, "opL, opR", PowOper, PowHandler,
-        "src/ariths.c:POW" );
-    C_NEW_GVAR_FUNC( "POW_DEFAULT", 2L, "opL, opR", PowDefaultHandler,
-        "src/ariths.c:POW_DEFAULT" );
-
-
-    /* make and install the 'COMM' arithmetic operation                    */
-    C_NEW_GVAR_OPER( "COMM", 2L, "opL, opR", CommOper, CommHandler,
-        "src/ariths.c:COMM" );
-    C_NEW_GVAR_FUNC( "COMM_DEFAULT", 2L, "opL, opR", CommDefaultHandler,
-        "src/ariths.c:COMM_DEFAULT" );
-
-
-    /* make and install the 'MOD' arithmetic operation                     */
-    C_NEW_GVAR_OPER( "MOD", 2L, "opL, opR", ModOper, ModHandler,
-        "src/ariths.c:MOD" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckAriths() . check initialisation of the arithmetic operations package
+*F  InitInfoAriths()  . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckAriths ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "ariths",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoAriths ( void )
 {
-    SET_REVISION( "ariths_c",   Revision_ariths_c );
-    SET_REVISION( "ariths_h",   Revision_ariths_h );
+    module.revision_c = Revision_ariths_c;
+    module.revision_h = Revision_ariths_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

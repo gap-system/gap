@@ -1,0 +1,136 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  mapping.msk                  GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Mappings}
+
+\FileHeader{mapping}[1]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Declaration{IsGeneralMapping}
+\Declaration{IsConstantTimeAccessGeneralMapping}
+\Declaration{IsEndoGeneralMapping}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating mappings}
+
+\Declaration{GeneralMappingByElements}
+
+\Declaration{CompositionMapping}
+\Declaration{CompositionMapping2}
+\Declaration{InverseGeneralMapping}
+
+\Declaration{ZeroMapping}
+\Declaration{IdentityMapping}
+\Declaration{Embedding}
+\Declaration{Projection}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties and Attributes of (general) mappings}
+
+\Declaration{IsTotal}
+\Declaration{IsSingleValued}
+\Declaration{IsMapping}
+\Declaration{IsInjective}
+\Declaration{IsSurjective}
+\Declaration{IsBijective}
+
+\Declaration{Range}
+\Declaration{Source}
+\Declaration{UnderlyingRelation}
+\Declaration{UnderlyingGeneralMapping}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Images under mappings}
+
+\Declaration{ImagesSource}
+\Declaration{ImagesRepresentative}
+\Declaration{ImagesElm}
+\Declaration{ImagesSet}
+\Declaration{ImageElm}
+\Declaration{Image}
+\Declaration{Images}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Preimages under mappings}
+
+\Declaration{PreImagesRange}
+\Declaration{PreImagesElm}
+\Declaration{PreImageElm}
+\Declaration{PreImagesRepresentative}
+\Declaration{PreImagesSet}
+\Declaration{PreImage}
+\Declaration{PreImages}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Structure preserving mappings}
+
+From an algebraical point of view, the most important mappings are those
+which preserve a structure. {\GAP} supports four types of such mappings:
+
+1. General mappings that respect multiplication
+
+2. General mappings that respect addition
+
+3. General mappings that respect scalar mult.
+
+4. General mappings that respect multiplicative and additive structure
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Group Homomorphisms}
+
+\Declaration{RespectsMultiplication}
+\Declaration{RespectsInverses}
+\Declaration{RespectsOne}
+\Declaration{IsGroupGeneralMapping}
+\Declaration{KernelOfMultiplicativeGeneralMapping}
+\Declaration{CoKernelOfMultiplicativeGeneralMapping}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Additive Group Homomorphisms}
+
+\Declaration{RespectsAddition}
+\Declaration{RespectsAdditiveInverses}
+\Declaration{RespectsZero}
+\Declaration{IsAdditiveGroupGeneralMapping}
+\Declaration{KernelOfAdditiveGeneralMapping}
+\Declaration{CoKernelOfAdditiveGeneralMapping}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Linear mappings}
+
+\Declaration{RespectsScalarMultiplication}
+\Declaration{IsLeftModuleGeneralMapping}
+\Declaration{IsLinearMapping}
+\Declaration{KernelOfMultiplicativeGeneralMapping}
+\Declaration{CoKernelOfMultiplicativeGeneralMapping}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ring Homomorphisms}
+
+\Declaration{IsRingGeneralMapping}
+\Declaration{IsRingWithOneGeneralMapping}
+\Declaration{IsAlgebraGeneralMapping}
+\Declaration{IsAlgebraWithOneGeneralMapping}
+\Declaration{IsFieldHomomorphism}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Technical matters}
+
+\FileHeader{mapping}[2]
+
+\Declaration{IsGeneralMappingCollection}
+\Declaration{IsGeneralMappingFamily}
+\Declaration{FamilyRange}
+\Declaration{FamilySource}
+\Declaration{FamiliesOfGeneralMappingsAndRanges}
+\Declaration{GeneralMappingsFamily}
+\Declaration{TypeOfDefaultGeneralMapping}
+
+

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares  the functions of  Gasman,  the  GAP  storage manager.
 **
@@ -32,7 +33,7 @@
 **  happen to  look like references.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_gasman_h =
+const char * Revision_gasman_h =
    "@(#)$Id$";
 #endif
 
@@ -66,8 +67,11 @@ SYS_CONST char * Revision_gasman_h =
 **
 **  Note that bag identifiers are recycled.  That means that after a bag dies
 **  its identifier may be reused for a new bag.
-*/
+**
+**  The following is defined in "system.h"
+**
 typedef UInt * *        Bag;
+*/
 
 
 /****************************************************************************
@@ -480,12 +484,12 @@ extern  UInt                    NrHalfDeadBags;
 **  '-DCOUNT_BAGS', e.g., with 'make <target> COPTS=-DCOUNT_BAGS'.
 */
 typedef struct  {
-    SYS_CONST Char *        name;
+    const Char *            name;
     UInt                    nrLive;
     UInt                    nrAll;
     UInt                    sizeLive;
     UInt                    sizeAll;
-}                       TNumInfoBags;
+} TNumInfoBags;
 
 extern  TNumInfoBags            InfoBags [ 256 ];
 
@@ -670,6 +674,12 @@ extern  void            MarkOneSubBags (
 extern  void            MarkTwoSubBags (
             Bag                 bag );
 
+extern  void            MarkThreeSubBags (
+            Bag                 bag );
+
+extern  void            MarkFourSubBags (
+            Bag                 bag );
+
 extern  void            MarkAllSubBags (
             Bag                 bag );
 
@@ -757,7 +767,7 @@ extern  void            InitSweepFuncBags (
 
 typedef struct {
     Bag *                   addr [NR_GLOBAL_BAGS];
-    SYS_CONST Char *        cookie [NR_GLOBAL_BAGS];
+    const Char *            cookie [NR_GLOBAL_BAGS];
     UInt                    nr;
 } TNumGlobalBags;
 
@@ -789,9 +799,22 @@ extern TNumGlobalBags GlobalBags;
 **  after a save and load
 */
 
-extern  void            InitGlobalBag (
+extern void InitGlobalBag (
             Bag *               addr,
-            SYS_CONST Char *    cookie );
+            const Char *        cookie );
+
+extern void SortGlobals( UInt byWhat );
+
+extern Bag * GlobalByCookie(
+            const Char *        cookie );
+
+
+extern void StartRestoringBags( UInt nBags, UInt maxSize);
+
+extern Bag NextBagRestoring( UInt sizetype);
+
+extern void FinishedRestoringBags( void );
+
 
 
 /****************************************************************************
@@ -846,6 +869,24 @@ extern  void            InitCollectFuncBags (
             TNumCollectFuncBags before_func,
             TNumCollectFuncBags after_func );
 
+
+/****************************************************************************
+**
+*F  CheckMasterPointers() . . . . . . . . . . . . .do some consistency checks
+**
+**  'CheckMasterPointers()' tests for masterpoinetrs which are not one of the
+**  following:
+**
+**  0                       denoting the end of the free chain
+**  NewWeakDeadBagMarker    denoting the relic of a bag that was weakly
+**  OldWeakDeadBagMarker    but not strongly linked at the last garbage
+**                          collection
+**  a pointer into the masterpointer area   a link on the free chain
+**  a pointer into the bags area            a real object
+**
+*/
+
+extern void CheckMasterPointers( void );
 
 /****************************************************************************
 **

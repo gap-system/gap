@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares  the  functions  for  the  artithmetic  of  rationals.
 **
@@ -17,7 +18,7 @@
 **  something must not be an integer.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_rational_h =
+const char * Revision_rational_h =
    "@(#)$Id$";
 #endif
 
@@ -31,25 +32,9 @@ SYS_CONST char * Revision_rational_h =
 /****************************************************************************
 **
 
-*F  SetupRat()  . . . . . . . . . . . . . . . initialize the rational package
+*F  InitInfoRat() . . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupRat ( void );
-
-
-/****************************************************************************
-**
-*F  InitRat() . . . . . . . . . . . . . . . . initialize the rational package
-**
-**  'InitRat' initializes the rational package.
-*/
-extern void InitRat ( void );
-
-
-/****************************************************************************
-**
-*F  CheckRat()  . . . . . .  check the initialisation of the rational package
-*/
-extern void CheckRat ( void );
+StructInitInfo * InitInfoRat ( void );
 
 
 /****************************************************************************

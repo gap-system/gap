@@ -5,11 +5,19 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.grpperm_gd :=
     "@(#)$Id$";
 
-
+#############################################################################
+##
+#C  IsPermGroup(<obj>)
+##
+##  A permutation group is a  group of permutations on  a finite set
+##  $\Omega$ of  positive integers. {\GAP} does *not*  require the user to
+##  specify the operation domain  $\Omega$ when a permutation  group is
+##  defined.
 IsPermGroup := IsGroup and IsPermCollection;
 
 
@@ -31,33 +39,89 @@ IsFactorGroup := ReturnFalse;  # temporarily
 ##
 #R  IsPermGroupEnumerator . . . . . . . . . . . . . enumerator for perm group
 ##
-IsPermGroupEnumerator := NewRepresentation( "IsPermGroupEnumerator",
+DeclareRepresentation( "IsPermGroupEnumerator",
     IsEnumerator, [ "stabChain" ] );
 
 #############################################################################
 ##
 #R  IsRightTransversalPermGroup . . . . . . . right transversal of perm group
 ##
-IsRightTransversalPermGroup := NewRepresentation
-    ( "IsRightTransversalPermGroup", IsRightTransversal,
+DeclareRepresentation( "IsRightTransversalPermGroup", IsRightTransversal,
       [ "group", "subgroup", "stabChainGroup", "stabChainSubgroup" ] );
 
-MinimizeExplicitTransversal := NewOperationArgs
-                               ( "MinimizeExplicitTransversal" );
-AddCosetInfoStabChain := NewOperationArgs( "AddCosetInfoStabChain" );
-NumberCoset := NewOperationArgs( "NumberCoset" );
-CosetNumber := NewOperationArgs( "CosetNumber" );
+DeclareGlobalFunction( "MinimizeExplicitTransversal" );
+DeclareGlobalFunction( "AddCosetInfoStabChain" );
+DeclareGlobalFunction( "NumberCoset" );
+DeclareGlobalFunction( "CosetNumber" );
 
-IndependentGeneratorsAbelianPPermGroup := NewOperationArgs( "IndependentGeneratorsAbelianPPermGroup" );
-OrbitPerms := NewOperationArgs( "OrbitPerms" );
-OrbitsPerms := NewOperationArgs( "OrbitsPerms" );
-SmallestMovedPointPerms := NewOperationArgs( "SmallestMovedPointPerms" );
-LargestMovedPointPerms := NewOperationArgs( "LargestMovedPointPerms" );
-MovedPointsPerms := NewOperationArgs( "MovedPointsPerms" );
-NrMovedPointsPerms := NewOperationArgs( "NrMovedPointsPerms" );
-SylowSubgroupPermGroup := NewOperationArgs( "SylowSubgroupPermGroup" );
-SignPermGroup := NewOperationArgs( "SignPermGroup" );
-CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
+DeclareGlobalFunction( "IndependentGeneratorsAbelianPPermGroup" );
+
+DeclareGlobalFunction( "OrbitPerms" );
+
+DeclareGlobalFunction( "OrbitsPerms" );
+
+#############################################################################
+##
+#F  SmallestMovedPointPerms(<list>)
+##
+##  returns the smallest integer which is moved by at least one permutation
+##  in the nonempty list <list> of permutations.
+DeclareGlobalFunction( "SmallestMovedPointPerms" );
+
+#############################################################################
+##
+#F  LargestMovedPointPerms(<list>)
+##
+##  returns the smallest integer which is moved by at least one permutation
+DeclareGlobalFunction( "LargestMovedPointPerms" );
+
+
+#############################################################################
+##
+#F  MovedPointsPerms(<list>)
+##
+##  returns a list of the points which are moved by at least one of the
+##  permutations in <list>.
+DeclareGlobalFunction( "MovedPointsPerms" );
+
+#############################################################################
+##
+#F  NrMovedPointsPerms(<list>)
+##
+##  returns the number of the points which are moved by at least one of the
+##  permutations in <list>.
+DeclareGlobalFunction( "NrMovedPointsPerms" );
+
+#############################################################################
+##
+#A  LargestMovedPoint(<G>)
+##
+##  returns the largest positive integer which is moved by one element
+##  of the permutation group <G>.
+DeclareAttribute( "LargestMovedPoint", IsPermGroup );
+
+#############################################################################
+##
+#A  SmallestMovedPoint(<G>)
+##
+##  returns the smallest positive integer which is moved by one element
+##  of the permutation group <G>.
+DeclareAttribute( "SmallestMovedPoint", IsPermGroup );
+
+#############################################################################
+##
+#A  NrMovedPoints(<G>)
+##
+##  returns the number of positive integers which are moved by one element
+##  of the permutation group <G>.
+DeclareAttribute( "NrMovedPoints", IsPermGroup );
+
+DeclareGlobalFunction( "SylowSubgroupPermGroup" );
+
+DeclareGlobalFunction( "SignPermGroup" );
+
+DeclareGlobalFunction( "CycleStructuresGroup" );
+
 #############################################################################
 ##
 #M  ApproximateSuborbitsStabilizerPermGroup(<G>,<pnt>) . . . approximation of
@@ -65,25 +129,27 @@ CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
 ##  all schreier generators are used, the results may be the orbits of a
 ##  subgroup.)
 ##
-ApproximateSuborbitsStabilizerPermGroup :=
-  NewOperationArgs("ApproximateSuborbitsStabilizerPermGroup");
+DeclareGlobalFunction("ApproximateSuborbitsStabilizerPermGroup");
 
 #############################################################################
 ##
-#A  AllBlocks . . . . . Representatives of all block systems
+#A  AllBlocks(<G>)
 ##
-AllBlocks := NewAttribute( "AllBlocks", IsPermGroup );
-SetAllBlocks := Setter( AllBlocks );
-HasAllBlocks := Tester( AllBlocks );
+##  computes a list of representatives of all block systems for a
+##  permutation group <G> acting transitively on the points moved by the
+##  group.
+DeclareAttribute( "AllBlocks", IsPermGroup );
 
 #############################################################################
 ##
-#A  TransitiveIdentification . . . . . . . . . . in transitive groups library
+#A  TransitiveIdentification(<G>)
 ##
-TransitiveIdentification := NewAttribute( "TransitiveIdentification",
-                                          IsPermGroup );
-SetTransitiveIdentification := Setter( TransitiveIdentification );
-HasTransitiveIdentification := Tester( TransitiveIdentification );
+##  Let <G> be a permutation group, acting transitively on a set  of up to 23
+##  points.  Then `TransitiveIdentification' will return the position of this
+##  group in the transitive  groups library.  This means,  if <G> operates on
+##  $m$ points and    `TransitiveIdentification'  returns $n$,  then <G>   is
+##  permutation isomorphic to the group `TransitiveGroup(m,n)'.
+DeclareAttribute( "TransitiveIdentification", IsPermGroup );
 
 
 #############################################################################

@@ -6,22 +6,23 @@
 *H  @(#)$Id$
 **
 *Y  Copyright 1990-1992,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for computing with finite presentations.
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_tietze_c = 
+const char * Revision_tietze_c = 
   "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
+#include        "gap.h"                 /* error handling, initialisation  */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "gvars.h"               /* global variables                */
 
-#include        "gap.h"                 /* error handling, initialisation  */
 #include        "bool.h"                /* booleans                        */
 
 #include        "records.h"             /* generic records                 */
@@ -85,7 +86,7 @@ void CheckTietzeRelators (
     Obj *               ptTietze,
     Obj *               rels,
     Obj * *             ptRels,
-    Int4 *              numrels )
+    Int *              numrels )
 {
     *rels    = ptTietze[TZ_RELATORS];
     *numrels = INT_INTOBJ(ptTietze[TZ_NUMRELS]);
@@ -105,7 +106,7 @@ void CheckTietzeInverses (
     Obj *               ptTietze,
     Obj *               invs,
     Obj * *             ptInvs,
-    Int4 *              numgens )
+    Int *              numgens )
 {
     /* get and check the Tietze inverses list                              */
     *invs    = ptTietze[TZ_INVERSES];
@@ -124,7 +125,7 @@ void CheckTietzeInverses (
 */
 void CheckTietzeLengths (
     Obj *               ptTietze,
-    Int4                numrels,
+    Int                 numrels,
     Obj *               lens,
     Obj * *             ptLens )
 {
@@ -144,7 +145,7 @@ void CheckTietzeLengths (
 */
 void CheckTietzeFlags (
     Obj *               ptTietze,
-    Int4                numrels,
+    Int                 numrels,
     Obj *               flags,
     Obj * *             ptFlags )
 {
@@ -166,10 +167,10 @@ void CheckTietzeRelLengths (
     Obj *               ptTietze,
     Obj *               ptRels,
     Obj *               ptLens,
-    Int4                numrels,
-    Int4 *              total )
+    Int                 numrels,
+    Int  *              total )
 {
-    Int4               i;
+    Int                i;
 
     /* Check list <lens> to contain the relator lengths                 */
     *total = 0;
@@ -206,10 +207,10 @@ Obj FuncTzSortC (
     Obj *               ptLens;         /* pointer to this list            */
     Obj                 flags;          /* handle of the flags list        */
     Obj *               ptFlags;        /* pointer to this list            */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                i, h, k;        /* loop variables                  */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 i, h, k;        /* loop variables                  */
     Obj                 rel, len, flag; /* list entries                    */
-    Int4                total;
+    Int                 total;
 
     /* check the Tietze stack                                              */
     CheckTietzeStack( tietze, &ptTietze );
@@ -280,11 +281,11 @@ Obj FuncTzRenumberGens (
     Obj                 invs;           /* handle of the inverses list     */
     Obj *               ptInvs;         /* pointer to this list            */
     Obj *               ptRel;          /* pointer to the ith relator      */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                old;            /* generator or inverse            */
-    Int4                leng;           /* relator length                  */
-    Int4                i, j;           /* loop variables                  */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 old;            /* generator or inverse            */
+    Int                 leng;           /* relator length                  */
+    Int                 i, j;           /* loop variables                  */
 
     /* check the Tietze stack                                              */
     CheckTietzeStack( tietze, &ptTietze );
@@ -336,13 +337,13 @@ Obj FuncTzReplaceGens (
     Obj *               ptRel;          /* pointer to this relator         */
     Obj *               pt1;            /* pointer to a relator            */
     Obj *               pt2;            /* pointer to a relator            */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                total;          /* total length of relators        */
-    Int4                old, new;       /* generators or inverses          */
-    Int4                leng, reduced;  /* relator lengths                 */
-    Int4                altered;        /* flag                            */
-    Int4                i, j;           /* loop variables                  */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 total;          /* total length of relators        */
+    Int                 old, new;       /* generators or inverses          */
+    Int                 leng, reduced;  /* relator lengths                 */
+    Int                 altered;        /* flag                            */
+    Int                 i, j;           /* loop variables                  */
 
     /* check the Tietze stack                                              */
     CheckTietzeStack( tietze, &ptTietze );
@@ -469,16 +470,16 @@ Obj FuncTzSubstituteGen (
     Obj *               pt1;            /* pointer to a relator            */
     Obj *               pt2;            /* pointer to a relator            */
     Obj *               pt3;            /* pointer to a relator            */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                total;          /* total length of relators        */
-    Int4                given;          /* given generator and inverse     */
-    Int4                gen, ginv;      /* given generator and inverse     */
-    Int4                next;           /* generator or inverse            */
-    Int4                leng, newleng;  /* relator lengths                 */
-    Int4                wleng;          /* length of the replacing word    */
-    Int4                occ;            /* number of occurrences           */
-    Int4                i, j;           /* loop variables                  */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 total;          /* total length of relators        */
+    Int                 given;          /* given generator and inverse     */
+    Int                 gen, ginv;      /* given generator and inverse     */
+    Int                 next;           /* generator or inverse            */
+    Int                 leng, newleng;  /* relator lengths                 */
+    Int                 wleng;          /* length of the replacing word    */
+    Int                 occ;            /* number of occurrences           */
+    Int                 i, j;           /* loop variables                  */
 
     /* check the Tietze stack                                              */
     CheckTietzeStack( tietze, &ptTietze );
@@ -656,17 +657,17 @@ Obj FuncTzOccurrences (
     Obj                 rel;            /* handle of a relator             */
     Obj *               ptRel;          /* pointer to this relator         */
     Obj                 aux;            /* auxiliary list                  */
-    Int4 *              ptAux;          /* pointer to the lengths list     */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                leng;           /* length of a relator             */
-    Int4                num, next;      /* generators or inverses          */
-    Int4                i, k;           /* loop variables                  */
-    Int4                c;              /* count of one generator          */
-    Int4                nr;             /* number of occurrences           */
-    Int4                nr1;            /* nr of occurrences in one word   */
-    Int4                nrm;            /* minimal value of 'nr1'          */
-    Int4                min;            /* word that has this minimum      */
+    Int  *              ptAux;          /* pointer to the lengths list     */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 leng;           /* length of a relator             */
+    Int                 num, next;      /* generators or inverses          */
+    Int                 i, k;           /* loop variables                  */
+    Int                 c;              /* count of one generator          */
+    Int                 nr;             /* number of occurrences           */
+    Int                 nr1;            /* nr of occurrences in one word   */
+    Int                 nrm;            /* minimal value of 'nr1'          */
+    Int                 min;            /* word that has this minimum      */
 
     /* get and check arguments                                             */
     if ( ! IS_LIST(args) || 2 < LEN_LIST(args) || LEN_LIST(args) < 1 ) {
@@ -719,7 +720,7 @@ Obj FuncTzOccurrences (
     ptAux = 0;
     if ( numgens > 1 ) {
         aux   = NEW_STRING( (numgens+1)*sizeof(Int4) );
-        ptAux = (Int4*)ADDR_OBJ(aux);
+        ptAux = (Int*)ADDR_OBJ(aux);
         ptAux[0] = numgens;
         for ( k = 1;  k <= numgens;  k++ )
             ptAux[k] = 0;
@@ -862,11 +863,11 @@ Obj FuncTzOccurrencesPairs (
     Obj *               ptRel;          /* pointer to this relator         */
     Obj                 numObj;         /* handle of generator number      */
     Obj                 invObj;         /* handle of inverse gen number    */
-    Int4                num, i, ii;     /* generator numbers               */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                length;         /* length of the current relator   */
-    Int4                j1, j2, r;      /* loop variables                  */
+    Int                 num, i, ii;     /* generator numbers               */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 length;         /* length of the current relator   */
+    Int                 j1, j2, r;      /* loop variables                  */
 
     /* get and check arguments                                             */
     if ( ! IS_LIST(args) || 3 < LEN_LIST(args) || LEN_LIST(args) < 2 ) {
@@ -1042,33 +1043,33 @@ Obj FuncTzSearchC (
     UInt1               keys3[8192];    /* hash table of key values        */
     UInt                inv;            /* inverse for key computation     */
     UInt                key;            /* key value of subword            */
-    Int4                numgens;        /* number of Tietze generators     */
-    Int4                numrels;        /* number of Tietze relators       */
-    Int4                total;          /* total length of relators        */
+    Int                 numgens;        /* number of Tietze generators     */
+    Int                 numrels;        /* number of Tietze relators       */
+    Int                 total;          /* total length of relators        */
     Obj *               ptr;            /* pointer to a relator            */
     Obj *               v;              /* pointers into relators          */
     Obj *               w;              /* pointers into relators          */
     Obj *               ptx;            /* pointers into relators          */
     Obj *               pty;            /* pointers into relators          */
-    Int4                i1, j1;         /* loop variables                  */
-    Int4                i2, j2;         /* loop variables                  */
-    Int4                i3, j3;         /* loop variables                  */
-    Int4                len1;           /* relator length                  */
-    Int4                lmin, lmax;     /* bound for relator lengths       */
-    Int4                pos1, pos2;     /* position of the given relator   */
-    Int4                xmax;           /* position of the given relator   */
-    Int4                newflag, flag1; /* Tietze relator flags            */
-    Int4                xflag, yflag;   /* Tietze relator flags            */
-    Int4                xlen, xlen1;    /* length of the given relator     */
-    Int4                mlen;           /* length of the wanted match      */
-    Int4                ylen, ylen1;    /* length of the current relator   */
-    Int4                newlen;         /* length of a new relator         */
-    Int4                n, m;           /* subword lengths                 */
-    Int4                count;          /* number of altered relators      */
-    Int4                i, j, jj, x, y; /* loop variables                  */
-    Int4                lasty;          /* flag                            */
-    Int4                altered;        /* flag                            */
-    Int4                equal;          /* flag                            */
+    Int                 i1, j1;         /* loop variables                  */
+    Int                 i2, j2;         /* loop variables                  */
+    Int                 i3, j3;         /* loop variables                  */
+    Int                 len1;           /* relator length                  */
+    Int                 lmin, lmax;     /* bound for relator lengths       */
+    Int                 pos1, pos2;     /* position of the given relator   */
+    Int                 xmax;           /* position of the given relator   */
+    Int                 newflag, flag1; /* Tietze relator flags            */
+    Int                 xflag, yflag;   /* Tietze relator flags            */
+    Int                 xlen, xlen1;    /* length of the given relator     */
+    Int                 mlen;           /* length of the wanted match      */
+    Int                 ylen, ylen1;    /* length of the current relator   */
+    Int                 newlen;         /* length of a new relator         */
+    Int                 n, m;           /* subword lengths                 */
+    Int                 count;          /* number of altered relators      */
+    Int                 i, j, jj, x, y; /* loop variables                  */
+    Int                 lasty;          /* flag                            */
+    Int                 altered;        /* flag                            */
+    Int                 equal;          /* flag                            */
 
     /* get and check arguments                                             */
     if ( ! IS_LIST(args) || 4 < LEN_LIST(args) || LEN_LIST(args) < 3 ) {
@@ -1511,60 +1512,92 @@ Obj FuncTzSearchC (
 /****************************************************************************
 **
 
-*F  SetupTietze() . . . . . . . . . . . . . . . initialize the tietze package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupTietze ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
 
+    { "TzSortC", 1, "tietze",
+      FuncTzSortC, "src/tietze.c:TzSortC" },
 
-/****************************************************************************
-**
-*F  InitTietze()  . . . . . . . . . . . . . . . initialize the tietze package
-**
-**  'InitTietze' initializes the Tietze package.
-*/
-void InitTietze ( void )
-{
-    C_NEW_GVAR_FUNC( "TzSortC", 1, "tietze",
-                  FuncTzSortC,
-        "src/tietze.c:TzSortC" );
-
-    C_NEW_GVAR_FUNC( "TzRenumberGens", 1, "tietze",
-                  FuncTzRenumberGens,
-        "src/tietze.c:TzRenumberGens" );
+    { "TzRenumberGens", 1, "tietze",
+      FuncTzRenumberGens, "src/tietze.c:TzRenumberGens" },
     
-    C_NEW_GVAR_FUNC( "TzReplaceGens", 1, "tietze",
-                  FuncTzReplaceGens,
-        "src/tietze.c:TzReplaceGens" );
+    { "TzReplaceGens", 1, "tietze",
+      FuncTzReplaceGens, "src/tietze.c:TzReplaceGens" },
 
-    C_NEW_GVAR_FUNC( "TzSubstituteGen", 3, "tietze, gennum, word",
-                  FuncTzSubstituteGen,
-        "src/tietze.c:TzSubstituteGen" );
+    { "TzSubstituteGen", 3, "tietze, gennum, word",
+      FuncTzSubstituteGen, "src/tietze.c:TzSubstituteGen" },
 
-    C_NEW_GVAR_FUNC( "TzOccurrences", -1, "args",
-                  FuncTzOccurrences,
-        "src/tietze.c:TzOccurrences" );
+    { "TzOccurrences", -1, "args",
+      FuncTzOccurrences, "src/tietze.c:TzOccurrences" },
 
-    C_NEW_GVAR_FUNC( "TzOccurrencesPairs", -1, "args",
-                  FuncTzOccurrencesPairs,
-        "src/tietze.c:TzOccurrencesPairs" );
+    { "TzOccurrencesPairs", -1, "args",
+      FuncTzOccurrencesPairs, "src/tietze.c:TzOccurrencesPairs" },
 
-    C_NEW_GVAR_FUNC( "TzSearchC", -1, "args",
-                  FuncTzSearchC,
-        "src/tietze.c:TzSearchC" );
+    { "TzSearchC", -1, "args",
+      FuncTzSearchC, "src/tietze.c:TzSearchC" },
 
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
+{
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckTietze() . . . . . . . . . . . . . . . initialize the tietze package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckTietze ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "tietze_c",   Revision_tietze_c );
-    SET_REVISION( "tietze_h",   Revision_tietze_h );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoTietze()  . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "tietze",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoTietze ( void )
+{
+    module.revision_c = Revision_tietze_c;
+    module.revision_h = Revision_tietze_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation part of the padic numbers.
 ##
@@ -14,7 +15,6 @@ Revision.padics_gi :=
 
 #############################################################################
 ##
-
 #F  PrintPadicExpansion( <ppower>, <int>, <prime>, <precision> )
 ##
 ##  PrintPadicsExpansion prints   a pure p-adic  number x,  which is given as
@@ -217,7 +217,7 @@ end;
 ##  mult.-matrix   of  an   extended   p-adic  field    is   given  as    the
 ##  Kronecker-product of the mult.-matrices  of the two  polynomials returned
 ##  by        MultMatrixPadicNumbersByCoefficientsList.        (see        in
-##  PadicExtensionNumbersFamily)
+##  PadicExtensionNumberFamily)
 ##
 ##  So I get the structure-constants m_ijk if 
 ##    B_i*B_j = SUM(k=1,...,n) m_ijk B_k
@@ -247,7 +247,6 @@ end;
 
 #############################################################################
 ##
-
 #M  ShiftedPadicNumber( <padic>, <shift> ) 
 ##
 ##  ShiftedPadicNumber  takes a p-adic number <padic>  and an integer <shift>
@@ -362,14 +361,13 @@ end );
 
 #############################################################################
 ##
-
-#M  PurePadicNumbersFamily( <p>, <precision> )
+#M  PurePadicNumberFamily( <p>, <precision> )
 ##
-##  PurePadicNumbersFamily returns the family of pure p-adic numbers over the
+##  PurePadicNumberFamily returns the family of pure p-adic numbers over the
 ##  prime  <p> with  <precision>  "digits".  For the  representation  of pure
 ##  p-adic numbers see "PadicNumber" below.
 ##
-PurePadicNumbersFamily := function( p, precision )
+InstallGlobalFunction( PurePadicNumberFamily, function( p, precision )
     local   str,  fam;
 
     if not IsPrimeInt( p ) then 
@@ -378,7 +376,7 @@ PurePadicNumbersFamily := function( p, precision )
     if (not IsInt( precision )) or (precision < 0) then
         Error( "<precision> must be a positive integer" );
     fi;
-    str := "PurePadicNumbersFamily(";
+    str := "PurePadicNumberFamily(";
     Append( str, String(p) );
     Append( str, "," );
     Append( str, String(precision) );
@@ -390,7 +388,7 @@ PurePadicNumbersFamily := function( p, precision )
     fam!.printPadicSeries:= true;
     fam!.defaultType := NewType( fam, IsPurePadicNumber );
     return fam;
-end;
+end );
 
 
 #############################################################################
@@ -404,8 +402,8 @@ end;
 ##  
 InstallMethod( PadicNumber,
     true,
-    [ IsPurePadicNumbersFamily,
-      IsCyclotomicsCollection ],
+    [ IsPurePadicNumberFamily,
+      IsCyclotomicCollection ],
     0,
 
 function( fam, list )
@@ -428,7 +426,7 @@ end );
 ##
 InstallMethod( PadicNumber,
     true,
-    [ IsPurePadicNumbersFamily,
+    [ IsPurePadicNumberFamily,
       IsRat ],
     0,
 
@@ -474,7 +472,7 @@ end );
 ##
 InstallOtherMethod( Random,
     true,
-    [ IsPurePadicNumbersFamily ],
+    [ IsPurePadicNumberFamily ],
     0,
 
 function ( fam )
@@ -498,7 +496,7 @@ end );
 ##
 InstallOtherMethod( Zero,
     true,
-    [ IsPurePadicNumbersFamily ],
+    [ IsPurePadicNumberFamily ],
     0,
 
 function ( fam )
@@ -526,7 +524,7 @@ end );
 ##
 InstallOtherMethod( One,
     true,
-    [ IsPurePadicNumbersFamily ],
+    [ IsPurePadicNumberFamily ],
     0,
 
 function ( fam )
@@ -598,7 +596,7 @@ end );
 #M  <pure-padic> + <pure-padic>
 ##
 InstallMethod( \+,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPurePadicNumber, IsPurePadicNumber ],
      0,
 
@@ -647,7 +645,7 @@ end );
 #M  <pure-padic> * <pure-padic>
 ##
 InstallMethod( \*,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPurePadicNumber, IsPurePadicNumber ],
      0,
 
@@ -671,7 +669,7 @@ end );
 #M  <pure-padic> / <pure-padic>
 ##
 InstallMethod( \/,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPurePadicNumber, IsPurePadicNumber ],
      0,
 
@@ -692,7 +690,7 @@ end );
 #M  <pure-padic> = <pure-padic>
 ##
 InstallMethod( \=,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPurePadicNumber, IsPurePadicNumber ],
      0,
 
@@ -708,7 +706,7 @@ end );
 ##  This is just something to keep GAP quiet
 ##
 InstallMethod( \<,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPurePadicNumber, IsPurePadicNumber ],
      0,
 
@@ -723,8 +721,7 @@ end );
 
 #############################################################################
 ##
-
-#M  PadicExtensionNumbersFamily( <p>, <precision>, <unram>, <ram> )
+#M  PadicExtensionNumberFamily( <p>, <precision>, <unram>, <ram> )
 ##
 ##  An   extended p-adic field  L  is given by two   polynomials h and g with
 ##  coeff.-lists   <unram> (for  the  unramified  part)  and <ram>  (for  the
@@ -736,7 +733,8 @@ end );
 ##  {1,x,x^2,...,y,xy,x^2y,...} of L.   <precision> is the number of "digits"
 ##  that all the coeff. have.
 ##  
-PadicExtensionNumbersFamily := function( p, precision, unram, ram )
+InstallGlobalFunction( PadicExtensionNumberFamily,
+    function( p, precision, unram, ram )
     local   str,  fam,  yem1;
 
     if not IsPrimeInt( p ) then 
@@ -745,7 +743,7 @@ PadicExtensionNumbersFamily := function( p, precision, unram, ram )
     if (not IsInt( precision )) or (precision < 0) then
         Error( "<precision> must be a positive integer" );
     fi;
-    str := "PadicExtensionNumbersFamily(";
+    str := "PadicExtensionNumberFamily(";
     Append( str, String(p) );
     Append( str, "," );
     Append( str, String(precision) );
@@ -772,15 +770,15 @@ PadicExtensionNumbersFamily := function( p, precision, unram, ram )
     fam!.printPadicSeries := true;
 
     return fam;
-end;
+end );
 
 
 #############################################################################
 ##
-##  General  comment:    In  PadicExtensionNumbersFamily  you  give   the two
+##  General  comment:    In  PadicExtensionNumberFamily  you  give   the two
 ##  polynomials,  that define  the  extension of  Q_p.  You have  to care for
 ##  yourself, that these polynomials  are  really irreducible over Q_p!   Try
-##  PadicExtensionNumbersFamily(3, 4, [1,1,1], [1,1]) for example.  You think
+##  PadicExtensionNumberFamily(3, 4, [1,1,1], [1,1]) for example.  You think
 ##  this is ok? It is not, because  x^2+x+1 is NOT  irreducible over Q_p. The
 ##  result being,  that you get non-invertible extended  p-adic numbers.  So,
 ##  if that happens, check your polynomials!
@@ -802,14 +800,14 @@ end;
 ##  It is  NOT  guaranteed that all  or  at least one   of the coeff.  is not
 ##  divisible by the prime p.
 ##
-##  For example: in PadicExtensionNumbersFamily(3, 5, [1,1,1], [1,1])
+##  For example: in PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1])
 ##    the number (1.2000, 0.1210)(3) may be 
 ##      [ 0, [ 1.2000, 0.1210 ] ]   or
 ##      [-1, [ 12.000, 1.2100 ] ]  here the coeff. have to be multiplied
 ##                                 by p^(-1)
 ##
 ##    so there may be a number (1.2, 2.2)(3) and you may ask: "Where are my 5
-##    digits? There  are only two! Where  is the complain  compartment!"  But
+##    digits? There  are only two! Where  is the complain  department!"  But
 ##    the number is  intern: [-3, [ 0.0012, 0.0022  ] ]  and  so has in  fact
 ##    maximum precision.
 ##
@@ -817,7 +815,7 @@ end;
 ##
 InstallMethod( PadicNumber,
     true,
-    [ IsPadicExtensionNumbersFamily,
+    [ IsPadicExtensionNumberFamily,
       IsList ],
     0,
 
@@ -846,7 +844,7 @@ end );
 ##
 InstallMethod( PadicNumber,
     true,
-    [ IsPadicExtensionNumbersFamily,
+    [ IsPadicExtensionNumberFamily,
       IsRat ],
     0,
 
@@ -863,7 +861,6 @@ end );
 
 #############################################################################
 ##
-
 #M  PrintObj( <extended-padic> )
 ##
 InstallMethod( PrintObj,
@@ -898,7 +895,7 @@ end );
 ##
 InstallOtherMethod( Random,
     true,
-    [ IsPadicExtensionNumbersFamily ],
+    [ IsPadicExtensionNumberFamily ],
     0,
 
 function ( fam )
@@ -925,7 +922,7 @@ end );
 ##
 InstallOtherMethod( Zero,
     true,
-    [ IsPadicExtensionNumbersFamily ],
+    [ IsPadicExtensionNumberFamily ],
     0,
 
 function( fam )
@@ -956,7 +953,7 @@ end );
 ##
 InstallOtherMethod( One,
     true,
-    [ IsPadicExtensionNumbersFamily ],
+    [ IsPadicExtensionNumberFamily ],
     0,
 
 function( fam )
@@ -1137,7 +1134,7 @@ end );
 #M  <extended-padic> + <extended-padic>
 ##
 InstallMethod( \+,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPadicExtensionNumber,
        IsPadicExtensionNumber ],
      0,
@@ -1165,7 +1162,7 @@ end );
 #M  <extended-padic> - <extended-padic>
 ##
 InstallMethod( \-,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPadicExtensionNumber,
        IsPadicExtensionNumber ],
      0,
@@ -1247,7 +1244,7 @@ end );
 #M  <extended-padic> * <extended-padic>
 ##
 InstallMethod( \*,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPadicExtensionNumber,
        IsPadicExtensionNumber ],
      0,
@@ -1286,7 +1283,7 @@ end );
 #M  <extended-padic> = <extended-padic>
 ##
 InstallMethod( \=,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPadicExtensionNumber,
        IsPadicExtensionNumber ],
      0,
@@ -1322,7 +1319,7 @@ end );
 ##  Again just something to have it.
 ##
 InstallMethod( \<,
-     IsIdentical,
+     IsIdenticalObj,
      [ IsPadicExtensionNumber,
        IsPadicExtensionNumber ],
      0,

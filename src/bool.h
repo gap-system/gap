@@ -5,11 +5,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions for the boolean package.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_bool_h =
+const char * Revision_bool_h =
    "@(#)$Id$";
 #endif
 
@@ -51,27 +52,9 @@ extern Obj Fail;
 /****************************************************************************
 **
 
-*E  SetupBool() . . . . . . . . . . . . . . . initialize the booleans package
+*F  InitInfoBool()  . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupBool ( void );
-
-
-/****************************************************************************
-**
-*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
-*/
-extern void InitBool ( void );
-
-
-/****************************************************************************
-**
-*E  CheckBool() . check the initialisation of initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
-*/
-extern void CheckBool ( void );
+StructInitInfo * InitInfoBool ( void );
 
 
 /****************************************************************************

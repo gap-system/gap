@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the definition of categories of class functions,
 ##  and the corresponding properties, attributes, and operations.
@@ -53,9 +54,9 @@ Revision.ctblfuns_gd :=
 ##  Two class functions are equal if they have the same underlying
 ##  character table and the same class function values.
 ##
-IsClassFunction := NewCategory( "IsClassFunction",
+DeclareCategory( "IsClassFunction",
     IsRingElementWithOne and IsCommutativeElement and IsAssociativeElement
-        and IsHomogeneousList );
+        and IsHomogeneousList and IsScalarCollection and IsFinite );
 
 
 #############################################################################
@@ -68,30 +69,28 @@ IsClassFunction := NewCategory( "IsClassFunction",
 ##  Note that the class function knows the underlying group only via its
 ##  character table.
 ##  
-IsClassFunctionWithGroup := NewCategory( "IsClassFunctionWithGroup",
-    IsClassFunction );
+DeclareCategory( "IsClassFunctionWithGroup", IsClassFunction );
 
 
 #############################################################################
 ##
 #C  IsClassFunctionCollection( <obj> )
 ##
-IsClassFunctionCollection := CategoryCollections( IsClassFunction );
+DeclareCategoryCollections( "IsClassFunction" );
 
 
 #############################################################################
 ##
 #C  IsClassFunctionWithGroupCollection( <obj> )
 ##
-IsClassFunctionWithGroupCollection := CategoryCollections(
-    IsClassFunctionWithGroup );
+DeclareCategoryCollections( "IsClassFunctionWithGroup" );
 
 
 #############################################################################
 ##
 #C  IsClassFunctionFamily( <obj> )
 ##
-IsClassFunctionsFamily := CategoryFamily( IsClassFunction );
+DeclareCategoryFamily( "IsClassFunction" );
 
 
 #############################################################################
@@ -107,7 +106,7 @@ IsClassFunctionsFamily := CategoryFamily( IsClassFunction );
 ##  'elementsunderlying' : \\
 ##       the underlying character table of the elements,
 ##
-IsClassFunctionsSpaceRep := NewRepresentation( "IsClassFunctionsSpaceRep",
+DeclareRepresentation( "IsClassFunctionsSpaceRep",
     IsAttributeStoringRep and IsHandledByNiceBasis,
     [ "elementsunderlying" ] );
 
@@ -122,14 +121,11 @@ InstallTrueMethod( IsClassFunctionsSpaceRep,
 
 #############################################################################
 ##
-#A  ClassFunctionsFamily( <tbl> )
+#A  ClassFunctionFamily( <tbl> )
 ##
 ##  is the family of all class functions of the character table <tbl>.
 ##
-ClassFunctionsFamily := NewAttribute( "ClassFunctionsFamily",
-    IsNearlyCharacterTable );
-SetClassFunctionsFamily := Setter( ClassFunctionsFamily );
-HasClassFunctionsFamily := Tester( ClassFunctionsFamily );
+DeclareAttribute( "ClassFunctionFamily", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -140,10 +136,7 @@ HasClassFunctionsFamily := Tester( ClassFunctionsFamily );
 ##  'underlyingCharacterTable'.
 ##  (This belongs to the defining data of the class function <psi>.)
 ##
-UnderlyingCharacterTable := NewAttribute( "UnderlyingCharacterTable",
-    IsClassFunction );
-SetUnderlyingCharacterTable := Setter( UnderlyingCharacterTable );
-HasUnderlyingCharacterTable := Tester( UnderlyingCharacterTable );
+DeclareAttribute( "UnderlyingCharacterTable", IsClassFunction );
 
 
 #############################################################################
@@ -156,10 +149,7 @@ HasUnderlyingCharacterTable := Tester( UnderlyingCharacterTable );
 ##
 ##  This belongs to the defining data of the class function <psi>.
 ##
-ValuesOfClassFunction := NewAttribute( "ValuesOfClassFunction",
-    IsClassFunction );
-SetValuesOfClassFunction := Setter( ValuesOfClassFunction );
-HasValuesOfClassFunction := Tester( ValuesOfClassFunction );
+DeclareAttribute( "ValuesOfClassFunction", IsClassFunction );
 
 
 #############################################################################
@@ -169,18 +159,21 @@ HasValuesOfClassFunction := Tester( ValuesOfClassFunction );
 ##  A virtual character is a class function that can be written as the
 ##  difference of proper characters.
 ##
-IsVirtualCharacter := NewProperty( "IsVirtualCharacter", IsClassFunction );
-SetIsVirtualCharacter := Setter( IsVirtualCharacter );
-HasIsVirtualCharacter := Tester( IsVirtualCharacter );
+DeclareProperty( "IsVirtualCharacter", IsClassFunction );
 
 
 #############################################################################
 ##
 #P  IsCharacter( <chi> )
 ##
-IsCharacter := NewProperty( "IsCharacter", IsClassFunction );
-SetIsCharacter := Setter( IsCharacter );
-HasIsCharacter := Tester( IsCharacter );
+DeclareProperty( "IsCharacter", IsClassFunction );
+
+
+#############################################################################
+##
+#P  IsIrreducibleCharacter( <chi> )
+##
+DeclareProperty( "IsIrreducibleCharacter", IsClassFunction );
 
 
 #############################################################################
@@ -197,10 +190,8 @@ InstallTrueMethod( IsVirtualCharacter, IsCharacter );
 ##  is the centre of the character <psi>,
 ##  as a subgroup of the underlying group of <psi>.
 ##
-CentreOfCharacter := NewAttribute( "CentreOfCharacter",
+DeclareAttribute( "CentreOfCharacter",
     IsClassFunctionWithGroup and IsCharacter );
-SetCentreOfCharacter := Setter( CentreOfCharacter );
-HasCentreOfCharacter := Tester( CentreOfCharacter );
 
 
 #############################################################################
@@ -210,8 +201,7 @@ HasCentreOfCharacter := Tester( CentreOfCharacter );
 ##  is the list of positions of classes forming the centre of the character
 ##  <chi> of the ordinary character table <tbl>.
 ##
-CentreChar := NewOperation( "CentreChar",
-    [ IsClassFunction and IsCharacter ] );
+DeclareOperation( "CentreChar", [ IsClassFunction and IsCharacter ] );
 
 
 #############################################################################
@@ -221,10 +211,7 @@ CentreChar := NewOperation( "CentreChar",
 ##  is the set of irreducible characters that occur in the decomposition of
 ##  the (virtual) character <psi> with nonzero coefficient.
 ##
-ConstituentsOfCharacter := NewAttribute( "ConstituentsOfCharacter",
-    IsClassFunction );
-SetConstituentsOfCharacter := Setter( ConstituentsOfCharacter );
-HasConstituentsOfCharacter := Tester( ConstituentsOfCharacter );
+DeclareAttribute( "ConstituentsOfCharacter", IsClassFunction );
 
 
 #############################################################################
@@ -233,10 +220,7 @@ HasConstituentsOfCharacter := Tester( ConstituentsOfCharacter );
 ##
 ##  is the value of the character <psi> on the identity element.
 ##
-DegreeOfCharacter := NewAttribute( "DegreeOfCharacter",
-    IsClassFunction and IsCharacter );
-SetDegreeOfCharacter := Setter( DegreeOfCharacter );
-HasDegreeOfCharacter := Tester( DegreeOfCharacter );
+DeclareAttribute( "DegreeOfCharacter", IsClassFunction and IsCharacter );
 
 
 #############################################################################
@@ -248,17 +232,15 @@ HasDegreeOfCharacter := Tester( DegreeOfCharacter );
 ##  Then 'InertiaSubgroupInParent( <chi> )' is the inertia subgroup of <chi>
 ##  in the normalizer of $H$ in $G$.
 ##
-InertiaSubgroupInParent := NewAttribute( "InertiaSubgroupInParent",
+DeclareAttribute( "InertiaSubgroupInParent",
     IsClassFunctionWithGroup and IsCharacter );
-SetInertiaSubgroupInParent := Setter( InertiaSubgroupInParent );
-HasInertiaSubgroupInParent := Tester( InertiaSubgroupInParent );
 
 
 #############################################################################
 ##
 #O  InertiaSubgroup( <H>, <psi> )
 ##
-InertiaSubgroup := NewOperation( "InertiaSubgroup",
+DeclareOperation( "InertiaSubgroup",
     [ IsGroup, IsClassFunctionWithGroup and IsCharacter ] );
 
 
@@ -269,10 +251,8 @@ InertiaSubgroup := NewOperation( "InertiaSubgroup",
 ##  is the kernel of any representation of the underlying group of the
 ##  character <psi> affording the character <psi>.
 ##
-KernelOfCharacter := NewAttribute( "KernelOfCharacter",
+DeclareAttribute( "KernelOfCharacter",
     IsClassFunctionWithGroup and IsCharacter );
-SetKernelOfCharacter := Setter( KernelOfCharacter );
-HasKernelOfCharacter := Tester( KernelOfCharacter );
 
 
 #############################################################################
@@ -283,9 +263,7 @@ HasKernelOfCharacter := Tester( KernelOfCharacter );
 ##  of the character <psi>, that is, those positions with character value
 ##  equal to the character degree.
 ##
-KernelChar := NewAttribute( "KernelChar", IsClassFunction and IsCharacter );
-SetKernelChar := Setter( KernelChar );
-HasKernelChar := Tester( KernelChar );
+DeclareAttribute( "KernelChar", IsClassFunction and IsCharacter );
 
 
 #############################################################################
@@ -296,10 +274,7 @@ HasKernelChar := Tester( KernelChar );
 ##  is the trivial character of the group <G> resp. its character table
 ##  <tbl>.
 ##
-TrivialCharacter := NewAttribute( "TrivialCharacter",
-    IsNearlyCharacterTable );
-SetTrivialCharacter := Setter( TrivialCharacter );
-HasTrivialCharacter := Tester( TrivialCharacter );
+DeclareAttribute( "TrivialCharacter", IsNearlyCharacterTable );
 
 
 #############################################################################
@@ -313,9 +288,7 @@ HasTrivialCharacter := Tester( TrivialCharacter );
 ##  If <G> is a matrix group in characteristic zero then 'NaturalCharacter'
 ##  returns the character of the natural matrix representation of <G>.
 ##
-NaturalCharacter := NewAttribute( "NaturalCharacter", IsGroup );
-SetNaturalCharacter := Setter( NaturalCharacter );
-HasNaturalCharacter := Tester( NaturalCharacter );
+DeclareAttribute( "NaturalCharacter", IsGroup );
 
 
 #############################################################################
@@ -335,8 +308,7 @@ HasNaturalCharacter := Tester( NaturalCharacter );
 ##  <G> on the cosets of a point stabilizer <U>, 'NaturalCharacter( <G> )'
 ##  can be used instead of 'PermutationCharacter( <G>, <U> )'.
 ##
-PermutationCharacter := NewOperation( "PermutationCharacter",
-    [ IsGroup, IsGroup ] );
+DeclareOperation( "PermutationCharacter", [ IsGroup, IsGroup ] );
 
 
 #############################################################################
@@ -348,7 +320,7 @@ PermutationCharacter := NewOperation( "PermutationCharacter",
 ##  `CycleStructureClass' returns the cycle structure of the elements in
 ##  class <class> in the underlying permutation representation.
 ##
-CycleStructureClass := NewOperationArgs( "CycleStructureClass" );
+DeclareGlobalFunction( "CycleStructureClass" );
 
 
 #############################################################################
@@ -358,7 +330,7 @@ CycleStructureClass := NewOperationArgs( "CycleStructureClass" );
 ##  Note that the characteristic of the class function is determined by
 ##  <tbl>.
 ##
-ClassFunctionByValues := NewOperation( "ClassFunctionByValues",
+DeclareOperation( "ClassFunctionByValues",
     [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
 
@@ -366,7 +338,7 @@ ClassFunctionByValues := NewOperation( "ClassFunctionByValues",
 ##
 #O  VirtualCharacterByValues( <tbl>, <values> )
 ##
-VirtualCharacterByValues := NewOperation( "VirtualCharacterByValues",
+DeclareOperation( "VirtualCharacterByValues",
     [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
 
@@ -374,7 +346,7 @@ VirtualCharacterByValues := NewOperation( "VirtualCharacterByValues",
 ##
 #O  CharacterByValues( <tbl>, <values> )
 ##
-CharacterByValues := NewOperation( "CharacterByValues",
+DeclareOperation( "CharacterByValues",
     [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
 
@@ -390,15 +362,14 @@ CharacterByValues := NewOperation( "CharacterByValues",
 ##
 ##  (<chi> need *not* be a class function of <tbl>.)
 ##
-ClassFunctionSameType := NewOperationArgs( "ClassFunctionSameType" );
+DeclareGlobalFunction( "ClassFunctionSameType" );
 
 
 #############################################################################
 ##
 #A  CentralCharacter( <psi> )
 ##
-CentralCharacter := NewAttribute( "CentralCharacter",
-    IsClassFunction and IsCharacter );
+DeclareAttribute( "CentralCharacter", IsClassFunction and IsCharacter );
 
 
 #############################################################################
@@ -408,15 +379,14 @@ CentralCharacter := NewAttribute( "CentralCharacter",
 ##  is the list of values of the central character corresp. to the character
 ##  <chi> of the ordinary character table <tbl>.
 ##
-CentralChar := NewOperation( "CentralChar",
-    [ IsNearlyCharacterTable, IsCharacter ] );
+DeclareOperation( "CentralChar", [ IsNearlyCharacterTable, IsCharacter ] );
 
 
 #############################################################################
 ##
 #A  DeterminantOfCharacter( <psi> )
 ##
-DeterminantOfCharacter := NewAttribute( "DeterminantOfCharacter",
+DeclareAttribute( "DeterminantOfCharacter",
     IsClassFunction and IsCharacter );
 
 
@@ -429,7 +399,7 @@ DeterminantOfCharacter := NewAttribute( "DeterminantOfCharacter",
 ##  This is defined to be the character obtained on taking the determinant of
 ##  representing matrices of a representation affording <chi>.
 ##
-DeterminantChar := NewOperation( "DeterminantChar",
+DeclareOperation( "DeterminantChar",
     [ IsNearlyCharacterTable, IsVirtualCharacter ] );
 
 
@@ -447,8 +417,8 @@ DeterminantChar := NewOperation( "DeterminantChar",
 ##  We have '<char>[ <class> ] = List( [ 1 .. <n> ], k -> E(n)^k )
 ##                               * EigenvaluesChar( <tbl>, <char>, <class> ).
 ##
-EigenvaluesChar := NewOperation( "EigenvaluesChar",
-    [ IsNearlyCharacterTable, IsCharacter, IsInt and IsPosRat ] );
+DeclareOperation( "EigenvaluesChar",
+    [ IsNearlyCharacterTable, IsCharacter, IsPosInt ] );
 
 
 #############################################################################
@@ -459,11 +429,11 @@ EigenvaluesChar := NewOperation( "EigenvaluesChar",
 ##  is the restriction of the $G$-class function <chi> to the subgroup
 ##  or downward extension <H> of $G$. 
 ##
-RestrictedClassFunction := NewOperation( "RestrictedClassFunction",
+DeclareOperation( "RestrictedClassFunction",
     [ IsClassFunction, IsGroup ] );
 
 
-InflatedClassFunction := RestrictedClassFunction;
+DeclareSynonym( "InflatedClassFunction", RestrictedClassFunction );
 
 
 #############################################################################
@@ -483,11 +453,11 @@ InflatedClassFunction := RestrictedClassFunction;
 ##  be stored on the table <subtbl>; in the latter case the value of the
 ##  'specification' field may be specified.
 ##
-RestrictedClassFunctions := NewOperation( "RestrictedClassFunctions",
+DeclareOperation( "RestrictedClassFunctions",
     [ IsClassFunctionCollection, IsGroup ] );
 
 
-InflatedClassFunctions := RestrictedClassFunctions;
+DeclareSynonym( "InflatedClassFunctions", RestrictedClassFunctions );
 
 
 #############################################################################
@@ -497,8 +467,7 @@ InflatedClassFunctions := RestrictedClassFunctions;
 ##
 ##  is the class function obtained on induction of <chi> to <G>.
 ##
-InducedClassFunction := NewOperation( "InducedClassFunction",
-    [ IsClassFunction, IsGroup ] );
+DeclareOperation( "InducedClassFunction", [ IsClassFunction, IsGroup ] );
 
 
 #############################################################################
@@ -521,7 +490,7 @@ InducedClassFunction := NewOperation( "InducedClassFunction",
 ##
 ##  Note that <specification> must not be a list!
 ##
-InducedClassFunctions := NewOperation( "InducedClassFunctions",
+DeclareOperation( "InducedClassFunctions",
     [ IsClassFunctionCollection, IsGroup ] );
 
 
@@ -553,10 +522,10 @@ InducedClassFunctions := NewOperation( "InducedClassFunctions",
 #T why not to allow a projection into the orthogonal space of <constituents>?
 #T (<constituents> would have to be irreducibles then)
 ##  
-ReducedClassFunctions := NewOperation( "ReducedClassFunctions",
+DeclareOperation( "ReducedClassFunctions",
     [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ] );
 
-Reduced:= ReducedClassFunctions;
+DeclareSynonym( "Reduced", ReducedClassFunctions );
 #T compatibility with GAP-3
 
 
@@ -569,10 +538,10 @@ Reduced:= ReducedClassFunctions;
 ##  formed where the degree of the constituent is not bigger than the
 ##  degree of the reducibles character.
 ##
-ReducedCharacters := NewOperation( "ReducedOrdinary",
+DeclareOperation( "ReducedCharacters",
     [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ] );
 
-ReducedOrdinary:= ReducedCharacters;
+DeclareSynonym( "ReducedOrdinary", ReducedCharacters );
 #T compatibility with GAP-3
 
 
@@ -605,8 +574,7 @@ ReducedOrdinary:= ReducedCharacters;
 ##  is known the same number of $p$-th root classes for all $p$ for that the
 ##  power maps are stored.
 ##
-GlobalPartitionOfClasses := NewAttribute( "GlobalPartitionOfClasses",
-    IsGroup );
+DeclareAttribute( "GlobalPartitionOfClasses", IsGroup );
 
 
 #############################################################################
@@ -623,7 +591,7 @@ GlobalPartitionOfClasses := NewAttribute( "GlobalPartitionOfClasses",
 ##  for orbits on that <chi> is constant.
 #T for 'g' in 'H' is the identity or not?
 ##
-CorrespondingPermutation := NewOperation( "CorrespondingPermutation",
+DeclareOperation( "CorrespondingPermutation",
     [ IsGroup, IsMultiplicativeElementWithInverse ] );
 
 
@@ -635,8 +603,7 @@ CorrespondingPermutation := NewOperation( "CorrespondingPermutation",
 ##  <G> in its parent to the induced permutation of the conjugacy classes of
 ##  <G>.
 ##
-PermClassesHomomorphism := NewAttribute( "PermClassesHomomorphism",
-    IsGroup );
+DeclareAttribute( "PermClassesHomomorphism", IsGroup );
 #T SetIsParentDependent( PermClassesHomomorphism, true );
 
 
@@ -683,10 +650,7 @@ PermClassesHomomorphism := NewAttribute( "PermClassesHomomorphism",
 ##  'KernelOfCharacter' function you make use of this feature
 ##  because 'KernelOfCharacter' calls 'NormalSubgroupClasses'.
 ##
-NormalSubgroupClassesInfo := NewAttribute(
-    "NormalSubgroupClassesInfo", IsGroup, "mutable" );
-SetNormalSubgroupClassesInfo := Setter( NormalSubgroupClassesInfo );
-HasNormalSubgroupClassesInfo := Tester( NormalSubgroupClassesInfo );
+DeclareAttribute( "NormalSubgroupClassesInfo", IsGroup, "mutable" );
 
 
 ##############################################################################
@@ -696,7 +660,7 @@ HasNormalSubgroupClassesInfo := Tester( NormalSubgroupClassesInfo );
 ##  is the list of positions of conjugacy classes of the group <G> that
 ##  are contained in the normal subgroup <N> of <G>.
 ##
-ClassesOfNormalSubgroup := NewOperationArgs( "ClassesOfNormalSubgroup" );
+DeclareGlobalFunction( "ClassesOfNormalSubgroup" );
 
 
 ##############################################################################
@@ -712,7 +676,7 @@ ClassesOfNormalSubgroup := NewOperationArgs( "ClassesOfNormalSubgroup" );
 ##  the result will be identical to the group in
 ##  'NormalSubgroupClassesInfo( <G> ).normalSubgroups'.
 ##
-NormalSubgroupClasses := NewOperationArgs( "NormalSubgroupClasses" );
+DeclareGlobalFunction( "NormalSubgroupClasses" );
 
 
 ##############################################################################
@@ -723,8 +687,7 @@ NormalSubgroupClasses := NewOperationArgs( "NormalSubgroupClasses" );
 ##  <G> that consists of the conjugacy classes whose positions are in the
 ##  list <classes>.
 ##
-FactorGroupNormalSubgroupClasses := NewOperationArgs(
-    "FactorGroupNormalSubgroupClasses" );
+DeclareGlobalFunction( "FactorGroupNormalSubgroupClasses" );
 
 
 #############################################################################
@@ -743,7 +706,7 @@ FactorGroupNormalSubgroupClasses := NewOperationArgs(
 ##  'ScalarProduct( <tbl>, <characters>[j], <characters>[i] )'$ for
 ##  $ j \leq i $.
 ##  
-MatScalarProducts := NewOperationArgs( "MatScalarProducts" );
+DeclareGlobalFunction( "MatScalarProducts" );
 
 
 ##############################################################################
@@ -759,7 +722,7 @@ MatScalarProducts := NewOperationArgs( "MatScalarProducts" );
 ##  (This means that we can first form the orbit under Galois action, and
 ##  then apply the linear characters to all Galois conjugates.)
 ##
-OrbitChar := NewOperationArgs( "OrbitChar" );
+DeclareGlobalFunction( "OrbitChar" );
 
 
 ##############################################################################
@@ -769,7 +732,7 @@ OrbitChar := NewOperationArgs( "OrbitChar" );
 ##  is a list of orbits of the characters <irr> under the action of
 ##  Galois automorphisms and multiplication with linear characters.
 ##
-OrbitsCharacters := NewOperationArgs( "OrbitsCharacters" );
+DeclareGlobalFunction( "OrbitsCharacters" );
 
 
 ##############################################################################
@@ -780,13 +743,10 @@ OrbitsCharacters := NewOperationArgs( "OrbitsCharacters" );
 ##  under the action of Galois automorphisms and multiplication with linear
 ##  characters.
 ##
-OrbitRepresentativesCharacters := NewOperationArgs(
-    "OrbitRepresentativesCharacters" );
+DeclareGlobalFunction( "OrbitRepresentativesCharacters" );
 
 
 #############################################################################
 ##
 #E  ctblfuns.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This file  contains    functions which deal with   polycyclic  generating
 ##  systems of solvable permutation groups.
 ##
@@ -14,14 +17,14 @@ Revision.pcgsperm_gi :=
 ##
 #R  IsMemberPcSeriesPermGroup . . . . . . . . . . . . .  members of pc series
 ##
-IsMemberPcSeriesPermGroup := NewRepresentation( "IsMemberPcSeriesPermGroup",
+DeclareRepresentation( "IsMemberPcSeriesPermGroup",
     IsPermGroup, [ "noInSeries" ] );
 
 #############################################################################
 ##
 #F  WordVector( <gens>, <id>, <v> ) . . . . . .  make word from exponent list
 ##
-WordVector := function( gens, id, v )
+InstallGlobalFunction( WordVector, function( gens, id, v )
     local  word,  ll,  z;
     
     word := id;
@@ -32,13 +35,13 @@ WordVector := function( gens, id, v )
         fi;
     od;
     return word;
-end;
+end );
 
 #############################################################################
 ##
 #F  WordNumber( <gens>, <id>, <num>, <p> )  . . . . . . make word from number
 ##
-WordNumber := function( gens, id, num, p )
+InstallGlobalFunction( WordNumber, function( gens, id, num, p )
     local word,  gen;
     
     word := id;
@@ -48,14 +51,14 @@ WordNumber := function( gens, id, num, p )
         num := QuoInt( num, p );
     od;
     return word;
-end;
+end );
 
 #############################################################################
 ##
 
 #F  AddNormalizingElementPcgs( <G>, <z> ) . . . . . cyclic extension for pcgs
 ##
-AddNormalizingElementPcgs := function( G, z )
+InstallGlobalFunction( AddNormalizingElementPcgs, function( G, z )
     local   S,  A,  oldpos,  pos,  relord,
             pnt,  orb,  l,  L,  n,  m,  img,  i,  f,  p,  edg;
 
@@ -168,13 +171,13 @@ AddNormalizingElementPcgs := function( G, z )
     od;
     
     return true;
-end;
+end );
 
 #############################################################################
 ##
 #F  ExtendSeriesPermGroup( ... )  . . . . . . extend a series of a perm group
 ##
-ExtendSeriesPermGroup := function(
+InstallGlobalFunction( ExtendSeriesPermGroup, function(
             G,       # the group in which factors are to be normal/central
             series,  # the series being constructed
             cent,    # flag: true if central factors are wanted
@@ -292,7 +295,7 @@ ExtendSeriesPermGroup := function(
             
         fi;
     od;
-    
+
     # For a fastest-descending series,  replace the old group. Otherwise, add
     # the new group to the list.
     if desc  then
@@ -307,19 +310,19 @@ ExtendSeriesPermGroup := function(
     fi;
     
     return true;
-end;
+end );
 
 #############################################################################
 ##
 #F  TryPcgsPermGroup(<G>, <cent>, <desc>, <elab>) . . try to construct a pcgs
 ##
-TryPcgsPermGroup := function( G, cent, desc, elab )
+InstallGlobalFunction(TryPcgsPermGroup,function( G, cent, desc, elab )
     local   grp,  pcgs,  U,  oldlen,  series,  y,  w,  whole,
             bound,  deg,  step,  seriesAttr,  i,  S,  filter;
 
     # If the last member <U> of the series <G> already has a pcgs, start with
     # its stabilizer chain.
-    if not IsGroup( G )  then
+    if IsList( G )  then
         U := G[ Length( G ) ];
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
             U := CopyStabChain( Pcgs( U )!.stabChain );
@@ -333,19 +336,36 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
     # components on all levels.
     if IsGroup( U )  then                               
-        if IsTrivial( U )  and  not HasStabChain( U )  then
+        if IsTrivial( U )  and  not HasStabChainMutable( U )  then
             U := EmptyStabChain( [  ], One( U ) );
         else
-            U := StabChainAttr( U );
-            if IsBound( U.base )  then  i := U.base;
+	    S:=U;
+            U := StabChainMutable( U );
+            if IsBound( U.base )  and Length(U.base)>0  then  i := U.base;
                                   else  i := fail;   fi;
-            U := StabChainBaseStrongGenerators( BaseStabChain( U ),
-                         StrongGeneratorsStabChain( U ) );
-            if i <> fail  then
-                U.base := i;
-            fi;
+
+	    # ensure compatible bases
+	    if HasBaseOfGroup(G[1])
+	       and not IsSubset(BaseOfGroup(G[1]),BaseStabChain(U)) then
+
+	      # ensure compatible bases
+
+	      # compute a new stab chain without touching th stab chain
+	      # stored in S
+	      #T this is less than satisficial but I don't see how otherwise
+	      #T to avoid those %$#@ side effects. AH
+	      U:=StabChainOp(Group(GeneratorsOfGroup(S),()),
+	                     rec(base:=BaseOfGroup(G[1]),size:=Size(S)));
+	    else
+	      U := StabChainBaseStrongGenerators( BaseStabChain( U ),
+			   StrongGeneratorsStabChain( U ) );
+	      if i <> fail  then
+		  U.base := i;
+	      fi;
+	   fi;
         fi;
     fi;
+
     
     # The `genlabels' at every level of $U$ must be sets.
     S := U;
@@ -392,9 +412,10 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
                         # pcgs   of   the solvable  normal   subgroup  of <G>
                         # constructed    so   far,     and   an  element   in
                         # $G^{(\infty)}$.
+#T this should be cleaned up.
                         return [ PcgsStabChainSeries( IsPcgsPermGroupRep,
                                  GroupStabChain( grp, series[ 1 ], true ),
-                                 ElementaryAbelianSeries, series, oldlen ),
+                                 series, oldlen ),
                                  w ];
                         
                     fi;
@@ -406,20 +427,22 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     # Construct the pcgs object.
     if whole  then  filter := IsPcgsPermGroupRep;
               else  filter := IsModuloPcgsPermGroupRep;  fi;
-    if desc  and  elab = false  then
-        if cent         then  seriesAttr := LowerCentralSeriesOfGroup;
-                        else  seriesAttr := DerivedSeriesOfGroup;     fi;
-    elif elab <> false  then  seriesAttr := ElementaryAbelianSeries;
-    else                      seriesAttr := false;                    fi;
-    pcgs := PcgsStabChainSeries( filter, grp, seriesAttr, series, oldlen );
+
+    if elab=true then
+      filter:=filter and IsPcgsElementaryAbelianSeries;
+    fi;
+
+    if cent then
+      filter:=filter and IsPcgsCentralSeries;
+    fi;
+
+    pcgs := PcgsStabChainSeries( filter, grp, series, oldlen );
+
     if whole  then
-        SetPcgs( grp, pcgs );
         SetIsSolvableGroup( grp, true );
+        SetPcgs( grp, pcgs );
         if cent  then
             SetIsNilpotentGroup( grp, true );
-        fi;
-        if seriesAttr <> false  and  not Tester( seriesAttr )( grp )  then
-            Setter( seriesAttr )( grp, series );
         fi;
     else
         pcgs!.denominator := G[ Length( G ) ];
@@ -429,13 +452,13 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
         fi;
     fi;
     return pcgs;
-end;
+end);
 
 #############################################################################
 ##
-#F  PcgsStabChainSeries( <filter>, <G>, <seriesAttr>, <series>, <oldlen> )  .
+#F  PcgsStabChainSeries( <filter>, <G>, <series>, <oldlen> )  .
 ##
-PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
+InstallGlobalFunction( PcgsStabChainSeries, function( filter, G, series, oldlen )
     local   pcgs,  first,  i;
     
     pcgs := PcgsByPcSequenceCons(
@@ -445,76 +468,110 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
                     series[ 1 ].labels
                     { 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] } );
     pcgs!.stabChain := series[ 1 ];
-    SetGroupOfPcgs( pcgs, G );
+    pcgs!.generatingSeries:=series;
+
+#    if HasHomePcgs(G) and HomePcgs(G)<>pcgs then
+#      G:=Group(series[1].generators,());
+#    fi;
+#    SetGroupOfPcgs( pcgs, G );
+
     SetRelativeOrders( pcgs, series[ 1 ].relativeOrders );
-    SetStabChain( G, series[ 1 ] );
+#    SetStabChainMutable( G, series[ 1 ] );
     first := [  ];
     for i  in [ 1 .. Length( series ) ]  do
         Add( first, Length( series[ i ].labels ) );
+#        Unbind( series[ i ].relativeOrders );
+#        Unbind( series[ i ].base           );
+#        series[ i ] := GroupStabChain( G, series[ i ], true );
+#        SetHomePcgs ( series[ i ], pcgs );
+#        SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
+#        series[ i ]!.noInSeries := i;
+    od;
+    SetIndicesNormalSteps( pcgs, first[ 1 ] - first + 1 );
+
+    return pcgs;
+end );
+
+NorSerPermPcgs:=function(pcgs)
+local series,G,i;
+  G:=GroupOfPcgs(pcgs);
+  series:=pcgs!.generatingSeries;
+  for i  in [ 1 .. Length( series ) ]  do
         Unbind( series[ i ].relativeOrders );
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
         SetHomePcgs ( series[ i ], pcgs );
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
         series[ i ]!.noInSeries := i;
-    od;
-    SetNormalPcFirst( pcgs, first[ 1 ] - first + 1 );
-    SetNormalPcSeries( pcgs, series );
-    if seriesAttr <> false  then
-        Setter( seriesAttr )( pcgs, series );
-    fi;
-    return pcgs;
+  od;
+  return series;
 end;
+
+InstallMethod(NormalSeriesByPcgs,"perm group rep",true,
+   [IsPcgs and IsPcgsPermGroupRep],0,
+NorSerPermPcgs);
+
+InstallOtherMethod(NormalSeriesByPcgs,"perm group modulo rep",true,
+  [IsModuloPcgsPermGroupRep],0,
+NorSerPermPcgs);
 
 #############################################################################
 ##
 #F  TailOfPcgsPermGroup( <pcgs>, <from> ) . . . . . . . . construct tail pcgs
 ##
-TailOfPcgsPermGroup := function( pcgs, from )
+InstallGlobalFunction( TailOfPcgsPermGroup, function( pcgs, from )
     local   tail,  i;
     
     i := 1;
-    while NormalPcFirst( pcgs )[ i ] < from  do
+    while IndicesNormalSteps( pcgs )[ i ] < from  do
         i := i + 1;
     od;
     tail := PcgsByPcSequenceCons(
                     IsPcgsDefaultRep,
                     IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
                     FamilyObj( OneOfPcgs( pcgs ) ),
-                    pcgs{ [ NormalPcFirst( pcgs )[ i ] .. Length( pcgs ) ] } );
-    tail!.stabChain := StabChainAttr( NormalPcSeries( pcgs )[ i ] );
+                    pcgs{ [ IndicesNormalSteps( pcgs )[ i ] .. Length( pcgs ) ] } );
+    tail!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
     SetRelativeOrders( tail, RelativeOrders( pcgs )
             { [ from .. Length( pcgs ) ] } );
-    SetNormalPcFirst( tail, NormalPcFirst( pcgs )
-            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
-    SetNormalPcSeries( tail, NormalPcSeries( pcgs )
-            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
-    if from < NormalPcFirst( pcgs )[ i ]  then
+    SetIndicesNormalSteps( tail, IndicesNormalSteps( pcgs )
+            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
+    SetNormalSeriesByPcgs( tail, NormalSeriesByPcgs( pcgs )
+            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
+    if from < IndicesNormalSteps( pcgs )[ i ]  then
         tail := ExtendedPcgs( tail,
-                        pcgs{ [ from .. NormalPcFirst( pcgs )[ i ] - 1 ] } );
+                        pcgs{ [ from .. IndicesNormalSteps( pcgs )[ i ] - 1 ] } );
     fi;
     return tail;
-end;
+end );
 
 #############################################################################
 ##
-#F  PcgsMemberPcSeriesPermGroup( <U> )  . . . . . . . . . . . . . .  the same
+#F  PcgsMemberPcSeriesPermGroup( <U> ) . . . . pcgs for a group in the series
 ##
-PcgsMemberPcSeriesPermGroup := function( U )
-    local   home,  pcgs;
+InstallGlobalFunction( PcgsMemberPcSeriesPermGroup, function( U )
+    local   home,  pcgs,npf;
 
     home := HomePcgs( U );
-    pcgs := TailOfPcgsPermGroup( home,
-                    NormalPcFirst( home )[ U!.noInSeries ] );
+    npf:=IndicesNormalSteps(home);
+
+    if U!.noInSeries>Length(npf) then
+      # special treatment for the trivial subgroup
+      pcgs:=InducedPcgsByGenerators(home,GeneratorsOfGroup(U));
+    else
+      pcgs := TailOfPcgsPermGroup( home,
+		      IndicesNormalSteps( home )[ U!.noInSeries ] );
+    fi;
     SetGroupOfPcgs( pcgs, U );
     return pcgs;
-end;
+end );
 
 #############################################################################
 ##
 #F  ExponentsOfPcElementPermGroup( <pcgs>, <g>, <min>, <max>, <mode> )  local
 ##
-ExponentsOfPcElementPermGroup := function( pcgs, g, mindepth, maxdepth, mode )
+InstallGlobalFunction( ExponentsOfPcElementPermGroup,
+    function( pcgs, g, mindepth, maxdepth, mode )
     local   exp,  base,  bimg,  r,  depth,  img,  H,  bpt,  gen,  e,  i;
     
     if mode = 'e'  then
@@ -580,13 +637,13 @@ ExponentsOfPcElementPermGroup := function( pcgs, g, mindepth, maxdepth, mode )
     if   mode = 'd'  then  return maxdepth + 1;
     elif mode = 'l'  then  return fail;
     else                   return exp;  fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  PcGroupPcgs( <pcgs>, <index>, <isPcgsCentral> )  . .  pcp group from pcgs
 ##
-PcGroupPcgs := function( pcgs, index, isPcgsCentral )
+InstallGlobalFunction( PcGroupPcgs, function( pcgs, index, isPcgsCentral )
     local   m,  sc,  gens,  p,  start,  i,  i2,  n,  n2;
 
     m := Length( pcgs );
@@ -641,16 +698,16 @@ PcGroupPcgs := function( pcgs, index, isPcgsCentral )
     od;
     UpdatePolycyclicCollector( sc );
     return GroupByRwsNC( sc );
-end;
+end );
 
 #############################################################################
 ##
 #F  SolvableNormalClosurePermGroup( <G>, <H> )  . . . solvable normal closure
 ##
-SolvableNormalClosurePermGroup := function( G, H )
+InstallGlobalFunction( SolvableNormalClosurePermGroup, function( G, H )
     local   U,  oldlen,  series,  bound,  z,  S;
 
-    U := CopyStabChain( StabChainAttr( TrivialSubgroup( G ) ) );
+    U := CopyStabChain( StabChainMutable( TrivialSubgroup( G ) ) );
     oldlen := Length( U.labels );
     
     # The `genlabels' at every level of $U$ must be sets.
@@ -659,6 +716,10 @@ SolvableNormalClosurePermGroup := function( G, H )
         Sort( S.genlabels );
         S := S.stabilizer;
     od;
+
+    if HasBaseOfGroup(G) and not IsSubset(G,BaseStabChain(U)) then
+      Error("incompatible bases");
+    fi;
 
     U.relativeOrders := [  ];
     series := [ U ];
@@ -681,18 +742,16 @@ SolvableNormalClosurePermGroup := function( G, H )
     od;
     
     U := GroupStabChain( G, series[ 1 ], true );
-    SetPcgs( U, PcgsStabChainSeries( IsPcgsPermGroupRep, U,
-            ElementaryAbelianSeries, series, oldlen ) );
     SetIsSolvableGroup( U, true );
     SetIsNormalInParent( U, true );
     return U;
-end;
+end );
 
 #############################################################################
 ##
 #M  <pcgsG> mod <pcgsN> . . . . . . . . . . . . . . . . .  of perm group pcgs
 ##
-InstallMethod( \mod, "perm group pcgs", IsIdentical,
+InstallMethod( \mod, "perm group pcgs", IsIdenticalObj,
         [ IsPcgs and IsPcgsPermGroupRep,
           IsPcgs and IsPcgsPermGroupRep ], 20,
     function( G, N )
@@ -708,12 +767,12 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         pcgs!.stabChain := G!.stabChain;
         SetRelativeOrders( pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] } );
         i := 1;
-        while Length( G ) - NormalPcFirst( G )[ i ] >= Length( N )  do
+        while Length( G ) - IndicesNormalSteps( G )[ i ] >= Length( N )  do
             i := i + 1;
         od;
-        SetNormalPcFirst( pcgs, Concatenation( NormalPcFirst( G )
+        SetIndicesNormalSteps( pcgs, Concatenation( IndicesNormalSteps( G )
                 { [ 1 .. i - 1 ] }, [ Length( pcgs ) + 1 ] ) );
-        SetNormalPcSeries( pcgs, Concatenation( NormalPcSeries( G )
+        SetNormalSeriesByPcgs( pcgs, Concatenation( NormalSeriesByPcgs( G )
                 { [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] ) );
     else
         pcgs := PcgsByPcSequenceCons(
@@ -724,8 +783,8 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
         SetRelativeOrders( pcgs, [  ] );
-        SetNormalPcFirst( pcgs, [ 1 ] );
-        SetNormalPcSeries( pcgs, [ GroupOfPcgs( N ) ] );
+        SetIndicesNormalSteps( pcgs, [ 1 ] );
+        SetNormalSeriesByPcgs( pcgs, [ GroupOfPcgs( N ) ] );
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
@@ -765,17 +824,10 @@ InstallOtherMethod( DenominatorOfModuloPcgs, true,
 
 #############################################################################
 ##
-
-#M  IsPcgsComputable( <G> ) . . . . . . . . . . . . . . . . . .  return false
-##
-InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
-
-#############################################################################
-##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
 InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ],
-        100,  # to override method ``from independent generators''
+        100,  # to override method ``from indep. generators of abelian group''
     function( G )
     local   pcgs;
     
@@ -810,34 +862,26 @@ InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
     local   series,  G,  N,  i;
 
     G := GroupOfPcgs( pcgs );
-    N := CopyStabChain( StabChainAttr( TrivialSubgroup( G ) ) );
+    N := CopyStabChain( StabChainMutable( TrivialSubgroup( G ) ) );
     series := [ GroupStabChain( G, CopyStabChain( N ), true ) ];
-    for i  in Reversed( [ 2 .. Length( pcgs ) ] )  do
+    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
         AddNormalizingElementPcgs( N, pcgs[ i ] );
         Add( series, GroupStabChain( G, CopyStabChain( N ), true ) );
     od;
-    Add( series, G );
     return Reversed( series );
 end );        
-
-InstallOtherMethod( ElementaryAbelianSeries, true, [ IsPcgs ], 0,
-    pcgs -> ElementaryAbelianSeries( GroupOfPcgs( pcgs ) ) );
-InstallOtherMethod( DerivedSeriesOfGroup, true, [ IsPcgs ], 0,
-    pcgs -> DerivedSeriesOfGroup( GroupOfPcgs( pcgs ) ) );
-InstallOtherMethod( LowerCentralSeriesOfGroup, true, [ IsPcgs ], 0,
-    pcgs -> LowerCentralSeriesOfGroup( GroupOfPcgs( pcgs ) ) );
 
 #############################################################################
 ##
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )  . . . . . . . .  as perm pcgs
 ##
 InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
-    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsPcgs,
       IsList and IsPermCollection ], 0,
     function( pcgs, pcs )
     local   igs,  i;
 
-    i := Position( NormalPcFirst( pcgs ), Length( pcgs )-Length( pcs )+1 );
+    i := Position( IndicesNormalSteps( pcgs ), Length( pcgs )-Length( pcs )+1 );
     if i = fail  or
        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
        pcs  then
@@ -849,13 +893,13 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
                    IsTailInducedPcgsRep and IsPcgsPermGroupRep,
         FamilyObj( OneOfPcgs( pcgs ) ),
         pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.stabChain := StabChainAttr( NormalPcSeries( pcgs )[ i ] );
+    igs!.stabChain := StabChainMutable( NormalSeriesByPcgs( pcgs )[ i ] );
     SetRelativeOrders( igs, RelativeOrders( pcgs )
             { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    SetNormalPcFirst( igs, NormalPcFirst( pcgs )
-            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
-    SetNormalPcSeries( igs, NormalPcSeries( pcgs )
-            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
+    SetIndicesNormalSteps( igs, IndicesNormalSteps( pcgs )
+            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
+    SetNormalSeriesByPcgs( igs, NormalSeriesByPcgs( pcgs )
+            { [ i .. Length( IndicesNormalSteps( pcgs ) ) ] } );
     SetParentPcgs( igs, pcgs );
     igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
     return igs;
@@ -903,9 +947,9 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
-    SetNormalPcFirst( pcgs, Concatenation( [ 1 ], NormalPcFirst( N ) ) );
-    SetNormalPcSeries( pcgs, Concatenation( [ GroupStabChain( S ) ],
-            NormalPcSeries( N ) ) );
+    SetIndicesNormalSteps( pcgs, Concatenation( [ 1 ], IndicesNormalSteps( N ) ) );
+    SetNormalSeriesByPcgs( pcgs, Concatenation( [ GroupStabChain( S ) ],
+            NormalSeriesByPcgs( N ) ) );
     return pcgs;
 end );
 
@@ -921,7 +965,7 @@ end );
 
 InstallOtherMethod( DepthOfPcElement, true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
-          IsPosRat and IsInt ], 0,
+          IsPosInt ], 0,
     function( pcgs, g, depth )
     return ExponentsOfPcElementPermGroup( pcgs, g, depth, Length( pcgs ),
                    'd' );
@@ -949,10 +993,11 @@ end );
 
 InstallOtherMethod( ExponentsOfPcElement, "perm group with positions", true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
-          IsList and IsCyclotomicsCollection ], 0,
+          IsList and IsCyclotomicCollection ], 0,
     function( pcgs, g, poss )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Maximum( poss ), 'e' )
-           { poss - Minimum( poss ) + 1 };
+           { poss };
+           # was: { poss - Minimum( poss ) + 1 };
 end );
 
 InstallOtherMethod( ExponentsOfPcElement, "perm group with 0 positions", true,
@@ -968,7 +1013,7 @@ end );
 ##
 InstallMethod( ExponentOfPcElement, true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
-          IsPosRat and IsInt ], 0,
+          IsPosInt ], 0,
     function( pcgs, g, pos )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, pos, 'e' )[ pos ];
 end );
@@ -980,7 +1025,7 @@ end );
 InstallOtherMethod( RepresentativeOperationOp,
     "cycle structure comparison",
     true,
-    [ IsPermGroup and IsPcgsComputable,
+    [ IsPermGroup and CanEasilyComputePcgs,
       IsPerm,
       IsPerm,
       IsFunction ],
@@ -999,7 +1044,6 @@ end );
 
 #############################################################################
 ##
-
 #M  IsomorphismPcGroup( <G> ) . . . . . . . . . . . .  perm group as pc group
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
@@ -1008,19 +1052,14 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
-    if HasPcgs( G )  and  IsPcgsPermGroupRep( Pcgs( G ) )
-                     and  HasElementaryAbelianSeries( Pcgs( G ) )  then
-        pcgs := Pcgs( G );
-    else
-        pcgs := TryPcgsPermGroup( G, false, false, true );
-        if not IsPcgs( pcgs )  then
-            return fail;
-        fi;
+    pcgs:=PcgsElementaryAbelianSeries(G);
+    if not IsPcgs( pcgs )  then
+	return fail;
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, NormalPcFirst( pcgs ), false );
-    iso := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
+    A := PcGroupPcgs( pcgs, IndicesNormalSteps( pcgs ), false );
+    iso := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
     
     return iso;
@@ -1030,22 +1069,23 @@ end );
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . .  for solvable factors
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
-        [ IsPermGroup, IsPermGroup ], 0,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp,
+  "try solvable factor for permutation groups",
+  IsIdenticalObj, [ IsPermGroup, IsPermGroup ], 0,
     function( G, N )
     local   map,  pcgs,  A;
     
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
     pcgs := TryPcgsPermGroup( [ G, N ], false, false, true );
-    if not IsPcgs( pcgs )  then
+    if not IsModuloPcgs( pcgs )  then
         TryNextMethod();
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, NormalPcFirst( pcgs ), false );
+    A := PcGroupPcgs( pcgs, IndicesNormalSteps( pcgs ), false );
     UseFactorRelation( G, N, A );
-    map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
+    map := GroupHomomorphismByImagesNC( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );
     SetKernelOfMultiplicativeGeneralMapping( map, N );
     
@@ -1054,11 +1094,28 @@ end );
 
 #############################################################################
 ##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
+#M  ModuloPcgs( <G>, <N> )
+##
+InstallMethod( ModuloPcgs, "for permutation groups", IsIdenticalObj,
+        [ IsPermGroup, IsPermGroup ], 0,
+function( G, N )
+local   pcgs;
+
+  # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
+  # routines).
+  pcgs := TryPcgsPermGroup( [ G, N ], false, false, true );
+
+  if not IsModuloPcgs( pcgs )  then
+      return fail;
+  fi;
+
+  # set nomerator and denominator appropriately
+  SetNumeratorOfModuloPcgs(pcgs,GeneratorsOfGroup(G));
+  SetDenominatorOfModuloPcgs(pcgs,GeneratorsOfGroup(N));
+
+  return pcgs;
+end);
+
 
 #############################################################################
 ##

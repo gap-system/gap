@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains  the  functions  for  the  artithmetic  of  rationals.
 **
@@ -43,15 +44,16 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_rational_c =
+const char * Revision_rational_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
+
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
+#include        "gap.h"                 /* error handling, initialisation  */
 #include        "gvars.h"               /* global variables                */
-
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
@@ -64,8 +66,6 @@ SYS_CONST char * Revision_rational_c =
 #define INCLUDE_DECLARATION_PART
 #include        "rational.h"            /* rationals                       */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -749,7 +749,7 @@ Obj             FuncNumeratorRat (
          && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "Numerator: <rat> must be a rational (not a %s)",
-            0L, 0L,
+            (Int)TNAM_OBJ(rat), 0L,
             "you can return a rational for <rat>" );
     }
 
@@ -782,7 +782,7 @@ Obj             FuncDenominatorRat (
          && TNUM_OBJ(rat) != T_INTPOS && TNUM_OBJ(rat) != T_INTNEG ) {
         rat = ErrorReturnObj(
             "DenominatorRat: <rat> must be a rational (not a %s)",
-            0L, 0L,
+            (Int)TNAM_OBJ(rat), 0L,
             "you can return a rational for <rat>" );
     }
 
@@ -828,13 +828,56 @@ void LoadRat(Obj rat)
 /****************************************************************************
 **
 
-*F  SetupRat()  . . . . . . . . . . . . . . . initialize the rational package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupRat ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_RAT", "obj", &IsRatFilt,
+      IsRatHandler, "src/rational.c:IS_RAT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "NUMERATOR_RAT", 1, "rat",
+      FuncNumeratorRat, "src/rational.c:NUMERATOR_RAT" },
+
+    { "DENOMINATOR_RAT", 1, "rat",
+      FuncDenominatorRat, "src/rational.c:DENOMINATOR_RAT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking function                                        */
     InfoBags[         T_RAT ].name = "rational";
     InitMarkFuncBags( T_RAT, MarkTwoSubBags );
+
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
+    ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
+
+    TypeObjFuncs[ T_RAT ] = TypeRat;
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* install a saving function */
     SaveObjFuncs[ T_RAT ] = SaveRat;
@@ -842,7 +885,6 @@ void SetupRat ( void )
 
     /* install the printer                                                 */
     PrintObjFuncs[ T_RAT ] = PrintRat;
-
 
     /* install the comparisons                                             */
     EqFuncs  [ T_RAT    ][ T_RAT    ] = EqRat;
@@ -854,7 +896,6 @@ void SetupRat ( void )
     LtFuncs  [ T_RAT    ][ T_INT    ] = LtRat;
     LtFuncs  [ T_RAT    ][ T_INTPOS ] = LtRat;
     LtFuncs  [ T_RAT    ][ T_INTNEG ] = LtRat;
-
 
     /* install the arithmetic operations                                   */
     ZeroFuncs[ T_RAT    ] = ZeroRat;
@@ -914,46 +955,53 @@ void SetupRat ( void )
     PowFuncs [ T_RAT    ][ T_INT    ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitRat() . . . . . . . . . . . . . . . . initialize the rational package
-**
-**  'InitRat' initializes the rational package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitRat ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_RAT_POS", &TYPE_RAT_POS );
-    ImportGVarFromLibrary( "TYPE_RAT_NEG", &TYPE_RAT_NEG );
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    TypeObjFuncs[ T_RAT ] = TypeRat;
-
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FILT( "IS_RAT", "obj", IsRatFilt, IsRatHandler,
-      "src/rational.c:IS_RAT" );
-
-    C_NEW_GVAR_FUNC( "NUMERATOR_RAT", 1, "rat",
-                  FuncNumeratorRat,
-      "src/rational.c:NUMERATOR_RAT" );
-
-    C_NEW_GVAR_FUNC( "DENOMINATOR_RAT", 1, "rat",
-                  FuncDenominatorRat,
-      "src/rational.c:DENOMINATOR_RAT" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckRat()  . . . . . .  check the initialisation of the rational package
+*F  InitInfoRat() . . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckRat ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "rational",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoRat ( void )
 {
-    SET_REVISION( "rational_c", Revision_rational_c );
-    SET_REVISION( "rational_h", Revision_rational_h );
+    module.revision_c = Revision_rational_c;
+    module.revision_h = Revision_rational_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

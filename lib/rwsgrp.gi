@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains the generic methods for  groups  defined by rewriting
 ##  systems.
@@ -18,7 +19,7 @@ Revision.rwsgrp_gi :=
 
 #R  IsElementByRwsDefaultRep
 ##
-IsElementByRwsDefaultRep := NewRepresentation(
+DeclareRepresentation(
     "IsElementByRwsDefaultRep",
     IsPositionalObjectRep, [1] );
 
@@ -87,7 +88,7 @@ end );
 ##
 InstallMethod( Comm,
     "rws-element, rws-element",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -126,7 +127,7 @@ end );
 ##
 InstallMethod( LeftQuotient,
     "rws-element, rws-element",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -164,7 +165,7 @@ end );
 ##
 InstallMethod( \/,
     "rws-element, rws-element",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -184,7 +185,7 @@ end );
 ##
 InstallMethod( \*,
     "rws-element * rws-element",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -204,7 +205,7 @@ end );
 ##
 InstallMethod( \^,
     "rws-element ^ rws-element",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -224,7 +225,7 @@ end );
 ##
 InstallMethod( \^,
     "rws-element ^ int",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsInt ],
     0,
@@ -243,7 +244,7 @@ end );
 #M  <elm-by-rws> = <elm-by-rws>
 ##
 InstallMethod( \=,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -258,7 +259,7 @@ end );
 #M  <elm-by-rws> < <elm-by-rws>
 ##
 InstallMethod( \<,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
     0,

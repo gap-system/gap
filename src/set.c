@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions which mainly deal with proper sets.
 **
@@ -21,7 +22,7 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_set_c =
+const char * Revision_set_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -70,7 +71,7 @@ SYS_CONST char * Revision_set_c =
 */
 #define IS_IMM_PLIST(list)  ((TNUM_OBJ(list) - T_PLIST) % 2)
 
-Int             IsSet ( 
+Int IsSet ( 
     Obj                 list )
 {
     Int                 isSet;          /* result                          */
@@ -134,7 +135,7 @@ Int             IsSet (
 
 /****************************************************************************
 **
-*F  SetList(<list>) . . . . . . . . . . . . . . . . .  make a set from a list
+*F  SetList( <list> ) . . . . . . . . . . . . . . . .  make a set from a list
 **
 **  'SetList' returns  a new set that contains  the elements of <list>.  Note
 **  that 'SetList' returns a  new list even if <list>  was already a set.  In
@@ -144,7 +145,7 @@ Int             IsSet (
 **  copy and finally removes duplicates, which must appear next to each other
 **  now that the copy is sorted.
 */
-Obj             SetList (
+Obj SetList (
     Obj                 list )
 {
     Obj                 set;            /* result set                      */
@@ -166,6 +167,7 @@ Obj             SetList (
         }
     }
     SET_LEN_PLIST( set, lenSet );
+    SET_FILT_LIST( set, FN_IS_DENSE );
 
     /* sort the set (which is a dense plain list)                          */
     SortDensePlist( set );
@@ -174,8 +176,9 @@ Obj             SetList (
     mutable = RemoveDupsDensePlist( set );
 
     /* if possible, turn this into a set                                   */
-    /*N 1997/05/12 fceller this is a HACK until set props works for lists  */
-    IS_SSORT_LIST(set);
+    if ( IS_HOMOG_LIST(set) )
+	SET_FILT_LIST( set, FN_IS_HOMOG );
+    SET_FILT_LIST( set, FN_IS_SSORT );
 
     /* return set                                                          */
     return set;
@@ -184,7 +187,7 @@ Obj             SetList (
 
 /****************************************************************************
 **
-*F  FuncLIST_SORTED_LIST( <self>, <list> )  . . . . . . . .  make a set from a list
+*F  FuncLIST_SORTED_LIST( <self>, <list> )  . . . . .  make a set from a list
 **
 **  'FuncLIST_SORTED_LIST' implements the internal function 'SetList'.
 **
@@ -196,7 +199,7 @@ Obj             SetList (
 **  'SetList' returns a new list even if the list <list> is already a  proper
 **  set, in this case it is equivalent to 'ShallowCopy' (see  "ShallowCopy").
 */
-Obj             FuncLIST_SORTED_LIST (
+Obj FuncLIST_SORTED_LIST (
     Obj                 self,
     Obj                 list )
 {
@@ -828,73 +831,103 @@ Obj FuncSUBTR_SET (
 /****************************************************************************
 **
 
-*F  SetupSet()  . . . . . . . . . . . . . . . . .  initialize the set package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupSet ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
+
+    { "LIST_SORTED_LIST", 1, "list",
+      FuncLIST_SORTED_LIST, "src/set.c:LIST_SORTED_LIST" },
+
+    { "IS_EQUAL_SET", 2, "set1, set2",
+      FuncIS_EQUAL_SET, "src/set.c:IS_EQUAL_SET" },
+
+    { "IS_SUBSET_SET", 2, "set1, set2",
+      FuncIS_SUBSET_SET, "src/set.c:IS_SUBSET_SET" },
+
+    { "ADD_SET", 2, "set, val",
+      FuncADD_SET, "src/set.c:ADD_SET" },
+
+    { "REM_SET", 2, "set, val",
+      FuncREM_SET, "src/set.c:REM_SET" },
+
+    { "UNITE_SET", 2, "set1, set2",
+      FuncUNITE_SET, "src/set.c:UNITE_SET" },
+
+    { "INTER_SET", 2, "set1, set2",
+      FuncINTER_SET, "src/set.c:INTER_SET" },
+
+    { "SUBTR_SET", 2, "set1, set2",
+      FuncSUBTR_SET, "src/set.c:SUBTR_SET" },
+
+
+    { 0 }
+
+};
 
 
 /****************************************************************************
 **
-*F  InitSet() . . . . . . . . . . . . . . . . . .  initialize the set package
-**
-**  'InitSet' initializes the set package.
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitSet ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    /* install internal functions                                          */
-    C_NEW_GVAR_FUNC( "LIST_SORTED_LIST", 1, "list",
-                  FuncLIST_SORTED_LIST,
-           "src/set.c:LIST_SORTED_LIST" );
-
-    C_NEW_GVAR_FUNC( "IS_EQUAL_SET", 2, "set1, set2",
-                  FuncIS_EQUAL_SET,
-           "src/set.c:IS_EQUAL_SET" );
-
-    C_NEW_GVAR_FUNC( "IS_SUBSET_SET", 2, "set1, set2",
-                  FuncIS_SUBSET_SET,
-           "src/set.c:IS_SUBSET_SET" );
-
-
-    C_NEW_GVAR_FUNC( "ADD_SET", 2, "set, val",
-                  FuncADD_SET,
-           "src/set.c:ADD_SET" );
-
-    C_NEW_GVAR_FUNC( "REM_SET", 2, "set, val",
-                  FuncREM_SET,
-           "src/set.c:REM_SET" );
-
-    C_NEW_GVAR_FUNC( "UNITE_SET", 2, "set1, set2",
-                  FuncUNITE_SET,
-           "src/set.c:UNITE_SET" );
-
-    C_NEW_GVAR_FUNC( "INTER_SET", 2, "set1, set2",
-                  FuncINTER_SET,
-           "src/set.c:INTER_SET" );
-
-    C_NEW_GVAR_FUNC( "SUBTR_SET", 2, "set1, set2",
-                  FuncSUBTR_SET,
-           "src/set.c:SUBTR_SET" );
-
-
     /* create the temporary union bag                                      */
     InitGlobalBag( &TmpUnion, "src/set.c:TmpUnion" );
-    if ( ! SyRestoring ) {
-        TmpUnion = NEW_PLIST( T_PLIST, 1024 );
-        SET_LEN_PLIST( TmpUnion, 1024 );
-    }
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckSet()  . . . . . . . . . check the initialisation of the set package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckSet ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "set_c",      Revision_set_c );
-    SET_REVISION( "set_h",      Revision_set_h );
+    /* create the temporary union bag                                      */
+    TmpUnion = NEW_PLIST( T_PLIST, 1024 );
+    SET_LEN_PLIST( TmpUnion, 1024 );
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoSet() . . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "set",                              /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoSet ( void )
+{
+    module.revision_c = Revision_set_c;
+    module.revision_h = Revision_set_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

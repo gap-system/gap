@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration of those functions that are used
 ##  to construct maps (mostly fusion maps and power maps).
@@ -17,7 +18,7 @@ Revision.ctblmaps_gd :=
 ##
 #F  CharacterString( <char>, <str> )
 ##
-CharacterString := NewOperationArgs( "CharacterString" );
+DeclareGlobalFunction( "CharacterString" );
 
 
 #############################################################################
@@ -30,7 +31,7 @@ CharacterString := NewOperationArgs( "CharacterString" );
 ##  If no contradictions were detected, 'true' is returned,
 ##  otherwise 'false'.
 ##
-UpdateMap := NewOperationArgs( "UpdateMap" );
+DeclareGlobalFunction( "UpdateMap" );
 
 
 #############################################################################
@@ -41,7 +42,7 @@ UpdateMap := NewOperationArgs( "UpdateMap" );
 ##  with the character values lists in the list <chars> are nonnegative
 ##  integers, and 'false' otherwise.
 ##
-NonnegIntScalarProducts := NewOperationArgs( "NonnegIntScalarProducts" );
+DeclareGlobalFunction( "NonnegIntScalarProducts" );
 
 
 #############################################################################
@@ -52,7 +53,7 @@ NonnegIntScalarProducts := NewOperationArgs( "NonnegIntScalarProducts" );
 ##  with the character values lists in the list <chars> are
 ##  integers, and 'false' otherwise.
 ##
-IntScalarProducts := NewOperationArgs( "IntScalarProducts" );
+DeclareGlobalFunction( "IntScalarProducts" );
 
 
 #############################################################################
@@ -63,7 +64,7 @@ IntScalarProducts := NewOperationArgs( "IntScalarProducts" );
 ##  integral norm and integral scalar product with the principal character
 ##  of <tbl> and which satisfy <func>( <tbl>, <chars>, <vec> )
 ##
-ContainedSpecialVectors := NewOperationArgs( "ContainedSpecialVectors" );
+DeclareGlobalFunction( "ContainedSpecialVectors" );
 
 
 #############################################################################
@@ -77,7 +78,7 @@ ContainedSpecialVectors := NewOperationArgs( "ContainedSpecialVectors" );
 ##
 ##  (This is a special case of 'ContainedSpecialVectors'.)
 ##
-ContainedPossibleCharacters := NewOperationArgs(
+DeclareGlobalFunction(
     "ContainedPossibleCharacters" );
 
 
@@ -91,7 +92,7 @@ ContainedPossibleCharacters := NewOperationArgs(
 ##
 ##  (This is a special case of 'ContainedSpecialVectors'.)
 ##
-ContainedPossibleVirtualCharacters := NewOperationArgs(
+DeclareGlobalFunction(
     "ContainedPossibleVirtualCharacters" );
 
 
@@ -110,7 +111,7 @@ ContainedPossibleVirtualCharacters := NewOperationArgs(
 ##
 ##  If no fusion map is possible, 'fail' is returned.
 ##
-InitFusion := NewOperationArgs( "InitFusion" );
+DeclareGlobalFunction( "InitFusion" );
 
 
 #############################################################################
@@ -144,7 +145,7 @@ InitFusion := NewOperationArgs( "InitFusion" );
 ##
 ##  ('CheckPermChar' is used as subroutine of 'PossibleClassFusions'.)
 ##
-CheckPermChar := NewOperationArgs( "CheckPermChar" );
+DeclareGlobalFunction( "CheckPermChar" );
 
 
 #############################################################################
@@ -157,7 +158,7 @@ CheckPermChar := NewOperationArgs( "CheckPermChar" );
 ##  returned.
 ##  If no such inconsistency occurs, 'MeetMaps' returns 'true'.
 ##
-MeetMaps := NewOperationArgs( "MeetMaps" );
+DeclareGlobalFunction( "MeetMaps" );
 
 
 #############################################################################
@@ -178,7 +179,7 @@ MeetMaps := NewOperationArgs( "MeetMaps" );
 ##                           -1 if <map1>[ <class> ] was improved
 ##                          <x> if <map2>[ <x> ] was improved
 ##
-ImproveMaps := NewOperationArgs( "ImproveMaps" );
+DeclareGlobalFunction( "ImproveMaps" );
 
 
 #############################################################################
@@ -193,7 +194,7 @@ ImproveMaps := NewOperationArgs( "ImproveMaps" );
 ##  <paramap2>[ <paramap1>[ <class> ] ]', otherwise it is the union of
 ##  '<paramap2>[i]' for 'i' in '<paramap1>[ <class> ]'.
 ##
-CompositionMaps := NewOperationArgs( "CompositionMaps" );
+DeclareGlobalFunction( "CompositionMaps" );
 
 
 #############################################################################
@@ -204,7 +205,7 @@ CompositionMaps := NewOperationArgs( "CompositionMaps" );
 ##  identity map, i.e. first projecting and then fusing yields the identity.
 ##  Note that <fusionmap> must not be a parametrized map.
 ##
-ProjectionMap := NewOperationArgs( "ProjectionMap" );
+DeclareGlobalFunction( "ProjectionMap" );
 
 
 #############################################################################
@@ -234,7 +235,7 @@ ProjectionMap := NewOperationArgs( "ProjectionMap" );
 ##    v
 ##  map3[i] ---> map4[ map3[i] ]
 ##
-CommutativeDiagram := NewOperationArgs( "CommutativeDiagram" );
+DeclareGlobalFunction( "CommutativeDiagram" );
 
 
 #############################################################################
@@ -247,7 +248,7 @@ CommutativeDiagram := NewOperationArgs( "CommutativeDiagram" );
 ##  If no inconsistency occurs, 'CheckFixedPoints' returns the list of
 ##  classes where improvements were found; otherwise 'fail' is returned.
 ##
-CheckFixedPoints := NewOperationArgs( "CheckFixedPoints" );
+DeclareGlobalFunction( "CheckFixedPoints" );
 
 
 #############################################################################
@@ -279,7 +280,7 @@ CheckFixedPoints := NewOperationArgs( "CheckFixedPoints" );
 ##
 ##  (calls 'CheckFixedPoints')
 ##
-TransferDiagram := NewOperationArgs( "TransferDiagram" );
+DeclareGlobalFunction( "TransferDiagram" );
 
 
 #############################################################################
@@ -301,7 +302,7 @@ TransferDiagram := NewOperationArgs( "TransferDiagram" );
 ##  When an inconsistency occurs, the program immediately returns 'false';
 ##  otherwise 'true' is returned.
 ##
-TestConsistencyMaps := NewOperationArgs( "TestConsistencyMaps" );
+DeclareGlobalFunction( "TestConsistencyMaps" );
 
 
 #############################################################################
@@ -324,7 +325,7 @@ TestConsistencyMaps := NewOperationArgs( "TestConsistencyMaps" );
 ##  If there are classes for which no images are possible,
 ##  'fail' is returned.
 ##
-InitPowermap := NewOperationArgs( "InitPowermap" );
+DeclareGlobalFunction( "InitPowermap" );
 
 
 #############################################################################
@@ -360,7 +361,7 @@ InitPowermap := NewOperationArgs( "InitPowermap" );
 ##  `Congruences' returns `true' if no inconsistencies were detected, and
 ##  `false' otherwise.
 ##
-Congruences := NewOperationArgs( "Congruences" );
+DeclareGlobalFunction( "Congruences" );
 
 
 #############################################################################
@@ -391,7 +392,7 @@ Congruences := NewOperationArgs( "Congruences" );
 ##  If '\"quick\"' is specified, only those classes are considered where
 ##  <prime_powermap> is ambiguous.
 ##
-ConsiderKernels := NewOperationArgs( "ConsiderKernels" );
+DeclareGlobalFunction( "ConsiderKernels" );
 
 
 #############################################################################
@@ -414,7 +415,7 @@ ConsiderKernels := NewOperationArgs( "ConsiderKernels" );
 ##  The returned value is 'false' if there are classes for which no image
 ##  is possible, otherwise 'true'.
 ##
-ConsiderSmallerPowerMaps := NewOperationArgs( "ConsiderSmallerPowerMaps" );
+DeclareGlobalFunction( "ConsiderSmallerPowerMaps" );
 
 
 #############################################################################
@@ -458,7 +459,7 @@ ConsiderSmallerPowerMaps := NewOperationArgs( "ConsiderSmallerPowerMaps" );
 ##  If '<parameters>.quick = true', unique minus characters are never
 ##  considered.
 ##
-PowerMapsAllowedBySymmetrisations := NewOperationArgs(
+DeclareGlobalFunction(
     "PowerMapsAllowedBySymmetrisations" );
   
 
@@ -473,7 +474,7 @@ PowerMapsAllowedBySymmetrisations := NewOperationArgs(
 ##
 ##  The list of positions where improvements were found is returned.
 ##
-ConsiderTableAutomorphisms := NewOperationArgs(
+DeclareGlobalFunction(
     "ConsiderTableAutomorphisms" );
 
 
@@ -487,7 +488,7 @@ ConsiderTableAutomorphisms := NewOperationArgs(
 ##  the supergroup table.
 ##  The table automorphisms must be both permutation groups.
 ##
-OrbitFusions := NewOperationArgs( "OrbitFusions" );
+DeclareGlobalFunction( "OrbitFusions" );
 
 
 #############################################################################
@@ -499,7 +500,7 @@ OrbitFusions := NewOperationArgs( "OrbitFusions" );
 ##  <matautomorphisms> of the considered character table.
 ##  The matrix automorphisms must be a permutation group.
 ##
-OrbitPowerMaps := NewOperationArgs( "OrbitPowerMaps" );
+DeclareGlobalFunction( "OrbitPowerMaps" );
 
 
 #############################################################################
@@ -514,7 +515,7 @@ OrbitPowerMaps := NewOperationArgs( "OrbitPowerMaps" );
 ##  and <tblautomorphisms> of the supergroup table.
 ##  The table automorphisms must be both permutation groups.
 ##
-RepresentativesFusions := NewOperationArgs( "RepresentativesFusions" );
+DeclareGlobalFunction( "RepresentativesFusions" );
 
 
 #############################################################################
@@ -527,7 +528,7 @@ RepresentativesFusions := NewOperationArgs( "RepresentativesFusions" );
 ##  character matrix.
 ##  The matrix automorphisms must be a permutation group.
 ##
-RepresentativesPowermaps := NewOperationArgs( "RepresentativesPowermaps" );
+DeclareGlobalFunction( "RepresentativesPowerMaps" );
     
 
 #############################################################################
@@ -569,7 +570,7 @@ RepresentativesPowermaps := NewOperationArgs( "RepresentativesPowermaps" );
 ##
 ##  If '<parameters>.quick = true', unique restrictions are never considered.
 ##
-FusionsAllowedByRestrictions := NewOperationArgs(
+DeclareGlobalFunction(
     "FusionsAllowedByRestrictions" );
 
 
@@ -577,7 +578,7 @@ FusionsAllowedByRestrictions := NewOperationArgs(
 ##
 #F  Indeterminateness( <paramap> ) . . . . the indeterminateness of a paramap
 ##
-Indeterminateness := NewOperationArgs( "Indeterminateness" );
+DeclareGlobalFunction( "Indeterminateness" );
 
 
 #############################################################################
@@ -588,7 +589,7 @@ Indeterminateness := NewOperationArgs( "Indeterminateness" );
 ##  prints for each character in <list> the position, the indeterminateness
 ##  with respect to <paramap> and the list of ambiguous classes
 ##
-PrintAmbiguity := NewOperationArgs( "PrintAmbiguity" );
+DeclareGlobalFunction( "PrintAmbiguity" );
 
 
 #############################################################################
@@ -598,7 +599,7 @@ PrintAmbiguity := NewOperationArgs( "PrintAmbiguity" );
 ##  is the smallest parametrized map containing all elements of <list>.
 ##  These elements may be maps or parametrized maps.
 ##
-Parametrized := NewOperationArgs( "Parametrized" );
+DeclareGlobalFunction( "Parametrized" );
 
 
 #############################################################################
@@ -607,7 +608,7 @@ Parametrized := NewOperationArgs( "Parametrized" );
 ##
 ##  is the set of all contained maps of <paramap>
 ##
-ContainedMaps := NewOperationArgs( "ContainedMaps" );
+DeclareGlobalFunction( "ContainedMaps" );
 
 
 #############################################################################
@@ -617,7 +618,7 @@ ContainedMaps := NewOperationArgs( "ContainedMaps" );
 ##  'Indirected( <character>, <paramap> )[i]' = <character>[ <paramap>[i] ]',
 ##  if this value is unique; otherwise it is set undefined.
 ##  
-Indirected := NewOperationArgs( "Indirected" );
+DeclareGlobalFunction( "Indirected" );
 
 
 #############################################################################
@@ -629,7 +630,7 @@ Indirected := NewOperationArgs( "Indirected" );
 ##  The entries at positions where the power maps do not uniquely determine
 ##  the element orders are set to an unknown.
 ##
-ElementOrdersPowerMap := NewOperationArgs( "ElementOrdersPowerMap" );
+DeclareGlobalFunction( "ElementOrdersPowerMap" );
 
 
 #############################################################################
@@ -645,7 +646,7 @@ ElementOrdersPowerMap := NewOperationArgs( "ElementOrdersPowerMap" );
 ##  'mat'
 ##     the image of <mat> under that fusion.
 ##
-CollapsedMat := NewOperationArgs( "CollapsedMat" );
+DeclareGlobalFunction( "CollapsedMat" );
 
 
 #############################################################################
@@ -663,7 +664,7 @@ CollapsedMat := NewOperationArgs( "CollapsedMat" );
 ##  if there is a row with nonzero entry in column <col> then this row is
 ##  returned, otherwise 'fail' is returned.
 ##
-StepModGauss := NewOperationArgs( "StepModGauss" );
+DeclareGlobalFunction( "StepModGauss" );
 
 
 #############################################################################
@@ -676,7 +677,7 @@ StepModGauss := NewOperationArgs( "StepModGauss" );
 ##
 ##  <matrix> is changed, the triangular matrix is returned.
 ##
-ModGauss := NewOperationArgs( "ModGauss" );
+DeclareGlobalFunction( "ModGauss" );
 
 
 #############################################################################
@@ -689,7 +690,7 @@ ModGauss := NewOperationArgs( "ModGauss" );
 ##  calculated that modulo <moduls> lie in the lattice spanned by
 ##  <constituents> and satisfy $<func>( \chi )$.
 ##
-ContainedDecomposables := NewOperationArgs( "ContainedDecomposables" );
+DeclareGlobalFunction( "ContainedDecomposables" );
 
 
 #############################################################################
@@ -704,7 +705,7 @@ ContainedDecomposables := NewOperationArgs( "ContainedDecomposables" );
 ##  (The elements of the returned list are *not* necessary linear
 ##  combinations of <constituents>.)
 ##
-ContainedCharacters := NewOperationArgs( "ContainedCharacters" );
+DeclareGlobalFunction( "ContainedCharacters" );
 
 
 #############################################################################

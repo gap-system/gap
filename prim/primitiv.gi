@@ -11,7 +11,7 @@ Revision.primitiv_gi :=
 ##
 #F  RepOpSuborbits( <G>, <subs>, <a>, <b> ) . . . . . . . . . .  on suborbits
 ##
-RepOpSuborbits := function( G, subs, a, b )
+InstallGlobalFunction( RepOpSuborbits, function( G, subs, a, b )
     local   G1,  B1,  B2,  O,  S,  rbase,  Q;
 
     G1 := Stabilizer( G, Position( subs.blists[ 1 ], true ) );
@@ -27,13 +27,13 @@ RepOpSuborbits := function( G, subs, a, b )
                    g ^ gen in G ), true, rbase, [ Q, G, G, O ],
                    Stabilizer( G1, Position( subs.blists[ a ], true ) ),
                    Stabilizer( G1, Position( subs.blists[ b ], true ) ) );
-end;
+end );
 
 #############################################################################
 ##
 #F  OnSuborbits( <k>, <g>, <subs> ) . . . . . . . . .  operation on suborbits
 ##
-OnSuborbits := function( k, g, subs )
+InstallGlobalFunction( OnSuborbits, function( k, g, subs )
     local   rep,  img,  s;
     
     rep := Position( subs.blists[ k ], true );
@@ -43,13 +43,13 @@ OnSuborbits := function( k, g, subs )
         img := img ^ s;
     od;
     return subs.which[ img ];
-end;
+end );
 
 #############################################################################
 ##
 #F  ConstructCohort( <N>, <G>, <Omega> )  . . . . . . . . . . . . . . . local
 ##
-ConstructCohort := function( N, G, Omega )
+InstallGlobalFunction( ConstructCohort, function( N, G, Omega )
     local   A,  gens,  gen,  coh,  lens,  opr,  i;
 
     coh := NaturalHomomorphismByNormalSubgroup( N, G );
@@ -71,13 +71,13 @@ ConstructCohort := function( N, G, Omega )
         orb -> lens{ orb } );
 
     return coh;
-end;
+end );
 
 #############################################################################
 ##
 #F  CohortOfGroup( <G> )  . . . . . . . . . . . . . . . . . . . . . .  cohort
 ##
-CohortOfGroup := function( G )
+InstallGlobalFunction( CohortOfGroup, function( G )
     local   Omega,  S,  N;
     
     Omega := MovedPoints( G );
@@ -91,30 +91,30 @@ CohortOfGroup := function( G )
         G := ClosureGroup( G, Centralizer( S, G ) );
     fi;
     return ConstructCohort( N, G, Omega );
-end;
+end );
 
 #############################################################################
 ##
 #F  MakeCohort( <gens>, <out> ) . . . . . . . . . . . . . . . . make a cohort
 ##
-MakeCohort := function( gens, out )
+InstallGlobalFunction( MakeCohort, function( gens, out )
     local   S,  i,  N,  G,  Omega;
     
     G := GroupByGenerators( gens{ [ out + 1 .. Length( gens ) ] } );
-    S := StructuralCopy( StabChainAttr( G ) );
+    S := StructuralCopy( StabChainMutable( G ) );
     for i  in Reversed( [ 1 .. out ] )  do
         AddNormalizingElementPcgs( S, gens[ i ] );
     od;
     N := GroupStabChain( S );
     Omega := MovedPoints( G );
     return ConstructCohort( N, G, Omega );
-end;
+end );
     
 #############################################################################
 ##
 #F  AlternatingCohortOnSets( <n>, <k> ) . . . . . . .  for alternating groups
 ##
-AlternatingCohortOnSets := function( n, k )
+InstallGlobalFunction( AlternatingCohortOnSets, function( n, k )
     local   A,  orb,  G,  out,  coh;
     
     A := AlternatingGroup( n );
@@ -127,13 +127,13 @@ AlternatingCohortOnSets := function( n, k )
     SetName( coh, Concatenation( "A", String( n ), " on ", String( k ),
             "-sets" ) );
     return coh;
-end;
+end );
 
 #############################################################################
 ##
 #F  LinearCohortOnProjectivePoints( <n>, <q> )  . . . . . . . . linear cohort
 ##
-LinearCohortOnProjectivePoints := function( n, q )
+InstallGlobalFunction( LinearCohortOnProjectivePoints, function( n, q )
     local   fld,  pro,  gens,  M,  coh;
     
     fld := GF( q );
@@ -147,13 +147,13 @@ LinearCohortOnProjectivePoints := function( n, q )
     SetName( coh, Concatenation( "L", String( n ), ",", String( q ),
             " on projective points" ) );
     return coh;
-end;
+end );
 
 #############################################################################
 ##
 #F  SymplecticCohortOnProjectivePoints( <n>, <q> )  . . . . symplectic cohort
 ##
-SymplecticCohortOnProjectivePoints := function( n, q )
+InstallGlobalFunction( SymplecticCohortOnProjectivePoints, function( n, q )
     local   fld,  pro,  gens,  M,  coh,  i;
     
     fld := GF( q );
@@ -173,13 +173,13 @@ SymplecticCohortOnProjectivePoints := function( n, q )
     SetName( coh, Concatenation( "S", String( n ), ",", String( q ),
             " on projective points" ) );
     return coh;
-end;
+end );
 
 #############################################################################
 ##
 #F  UnitaryCohortOnProjectivePoints( <n>, <q>, <iso> )  . . .  unitary cohort
 ##
-UnitaryCohortOnProjectivePoints := function( n, q, iso )
+InstallGlobalFunction( UnitaryCohortOnProjectivePoints, function( n, q, iso )
     local   G,  id,  fld,  z,    # <z> = fld^*
                            zeta, # zeta + zeta ^ q = 1
                            imag, # imag ^ (q+1) = -1
@@ -222,13 +222,13 @@ UnitaryCohortOnProjectivePoints := function( n, q, iso )
     SetName( coh, Concatenation( "U", String( n ), ",", String( q ),
             " on ", iso, "isotropic projective points" ) );
     return coh;
-end;
+end );
 
 #############################################################################
 ##
 #F  CohortProductAction( <coh> )  . . . . . . . . . . . . . . .  product type
 ##
-CohortProductAction := function( coh, n )
+InstallGlobalFunction( CohortProductAction, function( coh, n )
     local   S,  N,  G,  prd;
     
     S := SymmetricGroup( n );
@@ -241,21 +241,21 @@ CohortProductAction := function( coh, n )
     prd := ConstructCohort( N, G, MovedPoints( G ) );
     SetName( prd, Concatenation( Name( coh ), "^", String( n ) ) );
     return prd;
-end;
+end );
 
-CohortPowerAlternating := function( m, n )
+InstallGlobalFunction( CohortPowerAlternating, function( m, n )
     return CohortProductAction( AlternatingCohortOnSets( m, 1 ), n );
-end;
+end );
 
-CohortPowerLinear := function( d, q, n )
+InstallGlobalFunction( CohortPowerLinear, function( d, q, n )
     return CohortProductAction( LinearCohortOnProjectivePoints( d, q ), n );
-end;
+end );
 
 #############################################################################
 ##
 #F  CohortDiagonalAction( <G> ) . . . . . . . . . . . . . . . diagonal action
 ##
-CohortDiagonalAction := function( G )
+InstallGlobalFunction( CohortDiagonalAction, function( G )
     local   coh,  T,  T_,  gens,  gen,  imgs,  N,  hom;
     
     hom := OperationHomomorphism( G, G, OnRight );
@@ -280,24 +280,18 @@ CohortDiagonalAction := function( G )
     coh := ConstructCohort( N, G, [ 1 .. Size( G ) ] );
     SetName( coh, "<diagonal action>" );
     return coh;
-end;
+end );
+
 
 #############################################################################
 ##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
-
-#############################################################################
-##
-
 #F  AffinePermGroupByMatrixGroup( <M> ) . . . . . . . . . . affine perm group
 ##
-AffinePermGroupByMatrixGroup := function( M )
-    local   V,  G,  E,  A;
+InstallGlobalFunction( AffinePermGroupByMatrixGroup, function( arg )
+local   M,gens,V,  G,  E,  A;
     
+    M:=arg[1];
+
     # build the vector space
     V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
     
@@ -309,9 +303,15 @@ AffinePermGroupByMatrixGroup := function( M )
                  Permutation( b, V, \+ ) ) );
     SetSize( E, Size( V ) );
     
+    if Length(arg)>1 then
+      gens:=GeneratorsOfGroup(E){arg[2]};
+    else
+      gens:=GeneratorsOfGroup(E);
+    fi;
+
     # construct the affine group
     A := GroupByGenerators( Concatenation
-                 ( GeneratorsOfGroup( G ), GeneratorsOfGroup( E ) ) );
+                 ( GeneratorsOfGroup( G ), gens ) );
     SetSize( A, Size( M ) * Size( V ) );
     Setter( EarnsAttr )( A, E );
     if HasName( M )  then
@@ -321,38 +321,21 @@ AffinePermGroupByMatrixGroup := function( M )
     fi;
     A!.matrixGroup := M;
     return A;
-end;
+end );
 
 #############################################################################
 ##
 #F  PrimitiveAffinePermGroupByMatrixGroup( <M> )  primitive affine perm group
 ##
-PrimitiveAffinePermGroupByMatrixGroup := function( M )
-    local   V,  G,  E,  A;
-    
-    V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
-    G := Operation( M, V );
-    E := GroupByGenerators( List( Basis( V ), b ->
-                 Permutation( b, V, \+ ) ) );
-    SetSize( E, Size( V ) );
-    A := GroupByGenerators( Concatenation
-                 ( GeneratorsOfGroup( G ), [ GeneratorsOfGroup( E )[1] ] ) );
-    SetSize( A, Size( M ) * Size( V ) );
-    Setter( EarnsAttr )( A, E );
-    if HasName( M )  then
-        SetName( A, Concatenation( String( Size( FieldOfMatrixGroup( M ) ) ),
-                "^", String( DimensionOfMatrixGroup( M ) ), ":",
-                Name( M ) ) );
-    fi;
-    A!.matrixGroup := M;
-    return A;
-end;
+InstallGlobalFunction( PrimitiveAffinePermGroupByMatrixGroup, function( M )
+    return AffinePermGroupByMatrixGroup(M,[1]);
+end );
 
 #############################################################################
 ##
 #F  GLnbylqtolInGLnq( <M>, <k> )  . . . . . . . . . . .  for field extensions
 ##
-GLnbylqtolInGLnq := function( M, k )
+InstallGlobalFunction( GLnbylqtolInGLnq, function( M, k )
     local   d,  q,  l,  b,  gens,  x,  new,  y,  z,  row,  G;
 
     # construct a base for GF(q^k) / GF(q)
@@ -387,13 +370,13 @@ GLnbylqtolInGLnq := function( M, k )
     fi;
     return G;
 
-end;
+end );
 
 #############################################################################
 ##
 #F  FrobInGLnq( <M>, <k> )  . . . . . . . . . . . . . .  for field extensions
 ##
-FrobInGLnq := function( M, k )
+InstallGlobalFunction( FrobInGLnq, function( M, k )
     local   d,  q,  l,  b,  new,  row,  frb,  z,  x;
     
     # construct a base for GF(q^k) / GF(q)
@@ -413,13 +396,13 @@ FrobInGLnq := function( M, k )
         new{[x*k+1..x*k+k]}{[x*k+1..x*k+k]} := frb;
     od;
     return new;
-end;
+end );
 
 #############################################################################
 ##
 #F  StabFldExt( <M>, <k> )  . . . . . . . . . . . . . .  for field extensions
 ##
-StabFldExt := function( M, k )
+InstallGlobalFunction( StabFldExt, function( M, k )
     local   G;
     
     G := GroupByGenerators( Concatenation
@@ -436,30 +419,13 @@ StabFldExt := function( M, k )
         SetSize( G, Size( M ) * k );
     fi;
     return G;
-end;
-
-#############################################################################
-##
-
-#A  PerfectResiduum( <G> )  . . . . . . . . . . . . . . . .  perfect residuum
-##
-InstallMethod( PerfectResiduum, true, [ IsGroup ], 0,
-    function( G )
-    local   P;
-    
-    P := AsSubgroup( G, DerivedSeriesOfGroup( G )
-                 [ Length( DerivedSeriesOfGroup( G ) ) ] );
-    if HasName( G )  then
-        SetName( P, Concatenation( Name( G ), "^\infty" ) );
-    fi;
-    return P;
 end );
 
 #############################################################################
 ##
 #F  AlmostDerivedSubgroup( <G>, <nr> )  . . . . . . .  between G and G^\infty
 ##
-AlmostDerivedSubgroup := function( G, nr )
+InstallGlobalFunction( AlmostDerivedSubgroup, function( G, nr )
     local   hom,  U;
     
     hom := NaturalHomomorphismByNormalSubgroupInParent
@@ -470,7 +436,7 @@ AlmostDerivedSubgroup := function( G, nr )
         SetName( U, Concatenation( Name( G ), "_", String( nr ) ) );
     fi;
     return U;
-end;
+end );
 
 #############################################################################
 ##
@@ -486,13 +452,13 @@ end );
 
 InstallMethod( RankOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicCollection,
           IsList,
           IsList,
           IsFunction ], 0,
     function( G, D, gens, oprs, opr )
     if    opr <> OnPoints
-       or not IsIdentical( gens, oprs )  then
+       or not IsIdenticalObj( gens, oprs )  then
         TryNextMethod();
     fi;
     return Length( Orbits( Stabilizer( G, D, D[ 1 ], opr ),
@@ -513,9 +479,9 @@ end );
 ##
 #V  AFFINE_NON_SOLVABLE_GROUPS  . . . . . . . . . . . . . . . of degree < 256
 ##
-AFFINE_NON_SOLVABLE_GROUPS := [  ];
+InstallValue( AFFINE_NON_SOLVABLE_GROUPS, [] );
     
-BOOT_AFFINE_NON_SOLVABLE_GROUPS := function()
+InstallGlobalFunction( BOOT_AFFINE_NON_SOLVABLE_GROUPS, function()
     local   ASLMaker,  p,  hom,  nr;
     
     AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 3 ] := [ function() return
@@ -545,13 +511,13 @@ BOOT_AFFINE_NON_SOLVABLE_GROUPS := function()
               ASLMaker(p[2],p[1],nr);
         od;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #F  Cohort( <deg>, <c> )  . . . . . . . . . . . . . . . . . non-affine cohort
 ##
-Cohort := function( deg, c )
+InstallGlobalFunction( Cohort, function( deg, c )
     local   bin,  n,  m,  q,  pro;
 
     if IsEmpty( COHORTS )  then
@@ -629,13 +595,13 @@ Cohort := function( deg, c )
         fi;
     fi;
     return COHORTS[ deg ][ c ];
-end;
+end );
 
 #############################################################################
 ##
 #F  PrimitiveGroup( <deg>, <nr> ) . . . . . . . . .  primitive group selector
 ##
-MakePrimitiveGroup := function( deg, nr )
+InstallGlobalFunction( MakePrimitiveGroup, function( deg, nr )
     local   G,  p,  n,  div,  nrcs,  c,  cls,  coh,  num,  tmp;
 
     if   deg = 1  then  num := 1;
@@ -755,9 +721,9 @@ MakePrimitiveGroup := function( deg, nr )
         return SymmetricGroup( deg );
     fi;
     return fail;
-end;
+end );
 
-PrimitiveGroup := function( deg, nr )
+InstallGlobalFunction( PrimitiveGroup, function( deg, nr )
     local   G;
     
     G := MakePrimitiveGroup( deg, nr );
@@ -772,22 +738,22 @@ PrimitiveGroup := function( deg, nr )
         fi;
     fi;
     return G;
-end;
+end );
 
 #############################################################################
 ##
 
 #F  NrPrimitiveGroups( <deg> )  . . . . . . . . . . . . . . counting function
 ##
-NrPrimitiveGroups := function( deg )
+InstallGlobalFunction( NrPrimitiveGroups, function( deg )
     return PrimitiveGroup( deg, infinity );
-end;
+end );
 
 #############################################################################
 ##
 #F  NrSolvableAffinePrimitiveGroups( <deg> )  . . . . . . . counting function
 ##
-NrSolvableAffinePrimitiveGroups := function( deg )
+InstallGlobalFunction( NrSolvableAffinePrimitiveGroups, function( deg )
     local   p,  n;
     
     if not IsPrimePowerInt( deg )  then
@@ -803,13 +769,13 @@ NrSolvableAffinePrimitiveGroups := function( deg )
             return Length( IrredSolGroupList[ n ][ p ] );
         fi;
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  NrAffinePrimitiveGroups( <deg> )  . . . . . . . . . . . counting function
 ##
-NrAffinePrimitiveGroups := function( deg )
+InstallGlobalFunction( NrAffinePrimitiveGroups, function( deg )
     if not IsPrimePowerInt( deg )  then
         return 0;
     elif deg > 255  then
@@ -826,7 +792,7 @@ NrAffinePrimitiveGroups := function( deg )
         return Length( AFFINE_NON_SOLVABLE_GROUPS[ deg ] ) +
                NrSolvableAffinePrimitiveGroups( deg );
     fi;
-end;
+end );
 
 #############################################################################
 ##
@@ -861,8 +827,6 @@ SelectionFunctionValue := function( arglis, func, rest )
     fi;
     return r;
 end;
-
-IsSolvable := "2b defined";
 
 #############################################################################
 ##
@@ -941,13 +905,6 @@ local sel;
   fi;
 end;
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration of functions that mainly deal with
 ##  lattices in the context of character tables.
@@ -19,7 +20,7 @@ Revision.ctbllatt_gd :=
 ##  \index{short vectors spanning a lattice}%
 ##  \index{lattice base reduction}
 ##  
-#F  'LLL( <tbl>, <characters> [, <y>] [, \"sort\"] [, \"linearcomb\"] )'
+#F  LLL( <tbl>, <characters> [, <y>] [, \"sort\"] [, \"linearcomb\"] )
 ##
 ##  calls the LLL algorithm (see "LLLReducedBasis") in the case of lattices
 ##  spanned by (virtual) characters <characters> of the character table <tbl>
@@ -59,21 +60,21 @@ Revision.ctbllatt_gd :=
 ##        remainders := [  ],
 ##        norms := [  ] )|
 ##  
-LLL := NewOperationArgs( "LLL" );
+DeclareGlobalFunction( "LLL" );
 
 
 #############################################################################
 ##
 #F  Extract( <tbl>, <reducibles>, <gram-matrix> [, <missing> ] )
 ##
-Extract := NewOperationArgs( "Extract" );
+DeclareGlobalFunction( "Extract" );
 
 
 #############################################################################
 ##
 #F  Decreased( <tbl>, <chars>, <decompmat>, [ <choice> ] )
 ##
-Decreased := NewOperationArgs( "Decreased" );
+DeclareGlobalFunction( "Decreased" );
 
 
 #############################################################################
@@ -81,7 +82,7 @@ Decreased := NewOperationArgs( "Decreased" );
 #F  OrthogonalEmbeddingsSpecialDimension( <tbl>, <reducibles>, <grammat>,
 #F                                        [, \"positive\" ], <integer> )
 ##
-OrthogonalEmbeddingsSpecialDimension := NewOperationArgs(
+DeclareGlobalFunction(
     "OrthogonalEmbeddingsSpecialDimension" );
 
 
@@ -89,14 +90,14 @@ OrthogonalEmbeddingsSpecialDimension := NewOperationArgs(
 ##
 #F  DnLattice( <tbl>, <g1>, <y1> )
 ##
-DnLattice := NewOperationArgs( "DnLattice" );
+DeclareGlobalFunction( "DnLattice" );
 
 
 #############################################################################
 ##
 #F  DnLatticeIterative( <tbl>, <red> )
 ##
-DnLatticeIterative := NewOperationArgs( "DnLatticeIterative" );
+DeclareGlobalFunction( "DnLatticeIterative" );
 
 
 #############################################################################

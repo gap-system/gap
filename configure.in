@@ -1,0 +1,10 @@
+AC_INIT(configure)
+gp_configure_options=$*
+AC_SUBST(gp_configure_options)
+AC_CONFIG_AUX_DIR(cnf)
+AC_CANONICAL_SYSTEM
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AC_OUTPUT(Makefile)
+
+

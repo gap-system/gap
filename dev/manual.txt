@@ -1,0 +1,86 @@
+Dear tutorial writers!
+
+Frank, Thomas and I have agreed on manuscript formatting rules for the
+GAP-4  manual. They  should  be  tried  out  on  the  GAP-4  tutorial.
+Therefore  I have committed  the  `doc' subdirectory which contains  a
+file `gapmacro.tex'   and    a shell   script  `manualindex'   and   a
+subdirectory `tut' which  contains three TeX  source files and an .mst
+style file for `makeindex'. If there is interest,  I could also commit
+the dvi file, so that you can get an impression of the whole thing.
+
+The manual is typeset with plain TeX.
+
+If you want to generate  the bibliography (the bbl-file) yourself, you
+must also have  BibTeX. At the moment,  however,  the BibTeX databases
+(the bib-files) are  taken from our local system  and are not referred
+to in `gapmacro.tex'.  Something has to be done  about this, but it is
+not urgent. There are no references in the tutorial up to now.
+
+If  you want to  generate the index  (the ind-file) yourself, you must
+call `../manualindex tutorial' from within the `doc/tut' subdirectory.
+`manualindex' needs awk and makeindex.
+
+The file `gapmacro.tex', which is read by `tutorial.tex', contains the
+following macros definitions:
+
+  - `text'   sets the text in typewriter style
+  - ``text'' encloses the text in doublequotes (it does *not* set `text'
+             in typewriter style)
+  - <text>   sets the text in italics. This can also be used inside
+             $...$ and `...'. Use \< to get a less than sign.
+  - *text*   sets the text in emphasized style (i.e. slanted)
+  - $a.b$    inside math mode, you can use . instead of \cdot. Use \. for
+             a full stop in $$...$$
+  - \cite{.} produces a reference to a bibliography entry (the
+             \cite[.]{.} option of LaTeX is not supported)
+  - "ref"    produces a reference to a label (like in the GAP-3 manual)
+  - \label   defines a label
+  - \index   defines an index entry. Index entries are also used for
+             the section index `tutorial.six' used by the on-line help.
+
+  \beginitems
+    item & text
+
+    item & text ...
+  \enditems  produces itemized texts with hanging indentation (note
+             the blank lines after each item)
+
+  \begintt
+    verbatim material
+  \endtt     prints verbatim material (example sessions). Comments are
+             typeset in roman font.
+
+  \beginexamplett ... \endtt
+             does the same thing, but should be used for examples to
+             aid the manual checker
+
+  \Chapter{title}\par \Section{title}\par
+      make chapter or section title. Automatically generates table of
+      contents, a label and an index entry. \Section{...}\null
+      inhibits labels and indexing.
+  \FrontMatter, \Chapters, \Appendices  parts of the book
+  \Bibliography, \TableOfContents       make these chapters automatically
+  \Index                                make index without chapter head
+
+  \>function( arguments )!{ index subentry }
+  \>`a binop b'{binary operation}!{ index subentry }
+      make a  heading for a subsection   explaining a function  or a binary
+      operation. This automatically generates   a label and an  index entry
+      (with optional subentry).
+  \){\fmark ...}
+      the same without label and index entry. \fmark is the triangle.
+
+  These last three probably won't occur in the tutorial.
+
+The file `gapmacro.tex' also contains  a double column output  routine
+taken from Appendix  E of the TeXbook.  This routine sometimes behaves
+strangely, for example,  it eats the whole  index page (including  the
+chapter head)  if the index has  no entries. (It also  sends TeX to an
+output  routine deadlock if there are  too many sections in a chapter,
+like in the GAP-3 manual. Don't worry about this at the moment.)
+
+If you want  to write chapters  for the tutorial, the example chapters
+committed so far should show you how to use these macros. If something
+isn't clear, do not hesitate to ask me.
+
+Heiko

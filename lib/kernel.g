@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains function that should be in the kernel of GAP.
 ##
@@ -96,6 +97,7 @@ end;
 ##
 #F  Ordinal( <n> )  . . . . . . . . . . . . . ordinal of an integer as string
 ##
+##  returns the ordinal of the integer <n> as a string.
 Ordinal := function ( n )
     local   str;
 

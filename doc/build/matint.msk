@@ -1,0 +1,49 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  matint.msk                  GAP documentation            Alexander Hulpke
+%A                                                           Thomas Breuer
+%A                                                           Rob Wainwright
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Integral matrices and lattices}
+
+\Declaration{IntegralizedMat}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Normal forms over the integers}
+
+\Declaration{DiagonalizeIntMatNormDriven}
+
+\Declaration{SNFNormDriven}
+
+\Declaration{HNFNormDriven}
+
+\Declaration{TriangulizeIntegerMat}
+
+\Declaration{SmithNormalFormIntegerMat}
+
+\Declaration{HermiteNormalFormIntegerMat}
+
+\Declaration{TriangulizedIntegerMat}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Decompositions}
+
+\Declaration{DecompositionInt}
+
+\Declaration{Decomposition}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lattice reduction}
+
+\index{LLL algorithm!for vectors}%
+\index{short vectors spanning a lattice}%
+\index{lattice base reduction}
+
+\Declaration{LLLReducedBasis}
+
+\index{LLL algorithm!for Gram matrices}%
+\index{lattice base reduction}
+\Declaration{LLLReducedGramMat}

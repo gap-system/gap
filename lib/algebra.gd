@@ -5,11 +5,20 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file declares the operations for 'FLMLOR's and algebras.
+##  This file declares the operations for `FLMLOR's and algebras.
 ##
 Revision.algebra_gd :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#V  InfoAlgebra
+##
+DeclareInfoClass( "InfoAlgebra" );
+
 
 
 #############################################################################
@@ -24,7 +33,7 @@ Revision.algebra_gd :=
 ##
 ##  Examples are magma rings (e.g. over the integers) or algebras.
 ##
-IsFLMLOR := IsFreeLeftModule and IsLeftOperatorRing;
+DeclareSynonym( "IsFLMLOR", IsFreeLeftModule and IsLeftOperatorRing );
 
 
 #############################################################################
@@ -41,7 +50,8 @@ IsFLMLOR := IsFreeLeftModule and IsLeftOperatorRing;
 ##  Examples are magma rings-with-one or algebras-with-one (but also over the
 ##  integers).
 ##
-IsFLMLORWithOne := IsFreeLeftModule and IsLeftOperatorRingWithOne;
+DeclareSynonym( "IsFLMLORWithOne",
+    IsFreeLeftModule and IsLeftOperatorRingWithOne );
 
 
 #############################################################################
@@ -52,7 +62,7 @@ IsFLMLORWithOne := IsFreeLeftModule and IsLeftOperatorRingWithOne;
 ##  Note that this means that being an algebra is not a property a ring can
 ##  get, since a ring is usually not represented as an external left set.
 ##
-IsAlgebra := IsLeftVectorSpace and IsLeftOperatorRing;
+DeclareSynonym( "IsAlgebra", IsLeftVectorSpace and IsLeftOperatorRing );
 
 
 #############################################################################
@@ -65,7 +75,8 @@ IsAlgebra := IsLeftVectorSpace and IsLeftOperatorRing;
 ##  ring-with-one can get,
 ##  since a ring-with-one is usually not represented as an external left set.
 ##
-IsAlgebraWithOne := IsLeftVectorSpace and IsLeftOperatorRingWithOne;
+DeclareSynonym( "IsAlgebraWithOne",
+    IsLeftVectorSpace and IsLeftOperatorRingWithOne );
 
 
 #############################################################################
@@ -76,137 +87,133 @@ IsAlgebraWithOne := IsLeftVectorSpace and IsLeftOperatorRingWithOne;
 ##  and $( a * ( b * c ) ) + ( b * ( c * a ) ) + ( c * ( a * b ) ) = 0$
 ##  for all $a, b, c$ in <A> (Jacobi identity).
 ##
-IsLieAlgebra := IsAlgebra and IsZeroSquaredRing and IsJacobianRing;
-SetIsLieAlgebra := Setter( IsLieAlgebra );
-HasIsLieAlgebra := Tester( IsLieAlgebra );
+DeclareSynonymAttr( "IsLieAlgebra",
+    IsAlgebra and IsZeroSquaredRing and IsJacobianRing );
 
 
 #############################################################################
 ##
-#P  IsSimpleAlgebra( <L> )
+#P  IsSimpleAlgebra( <A> )
 ##
-##  is 'true' if the algebra <L> is simple, and 'false' otherwise.
+##  is `true' if the algebra <A> is simple, and `false' otherwise. This 
+##  function is only implemented for the cases where <A> is an associative or
+##  a Lie algebra.
 ##
-IsSimpleAlgebra := NewProperty( "IsSimpleAlgebra", IsAlgebra );
-SetIsSimpleAlgebra := Setter( IsSimpleAlgebra );
-HasIsSimpleAlgebra := Tester( IsSimpleAlgebra );
+DeclareProperty( "IsSimpleAlgebra", IsAlgebra );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfLeftOperatorRing
 ##
-GeneratorsOfLeftOperatorRing := NewAttribute(
-    "GeneratorsOfLeftOperatorRing", IsLeftOperatorRing );
-SetGeneratorsOfLeftOperatorRing := Setter( GeneratorsOfLeftOperatorRing );
-HasGeneratorsOfLeftOperatorRing := Tester( GeneratorsOfLeftOperatorRing );
+DeclareAttribute( "GeneratorsOfLeftOperatorRing", IsLeftOperatorRing );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfLeftOperatorRingWithOne
 ##
-GeneratorsOfLeftOperatorRingWithOne := NewAttribute(
-    "GeneratorsOfLeftOperatorRingWithOne", IsLeftOperatorRingWithOne );
-SetGeneratorsOfLeftOperatorRingWithOne := Setter(
-    GeneratorsOfLeftOperatorRingWithOne );
-HasGeneratorsOfLeftOperatorRingWithOne := Tester(
-    GeneratorsOfLeftOperatorRingWithOne );
+DeclareAttribute( "GeneratorsOfLeftOperatorRingWithOne",
+    IsLeftOperatorRingWithOne );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfAlgebra( <A> )
 ##
-GeneratorsOfAlgebra := GeneratorsOfLeftOperatorRing;
-SetGeneratorsOfAlgebra := SetGeneratorsOfLeftOperatorRing;
-HasGeneratorsOfAlgebra := HasGeneratorsOfLeftOperatorRing;
+##  returns a list of elements that generate <A> as algebra.
+##
+DeclareSynonymAttr( "GeneratorsOfAlgebra", GeneratorsOfLeftOperatorRing );
+DeclareSynonymAttr( "GeneratorsOfFLMLOR", GeneratorsOfLeftOperatorRing );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfAlgebraWithOne( <A> )
 ##
-GeneratorsOfAlgebraWithOne := GeneratorsOfLeftOperatorRingWithOne;
-SetGeneratorsOfAlgebraWithOne := SetGeneratorsOfLeftOperatorRingWithOne;
-HasGeneratorsOfAlgebraWithOne := HasGeneratorsOfLeftOperatorRingWithOne;
+##  returns a list of elements of <A> that generate <A> as algebra with
+##  one. 
+##
+DeclareSynonymAttr( "GeneratorsOfAlgebraWithOne",
+    GeneratorsOfLeftOperatorRingWithOne );
+DeclareSynonymAttr( "GeneratorsOfFLMLORWithOne",
+    GeneratorsOfLeftOperatorRingWithOne );
 
 
 #############################################################################
 ##
 #A  DerivedSeriesOfAlgebra( <A> )
 ##
-DerivedSeriesOfAlgebra := NewAttribute( "DerivedSeriesOfAlgebra",
-    IsAlgebra );
-SetDerivedSeriesOfAlgebra := Setter( DerivedSeriesOfAlgebra );
-HasDerivedSeriesOfAlgebra := Tester( DerivedSeriesOfAlgebra );
+##  returns a list of ideals of <A>, the first term of which is <A>;
+##  and every next term is the derived subalgebra of the previous term.
+##
+DeclareAttribute( "DerivedSeriesOfAlgebra", IsAlgebra );
 
 
 #############################################################################
 ##
 #A  DerivedSubalgebra( <A> )
 ##
-DerivedSubalgebra := NewAttribute( "DerivedSubalgebra", IsAlgebra );
-SetDerivedSubalgebra := Setter( DerivedSubalgebra );
-HasDerivedSubalgebra := Tester( DerivedSubalgebra );
+##  the product space of <A> with itself (i.e., the ideal generated by all
+##  products $ab$ for $a,b\in A$.
+## 
+DeclareAttribute( "DerivedSubalgebra", IsAlgebra );
 
 
 #############################################################################
 ##
 #A  AdjointBasis( <B> )
 ##
-##  For the basis <B> of a (Lie) algebra $L$, this function returns a
-##  particular basis $C$ of the matrix space generated by $ad L$,
+##  For the basis <B> of an algebra $A$, this function returns a
+##  particular basis $C$ of the matrix space generated by $ad A$,
+##  (the matrix spaces spanned by the matrices of the left multiplication);
 ##  namely a basis consisting of elements of the form $ad x_i$,
 ##  where $x_i$ is a basis element of <B>.
 ##
-AdjointBasis := NewAttribute( "AdjointBasis", IsBasis );
-SetAdjointBasis := Setter( AdjointBasis );
-HasAdjointBasis := Tester( AdjointBasis );
+DeclareAttribute( "AdjointBasis", IsBasis );
 
 
 #############################################################################
 ##
 #A  IndicesOfAdjointBasis( <B> )
 ##
-IndicesOfAdjointBasis := NewAttribute( "IndicesOfAdjointBasis", IsBasis );
-SetIndicesOfAdjointBasis := Setter( IndicesOfAdjointBasis );
-HasIndicesOfAdjointBasis := Tester( IndicesOfAdjointBasis );
+##   Let <A> be an algebra and let <B>
+##   be the basis that is output by 'AdjointBasis( Basis( <A> ) )'. 
+##   This function 
+##   returns a list of indices. If $i$ is an index belonging to this
+##   list, then $ad x_{i}$ is a basis vector of the matrix space spanned
+##   by $ad A$, where $x_{i}$ is the $i$-th basis vector of <A>.
+##
+DeclareAttribute( "IndicesOfAdjointBasis", IsBasis );
 
 
 #############################################################################
 ##
 #A  RadicalOfAlgebra( <A> )
 ##
-##  is the intersection of maximal ideals of the algebra <A>.
+##  is the maximal nilpotent ideal of <A>.
 ##
-RadicalOfAlgebra := NewAttribute( "RadicalOfAlgebra", IsAlgebra );
-SetRadicalOfAlgebra := Setter( RadicalOfAlgebra );
-HasRadicalOfAlgebra := Tester( RadicalOfAlgebra );
+DeclareAttribute( "RadicalOfAlgebra", IsAlgebra );
 
 
 #############################################################################
 ##
 #A  TrivialSubalgebra( <A> )
 ##
-TrivialSubFLMLOR := TrivialSubadditiveMagmaWithZero;
-SetTrivialSubFLMLOR := SetTrivialSubadditiveMagmaWithZero;
-HasTrivialSubFLMLOR := HasTrivialSubadditiveMagmaWithZero;
-
-TrivialSubalgebra := TrivialSubFLMLOR;
-SetTrivialSubalgebra := SetTrivialSubFLMLOR;
-HasTrivialSubalgebra := HasTrivialSubFLMLOR;
+##  The zero dimensional subalgebra of the algebra <A>.
+##
+DeclareSynonymAttr( "TrivialSubFLMLOR", TrivialSubadditiveMagmaWithZero );
+DeclareSynonymAttr( "TrivialSubalgebra", TrivialSubFLMLOR );
 
 
 #############################################################################
 ##
 #A  NullAlgebra( <R> )  . . . . . . . . . . zero dimensional algebra over <R>
 ##
+##  The zero-dimensional algebra over <R>.
 #T or store this in the family ?
 ##
-NullAlgebra := NewAttribute( "NullAlgebra", IsRing );
-SetNullAlgebra := Setter( NullAlgebra );
-HasNullAlgebra := Tester( NullAlgebra );
+DeclareAttribute( "NullAlgebra", IsRing );
 
 
 #############################################################################
@@ -221,8 +228,7 @@ HasNullAlgebra := Tester( NullAlgebra );
 ##  If <U> and <V> are known to be ideals in an algebra $A$
 ##  then the product space is known to be an algebra and an ideal in $A$.
 ##
-ProductSpace := NewOperation( "ProductSpace",
-    [ IsFreeLeftModule, IsFreeLeftModule ] );
+DeclareOperation( "ProductSpace", [ IsFreeLeftModule, IsFreeLeftModule ] );
 
 
 #############################################################################
@@ -246,8 +252,7 @@ ProductSpace := NewOperation( "ProductSpace",
 ##  algebras or both are associative then the result is again a
 ##  matrix algebra of the appropriate type.
 ##
-DirectSumOfAlgebras := NewOperation( "DirectSumOfAlgebras",
-    [ IsDenseList ] );
+DeclareOperation( "DirectSumOfAlgebras", [ IsDenseList ] );
 
 
 #############################################################################
@@ -257,47 +262,61 @@ DirectSumOfAlgebras := NewOperation( "DirectSumOfAlgebras",
 ##  Compute the centralizer of the list of matrices <lst> in the full
 ##  matrix algebra over the ring <F>. 
 ##
-FullMatrixAlgebraCentralizer := NewOperationArgs(
-    "FullMatrixAlgebraCentralizer" );
+DeclareGlobalFunction( "FullMatrixAlgebraCentralizer" );
 
 
 #############################################################################
 ##
 #O  AsAlgebra( <F>, <A> ) . . . . . . . . . . .  view <A> as algebra over <F>
 ##
-AsFLMLOR := NewOperation( "AsFLMLOR", [ IsRing, IsCollection ] );
+##  Returns the algebra over <F> generated by <A>.
+##
+DeclareOperation( "AsFLMLOR", [ IsRing, IsCollection ] );
 
-AsAlgebra := AsFLMLOR;
+DeclareSynonym( "AsAlgebra", AsFLMLOR );
 
 
 #############################################################################
 ##
 #O  AsAlgebraWithOne( <F>, <A> )  . . . view <A> as algebra-with-one over <F>
 ##
-AsFLMLORWithOne := NewOperation( "AsFLMLORWithOne",
-    [ IsRing, IsCollection ] );
+##  If the algebra <A> has an identity, then it can be viewed as an
+##  algebra with one over <F>. This function returns this algebra with one.
+##
+DeclareOperation( "AsFLMLORWithOne", [ IsRing, IsCollection ] );
 
-AsAlgebraWithOne := AsFLMLORWithOne;
+DeclareSynonym( "AsAlgebraWithOne", AsFLMLORWithOne );
 
 
 #############################################################################
 ##
-#O  AsSubalgebra( <A>, <S> )  . . . . . . . . . view <S> as subalgebra of <A>
+#O  AsSubalgebra( <A>, <B> )  . . . . . . . . . view <B> as subalgebra of <A>
 ##
-AsSubFLMLOR := NewOperation( "AsSubFLMLOR", [ IsFLMLOR, IsCollection ] );
+##  If all elements of the algebra <B> happen to be contained in the
+##  algebra <A>, then <B> can be viewed as a subalgebra of <A>. This 
+##  function returns this subalgebra.
+##
+DeclareOperation( "AsSubFLMLOR", [ IsFLMLOR, IsFLMLOR ] );
 
-AsSubalgebra := AsSubFLMLOR;
+DeclareSynonym( "AsSubalgebra", AsSubFLMLOR );
 
 
 #############################################################################
 ##
-#O  AsSubalgebraWithOne( <A>, <S> ) . . view <S> as subalgebra-wth-one of <A>
+#O  AsSubalgebraWithOne( <A>, <B> ) . . view <B> as subalgebra-wth-one of <A>
 ##
-AsSubFLMLORWithOne := NewOperation( "AsSubFLMLORWithOne",
-    [ IsFLMLOR, IsDomain ] );
+##  If <B> is an algebra with one, all elements of which happen to be
+##  contained in the algebra with one <A>, then <B> can be viewed as a
+##  subalgebra with one of <A>. This function returns this subalgebra
+##  with one.
+##
+DeclareOperation( "AsSubFLMLORWithOne", [ IsFLMLOR, IsFLMLOR ] );
 
-AsSubalgebraWithOne := AsSubFLMLORWithOne;
+DeclareSynonym( "AsSubalgebraWithOne", AsSubFLMLORWithOne );
 
+#2 
+## For an introduction into structure constants and how they are handled
+## by {\GAP}, we refer to Section "tut:Algebras" of the user's tutorial.
 
 #############################################################################
 ##
@@ -305,7 +324,7 @@ AsSubalgebraWithOne := AsSubFLMLORWithOne;
 #F  EmptySCTable( <dim>, <zero>, \"symmetric\" )
 #F  EmptySCTable( <dim>, <zero>, \"antisymmetric\" )
 ##
-##  'EmptySCTable' returns a structure constants table for an algebra of
+##  `EmptySCTable' returns a structure constants table for an algebra of
 ##  dimension <dim>, describing trivial multiplication.
 ##  <zero> must be the zero of the coefficients domain.
 ##  If the multiplication is known to be (anti)commutative then
@@ -313,7 +332,7 @@ AsSubalgebraWithOne := AsSubFLMLORWithOne;
 ##
 ##  For filling up the s.c. table, see "SetEntrySCTable".
 ##
-EmptySCTable := NewOperationArgs( "EmptySCTable" );
+DeclareGlobalFunction( "EmptySCTable" );
 
 
 #############################################################################
@@ -325,12 +344,12 @@ EmptySCTable := NewOperationArgs( "EmptySCTable" );
 ##  value given by the list <list>.
 ##
 ##  If <T> is known to be antisymmetric or symmetric then also the value
-##  '<T>[<j>][<i>]' is set.
+##  `<T>[<j>][<i>]' is set.
 ##
 ##  <list> must be of the form
 ##  $[ c_{ij}^{k_1}, k_1, c_{ij}^{k_2}, k_2, ... ]$.
 ##
-SetEntrySCTable := NewOperationArgs( "SetEntrySCTable" );
+DeclareGlobalFunction( "SetEntrySCTable" );
 
 
 #############################################################################
@@ -338,10 +357,10 @@ SetEntrySCTable := NewOperationArgs( "SetEntrySCTable" );
 #F  GapInputSCTable( <T>, <varname> )
 ##
 ##  is a string that describes the structure constants table <T> in terms of
-##  'EmptySCTable' and 'SetEntrySCTable'.
+##  `EmptySCTable' and `SetEntrySCTable'.
 ##  The assignments are made to the variable <varname>.
 ##
-GapInputSCTable := NewOperationArgs( "GapInputSCTable" );
+DeclareGlobalFunction( "GapInputSCTable" );
 
 
 #############################################################################
@@ -349,11 +368,11 @@ GapInputSCTable := NewOperationArgs( "GapInputSCTable" );
 #F  IdentityFromSCTable( <T> )
 ##
 ##  Let <T> be a s.c. table of an algebra $A$ of dimension $n$.
-##  'IdentityFromSCTable( <T> )' is either 'fail' or the vector of length
+##  `IdentityFromSCTable( <T> )' is either `fail' or the vector of length
 ##  $n$ that contains the coefficients of the multipicative identity of $A$
 ##  w.r.t. the basis that belongs to <T>.
 ##
-IdentityFromSCTable := NewOperationArgs( "IdentityFromSCTable" );
+DeclareGlobalFunction( "IdentityFromSCTable" );
 
 
 #############################################################################
@@ -361,12 +380,12 @@ IdentityFromSCTable := NewOperationArgs( "IdentityFromSCTable" );
 #F  QuotientFromSCTable( <T>, <num>, <den> )
 ##
 ##  Let <T> be a s.c. table of an algebra $A$ of dimension $n$.
-##  'QuotientFromSCTable( <T> )' is either 'fail' or the vector of length
+##  `QuotientFromSCTable( <T> )' is either `fail' or the vector of length
 ##  $n$ that contains the coefficients of the quotient of <num> and <den>
 ##  w.r.t. the basis that belongs to <T>.
 ##
 ##  We solve the equation system $<num> = x <den>$.
-##  If no solution exists, 'fail' is returned.
+##  If no solution exists, `fail' is returned.
 ##
 ##  In terms of the basis $B$ with vectors $b_1, \ldots, b_n$ this means
 ##  for $<num> = \sum_{i=1}^n a_i b_i$,
@@ -376,7 +395,7 @@ IdentityFromSCTable := NewOperationArgs( "IdentityFromSCTable" );
 ##  Here $c_{ijk}$ denotes the structure constants w.r.t. $B$.
 ##  This means $a = x M$ with $M_{ik} = \sum_{j=1}^n c_{ijk} c_j$.
 ##
-QuotientFromSCTable := NewOperationArgs( "QuotientFromSCTable" );
+DeclareGlobalFunction( "QuotientFromSCTable" );
 
 
 #############################################################################
@@ -390,10 +409,10 @@ QuotientFromSCTable := NewOperationArgs( "QuotientFromSCTable" );
 ##  where $i \leq j \leq k$
 ##  (Thus antisymmetry is assumed.)
 ##
-##  The function returns 'true' if the Jacobi identity is satisfied,
-##  and a failing triple '[ i, j, k ]' otherwise.
+##  The function returns `true' if the Jacobi identity is satisfied,
+##  and a failing triple `[ i, j, k ]' otherwise.
 ##
-TestJacobi := NewOperationArgs( "TestJacobi" );
+DeclareGlobalFunction( "TestJacobi" );
 
 
 #############################################################################
@@ -403,39 +422,109 @@ TestJacobi := NewOperationArgs( "TestJacobi" );
 ##
 ##  For a left operator ring <A> and either an element <a> of its elements
 ##  family or a left operator ring <S> (over the same left acting domain),
-##  'ClosureLeftOperatorRing' returns the left operator ring generated by
+##  `ClosureLeftOperatorRing' returns the left operator ring generated by
 ##  both arguments.
 ##
-ClosureLeftOperatorRing := NewOperation( "ClosureLeftOperatorRing",
+DeclareOperation( "ClosureLeftOperatorRing",
     [ IsLeftOperatorRing, IsObject ] );
 
-ClosureAlgebra := ClosureLeftOperatorRing;
+DeclareSynonym( "ClosureAlgebra", ClosureLeftOperatorRing );
 
 
 #############################################################################
 ##
-#F  MutableBasisOfClosureUnderAction( <F>, <Agens>, <gens>, <from>, <init>,
-#F                                    <maxdim> )
+#F  MutableBasisOfClosureUnderAction( <F>, <Agens>, <from>, <init>, <opr>,
+#F                                    <zero>, <maxdim> )
 ##
-##  Let <F> be a ring, and <Agens> a list of generators for an <F>-algebra
-##  $A$,
-##  <gens> be a list of vectors in the elements family of the family of $A$,
-##  and <from> one of \"left\", \"right\", \"both\"; it means that elements
-##  of <A> act via multiplication from the respective side(s).
+##  Let <F> be a ring, <Agens> a list of generators for an <F>-algebra $A$,
+##  and <from> one of `"left"', `"right"', `"both"'; it means that elements
+##  of $A$ act via multiplication from the respective side(s).
+##  <init> must be a list of initial generating vectors,
+##  and <opr> the operation (a function of two arguments).
 ##
-##  <init> is a list of initial generating vectors.
-##  It usually contains 'One( <A> )' in the case of algebras-with-one,
-##  the algebra generators of <A> in the case of other algebras,
-##  and ideal generators in the ideal case.
+##  `MutableBasisOfClosureUnderAction' returns a mutable basis of the
+##  <F>-free left module generated by the vectors in <init>
+##  and their images under the action of <Agens> from the respective side(s).
 ##
-##  <maxdim> is an upper bound for the dimension of the closure.
+##  <zero> is the zero element of the desired module.
+##  <maxdim> is an upper bound for the dimension of the closure; if no such
+##  upper bound is known then the value of <maxdim> must be `infinity'.
 ##
-##  'MutableBasisOfClosureUnderAction' returns a mutable basis of the
-##  <F>-free left module generated by the vectors in <gens>
-##  and their images under the action of $A$.
+##  `MutableBasisOfClosureUnderAction' can be used to compute a basis of an
+##  *associative* algebra for which no vector space generators are known;
+##  in this case <Agens> is a list of algebra generators,
+##  <from> may be `"left"' or `"right"', <opr> is the multiplication `\*',
+##  and <init> is a list containing either the identity of the algebra or a
+##  list of algebra generators.
+##  (Note that if the algebra has an identity then it is in general not
+##  sufficient to take algebra-with-one generators as <init>,
+##  whereas of course <Agens> need not contain the identity.)
+## 
+##  (Note that bases of *not* necessarily associative algebras can be
+##  computed using `MutableBasisOfNonassociativeAlgebra'.)
 ##
-MutableBasisOfClosureUnderAction := NewOperationArgs(
-    "MutableBasisOfClosureUnderAction" );
+##  Other applications of `MutableBasisOfClosureUnderAction' are the
+##  computations of bases for (left/right/two-sided) ideals $I$ in an
+##  *associative* algebra $A$ from ideal generators of $I$;
+##  in these cases <Agens> is a list of algebra generators of $A$,
+##  <from> denotes the appropriate side(s),
+##  <init> is a list of ideal generators of $I$, and <opr> is again `\*'.
+##
+##  (Note that bases of ideals in *not* necessarily associative algebras can
+##  be computed using `MutableBasisOfIdealInNonassociativeAlgebra'.)
+##
+##  Finally, also bases of right $A$-modules can be computed using
+##  `MutableBasisOfClosureUnderAction'.
+##  The only difference to the ideal case is that <init> is now a list of
+##  right module generators, and <opr> is the operation of the module.
+##
+##  (Remark:
+##  It would be possible to use vector space generators of the algebra $A$
+##  if they are known; but in the associative case, it is cheaper to multiply
+##  only with generators until the vector space  becomes stable.)
+##
+DeclareGlobalFunction( "MutableBasisOfClosureUnderAction" );
+
+
+#############################################################################
+##
+#F  MutableBasisOfNonassociativeAlgebra( <F>, <Agens>, <zero>, <maxdim> )
+##
+##  is a mutable basis of the (not necessarily associative) <F>-algebra that
+##  is generated by <Agens>, has zero element <zero>, and has dimension at
+##  most <maxdim>.
+##  If no finite bound for the dimension is known then `infinity' must be
+##  the value of <maxdim>.
+##
+##  The difference to `MutableBasisOfClosureUnderAction' is that in general
+##  it is not sufficient to multiply just with algebra generators.
+##  (For special cases of nonassociative algebras, especially for Lie
+##  algebras, multiplying with algebra generators suffices.)
+##
+DeclareGlobalFunction( "MutableBasisOfNonassociativeAlgebra" );
+
+
+#############################################################################
+##
+#F  MutableBasisOfIdealInNonassociativeAlgebra( <F>, <Vgens>, <Igens>,
+#F                                              <zero>, <from>, <maxdim> )
+##
+##  is a mutable basis of the ideal generated by <Igens> under the action of
+##  the (not necessarily associative) <F>-algebra with vector space
+##  generators <Vgens>.
+##  The zero element of the ideal is <zero>,
+##  <from> is one of `"left"', `"right"', `"both"' (with the same meaning as
+##  in `MutableBasisOfClosureUnderAction'),
+##  and <maxdim> is a known upper bound on the dimension of the ideal;
+##  if no finite bound for the dimension is known then `infinity' must be
+##  the value of <maxdim>.
+##
+##  The difference to `MutableBasisOfClosureUnderAction' is that in general
+##  it is not sufficient to multiply just with algebra generators.
+##  (For special cases of nonassociative algebras, especially for Lie
+##  algebras, multiplying with algebra generators suffices.)
+##
+DeclareGlobalFunction( "MutableBasisOfIdealInNonassociativeAlgebra" );
 
 
 #############################################################################
@@ -448,10 +537,10 @@ MutableBasisOfClosureUnderAction := NewOperationArgs(
 #O  AlgebraByGenerators(<F>,<gens>) . . . . . . . . <F>-algebra by generators
 #O  AlgebraByGenerators( <F>, <gens>, <zero> )
 ##
-FLMLORByGenerators := NewOperation( "FLMLORByGenerators",
+DeclareOperation( "FLMLORByGenerators",
     [ IsRing, IsCollection ] );
 
-AlgebraByGenerators := FLMLORByGenerators;
+DeclareSynonym( "AlgebraByGenerators", FLMLORByGenerators );
 
 
 #############################################################################
@@ -461,25 +550,26 @@ AlgebraByGenerators := FLMLORByGenerators;
 #F  Algebra( <F>, <gens>, "basis" )
 #F  Algebra( <F>, <gens>, <zero>, "basis" )
 ##
-##  'Algebra( <F>, <gens> )' is the algebra over the division ring
+##  `Algebra( <F>, <gens> )' is the algebra over the division ring
 ##  <F>, generated by the vectors in the list <gens>.
 ##
 ##  If there are three arguments, a division ring <F> and a list <gens>
 ##  and an element <zero>,
-##  then 'Algebra( <F>, <gens>, <zero> )' is the <F>-algebra
+##  then `Algebra( <F>, <gens>, <zero> )' is the <F>-algebra
 ##  generated by <gens>, with zero element <zero>.
 ##
-##  If the last argument is the string '\"basis\"' then the vectors in
+##  If the last argument is the string `\"basis\"' then the vectors in
 ##  <gens> are known to form a basis of the algebra (as an <F>-vector space).
 ##
-FLMLOR := NewOperationArgs( "FLMLOR" );
+DeclareGlobalFunction( "FLMLOR" );
 
-Algebra := FLMLOR;
+DeclareSynonym( "Algebra", FLMLOR );
 
 
 #############################################################################
 ##
 #F  Subalgebra( <A>, <gens> ) . . . . . subalgebra of <A> generated by <gens>
+#F  Subalgebra( <A>, <gens>, "basis" )
 ##
 ##  is the $F$-algebra generated by <gens>, with parent algebra <A>, where
 ##  $F$ is the left acting domain of <A>.
@@ -487,27 +577,27 @@ Algebra := FLMLOR;
 ##  *Note* that being a subalgebra of <A> means to be an algebra, to be
 ##  contained in <A>, *and* to have the same left acting domain as <A>.
 ##
-#F  Subalgebra( <A>, <gens>, "basis" )
-##
-##  is the subalgebra of <A> for that <gens> is a list of basis vectors.
-##  It is *not* checked whether <gens> really are linearly independent
+##  An optional argument \"basis\" may be added if it is known that
+##  the generators already form a basis of the algebra.
+##  Then it is *not* checked whether <gens> really are linearly independent
 ##  and whether all in <gens> lie in <A>.
 ##
-SubFLMLOR := NewOperationArgs( "SubFLMLOR" );
+DeclareGlobalFunction( "SubFLMLOR" );
 
-Subalgebra := SubFLMLOR;
+DeclareSynonym( "Subalgebra", SubFLMLOR );
 
 
 #############################################################################
 ##
-#F  SubalgebraNC( <A>, <gens>, "basis" )
 #F  SubalgebraNC( <A>, <gens> )
+#F  SubalgebraNC( <A>, <gens>, "basis" )
 ##
-##  'SubalgebraNC' does not check whether all in <gens> lie in <A>.
+##  `SubalgebraNC' constructs the subalgebra generated by <gens>, only it 
+##  does not check whether all in <gens> lie in <A>.
 ##
-SubFLMLORNC := NewOperationArgs( "SubFLMLORNC" );
+DeclareGlobalFunction( "SubFLMLORNC" );
 
-SubalgebraNC := SubFLMLORNC;
+DeclareSynonym( "SubalgebraNC", SubFLMLORNC );
 
 
 #############################################################################
@@ -515,10 +605,10 @@ SubalgebraNC := SubFLMLORNC;
 #O  AlgebraWithOneByGenerators(<F>,<gens>)  . <F>-alg.-with-one by generators
 #O  AlgebraWithOneByGenerators( <F>, <gens>, <zero> )
 ##
-FLMLORWithOneByGenerators := NewOperation( "FLMLORWithOneByGenerators",
+DeclareOperation( "FLMLORWithOneByGenerators",
     [ IsRing, IsCollection ] );
 
-AlgebraWithOneByGenerators := FLMLORWithOneByGenerators;
+DeclareSynonym( "AlgebraWithOneByGenerators", FLMLORWithOneByGenerators );
 
 
 #############################################################################
@@ -528,50 +618,49 @@ AlgebraWithOneByGenerators := FLMLORWithOneByGenerators;
 #F  AlgebraWithOne( <F>, <gens>, "basis" )
 #F  AlgebraWithOne( <F>, <gens>, <zero>, "basis" )
 ##
-##  'AlgebraWithOne( <F>, <gens> )' is the algebra-with-one over the division
+##  `AlgebraWithOne( <F>, <gens> )' is the algebra-with-one over the division
 ##  ring <F>, generated by the vectors in the list <gens>.
 ##
 ##  If there are three arguments, a division ring <F> and a list <gens>
 ##  and an element <zero>,
-##  then 'AlgebraWithOne( <F>, <gens>, <zero> )' is the <F>-algebra-with-one
+##  then `AlgebraWithOne( <F>, <gens>, <zero> )' is the <F>-algebra-with-one
 ##  generated by <gens>, with zero element <zero>.
 ##
-##  If the last argument is the string '\"basis\"' then the vectors in
+##  If the last argument is the string `\"basis\"' then the vectors in
 ##  <gens> are known to form a basis of the algebra (as an <F>-vector space).
 ##
-FLMLORWithOne := NewOperationArgs( "FLMLORWithOne" );
+DeclareGlobalFunction( "FLMLORWithOne" );
 
-AlgebraWithOne := FLMLORWithOne;
+DeclareSynonym( "AlgebraWithOne", FLMLORWithOne );
 
 
 #############################################################################
 ##
 #F  SubalgebraWithOne( <A>, <gens> )   subalg.-with-one of <A> gen. by <gens>
-##
-##  is the algebra-with-one generated by <gens>, with parent algebra <V>.
-##
 #F  SubalgebraWithOne( <A>, <gens>, "basis" )
 ##
-##  is the subalgebra-with-one of <A> for that <gens> is a list of basis
-##  vectors.
-##  It is *not* checked whether <gens> really are linearly independent
+##  is the algebra-with-one generated by <gens>, with parent algebra <A>.
+##
+##  The optional third argument \"basis\" may be added if it is
+##  known that the elements from <gens> are linearly independent.
+##  Then it is *not* checked whether <gens> really are linearly independent
 ##  and whether all in <gens> lie in <A>.
 ##
-SubFLMLORWithOne := NewOperationArgs( "SubFLMLORWithOne" );
+DeclareGlobalFunction( "SubFLMLORWithOne" );
 
-SubalgebraWithOne := SubFLMLORWithOne;
+DeclareSynonym( "SubalgebraWithOne", SubFLMLORWithOne );
 
 
 #############################################################################
 ##
+#F  SubalgebraWithOneNC( <A>, <gens>  )
 #F  SubalgebraWithOneNC( <A>, <gens>, "basis" )
-#F  SubalgebraWithOneNC( <A>, <gens> )
 ##
-##  'SubalgebraWithOneNC' does not check whether all in <gens> lie in <V>.
+##  `SubalgebraWithOneNC' does not check whether all in <gens> lie in <A>.
 ##
-SubFLMLORWithOneNC := NewOperationArgs( "SubFLMLORWithOneNC" );
+DeclareGlobalFunction( "SubFLMLORWithOneNC" );
 
-SubalgebraWithOneNC := SubFLMLORWithOneNC;
+DeclareSynonym( "SubalgebraWithOneNC", SubFLMLORWithOneNC );
 
 
 #############################################################################
@@ -582,35 +671,35 @@ SubalgebraWithOneNC := SubFLMLORWithOneNC;
 #F  LieAlgebra( <F>, <gens>, "basis" )
 #F  LieAlgebra( <F>, <gens>, <zero>, "basis" )
 ##
-##  *Note* that the algebra returned by 'LieAlgebra' does not contain the
+##  *Note* that the algebra returned by `LieAlgebra' does not contain the
 ##  vectors in <gens>.
 ##  Instead the elements of this algebra are elements in a family of Lie
 ##  objects.
 ##  This allows to create Lie algebras from ring elements with respect to
 ##  the Lie bracket as product.  But of course the product in the Lie
-##  algebra is the usual '\*'.
+##  algebra is the usual `\*'.
 ##
-##  'LieAlgebra( <L> )' is the Lie algebra isomorphic to <L> as a vector
+##  `LieAlgebra( <L> )' is the Lie algebra isomorphic to <L> as a vector
 ##  space but with the Lie bracket as product.
 ##
-##  'LieAlgebra( <F>, <gens> )' is the Lie algebra over the division ring
+##  `LieAlgebra( <F>, <gens> )' is the Lie algebra over the division ring
 ##  <F>, generated *as Lie algebra* by the Lie objects corresponding to the
 ##  vectors in the list <gens>.
 ##
 ##  If there are three arguments, a division ring <F> and a list <gens>
 ##  and an element <zero>,
-##  then 'LieAlgebra( <F>, <gens>, <zero> )' is the corresponding <F>-Lie
+##  then `LieAlgebra( <F>, <gens>, <zero> )' is the corresponding <F>-Lie
 ##  algebra with zero element the Lie object corresponding to <zero>.
 ##
-##  If the last argument is the string '\"basis\"' then the vectors in
+##  If the last argument is the string `\"basis\"' then the vectors in
 ##  <gens> are known to form a basis of the algebra (as an <F>-vector space).
 ##
 ##  *Note* that even if each element in <gens> is already a Lie element,
-##  i.e., is of the form 'LieElement( <elm> )' for an object <elm>,
+##  i.e., is of the form `LieElement( <elm> )' for an object <elm>,
 ##  the elements of the result lie in the Lie family of the family that
 ##  contains <gens> as a subset.
 ##
-LieAlgebra := NewOperationArgs( "LieAlgebra" );
+DeclareGlobalFunction( "LieAlgebra" );
 
 
 #############################################################################
@@ -620,16 +709,7 @@ LieAlgebra := NewOperationArgs( "LieAlgebra" );
 ##  is a Lie algebra isomorphic to the algebra <A> as a vector space,
 ##  but with the Lie bracket as product.
 ##
-LieAlgebraByDomain := NewAttribute( "LieAlgebraByDomain", IsAlgebra );
-
-
-#############################################################################
-##
-#O  LieAlgebraByGenerators( <F>, <gens> )
-#O  LieAlgebraByGenerators( <F>, <gens>, <zero> )
-##
-LieAlgebraByGenerators := NewOperation( "LieAlgebraByGenerators",
-    [ IsDivisionRing, IsCollection ] );
+DeclareAttribute( "LieAlgebraByDomain", IsAlgebra );
 
 
 #############################################################################
@@ -638,8 +718,7 @@ LieAlgebraByGenerators := NewOperation( "LieAlgebraByGenerators",
 ##
 ##  Note that the multiplication in <A> is the same as in the result.
 ##
-AsLieAlgebra := NewOperation( "AsLieAlgebra",
-    [ IsDivisionRing, IsCollection ] );
+DeclareOperation( "AsLieAlgebra", [ IsDivisionRing, IsCollection ] );
 
 
 #############################################################################
@@ -650,7 +729,19 @@ AsLieAlgebra := NewOperation( "AsLieAlgebra",
 ##
 ##  is a free (nonassociative) algebra of rank <rank> over the ring <R>.
 ##
-FreeAlgebra := NewOperationArgs( "FreeAlgebra" );
+DeclareGlobalFunction( "FreeAlgebra" );
+
+
+#############################################################################
+##
+#F  FreeAlgebraWithOne( <R>, <rank> )
+#F  FreeAlgebraWithOne( <R>, <rank>, <name> )
+#F  FreeAlgebraWithOne( <R>, <name1>, <name2>, ... )
+##
+##  is a free (nonassociative) algebra-with-one of rank <rank> over the ring
+##  <R>.
+##
+DeclareGlobalFunction( "FreeAlgebraWithOne" );
 
 
 #############################################################################
@@ -661,17 +752,18 @@ FreeAlgebra := NewOperationArgs( "FreeAlgebra" );
 ##
 ##  is a free associative algebra of rank <rank> over the ring <R>.
 ##
-FreeAssociativeAlgebra := NewOperationArgs( "FreeAssociativeAlgebra" );
+DeclareGlobalFunction( "FreeAssociativeAlgebra" );
 
 
 #############################################################################
 ##
-#F  SCAlgebra( <R>, <A> )
+#F  FreeAssociativeAlgebraWithOne( <R>, <rank> )
+#F  FreeAssociativeAlgebraWithOne( <R>, <rank>, <name> )
+#F  FreeAssociativeAlgebraWithOne( <R>, <name1>, <name2>, ... )
 ##
-##  is the algebra <A> represented as s.c. algebra over <R>.
+##  is a free associative algebra-with-one of rank <rank> over the ring <R>.
 ##
-SCAlgebra := NewOperation( "SCAlgebra", [ IsDivisionRing, IsAlgebra ] );
-#T necessary ?
+DeclareGlobalFunction( "FreeAssociativeAlgebraWithOne" );
 
 
 #############################################################################
@@ -684,15 +776,14 @@ SCAlgebra := NewOperation( "SCAlgebra", [ IsDivisionRing, IsAlgebra ] );
 ##  with multiplication defined by the structure constants table <sctable>
 ##  of length $n$, say.
 ##
-##  The algebra generators of $A$ are linearly independent
-##  abstract vector space generators
-##  $x_1, x_2, \ldots, x_n$ which are multiplied according to the formula
-##  $ x_i x_j = \sum_{k=1}^n c_{ijk} x_k$
-##  where '$c_{ijk}$ = <sctable>[i][j][1][i_k]'
-##  and '<sctable>[i][j][2][i_k] = k'.
+#%  The algebra generators of $A$ are linearly independent
+#%  abstract vector space generators
+#%  $x_1, x_2, \ldots, x_n$ which are multiplied according to the formula
+#%  $ x_i x_j = \sum_{k=1}^n c_{ijk} x_k$
+#%  where `$c_{ijk}$ = <sctable>[i][j][1][i_k]'
+#%  and `<sctable>[i][j][2][i_k] = k'.
 ##
-AlgebraByStructureConstants := NewOperationArgs(
-    "AlgebraByStructureConstants" );
+DeclareGlobalFunction( "AlgebraByStructureConstants" );
 
 
 #############################################################################
@@ -701,27 +792,27 @@ AlgebraByStructureConstants := NewOperationArgs(
 #F  LieAlgebraByStructureConstants( <R>, <sctable>, <name> )
 #F  LieAlgebraByStructureConstants( <R>, <sctable>, <name1>, <name2>, ... )
 ##
-##  'LieAlgebraByStructureConstants' does the same as
-##  'AlgebraByStructureConstants', except that the result is assumed to be
-##  a Lie algebra.
+##  `LieAlgebraByStructureConstants' does the same as
+##  `AlgebraByStructureConstants', except that the result is assumed to be
+##  a Lie algebra. Note that the function does not check whether
+##  <sctable> satisfies the Jacobi identity. (So if one creates a Lie
+##  algebra this way with a table that does not satisfy the Jacobi identity,
+##  errors may occur later on.)
 ##
-LieAlgebraByStructureConstants := NewOperationArgs(
-    "LieAlgebraByStructureConstants" );
+DeclareGlobalFunction( "LieAlgebraByStructureConstants" );
 
 
 #############################################################################
 ##
-#C  IsQuaternion
+#C  IsQuaternion( <obj> )
 #C  IsQuaternionCollection
-#C  IsQuaternionCollColl
+#c  IsQuaternionCollColl
 ##
-##  category of elements in a algebra constructed by 'QuaternionAlgebra'
+##  category of elements in a algebra constructed by `QuaternionAlgebra'
 ##
-IsQuaternion := NewCategory( "IsQuaternion", IsScalar and IsAssociative );
-
-IsQuaternionCollection := CategoryCollections( IsQuaternion );
-
-IsQuaternionCollColl := CategoryCollections( IsQuaternionCollection );
+DeclareCategory( "IsQuaternion", IsScalar and IsAssociative );
+DeclareCategoryCollections( "IsQuaternion" );
+DeclareCategoryCollections( "IsQuaternionCollection" );
 
 
 #############################################################################
@@ -738,12 +829,12 @@ IsQuaternionCollColl := CategoryCollections( IsQuaternionCollection );
 ##  $k k = - <a> <b> e$.
 ##  The default values for <a> and <b> are $-1$ in <F>.
 ##
-##  The embedding of the field 'GaussianRationals' into a quaternion algebra
-##  $A$ over 'Rationals' is not uniquely determined.
-##  One can specify one as a vector space homomorphism that maps '1' to the
-##  first algebra generator of $A$, and 'E(4)' to one of the others.
+##  The embedding of the field `GaussianRationals' into a quaternion algebra
+##  $A$ over `Rationals' is not uniquely determined.
+##  One can specify one as a vector space homomorphism that maps `1' to the
+##  first algebra generator of $A$, and `E(4)' to one of the others.
 ##
-QuaternionAlgebra := NewOperationArgs( "QuaternionAlgebra" );
+DeclareGlobalFunction( "QuaternionAlgebra" );
 
 
 #############################################################################
@@ -755,61 +846,74 @@ QuaternionAlgebra := NewOperationArgs( "QuaternionAlgebra" );
 ##  over the field $F$ of cyclotomics, with basis $(e,i,j,k)$.
 ##
 ##  If $v = v_1 + v_2 j$ is a row vector over $A$ with $v_1 = e w_1 + i w_2$
-##  and $v_2 = e w_3 + i w_4$ then 'ComplexificationQuat( $v$ )' is the
-##  concatenation of $w_1 + 'E(4)' w_2$ and $w_3 + 'E(4)' w_4$.
+##  and $v_2 = e w_3 + i w_4$ then `ComplexificationQuat( $v$ )' is the
+##  concatenation of $w_1 + `E(4)' w_2$ and $w_3 + `E(4)' w_4$.
 ##
 ##  If $M = M_1 + M_2 j$ is a matrix over $A$ with $M_1 = e N_1 + i N_2$
-##  and $M_2 = e N_3 + i N_4$ then 'ComplexificationQuat( <M> )' is the
-##  block matrix over $e F \oplus i F$
-##  \[ \left( \begin{array}{rr}
-##                  N_1 + 'E(4)' N_2 & N_3 + 'E(4)' N_4           \\
-##                - N_3 + 'E(4)' N_4 & N_1 - 'E(4)' N_2
-##            \end{array} \right) \]
+##  and $M_2 = e N_3 + i N_4$ then `ComplexificationQuat( <M> )' is the
+##  block matrix $A$ over $e F \oplus i F$ such that $A(1,1)=N_1 + `E(4)' N_2$,
+##  $A(2,2)=N_1 - `E(4)' N_2$, $A(1,2)=N_3 + `E(4)' N_4$ and $A(2,1)=
+##   - N_3 + `E(4)' N_4$.
+#%  \[ \left( \begin{array}{rr}
+#%                  N_1 + `E(4)' N_2 & N_3 + `E(4)' N_4           \\
+#%                - N_3 + `E(4)' N_4 & N_1 - `E(4)' N_2
+#%            \end{array} \right) \]
 ##
-##  Then 'ComplexificationQuat( <v> ) * ComplexificationQuat( <M> ) = 
+##  Then `ComplexificationQuat( <v> ) * ComplexificationQuat( <M> ) = 
 ##        ComplexificationQuat( <v> \*\ <M>', since
-##  \[ v M = v_1 M_1 + v_2 j M_1 + v_1 M_2 j + v_2 j M_2 j
+##  $$ v M = v_1 M_1 + v_2 j M_1 + v_1 M_2 j + v_2 j M_2 j
 ##         =   ( v_1 M_1 - v_2 \overline{M_2} )
-##           + ( v_1 M_2 + v_2 \overline{M_1} ) j . \]
+##           + ( v_1 M_2 + v_2 \overline{M_1} ) j . $$
 ##             
-ComplexificationQuat := NewOperationArgs( "ComplexificationQuat" );
+DeclareGlobalFunction( "ComplexificationQuat" );
 
 
 #############################################################################
 ##
 #F  OctaveAlgebra( <F> )
 ##
-OctaveAlgebra := NewOperationArgs( "OctaveAlgebra" );
+##  The algebra of octonions over <F>.
+##
+DeclareGlobalFunction( "OctaveAlgebra" );
 
 
 #############################################################################
 ##
-#F  FullMatrixFLMLOR( <R>, <n> )
+##  FullMatrixFLMLOR( <R>, <n> )
+#F  FullMatrixAlgebra( <R>, <n> )
+#F  MatrixAlgebra( <R>, <n> )
+#F  MatAlgebra( <R>, <n> )
 ##
-##  is the matrix FLMLOR $<R>^[<n>,<n>]$, for a ring <R> and a nonnegative
-##  integer <n>.
+##  is the full matrix algebra $<R>^{<n>\times <n>}$, for a ring <R> and a 
+##  nonnegative integer <n>.
 ##
-FullMatrixFLMLOR := NewOperationArgs( "FullMatrixFLMLOR" );
+DeclareGlobalFunction( "FullMatrixFLMLOR" );
 
-FullMatrixAlgebra := FullMatrixFLMLOR;
-MatrixAlgebra := FullMatrixFLMLOR;
-MatAlgebra := FullMatrixFLMLOR;
+DeclareSynonym( "FullMatrixAlgebra", FullMatrixFLMLOR );
+DeclareSynonym( "MatrixAlgebra", FullMatrixFLMLOR );
+DeclareSynonym( "MatAlgebra", FullMatrixFLMLOR );
 
 
 #############################################################################
 ##
-#O  NaturalHomomorphismByIdeal( <G>, <I> )  . . . . . map onto factor algebra
+#F  FullMatrixLieAlgebra( <R>, <n> )
+#F  MatrixLieAlgebra( <R>, <n> )
+#F  MatLieAlgebra( <R>, <n> )
 ##
-NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",
-    [ IsFLMLOR, IsFLMLOR ] );
+##  is the full matrix Lie algebra $<R>^{<n>\times <n>}$, for a ring <R> and a 
+##  nonnegative integer <n>.
+##
+
+#FullMatrixLieAlgebra := FullMatrixFLMLOR;
+#MatrixLieAlgebra := FullMatrixFLMLOR;
+#MatLieAlgebra := FullMatrixFLMLOR;
 
 
 #############################################################################
 ##
 #C  IsMatrixFLMLOR( <obj> ) . . . . . .  test if an object is a matrix FLMLOR
 ##
-IsMatrixFLMLOR :=
-    IsFLMLOR and IsRingElementCollCollColl;
+DeclareSynonym( "IsMatrixFLMLOR", IsFLMLOR and IsRingElementCollCollColl );
 
 
 #############################################################################
@@ -821,73 +925,45 @@ InstallTrueMethod( IsFiniteDimensional, IsMatrixFLMLOR );
 
 #############################################################################
 ##
-#F  IsLeftIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
+#A  CentralIdempotentsOfAlgebra( <A> )
 ##
-IsLeftIdealFromGenerators :=
-    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
-    return function( A, S )
-
-    local inter,   # intersection of left acting domains
-          gensS,   # suitable generators of 'S'
-          a,       # loop over suitable generators of 'A'
-          i;       # loop over 'gensS'
-
-    if not IsSubset( A, S ) then
-      return false;
-    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
-      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
-      return IsLeftIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
-    fi;
-
-    gensS:= GeneratorsS( S );
-    for a in GeneratorsA( A ) do
-      for i in gensS do
-        if not a * i in S then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end;
-end;
+##  A list of central primitive idempotents such that their sum is
+##  the identity element of <A>. Therefore <A> is required to have an
+##  identity.
+##
+DeclareAttribute( "CentralIdempotentsOfAlgebra", IsAlgebra );
 
 
 #############################################################################
 ##
-#F  IsRightIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
+#A  LeviMalcevDecomposition( <L> )
 ##
-IsRightIdealFromGenerators :=
-    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
-    return function( A, S )
+##  A Levi-Malcev subalgebra of the algebra <L> is a semisimple subalgebra
+##  complementary to the radical of <L>. This function returns
+##  a list with two components. The first component is a Levi subalgebra,
+##  the second the radical. This function is implemented for associative
+##  and Lie algebras. 
+##
+DeclareAttribute( "LeviMalcevDecomposition", IsAlgebra );
 
-    local inter,   # intersection of left acting domains
-          gensS,   # suitable generators of 'S'
-          a,       # loop over suitable generators of 'A'
-          i;       # loop over 'gensS'
 
-    if not IsSubset( A, S ) then
-      return false;
-    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
-      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
-      return IsRightIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
-    fi;
-
-    gensS:= GeneratorsS( S );
-    for a in GeneratorsA( A ) do
-      for i in gensS do
-        if not i * a in S then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end;
-end;
+#############################################################################
+##
+#F  CentralizerInFiniteDimensionalAlgebra( <A>, <S>, <issubset> )
+##
+##  is the centralizer of the list <S> in the algebra <A>, that is, the set
+##  $\{ a \in A; a s = s a \forall s \in S \}$.
+##
+##  <issubset> must be either `true' or `false', where the former means that
+##  <S> is known to be contained in <A>.
+##  If <S> is not known to be contained in <A> then the centralizer of <S> in
+##  the closure of <A> and <S> is computed, the result is the intersection of
+##  this with <A>.
+##
+DeclareGlobalFunction( "CentralizerInFiniteDimensionalAlgebra" );
 
 
 #############################################################################
 ##
 #E  algebra.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

@@ -1,0 +1,390 @@
+#############################################################################
+##
+#W  tmadmin.tmi         GAP table of marks library           Thomas Merkwitz
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the implementation part of all functions to
+##  handle the table of marks library
+##
+##
+Revision.tmadmin_tmi :=
+    "@(#)$Id$";
+
+#############################################################################
+##
+#V  LIBTOMLIST
+##
+##  'LIBTOMLIST' provides all necesarry information about the library of 
+##  table of marks.
+##  It is a record with information about admissible names, fusion sources
+##  etc. of all library tables;
+##  The record is stored in the file "tmprimar.tom".
+AUTO( ReadTom, "tmprimar.tom", "LIBTOMLIST");
+
+#############################################################################
+##
+#F  MakeLIBTOMLIST
+##
+##  adds additional components to LIBTOMLIST to make things easier.
+InstallGlobalFunction(MakeLIBTOMLIST, 
+function()
+    local name, i,j,k;
+
+    LIBTOMLIST.names:=[];
+    LIBTOMLIST.positions:=[];
+
+    for i in [1..Length(LIBTOMLIST.namelist)] do
+        for j in [1..Length(LIBTOMLIST.namelist[i])] do
+            for name in LIBTOMLIST.namelist[i][j] do
+                 Add(LIBTOMLIST.names,name);
+                 Add(LIBTOMLIST.positions,[i,j]);
+            od;
+        od;
+    od;
+end);
+
+
+
+#############################################################################
+##
+#M   TableOfMarks( <string> )
+##
+##  dipatches to 'TableOfMarksFromLibrary'
+InstallOtherMethod( TableOfMarks, "method for a string",true,[IsString],0,
+    string -> TableOfMarksFromLibrary( string));
+
+
+#############################################################################
+##
+#F  TableOfMarksFromLibrary( <string> )
+##
+##  get the table of marks from the library
+InstallGlobalFunction(TableOfMarksFromLibrary,
+function( string )
+   local pos, name, file, number, filenumber;
+
+   # first get the correct file
+   name:=LowercaseString(string);
+   pos:=Position(LIBTOMLIST.names,name);
+   if pos = fail then
+       Print("#E no table of marks with name ",string," found\n");
+       return fail;
+   fi;
+   filenumber:=LIBTOMLIST.positions[pos][1];
+   file:=LIBTOMLIST.files[filenumber];
+   number:=LIBTOMLIST.positions[pos][2];
+
+   # is it necessary to read a new file?
+   if not IsBound(LIBTOMKNOWN.(file)) or LIBTOMKNOWN.LOADSTATUS.(file)[1] = 
+                                          "unloaded" then
+       # change the loadstatus of the files and remove one if necessary
+       # and allowed
+       if  LIBTOMKNOWN.UNLOAD then
+            # find the oldest file which is not userloaded and remove it
+            for name in RecNames(LIBTOMKNOWN.LOADSTATUS) do
+                LIBTOMKNOWN.LOADSTATUS.(name)[2]:=
+                            LIBTOMKNOWN.LOADSTATUS.(name)[2]-1;
+                if LIBTOMKNOWN.LOADSTATUS.(name)[2] = 0 then
+                    LIBTOMKNOWN.(name):=rec();
+                    LIBTOMKNOWN.LOADSTATUS.(name)[1]:="unloaded";
+                fi;
+            od;
+       fi;
+        
+       # read it
+       ReadTom( Concatenation( file, ".tom" ));
+
+       # reset the load status 
+       if LIBTOMKNOWN.UNLOAD then
+           LIBTOMKNOWN.LOADSTATUS.(file):=["loaded",LIBTOMKNOWN.MAX];
+       fi;
+   fi;
+
+   return LIBTOMKNOWN.(file)[number];
+end);
+
+#############################################################################
+##
+#F  ConvertToLibTom( <record> )
+##  
+InstallGlobalFunction(ConvertToLibTom,
+function( record)
+    local i, names;
+
+    names:=RecNames(record);
+    
+    # make the object
+    Objectify( NewType( TableOfMarksFamily, IsTableOfMarks and 
+                    IsLibTomRep),record);
+    
+    # set the attributes
+    for i in [1,3..Length(TableOfMarksComponents)-1] do
+        if TableOfMarksComponents[i] in names then
+            Setter(TableOfMarksComponents[i+1])(record,
+                   record!.(TableOfMarksComponents[i]));
+        fi;
+    od;
+        
+   return record;
+end);
+
+#############################################################################
+##
+#F  SetActualLibFileName( <string> )
+##
+InstallGlobalFunction(SetActualLibFileName,
+function( file )
+     LIBTOMKNOWN.(file):=[];
+     LIBTOMKNOWN.ACTUAL:=file;
+     LIBTOMKNOWN.LOADSTATUS.(file):=["userloaded",0];
+end);
+
+
+#############################################################################
+##
+#F  LIBTOM( <arg> )
+##
+InstallGlobalFunction(LIBTOM,
+function(arg)
+    local record;
+    
+    #first convert the words into internal representation
+    if arg[9] <> 0 then
+        arg[9]:=ConvWordsTom(arg[9],Length(arg[8]));
+    fi;
+    
+    # make the table of marks
+    record:=TOM(arg);
+    record:=ConvertToLibTom(record);
+
+    # set some attributes
+    SetSize(GroupOfTom(record),OrdersTom(record)[Length(OrdersTom(record))]);
+    SetTableOfMarksGroup(GroupOfTom(record),record);
+
+    Add(LIBTOMKNOWN.(LIBTOMKNOWN.ACTUAL),
+            record);
+end);
+
+#############################################################################
+##
+#F  ACLT( <name>, <component>, <value>
+##
+InstallGlobalFunction(ACLT,
+function( name, component, value)
+    local tom, fam, pos;
+    
+    # get the table of marks with name <name>
+    pos:=Position(LIBTOMLIST.names,name);
+    if pos = fail then
+        Error("no  table of marks with name ",name," known\n");
+    fi;
+    pos:=LIBTOMLIST.positions[pos][2];
+
+    if component = "otherwords" then
+        tom:=LIBTOMKNOWN.(LIBTOMKNOWN.ACTUAL)[pos];
+        fam:=FamilyObj(WordsTom(tom)[1][1][1]);
+        value:=ConvWordsTom(value,0,fam);
+    fi;
+    
+    # set the additional component
+    LIBTOMKNOWN.(LIBTOMKNOWN.ACTUAL)[pos]!.(component):=value;
+end);
+
+#############################################################################
+##
+#F  AFLT( <source>, <destination>, <fusion> )
+##
+InstallGlobalFunction(AFLT,
+function(source, destination , fusion)
+    local pos, fus, tom;
+    
+    # get the table of marks with name <source>    
+    pos:=Position(LIBTOMLIST.names,source);
+    if pos = fail then
+         Error("no table of marks with name ",source," known\n");
+    fi;
+    if LIBTOMKNOWN.ACTUAL <> LIBTOMLIST.files[LIBTOMLIST.positions[pos][1]] then
+         Error("source \"",source,"\" is not stored in file ",
+                          Concatenation(LIBTOMKNOWN.ACTUAL,".tom"));
+    fi;
+    pos:=LIBTOMLIST.positions[pos][2];
+    tom:=LIBTOMKNOWN.(LIBTOMKNOWN.ACTUAL)[pos];
+ 
+    # do some tests
+    for fus in FusionsTom(tom) do
+        if fus = [destination,fusion] then
+             return;
+        elif fus[1]  = destination and fus[2][Length(fus[2])] = 
+                      fusion[Length(fusion)] then
+             Error("there is already another fusion from \"",source,
+                   "\" to \"",destination,"\" stored on \"",source,"\"\n");
+        fi;
+    od;
+    
+    # add the fusion
+    Add(FusionsTom(LIBTOMKNOWN.(LIBTOMKNOWN.ACTUAL)[pos]),
+           [destination,fusion]);
+end);
+
+               
+      
+
+
+#############################################################################
+##
+#F AllLibTomNames()
+##
+## all names of library table of marks
+InstallGlobalFunction(AllLibTomNames,
+function()
+    local result, file;
+
+    result:=[];
+    for file in LIBTOMLIST.namelist do 
+        Append(result,List(file,x->x[1]));
+    od;
+    return result;
+
+end);
+
+#############################################################################
+##
+#F  NamesLibTom( <tom> )
+#F  NamesLibTom( <string> )
+##
+## 
+InstallMethod(NamesLibTom, true, [IsTableOfMarks and 
+                  IsLibTomRep],0,
+x->NamesLibTom(IdentifierOfTom(x)));
+
+InstallOtherMethod(NamesLibTom,true,[IsString],0,
+function(string)
+    local pos;
+    pos:=Position(LIBTOMLIST.names,LowercaseString(string));
+    
+    if pos = fail then
+        Print("no library table of marks whith name \"",string,"\" found\n");
+        return fail;
+    else 
+        pos:=LIBTOMLIST.positions[pos];
+        return LIBTOMLIST.namelist[pos[1]][pos[2]];
+    fi;
+end);
+
+#############################################################################
+##
+#M NotifiedFusionsOfLibTom( <tom> )
+#M NotifiedFusionsOfLibTom( <string> )
+#M FusionsOfLibTom( <tom> ) 
+#M FusionsOfLibTom( <string> ) 
+##
+##
+InstallMethod(FusionsOfLibTom,true,[IsTableOfMarks and 
+             IsLibTomRep],0,FusionsTom);
+
+InstallOtherMethod(FusionsOfLibTom,true,[IsString],0,
+function(string)
+    local tom;
+    tom:=TableOfMarks(string);
+    if tom = fail then
+       return fail;
+    else
+       return FusionsTom(tom);
+    fi;
+end);
+
+InstallMethod(NotifiedFusionsOfLibTom,true,[IsTableOfMarks and 
+              IsLibTomRep],0,
+x->List(FusionsTom(x),x->[x[1],x[2][Length(x[2])]]));
+
+InstallOtherMethod(NotifiedFusionsOfLibTom,true,[IsString],0,
+function(string)
+    local result, i, j, f;
+
+    if not LowercaseString(string) in LIBTOMLIST.names then
+      Print("no library table of marks with name \"",string,"\" found\n");
+      return fail;
+    fi;              
+
+    result:=[];
+    for i in [1..Length(LIBTOMLIST.namelist)] do
+        for j in [1..Length(LIBTOMLIST.namelist[i])] do
+            for f in LIBTOMLIST.fusions[i][j] do
+                if LowercaseString(f[1]) in 
+                     NamesLibTom(string) then
+                     Add(result,[LIBTOMLIST.namelist[i][j][1],f[2]]);
+                fi;
+            od;
+         od;
+     od;
+     return result;
+end);
+
+#############################################################################
+##
+#M  NotifiedFusionsToLibTom( <tom> ) 
+#M  NotifiedFusionsToLibTom( <string> )
+#M  FusionsToLibTom( <tom> )
+#M  FusionsToLibTom( <string> )
+##
+InstallMethod(FusionsToLibTom,true,[IsTableOfMarks and 
+               IsLibTomRep],0,x->FusionsToLibTom(IdentifierOfTom(x)));
+
+InstallOtherMethod(FusionsToLibTom,true,[IsString],0,
+function(string)
+     local result, tom, f, fus, fusions;
+
+     if not LowercaseString(string) in LIBTOMLIST.names then
+          Print("no library table of marks with name \"",string,"\" found\n");
+          return fail;
+     fi;
+
+     result:=[];
+     fusions:=NotifiedFusionsToLibTom(string);
+    
+     # get the fusion maps
+     for fus in fusions do
+         tom:=TableOfMarks(fus[1]);
+         for f in FusionsTom(tom) do
+             if f[1] in NamesLibTom(string) and f[2][Length(f[2])] = 
+                fus[2] then
+                Add(result,[fus[1],f[2]]);
+             fi;
+         od;
+     od;
+
+     return result;
+end);
+
+
+InstallMethod(NotifiedFusionsToLibTom,true,[IsTableOfMarks and 
+                   IsLibTomRep],0,
+x->NotifiedFusionsToLibTom(IdentifierOfTom(x)));
+
+InstallOtherMethod(NotifiedFusionsToLibTom,true,[IsString],0,
+function(string)
+    local pos;
+
+    pos:=Position(LIBTOMLIST.names,string);
+    if pos = fail then
+          Print("no library table of marks with name \"",string,"\" found\n");
+          return fail;
+    fi;
+
+    pos:=LIBTOMLIST.positions[pos];
+    return LIBTOMLIST.fusions[pos[1]][pos[2]];
+end);
+
+#############################################################################
+
+#############################################################################
+##
+#E  tmadmin.tmi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+
+
+

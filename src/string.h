@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions which mainly deal with strings.
 **
@@ -20,7 +21,7 @@
 **  installed in the appropriate tables by 'InitString'.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_string_h =
+const char * Revision_string_h =
    "@(#)$Id$";
 #endif
 
@@ -204,29 +205,9 @@ extern Int IsStringConv (
 /****************************************************************************
 **
 
-*F  SetupString() . . . . . . . . . . . . . . . .  initializes string package
+*F  InitInfoString()  . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupString ( void );
-
-
-/****************************************************************************
-**
-*F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
-**
-**  <CharCookie> is a space for the cookies passed into `InitGlobalBags' with
-**  the  character constants.  This  must be static,  and  different for each
-**  character,   as    the   cookies   are  only  copied    as  pointers   in
-**  `InitGlobalBags'.
-**
-*/
-extern void InitString ( void );
-
-
-/****************************************************************************
-**
-*F  CheckString() . . . . . .  check the initialisation of the string package
-*/
-extern void CheckString ( void );
+StructInitInfo * InitInfoString ( void );
 
 
 /****************************************************************************

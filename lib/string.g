@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file deals with strings and characters.
 ##
@@ -15,22 +16,20 @@ Revision.string_g :=
 
 #############################################################################
 ##
-
 #C  IsChar  . . . . . . . . . . . . . . . . . . . . .  category of characters
 ##
-IsChar := NewCategory( "IsChar", IS_OBJECT );
+##  is the category of characters.
+DeclareCategory( "IsChar", IS_OBJECT );
 
 
 #############################################################################
 ##
 #C  IsString  . . . . . . . . . . . . . . . . . . . . . . category of strings
 ##
-##  This will *not* change the representation.
+##  A string is a dense list of characters. 
+#T  will *not* change the representation. (still true? AH)
 ##
-IsString := NewCategoryKernel( 
-    "IsString",
-    IsDenseList,
-    IS_STRING );
+DeclareCategoryKernel( "IsString", IsDenseList, IS_STRING );
 
 #T  1996/08/23  M.Schoenert this is a hack because 'IsString' is a category
 Add( CATEGORIES_COLLECTIONS, [ IsChar, IsString ] );
@@ -38,7 +37,6 @@ Add( CATEGORIES_COLLECTIONS, [ IsChar, IsString ] );
 
 #############################################################################
 ##
-
 #V  CharsFamily . . . . . . . . . . . . . . . . . . . .  family of characters
 ##
 CharsFamily := NewFamily( "CharsFamily", IsChar );
@@ -76,39 +74,6 @@ ConvertToStringRep := CONV_STRING;
 ############################################################################
 ##
 
-#M  Int( <str> )  . . . . . . . . . . . . . . . . integer described by  <str>
-##
-InstallOtherMethod( Int,
-    true,
-    [ IsString ],
-    0,
-
-function( str )
-    local   m,  z,  d,  i,  s;
-
-    m := 1;
-    z := 0;
-    d := 1;
-    for i  in [ 1 .. Length(str) ]  do
-        if i = d and str[i] = '-'  then
-            m := m * -1;
-            d := i+1;
-        else
-            s := Position( "0123456789", str[i] );
-            if s <> fail  then
-                z := 10 * z + (s-1);
-            else
-                return fail;
-            fi;
-        fi;
-    od;
-    return z * m;
-end );
-
-
-
-#############################################################################
-##
 #M  String( <str> ) . . . . . . . . . . . . . . . . . . . . . .  for a string
 ##
 InstallMethod( String,

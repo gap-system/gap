@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file deals with functions.
 ##
@@ -18,8 +19,7 @@ Revision.function_g :=
 
 #C  IsFunction( <obj> )	. . . . . . . . . . . . . . . . category of functions
 ##
-IsFunction := NewCategoryKernel(
-    "IsFunction",
+DeclareCategoryKernel( "IsFunction",
     IS_OBJECT,
     IS_FUNCTION );
 
@@ -28,8 +28,7 @@ IsFunction := NewCategoryKernel(
 ##
 #C  IsOperation( <obj> )  . . . . . . . . . . . . . .  category of operations
 ##
-IsOperation := NewCategoryKernel(
-    "IsOperation",
+DeclareCategoryKernel( "IsOperation",
     IS_FUNCTION,
     IS_OPERATION );
 
@@ -39,23 +38,24 @@ IsOperation := NewCategoryKernel(
 
 #V  FunctionsFamily . . . . . . . . . . . . . . . . . . . family of functions
 ##
-FunctionsFamily := NewFamily(  "FunctionsFamily", IsFunction );
+BIND_GLOBAL( "FunctionsFamily", NewFamily( "FunctionsFamily", IsFunction ) );
 
 
 #############################################################################
 ##
 #V  TYPE_FUNCTION . . . . . . . . . . . . . . . . . . . .  type of a function
 ##
-TYPE_FUNCTION := NewType( FunctionsFamily,
-                          IsFunction and IsInternalRep );
+BIND_GLOBAL( "TYPE_FUNCTION", NewType( FunctionsFamily,
+                          IsFunction and IsInternalRep ) );
 
 
 #############################################################################
 ##
 #F  TYPE_OPERATION  . . . . . . . . . . . . . . . . . . . type of a operation
 ##
-TYPE_OPERATION := NewType( FunctionsFamily,
-                           IsFunction and IsOperation and IsInternalRep );
+BIND_GLOBAL( "TYPE_OPERATION",
+    NewType( FunctionsFamily,
+             IsFunction and IsOperation and IsInternalRep ) );
 
 
 #############################################################################
@@ -65,7 +65,7 @@ TYPE_OPERATION := NewType( FunctionsFamily,
 ##
 ##  If objects simulate functions this must become an operation.
 ##
-NameFunction := NAME_FUNC;
+BIND_GLOBAL( "NameFunction", NAME_FUNC );
 
 
 #############################################################################
@@ -74,36 +74,59 @@ NameFunction := NAME_FUNC;
 ##
 ##  If objects simulate functions this must become an operation.
 ##
-CallFuncList := CALL_FUNC_LIST;
+UNBIND_GLOBAL("CallFuncList"); # was declared 2b defined
+BIND_GLOBAL( "CallFuncList", CALL_FUNC_LIST );
 
 
 #############################################################################
 ##
 #F  ReturnTrue( ... ) . . . . . . . . . . . . . . . . . . . . . . always true
 ##
-ReturnTrue := RETURN_TRUE;
+BIND_GLOBAL( "ReturnTrue", RETURN_TRUE );
 
 
 #############################################################################
 ##
 #F  ReturnFalse( ... )  . . . . . . . . . . . . . . . . . . . .  always false
 ##
-ReturnFalse := RETURN_FALSE;
+BIND_GLOBAL( "ReturnFalse", RETURN_FALSE );
 
 
 #############################################################################
 ##
 #F  ReturnFail( ... ) . . . . . . . . . . . . . . . . . . . . . . always fail
 ##
-ReturnFail := RETURN_FAIL;
+BIND_GLOBAL( "ReturnFail", RETURN_FAIL );
 
 
 #############################################################################
 ##
 #F  IdFunc( <obj> ) . . . . . . . . . . . . . . . . . . . . . .  return <obj>
 ##
-IdFunc := ID_FUNC;
+BIND_GLOBAL( "IdFunc", ID_FUNC );
 
+
+#############################################################################
+##
+#M  ViewObj( <func> ) . . . . . . . . . . . . . . . . . . . . . . view method
+##
+
+InstallMethod( ViewObj, "for a function", true, [IsFunction], 0,
+        function ( func )
+    local nams, i;
+    Print("function( ");
+    nams := NAMS_FUNC(func);
+    if nams = fail then
+        Print( "<",NARG_FUNC(func)," unnamed arguments>" );
+    elif LEN_LIST(nams) > 0 then
+        Print(nams[1]);
+        for i in [2..LEN_LIST(nams)] do
+            Print(", ",nams[i]);
+        od;
+    fi;
+    Print(" ) ... end");
+end);
+        
 
 #############################################################################
 ##

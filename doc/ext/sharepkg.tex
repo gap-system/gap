@@ -9,10 +9,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Share Packages}
 
-A {\GAP} share package  is a part of the  {\GAP} distribution that is not
-automatically  available  when {\GAP}  is  started.   A  share package is
-activated by the function   RequirePackage().  Share packages reside   in
-subdirectories  of  the directory pkg which  itself  is one of the dozend
+A {\GAP} share package is  a part of  the {\GAP} distribution that is not
+automatically   available when  {\GAP}  is  started.  A  share package is
+activated by the  function  RequirePackage().  Share packages  reside  in
+subdirectories of the directory pkg which itself is one of about a dozend
 subdirectories of a typical {\GAP} installation.
 
 A share package extends  the functionality of   {\GAP} as defined by  the
@@ -23,33 +23,52 @@ much faster by purpose written programs.  However, this is not always the
 case:  some share library packages   are entirely  written in the  {\GAP}
 language.
 
-The responsibility  of a share package remains   with the original author
-while the   responsibility of the rest of   {\GAP} lies  with  the {\GAP}
-developer team.  A share   package undergoes a formal refereeing  process
-before it becomes  part of the  {\GAP} distribution.  This process is  in
-many  ways similar to  the refereeing process  of a  paper submitted to a
-journal.  It assesses the quality and usefulness of the submitted package
-and makes sure that it can be started  and runs smoothly.  Share packages
-should be submitted  to the chaiman of  the {\GAP} council, Prof. Charles
-Wright.
+The responsibility  and copyright of  a share  package remains  with  the
+original author while the responsibility of  the rest of {\GAP} lies with
+the {\GAP} developer team.  A share package undergoes a formal refereeing
+process before it becomes part  of the {\GAP} distribution.  This process
+is in many ways similar to the refereeing process of a paper submitted to
+a  journal.    It assesses the quality  and   usefulness of the submitted
+package and makes sure  that it can be  started and runs smoothly.  Share
+packages  should  be submitted to  the  chairman of   the {\GAP} council,
+Prof. Charles Wright.
 
 A share package is the way to make software written by (groups of) {\GAP}
 users available to the computational community.
 
-% share packages need not be available on all platforms, due to
-% incompatibilities between standalones and the OS.
+While much effort has  been spent on making {\GAP}  available on  as many
+platforms as  possible, the same is  not always  true for share packages.
+Share packages that consist entriely  of {\GAP} code  can be used on  any
+platform where  {\GAP}  runs.   However,   share  packages that   contain
+standalone programs often run only in a UNIX environment.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The Structure of a Share Package}
 
-Every share  package  is in a  subdirectory  of  the directory  pkg which
-itself is a  subdirectory of a {\GAP}  root directory.  *The name of this
-directory is  the name of  the share  package.* It is  this name  that is
-passed  as  the only argument  to  RequirePackage() when  the  package is
+Every  share  package is  in  a subdirectory of  the  directory pkg which
+itself  is a subdirectory of a  {\GAP} root directory.  This directory os
+called the home   directory  of the share   package.  *The  name of  this
+directory is  the name of the  share  package.* It is  this name  that is
+passed as  the only argument  to   RequirePackage() when the  package  is
 loaded.  The share package directory must contain a file called 'init.g'.
-This is only file of a share library package that is directly read by the
-function RequirePackage().  'init.g'  contains the necessary {\GAP}  code
-to setup all that the share package needs.
+This is the only file of a share library package that is directly read by
+the  function RequirePackage().   'init.g' contains  the necessary {\GAP}
+code  to setup all that  the share package  needs.  In addition, the home
+directory can  contain other files and  subdirectories.  It is  usually a
+good idea to follow the general example  of the subdirectory structure of
+the {\GAP} root directory.  Although  this is not strictly necessary,  it
+makes it easier to  look through a  share package and some administrative
+functions for share packages rely  on it.  Typically  there are at  least
+two  subdirectories call 'lib' and  'doc'.  The first contains files with
+{\GAP} code and corresponds to the  {\GAP} library directory.  The second
+contains the manual and documentation of the share package.  If the share
+package  has  standalone programs,  it  should have a subdirectory called
+'bin'  that contains the  executables.  This directory is subdivided into
+several others.   Refer  to the section   standalone programs for  a more
+detailed explanation.   In this  case  there might  also  be  a directory
+called 'src'  containing the source code of  the  standalone programs and
+instructions for their compilation.
+
 
 To illustrate this, create  the following directories  in your home area:
 'pkg' and  'pkg/example'.  Inside the directory  'example'  create the
@@ -57,15 +76,14 @@ file 'init.g' with the single line
 \begintt
 'Print( "reading the init file of share package example" )'
 \endtt
-The next bit is a bit tricky  because you have  to find out what the root
-directories of {\GAP}  on your  system are.   This  is done by   starting
-{\GAP}  and looking  at the  variable  'GAP_ROOT_PATHS'.  This a list  of
-directories which {\GAP}  searches upon   start  up for things like   the
-{\GAP} library.
+The next bit is a  bit tricky because you have  to find out what the root
+directories  of  {\GAP} on your   system are.  This   is done by starting
+{\GAP} and looking   at the variable  'GAP_ROOT_PATHS'.  This  a list  of
+directories which {\GAP} searches upon startup for things like the {\GAP}
+library.
 \begintt
 gap> GAP_ROOT_PATHS;
 [ "/gap/4.0/" ]
-gap> 
 \endtt
 Now start {\GAP} with the command 
 \beginitems
@@ -75,13 +93,13 @@ The  string between the  pair  of double quotes    are the components  of
 'GAP_ROOT_PATHS' seperated by semicolons.  We have added at the beginning
 the string  './' denoting the  current directory.  This  adds the current
 directory to the list of {\GAP} root directories.   Now you can load your
-share package:
+`share package':
 \beginitems
 gap> RequirePackage("example");
 \#I  Reading init file of the share package example.
 \enditems
-This is a very rudimentary share package.  It does not do anything useful
-yet, but we have succeeded in loading it via 'RequirePackage()'.
+This share package is too  simple to be useful, but  we have succeeded in
+loading it via 'RequirePackage()'.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,6 +107,17 @@ yet, but we have succeeded in loading it via 'RequirePackage()'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Standalone Programs in a Share Package}
+
+Share  packages  that    involve standalone  programs  are  fundamentally
+different from  share packages  that  consist entirely of  {\GAP}  code.
+There are two reasons  for this: the  input data has  to passed on to the
+standalone  program and the standalone   program  has to be started  from
+within {\GAP}.
+
+There are two principal ways of doing this.  The first possibility is to
+write all the data for the standalone to one or several files, then start
+the standalone which then writes the output data to file and finally read
+in the standalone's output file.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Relevant Functions}
@@ -100,15 +129,107 @@ in  which   case  nothing  happens.   Otherwise    the share   package is
 initialised  by reading the file  'init.g'  from the corresponding  share
 package directory.
 
-\>ReadPkg( <name> )
+Often when you are debugging  a share package, it  happens that you would
+like to  reread the package.  {\GAP}  keeps  track of  the share packages
+that have been  initialized by  the variable  LOADED_PACKAGES.   It is  a
+record   that   contains one component for    each   share package.  This
+component  contains the directory where the  share package  resides -- or
+more specifically, where its  init.g    file is.   In our example,    the
+following would happen:
+\begintt
+vgap> LOADED_PACKAGES;
+rec(
+  example := [ dir("/home/werner/Gap/4.0/pkg/example/") ] )
+\endtt
+To reread to package, do the following:
+\begintt
+gap> Unbind( LOADED_PACKAGES.example ); 
+gap> RequirePackage( "example" );
+#I  Reading init file of the share package example
+\endtt
+
+\>ReadPkg( <name>, <file> )
+
+reads a file of the share package <name>.  The file name <file> is
+relative to the home directory of the share package.
 
 \>DeclarePackageDocumentation( <name> )
+
+adds the share package's documentation to the online help.
+
 \>ReadAsFile( <filename> )
 %LastSystemError()
-%DirectoriesPackageProgram()
+
+\>DirectoriesPackagePrograms( <name> )
+
+takes the name of a share package and locates the directory where itsn
+executable programs are.
+
+\begintt
+gap> DirectoriesPackagePrograms( "nq" );    
+[ dir("/home/werner/Gap/4.0/pkg/nq/bin/i686-unknown-linux2.0.30-gcc/") ]
+\endtt
+
+\>DirectoriesPackageLibrary( <name>, [<path>] )
+
+takes  the name of a share  package and locates  the library functions of
+the share package.  The default is that the  library functions are in the
+subdirectory 'lib' of the share package's home directory.  If this is not
+the case, then the  second  argument needs to   be present and specify  a
+string that is  a path name relative to  the home directory of  the share
+package.
+
+\begintt
+gap> DirectoriesPackageLibrary( "example", "gap" );  
+[ dir("/home/werner/Gap/4.0/pkg/example/gap/") ]
+\endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Writing Documentation}
+
+DeclarePackageDocumentation;
+The format of the documentation
+
+%%  `text'   set text in typewriter style (use `\<' instead of `<')
+%%  <text>   set text in italics (use $\<$ instead of $<$ for less than)
+%%  *text*   set text in emphasized style (i.e. slanted)
+%%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
+%%  "ref"    refer to a label (like "function!for category")
+%%  \cite{.} make a citation
+%%  \index{.} \indextt{.} make index entry (\indextt in typewriter style)
+%%
+%%  \beginitems         produce itemized texts with 3pc hanging indentation
+%%    item & text
+%%
+%%    item & text ...
+%%  \enditems
+%%
+%%  \begintt            verbatim text in typewriter style (`|' is
+%%    verbatim material   temporary escape character, a line
+%%  \endtt                `|_' allows a page break)
+%%  \beginexamplett     verbatim text in typewriter style (`|' is
+%%    verbatim material   temporary escape character, a line
+%%  \endtt                `|_' allows a page break)
+%%
+%%  \Input{file}  includes file `file.tex' (not recommended for appendices)
+%%  \Chapter title \par
+%%  \Section{title} \par
+%%      make  chapter  or section   title. Automatically  generates  table of
+%%      contents. \null after \Section{...} inhibits indexing.
+%%  \>function( arguments )!{ index subentry }
+%%  \>`a binop b'{binary operation}!{ index subentry }
+%%      make a  heading for a subsection   explaining a function  or a binary
+%%      operation. This automatically generates   a label and an  index entry
+%%      (with optional subentry).
+%%  \){\fmark ...}
+%%      the same without label and index entry
+%%
+%%  \BeginningOfBook
+%%  \FrontMatter, \Chapters, \Appendices     parts of the book
+%%  \Bibliography, \Index, \TableOfContents  make these chapters (w/o head)
+%%  \EndOfBook
+%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

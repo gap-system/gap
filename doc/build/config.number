@@ -1,0 +1,5 @@
+@msfiles = ("integers","numtheor","padics","cyclotom","numfield");
+@gdfiles = ("integer","numtheor","domain","arith","padics","cyclotom.g",
+            "cyclotom","field");
+$DIR = "../ref";
+$LIB = "../../lib"; 

@@ -4,60 +4,93 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.gprd_gd :=
     "@(#)$Id$";
 
-DirectProduct := NewOperationArgs( "DirectProduct" );
-DirectProductOfPermGroups := NewOperationArgs( "DirectProductOfPermGroups" );
-DirectProductOfPcGroups := NewOperationArgs( "DirectProductOfPcGroups" );
-DirectProductOfGroups := NewOperationArgs( "DirectProductOfGroups" );
-SubdirectProduct := NewOperation( "SubdirectProduct",
+#############################################################################
+##
+#F  DirectProduct(<G> {,<H> })
+##
+##  constructs the direct product of the groups given as arguments.
+DeclareGlobalFunction( "DirectProduct" );
+
+#############################################################################
+##
+#F  SubdirectProduct(<G> ,<H>, <Ghom>, <Hhom> )
+##
+##  constructs the subdirect product of <G> and <H> with respect to the
+##  epimorphisms <Ghom> from <G> onto a group <A> and <Hhom> from <H> onto
+##  the same group <H>.
+DeclareOperation( "SubdirectProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ] );
-SemidirectProduct := NewOperation( "SemidirectProduct",
+
+#############################################################################
+##
+#F  SemidirectProduct(<G>, <alpha>, <N> )
+##
+##  constructs the semidirect product of <N> with <G> acting via <alpha>.
+DeclareOperation( "SemidirectProduct",
     [ IsGroup, IsGroupHomomorphism, IsGroup ] );
-WreathProduct := NewOperation( "WreathProduct", [ IsObject, IsObject ] );
-WreathProductProductAction := NewOperationArgs( "WreathProductProductAction" );
-InnerSubdirectProducts := NewOperationArgs( "InnerSubdirectProducts" );
-InnerSubdirectProducts2 := NewOperationArgs( "InnerSubdirectProducts2" );
-SubdirectProducts := NewOperationArgs( "SubdirectProducts" );
+
+
+#############################################################################
+##
+#F  WreathProduct(<G>, <P> )
+#F  WreathProduct(<G>, <H> [,<hom>] )
+##
+##  constructs the wreath product of <G> with the permutation group <P>
+##  (acting on its `MovedPoints'). The
+##  second usage constructs the wreath product of <G> with the image of <H>
+##  under <hom> where <hom> must be a homomorphism from <H> into a
+##  permutation group. If <hom> is not given, the regular representation of
+##  <H> is taken.
+## * Currently only the first usage is supported !*
+DeclareOperation( "WreathProduct", [ IsObject, IsObject ] );
+
+#############################################################################
+##
+#F  WreathProductProductAction(<G>, <H> )
+##
+##  for two permutation groups <G> and <H> this function constructs the
+##  wreath product in product action.
+DeclareGlobalFunction( "WreathProductProductAction" );
+
+DeclareGlobalFunction( "DirectProductOfPermGroups" );
+DeclareGlobalFunction( "DirectProductOfPcGroups" );
+DeclareGlobalFunction( "DirectProductOfGroups" );
+DeclareGlobalFunction( "InnerSubdirectProducts" );
+DeclareGlobalFunction( "InnerSubdirectProducts2" );
+DeclareGlobalFunction( "SubdirectProducts" );
 
 #############################################################################
 ##
 #A  DirectProductInfo( <G> )
 ##
-DirectProductInfo := NewAttribute( "DirectProductInfo", IsGroup, "mutable" );
-SetDirectProductInfo := Setter(DirectProductInfo);
-HasDirectProductInfo := Tester(DirectProductInfo);
+DeclareAttribute( "DirectProductInfo", IsGroup, "mutable" );
 
 #############################################################################
 ##
 #A  SubdirectProductInfo( <G> )
 ##
-SubdirectProductInfo := NewAttribute( "SubdirectProductInfo", IsGroup, 
-                                      "mutable" );
-SetSubdirectProductInfo := Setter(SubdirectProductInfo);
-HasSubdirectProductInfo := Tester(SubdirectProductInfo);
+DeclareAttribute( "SubdirectProductInfo", IsGroup, "mutable" );
 
 #############################################################################
 ##
 #A  SemidirectProductInfo( <G> )
 ##
-SemidirectProductInfo := NewAttribute( "SemidirectProductInfo", IsGroup, 
-                                       "mutable" );
-SetSemidirectProductInfo := Setter(SemidirectProductInfo);
-HasSemidirectProductInfo := Tester(SemidirectProductInfo);
+DeclareAttribute( "SemidirectProductInfo", IsGroup, "mutable" );
 
 #############################################################################
 ##
 #A  WreathProductInfo( <G> )
 ##
-WreathProductInfo := NewAttribute( "WreathProductInfo", IsGroup, "mutable" );
-SetWreathProductInfo := Setter(WreathProductInfo);
-HasWreathProductInfo := Tester(WreathProductInfo);
+DeclareAttribute( "WreathProductInfo", IsGroup, "mutable" );
 
 #############################################################################
 ##
-
 #E  Emacs variables . . . . . . . . . . . . . . local variables for this file
 ##  Local Variables:
 ##  mode:             outline-minor

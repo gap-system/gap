@@ -6,14 +6,15 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file    contains  methods for  finite  fields.    Note that  we must
-##  distinguish finite fields and fields that  consist of 'FFE's.  (The image
-##  of the natural embedding of the field  'GF(<q>)' into a field of rational
-##  functions is of  course a finite field  but  its elements are  not 'FFE's
+##  distinguish finite fields and fields that  consist of `FFE's.  (The image
+##  of the natural embedding of the field  `GF(<q>)' into a field of rational
+##  functions is of  course a finite field  but  its elements are  not `FFE's
 ##  since this would be a property given by their family.)
 ##
-##  Special methods for 'FFE's can be found in the file 'ffe.gi'.
+##  Special methods for `FFE's can be found in the file `ffe.gi'.
 ##
 Revision.fieldfin_gi :=
     "@(#)$Id$";
@@ -24,12 +25,15 @@ Revision.fieldfin_gi :=
 
 #M  GeneratorsOfLeftModule( <F> ) . . . .  the vectors of the canonical basis
 ##
-InstallMethod( GeneratorsOfLeftModule, true, [ IsField and IsFinite ], 0,
+InstallMethod( GeneratorsOfLeftModule,
+    "for a finite field",
+    true,
+    [ IsField and IsFinite ], 0,
     function( F )
     local z;
     z:= PrimitiveRoot( F );
     return List( [ 0 .. Dimension( F ) - 1 ], i -> z^i );
-#T call of 'UseBasis' ?
+#T call of `UseBasis' ?
     end );
 
 
@@ -41,10 +45,15 @@ InstallMethod( GeneratorsOfLeftModule, true, [ IsField and IsFinite ], 0,
 ##  primitive root, for efficiency reasons.
 ##  All other cases are handled by the vector space methods.
 ##
-InstallMethod( Random, true, [ IsField and IsPrimeField and IsFinite ], 0,
+InstallMethod( Random,
+    "for a finite prime field",
+    true,
+    [ IsField and IsPrimeField and IsFinite ], 0,
     F -> Random( [ 1 .. Size( F ) ] ) * One( F ) );
 
-InstallMethod( Random, true,
+InstallMethod( Random,
+    "for a finite field with known primitive root",
+    true,
     [ IsField and IsFinite and HasPrimitiveRoot ], 0,
     function ( F )
     local   rnd;
@@ -57,40 +66,49 @@ InstallMethod( Random, true,
     return rnd;
     end );
 
+
 #############################################################################
 ##
 #M  Units( <F> )  . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
 ##
-InstallMethod( Units, true,
+InstallMethod( Units,
+    "for a finite field",
+    true,
     [ IsField and IsFinite ], 0,
     F -> Group( PrimitiveRoot( F ) ) );
 
 InstallTrueMethod( IsHandledByNiceMonomorphism,
         IsGroup and IsFFECollection );
 
+
 #############################################################################
 ##
 #M  <elm> in <G>  . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
 ##
-InstallMethod( \in, "for groups of FFE, Z/pZ, p<>2", IsElmsColls,
-        [ IsFFE, IsGroup and IsFFECollection ], 0,
+InstallMethod( \in,
+    "for groups of FFE, Z/pZ, p<>2",
+    IsElmsColls,
+    [ IsFFE, IsGroup and IsFFECollection ], 0,
     function( elm, G )
     local   F;
-    
+
     F := Field( Concatenation( GeneratorsOfGroup( G ), [ One( G ) ] ) );
     return LogFFE( elm, PrimitiveRoot( F ) ) mod
            ( ( Size( F ) - 1 ) / Size( G ) ) = 0;
 end );
 
+
 #############################################################################
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . via `PrimitiveRoot'
 ##
-InstallMethod( Pcgs, "for groups of FFE", true,
-        [ IsGroup and IsFFECollection ], 0,
+InstallMethod( Pcgs,
+    "for groups of FFE",
+    true,
+    [ IsGroup and IsFFECollection ], 0,
     function( G )
     local   F;
-    
+
     if IsTrivial( G )  then
         TryNextMethod();
     else
@@ -101,16 +119,35 @@ InstallMethod( Pcgs, "for groups of FFE", true,
     fi;
 end );
 
+
 #############################################################################
 ##
-#R  IsBasisFiniteField( <F> )
+#M  Subfields( <F> )  . . . . . . . . . . . . . . subfields of a finite field
+##
+InstallMethod( Subfields,
+    "for finite field of FFEs",
+    true,
+    [ IsField and IsFFECollection ], 0,
+    function( F )
+    local d, p;
+    d:= DegreeOverPrimeField( F );
+    p:= Characteristic( F );
+    return List( DivisorsInt( d ), n -> GF( p, n ) );
+    end );
+
+
+#############################################################################
+##
+#R  IsBasisFiniteFieldRep( <F> )
 ##
 ##  Bases of finite fields in internal representation are treated in a
 ##  special way.
 ##
-IsBasisFiniteField := NewRepresentation( "IsBasisFiniteField",
+DeclareRepresentation( "IsBasisFiniteFieldRep",
     IsBasis and IsAttributeStoringRep,
     [ "inverseBase", "d", "q" ] );
+
+InstallTrueMethod( IsFinite, IsBasis and IsBasisFiniteFieldRep );
 
 
 #############################################################################
@@ -119,7 +156,10 @@ IsBasisFiniteField := NewRepresentation( "IsBasisFiniteField",
 ##
 ##  We know a canonical basis for finite fields.
 ##
-InstallMethod( BasisOfDomain, true, [ IsField and IsFinite ], 0,
+InstallMethod( BasisOfDomain,
+    "for a finite field",
+    true,
+    [ IsField and IsFinite ], 0,
     CanonicalBasis );
 
 
@@ -127,11 +167,13 @@ InstallMethod( BasisOfDomain, true, [ IsField and IsFinite ], 0,
 ##
 #M  NewBasis( <F>, <gens> )
 ##
-InstallMethod( NewBasis, IsIdentical,
+InstallMethod( NewBasis,
+    "for a finite field, and a collection of FFEs",
+    IsIdenticalObj,
     [ IsField and IsFinite, IsFFECollection ], 0,
     function( F, gens )
     local B;
-    B:= Objectify( NewType( FamilyObj( gens ), IsBasisFiniteField ),
+    B:= Objectify( NewType( FamilyObj( gens ), IsBasisFiniteFieldRep ),
                    rec() );
     SetUnderlyingLeftModule( B, F );
     SetBasisVectors( B, gens );
@@ -144,7 +186,9 @@ InstallMethod( NewBasis, IsIdentical,
 #M  BasisByGenerators( <F>, <gens> )
 #M  BasisByGeneratorsNC( <F>, <gens> )
 ##
-InstallMethod( BasisByGenerators, IsIdentical,
+InstallMethod( BasisByGenerators,
+    "for a finite field, and a hom. list",
+    IsIdenticalObj,
     [ IsField and IsFinite, IsHomogeneousList ], 0,
     function( F, gens )
 
@@ -159,18 +203,18 @@ InstallMethod( BasisByGenerators, IsIdentical,
     # Set up the basis object.
     B:= NewBasis( F, gens );
 
-    # Get the size 'q' of the subfield and the dimension 'd'
+    # Get the size `q' of the subfield and the dimension `d'
     # of the extension with respect to the subfield.
     q:= Size( LeftActingDomain( F ) );
     d:= Dimension( F );
 
     # Test that the basis vectors really define the
-    # (unique) finite field extension of degree 'd'.
+    # (unique) finite field extension of degree `d'.
     if d <> Length( gens ) then
       return fail;
     fi;
 
-    # Build the matrix 'M[i][k] = vectors[i]^(q^k)'.
+    # Build the matrix `M[i][k] = vectors[i]^(q^k)'.
     mat:= [];
     for b in gens do
       cnjs := [];
@@ -180,7 +224,7 @@ InstallMethod( BasisByGenerators, IsIdentical,
       Add( mat, cnjs );
     od;
 
-    # It is a basis if and only if 'mat' is invertible.
+    # It is a basis if and only if `mat' is invertible.
     if DeterminantMat( mat ) = Zero( F ) then
       return fail;
     fi;
@@ -195,7 +239,9 @@ InstallMethod( BasisByGenerators, IsIdentical,
     return B;
     end );
 
-InstallMethod( BasisByGeneratorsNC, IsIdentical,
+InstallMethod( BasisByGeneratorsNC,
+    "for a finite field, and a hom. list",
+    IsIdenticalObj,
     [ IsField and IsFinite, IsHomogeneousList ], 10,
     function( F, gens )
 
@@ -210,12 +256,12 @@ InstallMethod( BasisByGeneratorsNC, IsIdentical,
     # Set up the basis object.
     B:= NewBasis( F, gens );
 
-    # Get the size 'q' of the subfield and the dimension 'd'
+    # Get the size `q' of the subfield and the dimension `d'
     # of the extension with respect to the subfield.
     q:= Size( LeftActingDomain( F ) );
     d:= Dimension( F );
 
-    # Build the matrix 'M[i][k] = vectors[i]^(q^k)'.
+    # Build the matrix `M[i][k] = vectors[i]^(q^k)'.
     mat:= [];
     for b in gens do
       cnjs := [];
@@ -240,9 +286,9 @@ InstallMethod( BasisByGeneratorsNC, IsIdentical,
 #M  Coefficents( <B>, <z> ) . . . . . . . . . . . for basis of a finite field
 ##
 InstallMethod( Coefficients,
-    "method for a basis of a finite field, and a scalar",
+    "for a basis of a finite field, and a scalar",
     IsCollsElms,
-    [ IsBasis and IsBasisFiniteField, IsScalar ], 0,
+    [ IsBasis and IsBasisFiniteFieldRep, IsScalar ], 0,
     function ( B, z )
     local   q, d, k, zz;
 
@@ -250,18 +296,18 @@ InstallMethod( Coefficients,
       return fail;
     fi;
 
-    # Get the size 'q' of the subfield and the degree 'd' of the extension
+    # Get the size `q' of the subfield and the degree `d' of the extension
     # with respect to the subfield.
     q := B!.q;
     d := B!.d;
 
-    # Compute the vector of conjugates of 'z'.
+    # Compute the vector of conjugates of `z'.
     zz := [];
     for k  in [0..d-1]  do
         Add( zz, z^(q^k) );
     od;
 
-    # The 'inverseBase' component of the basis defines the base change
+    # The `inverseBase' component of the basis defines the base change
     # to the normal basis.
     return zz * B!.inverseBase;
     end );
@@ -271,8 +317,10 @@ InstallMethod( Coefficients,
 ##
 #M  LinearCombination( <B>, <coeffs> )
 ##
-InstallMethod( LinearCombination, IsIdentical,
-    [ IsBasisFiniteField, IsHomogeneousList ], 0,
+InstallMethod( LinearCombination,
+    "for a basis of a finite field, and a hom. list",
+    IsIdenticalObj,
+    [ IsBasisFiniteFieldRep, IsHomogeneousList ], 0,
     function ( B, coeffs )
     return coeffs * BasisVectors( B );
     end );
@@ -283,10 +331,13 @@ InstallMethod( LinearCombination, IsIdentical,
 #M  CanonicalBasis( <F> )
 ##
 ##  The canonical basis of the finite field with $p^n$ elements, viewed over
-##  its subfield with $p^d$ elements, consists of the vectors '<z> ^ <i>',
+##  its subfield with $p^d$ elements, consists of the vectors `<z> ^ <i>',
 ##  $0 \leq i \< n/d$, where <z> is the primitive root of <F>.
 ##
-InstallMethod( CanonicalBasis, true, [ IsField and IsFinite ], 0,
+InstallMethod( CanonicalBasis,
+    "for a finite field",
+    true,
+    [ IsField and IsFinite ], 0,
     function( F )
 
     local z,         # primitive root
@@ -306,7 +357,7 @@ InstallMethod( CanonicalBasis, true, [ IsField and IsFinite ], 0,
 ##
 #R  IsFrobeniusAutomorphism( <obj> )  . test if an object is a Frobenius aut.
 ##
-IsFrobeniusAutomorphism := NewRepresentation( "IsFrobeniusAutomorphism",
+DeclareRepresentation( "IsFrobeniusAutomorphism",
         IsFieldHomomorphism
     and IsMapping
     and IsAttributeStoringRep,
@@ -317,7 +368,7 @@ IsFrobeniusAutomorphism := NewRepresentation( "IsFrobeniusAutomorphism",
 ##
 #F  FrobeniusAutomorphism(<F>)  . .  Frobenius automorphism of a finite field
 ##
-FrobeniusAutomorphismI := function ( F, i )
+BindGlobal( "FrobeniusAutomorphismI", function ( F, i )
 
     local Fam, frob;
 
@@ -346,9 +397,9 @@ FrobeniusAutomorphismI := function ( F, i )
 #T make this a list object!!
 
     return frob;
-end;
+end );
 
-FrobeniusAutomorphism := function ( F )
+BindGlobal( "FrobeniusAutomorphism", function ( F )
 
     # check the arguments
     if not IsField( F ) or not IsPosRat( Characteristic( F ) ) then
@@ -357,7 +408,8 @@ FrobeniusAutomorphism := function ( F )
 
     # return the automorphism
     return FrobeniusAutomorphismI( F, Characteristic( F ) );
-end;
+end );
+
 
 #############################################################################
 ##
@@ -366,31 +418,31 @@ end;
 #M  \=( <frob>, <id> )
 ##
 InstallMethod( \=,
-    "method for two Frobenius automorphisms",
-    IsIdentical,
+    "for two Frobenius automorphisms",
+    IsIdenticalObj,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
     function( aut1, aut2 )
     return Source( aut1 ) = Source( aut2 ) and aut1!.power  = aut2!.power;
     end );
 
 InstallMethod( \=,
-    "method for identity mapping and Frobenius automorphism",
-    IsIdentical,
+    "for identity mapping and Frobenius automorphism",
+    IsIdenticalObj,
     [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
     function( id, aut )
     return Source( id ) = Source( aut ) and aut!.power = 1;
     end );
 
 InstallMethod( \=,
-    "method for Frobenius automorphism and identity mapping",
-    IsIdentical,
+    "for Frobenius automorphism and identity mapping",
+    IsIdenticalObj,
     [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
     function( aut, id )
     return Source( id ) = Source( aut ) and aut!.power = 1;
     end );
 
 InstallMethod( ImageElm,
-    "method for Frobenius automorphism and source element",
+    "for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function( aut, elm )
@@ -398,7 +450,7 @@ InstallMethod( ImageElm,
     end );
 
 InstallMethod( ImagesElm,
-    "method for Frobenius automorphism and source element",
+    "for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function( aut, elm )
@@ -406,7 +458,7 @@ InstallMethod( ImagesElm,
     end );
 
 InstallMethod( ImagesSet,
-    "method for Frobenius automorphism and field contained in the source",
+    "for Frobenius automorphism and field contained in the source",
     CollFamSourceEqFamElms,
     [ IsFrobeniusAutomorphism, IsField ], 0,
     function( aut, elms )
@@ -414,7 +466,7 @@ InstallMethod( ImagesSet,
     end );
 
 InstallMethod( ImagesRepresentative,
-    "method for Frobenius automorphism and source element",
+    "for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function( aut, elm )
@@ -422,8 +474,8 @@ InstallMethod( ImagesRepresentative,
     end );
 
 InstallMethod( CompositionMapping2,
-    "method for two Frobenius automorphisms",
-    IsIdentical,
+    "for two Frobenius automorphisms",
+    IsIdenticalObj,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
     function( aut1, aut2 )
     if Characteristic( Source( aut1 ) )
@@ -436,23 +488,28 @@ InstallMethod( CompositionMapping2,
     end );
 
 InstallMethod( InverseGeneralMapping,
-    "method for a Frobenius automorphism",
+    "for a Frobenius automorphism",
     true,
     [ IsFrobeniusAutomorphism ], 0,
     aut -> FrobeniusAutomorphismI( Source( aut ),
                                    Size( Source( aut ) ) / aut!.power ) );
 
-InstallMethod( \^, true, [ IsFrobeniusAutomorphism, IsInt ], 0,
+InstallMethod( \^,
+    "for a Frobenius automorphism, and an integer",
+    true,
+    [ IsFrobeniusAutomorphism, IsInt ], 0,
     function ( aut, i )
     return FrobeniusAutomorphismI( Source( aut ),
                    PowerModInt( aut!.power, i, Size( Source( aut ) ) - 1 ) );
     end );
 
-InstallMethod( \<, IsIdentical,
+InstallMethod( \<,
+    "for an identity mapping, and a Frobenius automorphism",
+    IsIdenticalObj,
     [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
     function ( id, aut )
-    local source1, # source of 'id'
-          source2, # source of 'aut'
+    local source1, # source of `id'
+          source2, # source of `aut'
           p,       # characteristic
           root,    # primitive root of source
           size,    # size of source
@@ -482,11 +539,13 @@ InstallMethod( \<, IsIdentical,
     fi;
     end );
 
-InstallMethod( \<, IsIdentical,
+InstallMethod( \<,
+    "for a Frobenius automorphism, and an identity mapping",
+    IsIdenticalObj,
     [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
     function ( aut, id )
-    local source1, # source of 'aut'
-          source2, # source of 'id'
+    local source1, # source of `aut'
+          source2, # source of `id'
           p,       # characteristic
           root,    # primitive root of source
           size,    # size of source
@@ -516,11 +575,13 @@ InstallMethod( \<, IsIdentical,
     fi;
     end );
 
-InstallMethod( \<, IsIdentical,
+InstallMethod( \<,
+    "for two Frobenius automorphisms",
+    IsIdenticalObj,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
     function ( aut1, aut2 )
-    local source1, # source of 'aut1'
-          source2, # source of 'aut2'
+    local source1, # source of `aut1'
+          source2, # source of `aut2'
           p,       # characteristic
           root,    # primitive root of source
           size,    # size of source
@@ -550,7 +611,10 @@ InstallMethod( \<, IsIdentical,
     fi;
     end );
 
-InstallMethod( PrintObj, true, [ IsFrobeniusAutomorphism ], 0,
+InstallMethod( PrintObj,
+    "for a Frobenius automorphism",
+    true,
+    [ IsFrobeniusAutomorphism ], 0,
     function ( aut )
     if aut!.power = Characteristic( Source( aut ) ) then
         Print( "FrobeniusAutomorphism( ", Source( aut ), " )" );
@@ -565,22 +629,22 @@ InstallMethod( PrintObj, true, [ IsFrobeniusAutomorphism ], 0,
 ##
 #M  GaloisGroup( <F> )  . . . . . . . . . . .  Galois group of a finite field
 ##
-InstallMethod( GaloisGroup, true, [ IsField and IsFinite ], 0,
+InstallMethod( GaloisGroup,
+    "for a finite field",
+    true,
+    [ IsField and IsFinite ], 0,
     F -> Group( FrobeniusAutomorphismI( F, Size( LeftActingDomain(F) ) ) ) );
 
 
 #############################################################################
 ##
-#M  MinimalPolynomial( <F>, <z> )
+#M  MinimalPolynomial( <F>, <z>, <inum> )
 ##
 InstallMethod( MinimalPolynomial,
     "finite field and finite field element",
-    IsCollsElms,
-    [ IsField and IsFinite,
-      IsScalar ],
-    0,
-
-function( F, z )
+    IsCollsElmsX,
+    [ IsField and IsFinite, IsScalar,IsPosInt ], 0,
+function( F, z,inum )
     local   df,  dz,  q,  dd,  pol,  deg,  con,  i;
 
     # get the field in which <z> lies
@@ -602,7 +666,7 @@ function( F, z )
     od;
 
     # return the coefficients list of the minimal polynomial
-    return UnivariatePolynomial( LeftActingDomain( F ), pol );
+    return UnivariatePolynomial(  F , pol,inum );
 end );
 
 
@@ -611,6 +675,4 @@ end );
 
 #E  fieldfin.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
 

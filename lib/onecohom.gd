@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declarations of operations for the 1-Cohomology
 ##
@@ -17,7 +18,7 @@ Revision.onecohom_gd:=
 ##
 #V  InfoCoh
 ##
-InfoCoh := NewInfoClass("InfoCoh");
+DeclareInfoClass("InfoCoh");
 
 
 #############################################################################
@@ -26,8 +27,7 @@ InfoCoh := NewInfoClass("InfoCoh");
 ##                                                  triangulize and make base
 ##  AKA 'AbstractBaseMat'
 ##
-TriangulizedGeneratorsByMatrix :=
-  NewOperationArgs("TriangulizedGeneratorsByMatrix");
+DeclareGlobalFunction("TriangulizedGeneratorsByMatrix");
 
 
 ##  For all following functions, the group is given as second argument to
@@ -37,35 +37,34 @@ TriangulizedGeneratorsByMatrix :=
 ##
 #O  OCAddGenerators( <ocr>, <G> ) . . . . . . . . . . . add generators, local
 ##
-OCAddGenerators := NewOperationArgs( "OCAddGenerators" );
+DeclareGlobalFunction( "OCAddGenerators" );
 
 #############################################################################
 ##
 #O  OCAddMatrices( <ocr>, <gens> )  . . . . . . add operation matrices, local
 ##
-OCAddMatrices := NewOperationArgs( "OCAddMatrices" );
+DeclareGlobalFunction( "OCAddMatrices" );
 
 #############################################################################
 ##
 #O  OCAddToFunctions( <ocr> )  . . . . add operation matrices, local
 ##
-OCAddToFunctions := NewOperationArgs( "OCAddToFunctions" );
-OCAddToFunctions2 := NewOperation( "OCAddToFunctions2",
-  [IsRecord, IsListOrCollection] );
+DeclareGlobalFunction( "OCAddToFunctions" );
+DeclareOperation( "OCAddToFunctions2", [IsRecord, IsListOrCollection] );
 
 
 #############################################################################
 ##
 #O  OCAddRelations( <ocr>,<gens> ) . . . . . . . . . .  add relations, local
 ##
-OCAddRelations := NewOperation( "OCAddRelations",
+DeclareOperation( "OCAddRelations",
   [IsRecord, IsListOrCollection] );
 
 #############################################################################
 ##
 #O  OCNormalRelations( <ocr>,<G>,<gens> )  rels for normal complements, local
 ##
-OCNormalRelations := NewOperation( "OCNormalRelations",
+DeclareOperation( "OCNormalRelations",
   [IsRecord,IsGroup,IsListOrCollection] );
 
 
@@ -73,7 +72,7 @@ OCNormalRelations := NewOperation( "OCNormalRelations",
 ##
 #O  OCAddSumMatrices( <ocr>, <gens> )  . . . . . . . . . . . add sums, local
 ##
-OCAddSumMatrices := NewOperation("OCAddSumMatrices",
+DeclareOperation("OCAddSumMatrices",
   [IsRecord,IsListOrCollection]);
 
 
@@ -81,7 +80,7 @@ OCAddSumMatrices := NewOperation("OCAddSumMatrices",
 ##
 #O  OCAddBigMatrices( <ocr>, <gens> )  . . . . . . . . . . . . . . . . local
 ##
-OCAddBigMatrices := NewOperation( "OCAddBigMatrices",
+DeclareOperation( "OCAddBigMatrices",
   [IsRecord,IsListOrCollection] );
 
 
@@ -89,7 +88,7 @@ OCAddBigMatrices := NewOperation( "OCAddBigMatrices",
 ##
 #O  OCCoprimeComplement( <ocr>, <gens> ) . . . . . . . .  coprime complement
 ##
-OCCoprimeComplement := NewOperation( "OCCoprimeComplement",
+DeclareOperation( "OCCoprimeComplement",
   [IsRecord,IsListOrCollection] );
 
 
@@ -97,21 +96,35 @@ OCCoprimeComplement := NewOperation( "OCCoprimeComplement",
 ##
 #O  OneCoboundaries( <G>, <M> )	. . . . . . . . . . one cobounds of <G> / <M>
 ##
-OneCoboundaries := NewOperationArgs( "OneCoboundaries" );
+##  computes only the one coboundaries. Syntax of input and output otherwise
+##  is the same as with `OneCocycles' except that entries that refer to
+##  cocycles are not computed.
+DeclareGlobalFunction( "OneCoboundaries" );
 
 
 #############################################################################
 ##
-#O  OneCocycles( <G>, <M> )	. . . . . . . . . . one cocycles of <G> / <M>
+#O  OneCocycles( <G>, <M> )
+#O  OneCocycles( <gens>, <M> )
+#O  OneCocycles( <G>, <mpcgs> )
+#O  OneCocycles( <gens>, <mpcgs> )
 ##
-OneCocycles := NewOperationArgs( "OneCocycles" );
+##  Computes 1-Cocycle Z^1(<G>/<M>,<M>). The normal subgroup <M> may be
+##  given by a (Modulo)Pcgs <mpcgs>. In this case the whole calculation is
+##  permormed modulo the normal subgroup defined by the
+##  `DenominatorOfModuloPcgs(<mpcgs>)'. Similarly the group <G> may instead
+##  be specified by a set of elements <gens> that are represesentatives for
+##  a generating system for the factor group <G>/<M>. If this is done the
+##  1-Cocycles are computed with respect to these generators (otherwise the
+##  routines try to select suitable generators themselves).
+DeclareGlobalFunction( "OneCocycles" );
 
 
 #############################################################################
 ##
 #O  OCOneCoboundaries( <ocr> )	. . . . . . . . . . one cobounds main routine
 ##
-OCOneCoboundaries := NewOperationArgs("OCOneCoboundaries");
+DeclareGlobalFunction("OCOneCoboundaries");
 
 
 #############################################################################
@@ -120,42 +133,42 @@ OCOneCoboundaries := NewOperationArgs("OCOneCoboundaries");
 ##
 ##  Compute a Word n in <ocr.module> such that <c1> ^ n = <c2>.
 ##
-OCConjugatingWord := NewOperationArgs("OCConjugatingWord");
+DeclareGlobalFunction("OCConjugatingWord");
 
 
 #############################################################################
 ##
 #O  OCEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . . .  local
 ##
-OCEquationMatrix := NewOperationArgs("OCEquationMatrix");
+DeclareGlobalFunction("OCEquationMatrix");
 
 
 #############################################################################
 ##
 #O  OCSmallEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . local
 ##
-OCSmallEquationMatrix := NewOperationArgs("OCSmallEquationMatrix");
+DeclareGlobalFunction("OCSmallEquationMatrix");
 
 
 #############################################################################
 ##
 #O  OCEquationVector( <ocr>, <r> )  . . . . . . . . . . . . . . . . . . local
 ##
-OCEquationVector := NewOperationArgs("OCEquationVector");
+DeclareGlobalFunction("OCEquationVector");
 
 
 #############################################################################
 ##
 #O  OCSmallEquationVector( <ocr>, <r> )	. . . . . . . . . . . . . . . . local
 ##
-OCSmallEquationVector := NewOperationArgs("OCSmallEquationVector");
+DeclareGlobalFunction("OCSmallEquationVector");
 
 
 #############################################################################
 ##
 #O  OCAddComplement( <ocr>, <ocr.group>, <K> ) . . . . . . . . . . . . . local
 ##
-OCAddComplement := NewOperation("OCAddComplement",
+DeclareOperation("OCAddComplement",
   [IsRecord,IsGroup,IsListOrCollection]);
 
 
@@ -163,27 +176,39 @@ OCAddComplement := NewOperation("OCAddComplement",
 ##
 #O  OCOneCocycles( <ocr>, <onlySplit> ) . . . . . . one cocycles main routine
 ##
-##  If <onlySplit>, 'OneCocyclesOC' returns 'false' as soon  as  possibly  if
-##  the extension does not split.
+##  is the more technical function to compute one cocycles. It takes an record
+##  <ocr> as first argument which must contain at least the components
+##  `group' for $G$ and `modulePcgs' for a (modulo) pcgs of <M>. This record
+##  will also be returned with components as described under `OneCocycles'
+##  (with the exception of `isSplitExtension' which is indicated by the
+##  existence of a `complement')
+##  but components like `oneCoboundaries' will only be
+##  computed if not already present.
 ##
-OCOneCocycles := NewOperationArgs("OCOneCocycles");
+##  If <onlySplit> is `true', 'OneCocyclesOC' returns `false' as soon as
+##  possibly  if the extension does not split.
+##
+DeclareGlobalFunction("OCOneCocycles");
 
 
 #############################################################################
 ##
 #O  ComplementclassesEA(<G>,<N>) . complement classes to el.ab. N by 1-Cohom.
 ##
-ComplementclassesEA := NewOperationArgs("ComplementclassesEA");
+##  computes `Complementclasses' to an elementary abelian normal subgroup
+##  <N> via 1-Cohomology.
+DeclareGlobalFunction("ComplementclassesEA");
 
 
 #############################################################################
 ##
-#O  OCPPrimeSets( <U> ) . . . . . . . . . . . . . . . . . . . . . . . . local
+#o  OCPPrimeSets( <U> ) . . . . . . . . . . . . . . . . . . . . . . . . local
 ##
 ##  Construct  a  generating  set, which has the generators of Hall-subgroups
 ##  of a sylowcomplement system as sublist.
 ##
-OCPPrimeSets := NewOperationArgs("OCPPrimeSets");
+#T DeclareGlobalFunction("OCPPrimeSets");
+#T up to now no function is installed
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for class functions.
 ##
@@ -37,34 +38,48 @@ Revision.ctblfuns_gi :=
 ##  we install methods for '\[\]', 'Length', 'IsBound\[\]', 'Position'.
 ##
 InstallMethod( \[\],
-    "method for class function and positive integer",
+    "for class function and positive integer",
     true,
-    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    [ IsClassFunction, IsPosInt ], 0,
     function( chi, i )
     return ValuesOfClassFunction( chi )[i];
     end );
 
 InstallMethod( Length,
-    "method for class function",
+    "for class function",
     true,
     [ IsClassFunction ], 0,
     chi -> Length( ValuesOfClassFunction( chi ) ) );
 
 InstallMethod( IsBound\[\],
-    "method for class function and positive integer",
+    "for class function and positive integer",
     true,
-    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    [ IsClassFunction, IsPosInt ], 0,
     function( chi, i )
     return IsBound( ValuesOfClassFunction( chi )[i] );
     end );
 
 InstallMethod( Position,
-    "method for class function, cyclotomic, and nonnegative integer",
+    "for class function, cyclotomic, and nonnegative integer",
     true,
     [ IsClassFunction, IsCyc, IsInt ], 0,
     function( chi, obj, pos )
     return Position( ValuesOfClassFunction( chi ), obj, pos );
     end );
+
+
+#############################################################################
+##
+#M  ValuesOfClassFunction( <list> )
+##
+##  In order to treat lists as class functions where this makes sense,
+##  we define that `ValuesOfClassFunction' returns the list <list> itself.
+##
+InstallOtherMethod( ValuesOfClassFunction,
+    "for a list of cyclotomics",
+    true,
+    [ IsCyclotomicCollection and IsList ], 0,
+    IdFunc );
 
 
 #############################################################################
@@ -84,16 +99,16 @@ InstallMethod( Position,
 ##  values.
 ##
 InstallMethod( \=,
-    "method for two class functions (same family)",
-    IsIdentical,
+    "for two class functions (same family)",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     return ValuesOfClassFunction( chi ) = ValuesOfClassFunction( psi );
     end );
 
 InstallMethod( \=,
-    "method for two class functions (nonidentical families)",
-    IsNotIdentical,
+    "for two class functions (nonidentical families)",
+    IsNotIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     if    not HasUnderlyingGroup( UnderlyingCharacterTable( chi ) )
@@ -114,8 +129,8 @@ InstallMethod( \=,
 #M  \<( <chi>, <psi> )  . . . . . . . . . . . . comparison of class functions
 ##
 InstallMethod( \<,
-    "method for two class functions",
-    IsIdentical,
+    "for two class functions",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     return ValuesOfClassFunction( chi ) < ValuesOfClassFunction( psi );
@@ -127,8 +142,8 @@ InstallMethod( \<,
 #M  \+( <chi>, <psi> )  . . . . . . . . . . . . . . .  sum of class functions
 ##
 InstallMethod( \+,
-    "method for two class functions",
-    IsIdentical,
+    "for two class functions",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     return ClassFunctionByValues( UnderlyingCharacterTable( chi ),
@@ -136,8 +151,8 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
-    "method for two virtual characters",
-    IsIdentical,
+    "for two virtual characters",
+    IsIdenticalObj,
     [ IsClassFunction and IsVirtualCharacter,
       IsClassFunction and IsVirtualCharacter ], 0,
     function( chi, psi )
@@ -146,8 +161,8 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
-    "method for two characters",
-    IsIdentical,
+    "for two characters",
+    IsIdenticalObj,
     [ IsClassFunction and IsCharacter,
       IsClassFunction and IsCharacter ], 0,
     function( chi, psi )
@@ -161,7 +176,7 @@ InstallMethod( \+,
 #M  AdditiveInverse( <psi> )  . . . . . . . . . . . . .  for a class function
 ##
 InstallMethod( AdditiveInverse,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     psi -> ClassFunctionByValues( UnderlyingCharacterTable( psi ),
@@ -169,7 +184,7 @@ InstallMethod( AdditiveInverse,
 
 
 InstallMethod( AdditiveInverse,
-    "method for a virtual character",
+    "for a virtual character",
     true,
     [ IsClassFunction and IsVirtualCharacter ], 0,
     psi -> VirtualCharacterByValues( UnderlyingCharacterTable( psi ),
@@ -181,7 +196,7 @@ InstallMethod( AdditiveInverse,
 #M  Zero( <psi> ) . . . . . . . . . . . . . . . . . . .  for a class function
 ##
 InstallMethod( Zero,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     psi -> VirtualCharacterByValues( UnderlyingCharacterTable( psi ),
@@ -193,8 +208,8 @@ InstallMethod( Zero,
 #M  \-( <chi>, <psi> )  . . . . . . . . . . . . difference of class functions
 ##
 InstallMethod( \-,
-    "method for two class functions",
-    IsIdentical,
+    "for two class functions",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     return ClassFunctionByValues( UnderlyingCharacterTable( chi ),
@@ -202,8 +217,8 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \-,
-    "method for two virtual characters",
-    IsIdentical,
+    "for two virtual characters",
+    IsIdenticalObj,
     [ IsVirtualCharacter, IsVirtualCharacter ], 0,
     function( chi, psi )
     return VirtualCharacterByValues( UnderlyingCharacterTable( chi ),
@@ -216,7 +231,7 @@ InstallMethod( \-,
 #M  \*( <cyc>, <psi> )  . . . . . . . . . . scalar multiple of class function
 ##
 InstallMethod( \*,
-    "method for a cyclotomic and a class function",
+    "for a cyclotomic and a class function",
     true,
     [ IsCyc, IsClassFunction ], 0,
     function( cyc, chi )
@@ -225,7 +240,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for an integer and a virtual character",
+    "for an integer and a virtual character",
     true,
     [ IsInt, IsVirtualCharacter ], 0,
     function( cyc, chi )
@@ -234,9 +249,9 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for a positive integer and a character",
+    "for a positive integer and a character",
     true,
-    [ IsInt and IsPosRat, IsCharacter ], 0,
+    [ IsPosInt, IsCharacter ], 0,
     function( cyc, chi )
     return CharacterByValues( UnderlyingCharacterTable( chi ),
                cyc * ValuesOfClassFunction( chi ) );
@@ -248,7 +263,7 @@ InstallMethod( \*,
 #M  \*( <psi>, <cyc> )  . . . . . . . . . . scalar multiple of class function
 ##
 InstallMethod( \*,
-    "method for class function and cyclotomic",
+    "for class function and cyclotomic",
     true,
     [ IsClassFunction, IsCyc ], 0,
     function( chi, cyc )
@@ -257,7 +272,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for virtual character and integer",
+    "for virtual character and integer",
     true,
     [ IsVirtualCharacter, IsInt ], 0,
     function( chi, cyc )
@@ -266,9 +281,9 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for character and positive integer",
+    "for character and positive integer",
     true,
-    [ IsCharacter, IsInt and IsPosRat ], 0,
+    [ IsCharacter, IsPosInt ], 0,
     function( chi, cyc )
     return CharacterByValues( UnderlyingCharacterTable( chi ),
                ValuesOfClassFunction( chi ) * cyc );
@@ -280,7 +295,7 @@ InstallMethod( \*,
 #M  \/( <chi>, <cyc> )  . . . . . . . . . . . . . . .  divide by a cyclotomic
 ##
 InstallMethod( \/,
-    "method for class function and cyclotomic",
+    "for class function and cyclotomic",
     true,
     [ IsClassFunction, IsCyc ], 0,
     function( chi, n )
@@ -294,7 +309,7 @@ InstallMethod( \/,
 #M  One( <psi> )  . . . . . . . . . . . . . . . . . . .  for a class function
 ##
 InstallMethod( One,
-    "method for class function",
+    "for class function",
     true,
     [ IsClassFunction ], 0,
     psi -> TrivialCharacter( UnderlyingCharacterTable( psi ) ) );
@@ -305,8 +320,8 @@ InstallMethod( One,
 #M  \*( <chi>, <cyc> )  . . . . . . . . . . tensor product of class functions
 ##
 InstallMethod( \*,
-    "method for two class functions",
-    IsIdentical,
+    "for two class functions",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     local valschi, valspsi;
@@ -318,8 +333,8 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for two virtual characters",
-    IsIdentical,
+    "for two virtual characters",
+    IsIdenticalObj,
     [ IsVirtualCharacter, IsVirtualCharacter ], 0,
     function( chi, psi )
     local valschi, valspsi;
@@ -331,8 +346,8 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for two characters",
-    IsIdentical,
+    "for two characters",
+    IsIdenticalObj,
     [ IsCharacter, IsCharacter ], 0,
     function( chi, psi )
     local valschi, valspsi;
@@ -374,9 +389,9 @@ InstallOtherMethod( Order,
 #M  \^( <chi>, <n> )  . . . . . . . . . . for class function and pos. integer
 ##
 InstallOtherMethod( \^,
-    "method for class function and positive integer",
+    "for class function and positive integer",
     true,
-    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    [ IsClassFunction, IsPosInt ], 0,
     function( chi, n )
     return ClassFunctionSameType( UnderlyingCharacterTable( chi ),
                chi,
@@ -402,7 +417,7 @@ InstallOtherMethod( \^,
 ##  (see 'CorrespondingPermutation').
 ##  
 InstallMethod( \^,
-    "method for class function with group, and group element",
+    "for class function with group, and group element",
     true,
     [ IsClassFunctionWithGroup, IsMultiplicativeElementWithInverse ], 0,
     function( chi, g )
@@ -435,13 +450,13 @@ InstallMethod( \^,
 #M  \^( <chi>, <tbl> )  . . . . . . . . . . . . . . .  induced class function
 ##
 InstallOtherMethod( \^,
-    "method for class function with group, and group",
+    "for class function with group, and group",
     true,
     [ IsClassFunctionWithGroup, IsGroup ], 0,
     InducedClassFunction );
 
 InstallOtherMethod( \^,
-    "method for class function and nearly character table",
+    "for class function and nearly character table",
     true,
     [ IsClassFunction, IsNearlyCharacterTable ], 0,
     InducedClassFunction );
@@ -452,7 +467,7 @@ InstallOtherMethod( \^,
 #M  \^( <chi>, <galaut> ) . . . Galois automorphism <galaut> applied to <chi>
 ##
 InstallOtherMethod( \^,
-    "method for class function and Galois automorphism",
+    "for class function and Galois automorphism",
     true,
     [ IsClassFunction, IsGeneralMapping and IsANFAutomorphismRep ], 0,
     function( chi, galaut )
@@ -488,8 +503,8 @@ InstallOtherMethod( \^,
 #M  \^( <psi>, <chi> )  . . . . . . . . . .  conjugation of linear characters
 ##
 InstallOtherMethod( \^,
-    "method for two class functions (conjugation)",
-    IsIdentical,
+    "for two class functions (conjugation)",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
     return chi;
@@ -501,7 +516,7 @@ InstallOtherMethod( \^,
 #M  Inverse( <chi> )  . . . . . . . . . . . . . . . . .  for a class function
 ##
 InstallOtherMethod( Inverse,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     function( chi )
@@ -522,10 +537,10 @@ InstallOtherMethod( Inverse,
 
 #############################################################################
 ##
-#M  ClassFunctionsFamily( <tbl> )
+#M  ClassFunctionFamily( <tbl> )
 ##
-InstallMethod( ClassFunctionsFamily,
-    "method for a nearly character table",
+InstallMethod( ClassFunctionFamily,
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     function( tbl )
@@ -553,9 +568,9 @@ InstallMethod( ClassFunctionsFamily,
 #M  One( <Fam> )  . . . . . . . . . . . . . . for a family of class functions
 ##
 InstallOtherMethod( One,
-    "method for a family of class functions",
+    "for a family of class functions",
     true,
-    [ IsClassFunctionsFamily ], 0,
+    [ IsClassFunctionFamily ], 0,
     Fam -> TrivialCharacter( Fam!.underlyingCharacterTable ) );
 
 
@@ -564,9 +579,9 @@ InstallOtherMethod( One,
 #M  Zero( <Fam> ) . . . . . . . . . . . . . . for a family of class functions
 ##
 InstallOtherMethod( Zero,
-    "method for a family of class functions",
+    "for a family of class functions",
     true,
-    [ IsClassFunctionsFamily ], 0,
+    [ IsClassFunctionFamily ], 0,
     Fam -> Zero( One( Fam ) ) );
 
 
@@ -575,7 +590,7 @@ InstallOtherMethod( Zero,
 #M  UnderlyingCharacterTable( <psi> ) . . . . . . . . .  for a class function
 ##
 InstallMethod( UnderlyingCharacterTable,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     psi -> FamilyObj( psi )!.underlyingCharacterTable );
@@ -586,7 +601,7 @@ InstallMethod( UnderlyingCharacterTable,
 #M  UnderlyingCharacteristic( <psi> ) . . . . . . . . .  for a class function
 ##
 InstallOtherMethod( UnderlyingCharacteristic,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     psi -> FamilyObj( psi )!.char );
@@ -597,7 +612,7 @@ InstallOtherMethod( UnderlyingCharacteristic,
 #M  UnderlyingGroup( <psi> )  . . . . . . . . . . . . .  for a class function
 ##
 InstallOtherMethod( UnderlyingGroup,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     psi -> UnderlyingGroup( FamilyObj( psi )!.underlyingCharacterTable ) );
@@ -608,7 +623,7 @@ InstallOtherMethod( UnderlyingGroup,
 #M  PrintObj( <psi> ) . . . . . . . . . . . . . . . .  print a class function
 ##
 InstallMethod( PrintObj,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     function( psi )
@@ -617,7 +632,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a class function with group",
+    "for a class function with group",
     true,
     [ IsClassFunctionWithGroup ], 0,
     function( psi )
@@ -630,7 +645,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a virtual character",
+    "for a virtual character",
     true,
     [ IsClassFunction and IsVirtualCharacter ], 0,
     function( psi )
@@ -639,7 +654,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a virtual character with group",
+    "for a virtual character with group",
     true,
     [ IsVirtualCharacter and IsClassFunctionWithGroup ], 0,
     function( psi )
@@ -652,7 +667,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     function( psi )
@@ -661,12 +676,101 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a character with group",
+    "for a character with group",
     true,
-     [ IsClassFunctionWithGroup and IsCharacter ], 0,
+    [ IsClassFunctionWithGroup and IsCharacter ], 0,
     function( psi )
     Print( "Character( ", UnderlyingGroup( psi ),
            ", ", ValuesOfClassFunction( psi ) );
+    if UnderlyingCharacteristic( psi ) <> 0 then
+      Print( ", ", UnderlyingCharacteristic( psi ) );
+    fi;
+    Print( " )" );
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <psi> )  . . . . . . . . . . . . . . . . . view a class function
+##
+##  Note that class functions are finite lists, so the default `ViewObj'
+##  method for finite lists should be avoided.
+##
+InstallMethod( ViewObj,
+    "for a class function",
+    true,
+    [ IsClassFunction ], 0,
+    function( psi )
+    Print( "ClassFunction( " );
+    View( UnderlyingCharacterTable( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
+    Print( " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a class function with group",
+    true,
+    [ IsClassFunctionWithGroup ], 0,
+    function( psi )
+    Print( "ClassFunction( " );
+    View( UnderlyingGroup( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
+    if UnderlyingCharacteristic( psi ) <> 0 then
+      Print( ", ", UnderlyingCharacteristic( psi ) );
+    fi;
+    Print( " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a virtual character",
+    true,
+    [ IsClassFunction and IsVirtualCharacter ], 0,
+    function( psi )
+    Print( "VirtualCharacter( " );
+    View( UnderlyingCharacterTable( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
+    Print( " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a virtual character with group",
+    true,
+    [ IsVirtualCharacter and IsClassFunctionWithGroup ], 0,
+    function( psi )
+    Print( "VirtualCharacter( " );
+    View( UnderlyingGroup( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
+    if UnderlyingCharacteristic( psi ) <> 0 then
+      Print( ", ", UnderlyingCharacteristic( psi ) );
+    fi;
+    Print( " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a character",
+    true,
+    [ IsClassFunction and IsCharacter ], 0,
+    function( psi )
+    Print( "Character( " );
+    View( UnderlyingCharacterTable( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
+    Print( " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a character with group",
+    true,
+    [ IsClassFunctionWithGroup and IsCharacter ], 0,
+    function( psi )
+    Print( "Character( " );
+    View( UnderlyingGroup( psi ) );
+    Print( ", " );
+    View( ValuesOfClassFunction( psi ) );
     if UnderlyingCharacteristic( psi ) <> 0 then
       Print( ", ", UnderlyingCharacteristic( psi ) );
     fi;
@@ -680,7 +784,7 @@ InstallMethod( PrintObj,
 #M  Display( <chi>, <arec> )
 ##
 InstallOtherMethod( Display,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     function( chi )
@@ -688,7 +792,7 @@ InstallOtherMethod( Display,
     end );
 
 InstallOtherMethod( Display,
-    "method for a class function, and a record",
+    "for a class function, and a record",
     true,
     [ IsClassFunction, IsRecord ], 0,
     function( chi, arec )
@@ -703,7 +807,7 @@ InstallOtherMethod( Display,
 #M  IsVirtualCharacter( <chi> ) . . . . . . . . . . . .  for a class function
 ##
 InstallMethod( IsVirtualCharacter,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     function( chi )
@@ -729,7 +833,7 @@ InstallMethod( IsVirtualCharacter,
 #M  IsCharacter( <obj> )  . . . . . . . . . . . . . . for a virtual character
 ##
 InstallMethod( IsCharacter,
-    "method for a virtual character",
+    "for a virtual character",
     true,
     [ IsClassFunction and IsVirtualCharacter ], 0,
     function( obj )
@@ -752,7 +856,7 @@ InstallMethod( IsCharacter,
     end );
 
 InstallMethod( IsCharacter,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     function( obj )
@@ -784,10 +888,21 @@ InstallMethod( IsCharacter,
 
 #############################################################################
 ##
+#M  IsIrreducibleCharacter( <chi> )   . . . . . . . . .  for a class function
+##
+InstallMethod( IsIrreducibleCharacter,
+    "for a class function",
+    true,
+    [ IsClassFunction ], 0,
+    chi -> IsCharacter( chi ) and ScalarProduct( chi, chi ) = 1 );
+
+
+#############################################################################
+##
 #M  CentreOfCharacter( <chi> )  . . . . . . . . . . . . centre of a character
 ##
 InstallMethod( CentreOfCharacter,
-    "method for a character with group",
+    "for a character with group",
     true,
     [ IsClassFunctionWithGroup and IsCharacter ], 0,
     chi -> NormalSubgroupClasses( UnderlyingCharacterTable( chi ),
@@ -799,15 +914,15 @@ InstallMethod( CentreOfCharacter,
 #M  CentreChar( <chi> )  . . . . . . . . classes in the centre of a character
 ##
 InstallMethod( CentreChar,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     chi -> CentreChar( ValuesOfClassFunction( chi ) ) );
 
 InstallOtherMethod( CentreChar,
-    "method for a homogeneous list of cyclotomics",
+    "for a homogeneous list of cyclotomics",
     true,
-    [ IsHomogeneousList and IsCyclotomicsCollection ], 0,
+    [ IsHomogeneousList and IsCyclotomicCollection ], 0,
     char -> Filtered( [ 1 .. Length( char ) ],
                      i -> char[i] = char[1] or
                           char[i] = - char[1] or
@@ -849,7 +964,7 @@ InstallMethod( ConstituentsOfCharacter,
     end );
 
 InstallMethod( ConstituentsOfCharacter,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     function( chi )
@@ -888,7 +1003,7 @@ InstallMethod( ConstituentsOfCharacter,
 #M  DegreeOfCharacter( <chi> )  . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( DegreeOfCharacter,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     chi -> ValuesOfClassFunction( chi )[1] );
@@ -899,7 +1014,7 @@ InstallMethod( DegreeOfCharacter,
 #M  InertiaSubgroupInParent( <chi> )  . . . . . .  for a character with group
 ##
 InstallMethod( InertiaSubgroupInParent,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunctionWithGroup and IsCharacter ], 0,
     function( chi )
@@ -918,7 +1033,7 @@ InstallMethod( InertiaSubgroupInParent,
 #M  KernelOfCharacter( <chi> )  . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( KernelOfCharacter,
-    "method for a character with group",
+    "for a character with group",
     true,
     [ IsClassFunctionWithGroup and IsCharacter ], 0,
     chi -> NormalSubgroupClasses( UnderlyingCharacterTable( chi ),
@@ -930,15 +1045,15 @@ InstallMethod( KernelOfCharacter,
 #M  KernelChar( <char> ) . . . . . . .  the set of classes forming the kernel
 ##
 InstallMethod( KernelChar,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     chi -> KernelChar( ValuesOfClassFunction( chi ) ) );
 
 InstallOtherMethod( KernelChar,
-    "method for a homogeneous list of cyclotomics",
+    "for a homogeneous list of cyclotomics",
     true,
-    [ IsHomogeneousList and IsCyclotomicsCollection], 0,
+    [ IsHomogeneousList and IsCyclotomicCollection], 0,
     function( char )
     local degree;
     degree:= char[1];
@@ -951,7 +1066,7 @@ InstallOtherMethod( KernelChar,
 #M  TrivialCharacter( <G> ) . . . . . . . . . . . . . . . . . . . for a group
 ##
 InstallOtherMethod( TrivialCharacter,
-    "method for a group (delegate to the table)",
+    "for a group (delegate to the table)",
     true,
     [ IsGroup ], 0,
     G -> TrivialCharacter( OrdinaryCharacterTable( G ) ) );
@@ -962,7 +1077,7 @@ InstallOtherMethod( TrivialCharacter,
 #M  TrivialCharacter( <tbl> ) . . . . . . . . . . . . . for a character table
 ##
 InstallMethod( TrivialCharacter,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> CharacterByValues( tbl, List( [ 1 .. NrConjugacyClasses( tbl ) ],
@@ -974,7 +1089,7 @@ InstallMethod( TrivialCharacter,
 #M  NaturalCharacter( <G> ) . . . . . . . . . . . . . for a permutation group
 ##
 InstallMethod( NaturalCharacter,
-    "method for a permutation group",
+    "for a permutation group",
     true,
     [ IsGroup and IsPermCollection ], 0,
     function( G )
@@ -991,7 +1106,7 @@ InstallMethod( NaturalCharacter,
 #M  NaturalCharacter( <G> ) . . . . for a matrix group in characteristic zero
 ##
 InstallMethod( NaturalCharacter,
-    "method for a matrix group in characteristic zero",
+    "for a matrix group in characteristic zero",
     true,
     [ IsGroup and IsRingElementCollCollColl ], 0,
     function( G )
@@ -1010,8 +1125,8 @@ InstallMethod( NaturalCharacter,
 #M  PermutationCharacter( <G>, <U> )  . . . . . . . . . . . .  for two groups
 ##
 InstallMethod( PermutationCharacter,
-    "method for two groups (use double cosets)",
-    IsIdentical,
+    "for two groups (use double cosets)",
+    IsIdenticalObj,
     [ IsGroup, IsGroup ], 0,
     function( G, U )
     local C, c, s, i;
@@ -1047,8 +1162,8 @@ end);
 #T #M  PermutationCharacter( <G>, <U> )  . . . . . . . . .  for two small groups
 #T ##
 #T InstallMethod( PermutationCharacter,
-#T     "method for two small groups",
-#T     IsIdentical,
+#T     "for two small groups",
+#T     IsIdenticalObj,
 #T     [ IsGroup and IsSmallGroup, IsGroup and IsSmallGroup ], 0,
 #T     function( G, U )
 #T     local E, I;
@@ -1065,7 +1180,7 @@ end);
 ##
 #F  CycleStructureClass( <permchar>, <class> )
 ##
-CycleStructureClass := function( permchar, class )
+InstallGlobalFunction( CycleStructureClass, function( permchar, class )
 
     local tbl,         # underlying character table
           n,           # element order of `class'
@@ -1075,8 +1190,7 @@ CycleStructureClass := function( permchar, class )
           cycstruct;   # cycle structure, result
 
     # Check the arguments.
-    if not ( IsClassFunction( permchar ) and IsInt( class )
-                                         and IsPosRat( class ) ) then
+    if not ( IsClassFunction( permchar ) and IsPosInt( class ) ) then
       Error( "<permchar> must be a class function, <class> a position" );
     fi;
 
@@ -1113,7 +1227,7 @@ CycleStructureClass := function( permchar, class )
     
     # Return the cycle structure.
     return cycstruct;
-end;
+end );
 
 
 #############################################################################
@@ -1123,9 +1237,9 @@ end;
 #T change this to return list objects!
 ##
 InstallMethod( ClassFunctionByValues,
-    "method for nearly character table, and coll. of cyclotomics",
+    "for nearly character table, and coll. of cyclotomics",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, values )
     local chi;
 
@@ -1135,7 +1249,7 @@ InstallMethod( ClassFunctionByValues,
       Error( "no. of classes in <tbl> and <values> must be equal" );
     fi;
 
-    chi:= Objectify( NewType( ClassFunctionsFamily( tbl ),
+    chi:= Objectify( NewType( ClassFunctionFamily( tbl ),
                                   IsClassFunction
                               and IsAttributeStoringRep ),
                      rec() );
@@ -1145,10 +1259,10 @@ InstallMethod( ClassFunctionByValues,
     end );
 
 InstallMethod( ClassFunctionByValues,
-    "method for nearly character table with group, and coll. of cyclotomics",
+    "for nearly character table with group, and coll. of cyclotomics",
     true,
     [ IsNearlyCharacterTable and HasUnderlyingGroup,
-      IsList and IsCyclotomicsCollection ], 0,
+      IsList and IsCyclotomicCollection ], 0,
     function( tbl, values )
     local chi;
 
@@ -1158,7 +1272,7 @@ InstallMethod( ClassFunctionByValues,
       Error( "no. of classes in <tbl> and <values> must be equal" );
     fi;
 
-    chi:= Objectify( NewType( ClassFunctionsFamily( tbl ),
+    chi:= Objectify( NewType( ClassFunctionFamily( tbl ),
                                   IsClassFunctionWithGroup
                               and IsAttributeStoringRep ),
                      rec() );
@@ -1172,9 +1286,9 @@ InstallMethod( ClassFunctionByValues,
 #M  VirtualCharacterByValues( <tbl>, <values> )
 ##
 InstallMethod( VirtualCharacterByValues,
-    "method for nearly character table, and coll. of cyclotomics",
+    "for nearly character table, and coll. of cyclotomics",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, values )
     values:= ClassFunctionByValues( tbl, values );
     SetIsVirtualCharacter( values, true );
@@ -1187,9 +1301,9 @@ InstallMethod( VirtualCharacterByValues,
 #M  CharacterByValues( <tbl>, <values> )
 ##
 InstallMethod( CharacterByValues,
-    "method for nearly character table, and coll. of cyclotomics",
+    "for nearly character table, and coll. of cyclotomics",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, values )
     values:= ClassFunctionByValues( tbl, values );
     SetIsCharacter( values, true );
@@ -1201,7 +1315,7 @@ InstallMethod( CharacterByValues,
 ##
 #F  ClassFunctionSameType( <tbl>, <chi>, <values> )
 ##
-ClassFunctionSameType:=
+InstallGlobalFunction( ClassFunctionSameType,
     function( tbl, chi, values )
     if HasIsCharacter( chi ) and IsCharacter( chi ) then
       return CharacterByValues( tbl, values );
@@ -1210,7 +1324,7 @@ ClassFunctionSameType:=
     else
       return ClassFunctionByValues( tbl, values );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1218,7 +1332,7 @@ end;
 #M  Norm( <chi> )  . . . . . . . . . . . . . . . . . . norm of class function
 ##
 InstallOtherMethod( Norm,
-    "method for a class function",
+    "for a class function",
     true,
     [ IsClassFunction ], 0,
     chi -> ScalarProduct( chi, chi ) );
@@ -1229,7 +1343,7 @@ InstallOtherMethod( Norm,
 #M  CentralCharacter( <chi> ) . . . . . . . . . . . . . . . . for a character
 ##
 InstallMethod( CentralCharacter,
-    "method for a character",
+    "for a character",
     true,
     [ IsClassFunction and IsCharacter ], 0,
     chi -> ClassFunctionByValues( UnderlyingCharacterTable( chi ),
@@ -1242,7 +1356,7 @@ InstallMethod( CentralCharacter,
 #M  CentralChar( <tbl>, <char> )
 ##
 InstallMethod( CentralChar,
-    "method for a character table and a character",
+    "for a character table and a character",
     true,
     [ IsCharacterTable, IsClassFunction and IsCharacter ], 0,
     function( tbl, char )
@@ -1250,9 +1364,9 @@ InstallMethod( CentralChar,
     end );
 
 InstallOtherMethod( CentralChar,
-    "method for a nearly character table and a homogeneous list",
+    "for a nearly character table and a homogeneous list",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, char )
     local classes;
     classes:= SizesConjugacyClasses( tbl );
@@ -1278,7 +1392,7 @@ InstallOtherMethod( CentralChar,
 ##  of the determinants of the summands.
 ##  
 InstallMethod( DeterminantChar,
-    "method for a nearly character table and a class function",
+    "for a nearly character table and a class function",
     true,
     [ IsNearlyCharacterTable, IsClassFunction and IsVirtualCharacter ], 0,
     function( tbl, chi )
@@ -1286,9 +1400,9 @@ InstallMethod( DeterminantChar,
     end );
 
 InstallOtherMethod( DeterminantChar,
-    "method for a nearly character table and a homogeneous list",
+    "for a nearly character table and a homogeneous list",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, chi )
     local det,      # result list
           ev,       # eigenvalues
@@ -1323,7 +1437,7 @@ InstallOtherMethod( DeterminantChar,
 #M  DeterminantOfCharacter( <chi> ) . . . . . . . . .  for a virtual character
 ##
 InstallOtherMethod( DeterminantOfCharacter,
-    "method for a virtual character",
+    "for a virtual character",
     true,
     [ IsClassFunction and IsVirtualCharacter ], 0,
     chi -> CharacterByValues( UnderlyingCharacterTable( chi ),
@@ -1336,19 +1450,19 @@ InstallOtherMethod( DeterminantOfCharacter,
 #M  EigenvaluesChar( <tbl>, <char>, <class> )
 ##
 InstallMethod( EigenvaluesChar,
-    "method for a nearly character table, a class function, and a pos.",
+    "for a nearly character table, a class function, and a pos.",
     true,
     [ IsNearlyCharacterTable, IsClassFunction and IsCharacter,
-      IsInt and IsPosRat ], 0,
+      IsPosInt ], 0,
     function( tbl, chi, class )
     return EigenvaluesChar( tbl, ValuesOfClassFunction( chi ), class );
     end );
 
 InstallOtherMethod( EigenvaluesChar,
-    "method for a nearly character table and a hom. list, and a pos.",
+    "for a nearly character table and a hom. list, and a pos.",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection,
-      IsInt and IsPosRat ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection,
+      IsPosInt ], 0,
     function( tbl, char, class )
 
     local i, j, n, powers, eigen, e, val;
@@ -1400,9 +1514,9 @@ InstallOtherMethod( EigenvaluesChar,
 #M  EigenvaluesChar( <chi>, <class> )
 ##
 InstallOtherMethod( EigenvaluesChar,
-    "method for a character and a positive integer",
+    "for a character and a positive integer",
     true,
-    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    [ IsClassFunction, IsPosInt ], 0,
     function( chi, class )
     if IsCharacter( chi ) then
       return EigenvaluesChar( UnderlyingCharacterTable( chi ),
@@ -1418,8 +1532,8 @@ InstallOtherMethod( EigenvaluesChar,
 #M  ScalarProduct( <chi>, <psi> ) . . . . . . . . . . for two class functions
 ##
 InstallMethod( ScalarProduct,
-    "method for two class functions",
-    IsIdentical,
+    "for two class functions",
+    IsIdenticalObj,
     [ IsClassFunction, IsClassFunction ], 0,
     function( chi, psi )
 
@@ -1444,10 +1558,10 @@ InstallMethod( ScalarProduct,
 ##
 #M  ScalarProduct( <tbl>, <chi>, <psi> ) .  scalar product of class functions
 ##
-Is2Identical3 := function( F1, F2, F3 ) return IsIdentical( F2, F3 ); end;
+Is2Identical3 := function( F1, F2, F3 ) return IsIdenticalObj( F2, F3 ); end;
 
 InstallOtherMethod( ScalarProduct,
-    "method for ordinary table and two class functions",
+    "for ordinary table and two class functions",
     Is2Identical3,
     [ IsOrdinaryTable, IsClassFunction, IsClassFunction ], 0,
     function( tbl, x1, x2 )
@@ -1472,7 +1586,7 @@ InstallOtherMethod( ScalarProduct,
 #M  ScalarProduct( <tbl>, <chivals>, <psivals> )
 ##
 InstallOtherMethod( ScalarProduct,
-    "method for ordinary table and two values lists",
+    "for ordinary table and two values lists",
     true,
     [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ], 0,
     function( tbl, x1, x2 )
@@ -1496,7 +1610,7 @@ InstallOtherMethod( ScalarProduct,
 #M  RestrictedClassFunction( <chi>, <tbl> )
 ##
 InstallMethod( RestrictedClassFunction,
-    "method for class function with group, and group",
+    "for class function with group, and group",
     true,
     [ IsClassFunctionWithGroup, IsGroup ], 0,
     function( chi, H );
@@ -1505,7 +1619,7 @@ InstallMethod( RestrictedClassFunction,
     end );
 
 InstallOtherMethod( RestrictedClassFunction,
-    "method for class function and nearly character table",
+    "for class function and nearly character table",
     true,
     [ IsClassFunction, IsNearlyCharacterTable ], 0,
     function( chi, tbl )
@@ -1525,7 +1639,7 @@ InstallOtherMethod( RestrictedClassFunction,
 #M  RestrictedClassFunctions( <chars>, <tbl> )
 ##
 InstallMethod( RestrictedClassFunctions,
-    "method for collection of class functions with group, and group",
+    "for collection of class functions with group, and group",
     true,
     [ IsClassFunctionWithGroupCollection, IsGroup ], 0,
     function( chars, H );
@@ -1533,7 +1647,7 @@ InstallMethod( RestrictedClassFunctions,
     end );
 
 InstallOtherMethod( RestrictedClassFunctions,
-    "method for collection of class functions, and nearly character table",
+    "for collection of class functions, and nearly character table",
     true,
     [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
     function( chars, tbl );
@@ -1548,7 +1662,7 @@ InstallOtherMethod( RestrictedClassFunctions,
 #M  RestrictedClassFunctions( <chars>, <fusionmap> )
 ##
 InstallOtherMethod( RestrictedClassFunctions,
-    "method for two nearly character tables, and homogeneous list",
+    "for two nearly character tables, and homogeneous list",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
     function( tbl, subtbl, chars )
@@ -1562,7 +1676,7 @@ InstallOtherMethod( RestrictedClassFunctions,
     end );
 
 InstallOtherMethod( RestrictedClassFunctions,
-    "method for two nearly character tables, homogeneous list, and string",
+    "for two nearly character tables, homogeneous list, and string",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsMatrix,
       IsString ], 0,
@@ -1576,9 +1690,9 @@ InstallOtherMethod( RestrictedClassFunctions,
     end );
 
 InstallOtherMethod( RestrictedClassFunctions,
-    "method for matrix and list of cyclotomics",
+    "for matrix and list of cyclotomics",
     true,
-    [ IsMatrix, IsList and IsCyclotomicsCollection ], 0,
+    [ IsMatrix, IsList and IsCyclotomicCollection ], 0,
     function( chars, fusionmap )
     return List( chars, x -> x{ fusionmap } );
     end );
@@ -1633,7 +1747,7 @@ end;
 #M  InducedClassFunction( <chi>, <tbl> )
 ##
 InstallMethod( InducedClassFunction,
-    "method for class function with group, and group",
+    "for class function with group, and group",
     true,
     [ IsClassFunctionWithGroup, IsGroup ], 0,
     function( chi, G )
@@ -1644,7 +1758,7 @@ InstallMethod( InducedClassFunction,
 
 
 InstallOtherMethod( InducedClassFunction,
-    "method for class function and nearly character table",
+    "for class function and nearly character table",
     true,
     [ IsClassFunction, IsNearlyCharacterTable ], 0,
     function( chi, tbl )
@@ -1728,7 +1842,7 @@ end;
 #M  InducedClassFunctions( <chars>, <tbl> )
 ##
 InstallOtherMethod( InducedClassFunctions,
-    "method for empty list, and group",
+    "for empty list, and group",
     true,
     [ IsList and IsEmpty, IsGroup ], 0,
     function( empty, G )
@@ -1736,7 +1850,7 @@ InstallOtherMethod( InducedClassFunctions,
     end );
 
 InstallMethod( InducedClassFunctions,
-    "method for collection of class functions with group, and group",
+    "for collection of class functions with group, and group",
     true,
     [ IsClassFunctionWithGroupCollection, IsGroup ], 0,
     function( chars, G )
@@ -1747,7 +1861,7 @@ InstallMethod( InducedClassFunctions,
 
 
 InstallOtherMethod( InducedClassFunctions,
-    "method for collection of class functions, and nearly character table",
+    "for collection of class functions, and nearly character table",
     true,
     [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
     function( chars, tbl )
@@ -1764,7 +1878,7 @@ InstallOtherMethod( InducedClassFunctions,
 #M  InducedClassFunctions( <subtbl>, <tbl>, <chars>, <fusionmap> )
 ##
 InstallOtherMethod( InducedClassFunctions,
-    "method for two nearly character tables and homog list",
+    "for two nearly character tables and homog list",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
     function( subtbl, tbl, chars )
@@ -1773,7 +1887,7 @@ InstallOtherMethod( InducedClassFunctions,
     end );
 
 InstallOtherMethod( InducedClassFunctions,
-    "method for two nearly character tables, homog list, and string",
+    "for two nearly character tables, homog list, and string",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable,
       IsHomogeneousList, IsString ], 0,
@@ -1783,10 +1897,10 @@ InstallOtherMethod( InducedClassFunctions,
     end );
 
 InstallOtherMethod( InducedClassFunctions,
-    "method for two nearly character tables and two homog. lists",
+    "for two nearly character tables and two homog. lists",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable,
-      IsHomogeneousList, IsHomogeneousList and IsCyclotomicsCollection ], 0,
+      IsHomogeneousList, IsHomogeneousList and IsCyclotomicCollection ], 0,
     InducedClassFunctionsByFusionMap );
 
 
@@ -1796,7 +1910,7 @@ InstallOtherMethod( InducedClassFunctions,
 #M  ReducedClassFunctions( <ordtbl>, <reducibles> )
 ##
 InstallMethod( ReducedClassFunctions,
-    "method for ordinary character table, and two lists of class functions",
+    "for ordinary character table, and two lists of class functions",
     true,
     [ IsOrdinaryTable, IsHomogeneousList , IsHomogeneousList ], 0,
     function( ordtbl, constituents, reducibles )
@@ -1860,7 +1974,7 @@ InstallMethod( ReducedClassFunctions,
     end );
 
 InstallOtherMethod( ReducedClassFunctions,
-    "method for ordinary character table, and list of class functions",
+    "for ordinary character table, and list of class functions",
     true,
     [ IsOrdinaryTable, IsHomogeneousList ], 0,
     function( ordtbl, reducibles )
@@ -1938,7 +2052,7 @@ InstallOtherMethod( ReducedClassFunctions,
 #M  ReducedCharacters( <ordtbl>, <constituents>, <reducibles> )
 ##
 InstallMethod( ReducedCharacters,
-    "method for ordinary character table, and two lists of characters",
+    "for ordinary character table, and two lists of characters",
     true,
     [ IsOrdinaryTable, IsHomogeneousList , IsHomogeneousList ], 0,
     function( ordtbl, constituents, reducibles )
@@ -2008,7 +2122,7 @@ InstallMethod( ReducedCharacters,
 #F  MatScalarProducts( <ordtbl>, <characters1>, <characters2> )
 #F  MatScalarProducts( <ordtbl>, <characters> )
 ##
-MatScalarProducts := function( arg )
+InstallGlobalFunction( MatScalarProducts, function( arg )
 
     local i, j, tbl, chars, chars2, chi, nccl, weight, scprmatrix, order,
           scpr;
@@ -2077,7 +2191,7 @@ MatScalarProducts := function( arg )
       od;
     fi;
     return scprmatrix;
-end;
+end );
 
 
 #############################################################################
@@ -2086,11 +2200,50 @@ end;
 ##
 
 #############################################################################
+##                     
+#M  GaloisMat( <mat> )  . . . . . . . . . . . . for a list of class functions
+##                  
+##  Note that we must not mix up plain lists and class functions, since
+##  these objects ie in different families.
+##                                       
+InstallMethod( GaloisMat,  
+    "for a list of class functions",
+    true,
+    [ IsMatrix and IsClassFunctionCollection ], 0,
+    function( mat ) 
+
+    local gal, lenold, lennew, tbl, i;
+
+    gal:= GaloisMat( List( mat, ValuesOfClassFunction ) );
+    lenold:= Length( mat );
+    lennew:= Length( gal.mat );
+
+    if lennew <> lenold then
+
+      # There are new rows.
+      mat:= ShallowCopy( mat );
+      tbl:= UnderlyingCharacterTable( mat[1] );
+      for i in [ lenold+1 .. lennew ] do
+        Add( mat, ClassFunctionByValues( tbl, gal.mat[i] ) );
+#T if the row arises from a character and not only a class function,
+#T the Galois conjugate is a character, too!
+      od;
+
+    fi;
+  
+    return rec( mat        := mat,
+                galoisfams := gal.galoisfams,
+                generators := gal.generators
+               );
+    end );
+
+
+#############################################################################
 ##
 #M  GlobalPartitionOfClasses( <G> )
 ##
 InstallMethod( GlobalPartitionOfClasses,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
@@ -2172,7 +2325,7 @@ InstallMethod( GlobalPartitionOfClasses,
 #M  CorrespondingPermutation( <G>, <g> )  . . . . action on the conj. classes
 ##
 InstallMethod( CorrespondingPermutation,
-    "method for group and group element",
+    "for group and group element",
     IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
@@ -2207,7 +2360,7 @@ InstallMethod( CorrespondingPermutation,
       part:= AutomorphismsOfTable( OrdinaryCharacterTable( G ) );
 
       # Compute the images of the base points of this group.
-      base:= Base( part );
+      base:= BaseOfGroup( part );
       images:= [];
       for pt in base do
         im:= Representative( classes[ pt ] ) ^ g;
@@ -2321,7 +2474,7 @@ InstallMethod( CorrespondingPermutation,
 #T for 'g' in 'H' is the identity or not?
 ##
 InstallOtherMethod( CorrespondingPermutation,
-    "method for a class function with group, and an object",
+    "for a class function with group, and an object",
     true,
     [ IsClassFunctionWithGroup, IsObject ], 0,
     function( chi, g )
@@ -2361,7 +2514,7 @@ InstallOtherMethod( CorrespondingPermutation,
       part:= AutomorphismsOfTable( OrdinaryCharacterTable( G ) );
 
       # Compute the images of the base points of this group.
-      base:= Base( part );
+      base:= BaseOfGroup( part );
       images:= [];
       for pt in base do
         im:= Representative( classes[ pt ] ) ^ g;
@@ -2481,7 +2634,7 @@ InstallOtherMethod( CorrespondingPermutation,
 #M  PermClassesHomomorphism( <H> )
 ##
 InstallMethod( PermClassesHomomorphism,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( H )
@@ -2496,12 +2649,12 @@ InstallMethod( PermClassesHomomorphism,
 
     # compute the permutations corresponding to the generators of 'N'.
     if IsEmpty( Ngens ) then
-      hom:= GroupHomomorphismByImages( N, GroupByGenerators( () ),
-                                       Ngens, [] );
+      hom:= GroupHomomorphismByImagesNC( N, GroupByGenerators( () ),
+                                         Ngens, [] );
     else
       gens:= List( Ngens, g -> CorrespondingPermutation( H, g ) );
-      hom:= GroupHomomorphismByImages( N, GroupByGenerators( gens ),
-                                       Ngens, gens );
+      hom:= GroupHomomorphismByImagesNC( N, GroupByGenerators( gens ),
+                                         Ngens, gens );
     fi;
 
     return hom;
@@ -2573,7 +2726,7 @@ InstallMethod( PermClassesHomomorphism,
 #T ##  \end{enumerate}
 #T ##
 #T InstallMethod( InertiaSubgroup,
-#T     "method for a group, and a character with group",
+#T     "for a group, and a character with group",
 #T     true,
 #T     [ IsGroup, IsClassFunctionWithGroup ], 0,
 #T     function( G, chi )
@@ -2606,7 +2759,7 @@ InstallMethod( PermClassesHomomorphism,
 #T     N:= NormalizerInParent( H );
 #T 
 #T     # The inertia subgroup stored in 'chi' is that w.r.t. 'N'.
-#T     if HasInertiaSubgroupInParent( chi ) and IsIdentical( G, N ) then
+#T     if HasInertiaSubgroupInParent( chi ) and IsIdenticalObj( G, N ) then
 #T       return InertiaSubgroupInParent( chi );
 #T     fi;
 #T 
@@ -2759,7 +2912,7 @@ InstallMethod( PermClassesHomomorphism,
 ##
 #F  OrbitChar( <chi>, <linear> )
 ##
-OrbitChar := function( chi, linear )
+InstallGlobalFunction( OrbitChar, function( chi, linear )
 
     local classes,   # range of positions in 'chi'
           nofcyc,    # describes the conductor of values of 'chi'
@@ -2797,14 +2950,14 @@ OrbitChar := function( chi, linear )
       
     # Return the orbit.
     return orb;
-end;
+end );
 
 
 ##############################################################################
 ##
 #F  OrbitsCharacters( <irr> )
 ##
-OrbitsCharacters := function( irr )
+InstallGlobalFunction( OrbitsCharacters, function( irr )
 
     local irrvals,     # list of value lists
           oldirrvals,  # store original succession
@@ -2906,14 +3059,14 @@ OrbitsCharacters := function( irr )
     fi;
 
     return orbits;
-end;
+end );
 
 
 ##############################################################################
 ##
 #F  OrbitRepresentativesCharacters( <irr> )
 ##
-OrbitRepresentativesCharacters := function( irr )
+InstallGlobalFunction( OrbitRepresentativesCharacters, function( irr )
 
     local irrvals,     # list of value lists
           oldirrvals,  # store original succession
@@ -2971,7 +3124,7 @@ OrbitRepresentativesCharacters := function( irr )
 
     # Return the representatives.
     return repres;
-end;
+end );
 
 
 #############################################################################
@@ -2980,7 +3133,7 @@ end;
 #M  GroupByGenerators( <classfuns>, <id> )
 ##
 InstallOtherMethod( GroupByGenerators,
-    "method for list of class functions",
+    "for list of class functions",
     true,
     [ IsHomogeneousList and IsClassFunctionCollection ], 0,
     function( gens )
@@ -3003,7 +3156,7 @@ InstallOtherMethod( GroupByGenerators,
     end );
 
 InstallOtherMethod( GroupByGenerators,
-    "method for list of class functions and identity",
+    "for list of class functions and identity",
     IsCollsElms,
     [ IsHomogeneousList and IsClassFunctionCollection, IsClassFunction ], 0,
     function( gens, id )
@@ -3029,7 +3182,7 @@ InstallOtherMethod( GroupByGenerators,
     end );
 
 InstallOtherMethod( GroupByGenerators,
-    "method for empty list and trivial character",
+    "for empty list and trivial character",
     true,
     [ IsList and IsEmpty, IsClassFunction ], 0,
     function( empty, id )
@@ -3061,7 +3214,7 @@ InstallOtherMethod( GroupByGenerators,
 #M  PrepareNiceFreeLeftModule( <V> )
 ##
 InstallMethod( PrepareNiceFreeLeftModule,
-    "method for a space of class functions",
+    "for a space of class functions",
     true,
     [ IsFreeLeftModule and IsClassFunctionsSpaceRep ], 0,
     function( V )
@@ -3075,7 +3228,7 @@ InstallMethod( PrepareNiceFreeLeftModule,
 #M  NiceVector( <V>, <v> )
 ##
 InstallMethod( NiceVector,
-    "method for a free module of class functions",
+    "for a free module of class functions",
     IsCollsElms,
     [ IsFreeLeftModule and IsClassFunctionsSpaceRep, IsClassFunction ], 0,
     function( V, v )
@@ -3092,7 +3245,7 @@ InstallMethod( NiceVector,
 #M  UglyVector( <V>, <r> )
 ##
 InstallMethod( UglyVector,
-    "method for a free module of class functions",
+    "for a free module of class functions",
     true,
     [ IsFreeLeftModule and IsClassFunctionsSpaceRep, IsRowVector ], 0,
     function( V, r )
@@ -3107,7 +3260,7 @@ InstallMethod( UglyVector,
 ##  Left modules of class functions carry the usual bilinear form.
 ##
 InstallOtherMethod( ScalarProduct,
-    "method for left module of class functions, and two class functions",
+    "for left module of class functions, and two class functions",
     IsCollsElmsElms,
     [ IsFreeLeftModule and IsClassFunctionsSpaceRep,
       IsClassFunction, IsClassFunction ], 0,
@@ -3137,7 +3290,7 @@ InstallOtherMethod( ScalarProduct,
 ##  Left modules of class functions carry the usual bilinear form.
 ##
 InstallOtherMethod( ScalarProduct,
-    "method for module of class functions, and two values lists",
+    "for module of class functions, and two values lists",
     Is2Identical3,
     [ IsFreeLeftModule and IsClassFunctionsSpaceRep,
       IsHomogeneousList, IsHomogeneousList ], 0,
@@ -3162,7 +3315,7 @@ InstallOtherMethod( ScalarProduct,
 ##
 #F  NormalSubgroupClasses( <G>, <classes> )
 ##
-NormalSubgroupClasses := function( G, classes )
+InstallGlobalFunction( NormalSubgroupClasses, function( G, classes )
 
     local info,
           pos,        # position of the group in the list of such groups
@@ -3226,14 +3379,14 @@ NormalSubgroupClasses := function( G, classes )
     fi;
 
     return info.nsg[ pos ];
-end;
+end );
 
 
 ##############################################################################
 ##
-#M  ClassesNormalSubgroup( <G>, <N> )
+#M  ClassesOfNormalSubgroup( <G>, <N> )
 ##
-ClassesNormalSubgroup := function( G, N )
+InstallGlobalFunction( ClassesOfNormalSubgroup, function( G, N )
 
     local info,
           classes,    # result list
@@ -3257,7 +3410,7 @@ ClassesNormalSubgroup := function( G, N )
     pos:= 0;
     while ( not found ) and pos < Length( info.nsg ) do
       pos:= pos+1;
-      if IsIdentical( N, info.nsg[ pos ] ) then
+      if IsIdenticalObj( N, info.nsg[ pos ] ) then
         found:= true;
       fi;
     od;
@@ -3286,14 +3439,14 @@ ClassesNormalSubgroup := function( G, N )
     fi;
 
     return info.nsgclasses[ pos ];
-end;
+end );
 
 
 ##############################################################################
 ##
 #F  FactorGroupNormalSubgroupClasses( <G>, <classes> )
 ##
-FactorGroupNormalSubgroupClasses := function( G, classes )
+InstallGlobalFunction( FactorGroupNormalSubgroupClasses, function( G, classes )
 
     local info,
           f,     # the result
@@ -3327,7 +3480,7 @@ FactorGroupNormalSubgroupClasses := function( G, classes )
     fi;
 
     return f;
-end;
+end );
 
 
 #############################################################################

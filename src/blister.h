@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This  file declares the functions  that mainly operate  on boolean lists.
 **  Because boolean lists are  just a special case  of lists many  things are
@@ -16,7 +17,7 @@
 **  Lists" about the different internal representations of such lists.
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_blister_h =
+const char * Revision_blister_h =
    "@(#)$Id$";
 #endif
 
@@ -30,7 +31,7 @@ SYS_CONST char * Revision_blister_h =
 **  which must be the same size as a bag identifier.
 **
 */
-#define BIPEB                           (sizeof(UInt) * 8L)
+#define BIPEB   (sizeof(UInt) * 8L)
 
 
 /****************************************************************************
@@ -75,10 +76,10 @@ SYS_CONST char * Revision_blister_h =
 */
 #define LEN_BLIST(list)         (INT_INTOBJ(ADDR_OBJ(list)[0]))
 
+
 /***************************************************************************
 **
 *F  NUMBER_BLOCKS_BLIST(<list>) . . . . . . . . number of UInt blocks in list
-**
 **
 */
 #define NUMBER_BLOCKS_BLIST( blist ) ((LEN_BLIST((blist)) + BIPEB -1)/BIPEB)
@@ -97,6 +98,7 @@ SYS_CONST char * Revision_blister_h =
 #define SET_LEN_BLIST(list,len) \
                         (ADDR_OBJ(list)[0] = INTOBJ_INT(len))
 
+
 /****************************************************************************
 **
 *F  BLOCKS_BLIST( <list> )  . . . . . . . . . . first block of a boolean list
@@ -109,12 +111,12 @@ SYS_CONST char * Revision_blister_h =
 
 /****************************************************************************
 **
-*F  BLOCK_ELM_BLIST( <list>, <pos> )  . . . . . . . .block  of a boolean list
+*F  BLOCK_ELM_BLIST( <list>, <pos> )  . . . . . . . . block of a boolean list
 **
 **  'BLOCK_ELM_BLIST' return the block containing the <pos>-th element of the
 **  boolean list <list> as   a UInt value, which  is  also a valid left  hand
 **  side.  <pos> must be a positive integer less than  or equal to the length
-**  of <List>.
+**  of <list>.
 **
 **  Note that 'BLOCK_ELM_BLIST' is a macro, so do not call it  with arguments
 **  that have sideeffects.
@@ -141,7 +143,7 @@ SYS_CONST char * Revision_blister_h =
 **
 **  'ELM_BLIST' return the <pos>-th element of the boolean list <list>, which
 **  is either 'true' or 'false'.  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
+**  or equal to the length of <list>.
 **
 **  Note that 'ELM_BLIST' is a macro, so do not call it  with arguments  that
 **  have sideeffects.
@@ -156,12 +158,11 @@ SYS_CONST char * Revision_blister_h =
 **
 **  'SET_ELM_BLIST' sets  the element at position <pos>   in the boolean list
 **  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
+**  equal to the length of <list>.  <val> must be either 'true' or 'false'.
 **
 **  Note that  'SET_ELM_BLIST' is  a macro, so do not  call it with arguments
 **  that have sideeffects.
 */
-
 #define SET_ELM_BLIST(list,pos,val)  \
  ((val) == True ? \
   (BLOCK_ELM_BLIST(list, pos) |= MASK_POS_BLIST(pos)) : \
@@ -178,6 +179,76 @@ SYS_CONST char * Revision_blister_h =
 
 /****************************************************************************
 **
+*F  COUNT_TRUES_BLOCK( <block> )  . . . . . . . . . . . count number of trues
+*/
+#ifdef SYS_IS_64_BIT
+
+#define COUNT_TRUES_BLOCK( block )                                                          \
+        do {                                                                                \
+        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
+        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
+        (block) = ((block) + ((block) >>  8));                                              \
+        (block) = ((block) + ((block) >> 16));                                              \
+        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
+
+#else
+
+#define COUNT_TRUES_BLOCK( block )                                        \
+        do {                                                              \
+        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
+        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
+        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
+        (block) = ((block) + ((block) >>  8));                            \
+        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * list functions * * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
+*F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
+**
+**  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
+**  position <pos>.   It is the responsibility  of the caller to  ensure that
+**  <pos> is positive, and that <val> is not 0.
+**
+**  'AssBlist' is the function in 'AssListFuncs' for boolean lists.
+**
+**  If <pos> is less than or equal to the logical length  of the boolean list
+**  and <val> is 'true' or   'false' the assignment  is  done by setting  the
+**  corresponding bit.  If <pos>  is one more  than the logical length of the
+**  boolean list  the assignment is  done by   resizing  the boolean list  if
+**  necessary, setting the   corresponding bit and  incrementing  the logical
+**  length  by one.  Otherwise  the boolean list is  converted to an ordinary
+**  list and the assignment is performed the ordinary way.
+*/
+extern void AssBlist (
+    Obj                 list,
+    Int                 pos,
+    Obj                 val );
+
+
+/****************************************************************************
+**
+*F  ConvBlist( <list> ) . . . . . . . . .  convert a list into a boolean list
+**
+**  `ConvBlist' changes the representation of boolean  lists into the compact
+**  representation of type 'T_BLIST' described above.
+*/
+extern void ConvBlist (
+    Obj                 list );
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -185,23 +256,9 @@ SYS_CONST char * Revision_blister_h =
 /****************************************************************************
 **
 
-*F  SetupBlist()  . . . . . . . . . . . . initialize the boolean list package
+*F  InitInfoBlist() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupBlist ( void );
-
-
-/****************************************************************************
-**
-*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
-*/
-extern void InitBlist ( void );
-
-
-/****************************************************************************
-**
-*F  CheckBlist()  . . .  check the initialisation of the boolean list package
-*/
-extern void CheckBlist ( void );
+StructInitInfo * InitInfoBlist ( void );
 
 
 /****************************************************************************

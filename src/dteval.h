@@ -1,5 +1,5 @@
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_dteval_h =
+const char * Revision_dteval_h =
    "@(#)$Id$";
 #endif
 
@@ -14,26 +14,9 @@ SYS_CONST char * Revision_dteval_h =
 /****************************************************************************
 **
 
-*F  SetupDTEvaluation() . . . . . . .  initialize the Deep Thought Evaluation
+*F  InitInfoDTEvaluation()  . . . . . . . . . . . . . table of init functions
 */
-extern void SetupDTEvaluation ( void );
-
-
-/****************************************************************************
-**
-*F  InitDTEvaluation()  . . . . . . .  initialize the Deep Thought Evaluation
-**
-**  InitDTEvaluation initializes the deep thought multiplication package.
-*/
-extern void InitDTEvaluation ( void );
-
-
-/****************************************************************************
-**
-*F  CheckDTEvaluation()   check the initialisation of Deep Thought Evaluation
-*/
-extern void CheckDTEvaluation( void );
-
+StructInitInfo * InitInfoDTEvaluation ( void );
 
 
 /****************************************************************************

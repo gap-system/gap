@@ -1,0 +1,5 @@
+@msfiles = ("grppc","pcgs");
+@gdfiles = ("grppc","clas","pcgs","pcgsind","pcgsmodu","pcgsspec","grp.gd",
+            "pcgspcg","onecohom","grppcfp");
+$DIR = "../ref";
+$LIB = "../../lib"; 

@@ -10,11 +10,11 @@
 gap> START_TEST("$Id$");
 
 gap> u:= LeftModuleByGenerators( GF(3), [ [ Z(3), 0*Z(3) ] ] );
-VectorSpace( GF(3), [ [ Z(3), 0*Z(3) ] ] )
+<vector space over GF(3), with 1 generators>
 gap> v:= LeftModuleByGenerators( GF(2), [ [ Z(2), Z(2) ], [ Z(4), Z(4) ] ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] ] )
+<vector space over GF(2), with 2 generators>
 gap> w:= LeftModuleByGenerators( GF(4), [ [ Z(2), Z(2) ] ] );
-VectorSpace( GF(2^2), [ [ Z(2)^0, Z(2)^0 ] ] )
+<vector space over GF(2^2), with 1 generators>
 gap> u = v;
 false
 gap> v = u;
@@ -22,9 +22,9 @@ false
 gap> v = w;
 true
 gap> v1:= LeftModuleByGenerators( GF(2), [ [Z(2),0*Z(2)], [0*Z(2),Z(2)] ] );
-VectorSpace( GF(2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] )
+<vector space over GF(2), with 2 generators>
 gap> v2:= LeftModuleByGenerators( GF(2), [ [Z(2),Z(2)], [Z(2),0*Z(2)] ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] )
+<vector space over GF(2), with 2 generators>
 gap> v1 = v2;
 true
 gap> v < w;
@@ -54,25 +54,24 @@ gap> Size( v );
 gap> Size( Integers^4 );
 infinity
 gap> enum:= Enumerator( v );
-<enumerator of VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] 
- ] )>
+<enumerator of <vector space of dimension 2 over GF(2)>>
 gap> len:= Length( enum );
 4
 gap> l:= [];;
 gap> for i in [ 1 .. len ] do
 >   l[i]:= enum[i];
 > od;
-gap> l;
+gap> Print(l,"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2^2), Z(2^2) ], [ Z(2)^0, Z(2)^0 ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
 gap> ForAll( [ 1 .. len ], i -> i = Position( enum, enum[i], 0 ) );
 true
 gap> v:= LeftModuleByGenerators( GF(2), [ [ Z(2), Z(2) ], [ Z(4), Z(4) ] ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] ] )
-gap> AsList( v );
+<vector space over GF(2), with 2 generators>
+gap> Print(AsList( v ),"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
-gap> AsListSorted( v );
+gap> Print(AsListSorted( v ),"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
 gap> IsSubset( v, w );
@@ -101,7 +100,8 @@ gap> Dimension( Integers^4 );
 4
 gap> GeneratorsOfLeftModule( Rationals^2 );
 [ [ 1, 0 ], [ 0, 1 ] ]
-gap> enum:= Enumerator( v );
+gap> enum:= Enumerator( v );;
+gap> Print(enum,"\n");
 [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
   [ Z(2^2)^2, Z(2^2)^2 ] ]
 gap> iter:= Iterator( v );
@@ -118,7 +118,7 @@ gap> l:= [];;
 gap> for i in [ 1000 .. 1100 ] do
 >      Add( l, enum[i] );
 >    od;
-gap> l{ [ 17 .. 25 ] };
+gap> Print(l{ [ 17 .. 25 ] },"\n");
 [ [ -5, 3, 1 ], [ -5, -3, 1 ], [ -5, 4, 1 ], [ -5, -4, 1 ], [ -5, 5, 1 ], 
   [ -5, 0, -1 ], [ -5, 1, -1 ], [ -5, -1, -1 ], [ -5, 2, -1 ] ]
 gap> ForAll( [ 1 .. 1000 ], i -> i = Position( enum, enum[i], 0 ) );
@@ -138,19 +138,17 @@ gap> l:= [];;
 gap> for i in [ 1 .. 10 ] do
 >      l[i]:= NextIterator( iter );
 >    od;
-gap> l;
+gap> Print(l,"\n");
 [ [ -5, 2, 0 ], [ -5, -2, 0 ], [ -5, 3, 0 ], [ -5, -3, 0 ], [ -5, 4, 0 ], 
   [ -5, -4, 0 ], [ -5, 5, 0 ], [ -5, 0, 1 ], [ -5, 1, 1 ], [ -5, -1, 1 ] ]
 gap> IsDoneIterator( iter );
 false
 gap> v:= LeftModuleByGenerators( GF(2), [ [ Z(2), Z(2) ], [ Z(4), Z(4) ] ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ] ] )
+<vector space over GF(2), with 2 generators>
 gap> c:= ClosureLeftModule( v, [ 0*Z(2), Z(2) ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
-  [ 0*Z(2), Z(2)^0 ] ] )
+<vector space over GF(2), with 3 generators>
 gap> c:= ClosureLeftModule( c, [ Z(4), 0*Z(2) ] );
-VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ], 
-  [ 0*Z(2), Z(2)^0 ], [ Z(2^2), 0*Z(2) ] ] )
+<vector space over GF(2), with 4 generators>
 gap> Dimension( c );
 4
 gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] );
@@ -192,7 +190,7 @@ gap> Coefficients( c, [ 1, 2, 3, 4 ] );
 gap> BasisOfDomain( Integers^2 );
 CanonicalBasis( ( Integers^2 ) )
 
-gap> STOP_TEST( "modfree.tst", 23070000 );
+gap> STOP_TEST( "modfree.tst", 28690858 );
 
 #############################################################################
 ##

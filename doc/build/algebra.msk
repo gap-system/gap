@@ -1,0 +1,734 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  algebra.msk                  GAP documentation            Willem de Graaf
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Algebras}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing algebras by generators}
+
+% AlgebraByGenerators( <F>, <gens>, <zero> ) Left out...
+
+\Declaration{Algebra}
+
+\beginexample
+gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3], [ 0, 0, 0 ] ];;
+gap> A:= Algebra( Rationals, [ m ] );
+<algebra over Rationals, with 1 generators>
+gap> Dimension( A );
+2
+\endexample
+
+%  AlgebraWithOneByGenerators( <F>, <gens>, <zero> ) Left out...
+
+\Declaration{AlgebraWithOne}
+
+\beginexample
+gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3], [ 0, 0, 0 ] ];;
+gap> A:= AlgebraWithOne( Rationals, [ m ] );
+<algebra-with-one over Rationals, with 1 generators>
+gap> Dimension( A );
+3
+gap> One(A);
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
+\endexample
+
+\Declaration{LieAlgebra}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( GF( 7 ), 4 );;
+gap> L:= LieAlgebra( A );
+<Lie algebra of dimension 16 over GF(7)>
+gap> mats:= [  [[ 1, 0 ], [ 0, -1 ]], [[ 0, 1 ], [ 0, 0 ]], [[ 0, 0 ], [ 1, 0]] ];;
+gap> L:= LieAlgebra( Rationals, mats );
+<Lie algebra over Rationals, with 3 generators>
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing algebras as free algebras}
+
+\Declaration{FreeAlgebra}
+
+\beginexample
+gap> A:= FreeAlgebra( GF( 5 ), 4, "a" );
+<algebra over GF(5), with 4 generators>
+\endexample
+
+
+\Declaration{FreeAssociativeAlgebra}
+
+\beginexample
+gap> A:= FreeAssociativeAlgebra( GF( 5 ), 4, "a" );
+<algebra-with-one over GF(5), with 4 generators>
+\endexample
+
+\Declaration{FreeLieAlgebra}
+
+\beginexample
+gap> L:= FreeLieAlgebra( Rationals, "x", "y", "z" );
+<Lie algebra over Rationals, with 3 generators>
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Constructing algebras by structure constants}
+
+\FileHeader[2]{algebra}
+
+\Declaration{EmptySCTable}
+
+\beginexample
+gap> EmptySCTable( 2, Zero( GF(5) ), "antisymmetric" );
+[ [ [ [  ], [  ] ], [ [  ], [  ] ] ], [ [ [  ], [  ] ], [ [  ], [  ] ] ], -1, 
+  0*Z(5) ]
+\endexample
+
+\Declaration{SetEntrySCTable}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] ); 
+gap> T;
+[ [ [ [ 1, 2 ], [ 1/2, 2/3 ] ], [ [  ], [  ] ] ], 
+  [ [ [  ], [  ] ], [ [  ], [  ] ] ], 0, 0 ]
+\endexample
+
+\Declaration{GapInputSCTable}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;                 
+gap> SetEntrySCTable( T, 1, 2, [ 1, 2 ] );;
+gap> SetEntrySCTable( T, 2, 1, [ 1, 2 ] );;
+gap> GapInputSCTable( T, "T" );
+"T:= EmptySCTable( 2, 0 );
+SetEntrySCTable( T, 1, 2, [1,2] );
+SetEntrySCTable( T, 2, 1, [1,2] );
+"
+\endexample
+
+\Declaration{TestJacobi}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0, "antisymmetric" );;
+gap> SetEntrySCTable( T, 1, 2, [ 1, 2 ] );;
+gap> TestJacobi( T );
+true
+\endexample
+
+
+
+\Declaration{AlgebraByStructureConstants}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1/2, 1, 2/3, 2 ] );
+gap> A:= AlgebraByStructureConstants( Rationals, T ); 
+<algebra of dimension 2 over Rationals>
+gap> b:= BasisVectors( Basis( A ) );;
+gap> b[1]^2;
+(1/2)*v.1+(2/3)*v.2
+gap> b[1]*b[2];
+0*v.1
+\endexample
+
+\Declaration{LieAlgebraByStructureConstants}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0, "antisymmetric" );;
+gap> SetEntrySCTable( T, 1, 2, [ 1/2, 1 ] );        
+gap> L:= LieAlgebraByStructureConstants( Rationals, T );
+<Lie algebra of dimension 2 over Rationals>
+\endexample
+
+\Declaration{IdentityFromSCTable}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;                 
+gap> SetEntrySCTable( T, 1, 1, [ 1, 1 ] );;
+gap> SetEntrySCTable( T, 1, 2, [ 1, 2 ] );;
+gap> SetEntrySCTable( T, 2, 1, [ 1, 2 ] );; 
+gap> IdentityFromSCTable( T );
+[ 1, 0 ]
+\endexample
+
+\Declaration{QuotientFromSCTable}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [ 1, 1 ] );;
+gap> SetEntrySCTable( T, 2, 1, [ 1, 2 ] );;
+gap> SetEntrySCTable( T, 1, 2, [ 1, 2 ] );;
+gap> QuotientFromSCTable( T, [0,1], [1,0] );
+[ 0, 1 ]
+\endexample
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Some special algebras}
+
+\Declaration{QuaternionAlgebra}
+
+\beginexample
+gap> QuaternionAlgebra( Rationals );
+<algebra-with-one of dimension 4 over Rationals>
+\endexample
+
+\Declaration{ComplexificationQuat}
+
+\Declaration{OctaveAlgebra}
+
+\beginexample
+gap> OctaveAlgebra( Rationals );
+<algebra of dimension 8 over Rationals>
+\endexample
+
+\Declaration{FullMatrixAlgebra}
+
+\beginexample
+gap> A:=FullMatrixAlgebra( Rationals, 20 );
+<algebra-with-one over Rationals, with 2 generators>
+gap> Dimension( A );
+400
+\endexample
+
+\Declaration{FullMatrixLieAlgebra}
+
+\beginexample
+gap> FullMatrixLieAlgebra( GF(9), 10 );
+<Lie algebra over GF(3^2), with 19 generators>
+\endexample
+
+\Declaration{NullAlgebra}
+
+\beginexample
+gap> A:= NullAlgebra( Rationals );
+<algebra over Rationals>
+gap> Dimension( A );
+0
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subalgebras}
+
+\Declaration{Subalgebra}
+
+\beginexample
+gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3], [ 0, 0, 0 ] ];;
+gap> A:= Algebra( Rationals, [ m ] );
+<algebra over Rationals, with 1 generators>
+gap> B:= Subalgebra( A, [ m^2 ] );
+<algebra over Rationals, with 1 generators>
+\endexample
+
+\Declaration{SubalgebraNC}
+
+\beginexample
+gap> m:= RandomMat( 3, 3 );;
+gap> A:= Algebra( Rationals, [ m ] );
+<algebra over Rationals, with 1 generators>
+gap> SubalgebraNC( A, [ IdentityMat( 3, 3 ) ], "basis" );
+<algebra of dimension 1 over Rationals>
+\endexample
+
+\Declaration{SubalgebraWithOne}
+
+\beginexample
+gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3], [ 0, 0, 0 ] ];;
+gap> A:= AlgebraWithOne( Rationals, [ m ] );
+<algebra-with-one over Rationals, with 1 generators>
+gap> B1:= SubalgebraWithOne( A, [ m ] );;
+gap> B2:= Subalgebra( A, [ m ] );;       
+gap> Dimension( B1 );
+3
+gap> Dimension( B2 );
+2
+\endexample
+
+\Declaration{SubalgebraWithOneNC}
+
+\beginexample
+gap> m:= RandomMat( 3, 3 );; A:= Algebra( Rationals, [ m ] );;
+gap> SubalgebraWithOneNC( A, [ m ] );
+<algebra-with-one over Rationals, with 1 generators>
+\endexample
+
+\Declaration{TrivialSubalgebra}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> B:= TrivialSubalgebra( A );         
+<algebra over Rationals>
+gap> Dimension( B );
+0
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ideals}
+
+For constructing and working with ideals in algebras the same functions
+are available as for ideals in rings. So for the precise description of
+these functions we refer to Chapter "Rings". Here we give an example 
+demonstrating the use of ideals in algebras.
+
+\beginexample
+gap> m:= [ [ 0, 2, 3 ], [ 0, 0, 4 ], [ 0, 0, 0] ];;
+gap> A:= AlgebraWithOne( Rationals, [ m ] );;
+gap> I:= Ideal( A, [ m ] );  # i.e., the two-sided ideal of `A' generated by `m'.  
+<two-sided ideal in <algebra-with-one over Rationals, with 1 generators>, (
+1generators)>
+gap> Dimension( I );
+2
+gap> GeneratorsOfIdeal( I );
+[ [ [ 0, 2, 3 ], [ 0, 0, 4 ], [ 0, 0, 0 ] ] ]
+gap> BasisVectors( Basis( I ) );
+[ [ [ 0, 1, 3/2 ], [ 0, 0, 2 ], [ 0, 0, 0 ] ], 
+  [ [ 0, 0, 1 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ] ]
+\endexample
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 4 );;
+gap> m:= MutableNullMat( 4, 4 );; m[1][4]:=1;;
+gap> I:= LeftIdeal( A, [ m ] );
+<left ideal in <algebra-with-one over Rationals, with 2 generators>, (
+1generators)>
+gap> Dimension( I );
+16
+gap> GeneratorsOfLeftIdeal( I );
+[ [ [ 0, 0, 0, 1 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ], [ 0, 0, 0, 0 ] ] ]
+\endexample
+
+\beginexample
+gap> mats:= [ [[1,0],[0,0]], [[0,1],[0,0]], [[0,0],[0,1]] ];;
+gap> A:= Algebra( Rationals, mats );;
+gap> I:= Ideal( A, [ mats[2] ], "basis" ); # we already know that the element
+                                           # `mats[2]' forms a basis of the ideal.
+<two-sided ideal in <algebra over Rationals, with 3 generators>, (
+1generators)>
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Categories and properties}
+
+\Declaration{IsFLMLOR}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 2 );;
+gap> IsFLMLOR ( A );
+true
+\endexample
+
+\Declaration{IsFLMLORWithOne}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 2 );;
+gap> IsFLMLORWithOne ( A );
+true
+\endexample
+
+\Declaration{IsAlgebra}
+
+\beginexample
+gap> A:= MatAlgebra( Rationals, 3 );;
+gap> IsAlgebra( A );       
+true
+\endexample
+
+\Declaration{IsAlgebraWithOne}
+
+\beginexample
+gap> A:= MatAlgebra( Rationals, 3 );;
+gap> IsAlgebraWithOne( A );
+true
+\endexample
+
+\Declaration{IsLieAlgebra}
+
+\beginexample
+gap> A:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> IsLieAlgebra( A );                        
+true
+\endexample
+
+\Declaration{IsSimpleAlgebra}
+
+\beginexample
+gap> A:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> IsSimpleAlgebra( A );
+false
+gap> A:= MatAlgebra( Rationals, 3 );;          
+gap> IsSimpleAlgebra( A );           
+true
+\endexample
+
+% IsMatrixFLMLOR left out...
+
+\Declaration{IsFiniteDimensional}
+
+\beginexample
+gap> A:= MatAlgebra( Rationals, 3 );;
+gap> IsFiniteDimensional( A );
+true
+\endexample
+
+\Declaration{IsQuaternion}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> b:= BasisVectors( Basis( A ) ); 
+[ e, i, j, k ]
+gap> IsQuaternion( b[1] );
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes and Operations}
+
+% GeneratorsOfLeftOperatorRing left out....
+
+% GeneratorsOfLeftOperatorRingWithOne left out....
+
+\Declaration{GeneratorsOfAlgebra}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> GeneratorsOfAlgebra( A );     
+[ e, i, j, k ]
+\endexample
+
+\Declaration{GeneratorsOfAlgebraWithOne}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> GeneratorsOfAlgebraWithOne( A );
+[ e, i, j, k ]
+\endexample
+
+\Declaration{ProductSpace}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> b:= BasisVectors( Basis( A ) );;
+gap> B:= Subalgebra( A, [ b[4] ] );
+<algebra over Rationals, with 1 generators>
+gap> ProductSpace( A, B );
+VectorSpace( Rationals, [ k, e, j, i ] )
+\endexample
+
+\Declaration{DerivedSubalgebra}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> DerivedSubalgebra(A);
+<algebra of dimension 4 over Rationals>
+\endexample
+
+\Declaration{DerivedSeriesOfAlgebra}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> DerivedSeriesOfAlgebra(A);
+[ <algebra-with-one of dimension 4 over Rationals> ]
+\endexample
+
+\Declaration{AdjointBasis}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;      
+gap> AdjointBasis( Basis( A ) );
+Basis( VectorSpace( Rationals, 
+[ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], 
+  [ [ 0, -1, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ], 
+  [ [ 0, 0, -1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, -1, 0, 0 ] ], 
+  [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ] ] ] ), 
+[ [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ], 
+  [ [ 0, -1, 0, 0 ], [ 1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] ], 
+  [ [ 0, 0, -1, 0 ], [ 0, 0, 0, 1 ], [ 1, 0, 0, 0 ], [ 0, -1, 0, 0 ] ], 
+  [ [ 0, 0, 0, -1 ], [ 0, 0, -1, 0 ], [ 0, 1, 0, 0 ], [ 1, 0, 0, 0 ] ] ] )
+\endexample
+
+\Declaration{IndicesOfAdjointBasis}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> B:= AdjointBasis( Basis( L ) );;
+gap> IndicesOfAdjointBasis( B );      
+[ 1, 2, 3, 4, 5, 6, 7, 8 ]
+\endexample
+
+\Declaration{AsAlgebra}
+
+\beginexample
+gap> V:= VectorSpace( Rationals, [ IdentityMat( 2 ) ] );;
+gap> AsAlgebra( Rationals, V );
+<algebra of dimension 1 over Rationals>
+\endexample
+
+\Declaration{AsAlgebraWithOne}
+
+\beginexample
+gap> V:= VectorSpace( Rationals, [ IdentityMat( 2 ) ] );;
+gap> A:= AsAlgebra( Rationals, V );;
+gap> AsAlgebraWithOne( Rationals, A );
+<algebra-with-one over Rationals, with 1 generators>
+\endexample
+
+\Declaration{AsSubalgebra}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 2 );;
+gap> V:= VectorSpace( Rationals, [ IdentityMat( 2 ) ] );;
+gap> B:= AsAlgebra( Rationals, V );;
+gap> BA:= AsSubalgebra( A, B );
+<algebra of dimension 1 over Rationals>
+\endexample
+
+
+\Declaration{AsSubalgebraWithOne}
+
+\beginexample
+gap> A:= FullMatrixAlgebra( Rationals, 2 );;
+gap> V:= VectorSpace( Rationals, [ IdentityMat( 2 ) ] );;
+gap> B:= AsAlgebra( Rationals, V );;       
+gap> C:= AsAlgebraWithOne( Rationals, B );;
+gap> AC:= AsSubalgebraWithOne( A, C );
+<algebra-with-one over Rationals, with 1 generators>
+\endexample
+
+\Declaration{MutableBasisOfClosureUnderAction}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> g:= GeneratorsOfAlgebra( A );;
+gap> B:= MutableBasisOfClosureUnderAction( Rationals, g, "left", [ g[1] ], \*, Zero(A), 4 );
+<mutable basis over Rationals, 4 vectors>
+gap> BasisVectors( B );
+[ e, i, j, k ]
+\endexample
+
+\Declaration{MutableBasisOfNonassociativeAlgebra}
+
+\beginexample
+gap> mats:= [  [[ 1, 0 ], [ 0, -1 ]], [[0,1],[0,0]] ];;
+gap> B:=MutableBasisOfNonassociativeAlgebra( Rationals, mats, NullMat(2,2), infinity );
+<mutable basis over Rationals, 3 vectors>
+gap> BasisVectors( B );         
+[ [ [ 1, 0 ], [ 0, -1 ] ], [ [ 0, 1 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
+\endexample
+
+\Declaration{MutableBasisOfIdealInNonassociativeAlgebra}
+
+\beginexample
+gap> mats:= [  [[ 1, 0 ], [ 0, -1 ]], [[0,1],[0,0]] ];;
+gap> A:= Algebra( Rationals, mats );;
+gap> basA:= BasisVectors( Basis( A ) );;
+gap> B:= MutableBasisOfIdealInNonassociativeAlgebra( Rationals, basA,          
+> [ mats[2] ], 0*mats[1], "both", infinity );
+<mutable basis over Rationals, 1 vectors>
+gap> BasisVectors( B );
+[ [ [ 0, 1 ], [ 0, 0 ] ] ]
+\endexample
+
+\Declaration{DirectSumOfAlgebras}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> DirectSumOfAlgebras( [A, A, A] );
+<algebra of dimension 12 over Rationals>
+\endexample
+
+\Declaration{FullMatrixAlgebraCentralizer}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> mats:= List(BasisVectors(Basis( A ) ), x -> AdjointMatrix(Basis(A), x ));;
+gap> FullMatrixAlgebraCentralizer( Rationals, mats );
+<algebra of dimension 4 over Rationals>
+\endexample
+
+\Declaration{RadicalOfAlgebra}
+
+\beginexample
+gap> m:= [ [ 0, 1, 2 ], [ 0, 0, 3 ], [ 0, 0, 0 ] ];;
+gap> A:= AlgebraWithOneByGenerators( Rationals, [ m ] );
+<algebra-with-one over Rationals, with 1 generators>
+gap> RadicalOfAlgebra( A );
+<algebra of dimension 2 over Rationals>
+\endexample
+
+\Declaration{CentralIdempotentsOfAlgebra}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;               
+gap> B:= DirectSumOfAlgebras( [A, A, A] );
+<algebra of dimension 12 over Rationals>
+gap> CentralIdempotentsOfAlgebra( B );
+[ v.1, v.5, v.9 ]
+\endexample
+
+\Declaration{LeviMalcevDecomposition}
+
+\beginexample
+gap> m:= [ [ 1, 2, 0 ], [ 0, 1, 3 ], [ 0, 0, 1] ];;
+gap> A:= Algebra( Rationals, [ m ] );;
+gap> LeviMalcevDecomposition( A );
+[ <algebra of dimension 1 over Rationals>, 
+  <algebra of dimension 2 over Rationals> ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Homomorphisms of algebras}
+
+\FileHeader[1]{alghom}
+
+\Declaration{AlgebraGeneralMappingByImages}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> B:= FullMatrixAlgebra( Rationals, 2 );;
+gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
+gap> f:= AlgebraGeneralMappingByImages( A, B, bA, bB );
+[ e, i, j, k ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+  [ [ 0, 0 ], [ 1, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
+gap> Images( f, bA[1] );
+( [ [ 1, 0 ], [ 0, 0 ] ] + <algebra over Rationals, with 60 generators> )
+\endexample
+
+
+\Declaration{AlgebraHomomorphismByImages}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [1,1] ); SetEntrySCTable( T, 2, 2, [1,2] );
+gap> A:= AlgebraByStructureConstants( Rationals, T );;
+gap> m1:= MutableNullMat( 2, 2 );; m1[1][1]:= 1;;
+gap> m2:= MutableNullMat( 2, 2 );; m2[2][2]:= 1;;
+gap> B:= AlgebraByGenerators( Rationals, [ m1, m2 ] );;
+gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
+gap> f:= AlgebraHomomorphismByImages( A, B, bA, bB ); 
+[ v.1, v.2 ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
+gap> Image( f, bA[1]+bA[2] );
+[ [ 1, 0 ], [ 0, 1 ] ]
+\endexample
+
+
+\Declaration{AlgebraHomomorphismByImagesNC}
+
+
+For the definitions of the algebras `A' and `B' in the next example we refer 
+to the previous example. 
+
+\beginexample
+gap> f:= AlgebraHomomorphismByImagesNC( A, B, bA, bB );
+[ v.1, v.2 ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ]
+\endexample
+
+
+
+\Declaration{AlgebraWithOneGeneralMappingByImages}
+
+\beginexample
+gap> A:= QuaternionAlgebra( Rationals );;
+gap> B:= FullMatrixAlgebra( Rationals, 2 );;
+gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
+gap> f:= AlgebraWithOneGeneralMappingByImages(A,B,bA{[2,3,4]},bB{[1,2,3]});
+[ i, j, k, e ] -> [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ 0, 0 ] ], 
+  [ [ 0, 0 ], [ 1, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
+\endexample
+
+
+\Declaration{AlgebraWithOneHomomorphismByImages}
+
+\beginexample
+gap> m1:= MutableNullMat( 2, 2 );; m1[1][1]:=1;;
+gap> m2:= MutableNullMat( 2, 2 );; m2[2][2]:=1;;
+gap> A:= AlgebraByGenerators( Rationals, [m1,m2] );;
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [1,1] );
+gap> SetEntrySCTable( T, 2, 2, [1,2] );
+gap> B:= AlgebraByStructureConstants(Rationals, T);;
+gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
+gap> f:= AlgebraWithOneHomomorphismByImages( A, B, bA{[1]}, bB{[1]} );
+[ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ] -> [ v.1, v.1+v.2 ]
+\endexample
+
+
+\Declaration{AlgebraWithOneHomomorphismByImagesNC}
+
+\beginexample
+gap> m1:= MutableNullMat( 2, 2 );; m1[1][1]:=1;;
+gap> m2:= MutableNullMat( 2, 2 );; m2[2][2]:=1;;
+gap> A:= AlgebraByGenerators( Rationals, [m1,m2] );;
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [1,1] );
+gap> SetEntrySCTable( T, 2, 2, [1,2] );
+gap> B:= AlgebraByStructureConstants( Rationals, T);;
+gap> bA:= BasisVectors( Basis( A ) );; bB:= BasisVectors( Basis( B ) );;
+gap> f:= AlgebraWithOneHomomorphismByImagesNC( A, B, bA{[1]}, bB{[1]} );
+[ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ] -> [ v.1, v.1+v.2 ]
+\endexample
+
+\Declaration{NaturalHomomorphismByIdeal}
+
+\beginexample
+gap> L:= FullMatrixLieAlgebra( Rationals, 3 );;
+gap> C:= LieCentre( L );
+<two-sided ideal in <Lie algebra of dimension 9 over Rationals>, (
+1generators)>
+gap> hom:= NaturalHomomorphismByIdeal( L, C );
+<linear mapping by matrix, <Lie algebra of dimension 
+9 over Rationals> -> <Lie algebra of dimension 8 over Rationals>>
+gap> ImagesSource( hom );
+<Lie algebra of dimension 8 over Rationals>
+\endexample
+
+\Declaration{OperationAlgebraHomomorphism}
+
+\beginexample
+gap> m1:= MutableNullMat( 2, 2 );; m1[1][1]:= 1;;
+gap> m2:= MutableNullMat( 2, 2 );; m2[2][2]:= 1;;
+gap> B:= AlgebraByGenerators( Rationals, [ m1, m2 ] );;
+gap> V:= FullRowSpace( Rationals, 2 );
+( Rationals^2 )
+gap> f:=OperationAlgebraHomomorphism( B, Basis( V ), OnRight );
+<op. hom. <algebra over Rationals, with 2 generators> -> matrices of dim. 2>
+gap> Image( f, m1 );
+[ [ 1, 0 ], [ 0, 0 ] ]
+\endexample
+
+\Declaration{IsomorphismFpAlgebra}
+
+\beginexample
+
+\endexample
+
+\Declaration{IsomorphismMatrixAlgebra}
+
+\beginexample
+gap> T:= EmptySCTable( 2, 0 );;
+gap> SetEntrySCTable( T, 1, 1, [1,1] ); SetEntrySCTable( T, 2, 2, [1,2] );
+gap> A:= AlgebraByStructureConstants( Rationals, T );;
+gap> A:= AsAlgebraWithOne( Rationals, A );;            
+gap> f:=IsomorphismMatrixAlgebra( A );                                    
+<op. hom. <algebra-with-one over Rationals, with 
+2 generators> -> matrices of dim. 2>
+gap> Image( f, BasisVectors( Basis( A ) )[1] );
+[ [ 1, 0 ], [ 0, 0 ] ]
+\endexample
+
+
+\Declaration{RepresentativeLinearOperation}
+
+\beginexample
+gap> m1:= MutableNullMat( 2, 2 );; m1[1][1]:= 1;;
+gap> m2:= MutableNullMat( 2, 2 );; m2[2][2]:= 1;;
+gap> B:= AlgebraByGenerators( Rationals, [ m1, m2 ] );;
+gap> RepresentativeLinearOperation( B, [1,0], [1,0], OnRight );
+[ [ 1, 0 ], [ 0, 0 ] ]
+gap> RepresentativeLinearOperation( B, [1,0], [0,1], OnRight );
+fail
+\endexample

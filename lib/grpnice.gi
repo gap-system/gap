@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains generic     methods   for groups handled    by  nice
 ##  monomorphisms..
@@ -15,7 +16,6 @@ Revision.grpnice_gi :=
 
 #############################################################################
 ##
-
 #M  GeneratorsOfMagmaWithInverses( <group> )  .  get generators from nice obj
 ##
 InstallMethod( GeneratorsOfMagmaWithInverses,
@@ -84,13 +84,14 @@ function( G )
     nice := NiceMonomorphism( G );
     img := ImagesSet( nice, G );
     if     IsOperationHomomorphism( nice )
-       and HasBase( UnderlyingExternalSet( nice ) )  then
+       and HasBaseOfGroup( UnderlyingExternalSet( nice ) )  then
         if not IsBound( UnderlyingExternalSet( nice )!.basePermImage )  then
             D := HomeEnumerator( UnderlyingExternalSet( nice ) );
-            UnderlyingExternalSet( nice )!.basePermImage := List
-                ( Base( UnderlyingExternalSet( nice ) ), b -> PositionCanonical( D, b ) );
+            UnderlyingExternalSet( nice )!.basePermImage :=
+	      List(BaseOfGroup(UnderlyingExternalSet(nice)),
+		   b->PositionCanonical(D,b));
         fi;
-        SetBase( img, UnderlyingExternalSet( nice )!.basePermImage );
+        SetBaseOfGroup( img, UnderlyingExternalSet( nice )!.basePermImage );
     fi;
     return img;
 end );
@@ -537,7 +538,7 @@ AttributeMethodByNiceMonomorphism( OrdersClassRepresentatives,
 #M  PCentralSeriesOp( <G>, <p> )  . . . . . .  . . . . . . <p>-central series
 ##
 GroupSeriesMethodByNiceMonomorphismCollOther( PCentralSeriesOp,
-    [ IsGroup, IsPosRat and IsInt ] );
+    [ IsGroup, IsPosInt ] );
 
 
 #############################################################################
@@ -545,7 +546,7 @@ GroupSeriesMethodByNiceMonomorphismCollOther( PCentralSeriesOp,
 #M  PCoreOp( <G>, <p> ) . . . . . . . . . . . . . . . . . . p-core of a group
 ##
 SubgroupMethodByNiceMonomorphismCollOther( PCoreOp,
-    [ IsGroup, IsPosRat and IsInt ] );
+    [ IsGroup, IsPosInt ] );
 
 
 #############################################################################
@@ -633,7 +634,7 @@ GroupSeriesMethodByNiceMonomorphismCollColl( SubnormalSeriesOp,
 #M  SylowSubgroupOp( <G>, <p> ) . . . . . . . . . . Sylow subgroup of a group
 ##
 SubgroupMethodByNiceMonomorphismCollOther( SylowSubgroupOp,
-    [ IsGroup, IsPosRat and IsInt ] );
+    [ IsGroup, IsPosInt ] );
 
 
 #############################################################################
@@ -643,6 +644,28 @@ SubgroupMethodByNiceMonomorphismCollOther( SylowSubgroupOp,
 GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
     [ IsGroup ] );
 
+
+#############################################################################
+##
+#M  RepresentativeOperation( <G> )  . . . . upper central series of a group
+##
+InstallOtherMethod(RepresentativeOperationOp,"nice group on elements",
+  IsCollsElmsElmsX,[IsHandledByNiceMonomorphism and IsGroup,
+  IsMultiplicativeElementWithInverse,IsMultiplicativeElementWithInverse,
+  IsFunction],10,
+function(G,a,b,op)
+local hom,rep;
+  if op<>OnPoints then
+    TryNextMethod();
+  fi;
+  hom:=NiceMonomorphism(G);
+  rep:=RepresentativeOperation(NiceObject(G),Image(hom,a),Image(hom,b),
+                               OnPoints);
+  if rep<>fail then
+    rep:=PreImagesRepresentative(hom,rep);
+  fi;
+  return rep;
+end);
 
 #############################################################################
 ##

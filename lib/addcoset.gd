@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for additive cosets.
 ##
@@ -21,7 +22,7 @@ Revision.addcoset_gd :=
 ##  The additive coset and its additively acting domain lie in the same
 ##  family.
 ##
-IsAdditiveCoset := NewCategory( "IsAdditiveCoset",
+DeclareCategory( "IsAdditiveCoset",
     IsExtASet and IsAssociativeAOpESum and IsTrivialAOpEZero );
 
 
@@ -29,7 +30,7 @@ IsAdditiveCoset := NewCategory( "IsAdditiveCoset",
 ##
 #O  AdditiveCoset( <A>, <a> )
 ##
-AdditiveCoset := NewOperation( "AdditiveCoset",
+DeclareOperation( "AdditiveCoset",
     [ IsAdditiveGroup, IsAdditiveElement ] );
 
 

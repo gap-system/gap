@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the global variables package.
 **
@@ -27,7 +28,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_gvars_c =
+const char * Revision_gvars_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -169,6 +170,9 @@ Obj             ErrorMustHaveAssObjHandler (
 **
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.
 */
+
+static Obj REREADING;			/* Copy of GAP global variable REREADING */
+
 void            AssGVar (
     UInt                gvar,
     Obj                 val )
@@ -180,7 +184,8 @@ void            AssGVar (
     Obj                 onam;          /* object of <name>                */
 
     /* make certain that the variable is not read only                     */
-    while ( ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0) ) {
+    while ( (REREADING != True) &&
+	    (ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0)) ) {
         ErrorReturnVoid(
             "Variable: '%s' is read only",
             (Int)CSTR_STRING( ELM_PLIST(NameGVars,gvar) ), 0L,
@@ -297,7 +302,7 @@ Char *          NameGVar (
 **  'GVarName' returns the global variable with the name <name>.
 */
 UInt GVarName (
-    SYS_CONST Char *    name )
+    const Char *        name )
 {
     Obj                 gvar;           /* global variable (as imm intval) */
     UInt                pos;            /* hash position                   */
@@ -305,7 +310,7 @@ UInt GVarName (
     Obj                 string;         /* temporary string value <name>   */
     Obj                 table;          /* temporary copy of <TableGVars>  */
     Obj                 gvar2;          /* one element of <table>          */
-    SYS_CONST Char *    p;              /* loop variable                   */
+    const Char *        p;              /* loop variable                   */
     UInt                i;              /* loop variable                   */
 
     /* start looking in the table at the following hash position           */
@@ -381,206 +386,7 @@ UInt GVarName (
 
 /****************************************************************************
 **
-*V  CopyAndFopyGVars . . kernel table of kernel copies and "fopies" of global
-**                       variables
-**
-**  This needs to be kept inside the kernel so that the copies can be updated
-**  after loading a workspace.
-*/  
 
-typedef struct  { 
-  Obj * copy;
-  UInt isFopy;
-  Char * name;
-} TypeCopyGVar;
-
-#ifndef MAX_COPY_AND_FOPY_GVARS
-#define MAX_COPY_AND_FOPY_GVARS 20000
-#endif
-
-static TypeCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
-
-static NCopyAndFopyGVars = 0;
-
-/****************************************************************************
-**
-*F  InitCopyGVar(<name>,<copy>) . . . .  declare C variable as copy of global
-**
-**  'InitCopyGVar' makes  the C variable <cvar>  at address  <copy> a copy of
-**  the global variable named <name> (which must be a kernel string).
-**
-**  Unfortunately it does so by storing <copy> in place of a bag identifier 
-**  in a PLIST. This is OK for garbage collection, but a real problem for saving
-**  in any event, this information does not really want to be saved because it is
-**  kernel centred rather than workspace centred. 
-**
-**  Accordingly we provide two functions
-**
-*F  RemoveCopyFopyInfo( )  . . . remove the information about copies of gvars from
-**                               the workspace
-*F  RestoreCopyFopyInfo( )  . .  restore this information from the copy in the kernel
-**
-**  The Restore function is also intended to be used after loading a saved workspace
-**
-*/
-void InitCopyGVar (
-    Char *              name ,
-    Obj *               copy )
-{
-    Obj                 cops;           /* copies list                     */
-    UInt                ncop;           /* number of copies                */
-    UInt                gvar;
-
-    gvar = GVarName(name);
-
-    /* get the copies list and its length                                  */
-    if ( ELM_PLIST( CopiesGVars, gvar ) != 0 ) {
-        cops = ELM_PLIST( CopiesGVars, gvar );
-    }
-    else {
-        cops = NEW_PLIST( T_PLIST, 0 );
-        SET_ELM_PLIST( CopiesGVars, gvar, cops );
-        CHANGED_BAG(CopiesGVars)
-    }
-    ncop = LEN_PLIST(cops);
-
-    /* append the copy to the copies list                                  */
-    GROW_PLIST( cops, ncop+1 );
-    SET_LEN_PLIST( cops, ncop+1 );
-    SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
-    CHANGED_BAG(cops)
-
-    /* now copy the value of <gvar> to <cvar>                              */
-    *copy = VAL_GVAR(gvar);
-
-    /* make a record in the kernel also, for saving and loading */
-    if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
-      {
-        Pr("Panic, no room to record CopyGVar\n",0L,0L);
-        SyExit(1);
-      }
-    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
-    CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
-    NCopyAndFopyGVars++;
-}
-
-
-void RemoveCopyFopyInfo( void )
-{
-  UInt i,l;
-  l = LEN_PLIST(CopiesGVars);
-  for (i = 1; i <= l; i++)
-    SET_ELM_PLIST( CopiesGVars, i, 0);
-  l = LEN_PLIST(FopiesGVars);
-  for (i = 1; i <= l; i++)
-    SET_ELM_PLIST( FopiesGVars, i, 0);
-  return;
-}
-
-void RestoreCopyFopyInfo( void )
-{
-  UInt i;
-  UInt gvar;
-  Obj thelist;
-  Obj cops;
-  UInt ncop;
-
-  for (i = 0; i < NCopyAndFopyGVars; i++)
-    {
-      /* get the copies list and its length                                  */
-      gvar = GVarName( CopyAndFopyGVars[i].name);
-      thelist = CopyAndFopyGVars[i].isFopy ? FopiesGVars : CopiesGVars;
-      if ( ELM_PLIST( thelist , gvar ) != 0 ) 
-        {
-          cops = ELM_PLIST( thelist, gvar );
-        }
-      else 
-        {
-          cops = NEW_PLIST( T_PLIST, 0 );
-          SET_ELM_PLIST( thelist, gvar, cops );
-          CHANGED_BAG(thelist);
-        }
-      ncop = LEN_PLIST(cops);
-      /* append the copy to the copies list                                  */
-      GROW_PLIST( cops, ncop+1 );
-      SET_LEN_PLIST( cops, ncop+1 );
-      SET_ELM_PLIST( cops, ncop+1, (Obj)CopyAndFopyGVars[i].copy );
-      CHANGED_BAG(cops);
-
-      /* now copy the value of <gvar> to <cvar>                              */
-      *CopyAndFopyGVars[i].copy = VAL_GVAR(gvar);
-    }
-  return;
-}
-
-/****************************************************************************
-**
-*F  InitFopyGVar(<name>,<copy>) . . . .  declare C variable as copy of global
-**
-**  'InitFopyGVar' makes the C variable <cvar> at address <copy> a
-**  (function) copy of the global variable <gvar>, whose name is
-**  <name>.  That means that whenever the value of <gvar> is a
-**  function, then <cvar> will reference the same value (i.e., will
-**  hold the same bag identifier).  When the value of <gvar> is not a
-**  function, then <cvar> will reference a function that signals the
-**  error ``<func> must be a function''.  When <gvar> has no assigned
-**  value, then <cvar> will reference a function that signals the
-**  error ``<gvar> must have an assigned value''.  
-*/
-void InitFopyGVar (
-    Char *              name,
-    Obj *               copy )
-{
-    Obj                 cops;           /* copies list                     */
-    UInt                ncop;           /* number of copies                */
-    UInt                gvar;
-
-    gvar = GVarName(name);
-
-    /* get the copies list and its length                                  */
-    if ( ELM_PLIST( FopiesGVars, gvar ) != 0 ) {
-        cops = ELM_PLIST( FopiesGVars, gvar );
-    }
-    else {
-        cops = NEW_PLIST( T_PLIST, 0 );
-        SET_ELM_PLIST( FopiesGVars, gvar, cops );
-        CHANGED_BAG(FopiesGVars)
-    }
-    ncop = LEN_PLIST(cops);
-
-    /* append the copy to the copies list                                  */
-    GROW_PLIST( cops, ncop+1 );
-    SET_LEN_PLIST( cops, ncop+1 );
-    SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
-    CHANGED_BAG(cops)
-
-    /* now copy the value of <gvar> to <cvar>                              */
-    if ( VAL_GVAR(gvar) != 0 && TNUM_OBJ(VAL_GVAR(gvar)) == T_FUNCTION ) {
-        *copy = VAL_GVAR(gvar);
-    }
-    else if ( VAL_GVAR(gvar) != 0 ) {
-        *copy = ErrorMustEvalToFuncFunc;
-    }
-    else {
-        *copy = ErrorMustHaveAssObjFunc;
-    }
-    
-    /* make a record in the kernel also, for saving and loading */
-    if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
-      {
-        Pr("Panic, no room to record FopyGVar\n",0L,0L);
-        SyExit(1);
-      }
-    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
-    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
-    CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
-    NCopyAndFopyGVars++;
-}
-
-
-/****************************************************************************
-**
 *V  Tilde . . . . . . . . . . . . . . . . . . . . . . . . global variable '~'
 **
 **  'Tilde' is  the global variable '~', the  one used in expressions such as
@@ -675,6 +481,39 @@ Obj MakeReadWriteGVarHandler (
 
     /* return void                                                         */
     return 0;
+}
+
+/****************************************************************************
+**
+*F  IsReadOnlyGVar( <gvar> ) . . . . . . return status of a global variable
+*/
+Int IsReadOnlyGVar (
+    UInt                gvar )
+{
+  return !INT_INTOBJ(ELM_PLIST(WriteGVars, gvar));
+}
+
+
+/****************************************************************************
+**
+*F  FuncIsReadOnlyGVar( <name> ) . . .handler for GAP function
+**
+*/
+
+static Obj FuncIsReadOnlyGVar (
+    Obj                 self,
+    Obj                 name )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( name ) ) {
+        name = ErrorReturnObj(
+            "IsReadOnlyGVar: <name> must be a string (not a %s)",
+            (Int)TNAM_OBJ(name), 0L,
+            "you can return a string for <name>" );
+    }
+
+    /* get the answer                             */
+    return IsReadOnlyGVar(GVarName(CSTR_STRING(name))) ? True : False;
 }
 
 
@@ -855,12 +694,256 @@ Obj FuncISB_GVAR (
     /* check the argument                                                  */
     while ( ! IsStringConv( gvar ) ) {
         gvar = ErrorReturnObj(
-            "READ: <gvar> must be a string (not a %s)",
+            "ISB_GVAR: <gvar> must be a string (not a %s)",
             (Int)TNAM_OBJ(gvar), 0L,
             "you can return a string for <gvar>" );
     }
 
     return ValAutoGVar( GVarName( CSTR_STRING(gvar) ) ) ? True : False;
+}
+
+
+/****************************************************************************
+**
+*F  FuncVAL_GVAR( <self>, <gvar> )  . . contents of a global variable
+*/
+
+Obj FuncVAL_GVAR (
+    Obj                 self,
+    Obj                 gvar )
+{
+  Obj val;
+    /* check the argument                                                  */
+    while ( ! IsStringConv( gvar ) ) {
+        gvar = ErrorReturnObj(
+            "VAL_GVAR: <gvar> must be a string (not a %s)",
+            (Int)TNAM_OBJ(gvar), 0L,
+            "you can return a string for <gvar>" );
+    }
+
+    /* get the value */
+    val = ValAutoGVar( GVarName( CSTR_STRING(gvar) ) );
+
+    while (val == (Obj) 0)
+      val = ErrorReturnObj("VAL_GVAR: No value bound to %s",
+			   (Int)CSTR_STRING(gvar), (Int) 0,
+			   "you can return a value" );
+    return val;
+}
+
+/****************************************************************************
+**
+*F  FuncUNB_GVAR( <self>, <gvar> )  . . unbind a global variable
+*/
+
+Obj FuncUNB_GVAR (
+    Obj                 self,
+    Obj                 gvar )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( gvar ) ) {
+        gvar = ErrorReturnObj(
+            "UNB_GVAR: <gvar> must be a string (not a %s)",
+            (Int)TNAM_OBJ(gvar), 0L,
+            "you can return a string for <gvar>" );
+    }
+
+    /*  */
+    AssGVar( GVarName( CSTR_STRING(gvar) ), (Obj)0 );
+    return (Obj) 0;
+}
+
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * copies and fopies  * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  CopyAndFopyGVars  . . . . . .  kernel table of kernel copies and "fopies"
+**
+**  This needs to be kept inside the kernel so that the copies can be updated
+**  after loading a workspace.
+*/  
+typedef struct  { 
+    Obj *               copy;
+    UInt                isFopy;
+    const Char *        name;
+} StructCopyGVar;
+
+#ifndef MAX_COPY_AND_FOPY_GVARS
+#define MAX_COPY_AND_FOPY_GVARS         20000
+#endif
+
+static StructCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
+static Int NCopyAndFopyGVars = 0;
+
+
+/****************************************************************************
+**
+*F  InitCopyGVar( <name>, <copy> )  . .  declare C variable as copy of global
+**
+**  'InitCopyGVar' makes  the C variable <cvar>  at address  <copy> a copy of
+**  the global variable named <name> (which must be a kernel string).
+**
+**  The function only registers the  information in <CopyAndFopyGVars>.  At a
+**  latter stage one  has to call  'UpdateCopyFopyInfo' to actually enter the
+**  information stored in <CopyAndFopyGVars> into a plain list.
+**
+**  This is OK for garbage collection, but  a real problem  for saving in any
+**  event, this information  does not really want to  be saved  because it is
+**  kernel centred rather than workspace centred.
+**
+**  Accordingly we     provide  two    functions    `RemoveCopyFopyInfo'  and
+**  `RestoreCopyFopyInfo' to  remove  or restore   the  information from  the
+**  workspace.  The  Restore  function is  also   intended to  be used  after
+**  loading a saved workspace
+*/
+void InitCopyGVar (
+    const Char *        name ,
+    Obj *               copy )
+{
+    /* make a record in the kernel for saving and loading                  */
+    if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+        Pr( "Panic, no room to record CopyGVar\n", 0L, 0L );
+        SyExit(1);
+    }
+    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
+    CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
+    NCopyAndFopyGVars++;
+}
+
+
+/****************************************************************************
+**
+*F  InitFopyGVar( <name>, <copy> )  . .  declare C variable as copy of global
+**
+**  'InitFopyGVar' makes the C variable <cvar> at address <copy> a (function)
+**  copy  of the  global variable <gvar>,  whose name  is <name>.  That means
+**  that whenever   the value  of   <gvar> is a    function, then <cvar> will
+**  reference the same value (i.e., will hold the same bag identifier).  When
+**  the value  of <gvar>  is not a   function, then  <cvar> will  reference a
+**  function  that signals  the error ``<func>  must be  a function''.   When
+**  <gvar> has no assigned value, then <cvar> will  reference a function that
+**  signals the error ``<gvar> must have an assigned value''.
+*/
+void InitFopyGVar (
+    const Char *        name,
+    Obj *               copy )
+{
+    /* make a record in the kernel for saving and loading                  */
+    if ( NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS ) {
+        Pr( "Panic, no room to record FopyGVar\n", 0L, 0L );
+        SyExit(1);
+    }
+    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
+    CopyAndFopyGVars[NCopyAndFopyGVars].name = name;
+    NCopyAndFopyGVars++;
+}
+
+
+/****************************************************************************
+**
+*F  UpdateCopyFopyInfo()  . . . . . . . . . .  convert kernel info into plist
+*/
+static Int NCopyAndFopyDone = 0;
+
+void UpdateCopyFopyInfo ( void )
+{
+    Obj                 cops;           /* copies list                     */
+    UInt                ncop;           /* number of copies                */
+    UInt                gvar;
+    const Char *        name;           /* name of the variable            */
+    Obj *               copy;           /* address of the copy             */
+
+    /* loop over new copies and fopies                                     */
+    for ( ; NCopyAndFopyDone < NCopyAndFopyGVars; NCopyAndFopyDone++ ) {
+        name = CopyAndFopyGVars[NCopyAndFopyDone].name;
+        copy = CopyAndFopyGVars[NCopyAndFopyDone].copy;
+        gvar = GVarName(name);
+
+        /* get the copies list and its length                              */
+        if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
+            if ( ELM_PLIST( FopiesGVars, gvar ) != 0 ) {
+                cops = ELM_PLIST( FopiesGVars, gvar );
+            }
+            else {
+                cops = NEW_PLIST( T_PLIST, 0 );
+                SET_ELM_PLIST( FopiesGVars, gvar, cops );
+                CHANGED_BAG(FopiesGVars);
+            }
+        }
+        else {
+            if ( ELM_PLIST( CopiesGVars, gvar ) != 0 ) {
+                cops = ELM_PLIST( CopiesGVars, gvar );
+            }
+            else {
+                cops = NEW_PLIST( T_PLIST, 0 );
+                SET_ELM_PLIST( CopiesGVars, gvar, cops );
+                CHANGED_BAG(CopiesGVars);
+            }
+        }
+        ncop = LEN_PLIST(cops);
+
+        /* append the copy to the copies list                              */
+        GROW_PLIST( cops, ncop+1 );
+        SET_LEN_PLIST( cops, ncop+1 );
+        SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
+        CHANGED_BAG(cops);
+
+        /* now copy the value of <gvar> to <cvar>                          */
+        if ( CopyAndFopyGVars[NCopyAndFopyDone].isFopy ) {
+            if ( VAL_GVAR(gvar) != 0 && IS_FUNC(VAL_GVAR(gvar)) ) {
+                *copy = VAL_GVAR(gvar);
+            }
+            else if ( VAL_GVAR(gvar) != 0 ) {
+                *copy = ErrorMustEvalToFuncFunc;
+            }
+            else {
+                *copy = ErrorMustHaveAssObjFunc;
+            }
+        }
+        else {
+            *copy = VAL_GVAR(gvar);
+        }
+    }
+}
+
+
+/****************************************************************************
+**
+*F  RemoveCopyFopyInfo()  . . . remove the info about copies of gvars from ws
+*/
+void RemoveCopyFopyInfo( void )
+{
+    UInt        i, l;
+
+    l = LEN_PLIST(CopiesGVars);
+    for ( i = 1; i <= l; i++ )
+        SET_ELM_PLIST( CopiesGVars, i, 0 );
+    l = LEN_PLIST(FopiesGVars);
+    for ( i = 1; i <= l; i++ )
+        SET_ELM_PLIST( FopiesGVars, i, 0 );
+    NCopyAndFopyDone = 0;
+    return;
+}
+
+
+/****************************************************************************
+**
+*F  RestoreCopyFopyInfo() . . .  restore the info from the copy in the kernel
+*/
+void RestoreCopyFopyInfo( void )
+{
+    NCopyAndFopyDone = 0;
+    UpdateCopyFopyInfo();
 }
 
 
@@ -874,137 +957,225 @@ Obj FuncISB_GVAR (
 /****************************************************************************
 **
 
-*F  SetupGVars()  . . . . . . . . . . initialize the global variables package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupGVars ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "MakeReadOnlyGVar", 1, "name",
+      MakeReadOnlyGVarHandler, "src/gap.c:MakeReadOnlyGVar" },
+
+    { "MakeReadWriteGVar", 1, "name",
+      MakeReadWriteGVarHandler, "src/gap.c:MakeReadWriteGVar" },
+
+    { "IsReadOnlyGVar", 1, "name",
+      FuncIsReadOnlyGVar, "src/gap.c:IsReadOnlyGVar" },
+
+    { "AUTO", -1, "args",
+      AUTOHandler, "src/gap.c:AUTO" },
+               
+    { "IDENTS_GVAR", 0L, "",
+      FuncIDENTS_GVAR, "src/gap.c:IDENTS_GVAR" },
+
+    { "ISB_GVAR", 1L, "gvar",
+      FuncISB_GVAR, "src/gap.c:ISB_GVAR" },
+
+    { "ASS_GVAR", 2L, "gvar, value",
+      FuncASS_GVAR, "src/gap.c:ASS_GVAR" },
+
+    { "VAL_GVAR", 1L, "gvar",
+      FuncVAL_GVAR, "src/gap.c:VAL_GVAR" },
+
+    { "UNB_GVAR", 1L, "gvar",
+      FuncUNB_GVAR, "src/gap.c:UNB_GVAR" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init global bags and handler                                        */
+    InitGlobalBag( &ErrorMustEvalToFuncFunc,
+                   "src/gvars.c:ErrorMustEvalToFuncFunc" );
+    InitGlobalBag( &ErrorMustHaveAssObjFunc,
+                   "src/gvars.c:ErrorMustHaveAssObjFunc" );
+    InitGlobalBag( &ValGVars,
+                   "src/gvars.c:ValGVars" );
+    InitGlobalBag( &NameGVars,
+                   "src/gvars.c:NameGVars" );
+    InitGlobalBag( &WriteGVars,
+                   "src/gvars.c:WriteGVars" );
+    InitGlobalBag( &ExprGVars,
+                   "src/gvars.c:ExprGVars" );
+    InitGlobalBag( &CopiesGVars,
+                   "src/gvars.c:CopiesGVars" );
+    InitGlobalBag( &FopiesGVars,
+                   "src/gvars.c:FopiesGVars"  );
+    InitGlobalBag( &TableGVars,
+                   "src/gvars.c:TableGVars" );
+
+    InitHandlerFunc( ErrorMustEvalToFuncHandler,
+                     "src/gvars.c:ErrorMustEvalToFuncHandler" );
+    InitHandlerFunc( ErrorMustHaveAssObjHandler,
+                     "src/gvars.c:ErrorMustHaveAssObjHandler" );
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitGVars() . . . . . . . . . . . initialize the global variables package
-**
-**  'InitGVars' initializes the global variables package.
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void InitGVars ( void )
+
+static Int PostRestore (
+    StructInitInfo *    module )
 {
-    /* make the error functions for 'AssGVar'                              */
-    InitGlobalBag(  &ErrorMustEvalToFuncFunc,    "src/gvars.c:ErrorMustEvalToFuncFunc" );
-    InitHandlerFunc( ErrorMustEvalToFuncHandler, "src/gvars.c:ErrorMustEvalToFuncHandler" );
-    if ( ! SyRestoring ) {
-        ErrorMustEvalToFuncFunc = NewFunctionC(
-            "ErrorMustEvalToFunc", -1,"args", ErrorMustEvalToFuncHandler );
-    }
-    
-    InitGlobalBag(  &ErrorMustHaveAssObjFunc,    "src/gvars.c:ErrorMustHaveAssObjFunc" );
-    InitHandlerFunc( ErrorMustHaveAssObjHandler, "src/gvars.c:ErrorMustHaveAssObjHandler" );
-    if ( ! SyRestoring ) {
-        ErrorMustHaveAssObjFunc = NewFunctionC(
-            "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
-    }
-
-
     /* make the lists for global variables                                 */
-    CountGVars = 0;
-    InitGlobalBag( &ValGVars, "src/gvars.c:ValGVars" );
-    if ( 1 || ! SyRestoring ) {
-        ValGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( ValGVars, 0 );
-    }
-    PtrGVars = ADDR_OBJ( ValGVars );
-
-    InitGlobalBag( &NameGVars, "src/gvars.c:NameGVars" );
-    if ( 1 || ! SyRestoring ) {
-        NameGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( NameGVars, 0 );
-    }
-
-    InitGlobalBag( &WriteGVars, "src/gvars.c:WriteGVars" );
-    if ( 1 || ! SyRestoring ) {
-        WriteGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( WriteGVars, 0 );
-    }
-
-    InitGlobalBag( &ExprGVars, "src/gvars.c:ExprGVars" );
-    if ( 1 || ! SyRestoring ) {
-        ExprGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( ExprGVars, 0 );
-    }
-
-    InitGlobalBag( &CopiesGVars, "src/gvars.c:CopiesGVars" );
-    if ( 1 || ! SyRestoring ) {
-        CopiesGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( CopiesGVars, 0 );
-    }
-
-    InitGlobalBag( &FopiesGVars, "src/gvars.c:FopiesGVars"  );
-    if ( 1 || ! SyRestoring ) {
-        FopiesGVars = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( FopiesGVars, 0 );
-    }
-
-
-    /* make the list of global variables                                   */
-    InitGlobalBag( &TableGVars, "src/gvars.c:TableGVars" );
-    if ( 1 || ! SyRestoring ) {
-        SizeGVars  = 997;
-        TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
-        SET_LEN_PLIST( TableGVars, SizeGVars );
-    }
-    else {
-        SizeGVars = LEN_PLIST( TableGVars );
-    }
-
+    CountGVars = LEN_PLIST( ValGVars );
+    PtrGVars   = ADDR_OBJ( ValGVars );
+    SizeGVars  = LEN_PLIST( TableGVars );
 
     /* create the global variable '~'                                      */
     Tilde = GVarName( "~" );
 
+    /* Get a copy of REREADING                                             */
+    ImportGVarFromLibrary("REREADING", &REREADING);
 
-    /* install the functions 'MakeReadOnlyGVar' and 'MakeReadWriteGVar'    */
-    C_NEW_GVAR_FUNC( "MakeReadOnlyGVar", 1, "name",
-                      MakeReadOnlyGVarHandler,
-           "src/gap.c:MakeReadOnlyGVar" );
+    /* update fopies and copies                                            */
+    UpdateCopyFopyInfo();
 
-    C_NEW_GVAR_FUNC( "MakeReadWriteGVar", 1, "name",
-                      MakeReadWriteGVarHandler,
-           "src/gap.c:MakeReadWriteGVar" );
+    /* return success                                                      */
+    return 0;
+}
 
-            
-    /* install the function 'AUTO'                                         */
-    C_NEW_GVAR_FUNC( "AUTO", -1, "args",
-                      AUTOHandler,
-           "src/gap.c:AUTO" );
-               
+/****************************************************************************
+**
+*F  PreSave( <module> ) . . . . . . . . . . . . . before save workspace
+*/
+static Int PreSave (
+    StructInitInfo *    module )
+{
+  RemoveCopyFopyInfo();
+  return 0;
+}
 
-    /* list of all global variable names                                   */
-    C_NEW_GVAR_FUNC( "IDENTS_GVAR", 0L, "",
-                  FuncIDENTS_GVAR,
-           "src/gap.c:IDENTS_GVAR" );
-
-
-    /* test if global variable is bound                                    */
-    C_NEW_GVAR_FUNC( "ISB_GVAR", 1L, "gvar",
-                  FuncISB_GVAR,
-           "src/gap.c:ISB_GVAR" );
-
-
-    /* assign global variable                                              */
-    C_NEW_GVAR_FUNC( "ASS_GVAR", 2L, "gvar, value",
-                  FuncASS_GVAR,
-           "src/gap.c:ASS_GVAR" );
-
+/****************************************************************************
+**
+*F  PostSave( <module> ) . . . . . . . . . . . . . aftersave workspace
+*/
+static Int PostSave (
+    StructInitInfo *    module )
+{
+  UpdateCopyFopyInfo();
+  return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckGVars()  .  check the initialisation of the global variables package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckGVars ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "gvars_c",    Revision_gvars_c );
-    SET_REVISION( "gvars_h",    Revision_gvars_h );
+    /* make the error functions for 'AssGVar'                              */
+    ErrorMustEvalToFuncFunc = NewFunctionC(
+        "ErrorMustEvalToFunc", -1,"args", ErrorMustEvalToFuncHandler );
+    
+    ErrorMustHaveAssObjFunc = NewFunctionC(
+        "ErrorMustHaveAssObj", -1L,"args", ErrorMustHaveAssObjHandler );
+
+    /* make the lists for global variables                                 */
+    ValGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( ValGVars, 0 );
+
+    NameGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( NameGVars, 0 );
+
+    WriteGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( WriteGVars, 0 );
+
+    ExprGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( ExprGVars, 0 );
+
+    CopiesGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( CopiesGVars, 0 );
+
+    FopiesGVars = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( FopiesGVars, 0 );
+
+    /* make the list of global variables                                   */
+    SizeGVars  = 997;
+    TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
+    SET_LEN_PLIST( TableGVars, SizeGVars );
+
+    /* fix C vars                                                          */
+    PostRestore( module );
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  CheckInit( <module> ) . . . . . . . . . . . . . . .  check initialisation
+*/
+static Int CheckInit (
+    StructInitInfo *    module )
+{
+    Int                 success = 1;
+
+    if ( NCopyAndFopyGVars != NCopyAndFopyDone ) {
+        success = 0;
+        Pr( "#W  failed to updated copies and fopies\n", 0L, 0L );
+    }
+
+    /* return success                                                      */
+    return ! success;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoGVars() . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "gvars",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    CheckInit,                          /* checkInit                      */
+    PreSave,                            /* preSave                        */
+    PostSave,                            /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoGVars ( void )
+{
+    module.revision_c = Revision_gvars_c;
+    module.revision_h = Revision_gvars_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

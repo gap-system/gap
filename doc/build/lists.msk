@@ -1,0 +1,1191 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  lists.msk                   GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Lists}
+
+In contrast to collections lists arrange objects in a definite order.
+Therefore they also can contain equal objects multiple times.
+Lists are also used to implement ranges, sets and strings.
+
+A list also implies a
+partial mapping from the integers to the elements. I.e., there is a
+first element of a list, a second, a third, and so on.
+
+\Declaration{IsList}
+\FileHeader{list}[1]
+\Declaration{IsListOrCollection}
+\Declaration{IsConstantTimeAccessList}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Lists in the kernel}
+
+List constants are written by writing down the elements in order between
+square brackets `[', `]', and separating them with commas `,'. An *empty
+list*, i.e., a list with no elements, is written as `[]'.
+
+\beginexample
+gap> [ 1, 2, 3 ];
+[ 1, 2, 3 ]  # a list with three elements
+gap> [ [], [ 1 ], [ 1, 2 ] ];
+[ [ ], [ 1 ], [ 1, 2 ] ]  # a list may contain other lists
+\endexample
+
+Usually a list has no holes, i.e., contain an element at every position.
+However, it is absolutely legal to have lists with holes.  They are
+created by leaving the entry between the commas empty. Holes at the end of
+a list are ignored. Lists with holes
+are sometimes convenient when the list represents a mapping from a
+finite, but not consecutive, subset of the positive integers. We say
+that a list that has no holes is *dense*.
+
+\beginexample
+gap> l := [ , 4, 9,, 25,, 49,,,, 121 ];;
+gap> l[3];
+9
+\endexample
+\begintt
+gap> l[4];
+Error, List Element: <list>[4] must have a value
+\endtt
+
+\>IsBound(<list>,<pos>)
+
+tests whether list has no hole at position <pos>.
+
+\beginexample
+gap> IsBound(l[3]);IsBound(l[4]);
+true
+false
+\endexample
+
+The command `Unbind' can be used to produce holes in a list.
+\beginexample
+gap> Unbind(l[2]);l;
+[ ,, 9,, 25,, 49,,,, 121 ]
+\endexample
+
+It is most common that a list contains only elements of one type. This
+is not a must though. It is absolutely possible to have lists whose
+elements are of different types. We say that a list whose elements are
+all of the same type is *homogeneous*.
+
+\beginexample
+gap> l := [ 1, E(2), Z(3), (1,2,3), [1,2,3], "What a mess" ];;
+gap> l[1]; l[3]; l[5][2];
+1
+Z(3)
+2
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List Elements}
+\index{accessing!list elements}
+
+\> `<list>[ <pos> ]'{list element!access}
+
+The above construct evaluates to the <pos>-th element of the list <list>.
+<pos> must be a positive integer. List indexing is done with origin 1,
+i.e., the first element of the list is the element at position 1.
+
+\beginexample
+gap> l := [ 2, 3, 5, 7, 11, 13 ];;
+gap> l[1];
+2
+gap> l[2];
+3
+gap> l[6];
+13
+\endexample
+
+If <list> is not a list, or <pos> does not evaluate to a
+positive integer, or '<list>[<pos>]' is unbound an error is signalled.
+
+\> `<list>\{ <poss> \}'{sublist!access}
+\index{sublist}
+
+The above construct creates to a new list <new> whose first element is
+`<list>[<poss>[1]]', whose second element is `<list>[<poss>[2]]', and so
+on. <poss> must be a dense list of positive integers. However, it does not
+need to be sorted and may contain duplicate elements. If for any <i>,
+'<list>[ <poss>[<i>] ]' is unbound, an error is signalled.
+
+\beginexample
+gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+gap> l{[4..6]};
+[ 7, 11, 13 ]
+gap> l{[1,7,1,8]};
+[ 2, 17, 2, 19 ]
+\endexample
+
+The result is a new list, that is not identical to any other list. The
+elements of that list however are identical to the corresponding elements
+of the left operand (see "Identical Lists").
+
+It is possible to nest such sublist extractions, as can be seen in the
+following example.
+
+\beginexample
+gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+gap> m{[1,2,3]}{[3,2]};
+[ [ 3, 2 ], [ 6, 5 ], [ 9, 8 ] ]
+gap> l := m{[1,2,3]};; l{[3,2]};
+[ [ 7, 8, 9 ], [ 4, 5, 6 ] ]
+\endexample
+
+Note the difference between the two examples.  The latter extracts
+elements 1, 2, and 3 from <m> and then extracts the elements 3 and 2 from
+*this list*. The former extracts elements 1, 2, and 3 from <m> and then
+extracts the elements 3 and 2 from *each of those element lists*.
+
+To be precise: With each selector `[<pos>]' or `\{<poss>\}' we associate
+a *level* that is defined as the number of selectors of the form
+`\{<poss>\}' to its left in the same expression. For example
+
+\begintt
+    l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+level   0      0      1     1      1     2   
+\endtt
+
+Then  a selector `<list>[<pos>]' of level <level> is computed as
+`ListElement(<list>,<pos>,<level>)', where `ListElement' is defined as
+follows
+
+\begintt
+ListElement := function ( list, pos, level )
+ if level = 0 then
+  return list[pos];
+ else
+  return List( list, elm -> ListElement(elm,pos,level-1) );
+ fi;
+end; 
+\endtt
+
+and a selector `<list>\{<poss>\}' of level <level> is computed as
+`ListElements(<list>,<poss>,<level>)', where `ListElements' is defined as
+follows
+
+\begintt
+ListElements := function ( list, poss, level )
+ if level = 0 then
+  return list{poss};
+  else
+   return List( list, elm -> ListElements(elm,poss,level-1) );
+  fi;
+end;
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List Assignment}
+\index{assignment!to a list}
+
+\> `<list>[ <pos> ] := <object>;'{list element!assignement}
+
+The list assignment assigns the object <object>, which can be of any
+type, to the list entry at the position <pos>, which must be a positive
+integer, in the list <list>. That means that accessing the <pos>-th
+element of the list <list> will return <object> after this assignment.
+
+\beginexample
+gap> l := [ 1, 2, 3 ];;
+gap> l[1] := 3;; l;        # assign a new object
+[ 3, 2, 3 ]
+gap> l[2] := [ 4, 5, 6 ];; l;   # <object> may be of any type
+[ 3, [ 4, 5, 6 ], 3 ]
+gap> l[ l[1] ] := 10;; l;     # <index> may be an expression
+[ 3, [ 4, 5, 6 ], 10 ]
+\endexample
+
+If the index <pos> is larger than the length of the list <list> (see
+"Length"), the list is automatically enlarged to make room for the new
+element. Note that it is possible to generate lists with holes that way.
+
+\beginexample
+gap> l[4] := "another entry";; l; # <list> is enlarged
+[ 3, [ 4, 5, 6 ], 10, "another entry" ]
+gap> l[ 10 ] := 1;; l;      # now <list> has a hole
+[ 3, [ 4, 5, 6 ], 10, "another entry",,,,,, 1 ]
+\endexample
+
+The  function `Add' (see "Add") should be used if you want to add an
+element to the end of the list.
+
+Note that assigning to a list changes the list. The ability to change an
+object is only available for lists and records (see "Identical Lists").
+
+If <list> does not evaluate to a list, <pos> does not evaluate to a
+positive integer or <object> is a call to a function which does not
+return a value (for example `Print') an error is signalled
+
+\> `<list>\{ <poss> \} := <objects>;'{sublist!assignement}
+
+The list assignment assigns the object `<objects>[1]', which can be of
+any type, to the list <list> at the position '<poss>[1]', the object
+`<objects>[2]' to `<list>[<poss>[2]]', and so on. <poss> must be a dense
+list of positive integers, it need, however, not be sorted and may
+contain duplicate elements. <objects> must be a dense list and must have
+the same length as <poss>.
+
+\beginexample
+gap> l := [ 2, 3, 5, 7, 11, 13, 17, 19 ];;
+gap> l{[1..4]} := [10..13];; l;
+[ 10, 11, 12, 13, 11, 13, 17, 19 ]
+gap> l{[1,7,1,10]} := [ 1, 2, 3, 4 ];; l;
+[ 3, 11, 12, 13, 11, 13, 2, 19,, 4 ]
+\endexample
+
+It is possible to nest such sublist assignments, as can be seen in the
+following example.
+
+\beginexample
+gap> m := [ [1,2,3], [4,5,6], [7,8,9], [10,11,12] ];;
+gap> m{[1,2,3]}{[3,2]} := [ [11,12], [13,14], [15,16] ];; m;
+[ [ 1, 12, 11 ], [ 4, 14, 13 ], [ 7, 16, 15 ], [ 10, 11, 12 ] ]
+\endexample
+
+The exact behaviour is defined in the same way as for list extractions
+(see  "List Elements").  Namely  with each  selector `[<pos>]' or
+`\{<poss>\}' we associate a *level* that is defined as the number of
+selectors of the form `\{<poss>\}' to its left in the same expression.
+For example
+
+\begintt
+    l[pos1]{poss2}{poss3}[pos4]{poss5}[pos6]
+level   0      0      1     1      1     2 
+\endtt
+
+Then a list assignment `<list>[<pos>] := <vals>;' of level <level> is
+computed as `ListAssignment( <list>, <pos>, <vals>, <level> )', where
+`ListAssignment' is defined as follows
+
+\begintt
+ListAssignment := function ( list, pos, vals, level )
+ local i;
+ if level = 0 then
+  list[pos] := vals;
+ else
+  for i in [1..Length(list)] do
+   ListAssignment( list[i], pos, vals[i], level-1 );
+  od;
+ fi;
+end;
+\endtt
+
+and a list assignment `<list>\{<poss>\} := <vals>' of level <level> is
+computed as `ListAssignments( <list>, <poss>, <vals>, <level> )', where
+`ListAssignments' is defined as follows
+
+\begintt
+ListAssignments := function ( list, poss, vals, level )
+ local i;
+ if level = 0 then
+  list{poss} := vals;
+ else
+  for i in [1..Length(list)] do
+   ListAssignments( list[i], poss, vals[i], level-1 );
+  od;
+ fi;
+end;
+\endtt
+
+\Declaration{Add}
+
+\beginexample
+gap> l := [ 2, 3, 5 ];; Add( l, 7 ); l;
+[ 2, 3, 5, 7 ]
+\endexample
+
+\Declaration{Append}
+\beginexample
+gap> l := [ 2, 3, 5 ];; Append( l, [ 7, 11, 13 ] ); l;
+[ 2, 3, 5, 7, 11, 13 ]
+gap> Append( l, [ 17,, 23 ] ); l;
+[ 2, 3, 5, 7, 11, 13, 17,, 23 ]
+\endexample
+
+\Declaration{Concatenation}
+\beginexample
+gap> Concatenation( [ 1, 2, 3 ], [ 4, 5 ] );
+[ 1, 2, 3, 4, 5 ]
+gap> Concatenation( [2,3,,5,,7], [11,,13,,,,17,,19] );
+[ 2, 3,, 5,, 7, 11,, 13,,,, 17,, 19 ]
+gap> Concatenation( [ [1,2,3], [2,3,4], [3,4,5] ] );
+[ 1, 2, 3, 2, 3, 4, 3, 4, 5 ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{IsBound and Unbind for lists}
+
+\){\fmark IsBound( <list>[<n>] )}
+
+`IsBound' returns `true' if the list <list> has a
+element at the position <n>, and `false' otherwise. <list> must evaluate
+to a list, otherwise an error is signalled.
+
+\beginexample
+gap> l := [ , 2, 3, , 5, , 7, , , , 11 ];;
+gap> IsBound( l[7] );
+true
+gap> IsBound( l[4] );
+false
+gap> IsBound( l[101] );
+false
+\endexample
+
+\){\fmark Unbind( <list>[<n>] )}
+
+`Unbind' deletes the element at the position <n> in
+the list <list>. That is, after execution of `Unbind', <list> no longer
+has an assigned value at the position <n>. Note that it is not an error
+to unbind a nonexisting list element. <list> must evaluate to a list,
+otherwise an error is signalled.
+
+\beginexample
+gap> l := [ , 2, 3, 5, , 7, , , , 11 ];;
+gap> Unbind( l[3] ); l;
+[ , 2,, 5,, 7,,,, 11 ]
+gap> Unbind( l[4] ); l;
+[ , 2,,,, 7,,,, 11 ]
+\endexample
+
+Note that `IsBound' and `Unbind' are special in that they do not evaluate
+their argument, otherwise `IsBound' would always signal an error when it is
+supposed to return `false' and there would be no way to tell `Unbind' which
+component to remove.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Membership test for lists}
+
+\){\fmark <obj> in <list>}
+
+tests whether there is a positive integer <i> such that `<list>[<i>]=<obj>'
+
+This operation also works for lists which are not collections.
+
+For strictly sorted lists (see "IsSSortedList") the membership test is much
+quicker, because a binary search can be used.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List access operations}
+
+Internally, list accesses are done using the operations listed in this
+section. For the lists implemented in the kernel, kernel methods are
+provided for all these operations but otherwise it is possible to install
+methods for these operations for all objects in the category `IsList'. This
+permits objects to simulate list behavior without having to store all list
+elements (which might be described by an algorithm like for example the
+elements list of a group). For this reduction of space requirements however
+a price in access time may have to be paid (see "ConstantTimeAccessList").
+
+\> `\\[\\](<list>,<pos>)'{list element!operation}
+\> `IsBound\\[\\](<list>,<pos>)'{list boundness test!operation}
+\> `\\[\\]\\:\\=(<list>,<pos>,<val>)'{list assignement!operation}
+\> `Unbind\\[\\](<list>,<pos>)'{list unbind!operation}
+
+These operations implement element access, test for element boundness, list
+element assignement and removal of list elements at position <pos>.
+
+The index <pos> is always declared as `IsPosInt'.
+
+\> `\\\{\\\}(<list>,<poss>)'{sublist!operation}
+\> `\\\{\\\}\\:\\=(<list>,<poss>,<val>)'{sublist assignement!operation}
+
+These operations implement the sublist access. For all types of lists they
+default to loops over the entries in <poss> and delegation to the ordinary
+access functions.
+
+The operation `\\in' (as described in chapter "Collections") is used to
+implement element test also for lists which are not collections.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identical Lists}
+
+With the list assignment (see "List Assignment", "Add", "Append") it is
+possible  to change a list.  The ability to  change an object is only
+available for lists and records. This  section describes the semantic
+consequences of this fact.
+
+You may think that in the following example the second assignment changes
+the integer, and that therefore the above sentence, which claimed that
+only lists and records can be changed is wrong
+
+\begintt
+i := 3;
+i := i + 1;
+\endtt
+
+But in this example not the *integer* `3' is changed by adding one to it.
+Instead the *variable* `i' is changed by assigning the value of `i+1',
+which happens to be `4', to `i'. The same thing happens in the following
+example
+
+\begintt
+l := [ 1, 2 ]
+l := [ 1, 2, 3 ];
+\endtt
+
+The second assignment does not change the first list, instead it assigns
+a new list to the variable `l'.  On the other hand, in the following
+example the list is changed by the second assignment.
+
+\begintt
+l := [ 1, 2 ];
+l[3] := 3;
+\endtt
+
+To understand the difference first think of a variable as a name for an
+object. The important point is that a list can have several names at the
+same time.  An  assignment `<var>:=<list>;' means in  this
+interpretation that <var> is a name for the object <list>. At the end of
+the following example `l2' still has the value `[ 1, 2 ]' as this list
+has not been changed and nothing else has been assigned to it.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := l1;
+l1 := [ 1, 2, 3 ]; 
+\endtt
+
+But after the following example the list for which `l2' is a name has
+been changed and thus the value of `l2' is now `[ 1, 2, 3 ]'.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := l1;
+l1[3] := 3;
+\endtt
+
+We shall say that two lists are *identical* if changing one of them by a
+list assignment also changes the other one.  This is slightly incorrect,
+because if *two* lists are identical, there are actually only two names
+for *one* list. However, the correct usage would be very awkward and
+would only add to the confusion.  Note that two identical lists must be
+equal, because there is only one list with two different names. Thus
+identity is an equivalence relation that is a refinement of equality.
+
+Let us now consider under which circumstances two lists are identical.
+
+If you enter a list literal than the list denoted by this literal is a
+new list that is not identical to any other list. Thus in the following
+example `l1' and `l2' are not identical, though they are equal of course.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := [ 1, 2 ];
+\endtt
+
+Also in the following example, no lists in the list `l' are identical.
+
+\begintt
+l := [];
+for i in [1..10] do l[i] := [ 1, 2 ]; od;
+\endtt
+
+If you assign a list to a variable no new list is created. Thus the list
+value of the variable on the left hand side and the list on the right
+hand side of the assignment are identical. So in the following example
+`l1' and `l2' are identical lists.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := l1;
+\endtt
+
+If you pass a list as argument, the old list and the argument of the
+function are identical. Also if you return a list from a function, the
+old list and the value of the function call are identical. So in the
+following example 'l1' and 'l2' are identical list
+
+\begintt
+l1 := [ 1, 2 ];
+f := function ( l ) return l; end;
+l2 := f( l1 );
+\endtt
+
+The functions `StructuralCopy' and `ShallowCopy' (see "StructuralCopy"
+and "ShallowCopy") accept a list and return a new list that is equal to
+the old list but that is *not* identical to the old list. The difference
+between `StructuralCopy' and `ShallowCopy' is that in the case of
+`ShallowCopy' the corresponding elements of the new and the old lists will
+be identical, whereas in the case of `StructuralCopy' they will only be
+equal. So in the following example `l1' and `l2' are not identical lists.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := StructuralCopy( l1 );
+\endtt
+
+If you change a list it keeps its identity.  Thus if two lists are
+identical and you change one of them, you also change the other, and they
+are still identical afterwards. On the other hand, two lists that are
+not identical will never become identical if you change one of them. So
+in the following example both `l1' and `l2' are changed, and are still
+identical.
+
+\begintt
+l1 := [ 1, 2 ];
+l2 := l1;
+l1[1] := 2;
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{ShallowCopy}
+
+\index{copy!an object}\index{clone!an object}
+
+\>ShallowCopy( <obj> ) O
+
+`ShallowCopy' returns a copy of the object <obj>. You may apply
+`ShallowCopy' to objects of any type, but for objects that have no internal
+structure. `ShallowCopy' replaces only the first level of nesting.
+
+For lists and records the result is a *new* list or record that is *not
+identical* to any other list or record (see "Identical Lists" and
+"Identical Records"). This means that you may modify this copy <new> by
+assignments (see "List Assignment" and "Record Assignment") or by adding
+elements to it (see "Add" and "Append"), without modifying the original
+object <obj>.
+
+In general, `ShallowCopy' is an operation for which methods can be installed
+for any object. The methods installed for lists and records just copy the
+first level of recursion, but for other objects it is possible to install
+other methods that would better reflect the idea of ``first level copying''.
+
+\beginexample
+gap> list1 := [ 1, 2, 3 ];;
+gap> list2 := ShallowCopy( list1 );
+[ 1, 2, 3 ]
+gap> list2[1] := 0;; list2;
+[ 0, 2, 3 ]
+gap> list1;
+[ 1, 2, 3 ]
+\endexample
+
+That `ShallowCopy' returns the object itself if it is not a list or a
+record (or an object with internal structure)
+is consistent with this definition, since there is no way to
+change the original object <obj> by modifying <new>, because in fact
+there is no way to change the object <new>.
+
+`ShallowCopy' basically executes the following code for lists, and
+similar code for records.
+
+\begintt
+new := [];
+for i in [1..Length(obj)] do
+ if IsBound(obj[i]) then
+ new[i] := obj[i];
+ fi;
+od;
+\endtt
+
+Note that `ShallowCopy' only copies the top level. The subobjects of the
+new object <new> are identical to the corresponding subobjects of the
+object <obj>. If you want to copy recursively use `StructuralCopy' (see
+"StructuralCopy").
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{StructuralCopy}
+
+\index{copy!an object}\index{clone!an object}
+
+\>StructuralCopy(<obj>) F
+
+`StructuralCopy( <obj> )'
+
+`StructuralCopy' returns a copy <new> of the object <obj>. You may apply
+`StructuralCopy' to objects of any type, but for objects that have no
+internal structure `StructuralCopy' simply returns the object itself.
+
+In most cases it will be sufficient however to copy only the first layer of
+an object with internal structure. This is done by `ShallowCopy' (see
+"ShallowCopy").
+
+For lists and records the result is a *new* list or record that is *not
+identical* to any other list or record (see "Identical Lists" and
+"Identical Records"). This means that you may modify this copy <new> by
+assignments (see "List Assignment" and "Record Assignment") or by adding
+elements to it (see "Add" and "Append"), without modifying the original
+object <obj>.
+
+\beginexample
+gap> list1 := [ 1, 2, 3 ];;
+gap> list2 := StructuralCopy( list1 );
+[ 1, 2, 3 ]
+gap> list2[1] := 0;; list2;
+[ 0, 2, 3 ]
+gap> list1;
+[ 1, 2, 3 ]
+\endexample
+
+That `StructuralCopy' returns the object itself if it is not a list or a
+record is consistent with this definition, since there is no way to change
+the original object <obj> by modifying <new>, because in fact there is no
+way to change the object <new>.
+
+`StructuralCopy' basically executes the following code for lists, and
+similar code for records.
+
+\begintt
+new := [];
+for i in [1..Length(obj)] do
+ if IsBound(obj[i]) then
+ new[i] := StructuralCopy( obj[i] );
+ fi;
+od;
+\endtt
+
+Note that `StructuralCopy' recursively copies all elements of the object
+<obj>. If you only want to copy the top level use `ShallowCopy' (see
+"ShallowCopy").
+
+\beginexample
+gap> list1 := [ [ 1, 2 ], [ 3, 4 ] ];;
+gap> list2 := StructuralCopy( list1 );
+[ [ 1, 2 ], [ 3, 4 ] ]
+gap> list2[1][1] := 0;; list2;
+[ [ 0, 2 ], [ 3, 4 ] ]
+gap> list1;
+[ [ 1, 2 ], [ 3, 4 ] ]
+\endexample
+
+The above code is not entirely correct. If the object <obj> contains a
+list or record twice this list or record is not copied twice, as would
+happen with the above definition, but only once. This means that the
+copy <new> and the object <obj> have exactly the same structure when view
+as a general graph.
+
+\beginexample
+gap> sub := [ 1, 2 ];; list1 := [ sub, sub ];;
+gap> list2 := StructuralCopy( list1 );
+[ [ 1, 2 ], [ 1, 2 ] ]
+gap> list2[1][1] := 0;; list2;
+[ [ 0, 2 ], [ 0, 2 ] ]
+gap> list1;
+[ [ 1, 2 ], [ 1, 2 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Enlarging Kernel Lists}
+
+The previous section (see  "List Assignment") told you  (among other
+things) that it is possible to assign beyond the logical end of a list,
+automatically enlarging the list.  This section tells you how this is
+done.
+
+It would be extremly wasteful to make all lists large enough so that
+there is room for all assignments, because some lists may have more than
+100000 elements, while most lists have less than 10 elements.
+
+On the other hand suppose every assignment beyond the end of a list would
+be done by allocating new space for the list and copying all entries to
+the new space. Then creating a list of 1000 elements by assigning them
+in order, would take half a million copy operations and also create a lot
+of garbage that the garbage collector would have to reclaim.
+
+So the following strategy is used.  If a list is created it is created
+with exactly the correct size. If a  list is enlarged, because of an
+assignment beyond  the end of the list,  it is enlarged  by at least
+`<length>/8 + 4' entries. Therefore the next assignments beyond the end
+of the list do not need to enlarge the list. For example creating a list
+of 1000 elements by  assigning them in order,  would now take only 32
+enlargements.
+
+The result of this is of course that the *physical length*, which is also
+called the size, of a list may be different from the *logical length*,
+which is usually called simply the length of the list. Aside from the
+implications for the performance you need not be aware of the physical
+length.  In fact all you can  ever observe, for  example by calling
+`Length' is the logical length.
+
+Suppose that `Length' would have to take  the physical length and then
+test how many entries at the end of a list are unassigned, to compute the
+logical length of the list. That would take too much time. In order to
+make 'Length', and other functions that need to know the logical length,
+more efficient, the length of a list is stored along with the list.
+
+%A note aside. In the previous version 2.4 of {\GAP} a list was indeed
+%enlarged  every time an assignment beyond  the end of the list was
+%performed. To deal with the above inefficiency the following hacks where
+%used. Instead of creating lists in order they were usually created in
+%reverse  order.  In situations  where this was not possible a dummy
+%assignment to the last position was performed, for example
+%
+%  l := [];
+%  l[1000] := "dummy";
+%  l[1] := first_value();
+%  for i from 2 to 1000 do l[i] := next_value(l[i-1]); od;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Lists}
+\index{comparisons!of lists}
+
+\> `<list1> = <list2>'{list equal!comparison}
+\){\fmark <list1> \< > <list2>}
+
+Two lists <list1> and <list2> are equal if and only if for
+every index <i>, either both entries `<list1>[<i>]' and `<list2>[<i>]'
+are unbound, or  both are bound and are equal, i.e., `<list1>[<i>] =
+<list2>[<i>]' is `true'.
+
+\beginexample
+gap> [ 1, 2, 3 ] = [ 1, 2, 3 ];
+true
+gap> [ , 2, 3 ] = [ 1, 2, ];
+false
+gap> [ 1, 2, 3 ] = [ 3, 2, 1 ];
+false
+\endexample
+
+\> `<list1> \<\ <list2>'{list smaller!comparison}
+\){\fmark <list1> \< = <list2>}
+
+Lists are
+ordered lexicographically, with unbound entries comparing very small.
+That means the following. Let <i> be the smallest positive integer <i>,
+such that neither both entries `<list1>[<i>]' and `<list2>[<i>]' are
+unbound, nor both are bound and equal. Then <list1> is less than <list2>
+if either `<list1>[<i>]' is unbound (and `<list2>[<i>]' is not) or both
+are bound and `<list1>[<i>]\< <list2>[<i>]' is `true'.
+
+\beginexample
+gap> [ 1, 2, 3, 4 ] < [ 1, 2, 4, 8 ];
+true  # '<list1>[3] \<\ <list2>[3]'
+gap> [ 1, 2, 3 ] < [ 1, 2, 3, 4 ];
+true  # '<list1>[4]' is unbound and therefore very small
+gap> [ 1, , 3, 4 ] < [ 1, 2, 3 ];
+true  # '<list1>[2]' is unbound and therefore very small
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Arithmetic for Lists}
+\index{operations!for lists}
+
+\> `<list> \* <obj>'{list and scalar!multiplication}
+\){\fmark <obj> \* <list>}
+
+The product of a list with a dense scalar is a new list that at each position
+contains the product of the corresponding element of <list> by <obj>.
+
+If <obj> is a vector or a matrix the rules for matrix multiplication apply.
+See "Operations for row vectors" and "Operations for Matrices" for details.
+
+The elements of <list> and <obj> must be objects of the following types;
+integers (see "Integers"), rationals (see "Rationals"), cyclotomics (see
+"Cyclotomics"),  elements of a finite field (see "Finite Fields"),
+permutations (see "Permutations"), matrices  (see "Matrices"), words in
+abstract generators (see "Associative Words"), or words in
+solvable groups (see "Words in Finite Polycyclic Groups").
+
+\beginexample
+gap> [ 1, 2, 3 ] * 2;
+[ 2, 4, 6 ]
+gap> [ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ] * (1,4);
+[ (1,4), (1,4)(2,3), (1,2,4), (1,2,3,4), (1,3,2,4), (1,3,4) ]
+\endexample
+
+Multiplication with numbers yields immutable lists. For creating lists
+containing zeroes therefore the command `ListWithIdenticalEntries' should be
+used.
+
+\Declaration{ListWithIdenticalEntries}
+\beginexample
+gap> ListWithIdenticalEntries(10,0);
+[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties and attributes for lists}
+
+\Declaration{IsDenseList}
+\Declaration{IsHomogeneousList}
+\Declaration{IsSSortedList}
+\Declaration{IsDuplicateFreeList}
+\Declaration{IsTable}
+
+\Declaration{Length}
+\Declaration{ConstantTimeAccessList}
+\Declaration{AsListSortedList}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Finding positions in lists}
+
+\Declaration{Position}
+
+\beginexample
+gap> Position( [ 2, 2, 1, 3 ], 1 );
+3
+gap> Position( [ 2, 1, 1, 3 ], 1 );
+2
+gap> Position( [ 2, 1, 1, 3 ], 1, 2 );
+3
+gap> Position( [ 2, 1, 1, 3 ], 1, 3 );
+fail
+\endexample
+
+\Declaration{PositionCanonical}
+For example `RightTransversal' defines the canonical associate to be the
+element in the transversal defining the same coset.
+
+\beginexample
+gap> g:=Group((1,2,3,4),(1,2));;u:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
+gap> rt:=RightTransversal(g,u);;AsList(rt);
+[ (), (3,4), (2,3), (2,3,4), (2,4,3), (2,4) ]
+gap> Position(rt,(1,2));
+fail
+gap> PositionCanonical(rt,(1,2));
+2
+\endexample
+
+
+\Declaration{PositionNthOccurence}
+
+\beginexample
+gap> PositionNthOccurence([1,2,3,2,4,2,1],1,1);
+1
+gap> PositionNthOccurence([1,2,3,2,4,2,1],1,2);
+7
+gap> PositionNthOccurence([1,2,3,2,4,2,1],2,3);
+6
+gap> PositionNthOccurence([1,2,3,2,4,2,1],2,4);
+fail
+\endexample
+
+\Declaration{PositionSorted}
+\Declaration{PositionSet}
+
+\beginexample
+gap> PositionSorted( [1,4,5,5,6,7], 0 );
+1
+gap> PositionSorted( [1,4,5,5,6,7], 2 );
+2
+gap> PositionSorted( [1,4,5,5,6,7], 4 );
+2
+gap> PositionSorted( [1,4,5,5,6,7], 5 );
+3
+gap> PositionSorted( [1,4,5,5,6,7], 8 );
+7
+gap> PositionSet( [1,4,5,5,6,7], 0 );
+fail
+gap> PositionSet( [1,4,5,5,6,7], 2 );
+fail
+gap> PositionSet( [1,4,5,5,6,7], 4 );
+2
+gap> PositionSet( [1,4,5,5,6,7], 5 );
+3
+gap> PositionSet( [1,4,5,5,6,7], 8 );
+fail
+\endexample
+
+\Declaration{PositionProperty}
+
+\beginexample
+gap> PositionProperty( [10^7..10^8], IsPrime );
+20
+gap> PositionProperty( [10^5..10^6],
+> n -> not IsPrime(n) and IsPrimePowerInt(n) );
+490
+\endexample
+
+\Declaration{PositionBound}
+
+\beginexample
+gap> PositionBound([1,2,3]);
+1
+gap> PositionBound([,1,2,3]);
+2
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sorting lists}
+
+\Declaration{Sort}
+\beginexample
+gap> list := [ 5, 4, 6, 1, 7, 5 ];; Sort( list ); list;
+[ 1, 4, 5, 5, 6, 7 ]
+gap> list := [ [0,6], [1,2], [1,3], [1,5], [0,4], [3,4] ];;
+gap> Sort( list, function(v,w) return v*v < w*w; end ); list;
+[ [ 1, 2 ], [ 1, 3 ], [ 0, 4 ], [ 3, 4 ], [ 1, 5 ], [ 0, 6 ] ]
+# sorted according to the Euclidian distance from [0,0]
+gap> list := [ [0,6], [1,3], [3,4], [1,5], [1,2], [0,4], ];;
+gap> Sort( list, function(v,w) return v[1] < w[1]; end ); list;
+[ [ 0, 6 ], [ 0, 4 ], [ 1, 3 ], [ 1, 5 ], [ 1, 2 ], [ 3, 4 ] ]
+# note the random order of the elements with equal first component
+\endexample
+
+\Declaration{SortParallel}
+\beginexample
+gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+gap> list2 := [ 2, 3, 5, 7, 8, 9 ];;
+gap> SortParallel( list1, list2 );
+gap> list1;
+[ 1, 4, 5, 5, 6, 7 ]
+gap> list2;
+[ 7, 3, 2, 9, 5, 8 ]  # '[ 7, 3, 9, 2, 5, 8 ]' is also possible 
+\endexample
+
+\Declaration{SortingPerm}
+\beginexample
+gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+gap> list2 := StructuralCopy( list1 );;
+gap> perm := SortingPerm( list1 );
+(1,3,5,6,4)
+gap> list1;
+[ 5, 4, 6, 1, 7, 5 ]
+gap> Permuted( list2, perm );
+[ 1, 4, 5, 5, 6, 7 ]
+\endexample
+
+\Declaration{Sortex}
+\beginexample
+gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+gap> list2 := StructuralCopy( list1 );;
+gap> perm := Sortex( list1 );
+(1,3,5,6,4)
+gap> list1;
+[ 1, 4, 5, 5, 6, 7 ]
+gap> Permuted( list2, perm );
+[ 1, 4, 5, 5, 6, 7 ]
+\endexample
+
+
+Currently {\GAP} uses shellsort.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sorted Lists}
+% this supersedes the chapter about `Sets' in the GAP3 manual
+
+Searching objects in a list works much quicker if the list is sorted. {\GAP}
+provides a special property to recognize such lists, *strictly sorted
+lists*. This is indicated by the property `IsSSortedList' (see
+"IsSSortedList").
+
+\>`<obj> in <list>'!{for strictly sorted lists}
+The element test for strictly sorted lists uses binary search.
+
+\Declaration{ListSorted}
+\Declaration{Set}
+
+\Declaration{IsSubsetSet}
+\Declaration{AddSet}
+\Declaration{RemoveSet}
+\Declaration{UniteSet}
+\Declaration{IntersectSet}
+\Declaration{SubtractSet}
+
+See also `AsListSorted' (see "AsListSorted") and `PositionSorted' (see
+"PositionSorted").
+
+\index{Sorted lists as collections}
+
+Commands for collections that return subsets or form new collections from
+old ones return sorted lists if both arguments are sorted lists that have
+the same `ElementsFamily'. Examples are `IsSubset', `Union', `Intersection'
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for lists}
+
+\Declaration{Compacted}
+\beginexample
+gap> l:=[,1,,,3,,,4,[5,,,6],7];;Compacted(l);
+[ 1, 3, 4, [ 5,,, 6 ], 7 ]
+
+\endexample
+
+\Declaration{Collected}
+\beginexample
+gap> Factors( Factorial( 10 ) );
+[ 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 5, 5, 7 ]
+gap> Collected( last );
+[ [ 2, 8 ], [ 3, 4 ], [ 5, 2 ], [ 7, 1 ] ]
+gap> Collected( last );
+[ [ [ 2, 8 ], 1 ], [ [ 3, 4 ], 1 ], [ [ 5, 2 ], 1 ], [ [ 7, 1 ], 1 ] ]
+\endexample
+
+\Declaration{Unique}
+\Declaration{AsDuplicateFreeList}
+\beginexample
+gap> l:=[1,Z(3),1,"abc",Group((1,2,3),(1,2)),Z(3),Group((1,2),(2,3))];;
+gap> Unique(l);
+[ 1, Z(3), "abc", Group( [ (1,2,3), (1,2) ], ... ) ]
+\endexample
+
+\Declaration{Flat}
+\beginexample
+gap> Flat( [ 1, [ 2, 3 ], [ [ 1, 2 ], 3 ] ] );
+[ 1, 2, 3, 1, 2, 3 ]
+gap> Flat( [ ] );
+[ ]
+\endexample
+
+\Declaration{Reversed}
+\beginexample
+gap> Reversed( [ 1, 4, 5, 5, 6, 7 ] );
+[ 7, 6, 5, 5, 4, 1 ]
+\endexample
+
+\Declaration{Lexicographically}
+\beginexample
+\endexample
+
+
+\Declaration{Apply}
+\beginexample
+gap> l:=[1,2,3];;Apply(l,i->i^2);l;
+[ 1, 4, 9 ]
+\endexample
+
+\Declaration{List}
+\beginexample
+gap> List([1,2,3],i->i^2);
+[ 1, 4, 9 ]
+\endexample
+
+\Declaration{PermListList}
+\beginexample
+gap> list1 := [ 5, 4, 6, 1, 7, 5 ];;
+gap> list2 := [ 4, 1, 7, 5, 5, 6 ];;
+gap> perm := PermListList(list1, list2);
+(1,2,4)(3,5,6)
+gap> Permuted( list2, perm );
+[ 5, 4, 6, 1, 7, 5 ]
+\endexample
+
+
+\Declaration{Maximum}
+\Declaration{MaximumList}
+\Declaration{Minimum}
+\Declaration{MinimumList}
+\beginexample
+gap> Maximum(1,2,3);
+3
+gap> MaximumList([1,3,2]);
+3
+gap> Minimum(-1,0,3);
+-1
+\endexample
+
+
+\Declaration{Cartesian}
+\beginexample
+gap> Cartesian( [1,2], [3,4], [5,6] );
+[ [ 1, 3, 5 ], [ 1, 3, 6 ], [ 1, 4, 5 ], [ 1, 4, 6 ], [ 2, 3, 5 ],
+ [ 2, 3, 6 ], [ 2, 4, 5 ], [ 2, 4, 6 ] ]
+gap> Cartesian( [1,2,2], [1,1,2] );
+[ [ 1, 1 ], [ 1, 1 ], [ 1, 2 ], [ 2, 1 ], [ 2, 1 ], [ 2, 2 ], 
+ [ 2, 1 ], [ 2, 1 ], [ 2, 2 ] ]
+\endexample
+
+\Declaration{Permuted}
+\beginexample
+gap> Permuted( [ 5, 4, 6, 1, 7, 5 ], (1,3,5,6,4) );
+[ 1, 4, 5, 5, 6, 7 ]
+\endexample
+
+\Declaration{First}
+\beginexample
+gap> First( [10^7..10^8], IsPrime );
+10000019
+gap> First( [10^5..10^6],
+>      n -> not IsPrime(n) and IsPrimePowerInt(n) );
+100489
+\endexample
+
+\Declaration{Iterated}
+\beginexample
+gap> Iterated( [ 126, 66, 105 ], Gcd );
+3
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ranges}
+
+A *range* is a dense list of integers in arithmetic progression (or
+degression). This is a
+list of integers such that the difference between
+consecutive elements is a nonzero constant.  Ranges can be abbreviated
+with the syntactic construct '[ <first>, <second> .. <last> ]' or, if the
+difference between consecutive elements is 1, as '[ <first> .. <last> ]'.
+
+If '<first> > <last>', '[<first>,<second>..<last>]' is the empty list,
+which  by definition is  also  a range.  If  <first> = <last>,
+'[<first>,<second>..<last>]' is a singleton list, which is a range too.
+Note that '<last> - <first>' must be divisible by the increment '<second>
+- <first>', otherwise an error is signalled.
+
+When assigning elements to a range it becomes an ordinary list.
+
+\beginexample
+gap> r := [10..20];
+[ 10 .. 20 ]
+gap> Length( r );
+11
+gap> r[3];
+12
+gap> 17 in r;
+true
+gap> r[12] := 25;; r;
+[ 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25 ]
+gap> r := [1,3..17];
+[ 1, 3 .. 17 ]
+gap> Length( r );
+9
+gap> r[4];
+7
+gap> r := [0,-1..-9];
+[ 0, -1 .. -9 ]
+gap> r[5];
+-4
+gap> r := [ 1, 4 .. 32 ];
+Range: <last>-<first> (31) must be divisible by <inc> (3)
+gap> s := [];; for i in [10..20] do Add( s, i^2 ); od; s;
+[ 100, 121, 144, 169, 196, 225, 256, 289, 324, 361, 400 ]
+\endexample
+
+\Declaration{IsRange}
+
+\beginexample
+gap> IsRange( [1,2,3] );
+true
+gap> IsRange( [7,5,3,1] );
+true
+gap> IsRange( [1,2,4,5] );
+false
+gap> IsRange( [1,,3,,5,,7] );
+false
+gap> IsRange( [] );
+true
+gap> IsRange( [1] );
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Enumerators}
+
+Enumerators are immutable lists that do not store their elements explicitly
+but know how to determine the $i$-th element from a smaller set of basic data.
+Typical examples of this are vector spaces, for which it is very easy to
+enumerate all elements by $p$-adic expansion.
+
+Access to an enumerator may take more time than access to a list of the
+elements, on the other hand an enumerator may save a vast amout of space.
+Take for example a permutation group of size a few millions. Even for
+moderate degree it is unlikely that a list of all its elements will fit in
+memory while it is no problem to construct an enumerator from a stabilizer
+chain.
+
+\Declaration{Enumerator}
+\Declaration{EnumeratorSorted}
+
+See also section "Iterators" on iterators.

@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  The  files  "system.c" and  "sysfiles.c"   contain  all operating  system
 **  dependent functions.  File and  stream operations are implemented in this
@@ -15,7 +16,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_sysfiles_c =
+const char * Revision_sysfiles_c =
    "@(#)$Id$";
 
 #define INCLUDE_DECLARATION_PART
@@ -72,11 +73,11 @@ typedef SYS_SIG_T       sig_handler_t ( int );
 
 
 #ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
-extern FILE * fopen ( SYS_CONST char *, SYS_CONST char * );
+extern FILE * fopen ( const char *, const char * );
 extern int    fclose ( FILE * );
 extern void   setbuf ( FILE *, char * );
 extern char * fgets ( char *, int, FILE * );
-extern int    fputs ( SYS_CONST char *, FILE * );
+extern int    fputs ( const char *, FILE * );
 #endif
 
 
@@ -85,6 +86,9 @@ extern int read ( int, char *, int );
 extern int write ( int, char *, int );
 #endif
 
+#if HAVE_VFORK_H
+# include <vfork.h>
+#endif
 
 /* HP-UX already defines SYS_FORK */
 
@@ -95,10 +99,14 @@ extern int write ( int, char *, int );
 #endif
 
 
+#if HAVE_LIBC_H
+#include <libc.h>
+#endif
+
 #ifndef SYS_HAS_EXEC_PROTO
 extern int SYS_MY_FORK ( void );
 #ifndef SYS_HAS_BROKEN_EXEC_PROTO
-extern int execve (SYS_CONST char*,char * SYS_CONST [],char * SYS_CONST []);
+extern int execve (const char*,char * const [],char * const []);
 #else
 extern int execve (char*, char * [], char * [] );
 #endif
@@ -129,15 +137,15 @@ extern int             kill ( int, int );
 **  check  if   there is a corresponding    statically  or dynamically linked
 **  module.  If the CRC matches this module  is loaded otherwise the filename
 **  is returned.
-*/
-
-
-/****************************************************************************
 **
-*f  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> )   BSD/Mach/USG
+**  The function returns:
+**
+**  0: no file or module was found
+**  1: if a dynamically linked module was found
+**  2: if a statically linked module was found
+**  3: a GAP file was found
+**  4: a GAP file was found and the CRC value didn't match
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
-
 #include        "compstat.h"            /* statically linked modules       */
 
 Int SyFindOrLinkGapRootFile (
@@ -154,16 +162,16 @@ Int SyFindOrLinkGapRootFile (
     Char *              tmp;
     Char                module [256];
     Char                name [256];
-    StructCompInitInfo* info_dyn = 0;
-    StructCompInitInfo* info_sta = 0;
+    StructInitInfo *    info_dyn = 0;
+    StructInitInfo *    info_sta = 0;
     Int                 k;
 
-#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY)
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN
     Char *              p;
     Char *              dot;
     Int                 pos;
     Int                 pot = 0;
-    CompInitFunc        init;
+    InitInfoFunc        init;
 #endif
 
     /* find the GAP file                                                   */
@@ -195,8 +203,8 @@ Int SyFindOrLinkGapRootFile (
         if ( info_sta == 0 ) {
             continue;
         }
-        if ( ! SyStrcmp( module, info_sta->magic2 ) ) {
-            crc_sta   = info_sta->magic1;
+        if ( ! SyStrcmp( module, info_sta->name ) ) {
+            crc_sta   = info_sta->crc;
             found_sta = 1;
             break;
         }
@@ -204,7 +212,7 @@ Int SyFindOrLinkGapRootFile (
     
 
     /* try to find any dynamically loadable module for filename            */
-#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY)
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY) || HAVE_DLOPEN
     pos = SyStrlen(filename);
     p   = filename + pos;
     dot = 0;
@@ -248,16 +256,23 @@ Int SyFindOrLinkGapRootFile (
         init = SyLoadModule(tmp);
         if ( ( (Int)init & 1 ) == 0 ) {
             info_dyn  = (*init)();
-            crc_dyn   = info_dyn->magic1;
+            crc_dyn   = info_dyn->crc;
             found_dyn = 1;
         }
     }
 #endif
 
     /* check if we have to compute the crc                                 */
-    if ( crc_gap == 0 && found_gap && ( found_dyn || found_sta ) ) {
-        crc_gap = SyGAPCRC(name);
+    if ( found_gap && ( found_dyn || found_sta ) ) {
+        if ( crc_gap == 0 ) {
+            crc_gap = SyGAPCRC(name);
+        } else if ( SyCheckCompletionCrcComp || SyCheckCompletionCrcRead ) {
+            if ( crc_gap != SyGAPCRC(name) ) {
+                return 4;
+            }
+        }
     }
+
 
     /* now decide what to do                                               */
     if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
@@ -267,28 +282,26 @@ Int SyFindOrLinkGapRootFile (
         found_sta = 0;
     }
     if ( found_gap && found_sta ) {
-        *(StructCompInitInfo**)result = info_sta;
+        *(StructInitInfo**)result = info_sta;
         return 2;
     }
     if ( found_gap && found_dyn ) {
-        *(StructCompInitInfo**)result = info_dyn;
+        *(StructInitInfo**)result = info_dyn;
         return 1;
     }
     if ( found_gap ) {
         return 3;
     }
     if ( found_sta ) {
-        *(StructCompInitInfo**)result = info_sta;
+        *(StructInitInfo**)result = info_sta;
         return 2;
     }
     if ( found_dyn ) {
-        *(StructCompInitInfo**)result = info_dyn;
+        *(StructInitInfo**)result = info_dyn;
         return 1;
     }
     return 0;
 }
-
-#endif
 
 
 /****************************************************************************
@@ -403,7 +416,7 @@ Int4 SyGAPCRC( Char * name )
 **
 *f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . . .  dlopen
 */
-#ifdef SYS_HAS_DL_LIBRARY
+#if defined(SYS_HAS_DL_LIBRARY) || HAVE_DLOPEN
 
 #include <dlfcn.h>
 
@@ -411,18 +424,18 @@ Int4 SyGAPCRC( Char * name )
 #define RTLD_LAZY               1
 #endif
 
-void * SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( Char * name )
 {
     void *          init;
     void *          handle;
 
     handle = dlopen( name, RTLD_LAZY );
-    if ( handle == 0 )  return (void*) 1;
+    if ( handle == 0 )  return (InitInfoFunc) 1;
 
     init = dlsym( handle, SYS_INIT_DYNAMIC );
-    if ( init == 0 )  return (void*) 3;
+    if ( init == 0 )  return (InitInfoFunc) 3;
 
-    return init;
+    return (InitInfoFunc) init;
 }
 
 #endif
@@ -432,27 +445,27 @@ void * SyLoadModule ( Char * name )
 **
 *f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . .  rld_load
 */
-#ifdef SYS_HAS_RLD_LIBRARY
+#if defined(SYS_HAS_RLD_LIBRARY) || HAVE_RLD_LOAD
 
 #include <mach-o/rld.h>
 
-void * SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( Char * name )
 {
-    Char *          names[2];
+    const Char *    names[2];
     unsigned long   init;
 
     names[0] = name;
     names[1] = 0;
     if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
-        return (void*) 1;
+        return (InitInfoFunc) 1;
     }
     if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
-        return (void*) 3;
+        return (InitInfoFunc) 3;
     }
     if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
-        return (void*) 5;
+        return (InitInfoFunc) 5;
     }
-    return (void*)init;
+    return (InitInfoFunc) init;
 }
 
 #endif
@@ -462,11 +475,11 @@ void * SyLoadModule ( Char * name )
 **
 *f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . .  no support
 */
-#if !defined(SYS_HAS_RLD_LIBRARY) && !defined(SYS_HAS_DL_LIBRARY)
+#if !defined(SYS_HAS_RLD_LIBRARY) && !defined(SYS_HAS_DL_LIBRARY) && !HAVE_DLOPEN && !HAVE_RLD_LOAD
 
-void * SyLoadModule ( Char * name )
+InitInfoFunc SyLoadModule ( Char * name )
 {
-    return (void*) 7;
+    return (InitInfoFunc) 7;
 }
 
 #endif
@@ -522,12 +535,12 @@ void * SyLoadModule ( Char * name )
 
 void syWinPut (
     Int                 fid,
-    SYS_CONST Char *    cmd,
-    SYS_CONST Char *    str )
+    const Char *        cmd,
+    const Char *        str )
 {
     Int                 fd;             /* file descriptor                 */
     Char                tmp [130];      /* temporary buffer                */
-    SYS_CONST Char *    s;              /* pointer into the string         */
+    const Char *        s;              /* pointer into the string         */
     Char *              t;              /* pointer into the temporary      */
 
     /* if not running under a window handler, don't do anything            */
@@ -579,7 +592,7 @@ void            syWinPut (
 
 /****************************************************************************
 **
-*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . .  . execute a window cmd
+*F  SyWinCmd( <str>, <len> )  . . . . . . . . . . . . .  execute a window cmd
 **
 **  'SyWinCmd' send   the  command <str> to  the   window  handler (<len>  is
 **  ignored).  In the string <str> '@' characters are duplicated, and control
@@ -592,18 +605,18 @@ void            syWinPut (
 Char WinCmdBuffer [8000];
 
 Char * SyWinCmd (
-    SYS_CONST Char *    str,
+    const Char *        str,
     UInt                len )
 {
     Char                buf [130];      /* temporary buffer                */
-    SYS_CONST Char *    s;              /* pointer into the string         */
-    SYS_CONST Char *    bb;             /* pointer into the temporary      */
+    const Char *        s;              /* pointer into the string         */
+    const Char *        bb;             /* pointer into the temporary      */
     Char *              b;              /* pointer into the temporary      */
     UInt                i;              /* loop variable                   */
 
     /* if not running under a window handler, don't do nothing             */
     if ( ! SyWindow )
-        return "I1+S52000000No Window Handler Present";
+        return "I1+S52+No Window Handler Present";
 
     /* compute the length of the (expanded) string (and ignore argument)   */
     len = 0;
@@ -612,42 +625,37 @@ Char * SyWinCmd (
 
     /* send the length to the window handler                               */
     b = buf;
-    for ( i = 0; i < 8; i++ ) {
+    for ( ; 0 < len;  len /= 10 ) {
         *b++ = (len % 10) + '0';
-        len /= 10;
     }
-    *b = '\0';
+    *b++ = '+';
+    *b++ = '\0';
     syWinPut( 1, "@w", buf );
 
     /* send the string to the window handler                               */
     syWinPut( 1, "", str );
 
     /* read the length of the answer                                       */
-    s = WinCmdBuffer;
-    i = 10;
-    do {
-        while ( 0 < i ) {
-            len = read( 0, (Char*)s, i );
-            i  -= len;
-            s  += len;
-        }
-        if ( WinCmdBuffer[0] == '@' && WinCmdBuffer[1] == 'y' ) {
-            for ( i = 2;  i < 10;  i++ )
-                WinCmdBuffer[i-2] = WinCmdBuffer[i];
-            s -= 2;
-            i  = 2;
-        }
-    } while ( 0 < i );
+    b = WinCmdBuffer;
+    i = 3;
+    while ( 0 < i ) {
+	len = read( 0, b, i );
+	i  -= len;
+	b  += len;
+    }
     if ( WinCmdBuffer[0] != '@' || WinCmdBuffer[1] != 'a' )
-        return "I1+S41000000Illegal Answer";
-    for ( len = 0, i = 9;  1 < i;  i-- )
-        len = len*10 + (WinCmdBuffer[i]-'0');
+        return "I1+S41+Illegal Answer";
+    b = WinCmdBuffer+2;
+    for ( i=1,len=0; '0' <= *b && *b <= '9';  i *= 10 ) {
+        len += (*b-'0')*i;
+	while ( read( 0, b, 1 ) != 1 )  ;
+    }
 
     /* read the arguments of the answer                                    */
-    s = WinCmdBuffer;
+    b = WinCmdBuffer;
     i = len;
     while ( 0 < i ) {
-        len = read( 0, (Char*)s, i );
+        len = read( 0, b, i );
         i  -= len;
         s  += len;
     }
@@ -680,7 +688,7 @@ Char * SyWinCmd (
     Char *              str,
     UInt                len )
 {
-    return 0;
+    return "I1+S52+No Window Handler Present";
 }
 
 #endif
@@ -785,10 +793,11 @@ Int SyFopen (
         syBuf[fid].pipe = 0;
         syBuf[fid].echo = syBuf[fid].fp;
     }
-#if SYS_BSD || SYS_MACH || SYS_USG
-    else if ( SyStrcmp(mode,"r") == 0
+#if SYS_BSD || SYS_MACH || SYS_USG || HAVE_POPEN
+   else if ( SyStrncmp(mode,"r",1) == 0
            && SyIsReadableFile(namegz) == 0
-           && (syBuf[fid].fp = popen(cmd,mode)) ) {
+           && (syBuf[fid].fp = popen(cmd,"r")
+	       ) ) {
         syBuf[fid].pipe = 1;
     }
 #endif
@@ -913,7 +922,7 @@ extern void syStopraw (
 **  instead we catch the signal, so that we  can turn  the terminal line back
 **  to cooked mode before stopping GAP and back to raw mode when continueing.
 */
-#if SYS_BSD || SYS_MACH
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
 
 #ifndef SYS_SGTTY_H                     /* terminal control functions      */
 # include       <sgtty.h>
@@ -937,7 +946,7 @@ SYS_SIG_T syAnswerCont (
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
     kill( getpid(), SIGCONT );
-#ifdef SYS_HAS_SIG_T
+#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
     return 0;                           /* is ignored                      */
 #endif
 }
@@ -948,7 +957,7 @@ SYS_SIG_T syAnswerTstp (
     syStopraw( syFid );
     signal( SIGCONT, syAnswerCont );
     kill( getpid(), SIGTSTP );
-#ifdef SYS_HAS_SIG_T
+#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
     return 0;                           /* is ignored                      */
 #endif
 }
@@ -1015,11 +1024,16 @@ UInt syStartraw (
 **  continue signals if this particular version  of UNIX supports them, so we
 **  can turn the terminal line back to cooked mode before stopping GAP.
 */
-#if SYS_USG
+#if SYS_USG || HAVE_TERMIO_H
 
 #ifndef SYS_TERMIO_H                    /* terminal control functions      */
 # include       <termio.h>
 # define SYS_TERMIO_H
+#endif
+
+/* fix by L. Johansson */
+#if defined(linux) && defined(alpha)
+#define termio termios
 #endif
 
 #ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
@@ -1055,7 +1069,7 @@ SYS_SIG_T syAnswerCont (
     syStartraw( syFid );
     signal( SIGCONT, SIG_DFL );
     kill( getpid(), SIGCONT );
-#ifdef SYS_HAS_SIG_T
+#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
     return 0;                           /* is ignored                      */
 #endif
 }
@@ -1066,7 +1080,7 @@ SYS_SIG_T syAnswerTstp (
     syStopraw( syFid );
     signal( SIGCONT, syAnswerCont );
     kill( getpid(), SIGTSTP );
-#ifdef SYS_HAS_SIG_T
+#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
     return 0;                           /* is ignored                      */
 #endif
 }
@@ -1098,7 +1112,13 @@ UInt syStartraw (
     syNew.c_cc[VMIN]  = 1;
     syNew.c_cc[VTIME] = 0;
     syNew.c_lflag    &= ~(ECHO|ICANON);
+
+    /* cygwin32 provides no SETAW. Try using SETA instead in that case */
+#ifdef TCSETAW
     if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+#else
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETA, &syNew ) == -1 )  return 0;
+#endif
 
 #ifdef SIGTSTP
     /* install signal handler for stop                                     */
@@ -1385,7 +1405,7 @@ UInt syStartraw (
 **
 *f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
 
 void syStopraw (
     Int                 fid )
@@ -1415,7 +1435,7 @@ void syStopraw (
 **
 *f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG
+#if SYS_USG || HAVE_TERMIO_H
 
 void syStopraw (
     Int                 fid )
@@ -1430,7 +1450,11 @@ void syStopraw (
 #endif
 
     /* enable input buffering, line editing and echo again                 */
+#ifdef TCSETAW
     if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
+#else
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETA, &syOld ) == -1 )
+#endif
         fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
 }
 
@@ -1559,7 +1583,7 @@ void syStopraw (
 **  'SIGINT'.   If two interrupts  occur within 1 second 'syAnswerIntr' exits
 **  GAP.
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS || HAVE_SIGNAL
 
 #ifndef SYS_SIGNAL_H                    /* signal handling functions       */
 # include       <signal.h>
@@ -1623,12 +1647,12 @@ SYS_SIG_T syAnswerIntr (
     /* remember time of this interrupt                                     */
     syLastIntr = nowIntr;
 
-#ifdef SYS_HAS_SIGNALS
+#if HAVE_SIGNAL
     /* interrupt the executor                                              */
     InterruptExecStat();
 #endif
 
-#ifdef SYS_HAS_SIG_T
+#if defined(SYS_HAS_SIG_T) && ! HAVE_SIGNAL_VOID
     return 0;                           /* is ignored                      */
 #endif
 }
@@ -2071,7 +2095,7 @@ UInt SyIsIntr ( void )
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
 
 void syEchoch (
     Int                 ch,
@@ -2097,7 +2121,7 @@ void syEchoch (
 **
 *f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG
+#if SYS_USG || HAVE_TERMIO_H
 
 void syEchoch (
     Int                 ch,
@@ -2271,7 +2295,7 @@ Int SyEchoch (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
 
 void syEchos (
     Char *              str,
@@ -2293,7 +2317,7 @@ void syEchos (
 **
 *f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG
+#if SYS_USG || HAVE_TERMIO_H
 
 void syEchos (
     Char *              str,
@@ -2454,7 +2478,7 @@ Char   syPrompt [256];                  /* characters alread on the line   */
 **
 *f  SyFputs( <line>, <fid> )  . . .  BSD/MACH/USG/OS2 EMX/VMS/MAC MPW/MAC SYC
 */
-#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||SYS_MAC_SYC
+#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||SYS_MAC_SYC||HAVE_SGTTY_H||HAVE_TERMIO_H
 
 void SyFputs (
     Char *              line,
@@ -2611,12 +2635,13 @@ Int SyFseek (
 **
 *f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
 */
-#if SYS_BSD || SYS_MACH
+#if SYS_BSD || SYS_MACH || HAVE_SGTTY_H
 
 Int syGetch (
     Int                 fid )
 {
     Char                ch;
+    Char                str[2];
 
     /* read a character                                                    */
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
@@ -2629,7 +2654,13 @@ Int syGetch (
                 ;
         } while ( ch < '@' || 'z' < ch );
         if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
+	    do {
+		while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
+		    ;
+	    } while ( ch < '@' || 'z' < ch );
+	    str[0] = ch;
+	    str[1] = 0;
+            syWinPut( fileno(syBuf[fid].echo), "@s", str );
             ch = syGetch(fid);
         }
         else if ( 'A' <= ch && ch <= 'Z' )
@@ -2647,12 +2678,13 @@ Int syGetch (
 **
 *f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . USG
 */
-#if SYS_USG
+#if SYS_USG || HAVE_TERMIO_H
 
 Int syGetch (
     Int                 fid )
 {
     Char                ch;
+    Char                str[2];
 
     /* read a character                                                    */
     while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
@@ -2665,7 +2697,13 @@ Int syGetch (
                 ;
         } while ( ch < '@' || 'z' < ch );
         if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
+	    do {
+		while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
+		    ;
+	    } while ( ch < '@' || 'z' < ch );
+	    str[0] = ch;
+	    str[1] = 0;
+            syWinPut( fileno(syBuf[fid].echo), "@s", str );
             ch = syGetch(fid);
         }
         else if ( 'A' <= ch && ch <= 'Z' )
@@ -2948,6 +2986,38 @@ Int SyGetch (
     return ch;
 }
 
+
+/****************************************************************************
+**
+*F  SyGetc( <fid> ).  . . . . . . . . . . . . . . . . . get a char from <fid>
+**
+**  'SyGetc' reads a character from <fid>, without any translation or
+**   interference
+*/
+
+Int SyGetc
+(
+    Int                 fid )
+{
+  return getc(syBuf[fid].fp);
+}
+
+
+/****************************************************************************
+**
+*F  SyPutc( <fid>, <char> ).. . . . . . . . . . . . . . . put a char to <fid>
+**
+**  'SyPutc' writes a character to <fid>, without any translation or
+**   interference
+*/
+
+extern Int SyPutc
+(
+    Int                 fid,
+    Char                c )
+{
+  return putc(c,syBuf[fid].fp);
+}
 
 
 /****************************************************************************
@@ -3598,17 +3668,17 @@ void SyClearErrorNo ( void )
 # define SYS_STRING_H
 #endif
 
-#ifdef SYS_HAS_NO_STRERROR
+#if defined(SYS_HAS_NO_STRERROR) || ! HAVE_STRERROR
 extern char * sys_errlist[];
 #endif
 
 void SySetErrorNo ( void )
 {
-    SYS_CONST Char *    err;
+    const Char *        err;
 
     if ( errno != 0 ) {
         SyLastErrorNo = errno;
-#ifdef SYS_HAS_NO_STRERROR
+#if defined(SYS_HAS_NO_STRERROR) || ! HAVE_STRERROR
         err = sys_errlist[errno];
 #else
         err = strerror(errno);
@@ -3650,7 +3720,7 @@ void SySetErrorNo ( void )
 # define SYS_STDLIB_H
 #endif
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.2   */
-extern  int             system ( SYS_CONST char * );
+extern  int             system ( const char * );
 #endif
 
 #if ! (SYS_MAC_MPW || SYS_MAC_SYC)
@@ -3692,13 +3762,38 @@ void SyExec (
 **
 *f  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . .  BSD/Mach/USG
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_FORK
 
 #ifndef SYS_PID_T
 #define SYS_PID_T       pid_t
 #endif
 
+#if  SYS_OS2_EMX
+#include <sys/types.h>
+#endif
+
+#ifndef CONFIG_H
+
 #include        <sys/wait.h>
+
+#else
+
+#if HAVE_UNION_WAIT
+# include <sys/wait.h>
+#else
+# include <sys/types.h>
+# if HAVE_SYS_WAIT_H
+#  include <sys/wait.h>
+# endif
+# ifndef WEXITSTATUS
+#  define WEXITSTATUS(stat_val) ((unsigned)(stat_val) >> 8)
+# endif
+# ifndef WIFEXITED
+#  define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
+# endif
+#endif
+
+#endif
 
 #ifndef SYS_FCNTL_H
 #include        <fcntl.h>
@@ -3721,12 +3816,16 @@ UInt SyExecuteProcess (
     Char *                  args[] )
 {
     SYS_PID_T               pid;                    /* process id          */
+#if HAVE_UNION_WAIT
+    union wait              status;                 /* non POSIX           */
+#else
     int                     status;                 /* do not use `Int'    */
+#endif
     Int                     tin;                    /* temp in             */
     Int                     tout;                   /* temp out            */
     SYS_SIG_T               (*func)(int);
 
-#ifdef SYS_HAS_WAIT4
+#if defined(SYS_HAS_WAIT4) || HAVE_WAIT4
     struct rusage           usage;
 #endif
 
@@ -3744,7 +3843,7 @@ UInt SyExecuteProcess (
         func = signal( SIGINT, SIG_IGN );
 
         /* wait for some action                                            */
-#ifdef SYS_HAS_WAIT4
+#if defined(SYS_HAS_WAIT4) || HAVE_WAIT4
 
         if ( wait4( pid, &status, 0, &usage ) == -1 ) {
             signal( SIGINT, func );
@@ -3843,9 +3942,9 @@ UInt SyExecuteProcess (
 
 /****************************************************************************
 **
-*f  SyIsExistingFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyIsExistingFile( <name> )  . . . . . . . . . . . . . . .  using `access'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_ACCESS
 
 Int SyIsExistingFile ( Char * name )
 {
@@ -3878,9 +3977,9 @@ Int SyIsExistingFile ( Char * name )
 
 /****************************************************************************
 **
-*f  SyIsReadableFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyIsReadableFile( <name> )  . . . . . . . . . . . . . . .  using `access'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_ACCESS
 
 Int SyIsReadableFile ( Char * name )
 {
@@ -3899,7 +3998,7 @@ Int SyIsReadableFile ( Char * name )
 
 /****************************************************************************
 **
-*F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
+*F  SyIsWritableFile( <name> )  . . . . . . . . . is the file <name> writable
 **
 **  'SyIsWritableFile'   returns  1  if  the  file  <name> is  writable and 0
 **  otherwise. <name> is a system dependent description of the file.
@@ -3908,9 +4007,9 @@ Int SyIsReadableFile ( Char * name )
 
 /****************************************************************************
 **
-*f  SyIsWritable( <name> )  . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyIsWritableFile( <name> )  . . . . . . . . . . . . . . .  using `access'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_ACCESS
 
 Int SyIsWritableFile ( Char * name )
 {
@@ -3943,9 +4042,9 @@ Int SyIsWritableFile ( Char * name )
 
 /****************************************************************************
 **
-*f  SyIsExecutableFile( <name> )  . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyIsExecutableFile( <name> )  . . . . . . . . . . . . . .  using `access'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_ACCESS
 
 Int SyIsExecutableFile ( Char * name )
 {
@@ -3984,9 +4083,13 @@ Int SyIsExecutableFile ( Char * name )
 
 /****************************************************************************
 **
-*f  SyIsDirectoryPath( <name> ) . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyIsDirectoryPath( <name> ) . . . . . . . . . . . . . . . .  using `stat'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if SYS_OS2_EMX
+#include <sys/types.h>
+#endif
+
+#if HAVE_STAT
 
 #include <sys/stat.h>
 
@@ -4013,9 +4116,9 @@ Int SyIsDirectoryPath ( Char * name )
 
 /****************************************************************************
 **
-*f  SyRemoveFile( <name> )  . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyRemoveFile( <name> )  . . . . . . . . . . . . . . . . .  using `unlink'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_UNLINK
 
 Int SyRemoveFile ( Char * name )
 {
@@ -4120,9 +4223,9 @@ Char * SyTmpname ( void )
 
 /****************************************************************************
 **
-*f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*f  SyTmpdir( <hint> )  . . . . . . . . . . . . . . . . . . . . using `mkdir'
 */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if HAVE_MKDIR
 
 Char * SyTmpdir ( Char * hint )
 {
@@ -4156,9 +4259,10 @@ Char * SyTmpdir ( Char * hint )
 /****************************************************************************
 **
 
-*F  InitSysFiles()  . . . . . . . . . . . . . . . . . initialize the packages
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitSysFiles( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
     Obj             list;
     Obj             tmp;
@@ -4176,7 +4280,6 @@ void InitSysFiles( void )
     gvar = GVarName("GAP_ARCHITECTURE");
     AssGVar( gvar, tmp );
     MakeReadOnlyGVar(gvar);
-
 
     /* GAP_ROOT_PATH                                                       */
     list = NEW_PLIST( T_PLIST+IMMUTABLE, MAX_GAP_DIRS );
@@ -4196,7 +4299,7 @@ void InitSysFiles( void )
     MakeReadOnlyGVar(gvar);
 
     /* DIRECTORIES_SYSTEM_PROGRAMS                                         */
-#if SYS_BSD || SYS_MACH || SYS_USG
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || HAVE_PATH_ENV
     list = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( list, 0 );
     for ( p = getenv("PATH"), i = 0, q = p;  ;  p++, i++ ) {
@@ -4232,6 +4335,36 @@ void InitSysFiles( void )
     AssGVar( gvar, list );
     MakeReadOnlyGVar(gvar);
 
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoSysFiles()  . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "sysfiles",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    0,                                  /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoSysFiles ( void )
+{
+    module.revision_c = Revision_sysfiles_c;
+    module.revision_h = Revision_sysfiles_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -1,0 +1,165 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  boolean.msk                 GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Booleans}
+
+\index{type!boolean}\index{logical}
+
+The two main *boolean*  values are `true' and `false'.  They stand for the
+*logical* values of the same name. They appear mainly as values of the
+conditions in `if'-statements and `while'-loops.
+
+{\GAP} provides a third boolean value, `fail'. This is used as a return
+value by functions to indicate that they cannot return a proper result.
+
+Note that it is a convention that the name of a function that
+tests a  property, and returns `true' and  `false' according to the
+outcome, starts with `Is', as in `IsBool'.
+
+\Declaration{IsBool}
+
+\beginexample
+gap> IsBool( true );
+true
+gap> IsBool( false );
+true
+gap> IsBool( 17 );
+false
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparisons of Booleans}
+
+
+\>`<bool1> = <bool2>'{comparisons!of booleans}
+\>`<bool1> \<> <bool2>'{comparisons!of booleans}
+
+The equality operator `=' evaluates to `true' if the two boolean values
+<bool1> and <bool2> are equal, i.e., both are `true' or both are `false' or
+both `fail', and `false' otherwise. The inequality operator `\<>' evaluates
+to `true' if the two boolean values <bool1> and <bool2> are different and
+`false' otherwise. This operation is also called the *exclusive or*, because
+its value is `true' if exactly one of <bool1> or <bool2> is `true'.
+
+You can compare boolean values with objects of other types. Of course
+they are never equal.
+
+\beginexample
+gap> true = false;
+false
+gap> false = (true = false);
+true
+gap> true <> 17;
+true 
+\endexample
+
+\>`<bool1> \< <bool2>'{ordering!booleans}
+
+The ordering of boolean values is defined by `true \< false \< fail'.
+
+\beginexample
+gap> true<false;
+true
+gap> fail>=false;
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Booleans}%
+
+\index{operations!for booleans}
+\index{logical operations}
+
+The following boolean operations are only applicable to `true' and `false'.
+
+`<bool1> or <bool2>'{or}
+
+The logical operator `or' evaluates to `true' if at least one of the two
+boolean operands <bool1> and <bool2> is `true' and to `false' otherwise.
+
+`or' first evaluates <bool1>. If the value is neither `true' nor `false'
+an error is signalled. If the value is `true', then `or' returns `true'
+*without* evaluating <bool2>.  If the value is `false', then `or'
+evaluates <bool2>. Again, if the value is neither `true' nor `false' an
+error is signalled. Otherwise `or' returns the value of <bool2>. This
+*short-circuited* evaluation is important if  the value of <bool1> is
+`true' and evaluation of <bool2> would take much time or cause an error.
+
+`or' is associative, i.e., it is allowed to write `<b1> or <b2> or <b3>',
+which is interpreted as `(<b1> or <b2>) or <b3>'.  `or' has the lowest
+precedence of the logical operators.  All logical operators have lower
+precedence than the comparison operators `=', `\<', `in', etc.
+
+\beginexample
+gap> true or false;
+true
+gap> false or false;
+false
+gap> i := -1;; l := [1,2,3];;
+gap> if i <= 0 or l[i] = false then Print("aha\n"); fi;
+aha  # no error, because `l[i]' is not evaluated
+\endexample
+
+\>`<bool1> and <bool2>'{and}
+
+The logical operator `and' evaluates to `true' if both boolean operands
+<bool1> and <bool2> are `true' and to `false' otherwise.
+
+`and' first evaluates <bool1>.  If the value  is neither `true' nor
+`false' an error is signalled.  If the value is `false', then `and'
+returns `false' *without* evaluating <bool2>. If the value is `true',
+then `and' evaluates <bool2>. Again, if the value is neither `true' nor
+`false' an error is signalled.  Otherwise  `and' returns the value of
+<bool2>. This *short-circuited* evaluation is important if the value of
+<bool1> is `false' and evaluation of  <bool2> would take much time or
+cause an error.
+
+`and' is associative, i.e., it is allowed to write `<b1> and <b2> and
+<b3>', which is interpreted as `(<b1> and <b2>) and <b3>'. `and' has
+higher precedence than the logical `or' operator, but lower than the
+unary logical `not' operator.  All  logical operators have  lower
+precedence than the comparison operators `=', `\<', `in', etc.
+
+\beginexample
+gap> true and false;
+false
+gap> true and true;
+true
+gap> false and 17;
+false  # is no error, because `17' is never looked at
+\endexample
+
+
+\>`<fil1> and <fil2>'{and!for filters}
+
+`and' can also be applied to filters. It returns a filter that tests
+`<fil1>(x) and <fil2>(x)'
+
+\beginexample
+gap> IsPosRat and IsInt;
+function ( obj ) ... end
+\endexample
+
+\>`not <bool>'{not}
+
+The logical operator `not' returns `true' if the boolean value <bool> is
+`false' and `true' otherwise. An error is signalled if <bool> does not
+evaluate to `true' or `false'.
+
+`not' has higher precedence than the other logical operators, `or' and
+`and'. All logical operators have lower precedence than the comparison
+operators `=', `\<', `in', etc.
+
+\beginexample
+gap> true and false;
+gap> not true;
+false
+gap> not false;
+true
+\endexample

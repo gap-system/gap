@@ -5,11 +5,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions for generic lists.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char *          Revision_listfunc_h =
+const char * Revision_listfunc_h =
    "@(#)$Id$";
 #endif
 
@@ -93,25 +94,9 @@ extern  UInt            RemoveDupsDensePlist (
 /****************************************************************************
 **
 
-*F  SetupListFunc() . . . . . . . . .  initialize the lists functions package
+*F  InitInfoListFunc()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupListFunc ( void );
-
-
-/****************************************************************************
-**
-*F  InitListFunc()  . . . . . . . . .  initialize the lists functions package
-**
-**  'InitListFunc' initializes the lists functions package.
-*/
-extern void InitListFunc ( void );
-
-
-/****************************************************************************
-**
-*F  CheckListFunc() . check the initialisation of the lists functions package
-*/
-extern void CheckListFunc ( void );
+StructInitInfo * InitInfoListFunc ( void );
 
 
 /****************************************************************************

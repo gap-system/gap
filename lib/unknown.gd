@@ -4,7 +4,8 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for unknowns.
 ##
@@ -12,6 +13,13 @@ Revision.unknown_gd :=
     "@(#)$Id$";
 
 
+#############################################################################
+##
+#C  IsUnknown( <obj> )
+##
+DeclareCategory( "IsUnknown", IsCyclotomic );
+    
+    
 #############################################################################
 ##
 #V  LargestUnknown  . . . . . . . . . . . . largest used index for an unknown
@@ -33,7 +41,7 @@ LargestUnknown := 0;
 ##
 ##  In the second form 'Unknown' returns the unknown 'Unknown(<n>)'.
 ##
-Unknown := NewOperation( "Unknown", [ IsPosRat and IsInt ] );
+DeclareOperation( "Unknown", [ IsPosInt ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
 
 

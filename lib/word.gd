@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for (nonassociative) words.
 ##
@@ -32,16 +33,17 @@ Revision.word_gd :=
 #C  IsWordWithOne( <obj> )
 #C  IsWordWithInverse( <obj> )
 ##
-IsWord            := NewCategory( "IsWord", IsMultiplicativeElement );
-IsWordWithOne     := IsWord and IsMultiplicativeElementWithOne;
-IsWordWithInverse := IsWord and IsMultiplicativeElementWithInverse;
+DeclareCategory( "IsWord", IsMultiplicativeElement );
+DeclareSynonym( "IsWordWithOne", IsWord and IsMultiplicativeElementWithOne );
+DeclareSynonym( "IsWordWithInverse",
+    IsWord and IsMultiplicativeElementWithInverse );
 
 
 #############################################################################
 ##
 #C  IsWordCollection( <obj> )
 ##
-IsWordCollection            := CategoryCollections( IsWord );
+DeclareCategoryCollections( "IsWord" );
 
 
 #############################################################################
@@ -49,8 +51,8 @@ IsWordCollection            := CategoryCollections( IsWord );
 #C  IsNonassocWord( <obj> )
 #C  IsNonassocWordWithOne( <obj> )
 ##
-IsNonassocWord            := NewCategory( "IsNonassocWord", IsWord );
-IsNonassocWordWithOne     := IsNonassocWord and IsWordWithOne;
+DeclareCategory( "IsNonassocWord", IsWord );
+DeclareSynonym( "IsNonassocWordWithOne", IsNonassocWord and IsWordWithOne );
 
 
 #############################################################################
@@ -58,38 +60,30 @@ IsNonassocWordWithOne     := IsNonassocWord and IsWordWithOne;
 #C  IsNonassocWordCollection( <obj> )
 #C  IsNonassocWordWithOneCollection( <obj> )
 ##
-IsNonassocWordCollection            := CategoryCollections( IsNonassocWord );
+DeclareCategoryCollections( "IsNonassocWord" );
+DeclareCategoryCollections( "IsNonassocWordWithOne" );
 
-IsNonassocWordWithOneCollection     := CategoryCollections(
-    IsNonassocWordWithOne );
-
-
-IsNonassocWordFamily := CategoryFamily( IsNonassocWord );
-
-IsNonassocWordWithOneFamily := CategoryFamily( IsNonassocWordWithOne );
+DeclareCategoryFamily( "IsNonassocWord" );
+DeclareCategoryFamily( "IsNonassocWordWithOne" );
 
 
 #############################################################################
 ##
 #C  IsFreeMagma( <obj> )
 ##
-IsFreeMagma := IsNonassocWordCollection and IsMagma;
-
-
-#############################################################################
+##  (Note that we cannot define `IsFreeMagmaWithOne' as
+##  `IsNonassocWordWithOneCollection and IsMagma',
+##  since then a free magma-with-one would be also a free magma.)
 ##
-#A  LengthWord( <w> )
-##
-##  is the number of letters in the word <w>.
-##
-LengthWord := NewAttribute( "LengthWord", IsWord );
+DeclareSynonym( "IsFreeMagma", IsNonassocWordCollection and IsMagma );
 
 
 #############################################################################
 ##
 #O  NonassocWord( <Fam>, <extrep> )   . .  construct word from external repr.
 ##
-NonassocWord := NewOperationArgs( "NonassocWord" );
+DeclareSynonym( "NonassocWord", ObjByExtRep );
+#T Note that `InstallGlobalFunction' does not admit to assign an operation.
 
 
 #############################################################################
@@ -106,15 +100,13 @@ NonassocWord := NewOperationArgs( "NonassocWord" );
 ##
 ##  Note that for associative words, the special case that the list <gens>
 ##  and <imgs> have only length 1 is handled more efficiently by
-##  'EliminatedWord' (see "EliminatedWord").
+##  `EliminatedWord' (see "EliminatedWord").
 ##
-MappedWord := NewOperation( "MappedWord",
-    [ IsWord, IsWordCollection, IsList ] );
+DeclareOperation( "MappedWord", [ IsWord, IsWordCollection, IsList ] );
 
 
 #############################################################################
 ##
-
 #E  word.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 ##

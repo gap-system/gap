@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for mutable bases, in the representations of
 ##  - mutable bases that store immutable bases
@@ -38,7 +39,7 @@ InstallMethod( NrBasisVectors,
 ##  The default case of a mutable basis stores an immutable basis,
 ##  and constructs a new one whenever the mutable basis is changed.
 ##
-IsMutableBasisByImmutableBasisRep := NewRepresentation(
+DeclareRepresentation(
     "IsMutableBasisByImmutableBasisRep",
     IsComponentObjectRep and IsMutable,
     [ "immutableBasis", "leftActingDomain" ] );
@@ -73,9 +74,9 @@ InstallMethod( MutableBasisByGenerators,
     end );
 
 InstallOtherMethod( MutableBasisByGenerators,
-    "generic method for ring, list, and zero vector",
+    "generic method for ring, list, and object",
     true,
-    [ IsRing, IsList, IsVector ], 0,
+    [ IsRing, IsList, IsObject ], 0,
     function( R, vectors, zero )
     local B;
 
@@ -95,15 +96,35 @@ InstallOtherMethod( MutableBasisByGenerators,
 
 #############################################################################
 ##
-#M  PrintObj( <MB> )  . . . . . . . . . . . . . . . . . print a mutable basis
+#M  ViewObj( <MB> ) . . . . . . . . . . . . . . . . . .  view a mutable basis
 ##
-InstallMethod( PrintObj,
-    "method for mutable basis represented by an immutable basis",
+InstallMethod( ViewObj,
+    "for mutable basis represented by an immutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
     function( MB )
-    Print( "<mutable basis over ", MB!.leftActingDomain, ", ",
-           NrBasisVectors( MB ), " vectors>" );
+    Print( "<mutable basis over " );
+    View( MB!.leftActingDomain );
+    Print( ", ", NrBasisVectors( MB ), " vectors>" );
+    end );
+
+
+#############################################################################
+##
+#M  PrintObj( <MB> )  . . . . . . . . . . . . . . . . . print a mutable basis
+##
+InstallMethod( PrintObj,
+    "for mutable basis represented by an immutable basis",
+    true,
+    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
+    function( MB )
+    if NrBasisVectors( MB )  = 0 then
+      Print( "MutableBasisByGenerators( ", MB!.leftActingDomain, ", [], ",
+             Zero( UnderlyingLeftModule( MB!.immutableBasis ) ), " )" );
+    else
+      Print( "MutableBasisByGenerators( ", MB!.leftActingDomain, ", ",
+             BasisVectors( MB!.immutableBasis ), " )" );
+    fi;
     end );
 
 
@@ -112,7 +133,7 @@ InstallMethod( PrintObj,
 #M  BasisVectors( <MB> )
 ##
 InstallOtherMethod( BasisVectors,
-    "method for mutable basis represented by an immutable basis",
+    "for mutable basis represented by an immutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
     MB -> BasisVectors( MB!.immutableBasis ) );
@@ -123,7 +144,7 @@ InstallOtherMethod( BasisVectors,
 #M  CloseMutableBasis( <MB>, <v> )
 ##
 InstallMethod( CloseMutableBasis,
-    "method for mutable basis represented by an immutable basis, and vector",
+    "for mutable basis represented by an immutable basis, and vector",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep, IsVector ], 0,
     function( MB, v )
@@ -144,7 +165,7 @@ InstallMethod( CloseMutableBasis,
 #M  IsContainedInSpan( <MB>, <v> )
 ##
 InstallMethod( IsContainedInSpan,
-    "method for mutable basis represented by an immutable basis, and vector",
+    "for mutable basis represented by an immutable basis, and vector",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep, IsVector ], 0,
     function( MB, v )
@@ -157,7 +178,7 @@ InstallMethod( IsContainedInSpan,
 #M  ImmutableBasis( <MB> )
 ##
 InstallMethod( ImmutableBasis,
-    "method for mutable basis represented by an immutable basis",
+    "for mutable basis represented by an immutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
     MB -> MB!.immutableBasis );
@@ -167,8 +188,7 @@ InstallMethod( ImmutableBasis,
 ##
 #R  IsMutableBasisViaNiceMutableBasisRep( <B> )
 ##
-IsMutableBasisViaNiceMutableBasisRep := NewRepresentation(
-    "IsMutableBasisViaNiceMutableBasisRep",
+DeclareRepresentation( "IsMutableBasisViaNiceMutableBasisRep",
     IsComponentObjectRep and IsMutable,
     [ "leftModule", "niceMutableBasis", "zero" ] );
 
@@ -179,9 +199,10 @@ IsMutableBasisViaNiceMutableBasisRep := NewRepresentation(
 ##
 ##  *Note* that <vectors> must be a collection.
 ##  (This must be guaranteed by the installations of this function as
-##  method of 'MutableBasisByGenerators'.)
+##  method of `MutableBasisByGenerators'.)
 ##
-MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
+InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod2,
+    function( R, vectors )
 
     local M, nice, B;
 
@@ -194,7 +215,7 @@ MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
       Error( "<M> is not handled via nice bases" );
     fi;
     PrepareNiceFreeLeftModule( M );
-#T is this an argument against binding 'NiceVector' to a module?
+#T is this an argument against binding `NiceVector' to a module?
 #T (would a homomorphism be more elegant?)
 
     nice:= MutableBasisByGenerators( R,
@@ -210,26 +231,27 @@ MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
                                    IsMutableBasis
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MutableBasisViaNiceMutableBasisMethod3( <R>, <vectors>, <zero> )
 ##
-MutableBasisViaNiceMutableBasisMethod3 := function( R, vectors, zero )
+InstallGlobalFunction( MutableBasisViaNiceMutableBasisMethod3,
+    function( R, vectors, zero )
 
-    local   M,  B;
+    local M, B;
 
     M:= LeftModuleByGenerators( R, vectors, zero );
     B:= rec( leftModule:= M );
 
-    # If 'vectors' is empty then in general 'M' will *not* be
+    # If `vectors' is empty then in general `M' will *not* be
     # handled by nice bases.
     if IsHandledByNiceBasis( M ) then
 
       PrepareNiceFreeLeftModule( M );
-#T is this an argument against binding 'NiceVector' to a module?
+#T is this an argument against binding `NiceVector' to a module?
 #T (would a homomorphism be more elegant?)
 
       B.niceMutableBasis:= MutableBasisByGenerators( R,
@@ -249,7 +271,26 @@ MutableBasisViaNiceMutableBasisMethod3 := function( R, vectors, zero )
                                    IsMutableBasis
                                and IsMutableBasisViaNiceMutableBasisRep ),
                       B );
-end;
+end );
+
+
+#############################################################################
+##
+#M  ViewObj( <MB> ) . . . . . . . . . . . . . . . . . .  view a mutable basis
+##
+InstallMethod( ViewObj,
+    "for mutable basis represented by a nice mutable basis",
+    true,
+    [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
+    function( MB )
+    Print( "<mutable basis over " );
+    View( LeftActingDomain( MB!.leftModule ) );
+    if IsBound( MB!.niceMutableBasis ) then
+      Print( ", ", NrBasisVectors( MB!.niceMutableBasis ), " vectors>" );
+    else
+      Print( ", 0 vectors>" );
+    fi;
+    end );
 
 
 #############################################################################
@@ -257,16 +298,19 @@ end;
 #M  PrintObj( <MB> )  . . . . . . . . . . . . . . . . . print a mutable basis
 ##
 InstallMethod( PrintObj,
-    "method for mutable basis represented by a nice mutable basis",
+    "for mutable basis represented by a nice mutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
     if IsBound( MB!.niceMutableBasis ) then
-      Print( "<mutable basis over ", LeftActingDomain( MB!.leftModule ),
-             ", ", NrBasisVectors( MB!.niceMutableBasis ), " vectors>" );
+      Print( "MutableBasisByGenerators( ",
+             LeftActingDomain( MB!.leftModule ), ", ",
+             BasisVectors( MB!.niceMutableBasis ), ", ",
+             Zero( LeftActingDomain( MB!.leftModule ) ), " )" );
     else
-      Print( "<mutable basis over ", LeftActingDomain( MB!.leftModule ),
-             ", 0 vectors>" );
+      Print( "MutableBasisByGenerators( ",
+             LeftActingDomain( MB!.leftModule ), ", [], ",
+             Zero( LeftActingDomain( MB!.leftModule ) ), " )" );
     fi;
     end );
 
@@ -276,7 +320,7 @@ InstallMethod( PrintObj,
 #M  BasisVectors( <MB> )
 ##
 InstallOtherMethod( BasisVectors,
-    "method for mutable basis represented by a nice mutable basis",
+    "for mutable basis represented by a nice mutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
@@ -296,7 +340,7 @@ InstallOtherMethod( BasisVectors,
 #M  NrBasisVectors( <MB> )  .  for a mutable basis using a nice mutable basis
 ##
 InstallMethod( NrBasisVectors,
-    "method for mutable basis represented by a nice mutable basis",
+    "for mutable basis represented by a nice mutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
@@ -313,7 +357,7 @@ InstallMethod( NrBasisVectors,
 #M  CloseMutableBasis( <MB>, <v> )
 ##
 InstallMethod( CloseMutableBasis,
-    "method for mutable basis repres. by a nice mutable basis, and vector",
+    "for mutable basis repres. by a nice mutable basis, and vector",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep, IsVector ], 0,
     function( MB, v )
@@ -323,7 +367,7 @@ InstallMethod( CloseMutableBasis,
                          NiceVector( MB!.leftModule, v ) );
     elif v <> MB!.zero then
 
-      # We have to setup the component 'niceMutableBasis'.
+      # We have to setup the component `niceMutableBasis'.
       R:= LeftActingDomain( MB!.leftModule );
       M:= LeftModuleByGenerators( R, [ v ] );
       if not IsHandledByNiceBasis( M ) then
@@ -342,7 +386,7 @@ InstallMethod( CloseMutableBasis,
 #M  IsContainedInSpan( <MB>, <v> )
 ##
 InstallMethod( IsContainedInSpan,
-    "method for mutable basis repres. by a nice mutable basis, and vector",
+    "for mutable basis repres. by a nice mutable basis, and vector",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep, IsVector ], 0,
     function( MB, v )
@@ -360,7 +404,7 @@ InstallMethod( IsContainedInSpan,
 #M  ImmutableBasis( <MB> )
 ##
 InstallMethod( ImmutableBasis,
-    "method for mutable basis represented by a nice mutable basis",
+    "for mutable basis represented by a nice mutable basis",
     true,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep ], 0,
     function( MB )
@@ -394,6 +438,4 @@ InstallMethod( ImmutableBasis,
 #############################################################################
 ##
 #E  basismut.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

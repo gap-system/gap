@@ -1,0 +1,5 @@
+@msfiles = ("coll","lists","string","domain","record","combinat","boolean");
+@gdfiles = ("coll","list","list.g","set.g","domain","arith","string.g",
+            "string","kernel.g","record.g","combinat","boolean.g");
+$DIR = "../ref";
+$LIB = "../../lib"; 

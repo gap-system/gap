@@ -4,25 +4,26 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.oprt_gd :=
     "@(#)$Id$";
 
-InfoOperation := NewInfoClass( "InfoOperation" );
+DeclareInfoClass( "InfoOperation" );
 
 #############################################################################
 ##
 #A  MovedPoints( <G> ). . . . . . . . . . . . . . . .  of a permutation group
 ##
 ##  returns a list of the points moved by the permutation group <G>.
-MovedPoints := NewAttribute( "MovedPoints", IsPermGroup );
-SetMovedPoints := Setter( MovedPoints );
-HasMovedPoints := Tester( MovedPoints );
+DeclareAttribute( "MovedPoints", IsPermGroup );
 
 #############################################################################
 ##
-#C  IsExternalSet . . . . . . . . . . . . . . . . . category of external sets
+#C  IsExternalSet(<obj>)
 ##
-##  An *external set*  specifies an operation <opr>:  <D>  x <G>  --> <D>  of a
+##  An *external set*  specifies an operation <opr>:  <D> x <G> --> <D>  of a
 ##  group <G> on a domain <D>. The external set knows the group, the
 ##  domain and the actual operation function.
 ##  Mathematically,  an external set  is the set~<D>,  which is endowed with
@@ -32,7 +33,7 @@ HasMovedPoints := Tester( MovedPoints );
 ##  Currently the domain~<D> must always be finite.
 ##  If <D> is not a list, an enumerator for <D> is automatically chosen.
 ##
-IsExternalSet := NewCategory( "IsExternalSet", IsDomain );
+DeclareCategory( "IsExternalSet", IsDomain );
 
 OrbitishReq  := [ IsGroup, IsList, IsObject,
                   IsList,
@@ -50,7 +51,7 @@ OrbitsishReq := [ IsGroup, IsList,
 ##  An external subset is the restriction  of an external  set to a subset of
 ##  the domain. It is again an external set.
 ##
-IsExternalSubset := NewRepresentation( "IsExternalSubset",
+DeclareRepresentation( "IsExternalSubset",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [ "start" ] );                            
 
@@ -60,9 +61,9 @@ IsExternalSubset := NewRepresentation( "IsExternalSubset",
 ##
 ##  An external orbit is an external subset consisting of one orbit.
 ##
-IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
+DeclareRepresentation( "IsExternalOrbit",
     IsExternalSubset, [ "start" ] );
-IsExternalSetByPcgs := NewCategory( "IsExternalSetByPcgs", IsExternalSet );
+DeclareCategory( "IsExternalSetByPcgs", IsExternalSet );
 
 # The following two integer variables give position in which the `Type' of an
 # external set can  store the `Type' of its  external subsets resp.  external
@@ -76,13 +77,12 @@ XSET_XORBTYPE  := 5;
 #R  IsExternalSetByOperatorsRep . . . . . . . representation of external sets
 ##
 ##  External sets  can be specified  directly (`IsExternalSetDefaultRep'), or
-##  via <gens> and <oprs> (`IsExternalSetByOperatorsRep') (see ref. manual).
+##  via <gens> and <oprs> (`IsExternalSetByOperatorsRep').
 ##
-IsExternalSetDefaultRep := NewRepresentation( "IsExternalSetDefaultRep",
+DeclareRepresentation( "IsExternalSetDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [  ] );
-IsExternalSetByOperatorsRep := NewRepresentation
-  ( "IsExternalSetByOperatorsRep",
+DeclareRepresentation( "IsExternalSetByOperatorsRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [ "generators", "operators", "funcOperation" ] );
 
@@ -92,56 +92,53 @@ IsExternalSetByOperatorsRep := NewRepresentation
 ##
 ##  This attributs returns the group with which the external set <xset> was
 ##  defined.
-ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );
-SetActingDomain := Setter( ActingDomain );
-HasActingDomain := Tester( ActingDomain );
+DeclareAttribute( "ActingDomain", IsExternalSet );
 
 #############################################################################
 ##
 #A  HomeEnumerator( <xset> )  . . . . . . .  the enumerator of the domain <D>
 ##
+##  returns an enumerator of the domain <D> with which <xset> was defined.
 ##  For external   subsets, this is  different  from `Enumerator(  <xset> )',
 ##  which enumerates the union of orbits.
 ##
-HomeEnumerator := NewAttribute( "HomeEnumerator", IsExternalSet );
-SetHomeEnumerator := Setter( HomeEnumerator );
-HasHomeEnumerator := Tester( HomeEnumerator );
+DeclareAttribute( "HomeEnumerator", IsExternalSet );
 
 
 
-IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
+DeclareRepresentation( "IsOperationHomomorphism",
     IsGroupHomomorphism and
     IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
     IsAttributeStoringRep, [  ] );
 
-IsOperationHomomorphismDirectly := NewRepresentation
-    ( "IsOperationHomomorphismDirectly",
+DeclareRepresentation( "IsOperationHomomorphismDirectly",
       IsOperationHomomorphism,
       [  ] );
-IsOperationHomomorphismByOperators := NewRepresentation
-    ( "IsOperationHomomorphismByOperators",
+DeclareRepresentation( "IsOperationHomomorphismByOperators",
       IsOperationHomomorphism,
       [  ] );
-IsOperationHomomorphismSubset := NewRepresentation
-    ( "IsOperationHomomorphismSubset",
+DeclareRepresentation( "IsOperationHomomorphismSubset",
       IsOperationHomomorphism,
       [  ] );
 
 #############################################################################
 ##
-#R  IsOperationHomomorphismByBase() . .  if a base for the operation is known
+#R  IsOperationHomomorphismByBase(<obj>)
 ##
-##  This is chosen if `HasBase( <xset> )'.
+##  This is chosen if `HasBaseOfGroup( <xset> )'.
 ##
-IsOperationHomomorphismByBase := NewRepresentation
-    ( "IsOperationHomomorphismByBase",
-      IsOperationHomomorphism,
-      [  ] );
+DeclareRepresentation( 
+  "IsOperationHomomorphismByBase",
+      IsOperationHomomorphism, [  ] );
 
-IsConstituentHomomorphism := NewRepresentation( "IsConstituentHomomorphism",
+#############################################################################
+##
+#R  IsConstituentHomomorphism(<obj>)
+##
+DeclareRepresentation( "IsConstituentHomomorphism",
     IsOperationHomomorphismDirectly, [ "conperm" ] );
 
-IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
+DeclareRepresentation( "IsBlocksHomomorphism",
     IsOperationHomomorphismDirectly, [ "reps" ] );
 
 #############################################################################
@@ -151,29 +148,25 @@ IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
 ##  This   representation is chosen  for  operation homomorphisms from matrix
 ##  groups acting naturally on a set of vectors including the standard base.
 ##
-IsLinearOperationHomomorphism := NewRepresentation
-    ( "IsLinearOperationHomomorphism",
+DeclareRepresentation( "IsLinearOperationHomomorphism",
       IsOperationHomomorphismDirectly,
       [  ] );
 
 #############################################################################
 ##
-#A  FunctionOperation( <xset> ) . . . . . . . . . . . . .  the function <opr>
+#A  FunctionOperation( <xset> )
 ##
-FunctionOperation := NewAttribute( "FunctionOperation", IsExternalSet );
-SetFunctionOperation := Setter( FunctionOperation );
-HasFunctionOperation := Tester( FunctionOperation );
+##  the operation function <opr> of <xset>
+DeclareAttribute( "FunctionOperation", IsExternalSet );
 
 #############################################################################
 ##
 #A  StabilizerOfExternalSet( <xset> ) .  stabilizer of `Representative(xset)'
 ##
-##  The stabilizer must have <G> as its parent.
+##  computes the stabilizer of `Representative(<xset>)'
+##  The stabilizer must have the acting group <G> of <xset> as its parent.
 ##
-StabilizerOfExternalSet := NewAttribute( "StabilizerOfExternalSet",
-                                   IsExternalSet );
-SetStabilizerOfExternalSet := Setter( StabilizerOfExternalSet );
-HasStabilizerOfExternalSet := Tester( StabilizerOfExternalSet );
+DeclareAttribute( "StabilizerOfExternalSet", IsExternalSet );
 
 #############################################################################
 ##
@@ -182,25 +175,26 @@ HasStabilizerOfExternalSet := Tester( StabilizerOfExternalSet );
 ##  The canonical representative of an  external set may  only depend on <G>,
 ##  <D>, <opr> and (in the case of  external subsets) `Enumerator( <xset> )'.
 ##  It must not depend, e.g., on the representative of an external orbit.
+##  {\GAP} does not know methods for every external set to compute a
+##  canonical representative. See
+##  `CanonicalRepresentativeDeterminatorOfExternalSet'.
 ##
-CanonicalRepresentativeOfExternalSet := NewAttribute
-    ( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
-SetCanonicalRepresentativeOfExternalSet :=
-  Setter( CanonicalRepresentativeOfExternalSet );
-HasCanonicalRepresentativeOfExternalSet :=
-  Tester( CanonicalRepresentativeOfExternalSet );
+DeclareAttribute( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
 
-# a CanonicalRepresentativeDeterminatorOfExternalSet is a function that
-# takes as arguments the acting group and the point. It returns a list
-# of length 3: [CanonRep, NormalizerCanonRep, ConjugatingElm]. 
-# list components 2 and 3 do not need to be bound.
 
-CanonicalRepresentativeDeterminatorOfExternalSet := NewAttribute
-    ( "CanonicalRepresentativeDeterminatorOfExternalSet", IsExternalSet );
-SetCanonicalRepresentativeDeterminatorOfExternalSet :=
-  Setter( CanonicalRepresentativeDeterminatorOfExternalSet );
-HasCanonicalRepresentativeDeterminatorOfExternalSet :=
-  Tester( CanonicalRepresentativeDeterminatorOfExternalSet );
+#############################################################################
+##
+#A  CanonicalRepresentativeDeterminatorOfExternalSet( <xset> )
+##
+##  a CanonicalRepresentativeDeterminatorOfExternalSet is a function that
+##  takes as arguments the acting group and the point. It returns a list
+##  of length 3: [<canonrep>, <stabilizercanonrep>, <conjugatingelm>]. 
+##  (List components 2 and 3 are optional and do not need to be bound.)
+##  An external set is only guaranteed to be able to compute a canonical
+##  representative if it has a
+##  `CanonicalRepresentativeDeterminatorOfExternalSet'.
+DeclareAttribute( "CanonicalRepresentativeDeterminatorOfExternalSet",
+    IsExternalSet );
 
 # Xsets that know how to get a canonical representative should claim they
 # have one for purposes of method selection
@@ -214,17 +208,15 @@ InstallTrueMethod(HasCanonicalRepresentativeOfExternalSet,
 ##  an     element     mapping      `Representative(     <xset>    )'      to
 ##  `CanonicalRepresentativeOfExternalSet( <xset> ' under the given operation
 ##
-OperatorOfExternalSet := NewAttribute( "OperatorOfExternalSet",
+DeclareAttribute( "OperatorOfExternalSet",
                                  IsExternalSet );
-SetOperatorOfExternalSet := Setter( OperatorOfExternalSet );
-HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
 
 
 #############################################################################
 ##
-
 #F  OrbitsishFOA( <name>, <reqs>, <usetype>, <AorP> ) . orbits-like operation
 ##
+##  is used to create operations like `Orbits'.
 ##  This function returns a list containing a wrapper function, an operation,
 ##  and an attribute resp. property.
 ##
@@ -255,18 +247,24 @@ HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
 ##  Also in this case, the attribute is used to store the result.)
 ##
 OrbitsishFOA := function( name, reqs, usetype, NewAorP )
-    local   str,  propop,  propat,  func;
+    local str, nname, propop, propat, func;
 
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "Op" );
     propop := NewOperation( str, reqs );
+    BIND_GLOBAL( str, propop );
 
     # Create the  attribute or property.
     str := SHALLOW_COPY_OBJ( name );
     if NewAorP = NewAttribute  then  APPEND_LIST_INTR( str, "Attr" );
                                else  APPEND_LIST_INTR( str, "Prop" );  fi;
     propat := NewAorP( str, IsExternalSet );
+    BIND_GLOBAL( str, propat );
+    nname:= "Set"; APPEND_LIST_INTR( nname, str );
+    BIND_GLOBAL( nname, SETTER_FILTER( propat ) );
+    nname:= "Has"; APPEND_LIST_INTR( nname, str );
+    BIND_GLOBAL( nname, TESTER_FILTER( propat ) );
 
     # Install a method for the attribute when called with an external set.
     InstallMethod( propat,
@@ -281,7 +279,7 @@ OrbitsishFOA := function( name, reqs, usetype, NewAorP )
           oprs := xset!.operators;
           opr  := xset!.funcOperation;
         else
-          if IsPcgsComputable( G ) then
+          if CanEasilyComputePcgs( G ) then
             gens := Pcgs( G );
           else
             gens := GeneratorsOfGroup( G );
@@ -346,7 +344,7 @@ OrbitsishFOA := function( name, reqs, usetype, NewAorP )
             return propat( G );
           fi;
 
-          if IsPcgsComputable( G ) then
+          if CanEasilyComputePcgs( G ) then
             gens:= Pcgs( G );
           else
             gens:= GeneratorsOfGroup( G );
@@ -358,9 +356,7 @@ OrbitsishFOA := function( name, reqs, usetype, NewAorP )
         # Call the operation.
         return propop( G, D, gens, oprs, opr );
     end;
-
-    # Return the triple.
-    return [ func, propop, propat ];
+    BIND_GLOBAL( name, func );
 end;
 
 
@@ -368,6 +364,7 @@ end;
 ##
 #F  OrbitishFO( <name>, <reqs>, <famrel>, <usetype> ) .  orbit-like operation
 ##
+##  is used to create operations like `Orbit'.
 ##  This function is analogous to `OrbitsishFOA', but for operations <orbish>
 ##  like `Orbit( <G>, <D>, <pnt> )'.
 ##  Since the return values of these operations depend on the  additional
@@ -382,137 +379,143 @@ end;
 ##
 OrbitishFO := function( name, reqs, famrel, usetype )
 
-    local str, orbish, func;
+    local str, nname, orbish, func;
     
     # Create the operation.
     str:= SHALLOW_COPY_OBJ( name );
     APPEND_LIST_INTR( str, "Op" );
     orbish := NewOperation( str, reqs );
+    BIND_GLOBAL( str, orbish );
     
     # Create the wrapper function.
     func := function( arg )
-    local   G,  D,  pnt,  gens,  oprs,  opr,  xset,  p,  attrG,  result;
-    
-    # Get the arguments.
-    if Length( arg ) = 2 and IsExternalSet( arg[ 1 ] )  then
-        xset := arg[ 1 ];
-        pnt := arg[ 2 ];
-        G := ActingDomain( xset );
-        if HasHomeEnumerator( xset )  then
-            D := HomeEnumerator( xset );
-        fi;
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-    elif 2 <= Length( arg ) then
-        G := arg[ 1 ];
-        if     Length( arg ) > 2
-           and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) )  then
-            D := arg[ 2 ];
-            if IsDomain( D )  then
-                D := Enumerator( D );
-            fi;
-            p := 3;
-        else
-            p := 2;
-        fi;
-        pnt := arg[ p ];
-        if Length( arg ) > p + 1  then
-            gens := arg[ p + 1 ];
-            oprs := arg[ p + 2 ];
-        fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            opr := arg[ Length( arg ) ];
-        else
-            opr := OnPoints;
-        fi;
-    else
-      Error( "usage: ", name, "(<xset>,<pnt>)\n",
-             "or ", name, "(<G>[,<D>],<pnt>[,<gens>,<oprs>][,<opr>])" );
-    fi;
-    
-    if not IsBound( gens )  then
-        if IsPcgsComputable( G )  then  
-	  gens := Pcgs( G );
-	else  
-	  gens := GeneratorsOfGroup( G ); 
-	fi;
-        oprs := gens;
-    fi;
-    
-    # In  the  case of `[Maximal]Blocks',  where  $G$  is a permutation group
-    # acting on its moved points, use an attribute for $G$.
-    attrG := IsOperation( usetype )
-         and gens = oprs
-         and opr = OnPoints
-         and not IsBound( D )
-         and HasMovedPoints( G )
-         and pnt = MovedPoints( G );
-    if attrG  and  IsBound( xset )  and  Tester( usetype )( xset )  then
-        result := usetype( xset );
-    elif attrG  and  Tester( usetype )( G )  then
-        result := usetype( G );
-    elif usetype = true  and  IsBound( xset )  then
-        result := orbish( G, xset, pnt, gens, oprs, opr );
-    elif IsBound( D )  then
-        result := orbish( G, D, pnt, gens, oprs, opr );
-    else
-        
-        # The following line is also executed  when `Blocks(<G>, <D>, <opr>)'
-        # is called to compute blocks with no  seed, but then <pnt> is really
-        # <D>, i.e., the operation domain!
-        result := orbish( G, pnt, gens, oprs, opr );
-        
-    fi;
-    
-    # Store the result in the case of an attribute `[Maximal]BlocksAttr'.
-    if attrG  then
-        if IsBound( xset )  then
-            Setter( usetype )( xset, result );
-        fi;
-        Setter( usetype )( G, result );
-    fi;
-    
-    return result;
+    local   G,  D,  pnt,  gens,  oprs,  opr,  xset,  p,  attrG,  result,le;
+      
+      # Get the arguments.
+      if Length( arg ) = 2 and IsExternalSet( arg[ 1 ] )  then
+	  xset := arg[ 1 ];
+	  pnt := arg[ 2 ];
+	  G := ActingDomain( xset );
+	  if HasHomeEnumerator( xset )  then
+	      D := HomeEnumerator( xset );
+	  fi;
+	  if IsExternalSetByOperatorsRep( xset )  then
+	      gens := xset!.generators;
+	      oprs := xset!.operators;
+	      opr  := xset!.funcOperation;
+	  else
+	      opr := FunctionOperation( xset );
+	  fi;
+      elif 2 <= Length( arg ) then
+	  le:=Length(arg);
+	  G := arg[ 1 ];
+	  if IsFunction( arg[ le ] )  then
+	      opr := arg[ le ];
+	      le:=le-1;
+	  else
+	      opr := OnPoints;
+	  fi;
+	  if     Length( arg ) > 2
+	    and famrel( FamilyObj( arg[ 2 ] ), FamilyObj( arg[ 3 ] ) ) 
+	    # for blocks on the groups elements
+	    and not (IsOperation(usetype) and le=4) 
+	    then
+	      D := arg[ 2 ];
+	      if IsDomain( D )  then
+		  D := Enumerator( D );
+	      fi;
+	      p := 3;
+	  else
+	      p := 2;
+	  fi;
+	  pnt := arg[ p ];
+	  if Length( arg ) > p + 1  then
+	      gens := arg[ p + 1 ];
+	      oprs := arg[ p + 2 ];
+	  fi;
+      else
+	Error( "usage: ", name, "(<xset>,<pnt>)\n",
+	      "or ", name, "(<G>[,<D>],<pnt>[,<gens>,<oprs>][,<opr>])" );
+      fi;
+      
+      if not IsBound( gens )  then
+	  if CanEasilyComputePcgs( G )  then  
+	    gens := Pcgs( G );
+	  else  
+	    gens := GeneratorsOfGroup( G ); 
+	  fi;
+	  oprs := gens;
+      fi;
+      
+      # In  the  case of `[Maximal]Blocks',  where  $G$  is a permutation group
+      # acting on its moved points, use an attribute for $G$.
+      attrG := IsOperation( usetype )
+	  and gens = oprs
+	  and opr = OnPoints
+	  and not IsBound( D )
+	  and HasMovedPoints( G )
+	  and pnt = MovedPoints( G );
+      if attrG  and  IsBound( xset )  and  Tester( usetype )( xset )  then
+	  result := usetype( xset );
+      elif attrG  and  Tester( usetype )( G )  then
+	  result := usetype( G );
+      elif usetype = true  and  IsBound( xset )  then
+	  result := orbish( G, xset, pnt, gens, oprs, opr );
+      elif IsBound( D )  then
+	  result := orbish( G, D, pnt, gens, oprs, opr );
+      else
+	  
+	  # The following line is also executed  when `Blocks(<G>, <D>, <opr>)'
+	  # is called to compute blocks with no  seed, but then <pnt> is really
+	  # <D>, i.e., the operation domain!
+	  result := orbish( G, pnt, gens, oprs, opr );
+	  
+      fi;
+      
+      # Store the result in the case of an attribute `[Maximal]BlocksAttr'.
+      if attrG  then
+	  if IsBound( xset )  then
+	      Setter( usetype )( xset, result );
+	  fi;
+	  Setter( usetype )( G, result );
+      fi;
+      
+      return result;
+  end;
+  BIND_GLOBAL( name, func );
 end;
-
-    # Return the pair.
-    return [ func, orbish ];
-end;
-
 
 
 
 #############################################################################
 ##
-#A  OperationHomomorphism( <xset> ) . homomorphism into S_{HomeEnumerator(D)}
-#O  OperationHomomorphism( <G>, <D> [,<opr>] )
+#O  OperationHomomorphism( <G>, <D> [,<opr>] [,"surjective"] )
+#A  OperationHomomorphism( <xset> [,"surjective"] )
+#A  OperationHomomorphism( <oprt> )
 ##
-##  From an external set <xset> (for group <G> and domain <D>),
-##  the function call 
-##  `OperationHomomorphism( <xset> )' constructs
-##  the permutation representation $<G> \to S_{|<D>|}$ of <G> by acting on
-##  the external set <xset>. The mapping functions
-##  for operation homomorphisms are described in section "Homomorphisms!for
-##  groups". The version `OperationHomomorphism( <G>, <D>, <opr>)' serves as
-##  shortcut for `OperationHomomorphism( ExternalSet( <G>, <D>, <opr> ) )'.
-
-OperationHomomorphism := NewOperationArgs( "OperationHomomorphism" );
-OperationHomomorphismAttr := NewAttribute( "OperationHomomorphism",
-                                 IsExternalSet );
-OperationHomomorphismConstructor := NewOperationArgs
-                                    ( "OperationHomomorphismConstructor" );
+##  computes an homomorphism from <G> into the symmetric group on
+##  `HomeEnumerator(<D>)' that gives the permutation action of <G> on <D>.
+##  The third version (which is supported only for {\GAP}3 compatibility)
+##  returns the operation homomorphism that belongs to a image
+##  obtained via `Operation' (see "Operation").
+##
+##  The homomorphism returned by `OperationHomomorphism' usually is not
+##  surjective (its `Range' is the full
+##  symmetric group) to avoid unnecessary computation of the image. If the
+##  optional string argument `"surjective"' is given a surjective
+##  homomorphism is created.
+DeclareGlobalFunction( "OperationHomomorphism" );
+DeclareAttribute( "OperationHomomorphismAttr", IsExternalSet );
+DeclareGlobalFunction( "OperationHomomorphismConstructor" );
 
 #############################################################################
 ##
-#A  SurjectiveOperationHomomorphism( <xset> ) .  surj. operation homomorphism
+#A  SurjectiveOperationHomomorphismAttr( <xset> )
 ##
-SurjectiveOperationHomomorphismAttr := NewAttribute
-    ( "SurjectiveOperationHomomorphism", IsExternalSet );
+##  returns an operation homomorphism for <xset> which is surjective.
+##  (As the `Image' has to be computed this may take substantially longer
+##  than `OperationHomomorphism'.)
+DeclareAttribute( "SurjectiveOperationHomomorphismAttr", IsExternalSet );
 
 #############################################################################
 ##
@@ -520,332 +523,486 @@ SurjectiveOperationHomomorphismAttr := NewAttribute
 ##
 ##  The underlying set of an operation homomorphism is the external set on
 ##  which it was defined.
-UnderlyingExternalSet := NewAttribute( "UnderlyingExternalSet",
-                                 IsOperationHomomorphism );
-SetUnderlyingExternalSet := Setter( UnderlyingExternalSet );
-HasUnderlyingExternalSet := Tester( UnderlyingExternalSet );
+DeclareAttribute( "UnderlyingExternalSet", IsOperationHomomorphism );
 
 #############################################################################
 ##
-#O  SparseOperationHomomorphism( <G>, <D>, <start>, [<gens>,<oprs>,] <opr> )
+#O  SparseOperationHomomorphism( <G>, <D>, <start> [,<gens>,<oprs>] [,<opr>] )
 ##
-tmp := OrbitishFO( "SparseOperationHomomorphism", OrbitishReq,
-               IsIdentical, false );
-SparseOperationHomomorphism   := tmp[1];
-SparseOperationHomomorphismOp := tmp[2];
+##  Computes the
+##  `OperationHomomorphism(<G>,<dom>[,<gens>,<oprs>][,<opr>])', where <dom>
+##  is the union of the orbits `Orbit(<G>,<pnt>[,<gens>,<oprs>][,<opr>])'
+##  for all points <pnt> from <start>.
+##
+OrbitishFO( "SparseOperationHomomorphism", OrbitishReq,
+               IsIdenticalObj, false );
+
+DeclareGlobalFunction(
+    "OperationHomomorphismSubsetAsGroupGeneralMappingByImages" );
+
 
 #############################################################################
 ##
-#O  ExternalSet( <G>, <D> [,<gens>,<oprs>] [,<opr>] ) .  construct external set
+#O  Operation( <G>, <D> [,<opr>] )
+#A  Operation( <xset> )
+##
+##  returns the image of `OperationHomomorphism' called with the same
+##  parameters.
+DeclareGlobalFunction( "Operation" );
+
+#############################################################################
+##
+#O  ExternalSet( <G>, <D> [,<gens>,<oprs>] [,<opr>] )  construct external set
 ##
 ##  creates the external set for the operation <opr> of <G> on <D>.
 ##  <D> can
-##  be either a proper set (see "Sets") or a domain which is represented as
-##  described in "Domains and Collections". <G> can be an arbitrary group,
-##  and <opr> must be a {\GAP} function that takes two arguments (the first
-##  from <D>, the second from <G>) and returns the an element of~<D>, namely
-##  the image of the first argument under the second. This last argument
-##  <opr> is always optional in operation functions, if it is not present,
-##  the operation `OnPoints', which is defined as
-##  `<opr>( <pnt>, <g> ) = <pnt> ^ <g>' is the default. 
-##  If <gens> and  <oprs> are specified, <gens>  must be a generating set for
-##  <G>, and the operation is $(d,gens[i]) -> opr(d,oprs[i])$. This can be
-##  useful if a representation, in which the operation is easier describable
-##  (for example a matrix representation) can be given for the generators, but
-##  there is no easy way to decompose arbitrary elements in the generators.
+##  be either a proper set  or a domain which is represented as
+##  described in "Domains" and "Collections". 
 ##
-tmp := OrbitsishFOA( "ExternalSet", OrbitsishReq, false, NewAttribute );
-ExternalSet     := tmp[1];
-ExternalSetOp   := tmp[2];
-ExternalSetAttr := tmp[3];
-ExternalSetByFilterConstructor := NewOperationArgs
-                                  ( "ExternalSetByFilterConstructor" );
-ExternalSetByTypeConstructor := NewOperationArgs
-                                ( "ExternalSetByTypeConstructor" );
+OrbitsishFOA( "ExternalSet", OrbitsishReq, false, NewAttribute );
+
+DeclareGlobalFunction( "ExternalSetByFilterConstructor" );
+DeclareGlobalFunction( "ExternalSetByTypeConstructor" );
+
 
 #############################################################################
 ##
-#O  ExternalSubset( <G>, <xset>, <start>, [<gens>,<oprs>,] <opr> ) . . . . . . .
+#O  ExternalSubset(<G>,<xset>,<start>,[<gens>,<oprs>,]<opr>)
 ##
-#T there must be a shorter syntax here!
-##  constructs the external subset of <xset> on the union of orbits of <start>.
+##  constructs the external subset of <xset> on the union of orbits of the
+##  points in <start>.
 ##
-tmp := OrbitishFO( "ExternalSubset", 
+OrbitishFO( "ExternalSubset", 
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdentical, true );
-ExternalSubset   := tmp[1];
-ExternalSubsetOp := tmp[2];
+      IsFunction ], IsIdenticalObj, true );
+
 
 #############################################################################
 ##
 #O  ExternalOrbit( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . .
 ##
-##  constructs the external subset on the orbit of <pnt>.
+##  constructs the external subset on the orbit of <pnt>. The
+##  `Representative' of this external set is <pnt>.
 ##
-tmp := OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true );
-ExternalOrbit   := tmp[1];
-ExternalOrbitOp := tmp[2];
+OrbitishFO( "ExternalOrbit", OrbitishReq, IsCollsElms, true );
+
 
 #############################################################################
 ##
-
-#O  Orbit( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
+#O  Orbit( <G>[,<D>], <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
 ##
-tmp := OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
-Orbit   := tmp[1];
-OrbitOp := tmp[2];
+##  The orbit of the point <pnt> is the list of all images of <pnt> under
+##  the operation.
+##
+OrbitishFO( "Orbit", OrbitishReq, IsCollsElms, false );
+
 
 #############################################################################
 ##
-#A  Orbits( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . . . . .
+#O  Orbits( <G>, <D> [,<gens>,<oprs>] [,<opr>] )  . . . . . . . . . . . . . . .
+#A  Orbits( <xset> )
 ##
-tmp := OrbitsishFOA( "Orbits", OrbitsishReq, false, NewAttribute );
-Orbits     := tmp[1];
-OrbitsOp   := tmp[2];
-OrbitsAttr := tmp[3];
+##  returns a list of the orbits (given as lists) under the operation.
+##
+OrbitsishFOA( "Orbits", OrbitsishReq, false, NewAttribute );
+
 
 #############################################################################
 ##
 #O  OrbitLength( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . . .
 ##
-tmp := OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false );
-OrbitLength   := tmp[1];
-OrbitLengthOp := tmp[2];
+##  computes the length of the orbit of <pnt>.
+##
+OrbitishFO( "OrbitLength", OrbitishReq, IsCollsElms, false );
+
 
 #############################################################################
 ##
 #O  OrbitLengths( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
+#A  OrbitLengths( <xset> )
 ##
-tmp := OrbitsishFOA( "OrbitLengths", OrbitsishReq, false, NewAttribute );
-OrbitLengths     := tmp[1];
-OrbitLengthsOp   := tmp[2];
-OrbitLengthsAttr := tmp[3];
+##  computes the lengths of the orbits.
+##
+OrbitsishFOA( "OrbitLengths", OrbitsishReq, false, NewAttribute );
+
 
 #############################################################################
 ##
-#O  OrbitStabilizer( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . .
+#O  OrbitStabilizer( <G>, [<D>,] <pnt>, [<gens>,<oprs>,] <opr> )
 ##
+##  computes the orbit and the stabilizer of <pnt> in one Orbit-Stabilizer
+##  algorithm.
 ##  The stabilizer must have <G> as its parent.
 ##
-tmp := OrbitishFO( "OrbitStabilizer", OrbitishReq, IsCollsElms, false );
-OrbitStabilizer   := tmp[1];
-OrbitStabilizerOp := tmp[2];
+OrbitishFO( "OrbitStabilizer", OrbitishReq, IsCollsElms, false );
+
 
 #############################################################################
 ##
-#A  ExternalOrbits( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . .
+#O  ExternalOrbits( <G>, <D>, [<gens>,<oprs>,] <opr> )
+#A  ExternalOrbits( <xset> )
 ##
-tmp := OrbitsishFOA( "ExternalOrbits", OrbitsishReq, true, NewAttribute );
-ExternalOrbits     := tmp[1];
-ExternalOrbitsOp   := tmp[2];
-ExternalOrbitsAttr := tmp[3];
+##  computes a list of `ExternalOrbit's that give the orbits of <G>.
+##
+OrbitsishFOA( "ExternalOrbits", OrbitsishReq, true, NewAttribute );
+
 
 #############################################################################
 ##
-#A  ExternalOrbitsStabilizers( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . .
+#O  ExternalOrbitsStabilizers( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . .
+#A  ExternalOrbitsStabilizers( <xset> )
 ##
-tmp := OrbitsishFOA( "ExternalOrbitsStabilizers", OrbitsishReq,
+##  In addition to `ExternalOrbits' also computes the stabilizers of the
+##  representatives of the external orbits.
+##
+OrbitsishFOA( "ExternalOrbitsStabilizers", OrbitsishReq,
                true, NewAttribute );
-ExternalOrbitsStabilizers     := tmp[1];
-ExternalOrbitsStabilizersOp   := tmp[2];
-ExternalOrbitsStabilizersAttr := tmp[3];
+
 
 #############################################################################
 ##
-#A  Transitivity( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
+#O  Transitivity( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
+#A  Transitivity( <xset> )
 ##
-tmp := OrbitsishFOA( "Transitivity", OrbitsishReq, false, NewAttribute );
-Transitivity     := tmp[1];
-TransitivityOp   := tmp[2];
-TransitivityAttr := tmp[3];
+##  An operation is $k$-transitive if every $k$-tuple of points can be
+##  mapped simultaneously to every other $k$-tuple.
+##
+OrbitsishFOA( "Transitivity", OrbitsishReq, false, NewAttribute );
+
 
 #############################################################################
 ##
-#A  Blocks( <G>, <D>, <seed>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . .
+#O  Blocks( <G>, <D> [,<seed>] [,<gens>,<oprs>] [,<opr>] )
+#A  Blocks( <xset> [,<seed>] )
 ##
-BlocksAttr := NewAttribute( "BlocksAttr", IsExternalSet );
-tmp := OrbitishFO( "Blocks",
+##  computes a block system (system of imprimitivity) for the operation. If
+##  <seed> is not given an the operation is imprimitive, a minimal nontrivial
+##  block system will be found.
+##  If <seed> is given a block system in which <seed>
+##  is the subset of one block is computed.
+##  The operation must be transitive.
+##
+DeclareAttribute( "BlocksAttr", IsExternalSet );
+
+OrbitishFO( "Blocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdentical, BlocksAttr );
-Blocks   := tmp[1];
-BlocksOp := tmp[2];
+      IsFunction ], IsIdenticalObj, BlocksAttr );
+
 
 #############################################################################
 ##
-#A  MaximalBlocks( <G>, <D>, <seed>, [<gens>,<oprs>,] <opr> ) . . . . . . . .
+#O  MaximalBlocks( <G>, <D> [,<seed>] [,<gens>,<oprs>] [,<opr>] )
+#A  MaximalBlocks( <xset> [,<seed>] )
 ##
-MaximalBlocksAttr := NewAttribute( "MaximalBlocksAttr", IsExternalSet );
-tmp := OrbitishFO( "MaximalBlocks",
+##  computes a list of block representatives for all maximal (i.e blocks are
+##  maximal with respect to inclusion) nontrivial block systems for the
+##  operation. If <seed> is given, only block systems in which one block
+##  contains <seed> are determined.
+##
+DeclareAttribute( "MaximalBlocksAttr", IsExternalSet );
+
+OrbitishFO( "MaximalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdentical, MaximalBlocksAttr );
-MaximalBlocks   := tmp[1];
-MaximalBlocksOp := tmp[2];
+      IsFunction ], IsIdenticalObj, MaximalBlocksAttr );
+
 
 #############################################################################
 ##
-#A  MinimalBlocks( <G>, <D>, <seed>, [<gens>,<oprs>,] <opr> ) . . . . . . . .
+#O  MinimalBlocks( <G>, <D> [,<seed>] [,<gens>,<oprs>] [,<opr>] )
+#A  MinimalBlocks( <xset> [,<seed>] )
 ##
-MinimalBlocksAttr := NewAttribute( "MinimalBlocksAttr", IsExternalSet );
-tmp := OrbitishFO( "MinimalBlocks",
+##  computes a list of block representatives for all minimal (i.e blocks are
+##  minimal with respect to inclusion) nontrivial block systems for the
+##  operation. If <seed> is given, only block systems in which one block
+##  contains <seed> are determined.
+##
+DeclareAttribute( "MinimalBlocksAttr", IsExternalSet );
+
+OrbitishFO( "MinimalBlocks",
     [ IsGroup, IsList, IsList,
       IsList,
       IsList,
-      IsFunction ], IsIdentical, MinimalBlocksAttr );
-MinimalBlocks   := tmp[1];
-MinimalBlocksOp := tmp[2];
+      IsFunction ], IsIdenticalObj, MinimalBlocksAttr );
+
 
 #############################################################################
 ##
-#A  Earns( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . . . . . . . .
+#A  Earns( <G>, <D>, [<gens>,<oprs>,] <opr> )
 ##
-tmp := OrbitsishFOA( "Earns", OrbitsishReq, false, NewAttribute );
-Earns     := tmp[1];
-EarnsOp   := tmp[2];
-EarnsAttr := tmp[3];
+OrbitsishFOA( "Earns", OrbitsishReq, false, NewAttribute );
+
 
 #############################################################################
 ##
+#P  IsTransitive( <G>, <D> [,<gens>,<oprs>] [,<opr>] )
+##
+##  An operation is transive if the whole domain forms one orbit.
+##
+OrbitsishFOA( "IsTransitive", OrbitsishReq, false, NewProperty );
 
-#P  IsTransitive( <G>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
-##
-tmp := OrbitsishFOA( "IsTransitive", OrbitsishReq, false, NewProperty );
-IsTransitive     := tmp[1];
-IsTransitiveOp   := tmp[2];
-IsTransitiveProp := tmp[3];
-
-#############################################################################
-##
-#P  IsPrimitive( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . . . . .
-##
-tmp := OrbitsishFOA( "IsPrimitive", OrbitsishReq, false, NewProperty );
-IsPrimitive     := tmp[1];
-IsPrimitiveOp   := tmp[2];
-IsPrimitiveProp := tmp[3];
 
 #############################################################################
 ##
-#P  IsPrimitiveAffine( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . .
+#P  IsPrimitive( <G>, <D>, [<gens>,<oprs>,] <opr> )
 ##
-tmp := OrbitsishFOA( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
-IsPrimitiveAffine     := tmp[1];
-IsPrimitiveAffineOp   := tmp[2];
-IsPrimitiveAffineProp := tmp[3];
+##  An operation is primitive  if it is transitive and no nontrivial block
+##  systems are permissible.
+##
+OrbitsishFOA( "IsPrimitive", OrbitsishReq, false, NewProperty );
+
 
 #############################################################################
 ##
-#P  IsSemiRegular( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . . . .
+#P  IsPrimitiveAffine( <G>, <D>, [<gens>,<oprs>,] <opr> )
 ##
-tmp := OrbitsishFOA( "IsSemiRegular", OrbitsishReq, false, NewProperty );
-IsSemiRegular     := tmp[1];
-IsSemiRegularOp   := tmp[2];
-IsSemiRegularProp := tmp[3];
+OrbitsishFOA( "IsPrimitiveAffine", OrbitsishReq, false, NewProperty );
+
 
 #############################################################################
 ##
-#P  IsRegular( <G>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . . . . . .
+#O  IsSemiRegular( <G>, <D> [,<gens>,<oprs>] [,<opr>] )
+#P  IsSemiRegular( <xset> )
 ##
-tmp := OrbitsishFOA( "IsRegular", OrbitsishReq, false, NewProperty );
-IsRegular     := tmp[1];
-IsRegularOp   := tmp[2];
-IsRegularProp := tmp[3];
+##  An operation is semiregular is the stabilizer of each point is the
+##  identity.
+##
+OrbitsishFOA( "IsSemiRegular", OrbitsishReq, false, NewProperty );
+
 
 #############################################################################
 ##
-
-#O  Permutation( <g>, <D>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . . . . .
+#O  IsRegular( <G>, <D> [,<gens>,<oprs>] [,<opr>] )
+#P  IsRegular( <xset> )
 ##
-Permutation := NewOperationArgs( "Permutation" );
-PermutationOp := NewOperation( "Permutation",
+##  An operation is regular if it is semiregular (see `IsSemiRegular') and
+##  transitive. In this case every point <pnt> of <D> defines a one to one
+##  correspondence between <G> and <D>.
+##
+OrbitsishFOA( "IsRegular", OrbitsishReq, false, NewProperty );
+
+
+#############################################################################
+##
+#O  Permutation( <g>, <D> [,<gens>,<oprs>] [,<opr>] )
+#A  Permutation( <g>, <xset> )
+##
+##  computes a permutation that corresponds to the action of <g> on the
+##  domain (respectively the `UnderlyingDomain' of the external set).
+##
+DeclareGlobalFunction( "Permutation" );
+
+DeclareOperation( "PermutationOp",
     [ IsObject, IsList, IsFunction ] );
 
 #############################################################################
 ##
-#O  PermutationCycle( <g>, <D>, <pnt>, [<gens>,<oprs>,] <opr> ) . . . . . . .
+#O  PermutationCycle( <g>, <D>, <pnt> [,<opr>] ) . . . . . . .
 ##
-PermutationCycle := NewOperationArgs( "PermutationCycle" );
-PermutationCycleOp := NewOperation( "PermutationCycle",
+##  computes the permutation that represents the cycle of <pnt> under the
+##  action of the elemnt <g>
+##
+DeclareGlobalFunction( "PermutationCycle" );
+
+DeclareOperation( "PermutationCycleOp",
     [ IsObject, IsList, IsObject, IsFunction ] );
+
 
 #############################################################################
 ##
-#O  Cycle( <g>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . .
+#O  Cycle( <g>, <D>, <pnt> [,<opr>] ) . . . . . . .
 ##
-Cycle := NewOperationArgs( "Cycle" );
-CycleOp := NewOperation( "Cycle",
+##  returns a list of the points in the cycle of <pnt> under the action of the
+##  element <g>.
+##
+DeclareGlobalFunction( "Cycle" );
+
+DeclareOperation( "CycleOp",
     [ IsObject, IsList, IsObject, IsFunction ] );
+
 
 #############################################################################
 ##
-#O  Cycles( <g>, <D>, [<gens>,<oprs>,] <opr> )  . . . . . . . . . . . . . . .
+#O  Cycles( <g>, <D> [,<opr>] )  . . . . . . . . . . . . . . .
 ##
-Cycles := NewOperationArgs( "Cycles" );
-CyclesOp := NewOperation( "Cycles",
+##  returns a list of the cycles (as lists of points) of the action of the
+##  element <g>.
+##
+DeclareGlobalFunction( "Cycles" );
+
+DeclareOperation( "CyclesOp",
     [ IsObject, IsList, IsFunction ] );
 
+
 #############################################################################
 ##
-#O  CycleLength( <g>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . . .
+#O  CycleLength( <g>, <D>, <pnt> [,<opr>] ) . . . . . . .
 ##
-CycleLength := NewOperationArgs( "CycleLength" );
-CycleLengthOp := NewOperation( "CycleLength",
+##  returns the length of the cycle of <pnt> under the action of the element
+##  <g>.
+##
+DeclareGlobalFunction( "CycleLength" );
+
+DeclareOperation( "CycleLengthOp",
     [ IsObject, IsList, IsObject, IsFunction ] );
 
+
 #############################################################################
 ##
-#O  CycleLengths( <G>, <D>, <seed>, [<gens>,<oprs>,] <opr> )  . . . . . . . .
+#O  CycleLengths( <g>, <D>, [,<opr>] ) . . . . . . .
 ##
-CycleLengths := NewOperationArgs( "CycleLengths" );
-CycleLengthsOp := NewOperation( "CycleLengths",
+##  returns the lengths of the cycles under the action of the element
+##  <g> on <D>.
+##
+DeclareGlobalFunction( "CycleLengths" );
+
+DeclareOperation( "CycleLengthsOp",
     [ IsObject, IsList, IsFunction ] );
 
+
 #############################################################################
 ##
-
-#O  RepresentativeOperation( <G>, <D>, <d>, <e>, [<gens>,<oprs>,] <opr> ) . .
+#O  RepresentativeOperation( <G> [,<D>], <d>, <e> [,<gens>,<oprs>] [,<opr>] )
 ##
-RepresentativeOperation := NewOperationArgs( "RepresentativeOperation" );
-RepresentativeOperationOp := NewOperation( "RepresentativeOperation",
+##  computes an element of <G> that maps <d> to <e> under the given
+##  operation and returns `fail' if no such element exists.
+##
+DeclareGlobalFunction( "RepresentativeOperation" );
+
+DeclareOperation( "RepresentativeOperationOp",
     [ IsGroup, IsList, IsObject, IsObject, IsFunction ] );
 
-#############################################################################
-##
-#O  Stabilizer( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> ) . . . . . . . . . .
-##
-##  The stabilizer must have <G> as its parent.
-##
-Stabilizer := NewOperationArgs( "Stabilizer" );
-tmp := OrbitishFO( "StabilizerFunc", OrbitishReq, IsCollsElms, false );
-StabilizerFunc := tmp[1];
-StabilizerOp   := tmp[2];
-
-OperationHomomorphismSubsetAsGroupGeneralMappingByImages := NewOperationArgs
-    ( "OperationHomomorphismSubsetAsGroupGeneralMappingByImages" );
-Operation := NewOperationArgs( "Operation" );
-OperationOrbit := NewOperationArgs( "OperationOrbit" );
-OrbitByPosOp := NewOperationArgs( "OrbitByPosOp" );
-OrbitStabilizerByGenerators := NewOperationArgs
-                               ( "OrbitStabilizerByGenerators" );
-OrbitStabilizerListByGenerators := NewOperationArgs
-                               ( "OrbitStabilizerListByGenerators" );
-SetCanonicalRepresentativeOfExternalOrbitByPcgs :=
-  NewOperationArgs( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
-StabilizerOfBlockNC := NewOperationArgs( "StabilizerOfBlockNC" );
 
 #############################################################################
 ##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
+#O  Stabilizer( <G> [,<D>] <pnt> [,<gens>,<oprs>] [,<opr>] ) . . . . . . . . . .
+##
+##  computes the stabilizer in <G> of the point <pnt>, that is the subgroup
+##  of those elements of <G> that fix <pnt>.
+##  The stabilizer will have <G> as its parent.
+##
+DeclareGlobalFunction( "Stabilizer" );
+
+OrbitishFO( "StabilizerFunc", OrbitishReq, IsCollsElms, false );
+BindGlobal( "StabilizerOp", StabilizerFuncOp );
+
+#T DeclareGlobalFunction( "OperationOrbit" );
+#T up to now no  function is installed
+
+DeclareGlobalFunction( "OrbitByPosOp" );
+
+DeclareGlobalFunction( "OrbitStabilizerByGenerators" );
+
+DeclareGlobalFunction( "OrbitStabilizerListByGenerators" );
+
+DeclareGlobalFunction( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
+
+DeclareGlobalFunction( "StabilizerOfBlockNC" );
 
 #############################################################################
 ##
+#O  OnPoints(<pnt>,<g>)
+##
+##  returns <pnt>`^'<g>. This is for example the action of a permutation group
+##  on points, a matrix group on vectors or a group on its elements via
+##  conjugation.
 
+# DeclareGlobalFunction("OnPoints");
+
+#############################################################################
+##
+#O  OnRight(<pnt>,<g>)
+##
+##  returns <pnt>`\*'<g>. This is for example the action of a group on its
+##  elements via right multiplication or the action of a group on the cosets
+##  of a subgroup.
+
+# DeclareGlobalFunction("OnRight");
+
+#############################################################################
+##
+#O  OnLeftInverse(<pnt>,<g>)
+##
+##  returns $<g>^{-1}$`\*'<pnt>. The inverse is necessary to make this a
+##  proper opeartion as in {\GAP} groups always operate from the right.
+##  This operation is used in the representation of a `RightCoset' as an
+##  external set.
+
+# DeclareGlobalFunction("OnLeftInverse");
+
+#############################################################################
+##
+#O  OnSets(<set>,<g>)
+##
+##  <set> must be a set. This action returns the set formed by the images
+##  `OnPoints(<pnt>,<g>)' for all points <pnt> of <set>. In contrast to
+##  OnTuples the images are arranged in a set.
+
+# DeclareGlobalFunction("OnSets");
+
+#############################################################################
+##
+#O  OnTuples(<tup>,<g>)
+##
+##  <tup> must be a list. This action returns the list obtained by
+##  `OnPoints(<pnt>,<g>)' for all points <pnt> of <tup>. In contrast to
+##  OnSets the arrangement of the images is kept.
+
+# DeclareGlobalFunction("OnTuples");
+
+
+#############################################################################
+##
+#O  OnPairs(<tup>,<g>)
+##
+##  Is a special case of `OnTuples' for lists <tup> of length 2.
+
+# DeclareGlobalFunction("OnPairs");
+
+#############################################################################
+##
+#O  OnLines(<vec>,<g>)
+##
+##  <vec> must be a normed (that is its first nonzero entry is normed to one
+##  of the relevant ring) row vector . This action returns the normed vector
+##  <w> obtained from `OnRight(<vec>,<g>)'. This action corresponds to the
+##  projective action of a matrix group on subspaces of dimension 1.
+DeclareGlobalFunction("OnLines");
+
+#############################################################################
+##
+#O  OnSetsSets(<set>,<g>)
+##
+##  Operation on sets of sets (sometimes called partitions).
+DeclareGlobalFunction("OnSetsSets");
+
+#############################################################################
+##
+#O  OnSetsTuples(<set>,<g>)
+##
+##  Operation on sets of tuples.
+DeclareGlobalFunction("OnSetsTuples");
+
+#############################################################################
+##
+#O  OnTuplesSets(<set>,<g>)
+##
+##  Operation on tuples of sets.
+DeclareGlobalFunction("OnTuplesSets");
+
+#############################################################################
+##
+#O  OnTuplesTuples(<set>,<g>)
+##
+##  Operation on tuples of tuples
+DeclareGlobalFunction("OnTuplesTuples");
+
+
+#############################################################################
+##
 #E  oprt.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

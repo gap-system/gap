@@ -213,7 +213,7 @@ if [ ${comp_mode} = "comp_link" ]; then
         *.g) # compile '.g' source files
             name=`basename ${input} .g`
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             temps_o="${temps_o} /tmp/$$_${name}.o"
             c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
@@ -224,7 +224,7 @@ if [ ${comp_mode} = "comp_link" ]; then
         *.gap) # compile '.gap' source files
             name=`basename ${input} .gap`
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             temps_o="${temps_o} /tmp/$$_${name}.o"            
             c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
@@ -235,7 +235,7 @@ if [ ${comp_mode} = "comp_link" ]; then
         *.gd) # compile '.gd' source files
             name=`basename ${input} .gd`
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             temps_o="${temps_o} /tmp/$$_${name}.o"            
             c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
@@ -246,7 +246,7 @@ if [ ${comp_mode} = "comp_link" ]; then
         *.gi) # compile '.gi' source files
             name=`basename ${input} .gi`
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             temps_o="${temps_o} /tmp/$$_${name}.o"            
             c_compile /tmp/$$_${name}.o /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
@@ -313,7 +313,7 @@ elif [ ${comp_mode} = "comp_stat" ]; then
             name=`basename ${input} .g`
             if [ "X${output}" = "X" ]; then output=${name}.o; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             c_compile ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -323,7 +323,7 @@ elif [ ${comp_mode} = "comp_stat" ]; then
             name=`basename ${input} .gap`
             if [ "X${output}" = "X" ]; then output=${name}.o; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             c_compile ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -333,7 +333,7 @@ elif [ ${comp_mode} = "comp_stat" ]; then
             name=`basename ${input} .gd`
             if [ "X${output}" = "X" ]; then output=${name}.o; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             c_compile ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -343,7 +343,7 @@ elif [ ${comp_mode} = "comp_stat" ]; then
             name=`basename ${input} .gi`
             if [ "X${output}" = "X" ]; then output=${name}.o; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
             c_compile ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -373,7 +373,7 @@ elif [ ${comp_mode} = "comp_dyna" ]; then
             name=`basename ${input} .g`
             if [ "X${output}" = "X" ]; then output=${name}.so; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
             c_compile_dyn ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -383,7 +383,7 @@ elif [ ${comp_mode} = "comp_dyna" ]; then
             name=`basename ${input} .gap`
             if [ "X${output}" = "X" ]; then output=${name}.so; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
             c_compile_dyn ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -393,7 +393,7 @@ elif [ ${comp_mode} = "comp_dyna" ]; then
             name=`basename ${input} .gd`
             if [ "X${output}" = "X" ]; then output=${name}.so; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
             c_compile_dyn ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -403,7 +403,7 @@ elif [ ${comp_mode} = "comp_dyna" ]; then
             name=`basename ${input} .gi`
             if [ "X${output}" = "X" ]; then output=${name}.so; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic" ${input}
             c_compile_dyn ${output} /tmp/$$_${name}.c
             echo rm -f /tmp/$$_${name}.c
             rm -f /tmp/$$_${name}.c
@@ -433,7 +433,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .g`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -441,7 +441,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gap`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -449,7 +449,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gd`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -457,7 +457,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gi`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}" ${input}
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 

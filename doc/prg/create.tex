@@ -110,12 +110,19 @@ an object in the representation <rep>.
 The filter <filt> describes the involved filters of <attr>,
 see~"Filters".
 That is, the argument for <attr> is expected to lie in <filt>.
-For example the attribute `Size' was created with second argument
-`IsDomain'.
-Note that a method for <attr> that does not require its argument to lie
+
+Each method for <attr> that does *not* require its argument to lie
 in <filt> must be installed using `InstallOtherMethod'.
-In other words, <filt> is not implied by <attr>.
-For example, there is a method for `Size' that is applicable to lists.
+
+Contrary to the situation with categories and representations,
+the tester of <attr> does *not* imply <filt>.
+This is exactly because of the possibility to install methods
+that do not require <filt>.
+
+For example, the attribute `Size' was created with second argument
+a list or a collection,
+but there is also a method for `Size' that is applicable to
+a character table, which is neither a list nor a collection.
 
 The optional third argument <rank> denotes the incremental rank
 (see~"Filters") of the tester of <attr>, the default value is 1.
@@ -177,7 +184,8 @@ compute the value of <filt> for an object, and also `Setter' and
 `Tester' do not work for <filt>.
 
 In order to change the value of <filt> for an object <obj>,
-one can use only the functions
+one can use logical implications (see~"Logical Implications") or
+the functions
 
 \>SetFilterObj( <obj>, <filt> )
 \>ResetFilterObj( <obj>, <filt> )
@@ -185,6 +193,16 @@ one can use only the functions
 `SetFilterObj' sets the value of <filt> for <obj> to `true',
 `ResetFilterObj' sets the value of <filt> for <obj> to `false'.
 The default value of <filt> for each object is `false'.
+
+Filters created by `NewFilter' are usually used similar to attribute
+testers in the sense that a `true' value indicates that certain methods
+are applicable, independent of the attribute value itself.
+
+Note that there need not be an abstract definition of such a filter
+that would admit to compute whether or not an object lies in the filter;
+usually there are just some situations in which the filter value is set
+to `true', either via a logical implication or by a call to
+`SetFilterObj'.
 
 %T Categories and representations should not be operations,
 %T the same for filters made by `NewFilter'!
@@ -529,6 +547,51 @@ for the objects in the new representation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Global Variables in the Library}
+
+Global variables in the {\GAP} library are usually read-only in order to
+avoid that they are overwritten by chance.
+
+\>BindGlobal( <name>, <val> )
+
+sets the global variable named by the string <name> to the value <val>,
+and makes it read-only.
+An error is given if <name> already had a value bound.
+
+The different types of filters that are used in the library are
+assigned by the following functions which make the variables automatically
+read-only.
+The only other difference between `New<Something>' and
+`Declare<Something>' is that `DeclareAttribute' and `DeclareProperty'
+also bind read-only global variables with names `Has<name>' and `Set<name>'
+for the tester and setter of the attribute.
+
+\>DeclareAttribute( <name>, <filt>[, "mutable"][, <rank>] )
+\>DeclareCategory( <name>, <super> )
+\>DeclareFilter( <name>, <rank> )
+\>DeclareProperty( <name>, <filt>[, <rank>] )
+
+Also operations and other global functions used in the {\GAP} library
+are assigned to read-only variables, with the following functions.
+
+\>DeclareOperation( <name>, <args-filts> )
+\>DeclareGlobalFunction( <name> )
+
+{\GAP} functions that are not operations and that are intended to be
+called by users should be notified to {\GAP} in the declaration part via
+`DeclareGlobalFunction', which returns a function that serves as a
+placeholder for the function that will be installed later,
+and that will print an error message if it is called.
+A global function declared with `DeclareGlobalFunction' can be given its
+value <func> via
+
+\>InstallGlobalFunction( <gvar>, <func> )
+
+where <gvar> is the variable named with the <name> argument of the call
+to `DeclareGlobalFunction'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Declaration and Implementation Part}
 
 Each package of {\GAP} code consists of two parts,
@@ -542,34 +605,28 @@ implementation part.
 
 {\GAP} functions that are not operations and that are intended to be
 called by users should be notified to {\GAP} in the declaration part via
-
-\>NewOperationArgs( <name> )
-
-`NewOperationArgs' returns a function that serves as a placeholder
-for the function that will be installed in the implementation part,
-and that will print an error message if it is called.
-
-% what anbout
-% \>InstallMethodArgs( ... ) ???
-
+`DeclareGlobalFunction'.
+Values for these functions can be installed in the implementation part
+via `InstallGlobalFunction'.
 
 Calls to the following functions belong to the declaration part.
 
+`DeclareAttribute',
+`DeclareCategory',
+`DeclareFilter',
+`DeclareOperation',
+`DeclareGlobalFunction',
+`DeclareProperty'.
 `InstallTrueMethod',
-`NewAttribute',
-`NewCategory',
-`NewFilter',
-`NewOperation',
-`NewOperationArgs',
-`NewProperty'.
 
 Calls to the following functions belong to the implementation part.
 
+`DeclareRepresentation',
+`InstallGlobalFunction',
 `InstallMethod',
 `InstallImmediateMethod',
 `InstallOtherMethod',
 `NewFamily',
-`NewRepresentation',
 `NewType',
 `Objectify'.
 
@@ -577,3 +634,4 @@ Calls to the following functions belong to the implementation part.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  create.tex
+

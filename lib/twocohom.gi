@@ -2,6 +2,9 @@
 ##
 #W  twocohom.gi                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.twocohom_gi :=
     "@(#)$Id$";
 
@@ -12,7 +15,7 @@ Revision.twocohom_gi :=
 ##  The tail of  a conjugate  i^j  (i>j) or a   power i^p (i=j) is  stored at
 ##  posiition (i^2-i)/2+j
 ##
-CollectedWordSQ := function( C, u, v )
+InstallGlobalFunction( CollectedWordSQ, function( C, u, v )
     local   w, p, c, m, g, n, i, j, x, mx, l1, l2, l; 
 
     # convert lists in to word/module pair
@@ -194,13 +197,13 @@ CollectedWordSQ := function( C, u, v )
         fi;
     od;
     return rec( word := w,  tail := mx );
-end;
+end );
 
 #############################################################################
 ##
 #F  CollectorSQ( G, M, isSplit )
 ##
-CollectorSQ := function( G, M, isSplit )
+InstallGlobalFunction( CollectorSQ, function( G, M, isSplit )
     local  r,  pcgs,  o,  i,  j,  word,  k, Gcoll;
 
     # convert word into gen/exp form
@@ -278,13 +281,13 @@ CollectorSQ := function( G, M, isSplit )
 
     # and return collector
     return r;
-end;
+end );
 
 #############################################################################
 ##
 #F  AddEquationsSQ( eq, t1, t2 )
 ##
-AddEquationsSQ := function( eq, t1, t2 )
+InstallGlobalFunction( AddEquationsSQ, function( eq, t1, t2 )
     local   i,  j,  l,  v,  w,  x,  n,  c;
 
     # if <t1> = <t2>  return
@@ -345,13 +348,13 @@ AddEquationsSQ := function( eq, t1, t2 )
             eq.spos[w]   := Filtered( [1..eq.nrels], t -> IsBound(x[t]) );
         fi;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #F  SolutionSQ( C, eq )
 ##
-SolutionSQ := function( C, eq )
+InstallGlobalFunction( SolutionSQ, function( C, eq )
     local   x,  e,  d,  t,  j,  v,  i,  n,  p,  w;
 
     # construct null vector
@@ -445,13 +448,13 @@ SolutionSQ := function( C, eq )
 
     # and return
     return e;
-end;
+end );
 
 #############################################################################
 ##
 #F  TwoCocyclesSQ( C, G, M )
 ##
-TwoCocyclesSQ := function( C, G, M )
+InstallGlobalFunction( TwoCocyclesSQ, function( C, G, M )
     local   pairs, gi, gj, gk, i,  j,  k, w1, w2, eq, p, n;
             
     # get number of generators
@@ -536,13 +539,13 @@ TwoCocyclesSQ := function( C, G, M )
 
     # and return solution
     return SolutionSQ( C, eq );
-end;
+end );
 
 #############################################################################
 ##
 #F  TwoCoboundariesSQ( C, G, M )
 ##
-TwoCoboundariesSQ := function( C, G, M )
+InstallGlobalFunction( TwoCoboundariesSQ, function( C, G, M )
     local   n,  R,  MI,  j,  i,  x,  m,  e,  k,  r,  d;
 
     # start with zero matrix
@@ -608,13 +611,13 @@ TwoCoboundariesSQ := function( C, G, M )
 
     # compute a base for <m>
     return BaseMat(m);
-end;
+end );
 
 #############################################################################
 ##
 #F  TwoCohomologySQ( C, G, M )
 ##
-TwoCohomologySQ := function( C, G, M )
+InstallGlobalFunction( TwoCohomologySQ, function( C, G, M )
     local cc, cb;
     cc := TwoCocyclesSQ( C, G, M );
     if Length( cc ) > 0 then
@@ -627,7 +630,7 @@ TwoCohomologySQ := function( C, G, M )
         fi;
     fi;
     return cc;
-end;
+end );
      
 #############################################################################
 ##
@@ -672,7 +675,19 @@ InstallMethod( TwoCohomology,
     0,
 
 function( G, M )
-    local C;
+    local C, co, cb, cc, pr;
     C := CollectorSQ( G, M, false );
-    return TwoCohomologySQ( C, G, M );
+    co := TwoCocyclesSQ( C, G, M );
+    cb := TwoCoboundariesSQ( C, G, M );
+    cc := BaseSteinitzVectors( co, cb ).factorspace;
+    pr := FpGroupPcGroupSQ( G );
+    return rec( group := G,
+                pcgs := Pcgs( G ),
+                module := M,
+                collector := C,
+                cocycles := co,
+                coboundaries := cb,
+                cohomology := cc,
+                fpgens := GeneratorsOfGroup( pr.group ),
+                fprelators := pr.relators );
 end );

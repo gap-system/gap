@@ -5,12 +5,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file implements the arithmetic for elements from  cyclotomic  fields
 **  $Q(e^{{2 \pi i}/n}) = Q(e_n)$,  which  we  call  cyclotomics  for  short.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_cyclotom_h =
+const char * Revision_cyclotom_h =
    "@(#)$Id$";
 #endif
 
@@ -25,28 +26,9 @@ SYS_CONST char * Revision_cyclotom_h =
 /****************************************************************************
 **
 
-*F  SetupCyc()  . . . . . . . . . . . . . . initialize the cyclotomic package
+*F  InitInfoCyc() . . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupCyc ( void );
-
-
-/****************************************************************************
-**
-*F  InitCyc() . . . . . . . . . . . . . . . initialize the cyclotomic package
-**
-**  'InitCyc' initializes the cyclotomic package.
-*/
-extern void InitCyc ( void );
-
-
-
-/****************************************************************************
-**
-*F  CheckCyc()  . . . . .  check the initialisation of the cyclotomic package
-**
-**  'InitCyc' initializes the cyclotomic package.
-*/
-extern void CheckCyc ( void );
+StructInitInfo * InitInfoCyc ( void );
 
 
 /****************************************************************************

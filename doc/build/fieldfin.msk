@@ -1,0 +1,23 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  fieldfin.msk                  GAP documentation             Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Finite Fields}
+
+\Declaration{IsFFE}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for finite field elements}
+
+\Declaration{DegreeFFE}
+\Declaration{LogFFE}
+\Declaration{IntFFE}
+\Declaration{IntVecFFE}
+
+\Declaration{GaloisField}
+\Declaration{PrimitiveRoot}
+

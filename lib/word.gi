@@ -3,6 +3,7 @@
 #W  word.gi                     GAP library                     Thomas Breuer
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 #H  @(#)$Id$
 ##
@@ -17,8 +18,8 @@ Revision.word_gi :=
 #M  \=( <w1>, <w2> )  . . . . . . . . . . . . . . . . . . . . . . . for words
 ##
 InstallMethod( \=,
-    "method for two words",
-    IsIdentical,
+    "for two words",
+    IsIdenticalObj,
     [ IsWord, IsWord ], 0,
     function( x, y )
     return ExtRepOfObj( x ) = ExtRepOfObj( y );
@@ -29,31 +30,31 @@ InstallMethod( \=,
 ##
 #M  \<( <w1>, <w2> )  . . . . . . . . . . . . . . . . . . . . . . . for words
 ##
-##  Words  are ordered as  follows: a lexicographical   order in the external
-##  representation is chosen.
+##  Words are ordered by the lexicographical order of their external
+##  representation.
 ##
 InstallMethod( \<,
-    "method for two words",
-    IsIdentical,
+    "for two words",
+    IsIdenticalObj,
     [ IsWord, IsWord ], 0,
     function( x, y )
     local n;
 
-    x := ExtRepOfObj( x );
-    y := ExtRepOfObj( y );
+    x:= ExtRepOfObj( x );
+    y:= ExtRepOfObj( y );
     if IsInt( x ) then
       return IsList( y ) or x < y;
     elif IsInt( y ) then
       return false;
     fi;
-    for n  in [ 1 .. Minimum(Length(x),Length(y)) ]  do
-        if x[n] < y[n]  then
-            return true;
-        elif y[n] < x[n]  then
-            return false;
-        fi;
+    for n in [ 1 .. Minimum( Length( x ), Length( y ) ) ] do
+      if x[n] < y[n] then
+        return true;
+      elif y[n] < x[n] then
+        return false;
+      fi;
     od;
-    return Length(x) < Length(y);
+    return Length( x ) < Length( y );
     end );
 
 
@@ -65,16 +66,16 @@ InstallMethod( \<,
 ##  into a bracket.
 ##
 InstallMethod( \*,
-    "method for two nonassoc. words",
-    IsIdentical,
+    "for two nonassoc. words",
+    IsIdenticalObj,
     [ IsNonassocWord, IsNonassocWord ], 0,
     function( x, y )
 
-    local xx,    # external representation of 'x'
-          l,     # current length of 'xx', minus 1
-          yy,    # external representation of 'y'
-          p,     # current first valid position in 'yy'
-          len;   # total length of 'yy' minus 1
+    local xx,    # external representation of `x'
+          l,     # current length of `xx', minus 1
+          yy,    # external representation of `y'
+          p,     # current first valid position in `yy'
+          len;   # total length of `yy' minus 1
 
     # Treat the special cases that one argument is trivial.
     xx:= ExtRepOfObj( x );
@@ -93,17 +94,10 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  \^( <w>, <n> )
+#M  Length( <w> ) . . . . . . . . . . . . . . . . . . .  for a nonassoc. word
 ##
-#T  how is this defined?
-
-
-#############################################################################
-##
-#M  LengthWord( <w> ) . . . . . . . . . . . . . . . . .  for a nonassoc. word
-##
-InstallMethod( LengthWord,
-    "method for a nonassoc. word",
+InstallOtherMethod( Length,
+    "for a nonassoc. word",
     true,
     [ IsNonassocWord ], 0,
     function( w )
@@ -126,7 +120,7 @@ InstallMethod( LengthWord,
 #M  MappedWord( <x>, <gens1>, <gens2> )
 ##
 InstallMethod( MappedWord,
-    "method for a nonassoc. word, a homogeneous list, and a list",
+    "for a nonassoc. word, a homogeneous list, and a list",
     IsElmsCollsX,
     [ IsNonassocWord, IsNonassocWordCollection, IsList ], 0,
     function( x, gens1, gens2 )
@@ -154,8 +148,7 @@ InstallMethod( MappedWord,
 ##
 ##  This representation is equal to the external representation.
 ##
-IsBracketRep := NewRepresentation( "IsBracketRep",
-    IsPositionalObjectRep, [] );
+DeclareRepresentation( "IsBracketRep", IsPositionalObjectRep, [] );
 
 
 #############################################################################
@@ -163,7 +156,7 @@ IsBracketRep := NewRepresentation( "IsBracketRep",
 #M  Print( <w> )  . . . . . . . . . . . . . . . . . . .  for a nonassoc. word
 ##
 InstallMethod( PrintObj,
-    "method for a nonassociative word",
+    "for a nonassociative word",
     true,
     [ IsNonassocWord ], 0,
     function( elm )
@@ -194,7 +187,7 @@ InstallMethod( PrintObj,
 #M  String( <w> ) . . . . . . . . . . . . . . . . . . .  for a nonassoc. word
 ##
 InstallMethod( String,
-    "method for a nonassociative word",
+    "for a nonassociative word",
     true,
     [ IsNonassocWord ], 0,
     function( elm )
@@ -224,7 +217,7 @@ InstallMethod( String,
 #M  ObjByExtRep( <F>, <descr> ) . . . . . .  for a nonassociative word family
 ##
 InstallMethod( ObjByExtRep,
-    "method for a family of nonassociative words, and a homogeneous list",
+    "for a family of nonassociative words, and a homogeneous list",
     true,
     [ IsNonassocWordFamily, IsObject ], 0,
     function( F, descr )
@@ -237,7 +230,7 @@ InstallMethod( ObjByExtRep,
 #M  ExtRepOfObj( <w> )  . . . . . . . . . . . . . . for a nonassociative word
 ##
 InstallMethod( ExtRepOfObj,
-    "method for a nonassoc. word",
+    "for a nonassoc. word",
     true,
     [ IsNonassocWord and IsBracketRep ], 0,
     elm -> elm![1] );
@@ -245,26 +238,17 @@ InstallMethod( ExtRepOfObj,
 
 #############################################################################
 ##
-#M  NonassocWord( <Fam>, <descr> )  . . . . . . . . for a nonass. word family
-##
-NonassocWord := ObjByExtRep;
-
-
-#############################################################################
-##
 #M  One( <w> )  . . . . . . . . . . . . . . . . . for a nonass. word-with-one
 ##
 InstallMethod( One,
-    "method for a nonassoc. word-with-one",
+    "for a nonassoc. word-with-one",
     true,
     [ IsNonassocWordWithOne ], 0,
-    x -> ObjByExtRep( FamilyObj( x )!.defaultType, 0 ) );
+    x -> ObjByExtRep( FamilyObj( x ), 0 ) );
 
 
 #############################################################################
 ##
 #E  word.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
 

@@ -4,6 +4,7 @@
 #X  after this file is read an 'ExportToKernelFinished' is done.
 ##
 ReadLib( "kernel.g"    );
+ReadLib( "global.g"    );
 ReadLib( "filter.g"    );
 ReadLib( "oper.g"      );
 ReadLib( "type.g"      );
@@ -12,6 +13,9 @@ ReadLib( "methsel.g"   );
 ReadLib( "function.g"  );
 
 ReadLib( "object.gd"   );
+
+ReadLib( "variable.g"  );
+
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
 ReadLib( "wpobj.gd"    );
@@ -40,6 +44,11 @@ ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 
+ReadLib( "vecmat.gd"   );
+
+ReadLib( "global.gd"   );
+
 ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
+ReadLib( "global.gi"   );
 

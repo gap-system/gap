@@ -75,8 +75,8 @@ situation the method is installed,
 each entry being a filter,
 and <val> is an integer that measures the priority of the method.
 
-The exact meaning of the arguments <famp>, <args-filts>, and <val>
-is explained below.
+The exact meaning of the arguments <famp>, <args-filts>,
+and <val> is explained below.
 
 <opr> expects its methods to require certain filters for their arguments.
 For example, the argument of a method for the operation `Zero' must be
@@ -105,7 +105,7 @@ For unary operations such as attributes and properties,
 there is no such relation to postulate,
 <famp> is `ReturnTrue' for these operations,
 a function that does always return `true'.
-For binary operations, the usual value of <famp> is `IsIdentical',
+For binary operations, the usual value of <famp> is `IsIdenticalObj',
 which means that both arguments must lie in the same family.
 
 If no method is applicable,
@@ -164,6 +164,15 @@ one may install a method for the property `IsSolvableGroup' that checks
 whether the size of the argument is an odd integer,
 returns `true' if yes,
 and gives up otherwise.
+
+Care is  needed  if a  partial  method  might  modify the  type of  one  of its
+arguments, for example by computing an attribute  or property. If this happens,
+and the type  has   really changed, then  the  method  should not  exit   using
+`TryNextMethod()' but  should call the operation again,  as the new information
+in the type may   cause  some methods  previously   judged inapplicable to   be
+applicable. For  example, if  the  above method  for `IsSolvableGroup' actually
+computes the size, (rather than  just examining  a  stored size), then it  must
+take care to check whether the type of the group has changed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Immediate Methods}

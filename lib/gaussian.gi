@@ -5,36 +5,34 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for Gaussian rationals and Gaussian integers.
 ##
 ##  Gaussian rationals are elements of the form $a + b * I$ where $I$ is the
 ##  square root of -1 and $a,b$ are rationals.
-##  Note that $I$ is written as 'E(4)', i.e., as a fourth root of unity in
+##  Note that $I$ is written as `E(4)', i.e., as a fourth root of unity in
 ##  {\GAP}.
 ##  Gauss was the first to investigate such numbers, and already proved that
 ##  the ring of integers of this field, i.e., the elements of the form
 ##  $a + b * I$ where $a,b$ are integers, forms a Euclidean Ring.
-##  It follows that  this ring is a Unique Factorization Domain.
-##
+##  It follows that this ring is a Unique Factorization Domain.
 ##
 Revision.gaussian_gi :=
     "@(#)$Id$";
 
-#T make 'Integers' a FLMLOR over 'Integers'!
-#T (then 'Enumerator' etc. for 'GaussianIntegers' should automatically work)
-
 
 #############################################################################
 ##
-#M  \in( <n>, <GaussianIntegers> )  . . membership test for Gaussian integers
+#M  \in( <n>, GaussianIntegers )  . . . membership test for Gaussian integers
 ##
-##  Gaussian integers are of the form '<a> + <b>\*E(4)', where <a> and <b>
+##  Gaussian integers are of the form `<a> + <b> * E(4)', where <a> and <b>
 ##  are integers.
 ##
 InstallMethod( \in,
-    "method for Gaussian integers",
-    IsElmsColls, [ IsCyc, IsGaussianIntegers ], 0,
+    "for Gaussian integers",
+    IsElmsColls,
+    [ IsCyc, IsGaussianIntegers ], 0,
     function( cyc, GaussianIntegers )
     return IsCycInt( cyc ) and 4 mod Conductor( cyc ) = 0;
     end );
@@ -42,25 +40,27 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <GaussianIntegers> ) . . . . . . . . for Gaussian integers
+#M  BasisOfDomain( GaussianIntegers ) . . . . . . . . . for Gaussian integers
 ##
 InstallMethod( BasisOfDomain,
-    "method for Gaussian integers",
-    true, [ IsGaussianIntegers ], 0,
+    "for Gaussian integers",
+    true,
+    [ IsGaussianIntegers ], 0,
     CanonicalBasis );
 
     
 #############################################################################
 ##
-#M  CanonicalBasis( <GaussianIntegers> )  . . . . . . . for Gaussian integers
+#M  CanonicalBasis( GaussianIntegers )  . . . . . . . . for Gaussian integers
 ##
-IsCanonicalBasisGaussianIntegersRep := NewRepresentation(
+DeclareRepresentation(
     "IsCanonicalBasisGaussianIntegersRep", IsAttributeStoringRep,
     [ "conductor", "zumbroichbase" ] );
 
 InstallMethod( CanonicalBasis,
-    "method for Gaussian integers",
-    true, [ IsGaussianIntegers ], 0,
+    "for Gaussian integers",
+    true,
+    [ IsGaussianIntegers ], 0,
     function( GaussianIntegers )
     local B;
 
@@ -86,7 +86,7 @@ InstallMethod( CanonicalBasis,
 #M  Coefficients( <B>, <z> )  . for the canon. basis of the Gaussian integers
 ##
 InstallMethod( Coefficients,
-    "method for canon. basis of Gaussian integers, and cyclotomic",
+    "for canon. basis of Gaussian integers, and cyclotomic",
     true,
     [ IsBasis and IsCanonicalBasis and IsCanonicalBasisGaussianIntegersRep,
       IsCyc ], 0,
@@ -100,7 +100,7 @@ InstallMethod( Coefficients,
 
     N:= B!.conductor;
 
-    # Get the Zumbroich basis representation of <z> in 'N'-th roots.
+    # Get the Zumbroich basis representation of <z> in `N'-th roots.
     coeffs:= CoeffsCyc( z, N );
     if coeffs = fail then return fail; fi;
 
@@ -112,25 +112,12 @@ InstallMethod( Coefficients,
     end );
 
 
-#T #############################################################################
-#T ##
-#T #M  Random( <GaussianIntegers> )  . . . . . . . . . . . for Gaussian integers
-#T ##
-#T InstallMethod( Random,
-#T     "method for Gaussian integers",
-#T     true, [ IsGaussianIntegers ], 0,
-#T     function( GaussianIntegers )
-#T     return Random( Integers ) + Random( Integers ) * E(4);
-#T     end );
-#T #T necessary?
-
-
 #############################################################################
 ##
 #M  Quotient( GaussianIntegers, <n>, <m> )
 ##
 InstallMethod( Quotient,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElmsElms,
     [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
     function ( GaussianIntegers, x, y )
@@ -145,30 +132,17 @@ InstallMethod( Quotient,
 
 #############################################################################
 ##
-#M  IsAssociated( <GaussianIntegers>, <x>, <y> )
-##
-InstallMethod( IsAssociated,
-    "method for Gaussian integers",
-    IsCollsElmsElms,
-    [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
-    function( GaussianIntegers, x, y )
-    return x = y  or x = -y  or x = E(4)*y  or x = -E(4)*y;
-    end );
-
-
-#############################################################################
-##
-#M  StandardAssociate( <GaussianIntegers>, <x> )  . . . for Gaussian integers
+#M  StandardAssociate( GaussianIntegers, <x> )  . . . for Gaussian integers
 ##
 ##  The standard associate of <x> is an associated element <y> of <x> that
 ##  lies in the  first quadrant of the complex plane.
-##  That is <y> is that element from '<x> * [1,-1,E(4),-E(4)]' that has
+##  That is <y> is that element from `<x> * [1,-1,E(4),-E(4)]' that has
 ##  positive real part and nonnegative imaginary part.
 ##
-##  (This is the generalization of 'Abs' (see "Abs") for Gaussian integers.)
+##  (This is the generalization of `Abs' (see "Abs") for Gaussian integers.)
 ##
 InstallMethod( StandardAssociate,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElms,
     [ IsGaussianIntegers, IsCyc ], 0,
     function ( GaussianIntegers, x )
@@ -195,7 +169,7 @@ InstallMethod( StandardAssociate,
 #M  EuclideanDegree( GaussianIntegers, <n> )
 ##
 InstallMethod( EuclideanDegree,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElms,
     [ IsGaussianIntegers, IsCyc ], 0,
     function( GaussianIntegers, x )
@@ -212,7 +186,7 @@ InstallMethod( EuclideanDegree,
 #M  EuclideanRemainder( GaussianIntegers, <n>, <m> )
 ##
 InstallMethod( EuclideanRemainder,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElmsElms,
     [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
     function ( GaussianIntegers, x, y )
@@ -229,7 +203,7 @@ InstallMethod( EuclideanRemainder,
 #M  EuclideanQuotient( GaussianIntegers, <x>, <y> )
 ##
 InstallMethod( EuclideanQuotient,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElmsElms,
     [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
     function ( GaussianIntegers, x, y )
@@ -246,7 +220,7 @@ InstallMethod( EuclideanQuotient,
 #M  QuotientRemainder( GaussianIntegers, <x>, <y> )
 ##
 InstallMethod( QuotientRemainder,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElmsElms,
     [ IsGaussianIntegers, IsCyc, IsCyc ], 0,
     function ( GaussianIntegers, x, y )
@@ -265,7 +239,7 @@ InstallMethod( QuotientRemainder,
 #M  IsPrime( GaussianIntegers, <n> )
 ##
 InstallMethod( IsPrime,
-    "method for Gaussian integers and integer",
+    "for Gaussian integers and integer",
     IsCollsElms,
     [ IsGaussianIntegers, IsInt ], 0,
     function ( GaussianIntegers, x )
@@ -273,7 +247,7 @@ InstallMethod( IsPrime,
     end );
 
 InstallMethod( IsPrime,
-    "method for Gaussian integers and cyclotomic",
+    "for Gaussian integers and cyclotomic",
     IsCollsElms,
     [ IsGaussianIntegers, IsCyc ], 0,
     function ( GaussianIntegers, x )
@@ -290,13 +264,13 @@ InstallMethod( IsPrime,
 #M  Factors( GaussianIntegers, <x> )
 ##
 InstallMethod( Factors,
-    "method for Gaussian integers",
+    "for Gaussian integers",
     IsCollsElms,
     [ IsGaussianIntegers, IsCyc ], 0,
     function ( GaussianIntegers, x )
     local   facs,       # factors (result)
             prm,        # prime factors of the norm
-            tsq;        # representation of 'prm' as $x^2 + y^2$
+            tsq;        # representation of `prm' as $x^2 + y^2$
 
     # handle trivial cases
     if x in [ 0, 1, -1, E(4), -E(4) ]  then

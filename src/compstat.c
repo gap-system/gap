@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 */
 #include        "system.h"
 #include        "compstat.h"            /* statically linked modules       */
@@ -17,15 +18,15 @@
 **
 **  This a dummy list in case no module is statically linked.
 */
-#ifdef USE_PRECOMPILED
-extern StructCompInitInfo * Init_lib_methsel_g ( void );
-extern StructCompInitInfo * Init_lib_type_g ( void );
+#ifndef AVOID_PRECOMPILED
+extern StructInitInfo * Init__methsel ( void );
+extern StructInitInfo * Init__type ( void );
 #endif
 
-CompInitFunc CompInitFuncs [] = {
-#ifdef USE_PRECOMPILED
-    Init_lib_methsel_g,
-    Init_lib_type_g,
+InitInfoFunc CompInitFuncs [] = {
+#ifndef AVOID_PRECOMPILED
+    Init__methsel,
+    Init__type,
 #endif
     0
 };

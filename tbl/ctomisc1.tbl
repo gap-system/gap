@@ -28,7 +28,7 @@ MOT("2..11.m23",
 "   comments:non-split extension of m23 with an\n",
 "           elementar-abelian group of order 2..11.m23 \n",
 "   test: 1. o.r., sym 2 decompose correctly  \n",
-"2powermap determined by subgroup fusion into Fi23\n",
+"2nd power map determined by subgroup fusion into Fi23\n",
 "tests: 1.o.r., pow[2,3,5,7,11,23]"
 ],
 [20891566080,908328960,82575360,11796480,344064,49152,43008,6144,12288,12288,
@@ -3074,6 +3074,7 @@ E(3)-E(3)^2,0,0,-1,-1,1,1,0,0,0,0,0,0,0,0,0,0,0,0],
 [( 5, 6)( 7, 8)(16,17)(18,19)(23,24)(25,26)(27,28)(29,30)(31,32)(33,34)(35,36)
 (37,38)(39,40)(41,42)(43,44)(45,46)(47,48)(49,50)(51,52)(53,54)(55,56)(57,58)
 (59,60)(61,62)(63,64)]);
+ARC("2^{1+6}:3^{1+2}:2A4","tomidentifier","2^(1+6)-:3^(1+2)+:2A4");
 ALF("2^{1+6}:3^{1+2}:2A4","U5(2)",[1,2,3,10,6,7,16,17,8,22,39,2,3,11,12,
 19,18,24,23,10,11,28,42,43,38,37,5,4,6,7,9,9,14,15,18,19,17,16,14,15,21,
 20,24,23,26,25,21,20,27,27,25,26,30,29,35,36,37,38,43,42,40,41,46,47],[
@@ -3193,6 +3194,7 @@ MOT("4^2:s3",
 [TENSOR,[4,2]],
 [TENSOR,[5,2]],[6,-2,2,2,-2,0,0,0,0,0]],
 [( 3, 4)( 9,10)]);
+ARC("4^2:s3","tomidentifier","4^2:S3");
 ALF("4^2:s3","U3(3)",[1,2,5,6,7,7,4,2,12,11],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -4042,7 +4044,7 @@ MOT("c2m22",
 "centralizer of an involution in the sporadic simple Mathieu group M22,\n",
 "computed using CAYLEY,\n",
 "tests: 1.o.r., pow[2,3],\n",
-"2powermap determined only up to matrix automorphisms,"
+"2nd power map determined only up to matrix automorphisms,"
 ],
 [384,384,16,8,32,48,16,64,8,32,12,12,12,12,16,16,16],
 [,[1,1,1,5,1,1,8,1,10,2,11,11,11,11,8,2,8],[1,2,3,4,5,6,7,8,9,10,1,2,6,6,15,
@@ -4071,7 +4073,7 @@ MOT("c2m24",
 [
 "origin: CAS library,\n",
 "tests: 1.o.r., pow[2,3,5],\n",
-"2powermap determined only up to matrix automorphisms,"
+"2nd power map determined only up to matrix automorphisms,"
 ],
 [7680,7680,3840,512,512,256,96,96,32,32,128,128,64,64,64,32,32,24,24,12,16,16,
 16,16,12,12,20,20,20,20],

@@ -6,15 +6,17 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the various read-eval-print loops and  related  stuff.
 */
 #include        <stdio.h>
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+#include        <string.h>              /* memcpy */
 
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_gap_c =
+const char * Revision_gap_c =
    "@(#)$Id$";
 
 extern char * In;
@@ -55,6 +57,7 @@ extern char * In;
 #include        "blister.h"             /* boolean lists                   */
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
+#include        "vecgf2.h"              /* functions for GF2 vectors       */
 
 #include        "objfgelm.h"            /* objects of free groups          */
 #include        "objpcgel.h"            /* objects of polycyclic groups    */
@@ -132,10 +135,17 @@ UInt Time;
 UInt BreakOnError = 1;
 
 
+
 /****************************************************************************
 **
-
 *F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
+**
+**  This is the function actually called in Read-Eval-View loops.
+**  We might be in trouble if the library has not (yet) loaded and so ViewObj
+**  is not yet defined, or the fallback methods not yet installed. To avoid
+**  this problem, we check, and use PrintObj if there is a problem
+**
+**  This function also supplies the \n after viewing.
 */
 UInt ViewObjGVar;
 
@@ -154,7 +164,7 @@ void ViewObjHandler ( Obj obj )
             PrintObj(obj);
         }
         else {
-            CALL_1ARGS( func, obj );
+            ViewObj( obj );
         }
         Pr( "\n", 0L, 0L );
         memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
@@ -171,18 +181,27 @@ void ViewObjHandler ( Obj obj )
 */
 Obj AtExitFunctions;
 
+UInt SaveOnExitFileGVar;
+
+UInt QUITTINGGVar;
+
 int main (
     int                 argc,
     char *              argv [] )
 {
-    UInt                type;                   /* type of command         */
+    ExecStatus          status;                 /* result of ReadEvalCommand*/
+    UInt                type;                   /* result of compile       */
     UInt                time;                   /* start time              */
     Obj                 func;                   /* function (compiler)     */
     Int4                crc;                    /* crc of file to compile  */
     volatile UInt       i;                      /* loop variable           */
+    Obj                 SaveOnExitFile;         /* contents of the GVar    */
 
     /* initialize everything                                               */
     InitializeGap( &argc, argv );
+    if (UserHasQUIT)		/* maybe the user QUIT from the initial
+				 read of init.g */
+      goto finalize;
 
     /* maybe compile                                                       */
     if ( SyCompilePlease ) {
@@ -191,7 +210,8 @@ int main (
         }
         func = READ_AS_FUNC();
         crc  = SyGAPCRC(SyCompileInput);
-        type = CompileFunc( SyCompileOutput,
+        type = CompileFunc(
+			   SyCompileOutput,
                             func,
                             SyCompileName,
                             crc,
@@ -210,13 +230,15 @@ int main (
         /* read and evaluate one command                                   */
         Prompt = "gap> ";
         ClearError();
-        type = ReadEvalCommand();
+        status = ReadEvalCommand();
+	if (UserHasQUIT)
+	  break;
 
         /* stop the stopwatch                                              */
         AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
 
         /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
+        if ( status == STATUS_END && ReadEvalResult != 0 ) {
 
             /* remember the value in 'last' and the time in 'time'         */
             AssGVar( Last3, VAL_GVAR( Last2 ) );
@@ -230,20 +252,34 @@ int main (
         }
 
         /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
+        else if ( status & (STATUS_RETURN_VAL | STATUS_RETURN_VOID) ) {
             Pr( "'return' must not be used in main read-eval-print loop",
                 0L, 0L );
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
+        else if ( status & (STATUS_EOF | STATUS_QUIT ) ) {
             break;
         }
+	
+	/* handle QUIT */
+	else if (status & (STATUS_QQUIT)) {
+	  UserHasQUIT = 1;
+	  break;
+	}
+	UserHasQuit = 0;	/* quit has done its job if we are here */
 
     }
 
+ finalize:
+    /* The QUITTING variable is made available to the AtExitFunction */
+    MakeReadWriteGVar(QUITTINGGVar);
+    AssGVar(QUITTINGGVar, UserHasQUIT ? True : False );
+    MakeReadOnlyGVar(QUITTINGGVar);
+
     /* call the exit functions                                             */
     BreakOnError = 0;
+
     for ( i = 1;  i <= LEN_PLIST(AtExitFunctions);  i++ ) {
         if ( setjmp(ReadJmpError) == 0 ) {
             func = ELM_PLIST( AtExitFunctions, i );
@@ -251,6 +287,25 @@ int main (
         }
     }
 
+    /* Possibly save the workspace */
+    if ( !UserHasQUIT
+	 && (SaveOnExitFile = VAL_GVAR(SaveOnExitFileGVar))
+	 && SaveOnExitFile != False)
+      {
+	if (IsStringConv(SaveOnExitFile))
+	  {
+	    if (SaveWorkspace(SaveOnExitFile) == True)
+	      Pr("Workspace saved in %s\n",
+		 (Int)CSTR_STRING(SaveOnExitFile), 0);
+	    else
+	      Pr("Attempt to save in %s failed\n",
+		 (Int)CSTR_STRING(SaveOnExitFile), 0);
+	  }
+	else
+	  Pr("SaveOnExitFile is a %s not a filename\n",
+	     (Int)TNAM_OBJ(SaveOnExitFile), 0);
+      }
+    
     /* exit to the operating system, the return is there to please lint    */
     SyExit(0);
     return 0;
@@ -386,6 +441,157 @@ Obj FuncSizeScreen (
     SET_ELM_PLIST( size, 2, INTOBJ_INT(nr)  );
     return size;
 
+}
+
+
+/****************************************************************************
+**
+*F  FuncWindowCmd( <self>, <args> ) . . . . . . . .  execute a window command
+*/
+static Obj WindowCmdString;
+
+Obj FuncWindowCmd (
+    Obj	      	    self,
+    Obj             args )
+{
+    Obj             tmp;
+    Obj       	    list;
+    Int             len;
+    Int             n,  m;
+    Int             i;
+    Char *          ptr;
+    Char *          qtr;
+
+    /* check arguments                                                     */
+    while ( ! IS_LIST(args) ) {
+	args = ErrorReturnObj( "argument list must be a list (not a %s)",
+            (Int)TNAM_OBJ(args), 0L,
+            "you can return a list of arguments" );
+
+    }
+    tmp = ELM_LIST(args,1);
+    while ( ! IsStringConv(tmp) || 3 != LEN_LIST(tmp) ) {
+	while ( ! IsStringConv(tmp) ) {
+	    tmp = ErrorReturnObj( "<cmd> must be a string (not a %s)",
+	        (Int)TNAM_OBJ(tmp), 0L,
+		"you can return a string as command" );
+	}
+	if ( 3 != LEN_LIST(tmp) ) {
+	    tmp = ErrorReturnObj( "<cmd> must be a string of length 3",
+	        0L, 0L,
+		"you can return a string as command" );
+	}
+    }
+
+    /* compute size needed to store argument string                        */
+    len = 13;
+    for ( i = 2;  i <= LEN_LIST(args);  i++ )
+    {
+	tmp = ELM_LIST( args, i );
+	while ( TNUM_OBJ(tmp) != T_INT && ! IsStringConv(tmp) ) {
+	    tmp = ErrorReturnObj(
+              "%d. argument must be a string or integer (not a %s)",
+	      i, (Int)TNAM_OBJ(tmp),
+	      "yout can return a string or integer" );
+	    SET_ELM_PLIST( args, i, tmp );
+	}
+	if ( TNUM_OBJ(tmp) == T_INT )
+	    len += 12;
+	else
+	    len += 12 + LEN_LIST(tmp);
+    }
+    if ( SIZE_OBJ(WindowCmdString) <= len ) {
+	ResizeBag( WindowCmdString, 2*len+1 );
+    }
+
+    /* convert <args> into an argument string                              */
+    ptr  = (Char*) CSTR_STRING(WindowCmdString);
+    *ptr = '\0';
+
+    /* first the command name                                              */
+    SyStrncat( ptr, CSTR_STRING( ELM_LIST(args,1) ), 3 );
+    ptr += 3;
+
+    /* and now the arguments                                               */
+    for ( i = 2;  i <= LEN_LIST(args);  i++ )
+    {
+	tmp = ELM_LIST(args,i);
+
+	if ( TNUM_OBJ(tmp) == T_INT ) {
+	    *ptr++ = 'I';
+	    m = INT_INTOBJ(tmp);
+	    for ( m = (m<0)?-m:m;  0 < m;  m /= 10 )
+		*ptr++ = (m%10) + '0';
+	    if ( INT_INTOBJ(tmp) < 0 )
+		*ptr++ = '-';
+	    else
+		*ptr++ = '+';
+	}
+	else {
+	    *ptr++ = 'S';
+	    m = LEN_LIST(tmp);
+	    for ( ; 0 < m;  m/= 10 )
+		*ptr++ = (m%10) + '0';
+	    *ptr++ = '+';
+	    qtr = CSTR_STRING(tmp);
+	    for ( m = LEN_LIST(tmp);  0 < m;  m-- )
+		*ptr++ = *qtr++;
+	}
+    }
+    *ptr = 0;
+
+    /* now call the window front end with the argument string              */
+    qtr = CSTR_STRING(WindowCmdString);
+    ptr = SyWinCmd( qtr, SyStrlen(qtr) );
+    len = SyStrlen(ptr);
+
+    /* now convert result back into a list                                 */
+    list = NEW_PLIST( T_PLIST, 11 );
+    SET_LEN_PLIST( list, 0 );
+    i = 1;
+    while ( 0 < len ) {
+	if ( *ptr == 'I' ) {
+	    ptr++;
+	    for ( n=0,m=1; '0' <= *ptr && *ptr <= '9'; ptr++,m *= 10,len-- )
+		n += (*ptr-'0') * m;
+	    if ( *ptr++ == '-' )
+		n *= -1;
+	    len -= 2;
+	    AssPlist( list, i, INTOBJ_INT(n) );
+	}
+	else if ( *ptr == 'S' ) {
+	    ptr++;
+	    for ( n=0,m=1;  '0' <= *ptr && *ptr <= '9';  ptr++,m *= 10,len-- )
+		n += (*ptr-'0') * m;
+	    ptr++; /* ignore the '+' */
+	    tmp = NEW_STRING(n);
+	    *CSTR_STRING(tmp) = '\0';
+	    SyStrncat( CSTR_STRING(tmp), ptr, n );
+	    ptr += n;
+	    len -= n+2;
+	    AssPlist( list, i, tmp );
+	}
+	else {
+	    ErrorQuit( "unknown return value '%s'", (Int)ptr, 0 );
+	    return 0;
+	}
+	i++;
+    }
+
+    /* if the first entry is one signal an error */
+    if ( ELM_LIST(list,1) == INTOBJ_INT(1) ) {
+	tmp = NEW_STRING(15);
+	SyStrncat( CSTR_STRING(tmp), "window system: ", 15 );
+	SET_ELM_PLIST( list, 1, tmp );
+	SET_LEN_PLIST( list, i-1 );
+	return FuncError( 0, list );
+    }
+    else {
+	for ( m = 1;  m <= i-2;  m++ )
+	    SET_ELM_PLIST( list, m, ELM_PLIST(list,m+1) );
+	SET_LEN_PLIST( list, i-2 );
+	return list;
+    }
 }
 
 
@@ -534,18 +740,26 @@ Obj FuncWhere (
 **
 *F  ErrorMode( <msg>, <arg1>, <arg2>, <args>, <msg2>, <mode> )
 */
+
+Obj OnBreak;			/* a Fopy of the global OnBreak,
+				   which by default is set to Where. */
+
+
+UInt UserHasQuit = 0;
+UInt UserHasQUIT = 0; 
+ 
 Obj ErrorMode (
-    SYS_CONST Char *    msg,
+    const Char *        msg,
     Int                 arg1,
     Int                 arg2,
     Obj                 args,
-    SYS_CONST Char *    msg2,
+    const Char *        msg2,
     Char                mode )
 {
     Obj                 errorLVars0;
     Obj                 errorLVars;
     UInt                errorLLevel;
-    UInt                type;
+    ExecStatus          status;
     char                prompt [16];
 
     /* ignore all errors when testing or quitting                          */
@@ -585,6 +799,7 @@ Obj ErrorMode (
         Pr( " at\n", 0L, 0L );
         PrintStat( CurrStat );
         Pr( "\n", 0L, 0L );
+	CALL_0ARGS(OnBreak);
     }
     else {
         Pr( "\n", 0L, 0L );
@@ -629,11 +844,13 @@ Obj ErrorMode (
         /* read and evaluate one command                                   */
         ClearError();
         DualSemicolon = 0;
-        type = ReadEvalCommand();
+        status = ReadEvalCommand();
+	UserHasQuit = 0;	/* it is enough for quit
+				 to have got us here */
 
         /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
-
+        if ( status == STATUS_END && ReadEvalResult != 0 ) {
+	  
             /* remember the value in 'last'                                */
             AssGVar( Last,  ReadEvalResult   );
 
@@ -645,7 +862,7 @@ Obj ErrorMode (
         }
 
         /* handle return-value                                             */
-        else if ( type == 1 ) {
+        else if ( status == STATUS_RETURN_VAL ) {
             if ( mode == 'v' ) {
                 ErrorLevel -= 1;
                 ErrorLVars0 = errorLVars0;
@@ -663,7 +880,7 @@ Obj ErrorMode (
         }
 
         /* handle return-value                                             */
-        else if ( type == 2 ) {
+        else if ( status == STATUS_RETURN_VOID ) {
             if ( mode == 'x' ) {
                 ErrorLevel -= 1;
                 ErrorLVars0 = errorLVars0;
@@ -681,9 +898,16 @@ Obj ErrorMode (
         }
 
         /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
+        else if ( status == STATUS_EOF || status == STATUS_QUIT ) {
+	  UserHasQuit = 1;
+	  break;
         }
+	else if ( status == STATUS_QQUIT ) {
+	  UserHasQUIT = 1;
+	  break;
+	}
+	if (UserHasQUIT)
+	  break;
 
     }
 
@@ -707,7 +931,7 @@ Obj ErrorMode (
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
 void ErrorQuit (
-    SYS_CONST Char *    msg,
+    const Char *        msg,
     Int                 arg1,
     Int                 arg2 )
 {
@@ -811,10 +1035,10 @@ void ErrorQuitNrArgs (
 *F  ErrorReturnObj( <msg>, <arg1>, <arg2>, <msg2> ) . .  print and return obj
 */
 Obj ErrorReturnObj (
-    SYS_CONST Char *    msg,
+    const Char *        msg,
     Int                 arg1,
     Int                 arg2,
-    SYS_CONST Char *    msg2 )
+    const Char *        msg2 )
 {
     return ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'v' );
 }
@@ -825,10 +1049,10 @@ Obj ErrorReturnObj (
 *F  ErrorReturnVoid( <msg>, <arg1>, <arg2>, <msg2> )  . . .  print and return
 */
 void ErrorReturnVoid (
-    SYS_CONST Char *    msg,
+    const Char *        msg,
     Int                 arg1,
     Int                 arg2,
-    SYS_CONST Char *    msg2 )
+    const Char *        msg2 )
 {
     ErrorMode( msg, arg1, arg2, (Obj)0, msg2, 'x' );
 }
@@ -939,10 +1163,9 @@ Obj DoComplete0args (
     Obj                 self )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 0 ) == DoComplete0args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_0ARGS( self );
@@ -953,10 +1176,9 @@ Obj DoComplete1args (
     Obj                 arg1 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 1 ) == DoComplete1args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_1ARGS( self, arg1 );
@@ -968,10 +1190,9 @@ Obj DoComplete2args (
     Obj                 arg2 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 2 ) == DoComplete2args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_2ARGS( self, arg1, arg2 );
@@ -984,10 +1205,9 @@ Obj DoComplete3args (
     Obj                 arg3 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 3 ) == DoComplete3args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_3ARGS( self, arg1, arg2, arg3 );
@@ -1001,10 +1221,9 @@ Obj DoComplete4args (
     Obj                 arg4 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 4 ) == DoComplete4args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_4ARGS( self, arg1, arg2, arg3, arg4 );
@@ -1019,10 +1238,9 @@ Obj DoComplete5args (
     Obj                 arg5 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 5 ) == DoComplete5args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_5ARGS( self, arg1, arg2, arg3, arg4, arg5 );
@@ -1038,10 +1256,9 @@ Obj DoComplete6args (
     Obj                 arg6 )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 6 ) == DoComplete6args ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_6ARGS( self, arg1, arg2, arg3, arg4, arg5, arg6 );
@@ -1052,10 +1269,9 @@ Obj DoCompleteXargs (
     Obj                 args )
 {
     COMPLETE_FUNC( self );
-    if ( HDLR_FUNC( self, 7 ) == DoCompleteXargs ) {
-        ErrorQuit(
-            "panic: completion did not define function",
-            0L, 0L );
+    if ( IS_UNCOMPLETED_FUNC(self) ) {
+        ErrorQuit( "panic: completion did not define function",
+                   0, 0 );
         return 0;
     }
     return CALL_XARGS( self, args );
@@ -1072,12 +1288,11 @@ Obj FuncCOM_FILE (
     Obj                 crc )
 {
     Int                 len;
-    StructCompInitInfo* info;
+    StructInitInfo *    info;
     Int4                crc1;
     Int4                crc2;
     Char                result[256];
     Int                 res;
-    Obj                 func;
 
 
     /* check the argument                                                  */
@@ -1111,10 +1326,13 @@ Obj FuncCOM_FILE (
             Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
                 (Int)CSTR_STRING(filename), 0L );
         }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
+        info = *(StructInitInfo**)result;
+        res  = info->initKernel(info);
+	UpdateCopyFopyInfo();
+        res  = res || info->initLibrary(info);
+        if ( res ) {
+            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+        }
         return INTOBJ_INT(1);
     }
 
@@ -1124,10 +1342,13 @@ Obj FuncCOM_FILE (
             Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
                 (Int)CSTR_STRING(filename), 0L );
         }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
+        info = *(StructInitInfo**)result;
+        res  = info->initKernel(info);
+	UpdateCopyFopyInfo();
+        res  = res || info->initLibrary(info);
+        if ( res ) {
+            Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+        }
         return INTOBJ_INT(2);
     }
 
@@ -1159,6 +1380,11 @@ Obj FuncCOM_FILE (
         return INTOBJ_INT(3);
     }
 
+    /* we have to read the GAP file, crc mismatch                          */
+    else if ( res == 4 ) {
+        return INTOBJ_INT(4);
+    }
+
     /* don't know                                                          */
     else {
         ErrorQuit( "unknown result code %d from 'SyFindGapRoot'", res, 0L );
@@ -1171,6 +1397,9 @@ Obj FuncCOM_FILE (
 **
 *F  FuncCOM_FUN( <self>, <num> )  . . . . . . . . make a completable function
 */
+static Obj StringUncompleted;
+static Obj EmptyList;
+
 Obj FuncCOM_FUN (
     Obj                 self,
     Obj                 num )
@@ -1183,8 +1412,8 @@ Obj FuncCOM_FUN (
     if ( LEN_PLIST( CompThenFuncs ) < n ) {
        
         /* make the function                                               */
-        func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, "", -1, "uncompleted",
-                              0L );
+        func = NewFunctionT( T_FUNCTION, SIZE_FUNC, EmptyList, -1,
+                             StringUncompleted, 0 );
         HDLR_FUNC( func, 0 ) = DoComplete0args;
         HDLR_FUNC( func, 1 ) = DoComplete1args;
         HDLR_FUNC( func, 2 ) = DoComplete2args;
@@ -1310,7 +1539,6 @@ Obj FuncMAKE_INIT (
         else {
 
             switch ( symbol ) {
-
             case S_IDENT:    Pr( "%I",      (Int)value, 0L );  break;
             case S_UNBIND:   Pr( "Unbind",  0L, 0L );  break;
             case S_ISBOUND:  Pr( "IsBound", 0L, 0L );  break;
@@ -1449,10 +1677,10 @@ Obj FuncLOAD_DYN (
     Obj                 filename,
     Obj                 crc )
 {
-    CompInitFunc        init;
-    StructCompInitInfo* info;
+    InitInfoFunc        init;
+    StructInitInfo *    info;
     Obj                 crc1;
-    Obj                 func;
+    Int                 res;
 
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
@@ -1492,7 +1720,7 @@ Obj FuncLOAD_DYN (
 
     /* check the crc value                                                 */
     if ( crc != False ) {
-        crc1 = INTOBJ_INT( info->magic1 );
+        crc1 = INTOBJ_INT( info->crc );
         if ( ! EQ( crc, crc1 ) ) {
             if ( SyDebugLoading ) {
                 Pr( "#I  LOAD_DYN: crc values do not match, gap ", 0L, 0L );
@@ -1506,11 +1734,15 @@ Obj FuncLOAD_DYN (
     }
 
     /* link and init me                                                    */
-    (info->link)();
-    func = (Obj)(info->function1)();
-    CALL_0ARGS(func);
+    info->isGapRootRelative = 0;
+    res = (info->initKernel)(info);
+    UpdateCopyFopyInfo();
+    res = res || (info->initLibrary)(info);
+    if ( res ) {
+        Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+    }
+    RecordLoadedModule(info, CSTR_STRING(filename));
 
-    RecordLoadedModule(filename, INT_INTOBJ(crc));  
     return True;
 }
 
@@ -1524,10 +1756,10 @@ Obj FuncLOAD_STAT (
     Obj                 filename,
     Obj                 crc )
 {
-    StructCompInitInfo* info;
+    StructInitInfo *    info;
     Obj                 crc1;
     Int                 k;
-    Obj                 func;
+    Int                 res;
 
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
@@ -1549,7 +1781,7 @@ Obj FuncLOAD_STAT (
         if ( info == 0 ) {
             continue;
         }
-        if ( ! SyStrcmp( CSTR_STRING(filename), info->magic2 ) ) {
+        if ( ! SyStrcmp( CSTR_STRING(filename), info->name ) ) {
             break;
         }
     }
@@ -1563,7 +1795,7 @@ Obj FuncLOAD_STAT (
 
     /* check the crc value                                                 */
     if ( crc != False ) {
-        crc1 = INTOBJ_INT( info->magic1 );
+        crc1 = INTOBJ_INT( info->crc );
         if ( ! EQ( crc, crc1 ) ) {
             if ( SyDebugLoading ) {
                 Pr( "#I  LOAD_STAT: crc values do not match, gap ", 0L, 0L );
@@ -1577,11 +1809,14 @@ Obj FuncLOAD_STAT (
     }
 
     /* link and init me                                                    */
-    (info->link)();
-    func = (Obj)(info->function1)();
-    CALL_0ARGS(func);
-
-    RecordLoadedModule(filename, INT_INTOBJ(crc));  
+    info->isGapRootRelative = 0;
+    res = (info->initKernel)(info);
+    UpdateCopyFopyInfo();
+    res = res || (info->initLibrary)(info);
+    if ( res ) {
+        Pr( "#W  init functions returned non-zero exit code\n", 0L, 0L );
+    }
+    RecordLoadedModule(info, CSTR_STRING(filename));
 
     return True;
 }
@@ -1595,9 +1830,8 @@ Obj FuncSHOW_STAT (
     Obj                 self )
 {
     Obj                 modules;
-    Obj                 crc1;
     Obj                 name;
-    StructCompInitInfo* info;
+    StructInitInfo *    info;
     Int                 k;
     Int                 im;
 
@@ -1619,17 +1853,64 @@ Obj FuncSHOW_STAT (
         if ( info == 0 ) {
             continue;
         }
-        name = NEW_STRING( SyStrlen(info->magic2) );
-        SyStrncat( CSTR_STRING(name), info->magic2, SyStrlen(info->magic2) );
+        name = NEW_STRING( SyStrlen(info->name) );
+        SyStrncat( CSTR_STRING(name), info->name, SyStrlen(info->name) );
         SET_ELM_PLIST( modules, im, name );
 
         /* compute the crc value                                           */
-        crc1 = INTOBJ_INT( info->magic1 );
-        SET_ELM_PLIST( modules, im+1, crc1 );
+        SET_ELM_PLIST( modules, im+1, INTOBJ_INT( info->crc ) );
         im += 2;
     }
 
     return modules;
+}
+
+
+/****************************************************************************
+**
+*F  FuncLoadedModules( <self> ) . . . . . . . . . . . list all loaded modules
+*/
+Obj FuncLoadedModules (
+    Obj                 self )
+{
+    Int                 i;
+    StructInitInfo *    m;
+    Obj                 str;
+    Obj                 list;
+
+    /* create a list                                                       */
+    list = NEW_PLIST( T_PLIST, NrModules * 3 );
+    SET_LEN_PLIST( list, NrModules * 3 );
+    for ( i = 0;  i < NrModules;  i++ ) {
+        m = Modules[i];
+        if ( m->type == MODULE_BUILTIN ) {
+            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'b'] );
+	    CHANGED_BAG(list);
+            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            SET_ELM_PLIST( list, 3*i+2, str );
+            SET_ELM_PLIST( list, 3*i+3, INTOBJ_INT(m->version) );
+        }
+        else if ( m->type == MODULE_DYNAMIC ) {
+            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
+	    CHANGED_BAG(list);
+            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            SET_ELM_PLIST( list, 3*i+2, str );
+	    CHANGED_BAG(list);
+            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            SET_ELM_PLIST( list, 3*i+3, str );
+        }
+        else if ( m->type == MODULE_STATIC ) {
+            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'s'] );
+            SET_ELM_PLIST( list, 3*i+1, ObjsChar[(Int)'d'] );
+	    CHANGED_BAG(list);
+            C_NEW_STRING( str, SyStrlen(m->name), m->name );
+            SET_ELM_PLIST( list, 3*i+2, str );
+	    CHANGED_BAG(list);
+            C_NEW_STRING( str, SyStrlen(m->filename), m->filename );
+            SET_ELM_PLIST( list, 3*i+3, str );
+        }
+    }
+    return CopyObj( list, 0 );
 }
 
 
@@ -1772,7 +2053,7 @@ Obj FuncTNUM_OBJ (
 {
     Obj                 res;
     Obj                 str;
-    SYS_CONST Char *    cst;
+    const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
@@ -1800,7 +2081,7 @@ Obj FuncXTNUM_OBJ (
     Obj                 res;
     Obj                 str;
     UInt                xtype;
-    SYS_CONST Char *    cst;
+    const Char *        cst;
 
     res = NEW_PLIST( T_PLIST, 2 );
     SET_LEN_PLIST( res, 2 );
@@ -1919,35 +2200,377 @@ Obj FuncSWAP_MPTR (
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
+
 /****************************************************************************
 **
 
+*F  FillInVersion( <module>, <rev_c>, <rev_h> ) . . .  fill in version number
+*/
+static UInt ExtractRevision (
+    const Char *                rev,
+    const Char * *              name )
+{
+    const Char *                p;
+    const Char *                major;
+    const Char *                minor;
+    UInt                        ver1;
+    UInt                        ver2;
+
+    /* store the revision strings                                          */
+    
+    /* the revision string is "@(#)Id: filename.x,v major.minor ..."       */
+    p = rev;
+    while ( *p && *p != ':' )  p++;
+    if ( *p )  p++;
+    while ( *p && *p == ' ' )  p++;
+    *name = p;
+    while ( *p && *p != ' ' )  p++;
+    while ( *p && *p == ' ' )  p++;
+    major = p;
+    while ( *p && *p != '.' )  p++;
+    if ( *p )  p++;
+    while ( *p && *p == '.' )  p++;
+    minor = p;
+
+    /* the version is MMmmm, that is 2 digits major, 3 digits minor        */
+    ver1 = 0;
+    while ( '0' <= *major && *major <= '9' ) {
+        ver1 = ver1 * 10 + (UInt)( *major - '0' );
+        major++;
+    }
+    ver2 = 0;
+    while ( '0' <= *minor && *minor <= '9' ) {
+        ver2 = ver2 * 10 + (UInt)( *minor - '0' );
+        minor++;
+    }
+
+    return ver1 * 1000 + ver2;
+}
+
+
+void FillInVersion (
+    StructInitInfo *            module )
+{
+    const Char *                p;
+    const Char *                q;
+    const Char *                name;
+    const Char *                rev_c;
+    const Char *                rev_h;
+    UInt                        c_ver;
+    UInt                        h_ver;
+
+    /* store revision entries                                              */
+    rev_c = module->revision_c;
+    rev_h = module->revision_h;
+
+    /* extract the filename and version entry from <rev_c>                 */
+    c_ver = ExtractRevision( rev_c, &name );
+    if ( module->name ) {
+        p = name;
+        q = module->name;
+        while ( *p && *q && *p == *q ) { p++; q++; }
+        if ( *q || *p != '.' ) {
+            fputs( "#W  corrupt version info '", stderr );
+            fputs( rev_c, stderr );
+            fputs( "'\n", stderr );
+        }
+    }
+    h_ver = ExtractRevision( rev_h, &name );
+    if ( module->name ) {
+        p = name;
+        q = module->name;
+        while ( *p && *q && *p == *q ) { p++; q++; }
+        if ( *q || *p != '.' ) {
+            fputs( "#W  corrupt version info '", stderr );
+            fputs( rev_h, stderr );
+            fputs( "'\n", stderr );
+        }
+    }
+    module->version = c_ver*100000+h_ver;
+}
+
+
+/****************************************************************************
+**
+*F  RequireModule( <calling>, <required>, <version> ) . . . .  require module
+*/
+void RequireModule (
+    StructInitInfo *            module,
+    const Char *                required,
+    UInt                        version )
+{
+}
+
+
+/****************************************************************************
+**
+*F  InitBagNamesFromTable( <table> )  . . . . . . . . .  initialise bag names
+*/
+void InitBagNamesFromTable (
+    StructBagNames *            tab )
+{
+    Int                         i;
+
+    for ( i = 0;  tab[i].tnum != -1;  i++ ) {
+        InfoBags[tab[i].tnum].name = tab[i].name;
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitClearFiltsTNumsFromTable( <tab> ) . . .  initialise clear filts tnums
+*/
+void InitClearFiltsTNumsFromTable (
+    Int *               tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i] != -1;  i += 2 ) {
+        ClearFiltsTNums[tab[i]] = tab[i+1];
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHasFiltListTNumsFromTable( <tab> )  . . initialise tester filts tnums
+*/
+void InitHasFiltListTNumsFromTable (
+    Int *               tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i] != -1;  i += 3 ) {
+        HasFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitSetFiltListTNumsFromTable( <tab> )  . . initialise setter filts tnums
+*/
+void InitSetFiltListTNumsFromTable (
+    Int *               tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i] != -1;  i += 3 ) {
+        SetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitResetFiltListTNumsFromTable( <tab> )  initialise unsetter filts tnums
+*/
+void InitResetFiltListTNumsFromTable (
+    Int *               tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i] != -1;  i += 3 ) {
+        ResetFiltListTNums[tab[i]][tab[i+1]] = tab[i+2];
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitGVarFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
+*/
+void InitGVarFiltsFromTable (
+    StructGVarFilt *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        AssGVar( GVarName( tab[i].name ),
+            NewFilterC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
+        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitGVarAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
+*/
+void InitGVarAttrsFromTable (
+    StructGVarAttr *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+       AssGVar( GVarName( tab[i].name ),
+         NewAttributeC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
+       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitGVarPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
+*/
+void InitGVarPropsFromTable (
+    StructGVarProp *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+       AssGVar( GVarName( tab[i].name ),
+         NewPropertyC( tab[i].name, 1, tab[i].argument, tab[i].handler ) );
+       MakeReadOnlyGVar( GVarName( tab[i].name ) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitGVarOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
+*/
+void InitGVarOpersFromTable (
+    StructGVarOper *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        AssGVar( GVarName( tab[i].name ), NewOperationC( tab[i].name, 
+            tab[i].nargs, tab[i].args, tab[i].handler ) );
+        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitGVarFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
+*/
+void InitGVarFuncsFromTable (
+    StructGVarFunc *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        AssGVar( GVarName( tab[i].name ), NewFunctionC( tab[i].name, 
+            tab[i].nargs, tab[i].args, tab[i].handler ) );
+        MakeReadOnlyGVar( GVarName( tab[i].name ) );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHdlrFiltsFromTable( <tab> ) . . . . . . . . . . . . . . . new filters
+*/
+void InitHdlrFiltsFromTable (
+    StructGVarFilt *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+        InitFopyGVar( tab[i].name, tab[i].filter );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHdlrAttrsFromTable( <tab> ) . . . . . . . . . . . . .  new attributes
+*/
+void InitHdlrAttrsFromTable (
+    StructGVarAttr *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+        InitFopyGVar( tab[i].name, tab[i].attribute );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHdlrPropsFromTable( <tab> ) . . . . . . . . . . . . .  new properties
+*/
+void InitHdlrPropsFromTable (
+    StructGVarProp *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+        InitFopyGVar( tab[i].name, tab[i].property );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHdlrOpersFromTable( <tab> ) . . . . . . . . . . . . .  new operations
+*/
+void InitHdlrOpersFromTable (
+    StructGVarOper *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+        InitFopyGVar( tab[i].name, tab[i].operation );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  InitHdlrFuncsFromTable( <tab> ) . . . . . . . . . . . . . . new functions
+*/
+void InitHdlrFuncsFromTable (
+    StructGVarFunc *    tab )
+{
+    Int                 i;
+
+    for ( i = 0;  tab[i].name != 0;  i++ ) {
+        InitHandlerFunc( tab[i].handler, tab[i].cookie );
+    }
+}
+
+
+/****************************************************************************
+**
 *F  ImportGVarFromLibrary( <name>, <address> )  . . .  import global variable
 */
-static UInt   ImportedGVars [1024];
-static Obj *  ImportedGVarAddrs [1024];
-static UInt   NrImportedGVars = 0;
+typedef struct {
+    const Char *                name;
+    Obj *                       address;
+} StructImportedGVars;
 
+#ifndef MAX_IMPORTED_GVARS
+#define MAX_IMPORTED_GVARS      1024
+#endif
+
+static StructImportedGVars ImportedGVars[MAX_IMPORTED_GVARS];
+static Int NrImportedGVars = 0;
 
 void ImportGVarFromLibrary(
-    SYS_CONST Char *    name,
+    const Char *        name,
     Obj *               address )
 {
     if ( NrImportedGVars == 1024 ) {
-        if ( ! SyQuiet ) {
-            Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
-        }
-        if ( address != 0 ) {
-            InitCopyGVar( (Char *)name, address );
-        }
+        Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
     }
     else {
-        ImportedGVars[NrImportedGVars]     = GVarName(name);
-        ImportedGVarAddrs[NrImportedGVars] = address;
-        if ( address != 0 ) {
-            InitCopyGVar( (Char *)name, address );
-        }
+        ImportedGVars[NrImportedGVars].name    = name;
+        ImportedGVars[NrImportedGVars].address = address;
         NrImportedGVars++;
+    }
+    if ( address != 0 ) {
+        InitCopyGVar( name, address );
     }
 }
 
@@ -1956,30 +2579,24 @@ void ImportGVarFromLibrary(
 **
 *F  ImportFuncFromLibrary( <name>, <address> )  . . .  import global function
 */
-static UInt   ImportedFuncs [1024];
-static Obj *  ImportedFuncAddrs [1024];
-static UInt   NrImportedFuncs = 0;
+static StructImportedGVars ImportedFuncs[MAX_IMPORTED_GVARS];
+static Int NrImportedFuncs = 0;
 
 
 void ImportFuncFromLibrary(
-    SYS_CONST Char *    name,
+    const Char *        name,
     Obj *               address )
 {
     if ( NrImportedFuncs == 1024 ) {
-        if ( ! SyQuiet ) {
-            Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
-        }
-        if ( address != 0 ) {
-            InitFopyGVar( (Char *)name, address );
-        }
+        Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
     }
     else {
-        ImportedFuncs[NrImportedFuncs]     = GVarName(name);
-        ImportedFuncAddrs[NrImportedFuncs] = address;
-        if ( address != 0 ) {
-            InitFopyGVar( (Char *)name, address );
-        }
+        ImportedFuncs[NrImportedFuncs].name    = name;
+        ImportedFuncs[NrImportedFuncs].address = address;
         NrImportedFuncs++;
+    }
+    if ( address != 0 ) {
+        InitFopyGVar( (Char *)name, address );
     }
 }
 
@@ -1996,50 +2613,50 @@ Obj FuncExportToKernelFinished (
     Obj             val;
 
     for ( i = 0;  i < NrImportedGVars;  i++ ) {
-        if (  ImportedGVarAddrs[i] == 0 ) {
-            val = ValAutoGVar(ImportedGVars[i]);
+        if ( ImportedGVars[i].address == 0 ) {
+            val = ValAutoGVar(GVarName(ImportedGVars[i].name));
             if ( val == 0 ) {
                 errs++;
                 if ( ! SyQuiet ) {
                     Pr( "#W  global variable '%s' has not been defined\n",
-                        (Int)NameGVar(ImportedFuncs[i]), 0L );
+                        (Int)ImportedFuncs[i].name, 0L );
                 }
             }
         }
-        else if ( *ImportedGVarAddrs[i] == 0 ) {
+        else if ( *ImportedGVars[i].address == 0 ) {
             errs++;
             if ( ! SyQuiet ) {
                 Pr( "#W  global variable '%s' has not been defined\n",
-                    (Int)NameGVar(ImportedGVars[i]), 0L );
+                    (Int)ImportedGVars[i].name, 0L );
             }
         }
         else {
-            MakeReadOnlyGVar(ImportedGVars[i]);
+            MakeReadOnlyGVar(GVarName(ImportedGVars[i].name));
         }
     }
     
     for ( i = 0;  i < NrImportedFuncs;  i++ ) {
-        if (  ImportedFuncAddrs[i] == 0 ) {
-            val = ValAutoGVar(ImportedFuncs[i]);
-            if ( val == 0 || TNUM_OBJ(val) != T_FUNCTION ) {
+        if (  ImportedFuncs[i].address == 0 ) {
+            val = ValAutoGVar(GVarName(ImportedFuncs[i].name));
+            if ( val == 0 || ! IS_FUNC(val) ) {
                 errs++;
                 if ( ! SyQuiet ) {
                     Pr( "#W  global function '%s' has not been defined\n",
-                        (Int)NameGVar(ImportedFuncs[i]), 0L );
+                        (Int)ImportedFuncs[i].name, 0L );
                 }
             }
         }
-        else if ( *ImportedFuncAddrs[i] == ErrorMustEvalToFuncFunc
-          || *ImportedFuncAddrs[i] == ErrorMustHaveAssObjFunc )
+        else if ( *ImportedFuncs[i].address == ErrorMustEvalToFuncFunc
+          || *ImportedFuncs[i].address == ErrorMustHaveAssObjFunc )
         {
             errs++;
             if ( ! SyQuiet ) {
                 Pr( "#W  global function '%s' has not been defined\n",
-                    (Int)NameGVar(ImportedFuncs[i]), 0L );
+                    (Int)ImportedFuncs[i].name, 0L );
             }
         }
         else {
-            MakeReadOnlyGVar(ImportedFuncs[i]);
+            MakeReadOnlyGVar(GVarName(ImportedFuncs[i].name));
         }
     }
     
@@ -2049,6 +2666,7 @@ Obj FuncExportToKernelFinished (
 
 /****************************************************************************
 **
+
 *V  Revisions . . . . . . . . . . . . . . . . . .  record of revision numbers
 */
 Obj Revisions;
@@ -2056,484 +2674,419 @@ Obj Revisions;
 
 /****************************************************************************
 **
-*F  SetupGap()  . . . . . . . . . . . . . . . . . . . . setup internal tables
-**
-**  - setup any tables like gasman marking functions, gasman bag names,  list
-**    dispatchers, list filter maps, etc.
-**
-**  - do not create *any* new bag, global variable, fopies or copies, rnams.
-**
-**  After the setup the basic stuff of each package  should work, for example
-**  it  should be possible  to create  and  handle  plain lists  and records.
-**  However, functions like  "type of  list" will  not yet  work because they
-**  need to interact with library, `OnePerm' will not work because it needs a
-**  global `()' permutation.
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupGap ( void )
-{
-    UInt                i;
+static StructGVarFunc GVarFuncs [] = {
 
-    /* global variables                                                    */
-    SetupGVars();
+    { "Runtime", 0, "",
+      FuncRuntime, "src/gap.c:Runtime" },
 
-    /* objects                                                             */
-    SetupObjects();
+    { "SizeScreen", -1, "args",
+      FuncSizeScreen, "src/gap.c:SizeScreen" },
 
-    /* scanner, reader, interpreter, coder, caller, compiler               */
-    SetupScanner();
-    SetupRead();
-    SetupCalls();
-    SetupExprs();
-    SetupStats();
-    SetupCode();
-    SetupVars(); /* must come after InitExpr and InitStats */
-    SetupFuncs();
-    SetupOpers();
-    SetupIntrprtr();
-    SetupCompiler();
+    { "ID_FUNC", 1, "object",
+      FuncID_FUNC, "src/gap.c:ID_FUNC" },
 
-    /* arithmetic operations                                               */
-    SetupAriths();
-    SetupInt();
-    SetupRat();
-    SetupCyc();
-    SetupFinfield();
-    SetupPermutat();
-    SetupBool();
+    { "ExportToKernelFinished", 0, "",
+      FuncExportToKernelFinished, "src/gap.c:ExportToKernelFinished" },
 
-    /* record packages                                                     */
-    SetupRecords();
-    SetupPRecord();
+    { "DownEnv", -1, "args",
+      FuncDownEnv, "src/gap.c:DownEnv" },
 
-    /* list packages                                                       */
-    SetupLists();
-    SetupListOper();
-    SetupListFunc();
-    SetupPlist();
-    SetupSet();
-    SetupVector();
-    SetupBlist();
-    SetupRange();
-    SetupString();
+    { "Where", -1, "args",
+      FuncWhere, "src/gap.c:Where" },
 
-    /* free and presented groups                                           */
-    SetupFreeGroupElements();
-    SetupCosetTable();
-    SetupTietze();
-    SetupPcElements();
-    SetupSingleCollector();
-    SetupPcc();
-    SetupDeepThought();
-    SetupDTEvaluation();
+    { "Error", -1, "args",
+      FuncError, "src/gap.c:Error" },
 
-    /* algebras                                                            */
-    SetupSCTable();
+    { "COM_FILE", 2, "filename, crc",
+      FuncCOM_FILE, "src/gap.c:COM_FILE" },
 
-    /* input and output                                                    */
-    SetupStreams();
+    { "COM_FUN", 1, "number",
+      FuncCOM_FUN, "src/gap.c:COM_FUN" },
 
-    /* save and load workspace, weak pointers                              */
-    SetupWeakPtr();
-    SetupSaveLoad();
+    { "MAKE_INIT", 2, "output, input",
+      FuncMAKE_INIT, "src/gap.c:MAKE_INIT" },
 
+    { "GAP_CRC", 1, "filename",
+      FuncGAP_CRC, "src/gap.c:GAP_CRC" },
 
-    /* you should set 'COUNT_BAGS' as well                                 */
-#ifdef DEBUG_RESTORE
-    if ( SyRestoring ) {
-        Pr( "#W  after setup\n", 0L, 0L );
-        Pr( "#W  %36s ", (Int)"type",  0L          );
-        Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
-        Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-        for ( i = 0;  i < 256;  i++ ) {
-            if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
-                char    buf[41];
+    { "LOAD_DYN", 2, "filename, crc",
+      FuncLOAD_DYN, "src/gap.c:LOAD_DYN" },
 
-                buf[0] = '\0';
-                SyStrncat( buf, InfoBags[i].name, 40 );
-                Pr("#W  %36s ",    (Int)buf, 0L );
-                Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
-                               (Int)(InfoBags[i].sizeLive/1024));
-                Pr("%8d %8d\n",(Int)InfoBags[i].nrAll,
-                               (Int)(InfoBags[i].sizeAll/1024));
-            }
-        }
-    }
-#endif
-}
+    { "LOAD_STAT", 2, "filename, crc",
+      FuncLOAD_STAT, "src/gap.c:LOAD_STAT" },
+
+    { "SHOW_STAT", 0, "",
+      FuncSHOW_STAT, "src/gap.c:SHOW_STAT" },
+
+    { "GASMAN", -1, "args",
+      FuncGASMAN, "src/gap.c:GASMAN" },
+
+    { "SHALLOW_SIZE", 1, "object",
+      FuncSHALLOW_SIZE, "src/gap.c:SHALLOW_SIZE" },
+
+    { "TNUM_OBJ", 1, "object",
+      FuncTNUM_OBJ, "src/gap.c:TNUM_OBJ" },
+
+    { "XTNUM_OBJ", 1, "object",
+      FuncXTNUM_OBJ, "src/gap.c:XTNUM_OBJ" },
+
+    { "OBJ_HANDLE", 1, "object",
+      FuncOBJ_HANDLE, "src/gap.c:OBJ_HANDLE" },
+
+    { "HANDLE_OBJ", 1, "object",
+      FuncHANDLE_OBJ, "src/gap.c:HANDLE_OBJ" },
+
+    { "SWAP_MPTR", 2, "obj1, obj2",
+      FuncSWAP_MPTR, "src/gap.c:SWAP_MPTR" },
+
+    { "LoadedModules", 0, "",
+      FuncLoadedModules, "src/gap.c:LoadedModules" },
+
+    { "WindowCmd", 1, "arg-list",
+      FuncWindowCmd, "src/gap.c:WindowCmd" },
+
+    { 0 }
+
+};
 
 
 /****************************************************************************
 **
-*F  InitGap() . . . . . . . . . . . . . . . . . . . . initialise the packages
-**
-**  - create any global bags needed,
-**  - export handlers, setup GAP functions, import library functions,
-**  - initialise fopies and copies,
-**  - assign global variables,
-**  - precompute record names
-**
-**  This  step   is allowed  to  create new  bags.  If   we are restoring the
-**  creating part will be skipped.
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitGap ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    Char *              version = "v4r0p0 1996/06/06";
-    Obj                 string;
-    UInt                i;
-    UInt                var;
-
-    /* global variables                                                    */
-    InitGVars();
-
-    /* objects                                                             */
-    InitObjects();
-
-    /* scanner, reader, interpreter, coder, caller, compiler               */
-    InitScanner();
-    InitRead();
-    InitCalls();
-    InitExprs();
-    InitStats();
-    InitCode();
-    InitVars(); /* must come after InitExpr and InitStats */
-    InitFuncs();
-    InitOpers();
-    InitIntrprtr();
-    InitCompiler();
-
-    /* arithmetic operations                                               */
-    InitAriths();
-    InitInt();
-    InitRat();
-    InitCyc();
-    InitFinfield();
-    InitPermutat();
-    InitBool();
-
-
-    /* record packages                                                     */
-    InitRecords();
-    InitPRecord();
-
-    /* list packages                                                       */
-    InitLists();
-    InitListOper();
-    InitListFunc();
-    InitPlist();
-    InitSet();
-    InitVector();
-    InitBlist();
-    InitRange();
-    InitString();
-
-    /* free and presented groups                                           */
-    InitFreeGroupElements();
-    InitCosetTable();
-    InitTietze();
-    InitPcElements();
-    InitSingleCollector();
-    InitPcc();
-    InitDeepThought();
-    InitDTEvaluation();
-
-    /* algebras                                                            */
-    InitSCTable();
-
-    /* input and output                                                    */
-    InitStreams();
-
-    /* save and load workspace, weak pointers                              */
-    InitSaveLoad();
-    InitWeakPtr();
-    InitSysFiles();
-
     /* init the completion function                                        */
-    InitGlobalBag( &CompNowFuncs,  "src/gap.c:CompNowFuncs"  );
-    InitGlobalBag( &CompThenFuncs, "src/gap.c:CompThenFuncs" );
-    InitGlobalBag( &CompLists,     "src/gap.c:CompLists"     );
-    if ( ! SyRestoring ) {
-        CompLists = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( CompLists, 0 );
-    }
+    InitGlobalBag( &CompNowFuncs,      "src/gap.c:CompNowFuncs"      );
+    InitGlobalBag( &CompThenFuncs,     "src/gap.c:CompThenFuncs"     );
+    InitGlobalBag( &CompLists,         "src/gap.c:CompLists"         );
+    InitGlobalBag( &StringUncompleted, "src/gap.c:StringUncompleted" );
+    InitGlobalBag( &EmptyList,         "src/gap.c:EmptyList"         );
 
-
-    /* construct the `ViewObj' variable                                    */
-    ViewObjGVar = GVarName( "ViewObj" );
-    ImportFuncFromLibrary(  "ViewObj", 0L ); 
-
-    /* construct the last and time variables                               */
-    Last  = GVarName( "last"  );
-    Last2 = GVarName( "last2" );
-    Last3 = GVarName( "last3" );
-    Time  = GVarName( "time"  );
-
-
-    /* version info                                                        */
-    if ( ! SyRestoring ) {
-        string = NEW_STRING( SyStrlen(version) );
-        SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
-        var = GVarName( "VERSRC" );
-        AssGVar( var, string );
-        MakeReadOnlyGVar(var);
-        string = NEW_STRING( SyStrlen(SyFlags) );
-        SyStrncat( CSTR_STRING(string), SyFlags, SyStrlen(SyFlags) );
-        var = GVarName( "VERSYS" );
-        AssGVar( var, string );
-        MakeReadOnlyGVar(var);
-    }
-
-
-    /* library name and other stuff                                        */
-    if ( ! SyRestoring ) {
-        var = GVarName( "QUIET" );
-        AssGVar( var, (SyQuiet  ? True : False) );
-        MakeReadOnlyGVar(var);
-
-        var = GVarName( "BANNER" );
-        AssGVar( var, (SyBanner ? True : False) );
-        MakeReadOnlyGVar(var);
-
-        var = GVarName( "DEBUG_LOADING" );
-        AssGVar( var, (SyDebugLoading ? True : False) );
-        MakeReadOnlyGVar(var);
-
-        var = GVarName( "CHECK_FOR_COMP_FILES" );
-        AssGVar( var, (SyCheckForCompletion ? True : False) );
-        MakeReadOnlyGVar(var);
-    }
-
+    InitGlobalBag( &Revisions,         "src/gap.c:Revisions"         );
 
     /* list of exit functions                                              */
     InitGlobalBag( &AtExitFunctions, "src/gap.c:AtExitFunctions" );
-    if ( ! SyRestoring ) {
-        AtExitFunctions = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( AtExitFunctions, 0 );
-        var = GVarName( "AT_EXIT_FUNCS" );
-        AssGVar( var, AtExitFunctions );
-        MakeReadOnlyGVar(var);
-    }
+
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* use short cookies to save space in saved workspace                  */
+    InitHandlerFunc( DoComplete0args, "c0" );
+    InitHandlerFunc( DoComplete1args, "c1" );
+    InitHandlerFunc( DoComplete2args, "c2" );
+    InitHandlerFunc( DoComplete3args, "c3" );
+    InitHandlerFunc( DoComplete4args, "c4" );
+    InitHandlerFunc( DoComplete5args, "c5" );
+    InitHandlerFunc( DoComplete6args, "c6" );
+    InitHandlerFunc( DoCompleteXargs, "cX" );
 
 
-    /* init handlers                                                       */
-    InitHandlerFunc( DoComplete0args, "src/gap.c:DoComplete0args" );
-    InitHandlerFunc( DoComplete1args, "src/gap.c:DoComplete1args" );
-    InitHandlerFunc( DoComplete2args, "src/gap.c:DoComplete2args" );
-    InitHandlerFunc( DoComplete3args, "src/gap.c:DoComplete3args" );
-    InitHandlerFunc( DoComplete4args, "src/gap.c:DoComplete4args" );
-    InitHandlerFunc( DoComplete5args, "src/gap.c:DoComplete5args" );
-    InitHandlerFunc( DoComplete6args, "src/gap.c:DoComplete6args" );
-    InitHandlerFunc( DoCompleteXargs, "src/gap.c:DoCompleteXargs" );
+    /* establish Fopy of ViewObj                                           */
+    ImportFuncFromLibrary(  "ViewObj", 0L ); 
+    ImportFuncFromLibrary(  "OnBreak", &OnBreak );
 
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FUNC( "Runtime", 0L, "",
-                  FuncRuntime,
-           "src/gap.c:Runtime" );
-
-    C_NEW_GVAR_FUNC( "SizeScreen", -1L, "args",
-                  FuncSizeScreen,
-           "src/gap.c:SizeScreen" );
-
-    C_NEW_GVAR_FUNC( "ID_FUNC", 1L, "object",
-                  FuncID_FUNC,
-           "src/gap.c:ID_FUNC" );
-
-    C_NEW_GVAR_FUNC( "ExportToKernelFinished", 0L, "",
-                  FuncExportToKernelFinished,
-           "src/gap.c:ExportToKernelFinished" );
-
-
-    /* install the error functions                                         */
-    C_NEW_GVAR_FUNC( "DownEnv", -1L, "args",
-                  FuncDownEnv,
-           "src/gap.c:DownEnv" );
-
-    C_NEW_GVAR_FUNC( "Where", -1L, "args",
-                  FuncWhere,
-           "src/gap.c:Where" );
-
-    C_NEW_GVAR_FUNC( "Error", -1L, "args",
-                  FuncError,
-           "src/gap.c:Error" );
-
-
-    /* install the functions for creating the init file                    */
-    C_NEW_GVAR_FUNC( "COM_FILE", 2L, "filename, crc",
-                  FuncCOM_FILE,
-           "src/gap.c:COM_FILE" );
-
-    C_NEW_GVAR_FUNC( "COM_FUN", 1L, "number",
-                    FuncCOM_FUN,
-           "src/gap.c:COM_FUN" );
-
-    C_NEW_GVAR_FUNC( "MAKE_INIT", 2L, "output, input",
-                  FuncMAKE_INIT,
-           "src/gap.c:MAKE_INIT" );
-
-
-    /* install functions for dynamically/statically loadable modules       */
-    C_NEW_GVAR_FUNC( "GAP_CRC", 1L, "filename",
-                  FuncGAP_CRC,
-           "src/gap.c:GAP_CRC" );
-
-    C_NEW_GVAR_FUNC( "LOAD_DYN", 2L, "filename, crc",
-                  FuncLOAD_DYN,
-           "src/gap.c:LOAD_DYN" );
-
-    C_NEW_GVAR_FUNC( "LOAD_STAT", 2L, "filename, crc",
-                  FuncLOAD_STAT,
-           "src/gap.c:LOAD_STAT" );
-
-    C_NEW_GVAR_FUNC( "SHOW_STAT", 0L, "",
-                  FuncSHOW_STAT,
-           "src/gap.c:SHOW_STAT" );
-
-
-    /* debugging functions                                                 */
-    C_NEW_GVAR_FUNC( "GASMAN", -1L, "args",
-                  FuncGASMAN,
-           "src/gap.c:GASMAN" );
-
-    C_NEW_GVAR_FUNC( "SHALLOW_SIZE", 1L, "object",
-                  FuncSHALLOW_SIZE,
-           "src/gap.c:SHALLOW_SIZE" );
-
-    C_NEW_GVAR_FUNC( "TNUM_OBJ", 1L, "object",
-                  FuncTNUM_OBJ,
-           "src/gap.c:TNUM_OBJ" );
-
-    C_NEW_GVAR_FUNC( "XTNUM_OBJ", 1L, "object",
-                  FuncXTNUM_OBJ,
-           "src/gap.c:XTNUM_OBJ" );
-
-    C_NEW_GVAR_FUNC( "OBJ_HANDLE", 1L, "object",
-                  FuncOBJ_HANDLE,
-           "src/gap.c:OBJ_HANDLE" );
-
-    C_NEW_GVAR_FUNC( "HANDLE_OBJ", 1L, "object",
-                  FuncHANDLE_OBJ,
-           "src/gap.c:HANDLE_OBJ" );
-
-    C_NEW_GVAR_FUNC( "SWAP_MPTR", 2L, "obj1, obj2",
-                  FuncSWAP_MPTR,
-           "src/gap.c:SWAP_MPTR" );
-
-
-    /* you should set 'COUNT_BAGS' as well                                 */
-#ifdef DEBUG_RESTORE
-    if ( SyRestoring ) {
-        Pr( "#W  after init\n", 0L, 0L );
-        Pr( "#W  %36s ", (Int)"type",  0L          );
-        Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
-        Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
-        for ( i = 0;  i < 256;  i++ ) {
-            if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
-                char    buf[41];
-
-                buf[0] = '\0';
-                SyStrncat( buf, InfoBags[i].name, 40 );
-                Pr("#W  %36s ",    (Int)buf, 0L );
-                Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
-                               (Int)(InfoBags[i].sizeLive/1024));
-                Pr("%8d %8d\n",(Int)InfoBags[i].nrAll,
-                               (Int)(InfoBags[i].sizeAll/1024));
-            }
-        }
-    }
-#endif
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckGap()  . . . . . . . . . .  check the initialisation of the packages
-**
-**  Do any sanity checks.  For example, the  generic list package might check
-**  that all  tables are filled, while the  arithmitic package  might want to
-**  check that special packages didn't mess up the arithmitic tables.
-**
-**  This step  is optional.  It should not  fix errors without warnings, that
-**  is to say,  if no warning or error  messages are produced then this  step
-**  can be skipped.
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void CheckGap ( void )
+static Int PostRestore (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "gap_c",      Revision_gap_c    );
-    SET_REVISION( "gap_h",      Revision_gap_h    );
+    /* construct the `ViewObj' variable                                    */
+    ViewObjGVar = GVarName( "ViewObj" ); 
+
+    /* construct the last and time variables                               */
+    Last              = GVarName( "last"  );
+    Last2             = GVarName( "last2" );
+    Last3             = GVarName( "last3" );
+    Time              = GVarName( "time"  );
+    SaveOnExitFileGVar= GVarName( "SaveOnExitFile" );
+    QUITTINGGVar      = GVarName( "QUITTING" );
+    
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    Char *              version = "v4r0p0 1996/06/06";
+    Obj                 string;
+    UInt                var;
+
+    /* init the completion function                                        */
+    CompLists = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( CompLists, 0 );
+
+    /* create a revision record                                            */
+    Revisions = NEW_PREC(0);
+    var = GVarName( "Revision" );
+    AssGVar( var, Revisions );
+    MakeReadOnlyGVar(var);
+
+    /* version info                                                        */
+    string = NEW_STRING( SyStrlen(version) );
+    SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
+    var = GVarName( "VERSRC" );
+    AssGVar( var, string );
+    MakeReadOnlyGVar(var);
+
+    /* library name and other stuff                                        */
+    var = GVarName( "QUIET" );
+    AssGVar( var, (SyQuiet  ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "BANNER" );
+    AssGVar( var, (SyBanner ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "DEBUG_LOADING" );
+    AssGVar( var, (SyDebugLoading ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    var = GVarName( "CHECK_FOR_COMP_FILES" );
+    AssGVar( var, (SyCheckForCompletion ? True : False) );
+    MakeReadOnlyGVar(var);
+
+    /* list of exit functions                                              */
+    AtExitFunctions = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( AtExitFunctions, 0 );
+    var = GVarName( "AT_EXIT_FUNCS" );
+    AssGVar( var, AtExitFunctions );
+    MakeReadOnlyGVar(var);
+
+    /* we are not (yet) bailing out after QUIT */
+    QUITTINGGVar      = GVarName( "QUITTING" );
+    AssGVar(QUITTINGGVar, False);
+    MakeReadOnlyGVar( QUITTINGGVar );
+    
+    /* share between uncompleted functions                                 */
+    C_NEW_STRING( StringUncompleted, 11, "uncompleted" );
+    RESET_FILT_LIST( StringUncompleted, FN_IS_MUTABLE );
+    EmptyList = NEW_PLIST( T_PLIST+IMMUTABLE, 0 );
+    SET_LEN_PLIST( EmptyList, 0 );
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* create windows command buffer                                       */
+    WindowCmdString = NEW_STRING( 1000 );
+
+
+    
+    /* return success                                                      */
+    return PostRestore( module );
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoGap() . . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "gap",                              /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoGap ( void )
+{
+    module.revision_c = Revision_gap_c;
+    module.revision_h = Revision_gap_h;
+    FillInVersion( &module );
+    return &module;
+}
+
+
+/****************************************************************************
+**
+
+*V  InitFuncsBuiltinModules . . . . .  list of builtin modules init functions
+*/
+static InitInfoFunc InitFuncsBuiltinModules[] = {
 
     /* global variables                                                    */
-    CheckGVars();
-
-    /* scanner, reader, interpreter, coder, caller, compiler               */
-    CheckScanner();
-    CheckRead();
-    CheckExprs();
-    CheckStats();
-    CheckCode();
-    CheckCalls();
-    CheckVars();
-    CheckFuncs();
-    CheckOpers();
-    CheckIntrprtr();
-    CheckCompiler();
+    InitInfoGVars,
 
     /* objects                                                             */
-    CheckObjects();
+    InitInfoObjects,
+
+    /* scanner, reader, interpreter, coder, caller, compiler               */
+    InitInfoScanner,
+    InitInfoRead,
+    InitInfoCalls,
+    InitInfoExprs,
+    InitInfoStats,
+    InitInfoCode,
+    InitInfoVars,       /* must come after InitExpr and InitStats */
+    InitInfoFuncs,
+    InitInfoOpers,
+    InitInfoIntrprtr,
+    InitInfoCompiler,
 
     /* arithmetic operations                                               */
-    CheckAriths();
-    CheckInt();
-    CheckRat();
-    CheckCyc();
-    CheckFinfield();
-    CheckPermutat();
-    CheckBool();
+    InitInfoAriths,
+    InitInfoInt,
+    InitInfoRat,
+    InitInfoCyc,
+    InitInfoFinfield,
+    InitInfoPermutat,
+    InitInfoBool,
 
     /* record packages                                                     */
-    CheckRecords();
-    CheckPRecord();
+    InitInfoRecords,
+    InitInfoPRecord,
 
     /* list packages                                                       */
-    CheckLists();
-    CheckListOper();
-    CheckListFunc();
-    CheckPlist();
-    CheckSet();
-    CheckVector();
-    CheckBlist();
-    CheckRange();
-    CheckString();
+    InitInfoLists,
+    InitInfoListOper,
+    InitInfoListFunc,
+    InitInfoPlist,
+    InitInfoSet,
+    InitInfoVector,
+    InitInfoBlist,
+    InitInfoRange,
+    InitInfoString,
+    InitInfoGF2Vec,
 
     /* free and presented groups                                           */
-    CheckFreeGroupElements();
-    CheckCosetTable();
-    CheckTietze();
-    CheckPcElements();
-    CheckSingleCollector();
-    CheckPcc();
-    CheckDeepThought();
-    CheckDTEvaluation();
+    InitInfoFreeGroupElements,
+    InitInfoCosetTable,
+    InitInfoTietze,
+    InitInfoPcElements,
+    InitInfoSingleCollector,
+    InitInfoPcc,
+    InitInfoDeepThought,
+    InitInfoDTEvaluation,
 
     /* algebras                                                            */
-    CheckSCTable();
-
-    /* input and output                                                    */
-    CheckStreams();
+    InitInfoSCTable,
 
     /* save and load workspace, weak pointers                              */
-    CheckWeakPtr();
-    CheckSaveLoad();
+    InitInfoWeakPtr,
+    InitInfoSaveLoad,
 
-    /* check function handlers                                             */
-#ifdef DEBUG_HANDLER_REGISTRATION
-    CheckAllHandlers();
+    /* input and output                                                    */
+    InitInfoStreams,
+    InitInfoSysFiles,
+
+    /* main module                                                         */
+    InitInfoGap,
+
+    0
+};
+
+
+/****************************************************************************
+**
+*F  Modules . . . . . . . . . . . . . . . . . . . . . . . . . list of modules
+*/
+#ifndef MAX_MODULES
+#define MAX_MODULES     1000
 #endif
+
+
+#ifndef MAX_MODULE_FILENAMES
+#define MAX_MODULE_FILENAMES (MAX_MODULES*50)
+#endif
+
+Char LoadedModuleFilenames[MAX_MODULE_FILENAMES];
+Char *NextLoadedModuleFilename = LoadedModuleFilenames;
+
+
+StructInitInfo * Modules [ MAX_MODULES ];
+UInt NrModules = 0;
+UInt NrBuiltinModules = 0;
+
+
+/****************************************************************************
+**
+*F  RecordLoadedModule( <module> )  . . . . . . . . store module in <Modules>
+*/
+
+void RecordLoadedModule (
+    StructInitInfo *        module,
+    Char *filename )
+{
+  UInt len;
+    if ( NrModules == MAX_MODULES ) {
+        Pr( "panic: no room to record module\n", 0L, 0L );
+    }
+    len = SyStrlen(filename);
+    if (NextLoadedModuleFilename + len + 1
+	> LoadedModuleFilenames+MAX_MODULE_FILENAMES) {
+      Pr( "panic: no room for module filename\n", 0L, 0L );
+    }
+    *NextLoadedModuleFilename = '\0';
+    SyStrncat(NextLoadedModuleFilename,filename, len);
+    module->filename = NextLoadedModuleFilename;
+    NextLoadedModuleFilename += len +1;
+    Modules[NrModules++] = module;
 }
+
+
+/****************************************************************************
+**
+
+*F  SET_REVISION( <file>, <revision> )  . . . . . . . . . enter revision info
+*/
+#define SET_REVISION( file, revision ) \
+  do { \
+      UInt                    rev_rnam; \
+      Obj                     rev_str; \
+      rev_rnam = RNamName(file); \
+      C_NEW_STRING( rev_str, SyStrlen(revision), (revision) ); \
+      RESET_FILT_LIST( rev_str, FN_IS_MUTABLE ); \
+      AssPRec( Revisions, rev_rnam, rev_str ); \
+  } while (0)
 
 
 /****************************************************************************
 **
 *F  InitializeGap() . . . . . . . . . . . . . . . . . . . . . . intialize GAP
+**
+**  Each module  (builtin  or compiled) exports  a sturctures  which contains
+**  information about the name, version, crc, init function, save and restore
+**  functions.
+**
+**  The init process is split into three different functions:
+**
+**  `InitKernel':   This function setups the   internal  data structures  and
+**  tables,   registers the global bags  and   functions handlers, copies and
+**  fopies.  It is not allowed to create objects, gvar or rnam numbers.  This
+**  function is used for both starting and restoring.
+**
+**  `InitLibrary': This function creates objects,  gvar and rnam number,  and
+**  does  assignments of auxillary C   variables (for example, pointers  from
+**  objects, length of hash lists).  This function is only used for starting.
+**
+**  `PostRestore': Everything in  `InitLibrary' execpt  creating objects.  In
+**  general    `InitLibrary'  will  create    all objects    and  then  calls
+**  `PostRestore'.  This function is only used when restoring.
 */
 extern TNumMarkFuncBags TabMarkFuncBags [ 256 ];
 
@@ -2543,7 +3096,7 @@ void InitializeGap (
 {
     UInt                type;
     UInt                i;
-    UInt                var;
+    Int                 ret;
 
 
     /* initialize the basic system and gasman                              */
@@ -2555,34 +3108,156 @@ void InitializeGap (
     InitMsgsFuncBags( SyMsgsBags );
 
 
-    /* setup internal tables                                               */
-    SetupGap();
+    /* get info structures for the build in modules                        */
+    for ( i = 0;  InitFuncsBuiltinModules[i];  i++ ) {
+        if ( NrModules == MAX_MODULES ) {
+            fputs( "panic: too many builtin modules\n", stderr );
+            SyExit(1);
+        }
+        Modules[NrModules++] = InitFuncsBuiltinModules[i]();
+#       ifdef DEBUG_LOADING
+            fputs( "#I  InitInfo(builtin ", stderr );
+            fputs( Modules[NrModules-1]->name, stderr );
+            fputs( ")\n", stderr );
+#       endif
+    }
+    NrBuiltinModules = NrModules;
 
+    /* call kernel initialisation                                          */
+    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
+        if ( Modules[i]->initKernel ) {
+#           ifdef DEBUG_LOADING
+                fputs( "#I  InitKernel(builtin ", stderr );
+                fputs( Modules[i]->name, stderr );
+                fputs( ")\n", stderr );
+#           endif
+            ret =Modules[i]->initKernel( Modules[i] );
+            if ( ret ) {
+                fputs( "#I  InitKernel(builtin ", stderr );
+                fputs( Modules[i]->name, stderr );
+                fputs( ") returned non-zero value\n", stderr );
+            }
+        }
+    }
+
+    /* you should set 'COUNT_BAGS' as well                                 */
+#   ifdef DEBUG_LOADING
+        if ( SyRestoring ) {
+            Pr( "#W  after setup\n", 0L, 0L );
+            Pr( "#W  %36s ", (Int)"type",  0L          );
+            Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
+            Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
+            for ( i = 0;  i < 256;  i++ ) {
+                if ( InfoBags[i].name != 0 && InfoBags[i].nrAll != 0 ) {
+                    char    buf[41];
+
+                    buf[0] = '\0';
+                    SyStrncat( buf, InfoBags[i].name, 40 );
+                    Pr("#W  %36s ",    (Int)buf, 0L );
+                    Pr("%8d %8d ", (Int)InfoBags[i].nrLive,
+                       (Int)(InfoBags[i].sizeLive/1024));
+                    Pr("%8d %8d\n",(Int)InfoBags[i].nrAll,
+                       (Int)(InfoBags[i].sizeAll/1024));
+                }
+            }
+        }
+#   endif
 
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TNUM+1; i <= LAST_REAL_TNUM; i++ ) {
         TabMarkFuncBags[ i+COPYING ] = TabMarkFuncBags[ i ];
     }
 
+    /* if we are restoring, load the workspace and call the post restore   */
+    if ( SyRestoring ) {
+        LoadWorkspace(SyRestoring);
+        for ( i = 0;  i < NrModules;  i++ ) {
+            if ( Modules[i]->postRestore ) {
+#               ifdef DEBUG_LOADING
+                    fputs( "#I  PostRestore(builtin ", stderr );
+                    fputs( Modules[i]->name, stderr );
+                    fputs( ")\n", stderr );
+#               endif
+                ret = Modules[i]->postRestore( Modules[i] );
+                if ( ret ) {
+                    fputs( "#I  PostRestore(builtin ", stderr );
+                    fputs( Modules[i]->name, stderr );
+                    fputs( ") returned non-zero value\n", stderr );
+                }
+            }
+        }
+	SyRestoring = NULL;
+    }
 
-    /* initialize packages                                                 */
-    InitGap();
+    /* otherwise call library initialisation                               */
+    else {
+        extern Int WarnInitGlobalBag;
 
+        WarnInitGlobalBag = 1;
+#       ifdef DEBUG_HANDLER_REGISTRATION
+            CheckAllHandlers();
+#       endif
+        for ( i = 0;  i < NrBuiltinModules;  i++ ) {
+            if ( Modules[i]->initLibrary ) {
+#               ifdef DEBUG_LOADING
+                    fputs( "#I  InitLibrary(builtin ", stderr );
+                    fputs( Modules[i]->name, stderr );
+                    fputs( ")\n", stderr );
+#               endif
+                ret = Modules[i]->initLibrary( Modules[i] );
+                if ( ret ) {
+                    fputs( "#I  InitLibrary(builtin ", stderr );
+                    fputs( Modules[i]->name, stderr );
+                    fputs( ") returned non-zero value\n", stderr );
+                }
+            }
+        }
+        WarnInitGlobalBag = 0;
+    }
 
-    /* check the initialisation of the packages                            */
-    Revisions = NEW_PREC(0);
-    var = GVarName( "Revision" );
-    AssGVar( var, Revisions );
-    MakeReadOnlyGVar(var);
+    /* check initialisation                                                */
+    for ( i = 0;  i < NrModules;  i++ ) {
+        if ( Modules[i]->checkInit ) {
+#           ifdef DEBUG_LOADING
+                fputs( "#I  CheckInit(builtin ", stderr );
+                fputs( Modules[i]->name, stderr );
+                fputs( ")\n", stderr );
+#           endif
+            ret = Modules[i]->checkInit( Modules[i] );
+            if ( ret ) {
+                fputs( "#I  CheckInit(builtin ", stderr );
+                fputs( Modules[i]->name, stderr );
+                fputs( ") returned non-zero value\n", stderr );
+            }
+        }
+    }
 
-    CheckGap();
+    /* create a revision record (overwrite a restored one)                 */
+    for ( i = 0;  i < NrBuiltinModules;  i++ ) {
+        Char buf[30];
 
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_c", 2 );
+        SET_REVISION( buf, Modules[i]->revision_c );
+        buf[0] = 0;
+        SyStrncat( buf, Modules[i]->name, 27 );
+        SyStrncat( buf, "_h", 2 );
+        SET_REVISION( buf, Modules[i]->revision_h );
+    }
 
-    SET_REVISION( "system_c",   Revision_system_c );
-    SET_REVISION( "system_h",   Revision_system_h );
-    SET_REVISION( "gasman_c",   Revision_gasman_c );
-    SET_REVISION( "gasman_h",   Revision_gasman_h );
+    /* add revisions for files which are not modules                       */
+    {
+        extern const char * Revision_system_c;
+        extern const char * Revision_system_h;
+        extern const char * Revision_gasman_c;
+        extern const char * Revision_gasman_h;
 
+        SET_REVISION( "system_c", Revision_system_c );
+        SET_REVISION( "system_h", Revision_system_h );
+        SET_REVISION( "gasman_c", Revision_gasman_c );
+        SET_REVISION( "gasman_h", Revision_gasman_h );
+    }
 
     /* read the init files                                                 */
     if ( SySystemInitFile[0] ) {

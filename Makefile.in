@@ -1,0 +1,52 @@
+#############################################################################
+##
+#W  Makefile                    GAP source                       Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file is the top level make file.  It is generated from `Makefile.in'
+##  by the `configure' script.  After unpacking GAP you simply type
+##
+##    ./configure
+##
+##  to create a make file and then
+##
+##    make
+##
+##  to compile and link GAP.
+##
+##  The "default" traget:
+##    - creates a subdirectory CPU-VENDOR-OS in the directory `bin',
+##    - copies the configuration script into this directory,
+##    - it switches into this directory and executes the configure script,
+##    - it makes GAP in this directory.
+##
+##  The "clean" target:
+##    - removes the subdirectory CPU-VENDOR-OS in the directory `bin'
+##    - removes any files created by `configure'
+##
+SHELL=/bin/sh
+CC=@CC@
+@SET_MAKE@
+
+default: config compile
+
+config: bin/@target@-@CC@/configure bin/@target@-@CC@/Makefile
+
+bin/@target@-@CC@/configure: cnf/configure.out
+	if test ! -d bin;  then mkdir bin;  fi
+	if test ! -d bin/@target@-@CC@;  then mkdir bin/@target@-@CC@;  fi
+	@rm -f bin/@target@-@CC@/configure
+	cp cnf/configure.out bin/@target@-@CC@/configure
+
+bin/@target@-@CC@/Makefile: bin/@target@-@CC@/configure cnf/config.hin
+	( cd bin/@target@-@CC@ ; CC=$(CC) ./configure --target=@target@ @gp_configure_options@ )
+
+compile:
+	( cd bin/@target@-@CC@ ; $(MAKE) CC=$(CC) )
+
+clean:
+	rm -rf bin/@target@-@CC@
+	rm -f config.cache config.log config.status Makefile

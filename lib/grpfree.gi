@@ -6,8 +6,16 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for free groups.
+##
+##  Free groups are treated as   special cases of finitely presented  groups.
+##  This  is done by making  the elements (more specifically, the generators)
+##  of  a  free group to   have  the property   IsElementOfFpGroup.  See  the
+##  function  FreeGroup().    In addition,   elements  of  a free   group are
+##  (associative) words, that is they have a normal  form that allows an easy
+##  equalitity test.  
 ##
 Revision.grpfree_gi :=
     "@(#)$Id$";
@@ -50,7 +58,7 @@ Revision.grpfree_gi :=
 ##         s_{c_{i+1}+1} & ; & \mbox{\rm otherwise}
 ##                            \end{array} \right.    \]
 ##
-IsFreeGroupIterator := NewRepresentation( "IsFreeGroupIterator",
+DeclareRepresentation( "IsFreeGroupIterator",
     IsIterator and IsComponentObjectRep,
     [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
 
@@ -118,14 +126,14 @@ InstallMethod( Iterator,
 ##
 #M  Enumerator( <G> )
 ##
-IsFreeGroupEnumerator := NewRepresentation( "IsFreeGroupEnumerator",
+DeclareRepresentation( "IsFreeGroupEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
 InstallMethod( \[\],
     "method for enumerator of a free group",
     true,
-    [ IsFreeGroupEnumerator, IsPosRat and IsInt ], 0,
+    [ IsFreeGroupEnumerator, IsPosInt ], 0,
     function( enum, nr )
 
     local n,
@@ -327,7 +335,7 @@ InstallMethod( IsWholeFamily,
     true,
     [ IsAssocWordWithInverseCollection and IsGroup ], 0,
     function( M )
-    if IsSubset( GeneratorsMagmaFamily( FamilyObj( M ) ),
+    if IsSubset( GeneratorsMagmaFamily( ElementsFamily( FamilyObj( M ) ) ),
                  GeneratorsOfGroup( M ) ) then
       return true;
     else
@@ -423,7 +431,7 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeGroup( <name1>, <name2>, ... )
 #F  FreeGroup( <names> )
 ##
-FreeGroup := function ( arg )
+InstallGlobalFunction( FreeGroup, function ( arg )
 
     local   names,      # list of generators names
             F,          # family of free group element objects
@@ -451,10 +459,12 @@ FreeGroup := function ( arg )
     fi;
 
     # Construct the family of element objects of our group.
-    F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse );
+    F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse 
+                            and IsElementOfFpGroup );
 
     # Install the data (names, no. of bits available for exponents, types).
-    StoreInfoFreeMagma( F, names, IsAssocWordWithInverse );
+    StoreInfoFreeMagma( F, names, IsAssocWordWithInverse 
+            and IsElementOfFpGroup );
 
     # Make the group.
     if IsEmpty( names ) then
@@ -472,14 +482,442 @@ FreeGroup := function ( arg )
     # Store whether the group is trivial.
     SetIsTrivial( G, Length( names ) = 0 );
 
+    # Store the whole group in the family.
+    FamilyObj(G)!.wholeGroup := G;
+    SetFilterObj(G,IsGroupOfFamily);
+
     # Return the free group.
     return G;
-end;
+end );
 
 
 #############################################################################
 ##
+#M  FreeGeneratorsOfFpGroup( F )
+##
+InstallMethod( FreeGeneratorsOfFpGroup,
+    "method for a free group",
+    true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily and IsFreeGroup ], 0,
+    F -> GeneratorsOfGroup( F ) );
+
+#############################################################################
+##
+#M  RelatorsOfFpGroup( F )
+##
+InstallMethod( RelatorsOfFpGroup,
+    "method for a free group",
+    true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily and IsFreeGroup ], 0,
+    F -> [] );
+
+#############################################################################
+##
+#M  FreeGroupOfFpGroup( F )
+##
+InstallMethod( FreeGroupOfFpGroup,
+    "method for a free group",
+    true,
+    [ IsSubgroupFpGroup and IsGroupOfFamily and IsFreeGroup ], 0,
+    F -> F );
+
+#############################################################################
+##
+#M  UnderlyingElement( w )
+##
+InstallMethod( UnderlyingElement,
+    "method for an element of a free group",
+    true,
+    [ IsElementOfFreeGroup ], 0,
+    w -> w );
+
+#############################################################################
+##
+#M  ElementOfFpGroup( w )
+##
+InstallMethod( ElementOfFpGroup,
+    "method for a family of free group elements, and an assoc. word",
+    true,
+    [ IsElementOfFpGroupFamily and IsAssocWordWithInverseFamily,
+      IsAssocWordWithInverse ], 0,
+    function( fam, w ) return w; end );
+
+#############################################################################
+##
+##  The methods for  testing equality, multiplying,  etc. are the same as for
+##  IsAssocWordWithInverse.  However,  these methods   have to   be installed
+##  again  for IsElementOfFpGroup in order   to  guarantee that they will  be
+##  chosen over methods for elements of a finitely presented group.
+##
+#M  install            methods for all free group elements.
+##
+InstallMethod( Inverse,
+    "method for a free group element",
+    true,
+    [ IsElementOfFreeGroup ], 0,
+    AssocWordWithInverse_Inverse );
+
+#############################################################################
+##
+#M  Install (internal) methods for elements of free groups (8 bits)
+##
+
+methname8b1 := "method for a free group element (8 bits)";
+methname8b2 := "method for two free group elements (8 bits)";
+methname16b1 := "method for a free group element (16 bits)";
+methname16b2 := "method for two free group elements (16 bits)";
+methname32b1 := "method for a free group element (32 bits)";
+methname32b2 := "method for two free group elements (32 bits)";
+
+InstallMethod( ExtRepOfObj,
+    methname8b1,
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    8Bits_ExtRepOfObj );
+
+InstallMethod( \=,
+        methname8b1,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord,
+      IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    8Bits_Equal );
+
+InstallMethod( \<,
+        methname8b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord,
+      IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    8Bits_Less );
+
+InstallMethod( \*,
+        methname8b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord, 
+      IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    8Bits_Product );
+
+InstallMethod( One,
+        methname8b1,
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    x -> 8Bits_AssocWord( FamilyObj( x )!.types[1], [] ) );
+
+InstallMethod( \^,
+    "method for a free group element (8 bits), and a small integer",
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord,
+      IsSmallIntRep and IsInt ], 0,
+    8Bits_Power );
+
+InstallMethod( ExponentSyllable,
+    "method for a free group element (8 bits), and a pos. integer",
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord, IsPosInt ], 0,
+    8Bits_ExponentSyllable );
+
+InstallMethod( GeneratorSyllable,
+    "method for a free group element (8 bits), and an integer",
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord, IsInt ], 0,
+    8Bits_GeneratorSyllable );
+
+InstallMethod( NumberSyllables,
+        methname8b1,
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+    8Bits_NumberSyllables );
+
+InstallMethod( ExponentSums,
+        methname8b1,
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord ], 0,
+        8Bits_ExponentSums1 );
+
+InstallOtherMethod( ExponentSums,
+    "method for a free group element (8 bits), and two integers",
+    true,
+    [ IsElementOfFreeGroup and Is8BitsAssocWord, IsInt, IsInt ], 0,
+    8Bits_ExponentSums3 );
+
+#############################################################################
+##
+#M  Install (internal) methods for elements of free groups (16 bits)
+##
+InstallMethod( ExtRepOfObj,
+    methname16b1,
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_ExtRepOfObj );
+
+InstallMethod( \=,
+    methname16b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord,
+      IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_Equal );
+
+InstallMethod( \<,
+    methname16b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord,
+      IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_Less );
+
+InstallMethod( \*,
+    methname16b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord, 
+      IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_Product );
+
+InstallMethod( One,
+    methname16b1,
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    x -> 16Bits_AssocWord( FamilyObj( x )!.types[2], [] ) );
+
+InstallMethod( \^,
+    "method for a free group element (16 bits), and a small integer",
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord,
+      IsSmallIntRep and IsInt ], 0,
+    16Bits_Power );
+
+InstallMethod( ExponentSyllable,
+    "method for a free group element (16 bits), and a pos. integer",
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord, IsPosInt ], 0,
+    16Bits_ExponentSyllable );
+
+InstallMethod( GeneratorSyllable,
+    "method for a free group element (16 bits), and an integer",
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord, IsInt ], 0,
+    16Bits_GeneratorSyllable );
+
+InstallMethod( NumberSyllables,
+    methname16b1,
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_NumberSyllables );
+
+InstallMethod( ExponentSums,
+    methname16b1,
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord ], 0,
+    16Bits_ExponentSums1 );
+
+
+InstallOtherMethod( ExponentSums,
+    "method for a free group element (16 bits), and two integers",
+    true,
+    [ IsElementOfFreeGroup and Is16BitsAssocWord, IsInt, IsInt ], 0,
+    16Bits_ExponentSums3 );
+
+#############################################################################
+##
+#M  Install (internal) methods for elements of free groups (32 bits)
+##
+InstallMethod( ExtRepOfObj,
+    methname32b1,
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_ExtRepOfObj );
+
+InstallMethod( \=,
+    methname32b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord,
+      IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_Equal );
+
+InstallMethod( \<,
+    methname32b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord,
+      IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_Less );
+
+InstallMethod( \*,
+    methname32b2,
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord, 
+      IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_Product );
+
+InstallMethod( One,
+    methname32b1,
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    x -> 32Bits_AssocWord( FamilyObj( x )!.types[3], [] ) );
+
+InstallMethod( \^,
+    "method for a free group element (32 bits), and a small integer",
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord, 
+      IsSmallIntRep and IsInt ], 0,
+    32Bits_Power );
+
+InstallMethod( ExponentSyllable,
+    "method for a free group element (32 bits), and a pos. integer",
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord, IsPosInt ], 0,
+    32Bits_ExponentSyllable );
+
+InstallMethod( GeneratorSyllable,
+    "method for a free group element (32 bits), and an integer",
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord, IsInt ], 0,
+    32Bits_GeneratorSyllable );
+
+InstallMethod( NumberSyllables,
+    methname32b1,
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_NumberSyllables );
+
+InstallMethod( ExponentSums,
+    methname32b1,
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord ], 0,
+    32Bits_ExponentSums1 );
+
+
+InstallOtherMethod( ExponentSums,
+    "method for a free group element (32 bits), and two integers",
+    true,
+    [ IsElementOfFreeGroup and Is32BitsAssocWord, IsInt, IsInt ], 0,
+    32Bits_ExponentSums3 );
+
+#############################################################################
+##
+#M  Install            methods for elements of free groups (inf bits)
+##
+InstallMethod( ExtRepOfObj,
+    "method for a free group element (inf bits)",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    InfBits_ExtRepOfObj );
+
+InstallMethod( \=,
+    "method for two free group elements (inf bits)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord,
+      IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    InfBits_Equal );
+
+InstallMethod( \<,
+    "method for two free group elements (inf bits)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord,
+      IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    InfBits_Less );
+
+InstallMethod( \*,
+    "method for two free group elements (inf bits)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord, 
+      IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    AssocWord_Product );
+
+InstallMethod( One,
+    "method for a free group element (inf bits)",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    x -> InfBits_AssocWord( FamilyObj( x )!.types[4], [] ) );
+
+InstallMethod( \^,
+    "method for a free group element (inf bits), and a small integer",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord,
+      IsSmallIntRep and IsInt ], 0,
+    AssocWordWithInverse_Power );
+
+InstallMethod( ExponentSyllable,
+    "method for a free group element (inf bits), and a pos. integer",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord, IsPosInt ], 0,
+    InfBits_ExponentSyllable );
+
+InstallMethod( GeneratorSyllable,
+    "method for a free group element (inf bits), and an integer",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord, IsInt ], 0,
+    InfBits_GeneratorSyllable );
+
+InstallMethod( NumberSyllables,
+    "method for a free group element (inf bits)",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    InfBits_NumberSyllables );
+
+InstallMethod( ExponentSums,
+    "method for a free group element (inf bits)",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord ], 0,
+    InfBits_ExponentSums1 );
+
+InstallOtherMethod( ExponentSums,
+    "method for a free group element (inf bits), and two integers",
+    true,
+    [ IsElementOfFreeGroup and IsInfBitsAssocWord, IsInt, IsInt ], 0,
+    InfBits_ExponentSums3 );
+
+#############################################################################
+##
+#M  Install            methods for elements of free groups, mixed bit type
+##
+InstallMethod( \=,
+    "method for two free group elements ( using extrep)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup, IsElementOfFreeGroup ], 0,
+    function( x, y )
+    return ExtRepOfObj( x ) = ExtRepOfObj( y ); end );
+
+InstallMethod( \<,
+    "method for two free group elements (using extrep)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup, IsElementOfFreeGroup ], 0,
+    function( x, y )
+    return ExtRepOfObj( x ) < ExtRepOfObj( y ); end );
+
+InstallMethod( \*,
+    "method for two free group elements (using extrep)",
+    IsIdenticalObj,
+    [ IsElementOfFreeGroup, IsElementOfFreeGroup ], 0,
+    AssocWord_Product );
+
+
+#############################################################################
+##
+#M  ViewObj(<G>)
+##
+InstallMethod(ViewObj,"subgroup of free group",true,[IsFreeGroup],0,
+function(G)
+  if IsGroupOfFamily(G) then
+    if Length(GeneratorsOfGroup(G))>VIEWLEN*10 then
+      Print("<free group with ",Length(GeneratorsOfGroup(G))," generators>");
+    else
+      Print("<free group on the generators ",GeneratorsOfGroup(G),">");
+    fi;
+  else
+    Print("Group(");
+    if HasGeneratorsOfGroup(G) then
+      if not IsBound(G!.gensWordLengthSum) then
+	G!.gensWordLengthSum:=Sum(List(GeneratorsOfGroup(G),Length));
+      fi;
+      if G!.gensWordLengthSum<=VIEWLEN*30 then
+        Print(GeneratorsOfGroup(G));
+      else
+        Print("<",Length(GeneratorsOfGroup(G))," generators>");
+      fi;
+    else
+      Print("<free, no generators known>");
+    fi;
+    Print(")");
+  fi;
+end);
+
+#############################################################################
+##
 #E  grpfree.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-

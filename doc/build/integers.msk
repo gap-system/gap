@@ -1,0 +1,81 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  integers.msk                GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Integers}
+
+One of the most  fundamental  datatypes in every programming  language is
+the integer type.  {\GAP} is no exception.
+
+{\GAP} integers are entered  as a sequence  of digits optionally preceded
+by a '+' sign for positive integers or a '-'  sign for negative integers.
+The size of integers in {\GAP} is only limited by the amount of available
+memory,  so you can compute with integers having thousands of digits.
+
+\beginexample
+    gap> -1234;
+    -1234
+    gap> 123456789012345678901234567890123456789012345678901234567890;
+    123456789012345678901234567890123456789012345678901234567890 
+\endexample
+
+
+Many more functions that are mainly related to the prime residue group of
+integers modulo an integer are described in chapter "Number Theory".
+
+
+\Declaration{Integers}
+\Declaration{IsIntegers}
+
+\Declaration{GaussianIntegers}
+\Declaration{IsGaussianIntegers}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Elementary operations for Integers}
+
+\Declaration{IsInt}
+\Declaration{Int}
+
+\Declaration{IsEvenInt}
+\Declaration{IsOddInt}
+
+\Declaration{AbsInt}
+\Declaration{SignInt}
+
+\Declaration{LogInt}
+\Declaration{RootInt}
+\Declaration{SmallestRootInt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Quotients and Remainders}
+
+\Declaration{QuoInt}
+\Declaration{BestQuoInt}
+\Declaration{Gcdex}
+\Declaration{LcmInt}
+
+\Declaration{CoefficientsQadic}
+\Declaration{ChineseRem}
+\Declaration{PowerModInt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Prime numbers}
+
+\Declaration{Primes}
+\Declaration{IsPrimeInt}
+\Declaration{IsPrimePowerInt}
+\Declaration{NextPrimeInt}
+\Declaration{PrevPrimeInt}
+\Declaration{FactorsInt}
+\Declaration{PrintFactorsInt}
+\Declaration{PrimePowersInt}
+\Declaration{DivisorsInt}
+
+
+
+

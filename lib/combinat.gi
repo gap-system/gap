@@ -1,10 +1,11 @@
 #############################################################################
 ##
-#W  combinat.gi                 GAP library                     .............
+#W  combinat.gi                 GAP library                  Martin Schoenert
 ##
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains method for combinatorics.
 ##
@@ -14,20 +15,19 @@ Revision.combinat_gi :=
 
 #############################################################################
 ##
-
 #F  Factorial( <n> )  . . . . . . . . . . . . . . . . factorial of an integer
 ##
-Factorial := function ( n )
+InstallGlobalFunction(Factorial,function ( n )
     if n < 0  then Error("<n> must be nonnegative");  fi;
     return Product( [1..n] );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Binomial( <n>, <k> )  . . . . . . . . .  binomial coefficient of integers
 ##
-Binomial := function ( n, k )
+InstallGlobalFunction(Binomial,function ( n, k )
     local   bin, i, j;
     if   k < 0  then
         bin := 0;
@@ -52,14 +52,14 @@ Binomial := function ( n, k )
         od;
     fi;
     return bin;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Bell( <n> ) . . . . . . . . . . . . . . . . .  value of the Bell sequence
 ##
-Bell := function ( n )
+InstallGlobalFunction(Bell,function ( n )
     local   bell, k, i;
     bell := [ 1 ];
     for i  in [1..n-1]  do
@@ -69,16 +69,14 @@ Bell := function ( n )
         od;
     od;
     return bell[1];
-end;
+end);
 
 
 #############################################################################
 ##
 #F  Stirling1( <n>, <k> ) . . . . . . . . . Stirling number of the first kind
 ##
-Stirling2 := "will be defined later";
-
-Stirling1 := function ( n, k )
+InstallGlobalFunction(Stirling1,function ( n, k )
     local   sti, i, j;
     if   n < k  then
         sti := 0;
@@ -102,7 +100,7 @@ Stirling1 := function ( n, k )
         sti := sti[n-k+1];
     fi;
     return sti;
-end;
+end);
 
 
 #############################################################################
@@ -111,7 +109,7 @@ end;
 ##
 ##  Uses $S_2(n,k) = (-1)^k \sum_{i=1}^{k}{(-1)^i {k \choose i} i^k} / k!$.
 ##
-Stirling2 := function ( n, k )
+InstallGlobalFunction(Stirling2,function ( n, k )
     local   sti, bin, fib, i;
     if   n < k  then
         sti := 0;
@@ -133,7 +131,7 @@ Stirling2 := function ( n, k )
         sti := sti / fib;
     fi;
     return sti;
-end;
+end);
 
 
 #############################################################################
@@ -193,7 +191,7 @@ CombinationsK := function ( mset, m, n, k, comb, i )
     return combs;
 end;
 
-Combinations := function ( arg )
+InstallGlobalFunction(Combinations,function ( arg )
     local   combs, mset;
     if Length(arg) = 1  then
         mset := ShallowCopy(arg[1]);  Sort( mset );
@@ -205,7 +203,7 @@ Combinations := function ( arg )
         Error("usage: Combinations( <mset> [, <k>] )");
     fi;
     return combs;
-end;
+end);
 
 
 #############################################################################
@@ -295,7 +293,7 @@ NrCombinationsMSetK := function ( mset, k )
     return nr;
 end;
 
-NrCombinations := function ( arg )
+InstallGlobalFunction(NrCombinations,function ( arg )
     local   nr, mset;
     if Length(arg) = 1  then
         mset := ShallowCopy(arg[1]);  Sort( mset );
@@ -315,7 +313,7 @@ NrCombinations := function ( arg )
         Error("usage: NrCombinations( <mset> [, <k>] )");
     fi;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -384,7 +382,7 @@ ArrangementsK := function ( mset, m, n, k, comb, i )
     return combs;
 end;
 
-Arrangements := function ( arg )
+InstallGlobalFunction(Arrangements,function ( arg )
     local   combs, mset, m;
     if Length(arg) = 1  then
         mset := ShallowCopy(arg[1]);  Sort( mset );
@@ -398,7 +396,7 @@ Arrangements := function ( arg )
         Error("usage: Arrangements( <mset> [, <k>] )");
     fi;
     return combs;
-end;
+end);
 
 
 #############################################################################
@@ -493,7 +491,7 @@ NrArrangementsMSetK := function ( mset, k )
     return nr;
 end;
 
-NrArrangements := function ( arg )
+InstallGlobalFunction(NrArrangements,function ( arg )
     local   nr, mset;
     if Length(arg) = 1  then
         mset := ShallowCopy(arg[1]);  Sort( mset );
@@ -513,7 +511,7 @@ NrArrangements := function ( arg )
         Error("usage: NrArrangements( <mset> [, <k>] )");
     fi;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -546,19 +544,19 @@ UnorderedTuplesK := function ( set, n, m, k, tup, i )
     return tups;
 end;
 
-UnorderedTuples := function ( set, k )
+InstallGlobalFunction(UnorderedTuples,function ( set, k )
     set := Set(set);
     return UnorderedTuplesK( set, Size(set), 1, k, [], 1 );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  NrUnorderedTuples( <set>, <k> ) . . number unordered of tuples from a set
 ##
-NrUnorderedTuples := function ( set, k )
+InstallGlobalFunction(NrUnorderedTuples,function ( set, k )
     return Binomial( Size(Set(set))+k-1, k );
-end;
+end);
 
 
 #############################################################################
@@ -587,19 +585,19 @@ TuplesK := function ( set, k, tup, i )
     return tups;
 end;
 
-Tuples := function ( set, k )
+InstallGlobalFunction(Tuples,function ( set, k )
     set := Set(set);
     return TuplesK( set, k, [], 1 );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  NrTuples( <set>, <k> )  . . . . . . . number of ordered tuples from a set
 ##
-NrTuples := function ( set, k )
+InstallGlobalFunction(NrTuples,function ( set, k )
     return Size(Set(set)) ^ k;
-end;
+end);
 
 
 #############################################################################
@@ -637,12 +635,12 @@ PermutationsListK := function ( mset, m, n, k, perm, i )
     return perms;
 end;
 
-PermutationsList := function ( mset )
+InstallGlobalFunction(PermutationsList,function ( mset )
     local   m;
     mset := ShallowCopy(mset);  Sort( mset );
     m := List( mset, i->true );
     return PermutationsListK(mset,m,Length(mset),Length(mset),[],1);
-end;
+end);
 
 
 #############################################################################
@@ -651,14 +649,14 @@ end;
 ##
 ##  'NrPermutationsList' uses the well known multinomial coefficient formula.
 ##
-NrPermutationsList := function ( mset )
+InstallGlobalFunction(NrPermutationsList,function ( mset )
     local   nr, m;
     nr := Factorial( Length(mset) );
     for m  in Set(mset)  do
         nr := nr / Factorial( Number( mset, i->i = m ) );
     od;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -696,12 +694,12 @@ DerangementsK := function ( mset, m, n, list, k, perm, i )
     return perms;
 end;
 
-Derangements := function ( list )
+InstallGlobalFunction(Derangements,function ( list )
     local   mset, m;
     mset := ShallowCopy(list);  Sort( mset );
     m := List( mset, i->true );
     return DerangementsK(mset,m,Length(mset),list,Length(mset),[],1);
-end;
+end);
 
 
 #############################################################################
@@ -730,7 +728,7 @@ NrDerangementsK := function ( mset, m, n, list, k, i )
     return perms;
 end;
 
-NrDerangements := function ( list )
+InstallGlobalFunction(NrDerangements,function ( list )
     local   nr, mset, m, i;
     mset := ShallowCopy(list);  Sort( mset );
     if IsSSortedList(mset)  then
@@ -751,7 +749,7 @@ NrDerangements := function ( list )
         nr := NrDerangementsK(mset,m,Length(mset),list,Length(mset),1);
     fi;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -770,9 +768,9 @@ Permanent2 := function ( mat, n, i, sum )
     return p;
 end;
 
-Permanent := function ( mat )
+InstallGlobalFunction(Permanent,function ( mat )
     return (-1)^Length(mat) * Permanent2( mat, Length(mat), 1, 0*mat[1] );
-end;
+end);
 
 
 #############################################################################
@@ -869,7 +867,7 @@ PartitionsSetK := function ( set, n, m, o, k, part, i, j )
     return parts;
 end;
 
-PartitionsSet := function ( arg )
+InstallGlobalFunction(PartitionsSet,function ( arg )
     local   parts, set, m;
     if Length(arg) = 1  then
         set := arg[1];
@@ -904,14 +902,14 @@ PartitionsSet := function ( arg )
         Error("usage: PartitionsSet( <n> [, <k>] )");
     fi;
     return parts;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  NrPartitionsSet( <set> )  . . . . . . . . . number of partitions of a set
 ##
-NrPartitionsSet := function ( arg )
+InstallGlobalFunction(NrPartitionsSet,function ( arg )
     local   nr, set;
     if Length(arg) = 1  then
         set := arg[1];
@@ -929,7 +927,7 @@ NrPartitionsSet := function ( arg )
         Error("usage: NrPartitionsSet( <n> [, <k>] )");
     fi;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -1024,7 +1022,7 @@ PartitionsK := function ( n, m, k, part, i )
     return parts;
 end;
 
-Partitions := function ( arg )
+InstallGlobalFunction(Partitions,function ( arg )
     local   parts;
     if Length(arg) = 1  then
         parts := PartitionsA( arg[1], arg[1], [], 1 );
@@ -1046,7 +1044,7 @@ Partitions := function ( arg )
         Error("usage: Partitions( <n> [, <k>] )");
     fi;
     return parts;
-end;
+end);
 
 
 #############################################################################
@@ -1067,7 +1065,7 @@ end;
 ##  that no summand is 1 is $P(m-l,l)$, because we  can  subtract 1 from each
 ##  summand and obtain new sums that still have $l$ summands but value $m-l$.
 ##
-NrPartitions := function ( arg )
+InstallGlobalFunction(NrPartitions,function ( arg )
     local   s, n, m, p, k, l;
 
     if Length(arg) = 1  then
@@ -1113,7 +1111,7 @@ NrPartitions := function ( arg )
     fi;
 
     return s;
-end;
+end);
 
 
 #############################################################################
@@ -1169,7 +1167,7 @@ OrderedPartitionsK := function ( n, k, part, i )
     return parts;
 end;
 
-OrderedPartitions := function ( arg )
+InstallGlobalFunction(OrderedPartitions,function ( arg )
     local   parts;
     if Length(arg) = 1  then
         parts := OrderedPartitionsA( arg[1], [], 1 );
@@ -1191,7 +1189,7 @@ OrderedPartitions := function ( arg )
         Error("usage: OrderedPartitions( <n> [, <k>] )");
     fi;
     return parts;
-end;
+end);
 
 
 #############################################################################
@@ -1201,7 +1199,7 @@ end;
 ##  'NrOrderedPartitions' uses well known identities to compute the number of
 ##  ordered partitions of <n>.
 ##
-NrOrderedPartitions := function ( arg )
+InstallGlobalFunction(NrOrderedPartitions,function ( arg )
     local   nr;
     if Length(arg) = 1  then
         if arg[1] = 0  then
@@ -1223,7 +1221,7 @@ NrOrderedPartitions := function ( arg )
         Error("usage: NrOrderedPartitions( <n> [, <k>] )");
     fi;
     return nr;
-end;
+end);
 
 
 #############################################################################
@@ -1299,7 +1297,7 @@ RestrictedPartitionsK := function ( n, set, m, k, part, i )
     return parts;
 end;
 
-RestrictedPartitions := function ( arg )
+InstallGlobalFunction(RestrictedPartitions,function ( arg )
     local   parts;
     if Length(arg) = 2  then
         parts := RestrictedPartitionsA(arg[1],arg[2],Length(arg[2]),[],1);
@@ -1322,7 +1320,7 @@ RestrictedPartitions := function ( arg )
         Error("usage: RestrictedPartitions( <n>, <set> [, <k>] )");
     fi;
     return parts;
-end;
+end);
 
 
 #############################################################################
@@ -1353,7 +1351,7 @@ NrRestrictedPartitionsK := function ( n, set, m, k, part, i )
     return parts;
 end;
 
-NrRestrictedPartitions := function ( arg )
+InstallGlobalFunction(NrRestrictedPartitions,function ( arg )
     local  s, n, set, m, p, l;
 
     if Length(arg) = 2  then
@@ -1389,18 +1387,18 @@ NrRestrictedPartitions := function ( arg )
     fi;
 
     return s;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  SignPartition( <pi> ) . . . . . . . . . . . . .  signum of partition <pi>
 ##
-SignPartition := function(pi)
+InstallGlobalFunction(SignPartition,function(pi)
    
    return (-1)^(Sum(pi) - Length(pi));
 
-end;
+end);
 
 
 #############################################################################
@@ -1410,7 +1408,7 @@ end;
 ##  'AssociatedPartition'  returns the associated partition  of the partition
 ##  <pi> which is obtained by transposing the corresponding Young diagram.
 ##
-AssociatedPartition := function(pi)
+InstallGlobalFunction(AssociatedPartition,function(pi)
 
    local i, j, mu;
 
@@ -1423,7 +1421,7 @@ AssociatedPartition := function(pi)
 
    return(mu);
 
-end;
+end);
 
 
 #############################################################################
@@ -1433,7 +1431,7 @@ end;
 ##  'PowerPartition'  returns the partition corresponding to the <k>-th power
 ##  of a permutation with cycle structure <pi>.
 ##
-PowerPartition := function(pi, k)
+InstallGlobalFunction(PowerPartition,function(pi, k)
 
    local res, i, d, part;
 
@@ -1448,7 +1446,7 @@ PowerPartition := function(pi, k)
 
    return Reversed(res);
 
-end;
+end);
 
 
 #############################################################################
@@ -1458,7 +1456,7 @@ end;
 ##  'PartitionTuples'  returns the list of all <r>-tuples of partitions which
 ##  together form a partition of <n>.
 ##
-PartitionTuples := function( n, r )
+InstallGlobalFunction(PartitionTuples,function( n, r )
     local   empty,  pm,  m,  i,  s,  k,  t,  t1,  res;
 
    empty := rec( tup := List( [1..r], x-> [] ),
@@ -1518,7 +1516,7 @@ PartitionTuples := function( n, r )
 
    return res;
 
-end;
+end);
 
 
 #############################################################################
@@ -1529,7 +1527,7 @@ end;
 ##  $U_{2k} = U_k V_k,        U_{2k+1} = (P U_{2k} + V_{2k}) / 2$ and
 ##  $V_{2k} = V_k^2 - 2 Q^k,  V_{2k+1} = ((P^2-4Q) U_{2k} + P V_{2k}) / 2$.
 ##
-Lucas := function ( P, Q, k )
+InstallGlobalFunction(Lucas,function ( P, Q, k )
     local   l;
     if k = 0  then
         l := [ 0, 2, 1 ];
@@ -1544,7 +1542,7 @@ Lucas := function ( P, Q, k )
         l := [ (P*l[1]+l[2])/2, ((P^2-4*Q)*l[1]+P*l[2])/2, Q*l[3] ];
     fi;
     return l;
-end;
+end);
 
 
 #############################################################################
@@ -1557,9 +1555,9 @@ end;
 ##  The binary recursion of 'Lucas' reduces the number of calls to $log2(n)$.
 ##  The number of bit operations now is $O(n)$, i.e., the size of the result.
 ##
-Fibonacci := function ( n )
+InstallGlobalFunction(Fibonacci,function ( n )
     return Lucas( 1, -1, n )[ 1 ];
-end;
+end);
 
 
 #############################################################################
@@ -1568,7 +1566,7 @@ end;
 ##
 Bernoulli2 := [-1/2,1/6,0,-1/30,0,1/42,0,-1/30,0,5/66,0,-691/2730,0,7/6];
 
-Bernoulli := function ( n )
+InstallGlobalFunction(Bernoulli,function ( n )
     local   brn, bin, i, j;
     if   n < 0  then
         Error("Bernoulli: <n> must be nonnegative");
@@ -1597,7 +1595,7 @@ Bernoulli := function ( n )
         brn := Bernoulli2[n];
     fi;
     return brn;
-end;
+end);
 
 #############################################################################
 ##

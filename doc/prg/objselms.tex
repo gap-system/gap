@@ -139,7 +139,7 @@ This is best illustrated with an example.
     gap> l1:= [ 1, 2, 3 ];; l2:= [ 1, 2, 3 ];;
     gap> l1 = l2;
     true
-    gap> IsIdentical( l1, l2 );
+    gap> IsIdenticalObj( l1, l2 );
     false
     gap> l1[3]:= 4;; l1; l2;
     [ 1, 2, 4 ]
@@ -153,7 +153,7 @@ Thus a change in `l1' does not affect `l2'.
     gap> l1:= [ 1, 2, 3 ];; l2:= l1;;
     gap> l1 = l2;
     true
-    gap> IsIdentical( l1, l2 );
+    gap> IsIdenticalObj( l1, l2 );
     true
     gap> l1[3]:= 4;; l1; l2;
     [ 1, 2, 4 ]
@@ -241,6 +241,15 @@ and the infix operations `+', `-', `*', `/', `^', `mod'.
 So the product of two matrices or of a vector and a matrix is immutable,
 no matter whether the arguments are mutable or immutable.
 
+In a few, relatively low-level algorithms, one wishes  to treat a matrix partly
+as  a data structure,  rather than  an  algebraic  element, and manipulate  and
+change its entries. For this, the matrix needs to be mutable, and the fact that
+the usual arithmetic operations produce  immutable results is an obstacle.  For
+these situations, a  number of additional  operations are provided, for example
+`MutabledentityMat', `MutableTransposedMat', `MutableNullMat', constuct mutable
+matrices, while `TriangulizeMat' modifies a mutable matrix  in place into upper
+triangular form.
+
 In a few situations,
 one wants to make a *structural copy* <scp> of an object <obj>.
 This is defined as follows.
@@ -257,20 +266,22 @@ Here is an example.
     gap> obj[2]:= obj[1];;
     gap> obj[3]:= Immutable( obj[1] );;
     gap> scp:= StructuralCopy( obj );;
-    gap> scp = obj; IsIdentical( scp, obj );
+    gap> scp = obj; IsIdenticalObj( scp, obj );
     true
     false
-    gap> IsIdentical( scp[1], obj[1] );
+    gap> IsIdenticalObj( scp[1], obj[1] );
     false
-    gap> IsIdentical( scp[3], obj[3] );
+    gap> IsIdenticalObj( scp[3], obj[3] );
     true
-    gap> IsIdentical( scp[1], scp[2] );
+    gap> IsIdenticalObj( scp[1], scp[2] );
     true
 \endexample
 
 Note that being immutable does not forbid an object to store knowledge.
 For example, if it is found out that an immutable list is strictly
 sorted then the list may store this information.
+More precisely, an immutable object may change in any way,
+provided that it continues to represent the same element.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

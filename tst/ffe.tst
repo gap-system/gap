@@ -70,7 +70,7 @@ gap> SquareRoots( GF(9), Z(3) );
 
 gap> List( AsListSorted( GF(7) ), Int );
 [ 0, 1, 3, 2, 6, 4, 5 ]
-gap> List( AsListSorted( GF(8) ), String );
+gap> Print(List( AsListSorted( GF(8) ), String ),"\n");
 [ "0*Z(2)", "Z(2)^0", "Z(2^3)", "Z(2^3)^2", "Z(2^3)^3", "Z(2^3)^4", 
   "Z(2^3)^5", "Z(2^3)^6" ]
 
@@ -94,9 +94,14 @@ GF(2^6)
 gap> DefaultRingByGenerators( [ Z(4), Z(8) ] );
 GF(2^6)
 
+gap> Subfields( GF(81) );
+[ GF(3), GF(3^2), GF(3^4) ]
+gap> Subfields( GF(2^6) );
+[ GF(2), GF(2^2), GF(2^3), GF(2^6) ]
+
 #T missing: polynomials and polynomial rings
 
-gap> STOP_TEST( "ffe.tst", 4810000 );
+gap> STOP_TEST( "ffe.tst", 6757787 );
 
 
 #############################################################################

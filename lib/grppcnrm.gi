@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for normalizers of polycylic groups.
 ##
@@ -1064,7 +1065,7 @@ end );
 ##
 InstallMethod( NormalizerOp,
     "for groups with home pcgs",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementations for weak pointer objects
 ##
@@ -22,7 +23,7 @@ Revision.wpobj_gi :=
 InstallMethod(\[\], 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsInt and IsPosRat ],
+        [ IsWeakPointerObject, IsPosInt ],
         0,
         function( wp, pos)
     local elm;
@@ -42,7 +43,7 @@ end);
 InstallMethod(\[\]\:\=, 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsInt and IsPosRat, IsObject ],
+        [ IsWeakPointerObject, IsPosInt, IsObject ],
         0,
         SetElmWPObj);
         
@@ -66,7 +67,7 @@ InstallMethod(Length,
 InstallMethod(IsBound\[\], 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsInt and IsPosRat ],
+        [ IsWeakPointerObject, IsPosInt ],
         0,
         IsBoundElmWPObj);
 
@@ -79,7 +80,7 @@ InstallMethod(IsBound\[\],
 InstallMethod(Unbind\[\], 
         "method for a weak pointer object",
         true,
-        [ IsWeakPointerObject, IsInt and IsPosRat ],
+        [ IsWeakPointerObject, IsPosInt ],
         0,
         UnbindElmWPObj);
 
@@ -100,14 +101,46 @@ InstallMethod(PrintObj,
     Print("WeakPointerObj( [ ");
     l := Length(wp);
     if l <> 0 then
-        if IsBound(wp[1]) then
-            PrintObj(wp[1]);
+        x := ElmWPObj(wp,1);
+        if x <> fail or IsBoundElmWPObj(wp,1) then
+            PrintObj(x);
         fi;
         for i in [2..l] do
             Print(", ");
-            if IsBound(wp[i]) then
-                x := wp[i];
+            x := ElmWPObj(wp,i);
+            if x <> fail or IsBoundElmWPObj(wp,i) then
                 PrintObj(x);
+            fi;
+        od;
+    fi;
+    Print("] )");
+end);
+
+#############################################################################
+##
+#M  View method, ~ is not supported, so self-referential weak pointer
+##  objects cannot be printed
+##
+
+InstallMethod(ViewObj,   
+        "method for a weak pointer object",
+        true,
+        [ IsWeakPointerObject ],
+        0,
+        function(wp)
+    local i,l,x;
+    Print("WeakPointerObj( [ ");
+    l := Length(wp);
+    if l <> 0 then
+        x := ElmWPObj(wp,1);
+        if x <> fail or IsBoundElmWPObj(wp,1) then
+            ViewObj(x);
+        fi;
+        for i in [2..l] do
+            Print(", ");
+            x := ElmWPObj(wp,i);
+            if x <> fail or IsBoundElmWPObj(wp,i) then
+                ViewObj(x);
             fi;
         od;
     fi;

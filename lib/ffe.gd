@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares operations for 'FFE's.
 ##
@@ -18,25 +19,22 @@ Revision.ffe_gd :=
 #C  IsFFE
 #C  IsFFECollection
 #C  IsFFECollColl
-#C  IsFFECollCollColl
+#c  IsFFECollCollColl
 ##
-IsFFE := NewCategoryKernel(
-    "IsFFE",
+DeclareCategoryKernel( "IsFFE",
     IsScalar and IsAssociativeElement and IsCommutativeElement,
     IS_FFE );
 
-IsFFECollection := CategoryCollections( IsFFE );
-
-IsFFECollColl := CategoryCollections( IsFFECollection );
-
-IsFFECollCollColl := CategoryCollections( IsFFECollColl );
+DeclareCategoryCollections( "IsFFE" );
+DeclareCategoryCollections( "IsFFECollection" );
+DeclareCategoryCollections( "IsFFECollColl" );
 
 
 #############################################################################
 ##
 #C  IsFFEFamily
 ##
-IsFFEFamily := CategoryFamily( IsFFE );
+DeclareCategoryFamily( "IsFFE" );
 
 
 #############################################################################
@@ -46,7 +44,7 @@ IsFFEFamily := CategoryFamily( IsFFE );
 ##
 ##  is the family of finite field elements in characteristic <p>.
 ##
-FFEFamily := NewOperationArgs( "FFEFamily" );
+DeclareGlobalFunction( "FFEFamily" );
 
 
 #############################################################################
@@ -57,10 +55,10 @@ FFEFamily := NewOperationArgs( "FFEFamily" );
 ##  at position 2 the families of field elements of these characteristics.
 ##
 ##  Known families of FFE in characteristic at most `MAXSIZE_GF_INTERNAL'
-##  are stored in `FAMS_FFE', the family of characteristic $p$ at position
-##  $p$.
+##  are stored via the types in the list `TYPE_FFE', the default type of
+##  elements in characteristic $p$ at position $p$.
 ##
-FAMS_FFE_LARGE := [ [], [] ];
+BIND_GLOBAL( "FAMS_FFE_LARGE", [ [], [] ] );
 
 
 #############################################################################
@@ -70,7 +68,9 @@ FAMS_FFE_LARGE := [ [], [] ];
 ##  global list of finite fields 'GF( <p>^<d> )',
 ##  the field of size $p^d$ is stored in 'GALOIS_FIELDS[<p>][<d>]'.
 ##
-GALOIS_FIELDS := [];
+DeclareGlobalVariable( "GALOIS_FIELDS",
+    "list of lists, GALOIS_FIELDS[p][n] = GF(p^n) if bound" );
+InstallFlushableValue( GALOIS_FIELDS, [] );
 
 
 #############################################################################
@@ -80,7 +80,7 @@ GALOIS_FIELDS := [];
 ##
 #T other construction possibilities?
 ##
-LargeGaloisField := NewOperationArgs( "LargeGaloisField" );
+DeclareGlobalFunction( "LargeGaloisField" );
 
 
 #############################################################################
@@ -91,9 +91,9 @@ LargeGaloisField := NewOperationArgs( "LargeGaloisField" );
 #F  GaloisField( <p>, <pol> )
 #F  GaloisField( <S>, <pol> )
 ##
-##  'GaloisField' returns a  finite field.  It takes two arguments.  The form
-##  'GaloisField(<p>,<d>)',  where <p>,<d> are integers, can also be given as
-##  'GaloisField(<p>\^<d>)'.  'GF' is an abbreviation for 'GaloisField'.
+##  `GaloisField' returns a  finite field.  It takes two arguments.  The form
+##  `GaloisField(<p>,<d>)',  where <p>,<d> are integers, can also be given as
+##  `GaloisField(<p>^<d>)'.  `GF' is an abbreviation for `GaloisField'.
 ##  
 ##  The first argument  specifies the subfield <S>  over which the new  field
 ##  <F> is to be  taken.  It  can be  a prime or  a finite field.  If it is a
@@ -113,10 +113,10 @@ LargeGaloisField := NewOperationArgs( "LargeGaloisField" );
 ##  "Norm", "Trace", "MinPol", "CharPol", and   "Field  Functions for  Finite
 ##  Fields").
 ##  
-GaloisField := NewOperationArgs( "GaloisField" );
+DeclareGlobalFunction( "GaloisField" );
 
-FiniteField := GaloisField;
-GF := GaloisField;
+DeclareSynonym( "FiniteField", GaloisField );
+DeclareSynonym( "GF", GaloisField );
 
 
 #############################################################################
@@ -125,12 +125,12 @@ GF := GaloisField;
 #O  DegreeFFE( <vec> )
 #O  DegreeFFE( <mat> )
 ##  
-##  'DegreeFFE'  returns  the   degree of  the   smallest  finite field   <F>
-##  containing the element <z>, respectively all elements of the vector <vec>
-##  over a finite field (see "Vectors"), or matrix  <mat> over a finite field
-##  (see "Matrices").
+##  'DegreeFFE'  returns  the   degree of  the   smallest  finite field
+##  <F> containing the element <z>, respectively all elements of the vector
+##  <vec> over a finite field (see "Row Vectors"), or matrix  <mat> over a
+##  finite field (see "Matrices").
 ##  
-DegreeFFE := NewOperation( "DegreeFFE", [ IsFFE ] );
+DeclareOperation( "DegreeFFE", [ IsFFE ] );
 
 
 #############################################################################
@@ -144,7 +144,7 @@ DegreeFFE := NewOperation( "DegreeFFE", [ IsFFE ] );
 ##  The *discrete logarithm* of an element $z$ with  respect to a root $r$ is
 ##  the smallest nonnegative integer $i$ such that $r^i = z$.
 ##  
-LogFFE := NewOperation( "LogFFE", [ IsFFE, IsFFE ] );
+DeclareOperation( "LogFFE", [ IsFFE, IsFFE ] );
 
 
 #############################################################################
@@ -160,7 +160,7 @@ LogFFE := NewOperation( "LogFFE", [ IsFFE, IsFFE ] );
 ##  choosing 'Z(<p>)'  the     smallest  primitive  root    mod   <p>    (see
 ##  "PrimitiveRootMod").
 ##
-IntFFE := NewOperation( "IntFFE", [ IsFFE ] );
+DeclareOperation( "IntFFE", [ IsFFE ] );
 
 
 #############################################################################
@@ -170,7 +170,7 @@ IntFFE := NewOperation( "IntFFE", [ IsFFE ] );
 ##  is the list of integers corresponding to the vector <vecffe> of finite
 ##  field elements in a prime field (see "IntFFE").
 ##
-IntVecFFE := NewOperation( "IntVecFFE", [ IsFFECollection ] );
+DeclareOperation( "IntVecFFE", [ IsFFECollection ] );
 
 
 #############################################################################

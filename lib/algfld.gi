@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for algebraic elements and their families
 ##
@@ -15,7 +16,7 @@ Revision.algfld_gi:=
 ##
 #R  IsAlgebraicExtensionDefaultRep    Representation of algebraic extensions
 ##
-IsAlgebraicExtensionDefaultRep := NewRepresentation(
+DeclareRepresentation(
   "IsAlgebraicExtensionDefaultRep", IsAlgebraicExtension and
   IsComponentObjectRep and IsAttributeStoringRep,
   ["definingPolynomial","extFam"]);
@@ -24,14 +25,14 @@ IsAlgebraicExtensionDefaultRep := NewRepresentation(
 ##
 #R  IsAlgBFRep        Representation for embedded base field
 ##
-IsAlgBFRep := NewRepresentation("IsAlgBFRep",
+DeclareRepresentation("IsAlgBFRep",
   IsPositionalObjectRep and IsAlgebraicElement,[]);
 
 #############################################################################
 ##
 #R  IsAlgExtRep       Representation for true extension elements
 ##
-IsAlgExtRep := NewRepresentation("IsAlgExtRep",
+DeclareRepresentation("IsAlgExtRep",
   IsPositionalObjectRep and IsAlgebraicElement,[]);
 
 #############################################################################
@@ -62,7 +63,7 @@ InstallMethod(AlgebraicElementsFamily,"generic",true,
   [IsField,IsUnivariatePolynomial],0,
 function(f,p)
 local fam,i;
-  if not IsIrreducible(PolynomialRing(f),p) then
+  if not IsIrreducibleRingElement(PolynomialRing(f),p) then
     Error("<p> must be irreducible over f");
   fi;
   fam:=AlgebraicElementsFamilies(p);
@@ -72,7 +73,7 @@ local fam,i;
   fi;
 
   fam:=NewFamily("AlgebraicElementsFamily(...)",IsAlgebraicElement,
-         IsObject,IsAlgebraicElementsFamily);
+         IsObject,IsAlgebraicElementFamily);
 
   # The two types
   fam!.baseType := NewType(fam,IsAlgBFRep);
@@ -178,7 +179,7 @@ end);
 #M  ObjByExtRep          embedding of elements of base field
 ##
 InstallMethod(ObjByExtRep,"baseFieldElm",true,
-  [IsAlgebraicElementsFamily,IsRingElement],0,
+  [IsAlgebraicElementFamily,IsRingElement],0,
 function(fam,e)
   #AH: Immutable
   e:=[e];
@@ -191,7 +192,7 @@ end);
 #M  ObjByExtRep          extension elements
 ##
 InstallMethod(ObjByExtRep,"ExtElm",true,
-  [IsAlgebraicElementsFamily,IsList],0,
+  [IsAlgebraicElementFamily,IsList],0,
 function(fam,e)
   #AH: Immutable
   e:=[e];
@@ -265,26 +266,26 @@ end);
 ##
 #M  \+  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\+,"AlgElm+AlgElm",IsIdentical,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\+,"AlgElm+AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(a,b)
   return AlgExtElm(FamilyObj(a),a![1]+b![1]);
 end);
 
-InstallMethod(\+,"AlgElm+BFElm",IsIdentical,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\+,"AlgElm+BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
   a:=ShallowCopy(a![1]);
   a[1]:=a[1]+b![1];
   return ObjByExtRep(FamilyObj(b),a);
 end);
 
-InstallMethod(\+,"BFElm+AlgElm",IsIdentical,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\+,"BFElm+AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
   b:=ShallowCopy(b![1]);
   b[1]:=b[1]+a![1];
   return ObjByExtRep(FamilyObj(a),b);
 end);
 
-InstallMethod(\+,"BFElm+BFElm",IsIdentical,[IsAlgBFRep,IsAlgBFRep],0,
+InstallMethod(\+,"BFElm+BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
   return ObjByExtRep(FamilyObj(a),a![1]+b![1]);
 end);
@@ -337,7 +338,7 @@ end);
 ##
 #M  \*  for all combinations of A.E.Elms and base field elms.
 ##
-InstallMethod(\*,"AlgElm*AlgElm",IsIdentical,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\*,"AlgElm*AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -346,19 +347,19 @@ local fam;
   return AlgExtElm(fam,b);
 end);
 
-InstallMethod(\*,"AlgElm*BFElm",IsIdentical,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\*,"AlgElm*BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
   a:=a![1]*b![1];
   return AlgExtElm(FamilyObj(b),a);
 end);
 
-InstallMethod(\*,"BFElm*AlgElm",IsIdentical,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\*,"BFElm*AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
   b:=b![1]*a![1];
   return AlgExtElm(FamilyObj(a),b);
 end);
 
-InstallMethod(\*,"BFElm*BFElm",IsIdentical,[IsAlgBFRep,IsAlgBFRep],0,
+InstallMethod(\*,"BFElm*BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
   return ObjByExtRep(FamilyObj(a),a![1]*b![1]);
 end);
@@ -410,7 +411,7 @@ local i,fam,f,g,t,h,rf,rg,rh,z;
     if Length(t[1])=0 then
       rg:=[];
     else
-      rg:=-ProductCoeffs(t[1],rg);
+      rg:=ShallowCopy(-ProductCoeffs(t[1],rg));
     fi;
     for i in [1..Length(rf)] do
       if IsBound(rg[i]) then
@@ -443,12 +444,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\<,"AlgElm<AlgElm",IsIdentical,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\<,"AlgElm<AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(a,b)
   return a![1]<b![1];
 end);
 
-InstallMethod(\<,"AlgElm<BFElm",IsIdentical,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\<,"AlgElm<BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(a);
@@ -467,7 +468,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"BFElm<AlgElm",IsIdentical,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\<,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
 local fam,i;
   fam:=FamilyObj(b);
@@ -486,7 +487,7 @@ local fam,i;
   fi;
 end);
 
-InstallMethod(\<,"BFElm<BFElm",IsIdentical,[IsAlgBFRep,IsAlgBFRep],0,
+InstallMethod(\<,"BFElm<BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
   return a![1]<b![1];
 end);
@@ -545,12 +546,12 @@ end);
 ##      Comparison is by the coefficient lists of the External
 ##      representation. The base field is naturally embedded
 ##
-InstallMethod(\=,"AlgElm=AlgElm",IsIdentical,[IsAlgExtRep,IsAlgExtRep],0,
+InstallMethod(\=,"AlgElm=AlgElm",IsIdenticalObj,[IsAlgExtRep,IsAlgExtRep],0,
 function(a,b)
   return a![1]=b![1];
 end);
 
-InstallMethod(\=,"AlgElm=BFElm",IsIdentical,[IsAlgExtRep,IsAlgBFRep],0,
+InstallMethod(\=,"AlgElm=BFElm",IsIdenticalObj,[IsAlgExtRep,IsAlgBFRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(a);
@@ -562,7 +563,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"BFElm<AlgElm",IsIdentical,[IsAlgBFRep,IsAlgExtRep],0,
+InstallMethod(\=,"BFElm<AlgElm",IsIdenticalObj,[IsAlgBFRep,IsAlgExtRep],0,
 function(a,b)
 local fam;
   fam:=FamilyObj(b);
@@ -574,7 +575,7 @@ local fam;
   fi;
 end);
 
-InstallMethod(\=,"BFElm=BFElm",IsIdentical,[IsAlgBFRep,IsAlgBFRep],0,
+InstallMethod(\=,"BFElm=BFElm",IsIdenticalObj,[IsAlgBFRep,IsAlgBFRep],0,
 function(a,b)
   return a![1]=b![1];
 end);
@@ -634,47 +635,35 @@ end);
 ##
 #M  MinimalPolynomial
 ##
-InstallMethod(MinimalPolynomial,"AlgElm",true,
-  [IsAlgebraicExtension,IsAlgExtRep],0,
-function(f,e)
-local fam,c,m;
-  fam:=FamilyObj(e);
-  c:=One(e);
-  m:=[];
-  repeat
-    Add(m,ShallowCopy(ExtRepOfObj(c)));
-    c:=c*e;
-  until RankMat(m)<Length(m);
-  m:=NullspaceMat(m)[1];
-  # make monic
-  m:=m/m[Length(m)];
-  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.baseZero),m,1);
-end);
-
-InstallMethod(MinimalPolynomial,"(B)FElm",true,
-  [IsAlgebraicExtension,IsScalar],0,
-function(f,e)
-local fam;
-  if not e in f then
-    TryNextMethod();
-  fi;
-  e:=e*One(f);
-  fam:=FamilyObj(e);
-  return Indeterminate(fam!.baseField)-e![1];
-end);
+#InstallMethod(MinimalPolynomial,"AlgElm",true,
+#  [IsAlgebraicExtension,IsAlgExtRep,IsPosInt],0,
+#function(f,e,inum)
+#local fam,c,m;
+#  fam:=FamilyObj(e);
+#  c:=One(e);
+#  m:=[];
+#  repeat
+#    Add(m,ShallowCopy(ExtRepOfObj(c)));
+#    c:=c*e;
+#  until RankMat(m)<Length(m);
+#  m:=NullspaceMat(m)[1];
+#  # make monic
+#  m:=m/m[Length(m)];
+#  return UnivariatePolynomialByCoefficients(FamilyObj(fam!.baseZero),m,inum);
+#end);
 
 #############################################################################
 ##
 #M  CharacteristicPolynomial
 ##
-InstallMethod(CharacteristicPolynomial,"Alg",true,
-  [IsAlgebraicExtension,IsScalar],0,
-function(f,e)
-local fam,p;
-  fam:=FamilyObj(One(f));
-  p:=MinimalPolynomial(f,e);
-  return p^(fam!.deg/DOULP(p));
-end);
+#InstallMethod(CharacteristicPolynomial,"Alg",true,
+#  [IsAlgebraicExtension,IsScalar],0,
+#function(f,e)
+#local fam,p;
+#  fam:=FamilyObj(One(f));
+#  p:=MinimalPolynomial(f,e);
+#  return p^(fam!.deg/DOULP(p));
+#end);
 
 #############################################################################
 ##

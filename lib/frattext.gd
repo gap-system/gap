@@ -2,6 +2,9 @@
 ##
 #W  frattext.gd                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.frattext_gd :=
     "@(#)$Id$";
 
@@ -9,22 +12,19 @@ Revision.frattext_gd :=
 ##
 #I Infos
 ##
-InfoFrattExt := NewInfoClass( "InfoFrattExt" );
-InfoFEMeth := NewInfoClass( "InfoFEMeth" );
+DeclareInfoClass( "InfoFEMeth" );
 
 #############################################################################
 ##
 #A FrattiniFactor 
 ##
-FrattiniFactor := NewAttribute( "FrattiniFactor", IsGroup );
-SetFrattiniFactor := Setter( FrattiniFactor );
-HasFrattiniFactor := Tester( FrattiniFactor );
+DeclareAttribute( "FrattiniFactor", IsGroup );
 
 #############################################################################
 ##
-#A FrattiniExtensionInfo 
+#A FrattExtInfo 
 ##
-FrattiniExtensionInfo := NewAttribute( "FrattiniExtensionInfo", IsGroup,
-                                       "mutable" );
-SetFrattiniExtensionInfo := Setter( FrattiniExtensionInfo );
-HasFrattiniExtensionInfo := Tester( FrattiniExtensionInfo );
+DeclareAttribute( "FrattExtInfo", IsGroup, "mutable" );
+
+DeclareGlobalFunction( "RandomIsomorphismTest" );
+

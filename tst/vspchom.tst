@@ -25,13 +25,13 @@ gap> w:= f^2;
 gap> map1:= LeftModuleGeneralMappingByImages( f, v, [ Z(3)^0 ], [ Z(27) ] );
 [ Z(3)^0 ] -> [ Z(3^3) ]
 gap> ImagesSource( map1 );
-VectorSpace( GF(3), [ Z(3^3) ] )
+<vector space over GF(3), with 1 generators>
 gap> PreImagesRange( map1 );
-VectorSpace( GF(3), [ Z(3)^0 ] )
+<vector space over GF(3), with 1 generators>
 gap> CoKernelOfAdditiveGeneralMapping( map1 );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> KernelOfAdditiveGeneralMapping( map1 );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> IsSingleValued( map1 );
 true
 gap> IsInjective( map1 );
@@ -55,14 +55,13 @@ gap> map2:= LeftModuleGeneralMappingByImages( v, w,
 CanonicalBasis( GF(3^3) ) -> [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
   [ 0*Z(3), Z(3)^0 ] ]
 gap> ImagesSource( map2 );
-VectorSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ 0*Z(3), Z(3)^0 ] ] )
+<vector space over GF(3), with 3 generators>
 gap> PreImagesRange( map2 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map2 );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> KernelOfAdditiveGeneralMapping( map2 );
-VectorSpace( GF(3), [ Z(3^3)^18 ] )
+<vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map2 );
 true
 gap> IsInjective( map2 );
@@ -88,12 +87,11 @@ gap> map3:= LeftModuleGeneralMappingByImages( w, v,
 gap> ImagesSource( map3 );
 GF(3^3)
 gap> PreImagesRange( map3 );
-VectorSpace( GF(3), [ [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ 0*Z(3), Z(3)^0 ] ] )
+<vector space over GF(3), with 3 generators>
 gap> CoKernelOfAdditiveGeneralMapping( map3 );
-VectorSpace( GF(3), [ Z(3^3)^18 ] )
+<vector space over GF(3), with 1 generators>
 gap> KernelOfAdditiveGeneralMapping( map3 );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> IsSingleValued( map3 );
 false
 gap> IsInjective( map3 );
@@ -180,13 +178,13 @@ gap> map5:= LeftModuleHomomorphismByMatrix( bf,
 >               [ [ Z(3), Z(3), Z(3) ] ], bv );
 <linear mapping by matrix, GF(3) -> GF(3^3)>
 gap> ImagesSource( map5 );
-VectorSpace( GF(3), [ Z(3^3)^19 ] )
+<vector space over GF(3), with 1 generators>
 gap> PreImagesRange( map5 );
 GF(3)
 gap> CoKernelOfAdditiveGeneralMapping( map5 );
 <algebra of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map5 );
-VectorSpace( GF(3), [ 0*Z(3) ] )
+<vector space over GF(3), with 0 generators>
 gap> IsSingleValued( map5 );
 true
 gap> IsInjective( map5 );
@@ -209,13 +207,13 @@ gap> map6:= LeftModuleHomomorphismByMatrix( bv,
 >            bw );
 <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )>
 gap> ImagesSource( map6 );
-VectorSpace( GF(3), [ [ Z(3), Z(3) ], [ 0*Z(3), 0*Z(3) ], [ Z(3), 0*Z(3) ] ] )
+<vector space over GF(3), with 3 generators>
 gap> PreImagesRange( map6 );
 GF(3^3)
 gap> CoKernelOfAdditiveGeneralMapping( map6 );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> KernelOfAdditiveGeneralMapping( map6 );
-VectorSpace( GF(3), [ 0*Z(3), Z(3^3), Z(3^3)^14 ] )
+<vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map6 );
 true
 gap> IsInjective( map6 );
@@ -238,14 +236,13 @@ gap> map7:= LeftModuleHomomorphismByMatrix( bw,
 >          bv );
 <linear mapping by matrix, ( GF(3)^2 ) -> GF(3^3)>
 gap> ImagesSource( map7 );
-VectorSpace( GF(3), [ Z(3^3)^21, Z(3^3)^21 ] )
+<vector space over GF(3), with 2 generators>
 gap> PreImagesRange( map7 );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( map7 );
 <algebra of dimension 0 over GF(3)>
 gap> KernelOfAdditiveGeneralMapping( map7 );
-VectorSpace( GF(3), [ [ 0*Z(3), 0*Z(3) ], [ Z(3)^0, Z(3) ], [ Z(3), Z(3)^0 ] 
- ] )
+<vector space over GF(3), with 1 generators>
 gap> IsSingleValued( map7 );
 true
 gap> IsInjective( map7 );
@@ -356,9 +353,9 @@ gap> ImagesSource( nathom );
 gap> PreImagesRange( nathom );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( nathom );
-VectorSpace( GF(3), [  ] )
+<vector space over GF(3), with 0 generators>
 gap> KernelOfAdditiveGeneralMapping( nathom );
-VectorSpace( GF(3), [ [ Z(3), Z(3) ] ] )
+<vector space of dimension 1 over GF(3)>
 gap> IsInjective( nathom );
 false
 gap> IsSingleValued( nathom );
@@ -397,18 +394,18 @@ true
 gap> map6 in hom;
 true
 gap> sub:= Subspace( hom, [ map6 ] );
-VectorSpace( GF(3), [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] )
+<vector space over GF(3), with 1 generators>
 gap> BasisVectors( BasisOfDomain( sub ) );
 [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ]
 
 gap> sub:= LeftModuleByGenerators( f, [ map6 ] );
-VectorSpace( GF(3), [ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] )
+<vector space over GF(3), with 1 generators>
 gap> Dimension( sub );
 1
 gap> zero:= ZeroMapping( v, w );
 ZeroMapping( GF(3^3), ( GF(3)^2 ) )
 gap> triv:= LeftModuleByGenerators( f, [], zero );
-VectorSpace( GF(3), [  ], ZeroMapping( GF(3^3), ( GF(3)^2 ) ) )
+<vector space over GF(3), with 0 generators>
 gap> IsSubset( hom, triv );
 true
 
@@ -416,9 +413,7 @@ gap> mb:= MutableBasisByGenerators( f, [], zero );
 <mutable basis over GF(3), 0 vectors>
 gap> CloseMutableBasis( mb, map6 );
 gap> ImmutableBasis( mb );
-Basis( VectorSpace( GF(3), 
-[ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] ), 
-[ <linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )> ] )
+Basis( <vector space of dimension 1 over GF(3)>, ... )
 
 
 #############################################################################
@@ -514,7 +509,7 @@ End( GF(3), End( GF(3), GF(3^3) ) )
 gap> Dimension( endoendo );
 81
 
-gap> STOP_TEST( "vspchom.tst", 37810000 );
+gap> STOP_TEST( "vspchom.tst", 39749178 );
 
 
 #############################################################################

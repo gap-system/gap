@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1994,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file contains  the  functions for  a random Schreier-Sims algorithm
 ##  with verification.
@@ -40,7 +41,7 @@ Revision.stbcrand_gi :=
 ##  After the  stabilizer chain  is  ready,  the  extra records are  deleted.
 ##  Transversals are rebuilt using the generators in the .generators records.
 ##
-StabChainRandomPermGroup := function(S,options)
+InstallGlobalFunction( StabChainRandomPermGroup, function(S,options)
     local degree,   # degree of S
           givenbase,# list of points from which first base points should come
           correct,  # boolean; true if a correct base is given
@@ -202,7 +203,7 @@ StabChainRandomPermGroup := function(S,options)
                 else 
                    if not IsPerm(result) then 
                       repeat 
-                         result := SCRStrongGenTest2(S,param); 
+                         result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
                       until result <> ();
                    fi;
                    new := [result]; 
@@ -256,7 +257,7 @@ StabChainRandomPermGroup := function(S,options)
                else 
                   if not IsPerm(result) then 
                      repeat 
-                        result := SCRStrongGenTest2(S,param); 
+                        result := SCRStrongGenTest2(S,[0,0,1,10/S.diam,0,0]);
                      until result <> ();
                   fi;
                   new := [result]; 
@@ -288,7 +289,7 @@ StabChainRandomPermGroup := function(S,options)
        S := SCRRestoredRecord(S); 
     fi;
     return S;
-end;
+end );
 
 
 #############################################################################
@@ -300,7 +301,8 @@ end;
 ##  each  level,  and one or two  (defined  by mlimit) random cosets  to make
 ##  Schreier generators
 ##
-SCRMakeStabStrong := function ( S, new, param, orbits, where, basesize, base,
+InstallGlobalFunction( SCRMakeStabStrong,
+    function ( S, new, param, orbits, where, basesize, base,
                                 correct, missing, top )
     local   x,m,j,l,      # loop variables
             ran1,         # random permutation
@@ -496,7 +498,7 @@ SCRMakeStabStrong := function ( S, new, param, orbits, where, basesize, base,
         fi;
     od; #m loop
 
-end;
+end );
 
 
 #############################################################################
@@ -509,7 +511,8 @@ end;
 ##  plugged in to test whether a word represents  the identity.  If SGS for S
 ##  not complete, returns a permutation not in S.
 ##
-SCRStrongGenTest := function ( S, param, orbits, basesize,
+InstallGlobalFunction( SCRStrongGenTest,
+    function ( S, param, orbits, basesize,
                                base, correct, missing)
     local   x,i,k,m,j,l,  # loop variables
             ran1,ran2,    # random permutations
@@ -640,7 +643,7 @@ SCRStrongGenTest := function ( S, param, orbits, basesize,
     od; #k loop
 
     return ();
-end;
+end );
 
 
 #############################################################################
@@ -649,7 +652,7 @@ end;
 ##
 ##  tries to factor g as product of cosetreps in S; returns remainder
 ##
-SCRSift := function ( S, g )
+InstallGlobalFunction( SCRSift, function ( S, g )
     local stb,   # the stabilizer of S we currently work with
           bpt;   # first point of stb.orbit
 
@@ -668,7 +671,7 @@ SCRSift := function ( S, g )
     od;
 
     return g;
-end;
+end );
 
 
 #############################################################################
@@ -679,7 +682,7 @@ end;
 ##  the  strong generators of S is  in S.  Computations  are carried out with
 ##  complete permutations.
 ##
-SCRStrongGenTest2 := function ( S, param )
+InstallGlobalFunction( SCRStrongGenTest2, function ( S, param )
     local   x,i,k,m,      # loop variables
             ran1,ran2,    # random permutations
             string,       # random 0-1 string
@@ -763,7 +766,7 @@ SCRStrongGenTest2 := function ( S, param )
     od; #k loop
 
     return ();
-end;
+end );
 
 
 #############################################################################
@@ -773,7 +776,8 @@ end;
 ##  checks whether   orbit  is closed  for  the   action of  permutations  in
 ##  genlist. If not, returns orbit point and generator witnessing.
 ##
-SCRNotice := function ( orb, transversal, genlist )
+InstallGlobalFunction( SCRNotice,
+    function ( orb, transversal, genlist )
     local flag, #first component of output; true if orb is closed for
                 #action of genlist
           i,    #second component of output, index of point in orb moving out
@@ -793,7 +797,7 @@ SCRNotice := function ( orb, transversal, genlist )
     od;
 
     return [flag,i,j];
-end;
+end );
 
 
 #############################################################################
@@ -804,7 +808,7 @@ end;
 ##  SCRExtends the partial Schreier tree to depth d+1
 ##  input, output coded in list of length 5
 ##
-SCRExtend := function ( list )
+InstallGlobalFunction( SCRExtend, function ( list )
     local orb,          #partial orbit
           transversal,  #partial transversal
           treegen,      #list of generators
@@ -839,7 +843,7 @@ SCRExtend := function ( list )
     # return Schreier tree of depth one larger
     return [orb,transversal,treegen,treegeninv,len];
 
-end;
+end );
 
 
 #############################################################################
@@ -848,7 +852,7 @@ end;
 ##
 ##  creates Schreier tree for the group generated by S.generators \cup new
 ##
-SCRSchTree := function ( S, new )
+InstallGlobalFunction( SCRSchTree, function ( S, new )
     local l,        #output of notice
           flag,     #first component of output
           i,        #second component of output
@@ -910,7 +914,7 @@ SCRSchTree := function ( S, new )
     S.aux := Concatenation(S.treegen,S.treegeninv,S.stabilizer.aux);
     S.diam := S.treedepth+S.stabilizer.diam;
 
-end;
+end );
 
 
 #############################################################################
@@ -920,7 +924,7 @@ end;
 ##  constructs random permutation in Sym(d)
 ##  without creating group record of Sym(d)
 ##
-SCRRandomPerm := function ( d )
+InstallGlobalFunction( SCRRandomPerm, function ( d )
     local   rnd,        # random permutation, result
             tmp,        # temporary variable for swapping
             i,  k;      # loop variables
@@ -936,7 +940,7 @@ SCRRandomPerm := function ( d )
 
     # return the permutation
     return PermList( rnd );
-end;
+end );
 
 
 #############################################################################
@@ -946,7 +950,7 @@ end;
 ##  constructs random 0-1 string of length n
 ##  same steps as Random, but uses created random number for 28 bits
 ##
-SCRRandomString := function ( n )
+InstallGlobalFunction( SCRRandomString, function ( n )
     local i, j,     # loop variables
           k,        # number of 28 long substrings
           rnd,      # the random number which would be created by Random
@@ -976,13 +980,13 @@ SCRRandomString := function ( n )
     od;
 
     return string;
-end;
+end );
 
 ###############################################################################
 ##
 #F  SCRRandomSubproduct(list) . . . random subproduct of permutations in list
 ##
-SCRRandomSubproduct := function (list)
+InstallGlobalFunction( SCRRandomSubproduct, function (list)
     local string,  # 0-1 string containing the exponents of elements of list
           random,  # the random subproduct 
           i;       # loop variable
@@ -996,7 +1000,7 @@ SCRRandomSubproduct := function (list)
     od;
 
     return random;
-end;
+end );
 
 #############################################################################
 ##
@@ -1004,7 +1008,7 @@ end;
 ##
 ##  defines record elements used at random stabilizer chain construction
 ##
-SCRExtendRecord := function(G)
+InstallGlobalFunction( SCRExtendRecord, function(G)
     local list,       # list of stabilizer subgroups
           len,        # length of list
           i;          # loop variable
@@ -1034,7 +1038,7 @@ SCRExtendRecord := function(G)
 
     od;
 
-end;
+end );
 
 
 #############################################################################
@@ -1043,7 +1047,7 @@ end;
 ##
 ##  restores usual group records after random stabilizer chain construction
 ##
-SCRRestoredRecord := function( G )
+InstallGlobalFunction( SCRRestoredRecord, function( G )
     local   sgs,  T,  S,  l,  lab,  pnt;
     
     S := G;
@@ -1076,14 +1080,14 @@ SCRRestoredRecord := function( G )
         G := G.stabilizer;
     od;
     return T;
-end;
+end );
 
 #############################################################################
 ##
 
 #F  VerifyStabilizer( <S>, <z>, <missing>, <correct> )  . . . .  verification
 ##
-VerifyStabilizer := function(S,z,missing,correct)
+InstallGlobalFunction( VerifyStabilizer, function(S,z,missing,correct)
  #z is an involution, moving first base point
  # correct is boolean telling whether a base is known
  # if yes, missing contains the base points which do not occur in the base of S
@@ -1284,13 +1288,13 @@ VerifyStabilizer := function(S,z,missing,correct)
 
  return result;
 
-end;
+end );
 
 #############################################################################
 ##
 #F  VerifySGS( <S>, <missing>, <correct> )  . . . . . . . . . .  verification
 ##
-VerifySGS := function(S,missing,correct) 
+InstallGlobalFunction( VerifySGS, function(S,missing,correct) 
  # correct is boolean telling whether a base is known
  # if yes, missing contains the base points which do not occur in the base of S
  local n,         # degree of S
@@ -1419,13 +1423,13 @@ VerifySGS := function(S,missing,correct)
  
  return result; 
 
-end;
+end );
 
 #############################################################################
 ##
 #F  ExtensionOnBlocks( <S>, <n>, <blks>, <elms> ) . . . . . . . . . extension
 ##
-ExtensionOnBlocks := function( S, n, blks, elms )
+InstallGlobalFunction( ExtensionOnBlocks, function( S, n, blks, elms )
     local   where,  j,  k,  hom,  T,  newelms;
 
       # list which block the elements of the orbit belong to 
@@ -1454,14 +1458,15 @@ ExtensionOnBlocks := function( S, n, blks, elms )
       newelms := List( elms, hom );
 
       return [ T, newelms ]; 
-end;
+end );
   
 #############################################################################
 ##
 
 #F  ClosureRandomPermGroup( <G>, <genlist>, <options> ) make closure randomly
 ##
-ClosureRandomPermGroup := function( G, genlist, options )
+InstallGlobalFunction( ClosureRandomPermGroup,
+    function( G, genlist, options )
     local  k,          # number of pairs of subproducts of generators in 
                        # testing result
            givenbase,  # ordering from which initial base points should
@@ -1486,7 +1491,7 @@ ClosureRandomPermGroup := function( G, genlist, options )
                        # constructed base
            correct;     # boolean; true if a correct base is given
 
-# warning:  options.base should be compatible with Base(G)
+# warning:  options.base should be compatible with BaseOfGroup(G)
 
     gens := Filtered( genlist, gen -> SCRSift(G,gen) <> () );
     if Length(gens) > 0  then
@@ -1632,6 +1637,11 @@ ClosureRandomPermGroup := function( G, genlist, options )
                           (G,param,orbits,basesize,base,correct,missing);
               fi;
               if result <> () then
+                  if not IsPerm(result) then
+                     repeat
+                         result := SCRStrongGenTest2(G,[0,0,1,10/G.diam,0,0]);
+                     until result <> ();
+                  fi;
                   new := [result];
                   ready := false;
               elif correct or options.random = 0 or options.random = 1000 then
@@ -1672,17 +1682,8 @@ ClosureRandomPermGroup := function( G, genlist, options )
     # return the closure
     return G;
 
-end;
+end );
 
-#############################################################################
-##
-
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[AEFTV]"
-##  fill-column:      77
-##  End:
 #############################################################################
 
 

@@ -2,6 +2,9 @@
 ##
 #W  twocohom.gd                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.twocohom_gd :=
     "@(#)$Id$";
 
@@ -9,59 +12,59 @@ Revision.twocohom_gd :=
 ##
 #F  CollectedWordSQ( C, u, v ) 
 ##
-CollectedWordSQ := NewOperationArgs( "CollectedWordSQ" );
+DeclareGlobalFunction( "CollectedWordSQ" );
 
 #############################################################################
 ##
 #F  CollectorSQ( G, M, isSplit )
 ##
-CollectorSQ := NewOperationArgs( "CollectorSQ" );
+DeclareGlobalFunction( "CollectorSQ" );
 
 #############################################################################
 ##
 #F  AddEquationsSQ( eq, t1, t2 )
 ##
-AddEquationSQ := NewOperationArgs( "AddEquationSQ" );
+DeclareGlobalFunction( "AddEquationsSQ" );
 
 #############################################################################
 ##
 #F  SolutionSQ( C, eq )
 ##
-SolutionSQ := NewOperationArgs( "SolutionSQ" );
+DeclareGlobalFunction( "SolutionSQ" );
 
 #############################################################################
 ##
 #F  TwoCocyclesSQ( C, G, M )
 ##
-TwoCocyclesSQ := NewOperationArgs( "TwoCocyclesSQ" );
+DeclareGlobalFunction( "TwoCocyclesSQ" );
 
 #############################################################################
 ##
 #F  TwoCoboundariesSQ( C, G, M )
 ##
-TwoCoboundariesSQ := NewOperationArgs( "TwoCoboundariesSQ" );
+DeclareGlobalFunction( "TwoCoboundariesSQ" );
 
 #############################################################################
 ##
 #F  TwoCohomologySQ( C, G, M )
 ##
-TwoCohomologySQ := NewOperationArgs( "TwoCohomologySQ" );
+DeclareGlobalFunction( "TwoCohomologySQ" );
 
 #############################################################################
 ##
 #O  TwoCocycles( G, M )
 ##
-TwoCocycles := NewOperation( "TwoCocycles", [ IsPcGroup, IsObject ] );
+DeclareOperation( "TwoCocycles", [ IsPcGroup, IsObject ] );
 
 #############################################################################
 ##
 #O  TwoCoboundaries( G, M )
 ##
-TwoCoboundaries := NewOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
+DeclareOperation( "TwoCoboundaries", [ IsPcGroup, IsObject ] );
 
 #############################################################################
 ##
 #O  TwoCohomology( G, M )
 ##
-TwoCohomology := NewOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
+DeclareOperation( "TwoCohomology", [ IsPcGroup, IsObject ] );
 

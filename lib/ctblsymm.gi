@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains  the  functions   needed  for a  direct computation of
 ##  the  character values of  wreath  products  of a  group  $G$  with $S_n$,
@@ -18,26 +19,15 @@ Revision.ctblsymm_gi :=
 ##
 #F  BetaSet( <alpha> )  . . . . . . . . . . . . . . . . . . . . . . beta set.
 ##
-BetaSet := function(alpha)
-
-    local i, la, beta;
-
-    la:= Length(alpha);
-    beta:= [];
-    for i in [0 .. la-1] do
-       Add(beta, alpha[la-i] + i);
-    od;
-
-    return beta;
-
-end;
+InstallGlobalFunction( BetaSet,
+    alpha -> Reversed( alpha ) + [ 0 .. Length( alpha ) - 1 ] );
 
 
 #############################################################################
 ##
 #F  CentralizerWreath( <sub_cen>, <ptuple> )  . . . . centralizer in G wr Sn.
 ##
-CentralizerWreath := function(sub_cen, ptuple)
+InstallGlobalFunction( CentralizerWreath, function(sub_cen, ptuple)
 
     local p, i, j, k, last, res;
 
@@ -58,14 +48,14 @@ CentralizerWreath := function(sub_cen, ptuple)
 
     return res;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PowerWreath( <sub_pm>, <ptuple>, <p> )  . . . . . .  powermap in G wr Sn.
 ##
-PowerWreath := function(sub_pm, ptuple, p)
+InstallGlobalFunction( PowerWreath, function(sub_pm, ptuple, p)
 
     local power, k, i, j;
 
@@ -88,14 +78,14 @@ PowerWreath := function(sub_pm, ptuple, p)
 
     return power;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  InductionScheme( <n> )  . . . . . . . . . . . . . . . . removal of hooks.
 ##
-InductionScheme := function(n)
+InstallGlobalFunction( InductionScheme, function(n)
 
     local scheme, pm, i, beta, hooks;
 
@@ -154,14 +144,14 @@ InductionScheme := function(n)
 
     return scheme;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MatCharsWreathSymmetric( <tbl>, <n> ) . . .  character matrix of G wr Sn.
 ##
-MatCharsWreathSymmetric := function( tbl, n)
+InstallGlobalFunction( MatCharsWreathSymmetric, function( tbl, n)
 
     local tbl_irreducibles,
           i, j, k, m, r, s, t, pm, res, col, scheme, np, charCol, hooks,
@@ -308,14 +298,14 @@ MatCharsWreathSymmetric := function( tbl, n)
 
     return res;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CharValueSymmetric( <n>, <beta>, <pi> ) . . . . . character value in S_n.
 ##
-CharValueSymmetric := function(n, beta, pi)
+InstallGlobalFunction( CharValueSymmetric, function(n, beta, pi)
 
     local i, j, k, o, gamma, rho, val, sign;
 
@@ -383,7 +373,7 @@ CharValueSymmetric := function(n, beta, pi)
 
     #  return the result.
     return val;
-end;
+end );
 
 
 #############################################################################
@@ -487,7 +477,7 @@ CharTableSymmetric := rec(
           return res;
         end,
     domain:=
-        IsInt and IsPosRat
+        IsPosInt
     );
 
 
@@ -643,7 +633,7 @@ CharTableAlternating := rec(
 ##
 #F  CharValueWeylB( <n>, <beta>, <pi> ) . . . . . character value in 2 wr Sn.
 ##
-CharValueWeylB := function(n, beta, pi)
+InstallGlobalFunction( CharValueWeylB, function(n, beta, pi)
 
     local i, j, k, lb, o, s, t, gamma, rho, sign, val;
 
@@ -708,7 +698,7 @@ CharValueWeylB := function(n, beta, pi)
     #  return the result.
     return val;
 
-end;
+end );
 
 
 #############################################################################
@@ -763,7 +753,7 @@ CharTableWeylB := rec(
     matrix:=
         n -> MatCharsWreathSymmetric( CharacterTable( "Cyclic", 2 ), n),
     domain:=
-        IsInt and IsPosRat
+        IsPosInt
     );
 
 
@@ -906,7 +896,7 @@ CharTableWeylD := rec(
 #F  CharValueWreathSymmetric( <sub>, <n>, <beta>, <pi> ) . .
 #F                                        . . . . character value in G wr Sn.
 ##
-CharValueWreathSymmetric := function(sub, n, beta, pi)
+InstallGlobalFunction( CharValueWreathSymmetric, function(sub, n, beta, pi)
 
     local i, j, k, lb, o, s, t, r, gamma, rho, sign, val, subirreds;
 
@@ -972,14 +962,14 @@ CharValueWreathSymmetric := function(sub, n, beta, pi)
     #  return the result.
     return val;
 
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CharTableWreathSymmetric( <sub>, <n> )  . . . character table of G wr Sn.
 ##
-CharTableWreathSymmetric := function( sub, n )
+InstallGlobalFunction( CharTableWreathSymmetric, function( sub, n )
 
     local i, j,             # loop variables
           tbl,              # character table, result
@@ -1047,7 +1037,7 @@ CharTableWreathSymmetric := function( sub, n )
 
     # Return the table.
     return tbl;
-end;
+end );
 
 
 #############################################################################

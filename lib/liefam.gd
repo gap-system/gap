@@ -5,13 +5,14 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the definition of the family of Lie elements of a
 ##  family of ring elements.
 ##
 ##  Given a family $F$ of ring elements, we can form its Lie family $L$.
 ##  The elements of $F$ and $L$ are in bijection, only the multiplications
-##  via '\*' differ for both families.
+##  via `\*' differ for both families.
 ##  More exactly, if $l_1$ and $l_2$ are the Lie elements corresponding to
 ##  the elements $f_1$ and $f_2$ in $F$, we have $l_1 * l_2$ equal to the
 ##  Lie element corresponding to $f_1 * f_2 - f_2 * f_2$.
@@ -43,7 +44,7 @@
 ##    selection must distinguish the two cases.
 ##    In the latter situation, only one method may be applicable to each
 ##    case; this means that it is not sufficient to treat the Lie case
-##    with the additional requirement 'IsLieObjectCollection' but that
+##    with the additional requirement `IsLieObjectCollection' but that
 ##    we must explicitly require non-Lie elements for the non-Lie case.
 ##
 ##  - Being a full matrix space is a property that may hold for a space
@@ -59,48 +60,53 @@ Revision.liefam_gd :=
 #C  IsLieObject( <obj> )
 #C  IsLieObjectCollection( <obj> )
 ##
-IsLieObject := NewCategory( "IsLieObject",
+##  An object lies in `IsLieObject' if and only if it lies in a family
+##  constructed by `LieFamily'.
+##
+DeclareCategory( "IsLieObject",
         IsRingElement
     and IsZeroSquaredElement
     and IsJacobianElement );
 
-IsLieObjectCollection := CategoryCollections( IsLieObject );
+DeclareCategoryCollections( "IsLieObject" );
 
 
 #############################################################################
 ##
 #A  LieFamily( <Fam> )
 ##
-##  is a family $F$ isomorphic to the family <Fam>, but with the Lie bracket
-##  as infix multiplication.
+##  is a family $F$ in bijection with the family <Fam>,
+##  but with the Lie bracket as infix multiplication.
 ##  That is, for $x$, $y$ in <Fam>, the product of the images in $F$ will be
 ##  the image of $x \* y - y \* x$.
 ##
-##  The standard type of objects in a Lie family <F> is '<F>!.packedType'.
+##  The standard type of objects in a Lie family <F> is `<F>!.packedType'.
 ##
-##  The isomorphism is given by 'Embedding( <Fam>, $F$ )'.
+##  The bijection from <Fam> to $F$ is given by `Embedding( <Fam>, $F$ )'.
 ##
-LieFamily := NewAttribute( "LieFamily", IsFamily );
-SetLieFamily := Setter( LieFamily );
-HasLieFamily := Tester( LieFamily );
+DeclareAttribute( "LieFamily", IsFamily );
 
 
 #############################################################################
 ##
 #A  UnderlyingFamily( <Fam> )
 ##
-##  is a family <F> such that '<Fam> = LieFamily( <F> )'.
+##  If <Fam> is a Lie family then `UnderlyingFamily( <Fam> )'
+##  is a family $F$ such that `<Fam> = LieFamily( $F$ )'.
 ##
-UnderlyingFamily := NewAttribute( "UnderlyingFamily", IsFamily );
-SetUnderlyingFamily := Setter( UnderlyingFamily );
-HasUnderlyingFamily := Tester( UnderlyingFamily );
+DeclareAttribute( "UnderlyingFamily", IsObject );
 
 
 #############################################################################
 ##
 #A  LieObject( <obj> )
 ##
-LieObject := NewAttribute( "LieObject", IsRingElement );
+##  Let <obj> be a ring element in the family $F$.
+##  Then `LieObject( <obj> )' is the corresponding object in the family
+##  `LieFamily( $F$ )'.
+##
+DeclareAttribute( "LieObject", IsRingElement );
+
 
 #############################################################################
 ##

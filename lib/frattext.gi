@@ -2,6 +2,9 @@
 ##
 #W  frattext.gi                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.frattext_gi :=
     "@(#)$Id$";
 
@@ -20,348 +23,29 @@ end;
 
 #############################################################################
 ##
-#F CoefficientsInt( primes, int )
-##
-CoefficientsInt := function( primes, int )
-    local vec, i;
-    vec := List( primes, x -> 0 );
-    for i in Reversed( [1..Length(primes)] ) do
-        vec[i] := RemInt( int, primes[i] );
-        int := QuoInt( int, primes[i] );
-    od;
-    return vec;
-end;
-
-#############################################################################
-##
-#F CodePcgs( <pcgs> ) 
-##
-CodePcgs := function( pcgs )
-    local code, indices, l, mi, i, base, nt, r, j, e, size;
-
-    # basic structures
-    l := Length( pcgs );
-    indices := RelativeOrders( pcgs );
-    mi := Maximum( indices ) - 1;
-    code := 0;
-    base := 1;
-
-	# code indices of ag-series for non-p-groups
-    if Length( Set( indices ) ) > 1 then
-        for i in Reversed( [ 1 .. l ] ) do
-            code := code + base * ( indices[ i ] - 2 );
-            base := base * mi;
-        od;
-    fi;
-
-	#  code which powers are not trivial and collect values into nt
-    nt := [];
-    for i in [ 1 .. l - 1 ] do
-        r := pcgs[ i ] ^ indices[ i ];
-        if r <> OneOfPcgs( pcgs )  then
-            Add( nt, r );
-            code := code + base;
-        fi;
-        base := base * 2;
-    od;
-
-	# ... and commutators
-    for i in [ 1 .. l - 1 ] do
-        for j in [ i + 1 .. l ] do
-            r := Comm( pcgs[ j ], pcgs[ i ] );
-            if r <> OneOfPcgs( pcgs ) then
-                Add( nt, r );
-                code := code + base;
-            fi;
-            base := base * 2;
-        od;
-    od;
-
-	# code now non-trivial words
-    e := Enumerator( GroupOfPcgs( pcgs ) );
-    size := Size( GroupOfPcgs( pcgs ) );
-    for i in nt do
-        code := code + base * (Position( e, i ) - 1 );
-        base := base * size;
-    od;
-    return code;
-end;
-
-#############################################################################
-##
-#F CodePcGroup( <G> ) 
-##
-CodePcGroup := function( G )
-    return CodePcgs( Pcgs( G ) );
-end;
-
-#############################################################################
-##
-#F PcGroupCode( <code>, <size> )
-##
-PcGroupCode := function( code, size )
-    local F, n1, f, l, mi, n, t1, indices, gens, rels, g, i, uc, ll, rr,
-          t, j, z, z2, result;
-
-    # catch trivial case
-    if size = 1 then
-        return Image( IsomorphismPcGroup( Group(()) ) );
-    fi;
-
-    # get indices
-    f    := FactorsInt( size );
-    l    := Length( f );
-    mi   := Maximum( f ) - 1;
-    n    := ShallowCopy( code );
-    if Length( Set( f ) ) > 1 then
-        indices := CoefficientsInt( List([1..l], x -> mi), n mod (mi^l) ) + 2;
-        n := QuoInt( n, mi^l );
-    else
-        indices := f;
-    fi;
- 
-    # create free group
-    F := FreeGroup( l );
-    gens := GeneratorsOfGroup( F );
-    rels := [];
-    rr   := [];
-
-    for i in [1..l] do
-        rels[i]:=gens[i]^indices[i];
-    od;
-
-    ll:=l*(l+1)/2-1;
-    if ll < 28 then
-        uc := Reversed( CoefficientsInt( List([1..ll], x -> 2), n mod (2^ll)));
-    else
-        uc := [];
-	    n1 := n mod (2^ll);
-   	    for i in [1..ll] do
-   	        uc[i] := n1 mod 2;
-   	 	    n1 := QuoInt( n1, 2 );
-	    od;
-    fi;
-    n := QuoInt( n,2^ll );
-
-    for i in [1..Sum(uc)] do
-        t := CoefficientsInt( indices, n mod size );
-        g := gens[1]^0;
-        for j in [1..l] do
-            if t[j] > 0 then 
-                g := g * gens[j]^t[j];
-            fi;
-        od;
-        Add( rr, g );
-        n := QuoInt( n, size );
-    od;
-    z:=1;
-    for i in [1..l-1] do
-        if uc[i] = 1 then
-            rels[i] := rels[i]/rr[z];
-            z := z+1;
-        fi;
-    od;
-    z2 := l-1;
-    for i in [1..l] do
-        for j in [i+1..l] do
-            z2 := z2+1;
-            if uc[z2] = 1 then
-                Add( rels, Comm(gens[j],gens[i])/rr[z] );
-                z := z+1;
-            fi;
-        od;
-    od;
-
-    result := PcGroupFpGroup( F / rels );
-    return result;
-end;
-
-#############################################################################
-##
-#F RandomByPcs( pcs, p )
-##
-RandomByPcs := function( pcs, p )
-    local elm;
-    elm := List( [1..Length(pcs)], i -> pcs[i]^Random( 0, p-1 ) );
-    return Product( elm );
-end;
-
-#############################################################################
-##
-#F CheckInPcElement( pcgs, h, p, sub, lin, dims, layers )
-##
-CheckInPcElement := function( pcgs, h, p, sub, lin, dims, layers )
-    local d, l, k, g, ll, lr;
-
-    d := DepthOfPcElement( pcgs, h );
-    if d <= Length( pcgs ) then
-        l := layers[d];
-        if Length( sub[l] ) < dims[l] and IsBool( lin[d] ) then
-            Add( sub[l], h );
-            lin[d] := h;
-        elif Length( sub[l] ) < dims[l] then
-            k := h;
-            while d <= Length( pcgs ) and not IsBool( lin[d] ) do
-                g  := lin[d];
-                ll := LeadingExponentOfPcElement( pcgs, h );
-                lr := LeadingExponentOfPcElement( pcgs, g );
-                k  := LeftQuotient( g^(ll/lr mod p), k );
-                d  := DepthOfPcElement( pcgs, k );
-            od;
-            if d <= Length( pcgs ) and l = layers[d] then
-                Add( sub[l], h );
-                lin[d] := k;
-            fi;
-        fi;
-    fi;
-    return sub;
-end;
-
-#############################################################################
-##
-#F RandomPcgsSylowSubgroup( S, p )
-##
-RandomPcgsSylowSubgroup := function( S, p )
-    local pcgs, l, first, layers, dims, sub, lin, omega, U, top, pcgsU,
-          m, pcs, h, d, hit, i, g;
-
-    pcgs := InducedPcgsWrtSpecialPcgs( S );
-    l := Length( pcgs );
-    first := LGFirst( pcgs );
-    layers := LGLayers( pcgs );
-    dims := List( [1..Length(first)-1], x -> first[x+1] - first[x] );
- 
-    # set up 
-    sub := List( dims, x -> [] );
-    lin := List( [1..l], x -> true );
-
-    # use omega series
-    omega := OmegaSeries( S );
-    
-    # start to fill up sub
-    for i in [2..Length(omega)] do
-        U := omega[i];
-        pcgsU := Pcgs( U );
-        m := Length( pcgsU );
- 
-        hit := List( pcgsU, x -> false );
-        for g in Pcgs( omega[i-1] ) do
-            hit[DepthOfPcElement( pcgsU, g )] := true;
-        od;
-        top := First( [1..Length(hit)], x -> not hit[x] );
-
-        while top <= m do
-
-            # compute a random element
-            pcs := pcgsU{[top..m]};
-            h   := RandomByPcs( pcs, p );
-            sub := CheckInPcElement( pcgs, h, p, sub, lin, dims, layers );
-
-            # reset hit and top
-            hit[DepthOfPcElement(pcgsU, h)] := true;
-            while top <= Length( hit ) and hit[top] do
-                top := top + 1;
-            od;
-        od;
-    od;
-    return Concatenation( sub );
-end;
-
-#############################################################################
-##
-#F RandomSpecialPcgsCoded( G )
-##
-RandomSpecialPcgsCoded := function( G )
-    local pcgs, l, weights, first, primes, sylow, npcs, i, s, n, p, S,
-          layer, sub, seq, pcgssys, ppcs, npcgs, pfirst, j, d, k;
-
-    # compute the special pcgs
-    pcgs := SpecialPcgs( G );
-    l := Length( pcgs );
-
-    # catch the trivial cases
-    if l = 0 or l = 1 then return CodePcgs( pcgs ); fi;
-
-    # information about special pcgs
-    weights := LGWeights( pcgs );
-    first   := LGFirst( pcgs );
-    primes  := Set( List( weights, x -> x[3] ) );
-
-    # compute public sylow system
-    # sylow := PublicSylowSystem( pcgs );
-    sylow := SylowSystem( G );
-
-    # loop over sylow subgroups
-    ppcs := List( primes, x -> true );
-    for i in [1..Length(primes)] do
-        p := primes[i];
-        S := sylow[i];
-        ppcs[i] := RandomPcgsSylowSubgroup( S, p );
-    od;
-
-    # rewrite first for Sylow subgroups
-    for i in [1..Length(first)-1] do
-        s := first[i];
-        p := weights[s][3];
-        j := Position( primes, p );
-    od;
-
-    # loop over LG-series
-    npcs := List( [1..Length(first)-1], x -> true );
-    pfirst := List( primes, x -> [1] );
-    for i in [1..Length(first)-1] do
-
-        # relative to G
-        s := first[i];
-        n := first[i+1];
-        p := weights[s][3];
-        j := Position( primes, p );
-        d := n - s;
-
-        # relative to Sylow subgroup
-        k := Length( pfirst[j] );
-        Add( pfirst[j], pfirst[j][k] + d );
-        s := pfirst[j][k];
-        n := pfirst[j][k+1];
-        
-        # sift in
-        npcs[i] := ppcs[j]{[s..n-1]};
-    od;
-    npcs := Concatenation( npcs );
-        
-    # compute corresponding special pcgs
-    seq := PcgsByPcSequenceNC( FamilyObj( One( G ) ), npcs );
-    pcgssys := rec( pcgs := seq,
-                    weights := weights,
-                    first := first,
-                    layers := LGLayers( pcgs ) );
-    pcgssys := PcgsSystemWithComplementSystem( pcgssys );
-    seq := pcgssys.pcgs;
-    SetRelativeOrders( seq, List( weights, x -> x[3] ) );
-
-    # return code only
-    return CodePcgs( seq );
-end;
-
-#############################################################################
-##
 #F RandomIsomorphismTest( list, n )
 ##
-RandomIsomorphismTest := function( list, n )
-    local codes, conds, code, found, i, j, rem;
+InstallGlobalFunction( RandomIsomorphismTest, function( list, n )
+    local codes, conds, code, found, i, j, k, l, rem, c;
 
     # catch trivial case
-    if Length( list ) = 1 then return list; fi;
+    if Length( list ) = 1 or Length( list ) = 0 then return list; fi;
+
+    # unpack
+    for i in [1..Length(list)] do
+        list[i].group := PcGroupCode( list[i].code, list[i].order );
+    od;
 
     # set up
-    codes := List( list, x -> [CodePcGroup( x )] );
+    codes := List( list, x -> [x.code] );
     conds := List( list, x -> 0 );
     rem   := Length( list );
+    c := 0;
 
     while Minimum( conds ) <= n and rem > 1 do
         for i in [1..Length(list)] do
             if Length( codes[i] ) > 0 then
-                code := RandomSpecialPcgsCoded( list[i] );
+                code := RandomSpecialPcgsCoded( list[i].group );
                 if code in codes[i] then
                     conds[i] := conds[i]+1;
                 fi;
@@ -381,60 +65,99 @@ RandomIsomorphismTest := function( list, n )
                 od;
 
                 if found then
-                    Append( codes[i], codes[j] );
-                    conds[i] := conds[i] + conds[j];
-                    codes[j] := [];
-                    conds[j] := n+1;
+                    k := Minimum( i, j );
+                    l := Maximum( i, j );
+                    codes[k] := Union( codes[k], codes[l] );
+                    codes[l] := [];
+                    conds[k] := 0;
+                    conds[l] := n+1;
                     rem := rem - 1;
                 else
-                    Add( codes[i], code );
+                    AddSet( codes[i], code );
                 fi;
             fi;
         od;
-    od;
-    return list{ Filtered( [1..Length(codes)], x -> Length(codes[x])>0 ) };
-end;
 
-#############################################################################
-##
-#F FingerprintFF( G ) - hier fehlt noch ExtensionInfo
-##
-FingerprintFF := function( G ) 
-    return Flat( Collected( List( Orbits( G , List( G ) ), 
-       y -> [ Order ( y[ 1 ] ), Length( y ) , y[ 1 ] ^ 3 in y , 
-       y[ 1 ] ^ 5 in y , y[ 1 ] ^ 7 in y ] ) ) );
-end;
+		# just for information
+        c := c+1;
+        if c mod 10 = 0 then
+            Info( InfoFrattExt, 5, "     ", c, " loops, ", 
+                  rem, " groups ", 
+                  conds{ Filtered( [ 1 .. Length( list ) ],
+		  x -> Length( codes[ x ] ) > 0 ) }," doubles ",
+	 	  List( codes{ Filtered( [ 1 .. Length( list ) ],
+		  x -> Length( codes[ x ] ) > 0 ) }, Length ),
+		  " presentations");
+        fi;
+    od;
+    
+    # cut out information
+    for i in [1..Length(list)] do
+        Unbind( list[i].group );
+    od;
+
+    # and return
+    return list{ Filtered( [1..Length(codes)], x -> Length(codes[x])>0 ) };
+end );
 
 #############################################################################
 ##
 #F ReducedByIsomorphisms( list ) 
 ##
 ReducedByIsomorphisms := function( list )
-    local subl, fins, i, fin, j;
+    local subl, fins, i, fin, j, info, done, new, H;
+
+    # the trivial cases
+    if Length( list ) = 0 then return list; fi;
+
+    if Length( list ) = 1 then 
+        list[1].isUnique := true;
+        return list; 
+    fi;
+ 
+    Info( InfoFrattExt, 3, "  reduce ", Length(list), " groups " );
 
     # first split the list
+    Info( InfoFrattExt, 4, "   Iso: split list by invariants ");
+    done  := [];
     subl  := [];
     fins  := [];
     for i in [1..Length(list)] do
-        fin := FingerprintFF( list[i] );
-        j   := Position( fins, fin );
-        if IsBool( j ) then
-            Add( subl, [list[i]] );
-            Add( fins, fin );
+        if list[i].isUnique then 
+            Add( done, list[i] );
         else
-            Add( subl[j], list[i] );
+            H   := PcGroupCode( list[i].code, list[i].order );
+            fin := FingerprintFF( H );
+            fin := Concatenation( list[i].extdim, fin ); 
+            j   := Position( fins, fin );
+            if IsBool( j ) then
+                Add( subl, [list[i]] );
+                Add( fins, fin );
+            else
+                Add( subl[j], list[i] );
+            fi;
         fi;
     od;
 
     # now remove isomorphic copies
     for i in [1..Length(subl)] do
+        Info( InfoFrattExt, 4, "   Iso: reduce list of length ", 
+                               Length(subl[i]));
         subl[i] := RandomIsomorphismTest( subl[i], 10 );
+        if Length( subl[i] ) = 1 then
+            subl[i][1].isUnique := true;
+            Add( done, subl[i][1] );
+            Unbind( subl[i] );
+        fi;
     od;
+
+    subl := Compacted( subl );
+    Sort( subl, function( x, y ) return Length(x)<Length(y); end );
    
     # return 
-    return Flat( subl );
+    return Concatenation( done, subl );
 end;
-        
+
 #############################################################################
 ##
 #F EnlargedModule( M, F, H )
@@ -450,109 +173,262 @@ end;
 
 #############################################################################
 ##
-#F FrattiniExtensionsPcGroup( F, o )
+#F FindUniqueModules( modus )
 ##
-FrattiniExtensionsPcGroup := function( F, o )
-    local sizePhi, primes, prim, modus, grps, exts, min, sub, H, rest, tup,
-          j, modu, M, size, new;
+FindUniqueModules := function( list )
+    local modus, i, j, dims, cent;
+        
+    for modus in list do
 
+        # find the ones with unique dimension
+        dims := List( modus, x -> x.dimension );
+        for j in [1..Length(modus)] do
+            if Length( Filtered(dims, x -> x = modus[j].dimension) ) = 1
+            then
+                modus[j].unique := true;
+            else
+                modus[j].unique := false;
+            fi;
+            modus[j].central := false;
+        od;
+
+        # find the trivial module 
+        for j in [1..Length(modus)] do
+            if ForAll( modus[j].generators, x -> x = x^0 ) then
+                modus[j].unique := true;
+                modus[j].central := true;
+            fi;
+        od;
+    od;
+end;
+
+#############################################################################
+##
+#F CentralModules( F, field, d )
+##
+CentralModules := function( F, field, d )
+    local modus, i, mats, modu;
+    modus := [];
+    for i in [2..d] do
+        mats := List( Pcgs(F), x -> IdentityMat( i, field ) );
+        modu := GModuleByMats( mats, field );
+        modu.unique := true;
+        modu.central := true;
+        Add( modus, modu );
+    od;
+    return modus;
+end;
+
+#############################################################################
+##
+#F IsCentralExtension( F, ext )
+##
+IsCentralExtension := function( F, ext )
+    local pcgs, N;
+    pcgs := Pcgs( ext );
+    N := Subgroup( ext, pcgs{[Length(Pcgs(F))+1..Length(pcgs)]} );
+    return IsElementaryAbelian(N) and IsCentral( ext, N );
+end;
+
+#############################################################################
+##
+#F FrattiniExtensionsOfCode( code, o )
+##
+FrattiniExtensionsOfCode := function( code, o )
+    local primes, prim, modus, grps, exts, min, sub, H, rest, tup,
+          j, modu, M, size, new, i, count, p, d, grp, F;
+
+       
     # the trivial cases
-    sizePhi := o / Size( F );
-    if Size( F ) = o then return [F]; fi;
-    if not IsInt( sizePhi ) then return []; fi;
-    if not IsSubset( Set( FactorsInt( Size(F) ) ), Set( FactorsInt( o ) ) )
-    then return []; fi;
+    if code.order = o then return [code]; fi;
+
+    # check size
+    if not Set( FactorsInt( code.order ) ) = Set( FactorsInt( o ) ) or
+       not IsInt( o/code.order ) then
+        return []; 
+    fi;
 
     # construct irreducible modules for F
-    primes := Collected( FactorsInt( sizePhi ) );
+    F      := PcGroupCodeRec( code );
+    rest   := o / code.order;
+    primes := Collected( FactorsInt( rest ) );
     prim   := List( primes, x -> x[1] );
     modus  := List( primes, x -> IrreducibleModules( F, GF(x[1]), x[2] ) );
+    FindUniqueModules( modus );
 
     # set up
     grps := [];
-    exts := [F]; 
+    exts := [code]; 
 
     # start loop
     while Length( exts ) > 0 do
 
-        Info( InfoFrattExt, 1,"  start new round with ",Length(exts),
-                              " groups");
-        min := Minimum( List( exts, Size ) );
-        sub := Filtered( exts, x -> Size( x ) = min );
-        Info( InfoFrattExt, 1,"  start to extend ",Length(sub),
-                              " groups of size ",min," - with random isom");
-        sub := ReducedByIsomorphisms( sub );
-        exts := Filtered( exts, x -> Size( x ) > min );
-        Info( InfoFrattExt, 1,"  reduced to ",Length(sub)," groups");
+        min := Minimum( List( exts, x -> x.order ) );
+        sub := Filtered( exts, x -> x.order = min );
+        exts:= Filtered( exts, x -> x.order > min );
+        sub := Flat( ReducedByIsomorphisms( sub ) );
+        Info( InfoFrattExt, 2," next layer with ",Length(sub),
+                              " groups of order ", min );
         
         # loop over elements in sub
-        for H in sub do
+        for i in [1..Length(sub)] do
+
+            # the Frattini free group is a special case
+            H := PcGroupCodeRec( sub[i] );
+
             rest := o / Size( H );
             tup  := Collected( FactorsInt( rest ) )[1];
             j    := Position( prim, tup[1] );
             modu := Filtered( modus[j], x -> x.dimension <= tup[2] );
             modu := List( modu, x -> EnlargedModule( x, F, H ) );
 
+            Info( InfoFrattExt, 3,"  start ", i, " with ",
+                                    Length(modu)," modules");
+
             # loop over modules
+            count := 1;
             for M in modu do
-                size := Size( H ) * tup[1]^M.dimension; 
-                new := NonSplitExtensionReps( H, M );
+                
+                # create extensions
+                d := M.dimension;
+                p := Characteristic( M.field );
+                size := Size( H ) * p^d; 
+                new := NonSplitExtensions( H, M );
+
+                # create grp records
+                for j in [1..Length(new.groups)] do
+
+                    grp := rec( code := CodePcGroup( new.groups[j] ),
+                                order := size,
+                                isFrattiniFree := false );
+                    grp.first := code.first;
+                    grp.socledim := code.socledim; 
+                    grp.extdim := ShallowCopy( sub[i].extdim );
+                    Add( grp.extdim, p^d );
+                    Sort( grp.extdim );
+                    grp.isUnique := (new.reduced and M.unique and
+                                     sub[i].isFrattiniFree );
+
+                    new.groups[j] := grp;
+                    count := count + 1;
+                od;
+                
                 if size = o then
-                    Append( grps, new );
+                    Append( grps, new.groups );
                 else
-                    Append( exts, new );
+                    Append( exts, new.groups );
                 fi;
+                Unbind( new );
             od;
         od;
     od;
-    Info( InfoFrattExt, 1,"  reduce result ");
-    return ReducedByIsomorphisms( grps );
+    grps := ReducedByIsomorphisms( grps );
+    Info( InfoFrattExt, 2," determined ", Length( grps ),
+                          " classes with groups of order ",o);
+    return grps;
 end;
 
 #############################################################################
 ##
-#F FrattiniExtensionsPermGroup( F, o )
+#F FrattiniExtensionsOfGroup( F, size )
 ##
+FrattiniExtensionsOfGroup := function( F, size )
+    local P, S, K, pcgs, code;
 
-#############################################################################
-##
-#F FrattiniExtensions( F, o )
-##
-FrattiniExtensions := function( F, o )
-    if IsPcGroup( F ) then 
-        return FrattiniExtensionsPcGroup( F, o );
-    else
-        Print("sorry - not yet installed \n");
+    P := FrattiniSubgroup( F );
+    if not Size(P) = 1 then
+        Error(" group must be Frattini free ");
     fi;
+    S := FittingSubgroup( F );
+    K := Complementclasses( F, S )[1];
+    pcgs := PcgsByPcSequence( FamilyObj( One(F) ),
+                              Concatenation( Pcgs( K ), Pcgs(S) ) );
+    code := rec( code := CodePcgs( pcgs ),
+                 order := Size( F ),
+                 isFrattiniFree := true,
+                 first := [1, Length(Pcgs(K))+1, Length(pcgs)+1],
+                 socledim := false,
+                 extdim := [],
+                 exindent := [],
+                 isUnique := true ); 
+    return FrattiniExtensionsOfCode( code, size );
+end;
+        
+#############################################################################
+##
+#F FrattiniExtensions( list, size [,uncoded] )
+##
+FrattiniExtensions := function( arg )
+    local res, new, F, i;
+    res := [];
+    for i in [1..Length(arg[1])] do
+        F := arg[1][i];
+        if IsPcGroup( F ) then
+            Info( InfoFrattExt, 1, "extend candidate number ",i,
+                                   " of ",Length(arg[1]),
+                                   " with size ",Size(F) );
+            new := FrattiniExtensionsOfGroup( F, arg[2] );
+            Append( res, new );
+        else
+            Info( InfoFrattExt, 1, "extend candidate number ",i,
+                                   " of ",Length(arg[1]),
+                                   " with size ",F.order );
+            new := FrattiniExtensionsOfCode( F, arg[2] );
+            Append( res, new );
+        fi;
+    od;
+
+    if Length( arg ) = 3 and arg[3] then
+        for i in [1..Length(res)] do
+            if IsList( res[i] ) then
+                res[i] := List( res[i], PcGroupCodeRec );
+            else
+                res[i] := PcGroupCodeRec( res[i] );
+            fi;
+        od;
+    fi;
+    return res;
 end;
 
 #############################################################################
 ##
-#F FrattiniExtensionMethod( o )
+#F FrattiniExtensionMethod( size [, flags, uncoded] )
 ##
 FrattiniExtensionMethod := function( arg )
-    local o, flags, frattfree, groups, F, new, primes;
+    local prop, code, free, ext, i;
 
-    o := arg[1];
+    # catch the arguments
     if Length( arg ) = 1 then
-        flags := rec();
+        prop := rec();
+        code := false;
+    elif Length( arg ) = 2 then
+        if IsBool( arg[2] ) then
+            code := arg[2];
+            prop := rec();
+        else
+            prop := arg[2];
+            code := false;
+        fi;
     else
-        flags := arg[2];
+        prop := arg[2];
+        code := arg[3];
     fi;
 
-    Info( InfoFEMeth, 1, "compute groups of order", FactorsInt(o) );
-    Info( InfoFEMeth, 1, "compute frattini free groups");
-    primes    := Set( FactorsInt( o ) );
-    frattfree := FrattiniFreeSolvableGroupsBySize( o, flags );
-    Info( InfoFEMeth, 1, "found ",Length( frattfree ),
-                         " frattini free groups");
-    groups := [];
-    for F in frattfree do
-        Info( InfoFEMeth, 1, "start to extend group of order ",Size(F));
-        new := FrattiniExtensions( F, o );
-        Info( InfoFEMeth, 1, "extended group of order ",Size(F),
-                             " and found ",Length(new)," groups ");
-        Append( groups, new );
-    od;
-    return groups;
+    Info( InfoFrattExt, 1, "compute Frattini factors");
+    free := FrattiniFactorCandidates( arg[1], prop );
+    Info( InfoFrattExt, 1, "found ",Length( free )," candidates ");
+    Info( InfoFrattExt, 1, "compute Frattini extensions ");
+    ext  := FrattiniExtensions( free, arg[1] );
+    Info( InfoFrattExt, 1, "found ", Length( Flat(ext) )," extensions ");
+
+    if code then
+        for i in [1..Length(ext)] do
+            if IsList( ext[i] ) then
+                ext[i] := List( ext[i], PcGroupCodeRec );
+            else
+                ext[i] := PcGroupCodeRec( ext[i] );
+            fi;
+        od;
+    fi;
+    return ext;
 end;

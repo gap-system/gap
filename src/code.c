@@ -5,16 +5,19 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the coder package.
 **
 **  The  coder package  is   the part of   the interpreter  that creates  the
 **  expressions.  Its functions are called from the reader.
 */
+#include        <stdio.h>               /* on SunOS, assert.h uses stderr
+					   but does not include stdio.h    */
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_code_c =
+const char * Revision_code_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -2762,48 +2765,71 @@ void LoadBody ( Obj body )
 /****************************************************************************
 **
 
-*F  SetupCode() . . . . . . . . . . . . . . . .  initialize the coder package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupCode ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking functions for function body bags                */
-    InfoBags[         T_BODY           ].name = "function body bag";
-    InitMarkFuncBags( T_BODY           , MarkNoSubBags );
+    InfoBags[ T_BODY ].name = "function body bag";
+    InitMarkFuncBags( T_BODY, MarkNoSubBags );
 
     SaveObjFuncs[ T_BODY ] = SaveBody;
     LoadObjFuncs[ T_BODY ] = LoadBody;
-}
 
-
-/****************************************************************************
-**
-*F  InitCode()  . . . . . . . . . . . . . . . .  initialize the coder package
-**
-**  'InitCode' initializes the coder package.
-*/
-void InitCode ( void )
-{
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult, "CodeResult" );
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &StackStat, "StackStat" );
     InitGlobalBag( &StackExpr, "StackExpr" );
-    if ( ! SyRestoring ) {
-        StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-        StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
-    }
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckCode() . . . . . . . . check the initialisation of the coder package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckCode ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "code_c",     Revision_code_c );
-    SET_REVISION( "code_h",     Revision_code_h );
+    /* allocate the statements and expressions stacks                      */
+    StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
+    StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoCode()  . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "code",                             /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoCode ( void )
+{
+    module.revision_c = Revision_code_c;
+    module.revision_h = Revision_code_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

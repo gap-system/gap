@@ -7,7 +7,7 @@
 **  presentations.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_objcftl_h =
+const char * Revision_objcftl_h =
    "@(#)$Id$";
 #endif
 
@@ -45,23 +45,9 @@ SYS_CONST char * Revision_objcftl_h =
 /****************************************************************************
 **
 
-*F  SetupPcc()  . . . . . . . . . . . . . initialize the polycyclic collector
+*F  InitInfoPcc() . . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupPcc ( void );
-
-
-/****************************************************************************
-**
-*F  InitPcc() . . . . . . . . . . . . . . initialize the polycyclic collector
-*/
-extern void InitPcc ( void );
-
-
-/****************************************************************************
-**
-*F  CheckPcc()  . . . . . .  check the initialisation of polycyclic collector
-*/
-extern void CheckPcc ( void );
+StructInitInfo * InitInfoPcc ( void );
 
 
 /****************************************************************************

@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file defines the functions to install and select methods.
 ##
@@ -806,9 +807,39 @@ NEXT_VMETHOD_XARGS := function(arg)
 end;
 
 
+#############
+#
+
 #############################################################################
 ##
+#F  AttributeValueNotSet( <attr>, <obj> )
+##
+AttributeValueNotSet := function(attr,obj)
+local type,fam,methods,i,flag,erg;
+  type:=TypeObj(obj);
+  fam:=FamilyObj(obj);
+  methods:=METHODS_OPERATION(attr,1);
+  for i in [1..LEN_LIST(methods)/5] do
+#    nam:=methods[5*(i-1)+5]; # name
+    flag:=true;
+    flag:=flag and IS_SUBSET_FLAGS(type![2],methods[5*(i-1)+2]);
+    if flag then
+      flag:=flag and methods[5*(i-1)+1](fam);
+    fi;
+    if flag then
+      attr:=methods[5*(i-1)+3];
+      erg:=attr(obj);
+      if not IS_IDENTICAL_OBJ(erg,TRY_NEXT_METHOD) then
+	return erg;
+      fi;
+    fi;
+  od;
+  Error("No applicable method found for attribute");
+end;
 
+
+#############################################################################
+##
 #F  # # # # # # # # # # # #  constructor selection  # # # # # # # # # # # # #
 ##
 

@@ -9,12 +9,12 @@
 %%
 %Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
 %%
-%%  This file contains a tutorial introduction to lists.
+%%  This file contains a tutorial introduction to lists and records.
 %%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Chapter{Lists}
+\Chapter{Lists and Records}
 
 Modern mathematics, especially algebra, is based on set theory. When sets
 are represented in a computer, they inadvertently turn into lists. That's
@@ -25,13 +25,14 @@ entries are ordered with respect to the precedence relation~`\<'.
 
 After  the introduction of  the basic  manipulations with lists in~"Plain
 Lists", some difficulties concerning identity and mutability of lists are
-discussed  in~"Identical  Lists"  and~"Immutability".  Sets,  ranges, row
+discussed  in~"Identical Lists"  and~"Immutability".  Sets,  ranges, row
 vectors, and matrices are introduced as special kinds of lists in~"Sets",
-"Ranges", "Vectors and Matrices".   Loops  and some list   operations are
-shown in~"For and While Loops" and~"List Operations".
+"Ranges", "Vectors and Matrices".   Handy list   operations are
+shown in~"List Operations". Finally we explain how to use records
+in~"Plain Records". 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Plain Lists}\null
+\Section{Plain Lists}
 
 \atindex{lists!plain}{|indexit}%
 A *list* is a collection of objects separated by  commas and enclosed  in
@@ -180,18 +181,18 @@ This way you get  a new list that  contains at position <i> that  element
 whose position is the <i>th entry of the argument in the curly braces.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Identical Lists}\null
+\Section{Identical Lists}
 
 \atindex{lists!identical}{|indexit}%
 This second  section  about lists is dedicated  to  the subtle difference
-between  equality  and identity  of   lists. It  is  really  important to
+between  *equality*  and *identity*  of lists. It is really important to
 understand   this  difference in  order   to  understand how complex data
 structures are  realized in {\GAP}.   This section applies  to all {\GAP}
 objects  that have  subobjects,  e.g.,  to lists   and to  records. After
 reading the section about records~"Plain Records" you should return to
 this section and translate it into the record context.
 
-Two  lists are equal if all their entries are equal.  This means that the
+Two  lists are *equal* if all their entries are equal.  This means that the
 equality operator `=' returns `true' for the  comparison of  two lists if
 and  only if these two lists are of the same length and for each position
 the values in the respective lists are equal.
@@ -210,7 +211,7 @@ with `primes'.
 You  see that  `numbers' and  `primes'  are still   equal, check this  by
 printing the value of `primes'. The list `primes' is  no longer a list of
 primes! What has  happened?  The truth is  that  the  lists  `primes' and
-`numbers' are  not  only  equal but  they  are  identical.  `primes'  and
+`numbers' are  not only equal but they are also *identical*. `primes' and
 `numbers' are two variables pointing to the  same list. If you change the
 value of  the subobject `numbers[3]'  of `numbers' this will  also change
 `primes'.  Variables do *not* point to  a certain block of storage memory
@@ -219,7 +220,7 @@ assignment `numbers := primes' did *not* create a new list in a different
 place of memory but only created the new name `numbers'  for the same old
 list of primes.
 
-*The same object can have several names.*
+From this we see that *the same object can have several names.*
 
 If you want to change a list with the  contents of `primes' independently
 from `primes'  you will have to  make a copy of  `primes' by the function
@@ -271,8 +272,8 @@ that have bothered   us in    Section~"Identical Lists". The     function
 `Immutable' takes as argument a list and returns an immutable copy of it,
 i.e., a list  which  looks exactly like the   old one, but has  two extra
 properties:
-(1)~The new list is immutable, i.e.,  itself and its subobjects cannot be
-    changed.
+(1)~The new list is immutable, i.e.,  the list itself and its subobjects 
+    cannot be changed.
 (2)~In constructing the copy, every part of  the list that can be changed
     has been copied, so that changes to the  old list will not affect the
     new one.  In other words, the new  list has no  mutable subobjects in
@@ -324,7 +325,7 @@ function:
     end;
 \endtt
 This works only if the original list  does not contain the same subobject
-(up to `IsIdentical', see Section~"Objects vs. Elements") twice.
+(up to `IsIdenticalObj', see Section~"Objects vs. Elements") twice.
 For example, the list which {\GAP} prints as `[ ~ ]' will cause this
 function to recurse infinitely.
 
@@ -334,9 +335,10 @@ function to recurse infinitely.
 \index{lists!strictly sorted}\index{family}%
 {\GAP} knows several special kinds of lists. A  very important one is the
 *set*, which is a  dense list (i.e., without  holes) all of whose entries
-belong to the same  *family*, which says (more or  less) that they can be
-compared using the `\<'  operator. The crucial property of  a set is then
-that   its  entries must  be strictly   sorted, i.e.,   entries in higher
+belong to the same  *family*. (For elements to belong to the same family 
+roughly means that they 
+can be compared using the `\<' operator.) The crucial property of a set 
+is that its  entries must  be strictly   sorted, i.e.,   entries in higher
 positions   must be greater  with respect  to~`\<'. In  particular, a set
 cannot have duplicates. {\GAP} calls a  set also a *strictly sorted list*
 and the function `IsSSortedList' tests whether a given  list is a set. It
@@ -382,7 +384,7 @@ object `fruits' is changed.
     gap> fruits;  #  The banana is inserted in the right place.
     [ "apple", "banana", "cherry", "plum", "strawberry" ]
     gap> AddSet(fruits, "apple");
-    gap> fruits;  #  `fruits' has not changed.
+    gap> fruits;  #  {\tt fruits} has not changed.
     [ "apple", "banana", "cherry", "plum", "strawberry" ] 
 \endexample
 Sets can be intersected by the function `Intersection'  and united by the
@@ -406,8 +408,8 @@ change their first argument to be the result. Try them carefully.
 
 A *range* is a finite arithmetic progression of integers. This is another
 special kind   of list. A range  is  described by its minimum  (the first
-entry), its second entry and its maximum, separated  by a comma resp. two
-dots and enclosed in brackets. In the usual case  of an ascending list of
+entry), its second entry and its maximum, separated  by a comma respectively
+two dots and enclosed in brackets. In the usual case of an ascending list of
 consecutive integers the second entry may be omitted.
 \beginexample
     gap> [1..999999];     #  a range of almost a million numbers
@@ -438,121 +440,6 @@ an object is a range.
 % the list `a'. The list `a'  still behaves in any context  in the same way
 % as it would have in the long representation.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{For and While Loops}\null
-
-\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
-Given a list `pp' of permutations we can form their product by means of a
-`for' loop instead of writing down the product explicitly.
-\beginexample
-    gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8)(4,9), (1,5,7)(2,3,8,6),
-    >           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2) ];;
-    gap> prod:= ();;
-    gap> for p in pp do
-    >       prod:= prod * p;
-    >    od;
-    gap> prod;
-    (1,8,4,2,3,6,5)
-\endexample
-First a  new variable `prod'  is initialized  to the identity permutation
-`()'. Then the loop variable `p' takes as its value one permutation after
-the other from the list `pp' and is multiplied with  the present value of
-`prod'  resulting in a  new value which  is then assigned  to `prod'. The
-`for' loop has the following syntax
-
-\)\fmark for <var> in <list> do <statements> od;
-
-The  effect of the `for'  loop  is to execute the <statements> for  every
-element  of  the <list>.   A `for'  loop  is  a  statement  and therefore
-terminated by a semicolon.  The list of <statements>  is enclosed by  the
-keywords `do' and `od'  (reverse  `do').  A `for'  loop returns no value.
-Therefore we had  to  ask  explicitly for  the  value  of  `prod' in  the
-preceding example.
-
-The `for' loop can loop over any kind of list, even a list with holes.
-In many programming languages the `for' loop has the form
-
-\)\fmark for <var> from <first> to <last> do <statements> od;
-
-But this is merely a special case of the general `for' loop as defined
-above where the <list> in the loop body is a range.
-
-\)\fmark for <var> in [<first>..<last>] do <statements>  od;
-
-You can for  instance loop over a range to compute the factorial $15!$
-of the number 15 in the following way.
-\beginexample
-    gap> ff:= 1;;
-    gap> for i in [1..15] do
-    >       ff:= ff * i;
-    >    od;
-    gap> ff;
-    1307674368000 
-\endexample
-The following  example introduces the  `while' loop which  has the syntax
-`while <condition> do <statements>  od;' The `while'  loop loops over the
-<statements>  as long as  the <condition> evaluates  to  `true'. Like the
-`for' loop the `while' loop is terminated by the keyword `od' followed by
-a semicolon.
-
-We can use  our list `primes' to perform a very simple factorization.  We
-begin by  initializing a list `factors' to the empty list.   In this list
-we want to collect the prime factors of the number 1333.  Remember that a
-list has to exist  before any values  can be assigned to positions of the
-list.  Then we  will loop over the list `primes' and  test for each prime
-whether it divides the  number.  If it does we will  divide the number by
-that prime, add it to the list `factors' and continue.
-\beginexample
-    gap> n:= 1333;;
-    gap> factors:= [];;
-    gap> for p in primes do
-    >       while n mod p = 0 do
-    >          n:= n/p;
-    >          Add(factors, p);
-    >       od;
-    >    od;
-    gap> factors; n;
-    [ 31, 43 ]
-    1 
-\endexample
-As `n' now has the value 1 all prime factors  of 1333 have been found and
-`factors' contains a complete factorization of  1333.  This can of course
-be verified by multiplying 31 and 43.
-
-This loop  may  be applied  to arbitrary  numbers in order  to find prime
-factors.  But  as `primes' is not a complete list of all primes this loop
-may fail  to find all prime factors of  a number greater than 2000,  say.
-You  can try to improve it in such a way that new primes are added to the
-list `primes' if needed.
-
-You have already seen that list objects may be  changed.   This holds  of
-course also for the  list in a loop body.  In most  cases  you have to be
-careful not  to change this list, but there are situations  where this is
-quite useful.  The following example  shows a quick way  to determine the
-primes smaller than 1000 by a sieve method.  Here we will make use of the
-function `Unbind' to delete entries from a list.
-\beginexample
-    gap> primes:= [];;
-    gap> numbers:= [2..1000];;
-    gap> for p in numbers do
-    >       Add(primes, p);
-    >       for n in numbers do
-    >          if n mod p = 0 then
-    >             Unbind(numbers[n-1]);
-    >          fi;
-    >       od;
-    >    od;
-\endexample
-The inner loop  removes all entries from `numbers' that are  divisible by
-the last detected prime `p'.  This is done by the function `Unbind' which
-deletes the binding of the list position  `numbers[n-1]' to the value `n'
-so that afterwards `numbers[n-1]' no longer has  an  assigned value.  The
-next  element encountered in `numbers'  by the outer  loop necessarily is
-the next prime.
-
-In a similar way it is possible to enlarge the list which is looped over.
-This yields a nice and short orbit  algorithm for the  action of a group,
-for example.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{List Operations}
@@ -567,8 +454,8 @@ of numbers or permutations.
 \endexample
 The function  `Product'  takes a  list as  its argument and computes  the
 product  of  the  elements  of the  list.   This  is possible whenever  a
-multiplication of  the elements of the list is defined.  So  `Product' is
-just an implementation of the loop in the example above as a function.
+multiplication of  the elements of the list is defined.  So  `Product' 
+executes a loop over all elements of the list.
 
 There are other often used loops available as functions.   Guess what the
 function `Sum' does.  The function `List' may  take a list and a function
@@ -607,8 +494,21 @@ elements from the original list corresponding to these positions.
     [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
 \endexample
 
+Finally we mention the function `ForAll' that checks whether a property
+holds for all elements of a list. It takes as its arguments  a list and a 
+function that returns a boolean value. `ForAll' checks whether the
+function returns `true' for all elements of the list.
+
+\beginexample
+    gap> list:= [ 1, 2, 3, 4 ];;
+    gap> ForAll( list, x -> x > 0 );
+    true
+\endexample
+
+ 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Vectors and Matrices}\null
+\Section{Vectors and Matrices}
 
 \index{vectors!row}\index{matrices}%
 This section describes how {\GAP} uses lists to represent row vectors and
@@ -684,8 +584,8 @@ A matrix  of integers can  also be multiplied with  a finite field scalar
 and vice  versa. Such products result in  a matrix  over the finite field
 with the integers mapped into the finite field in the obvious way. Finite
 field matrices  are nicer to read when  they are  `Display'ed rather than
-`Print'ed. (Here  we write `Z(  <q> )' to denote a  primitive root of the
-finite field with <q> elements.)
+`Print'ed. (Here  we write `Z( q )' to denote a  primitive root of the
+finite field with `q' elements.)
 \beginexample
     gap> Display( m * One( GF(5) ) );
      1 4 1
@@ -726,15 +626,103 @@ have to interrupt {\GAP} by  pressing `<ctl>-C' (followed by `<ctl>-D' or
 infinite,  we  could look  at  the  minimal  polynomial  of `m'  over the
 rationals.
 \beginexample
-    gap> f := MinimalPolynomial( Rationals, m );;  Factors( f );
-    [ P1C0(-2+x), P1C0(3+x^2) ]
+    gap> f:=MinimalPolynomial( Rationals, m );; Factors( f );
+    [ -2+x_1, 3+x_1^2 ]
 \endexample
 `Factors'  returns a list of  irreducible factors  of the polynomial `f'.
-The notation `P1C0' means that  the factors are univariate polynomials in
-characteristic zero.
-
 The first  irreducible factor $X-2$ reveals   that 2 is an  eigenvalue of
 `m', hence its order cannot be finite.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Plain Records}
+
+A record provides another way to  build new data structures.  Like a list
+a record is a collection of other  objects.  In a record the elements are
+not indexed by numbers but by  names (i.e., identifiers).   An entry in a
+record is called a *record component*.
+
+In  this section  you  will see how to  define  and how to  use
+records.  Record objects are changed by assignments to record components.
+
+Initially a record is defined as a comma separated list of assignments to
+its record components.
+
+\beginexample
+    gap> date:= rec(year:= 1997,
+    >               month:= "Jul",
+    >               day:= 14);
+    rec(
+      year := 1997,
+      month := "Jul",
+      day := 14 )
+\endexample
+
+The value of a record component is accessible by  the record name and the
+record  component name separated   by one dot   as  the record  component
+selector.
+
+\beginexample
+    gap> date.year;
+    1997
+\endexample
+
+Assignments to new record components  are possible in  the same way.  The
+record is automatically resized to hold the new component.
+
+\beginexample
+    gap> date.time:= rec(hour:= 19, minute:= 23, second:= 12);
+    rec(
+      hour := 19,
+      minute := 23,
+      second := 12 )
+    gap> date;
+    rec(
+      year := 1997,
+      month := "Jul",
+      day := 14,
+      time := rec(
+          hour := 19,
+          minute := 23,
+          second := 12 ) )
+\endexample
+
+Records are objects  that  may be  changed.   An assignment to  a  record
+component  changes the original  object.    The remarks made in  Sections
+"Identical Lists" and "Immutability" are also true for records.
+
+Sometimes it is interesting to know which  components of a certain record
+are  bound.  This information is available  from the function `RecNames',
+which  takes a record as  its  argument and  returns  a list of names of
+all bound components of this record as a list of strings.
+
+\beginexample
+    gap> RecNames(date);
+    [ "year", "month", "day", "time" ]
+\endexample
+
+\exercise Finally try the following examples and explain the results.
+\beginexample
+    gap> r:= rec();
+    rec(
+       )
+    gap> r:= rec(r:= r);
+    rec(
+      r := rec(
+           ) )
+    gap> r.r:= r;
+    rec(
+      r := ~ )
+\endexample
+
+\answer  The  first  assignment to `r'    creates a  record.   The second
+assignment assigns a  new object to `r', namely  a record whose component
+`r' contains the old record object created  in the first assignment.  The
+last assignment changes the value of the record component `r' and creates
+a recursive object.
+
+Now return to Sections "Identical Lists"  and "Immutability" and find out
+what these sections mean for records.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Further Reading}\null
@@ -779,23 +767,26 @@ some known fields in {\GAP} are described in Chapters~"ref:Rationals",
 "ref:Cyclotomics", "ref:Gaussians", "ref:Subfields of Cyclotomic  Fields"
 and "ref:Finite Fields".
 Row vectors and matrices are described in more detail in chapters
-"Row Vectors" and "Matrices".
+"ref:Row Vectors" and "ref:Matrices".
 Vector spaces are described in Chapter~"ref:Vector Spaces",
-and further matrix related structures are described in Chapters~"Matrix Rings" and~"Matrix Groups".
+and further matrix related structures are described in Chapters~
+"ref:Matrix Rings" and~"ref:Matrix Groups".
 % 
 % You have learned how to loop over a list by the `for' loop and how to
 % loop with respect to a logical condition with the `while' loop.
 % You have seen that even the list in the loop body can be changed.
 
-The `for' loop is described in "ref:For".
-The `while' loop is described in "ref:While".
 % 
 % You have seen some functions which implement often used `for' loops.
 % There are functions like `Product' to form the product of the elements of
 % a list.
 % The function `List' can apply a function to all elements of a list
 % and the function `Filtered' creates a sublist of a given list.
-You will find more predefined `for' loops in Chapter~"ref:Lists".
+You will find more list operations in Chapter~"ref:Lists".
+
+Records and functions  for records are  described in  detail  in  Chapter
+"ref:Records".
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
@@ -810,3 +801,4 @@ You will find more predefined `for' loops in Chapter~"ref:Lists".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E  lists.tex . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the generic list package.
 **
@@ -14,7 +15,7 @@
 **  'LEN_LIST' and 'ELM_LIST' independently of the type of the list.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_lists_h =
+const char * Revision_lists_h =
    "@(#)$Id$";
 #endif
 
@@ -26,6 +27,7 @@ extern  Obj             TYPE_LIST_HOM;
 
 /****************************************************************************
 **
+
 *F  IS_LIST(<obj>)  . . . . . . . . . . . . . . . . . . . is an object a list
 *V  IsListFuncs[<type>] . . . . . . . . . . . . . . . . . table for list test
 **
@@ -104,50 +106,79 @@ extern  Int             (*IsbvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos )
 
 /****************************************************************************
 **
-*F  ELM0_LIST(<list>,<pos>) . . . . . . . . . . select an element from a list
-*F  ELMV0_LIST(<list>,<pos>)  . . . . . . . . . select an element from a list
-*V  Elm0ListFuncs[<type>] . . . . . . . . . . .  table of selection functions
-*V  Elmv0ListFuncs[<type>]  . . . . . . . . . .  table of selection functions
+
+*F * * * * * * * * * * * * list access functions  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  Elm0ListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
+**
+**  A package  implementing a  list type <type>  must provide  a function for
+**  'ELM0_LIST' and install it in 'Elm0ListFuncs[<type>]'.
+*/
+extern Obj (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+
+
+/****************************************************************************
+**
+*F  ELM0_LIST( <list>, <pos> )  . . . . . . . . select an element from a list
 **
 **  'ELM0_LIST' returns the element at the position <pos> in the list <list>,
 **  or 0 if <list>  has no assigned  object at position  <pos>.  An  error is
 **  signalled if <list>  is  not a list.  It   is the responsibility   of the
 **  caller to ensure that <pos> is a positive integer.
 **
-**  'ELMV0_LIST' does the same as 'ELM0_LIST', but the caller also guarantees
-**  that <list> is a list and that <pos> is less thatn or equal to the length
-**  of <list>.
+**  Note that 'ELM0_LIST' is a  macro, so do  not call it with arguments that
+**  have sideeffects.
+*/
+#define ELM0_LIST(list,pos)     ((*Elm0ListFuncs[TNUM_OBJ(list)])(list,pos))
+
+
+/****************************************************************************
 **
-**  Note that  'ELM0_LIST' and 'ELMV0_LIST'  are macros, so  do not call them
-**  with arguments that have sideeffects.
-**
-**  A package  implementing a  list type <type>  must provide  a function for
-**  'ELM0_LIST' and install it in 'Elm0ListFuncs[<type>]'.
+*V  Elmv0ListFuncs[ <type> ]  . . . . . . . . .  table of selection functions
 **
 **  A package implementing  a lists type  <type> must provide a function  for
 **  'ELMV0_LIST' and install it  in 'Elmv0ListFuncs[<type>]'.   This function
 **  need not test   whether <pos> is less  than   or equal to  the  length of
 **  <list>.
 */
-#define ELM0_LIST(list,pos) \
-                        ((*Elm0ListFuncs[TNUM_OBJ(list)])(list,pos))
-
-#define ELMV0_LIST(list,pos) \
-                        ((*Elm0vListFuncs[TNUM_OBJ(list)])(list,pos))
-
-extern  Obj             (*Elm0ListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
-
-extern  Obj             (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+extern  Obj (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
 **
-*F  ELM_LIST(<list>,<pos>)  . . . . . . . . . . select an element from a list
-*F  ELMV_LIST(<list>,<pos>) . . . . . . . . . . select an element from a list
-*F  ELMW_LIST(<list>,<pos>) . . . . . . . . . . select an element from a list
-*V  ElmListFuncs[<type>]  . . . . . . . . . . .  table of selection functions
-*V  ElmvListFuncs[<type>] . . . . . . . . . . .  table of selection functions
-*V  ElmwListFuncs[<type>] . . . . . . . . . . .  table of selection functions
+*F  ELMV0_LIST( <list>, <pos> ) . . . . . . . . select an element from a list
+**
+**  'ELMV0_LIST' does the same as 'ELM0_LIST', but the caller also guarantees
+**  that <list> is a list and that <pos> is less thatn or equal to the length
+**  of <list>.
+**
+**  Note that 'ELMV0_LIST' is a macro, so do not call  it with arguments that
+**  have sideeffects.
+*/
+#define ELMV0_LIST(list,pos)    ((*Elm0vListFuncs[TNUM_OBJ(list)])(list,pos))
+
+
+/****************************************************************************
+**
+
+*V  ElmListFuncs[ <type> ]  . . . . . . . . . .  table of selection functions
+**
+**  A package implementing a  list  type <type> must  provide a  function for
+**  'ELM_LIST' and install it  in 'ElmListFuncs[<type>]'.  This function must
+**  signal an error if <pos> is larger than the length of <list> or if <list>
+**  has no assigned object at <pos>.
+*/
+extern Obj (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+
+
+/****************************************************************************
+**
+*F  ELM_LIST( <list>, <pos> ) . . . . . . . . . select an element from a list
 **
 **  'ELM_LIST' returns the element at the position  <pos> in the list <list>.
 **  An  error is signalled if  <list> is not a list,  if <pos> is larger than
@@ -155,61 +186,68 @@ extern  Obj             (*Elm0vListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos 
 **  is the responsibility  of the caller to  ensure that <pos>  is a positive
 **  integer.
 **
-**  'ELMV_LIST' does  the same as 'ELM_LIST', but  the caller also guarantees
-**  that <list> is a list and that <pos> is less  than or equal to the length
-**  of <list>.
-**
-**  'ELMW_LIST' does the same as 'ELMV_LIST', but  the caller also guarantees
-**  that <list> has an assigned object at the position <pos>.
-**
 **  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
 **  call them with arguments that have sideeffects.
+*/
+#define ELM_LIST(list,pos)      ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
+
+
+/****************************************************************************
 **
-**  A package implementing a  list  type <type> must  provide a  function for
-**  'ELM_LIST' and install it  in 'ElmListFuncs[<type>]'.  This function must
-**  signal an error if <pos> is larger than the length of <list> or if <list>
-**  has no assigned object at <pos>.
+*V  ElmvListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package implementing  a list  type  <type> must provide a  function for
 **  'ELMV_LIST' and  install  it  in 'ElmvListFuncs[<type>]'.   This function
 **  need not check that <pos> is less than or equal to  the length of <list>,
 **  but it must signal an error if <list> has no assigned object at <pos>.
 **
+*/
+extern Obj (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+
+
+/****************************************************************************
+**
+*F  ELMV_LIST( <list>, <pos> )  . . . . . . . . select an element from a list
+**
+**  'ELMV_LIST' does  the same as 'ELM_LIST', but  the caller also guarantees
+**  that <list> is a list and that <pos> is less  than or equal to the length
+**  of <list>.
+**
+**  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
+**  call them with arguments that have sideeffects.
+*/
+#define ELMV_LIST(list,pos)     ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
+
+
+/****************************************************************************
+**
+*V  ElmwListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
+**
 **  A package implementing a  list type  <type>  must provide a  function for
 **  'ELMW_LIST' and install them  in 'ElmwListFuncs[<type>]'.  This  function
 **  need not check that <pos> is  less than or equal  to the length of <list>
 **  or that <list> has an assigned object at <pos>.
 */
-#define ELM_LIST(list,pos) \
-                        ((*ElmListFuncs[TNUM_OBJ(list)])(list,pos))
-
-#define ELMV_LIST(list,pos) \
-                        ((*ElmvListFuncs[TNUM_OBJ(list)])(list,pos))
-
-#define ELMW_LIST(list,pos) \
-                        ((*ElmwListFuncs[TNUM_OBJ(list)])(list,pos))
-
-extern  Obj             (*ElmListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
-
-extern  Obj             (*ElmvListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
-
-extern  Obj             (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
+extern Obj (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos );
 
 
 /****************************************************************************
 **
-*F  ELMS_LIST(<list>,<poss>)  . . . . . . select several elements from a list
-*V  ElmsListFuncs[<type>] . . . . . . . . . . .  table of selection functions
+*F  ELMW_LIST( <list>, <pos> )  . . . . . . . . select an element from a list
 **
-**  'ELMS_LIST' returns a  new list containing the  elements at the positions
-**  given in the list <poss> from the list <list>.  An  error is signalled if
-**  <list> is not a list, if  any of the positions  is larger than the length
-**  of  <list>, or if <list> has  no assigned object at any of the positions.
-**  It is the responsibility of the  caller to ensure  that <poss> is a dense
-**  list of positive integers.
+**  'ELMW_LIST' does the same as 'ELMV_LIST', but  the caller also guarantees
+**  that <list> has an assigned object at the position <pos>.
 **
-**  Note that 'ELMS_LIST' is a  macro, so do not call it with arguments  that
-**  have sideeffects.
+**  Note that 'ELM_LIST', 'ELMV_LIST', and  'ELMW_LIST' are macros, so do not
+**  call them with arguments that have sideeffects.
+*/
+#define ELMW_LIST(list,pos)     ((*ElmwListFuncs[TNUM_OBJ(list)])(list,pos))
+
+
+/****************************************************************************
+**
+
+*V  ElmsListFuncs[ <type> ] . . . . . . . . . .  table of selection functions
 **
 **  A package implementing a list  type <type> must  provide such a  function
 **  and install it in 'ElmsListFuncs[<type>]'.  This  function must signal an
@@ -221,18 +259,59 @@ extern  Obj             (*ElmwListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Int pos )
 **  result is a list of lists, then it also *must* create a new list that has
 **  the same representation as a plain list.
 */
-#define ELMS_LIST(list,poss) \
-                        ((*ElmsListFuncs[TNUM_OBJ(list)])(list,poss))
+extern Obj (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 
-extern  Obj             (*ElmsListFuncs[LAST_REAL_TNUM+1]) ( Obj list, Obj poss );
 
-extern  Obj             ElmsListDefault (
+
+/****************************************************************************
+**
+*F  ELMS_LIST(<list>,<poss>)  . . . . . . select several elements from a list
+**
+**  'ELMS_LIST' returns a  new list containing the  elements at the positions
+**  given in the list <poss> from the list <list>.  An  error is signalled if
+**  <list> is not a list, if  any of the positions  is larger than the length
+**  of  <list>, or if <list> has  no assigned object at any of the positions.
+**  It is the responsibility of the  caller to ensure  that <poss> is a dense
+**  list of positive integers.
+**
+**  Note that 'ELMS_LIST' is a  macro, so do not call it with arguments  that
+**  have sideeffects.
+*/
+#define ELMS_LIST(list,poss)    ((*ElmsListFuncs[TNUM_OBJ(list)])(list,poss))
+
+
+
+/****************************************************************************
+**
+*F  ElmsListDefault( <list>, <poss> ) . . .  default function for `ELMS_LIST'
+*/
+extern Obj ElmsListDefault (
             Obj                 list,
             Obj                 poss );
 
 
 /****************************************************************************
 **
+*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . .  `ELMS_LIST' with check
+*/
+extern Obj ElmsListCheck (
+    Obj                 list,
+    Obj                 poss );
+
+
+/****************************************************************************
+**
+*F  ElmsListLevelCheck( <lists>, <poss>, <level> ) `ElmsListLevel' with check
+*/
+extern void ElmsListLevelCheck (
+    Obj                 lists,
+    Obj                 poss,
+    Int                 level );
+
+
+/****************************************************************************
+**
+
 *F  UNB_LIST(<list>,<pos>)  . . . . . . . . . . .  unbind element from a list
 *V  UnbListFuncs[<type>]  . . . . . . . . . . . . . table of unbind functions
 **
@@ -313,6 +392,17 @@ extern  void            AsssListDefault (
 
 /****************************************************************************
 **
+*F  AssListObject( <list>, <pos>, <obj> ) . . . . . . . assign to list object
+*/
+extern void AssListObject (
+    Obj                 list,
+    Int                 pos,
+    Obj                 obj );
+
+
+/****************************************************************************
+**
+
 *F  IS_DENSE_LIST(<list>) . . . . . . . . . . . . . . .  test for dense lists
 *V  IsDenseListFuncs[<type>]  . . . . . .  table of dense list test functions
 **
@@ -768,7 +858,6 @@ extern Int ClearFiltsTNums [ LAST_REAL_TNUM ];
     } \
   } while (0)
 
-
 /****************************************************************************
 **
 *F  MARK_LIST( <list>, <what> ) . . . . . . . . . . . . . . . . . . mark list
@@ -795,25 +884,6 @@ extern Int ClearFiltsTNums [ LAST_REAL_TNUM ];
 /****************************************************************************
 **
 
-*F  ElmsListCheck( <list>, <poss> ) . . . . . . . . . . . . . . . . ELMS_LIST
-*/
-extern Obj ElmsListCheck (
-    Obj                 list,
-    Obj                 poss );
-
-
-/****************************************************************************
-**
-*F  ElmsListLevelCheck( <lists>, <poss>, <level> )  . . . . . . ElmsListLevel
-*/
-extern void ElmsListLevelCheck (
-    Obj                 lists,
-    Obj                 poss,
-    Int                 level );
-
-
-/****************************************************************************
-**
 *F  AsssListCheck( <list>, <poss>, <rhss> ) . . . . . . . . . . . . ASSS_LIST
 */
 extern void AsssListCheck (
@@ -853,28 +923,9 @@ extern void AsssListLevelCheck (
 /****************************************************************************
 **
 
-*F  SetupLists()  . . . . . . . . . . . . initialize the generic list package
+*F  InitInfoLists() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupLists ( void );
-
-
-/****************************************************************************
-**
-*F  InitLists() . . . . . . . . . . . . . initialize the generic list package
-**
-**  'InitLists' initializes the dispatch tables with the error handlers.
-*/
-extern void InitLists ( void );
-
-
-/****************************************************************************
-**
-*F  CheckLists()  . . .  check the initialisation of the generic list package
-**
-**  This  function does  a  few pre-init sanity  checks  for the various list
-**  packages.
-*/
-extern void CheckLists ( void );
+StructInitInfo * InitInfoLists ( void );
 
 
 /****************************************************************************

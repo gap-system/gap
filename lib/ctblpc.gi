@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C) 1993, 1997
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the parts of the Dixon-Schneider specific to pc groups
 ##
@@ -44,7 +45,7 @@ PcGroupClassMatrixColumn := function(D,M,r,t)
       T[1][i]:=T[1][i]*z;
     od;
 
-    T[1]:=List(ClassesSolvableGroup(D.group,D.group,true,0,T[1]),
+    T[1]:=List(ClassesSolvableGroup(D.group,0,rec(candidates:=T[1])),
                i->Position(D.ids,i.representative));
 
     for i in [1..Length(T[1])] do
@@ -61,7 +62,7 @@ end;
 #F  IdentificationSolvableGroup(<D>,<el>) . .  class invariants for el in G
 ##
 IdentificationSolvableGroup := function(D,el)
-  return ClassesSolvableGroup(D.group,D.group,true,0,[el])[1].representative;
+  return ClassesSolvableGroup(D.group,0,[el])[1].representative;
 end;
 
 

@@ -306,7 +306,7 @@ TRANSProperties := function(deg,nr)
   return TRANSPROPERTIES[deg][nr];
 end;
 
-TransitiveGroup := function(deg,num)
+InstallGlobalFunction( TransitiveGroup, function(deg,num)
   local gens,i,l,g,s;
   if not(deg in [1..TRANSDEGREES]) then
     Error("degree must be in [1..",TRANSDEGREES,"]");
@@ -355,7 +355,7 @@ TransitiveGroup := function(deg,num)
   fi;
   SetTransitiveIdentification(g,num);
   return g;
-end;
+end );
  
 CntOp := function(grp,orb,op)
 local l,i;
@@ -386,22 +386,6 @@ SeqsOrbits := function(g,n)
   return Orbits(g,Arrangements(MovedPoints(g),n),
                 OnTuples);
 end; 
-
-OnSetSets := function(e,g)
-  return Set(List(e,i->OnSets(i,g)));
-end;
-
-OnSetTuples := function(e,g)
-  return List(e,i->OnSets(i,g));
-end;
-
-OnTupleSets := function(e,g)
-  return Set(List(e,i->OnTuples(i,g)));
-end;
-
-OnTupleTuples := function(e,g)
-  return List(e,i->OnTuples(i,g));
-end;
 
 InstallMethod(TransitiveIdentification,"generic",true,[IsPermGroup],0,
 function(ogrp)

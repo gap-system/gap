@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for left modules, right modules,
 ##  and bimodules.
@@ -17,40 +18,44 @@ Revision.module_gd :=
 ##
 #C  IsLeftOperatorAdditiveGroup( <D> )
 ##
-IsLeftOperatorAdditiveGroup :=     IsAdditiveGroup
-                               and IsExtLSet
-                               and IsDistributiveLOpDSum;
+DeclareSynonym( "IsLeftOperatorAdditiveGroup",
+        IsAdditiveGroup
+    and IsExtLSet
+    and IsDistributiveLOpDSum );
 
 
 #############################################################################
 ##
 #C  IsLeftModule( <M> )
 ##
-IsLeftModule :=     IsLeftOperatorAdditiveGroup
-                and IsLeftActedOnByRing
-                and IsDistributiveLOpESum
-                and IsAssociativeLOpEProd
-                and IsTrivialLOpEOne;
+DeclareSynonym( "IsLeftModule",
+        IsLeftOperatorAdditiveGroup
+    and IsLeftActedOnByRing
+    and IsDistributiveLOpESum
+    and IsAssociativeLOpEProd
+    and IsTrivialLOpEOne );
 
 
 #############################################################################
 ##
 #C  IsRightOperatorAdditiveGroup( <D> )
 ##
-IsRightOperatorAdditiveGroup :=     IsAdditiveGroup
-                                and IsExtRSet
-                                and IsDistributiveROpDSum;
+DeclareSynonym( "IsRightOperatorAdditiveGroup",
+        IsAdditiveGroup
+    and IsExtRSet
+    and IsDistributiveROpDSum );
 
 
 #############################################################################
 ##
 #C  IsRightModule( <M> )
 ##
-IsRightModule :=     IsRightOperatorAdditiveGroup
-                 and IsRightActedOnByRing
-                 and IsDistributiveROpESum
-                 and IsAssociativeROpEProd
-                 and IsTrivialROpEOne;
+DeclareSynonym( "IsRightModule",
+        IsRightOperatorAdditiveGroup
+    and IsRightActedOnByRing
+    and IsDistributiveROpESum
+    and IsAssociativeROpEProd
+    and IsTrivialROpEOne );
 
 
 #############################################################################
@@ -62,27 +67,24 @@ IsRightModule :=     IsRightOperatorAdditiveGroup
 ##
 ##  Free left modules can have bases.
 ##
-IsFreeLeftModule := NewCategory( "IsFreeLeftModule", IsLeftModule );
+DeclareCategory( "IsFreeLeftModule", IsLeftModule );
 
 
 #############################################################################
 ##
 #P  IsFiniteDimensional( <M> )
 ##
-##  is 'true' if <M> is a free left module that is finite dimensional
-##  over its left acting domain, and 'false' otherwise.
+##  is `true' if <M> is a free left module that is finite dimensional
+##  over its left acting domain, and `false' otherwise.
 ##
-IsFiniteDimensional := NewProperty( "IsFiniteDimensional",
-    IsFreeLeftModule );
-SetIsFiniteDimensional := Setter( IsFiniteDimensional );
-HasIsFiniteDimensional := Tester( IsFiniteDimensional );
+DeclareProperty( "IsFiniteDimensional", IsFreeLeftModule );
 
 InstallSubsetMaintainedMethod( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional, IsFreeLeftModule );
 
 InstallFactorMaintainedMethod( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional,
-    IsFreeLeftModule, IsFreeLeftModule );
+    IsCollection, IsFreeLeftModule );
 
 InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 
@@ -98,11 +100,9 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 ##  the dimension is equal to the length of the row vectors.
 ##
 ##  Several functions delegate their tasks to full row modules,
-##  for example 'Iterator' and 'Enumerator'.
+##  for example `Iterator' and `Enumerator'.
 ##
-IsFullRowModule := NewProperty( "IsFullRowModule", IsFreeLeftModule );
-SetIsFullRowModule := Setter( IsFullRowModule );
-HasIsFullRowModule := Tester( IsFullRowModule );
+DeclareProperty( "IsFullRowModule", IsFreeLeftModule );
 
 
 #############################################################################
@@ -116,19 +116,20 @@ HasIsFullRowModule := Tester( IsFullRowModule );
 ##  and such that the dimension is equal to the number of entries in each
 ##  matrix.
 ##
-IsFullMatrixModule := NewProperty( "IsFullMatrixModule", IsFreeLeftModule );
-SetIsFullMatrixModule := Setter( IsFullMatrixModule );
-HasIsFullMatrixModule := Tester( IsFullMatrixModule );
+DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule );
 
 
 #############################################################################
 ##
 #C  IsHandledByNiceBasis( <M> )
 ##
+##  For a free left module in this category, essentially all operations are
+##  performed using a left row module, corresponding to a `NiceBasis' (see
+##  "NiceBasis") of <M>.
 ##  A free left module that supports the mechanism of associated bases
 ##  must know this.
 ##
-IsHandledByNiceBasis := NewCategory( "IsHandledByNiceBasis",
+DeclareCategory( "IsHandledByNiceBasis",
     IsFreeLeftModule and IsAttributeStoringRep );
 #T individually choose for each repres. in this category?
 
@@ -140,75 +141,64 @@ IsHandledByNiceBasis := NewCategory( "IsHandledByNiceBasis",
 ##  A free left module has dimension $n$ if it is isomorphic to a direct sum
 ##  of $n$ copies of its left acting domain.
 ##
-Dimension := NewAttribute( "Dimension", IsFreeLeftModule );
-SetDimension := Setter( Dimension );
-HasDimension := Tester( Dimension );
+##  (We do *not* mark `Dimension' as invariant under isomorphisms
+##  since we want to call `UseIsomorphismRelation' also for free left modules
+##  over different left acting domains.)
+##
+DeclareAttribute( "Dimension", IsFreeLeftModule );
 
 
 ############################################################################
 ##
 #A  GeneratorsOfLeftOperatorAdditiveGroup( <D> )
 ##
-GeneratorsOfLeftOperatorAdditiveGroup := NewAttribute(
-    "GeneratorsOfLeftOperatorAdditiveGroup", IsLeftOperatorAdditiveGroup );
-SetGeneratorsOfLeftOperatorAdditiveGroup := Setter(
-    GeneratorsOfLeftOperatorAdditiveGroup );
-HasGeneratorsOfLeftOperatorAdditiveGroup := Tester(
-    GeneratorsOfLeftOperatorAdditiveGroup );
+DeclareAttribute( "GeneratorsOfLeftOperatorAdditiveGroup",
+    IsLeftOperatorAdditiveGroup );
 
 
 ############################################################################
 ##
 #A  GeneratorsOfLeftModule( <M> )
 ##
-GeneratorsOfLeftModule := GeneratorsOfLeftOperatorAdditiveGroup;
-SetGeneratorsOfLeftModule := SetGeneratorsOfLeftOperatorAdditiveGroup;
-HasGeneratorsOfLeftModule := HasGeneratorsOfLeftOperatorAdditiveGroup;
+DeclareSynonymAttr( "GeneratorsOfLeftModule",
+    GeneratorsOfLeftOperatorAdditiveGroup );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfRightOperatorAdditiveGroup( <D> )
 ##
-GeneratorsOfRightOperatorAdditiveGroup := NewAttribute(
-    "GeneratorsOfRightOperatorAdditiveGroup", IsRightOperatorAdditiveGroup );
-SetGeneratorsOfRightOperatorAdditiveGroup := Setter(
-    GeneratorsOfRightOperatorAdditiveGroup );
-HasGeneratorsOfRightOperatorAdditiveGroup := Tester(
-    GeneratorsOfRightOperatorAdditiveGroup );
+DeclareAttribute( "GeneratorsOfRightOperatorAdditiveGroup",
+    IsRightOperatorAdditiveGroup );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfRightModule( <M> )
 ##
-GeneratorsOfRightModule := GeneratorsOfRightOperatorAdditiveGroup;
-SetGeneratorsOfRightModule := SetGeneratorsOfRightOperatorAdditiveGroup;
-HasGeneratorsOfRightModule := HasGeneratorsOfRightOperatorAdditiveGroup;
+DeclareSynonymAttr( "GeneratorsOfRightModule",
+    GeneratorsOfRightOperatorAdditiveGroup );
 
 
 #############################################################################
 ##
 #A  TrivialSubmodule( <M> )
 ##
-TrivialSubmodule := TrivialSubadditiveMagmaWithZero;
-SetTrivialSubmodule := SetTrivialSubadditiveMagmaWithZero;
-HasTrivialSubmodule := HasTrivialSubadditiveMagmaWithZero;
+DeclareSynonymAttr( "TrivialSubmodule", TrivialSubadditiveMagmaWithZero );
 
 
 #############################################################################
 ##
 #O  AsLeftModule( <R>, <D> )
 ##
-AsLeftModule := NewOperation( "AsModule", [ IsRing, IsCollection ] );
+DeclareOperation( "AsLeftModule", [ IsRing, IsCollection ] );
 
 
 #############################################################################
 ##
 #O  AsFreeLeftModule( <F>, <D> )  . . . . .  view <D> as free left <F>-module
 ##
-AsFreeLeftModule := NewOperation( "AsFreeLeftModule",
-    [ IsRing, IsCollection ] );
+DeclareOperation( "AsFreeLeftModule", [ IsRing, IsCollection ] );
 
 
 #############################################################################
@@ -218,8 +208,7 @@ AsFreeLeftModule := NewOperation( "AsFreeLeftModule",
 ##  is the left module generated by the left module generators of <M> and the
 ##  element <m>.
 ##
-ClosureLeftModule := NewOperation( "ClosureLeftModule",
-    [ IsLeftModule, IsVector ] );
+DeclareOperation( "ClosureLeftModule", [ IsLeftModule, IsVector ] );
 
 
 #############################################################################
@@ -227,9 +216,7 @@ ClosureLeftModule := NewOperation( "ClosureLeftModule",
 #O  LeftModuleByGenerators( <R>, <gens> ) .  left <R>-module gener. by <gens>
 #O  LeftModuleByGenerators( <R>, <gens>, <zero> )
 ##
-LeftModuleByGenerators := NewOperation( "LeftModuleByGenerators",
-    [ IsRing, IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+DeclareOperation( "LeftModuleByGenerators", [ IsRing, IsCollection ] );
 
 
 #############################################################################
@@ -238,10 +225,9 @@ LeftModuleByGenerators := NewOperation( "LeftModuleByGenerators",
 ##
 ##  The vectors in the list <gens> are known to form a basis of the
 ##  free left module <V>.
-##  'UseBasis' stores information in <V> that can be derived form this fact.
+##  `UseBasis' stores information in <V> that can be derived form this fact.
 ##
-UseBasis := NewOperation( "UseBasis",
-    [ IsFreeLeftModule, IsHomogeneousList ] );
+DeclareOperation( "UseBasis", [ IsFreeLeftModule, IsHomogeneousList ] );
 
 
 #############################################################################
@@ -251,18 +237,18 @@ UseBasis := NewOperation( "UseBasis",
 #F  FreeLeftModule( <R>, <gens>, "basis" )
 #F  FreeLeftModule( <R>, <gens>, <zero>, "basis" )
 ##
-##  'FreeLeftModule( <R>, <gens> )' is the free left module over the ring
+##  `FreeLeftModule( <R>, <gens> )' is the free left module over the ring
 ##  <R>, generated by the vectors in the collection <gens>.
 ##
 ##  If there are three arguments, a ring <R> and a collection <gens>
 ##  and an element <zero>,
-##  then 'FreeLeftModule( <R>, <gens>, <zero> )' is the <R>-free left module
+##  then `FreeLeftModule( <R>, <gens>, <zero> )' is the <R>-free left module
 ##  generated by <gens>, with zero element <zero>.
 ##
-##  If the last argument is the string '\"basis\"' then the vectors in
+##  If the last argument is the string `"basis"' then the vectors in
 ##  <gens> are known to form a basis of the free module.
 ##
-FreeLeftModule := NewOperationArgs( "FreeLeftModule" );
+DeclareGlobalFunction( "FreeLeftModule" );
 
 
 #############################################################################
@@ -272,7 +258,7 @@ FreeLeftModule := NewOperationArgs( "FreeLeftModule" );
 ##  is the row module $<R>^<n>$, for a ring <R> and a nonnegative integer
 ##  <n>.
 ##
-FullRowModule := NewOperationArgs( "FullRowModule" );
+DeclareGlobalFunction( "FullRowModule" );
 
 
 #############################################################################
@@ -282,22 +268,31 @@ FullRowModule := NewOperationArgs( "FullRowModule" );
 ##  is the row module $<R>^[<m>,<n>]$, for a ring <R> and nonnegative
 ##  integers <m> and <n>.
 ##
-FullMatrixModule := NewOperationArgs( "FullMatrixModule" );
+DeclareGlobalFunction( "FullMatrixModule" );
+DeclareSynonym( "FullMatrixSpace", FullMatrixModule );
+DeclareSynonym( "MatrixSpace", FullMatrixModule );
+DeclareSynonym( "MatSpace", FullMatrixModule );
+
+
+#############################################################################
+##
+#F  StandardGeneratorsOfFullMatrixModule( <M> )
+##
+DeclareGlobalFunction( "StandardGeneratorsOfFullMatrixModule" );
 
 
 #############################################################################
 ##
 #F  Submodule( <M>, <gens> )  . . . . .  submodule of <M> generated by <gens>
-##
-##  is the left module generated by <gens>, with parent module <M>.
-##
 #F  Submodule( <M>, <gens>, "basis" )
 ##
-##  is the submodule of <M> for that <gens> is a list of basis vectors.
+##  is the left module generated by <gens>, with parent module <M>.
+##  The second form generates
+##  the submodule of <M> for that <gens> is a list of basis vectors.
 ##  It is *not* checked whether <gens> really are linearly independent
 ##  and whether all in <gens> lie in <V>.
 ##
-Submodule := NewOperationArgs( "Submodule" );
+DeclareGlobalFunction( "Submodule" );
 
 
 #############################################################################
@@ -305,10 +300,10 @@ Submodule := NewOperationArgs( "Submodule" );
 #F  SubmoduleNC( <V>, <gens> )
 #F  SubmoduleNC( <V>, <gens>, "basis" )
 ##
-##  'SubmoduleNC' does the same as 'Submodule', except that it does not check
+##  `SubmoduleNC' does the same as `Submodule', except that it does not check
 ##  whether all in <gens> lie in <V>.
 ##
-SubmoduleNC := NewOperationArgs( "SubmoduleNC" );
+DeclareGlobalFunction( "SubmoduleNC" );
 
 
 #############################################################################
@@ -317,8 +312,7 @@ SubmoduleNC := NewOperationArgs( "SubmoduleNC" );
 ##
 ##  A *row module* is a free left module whose elements are lists of scalars.
 ##
-IsRowModuleRep := NewRepresentation( "IsRowModuleRep",
-    IsComponentObjectRep,
+DeclareRepresentation( "IsRowModuleRep", IsComponentObjectRep,
     [ "vectordim" ] );
 
 
@@ -336,8 +330,7 @@ InstallTrueMethod( IsFiniteDimensional,
 ##
 ##  A *matrix module* is a free left module whose elements are matrices.
 ##
-IsMatrixModuleRep := NewRepresentation( "IsMatrixModuleRep",
-    IsComponentObjectRep,
+DeclareRepresentation( "IsMatrixModuleRep", IsComponentObjectRep,
     [ "vectordim" ] );
 
 
@@ -352,6 +345,4 @@ InstallTrueMethod( IsFiniteDimensional,
 #############################################################################
 ##
 #E  module.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

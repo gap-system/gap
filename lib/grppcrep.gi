@@ -2,6 +2,9 @@
 ##
 #W  grppcrep.gd                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.grppcrep_gi :=
     "@(#)$Id$";
 
@@ -26,22 +29,23 @@ end;
 ##
 #F BlownUpModule( <modu>, <E>, <F> ) . . . . . . . blow up by field extension
 ##
-BlownUpModule := function( modu, E, F )
-    local K, mats;
+InstallGlobalFunction( BlownUpModule, function( modu, E, F )
+    local B, mats;
 
     # the trivial case
-    K := AsField( F, E );
-    if Dimension( K ) = 1 then return modu; fi;
+    B := AsField( F, E );
+    if Dimension( B ) = 1 then return modu; fi;
+    B := BasisOfDomain( B );
  
-    mats := List( modu.generators, x -> BlownUpMat( x, K ) );
+    mats := List( modu.generators, x -> TransposedMat( BlownUpMat( B, x )  ) );
     return GModuleByMats( mats, F );
-end;
+end );
 
 #############################################################################
 ##
 #F ConjugatedModule( <pcgsN>, <g>, <modu> ) . . . . . . . . conjugated module
 ##
-ConjugatedModule := function( pcgsN, g, modu )
+InstallGlobalFunction( ConjugatedModule, function( pcgsN, g, modu )
     local mats, i, exp, mat, j;
 
     mats := List(modu.generators, x -> false );
@@ -50,13 +54,13 @@ ConjugatedModule := function( pcgsN, g, modu )
         mats[i] := MappedVector( exp, modu.generators );
     od;
     return GModuleByMats( mats, modu.field );
-end;
+end );
 
 #############################################################################
 ##
 #F FpOfModules( <pcgs>, <list of reps> ) . . . . . . . . distinguish by chars
 ##
-FpOfModules := function( pcgs, modus )
+InstallGlobalFunction( FpOfModules, function( pcgs, modus )
     local words, traces, trset, word, exp, new, i, newset, n;
    
     n      := Length( modus );
@@ -86,25 +90,25 @@ FpOfModules := function( pcgs, modus )
     words := List( words, x -> ExponentsOfPcElement( pcgs, x ) );
     return rec( words  := words,
                 traces := traces );
-end;
+end );
         
 #############################################################################
 ##
 #F EquivalenceType( <fp>, <modu> ) . . . . . . . . . . use chars to find type
 ##
-EquivalenceType := function( fp, modu )
+InstallGlobalFunction( EquivalenceType, function( fp, modu )
     local trace;
 
     trace := List(fp.words, x -> TraceMat(MappedVector(x, modu.generators)));
     trace := Concatenation( [modu.dimension], trace );
     return Position( fp.traces, trace );
-end;
+end );
 
 #############################################################################
 ##
 #F IsEquivalentByFp( <fp>, <x>, <y> ) . . . . . . . equivalence type by chars
 ##
-IsEquivalentByFp := function( fp, x, y )
+InstallGlobalFunction( IsEquivalentByFp, function( fp, x, y )
 
     # get the easy cases first
     if x.dimension <> y.dimension then
@@ -115,13 +119,13 @@ IsEquivalentByFp := function( fp, x, y )
 
     # now it remains to check this really
     return EquivalenceType( fp, x ) = EquivalenceType( fp, y );
-end;
+end );
 
 #############################################################################
 ##
 #F GaloisConjugates( <modu>, <F> ) . . . . . . . . . . .apply frobenius autom
 ##
-GaloisConjugates := function( modu, F )
+InstallGlobalFunction( GaloisConjugates, function( modu, F )
     local d, p, conj, k, mats, r, i, new;
 
     # set up
@@ -140,25 +144,25 @@ GaloisConjugates := function( modu, F )
         Add( conj, new );
     od;
     return conj;
-end;
+end );
 
 #############################################################################
 ##
 #F TrivialModule( <n>, <F> ) . . . . . . . . . . . trivial module with n gens
 ##
-TrivialModule := function( n, F )
+InstallGlobalFunction( TrivialModule, function( n, F )
     return rec( field := F,
                 dimension := 1,
                 generators := List( [1..n], x ->  IdentityMat( 1, F ) ),
                 isMTXModule := true,
                 basis := [[One(F)]] );
-end;
+end );
 
 #############################################################################
 ##
 #F InducedModule( <pcgsS>, <modu> ) . . . . . . . . . . . . . .induced module
 ##
-InducedModule := function( pcgsS, modu )
+InstallGlobalFunction( InducedModule, function( pcgsS, modu )
     local m, d, h, r, mat, i, j, mats, zero, id, exp, g;
 
     g := pcgsS[1];
@@ -189,7 +193,7 @@ InducedModule := function( pcgsS, modu )
     od;
     
     return GModuleByMats( mats, modu.field );
-end; 
+end );
 
 #############################################################################
 ##
@@ -198,7 +202,8 @@ end;
 ## The conjugated module is also galoisconjugate to modu. Thus we may use
 ## a field extension to induce.
 ##
-InducedModuleByFieldReduction := function( pcgsS, modu, conj, gal, s )
+InstallGlobalFunction( InducedModuleByFieldReduction,
+    function( pcgsS, modu, conj, gal, s )
     local r, E, dE, p, l, K, EK, base, vecs, matsN, iso, nu, coeffs, id, ch,
           matg, mats, newm, exp, mat, e, k, q, c, m, gmat;
 
@@ -210,11 +215,12 @@ InducedModuleByFieldReduction := function( pcgsS, modu, conj, gal, s )
     l := QuoInt( dE, r );
     K := GF( p^l );
     EK := AsField( K, E );
-    base := Basis( EK );
+    base := BasisOfDomain( EK );
     vecs := BasisVectors( base );
 
     # blow up matrices in N
-    matsN := List( modu.generators, x -> BlownUpMat( x, EK ) );
+    matsN := List( modu.generators, 
+                   x -> TransposedMat( BlownUpMat( base, x ) ) );
 
     # compute isomorphism
     MTX.IsIrreducible( conj );
@@ -240,13 +246,13 @@ InducedModuleByFieldReduction := function( pcgsS, modu, conj, gal, s )
     ch := KroneckerProduct( id, TransposedMat( coeffs ) );
 
     # construct matrix
-    matg := ch * BlownUpMat( iso, EK );
+    matg := ch * TransposedMat( BlownUpMat( base, iso ) );
 
     # construct module and return
     mats := Concatenation( [matg], matsN );
     newm := GModuleByMats( mats, K ); 
     return newm;
-end;
+end );
 
 #############################################################################
 ##
@@ -254,7 +260,7 @@ end;
 ##
 ## <dim> is restriction on field extensions.
 ##
-ExtensionsOfModule := function( pcgsS, modu, conj, dim ) 
+InstallGlobalFunction( ExtensionsOfModule, function( pcgsS, modu, conj, dim ) 
     local r, new, E, p, dE, exp, gmat, iso, e, c, mats, newm, f, d, b, 
           L, j, w, g, k;
 
@@ -340,13 +346,13 @@ ExtensionsOfModule := function( pcgsS, modu, conj, dim )
         Add( new, newm );
     fi;
     return new;
-end;
+end );
 
 #############################################################################
 ##
 #F InitAbsAndIrredModules( <r>, <F>, <dim> )  . . . . . . . . . . . . . local
 ##
-InitAbsAndIrredModules := function( r, F, dim )
+InstallGlobalFunction( InitAbsAndIrredModules, function( r, F, dim )
     local new, mats, modu, f, l, E, w, S, j, matsn, d, p, b, irr, i;
 
     # set up
@@ -400,13 +406,14 @@ InitAbsAndIrredModules := function( r, F, dim )
 
     # return
     return new;
-end;
+end );
 
 #############################################################################
 ##
 #F LiftAbsAndIrredModules( <pcgsS>, <pcgsN>, <modrec>, <dim> ). . . . . local
 ##
-LiftAbsAndIrredModules := function( pcgsS, pcgsN, modrec, dim )
+InstallGlobalFunction( LiftAbsAndIrredModules,
+    function( pcgsS, pcgsN, modrec, dim )
     local todo, fp, new, i, modu, E, conj, type, s, gal, types, r, un, j, 
           g, galfp, smalls, small, sconj, irred, absirr, n, F, irr, d;
 
@@ -428,8 +435,8 @@ LiftAbsAndIrredModules := function( pcgsS, pcgsN, modrec, dim )
     while Length( todo ) > 0 do
 
         # choose a module
-        i := todo[Length( todo )];  
-        Unbind( todo[Length(todo)] );
+        i := todo[1];
+        todo := todo{[2..Length(todo)]};
         modu  := absirr[i];
         E     := modu.field;
         small := irred[i];
@@ -479,13 +486,13 @@ LiftAbsAndIrredModules := function( pcgsS, pcgsN, modrec, dim )
 
     # return
     return new;
-end;
+end );
              
 #############################################################################
 ##
 #F AbsAndIrredModules( <G>, <F>, <dim> ) . . . . . . . . . . . . . . . .local
 ##
-AbsAndIrredModules := function( G, F, dim )
+InstallGlobalFunction( AbsAndIrredModules, function( G, F, dim )
     local pcgs, m, modrec, i, pcgsS, pcgsN, r, irr;
 
     # set up 
@@ -494,7 +501,7 @@ AbsAndIrredModules := function( G, F, dim )
 
     if m = 0 and Dimension( F ) <= dim then 
         return [rec( irred:= TrivialModule( 0, F ),
-							 absirr := TrivialModule( 0, F ))]; 
+		 absirr := TrivialModule( 0, F ))]; 
     elif m = 0 then return []; fi;
     if dim = 0 then dim := 2^16-1; fi;
 
@@ -511,7 +518,7 @@ AbsAndIrredModules := function( G, F, dim )
   
     # return 
     return modrec;
-end;
+end );
 
 #############################################################################
 ##
@@ -522,7 +529,7 @@ end;
 InstallMethod( AbsolutIrreducibleModules,
     "generic method for groups with pcgs",
     true, 
-    [ IsGroup and IsPcgsComputable, IsField and IsFinite, IsInt ],
+    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite, IsInt ],
     0,
 
 function( G, F, dim )
@@ -540,7 +547,7 @@ end );
 InstallMethod( IrreducibleModules,
     "generic method for groups with pcgs",
     true, 
-    [ IsGroup and IsPcgsComputable, IsField and IsFinite, IsInt ],
+    [ IsGroup and CanEasilyComputePcgs, IsField and IsFinite, IsInt ],
     0,
 
 function( G, F, dim )

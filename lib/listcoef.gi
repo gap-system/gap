@@ -2,6 +2,9 @@
 ##
 #W  listcoef.gi                 GAP Library                      Frank Celler
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  The  '<Something>RowVector' functions operate  on row vectors, that is to
 ##  say (where it  makes sense) that the vectors  must have the  same length,
 ##  for example 'AddRowVector'  requires that  the  two involved row  vectors
@@ -22,7 +25,6 @@ Revision.listcoef_gi :=
 
 #############################################################################
 ##
-
 #M  AddRowVector( <list1>, <list2>, <mult>, <from>, <to> )
 ##
 InstallMethod( AddRowVector,
@@ -30,8 +32,8 @@ InstallMethod( AddRowVector,
     [ IsDenseList and IsMutable,
       IsDenseList,
       IsMultiplicativeElement,
-      IsInt and IsPosRat,
-      IsInt and IsPosRat ],
+      IsPosInt,
+      IsPosInt ],
     0,
 
 function( l1, l2, m, f, t )
@@ -90,7 +92,7 @@ end );
 InstallMethod( LeftShiftRowVector,
     true,
     [ IsDenseList and IsMutable,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( l, s )
@@ -164,7 +166,7 @@ end );
 InstallMethod( RightShiftRowVector,
     true,
     [ IsList and IsMutable,
-      IsInt and IsPosRat,
+      IsPosInt,
       IsObject ],
     0,
 
@@ -305,7 +307,7 @@ function( l1, l2 )
         fi;
     else
         pos := [ 1 .. Length(l2) ];
-        AddCoeffs( l1, pos, l2, pos, One(l2[1]) );
+        return AddCoeffs( l1, pos, l2, pos, One(l2[1]) );
     fi;
 end );
 
@@ -333,9 +335,9 @@ function( l1, l2, n2, l3, n3 )
         return 0;
     fi;
     zero := Zero(l2[1]);
-    if IsIdentical( l1, l2 )  then
+    if IsIdenticalObj( l1, l2 )  then
         l2 := ShallowCopy(l2);
-    elif IsIdentical( l1, l3 )  then
+    elif IsIdenticalObj( l1, l3 )  then
         l3 := ShallowCopy(l3);
     fi;
 
@@ -779,9 +781,244 @@ local q,m,n,i,c,k,z;
   return [q,f];
 end;
 
+#############################################################################
+##
+#M  WeightVecFFE( <vec> )
+##
+InstallMethod(WeightVecFFE,"generic",true,[IsList],0,
+function(v)
+local z,i,n;
+  z:=Zero(v[1]);
+  n:=0;
+  for i in [1..Length(v)] do
+    if v[i]<>z then n:=n+1;fi;
+  od;
+  return n;
+end);
 
 #############################################################################
 ##
+#M  DistanceVecFFE( <vec1>,<vec2> )
+##
+InstallMethod(DistanceVecFFE,"generic",IsIdenticalObj,[IsList,IsList],0,
+function(v,w)
+local i,n;
+  n:=0;
+  for i in [1..Length(v)] do
+    if v[i]<>w[i] then n:=n+1;fi;
+  od;
+  return n;
+end);
 
+#############################################################################
+##
+#M  DistancesDistributionVecFFEsVecFFE( <vecs>,<vec> )
+##
+InstallMethod(DistancesDistributionVecFFEsVecFFE,"generic",IsCollsElms,
+  [IsList, IsList],0,
+function(vecs,vec)
+local d,i;
+  d:=ListWithIdenticalEntries(Length(vec)+1,0);
+  for i in vecs do
+    i:=DistanceVecFFE(i,vec);
+    d[i+1]:=d[i+1]+1;
+  od;
+  return d;
+end);
+
+#############################################################################
+##
+#M  DistancesDistributionMatFFEVecFFE( <mat>,<f>,<vec> )
+##
+InstallMethod(DistancesDistributionMatFFEVecFFE,"generic",IsCollsElmsElms,
+  [IsMatrix,IsFFECollection, IsList],0,
+function(mat,f,vec)
+local d,i,j,l,m,z,cnt,v,pos;
+  f:=AsListSorted(f);
+  Assert(1,f[1]=Zero(f[1]));
+  l:=Length(f);
+  m:=Length(mat);
+  d:=ListWithIdenticalEntries(Length(vec)+1,0);
+  cnt:=ListWithIdenticalEntries(m,1);
+  z:=Zero(vec);
+  v:=DistanceVecFFE(z,vec);
+  d[v+1]:=d[v+1]+1;
+  for j in [1..l^m-1] do
+    pos:=m;
+    while cnt[pos]=l do
+      cnt[pos]:=1;
+      pos:=pos-1;
+    od;
+
+    cnt[pos]:=cnt[pos]+1;
+
+    v:=z;
+    for i in [1..m] do
+      v:=v+f[cnt[i]]*mat[i];
+    od;
+
+    v:=DistanceVecFFE(v,vec);
+    d[v+1]:=d[v+1]+1;
+  od;
+  return d;
+end);
+
+#############################################################################
+##
+#M  AClosestVectorCombinationsMatFFEVecFFE( <mat>,<f>,<vec>,<l>,<stop> )
+##
+InstallMethod(AClosestVectorCombinationsMatFFEVecFFE,"generic",
+  function(a,b,c,d,e)
+    return HasElementsFamily(a) and IsIdenticalObj(b,c)
+           and IsIdenticalObj(ElementsFamily(a),b);
+  end,
+  [IsMatrix,IsFFECollection, IsList, IsInt,IsInt],0,
+function(mat,f,vec,len,stop)
+local d,b,bd,i,j,l,comb,umat,z,cnt,v,pos;
+
+  f:=AsListSorted(f);
+  Assert(1,f[1]=Zero(f[1]));
+  f:=f{[2..Length(f)]}; # we want to exclude linear combinations with `zero'.
+  l:=Length(f);
+  z:=Zero(vec);
+  if len=0 then
+    return z;
+  else
+    bd:=infinity;
+  fi;
+  for comb in Combinations([1..Length(mat)],len) do
+    umat:=mat{comb};
+    cnt:=ListWithIdenticalEntries(len,1);
+    v:=Sum(umat)*f[1]; # the combination 1,1 .. 1
+    d:=DistanceVecFFE(v,vec);
+    if d<bd then
+      bd:=d;
+      b:=v;
+    fi;
+
+    # we let the coefficient of the first vector to be always 1. This in
+    # effect runs projectively through the linear combinations, which is
+    # just fine.
+    for j in [1..l^(len-1)-1] do
+      if bd<=stop then
+        return b;
+      fi;
+      pos:=len;
+      while cnt[pos]=l do
+	cnt[pos]:=1;
+	pos:=pos-1;
+      od;
+      cnt[pos]:=cnt[pos]+1;
+      v:=z;
+      for i in [1..len] do
+	v:=v+f[cnt[i]]*umat[i];
+      od;
+      d:=DistanceVecFFE(v,vec);
+      if d<bd then
+	bd:=d;
+	b:=v;
+      fi;
+    od;
+  od;
+
+  return b;
+
+end);
+
+#############################################################################
+##
+#M  CosetLeadersMatFFE( <mat>,<f> )
+##
+##  returns a list of representatives of minimal weight for the cosets of
+##  the vector space generated by the rows of <mat> over the finite field
+##  <f>. All rows of <mat> must have the same length, and all elements must
+##  lie in <f>. The rows of <mat> must be linearly independent.
+InstallMethod(CosetLeadersMatFFE,"generic",IsCollsElms,
+  [IsMatrix,IsFFECollection],0,
+function(mat,f)
+local m,bas,umat,z,reps,found,fs,l,cnt,sy,len,pos,v,comb,k,symod,fl;
+
+  m:=Length(mat);
+  bas:=IdentityMat(Length(mat[1]),One(f));
+  z:=Zero(mat[1]);
+  reps:=[z];
+  found:=Size(f)^Length(mat)-1;
+  symod:=found+1;
+
+  fs:=Size(f);
+  fl:=AsListSorted(f);
+  Assert(1,f[1]=Zero(f[1]));
+  f:=fl{[2..Length(fl)]}; # we want to exclude linear combinations with `zero'.
+  l:=Length(f);
+
+  # now run through all vectors in the space in ascending weigth
+  for len in [1..Length(mat[1])] do
+    for comb in Combinations([1..Length(mat[1])],len) do
+      umat:=bas{comb};
+      cnt:=ListWithIdenticalEntries(len,1);
+      v:=Sum(umat)*f[1]; # the combination 1,1 .. 1
+      sy:=0;
+      for i in mat do
+	sy:=sy*fs+Position(fl,v*i)-1;
+      od;
+      if not IsBound(reps[sy+1]) then
+	reps[sy+1]:=v;
+	for k in f do
+	  sy:=0;
+	  for i in mat do
+	    sy:=sy*fs+Position(fl,k*v*i)-1;
+	  od;
+	  reps[sy+1]:=v*k;
+	od;
+	found:=found-l;
+	if found=0 then 
+	  return reps;
+	fi;
+      fi;
+
+      # we let the coefficient of the first vector to be always 1. This in
+      # effect runs projectively through the linear combinations, which is
+      # just fine.
+      for j in [1..l^(len-1)-1] do
+	pos:=len;
+	while cnt[pos]=l do
+	  cnt[pos]:=1;
+	  pos:=pos-1;
+	od;
+	cnt[pos]:=cnt[pos]+1;
+	v:=z;
+	for i in [1..len] do
+	  v:=v+f[cnt[i]]*umat[i];
+	od;
+
+	sy:=0;
+	for i in mat do
+	  sy:=sy*fs+Position(fl,v*i)-1;
+	od;
+	if not IsBound(reps[sy+1]) then
+	  reps[sy+1]:=v;
+	  for k in f do
+	    sy:=0;
+	    for i in mat do
+	      sy:=sy*fs+Position(fl,k*v*i)-1;
+	    od;
+	    reps[sy+1]:=v*k;
+	  od;
+	  found:=found-l;
+	  if found=0 then 
+	    return reps;
+	  fi;
+	fi;
+
+      od;
+    od;
+  od;
+  Error("did not find representatives!");
+end);
+
+#############################################################################
+##
 #E  listcoef.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+
+

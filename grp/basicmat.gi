@@ -35,7 +35,7 @@ function( filter, fld, n )
         m[i][i+1] := o;
     od;
     m[n][1] := o;
-    m := Group( Immutable(m) );
+    m := Group( ImmutableMatrix(fld,m) );
     SetSize( m, n );
     return m;
     
@@ -61,7 +61,7 @@ function( filter, n )
         m[i][i+1] := 1;
     od;
     m[n][1] := 1;
-    m := Group( Immutable(m) );
+    m := Group( ImmutableMatrix(Rationals,m) );
     SetSize( m, n );
     return m;
     
@@ -100,6 +100,9 @@ function( filter, n, q )
     mat2[1][n] := o;
     for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;
 
+    mat1 := ImmutableMatrix( f, mat1 );
+    mat2 := ImmutableMatrix( f, mat2 );
+
     g := GroupByGenerators( [ mat1, mat2 ] );
     SetName( g, Concatenation("GL(",String(n),",",String(q),")") );
     SetDimensionOfMatrixGroup( g, n );
@@ -131,7 +134,7 @@ function( filter, n, q )
 
      # handle the trivial case first
      if n = 1 then
-         g := GroupByGenerators( [ [ [ One(f) ] ] ] );
+         g := GroupByGenerators( [ ImmutableMatrix( f, [[One(f)]] ) ] );
 
      # now the general case
      else
@@ -151,6 +154,8 @@ function( filter, n, q )
              mat1[2][2] := z^-1;
              mat2[1][1] := -o;
          fi;
+         mat1 := ImmutableMatrix(f,mat1);
+         mat2 := ImmutableMatrix(f,mat2);
 
          g := GroupByGenerators( [ mat1, mat2 ] );
      fi;

@@ -1,0 +1,5 @@
+#/bin/sh
+#usage: testexample <skeletonfile>
+awk -f getinput.awk $1
+gap4 <in
+awk -f parseoutput.awk gaout

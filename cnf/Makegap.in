@@ -1,0 +1,392 @@
+#############################################################################
+##
+#W  Makefile                    GAP source                       Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This  file compiles    and links  GAP.    It is  created from   the  file
+##  "Makegap.in" in the directory `cnf/'.
+##
+COPTS=
+CFLAGS=@CFLAGS@ $(COPTS)
+LOPTS=
+LDFLAGS=@LDFLAGS@ $(LOPTS)
+CC=@CC@
+
+# OBJECTS are generated from SOURCE
+OBJECTS=ariths.o blister.o bool.o c_methse.o c_type.o calls.o code.o compiler.o compstat.o costab.o cyclotom.o dt.o dteval.o exprs.o finfield.o funcs.o gap.o gasman.o gvars.o integer.o intrprtr.o listfunc.o listoper.o lists.o objcftl.o objects.o objfgelm.o objpcgel.o objscoll.o opers.o permutat.o plist.o precord.o range.o rational.o read.o records.o saveload.o scanner.o sctable.o set.o stats.o streams.o string.o sysfiles.o system.o tietze.o vars.o vecgf2.o vector.o weakptr.o 
+
+# compile and link GAP
+gap: $(OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o gap $(OBJECTS) @LIBS@
+
+# dependencies are automatically generated
+ariths.o: @srcdir@/ariths.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o ariths.o -c @srcdir@/ariths.c
+
+blister.o: @srcdir@/blister.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/set.h @srcdir@/blister.h @srcdir@/range.h @srcdir@/string.h \
+ @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o blister.o -c @srcdir@/blister.c
+
+bool.o: @srcdir@/bool.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o bool.o -c @srcdir@/bool.c
+
+c_methse.o: @srcdir@/c_methse.c @srcdir@/compiled.h @srcdir@/system.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
+ @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
+ @srcdir@/finfield.h @srcdir@/bool.h @srcdir@/permutat.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/listoper.h @srcdir@/listfunc.h \
+ @srcdir@/plist.h @srcdir@/set.h @srcdir@/vector.h @srcdir@/blister.h \
+ @srcdir@/range.h @srcdir@/string.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
+ @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
+ @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
+ @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
+ @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+ @srcdir@/saveload.h @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o c_methse.o -c @srcdir@/c_methse.c
+
+c_type.o: @srcdir@/c_type.c @srcdir@/compiled.h @srcdir@/system.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h \
+ @srcdir@/ariths.h @srcdir@/integer.h @srcdir@/rational.h @srcdir@/cyclotom.h \
+ @srcdir@/finfield.h @srcdir@/bool.h @srcdir@/permutat.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/listoper.h @srcdir@/listfunc.h \
+ @srcdir@/plist.h @srcdir@/set.h @srcdir@/vector.h @srcdir@/blister.h \
+ @srcdir@/range.h @srcdir@/string.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h \
+ @srcdir@/objscoll.h @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h \
+ @srcdir@/sctable.h @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h \
+ @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h \
+ @srcdir@/intrprtr.h @srcdir@/compiler.h @srcdir@/compstat.h \
+ @srcdir@/saveload.h @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o c_type.o -c @srcdir@/c_type.c
+
+calls.o: @srcdir@/calls.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/bool.h @srcdir@/plist.h @srcdir@/string.h \
+ @srcdir@/code.h @srcdir@/vars.h @srcdir@/stats.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o calls.o -c @srcdir@/calls.c
+
+code.o: @srcdir@/code.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/calls.h @srcdir@/records.h \
+ @srcdir@/integer.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/funcs.h @srcdir@/code.h @srcdir@/vars.h \
+ @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o code.o -c @srcdir@/code.c
+
+compiler.o: @srcdir@/compiler.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/ariths.h \
+ @srcdir@/bool.h @srcdir@/gap.h @srcdir@/calls.h @srcdir@/lists.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/plist.h @srcdir@/string.h \
+ @srcdir@/code.h @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/vars.h \
+ @srcdir@/compiler.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o compiler.o -c @srcdir@/compiler.c
+
+compstat.o: @srcdir@/compstat.c @srcdir@/system.h @srcdir@/compstat.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o compstat.o -c @srcdir@/compstat.c
+
+costab.o: @srcdir@/costab.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/integer.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/costab.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o costab.o -c @srcdir@/costab.c
+
+cyclotom.o: @srcdir@/cyclotom.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/integer.h @srcdir@/cyclotom.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o cyclotom.o -c @srcdir@/cyclotom.c
+
+dt.o: @srcdir@/dt.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/bool.h @srcdir@/calls.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/integer.h @srcdir@/dt.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/listfunc.h @srcdir@/plist.h \
+ @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o dt.o -c @srcdir@/dt.c
+
+dteval.o: @srcdir@/dteval.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/bool.h @srcdir@/calls.h \
+ @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/precord.h @srcdir@/records.h \
+ @srcdir@/integer.h @srcdir@/dt.h @srcdir@/objcftl.h @srcdir@/dteval.h \
+ @srcdir@/lists.h @srcdir@/listfunc.h @srcdir@/plist.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o dteval.o -c @srcdir@/dteval.c
+
+exprs.o: @srcdir@/exprs.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/ariths.h @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h \
+ @srcdir@/permutat.h @srcdir@/precord.h @srcdir@/plist.h @srcdir@/range.h \
+ @srcdir@/string.h @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o exprs.o -c @srcdir@/exprs.c
+
+finfield.o: @srcdir@/finfield.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/integer.h @srcdir@/finfield.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o finfield.o -c @srcdir@/finfield.c
+
+funcs.o: @srcdir@/funcs.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/calls.h \
+ @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/stats.h \
+ @srcdir@/funcs.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/plist.h @srcdir@/string.h @srcdir@/saveload.h @srcdir@/opers.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o funcs.o -c @srcdir@/funcs.c
+
+gap.o: @srcdir@/gap.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/read.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/integer.h \
+ @srcdir@/rational.h @srcdir@/cyclotom.h @srcdir@/finfield.h @srcdir@/bool.h \
+ @srcdir@/permutat.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/listoper.h @srcdir@/listfunc.h @srcdir@/plist.h @srcdir@/set.h \
+ @srcdir@/vector.h @srcdir@/blister.h @srcdir@/range.h @srcdir@/string.h \
+ @srcdir@/vecgf2.h @srcdir@/objfgelm.h @srcdir@/objpcgel.h @srcdir@/objscoll.h \
+ @srcdir@/objcftl.h @srcdir@/dt.h @srcdir@/dteval.h @srcdir@/sctable.h \
+ @srcdir@/costab.h @srcdir@/tietze.h @srcdir@/code.h @srcdir@/vars.h \
+ @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/funcs.h @srcdir@/intrprtr.h \
+ @srcdir@/compiler.h @srcdir@/compstat.h @srcdir@/saveload.h \
+ @srcdir@/streams.h @srcdir@/sysfiles.h @srcdir@/weakptr.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o gap.o -c @srcdir@/gap.c
+
+gasman.o: @srcdir@/gasman.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o gasman.o -c @srcdir@/gasman.c
+
+gvars.o: @srcdir@/gvars.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/plist.h @srcdir@/string.h @srcdir@/bool.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o gvars.o -c @srcdir@/gvars.c
+
+integer.o: @srcdir@/integer.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h @srcdir@/integer.h \
+ @srcdir@/gap.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o integer.o -c @srcdir@/integer.c
+
+intrprtr.o: @srcdir@/intrprtr.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/read.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h \
+ @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h @srcdir@/permutat.h \
+ @srcdir@/precord.h @srcdir@/plist.h @srcdir@/range.h @srcdir@/string.h \
+ @srcdir@/code.h @srcdir@/vars.h @srcdir@/funcs.h @srcdir@/intrprtr.h \
+ @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o intrprtr.o -c @srcdir@/intrprtr.c
+
+listfunc.o: @srcdir@/listfunc.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/string.h @srcdir@/bool.h \
+ @srcdir@/permutat.h @srcdir@/listfunc.h @srcdir@/plist.h @srcdir@/set.h \
+ @srcdir@/range.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o listfunc.o -c @srcdir@/listfunc.c
+
+listoper.o: @srcdir@/listoper.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/integer.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/listoper.h @srcdir@/plist.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o listoper.o -c @srcdir@/listoper.c
+
+lists.o: @srcdir@/lists.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h \
+ @srcdir@/lists.h @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h \
+ @srcdir@/range.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o lists.o -c @srcdir@/lists.c
+
+objcftl.o: @srcdir@/objcftl.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/gap.h @srcdir@/bool.h @srcdir@/integer.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h \
+ @srcdir@/dt.h @srcdir@/objcftl.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o objcftl.o -c @srcdir@/objcftl.c
+
+objects.o: @srcdir@/objects.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/bool.h @srcdir@/gap.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o objects.o -c @srcdir@/objects.c
+
+objfgelm.o: @srcdir@/objfgelm.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/bool.h \
+ @srcdir@/objfgelm.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o objfgelm.o -c @srcdir@/objfgelm.c
+
+objpcgel.o: @srcdir@/objpcgel.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/gap.h \
+ @srcdir@/calls.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/plist.h @srcdir@/string.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/objfgelm.h @srcdir@/objscoll.h @srcdir@/objpcgel.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o objpcgel.o -c @srcdir@/objpcgel.c
+
+objscoll.o: @srcdir@/objscoll.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/gap.h \
+ @srcdir@/calls.h @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h \
+ @srcdir@/precord.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/code.h \
+ @srcdir@/objfgelm.h @srcdir@/objscoll.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o objscoll.o -c @srcdir@/objscoll.c
+
+opers.o: @srcdir@/opers.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gvars.h @srcdir@/gap.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/lists.h \
+ @srcdir@/bool.h @srcdir@/plist.h @srcdir@/blister.h @srcdir@/string.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o opers.o -c @srcdir@/opers.c
+
+permutat.o: @srcdir@/permutat.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/integer.h @srcdir@/permutat.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o permutat.o -c @srcdir@/permutat.c
+
+plist.o: @srcdir@/plist.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/range.h @srcdir@/string.h @srcdir@/blister.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o plist.o -c @srcdir@/plist.c
+
+precord.o: @srcdir@/precord.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/records.h \
+ @srcdir@/lists.h @srcdir@/bool.h @srcdir@/precord.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o precord.o -c @srcdir@/precord.c
+
+range.o: @srcdir@/range.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o range.o -c @srcdir@/range.c
+
+rational.o: @srcdir@/rational.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/integer.h @srcdir@/rational.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o rational.o -c @srcdir@/rational.c
+
+read.o: @srcdir@/read.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/code.h @srcdir@/vars.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/intrprtr.h \
+ @srcdir@/read.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o read.o -c @srcdir@/read.c
+
+records.o: @srcdir@/records.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/records.h @srcdir@/bool.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o records.o -c @srcdir@/records.c
+
+saveload.o: @srcdir@/saveload.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/bool.h @srcdir@/calls.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/string.h @srcdir@/scanner.h @srcdir@/sysfiles.h \
+ @srcdir@/plist.h @srcdir@/saveload.h @srcdir@/finfield.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o saveload.o -c @srcdir@/saveload.c
+
+scanner.o: @srcdir@/scanner.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/calls.h @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o scanner.o -c @srcdir@/scanner.c
+
+sctable.o: @srcdir@/sctable.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/ariths.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/sctable.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o sctable.o -c @srcdir@/sctable.c
+
+set.o: @srcdir@/set.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/lists.h @srcdir@/listfunc.h @srcdir@/plist.h \
+ @srcdir@/set.h @srcdir@/string.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o set.o -c @srcdir@/set.c
+
+stats.o: @srcdir@/stats.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/bool.h \
+ @srcdir@/code.h @srcdir@/vars.h @srcdir@/exprs.h @srcdir@/intrprtr.h \
+ @srcdir@/ariths.h @srcdir@/stats.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o stats.o -c @srcdir@/stats.c
+
+streams.o: @srcdir@/streams.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/read.h @srcdir@/gvars.h @srcdir@/calls.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/saveload.h @srcdir@/streams.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o streams.o -c @srcdir@/streams.c
+
+string.o: @srcdir@/string.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/bool.h \
+ @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h @srcdir@/plist.h \
+ @srcdir@/range.h @srcdir@/string.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o string.o -c @srcdir@/string.c
+
+sysfiles.o: @srcdir@/sysfiles.c @srcdir@/system.h @srcdir@/sysfiles.h \
+ @srcdir@/gasman.h @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h \
+ @srcdir@/gvars.h @srcdir@/lists.h @srcdir@/listfunc.h @srcdir@/plist.h \
+ @srcdir@/string.h @srcdir@/records.h @srcdir@/compstat.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o sysfiles.o -c @srcdir@/sysfiles.c
+
+system.o: @srcdir@/system.c @srcdir@/system.h @srcdir@/sysfiles.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o system.o -c @srcdir@/system.c
+
+tietze.o: @srcdir@/tietze.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/calls.h \
+ @srcdir@/gvars.h @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h \
+ @srcdir@/lists.h @srcdir@/plist.h @srcdir@/string.h @srcdir@/tietze.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o tietze.o -c @srcdir@/tietze.c
+
+vars.o: @srcdir@/vars.c @srcdir@/system.h @srcdir@/gasman.h @srcdir@/objects.h \
+ @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/calls.h \
+ @srcdir@/records.h @srcdir@/lists.h @srcdir@/bool.h @srcdir@/precord.h \
+ @srcdir@/plist.h @srcdir@/string.h @srcdir@/code.h @srcdir@/vars.h \
+ @srcdir@/exprs.h @srcdir@/stats.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o vars.o -c @srcdir@/vars.c
+
+vecgf2.o: @srcdir@/vecgf2.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/gvars.h \
+ @srcdir@/calls.h @srcdir@/opers.h @srcdir@/ariths.h @srcdir@/finfield.h \
+ @srcdir@/bool.h @srcdir@/records.h @srcdir@/precord.h @srcdir@/lists.h \
+ @srcdir@/plist.h @srcdir@/range.h @srcdir@/blister.h @srcdir@/string.h \
+ @srcdir@/vecgf2.h @srcdir@/saveload.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o vecgf2.o -c @srcdir@/vecgf2.c
+
+vector.o: @srcdir@/vector.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/scanner.h @srcdir@/gap.h @srcdir@/ariths.h \
+ @srcdir@/lists.h @srcdir@/bool.h @srcdir@/integer.h @srcdir@/records.h \
+ @srcdir@/precord.h @srcdir@/listoper.h @srcdir@/plist.h @srcdir@/string.h \
+ @srcdir@/vector.h @srcdir@/range.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o vector.o -c @srcdir@/vector.c
+
+weakptr.o: @srcdir@/weakptr.c @srcdir@/system.h @srcdir@/gasman.h \
+ @srcdir@/objects.h @srcdir@/gap.h @srcdir@/gvars.h @srcdir@/bool.h \
+ @srcdir@/weakptr.h @srcdir@/lists.h @srcdir@/plist.h @srcdir@/calls.h \
+ @srcdir@/saveload.h @srcdir@/opers.h
+	$(CC) -I. -DCONFIG_H $(CFLAGS) -o weakptr.o -c @srcdir@/weakptr.c
+

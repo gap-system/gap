@@ -5,10 +5,12 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains declarations of operations for algebra(-with-one)
 ##  homomorphisms.
 ##
+#1
 ##  Algebra homomorphisms are vector space homomorphisms that preserve the
 ##  multiplication.
 ##  So the default methods for vector space homomorphisms work,
@@ -23,28 +25,117 @@ Revision.alghom_gd :=
 #############################################################################
 ##
 #O  AlgebraGeneralMappingByImages( <A>, <B>, <gens>, <imgs> )
-#O  AlgebraHomomorphismByImages( <A>, <B>, <gens>, <imgs> )
 ##
-AlgebraGeneralMappingByImages := NewOperation(
-    "AlgebraGeneralMappingByImages",
+##  is a general mapping from the $F$-algebra <A> to the $F$-algebra <B>.
+##  This general mapping is defined by mapping the entries in the list <gens>
+##  (elements of <A>) to the entries in the list <imgs> (elements of <B>),
+##  and taking the $F$-linear and multiplicative closure.
+##
+##  <gens> need not generate <A> as an $F$-algebra, and if the
+##  specification does not define a linear and multiplicative mapping then
+##  the result will be multivalued.
+##  Hence, in general it is not a mapping.
+##  For constructing a linear map that is not
+##  necessarily multiplicative, we refer to `LeftModuleHomomorphismByImages'.
+##  
+DeclareOperation( "AlgebraGeneralMappingByImages",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
 
-AlgebraHomomorphismByImages := NewOperation(
-    "AlgebraHomomorphismByImages",
+
+#############################################################################
+##
+#F  AlgebraHomomorphismByImages( <A>, <B>, <gens>, <imgs> )
+##
+##  `AlgebraHomomorphismByImages' returns the algebra homomorphism with
+##  source <A> and range <B> that is defined by mapping the list <gens> of
+##  generators of <A> to the list <imgs> of images in <B>.
+##
+##  If <gens> does not generate <A> or if the homomorphism does not exist
+##  (i.e., if mapping the generators describes only a multi-valued mapping)
+##  then `fail' is returned.
+##
+##  One can avoid the checks by calling `AlgebraHomomorphismByImagesNC',
+##  and one can construct multi-valued mappings with
+##  `AlgebraGeneralMappingByImages'.
+##
+DeclareGlobalFunction( "AlgebraHomomorphismByImages" );
+
+
+#############################################################################
+##
+#O  AlgebraHomomorphismByImagesNC( <A>, <B>, <gens>, <imgs> )
+##
+##  `AlgebraHomomorphismByImagesNC' is the operation that is called by the
+##  function `AlgebraHomomorphismByImages'.
+##  Its methods may assume that <gens> generates <A> and that the mapping of
+##  <gens> to <imgs> defines an algebra homomorphism.
+##  Results are unpredictable if these conditions do not hold.
+##
+##  For creating a possibly multi-valued mapping from <A> to <B> that
+##  respects addition, multiplication, and scalar multiplication,
+##  `AlgebraGeneralMappingByImages' can be used.
+##
+#T see the comment in the declaration of `GroupHomomorphismByImagesNC'!
+##
+DeclareOperation( "AlgebraHomomorphismByImagesNC",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
 
 
 #############################################################################
 ##
 #O  AlgebraWithOneGeneralMappingByImages( <A>, <B>, <gens>, <imgs> )
-#O  AlgebraWithOneHomomorphismByImages( <A>, <B>, <gens>, <imgs> )
 ##
-AlgebraWithOneGeneralMappingByImages := NewOperation(
-    "AlgebraWithOneGeneralMappingByImages",
+##  This function is analogous to "AlgebraGeneralMappingByImages";
+##  the only difference being that the identity of <A> is automatically
+##  mapped to the identity of <B>.
+##
+DeclareOperation( "AlgebraWithOneGeneralMappingByImages",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
 
-AlgebraWithOneHomomorphismByImages := NewOperation(
-    "AlgebraWithOneHomomorphismByImages",
+
+#############################################################################
+##
+#F  AlgebraWithOneHomomorphismByImages( <A>, <B>, <gens>, <imgs> )
+##
+##  `AlgebraWithOneHomomorphismByImages' returns the algebra-with-one
+##  homomorphism with source <A> and range <B> that is defined by mapping the
+##  list <gens> of generators of <A> to the list <imgs> of images in <B>.
+##
+##  The difference between an algebra homomorphism and an algebra-with-one
+##  homomorphism is that in the latter case,
+##  it is assumed that the identity of <A> is mapped to the identity of <B>,
+##  and therefore <gens> needs to generate <A> only as an
+##  algebra-with-one.
+##
+##  If <gens> does not generate <A> or if the homomorphism does not exist
+##  (i.e., if mapping the generators describes only a multi-valued mapping)
+##  then `fail' is returned.
+##
+##  One can avoid the checks by calling
+##  `AlgebraWithOneHomomorphismByImagesNC',
+##  and one can construct multi-valued mappings with
+##  `AlgebraWithOneGeneralMappingByImages'.
+##
+DeclareGlobalFunction( "AlgebraWithOneHomomorphismByImages" );
+
+
+#############################################################################
+##
+#O  AlgebraWithOneHomomorphismByImagesNC( <A>, <B>, <gens>, <imgs> )
+##
+##  `AlgebraWithOneHomomorphismByImagesNC' is the operation that is called by
+##  the function `AlgebraWithOneHomomorphismByImages'.
+##  Its methods may assume that <gens> generates <A> and that the mapping of
+##  <gens> to <imgs> defines an algebra-with-one homomorphism.
+##  Results are unpredictable if these conditions do not hold.
+##
+##  For creating a possibly multi-valued mapping from <A> to <B> that
+##  respects addition, multiplication, identity, and scalar multiplication,
+##  `AlgebraWithOneGeneralMappingByImages' can be used.
+##
+#T see the comment in the declaration of `GroupHomomorphismByImagesNC'!
+##
+DeclareOperation( "AlgebraWithOneHomomorphismByImagesNC",
     [ IsFLMLOR, IsFLMLOR, IsHomogeneousList, IsHomogeneousList ] );
 
 
@@ -52,19 +143,25 @@ AlgebraWithOneHomomorphismByImages := NewOperation(
 ##
 #O  NaturalHomomorphismByIdeal( <A>, <I> )  . . . . . map onto factor algebra
 ##
-NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",
+##  is the homomorphism of algebras provided by the natural
+##  projection map of <A> onto the quotient algebra <A>/<I>.
+##
+DeclareOperation( "NaturalHomomorphismByIdeal",
     [ IsFLMLOR, IsFLMLOR ] );
 
 
 #############################################################################
 ##
-#O  OperationAlgebraHomomorphism( <A>, <D>[, <opr>] )
+#O  OperationAlgebraHomomorphism( <A>, <B>[, <opr>] )
+#O  OperationAlgebraHomomorphism( <A>, <V>[, <opr>] )
 ##
 ##  `OperationAlgebraHomomorphism' returns an algebra homomorphism from the
-##  algebra <A> into a matrix algebra that describes the linear action of <A>
-##  on the free left module resp. basis <D>, via the operation <opr>.
-##  The homomorphism need not be surjective.
+##  $F$-algebra <A> into a matrix algebra over $F$ that describes the
+##  $F$-linear action of <A> on the basis <B> of a free left module resp.
+##  on the free left module <V> (in which case a basis of <V> is chosen),
+##  via the operation <opr>.
 ##
+##  The homomorphism need not be surjective.
 ##  The default value for <opr> is `OnRight'.
 ##
 ##  If <A> is an algebra-with-one then the operation homomorphism is an
@@ -72,60 +169,72 @@ NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",
 ##  trivially.
 ##  (Of course this holds especially if <D> is in the kernel of the action.)
 ##
-OperationAlgebraHomomorphism := NewOperation( "OperationAlgebraHomomorphism",
+DeclareOperation( "OperationAlgebraHomomorphism",
     [ IsFLMLOR, IsBasis, IsFunction ] );
 
 
 #############################################################################
 ##
-#A  IsomorphismFpFLMLOR( <A> )
+#F  InducedLinearAction( <basis>, <elm>, <opr> )
 ##
-##  isomorphism from the FLMLOR <A> onto a finitely presented FLMLOR
+##  returns the matrix that describe the linear action of the ring element
+##  <elm> via <opr> on the free left module with basis <basis>,
+##  with respect to this basis.
+#T (Should this replace `LinearOperation'?)
 ##
-IsomorphismFpFLMLOR := NewAttribute( "IsomorphismFpFLMLOR", IsFLMLOR );
-SetIsomorphismFpFLMLOR := Setter( IsomorphismFpFLMLOR );
-HasIsomorphismFpFLMLOR := Setter( IsomorphismFpFLMLOR );
-
-IsomorphismFpAlgebra := IsomorphismFpFLMLOR;
-SetIsomorphismFpAlgebra := SetIsomorphismFpFLMLOR;
-HasIsomorphismFpAlgebra := HasIsomorphismFpFLMLOR;
+DeclareGlobalFunction( "InducedLinearAction" );
 
 
 #############################################################################
 ##
-#A  IsomorphismMatrixFLMLOR( <A> )
+#O  MakePreImagesInfoOperationAlgebraHomomorphism( <ophom> )
 ##
-##  isomorphism from the FLMLOR <A> onto a matrix FLMLOR
+##  Provide the information for computing preimages, that is, set up
+##  the components `basisImage', `preimagesBasisImage'.
 ##
-IsomorphismMatrixFLMLOR := NewAttribute( "IsomorphismMatrixFLMLOR",
-    IsFLMLOR );
-SetIsomorphismMatrixFLMLOR := Setter( IsomorphismMatrixFLMLOR );
-HasIsomorphismMatrixFLMLOR := Setter( IsomorphismMatrixFLMLOR );
+DeclareOperation( "MakePreImagesInfoOperationAlgebraHomomorphism",
+    [ IsAlgebraGeneralMapping ] );
 
-IsomorphismMatrixAlgebra := IsomorphismMatrixFLMLOR;
-SetIsomorphismMatrixAlgebra := SetIsomorphismMatrixFLMLOR;
-HasIsomorphismMatrixAlgebra := HasIsomorphismMatrixFLMLOR;
+
+#############################################################################
+##
+#A  IsomorphismFpAlgebra( <A> )
+##
+##  isomorphism from the algebra <A> onto a finitely presented algebra.
+##
+DeclareAttribute( "IsomorphismFpFLMLOR", IsFLMLOR );
+
+DeclareSynonymAttr( "IsomorphismFpAlgebra", IsomorphismFpFLMLOR );
+
+
+#############################################################################
+##
+#A  IsomorphismMatrixAlgebra( <A> )
+##
+##  isomorphism from the algebra <A> onto a matrix algebra. Currently this
+##  is only implemented for associative algebras with one.
+##
+DeclareAttribute( "IsomorphismMatrixFLMLOR", IsFLMLOR );
+
+DeclareSynonymAttr( "IsomorphismMatrixAlgebra", IsomorphismMatrixFLMLOR );
 
 
 #############################################################################
 ##
 #O  RepresentativeLinearOperation( <A>, <v>, <w>, <opr> )
 ##
-##  is an element of the FLMLOR <A> that maps the vector <v>
+##  is an element of the algebra <A> that maps the vector <v>
 ##  to the vector <w> under the linear operation described by the function
 ##  <opr>.
 ##
 #T Would it be desirable to put this under `RepresentativeOperation'?
 #T (look at the code before you agree ...)
 ##
-RepresentativeLinearOperation := NewOperation(
-    "RepresentativeLinearOperation",
+DeclareOperation( "RepresentativeLinearOperation",
     [ IsFLMLOR, IsVector, IsVector, IsFunction ] );
 
 
 #############################################################################
 ##
 #E  alghom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

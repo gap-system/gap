@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for the boolean package.
 **
@@ -14,7 +15,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_bool_c =
+const char * Revision_bool_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -134,19 +135,15 @@ Int EqBool (
 **
 *F  LtBool( <boolL>, <boolR> )  . . . . . . . . .  test if <boolL> <  <boolR>
 **
-**  'LtBool' return  'True'  if the boolean   value <boolL> is less  than the
-**  boolean value <boolR> and 'False' otherwise.
+**  The ordering of Booleans is true < false <= fail (the <= comes from
+**  the fact that Fail may be equal to False in some compatibility modes
 */
 Int LtBool (
     Obj                 boolL,
     Obj                 boolR )
 {
-    if ( boolL == True && boolR == False ) {
-        return 1L;
-    }
-    else {
-        return 0L;
-    }
+  return  ( boolL == True && boolR != True) ||
+    ( boolL == False && boolR == Fail && boolL != boolR);
 }
 
 
@@ -342,14 +339,56 @@ void LoadBool( Obj obj )
 /****************************************************************************
 **
 
-*E  SetupBool() . . . . . . . . . . . . . . . initialize the booleans package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupBool ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_BOOL", "obj", &IsBoolFilt,
+      IsBoolHandler, "src/bool.c:IS_BOOL" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking functions for boolean values                    */
     InfoBags[ T_BOOL ].name = "boolean";
     InitMarkFuncBags( T_BOOL, MarkNoSubBags );
 
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+
+    /* make and install the 'RETURN_TRUE' function                         */
+    InitHandlerFunc( ReturnTrue1, "src/bool.c:ReturnTrue1" );
+    InitHandlerFunc( ReturnTrue2, "src/bool.c:ReturnTrue2" );
+    InitHandlerFunc( ReturnTrue3, "src/bool.c:ReturnTrue3" );
+
+    /* make and install the 'RETURN_FALSE' function                        */
+    InitHandlerFunc( ReturnFalse1, "src/bool.c:ReturnFalse1" );
+    InitHandlerFunc( ReturnFalse2, "src/bool.c:ReturnFalse2" );
+    InitHandlerFunc( ReturnFalse3, "src/bool.c:ReturnFalse3" );
+
+    /* make and install the 'RETURN_FAIL' function                        */
+    InitHandlerFunc( ReturnFail1, "src/bool.c:ReturnFail1" );
+    InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2" );
+    InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3" );
+
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
+    TypeObjFuncs[ T_BOOL ] = TypeBool;
+
+    /* make the three boolean bags                                         */
+    InitGlobalBag( &True,  "src/bool.c:TRUE"  );
+    InitGlobalBag( &False, "src/bool.c:FALSE" );
+    InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
 
     /* install the saving functions                                       */
     SaveObjFuncs[ T_BOOL ] = SaveBool;
@@ -357,111 +396,95 @@ void SetupBool ( void )
     /* install the loading functions                                       */
     LoadObjFuncs[ T_BOOL ] = LoadBool;
 
-
     /* install the printer for boolean values                              */
     PrintObjFuncs[ T_BOOL ] = PrintBool;
-
 
     /* install the comparison functions                                    */
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*E  InitBool()  . . . . . . . . . . . . . . . initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitBool ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
     UInt            gvar;
     Obj             tmp;
 
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_BOOL", &TYPE_BOOL );
-    TypeObjFuncs[ T_BOOL ] = TypeBool;
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
 
-
-    /* make the three boolean bags                                         */
-    InitGlobalBag( &True,  "src/bool.c:TRUE"  );
-    InitGlobalBag( &False, "src/bool.c:FALSE" );
-    InitGlobalBag( &Fail,  "src/bool.c:FAIL"  );
-
-    if ( ! SyRestoring ) {
-        True  = NewBag( T_BOOL, 0L );
-        False = NewBag( T_BOOL, 0L );
-        Fail  = NewBag( T_BOOL, 0L );
-    }
-
+    /* bags are registered in 'InitKernel'                                 */
+    True  = NewBag( T_BOOL, 0L );
+    False = NewBag( T_BOOL, 0L );
+    if (SyFalseEqFail)
+      Fail = False;
+    else
+      Fail  = NewBag( T_BOOL, 0L );
 
     /* `fail' is a variable not a language construct                       */
-    if ( ! SyRestoring ) {
-        gvar = GVarName( "fail" );
-        AssGVar( gvar, Fail );
-        MakeReadOnlyGVar(gvar);
-    }
-
-
-    /* make and install the 'IS_BOOL' filter*/
-    C_NEW_GVAR_FILT( "IS_BOOL", "obj", IsBoolFilt, IsBoolHandler,
-          "src/bool.c:IS_BOOL" );
-
+    gvar = GVarName( "fail" );
+    AssGVar( gvar, Fail );
+    MakeReadOnlyGVar(gvar);
 
     /* make and install the 'RETURN_TRUE' function                         */
-    InitHandlerFunc( ReturnTrue1, "src/bool.c:ReturnTrue1" );
-    InitHandlerFunc( ReturnTrue2, "src/bool.c:ReturnTrue2" );
-    InitHandlerFunc( ReturnTrue3, "src/bool.c:ReturnTrue3" );
-
-    if ( ! SyRestoring ) {
-        tmp = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
-        HDLR_FUNC( tmp, 1 ) = ReturnTrue1;
-        HDLR_FUNC( tmp, 2 ) = ReturnTrue2;
-        HDLR_FUNC( tmp, 3 ) = ReturnTrue3;
-        AssGVar( GVarName("RETURN_TRUE"), tmp );
-    }
-
+    tmp = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
+    HDLR_FUNC( tmp, 1 ) = ReturnTrue1;
+    HDLR_FUNC( tmp, 2 ) = ReturnTrue2;
+    HDLR_FUNC( tmp, 3 ) = ReturnTrue3;
+    AssGVar( GVarName("RETURN_TRUE"), tmp );
 
     /* make and install the 'RETURN_FALSE' function                        */
-    InitHandlerFunc( ReturnFalse1, "src/bool.c:ReturnFalse1" );
-    InitHandlerFunc( ReturnFalse2, "src/bool.c:ReturnFalse2" );
-    InitHandlerFunc( ReturnFalse3, "src/bool.c:ReturnFalse3" );
-
-    if ( ! SyRestoring ) {
-        tmp = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
-        HDLR_FUNC( tmp, 1 ) = ReturnFalse1;
-        HDLR_FUNC( tmp, 2 ) = ReturnFalse2;
-        HDLR_FUNC( tmp, 3 ) = ReturnFalse3;
-        AssGVar( GVarName( "RETURN_FALSE" ), tmp );
-    }
-
+    tmp = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
+    HDLR_FUNC( tmp, 1 ) = ReturnFalse1;
+    HDLR_FUNC( tmp, 2 ) = ReturnFalse2;
+    HDLR_FUNC( tmp, 3 ) = ReturnFalse3;
+    AssGVar( GVarName( "RETURN_FALSE" ), tmp );
 
     /* make and install the 'RETURN_FAIL' function                        */
-    InitHandlerFunc( ReturnFail1, "src/bool.c:ReturnFail1" );
-    InitHandlerFunc( ReturnFail2, "src/bool.c:ReturnFail2" );
-    InitHandlerFunc( ReturnFail3, "src/bool.c:ReturnFail3" );
+    tmp = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
+    HDLR_FUNC( tmp, 1 ) = ReturnFail1;
+    HDLR_FUNC( tmp, 2 ) = ReturnFail2;
+    HDLR_FUNC( tmp, 3 ) = ReturnFail3;
+    AssGVar( GVarName( "RETURN_FAIL" ), tmp );
 
-    if ( ! SyRestoring ) {
-        tmp = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
-        HDLR_FUNC( tmp, 1 ) = ReturnFail1;
-        HDLR_FUNC( tmp, 2 ) = ReturnFail2;
-        HDLR_FUNC( tmp, 3 ) = ReturnFail3;
-        AssGVar( GVarName( "RETURN_FAIL" ), tmp );
-    }
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*E  CheckBool() . check the initialisation of initialize the booleans package
-**
-**  'InitBool' initializes the boolean package.
+*F  InitInfoBool()  . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckBool ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "bool",                             /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoBool ( void )
 {
-    SET_REVISION( "bool_c",     Revision_bool_c );
-    SET_REVISION( "bool_h",     Revision_bool_h );
+    module.revision_c = Revision_bool_c;
+    module.revision_h = Revision_bool_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

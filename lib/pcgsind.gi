@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains  the operations   for  induced polycylic  generating
 ##  systems.
@@ -15,10 +16,9 @@ Revision.pcgsind_gi :=
 
 #############################################################################
 ##
-
 #R  IsInducedPcgsRep
 ##
-IsInducedPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsInducedPcgsRep",
     IsPcgsDefaultRep, [ "depthsInParent", "depthMapFromParent" ] );
 
@@ -27,7 +27,7 @@ IsInducedPcgsRep := NewRepresentation(
 ##
 #R  IsSubsetInducedPcgsRep
 ##
-IsSubsetInducedPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsSubsetInducedPcgsRep",
     IsInducedPcgsRep, [] );
 
@@ -36,7 +36,7 @@ IsSubsetInducedPcgsRep := NewRepresentation(
 ##
 #R  IsTailInducedPcgsRep
 ##
-IsTailInducedPcgsRep := NewRepresentation(
+DeclareRepresentation(
     "IsTailInducedPcgsRep",
     IsSubsetInducedPcgsRep, [] );
 
@@ -105,7 +105,7 @@ end );
 ##
 InstallMethod( InducedPcgsByPcSequenceNC,
     "pcgs, homogeneous list",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsPcgs,
       IsCollection and IsHomogeneousList ],
     0,
@@ -271,12 +271,12 @@ function( pcgs, sub, gens )
 
     # do family checks here to avoid problems with the empty list
     if not IsEmpty(sub)  then
-        if not IsIdentical( FamilyObj(pcgs), FamilyObj(sub) )  then
+        if not IsIdenticalObj( FamilyObj(pcgs), FamilyObj(sub) )  then
             Error( "<pcgs> and <gens> have different families" );
         fi;
     fi;
     if not IsEmpty(gens)  then
-        if not IsIdentical( FamilyObj(pcgs), FamilyObj(gens) )  then
+        if not IsIdenticalObj( FamilyObj(pcgs), FamilyObj(gens) )  then
             Error( "<pcgs> and <gens> have different families" );
         fi;
     fi;
@@ -417,7 +417,7 @@ function( pcgs, gens, imgs )
            cw, d, i, j, f;
 
     # do family check here to avoid problems with the empty list
-    if not IsIdentical( FamilyObj(pcgs), FamilyObj(gens) )  then
+    if not IsIdenticalObj( FamilyObj(pcgs), FamilyObj(gens) )  then
         Error( "<pcgs> and <gens> have different families" );
     fi;
     if Length( gens ) <> Length( imgs ) then
@@ -548,22 +548,6 @@ end );
 
 #############################################################################
 ##
-#M  InducedPcgsWrtHomePcgs( <G> )
-##
-InstallMethod( InducedPcgsWrtHomePcgs, true, [ IsGroup ], 0,
-    function( G )
-    local   home;
-    
-    home := HomePcgs( G );
-    if HasPcgs( G )  and  home = Pcgs( G )  then
-        return InducedPcgsByPcSequenceNC( home, home );
-    else
-        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
-    fi;
-end );
-
-#############################################################################
-##
 #M  CanonicalPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
 ##
 InstallMethod( CanonicalPcgsByGeneratorsWithImages,
@@ -643,7 +627,7 @@ end );
 #############################################################################
 InstallMethod( InducedPcgsByGeneratorsNC,
     function( p, l )
-        return IsIdentical( ElementsFamily(p), ElementsFamily(l) );
+        return IsIdenticalObj( ElementsFamily(p), ElementsFamily(l) );
     end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsCollection ],
@@ -676,7 +660,7 @@ end );
 #############################################################################
 InstallMethod( InducedPcgsByGenerators,
     function( p, l )
-        return IsIdentical( ElementsFamily(p), ElementsFamily(l) );
+        return IsIdenticalObj( ElementsFamily(p), ElementsFamily(l) );
     end,
     [ IsPcgs,
       IsCollection ],
@@ -704,7 +688,7 @@ end );
 
 
 InstallMethod( AsInducedPcgs,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsPcgs,
       IsHomogeneousList ],
     0,
@@ -907,7 +891,7 @@ end );
 
 
 InstallMethod( HomomorphicInducedPcgs,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList ],
     0,
@@ -936,7 +920,7 @@ end );
 
 
 InstallOtherMethod( HomomorphicInducedPcgs,
-    function(a,b,c) return IsIdentical(a,b); end,
+    function(a,b,c) return IsIdenticalObj(a,b); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList,
       IsFunction ],
@@ -966,7 +950,7 @@ end );
 
 
 InstallOtherMethod( HomomorphicInducedPcgs,
-    function(a,b,c) return IsIdentical(a,b); end,
+    function(a,b,c) return IsIdenticalObj(a,b); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList,
       IsObject ],
@@ -1065,8 +1049,7 @@ end );
 #M  IntersectionSumPcgs( <parent-pcgs>, <tail-pcgs>, <u> )
 ##
 InstallMethod( IntersectionSumPcgs,
-    "prime orders pcgs, tail-pcgs, list",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    "prime orders pcgs, tail-pcgs, list",IsFamFamFam,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsInducedPcgs and IsTailInducedPcgsRep,
       IsList ],
@@ -1110,8 +1093,7 @@ end );
 #M  NormalIntersectionPcgs( <parent-pcgs>, <tail-pcgs>, <u> )
 ##
 InstallMethod( NormalIntersectionPcgs,
-    "prime orders pcgs, tail-pcgs, list",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    "prime orders pcgs, tail-pcgs, list",IsFamFamFam,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsInducedPcgs and IsTailInducedPcgsRep,
       IsList ],
@@ -1153,8 +1135,7 @@ end );
 #M  NormalIntersectionPcgs( <parent-pcgs>, <tail-pcgs>, <induced-pcgs> )
 ##
 InstallMethod( NormalIntersectionPcgs,
-    "prime orders pcgs, tail-pcgs, induced-pcgs",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    "prime orders pcgs, tail-pcgs, induced-pcgs",IsFamFamFam,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsInducedPcgs and IsTailInducedPcgsRep,
       IsInducedPcgs and IsInducedPcgsRep ],
@@ -1164,7 +1145,9 @@ function( pcgs, n, u )
     local   len,  first,  pos,  dep;
 
     # the parent must match
-    if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)  then
+    if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)  
+      # and the depthInParent given
+      or not IsBound(u!.depthInParent) then
         TryNextMethod();
     fi;
 
@@ -1254,7 +1237,7 @@ InstallMethod( ExponentOfPcElement,
     function(a,b,c) return IsCollsElms(a,b); end,
     [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, elm, pos )
@@ -1378,12 +1361,11 @@ end );
 
 #############################################################################
 ##
-
 #M  ExtendedPcgs( <pcgs>, <img> )
 ##
 InstallMethod( ExtendedPcgs,
     "induced pcgs",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsInducedPcgs,
       IsList ],
     0,
@@ -1393,6 +1375,58 @@ function( kern, img )
                    ParentPcgs( kern ), kern, img );
 end );
 
+
+#############################################################################
+##
+#F  CorrespondingGeneratorsByModuloPcgs( <mpcgs>, <imgs> )
+##
+##  computes a list of elements in the span of <imgs> that form a cgs with
+##  respect to <mpcgs> (The calculation of induced generating sets is not
+##  possible for some modulo pcgs).
+InstallGlobalFunction( CorrespondingGeneratorsByModuloPcgs,
+    function(pcgs,l)
+local e,s,d,o,j,bj,bjo;
+  l:=ShallowCopy(l);
+  e:=List(l,i->ExponentsOfPcElement(pcgs,i));
+  s:=0;
+  d:=1;
+  while d<=Length(pcgs) do
+    o:=RelativeOrderOfPcElement(pcgs,pcgs[d]);
+
+    # find pivot
+    j:=s+1;
+    bj:=0;
+    bjo:=o;
+    while j<=Length(e) do
+      if e[j][d]<>0 and e[j][d]<bjo then
+	bj:=j;
+        bjo:=e[j][d];
+      fi;
+      j:=j+1;
+    od;
+    if bj<>0 then
+      # we found a pivot, move to top
+      s:=s+1;
+      j:=l[bj]; l[bj]:=l[s];l[s]:=j;
+      j:=e[bj]; e[bj]:=e[s];e[s]:=j;
+      #norm
+      if bjo<>1 then
+        bjo:=1/bjo mod o; # inverse order
+	l[s]:=l[s]^bjo;
+	e[s]:=ExponentsOfPcElement(pcgs,l[s]);
+      fi;
+      # clean out
+      for j in [1..Length(e)] do
+        if j<>s and e[j][d]<>0 then
+	  l[j]:=l[j]/l[s]^e[j][d];
+	  e[j]:=ExponentsOfPcElement(pcgs,l[j]);
+	fi;
+      od;
+    fi;
+    d:=d+1;
+  od;
+  return l{[1..s]};
+end );
 
 #############################################################################
 ##

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This package sets up a mechanism for diagnostic assertions at GAP
 ##  level. 
@@ -27,29 +28,28 @@ Revision.assert_gi :=
 #############################################################################
 ##
 #V  CurrentAssertionLevel . . . . . . . . . . the level of assertion checking
-#V  SetAssertionLevel() . . . . . . . . .sets the level of assertion checking
-#V  AssertionLevel() . . . . . . gets the current level of assertion checking
+#V  SetAssertionLevel() . . . . . . . .  sets the level of assertion checking
+#V  AssertionLevel()  . . . . .  gets the current level of assertion checking
 ##
 ##
-
 CurrentAssertionLevel := 0;
 
-SetAssertionLevel :=  function( level )
+InstallGlobalFunction( SetAssertionLevel,  function( level )
     if IsInt(level) and level >= 0 then
         CurrentAssertionLevel := level;
     else
         Error("Usage SetAssertionLevel( <level> )");
     fi;
-end;
+end );
 
-AssertionLevel := function()
+InstallGlobalFunction( AssertionLevel, function()
     return CurrentAssertionLevel;
-end;
+end );
 
         
 #############################################################################
 ##
-#E  assert.gi ends here  
+#E  assert.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 
         

@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This  file contains the functions  that mainly operate  on boolean lists.
 **  Because boolean lists are  just a special case  of lists many  things are
@@ -70,7 +71,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_blister_c =
+const char * Revision_blister_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -99,15 +100,13 @@ SYS_CONST char * Revision_blister_c =
 #include        "range.h"               /* ranges                          */
 #include        "string.h"              /* strings                         */
 
-#include        "gap.h"                 /* error handling, initialisation  */
-
 #include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
 
-*F  TypeBlist(<list>) . . . . . . . . . . . . . . . .  kind of a boolean list
+*F  TypeBlist( <list> )  . . . . . . . . . . . . . . . kind of a boolean list
 **
 **  'TypeBlist' returns the kind of a boolean list.
 **
@@ -159,7 +158,7 @@ Obj TypeBlist (
 
 /****************************************************************************
 **
-*F  SaveBlist( <bl> )  . . . . . . . . . . . . . . . . . . . . . save a blist
+*F  SaveBlist( <blist> ) . . . . . . . . . . . . . . . . . . . . save a blist
 **
 **   The saving method for the blist tnums
 */
@@ -179,7 +178,7 @@ void SaveBlist (
 
 /****************************************************************************
 **
-*F  LoadBlist( <bl> )  . . . . . . . . . . . . . . . . . . . . . load a blist
+*F  LoadBlist( <blist> ) . . . . . . . . . . . . . . . . . . . . load a blist
 **
 **   The loading method for the blist tnums
 */
@@ -398,6 +397,7 @@ Int IsbvBlist (
 
 /****************************************************************************
 **
+
 *F  Elm0Blist( <list>, <pos> )  . . . . . select an element of a boolean list
 **
 **  'Elm0Blist' returns the element at the position <pos> of the boolean list
@@ -611,6 +611,7 @@ Obj ElmsBlist (
 
 /****************************************************************************
 **
+
 *F  AssBlist( <list>, <pos>, <val> )  . . . . . . .  assign to a boolean list
 **
 **  'AssBlist' assigns the   value <val> to  the  boolean list <list> at  the
@@ -740,6 +741,7 @@ void AsssBlistImm (
 
 /****************************************************************************
 **
+
 *F  PosBlist( <list>, <val>, <start> )   position of an elm in a boolean list
 **
 **  'PosBlist' returns the   position of  the first  occurence  of the  value
@@ -1074,37 +1076,6 @@ Int IsBlistConv (
 
 /****************************************************************************
 **
-
-*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
-*/
-
-/****************************************************************************
-**
-
-
-*F  IsBlistHandler( <self>, <val> ) . . . . test if a value is a boolean list
-**
-**  'IsBlistHandler' handles the internal function 'IsBlist'.
-**
-**  'IsBlist( <val> )'
-**
-**  'IsBlist' returns 'true' if the value <val> is a boolean list and 'false'
-**  otherwise.  A value is a   boolean list if  it is  a lists without  holes
-**  containing only  'true' and 'false'.
-*/
-Obj IsBlistFilt;
-
-Obj IsBlistHandler (
-    Obj                 self,
-    Obj                 val )
-{
-    /* let 'IsBlist' do the work                                           */
-    return IsBlist( val ) ? True : False;
-}
-
-
-/****************************************************************************
-**
 *F  SizeBlist( <blist> )  . . . .  number of 'true' entries in a boolean list
 **
 **  'SizeBlist' returns   the number of  entries of  the boolean list <blist>
@@ -1139,28 +1110,6 @@ Obj IsBlistHandler (
 **  by the number of ones it contains. It will fail horribly if <var> is not 
 **  a variable.
 */
-#ifdef SYS_IS_64_BIT
-
-#define COUNT_TRUES_BLOCK( block )                                                          \
-        do {                                                                                \
-        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
-        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
-        (block) = ((block) + ((block) >>  8));                                              \
-        (block) = ((block) + ((block) >> 16));                                              \
-        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
-
-#else
-
-#define COUNT_TRUES_BLOCK( block )                                        \
-        do {                                                              \
-        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
-        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
-        (block) = ((block) + ((block) >>  8));                            \
-        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
-#endif
-
 UInt SizeBlist (
     Obj                 blist )
 {
@@ -1184,6 +1133,95 @@ UInt SizeBlist (
 
     /* return the number of bits                                           */
     return n;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * GAP level functions  * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+
+*F  FuncIS_BLIST( <self>, <val> ) . . . . . test if a value is a boolean list
+**
+**  'FuncIS_BLIST' handles the internal function 'IsBlist'.
+**
+**  'IsBlist( <val> )'
+**
+**  'IsBlist' returns 'true' if the value <val> is a boolean list and 'false'
+**  otherwise.  A value is a   boolean list if  it is  a lists without  holes
+**  containing only  'true' and 'false'.
+*/
+Obj IsBlistFilt;
+
+Obj FuncIS_BLIST (
+    Obj                 self,
+    Obj                 val )
+{
+    /* let 'IsBlist' do the work                                           */
+    return IsBlist( val ) ? True : False;
+}
+
+
+/****************************************************************************
+**
+*F  FuncIS_BLIST_CONV( <self>, <val> )  . . test if a value is a boolean list
+**
+**  'FuncIS_BLIST_CONV' handles the internal function 'IsBlist'.
+**
+**  'IsBlistConv( <val> )'
+**
+**  'IsBlist' returns 'true' if the value <val> is a boolean list and 'false'
+**  otherwise.  A value is a   boolean list if  it is  a lists without  holes
+**  containing only  'true' and 'false'.
+*/
+Obj IsBlistFilt;
+
+Obj FuncIS_BLIST_CONV (
+    Obj                 self,
+    Obj                 val )
+{
+    /* let 'IsBlist' do the work                                           */
+    return IsBlistConv( val ) ? True : False;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCONV_BLIST( <self>, <blist> ) . . . . convert into a boolean list rep
+*/
+Obj FuncCONV_BLIST (
+    Obj                 self,
+    Obj                 blist )
+{
+    /* check whether <blist> is a boolean list                             */
+    while ( ! IsBlistConv(blist) ) {
+        blist = ErrorReturnObj(
+            "CONV_BLIST: <blist> must be a boolean list (not a %s)",
+            (Int)TNAM_OBJ(blist), 0L,
+            "you can return a blist for <blist>" );
+    }
+
+    /* return nothing                                                      */
+    return 0;
+}
+
+/****************************************************************************
+**
+**
+*F  FuncIS_BLIST_REP( <self>, <obj> ) . . test if value is a boolean list rep
+*/
+Obj IsBlistRepFilt;
+
+Obj FuncIS_BLIST_REP (
+    Obj                 self,
+    Obj                 obj )
+{
+    return (IS_BLIST_REP( obj ) ? True : False);
 }
 
 
@@ -1468,7 +1506,7 @@ Obj FuncBLIST_LIST (
 
 /****************************************************************************
 **
-*F  FuncListBlist( <self>, <list>, <blist> )  . make a sublist from a <blist>
+*F  FuncLIST_BLIST( <self>, <list>, <blist> ) . make a sublist from a <blist>
 **
 **  'FuncListBlist' implements the internal function 'ListBlist'.
 **
@@ -1537,6 +1575,7 @@ Obj FuncLIST_BLIST (
 
 /****************************************************************************
 **
+
 *F  FuncPositionsTrueBlist( <self>, <blist> ) . . . true positions in a blist
 **
 *N  1992/12/15 martin this depends on 'BIPEB' being 32
@@ -1712,6 +1751,7 @@ Obj FuncIS_SUB_BLIST (
 
 /****************************************************************************
 **
+
 *F  FuncUNITE_BLIST( <self>, <list1>, <list2> ) . unite one list with another
 **
 **  'FuncUNITE_BLIST' implements the internal function 'UniteBlist'.
@@ -1870,27 +1910,6 @@ Obj FuncSUBTR_BLIST (
 /****************************************************************************
 **
 **
-*F  FuncCONV_BLIST( <self>, <blist> ) . . . . convert into a boolean list rep
-*/
-Obj FuncCONV_BLIST (
-    Obj                 self,
-    Obj                 blist )
-{
-    /* check whether <blist> is a boolean list                             */
-    while ( ! IsBlistConv(blist) ) {
-        blist = ErrorReturnObj(
-            "CONV_BLIST: <blist> must be a boolean list (not a %s)",
-            (Int)TNAM_OBJ(blist), 0L,
-            "you can return a blist for <blist>" );
-    }
-
-    /* return nothing                                                      */
-    return 0;
-}
-
-/****************************************************************************
-**
-**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -1899,32 +1918,352 @@ Obj FuncCONV_BLIST (
 /****************************************************************************
 **
 
-*F  SetupBlist()  . . . . . . . . . . . . initialize the boolean list package
+*V  BagNames  . . . . . . . . . . . . . . . . . . . . . . . list of bag names
 */
-void SetupBlist ( void )
+static StructBagNames BagNames[] = {
+  { T_BLIST,                           "list (boolean)"                  },
+  { T_BLIST       +IMMUTABLE,          "list (boolean,imm)"              },
+  { T_BLIST                  +COPYING, "list (boolean,copied)"           },
+  { T_BLIST       +IMMUTABLE +COPYING, "list (boolean,imm,copied)"       },
+  { T_BLIST_NSORT,                     "list (boolean,nsort)"            },
+  { T_BLIST_NSORT +IMMUTABLE,          "list (boolean,nsort,imm)"        },
+  { T_BLIST_NSORT            +COPYING, "list (boolean,nsort,copied)"     },
+  { T_BLIST_NSORT +IMMUTABLE +COPYING, "list (boolean,nsort,imm,copied)" },
+  { T_BLIST_SSORT,                     "list (boolean,ssort)"            },
+  { T_BLIST_SSORT +IMMUTABLE,          "list (boolean,ssort,imm)"        },
+  { T_BLIST_SSORT            +COPYING, "list (boolean,ssort,copied)"     },
+  { T_BLIST_SSORT +IMMUTABLE +COPYING, "list (boolean,ssort,imm,copied)" },
+  { -1,                                ""                                }
+};
+
+
+/****************************************************************************
+**
+*V  ClearFiltsTab . . . . . . . . . . . . . . . . . . . .  clear filter tnums
+*/
+static Int ClearFiltsTab [] = {
+    T_BLIST,                 T_BLIST,
+    T_BLIST      +IMMUTABLE, T_BLIST+IMMUTABLE,
+    T_BLIST_NSORT,           T_BLIST,
+    T_BLIST_NSORT+IMMUTABLE, T_BLIST+IMMUTABLE,
+    T_BLIST_SSORT,           T_BLIST,
+    T_BLIST_SSORT+IMMUTABLE, T_BLIST+IMMUTABLE,
+    -1,                      -1
+};
+
+
+/****************************************************************************
+**
+*V  HasFiltTab  . . . . . . . . . . . . . . . . . . . . .  tester filter tnum
+*/
+static Int HasFiltTab [] = {
+
+    /* mutable boolean list                                                */
+    T_BLIST,                    FN_IS_MUTABLE,  1,
+    T_BLIST,                    FN_IS_EMPTY,    0,
+    T_BLIST,                    FN_IS_DENSE,    1,
+    T_BLIST,                    FN_IS_NDENSE,   0,
+    T_BLIST,                    FN_IS_HOMOG,    1,
+    T_BLIST,                    FN_IS_NHOMOG,   0,
+    T_BLIST,                    FN_IS_TABLE,    0,
+    T_BLIST,                    FN_IS_SSORT,    0,
+    T_BLIST,                    FN_IS_NSORT,    0,
+
+    /* immutable boolean list                                               */
+    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  0,
+    T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    0,
+    T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    1,
+    T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   0,
+    T_BLIST      +IMMUTABLE,    FN_IS_HOMOG,    1,
+    T_BLIST      +IMMUTABLE,    FN_IS_NHOMOG,   0,
+    T_BLIST      +IMMUTABLE,    FN_IS_TABLE,    0,
+    T_BLIST      +IMMUTABLE,    FN_IS_SSORT,    0,
+    T_BLIST      +IMMUTABLE,    FN_IS_NSORT,    0,
+
+    /* nsort mutable boolean list                                          */
+    T_BLIST_NSORT,              FN_IS_MUTABLE,  1,
+    T_BLIST_NSORT,              FN_IS_EMPTY,    0,
+    T_BLIST_NSORT,              FN_IS_DENSE,    1,
+    T_BLIST_NSORT,              FN_IS_NDENSE,   0,
+    T_BLIST_NSORT,              FN_IS_HOMOG,    1,
+    T_BLIST_NSORT,              FN_IS_NHOMOG,   0,
+    T_BLIST_NSORT,              FN_IS_TABLE,    0,
+    T_BLIST_NSORT,              FN_IS_SSORT,    0,
+    T_BLIST_NSORT,              FN_IS_NSORT,    1,
+
+    /* nsort immutable boolean list                                        */
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_SSORT,    0,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    1,
+
+    /* ssort mutable boolean list                                          */
+    T_BLIST_SSORT,              FN_IS_MUTABLE,  1,
+    T_BLIST_SSORT,              FN_IS_EMPTY,    0,
+    T_BLIST_SSORT,              FN_IS_DENSE,    1,
+    T_BLIST_SSORT,              FN_IS_NDENSE,   0,
+    T_BLIST_SSORT,              FN_IS_HOMOG,    1,
+    T_BLIST_SSORT,              FN_IS_NHOMOG,   0,
+    T_BLIST_SSORT,              FN_IS_TABLE,    0,
+    T_BLIST_SSORT,              FN_IS_SSORT,    1,
+    T_BLIST_SSORT,              FN_IS_NSORT,    0,
+
+    /* ssort immutable boolean list                                        */
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  0,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    0,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   0,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_HOMOG,    1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   0,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_TABLE,    0,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_SSORT,    1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NSORT,    0,
+
+    -1,                         -1,             -1
+};
+
+
+/****************************************************************************
+**
+*V  SetFiltTab  . . . . . . . . . . . . . . . . . . . . .  setter filter tnum
+*/
+static Int SetFiltTab [] = {
+
+    /* mutable boolean list                                                */
+    T_BLIST,                    FN_IS_MUTABLE,  T_BLIST,
+    T_BLIST,                    FN_IS_EMPTY,    T_BLIST_SSORT,
+    T_BLIST,                    FN_IS_DENSE,    T_BLIST,
+    T_BLIST,                    FN_IS_NDENSE,   -1,
+    T_BLIST,                    FN_IS_HOMOG,    T_BLIST,
+    T_BLIST,                    FN_IS_NHOMOG,   -1,
+    T_BLIST,                    FN_IS_TABLE,    -1,
+    T_BLIST,                    FN_IS_SSORT,    T_BLIST_SSORT,
+    T_BLIST,                    FN_IS_NSORT,    T_BLIST_NSORT,
+
+    /* immutable boolean list                                              */
+    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST,
+    T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   -1,
+    T_BLIST      +IMMUTABLE,    FN_IS_HOMOG,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NHOMOG,   -1,
+    T_BLIST      +IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_BLIST      +IMMUTABLE,    FN_IS_SSORT,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NSORT,    T_BLIST_NSORT+IMMUTABLE,
+
+    /* nsort mutable boolean list                                          */
+    T_BLIST_NSORT,              FN_IS_MUTABLE,  T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_EMPTY,    -1,
+    T_BLIST_NSORT,              FN_IS_DENSE,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_NDENSE,   -1,
+    T_BLIST_NSORT,              FN_IS_HOMOG,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_NHOMOG,   -1,
+    T_BLIST_NSORT,              FN_IS_TABLE,    -1,
+    T_BLIST_NSORT,              FN_IS_SSORT,    -1,
+    T_BLIST_NSORT,              FN_IS_NSORT,    T_BLIST_NSORT,
+
+    /* nsort immutable boolean list                                        */
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_NSORT,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    -1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_SSORT,    -1,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST_NSORT+IMMUTABLE,
+
+    /* ssort mutable boolean list                                          */
+    T_BLIST_SSORT,              FN_IS_MUTABLE,  T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_EMPTY,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_DENSE,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_NDENSE,   -1,
+    T_BLIST_SSORT,              FN_IS_HOMOG,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_NHOMOG,   -1,
+    T_BLIST_SSORT,              FN_IS_TABLE,    -1,
+    T_BLIST_SSORT,              FN_IS_SSORT,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_NSORT,    -1,
+
+    /* ssort immutable boolean list                                        */
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_SSORT,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   -1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   -1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_TABLE,    -1,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NSORT,    -1,
+
+    -1,                         -1,             -1
+
+};
+
+
+/****************************************************************************
+**
+*V  ResetFiltTab  . . . . . . . . . . . . . . . . . . .  unsetter filter tnum
+*/
+static Int ResetFiltTab [] = {
+
+    /* mutable boolean list                                                */
+    T_BLIST,                    FN_IS_MUTABLE,  T_BLIST      +IMMUTABLE,
+    T_BLIST,                    FN_IS_EMPTY,    T_BLIST,
+    T_BLIST,                    FN_IS_DENSE,    T_BLIST,
+    T_BLIST,                    FN_IS_NDENSE,   T_BLIST,
+    T_BLIST,                    FN_IS_HOMOG,    T_BLIST,
+    T_BLIST,                    FN_IS_NHOMOG,   T_BLIST,
+    T_BLIST,                    FN_IS_TABLE,    T_BLIST,
+    T_BLIST,                    FN_IS_SSORT,    T_BLIST,
+    T_BLIST,                    FN_IS_NSORT,    T_BLIST,
+
+    /* immutable boolean list                                               */
+    T_BLIST      +IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_EMPTY,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_DENSE,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NDENSE,   T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_HOMOG,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NHOMOG,   T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_NSORT,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_SSORT,    T_BLIST      +IMMUTABLE,
+    T_BLIST      +IMMUTABLE,    FN_IS_TABLE,    T_BLIST      +IMMUTABLE,
+
+    /* nsort mutable boolean list                                          */
+    T_BLIST_NSORT,              FN_IS_MUTABLE,  T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT,              FN_IS_EMPTY,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_DENSE,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_NDENSE,   T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_HOMOG,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_NHOMOG,   T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_TABLE,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_SSORT,    T_BLIST_NSORT,
+    T_BLIST_NSORT,              FN_IS_NSORT,    T_BLIST,
+
+    /* nsort immutable boolean list                                        */
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NDENSE,   T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_HOMOG,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_TABLE,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_SSORT,    T_BLIST_NSORT+IMMUTABLE,
+    T_BLIST_NSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST      +IMMUTABLE,
+
+    /* ssort mutable boolean list                                          */
+    T_BLIST_SSORT,              FN_IS_MUTABLE,  T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT,              FN_IS_EMPTY,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_DENSE,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_NDENSE,   T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_HOMOG,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_NHOMOG,   T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_TABLE,    T_BLIST_SSORT,
+    T_BLIST_SSORT,              FN_IS_SSORT,    T_BLIST,
+    T_BLIST_SSORT,              FN_IS_NSORT,    T_BLIST_SSORT,
+
+    /* ssort immutable boolean list                                        */
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_MUTABLE,  T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_EMPTY,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_DENSE,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NDENSE,   T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_HOMOG,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NHOMOG,   T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_TABLE,    T_BLIST_SSORT+IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_SSORT,    T_BLIST      +IMMUTABLE,
+    T_BLIST_SSORT+IMMUTABLE,    FN_IS_NSORT,    T_BLIST_SSORT+IMMUTABLE,
+
+    -1,                         -1,             -1
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
+*/
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_BLIST", "obj", &IsBlistFilt, 
+      FuncIS_BLIST, "src/blister.c:IS_BLIST" },
+
+    { "IS_BLIST_REP", "obj", &IsBlistRepFilt, 
+      FuncIS_BLIST_REP, "src/blister.c:IS_BLIST_REP" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "IS_BLIST_CONV", 1, "obj", 
+      FuncIS_BLIST_CONV, "src/blister.c:IS_BLIST_CONV" },
+
+    { "CONV_BLIST", 1, "blist",
+      FuncCONV_BLIST, "src/blister.c:CONV_BLIST" },
+
+    { "BLIST_LIST", 2, "list, sub",
+      FuncBLIST_LIST, "src/blister.c:BLIST_LIST" },
+
+    { "LIST_BLIST", 2, "list, blist",
+      FuncLIST_BLIST, "src/blister.c:LIST_BLIST" },
+
+    { "SIZE_BLIST", 1, "blist",
+      FuncSIZE_BLIST, "src/blister.c:SIZE_BLIST" },
+
+    { "IS_SUB_BLIST", 2, "blist1, blist2",
+      FuncIS_SUB_BLIST, "src/blister.c:IS_SUB_BLIST" },
+
+    { "UNITE_BLIST", 2, "blist1, blist2",
+      FuncUNITE_BLIST, "src/blister.c:UNITE_BLIST" },
+
+    { "INTER_BLIST", 2, "blist1, blist2",
+      FuncINTER_BLIST, "src/blister.c:INTER_BLIST" },
+
+    { "SUBTR_BLIST", 2, "blist1, blist2",
+      FuncSUBTR_BLIST, "src/blister.c:SUBTR_BLIST" },
+
+    { "PositionNthTrueBlist", 2, "blist, nth",
+      FuncPositionNthTrueBlist, "src/blister.c:PositionNthTrueBlist" },
+
+    { "PositionsTrueBlist", 1, "blist",
+      FuncPositionsTrueBlist, "src/blister.c:PositionsTrueBlist" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    UInt                 t1;
-    UInt                 t2;
+    UInt                t1;
+    UInt                t2;
 
+    /* check dependencies                                                  */
+    RequireModule( module, "lists", 403600000UL );
 
-    /* install the names                                                   */
-    InfoBags[T_BLIST                          ].name = "list (boolean)";
-    InfoBags[T_BLIST       +IMMUTABLE         ].name = "list (boolean,imm)";
-    InfoBags[T_BLIST                  +COPYING].name = "list (boolean,copied)";
-    InfoBags[T_BLIST       +IMMUTABLE +COPYING].name = "list (boolean,imm,copied)";
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
-    InfoBags[T_BLIST_NSORT                    ].name = "list (boolean,nsort)";
-    InfoBags[T_BLIST_NSORT +IMMUTABLE         ].name = "list (boolean,nsort,imm)";
-    InfoBags[T_BLIST_NSORT            +COPYING].name = "list (boolean,nsort,copied)";
-    InfoBags[T_BLIST_NSORT +IMMUTABLE +COPYING].name = "list (boolean,nsort,imm,copied)";
+    /* GASMAN marking functions and GASMAN names                           */
+    InitBagNamesFromTable( BagNames );
 
-    InfoBags[T_BLIST_SSORT                    ].name = "list (boolean,ssort)";
-    InfoBags[T_BLIST_SSORT +IMMUTABLE         ].name = "list (boolean,ssort,imm)";
-    InfoBags[T_BLIST_SSORT            +COPYING].name = "list (boolean,ssort,copied)";
-    InfoBags[T_BLIST_SSORT +IMMUTABLE +COPYING].name = "list (boolean,ssort,imm,copied)";
-
-
-    /* install the marking function                                        */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
         InitMarkFuncBags( t1,                      MarkNoSubBags  );
         InitMarkFuncBags( t1 +IMMUTABLE,           MarkNoSubBags  );
@@ -1932,201 +2271,17 @@ void SetupBlist ( void )
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkOneSubBags );
     }
 
+    /* install the type method                                             */
+    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
+        TypeObjFuncs[ t1            ] = TypeBlist;
+        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
+    }
 
-    /* install the filter and property maps                                */
-    ClearFiltsTNums   [T_BLIST                ] = T_BLIST;
-    ClearFiltsTNums   [T_BLIST      +IMMUTABLE] = T_BLIST+IMMUTABLE;
-    ClearFiltsTNums   [T_BLIST_NSORT          ] = T_BLIST;
-    ClearFiltsTNums   [T_BLIST_NSORT+IMMUTABLE] = T_BLIST+IMMUTABLE;
-    ClearFiltsTNums   [T_BLIST_SSORT          ] = T_BLIST;
-    ClearFiltsTNums   [T_BLIST_SSORT+IMMUTABLE] = T_BLIST+IMMUTABLE;
-
-    /* mutable boolean list                                                */
-    HasFiltListTNums  [T_BLIST                ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_BLIST                ][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_BLIST                ][FN_IS_MUTABLE] = T_BLIST;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_DENSE  ] = T_BLIST;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_HOMOG  ] = T_BLIST;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_SSORT  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST                ][FN_IS_NSORT  ] = T_BLIST_NSORT;
-
-    ResetFiltListTNums[T_BLIST                ][FN_IS_MUTABLE] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_EMPTY  ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_NDENSE ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_NHOMOG ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_TABLE  ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_SSORT  ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST                ][FN_IS_NSORT  ] = T_BLIST;
-
-    /* immutable boolean list                                               */
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = T_BLIST;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = T_BLIST      +IMMUTABLE;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST      +IMMUTABLE;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_NSORT+IMMUTABLE;
-
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_MUTABLE] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NDENSE ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_NSORT  ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_SSORT  ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST      +IMMUTABLE][FN_IS_TABLE  ] = T_BLIST      +IMMUTABLE;
-
-    /* nsort mutable boolean list                                          */
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NSORT  ] = 1;
-
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_MUTABLE] = T_BLIST_NSORT;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_EMPTY  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_DENSE  ] = T_BLIST_NSORT;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_HOMOG  ] = T_BLIST_NSORT;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_SSORT  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT          ][FN_IS_NSORT  ] = T_BLIST_NSORT;
-
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_MUTABLE] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_EMPTY  ] = T_BLIST_NSORT;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NDENSE ] = T_BLIST_NSORT;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NHOMOG ] = T_BLIST_NSORT;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_TABLE  ] = T_BLIST_NSORT;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_SSORT  ] = T_BLIST_NSORT;
-    ResetFiltListTNums[T_BLIST_NSORT          ][FN_IS_NSORT  ] = T_BLIST;
-
-    /* nsort immutable boolean list                                        */
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = 0;
-    HasFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = 1;
-
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_NSORT;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = T_BLIST_NSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST_NSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = -1;
-    SetFiltListTNums  [T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_NSORT+IMMUTABLE;
-
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NDENSE ] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_TABLE  ] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_NSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_NSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST      +IMMUTABLE;
-
-    /* ssort mutable boolean list                                          */
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_MUTABLE] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_SSORT  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_MUTABLE] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_DENSE  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_HOMOG  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_SSORT  ] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT          ][FN_IS_NSORT  ] = -1;
-
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_MUTABLE] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_EMPTY  ] = T_BLIST_SSORT;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NDENSE ] = T_BLIST_SSORT;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NHOMOG ] = T_BLIST_SSORT;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_TABLE  ] = T_BLIST_SSORT;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_SSORT  ] = T_BLIST;
-    ResetFiltListTNums[T_BLIST_SSORT          ][FN_IS_NSORT  ] = T_BLIST_SSORT;
-
-    /* ssort immutable boolean list                                        */
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = 0;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = 1;
-    HasFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = 0;
-
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_SSORT;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = -1;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST_SSORT+IMMUTABLE;
-    SetFiltListTNums  [T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = -1;
-
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_MUTABLE] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_EMPTY  ] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_DENSE  ] = -1;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NDENSE ] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_HOMOG  ] = -1;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NHOMOG ] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_TABLE  ] = T_BLIST_SSORT+IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_SSORT  ] = T_BLIST      +IMMUTABLE;
-    ResetFiltListTNums[T_BLIST_SSORT+IMMUTABLE][FN_IS_NSORT  ] = T_BLIST_SSORT+IMMUTABLE;
-
+    /* initialise list tables                                              */
+    InitClearFiltsTNumsFromTable   ( ClearFiltsTab );
+    InitHasFiltListTNumsFromTable  ( HasFiltTab    );
+    InitSetFiltListTNumsFromTable  ( SetFiltTab    );
+    InitResetFiltListTNumsFromTable( ResetFiltTab  );
 
     /* Install the saving functions -- cannot save while copying           */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
@@ -2135,7 +2290,6 @@ void SetupBlist ( void )
         LoadObjFuncs[ t1            ] = LoadBlist;
         LoadObjFuncs[ t1 +IMMUTABLE ] = LoadBlist;
     }
-
 
     /* install the copy functions                                          */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
@@ -2149,14 +2303,12 @@ void SetupBlist ( void )
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanBlistCopy;
     }
 
-
     /* install the comparison methods                                      */
     for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT+IMMUTABLE;  t1++ ) {
         for ( t2 = T_BLIST;  t2 <= T_BLIST_SSORT+IMMUTABLE;  t2++ ) {
             EqFuncs[ t1 ][ t2 ] = EqBlist;
         }
     }
-
 
     /* install the list functions in the tables                            */
     for ( t1 = T_BLIST; t1 <= T_BLIST_SSORT; t1 += 2 ) {
@@ -2199,78 +2351,53 @@ void SetupBlist ( void )
     IsSSortListFuncs[ T_BLIST_NSORT +IMMUTABLE ] = IsSSortBlistNot;
     IsSSortListFuncs[ T_BLIST_SSORT            ] = IsSSortBlistYes;
     IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitBlist() . . . . . . . . . . . . . initialize the boolean list package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitBlist ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    UInt                 t1;
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    /* install the type method                                             */
-    for ( t1 = T_BLIST;  t1 <= T_BLIST_SSORT;  t1 += 2 ) {
-        TypeObjFuncs[ t1            ] = TypeBlist;
-        TypeObjFuncs[ t1 +IMMUTABLE ] = TypeBlist;
-    }
-
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FILT( "IS_BLIST", "obj", IsBlistFilt, IsBlistHandler,
-       "src/blister.c:IS_BLIST" );
-
-    C_NEW_GVAR_FUNC( "BLIST_LIST", 2L, "list, sub",
-                  FuncBLIST_LIST,
-       "src/blister.c:BLIST_LIST" );
-
-    C_NEW_GVAR_FUNC( "LIST_BLIST", 2L, "list, blist",
-                  FuncLIST_BLIST,
-       "src/blister.c:LIST_BLIST" );
-
-    C_NEW_GVAR_FUNC( "SIZE_BLIST", 1L, "blist",
-                  FuncSIZE_BLIST,
-       "src/blister.c:SIZE_BLIST" );
-
-    C_NEW_GVAR_FUNC( "IS_SUB_BLIST", 2L, "blist1, blist2",
-                  FuncIS_SUB_BLIST,
-       "src/blister.c:IS_SUB_BLIST" );
-
-    C_NEW_GVAR_FUNC( "UNITE_BLIST", 2L, "blist1, blist2",
-                  FuncUNITE_BLIST,
-       "src/blister.c:UNITE_BLIST" );
-
-    C_NEW_GVAR_FUNC( "INTER_BLIST", 2L, "blist1, blist2",
-                  FuncINTER_BLIST,
-       "src/blister.c:INTER_BLIST" );
-
-    C_NEW_GVAR_FUNC( "SUBTR_BLIST", 2L, "blist1, blist2",
-                  FuncSUBTR_BLIST,
-       "src/blister.c:SUBTR_BLIST" );
-
-    C_NEW_GVAR_FUNC( "PositionNthTrueBlist", 2L, "blist, nth",
-                  FuncPositionNthTrueBlist,
-       "src/blister.c:PositionNthTrueBlist" );
-
-    C_NEW_GVAR_FUNC( "PositionsTrueBlist", 1L, "blist",
-                  FuncPositionsTrueBlist,
-       "src/blister.c:PositionsTrueBlist" );
-
-    C_NEW_GVAR_FUNC( "CONV_BLIST", 1L, "blist",
-                  FuncCONV_BLIST,
-       "src/blister.c:CONV_BLIST" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckBlist()  . . .  check the initialisation of the boolean list package
+*F  InitInfoBlist() . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckBlist ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "blister",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoBlist ( void )
 {
-    SET_REVISION( "blister_c",  Revision_blister_c );
-    SET_REVISION( "blister_h",  Revision_blister_h );
+    module.revision_c = Revision_blister_c;
+    module.revision_h = Revision_blister_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

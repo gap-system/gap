@@ -16,13 +16,13 @@ Revision.perf_grp :=
 ##
 #F  PerfGrpLoad(<size>)  force loading of secondary files, return index
 ##
-PerfGrpLoad := function(sz)
+InstallGlobalFunction( PerfGrpLoad, function(sz)
 local p,sel,i,pos;
   if PERFRec=fail then
     ReadGrp("perf0.grp");
   fi;
   # get the index
-  pos:=PositionSortedWC(PERFRec.sizes,sz);
+  pos:=PositionSet(PERFRec.sizes,sz);
   if pos=fail then
     return fail;
   fi;
@@ -51,7 +51,7 @@ local p,sel,i,pos;
     PERFSELECT[i]:=true;
   od;
   return pos;
-end;
+end );
 
 
 #############################################################################
@@ -61,13 +61,13 @@ end;
 ##  'SizesPerfectGroups'  returns an ordered list of all integers  that occur
 ##  as group sizes in the library of perfect groups.
 ##
-SizesPerfectGroups := function ( )
+InstallGlobalFunction( SizesPerfectGroups, function ( )
 
     PerfGrpLoad(0);
     # return the requested list.
     return ShallowCopy( PERFRec.sizes );
 
-end;
+end );
 
 
 #############################################################################
@@ -83,18 +83,19 @@ end;
 ##  If size is one of these exceptions or if size is out of range,  the value
 ##  fail will be returned.
 ##
-NumberPerfectGroups := function ( size )
+InstallGlobalFunction( NumberPerfectGroups, function ( size )
 
     PerfGrpLoad(0);
 
     # get the number and return it.
-    if not size in [ 1 .. 1000000 ] or size in PERFRec.notKnown
-      or not size in PERFRec.sizes then
-        return fail;
+    if not size in [ 1 .. 1000000 ] or size in PERFRec.notKnown then
+      return fail;
+    elif not size in PERFRec.sizes then
+      return 0;
     else
       return PERFRec.number[ PositionSorted( PERFRec.sizes, size ) ];
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -105,7 +106,7 @@ end;
 ##  groups of size size for 1 <= size <= 1 000 000 which are available in the
 ##  perfect groups library.
 ##
-NumberPerfectLibraryGroups := function ( size )
+InstallGlobalFunction( NumberPerfectLibraryGroups, function ( size )
 local sizenum;
 
     # get the number and return it.
@@ -116,7 +117,7 @@ local sizenum;
         return PERFRec.number[sizenum];
     fi;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -404,7 +405,7 @@ end);
 ##
 #F  PerfectGroup([<filter>,]<sz>,<nr>) . . . .  Access perfect groups library
 ##
-PerfectGroup := function(arg)
+InstallGlobalFunction( PerfectGroup, function(arg)
 local func,sz,p;
   PerfGrpLoad(0); # force loading
   if not IsFunction(arg[1]) then 
@@ -437,7 +438,7 @@ local func,sz,p;
   SetIsPerfectGroup(p,true);
   SetFilterObj(p,IsPerfectLibraryGroup);
   return p;
-end;
+end );
 
 
 #############################################################################
@@ -452,7 +453,8 @@ end;
 ##  If no value of n has been specified, the invariants will be displayed for
 ##  all groups of size size available in the library.
 ##
-DisplayInformationPerfectGroups := function ( arg )
+InstallGlobalFunction( DisplayInformationPerfectGroups,
+    function ( arg )
 local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
 
   if IsInt(arg[1]) then
@@ -555,7 +557,7 @@ local size,i,nr,n,leng,sizenum,hpnum,description,centre,orbsize;
     Print( "\n" );
   od;
 
-end;
+end );
 
 
 #############################################################################
@@ -571,7 +573,7 @@ end;
 ##  the form [ size, n ], where size is the group size and n is the number of
 ##  the group within the list of all library groups of that size.
 ##
-SizeNumbersPerfectGroups := function ( arg )
+InstallGlobalFunction( SizeNumbersPerfectGroups, function ( arg )
 local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
       simple, simple2, size, sizenum, sizenums;
 
@@ -641,7 +643,7 @@ local a6a6, a6a6a6, empty, factor, minsize, minsizenum, n, nn, num, pos,
 
     # return the list of size numbers.
     return sizenums;
-end;
+end );
 
 
 #############################################################################
@@ -681,7 +683,7 @@ InstallMethod(IsomorphismFpGroup,"perfect library groups",true,
 function(G)
 local H,hom;
   H:=PerfectGroup(IsSubgroupFpGroup,PerfectIdentification(G));
-  hom:=GroupHomomorphismByImages(G,H,GeneratorsOfGroup(G),
+  hom:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
                                      GeneratorsOfGroup(H));
   SetIsInjective(hom,true);
   SetIsSurjective(hom,true);
@@ -697,7 +699,7 @@ InstallMethod(IsomorphismPermGroup,"perfect library groups",true,
 function(G)
 local H,hom;
   H:=PerfectGroup(IsPermGroup,PerfectIdentification(G));
-  hom:=GroupHomomorphismByImages(G,H,GeneratorsOfGroup(G),
+  hom:=GroupHomomorphismByImagesNC(G,H,GeneratorsOfGroup(G),
                                      GeneratorsOfGroup(H));
   SetIsInjective(hom,true);
   SetIsSurjective(hom,true);

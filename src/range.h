@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions that deal with ranges.
 **
@@ -21,7 +22,7 @@
 **  installed in the appropriate tables by 'InitRange'.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_range_h =
+const char * Revision_range_h =
    "@(#)$Id$";
 #endif
 
@@ -187,25 +188,9 @@ extern Obj Range3Check (
 /****************************************************************************
 **
 
-*F  SetupRange() . . . . . . . . . . . . . . . . initialize the range package
+*F  InitInfoRange() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupRange ( void );
-
-
-/****************************************************************************
-**
-*F  InitRange() . . . . . . . . . . . . . . . .  initialize the range package
-**
-**  'InitRange' initializes the range package.
-*/
-extern void InitRange ( void );
-
-
-/****************************************************************************
-**
-*F  CheckRange()  . . . . . . . check the initialisation of the range package
-*/
-extern void CheckRange ( void );
+StructInitInfo * InitInfoRange ( void );
 
 
 /****************************************************************************

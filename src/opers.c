@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the  filters, operations, attributes,
 **  and properties package.
@@ -13,7 +14,7 @@
 #include        <assert.h>
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_opers_c =
+const char * Revision_opers_c =
    "@(#)$Id$";
 
 
@@ -39,18 +40,18 @@ SYS_CONST char * Revision_opers_c =
 #include        "plist.h"               /* plain lists                     */
 #include        "blister.h"             /* boolean lists                   */
 #include        "string.h"              /* strings                         */
+#include        "range.h"               /* ranges                          */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
 
-#include        "gap.h"                 /* error handling, initialisation  */
 #include        "saveload.h"            /* saving and loading              */
 
 
 /****************************************************************************
 **
 
-*V  TRY_NEXT_METHOD
+*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
 */
 Obj TRY_NEXT_METHOD;
 
@@ -58,181 +59,16 @@ Obj TRY_NEXT_METHOD;
 /****************************************************************************
 **
 
-*F  IS_OPERATION( <func> )  . . . . . . . . .  check if function is operation
-**
-#define IS_OPERATION(func) \
-    (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
+*F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
 */
-
-
-Obj             CacheOper (
-    Obj                 oper,
-    UInt                i )
-{
-    Obj                 cache;
-    cache = CACHE_OPER( oper, i );
-    if ( cache == 0 ) {
-        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
-        CACHE_OPER( oper, i ) = cache;
-        CHANGED_BAG( oper );
-    }
-    return cache;
-}
-
-Obj             MethsOper (
-    Obj                 oper,
-    UInt                i )
-{
-    Obj                 methods;
-    methods = METHS_OPER( oper, i );
-    if ( methods == 0 ) {
-        methods = NEW_PLIST( T_PLIST, 0 );
-        METHS_OPER( oper, i ) = methods;
-        CHANGED_BAG( oper );
-    }
-    return methods;
-}
 
 
 /****************************************************************************
 **
 
-*F  SIZE_PLEN_FLAGS( <plen> ) . .  size for a flags list with physical length
+*F  PrintFlags( <flags> ) . . . . . . . . . . . . . . . .  print a flags list
 */
-#define SIZE_PLEN_FLAGS(plen) \
-  (3*sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(Obj))
-
-
-
-/****************************************************************************
-**
-*F  DATA_FLAGS( <flags> ) . . . . . . . . . . . . . data area of a flags list
-*/
-#define DATA_FLAGS(flags)               ((UInt*)(ADDR_OBJ(flags)+3))
-
-
-/****************************************************************************
-**
-*F  TRUES_FLAGS( <flags> )  . . . . . . . . . . . . . . trues of <flags> or 0
-*/
-#define TRUES_FLAGS(flags)              (ADDR_OBJ(flags)[0])
-
-
-/****************************************************************************
-**
-*F  SET_TRUES_FLAGS( <flags>, <trues> ) . . . . . . . . . . . . . . set trues
-*/
-#define SET_TRUES_FLAGS(flags,trues)    (ADDR_OBJ(flags)[0] = trues)
-
-
-/****************************************************************************
-**
-*F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
-*/
-#define HASH_FLAGS(flags)               (ADDR_OBJ(flags)[1])
-
-
-/****************************************************************************
-**
-*F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
-*/
-#define SET_HASH_FLAGS(flags,hash)      (ADDR_OBJ(flags)[1] = hash)
-
-
-/****************************************************************************
-**
-*F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
-*/
-#define LEN_FLAGS(list)                 (INT_INTOBJ(ADDR_OBJ(list)[2]))
-
-
-/****************************************************************************
-**
-*F  SET_LEN_FLAGS( <flags>, <len> ) . . . . .  set the length of a flags list
-*/
-#define SET_LEN_FLAGS(flags,len)        (ADDR_OBJ(flags)[2]=INTOBJ_INT(len))
-
-
-/****************************************************************************
-**
-*F  NRB_FLAGS( <flags> )  . . . . . . . numberof basic blocks of a flags lits
-*/
-#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
-
-
-
-/****************************************************************************
-**
-*F  BLOCK_ELM_FLAGS(<list>,<pos>) . . . . . . . . . .block  of a flags list
-**
-**  'BLOCK_ELM_FLAGS' return the block containing the <pos>-th element of 
-**   the flags list <list> as a UInt value, which is also a valid left
-**  hand side.
-**  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
-**
-**  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
-**  that have sideeffects.
-*/
-
-#define BLOCK_ELM_FLAGS(list, pos) (DATA_FLAGS( list )[((pos)-1)/BIPEB])
-
-
-/****************************************************************************
-**
-*F  MASK_POS_FLAGS(<pos>) . . .  . . .bit mask for position of a Flags list
-**
-**  MASK_POS_FLAGS(<pos>) returns a UInt with a single set bit in position
-**  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
-**
-**  Note that 'MASK_POS_FLAGS' is a macro, so do not call it  with arguments
-**  that have sideeffects.
-*/
-
-#define MASK_POS_FLAGS( pos ) (((UInt) 1)<<((pos)-1)%BIPEB)
-
-
-
-/****************************************************************************
-**
-*F  ELM_FLAGS(<list>,<pos>) . . . . . . . . . . . . element of a flags list
-**
-**  'ELM_FLAGS' return the <pos>-th element of the flags list <list>, which
-**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
-**  or equal to the length of <hdList>.
-**
-**  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
-**  have sideeffects.
-*/
-#define ELM_FLAGS(list,pos) \
-  ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
-
-
-/****************************************************************************
-**
-*F  SET_ELM_FLAGS(<list>,<pos>,<val>) . . .  set an element of a flags list
-**
-**  'SET_ELM_FLAGS' sets  the element at position <pos>   in the flags list
-**  <list> to the value <val>.  <pos> must be a positive integer less than or
-**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
-**
-**  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
-**  that have sideeffects.
-*/
-
-#define SET_ELM_FLAGS(list,pos,val)  \
- ((val) == True ? \
-  (BLOCK_ELM_FLAGS(list, pos) |= MASK_POS_FLAGS(pos)) : \
-  (BLOCK_ELM_FLAGS(list, pos) &= ~MASK_POS_FLAGS(pos)))
-
-
-
-/****************************************************************************
-**
-
-*F  PrintFlags( <flags> )
-*/
-void            PrintFlags (
+void PrintFlags (
     Obj                 flags )
 {
     Pr( "<flag list>", 0L, 0L );
@@ -241,7 +77,7 @@ void            PrintFlags (
 
 /****************************************************************************
 **
-*F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  kind of a flags list
+*F  TypeFlags( <flags> )  . . . . . . . . . . . . . . .  type of a flags list
 */
 Obj TYPE_FLAGS;
 
@@ -254,8 +90,62 @@ Obj TypeFlags (
 
 /****************************************************************************
 **
+*F  SaveFlags( <flags> )  . . . . . . . . . . . . . . . . . save a flags list
+**
+*/
+void SaveFlags (
+    Obj         flags )
+{
+    UInt        i, len, *ptr;
 
-*F  FuncLEN_FLAGS( <self>, <flags> )
+    SaveSubObj(TRUES_FLAGS(flags));
+    SaveSubObj(HASH_FLAGS(flags));
+    SaveSubObj(ADDR_OBJ(flags)[2]); /* length, as an object */
+    SaveSubObj(AND_CACHE_FLAGS(flags));
+
+    len = NRB_FLAGS(flags);
+    ptr = BLOCKS_FLAGS(flags);
+    for ( i = 1;  i <= len;  i++ )
+        SaveUInt(*ptr++);
+    return;
+}
+
+
+/****************************************************************************
+**
+*F  LoadFlags( <flags> )  . . . . . . . . . . . . . . . . . load a flags list
+**
+*/
+void LoadFlags(
+    Obj         flags )
+{
+    Obj         sub;
+    UInt        i, len, *ptr;
+
+    sub = LoadSubObj();  SET_TRUES_FLAGS( flags, sub );
+    sub = LoadSubObj();  SET_HASH_FLAGS( flags, sub );
+    ADDR_OBJ(flags)[2] = LoadSubObj(); /* length, as an object */
+    sub = LoadSubObj();  SET_AND_CACHE_FLAGS( flags, sub );
+    
+    len = NRB_FLAGS(flags);
+    ptr = BLOCKS_FLAGS(flags);
+    for ( i = 1;  i <= len;  i++ )
+        *ptr++ = LoadUInt();
+    return;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * *  GAP flags functions * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  FuncLEN_FLAGS( <self>, <flags> )  . . . . . . . .  length of a flags list
 **
 */
 Obj FuncLEN_FLAGS (
@@ -264,8 +154,7 @@ Obj FuncLEN_FLAGS (
 {
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj(
-            "<flags> must be a flags list (not a %s)",
+        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
@@ -276,7 +165,7 @@ Obj FuncLEN_FLAGS (
 
 /****************************************************************************
 **
-*F  FuncELM_FLAGS( <self>, <flags>, <pos> ) 
+*F  FuncELM_FLAGS( <self>, <flags>, <pos> ) . . . . . element of a flags list
 */
 Obj FuncELM_FLAGS (
     Obj                 self,
@@ -285,8 +174,7 @@ Obj FuncELM_FLAGS (
 {
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj(
-            "<flags> must be a flags list (not a %s)",
+        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
@@ -298,9 +186,18 @@ Obj FuncELM_FLAGS (
 
 /****************************************************************************
 **
-*F  FuncHASH_FLAGS( <self>, <flags> )
+*F  FuncHASH_FLAGS( <self>, <flags> ) . . . . . .  hash value of a flags list
+**
+**  The hash value is independent of the size of a machine word (32 or 64).
+**
+**  The rather peculiar cast in the definition of HASH_FLAGS_SIZE is needed
+**  to get the calculation to work right on the alpha.
+**
+*T  The 64 bit version depends on the byte order -- it assumes that
+**  the lower addressed half-word is the less significant
+**
 */
-#define HASH_FLAGS_SIZE 67108879L
+#define HASH_FLAGS_SIZE (Int4)67108879L
 
 Obj FuncHASH_FLAGS (
     Obj                 self,
@@ -314,8 +211,7 @@ Obj FuncHASH_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags) != T_FLAGS ) {
-            flags = ErrorReturnObj(
-            "<flags> must be a flags list (not a %s)",
+            flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags), 0L,
             "you can return a list for <flags>" );
     }
@@ -325,10 +221,10 @@ Obj FuncHASH_FLAGS (
 
     /* do the real work                                                    */
     len = NRB_FLAGS(flags)*(sizeof(UInt)/sizeof(UInt4));
-    ptr = (UInt4 *)DATA_FLAGS(flags);
+    ptr = (UInt4 *)BLOCKS_FLAGS(flags);
     hash = 0;
     x    = 1;
-    for ( i = 1; i <= len; i++ ) {
+    for ( i = len; i >= 1; i-- ) {
         hash = (hash + (*ptr % HASH_FLAGS_SIZE) * x) % HASH_FLAGS_SIZE;
         x    = ((8*sizeof(UInt4)-1) * x) % HASH_FLAGS_SIZE;
         ptr++;
@@ -341,7 +237,112 @@ Obj FuncHASH_FLAGS (
 
 /****************************************************************************
 **
-*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )
+*F  FuncTRUES_FLAGS( <self>, <flags> )  . . .  true positions of a flags list
+**
+**  see 'FuncPositionsTruesBlist' in "blister.c" for information.
+*/
+Obj FuncTRUES_FLAGS (
+    Obj                 self,
+    Obj                 flags )
+{
+    Obj                 sub;            /* handle of the result            */
+    Int                 len;            /* logical length of the list      */
+    UInt *              ptr;            /* pointer to flags                */
+    UInt                nrb;            /* number of blocks in flags       */
+    UInt                m;              /* number of bits in a block       */
+    UInt                n;              /* number of bits in flags         */
+    UInt                nn;
+    UInt                i;              /* loop variable                   */
+
+    /* get and check the first argument                                    */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can return a list for <flags>" );
+    }
+    if ( TRUES_FLAGS(flags) != 0 ) {
+        return TRUES_FLAGS(flags);
+    }
+
+    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
+    nrb = NRB_FLAGS(flags);
+    ptr = (UInt*)BLOCKS_FLAGS(flags);
+    n = 0;
+    for ( i = 1; i <= nrb; i++ ) {
+        m = *ptr++;
+        COUNT_TRUES_BLOCK(m); 
+        n += m;
+    }
+
+    /* make the sublist (we now know its size exactely)                    */
+    sub = NEW_PLIST( T_PLIST+IMMUTABLE, n );
+    SET_LEN_PLIST( sub, n );
+
+    /* loop over the boolean list and stuff elements into <sub>            */
+    len = LEN_FLAGS( flags );
+    nn  = 1;
+    for ( i = 1; nn <= n && i <= len;  i++ ) {
+        if ( ELM_FLAGS( flags, i ) == True ) {
+            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
+            nn++;
+        }
+    }
+    CHANGED_BAG(sub);
+
+    /* return the sublist                                                  */
+    SET_TRUES_FLAGS( flags, sub );
+    CHANGED_BAG(flags);
+    return sub;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSIZE_FLAGS( <self>, <flags> ) . . . . number of trues of a flags list
+**
+**  see 'FuncSIZE_FLAGS'
+*/
+Obj FuncSIZE_FLAGS (
+    Obj                 self,
+    Obj                 flags )
+{
+    UInt *              ptr;            /* pointer to flags                */
+    UInt                nrb;            /* number of blocks in flags       */
+    UInt                m;              /* number of bits in a block       */
+    UInt                n;              /* number of bits in flags         */
+    UInt                i;              /* loop variable                   */
+
+    /* get and check the first argument                                    */
+    while ( TNUM_OBJ(flags) != T_FLAGS ) {
+        flags = ErrorReturnObj( "<flags> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags), 0L,
+            "you can return a list for <flags>" );
+    }
+    if ( TRUES_FLAGS(flags) != 0 ) {
+        return INTOBJ_INT( LEN_PLIST( TRUES_FLAGS(flags) ) );
+    }
+
+    /* get the number of blocks and a pointer                              */
+    nrb = NRB_FLAGS(flags);
+    ptr = BLOCKS_FLAGS(flags);
+
+    /* loop over the blocks, adding the number of bits of each one         */
+    n = 0;
+    for ( i = 1; i <= nrb; i++ ) {
+        m = *ptr++;
+        COUNT_TRUES_BLOCK(m);
+        n += m;
+    }
+
+    /* return the number of bits                                           */
+    return INTOBJ_INT( n );
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )  equality of flags lists
 */
 Obj FuncIS_EQUAL_FLAGS (
     Obj                 self,
@@ -356,14 +357,12 @@ Obj FuncIS_EQUAL_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj(
-            "<flags1> must be a flags list (not a %s)",
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj(
-            "<flags2> must be a flags list (not a %s)",
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
@@ -374,8 +373,8 @@ Obj FuncIS_EQUAL_FLAGS (
     /* do the real work                                                    */
     len1 = NRB_FLAGS(flags1);
     len2 = NRB_FLAGS(flags2);
-    ptr1 = DATA_FLAGS(flags1);
-    ptr2 = DATA_FLAGS(flags2);
+    ptr1 = BLOCKS_FLAGS(flags1);
+    ptr2 = BLOCKS_FLAGS(flags2);
     if ( len1 <= len2 ) {
         for ( i = 1; i <= len1; i++ ) {
             if ( *ptr1 != *ptr2 )
@@ -406,272 +405,7 @@ Obj FuncIS_EQUAL_FLAGS (
 
 /****************************************************************************
 **
-*F  FuncAND_FLAGS( <self>, <flags1>, <flags2> )
-*/
-#define AND_FLAGS_HASH_SIZE             39733UL
-
-#ifdef AND_FLAGS_HASH_SIZE
-static Obj AndFlagsCache;
-#endif
-Int AndFlagsCacheHit;
-Int AndFlagsCacheMiss;
-Int AndFlagsCacheLost;
-
-Obj FuncAND_FLAGS (
-    Obj                 self,
-    Obj                 flags1,
-    Obj                 flags2 )
-{
-    Obj                 flags;
-    Int                 len1;
-    Int                 len2;
-    Int                 size1;
-    Int                 size2;
-    UInt *              ptr;
-    UInt *              ptr1;
-    UInt *              ptr2;
-    Int                 i;
-
-#ifdef AND_FLAGS_HASH_SIZE
-    UInt                hash;
-    UInt                hash2;
-    static UInt         count;
-#endif
-
-    /* check the cache                                                     */
-#ifdef AND_FLAGS_HASH_SIZE
-    hash = (31*INT_INTOBJ(flags1)+INT_INTOBJ(flags2)) % AND_FLAGS_HASH_SIZE;
-    for ( i = 0;  i < 6;  i++ ) {
-        hash2 = 3 * ( (hash+31*i) % AND_FLAGS_HASH_SIZE ) + 1;
-        if ( ELM_PLIST(AndFlagsCache,hash2)   == flags1
-          && ELM_PLIST(AndFlagsCache,hash2+1) == flags2 )
-        {
-#ifdef COUNT_OPERS
-            AndFlagsCacheHit++;
-#endif
-            return ELM_PLIST(AndFlagsCache,hash2+2);
-        }
-        if ( ELM_PLIST(AndFlagsCache,hash2) == INTOBJ_INT(0) ) {
-            break;
-        }
-    }
-#ifdef COUNT_OPERS
-    AndFlagsCacheMiss++;
-#endif
-    if ( i == 6 ) {
-        count = (count+1) % 6;
-        hash2 = 3 * ( (hash+31*count) % AND_FLAGS_HASH_SIZE ) + 1;
-#ifdef COUNT_OPERS
-        AndFlagsCacheLost++;
-#endif
-    }
-#endif
-
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj(
-            "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj(
-            "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
-    }
-
-    /* do the real work                                                    */
-    len1   = LEN_FLAGS(flags1);
-    size1  = NRB_FLAGS(flags1);
-    len2   = LEN_FLAGS(flags2);
-    size2  = NRB_FLAGS(flags2);
-    if ( len2 == 0 ) {
-        return flags1;
-    }
-    if ( len1 < len2 ) {
-        flags = NewBag( T_FLAGS, SIZE_OBJ(flags2) );
-        SET_LEN_FLAGS( flags, len2 );
-        ptr1 = DATA_FLAGS(flags1);
-        ptr2 = DATA_FLAGS(flags2);
-        ptr  = DATA_FLAGS(flags);
-        for ( i = 1; i <= size1; i++ )
-            *ptr++ = *ptr1++ | *ptr2++;
-        for (      ; i <= size2; i++ )
-            *ptr++ =           *ptr2++;
-    }
-    else {
-        flags = NewBag( T_FLAGS, SIZE_OBJ(flags1) );
-        SET_LEN_FLAGS( flags, len1 );
-        ptr1 = DATA_FLAGS(flags1);
-        ptr2 = DATA_FLAGS(flags2);
-        ptr  = DATA_FLAGS(flags);
-        for ( i = 1; i <= size2; i++ )
-            *ptr++ = *ptr1++ | *ptr2++;
-        for (      ; i <= size1; i++ )
-            *ptr++ = *ptr1++;
-    }        
-#ifdef AND_FLAGS_HASH_SIZE
-    SET_ELM_PLIST( AndFlagsCache, hash2,   flags1 );
-    SET_ELM_PLIST( AndFlagsCache, hash2+1, flags2 );
-    SET_ELM_PLIST( AndFlagsCache, hash2+2, flags  );
-    CHANGED_BAG(AndFlagsCache);
-#endif
-
-    return flags;
-}
-
-
-/****************************************************************************
-**
-*F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> )
-*/
-Obj FuncSUB_FLAGS (
-    Obj                 self,
-    Obj                 flags1,
-    Obj                 flags2 )
-{
-    Obj                 flags;
-    Int                 len1;
-    Int                 len2;
-    Int                 size1;
-    Int                 size2;
-    UInt *              ptr;
-    UInt *              ptr1;
-    UInt *              ptr2;
-    Int                 i;
-
-    /* do some trivial checks                                              */
-    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj(
-            "<flags1> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags1), 0L,
-            "you can return a list for <flags1>" );
-    }
-    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj(
-            "<flags2> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags2), 0L,
-            "you can return a list for <flags2>" );
-    }
-
-    /* do the real work                                                    */
-    len1   = LEN_FLAGS(flags1);
-    size1  = NRB_FLAGS(flags1);
-    len2   = LEN_FLAGS(flags2);
-    size2  = NRB_FLAGS(flags2);
-    if ( len1 < len2 ) {
-        flags = NewBag( T_FLAGS, SIZE_OBJ(flags1) );
-        SET_LEN_FLAGS( flags, len1 );
-        ptr1 = DATA_FLAGS(flags1);
-        ptr2 = DATA_FLAGS(flags2);
-        ptr  = DATA_FLAGS(flags);
-        for ( i = 1; i <= size1; i++ )
-            *ptr++ = *ptr1++ & ~ *ptr2++;
-    }
-    else {
-        flags = NewBag( T_FLAGS, SIZE_OBJ(flags1) );
-        SET_LEN_FLAGS( flags, len1 );
-        ptr1 = DATA_FLAGS(flags1);
-        ptr2 = DATA_FLAGS(flags2);
-        ptr  = DATA_FLAGS(flags);
-        for ( i = 1; i <= size2; i++ )
-            *ptr++ = *ptr1++ & ~ *ptr2++;
-        for (      ; i <= size1; i++ )
-            *ptr++ = *ptr1++;
-    }        
-
-    return flags;
-}
-
-/* See blister.c for more about this */
-
-#ifdef SYS_IS_64_BIT
-#define COUNT_TRUES_BLOCK( block )                                                          \
-        do {                                                                                \
-        (block) = ((block) & 0x5555555555555555L) + (((block) >> 1) & 0x5555555555555555L); \
-        (block) = ((block) & 0x3333333333333333L) + (((block) >> 2) & 0x3333333333333333L); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f0f0f0f0fL;                        \
-        (block) = ((block) + ((block) >>  8));                                              \
-        (block) = ((block) + ((block) >> 16));                                              \
-        (block) = ((block) + ((block) >> 32)) & 0x00000000000000ffL; } while (0)            
-#else
-#define COUNT_TRUES_BLOCK( block )                                        \
-        do {                                                              \
-        (block) = ((block) & 0x55555555) + (((block) >> 1) & 0x55555555); \
-        (block) = ((block) & 0x33333333) + (((block) >> 2) & 0x33333333); \
-        (block) = ((block) + ((block) >>  4)) & 0x0f0f0f0f;               \
-        (block) = ((block) + ((block) >>  8));                            \
-        (block) = ((block) + ((block) >> 16)) & 0x000000ff; } while (0)   
-#endif
-
-
-
-/****************************************************************************
-**
-*F  FuncTRUES_FLAGS( <self>, <flags> )
-**
-**  see 'FuncPositionsTruesBlist'
-*/
-Obj FuncTRUES_FLAGS (
-    Obj                 self,
-    Obj                 flags )
-{
-    Obj                 sub;            /* handle of the result            */
-    Int                 len;            /* logical length of the list      */
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in flags         */
-    UInt                nn;
-    UInt                i;              /* loop variable                   */
-
-    /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj(
-            "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
-    }
-    if ( TRUES_FLAGS(flags) != 0 ) {
-        return TRUES_FLAGS(flags);
-    }
-
-    /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
-    nrb = NRB_FLAGS(flags);
-    ptr = (UInt*)DATA_FLAGS(flags);
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m); 
-        n += m;
-    }
-
-    /* make the sublist (we now know its size exactely)                    */
-    sub = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), n );
-    SET_LEN_PLIST( sub, n );
-
-    /* loop over the boolean list and stuff elements into <sub>            */
-    len = LEN_FLAGS( flags );
-    nn  = 1;
-    for ( i = 1; nn <= n && i <= len;  i++ ) {
-        if ( ELM_FLAGS( flags, i ) == True ) {
-            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-            nn++;
-        }
-    }
-    CHANGED_BAG(sub);
-
-    /* return the sublist                                                  */
-    SET_TRUES_FLAGS( flags, sub );
-    CHANGED_BAG(flags);
-    return sub;
-}
-
-
-/****************************************************************************
-**
-*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> )
+*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
 */
 Int IsSubsetFlagsCalls;
 Int IsSubsetFlagsCalls1;
@@ -691,14 +425,12 @@ Obj FuncIS_SUBSET_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TNUM_OBJ(flags1) != T_FLAGS ) {
-        flags1 = ErrorReturnObj(
-            "<flags1> must be a flags list (not a %s)",
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags1), 0L,
             "you can return a list for <flags1>" );
     }
     while ( TNUM_OBJ(flags2) != T_FLAGS ) {
-        flags2 = ErrorReturnObj(
-            "<flags2> must be a flags list (not a %s)",
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
             (Int)TNAM_OBJ(flags2), 0L,
             "you can return a list for <flags2>" );
     }
@@ -742,8 +474,8 @@ Obj FuncIS_SUBSET_FLAGS (
     /* compare the bit lists                                               */
     len1 = NRB_FLAGS(flags1);
     len2 = NRB_FLAGS(flags2);
-    ptr1 = DATA_FLAGS(flags1);
-    ptr2 = DATA_FLAGS(flags2);
+    ptr1 = BLOCKS_FLAGS(flags1);
+    ptr2 = BLOCKS_FLAGS(flags2);
     if ( len1 <= len2 ) {
         for ( i = 1; i <= len1; i++ ) {
             if ( (*ptr1 & *ptr2) != *ptr2 ) {
@@ -769,45 +501,226 @@ Obj FuncIS_SUBSET_FLAGS (
     return True;
 }
 
+
 /****************************************************************************
 **
-*F  FuncSIZE_FLAGS( <self>, <flags> )
-**
-**  see 'FuncSIZE_FLAGS'
+
+*F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> ) . . .  substract a flags list
 */
-Obj FuncSIZE_FLAGS (
+Obj FuncSUB_FLAGS (
     Obj                 self,
-    Obj                 flags )
+    Obj                 flags1,
+    Obj                 flags2 )
 {
-    UInt *              ptr;            /* pointer to flags                */
-    UInt                nrb;            /* number of blocks in flags       */
-    UInt                m;              /* number of bits in a block       */
-    UInt                n;              /* number of bits in flags         */
-    UInt                i;              /* loop variable                   */
+    Obj                 flags;
+    Int                 len1;
+    Int                 len2;
+    Int                 size1;
+    Int                 size2;
+    UInt *              ptr;
+    UInt *              ptr1;
+    UInt *              ptr2;
+    Int                 i;
 
-    /* get and check the first argument                                    */
-    while ( TNUM_OBJ(flags) != T_FLAGS ) {
-        flags = ErrorReturnObj(
-            "<flags> must be a flags list (not a %s)",
-            (Int)TNAM_OBJ(flags), 0L,
-            "you can return a list for <flags>" );
+    /* do some trivial checks                                              */
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags1), 0L,
+            "you can return a list for <flags1>" );
+    }
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags2), 0L,
+            "you can return a list for <flags2>" );
     }
 
-    /* get the number of blocks and a pointer                              */
-    nrb = NRB_FLAGS(flags);
-    ptr = DATA_FLAGS(flags);
-
-    /* loop over the blocks, adding the number of bits of each one         */
-    n = 0;
-    for ( i = 1; i <= nrb; i++ ) {
-        m = *ptr++;
-        COUNT_TRUES_BLOCK(m);
-        n += m;
+    /* do the real work                                                    */
+    len1   = LEN_FLAGS(flags1);
+    size1  = NRB_FLAGS(flags1);
+    len2   = LEN_FLAGS(flags2);
+    size2  = NRB_FLAGS(flags2);
+    if ( len1 < len2 ) {
+        NEW_FLAGS( flags, len1 );
+        SET_LEN_FLAGS( flags, len1 );
+        ptr1 = BLOCKS_FLAGS(flags1);
+        ptr2 = BLOCKS_FLAGS(flags2);
+        ptr  = BLOCKS_FLAGS(flags);
+        for ( i = 1; i <= size1; i++ )
+            *ptr++ = *ptr1++ & ~ *ptr2++;
     }
+    else {
+        NEW_FLAGS( flags, len1 );
+        SET_LEN_FLAGS( flags, len1 );
+        ptr1 = BLOCKS_FLAGS(flags1);
+        ptr2 = BLOCKS_FLAGS(flags2);
+        ptr  = BLOCKS_FLAGS(flags);
+        for ( i = 1; i <= size2; i++ )
+            *ptr++ = *ptr1++ & ~ *ptr2++;
+        for (      ; i <= size1; i++ )
+            *ptr++ = *ptr1++;
+    }        
 
-    /* return the number of bits                                           */
-    return INTOBJ_INT( n );
+    return flags;
 }
+
+
+/****************************************************************************
+**
+*F  FuncAND_FLAGS( <self>, <flags1>, <flags2> ) . . . .  `and' of flags lists
+*/
+#define AND_FLAGS_HASH_SIZE             50
+
+Int AndFlagsCacheHit;
+Int AndFlagsCacheMiss;
+Int AndFlagsCacheLost;
+
+Obj FuncAND_FLAGS (
+    Obj                 self,
+    Obj                 flags1,
+    Obj                 flags2 )
+{
+    Obj                 flags;
+    Int                 len1;
+    Int                 len2;
+    Int                 size1;
+    Int                 size2;
+    UInt *              ptr;
+    UInt *              ptr1;
+    UInt *              ptr2;
+    Int                 i;
+
+#ifdef AND_FLAGS_HASH_SIZE
+    Obj                 flagsX;
+    Obj                 cache;
+    Obj                 entry;
+    UInt                hash;
+    UInt                hash2;
+    static UInt         next = 0;
+#endif
+
+    /* do some trivial checks                                              */
+    while ( TNUM_OBJ(flags1) != T_FLAGS ) {
+        flags1 = ErrorReturnObj( "<flags1> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags1), 0L,
+            "you can return a list for <flags1>" );
+    }
+    while ( TNUM_OBJ(flags2) != T_FLAGS ) {
+        flags2 = ErrorReturnObj( "<flags2> must be a flags list (not a %s)",
+            (Int)TNAM_OBJ(flags2), 0L,
+            "you can return a list for <flags2>" );
+    }
+
+    /* check the cache                                                     */
+#   ifdef AND_FLAGS_HASH_SIZE
+        if ( INT_INTOBJ(flags1) < INT_INTOBJ(flags2) ) {
+            flagsX = flags2;
+            cache  = AND_CACHE_FLAGS(flags1);
+            if ( cache == 0 ) {
+                cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                SET_AND_CACHE_FLAGS( flags1, cache );
+                CHANGED_BAG(flags1);
+            }
+        }
+        else {
+            flagsX = flags1;
+            cache  = AND_CACHE_FLAGS(flags2);
+            if ( cache == 0 ) {
+                cache = NEW_PLIST( T_PLIST, 2*AND_FLAGS_HASH_SIZE );
+                SET_AND_CACHE_FLAGS( flags2, cache );
+                CHANGED_BAG(flags2);
+            }
+        }
+        hash = (UInt)INT_INTOBJ(flagsX);
+        for ( i = 0;  i < 24;  i++ ) {
+            hash2 = (hash + 97*i) % AND_FLAGS_HASH_SIZE;
+            entry = ELM_PLIST( cache, 2*hash2+1 );
+            if ( entry == 0 ) {
+                break;
+            }
+            if ( entry == flagsX ) {
+#               ifdef COUNT_OPERS
+                    AndFlagsCacheHit++;
+#               endif
+                return ELM_PLIST( cache, 2*hash2+2 );
+            }
+        }
+        if ( entry == 0 ) {
+            hash = hash2;
+        }
+        else {
+            next = (next+1) % 24;
+            hash = (hash + 97*next) % AND_FLAGS_HASH_SIZE;
+        }
+#       ifdef COUNT_OPERS
+            AndFlagsCacheMiss++;
+#       endif
+#   endif
+
+
+    /* do the real work                                                    */
+    len1   = LEN_FLAGS(flags1);
+    size1  = NRB_FLAGS(flags1);
+    len2   = LEN_FLAGS(flags2);
+    size2  = NRB_FLAGS(flags2);
+    if ( len1 == 0 ) {
+        return flags2;
+    }
+    if ( len2 == 0 ) {
+        return flags1;
+    }
+    if ( len1 < len2 ) {
+        NEW_FLAGS( flags, len2 );
+        SET_LEN_FLAGS( flags, len2 );
+        ptr1 = BLOCKS_FLAGS(flags1);
+        ptr2 = BLOCKS_FLAGS(flags2);
+        ptr  = BLOCKS_FLAGS(flags);
+        for ( i = 1; i <= size1; i++ )
+            *ptr++ = *ptr1++ | *ptr2++;
+        for (      ; i <= size2; i++ )
+            *ptr++ =           *ptr2++;
+    }
+    else {
+        NEW_FLAGS( flags, len1 );
+        SET_LEN_FLAGS( flags, len1 );
+        ptr1 = BLOCKS_FLAGS(flags1);
+        ptr2 = BLOCKS_FLAGS(flags2);
+        ptr  = BLOCKS_FLAGS(flags);
+        for ( i = 1; i <= size2; i++ )
+            *ptr++ = *ptr1++ | *ptr2++;
+        for (      ; i <= size1; i++ )
+            *ptr++ = *ptr1++;
+    }        
+
+    /* store result in the cache                                           */
+#   ifdef AND_FLAGS_HASH_SIZE
+#       ifdef COUNT_OPERS
+            if ( ELM_PLIST(cache,2*hash+1) != 0 ) {
+                    AndFlagsCacheLost++;
+            }
+#       endif
+        SET_ELM_PLIST( cache, 2*hash+1, flagsX );
+        SET_ELM_PLIST( cache, 2*hash+2, flags  );
+        CHANGED_BAG(cache);
+#   endif
+
+    /* and return the result                                               */
+    return flags;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  Countlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+*/
+Int CountFlags;
 
 
 /****************************************************************************
@@ -815,9 +728,6 @@ Obj FuncSIZE_FLAGS (
 
 *F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
-extern Obj SetterAndFilter (
-            Obj                 oper );
-
 Obj SetterFilter (
     Obj                 oper )
 {
@@ -832,11 +742,51 @@ Obj SetterFilter (
 
 /****************************************************************************
 **
+*F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
+*/
+Obj DoSetAndFilter (
+    Obj                 self,
+    Obj                 obj,
+    Obj                 val )
+{
+    Obj                 op;
+    
+    /* call the first 'and'-ed function                                    */
+    op = FLAG1_FILT( self );
+    CALL_2ARGS( op, obj, val );
+    
+    /* call the second 'and'-ed function                                   */
+    op = FLAG2_FILT( self );
+    CALL_2ARGS( op, obj, val );
+    
+    /* return 'void'                                                       */
+    return 0;
+}
+
+
+Obj SetterAndFilter (
+    Obj                 getter )
+{
+    Obj                 setter;
+
+    if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
+        setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
+                                "<<setter-and-filter>>", 2L, "obj, val",
+                                DoSetAndFilter );
+        FLAG1_FILT(setter)  = SetterFilter( FLAG1_FILT(getter) );
+        FLAG2_FILT(setter)  = SetterFilter( FLAG2_FILT(getter) );
+        SETTR_FILT(getter)  = setter;
+        CHANGED_BAG(getter);
+    }
+
+    return SETTR_FILT(getter);
+}
+        
+
+/****************************************************************************
+**
 *F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
 */
-extern Obj TesterAndFilter (
-            Obj                 oper );
-            
 Obj TesterFilter (
     Obj                 oper )
 {
@@ -851,14 +801,49 @@ Obj TesterFilter (
 
 /****************************************************************************
 **
-*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+*F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
 */
-Int CountFlags;
+Obj DoTestAndFilter (
+    Obj                 self,
+    Obj                 obj )
+{
+    Obj                 val;
+    Obj                 op;
+    
+    /* call the first 'and'-ed function                                    */
+    op = FLAG1_FILT( self );
+    val = CALL_1ARGS( op, obj );
+    if ( val != True )  return False;
+    
+    /* call the second 'and'-ed function                                   */
+    op = FLAG2_FILT( self );
+    val = CALL_1ARGS( op, obj );
+    if ( val != True )  return False;
+    
+    /* return 'true'                                                       */
+    return True;
+}
+
+
+Obj TesterAndFilter (
+    Obj                 getter )
+{
+    Obj                 tester;
+
+    if ( TESTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
+        tester = NewAndFilter( TesterFilter( FLAG1_FILT(getter) ),
+                               TesterFilter( FLAG2_FILT(getter) ) );
+        TESTR_FILT(getter) = tester;
+        CHANGED_BAG(getter);
+
+    }
+    return TESTR_FILT(getter);
+}
 
 
 /****************************************************************************
 **
-*F  NewFilter( <name> )  . . . . . . . . . . . . . . . . .  make a new filter
+*F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
 Obj DoTestFilter (
     Obj                 self,
@@ -866,9 +851,6 @@ Obj DoTestFilter (
 {
     return True;
 }
-
-extern  Obj             ReturnTrueFilter;
-
 
 Obj NewTesterFilter (
     Obj                 getter )
@@ -917,14 +899,16 @@ Obj DoSetFilter (
     return 0;
 }
 
+static Obj StringFilterSetter;
+static Obj ArglistObjVal;
 
 Obj NewSetterFilter (
     Obj                 getter )
 {
     Obj                 setter;
 
-    setter = NewOperationC( "<<filter-setter>>", 2L, "obj, val",
-                                DoSetFilter );
+    setter = NewOperation( StringFilterSetter, 2, ArglistObjVal,
+                           DoSetFilter );
     FLAG1_FILT(setter)  = FLAG1_FILT(getter);
     FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
     CHANGED_BAG(setter);
@@ -979,7 +963,7 @@ Obj NewFilter (
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag1) );
+    NEW_FLAGS( flags, flag1 );
     SET_LEN_FLAGS( flags, flag1 );
     SET_ELM_FLAGS( flags, flag1, True );
     FLAGS_FILT(getter)  = flags;
@@ -997,10 +981,14 @@ Obj NewFilter (
 }
 
 
+/****************************************************************************
+**
+*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
+*/
 Obj NewFilterC (
-    SYS_CONST Char *    name,
+    const Char *        name,
     Int                 narg,
-    SYS_CONST Char *    nams,
+    const Char *        nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;
@@ -1014,7 +1002,7 @@ Obj NewFilterC (
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoFilter) );
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag1) );
+    NEW_FLAGS( flags, flag1 );
     SET_LEN_FLAGS( flags, flag1 );
     SET_ELM_FLAGS( flags, flag1, True );
     FLAGS_FILT(getter)  = flags;
@@ -1031,108 +1019,6 @@ Obj NewFilterC (
     return getter;    
 }
 
-
-Obj NewFilterHandler (
-    Obj                 self,
-    Obj                 name )
-{
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewFilter( <name> )",0L,0L);
-        return 0;
-    }
-
-    /* make the new operation                                              */
-    return NewFilter( name, 1L, (Obj)0, (ObjFunc)0 );
-}
-
-
-/****************************************************************************
-**
-*F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
-*/
-Obj DoTestAndFilter (
-    Obj                 self,
-    Obj                 obj )
-{
-    Obj                 val;
-    Obj                 op;
-    
-    /* call the first 'and'-ed function                                    */
-    op = FLAG1_FILT( self );
-    val = CALL_1ARGS( op, obj );
-    if ( val != True )  return False;
-    
-    /* call the second 'and'-ed function                                   */
-    op = FLAG2_FILT( self );
-    val = CALL_1ARGS( op, obj );
-    if ( val != True )  return False;
-    
-    /* return 'true'                                                       */
-    return True;
-}
-
-
-Obj TesterAndFilter (
-    Obj                 getter )
-{
-    Obj                 tester;
-
-    if ( TESTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-
-        tester = NewAndFilter( TesterFilter( FLAG1_FILT(getter) ),
-                               TesterFilter( FLAG2_FILT(getter) ) );
-
-        TESTR_FILT(getter) = tester;
-        CHANGED_BAG(getter);
-
-    }
-    return TESTR_FILT(getter);
-}
-
-
-/****************************************************************************
-**
-*F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
-*/
-Obj DoSetAndFilter (
-    Obj                 self,
-    Obj                 obj,
-    Obj                 val )
-{
-    Obj                 op;
-    
-    /* call the first 'and'-ed function                                    */
-    op = FLAG1_FILT( self );
-    CALL_2ARGS( op, obj, val );
-    
-    /* call the second 'and'-ed function                                   */
-    op = FLAG2_FILT( self );
-    CALL_2ARGS( op, obj, val );
-    
-    /* return 'void'                                                       */
-    return 0;
-}
-
-
-Obj SetterAndFilter (
-    Obj                 getter )
-{
-    Obj                 setter;
-
-    if ( SETTR_FILT( getter ) == INTOBJ_INT(0xBADBABE) ) {
-        setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                                "<<setter-and-filter>>", 2L, "obj, val",
-                                DoSetAndFilter );
-        FLAG1_FILT(setter)  = SetterFilter( FLAG1_FILT(getter) );
-        FLAG2_FILT(setter)  = SetterFilter( FLAG2_FILT(getter) );
-        SETTR_FILT(getter)  = setter;
-        CHANGED_BAG(getter);
-    }
-
-    return SETTR_FILT(getter);
-}
-        
 
 /****************************************************************************
 **
@@ -1159,6 +1045,8 @@ Obj DoAndFilter (
     return True;
 }
 
+static Obj StringAndFilter;
+static Obj ArglistObj;
 
 Obj NewAndFilter (
     Obj                 oper1,
@@ -1170,9 +1058,8 @@ Obj NewAndFilter (
     if ( oper1 == ReturnTrueFilter && oper2 == ReturnTrueFilter )
         return ReturnTrueFilter;
 
-    getter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                            "<<and-filter>>", 1L, "obj",
-                            DoAndFilter );
+    getter = NewFunctionT( T_FUNCTION, SIZE_OPER, StringAndFilter, 1,
+                           ArglistObj, DoAndFilter );
     FLAG1_FILT(getter)  = oper1;
     FLAG2_FILT(getter)  = oper2;
     flags = FuncAND_FLAGS( 0, FLAGS_FILT(oper1), FLAGS_FILT(oper2) );
@@ -1187,7 +1074,15 @@ Obj NewAndFilter (
 
 /****************************************************************************
 **
-*F  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
+
+*V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
+*/
+Obj ReturnTrueFilter;
+
+
+/****************************************************************************
+**
+*F  NewReturnTrueFilter() . . . . . . . . . . create a new return true filter
 */
 Obj DoTestReturnTrueFilter (
     Obj                 self,
@@ -1200,6 +1095,7 @@ Obj TesterReturnTrueFilter (
     Obj                 getter )
 {
     Obj                 tester;
+
     tester = getter;
     return getter;
 }
@@ -1210,8 +1106,7 @@ Obj DoSetReturnTrueFilter (
     Obj                 val )
 {
     if ( val != True ) {
-         ErrorReturnVoid(
-             "you cannot set this flag to 'false'",
+         ErrorReturnVoid( "you cannot set this flag to 'false'",
              0L, 0L,
              "you can return to ignore it" );
     }
@@ -1224,8 +1119,8 @@ Obj SetterReturnTrueFilter (
     Obj                 setter;
 
     setter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                                "<<setter-true-filter>>", 2L, "obj, val",
-                                DoSetReturnTrueFilter );
+        "<<setter-true-filter>>", 2L, "obj, val",
+        DoSetReturnTrueFilter );
     FLAG1_FILT(setter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(setter)  = INTOBJ_INT( 0 );
     CHANGED_BAG(setter);
@@ -1248,11 +1143,11 @@ Obj NewReturnTrueFilter ( void )
     Obj                 flags;
 
     getter = NewFunctionCT( T_FUNCTION, SIZE_OPER,
-                                "ReturnTrueFilter", 1L, "obj",
-                                DoReturnTrueFilter );
+        "ReturnTrueFilter", 1L, "obj",
+        DoReturnTrueFilter );
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( 0 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(0) );
+    NEW_FLAGS( flags, 0 );
     SET_LEN_FLAGS( flags, 0 );
     FLAGS_FILT(getter)  = flags;
     CHANGED_BAG(getter);
@@ -1268,37 +1163,40 @@ Obj NewReturnTrueFilter ( void )
     return getter;
 }
 
-Obj ReturnTrueFilter;
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * GAP filter functions * * * * * * * * * * * * * *
+*/
 
 
 /****************************************************************************
 **
 
-*F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
+*F  FuncNEW_FILTER( <self>, <name> )  . . . . . . . . . . . . .  new filter
 */
-Obj IsOperationFilt;
-
-Obj FuncIS_OPERATION (
+Obj FuncNEW_FILTER (
     Obj                 self,
-    Obj                 obj )
+    Obj                 name )
 {
-    if ( TNUM_OBJ(obj) == T_FUNCTION && IS_OPERATION(obj) ) {
-        return True;
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit("usage: NewFilter( <name> )",0L,0L);
+        return 0;
     }
-    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
-        return False;
-    }
-    else {
-        return DoFilter( self, obj );
-    }
+
+    /* make the new operation                                              */
+    return NewFilter( name, 1L, (Obj)0, (ObjFunc)0 );
 }
 
 
 /****************************************************************************
 **
-*F  FuncFlag1Filter( <self>, <oper> )
+
+*F  FuncFLAG1_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG1_FILT'
 */
-Obj FuncFlag1Filter (
+Obj FuncFLAG1_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1309,16 +1207,17 @@ Obj FuncFlag1Filter (
         return 0;
     }
     flag1 = FLAG1_FILT( oper );
-    if ( flag1 == 0 )  flag1 = INTOBJ_INT( 0 );
+    if ( flag1 == 0 )
+        flag1 = INTOBJ_INT(0);
     return flag1;
 }
 
 
 /****************************************************************************
 **
-*F  FuncSetFlag1Filter( <self>, <oper>, <flag1> )
+*F  FuncSET_FLAG1_FILTER( <self>, <oper>, <flag1> ) . . . .  set `FLAG1_FILT'
 */
-Obj FuncSetFlag1Filter (
+Obj FuncSET_FLAG1_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flag1 )
@@ -1334,9 +1233,9 @@ Obj FuncSetFlag1Filter (
 
 /****************************************************************************
 **
-*F  FuncFlag2Filter( <self>, <oper> )
+*F  FuncFLAG2_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAG2_FILT'
 */
-Obj FuncFlag2Filter (
+Obj FuncFLAG2_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1347,16 +1246,17 @@ Obj FuncFlag2Filter (
         return 0;
     }
     flag2 = FLAG2_FILT( oper );
-    if ( flag2 == 0 )  flag2 = INTOBJ_INT( 0 );
+    if ( flag2 == 0 )
+        flag2 = INTOBJ_INT(0);
     return flag2;
 }
 
 
 /****************************************************************************
 **
-*F  FuncSetFlag2Filter( <self>, <oper>, <flag2> )
+*F  FuncSET_FLAG2_FILTER( <self>, <oper>, <flag2> ) . . . .  set `FLAG2_FILT'
 */
-Obj FuncSetFlag2Filter (
+Obj FuncSET_FLAG2_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flag2 )
@@ -1372,9 +1272,9 @@ Obj FuncSetFlag2Filter (
 
 /****************************************************************************
 **
-*F  FuncFlagsFilter( <self>, <oper> )
+*F  FuncFLAGS_FILTER( <self>, <oper> )  . . . . . . . . . . . .  `FLAGS_FILT'
 */
-Obj FuncFlagsFilter (
+Obj FuncFLAGS_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1385,16 +1285,17 @@ Obj FuncFlagsFilter (
         return 0;
     }
     flags = FLAGS_FILT( oper );
-    if ( flags == 0 )  flags = False;
+    if ( flags == 0 )
+        flags = False;
     return flags;
 }
 
 
 /****************************************************************************
 **
-*F  FuncSetFlagsFilter( <self>, <oper>, <flags> )
+*F  FuncSET_FLAGS_FILTER( <self>, <oper>, <flags> ) . . . .  set `FLAGS_FILT'
 */
-Obj FuncSetFlagsFilter (
+Obj FuncSET_FLAGS_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 flags )
@@ -1410,9 +1311,10 @@ Obj FuncSetFlagsFilter (
 
 /****************************************************************************
 **
-*F  FuncSetterFilter( <self>, <oper> )
+
+*F  FuncSETTER_FILTER( <self>, <oper> ) . . . . . . . . .  setter of a filter
 */
-Obj FuncSetterFilter (
+Obj FuncSETTER_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1430,9 +1332,9 @@ Obj FuncSetterFilter (
 
 /****************************************************************************
 **
-*F  FuncSetSetterFilter( <self>, <oper>, <setter> )
+*F  FuncSET_SETTER_FILTER( <self>, <oper>, <setter> )  set setter of a filter
 */
-Obj FuncSetSetterFilter (
+Obj FuncSET_SETTER_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 setter )
@@ -1448,9 +1350,9 @@ Obj FuncSetSetterFilter (
 
 /****************************************************************************
 **
-*F  FuncTesterFilter( <self>, <oper> )
+*F  FuncTESTER_FILTER( <self>, <oper> ) . . . . . . . . .  tester of a filter
 */
-Obj FuncTesterFilter (
+Obj FuncTESTER_FILTER (
     Obj                 self,
     Obj                 oper )
 {
@@ -1468,9 +1370,9 @@ Obj FuncTesterFilter (
 
 /****************************************************************************
 **
-*F  FuncSetTesterFilter( <self>, <oper>, <tester> )
+*F  FuncSET_TESTER_FILTER( <self>, <oper>, <tester> )  set tester of a filter
 */
-Obj FuncSetTesterFilter (
+Obj FuncSET_TESTER_FILTER (
     Obj                 self,
     Obj                 oper,
     Obj                 tester )
@@ -1489,90 +1391,15 @@ Obj FuncSetTesterFilter (
 
 /****************************************************************************
 **
-*F  FuncMethodsOperation( <self>, <oper>, <narg> )  . . . . .  list of method
+
+*F * * * * * * * * * *  internal operation functions  * * * * * * * * * * * *
 */
-Obj FuncMethodsOperation (
-    Obj                 self,
-    Obj                 oper,
-    Obj                 narg )
-{
-    Int                 n;
-    Obj                 meth;
-
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
-    }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
-    }
-    n = INT_INTOBJ( narg );
-    meth = MethsOper( oper, n );
-    return meth == 0 ? Fail : meth;
-}
-
-
-/****************************************************************************
-**
-*F  FuncChangedMethodsOperation( <self>, <oper>, <narg> )
-*/
-Obj FuncChangedMethodsOperation (
-    Obj                 self,
-    Obj                 oper,
-    Obj                 narg )
-{
-    Obj *               cache;
-    Int                 n;
-    Int                 i;
-
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
-    }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
-    }
-    n = INT_INTOBJ( narg );
-    cache = ADDR_OBJ( CacheOper( oper, n ) );
-    for ( i = 0;  i < SIZE_OBJ(CACHE_OPER(oper,n)) / sizeof(Obj);  i++ ) {
-        cache[i] = 0;
-    }
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncSetMethodsOperation( <self>, <oper>, <narg>, <list> )
-*/
-Obj FuncSetMethodsOperation (
-    Obj                 self,
-    Obj                 oper,
-    Obj                 narg,
-    Obj                 meths )
-{
-    Int                 n;
-
-    if ( ! IS_OPERATION(oper) ) {
-        ErrorQuit("<oper> must be an operation",0L,0L);
-        return 0;
-    }
-    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
-        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
-        return 0;
-    }
-    n = INT_INTOBJ( narg );
-    METHS_OPER( oper, n ) = meths;
-    return 0;
-}
 
 
 /****************************************************************************
 **
 
-*F  NewOperation( <name> ) . . . . . . . . . . . . . . . make a new operation
+*F  DoOperation( <name> ) . . . . . . . . . . . . . . .  make a new operation
 */
 UInt CacheIndex;
 
@@ -1613,11 +1440,25 @@ Obj NextVMethodXArgs;
 
 /****************************************************************************
 **
-*f  DoOperation0Args( <oper> )
+**  DoOperation0Args( <oper> )
 */
 Int OperationHit;
 Int OperationMiss;
 Int OperationNext;
+
+Obj CacheOper (
+    Obj                 oper,
+    UInt                i )
+{
+    Obj                 cache;
+    cache = CACHE_OPER( oper, i );
+    if ( cache == 0 ) {
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
+        CACHE_OPER( oper, i ) = cache;
+        CHANGED_BAG( oper );
+    }
+    return cache;
+}
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -1673,7 +1514,7 @@ Obj DoOperation0Args (
 
 /****************************************************************************
 **
-*f  DoOperation1Args( <oper>, <a1> )
+**  DoOperation1Args( <oper>, <a1> )
 */
 Obj DoOperation1Args (
     Obj                 oper,
@@ -1756,7 +1597,7 @@ Obj DoOperation1Args (
 
 /****************************************************************************
 **
-*f  DoOperation2Args( <oper>, <a1>, <a2> )
+**  DoOperation2Args( <oper>, <a1>, <a2> )
 */
 Obj DoOperation2Args (
     Obj                 oper,
@@ -1848,7 +1689,7 @@ Obj DoOperation2Args (
 
 /****************************************************************************
 **
-*f  DoOperation3Args( <oper>, <a1>, <a2>, <a3> )
+**  DoOperation3Args( <oper>, <a1>, <a2>, <a3> )
 */
 Obj DoOperation3Args (
     Obj                 oper,
@@ -1949,7 +1790,7 @@ Obj DoOperation3Args (
 
 /****************************************************************************
 **
-*f  DoOperation4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+**  DoOperation4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
 */
 Obj DoOperation4Args (
     Obj                 oper,
@@ -2060,7 +1901,7 @@ Obj DoOperation4Args (
 
 /****************************************************************************
 **
-*f  DoOperation5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+**  DoOperation5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
 */
 Obj DoOperation5Args (
     Obj                 oper,
@@ -2188,7 +2029,7 @@ Obj DoOperation5Args (
 
 /****************************************************************************
 **
-*f  DoOperation6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+**  DoOperation6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
 */
 Obj DoOperation6Args (
     Obj                 oper,
@@ -2334,7 +2175,7 @@ Obj DoOperation6Args (
 
 /****************************************************************************
 **
-*f  DoOperationXArgs( <oper>, ... )
+**  DoOperationXArgs( <oper>, ... )
 */
 Obj DoOperationXArgs (
     Obj                 self,
@@ -2347,7 +2188,7 @@ Obj DoOperationXArgs (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation0Args( <oper> )
+**  DoVerboseOperation0Args( <oper> )
 */
 Obj DoVerboseOperation0Args (
     Obj                 oper )
@@ -2385,7 +2226,7 @@ Obj DoVerboseOperation0Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation1Args( <oper>, <a1> )
+**  DoVerboseOperation1Args( <oper>, <a1> )
 */
 Obj DoVerboseOperation1Args (
     Obj                 oper,
@@ -2429,7 +2270,7 @@ Obj DoVerboseOperation1Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation2Args( <oper>, <a1>, <a2> )
+**  DoVerboseOperation2Args( <oper>, <a1>, <a2> )
 */
 Obj DoVerboseOperation2Args (
     Obj                 oper,
@@ -2476,7 +2317,7 @@ Obj DoVerboseOperation2Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation3Args( <oper>, <a1>, <a2>, <a3> )
+**  DoVerboseOperation3Args( <oper>, <a1>, <a2>, <a3> )
 */
 Obj DoVerboseOperation3Args (
     Obj                 oper,
@@ -2526,7 +2367,7 @@ Obj DoVerboseOperation3Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+**  DoVerboseOperation4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
 */
 Obj DoVerboseOperation4Args (
     Obj                 oper,
@@ -2579,7 +2420,7 @@ Obj DoVerboseOperation4Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+**  DoVerboseOperation5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
 */
 Obj DoVerboseOperation5Args (
     Obj                 oper,
@@ -2645,7 +2486,7 @@ Obj DoVerboseOperation5Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperation6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+**  DoVerboseOperation6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
 */
 Obj DoVerboseOperation6Args (
     Obj                 oper,
@@ -2723,7 +2564,7 @@ Obj DoVerboseOperation6Args (
 
 /****************************************************************************
 **
-*f  DoVerboseOperationXArgs( <oper>, ... )
+**  DoVerboseOperationXArgs( <oper>, ... )
 */
 Obj DoVerboseOperationXArgs (
     Obj                 self,
@@ -2736,7 +2577,7 @@ Obj DoVerboseOperationXArgs (
 
 /****************************************************************************
 **
-*f  NewOperation( <name>, <narg>, <nams>, <hdlr> )
+*F  NewOperation( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewOperation (
     Obj                 name,
@@ -2791,12 +2632,12 @@ Obj NewOperation (
 
 /****************************************************************************
 **
-*f  NewOperationC( <name>, <narg>, <nams>, <hdlr> )
+*F  NewOperationC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewOperationC (
-    SYS_CONST Char *    name,
+    const Char *        name,
     Int                 narg,
-    SYS_CONST Char *    nams,
+    const Char *        nams,
     ObjFunc             hdlr )
 {
     Obj                 oper;
@@ -2846,27 +2687,8 @@ Obj NewOperationC (
 
 /****************************************************************************
 **
-*f  NewOperationHandler( <name> )
-*/
-Obj NewOperationHandler (
-    Obj                 self,
-    Obj                 name )
-{
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewOperation( <name> )",0L,0L);
-        return 0;
-    }
 
-    /* make the new operation                                              */
-    return NewOperation( name, -1L, (Obj)0, DoOperationXArgs );
-}
-
-
-/****************************************************************************
-**
-
-*F  NewConstructor( <name> )  . . . . . . . . . . . .  make a new constructor
+*F  DoConstructor( <name> ) . . . . . . . . . . . . .  make a new constructor
 */
 UInt CacheIndex;
 
@@ -2907,7 +2729,7 @@ Obj NextVConstructorXArgs;
 
 /****************************************************************************
 **
-*f  DoConstructor0Args( <oper> )
+**  DoConstructor0Args( <oper> )
 */
 Obj DoConstructor0Args (
     Obj                 oper )
@@ -2963,7 +2785,7 @@ Obj DoConstructor0Args (
 
 /****************************************************************************
 **
-*f  DoConstructor1Args( <oper>, <a1> )
+**  DoConstructor1Args( <oper>, <a1> )
 */
 Obj DoConstructor1Args (
     Obj                 oper,
@@ -3049,7 +2871,7 @@ Obj DoConstructor1Args (
 
 /****************************************************************************
 **
-*f  DoConstructor2Args( <oper>, <a1>, <a2> )
+**  DoConstructor2Args( <oper>, <a1>, <a2> )
 */
 Obj DoConstructor2Args (
     Obj                 oper,
@@ -3144,7 +2966,7 @@ Obj DoConstructor2Args (
 
 /****************************************************************************
 **
-*f  DoConstructor3Args( <oper>, <a1>, <a2>, <a3> )
+**  DoConstructor3Args( <oper>, <a1>, <a2>, <a3> )
 */
 Obj DoConstructor3Args (
     Obj                 oper,
@@ -3248,7 +3070,7 @@ Obj DoConstructor3Args (
 
 /****************************************************************************
 **
-*f  DoConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+**  DoConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
 */
 Obj DoConstructor4Args (
     Obj                 oper,
@@ -3362,7 +3184,7 @@ Obj DoConstructor4Args (
 
 /****************************************************************************
 **
-*f  DoConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+**  DoConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
 */
 Obj DoConstructor5Args (
     Obj                 oper,
@@ -3493,7 +3315,7 @@ Obj DoConstructor5Args (
 
 /****************************************************************************
 **
-*f  DoConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+**  DoConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
 */
 Obj DoConstructor6Args (
     Obj                 oper,
@@ -3642,7 +3464,7 @@ Obj DoConstructor6Args (
 
 /****************************************************************************
 **
-*f  DoConstructorXArgs( <oper>, ... )
+**  DoConstructorXArgs( <oper>, ... )
 */
 Obj DoConstructorXArgs (
     Obj                 self,
@@ -3655,7 +3477,7 @@ Obj DoConstructorXArgs (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor0Args( <oper> )
+**  DoVerboseConstructor0Args( <oper> )
 */
 Obj DoVerboseConstructor0Args (
     Obj                 oper )
@@ -3693,7 +3515,7 @@ Obj DoVerboseConstructor0Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor1Args( <oper>, <a1> )
+**  DoVerboseConstructor1Args( <oper>, <a1> )
 */
 Obj DoVerboseConstructor1Args (
     Obj                 oper,
@@ -3741,7 +3563,7 @@ Obj DoVerboseConstructor1Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor2Args( <oper>, <a1>, <a2> )
+**  DoVerboseConstructor2Args( <oper>, <a1>, <a2> )
 */
 Obj DoVerboseConstructor2Args (
     Obj                 oper,
@@ -3792,7 +3614,7 @@ Obj DoVerboseConstructor2Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor3Args( <oper>, <a1>, <a2>, <a3> )
+**  DoVerboseConstructor3Args( <oper>, <a1>, <a2>, <a3> )
 */
 Obj DoVerboseConstructor3Args (
     Obj                 oper,
@@ -3846,7 +3668,7 @@ Obj DoVerboseConstructor3Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+**  DoVerboseConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
 */
 Obj DoVerboseConstructor4Args (
     Obj                 oper,
@@ -3903,7 +3725,7 @@ Obj DoVerboseConstructor4Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+**  DoVerboseConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
 */
 Obj DoVerboseConstructor5Args (
     Obj                 oper,
@@ -3973,7 +3795,7 @@ Obj DoVerboseConstructor5Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+**  DoVerboseConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
 */
 Obj DoVerboseConstructor6Args (
     Obj                 oper,
@@ -4055,7 +3877,7 @@ Obj DoVerboseConstructor6Args (
 
 /****************************************************************************
 **
-*f  DoVerboseConstructorXArgs( <oper>, ... )
+**  DoVerboseConstructorXArgs( <oper>, ... )
 */
 Obj DoVerboseConstructorXArgs (
     Obj                 self,
@@ -4068,7 +3890,7 @@ Obj DoVerboseConstructorXArgs (
 
 /****************************************************************************
 **
-*f  NewConstructor( <name>, <narg>, <nams>, <hdlr> )
+*F  NewConstructor( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewConstructor (
     Obj                 name,
@@ -4123,7 +3945,7 @@ Obj NewConstructor (
 
 /****************************************************************************
 **
-*f  NewConstructorC( <name>, <narg>, <nams>, <hdlr> )
+*F  NewConstructorC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewConstructorC (
     Char *              name,
@@ -4178,33 +4000,14 @@ Obj NewConstructorC (
 
 /****************************************************************************
 **
-*f  NewConstructorHandler( <name> )
-*/
-Obj NewConstructorHandler (
-    Obj                 self,
-    Obj                 name )
-{
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewConstructor( <name> )",0L,0L);
-        return 0;
-    }
 
-    /* make the new constructor                                            */
-    return NewConstructor( name, -1L, (Obj)0, DoConstructorXArgs );
-}
-
-
-/****************************************************************************
-**
-
-*F  NewAttribute( <name> )  . . . . . . . . . . . . . .  make a new attribute
+*F  DoAttribute( <name> ) . . . . . . . . . . . . . . .  make a new attribute
 */
 
 
 /****************************************************************************
 **
-*f  DoTestAttribute( <attr>, <obj> )
+**  DoTestAttribute( <attr>, <obj> )
 */
 Obj DoTestAttribute (
     Obj                 self,
@@ -4233,7 +4036,7 @@ Obj DoTestAttribute (
 
 /****************************************************************************
 **
-*f  DoAttribute( <attr>, <obj> )
+**  DoAttribute( <attr>, <obj> )
 */
 #define DoSetAttribute  DoOperation2Args
 
@@ -4279,7 +4082,7 @@ Obj DoAttribute (
 
 /****************************************************************************
 **
-*f  DoVerboseAttribute( <attr>, <obj> )
+**  DoVerboseAttribute( <attr>, <obj> )
 */
 #define DoVerboseSetAttribute  DoVerboseOperation2Args
 
@@ -4325,7 +4128,7 @@ Obj DoVerboseAttribute (
 
 /****************************************************************************
 **
-*f  DoMutableAttribute( <attr>, <obj> )
+**  DoMutableAttribute( <attr>, <obj> )
 */
 Obj DoMutableAttribute (
     Obj                 self,
@@ -4369,7 +4172,7 @@ Obj DoMutableAttribute (
 
 /****************************************************************************
 **
-*f  DoVerboseMutableAttribute( <attr>, <obj> )
+**  DoVerboseMutableAttribute( <attr>, <obj> )
 */
 Obj DoVerboseMutableAttribute (
     Obj                 self,
@@ -4413,7 +4216,7 @@ Obj DoVerboseMutableAttribute (
 
 /****************************************************************************
 **
-*f  NewAttribute( <name>, <narg>, <nams>, <hdlr> )
+*F  NewAttribute( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewAttribute (
     Obj                 name,
@@ -4449,7 +4252,7 @@ Obj NewAttribute (
                            DoTestAttribute );    
     FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
     FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4457,10 +4260,24 @@ Obj NewAttribute (
     TESTR_FILT(tester)  = ReturnTrueFilter;
     CHANGED_BAG(tester);
 
-    getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
+    /* We use the value narg = -1 to signal that this is a real GAP
+       attribute, for which methods of any arity may be installed
+       For other than arity one, it behaves like an Operation.
+
+       We actually create a normal Operation and then overwrite the
+       one-argument method later */
+    
+    if (narg != -1)
+      getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoAttribute) ); 
+    else
+      {
+	getter = NewOperation( name, -1L, nams, (ObjFunc)0 );
+	HDLR_FUNC(getter,1) = (hdlr ? hdlr : DoAttribute);
+      }
+    
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4474,12 +4291,12 @@ Obj NewAttribute (
 
 /****************************************************************************
 **
-*f  NewAttributeC( <name>, <narg>, <nams>, <hdlr> )
+*F  NewAttributeC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewAttributeC (
-    SYS_CONST Char *    name,
+    const Char *        name,
     Int                 narg,
-    SYS_CONST Char *    nams,
+    const Char *        nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;
@@ -4510,7 +4327,7 @@ Obj NewAttributeC (
                            DoTestAttribute );    
     FLAG1_FILT(tester)  = INTOBJ_INT( 0 );
     FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4521,7 +4338,7 @@ Obj NewAttributeC (
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoAttribute) );
     FLAG1_FILT(getter)  = INTOBJ_INT( 0 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4535,46 +4352,8 @@ Obj NewAttributeC (
 
 /****************************************************************************
 **
-*f  NewAttributeHandler( <name> )
-*/
-Obj NewAttributeHandler (
-    Obj                 self,
-    Obj                 name )
-{
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewAttribute( <name> )",0L,0L);
-        return 0;
-    }
 
-    /* make the new operation                                              */
-    return NewAttribute( name, 1L, (Obj)0, DoAttribute );
-}
-
-
-/****************************************************************************
-**
-*f  NewMutableAttributeHandler( <name> )
-*/
-Obj NewMutableAttributeHandler (
-    Obj                 self,
-    Obj                 name )
-{
-    /* check the argument                                                  */
-    if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewMutableAttribute( <name> )",0L,0L);
-        return 0;
-    }
-
-    /* make the new operation                                              */
-    return NewAttribute( name, 1L, (Obj)0, DoMutableAttribute );
-}
-
-
-/****************************************************************************
-**
-
-*F  NewProperty( <name> ) . . . . . . . . . . . . . . . . make a new property
+*F  DoProperty( <name> )  . . . . . . . . . . . . . . . . make a new property
 */
 Obj SET_FILTER_OBJ;
 
@@ -4583,7 +4362,7 @@ Obj RESET_FILTER_OBJ;
 
 /****************************************************************************
 **
-*f  DoTestProperty( <prop>, <obj> )
+**  DoTestProperty( <prop>, <obj> )
 */
 Obj DoTestProperty (
     Obj                 self,
@@ -4614,7 +4393,7 @@ Obj DoTestProperty (
 
 /****************************************************************************
 **
-*f  DoSetProperty( <prop>, <obj>, <val> )
+**  DoSetProperty( <prop>, <obj>, <val> )
 */
 Obj DoSetProperty (
     Obj                 self,
@@ -4662,6 +4441,12 @@ Obj DoSetProperty (
         flags = (val == True ? self : TESTR_FILT(self));
         CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
+    else if ( IS_PLIST(obj) || IS_RANGE(obj) || IS_STRING_REP(obj)
+           || IS_BLIST_REP(obj) )  {
+	if ( val == True ) {
+	    FuncSET_FILTER_LIST( 0, obj, self );
+	}
+    }
     else {
         ErrorReturnVoid(
             "value cannot be set for internal objects",
@@ -4676,7 +4461,7 @@ Obj DoSetProperty (
 
 /****************************************************************************
 **
-*f  DoProperty( <prop>, <obj> )
+**  DoProperty( <prop>, <obj> )
 */
 Obj DoProperty (
     Obj                 self,
@@ -4727,7 +4512,7 @@ Obj DoProperty (
 
 /****************************************************************************
 **
-*f  DoVerboseProperty( <prop>, <obj> )
+**  DoVerboseProperty( <prop>, <obj> )
 */
 Obj DoVerboseProperty (
     Obj                 self,
@@ -4776,7 +4561,7 @@ Obj DoVerboseProperty (
 
 /****************************************************************************
 **
-*f  NewProperty( <name>, <narg>, <nams>, <hdlr> )
+*F  NewProperty( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewProperty (
     Obj                 name,
@@ -4814,7 +4599,7 @@ Obj NewProperty (
                            DoTestProperty );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4825,7 +4610,7 @@ Obj NewProperty (
     getter = NewOperation( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     SET_ELM_FLAGS( flags, flag1, True );
@@ -4846,12 +4631,12 @@ Obj NewProperty (
 
 /****************************************************************************
 **
-*f  NewPropertyC( <name>, <narg>, <nams>, <hdlr> )
+*F  NewPropertyC( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewPropertyC (
-    SYS_CONST Char *    name,
+    const Char *        name,
     Int                 narg,
-    SYS_CONST Char *    nams,
+    const Char *        nams,
     ObjFunc             hdlr )
 {
     Obj                 getter;
@@ -4884,7 +4669,7 @@ Obj NewPropertyC (
                            DoTestProperty );    
     FLAG1_FILT(tester)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(tester)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     FLAGS_FILT(tester)  = flags;
@@ -4895,7 +4680,7 @@ Obj NewPropertyC (
     getter = NewOperationC( name, 1L, nams, (hdlr ? hdlr : DoProperty) );
     FLAG1_FILT(getter)  = INTOBJ_INT( flag1 );
     FLAG2_FILT(getter)  = INTOBJ_INT( flag2 );
-    flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(flag2) );
+    NEW_FLAGS( flags, flag2 );
     SET_LEN_FLAGS( flags, flag2 );
     SET_ELM_FLAGS( flags, flag2, True );
     SET_ELM_FLAGS( flags, flag1, True );
@@ -4916,9 +4701,249 @@ Obj NewPropertyC (
 
 /****************************************************************************
 **
-*f  NewPropertyHandler( <self>, <name> )
+
+*F  DoOperationArgs( <name> ) . . . . . . . . . . . make a new operation args
 */
-Obj NewPropertyHandler (
+
+
+/****************************************************************************
+**
+**  DoUninstalledOperationArgs( <oper>, <args> )
+*/
+Obj DoUninstalledOperationArgs (
+    Obj                 oper,
+    Obj                 args )
+{
+    ErrorQuit( "%s: function is not yet defined",
+               (Int)CSTR_STRING(NAME_FUNC(oper)), 0L );
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  NewOperationArgs( <name>, <nargs>, <nams> )
+*/
+Obj NewOperationArgs (
+    Obj                 name,
+    Int                 narg,
+    Obj                 nams )
+{
+    Obj                 func;
+
+    /* create the function                                                 */
+    func = NewFunctionT( T_FUNCTION, SIZE_FUNC, name, narg, nams, 
+                         DoUninstalledOperationArgs );
+
+    /* check the number of args                                            */
+    if ( narg == -1 ) {
+        HDLR_FUNC(func,0) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,1) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,2) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,3) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,4) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,5) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,6) = DoUninstalledOperationArgs;
+        HDLR_FUNC(func,7) = DoUninstalledOperationArgs;
+    }
+    else {
+        ErrorQuit("number of args must be -1 in `NewOperationArgs'",0L,0L);
+        return 0;
+    }
+
+    /* added the name                                                      */
+    NAME_FUNC(func) = CopyObj( name, 0 );
+
+    /* and return                                                          */
+    return func;
+}
+
+
+/****************************************************************************
+**
+*F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
+**
+**  There is a problem  with uncompleted functions: if  they are  cloned then
+**  only   the orignal and not  the  clone will be  completed.  Therefore the
+**  clone must postpone the real cloning.
+*/
+void InstallMethodArgs (
+    Obj                 oper,
+    Obj                 func )
+{
+    Obj                 name;
+    Int                 i;
+
+    /* get the name                                                        */
+    name = NAME_FUNC(oper);
+
+    /* clone the function                                                  */
+    if ( SIZE_OBJ(oper) != SIZE_OBJ(func) ) {
+        ErrorQuit( "size mismatch of function bags", 0L, 0L );
+    }
+
+    /* catch uncompleted functions                                         */
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+        for ( i = 0;  i < SIZE_OBJ(func)/sizeof(Obj);  i++ ) {
+            ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
+        }
+        BODY_FUNC(oper) = func;
+    }
+
+    /* clone the functions                                                 */
+    else {
+        for ( i = 0;  i < SIZE_OBJ(func)/sizeof(Obj);  i++ ) {
+            ADDR_OBJ(oper)[i] = ADDR_OBJ(func)[i];
+        }
+    }
+    NAME_FUNC(oper) = name;
+    CHANGED_BAG(oper);
+}
+
+
+/****************************************************************************
+**
+
+*F  SaveOperationExtras( <oper> ) . . . additional saving for functions which
+**
+**  This is called by SaveFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+void SaveOperationExtras (
+    Obj         oper )
+{
+    UInt        i;
+
+    SaveSubObj(FLAG1_FILT(oper));
+    SaveSubObj(FLAG2_FILT(oper));
+    SaveSubObj(FLAGS_FILT(oper));
+    SaveSubObj(SETTR_FILT(oper));
+    SaveSubObj(TESTR_FILT(oper));
+    for (i = 0; i <= 7; i++)
+        SaveSubObj(METHS_OPER(oper,i));
+    for (i = 0; i <= 7; i++)
+        SaveSubObj(CACHE_OPER(oper,i));
+    return;
+}
+
+
+/****************************************************************************
+**
+*F  LoadOperationExtras( <oper> ) . .  additional loading for functions which
+**                                     are operations
+**  This is called by LoadFunction when the function bag is too large to be
+**  a simple function, and so must be an operation
+**
+*/
+void LoadOperationExtras (
+    Obj         oper )
+{
+    UInt        i;
+
+    FLAG1_FILT(oper) = LoadSubObj();
+    FLAG2_FILT(oper) = LoadSubObj();
+    FLAGS_FILT(oper) = LoadSubObj();
+    SETTR_FILT(oper) = LoadSubObj();
+    TESTR_FILT(oper) = LoadSubObj();
+    for (i = 0; i <= 7; i++)
+        METHS_OPER(oper,i) = LoadSubObj();
+    for (i = 0; i <= 7; i++)
+        CACHE_OPER(oper,i) = LoadSubObj();
+    return;
+}
+
+
+/****************************************************************************
+**
+**
+
+*F * * * * * * * * * * * * GAP operation functions  * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  FuncNEW_OPERATION( <self>, <name> ) . . . . . . . . . . . . new operation
+*/
+Obj FuncNEW_OPERATION (
+    Obj                 self,
+    Obj                 name )
+{
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit("usage: NewOperation( <name> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+    return NewOperation( name, -1L, (Obj)0, DoOperationXArgs );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNEW_CONSTRUCTOR( <self>, <name> ) . . . . . . . . . . new constructor
+*/
+Obj FuncNEW_CONSTRUCTOR (
+    Obj                 self,
+    Obj                 name )
+{
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit("usage: NewConstructor( <name> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new constructor                                            */
+    return NewConstructor( name, -1L, (Obj)0, DoConstructorXArgs );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNEW_ATTRIBUTE( <self>, <name> ) . . . . . . . . . . . . new attribute
+*/
+Obj FuncNEW_ATTRIBUTE (
+    Obj                 self,
+    Obj                 name )
+{
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit("usage: NewAttribute( <name> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+    return NewAttribute( name, -1L, (Obj)0, DoAttribute );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNEW_MUTABLE_ATTRIBUTE( <self>, <name> ) . . . . new mutable attribute
+*/
+Obj FuncNEW_MUTABLE_ATTRIBUTE (
+    Obj                 self,
+    Obj                 name )
+{
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit("usage: NewMutableAttribute( <name> )",0L,0L);
+        return 0;
+    }
+
+    /* make the new operation                                              */
+    return NewAttribute( name, -1L, (Obj)0, DoMutableAttribute );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNEW_PROPERTY( <self>, <name> )  . . . . . . . . . . . .  new property
+*/
+Obj FuncNEW_PROPERTY (
     Obj                 self,
     Obj                 name )
 {
@@ -4935,8 +4960,191 @@ Obj NewPropertyHandler (
 
 /****************************************************************************
 **
+*F  FuncNEW_OPERATION_ARGS( <self>, <name> )  . . . . . .  new operation args
+*/
+Obj FuncNEW_OPERATION_ARGS (
+    Obj                 self,
+    Obj                 name )
+{
+    Obj                 args;           
+    Obj                 list;
 
-*F  FuncSetterFunction( <self>, <name> )
+    /* check the argument                                                  */
+    if ( ! IsStringConv(name) ) {
+        ErrorQuit( "usage: NewOperationArgs( <name> )", 0L, 0L );
+        return 0;
+    }
+
+    /* make the new operation                                              */
+    C_NEW_STRING( args, 4, "args" )
+    list = NEW_PLIST( T_PLIST, 1 );
+    SET_LEN_PLIST( list, 1 );
+    SET_ELM_PLIST( list, 1, args );
+    return NewOperationArgs( name, -1, list );
+}
+
+
+/****************************************************************************
+**
+*F  FuncINSTALL_METHOD_ARGS( <self>, <oper>, <func> ) . . install method args
+*/
+static Obj REREADING;
+
+Obj FuncINSTALL_METHOD_ARGS (
+    Obj                 self,
+    Obj                 oper,
+    Obj                 func )
+{
+    /* check the arguments                                                 */
+    if ( ! IS_FUNC(oper) ) {
+        ErrorQuit( "<oper> must be a function (not a %s)",
+                   (Int)TNAM_OBJ(oper), 0L );
+    }
+    if ( (REREADING != True) &&
+	 (HDLR_FUNC(oper,0) != (ObjFunc)DoUninstalledOperationArgs) ) {
+        ErrorQuit( "operation already installed",
+                   0L, 0L );
+        return 0;
+    }
+    if ( ! IS_FUNC(func) ) {
+        ErrorQuit( "<func> must be a function (not a %s)",
+                   (Int)TNAM_OBJ(func), 0L );
+        return 0;
+    }
+    if ( IS_OPERATION(func) ) {
+        ErrorQuit( "<func> must not be an operation", 0L, 0L );
+        return 0;
+    }
+
+    /* install the new method                                              */
+    InstallMethodArgs( oper, func );
+    return 0;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
+*/
+Obj IsOperationFilt;
+
+Obj FuncIS_OPERATION (
+    Obj                 self,
+    Obj                 obj )
+{
+    if ( TNUM_OBJ(obj) == T_FUNCTION && IS_OPERATION(obj) ) {
+        return True;
+    }
+    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
+        return False;
+    }
+    else {
+        return DoFilter( self, obj );
+    }
+}
+
+
+/****************************************************************************
+**
+*F  FuncMETHODS_OPERATION( <self>, <oper>, <narg> ) . . . . .  list of method
+*/
+Obj MethsOper (
+    Obj                 oper,
+    UInt                i )
+{
+    Obj                 methods;
+    methods = METHS_OPER( oper, i );
+    if ( methods == 0 ) {
+        methods = NEW_PLIST( T_PLIST, 0 );
+        METHS_OPER( oper, i ) = methods;
+        CHANGED_BAG( oper );
+    }
+    return methods;
+}
+
+Obj FuncMETHODS_OPERATION (
+    Obj                 self,
+    Obj                 oper,
+    Obj                 narg )
+{
+    Int                 n;
+    Obj                 meth;
+
+    if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("<oper> must be an operation",0L,0L);
+        return 0;
+    }
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
+        return 0;
+    }
+    n = INT_INTOBJ( narg );
+    meth = MethsOper( oper, n );
+    return meth == 0 ? Fail : meth;
+}
+
+
+/****************************************************************************
+**
+*F  FuncCHANGED_METHODS_OPERATION( <self>, <oper>, <narg> ) . . . clear cache
+*/
+Obj FuncCHANGED_METHODS_OPERATION (
+    Obj                 self,
+    Obj                 oper,
+    Obj                 narg )
+{
+    Obj *               cache;
+    Int                 n;
+    Int                 i;
+
+    if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("<oper> must be an operation",0L,0L);
+        return 0;
+    }
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
+        return 0;
+    }
+    n = INT_INTOBJ( narg );
+    cache = ADDR_OBJ( CacheOper( oper, n ) );
+    for ( i = 0;  i < SIZE_OBJ(CACHE_OPER(oper,n)) / sizeof(Obj);  i++ ) {
+        cache[i] = 0;
+    }
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSET_METHODS_OPERATION( <self>, <oper>, <narg>, <list> ) . set methods
+*/
+Obj FuncSET_METHODS_OPERATION (
+    Obj                 self,
+    Obj                 oper,
+    Obj                 narg,
+    Obj                 meths )
+{
+    Int                 n;
+
+    if ( ! IS_OPERATION(oper) ) {
+        ErrorQuit("<oper> must be an operation",0L,0L);
+        return 0;
+    }
+    if ( TNUM_OBJ(narg) != T_INT || INT_INTOBJ(narg) < 0 ) {
+        ErrorQuit("<narg> must be a nonnegative integer",0L,0L);
+        return 0;
+    }
+    n = INT_INTOBJ( narg );
+    METHS_OPER( oper, n ) = meths;
+    return 0;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncSETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut setter
 */
 Obj DoSetterFunction (
     Obj                 self,
@@ -4971,7 +5179,7 @@ Obj DoSetterFunction (
 }
 
 
-Obj FuncSetterFunction (
+Obj FuncSETTER_FUNCTION (
     Obj                 self,
     Obj                 name,
     Obj                 filter )
@@ -4998,7 +5206,7 @@ Obj FuncSetterFunction (
 
 /****************************************************************************
 **
-*F  FuncGetterFunction( <self>, <name> )
+*F  FuncGETTER_FUNCTION( <self>, <name> ) . . . . . . default attribut getter
 */
 Obj DoGetterFunction (
     Obj                 self,
@@ -5012,7 +5220,7 @@ Obj DoGetterFunction (
 }
 
 
-Obj FuncGetterFunction (
+Obj FuncGETTER_FUNCTION (
     Obj                 self,
     Obj                 name )
 {
@@ -5034,29 +5242,76 @@ Obj FuncGetterFunction (
 /****************************************************************************
 **
 
-*F  ChangeDoOperations( <oper>, <verb> )
+*F  FuncOPERS_CACHE_INFO( <self> )  . . . . . . .  return cache stats as list
 */
-static void * TabSilentVerboseOperations[] =
+Obj FuncOPERS_CACHE_INFO (
+    Obj                        self )
 {
-    (void*) DoOperation0Args,   (void*) DoVerboseOperation0Args,
-    (void*) DoOperation1Args,   (void*) DoVerboseOperation1Args,
-    (void*) DoOperation2Args,   (void*) DoVerboseOperation2Args,
-    (void*) DoOperation3Args,   (void*) DoVerboseOperation3Args,
-    (void*) DoOperation4Args,   (void*) DoVerboseOperation4Args,
-    (void*) DoOperation5Args,   (void*) DoVerboseOperation5Args,
-    (void*) DoOperation6Args,   (void*) DoVerboseOperation6Args,
-    (void*) DoOperationXArgs,   (void*) DoVerboseOperationXArgs,
-    (void*) DoConstructor0Args, (void*) DoVerboseConstructor0Args,
-    (void*) DoConstructor1Args, (void*) DoVerboseConstructor1Args,
-    (void*) DoConstructor2Args, (void*) DoVerboseConstructor2Args,
-    (void*) DoConstructor3Args, (void*) DoVerboseConstructor3Args,
-    (void*) DoConstructor4Args, (void*) DoVerboseConstructor4Args,
-    (void*) DoConstructor5Args, (void*) DoVerboseConstructor5Args,
-    (void*) DoConstructor6Args, (void*) DoVerboseConstructor6Args,
-    (void*) DoConstructorXArgs, (void*) DoVerboseConstructorXArgs,
-    (void*) DoAttribute,        (void*) DoVerboseAttribute,
-    (void*) DoMutableAttribute, (void*) DoVerboseMutableAttribute,
-    (void*) DoProperty,         (void*) DoVerboseProperty,
+    Obj                 list;
+
+    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
+    SET_LEN_PLIST( list, 9 );
+    SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
+    SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
+    SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
+    SET_ELM_PLIST( list, 4, INTOBJ_INT(OperationHit)        );
+    SET_ELM_PLIST( list, 5, INTOBJ_INT(OperationMiss)       );
+    SET_ELM_PLIST( list, 6, INTOBJ_INT(IsSubsetFlagsCalls)  );
+    SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
+    SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
+    SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
+
+    return list;
+}
+
+
+
+/****************************************************************************
+**
+*F  FuncCLEAR_CACHE_INFO( <self> )  . . . . . . . . . . . . clear cache stats
+*/
+Obj FuncCLEAR_CACHE_INFO (
+    Obj                        self )
+{
+    AndFlagsCacheHit = 0;
+    AndFlagsCacheMiss = 0;
+    AndFlagsCacheLost = 0;
+    OperationHit = 0;
+    OperationMiss = 0;
+    IsSubsetFlagsCalls = 0;
+    IsSubsetFlagsCalls1 = 0;
+    IsSubsetFlagsCalls2 = 0;
+    OperationNext = 0;
+
+    return 0;
+}
+
+/****************************************************************************
+**
+
+*F  ChangeDoOperations( <oper>, <verb> )  . . .  verbose or silent operations
+*/
+static ObjFunc TabSilentVerboseOperations[] =
+{
+    (ObjFunc) DoOperation0Args,   (ObjFunc) DoVerboseOperation0Args,
+    (ObjFunc) DoOperation1Args,   (ObjFunc) DoVerboseOperation1Args,
+    (ObjFunc) DoOperation2Args,   (ObjFunc) DoVerboseOperation2Args,
+    (ObjFunc) DoOperation3Args,   (ObjFunc) DoVerboseOperation3Args,
+    (ObjFunc) DoOperation4Args,   (ObjFunc) DoVerboseOperation4Args,
+    (ObjFunc) DoOperation5Args,   (ObjFunc) DoVerboseOperation5Args,
+    (ObjFunc) DoOperation6Args,   (ObjFunc) DoVerboseOperation6Args,
+    (ObjFunc) DoOperationXArgs,   (ObjFunc) DoVerboseOperationXArgs,
+    (ObjFunc) DoConstructor0Args, (ObjFunc) DoVerboseConstructor0Args,
+    (ObjFunc) DoConstructor1Args, (ObjFunc) DoVerboseConstructor1Args,
+    (ObjFunc) DoConstructor2Args, (ObjFunc) DoVerboseConstructor2Args,
+    (ObjFunc) DoConstructor3Args, (ObjFunc) DoVerboseConstructor3Args,
+    (ObjFunc) DoConstructor4Args, (ObjFunc) DoVerboseConstructor4Args,
+    (ObjFunc) DoConstructor5Args, (ObjFunc) DoVerboseConstructor5Args,
+    (ObjFunc) DoConstructor6Args, (ObjFunc) DoVerboseConstructor6Args,
+    (ObjFunc) DoConstructorXArgs, (ObjFunc) DoVerboseConstructorXArgs,
+    (ObjFunc) DoAttribute,        (ObjFunc) DoVerboseAttribute,
+    (ObjFunc) DoMutableAttribute, (ObjFunc) DoVerboseMutableAttribute,
+    (ObjFunc) DoProperty,         (ObjFunc) DoVerboseProperty,
     0,                          0
 };
 
@@ -5132,9 +5387,9 @@ void ChangeDoOperations (
 
 /****************************************************************************
 **
-*F  FuncTraceMethods( <oper> )
+*F  FuncTRACE_METHODS( <oper> ) . . . . . . . .  switch tracing of methods on
 */
-Obj FuncTraceMethods (
+Obj FuncTRACE_METHODS (
     Obj                 self,
     Obj                 oper )
 {
@@ -5154,9 +5409,9 @@ Obj FuncTraceMethods (
 
 /****************************************************************************
 **
-*F  FuncUntraceMethods( <oper> )
+*F  FuncUNTRACE_METHODS( <oper> ) . . . . . . . switch tracing of methods off
 */
-Obj FuncUntraceMethods (
+Obj FuncUNTRACE_METHODS (
     Obj                 self,
     Obj                 oper )
 {
@@ -5177,142 +5432,6 @@ Obj FuncUntraceMethods (
 
 /****************************************************************************
 **
-*F  FuncOPERS_CACHE_INFO( <self> )
-*/
-Obj FuncOPERS_CACHE_INFO (
-    Obj                        self )
-{
-    Obj                 list;
-
-    list = NEW_PLIST( IMMUTABLE_TNUM(T_PLIST), 9 );
-    SET_LEN_PLIST( list, 9 );
-    SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
-    SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
-    SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
-    SET_ELM_PLIST( list, 4, INTOBJ_INT(OperationHit)        );
-    SET_ELM_PLIST( list, 5, INTOBJ_INT(OperationMiss)       );
-    SET_ELM_PLIST( list, 6, INTOBJ_INT(IsSubsetFlagsCalls)  );
-    SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
-    SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
-    SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
-
-    return list;
-}
-
-
-
-/****************************************************************************
-**
-*F  FuncCLEAR_CACHE_INFO( <self> )
-*/
-Obj FuncCLEAR_CACHE_INFO (
-    Obj                        self )
-{
-    AndFlagsCacheHit = 0;
-    AndFlagsCacheMiss = 0;
-    AndFlagsCacheLost = 0;
-    OperationHit = 0;
-    OperationMiss = 0;
-    IsSubsetFlagsCalls = 0;
-    IsSubsetFlagsCalls1 = 0;
-    IsSubsetFlagsCalls2 = 0;
-    OperationNext = 0;
-
-    return 0;
-}
-
-/****************************************************************************
-**
-*F  SaveFlags( <flags> )
-**
-*/
-
-void SaveFlags( Obj flags)
-{
-  UInt i, len, *ptr;
-  SaveSubObj(TRUES_FLAGS(flags));
-  SaveSubObj(HASH_FLAGS(flags));
-  SaveSubObj(ADDR_OBJ(flags)[2]); /* length, as an object */
-  len = NRB_FLAGS(flags);
-  ptr = DATA_FLAGS(flags);
-  for (i = 1; i <= len; i++)
-    SaveUInt(*ptr++);
-  return;
-}
-
-/****************************************************************************
-**
-*F  SaveOperationExtras( <oper> ) . . . .additional savng for functions which
-**                                       are operations
-**
-**  This is called by SaveFunction when the function bag is too large to be
-**  a simple function, and so must be an operation
-**
-*/
-
-void SaveOperationExtras( Obj oper )
-{
-  UInt i;
-  SaveSubObj(FLAG1_FILT(oper));
-  SaveSubObj(FLAG2_FILT(oper));
-  SaveSubObj(FLAGS_FILT(oper));
-  SaveSubObj(SETTR_FILT(oper));
-  SaveSubObj(TESTR_FILT(oper));
-  for (i = 0; i <= 7; i++)
-    SaveSubObj(METHS_OPER(oper,i));
-  for (i = 0; i <= 7; i++)
-    SaveSubObj(CACHE_OPER(oper,i));
-  return;
-}
-
-/****************************************************************************
-**
-*F  LoadFlags( <flags> )
-**
-*/
-
-void LoadFlags( Obj flags)
-{
-  UInt i, len, *ptr;
-  TRUES_FLAGS(flags) = LoadSubObj();
-  HASH_FLAGS(flags) = LoadSubObj();
-  ADDR_OBJ(flags)[2] = LoadSubObj(); /* length, as an object */
-  len = NRB_FLAGS(flags);
-  ptr = DATA_FLAGS(flags);
-  for (i = 1; i <= len; i++)
-    *ptr++ = LoadUInt();
-  return;
-}
-
-/****************************************************************************
-**
-*F  LoadOperationExtras( <oper> ) . . . .additional loading for functions which
-**                                       are operations
-**
-**  This is called by LoadFunction when the function bag is too large to be
-**  a simple function, and so must be an operation
-**
-*/
-
-void LoadOperationExtras( Obj oper )
-{
-  UInt i;
-  FLAG1_FILT(oper) = LoadSubObj();
-  FLAG2_FILT(oper) = LoadSubObj();
-  FLAGS_FILT(oper) = LoadSubObj();
-  SETTR_FILT(oper) = LoadSubObj();
-  TESTR_FILT(oper) = LoadSubObj();
-  for (i = 0; i <= 7; i++)
-    METHS_OPER(oper,i) = LoadSubObj();
-  for (i = 0; i <= 7; i++)
-    CACHE_OPER(oper,i) = LoadSubObj();
-  return;
-}
-
-
-/****************************************************************************
-**
-**
 
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
@@ -5321,36 +5440,152 @@ void LoadOperationExtras( Obj oper )
 /****************************************************************************
 **
 
-*F  SetupOpers() . . . . . . . . . . . . . . initialize the operations package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupOpers ( void )
-{
-    /* install the marking function                                        */
-    InfoBags[T_FLAGS].name = "flags list";
-    InitMarkFuncBags( T_FLAGS, MarkTwoSubBags );
+static StructGVarFilt GVarFilts [] = {
 
+    { "IS_OPERATION", "obj", &IsOperationFilt,
+      FuncIS_OPERATION, "src/opers.c:IS_OPERATION" },
 
-    /* install the printing function                                       */
-    PrintObjFuncs[ T_FLAGS ] = PrintFlags;
+    { 0 }
 
-
-    /* and the saving function */
-    SaveObjFuncs[ T_FLAGS ] = SaveFlags;
-}
-
+};
 
 
 /****************************************************************************
 **
-*F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void InitOpers ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "AND_FLAGS", 2, "oper1, oper2",
+      FuncAND_FLAGS, "src/opers.c:AND_FLAGS" },
+
+    { "SUB_FLAGS", 2, "oper1, oper2",
+      FuncSUB_FLAGS, "src/opers.c:SUB_FLAGS" },
+
+    { "HASH_FLAGS", 1, "flags",
+      FuncHASH_FLAGS, "src/opers.c:HASH_FLAGS" },
+
+    { "IS_EQUAL_FLAGS", 2, "flags1, flags2",
+      FuncIS_EQUAL_FLAGS, "src/opers.c:IS_EQUAL_FLAGS" },
+
+    { "IS_SUBSET_FLAGS", 2, "flags1, flags2",
+      FuncIS_SUBSET_FLAGS, "src/opers.c:IS_SUBSET_FLAGS" },
+
+    { "TRUES_FLAGS", 1, "flags",
+      FuncTRUES_FLAGS, "src/opers.c:TRUES_FLAGS" },
+
+    { "SIZE_FLAGS", 1, "flags",
+      FuncSIZE_FLAGS, "src/opers.c:SIZE_FLAGS" },
+
+    { "LEN_FLAGS", 1, "flags",
+      FuncLEN_FLAGS, "src/opers.c:LEN_FLAGS" },
+
+    { "ELM_FLAGS", 2, "flags, pos",
+      FuncELM_FLAGS, "src/opers.c:ELM_FLAGS" },
+
+    { "FLAG1_FILTER", 1, "oper",
+      FuncFLAG1_FILTER, "src/opers.c:FLAG1_FILTER" },
+
+    { "SET_FLAG1_FILTER", 2, "oper, flag1",
+      FuncSET_FLAG1_FILTER, "src/opers.c:SET_FLAG1_FILTER" },
+
+    { "FLAG2_FILTER", 1, "oper",
+      FuncFLAG2_FILTER, "src/opers.c:FLAG2_FILTER" },
+
+    { "SET_FLAG2_FILTER", 2, "oper, flag2",
+      FuncSET_FLAG2_FILTER, "src/opers.c:SET_FLAG2_FILTER" },
+
+    { "FLAGS_FILTER", 1, "oper",
+      FuncFLAGS_FILTER, "src/opers.c:FLAGS_FILTER" },
+
+    { "SET_FLAGS_FILTER", 2, "oper, flags",
+      FuncSET_FLAGS_FILTER, "src/opers.c:SET_FLAGS_FILTER" },
+
+    { "SETTER_FILTER", 1, "oper",
+      FuncSETTER_FILTER, "src/opers.c:SETTER_FILTER" },
+
+    { "SET_SETTER_FILTER", 2, "oper, other",
+      FuncSET_SETTER_FILTER, "src/opers.c:SET_SETTER_FILTER" },
+
+    { "TESTER_FILTER", 1, "oper",
+      FuncTESTER_FILTER, "src/opers.c:TESTER_FILTER" },
+
+    { "SET_TESTER_FILTER", 2, "oper, other",
+      FuncSET_TESTER_FILTER, "src/opers.c:SET_TESTER_FILTER" },
+
+    { "METHODS_OPERATION", 2, "oper, narg",
+      FuncMETHODS_OPERATION, "src/opers.c:METHODS_OPERATION" },
+
+    { "SET_METHODS_OPERATION", 3, "oper, narg, meths",
+      FuncSET_METHODS_OPERATION, "src/opers.c:SET_METHODS_OPERATION" },
+
+    { "CHANGED_METHODS_OPERATION", 2, "oper, narg",
+      FuncCHANGED_METHODS_OPERATION, "src/opers.c:CHANGED_METHODS_OPERATION" },
+
+    { "NEW_FILTER", 1, "name",
+      FuncNEW_FILTER, "src/opers.c:NEW_FILTER" },
+
+    { "NEW_OPERATION", 1, "name",
+      FuncNEW_OPERATION, "src/opers.c:NEW_OPERATION" },
+
+    { "NEW_CONSTRUCTOR", 1, "name",
+      FuncNEW_CONSTRUCTOR, "src/opers.c:NEW_CONSTRUCTOR" },
+
+    { "NEW_ATTRIBUTE", 1, "name",
+      FuncNEW_ATTRIBUTE, "src/opers.c:NEW_ATTRIBUTE" },
+
+    { "NEW_MUTABLE_ATTRIBUTE", 1, "name",
+      FuncNEW_MUTABLE_ATTRIBUTE, "src/opers.c:NEW_MUTABLE_ATTRIBUTE" },
+
+    { "NEW_PROPERTY", 1, "name",
+      FuncNEW_PROPERTY, "src/opers.c:NEW_PROPERTY" },
+
+    { "SETTER_FUNCTION", 2, "name, filter",
+      FuncSETTER_FUNCTION, "src/opers.c:SETTER_FUNCTION" },
+
+    { "GETTER_FUNCTION", 1, "name",
+      FuncGETTER_FUNCTION, "src/opers.c:GETTER_FUNCTION" },
+
+    { "NEW_OPERATION_ARGS", 1, "name",
+      FuncNEW_OPERATION_ARGS, "src/opers.c:NEW_OPERATION_ARGS" },
+
+    { "INSTALL_METHOD_ARGS", 2, "oper, func",
+      FuncINSTALL_METHOD_ARGS, "src/opers.c:INSTALL_METHOD_ARGS" },
+
+    { "TRACE_METHODS", 1, "oper",
+      FuncTRACE_METHODS, "src/opers.c:TRACE_METHODS" },
+
+    { "UNTRACE_METHODS", 1, "oper",
+      FuncUNTRACE_METHODS, "src/opers.c:UNTRACE_METHODS" },
+
+    { "OPERS_CACHE_INFO", 0, "",
+      FuncOPERS_CACHE_INFO, "src/opers.c:OPERS_CACHE_INFO" },
+
+    { "CLEAR_CACHE_INFO", 0, "",
+      FuncCLEAR_CACHE_INFO, "src/opers.c:CLEAR_CACHE_INFO" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-    Int                        i;
+    InitGlobalBag( &StringAndFilter,    "src/opers.c:StringAndFilter"    );
+    InitGlobalBag( &StringFilterSetter, "src/opers.c:StringFilterSetter" );
+    InitGlobalBag( &ArglistObj,         "src/opers.c:ArglistObj"         );
+    InitGlobalBag( &ArglistObjVal,      "src/opers.c:ArglistObjVal"      );
 
     /* Declare the handlers used in various places.  Some of the commonest */
     /* ones are abbreviated to save space in saved workspace.              */
-
     InitHandlerFunc( DoFilter,                  "df"                                    );
     InitHandlerFunc( DoSetFilter,               "dsf"                                   );
     InitHandlerFunc( DoAndFilter,               "daf"                                   );
@@ -5358,8 +5593,8 @@ void InitOpers ( void )
     InitHandlerFunc( DoReturnTrueFilter,        "src/opers.c:DoReturnTrueFilter"        );
     InitHandlerFunc( DoSetReturnTrueFilter,     "src/opers.c:DoSetReturnTrueFilter"     );
     
-    InitHandlerFunc( DoAttribute,               "src/opers.c:DoAttribute"               );
-    InitHandlerFunc( DoSetAttribute,            "src/opers.c:DoSetAttribute"            );
+    InitHandlerFunc( DoAttribute,               "da"                                    );
+    InitHandlerFunc( DoSetAttribute,            "dsa"                                   );
     InitHandlerFunc( DoTestAttribute,           "src/opers.c:DoTestAttribute"           );
     InitHandlerFunc( DoVerboseAttribute,        "src/opers.c:DoVerboseAttribute"        );
     InitHandlerFunc( DoMutableAttribute,        "src/opers.c:DoMutableAttribute"        );
@@ -5370,8 +5605,8 @@ void InitOpers ( void )
     InitHandlerFunc( DoTestProperty,            "src/opers.c:DoTestProperty"            );
     InitHandlerFunc( DoVerboseProperty,         "src/opers.c:DoVerboseProperty"         );
 
-    InitHandlerFunc( DoSetterFunction,          "src/opers.c:DoSetterFunction"          );
-    InitHandlerFunc( DoGetterFunction,          "src/opers.c:DoGetterFunction"          );
+    InitHandlerFunc( DoSetterFunction,          "dtf"                                   );
+    InitHandlerFunc( DoGetterFunction,          "dgf"                                   );
     
     InitHandlerFunc( DoOperation0Args,          "o0"                                    );
     InitHandlerFunc( DoOperation1Args,          "o1"                                    );
@@ -5409,169 +5644,18 @@ void InitOpers ( void )
     InitHandlerFunc( DoVerboseConstructor6Args, "src/opers.c:DoVerboseConstructor6Args" );
     InitHandlerFunc( DoVerboseConstructorXArgs, "src/opers.c:DoVerboseConstructorXArgs" );
 
-    
-    /* make the property blist functions                                   */
-    C_NEW_GVAR_FUNC( "AND_FLAGS", 2, "oper1, oper2",
-                  FuncAND_FLAGS,
-         "src/opers.c:AND_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "SUB_FLAGS", 2, "oper1, oper2",
-                  FuncSUB_FLAGS,
-         "src/opers.c:SUB_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "HASH_FLAGS", 1, "flags",
-                  FuncHASH_FLAGS,
-         "src/opers.c:HASH_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "IS_EQUAL_FLAGS", 2, "flags1, flags2",
-                  FuncIS_EQUAL_FLAGS,
-         "src/opers.c:IS_EQUAL_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "IS_SUBSET_FLAGS", 2, "flags1, flags2",
-                  FuncIS_SUBSET_FLAGS,
-         "src/opers.c:IS_SUBSET_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "TRUES_FLAGS", 1, "flags",
-                  FuncTRUES_FLAGS,
-         "src/opers.c:TRUES_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "SIZE_FLAGS", 1, "flags",
-                  FuncSIZE_FLAGS,
-         "src/opers.c:SIZE_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "LEN_FLAGS", 1, "flags",
-                  FuncLEN_FLAGS,
-         "src/opers.c:LEN_FLAGS" );
-
-    C_NEW_GVAR_FUNC( "ELM_FLAGS", 2, "flags, pos",
-                  FuncELM_FLAGS,
-         "src/opers.c:ELM_FLAGS" );
-
+    InitHandlerFunc( DoUninstalledOperationArgs, "src/opers.c:DoUninstalledOperationArgs" );
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "TYPE_FLAGS", &TYPE_FLAGS );
     TypeObjFuncs[ T_FLAGS ] = TypeFlags;
 
-
-    /* make the functions that support new operations                      */
-    C_NEW_GVAR_FILT( "IS_OPERATION", "obj", IsOperationFilt,
-                  FuncIS_OPERATION,
-         "src/opers.c:IS_OPERATION" );
-
-    C_NEW_GVAR_FUNC( "FLAG1_FILTER", 1, "oper",
-                  FuncFlag1Filter,
-         "src/opers.c:FLAG1_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SET_FLAG1_FILTER", 2, "oper, flag1",
-                  FuncSetFlag1Filter,
-         "src/opers.c:SET_FLAG1_FILTER" );
-
-    C_NEW_GVAR_FUNC( "FLAG2_FILTER", 1, "oper",
-                  FuncFlag2Filter,
-         "src/opers.c:FLAG2_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SET_FLAG2_FILTER", 2, "oper, flag2",
-                  FuncSetFlag2Filter,
-         "src/opers.c:SET_FLAG2_FILTER" );
-
-    C_NEW_GVAR_FUNC( "FLAGS_FILTER", 1, "oper",
-                  FuncFlagsFilter,
-         "src/opers.c:FLAGS_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SET_FLAGS_FILTER", 2, "oper, flags",
-                  FuncSetFlagsFilter,
-         "src/opers.c:SET_FLAGS_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SETTER_FILTER", 1, "oper",
-                  FuncSetterFilter,
-         "src/opers.c:SETTER_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SET_SETTER_FILTER", 2, "oper, other",
-                  FuncSetSetterFilter,
-         "src/opers.c:SET_SETTER_FILTER" );
-
-    C_NEW_GVAR_FUNC( "TESTER_FILTER", 1, "oper",
-                  FuncTesterFilter,
-         "src/opers.c:TESTER_FILTER" );
-
-    C_NEW_GVAR_FUNC( "SET_TESTER_FILTER", 2, "oper, other",
-                  FuncSetTesterFilter,
-         "src/opers.c:SET_TESTER_FILTER" );
-
-    C_NEW_GVAR_FUNC( "METHODS_OPERATION", 2, "oper, narg",
-                  FuncMethodsOperation,
-         "src/opers.c:METHODS_OPERATION" );
-
-    C_NEW_GVAR_FUNC( "SET_METHODS_OPERATION", 3, "oper, narg, meths",
-                  FuncSetMethodsOperation,
-         "src/opers.c:SET_METHODS_OPERATION" );
-
-    C_NEW_GVAR_FUNC( "CHANGED_METHODS_OPERATION", 2, "oper, narg",
-                  FuncChangedMethodsOperation,
-         "src/opers.c:CHANGED_METHODS_OPERATION" );
-
-
-    /* make the functions for filter, operations, properties, attributes   */
-    C_NEW_GVAR_FUNC( "NEW_FILTER", 1, "name",
-                      NewFilterHandler,
-         "src/opers.c:NEW_FILTER" );
-
-    C_NEW_GVAR_FUNC( "NEW_OPERATION", 1, "name",
-                      NewOperationHandler,
-         "src/opers.c:NEW_OPERATION" );
-
-    C_NEW_GVAR_FUNC( "NEW_CONSTRUCTOR", 1, "name",
-                      NewConstructorHandler,
-         "src/opers.c:NEW_CONSTRUCTOR" );
-
-    C_NEW_GVAR_FUNC( "NEW_ATTRIBUTE", 1, "name",
-                      NewAttributeHandler,
-         "src/opers.c:NEW_ATTRIBUTE" );
-
-    C_NEW_GVAR_FUNC( "NEW_MUTABLE_ATTRIBUTE", 1, "name",
-                      NewMutableAttributeHandler,
-         "src/opers.c:NEW_MUTABLE_ATTRIBUTE" );
-
-    C_NEW_GVAR_FUNC( "NEW_PROPERTY", 1, "name",
-                      NewPropertyHandler,
-         "src/opers.c:NEW_PROPERTY" );
-
-    C_NEW_GVAR_FUNC( "SETTER_FUNCTION", 2, "name, filter",
-                      FuncSetterFunction,
-         "src/opers.c:SETTER_FUNCTION" );
-
-    C_NEW_GVAR_FUNC( "GETTER_FUNCTION", 1, "name",
-                      FuncGetterFunction,
-         "src/opers.c:GETTER_FUNCTION" );
-
-
-    /* make the trace functions                                            */
-    C_NEW_GVAR_FUNC( "TRACE_METHODS", 1, "oper",
-                  FuncTraceMethods,
-         "src/opers.c:TRACE_METHODS" );
-
-    C_NEW_GVAR_FUNC( "UNTRACE_METHODS", 1, "oper",
-                  FuncUntraceMethods,
-         "src/opers.c:UNTRACE_METHODS" );
-
-
     /* make the 'true' operation                                           */  
     InitGlobalBag( &ReturnTrueFilter, "src/opers.c:ReturnTrueFilter" );
-    if ( ! SyRestoring ) {
-        ReturnTrueFilter = NewReturnTrueFilter();
-        AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
-    }
-
 
     /* install the (function) copies of global variables                   */
     /* for the inside-out (kernel to library) interface                    */
     InitGlobalBag( &TRY_NEXT_METHOD, "src/opers.c:TRY_NEXT_METHOD" );
-    if ( ! SyRestoring ) {
-        TRY_NEXT_METHOD = NEW_STRING( 16 );
-        SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
-        AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
-    }
-    ImportGVarFromLibrary( "TRY_NEXT_METHOD", &TRY_NEXT_METHOD );
 
     ImportFuncFromLibrary( "METHOD_0ARGS", &Method0Args );
     ImportFuncFromLibrary( "METHOD_1ARGS", &Method1Args );
@@ -5648,38 +5732,115 @@ void InitOpers ( void )
     ImportFuncFromLibrary( "SET_FILTER_OBJ",   &SET_FILTER_OBJ );
     ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
 
-    /* create the hash tables                                              */
-#ifdef AND_FLAGS_HASH_SIZE
-    InitGlobalBag( &AndFlagsCache, "src/opers.c:AndFlagsCache" );
-    if ( ! SyRestoring ) {
-        AndFlagsCache = NEW_PLIST( T_PLIST, 3*AND_FLAGS_HASH_SIZE );
-        SET_LEN_PLIST( AndFlagsCache, 3*AND_FLAGS_HASH_SIZE );
-        AssGVar( GVarName( "AND_FLAGS_CACHE" ), AndFlagsCache );
-        for ( i = 1;  i <= 3*AND_FLAGS_HASH_SIZE;  i++ ) {
-            SET_ELM_PLIST( AndFlagsCache, i, INTOBJ_INT(0) );
-        }
-    }
-#endif
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "OPERS_CACHE_INFO", 0, "",
-                  FuncOPERS_CACHE_INFO,
-         "src/opers.c:OPERS_CACHE_INFO" );
+    /* install the marking function                                        */
+    InfoBags[T_FLAGS].name = "flags list";
+    InitMarkFuncBags( T_FLAGS, MarkFourSubBags );
 
-    C_NEW_GVAR_FUNC( "CLEAR_CACHE_INFO", 0, "",
-                  FuncCLEAR_CACHE_INFO,
-         "src/opers.c:CLEAR_CACHE_INFO" );
+    /* install the printing function                                       */
+    PrintObjFuncs[ T_FLAGS ] = PrintFlags;
+
+    /* and the saving function */
+    SaveObjFuncs[ T_FLAGS ] = SaveFlags;
+    LoadObjFuncs[ T_FLAGS ] = LoadFlags;
+
+    /* import copy of REREADING */
+    ImportGVarFromLibrary( "REREADING", &REREADING );
+    /* return success                                                      */
+    return 0;
 }
-
 
 
 /****************************************************************************
 **
-*F  CheckOpers()  . . . .  check the initialisation of the operations package
+*F  postRestore( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckOpers ( void )
+static Int postRestore (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "opers_c",    Revision_opers_c );
-    SET_REVISION( "opers_h",    Revision_opers_h );
+
+  CountFlags = LEN_LIST(VAL_GVAR(GVarName("FILTERS")))+1;
+  return 0;
+}
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    Obj                 str;
+
+    /* share between uncompleted functions                                 */
+    C_NEW_STRING( StringAndFilter, 14, "<<and-filter>>" );
+    RESET_FILT_LIST( StringAndFilter, FN_IS_MUTABLE );
+
+    C_NEW_STRING( StringFilterSetter, 17, "<<filter-setter>>" );
+    RESET_FILT_LIST( StringFilterSetter, FN_IS_MUTABLE );
+
+    ArglistObj = NEW_PLIST( T_PLIST+IMMUTABLE, 1 );
+    SET_LEN_PLIST( ArglistObj, 1 );
+    C_NEW_STRING( str, 3, "obj" );
+    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    SET_ELM_PLIST( ArglistObj, 1, str );
+
+    ArglistObjVal = NEW_PLIST( T_PLIST+IMMUTABLE, 2 );
+    SET_LEN_PLIST( ArglistObjVal, 2 );
+    C_NEW_STRING( str, 3, "obj" );
+    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    SET_ELM_PLIST( ArglistObjVal, 1, str );
+    C_NEW_STRING( str, 3, "val" );
+    RESET_FILT_LIST( str, FN_IS_MUTABLE );
+    SET_ELM_PLIST( ArglistObjVal, 2, str );
+
+    /* make the 'true' operation                                           */  
+    ReturnTrueFilter = NewReturnTrueFilter();
+    AssGVar( GVarName( "IS_OBJECT" ), ReturnTrueFilter );
+
+    /* install the (function) copies of global variables                   */
+    /* for the inside-out (kernel to library) interface                    */
+    TRY_NEXT_METHOD = NEW_STRING( 16 );
+    SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
+    AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
+
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoOpers() . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "opers",                            /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    postRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoOpers ( void )
+{
+    module.revision_c = Revision_opers_c;
+    module.revision_h = Revision_opers_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

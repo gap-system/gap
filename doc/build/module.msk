@@ -1,0 +1,53 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  module.msk                   GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Modules}
+
+\Declaration{IsLeftOperatorAdditiveGroup}
+\Declaration{IsLeftModule}
+\Declaration{GeneratorsOfLeftOperatorAdditiveGroup}
+\Declaration{GeneratorsOfLeftModule}
+\Declaration{AsLeftModule}
+
+\Declaration{IsRightOperatorAdditiveGroup}
+\Declaration{IsRightModule}
+\Declaration{GeneratorsOfRightOperatorAdditiveGroup}
+\Declaration{GeneratorsOfRightModule}
+
+\Declaration{LeftModuleByGenerators}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Submodules}
+
+\Declaration{Submodule}
+\Declaration{SubmoduleNC}
+\Declaration{ClosureLeftModule}
+\Declaration{TrivialSubmodule}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Free Modules}
+
+\Declaration{IsFreeLeftModule}
+\Declaration{FreeLeftModule}
+\Declaration{AsFreeLeftModule}
+\Declaration{Dimension}
+\Declaration{IsFiniteDimensional}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Declaration{UseBasis}
+
+\Declaration{IsRowModuleRep}
+\Declaration{IsMatrixModuleRep}
+\Declaration{IsFullRowModule}
+\Declaration{FullRowModule}
+\Declaration{IsFullMatrixModule}
+\Declaration{FullMatrixModule}
+\Declaration{IsHandledByNiceBasis}
+

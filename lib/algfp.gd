@@ -5,8 +5,9 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the decalarations for finitely presented algebras
+##  This file contains the declarations for finitely presented algebras
 ##
 Revision.algfp_gd :=
     "@(#)$Id$";
@@ -16,23 +17,28 @@ Revision.algfp_gd :=
 ##
 #C  IsElementOfFpAlgebra
 ##
-IsElementOfFpAlgebra := NewCategory( "IsElementOfFpAlgebra",
-    IsRingElement );
+DeclareCategory( "IsElementOfFpAlgebra", IsRingElement );
 
 
 #############################################################################
 ##
 #C  IsElementOfFpAlgebraCollection
 ##
-IsElementOfFpAlgebraCollection := CategoryCollections(
-    IsElementOfFpAlgebra );
+DeclareCategoryCollections( "IsElementOfFpAlgebra" );
+
+
+#############################################################################
+##
+#C  IsElementOfFpAlgebraFamily
+##
+DeclareCategoryFamily( "IsElementOfFpAlgebra" );
 
 
 #############################################################################
 ##
 #C  IsSubalgebraFpAlgebra
 ##
-IsSubalgebraFpAlgebra := NewCategory ("IsSubalgebraFpAlgebra", IsAlgebra);
+DeclareCategory( "IsSubalgebraFpAlgebra", IsAlgebra );
 
 
 #############################################################################
@@ -45,17 +51,34 @@ InstallTrueMethod( IsSubalgebraFpAlgebra,
 
 #############################################################################
 ##
-#C  IsFamilyOfFpAlgebraElements
+#M  IsHandledByNiceBasis( <C> ) .  for space that is coll. of f.p. alg. elms.
 ##
-IsFamilyOfFpAlgebraElements := CategoryFamily( IsElementOfFpAlgebra );
+InstallTrueMethod( IsHandledByNiceBasis,
+    IsFreeLeftModule and IsElementOfFpAlgebraCollection );
+
+
+#############################################################################
+##
+#P  IsFullFpAlgebra( <A> )
+##
+##  A f.~p. algebra is given by generators which are arithmetic expressions
+##  in terms of a set of generators $X$ of an f.~p. algebra that was
+##  constructed as a quotient of a free algebra.
+##
+##  A *full f.~p. algebra* is a f.~p. algebra that contains $X$.
+##  (So a full f.~p. algebra need *not* contain the whole family of its
+##  elements.)
+##
+DeclareProperty( "IsFullFpAlgebra",
+    IsFLMLOR and IsElementOfFpAlgebraCollection );
 
 
 #############################################################################
 ##
 #O  ElementOfFpAlgebra( <Fam>, <elm> )
 ##
-ElementOfFpAlgebra := NewOperation("ElementOfFpAlgebra",
-    [IsFamilyOfFpAlgebraElements,IsRingElement]);
+DeclareOperation( "ElementOfFpAlgebra",
+    [ IsElementOfFpAlgebraFamily, IsRingElement ] );
 
 
 ############################################################################
@@ -69,7 +92,7 @@ ElementOfFpAlgebra := NewOperation("ElementOfFpAlgebra",
 ##  Note that it is expected that one can raise elements in <gens2> to the
 ##  zero-th power.
 ##
-MappedExpression := NewOperation( "MappedExpression",
+DeclareOperation( "MappedExpression",
     [ IsElementOfFpAlgebra, IsHomogeneousList, IsHomogeneousList ] );
 
 
@@ -77,100 +100,69 @@ MappedExpression := NewOperation( "MappedExpression",
 ##
 #F  FactorFreeAlgebraByRelators(<F>,<rels>) . . . . .  factor of free algebra
 ##
-FactorFreeAlgebraByRelators := NewOperationArgs(
-  "FactorFreeAlgebraByRelators");
+DeclareGlobalFunction( "FactorFreeAlgebraByRelators" );
 
 
 #############################################################################
 ##
 #P  IsNormalForm( <elm> )
 ##
-IsNormalForm := NewProperty( "IsNormalForm", IsObject );
-SetIsNormalForm := Setter( IsNormalForm );
-HasIsNormalForm := Tester( IsNormalForm );
+DeclareProperty( "IsNormalForm", IsObject );
 
 
 #############################################################################
 ##
 #A  NiceNormalFormByExtRepFunction( <Fam> )
 ##
-##  Applied to the family <Fam> and the external representation of an element
-##  $e$ of the family <Fam>,
-##  'NiceNormalFormByExtRepFunction( <Fam> )' returns the element of <Fam>
-##  that is equal to $e$ and in normal form.
+##  `NiceNormalFormByExtRepFunction( <Fam> )' is a function that can be
+##  applied to the family <Fam> and the external representation of an element
+##  $e$ of <Fam>;
+##  This call returns the element of <Fam> that is equal to $e$ and in normal
+##  form.
 ##
 ##  If the family <Fam> knows a nice normal form for its elements then the
 ##  elements can be always constructed as normalized elements by
-##  'NormalizedObjByExtRep'.
+##  `NormalizedObjByExtRep'.
 ##
 ##  (Perhaps a normal form that is expensive to compute will not be regarded
 ##  as a nice normal form.)
 ##
-NiceNormalFormByExtRepFunction := NewAttribute(
-    "NiceNormalFormByExtRepFunction",
-    IsFamily );
-SetNiceNormalFormByExtRepFunction := Setter(
-    NiceNormalFormByExtRepFunction );
-HasNiceNormalFormByExtRepFunction := Tester(
-    NiceNormalFormByExtRepFunction );
+DeclareAttribute( "NiceNormalFormByExtRepFunction", IsFamily );
 
 
 #############################################################################
 ##
-#A  BasisInfoFpAlgebra( <A> )
+#A  NiceAlgebraMonomorphism( <A> )
 ##
-##  The value of `BasisInfoFpAlgebra' for a f.p. algebra <A> is a record with
-##  the following components.
+##  If a f.p. algebra <A> knows the value of `NiceAlgebraMonomorphism'
+##  then it can be handled via the mechanism of nice bases.
+##  Namely, the nice vector of an element can be computed via
+##  `ImagesRepresentative',
+##  and the ugly vector is given by `PreImagesRepresentative'.
 ##
-##  `generators'
-##      a list of the generators of the full f.p. algebra containing <A>,
+##  `NiceAlgebraMonomorphism' is inherited to subalgebras and subspaces.
+##  (If one knows that <A> contains the source then one should set
+##  `GeneratorsOfLeftModule' for <A>,
+##  and also one can set `NiceFreeLeftModule' for <A>  to the module
+##  of the basis `basisimages'.)
 ##
-##  `genimages'
-##      a list of ring elements corresponding to `generators',
+##  The `NiceAlgebraMonomorphism' value of the algebra stored in
+##  the `wholeFamily' component of the family of algebra elements
+##  is used to define the `\<' relation of algebra elements.
+#T use it also for a ``nice normal form''!
 ##
-##  `basiselms'
-##      a list of elements in <A> that forms a basis of <A>,
-##
-##  `basisimages'
-##      a basis of an algebra whose vectors are in bijection with
-##      `basiselms', such that the bijection defines an algebra isomorphism
-##      that is compatible with the map that maps the algebra generators to
-##      `genimages'.
-##      
-##  If a f.p. algebra knows the value of `BasisInfoFpAlgebra' then it can be
-##  handled via the mechanism of nice bases.
-##  Namely, the nice vector of an element can be computed from the image
-##  under `MappedExpression', using `genimages'.
-##  The ugly vector is given by the linear combination of `basiselms',
-##  with coefficients of the decomposition into `basisimages'.
-#T Is it reasonable to use this attribute also to construct a
-#T ``nice normal form''?
-##
-BasisInfoFpAlgebra := NewAttribute( "BasisInfoFpAlgebra",
-    IsSubalgebraFpAlgebra );
-SetBasisInfoFpAlgebra := Setter( BasisInfoFpAlgebra );
-HasBasisInfoFpAlgebra := Tester( BasisInfoFpAlgebra );
+DeclareAttribute( "NiceAlgebraMonomorphism", IsSubalgebraFpAlgebra );
+
+InstallSubsetMaintainedMethod( NiceAlgebraMonomorphism,
+    IsFreeLeftModule and HasNiceAlgebraMonomorphism, IsFreeLeftModule );
 
 
 #############################################################################
 ##
-#M  IsHandledByNiceBasis( <A> ) . . .  for f.p. algebra with known basis info
+#M  IsHandledByNiceBasis( <A> ) . . . for f.p. algebra with known nice monom.
 ##
 InstallTrueMethod( IsHandledByNiceBasis,
-    IsSubalgebraFpAlgebra and HasBasisInfoFpAlgebra );
-
-
-#############################################################################
-##
-#F  IsGeneralizedCartanMatrix( <A> )
-##
-##  The square matrix <A> is a generalized Cartan Matrix if and only if
-##  1. `A[i][i] = 2' for all $i$,
-##  2. `A[i][j]' are nonpositive integers for $i \not= j$,
-##  3. `A[i][j] = 0' implies `A[j][i] = 0'.
-##
-IsGeneralizedCartanMatrix := NewAttribute( "IsGeneralizedCartanMatrix",
-    IsMatrix );
+    IsSubalgebraFpAlgebra and HasNiceAlgebraMonomorphism );
 
 
 #############################################################################
@@ -180,13 +172,11 @@ IsGeneralizedCartanMatrix := NewAttribute( "IsGeneralizedCartanMatrix",
 ##  is a finitely presented associative algebra over the field <F>,
 ##  defined by the generalized Cartan matrix <A>.
 ##
-FpAlgebraByGeneralizedCartanMatrix := NewOperationArgs(
-    "FpAlgebraByGeneralizedCartanMatrix" );
+DeclareGlobalFunction( "FpAlgebraByGeneralizedCartanMatrix" );
 
 
 #############################################################################
 ##
 #E  algfp.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
 

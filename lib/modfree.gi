@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for free modules.
 ##
@@ -18,7 +19,7 @@ Revision.modfree_gi :=
 ##
 InstallMethod( \=,
     "method for two free left modules (at least one fin. dim.)",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, W )
     local inter;
@@ -56,7 +57,7 @@ InstallMethod( \=,
 ##
 InstallMethod( \<,
     "method for two free left modules",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, W )
     local inters, BV, BW, i;
@@ -230,7 +231,7 @@ InstallMethod( Random,
 ##
 InstallMethod( IsSubset,
     "method for two free left modules",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsFreeLeftModule, IsFreeLeftModule ], 0,
     function( V, U )
 
@@ -355,7 +356,7 @@ InstallMethod( ClosureLeftModule,
 #F  FreeLeftModule( <R>, <gens>, "basis" )
 #F  FreeLeftModule( <R>, <gens>, <zero>, "basis" )
 ##
-FreeLeftModule := function( arg )
+InstallGlobalFunction(FreeLeftModule,function( arg )
 
 #T check that the families have the same characteristic?
 #T 'CharacteristicFamily' ?
@@ -395,7 +396,7 @@ FreeLeftModule := function( arg )
 
     # Return the result.
     return V;
-end;
+end);
 
 
 ##############################################################################
@@ -441,25 +442,31 @@ InstallMethod( UseBasis,
 
 #############################################################################
 ##
-#M  PrintObj( <A> ) . . . . . . . . . . . . . pretty print a free left module
+#M  ViewObj( <V> )  . . . . . . . . . . . . . . . . . view a free left module
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( PrintObj, true,
+InstallMethod( ViewObj,
+    "for free left module with known dimension",
+    true,
     [ IsFreeLeftModule and HasDimension ], 0,
     function( V )
     Print( "<free left module of dimension ", Dimension( V ),
            " over ", LeftActingDomain( V ), ">" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( ViewObj,
+    "for free left module with known generators",
+    true,
     [ IsFreeLeftModule and HasGeneratorsOfLeftModule ], 0,
     function( V )
     Print( "<free left module over ", LeftActingDomain( V ), ", with ",
            Length( GeneratorsOfLeftModule( V ) ), " generators>" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( ViewObj,
+    "for free left module",
+    true,
     [ IsFreeLeftModule ], 0,
     function( V )
     Print( "<free left module over ", LeftActingDomain( V ), ">" );
@@ -468,7 +475,32 @@ InstallMethod( PrintObj, true,
 
 #############################################################################
 ##
+#M  PrintObj( <A> ) . . . . . . . . . . . . . pretty print a free left module
+##
+InstallMethod( PrintObj,
+    "for free left module with known generators",
+    true,
+    [ IsFreeLeftModule and HasGeneratorsOfLeftModule ], 0,
+    function( V )
+    if IsEmpty( GeneratorsOfLeftModule( V ) ) then
+      Print( "FreeLeftModule( ", LeftActingDomain( V ), ", [], ",
+             Zero( V ), " )" );
+    else
+      Print( "FreeLeftModule( ", LeftActingDomain( V ), ", ",
+             GeneratorsOfLeftModule( V ), " )" );
+    fi;
+    end );
+
+InstallMethod( PrintObj,
+    "for free left module",
+    true,
+    [ IsFreeLeftModule ], 0,
+    function( V )
+    Print( "FreeLeftModule( ", LeftActingDomain( V ), ", ... )" );
+    end );
+
+
+#############################################################################
+##
 #E  modfree.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

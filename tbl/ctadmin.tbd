@@ -15,7 +15,7 @@
 ##  1. Representations of library tables
 ##  2. Functions used in the library files
 ##  3. Functions to construct library tables
-##  4. Functions used as 'construction' component of library tables
+##  4. Functions used as `construction' component of library tables
 ##  5. Selection functions for the table library
 ##  6. Functions to produce tables in library format
 ##
@@ -37,19 +37,19 @@ Revision.ctadmin_tbd :=
 ##
 ##  is a record with components
 ##
-##  'LOADSTATUS'
+##  `LOADSTATUS'
 ##     a record whose components are names of files in the table library,
-##     with value one of '"loaded"', '"unloaded"', '"userloaded"',
+##     with value one of `"loaded"', `"unloaded"', `"userloaded"',
 ##
-##  'TABLEFILENAME'
+##  `TABLEFILENAME'
 ##     the name of the file to be read at the moment
-##     (is set by 'SET_TABLEFILENAME'),
+##     (is set by `SET_TABLEFILENAME'),
 ##
-##  'clmelab'
+##  `clmelab'
 ##     list for Clifford matrices of extensions by elementary abelian normal
 ##     subgroups
 ##
-##  'clmexsp'
+##  `clmexsp'
 ##     list for Clifford matrices of extensions by extraspecial normal
 ##     subgroups
 ##
@@ -69,74 +69,14 @@ LIBTABLE := rec(
 ##
 ##  1. Representations of library tables
 ##
-
-#############################################################################
-##
-#V  SupportedLibraryTableComponents
-#R  IsLibraryCharacterTableRep( <tbl> )
-##
-##  Ordinary library tables may have some components that are meaningless for
-##  character tables that know their underlying group.
-##  These components do not justify the introduction of operations to fetch
-##  them.
-##
-##  Library tables are always complete character tables.
-##
-SupportedLibraryTableComponents := [
-     "factors",
-     "tomfusion",
-     "cliffordTable",
-     "construction", 
-     "extInfo",
-     "projectives",
-     "CAS",
-     "defect",
-     "basicset",
-     "brauertree",
-     "decinv",
-     "factorblocks",
-     "indicator",
-    ];
-
-IsLibraryCharacterTableRep := NewRepresentation(
-    "IsLibraryCharacterTableRep", IsAttributeStoringRep,
-    SupportedLibraryTableComponents );
-
-
-#############################################################################
-##
-#R  IsGenericCharacterTableRep( <tbl> )
-##
-##  generic character tables are a special representation of objects since
-##  they provide just some record components.
-##  It might be useful to treat them similar to character table like objects,
-##  for example to display them.
-##  So they belong to the category of nearly character tables.
-##
-IsGenericCharacterTableRep := NewRepresentation(
-     "IsGenericCharacterTable", IsNearlyCharacterTable,
-     [
-     "domain",
-     "wholetable",
-     "classparam",
-     "charparam",
-     "specializedname",
-     "size",
-     "centralizers",
-     "orders",
-     "powermap",
-     "classtext",
-     "matrix",
-     "irreducibles",
-     "text",
-     ] );
+##  All these are in the library now, because the library accesses these.
 
 
 #############################################################################
 ##
 #F  SET_TABLEFILENAME( <filename> )
 ##
-SET_TABLEFILENAME := NewOperationArgs( "SET_TABLEFILENAME" );
+DeclareGlobalFunction( "SET_TABLEFILENAME" );
 
 
 #############################################################################
@@ -151,31 +91,31 @@ SET_TABLEFILENAME := NewOperationArgs( "SET_TABLEFILENAME" );
 ##
 ##  are global variables used to store the library tables in compressed form.
 ##
-##  The entry '[GALOIS,[<i>,<j>]]' in the 'irreducibles' or 'projectives'
+##  The entry `[GALOIS,[<i>,<j>]]' in the `irreducibles' or `projectives'
 ##  component of a library table means the <j>-th Galois conjugate of
 ##  the <i>-th character.
 ##
-##  The entry '[TENSOR,[<i>,<j>]]' in the 'irreducibles' or 'projectives'
+##  The entry `[TENSOR,[<i>,<j>]]' in the `irreducibles' or `projectives'
 ##  component of a library table means the tensor product of the <i>-th
 ##  and the <j>-th character.
 ##
 #F  EvalChars( <chars> )
 ##
-##  replaces all entries of the form '[<func>,<list>]' in the list <chars>
-##  by the result '<func>( <chars>, <list> )'.
+##  replaces all entries of the form `[<func>,<list>]' in the list <chars>
+##  by the result `<func>( <chars>, <list> )'.
 ##
-GALOIS := NewOperationArgs( "GALOIS" );
-TENSOR := NewOperationArgs( "TENSOR" );
-EvalChars := NewOperationArgs( "EvalChars" );
+DeclareGlobalFunction( "GALOIS" );
+DeclareGlobalFunction( "TENSOR" );
+DeclareGlobalFunction( "EvalChars" );
 
 
 #############################################################################
 ##
 #F  ALF( <from>, <to>, <map> )
 #F  ALF( <from>, <to>, <map>, <text> )
-##     stores a fusion between library tables in the component 'classFusions'
+##     stores a fusion between library tables in the component `classFusions'
 ##     of the table <from>,
-##     and adjusts the global list 'LIBLIST.fusionsource'.
+##     and adjusts the global list `LIBLIST.fusionsource'.
 ##
 #F  ACM( <spec>, <dim>, <val> )
 ##     adds a Clifford matrix to the library.
@@ -191,14 +131,14 @@ EvalChars := NewOperationArgs( "EvalChars" );
 ##  so they assume that it is not necessary to read such a file before the
 ##  data can be stored.
 ##
-ALF := NewOperationArgs( "ALF" );
-ACM := NewOperationArgs( "ACM" );
-ARC := NewOperationArgs( "ARC" );
+DeclareGlobalFunction( "ALF" );
+DeclareGlobalFunction( "ACM" );
+DeclareGlobalFunction( "ARC" );
 
 
 #############################################################################
 ##
-#F  NotifyCharTableName( <firstname>, <newnames> )
+#F  NotifyNameOfCharacterTable( <firstname>, <newnames> )
 #F  ALN( <firstname>, <newnames> )
 ##
 ##  notifies the new names in the list <newnames> for the library table with
@@ -206,30 +146,35 @@ ARC := NewOperationArgs( "ARC" );
 ##  If there is already another table for that some of these names are
 ##  admissible, an error is signaled.
 ##
-##  'ALN' is a shorthand for 'NotifyCharTableName'.
-##  In those library tables for that the 'awk' script has produced the
-##  necessary information for 'LIBLIST', 'ALN' is set to 'Ignore'
-##  in the beginning and back to 'NotifyCharTableName' in the end.
+##  `ALN' is a shorthand for `NotifyNameOfCharacterTable'.
+##  In those library tables for that the `awk' script has produced the
+##  necessary information for `LIBLIST', `ALN' is set to `Ignore'
+##  in the beginning and back to `NotifyNameOfCharacterTable' in the end.
 ##
-NotifyCharTableName := NewOperationArgs( "NotifyCharTableName" );
-ALN := NotifyCharTableName;
+##  `NotifyNameOfCharacterTable' modifies the global variable `LIBLIST'
+##
+DeclareGlobalFunction( "NotifyNameOfCharacterTable" );
+ALN := NotifyNameOfCharacterTable;
+
+#T because of the table files ...
+NotifyCharTableName := NotifyNameOfCharacterTable;
 
 
 #############################################################################
 ##
-#F  NotifyCharTable( <firstname>, <filename>, <othernames> )
+#F  NotifyCharacterTable( <firstname>, <filename>, <othernames> )
 ##
 ##  notifies a new ordinary table to the library.
-##  This table has 'identifier' component <firstname>,
+##  This table has `identifier' component <firstname>,
 ##  it is contained in the file with name <filename>,
 ##  and it is known to have also the names contained in the list
 ##  <othernames>.
 ##
-##  'NotifyCharTable' modifies the global variable 'LIBLIST'
+##  `NotifyCharacterTable' modifies the global variable `LIBLIST'
 ##  after having checked that there is no other table yet with admissible
 ##  name equal to <firstname> or contained in <othernames>.
 ##
-NotifyCharTable := NewOperationArgs( "NotifyCharTable" );
+DeclareGlobalFunction( "NotifyCharacterTable" );
 
 
 #############################################################################
@@ -237,7 +182,7 @@ NotifyCharTable := NewOperationArgs( "NotifyCharTable" );
 #F  MBT( <arg> )
 ##
 ##  The library format of Brauer tables is a call to the function
-##  'MBT', with the following arguments.
+##  `MBT', with the following arguments.
 ##
 ##   1. identifier of the table
 ##   2. field characteristic
@@ -252,10 +197,10 @@ NotifyCharTable := NewOperationArgs( "NotifyCharTable" );
 ##  11. 2nd indicator (in characteristic 2 only)
 ##  12. (optional) record with additional components
 ##
-##  'MBT' constructs a record and stores it in the record
-##  'LIBTABLE.TABLEFILENAME'.
+##  `MBT' constructs a record and stores it in the record
+##  `LIBTABLE.TABLEFILENAME'.
 ##
-MBT := NewOperationArgs( "MBT" );
+DeclareGlobalFunction( "MBT" );
 
 
 #############################################################################
@@ -263,7 +208,7 @@ MBT := NewOperationArgs( "MBT" );
 #F  MOT( <arg> )
 ##
 ##  The library format of ordinary character tables is a call to the function
-##  'MOT', with the following arguments.
+##  `MOT', with the following arguments.
 ##
 ##   1. identifier of the table
 ##   2. text (list of lines)
@@ -273,16 +218,16 @@ MBT := NewOperationArgs( "MBT" );
 ##   6. list of generators for the group of table automorphisms
 ##   7. (optional) construction of the table
 ##
-##  Each fusion is added by 'ALF', any other component of the table must be
-##  added individually via 'ARC( <identifier>, <compname>, <compval> )'.
+##  Each fusion is added by `ALF', any other component of the table must be
+##  added individually via `ARC( <identifier>, <compname>, <compval> )'.
 ##
-##  'MOT' constructs a preliminary table record,
-##  and puts it into the record 'LIBTABLE.TABLEFILENAME'.
-##  The 'namesOfFusionSources' and 'projections' are dealt with when the
-##  table is constructed by 'CharacterTableFromLibrary'.
-##  Admissible names are notified by 'ALN( <name>, <othernames> )'.
+##  `MOT' constructs a preliminary table record,
+##  and puts it into the record `LIBTABLE.TABLEFILENAME'.
+##  The `namesOfFusionSources' and `projections' are dealt with when the
+##  table is constructed by `CharacterTableFromLibrary'.
+##  Admissible names are notified by `ALN( <name>, <othernames> )'.
 ##
-MOT := NewOperationArgs( "MOT" );
+DeclareGlobalFunction( "MOT" );
 
 
 #############################################################################
@@ -293,13 +238,14 @@ MOT := NewOperationArgs( "MOT" );
 ##
 #F  PrimeBase( <q> )  . . . . . . . . . . . . . . unique prime divisor of <q>
 ##
-##  If <q> is a prime power, 'PrimeBase' computes the prime of which it is
+##  If <q> is a prime power, `PrimeBase' computes the prime of which it is
 ##  a power.  For the sake of speed, the results are stored
-##  in the global list 'GEN_Q_P'.
+##  in the global list `GEN_Q_P'.
 ##
-GEN_Q_P := [];
+DeclareGlobalVariable( "GEN_Q_P",
+    "list where the prime <p> is stored at position <p>^<n>, if bound" );
 
-PrimeBase := NewOperationArgs( "PrimeBase" );
+DeclareGlobalFunction( "PrimeBase" );
 
 
 #############################################################################
@@ -313,14 +259,14 @@ PrimeBase := NewOperationArgs( "PrimeBase" );
 ##
 ##  is a record with components
 ##
-##  'firstName'
-##      the 'Identifier' value of the library table
+##  `firstName'
+##      the `Identifier' value of the library table
 ##      for that <tblname> is an admissible name,
 ##
-##  'fileName'
+##  `fileName'
 ##      the name of the file in that the table is stored.
 ##
-##  If no such table exists in the {\GAP} library then 'fail' is returned.
+##  If no such table exists in the {\GAP} library then `fail' is returned.
 ##
 ##  If <tblname> contains the substring "mod" it is regarded as name of a
 ##  Brauer table.
@@ -329,7 +275,7 @@ PrimeBase := NewOperationArgs( "PrimeBase" );
 ##  So if the ordinary table exists one gets a record, but the modular
 ##  table need not be contained in the library.
 ##
-LibInfoCharacterTable := NewOperationArgs( "LibInfoCharacterTable" );
+DeclareGlobalFunction( "LibInfoCharacterTable" );
 
 
 #############################################################################
@@ -337,9 +283,9 @@ LibInfoCharacterTable := NewOperationArgs( "LibInfoCharacterTable" );
 #F  LibraryTables( <filename> )
 ##
 ##  is the list of data obtained on reading the file <filename>,
-##  which is the file name relative to 'TBLNAME'.
+##  which is the file name relative to `TBLNAME'.
 ##
-LibraryTables := NewOperationArgs( "LibraryTables" );
+DeclareGlobalFunction( "LibraryTables" );
 
 
 #############################################################################
@@ -347,15 +293,15 @@ LibraryTables := NewOperationArgs( "LibraryTables" );
 #F  CharacterTableFromLibrary( [ <tblname> ] )
 ##
 ##  returns the library table that is known to have name <tblname>,
-##  if exists; otherwise 'fail' is returned.
+##  if exists; otherwise `fail' is returned.
 ##
 #F  CharacterTableFromLibrary( [ <series>, <parameters> ] )
 ##
 ##  returns the character table which is got from the generic table of the
 ##  series with name <series> by specialising with <parameters>, if these
-##  parameters are admissible; otherwise 'fail' is returned.
+##  parameters are admissible; otherwise `fail' is returned.
 ##
-CharacterTableFromLibrary := NewOperationArgs( "CharacterTableFromLibrary" );
+DeclareGlobalFunction( "CharacterTableFromLibrary" );
 
 
 #############################################################################
@@ -363,12 +309,12 @@ CharacterTableFromLibrary := NewOperationArgs( "CharacterTableFromLibrary" );
 #F  PartsBrauerTableName( <modname> )
 ##
 ##  is a record with components
-##  'ordname'
-##      substring up to the occurrence of 'mod' in <modname>,
-##  'prime'
-##      the integer of the string after 'mod'.
+##  `ordname'
+##      substring up to the occurrence of `mod' in <modname>,
+##  `prime'
+##      the integer of the string after `mod'.
 ##
-PartsBrauerTableName := NewOperationArgs( "PartsBrauerTableName" );
+DeclareGlobalFunction( "PartsBrauerTableName" );
 
 
 #############################################################################
@@ -377,9 +323,9 @@ PartsBrauerTableName := NewOperationArgs( "PartsBrauerTableName" );
 ##
 ##  returns a basic set of the Brauer tree <brauertree>.
 ##  *Note* that this is a list of positions relative to the block, so it is
-##  not compatible with the 'basicset' components of blocks in Brauer tables.
+##  not compatible with the `basicset' components of blocks in Brauer tables.
 ##
-BasicSetBrauerTree := NewOperationArgs( "BasicSetBrauerTree" );
+DeclareGlobalFunction( "BasicSetBrauerTree" );
 
 
 #############################################################################
@@ -387,15 +333,15 @@ BasicSetBrauerTree := NewOperationArgs( "BasicSetBrauerTree" );
 #F  DecMatBrauerTree( <brauertree> )
 ##
 ##  In the {\GAP} table library, a Brauer tree <brauertree> is a list where
-##  '<brauertree>[i]' contains the positions of '1' in the 'i'-th column
+##  `<brauertree>[i]' contains the positions of `1' in the `i'-th column
 ##  of the decomposition matrix of the corresponding block.
-##  So '<brauertree>[i]' has length 2 or 3 (in the case of exceptional
+##  So `<brauertree>[i]' has length 2 or 3 (in the case of exceptional
 ##  characters).
 ##
-##  'DecMatBrauerTree' returns the decomposition matrix of the block with
+##  `DecMatBrauerTree' returns the decomposition matrix of the block with
 ##  given Brauer tree.
 ##
-DecMatBrauerTree := NewOperationArgs( "DecMatBrauerTree" );
+DeclareGlobalFunction( "DecMatBrauerTree" );
 
 
 #############################################################################
@@ -403,9 +349,9 @@ DecMatBrauerTree := NewOperationArgs( "DecMatBrauerTree" );
 #F  BrauerTree( <decmat> )
 ##
 ##  returns the Brauer tree of the decomposition matrix <decmat>, if exists,
-##  and 'fail' otherwise.
+##  and `fail' otherwise.
 ##
-BrauerTree := NewOperationArgs( "BrauerTree" );
+DeclareGlobalFunction( "BrauerTree" );
 
 
 #############################################################################
@@ -415,7 +361,7 @@ BrauerTree := NewOperationArgs( "BrauerTree" );
 ##  is the Brauer table with name <name> and corresponding ordinary table
 ##  <ordtbl>.
 ##
-BrauerTable := NewOperationArgs( "BrauerTable" );
+DeclareGlobalFunction( "BrauerTable" );
 
 
 #############################################################################
@@ -424,31 +370,12 @@ BrauerTable := NewOperationArgs( "BrauerTable" );
 ##
 ##  This function does the actual specialisation of generic tables.
 ##
-CharacterTableSpecialized := NewOperationArgs( "CharacterTableSpecialized" );
+DeclareGlobalFunction( "CharacterTableSpecialized" );
 
 
 #############################################################################
 ##
-#F  ConvertToLibraryCharacterTableNC( <record> )
-##
-##  converts the record <record> into a library character table (ordinary or
-##  modular).
-##  No consistency checks are made, and <record> is not copied.
-##
-##  <record> must have one of the components 'isGenericTable' or
-##  'underlyingCharacteristic'.
-##
-##  The components listed in 'SupportedOrdinaryTableInfo' are used to set
-##  properties and attributes.
-##  All other components will simply become components of the record object.
-##  
-ConvertToLibraryCharacterTableNC := NewOperationArgs(
-    "ConvertToLibraryCharacterTableNC" );
-
-
-#############################################################################
-##
-##  4. Functions used as 'construction' component of library tables
+##  4. Functions used as `construction' component of library tables
 ##
 
 #############################################################################
@@ -457,12 +384,34 @@ ConvertToLibraryCharacterTableNC := NewOperationArgs(
 ##
 ##  <t> must be a library character table, and <tbl> a record that will be
 ##  converted to a library character table later.
-##  'TransferComponentsToLibraryTableRecord' transfers all those values
-##  from <t> to <tbl> that are described by 'SupportedOrdinaryTableInfo'
-##  and 'SupportedLibraryTableComponents'.
+##  `TransferComponentsToLibraryTableRecord' transfers all those values
+##  from <t> to <tbl> that are described by `SupportedOrdinaryTableInfo'
+##  and `SupportedLibraryTableComponents'.
 ##
-TransferComponentsToLibraryTableRecord := NewOperationArgs(
-    "TransferComponentsToLibraryTableRecord" );
+DeclareGlobalFunction( "TransferComponentsToLibraryTableRecord" );
+
+
+#############################################################################
+##
+#V  TABLE_CONSTRUCTORS
+#F  DeclareTableConstructor( <name> )
+##
+##  `TABLE_CONSTRUCTORS' is a list of length 2, the first containing the
+##  functions that are used as `construction' components of library tables,
+##  and the second containing the corresponding names of these function.
+##  This list is used for example by `PrintToLib'.
+##
+##  `DeclareTableConstructor' calls `DeclareGlobalFunction'
+##  and stores the corresponding global variable and <name>
+##  in the global variable `TABLE_CONSTRUCTORS'.
+##
+TABLE_CONSTRUCTORS := [ [], [] ];
+
+DeclareTableConstructor := function( name )
+    DeclareGlobalFunction( name );
+    Add( TABLE_CONSTRUCTORS[1], ValueGlobal( name ) );
+    Add( TABLE_CONSTRUCTORS[2], name );
+end;
 
 
 #############################################################################
@@ -488,7 +437,7 @@ TransferComponentsToLibraryTableRecord := NewOperationArgs(
 ##  the tables of $3.F_{3+}.2$ (subgroup $3.F_{3+}$, factor group $F_{3+}.2$)
 ##  and $6.Fi_{22}.2$ (subgroup $6.Fi_{22}$, factor group $2.Fi_{22}.2$).
 ##
-ConstructMixed := NewOperationArgs( "ConstructMixed" );
+DeclareTableConstructor( "ConstructMixed" );
 
 
 #############################################################################
@@ -498,7 +447,7 @@ ConstructMixed := NewOperationArgs( "ConstructMixed" );
 ##  constructs irreducibles for projective tables from projectives of
 ##  a factor group table.
 ##
-ConstructProj := NewOperationArgs( "ConstructProj" );
+DeclareTableConstructor( "ConstructProj" );
 
 
 #############################################################################
@@ -506,19 +455,19 @@ ConstructProj := NewOperationArgs( "ConstructProj" );
 #F  ConstructDirectProduct( <tbl> )
 #F  ConstructDirectProduct( <tbl>, <permclasses>, <permchars> )
 ##
-##  is a special case of a 'construction' call for a library table <tbl>.
+##  is a special case of a `construction' call for a library table <tbl>.
 ##
-##  The direct product of the tables described in the list '<tbl>.factors' is
+##  The direct product of the tables described in the list `<tbl>.factors' is
 ##  constructed, and all its components stored not yet in <tbl> are
 ##  added to <tbl>.
 ##
-##  The 'computedClassFusions' component of <tbl> is enlarged
+##  The `computedClassFusions' component of <tbl> is enlarged
 ##  by the factor fusions from the direct product to the factors.
 ##
 ##  If the optional arguments <permclasses>, <permchars> are given then
 ##  classes and characters of the result are sorted accordingly.
 ##
-ConstructDirectProduct := NewOperationArgs( "ConstructDirectProduct" );
+DeclareTableConstructor( "ConstructDirectProduct" );
 
 
 #############################################################################
@@ -529,7 +478,7 @@ ConstructDirectProduct := NewOperationArgs( "ConstructDirectProduct" );
 ##  taking the direct product of the tables with names in the list <factors>,
 ##  and then taking the table consisting of the classes in the list <choice>.
 ##
-ConstructSubdirect := NewOperationArgs( "ConstructSubdirect" );
+DeclareTableConstructor( "ConstructSubdirect" );
 
 
 #############################################################################
@@ -538,12 +487,12 @@ ConstructSubdirect := NewOperationArgs( "ConstructSubdirect" );
 #F  ConstructIsoclinic( <tbl>, <nsg> )
 ##
 ##  constructs first the direct product of library tables as given by the
-##  list '<tbl>.factors', and then constructs the isoclinic table of the
+##  list `<tbl>.factors', and then constructs the isoclinic table of the
 ##  result.
 ##  All components of this table that are missing in <tbl> are added
 ##  to <tbl>.
 ##
-ConstructIsoclinic := NewOperationArgs( "ConstructIsoclinic" );
+DeclareTableConstructor( "ConstructIsoclinic" );
 
 
 #############################################################################
@@ -556,10 +505,10 @@ ConstructIsoclinic := NewOperationArgs( "ConstructIsoclinic" );
 ##  Let <aut> be the permutation of classes of <tbl> induced by that
 ##  automorphism, and <facttbl> the name of the character table
 ##  of the factor group $2.G$.
-##  Then 'ConstructV4G' constructs the irreducible characters of <tbl> from
+##  Then `ConstructV4G' constructs the irreducible characters of <tbl> from
 ##  that information.
 ##
-ConstructV4G := NewOperationArgs( "ConstructV4G" );
+DeclareTableConstructor( "ConstructV4G" );
 
 
 #############################################################################
@@ -568,7 +517,7 @@ ConstructV4G := NewOperationArgs( "ConstructV4G" );
 ##
 ##  is the list of class function values lists
 ##
-InducedLibraryCharacters := NewOperationArgs( "InducedLibraryCharacters" );
+DeclareGlobalFunction( "InducedLibraryCharacters" );
 
 
 #############################################################################
@@ -583,7 +532,7 @@ InducedLibraryCharacters := NewOperationArgs( "InducedLibraryCharacters" );
 ##                             and one of <tbl3>.
 ##  <perm> is a permutation that must be applied to the irreducibles.
 ##
-ConstructGS3 := NewOperationArgs( "ConstructGS3" );
+DeclareTableConstructor( "ConstructGS3" );
 
 
 #############################################################################
@@ -594,7 +543,17 @@ ConstructGS3 := NewOperationArgs( "ConstructGS3" );
 ##  name <libnam>, whose classes and characters must be permuted by the
 ##  permutations <prmclasses> and <prmchars>, respectively.
 ##
-ConstructPermuted := NewOperationArgs( "ConstructPermuted" );
+DeclareTableConstructor( "ConstructPermuted" );
+
+
+#############################################################################
+##
+#F  ConstructFactor( <tbl>, <libnam>, <kernel> )
+##
+##  The library table <tbl> is completed with help of the library table with
+##  name <libnam>, by factoring out the classes in the list <kernel>.
+##
+DeclareTableConstructor( "ConstructFactor" );
 
 
 #############################################################################
@@ -602,23 +561,23 @@ ConstructPermuted := NewOperationArgs( "ConstructPermuted" );
 #F  ConstructClifford( <tbl> )
 ##
 ##  constructs the irreducibles of the ordinary character table <tbl> from
-##  the Clifford matrices stored in '<tbl>.cliffordTable'.
+##  the Clifford matrices stored in `<tbl>.cliffordTable'.
 ##
-ConstructClifford := NewOperationArgs( "ConstructClifford" );
+DeclareTableConstructor( "ConstructClifford" );
 
 
 #############################################################################
 ##
 #F  UnpackedCll( <cll> )
 ##
-##  is a record with the components 'mat', 'inertiagrps', 'fusionclasses',
-##  and perhaps 'libname'.
+##  is a record with the components `mat', `inertiagrps', `fusionclasses',
+##  and perhaps `libname'.
 ##  These are the only components used in the construction of library
 ##  character tables encoded by Clifford matrices.
 ##
-##  The meaning of <cll> is the same as in 'CllToClf'.
+##  The meaning of <cll> is the same as in `CllToClf'.
 ##
-UnpackedCll := NewOperationArgs( "UnpackedCll" );
+DeclareGlobalFunction( "UnpackedCll" );
 
 
 #############################################################################
@@ -633,30 +592,30 @@ UnpackedCll := NewOperationArgs( "UnpackedCll" );
 ##  3. identification of the matrix,
 ##     either unbound (then the matrix has dimension <= 2)
 ##     or a list containing
-##       a. string '"elab"' or '"exsp"'
+##       a. string `"elab"' or `"exsp"'
 ##       b. size of the Clifford matrix
 ##       c. index in the library file
 ##       d. (optional) necessary permutation of columns
 ##     or a list containing
 ##       a. the Clifford matrix itself and
 ##       b. the column weights.
-##  4. (case '"exsp"') a list with items of record 'splitinfos':
+##  4. (case `"exsp"') a list with items of record `splitinfos':
 ##       a. classindex
 ##       b. p
 ##       c. numclasses
 ##       d. root
 ##
-CllToClf := NewOperationArgs( "CllToClf" );
+DeclareGlobalFunction( "CllToClf" );
 
 
 #############################################################################
 ##
 #F  AddDecMats( <modtbl> )
 ##
-##  stores decomposition matrices of blocks in the 'block' component of
+##  stores decomposition matrices of blocks in the `block' component of
 ##  the Brauer table <modtbl>
 ##
-AddDecMats := NewOperationArgs( "AddDecMats" );
+DeclareGlobalFunction( "AddDecMats" );
 
 
 #############################################################################
@@ -672,26 +631,26 @@ AddDecMats := NewOperationArgs( "AddDecMats" );
 ##
 ##  dummy functions for selection function
 ##
-OfThose           := function( ) Error("this is just a dummy function"); end;
-IsSporadicSimple  := function(G) Error("this is just a dummy function"); end;
+DeclareGlobalFunction( "OfThose" );
+DeclareGlobalFunction( "IsSporadicSimple" );
 #T make this an attribute?
-SchurCover        := function( ) Error("this is just a dummy function"); end;
+DeclareGlobalFunction( "SchurCover" );
 #T ??
 
 
 #############################################################################
 ##
-#F  AllCharTableNames( )  . . . . . . all ordinary table names in the library
-#F  AllCharTableNames( IsSimpleGroup, true )
-#F  AllCharTableNames( IsSporadicSimpleGroup, true )
-#F  AllCharTableNames( <func>, <val> )
-#F  AllCharTableNames( ..., OfThose, AutomorphismGroup )
-#F  AllCharTableNames( ..., OfThose, SchurCover )
-#F  AllCharTableNames( ..., OfThose, <func> )
+#F  AllCharacterTableNames( )   . . . all ordinary table names in the library
+#F  AllCharacterTableNames( IsSimple, true )
+#F  AllCharacterTableNames( IsSporadicSimpleGroup, true )
+#F  AllCharacterTableNames( <func>, <val> )
+#F  AllCharacterTableNames( ..., OfThose, AutomorphismGroup )
+#F  AllCharacterTableNames( ..., OfThose, SchurCover )
+#F  AllCharacterTableNames( ..., OfThose, <func> )
 ##
 ##  selection function for {\GAP} library tables
 ##
-AllCharTableNames := NewOperationArgs( "AllCharTableNames" );
+DeclareGlobalFunction( "AllCharacterTableNames" );
 
 
 #############################################################################
@@ -703,12 +662,12 @@ AllCharTableNames := NewOperationArgs( "AllCharTableNames" );
 ##
 #F  ShrinkClifford( <tbl> )
 ##
-##  shrinks the 'cliffordTable' component.
-##  The Clifford records are changed to library format using 'ClfToCll'.
-##  In the library format, only the component 'ident' of the inertia factor
+##  shrinks the `cliffordTable' component.
+##  The Clifford records are changed to library format using `ClfToCll'.
+##  In the library format, only the component `ident' of the inertia factor
 ##  groups are stored.
 ##
-ShrinkClifford := NewOperationArgs( "ShrinkClifford" );
+DeclareGlobalFunction( "ShrinkClifford" );
 
 
 #############################################################################
@@ -724,24 +683,12 @@ ShrinkClifford := NewOperationArgs( "ShrinkClifford" );
 ##  "<line_n>"
 ##  ]
 ##
-##  where <line_i> is the <i>-th line of the output of 'Print( <text> )',
+##  where <line_i> is the <i>-th line of the output of `Print( <text> )',
 ##  except that the doublequotes are escaped.
 ##
-##  *Note* that the ']' is the last output character.
+##  *Note* that the `]' is the last output character.
 ##
-TextString := NewOperationArgs( "TextString" );
-
-
-#############################################################################
-##
-#F  BlanklessPrint( <obj> )
-##
-##  outputs <obj> without unnecessary blanks.
-##
-##  The component 'text' and strings in an 'irr' list are not treated
-##  in a special way!
-##
-BlanklessPrint := NewOperationArgs( "BlanklessPrint" );
+DeclareGlobalFunction( "TextString" );
 
 
 #############################################################################
@@ -750,16 +697,16 @@ BlanklessPrint := NewOperationArgs( "BlanklessPrint" );
 ##
 ##  returns the list corresponding to the list <chars> where
 ##
-##  each '<chars>[<k>]' that is the tensor product of '<chars>[<i>]'
-##  and a linear character '<chars>[j]' with $i, j \leq k$ is replaced by
-##  the string '\"[TENSOR,[<i>,<j>]]\"', and
+##  each `<chars>[<k>]' that is the tensor product of `<chars>[<i>]'
+##  and a linear character `<chars>[j]' with $i, j \leq k$ is replaced by
+##  the string `\"[TENSOR,[<i>,<j>]]\"', and
 ##
-##  each '<chars>[<k>]' that is the <j>-th Galois conjugate of '<chars>[<i>]'
-##  with $i \leq k$ is replaced by the string '\"[GALOIS,[<i>,<j>]]\"'.
+##  each `<chars>[<k>]' that is the <j>-th Galois conjugate of `<chars>[<i>]'
+##  with $i \leq k$ is replaced by the string `\"[GALOIS,[<i>,<j>]]\"'.
 ##
-##  This function is used by 'PrintToLib'.
+##  This function is used by `PrintToLib'.
 ##
-ShrinkChars := NewOperationArgs( "ShrinkChars" );
+DeclareGlobalFunction( "ShrinkChars" );
 
 
 #############################################################################
@@ -767,21 +714,22 @@ ShrinkChars := NewOperationArgs( "ShrinkChars" );
 #F  ClfToCll( <clf> )
 ##
 ##  is a list encoding the information in the Clifford matrix record <clf>.
-##  <clf> must contain the components 'mat', 'inertiagrps', 'fusionclasses'.
+##  <clf> must contain the components `mat', `inertiagrps', `fusionclasses'.
 ##
-##  See 'CllToClf' for the meaning of the entries.
+##  See `CllToClf' for the meaning of the entries.
 ##
-ClfToCll := NewOperationArgs( "ClfToCll" );
+#T DeclareGlobalFunction( "ClfToCll" );
+#T up to now no function is installed
 
 
 #############################################################################
 ##
-#F  PrintFusion( <name>, <fus> )
+#F  LibraryFusion( <name>, <fus> )
 ##
-##  prints the assignment of the fusion record <fus> that shall be stored on
-##  the table with name <name>, in library format.
+##  is a string that encodes the assignment of the fusion record <fus> that
+##  shall be stored on the table with name <name>, in library format.
 ##
-PrintFusion := NewOperationArgs( "PrintFusion" );
+DeclareGlobalFunction( "LibraryFusion" );
 
 
 #############################################################################
@@ -789,10 +737,13 @@ PrintFusion := NewOperationArgs( "PrintFusion" );
 #F  PrintToLib( <file>, <tbl> )
 ##
 ##  prints the character table <tbl> in library format to the file
-##  '<file>.tbl';
-##  this is the filename relative to a directory given by 'TBLNAME'.
+##  `<file>.tbl' resp. <file> (if this ends already with `.tbl').
 ##
-PrintToLib := NewOperationArgs( "PrintToLib" );
+##  The value of the attribute `NamesOfFusionSources' is ignored,
+##  since this information is extracted from the source tables by the
+##  `maketbl' script.
+##
+DeclareGlobalFunction( "PrintToLib" );
 
 
 #############################################################################
@@ -803,9 +754,10 @@ PrintToLib := NewOperationArgs( "PrintToLib" );
 ##  <file> which are not yet in the Clifford matrix library or in this list.
 ##
 ##  <clms> must be a Clifford table or a list of Clifford records.
-##  In case of splitting, each Clifford record must contain 'splitinfos'.
+##  In case of splitting, each Clifford record must contain `splitinfos'.
 ##
-PrintClmsToLib := NewOperationArgs( "PrintClmsToLib" );
+#T DeclareGlobalFunction( "PrintClmsToLib" );
+#T up to now no function is installed
 
 
 #############################################################################
@@ -817,12 +769,10 @@ PrintClmsToLib := NewOperationArgs( "PrintClmsToLib" );
 ##  being $q$.
 ##  <set> is the set of points to act on.
 ##
-OrbitsResidueClass := NewOperationArgs( "OrbitsResidueClass" );
+DeclareGlobalFunction( "OrbitsResidueClass" );
 
 
 #############################################################################
 ##
 #E  ctadmin.tbd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

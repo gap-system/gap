@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C) 1993, 1997
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation of the Dixon-Schneider algorithm
 ##
@@ -44,35 +45,14 @@ IsDxLargeGroup := G->Size(G)>DXLARGEGROUPORDER;
 ##  chance,that with one columns of them active to be several acitive,
 ##  reducing computation time !
 ##
-ClassComparison := function(c,d)
+InstallGlobalFunction( ClassComparison, function(c,d)
   if Size(c)=Size(d) then
     return Order(Representative(c))<Order(Representative(d));
   else
     return Size(c)<Size(d);
   fi;
-end;
+end );
 
-
-#############################################################################
-##
-#F  RootsOfPol(<pol>) . . . . . . . . . . . . . . . . . roots of a polynomial
-##
-RootsOfPol := function(f)
-  local roots,factor;
-  roots:=[];
-  for factor in Factors(f) do
-    if DOULP(factor)=1 then
-      factor:=CoefficientsOfUnivariateLaurentPolynomial(factor);
-      # work around new representation of polynomials
-      if factor[2]=0 then
-	Add(roots,-factor[1][1]/factor[1][2]);
-      else
-	Add(roots,0*factor[1][1]);
-      fi;
-    fi;
-  od;
-  return roots;
-end;
 
 #############################################################################
 ##
@@ -395,7 +375,7 @@ end;
 ##  irreducibles and possible degrees etc. are corrected. If the modular
 ##  images of the irreducibles are known, they may be given in newmod.
 ##
-DxIncludeIrreducibles := function(arg)
+InstallGlobalFunction( DxIncludeIrreducibles, function(arg)
 
 local i,pcomp,m,r,D,neue,tm,news;
 
@@ -448,7 +428,7 @@ local i,pcomp,m,r,D,neue,tm,news;
     D.raeume[i]:=r;
   od;
   D.raeume:=Filtered(D.raeume,i->i.dim>0);
-end;
+end );
 
 
 #############################################################################
@@ -606,7 +586,7 @@ end;
 #F   according to the character spaces yet known. This can be used
 #F   interactively to utilize partially computed spaces
 ##
-SplitCharacters := function(D,l)
+InstallGlobalFunction( SplitCharacters, function(D,l)
 local ml,nu,ret,r,p,v,alo,ofs,i,j,inv,b;
   b:=Filtered(l,i->(i[1]>1) and (i[1]<D.prime/2));
   l:=Difference(l,b);
@@ -639,7 +619,7 @@ local ml,nu,ret,r,p,v,alo,ofs,i,j,inv,b;
     od;
   od;
   return Union(ret,l);
-end;
+end );
 
 
 #############################################################################
@@ -653,7 +633,7 @@ DxEigenbase := function(M,f)
 
     minpol:=MinimalPolynomial(f,M);
 
-    eigenvalues:=Set(RootsOfPol(minpol));
+    eigenvalues:=Set(RootsOfUPol(minpol));
     dim:=0;
     bases:=[];
     for i in eigenvalues do
@@ -1092,7 +1072,7 @@ end;
 ##
 #F  OrbitSplit(<D>) . . . . . . . . . . . . . . try to split two-orbit-spaces
 ##
-OrbitSplit := function(D)
+InstallGlobalFunction( OrbitSplit, function(D)
 local i,j,s,ni,nm;
   ni:=[];
   nm:=[];
@@ -1111,7 +1091,7 @@ local i,j,s,ni,nm;
     DxIncludeIrreducibles(D,ni,nm);
   fi;
   CombinatoricSplit(D);
-end;
+end );
 
 
 #############################################################################
@@ -1123,7 +1103,7 @@ end;
 ##
 ##  'DxModularValuePol' uses Horners rule to evaluate the polynom.
 ##
-DxModularValuePol := function (f,x,p)
+InstallGlobalFunction( DxModularValuePol, function (f,x,p)
 local  value,i;
   value := 0;
   i := Length(f);
@@ -1132,7 +1112,7 @@ local  value,i;
     i := i-1;
   od;
   return value;
-end;
+end );
 
 
 #############################################################################
@@ -1162,7 +1142,7 @@ end;
 #F  DxDegreeCandidates(<D>,[<anz>]) . Potential degrees for anz characters of
 #F     same degree,if num characters of total degree deg are yet to be found
 ##
-DxDegreeCandidates := function(arg)
+InstallGlobalFunction( DxDegreeCandidates, function(arg)
   local D,anz,degrees,divisors,i,r;
   D:=arg[1];
   if Length(arg)>1 then
@@ -1183,15 +1163,15 @@ DxDegreeCandidates := function(arg)
   else
     return List(D.degreePool,i->i[1]);
   fi;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  SplitDegree(<D>,<space>,<r>)  estimate number of parts when splitting
+#F  DxSplitDegree(<D>,<space>,<r>)  estimate number of parts when splitting
 ##                space with matrix number r,according to charactermorphisms
 ##
-SplitDegree := function(D,space,r)
+InstallGlobalFunction( DxSplitDegree, function(D,space,r)
   local a,b,s,o,fix,k,l,i,j,gorb,v,w,
         base;
   # is perfect split guaranteed ?
@@ -1257,7 +1237,7 @@ SplitDegree := function(D,space,r)
     fi;
     return l;
   fi;
-end;
+end );
 
 
 #############################################################################
@@ -1307,7 +1287,7 @@ end;
 ##  This routine calculates also all required columns etc. and stores the
 ##  result in D
 ##
-BestSplittingMatrix := function(D)
+InstallGlobalFunction( BestSplittingMatrix, function(D)
   local n,dim,i,val,b,requiredCols,splitBases,wert,nu,r,rs,rc,bn,bw,split,
         orb,os;
 
@@ -1345,7 +1325,7 @@ BestSplittingMatrix := function(D)
 		# very small spaces will split nearly perfect
 		val:=8;
 	      else
-		bn:=SplitDegree(D,r,n);
+		bn:=DxSplitDegree(D,r,n);
 		if os then
 		  if IsPerfectGroup(D.group) then
 		    # G is perfect,no linear characters
@@ -1416,7 +1396,7 @@ BestSplittingMatrix := function(D)
   D.splitBases:=splitBases;
 
   return bn;
-end;
+end );
 
 
 #############################################################################
@@ -1508,12 +1488,14 @@ local tm,tme,piso,gpcgs,gals,ord,l,l2,f,fgens,rws,hom,pow,pos,i,j,k,gen,
   rws:=SingleCollector(f,ord);
 
   # pseudo-Homomorphism to map in free group
-  hom:=GroupHomomorphismByImages(k,f,gpcgs,fgens{[1..l]});
+  hom:= GroupGeneralMappingByImages( k, f, gpcgs, fgens{[1..l]} );
+
   # translate the gal-Relations:
   for i in [1..l] do
-    SetPower(rws,i,Image(hom,gpcgs[i]^ord[i]));
+    SetPower( rws, i, ImagesRepresentative( hom, gpcgs[i]^ord[i] ) );
     for j in [i+1..l] do
-      SetCommutator(rws,j,i,Image(hom,Comm(gpcgs[j],gpcgs[i])));
+      SetCommutator( rws, j, i, ImagesRepresentative( hom,
+                                    Comm( gpcgs[j], gpcgs[i] ) ) );
     od;
   od;
 
@@ -1881,7 +1863,7 @@ end;
 #F  DixonInit(<G>) . . . . . . . . . . initialize Dixon-Schneider algorithm
 ##
 ##
-DixonInit := function(arg)
+InstallGlobalFunction( DixonInit, function(arg)
 local G,     # group
       D,     # Dixon record,result
       p,
@@ -1983,14 +1965,14 @@ local G,     # group
   fi;
 
   return D;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DixonSplit(<D>) . .  calculate matrix,split spaces and obtain characters
 ##
-DixonSplit := function(D)
+InstallGlobalFunction( DixonSplit, function(D)
 local r,i,j,ch,ra,
       gens;
 
@@ -2024,7 +2006,7 @@ local r,i,j,ch,ra,
   od;
   D.raeume:=ra;
   CombinatoricSplit(D);
-end;
+end );
 
 
 #############################################################################
@@ -2035,7 +2017,7 @@ end;
 ##  the old group is returned,character table is sorted according to its 
 ##  classes
 ##
-DixontinI := function(D)
+InstallGlobalFunction( DixontinI, function(D)
 local C,p,u,irr;
 
   if IsBound(D.shorttests) then
@@ -2063,7 +2045,7 @@ local C,p,u,irr;
   od;
 
   return irr;
-end;
+end );
 
 #############################################################################
 #F  IrrDixonSchneider(<G>) . . . . .  character table of finite group G
@@ -2071,7 +2053,7 @@ end;
 ##  Compute the table of the irreducible characters of G,using the
 ##  Dixon/Schneider method.
 ##
-IrrDixonSchneider := function(arg)
+InstallGlobalFunction( IrrDixonSchneider, function(arg)
 local G,k,C,D,opt;
 
   G:=arg[1];
@@ -2098,7 +2080,7 @@ local G,k,C,D,opt;
   SetIrr(OrdinaryCharacterTable(G),C);
   return C;
 
-end;
+end );
 
 #############################################################################
 ##

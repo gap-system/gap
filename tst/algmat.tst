@@ -16,9 +16,9 @@ gap> Ring( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 <algebra over GF(3), with 2 generators>
 
 gap> Ring( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-Ring( ... )
+<free left module over Integers, and ring, with 1 generators>
 gap> Ring( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
-Ring( ... )
+<free left module over Integers, and ring, with 2 generators>
 
 
 gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
@@ -26,9 +26,9 @@ gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 <algebra-with-one over GF(3), with 2 generators>
 
 gap> RingWithOne( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-RingWithOne( ... )
+<free left module over Integers, and ring-with-one, with 1 generators>
 gap> RingWithOne( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
-RingWithOne( ... )
+<free left module over Integers, and ring-with-one, with 2 generators>
 
 gap> mat:= [ [ 1, E(4) ], [ 1, 1 ] ];
 [ [ 1, E(4) ], [ 1, 1 ] ]
@@ -175,38 +175,38 @@ gap> cen = uc;
 true
 
 gap> cen:= Centralizer( a, GeneratorsOfAlgebra( a )[1] );
-<algebra of dimension 24 over GF(3)>
+<algebra of dimension 12 over GF(3)>
 gap> Dimension( cen );
-24
+12
 gap> cen:= Centralizer( a, cen );
-<algebra of dimension 5 over GF(3)>
+<algebra of dimension 12 over GF(3)>
 gap> Dimension( cen );
-5
+12
 
 gap> cen:= Centralizer( ua, One( ua ) );
 <algebra-with-one of dimension 24 over GF(3)>
 gap> cen = ua;
 true
-gap> cen:= Centralizer( ua, GeneratorsOfAlgebra( ua )[1] );
-<algebra-with-one of dimension 23 over GF(3)>
+gap> cen:= Centralizer( ua, GeneratorsOfAlgebra( ua )[2] );
+<algebra-with-one of dimension 12 over GF(3)>
 gap> Dimension( cen );
-23
+12
 gap> cen:= Centralizer( ua, cen );
-<algebra-with-one of dimension 5 over GF(3)>
+<algebra-with-one of dimension 12 over GF(3)>
 gap> Dimension( cen );
-5
+12
 
 #############################################################################
 
 gap> fullcen:= FullMatrixAlgebraCentralizer( CF(5),
 >                  GeneratorsOfAlgebra( c ) );
-<algebra of dimension 2 over CF(5)>
+<algebra-with-one of dimension 2 over CF(5)>
 gap> Dimension( fullcen );
 2
 
 gap> fullcen:= FullMatrixAlgebraCentralizer( GF(9),
 >                  GeneratorsOfAlgebra( a ) );
-<algebra of dimension 1 over GF(3^2)>
+<algebra-with-one of dimension 1 over GF(3^2)>
 gap> Dimension( fullcen );
 1
 
@@ -235,15 +235,13 @@ gap> Dimension( cenu );
 
 gap> v:= FreeLeftModule( GF(2),
 >         [ [ [ 1, 1, 1 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ] * Z(2) ] );
-VectorSpace( GF(2), 
-[ [ [ Z(2)^0, Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0, 0*Z(2) ], 
-      [ 0*Z(2), 0*Z(2), Z(2)^0 ] ] ] )
+<vector space over GF(2), with 1 generators>
 gap> Dimension( v );
 1
 gap> IsSubset( f, v );
 true
 gap> cenv:= Centralizer( f, v );
-<algebra of dimension 5 over GF(2)>
+<algebra-with-one of dimension 5 over GF(2)>
 gap> Dimension( cenv );
 5
 
@@ -329,10 +327,11 @@ true
 
 #############################################################################
 
-gap> STOP_TEST( "algmat.tst", 2078150000 );
+gap> STOP_TEST( "algmat.tst", 2275253357 );
 
 
 #############################################################################
 ##
 #E  algmat.tst  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+

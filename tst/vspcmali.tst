@@ -20,7 +20,7 @@ gap> START_TEST("$Id$");
 ##  1. Construct Gaussian and non-Gaussian Lie matrix spaces
 ##
 gap> z:= LeftModuleByGenerators( GF(3), [], LieObject( [ [ 0*Z(9) ] ] ) );
-VectorSpace( GF(3), [  ], LieObject( [ [ 0*Z(3) ] ] ) )
+<vector space over GF(3), with 0 generators>
 gap> IsGaussianMatrixSpaceRep( z );
 true
 gap> IsNonGaussianMatrixSpaceRep( z );
@@ -28,7 +28,7 @@ false
 
 gap> v:= LeftModuleByGenerators( GF(9),
 >            [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
-VectorSpace( GF(3^2), [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] )
+<vector space over GF(3^2), with 1 generators>
 gap> IsGaussianMatrixSpaceRep( v );
 true
 gap> IsNonGaussianMatrixSpaceRep( v );
@@ -39,7 +39,7 @@ true
 
 gap> w:= LeftModuleByGenerators( GF(9),
 >            [ LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
-VectorSpace( GF(3^2), [ LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ) ] )
+<vector space over GF(3^2), with 1 generators>
 gap> IsGaussianMatrixSpaceRep( w );
 false
 gap> IsNonGaussianMatrixSpaceRep( w );
@@ -68,12 +68,9 @@ true
 gap> v:= LeftModuleByGenerators( GF(9),
 >     [ LieObject( [ [ Z(3), Z(3) ], [ Z(3),   Z(3) ] ] ),
 >       LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] );
-VectorSpace( GF(3^2), [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] )
+<vector space over GF(3^2), with 2 generators>
 gap> b:= SemiEchelonBasis( v );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), ... )
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>, ... )
 gap> lc:= LinearCombination( b, [ Z(3)^0, Z(3) ] );
 LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ] )
 gap> Coefficients( b, lc );
@@ -87,39 +84,31 @@ gap> b:= Basis( v, [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
 fail
 gap> b:= Basis( v, [ LieObject( [ [ Z(3), Z(3) ], [ Z(3),   Z(3) ] ] ),
 >                    LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] );
-Basis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
+Basis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
   LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v, [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
 >                    LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ) ] );
-Basis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
+Basis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3) ] ] ) ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v,
 >        [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
 >          LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ] ) ] );
-Basis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+Basis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, 0*Z(3) ] ] ) ] )
 gap> IsSemiEchelonized( b );
 false
 gap> b:= Basis( v,
 >           [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
 >             LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
 gap> IsSemiEchelonized( b );
 true
@@ -165,22 +154,16 @@ true
 gap> BasisByGeneratorsNC( v,
 >     [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
 >       LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
 gap> BasisOfDomain( v );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
 gap> SemiEchelonBasisOfDomain( v );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
 
 gap> b:= SemiEchelonBasis( v,
@@ -190,24 +173,22 @@ fail
 gap> b:= SemiEchelonBasis( v,
 >         [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
 >           LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
 gap> b:= SemiEchelonBasisByGeneratorsNC( v,
 >         [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
 >           LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] );
-SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ), 
-[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
+SemiEchelonBasis( <vector space over GF(3^2), with 2 generators>,
+[ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ),
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] )
-gap> c1:= CanonicalBasis( v );
+gap> c1:= CanonicalBasis( v );;
+gap> Print( c1, "\n" );
 CanonicalBasis( VectorSpace( GF(3^2), 
 [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
   LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ) ] ) )
-gap> c2:= CanonicalBasis( VectorSpace( GF(3), BasisVectors( b ) ) );
+gap> c2:= CanonicalBasis( VectorSpace( GF(3), BasisVectors( b ) ) );;
+gap> Print( c2, "\n" );
 CanonicalBasis( VectorSpace( GF(3), 
 [ LieObject( [ [ Z(3)^0, Z(3)^0 ], [ Z(3)^0, Z(3)^0 ] ] ), 
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0 ] ] ) ] ) )
@@ -218,17 +199,13 @@ gap> w:= LeftModuleByGenerators( GF(9),
 >         [ LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ),
 >           LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ),
 >           LieObject( [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
-VectorSpace( GF(3^2), [ LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] )
+<vector space over GF(3^2), with 3 generators>
 gap> BasisOfDomain( w );
-Basis( VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
-  LieObject( [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ) ] ), ... )
+Basis( <vector space over GF(3^2), with 3 generators>, ... )
 gap> b:= BasisByGenerators( w,
 >         [ LieObject( [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ),
->           LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ) ] );
+>           LieObject( [ [ Z(27), Z(3) ], [ Z(3), Z(3) ] ] ) ] );;
+gap> Print( b, "\n" );
 Basis( VectorSpace( GF(3^2), 
 [ LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
   LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
@@ -245,7 +222,8 @@ true
 gap> ForAny( b, IsZero );
 false
 
-gap> ww:= AsVectorSpace( GF(3), w );
+gap> ww:= AsVectorSpace( GF(3), w );;
+gap> Print( ww, "\n" );
 VectorSpace( GF(3), [ LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
   LieObject( [ [ Z(3^3), Z(3) ], [ Z(3), Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
@@ -262,7 +240,8 @@ fail
 gap> u:= GF( 3^6 )^[ 2, 3 ];
 ( GF(3^6)^[ 2, 3 ] )
 gap> u:= LeftModuleByGenerators( GF(3^6),
->            List( GeneratorsOfLeftModule( u ), LieObject ) );
+>            List( GeneratorsOfLeftModule( u ), LieObject ) );;
+gap> Print( u, "\n" );
 VectorSpace( GF(3^6), 
 [ LieObject( [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
@@ -274,7 +253,8 @@ gap> IsFullMatrixModule( u );
 true
 gap> u;
 ( GF(3^6)^[ 2, 3 ] )
-gap> uu:= AsVectorSpace( GF(9), u );
+gap> uu:= AsVectorSpace( GF(9), u );;
+gap> Print( uu, "\n" );
 VectorSpace( GF(3^2), 
 [ LieObject( [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
@@ -295,7 +275,8 @@ VectorSpace( GF(3^2),
   LieObject( [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3^6)^2, 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3^6)^2 ] ] ) 
  ] )
-gap> uuu:= AsVectorSpace( GF(27), uu );
+gap> uuu:= AsVectorSpace( GF(27), uu );;
+gap> Print( uuu, "\n" );
 VectorSpace( GF(3^3), 
 [ LieObject( [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
@@ -334,7 +315,8 @@ VectorSpace( GF(3^3),
   LieObject( [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3^6)^93, 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), Z(3^6)^93 ] ] ) 
  ] )
-gap> uuuu:= AsVectorSpace( GF(3^6), uu );
+gap> uuuu:= AsVectorSpace( GF(3^6), uu );;
+gap> Print( uuuu, "\n" );
 VectorSpace( GF(3^6), 
 [ LieObject( [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3), 0*Z(3) ] ] ), 
@@ -361,16 +343,15 @@ true
 gap> c:= VectorSpace( GF(9),
 >          [ LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ),
 >            LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ) ] );
-VectorSpace( GF(3^2), 
-[ LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ), 
-  LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ) ] )
-gap> f:= v + c;
+<vector space over GF(3^2), with 2 generators>
+gap> f:= v + c;;
+gap> Print( f, "\n" );
 VectorSpace( GF(3^2), [ LieObject( [ [ Z(3), Z(3) ], [ Z(3), Z(3) ] ] ), 
   LieObject( [ [ Z(3), Z(3) ], [ Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ) ] )
 gap> Intersection( v, c );
-VectorSpace( GF(3^2), [  ] )
+<vector space over GF(3^2), with 0 generators>
 gap> Intersection( v, f ) = v;
 true
 
@@ -384,7 +365,7 @@ gap> IsFullMatrixModule( f );
 true
 gap> c:= CanonicalBasis( f );
 CanonicalBasis( ( GF(3^2)^[ 2, 2 ] ) )
-gap> BasisVectors( c );
+gap> Print( BasisVectors( c ), "\n" );
 [ LieObject( [ [ Z(3)^0, 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), Z(3)^0 ], [ 0*Z(3), 0*Z(3) ] ] ), 
   LieObject( [ [ 0*Z(3), 0*Z(3) ], [ Z(3)^0, 0*Z(3) ] ] ), 
@@ -404,7 +385,7 @@ true
 gap> CloseMutableBasis( mb, LieObject( [ [ E(4), 0 ], [ 0, 0 ] ] ) );
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 false
-gap> BasisVectors( mb );
+gap> Print( BasisVectors( mb ), "\n" );
 [ LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ), LieObject( [ [ 0, 1 ], [ 1, 1 ] ] ), 
   LieObject( [ [ E(4), 0 ], [ 0, 0 ] ] ) ]
 
@@ -418,16 +399,14 @@ gap> CloseMutableBasis( mb, LieObject( [ [ 1, 2 ], [ 3, 5 ] ] ) );
 gap> CloseMutableBasis( mb, LieObject( [ [ 0, 0 ], [ 0, 7 ] ] ) );
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
-gap> bv:= BasisVectors( mb );
+gap> bv:= BasisVectors( mb );;
+gap> Print( bv, "\n" );
 [ LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ), LieObject( [ [ 0, 1 ], [ 1, 1 ] ] ), 
   LieObject( [ [ 0, 0 ], [ 1, 2 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ]
 gap> ImmutableBasis( mb );
-SemiEchelonBasis( VectorSpace( Rationals, 
-[ LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ), LieObject( [ [ 0, 1 ], [ 1, 1 ] ] ), 
-  LieObject( [ [ 0, 0 ], [ 1, 2 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) 
- ] ), [ LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ), 
-  LieObject( [ [ 0, 1 ], [ 1, 1 ] ] ), LieObject( [ [ 0, 0 ], [ 1, 2 ] ] ), 
-  LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
+SemiEchelonBasis( <vector space of dimension 4 over Rationals>,
+[ LieObject( [ [ 1, 1 ], [ 1, 1 ] ] ), LieObject( [ [ 0, 1 ], [ 1, 1 ] ] ),
+  LieObject( [ [ 0, 0 ], [ 1, 2 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
 
 gap> mb:= MutableBasisByGenerators( Rationals, [],
 >             LieObject( [ [ 0, 0 ], [ 0, 0 ] ] ) );
@@ -440,13 +419,11 @@ true
 gap> BasisVectors( mb );
 [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ]
 gap> ImmutableBasis( mb );
-SemiEchelonBasis( VectorSpace( Rationals, 
-[ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) 
- ] ), [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), 
-  LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
+SemiEchelonBasis( <vector space of dimension 2 over Rationals>,
+[ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
 
 
-gap> STOP_TEST( "vspcmali.tst", 43560000 );
+gap> STOP_TEST( "vspcmali.tst", 51405100 );
 
 #############################################################################
 ##

@@ -7,19 +7,14 @@ ReadLib( "ctbl.gd"     );
 ReadLib( "ctblfuns.gd" );
 ReadLib( "ctblchar.gd" );
 ReadLib( "ctblmaps.gd" );
+ReadLib( "ctblauto.gd" );
 ReadLib( "ctbllatt.gd" );
 ReadLib( "ctblsymm.gd" );
+ReadLib( "ctblsolv.gd" );
 ReadLib( "ctblpope.gd" );
 ReadLib( "ctblmoli.gd" );
 ReadLib( "ctblmono.gd" );
 ReadLib( "ctblgrp.gd"  );
-
-
-#############################################################################
-##
-#X  administration of the character table library
-##
-ReadTbl( "ctadmin.tbd"  );
 
 
 #############################################################################
@@ -30,7 +25,7 @@ ReadLib( "ctbl.gi"     );
 ReadLib( "ctblfuns.gi" );
 ReadLib( "ctblchar.gi" );
 ReadLib( "ctblmaps.gi" );
-# ReadLib( "ctblauto.gi" );
+ReadLib( "ctblauto.gi" );
 ReadLib( "ctbllatt.gi" );
 ReadLib( "ctblsymm.gi" );
 ReadLib( "ctblsolv.gi" );
@@ -41,6 +36,19 @@ ReadLib( "ctblgrp.gi"  );
 ReadLib( "ctblperm.gi" );
 ReadLib( "ctblpc.gi" );
 
-ReadTbl( "ctadmin.tbi"  );
+
+#############################################################################
+##
+#X  files dealing with tables of marks
+##
+ReadLib( "tom.gd");
+ReadLib( "tom.gi");
+
+
+#############################################################################
+##
+#X  interface between the libraries of char. tables and of tables of marks
+##
+ReadLib( "ctbltom.gi");
 
 

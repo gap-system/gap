@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for finitely presented algebras.
 ##  So far, there are not many.
@@ -17,8 +18,7 @@ Revision.algfp_gi :=
 ##
 #R  IsPackedAlgebraElmDefaultRep
 ##
-IsPackedAlgebraElmDefaultRep := NewRepresentation(
-    "IsPackedAlgebraElmDefaultRep",
+DeclareRepresentation( "IsPackedAlgebraElmDefaultRep",
     IsPositionalObjectRep and IsRingElement, [ 1 ] );
 
 
@@ -29,7 +29,7 @@ IsPackedAlgebraElmDefaultRep := NewRepresentation(
 InstallMethod(ElementOfFpAlgebra,
     "for family of fp. alg. elements and ring element",
     true,
-    [ IsFamilyOfFpAlgebraElements, IsRingElement ], 0,
+    [ IsElementOfFpAlgebraFamily, IsRingElement ], 0,
     function( fam, elm )
     return Objectify( fam!.defaultType, [ Immutable( elm ) ] );
     end );
@@ -40,9 +40,9 @@ InstallMethod(ElementOfFpAlgebra,
 #M  ElementOfFpAlgebra( <Fam>, <elm> )  . .  for family with nice normal form
 ##
 InstallMethod( ElementOfFpAlgebra,
-    "method for fp. alg. elms. family with normal form, and ring element",
+    "for fp. alg. elms. family with normal form, and ring element",
     true,
-    [ IsFamilyOfFpAlgebraElements and HasNiceNormalFormByExtRepFunction,
+    [ IsElementOfFpAlgebraFamily and HasNiceNormalFormByExtRepFunction,
       IsRingElement ], 0,
     function( Fam, elm )
     return NiceNormalFormByExtRepFunction( Fam )( Fam, ExtRepOfObj( elm ) );
@@ -59,7 +59,7 @@ InstallMethod( ElementOfFpAlgebra,
 ##  of the monomials and their coefficients.
 ##
 InstallMethod( ExtRepOfObj,
-    "method for f.p. algebra element",
+    "for f.p. algebra element",
     true,
     [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
     elm -> ExtRepOfObj( elm![1] ) );
@@ -70,9 +70,9 @@ InstallMethod( ExtRepOfObj,
 #M  ObjByExtRep( <Fam>, <descr> ) . for f.p. alg. elms. fam. with normal form
 ##
 InstallMethod( ObjByExtRep,
-    "method for family of f.p. algebra elements with normal form",
+    "for family of f.p. algebra elements with normal form",
     true,
-    [ IsFamilyOfFpAlgebraElements and HasNiceNormalFormByExtRepFunction,
+    [ IsElementOfFpAlgebraFamily and HasNiceNormalFormByExtRepFunction,
       IsList ], 0,
     function( Fam, descr )
     return NiceNormalFormByExtRepFunction( Fam )( Fam, descr );
@@ -83,10 +83,7 @@ InstallMethod( ObjByExtRep,
 ##
 #M  MappedExpression( <expr>, <gens1>, <gens2> )
 ##
-InstallMethod( MappedExpression,
-    "method for element of f.p. algebra, and two lists of generators",
-    IsElmsCollsX,
-    [ IsElementOfFpAlgebra, IsHomogeneousList, IsHomogeneousList ], 0,
+BindGlobal( "MappedExpressionForElementOfFreeAssociativeAlgebra",
     function( expr, gens1, gens2 )
 
     local mapped,      # the mapped expression, result
@@ -101,11 +98,11 @@ InstallMethod( MappedExpression,
       return Zero( gens2[1] );
     fi;
 
-    # Get the numbers of generators.
+    # Get the numbers corresponding to the generators.
     gens1:= List( gens1, x -> ExtRepOfObj( x )[2] );
     for i in [ 1 .. Length( gens1 ) ] do
       gen:= gens1[i];
-      if Length( gen ) = 2 and gen[2] = 1 then
+      if Length( gen ) = 2 and IsOne( gen[2] ) then
         gen:= gen[1];
         if Length( gen ) = 0 then
           gens1[i]:= 0;
@@ -162,8 +159,15 @@ InstallMethod( MappedExpression,
     od;
 
     return mapped;
-    end );
+end );
 #T special method for expression trees! (see GAP 3.5)
+
+InstallMethod( MappedExpression,
+    "for element of f.p. algebra, and two lists of generators",
+    IsElmsCollsX,
+    [ IsElementOfFpAlgebra, IsHomogeneousList, IsHomogeneousList ], 0,
+#T install same method for free ass. algebra elements!
+    MappedExpressionForElementOfFreeAssociativeAlgebra );
 
 
 #############################################################################
@@ -171,8 +175,8 @@ InstallMethod( MappedExpression,
 #M  \=( <x>, <y> )  . . . . . . . .  for two normalized f.p. algebra elements
 ##
 InstallMethod( \=,
-    "method for two normalized f.p. algebra elements",
-    IsIdentical,
+    "for two normalized f.p. algebra elements",
+    IsIdenticalObj,
     [ IsElementOfFpAlgebra and IsNormalForm,
       IsElementOfFpAlgebra and IsNormalForm ], 0,
     function( x, y )
@@ -180,6 +184,25 @@ InstallMethod( \=,
     end );
 
 #T missing: \= method to look for normal form in the family
+
+
+#############################################################################
+##
+#M  \=( <x>, <y> )  . . . . . . . . . . . . . . for two f.p. algebra elements
+##
+InstallMethod( \=,
+    "for two f.p. algebra elements (try nice monomorphism)",
+    IsIdenticalObj,
+    [ IsElementOfFpAlgebra,
+      IsElementOfFpAlgebra ], 0,
+    function( x, y )
+    local hom;
+    hom:= NiceAlgebraMonomorphism( FamilyObj( x )!.wholeAlgebra );
+    if hom = fail then
+      TryNextMethod();
+    fi;
+    return ImagesRepresentative( hom, x ) = ImagesRepresentative( hom, y );
+    end );
 
 
 #############################################################################
@@ -193,8 +216,8 @@ InstallMethod( \=,
 ##  according to the ordering in the external representation.
 ##
 InstallMethod( \<,
-    "method for two normalized f.p. algebra elements",
-    IsIdentical,
+    "for two normalized f.p. algebra elements",
+    IsIdenticalObj,
     [ IsElementOfFpAlgebra and IsNormalForm,
       IsElementOfFpAlgebra and IsNormalForm ], 0,
     function( x, y )
@@ -228,9 +251,28 @@ InstallMethod( \<,
 
 #############################################################################
 ##
+#M  \<( <x>, <y> )  . . . . . . . . . . . . . . for two f.p. algebra elements
+##
+InstallMethod( \<,
+    "for two f.p. algebra elements (try nice monomorphism)",
+    IsIdenticalObj,
+    [ IsElementOfFpAlgebra,
+      IsElementOfFpAlgebra ], 0,
+    function( x, y )
+    local hom;
+    hom:= NiceAlgebraMonomorphism( FamilyObj( x )!.wholeAlgebra );
+    if hom = fail then
+      TryNextMethod();
+    fi;
+    return ImagesRepresentative( hom, x ) < ImagesRepresentative( hom, y );
+    end );
+
+
+#############################################################################
+##
 #M  FactorFreeAlgebraByRelators( <F>, <rels> )  . . .  factor of free algebra
 ##
-FactorFreeAlgebraByRelators := function( F, rels )
+InstallGlobalFunction( FactorFreeAlgebraByRelators, function( F, rels )
     local A, fam;
 
     # Create a new family.
@@ -243,9 +285,13 @@ FactorFreeAlgebraByRelators := function( F, rels )
     fam!.relators := Immutable( rels );
     fam!.familyRing := FamilyObj(LeftActingDomain(F));
 
+    # Set the characteristic.
+    if HasCharacteristic( F ) or HasCharacteristic( FamilyObj( F ) ) then
+      SetCharacteristic( fam, Characteristic( F ) );
+    fi;
+
     # Create the algebra.
     if IsAlgebraWithOne( F ) then
-#T Do we want to support free algebras without one?
 
       A := Objectify(
           NewType( CollectionsFamily( fam ),
@@ -277,10 +323,28 @@ FactorFreeAlgebraByRelators := function( F, rels )
     fi;
 
     SetZero( fam, ElementOfFpAlgebra( fam, Zero( F ) ) );
-    UseFactorRelation(F,rels,A);
+    UseFactorRelation( F, rels, A );
+    SetIsFullFpAlgebra( A, true );
+    fam!.wholeAlgebra:= A;
 
     return A;
-end;
+end );
+
+
+#############################################################################
+##
+#M  IsFullFpAlgebra( <A> )
+##
+InstallOtherMethod( IsFullFpAlgebra,
+    "for f. p. algebra",
+    true,
+    [ IsAlgebra and IsSubalgebraFpAlgebra ], 0,
+    function( A )
+    local Fam;
+    Fam:= ElementsFamily( FamilyObj( A ) );
+    return IsSubset( A, List( GeneratorsOfAlgebra( Fam!.freeAlgebra ),
+                              a -> ElementOfFpAlgebra( Fam, a ) ) );
+    end );
 
 
 #############################################################################
@@ -288,14 +352,14 @@ end;
 #M  \/( <F>, <rels> )  . . . . . . . for free algebra and list of relators
 ##
 InstallOtherMethod( \/,
-    "method for free algebra and relators",
-    IsIdentical,
+    "for free algebra and relators",
+    IsIdenticalObj,
     [ IsFreeMagmaRing, IsCollection ], 0,
     FactorFreeAlgebraByRelators );
 
 InstallOtherMethod( \/,
-    "method for free algebra and empty list",
-    IsIdentical,
+    "for free algebra and empty list",
+    true,
     [ IsFreeMagmaRing, IsEmpty ], 0,
     FactorFreeAlgebraByRelators );
 
@@ -315,7 +379,7 @@ end);
 ##
 #M  \+(<fp alg elm>,<fp alg elm>)
 ##
-InstallMethod(\+,"fp algebra elements",IsIdentical,
+InstallMethod(\+,"fp algebra elements",IsIdenticalObj,
   [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
 function(a,b)
   return ElementOfFpAlgebra(FamilyObj(a),a![1]+b![1]);
@@ -325,7 +389,7 @@ end);
 ##
 #M  \-(<fp alg elm>,<fp alg elm>)
 ##
-InstallMethod(\-,"fp algebra elements",IsIdentical,
+InstallMethod(\-,"fp algebra elements",IsIdenticalObj,
   [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
 function(a,b)
   return ElementOfFpAlgebra(FamilyObj(a),a![1]-b![1]);
@@ -347,7 +411,7 @@ end);
 #M  One( <fp alg elm> )
 ##
 InstallOtherMethod( One,
-    "method for an f.p. algebra element",
+    "for an f.p. algebra element",
     true,
     [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
     function( elm )
@@ -365,7 +429,7 @@ InstallOtherMethod( One,
 #M  Zero( <fp alg elm>)
 ##
 InstallMethod( Zero,
-    "method for an f.p. algebra element",
+    "for an f.p. algebra element",
     true,
     [ IsElementOfFpAlgebra and IsPackedAlgebraElmDefaultRep ], 0,
     elm -> ElementOfFpAlgebra( FamilyObj( elm ), Zero( elm![1] ) ) );
@@ -375,7 +439,7 @@ InstallMethod( Zero,
 ##
 #M  \*(<fp alg elm>,<fp alg elm>)
 ##
-InstallMethod(\*,"fp algebra elements",IsIdentical,
+InstallMethod(\*,"fp algebra elements",IsIdenticalObj,
   [IsPackedAlgebraElmDefaultRep,IsPackedAlgebraElmDefaultRep],0,
 function(a,b)
   return ElementOfFpAlgebra(FamilyObj(a),a![1]*b![1]);
@@ -401,122 +465,132 @@ function(a,b)
   return ElementOfFpAlgebra(FamilyObj(a),a![1]*b);
 end);
 
-#AH  Embedding can only be defined reasonably if a 'One' different from
+#AH  Embedding can only be defined reasonably if a `One' different from
 #AH  the zero is present
 #AH  (The factor may collaps).
+#T The `One' of the factor may be equal to the `Zero',
+#T so the ``embedding'' can be defined as a mapping from the ring
+#T to the algebra,
+#T but it is injective only if the `One' is not the `Zero'.
 
 
 #############################################################################
 ##
-#M  PrepareNiceFreeLeftModule( <A> )
+#M  IsomorphismMatrixFLMLOR( <A> )  . . . . . . for a full f.p. assoc. FLMLOR
 ##
-##  We set the left module generators.
+##  We compute the operation homomorphism for <A> acting on itself from the
+##  right.
 ##
-InstallMethod( PrepareNiceFreeLeftModule,
-    "method for f.p. algebra with known basis info",
+InstallMethod( IsomorphismMatrixFLMLOR,
+    "for a full f.p. associative FLMLOR",
     true,
-    [ IsSubalgebraFpAlgebra and IsHandledByNiceBasis
-                            and HasBasisInfoFpAlgebra ], 0,
-    function( A )
-    SetGeneratorsOfLeftModule( A, BasisInfoFpAlgebra( A ).basiselms );
-    end );
+    [ IsFLMLORWithOne and IsSubalgebraFpAlgebra and IsAssociative
+      and IsFullFpAlgebra ], 0,
+    A  -> OperationAlgebraHomomorphism( A, [ [ Zero( A ) ] ], OnRight ) );
+#T change this: second argument should be the <A>-module itself!
 
 
 #############################################################################
 ##
-#M  NiceFreeLeftModule( <A> )
+#M  NiceAlgebraMonomorphism( <A> )  . . . . . . for a full f.p. assoc. FLMLOR
 ##
-##  We avoid to map the module generators, then to form the module,
-##  and then to compute a basis for it.
+##  We delegate to `IsomorphismMatrixFLMLOR'.
 ##
-InstallMethod( NiceFreeLeftModule,
-    "method for a f.p. algebra with known basis info",
+InstallMethod( NiceAlgebraMonomorphism,
+    "for a full f.p. associative FLMLOR (call `IsomorphismMatrixFLMLOR')",
     true,
-    [ IsSubalgebraFpAlgebra and IsHandledByNiceBasis
-                            and HasBasisInfoFpAlgebra ], 0,
-    A -> UnderlyingLeftModule( BasisInfoFpAlgebra( A ).basisimages ) );
+    [ IsFLMLORWithOne and IsSubalgebraFpAlgebra and IsAssociative
+      and IsFullFpAlgebra ], 0,
+    IsomorphismMatrixFLMLOR );
 
 
 #############################################################################
+##
+#M  IsFiniteDimensional( <A> )
+#M  Dimension( <A> )
 ##
 #M  NiceVector( <A>, <a> )
-##
-InstallMethod( NiceVector,
-    "method for f.p. algebra with known basis info, and a ring element",
-    IsCollsElms,
-    [ IsSubalgebraFpAlgebra and IsHandledByNiceBasis
-                            and HasBasisInfoFpAlgebra,
-      IsRingElement ], 0,
-    function( A, a )
-    local info;
-    info:= BasisInfoFpAlgebra( A );
-    return MappedExpression( a, info.generators, info.genimages );
-    end );
-    
-
-#############################################################################
-##
 #M  UglyVector( <A>, <r> )
 ##
-InstallMethod( UglyVector,
-    "method for f.p. algebra with known basis info, and a ring element",
+##  Provided the f.~p. algebra <A> knows its `NiceAlgebraMonomorphism' value,
+##  it is handled via nice bases.
+##  So we have to treat the case that this value is not (yet) known.
+##  Note that `Dimension' may ask whether <A> is finite dimensional,
+##  so we must provide a (partial) method for it.
+##
+##  The family of elements of <A> stores its whole algebra,
+##  so it is reasonable to look whether this algebra knows already a
+##  nice monomorphism.
+##
+InstallMethod( IsFiniteDimensional,
+    "for f.p. algebra",
     true,
-    [ IsSubalgebraFpAlgebra and IsHandledByNiceBasis
-                            and HasBasisInfoFpAlgebra,
+    [ IsSubalgebraFpAlgebra ], 0,
+    function( A )
+    local iso;
+    if HasNiceAlgebraMonomorphism(
+           ElementsFamily( FamilyObj( A ) )!.wholeAlgebra ) then
+      iso:= NiceAlgebraMonomorphism(
+                ElementsFamily( FamilyObj( A ) )!.wholeAlgebra );
+    else
+      iso:= IsomorphismMatrixFLMLOR( A );
+    fi;
+    if iso <> fail then
+      if IsAlgebraHomomorphismFromFpRep( iso ) then
+        SetNiceAlgebraMonomorphism( A, iso );
+      fi;
+      return true;
+    fi;
+    TryNextMethod();
+    end );
+
+
+InstallMethod( NiceVector,
+    "for f.p. algebra with known basis info, and a ring element",
+    IsCollsElms,
+    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection,
+      IsRingElement ], 0,
+    function( A, a )
+    local hom;
+    hom:= NiceAlgebraMonomorphism( FamilyObj( a )!.wholeAlgebra );
+    if hom = fail then
+      TryNextMethod();
+    fi;
+    return ImagesRepresentative( hom, a );
+    end );
+
+InstallMethod( UglyVector,
+    "for f.p. algebra with known basis info, and a ring element",
+    true,
+    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection,
       IsRingElement ], 0,
     function( A, r )
-    local info;
-    info:= BasisInfoFpAlgebra( A );
-    r:= Coefficients( info.basisimages, r );
-    if r <> fail then
-      r:= LinearCombination( info.basiselms, r );
+    local hom;
+    hom:= NiceAlgebraMonomorphism(
+              ElementsFamily( FamilyObj( A ) )!.wholeAlgebra );
+    if hom = fail then
+      TryNextMethod();
     fi;
-    return r;
+    return PreImagesRepresentative( hom, r );
     end );
 
 
 #############################################################################
+##  
+#M  PrepareNiceFreeLeftModule( <V> )               
 ##
-#M  IsGeneralizedCartanMatrix( <A> )
-##
-InstallMethod( IsGeneralizedCartanMatrix,
-    "method for a matrix",
-    true,
-    [ IsMatrix ], 0,
-    function( A )
-
-    local n, i, j;
-
-    if Length( A ) <> Length( A[1] ) then
-      Error( "<A> must be a square matrix" );
-    fi;
-
-    n:= Length( A );
-    for i in [ 1 .. n ] do
-      if A[i][i] <> 2 then
-        return false;
-      fi;
-    od;
-    for i in [ 1 .. n ] do
-      for j in [ i+1 .. n ] do
-        if not IsInt( A[i][j] ) or not IsInt( A[j][i] )
-           or 0 < A[i][j] or 0 < A[j][i] then
-          return false;
-        elif  ( A[i][j] = 0 and A[j][i] <> 0 )
-           or ( A[j][i] = 0 and A[i][j] <> 0 ) then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end );
+##  We do not need additional data to perform `NiceVector' and `UglyVector'.
+##                                                           
+InstallMethod( PrepareNiceFreeLeftModule, true,
+    [ IsFreeLeftModule and IsElementOfFpAlgebraCollection ], 0,
+    Ignore );                                                                
 
 
 #############################################################################
 ##
 #F  FpAlgebraByGeneralizedCartanMatrix( <F>, <A> )
 ##
-FpAlgebraByGeneralizedCartanMatrix := function( F, A )
+InstallGlobalFunction( FpAlgebraByGeneralizedCartanMatrix, function( F, A )
 
     local n,            # dimension of the matrix `A'
           i, j, k,      # loop variables
@@ -545,7 +619,7 @@ FpAlgebraByGeneralizedCartanMatrix := function( F, A )
     for i in [ 1 .. n ] do
       gensstrings[ 2*n + i ]:= Concatenation( "f", String(i) );
     od;
-    a:= FreeAssociativeAlgebra( F, gensstrings );
+    a:= FreeAssociativeAlgebraWithOne( F, gensstrings );
     gens:= GeneratorsOfAlgebraWithOne( a );
     e:= gens{ [       1 ..   n ] };
     h:= gens{ [   n + 1 .. 2*n ] };
@@ -607,7 +681,7 @@ FpAlgebraByGeneralizedCartanMatrix := function( F, A )
 
     # Return the algebra.
     return a / rels;
-end;
+end );
 
 
 #############################################################################

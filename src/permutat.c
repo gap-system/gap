@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions for permutations (small and large).
 **
@@ -38,7 +39,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_permutat_c =
+const char * Revision_permutat_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -61,9 +62,6 @@ SYS_CONST char * Revision_permutat_c =
 #define INCLUDE_DECLARATION_PART
 #include        "permutat.h"            /* permutations                    */
 #undef  INCLUDE_DECLARATION_PART
-
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -3157,6 +3155,56 @@ Obj             FuncSmallestGeneratorPerm (
 
 /****************************************************************************
 **
+*F  FuncTRIM_PERM( <self>, <perm>, <n> ) . . . . . . . . . trim a permutation
+**
+**  'TRIM_PERM' trims a permutation to the first <n> points. This can be
+##  useful to save memory
+*/
+Obj             FuncTRIM_PERM (
+    Obj			self,
+    Obj                 perm,
+    Obj                 n )
+{
+    UInt	deg,rdeg,i;
+    UInt4*	addr;
+
+    /* check arguments and extract permutation */
+    while ( TNUM_OBJ(perm) != T_PERM2 && TNUM_OBJ(perm) != T_PERM4 ) {
+        perm = ErrorReturnObj(
+            "TRIM_PERM: <perm> must be a permutation (not a %s)",
+            (Int)TNAM_OBJ(perm), 0L,
+            "you can return a permutation for <perm>" );
+    }
+
+    deg = INT_INTOBJ(n);
+    /*T a test might be useful here */
+
+    if ( TNUM_OBJ(perm) == T_PERM2 ) {
+      rdeg = deg < DEG_PERM2(perm) ? deg : DEG_PERM2(perm);
+      ResizeBag( perm, sizeof(UInt2)*rdeg);
+    }
+    else {
+      rdeg = deg < DEG_PERM4(perm) ? deg : DEG_PERM4(perm);
+      if (rdeg > 65535 ) {
+	ResizeBag( perm, sizeof(UInt4)*rdeg);
+      }
+      else {
+	/* Convert to 2Byte rep: move the points up */
+        addr=ADDR_PERM4(perm);
+	for (i=0;i<=rdeg;i++) {
+	  ((UInt2*)addr)[i]=(UInt2)addr[i];
+	}
+	RetypeBag( perm, T_PERM2 );
+	ResizeBag( perm, sizeof(UInt2)*rdeg);
+      }
+    }
+
+  return (Obj)0;
+}
+
+
+/****************************************************************************
+**
 *F  OnTuplesPerm( <tup>, <perm> )  . . . .  operations on tuples of points
 **
 **  'OnTuplesPerm'  returns  the  image  of  the  tuple  <tup>   under  the
@@ -3584,12 +3632,60 @@ Obj Array2Perm (
 /****************************************************************************
 **
 
-*F  SetupPermutat() . . . . . . . . . . . initializes the permutation package
-**
-**  Is  called  during  the  initialization  to  initialize  the  permutation
-**  package.
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupPermutat ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_PERM", "obj", &IsPermFilt,
+      IsPermHandler, "src/permutat.c:IS_PERM" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "PermList", 1, "list",
+      FuncPermList, "src/permutat.c:PermList" },
+
+    { "LARGEST_MOVED_POINT_PERM", 1, "perm",
+      FuncLARGEST_MOVED_POINT_PERM, "src/permutat.c:LARGEST_MOVED_POINT_PERM" },
+
+    { "CycleLengthPermInt", 2, "perm, point",
+      FuncCycleLengthPermInt, "src/permutat.c:CycleLengthPermInt" },
+
+    { "CyclePermInt", 2, "perm, point",
+      FuncCyclePermInt, "src/permutat.c:CyclePermInt" },
+
+    { "OrderPerm", 1, "perm",
+      FuncOrderPerm, "src/permutat.c:OrderPerm" },
+
+    { "SignPerm", 1, "perm",
+      FuncSignPerm, "src/permutat.c:SignPerm" },
+
+    { "SmallestGeneratorPerm", 1, "perm",
+      FuncSmallestGeneratorPerm, "src/permutat.c:SmallestGeneratorPerm" },
+
+    { "TRIM_PERM", 2, "perm, degree",
+      FuncTRIM_PERM, "src/permutat.c:TRIM_PERM" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking function                                        */
     InfoBags[           T_PERM2         ].name = "permutation (small)";
@@ -3597,17 +3693,32 @@ void SetupPermutat ( void )
     InfoBags[           T_PERM4         ].name = "permutation (large)";
     InitMarkFuncBags(   T_PERM4         , MarkNoSubBags );
 
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
+    ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
+
+    TypeObjFuncs[ T_PERM2 ] = TypePerm2;
+    TypeObjFuncs[ T_PERM4 ] = TypePerm4;
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* make the buffer bag                                                 */
+    InitGlobalBag( &TmpPerm, "src/permutat.c:TmpPerm" );
+
+    /* make the identity permutation                                       */
+    InitGlobalBag( &IdentityPerm, "src/permutat.c:IdentityPerm" );
+
     /* install the saving functions */
     SaveObjFuncs[ T_PERM2 ] = SavePerm2;
     SaveObjFuncs[ T_PERM4 ] = SavePerm4;
     LoadObjFuncs[ T_PERM2 ] = LoadPerm2;
     LoadObjFuncs[ T_PERM4 ] = LoadPerm4;
 
-
     /* install the printing functions                                      */
     PrintObjFuncs[ T_PERM2   ] = PrintPermP;
     PrintObjFuncs[ T_PERM4   ] = PrintPermQ;
-
 
     /* install the comparison methods                                      */
     EqFuncs  [ T_PERM2  ][ T_PERM2  ] = EqPerm22;
@@ -3618,7 +3729,6 @@ void SetupPermutat ( void )
     LtFuncs  [ T_PERM2  ][ T_PERM4  ] = LtPerm24;
     LtFuncs  [ T_PERM4  ][ T_PERM2  ] = LtPerm42;
     LtFuncs  [ T_PERM4  ][ T_PERM4  ] = LtPerm44;
-
 
     /* install the binary operations                                       */
     ProdFuncs[ T_PERM2  ][ T_PERM2  ] = ProdPerm22;
@@ -3656,91 +3766,66 @@ void SetupPermutat ( void )
     CommFuncs[ T_PERM4  ][ T_PERM2  ] = CommPerm42;
     CommFuncs[ T_PERM4  ][ T_PERM4  ] = CommPerm44;
 
-
     /* install the 'ONE' function for permutations                         */
     OneFuncs[ T_PERM2 ] = OnePerm;
     OneFuncs[ T_PERM4 ] = OnePerm;
 
-
     /* install the 'INV' function for permutations                         */
     InvFuncs[ T_PERM2 ] = InvPerm;
     InvFuncs[ T_PERM4 ] = InvPerm;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitPermutat()  . . . . . . . . . . . initializes the permutation package
-**
-**  Is  called  during  the  initialization  to  initialize  the  permutation
-**  package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitPermutat ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_PERM2", &TYPE_PERM2 );
-    ImportGVarFromLibrary( "TYPE_PERM4", &TYPE_PERM4 );
-
-    TypeObjFuncs[ T_PERM2 ] = TypePerm2;
-    TypeObjFuncs[ T_PERM4 ] = TypePerm4;
-
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FILT( "IS_PERM", "obj", IsPermFilt, IsPermHandler,
-      "src/permutat.c:IS_PERM" );
-
-    C_NEW_GVAR_FUNC( "PermList", 1, "list",
-                  FuncPermList,
-      "src/permutat.c:PermList" );
-
-    C_NEW_GVAR_FUNC( "LARGEST_MOVED_POINT_PERM", 1, "perm",
-                  FuncLARGEST_MOVED_POINT_PERM,
-      "src/permutat.c:LARGEST_MOVED_POINT_PERM" );
-
-    C_NEW_GVAR_FUNC( "CycleLengthPermInt", 2, "perm, point",
-                  FuncCycleLengthPermInt,
-      "src/permutat.c:CycleLengthPermInt" );
-
-    C_NEW_GVAR_FUNC( "CyclePermInt", 2, "perm, point",
-                  FuncCyclePermInt,
-      "src/permutat.c:CyclePermInt" );
-
-    C_NEW_GVAR_FUNC( "OrderPerm", 1, "perm",
-                  FuncOrderPerm,
-      "src/permutat.c:OrderPerm" );
-
-    C_NEW_GVAR_FUNC( "SignPerm", 1, "perm",
-                  FuncSignPerm,
-      "src/permutat.c:SignPerm" );
-
-    C_NEW_GVAR_FUNC( "SmallestGeneratorPerm", 1, "perm",
-                  FuncSmallestGeneratorPerm,
-      "src/permutat.c:SmallestGeneratorPerm" );
-
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
     /* make the buffer bag                                                 */
-    InitGlobalBag( &TmpPerm, "src/permutat.c:TmpPerm" );
-    if ( ! SyRestoring ) {
-        TmpPerm = NEW_PERM4( 1000 );
-    }
-
+    TmpPerm = NEW_PERM4( 1000 );
 
     /* make the identity permutation                                       */
-    InitGlobalBag( &IdentityPerm, "src/permutat.c:IdentityPerm" );
-    if ( ! SyRestoring ) {
-        IdentityPerm = NEW_PERM2(0);
-    }
+    IdentityPerm = NEW_PERM2(0);
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckPermutat() . . . check the initialisation of the permutation package
+*F  InitInfoPermutat()  . . . . . . . . . . . . . . . table of init functions
 */
-void CheckPermutat ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "permutat",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoPermutat ( void )
 {
-    SET_REVISION( "permutat_c", Revision_permutat_c );
-    SET_REVISION( "permutat_h", Revision_permutat_h );
+    module.revision_c = Revision_permutat_c;
+    module.revision_h = Revision_permutat_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

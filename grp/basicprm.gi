@@ -75,6 +75,7 @@ function( filter, dom )
     local   alt,  dl,  g,  l;
 
     dom := Set(dom);
+    IsRange( dom );
     if Length(dom) < 3  then
         alt := Group( () );
         SetSize(           alt, 1 );
@@ -108,8 +109,6 @@ function( filter, dom )
     fi;
     SetIsAlternatingGroup( alt, true );
     SetIsNaturalAlternatingGroup( alt, true );
-    IsRange( dom );
-    SetName( alt, Concatenation( "Alt", String( dom ) ) );
     return alt;
 end );
 
@@ -203,6 +202,7 @@ function( filters, dom )
     local   sym,  g;
     
     dom := Set(dom);
+    IsRange( dom );
     if Length(dom) < 2  then
         sym := Group( () );
         SetSize(           sym, 1 );
@@ -222,8 +222,6 @@ function( filters, dom )
     Setter( IsPrimitiveAffineProp )( sym, Length( dom ) < 5 );
     SetIsSymmetricGroup( sym, true );
     SetIsNaturalSymmetricGroup( sym, true );
-    IsRange( dom );
-    SetName( sym, Concatenation( "Sym", String( dom ) ) );
     return sym;
 end );
 

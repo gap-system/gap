@@ -11,7 +11,8 @@ gap> START_TEST("$Id$");
 
 gap> M:= GF(3);
 GF(3)
-gap> tuples:= List( Tuples( AsList( M ), 2 ), Tuple );
+gap> tuples:= List( Tuples( AsList( M ), 2 ), Tuple );;
+gap> Print(tuples,"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
   Tuple( [ Z(3)^0, Z(3)^0 ] ), Tuple( [ Z(3)^0, Z(3) ] ), 
@@ -42,7 +43,7 @@ true
 
 gap> inv:= InverseGeneralMapping( map );
 InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > )
-gap> AsList( UnderlyingRelation( inv ) );
+gap> Print(AsList( UnderlyingRelation( inv ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ) ]
 gap> IsInjective( inv );
@@ -57,7 +58,7 @@ false
 gap> comp:= CompositionMapping( inv, map );
 CompositionMapping( <general mapping: GF(3) -> GF(
 3) >, InverseGeneralMapping( <general mapping: GF(3) -> GF(3) > ) )
-gap> AsList( UnderlyingRelation( comp ) );
+gap> Print(AsList( UnderlyingRelation( comp ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
   Tuple( [ Z(3)^0, Z(3)^0 ] ), Tuple( [ Z(3)^0, Z(3) ] ), 
@@ -75,7 +76,7 @@ true
 gap> anticomp:= CompositionMapping( map, inv );
 CompositionMapping( InverseGeneralMapping( <general mapping: GF(3) -> GF(
 3) > ), <general mapping: GF(3) -> GF(3) > )
-gap> AsList( UnderlyingRelation( anticomp ) );
+gap> Print(AsList( UnderlyingRelation( anticomp ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ Z(3)^0, 0*Z(3) ] ), Tuple( [ Z(3)^0, Z(3)^0 ] ) ]
 gap> IsInjective( anticomp );
@@ -187,7 +188,7 @@ gap> (0*Z(3)) ^ map;
 
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
-gap> AsList( UnderlyingRelation( map ) );
+gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
 [ Tuple( [ 0*Z(3), 0*Z(3) ] ), Tuple( [ 0*Z(3), Z(3)^0 ] ), 
   Tuple( [ Z(3)^0, Z(3) ] ) ]
 
@@ -235,7 +236,7 @@ gap> ImagesRepresentative( map, Z(3) );
 
 gap> map:= InverseGeneralMapping( map );
 InverseGeneralMapping( <mapping: GF(3) -> GF(3) > )
-gap> AsList( UnderlyingRelation( map ) );
+gap> Print(AsList( UnderlyingRelation( map ) ),"\n");
 [ Tuple( [ 0*Z(3), Z(3) ] ), Tuple( [ Z(3)^0, 0*Z(3) ] ), 
   Tuple( [ Z(3), Z(3)^0 ] ) ]
 gap> IsInjective( map );
@@ -270,7 +271,7 @@ gap> j:=GroupGeneralMappingByImages(g,g,AsListSorted(g),AsListSorted(g));;
 gap> i2 = j;
 true
 
-gap> STOP_TEST( "mapping.tst", 9860000 );
+gap> STOP_TEST( "mapping.tst", 15840238 );
 
 
 #############################################################################

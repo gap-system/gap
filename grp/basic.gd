@@ -24,8 +24,12 @@ AbelianGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  AbelianGroup( <ints> )  . . . . . . . . . . . . . . . . . . abelian group
+#F  AbelianGroup( [<cat>,]<ints> ). . . . . . . . . . . . . . . abelian group
 ##
+##  constructs an  abelian group in the category <cat> which is of isomorphism
+##  type $C_{ints[1]} *  C_{ints[2]} * \ldots  *   C_{ints[n]}$.
+##  <ints>  must   be a  list  of positive integers. If <cat> is not given
+##  it defaults to `IsPcGroup'.
 AbelianGroup := function ( arg )
 
     if Length(arg) = 1  then
@@ -46,7 +50,6 @@ end;
 
 #############################################################################
 ##
-
 #O  AlternatingGroupCons( <filter>, <deg> )
 ##
 AlternatingGroupCons := NewConstructor(
@@ -56,8 +59,10 @@ AlternatingGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  AlternatingGroup( <deg> ) . . . . . . . . . . . . . . . alternating group
+#F  AlternatingGroup( [<cat>,] <deg> )  . . . . . . . . . . alternating group
 ##
+##  constructs the alternating group of degree <deg> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPermGroup'.
 AlternatingGroup := function ( arg )
 
     if Length(arg) = 1  then
@@ -87,11 +92,16 @@ CyclicGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  CyclicGroup( <n> )	. . . . . . . . . . . . . . . . . . . .  cyclic group
+#F  CyclicGroup( [<cat>,]  <n> )  . . . . . . . . . . . . . . .  cyclic group
 ##
+##  constructs the cyclic group of size <n> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPcGroup'.
 CyclicGroup := function ( arg )
 
     if Length(arg) = 1  then
+        if arg[1] = 1 then
+            return FreeGroup( 0 );
+        fi;
         return CyclicGroupCons( IsPcGroup, arg[1] );
 
     elif Length(arg) = 2  then
@@ -109,7 +119,6 @@ end;
 
 #############################################################################
 ##
-
 #O  DihedralGroupCons( <filter>, <n> )
 ##
 DihedralGroupCons := NewConstructor(
@@ -121,6 +130,8 @@ DihedralGroupCons := NewConstructor(
 ##
 #F  DihedralGroup( <n> )  . . . . . . . . . . . . dihedral groug of order <n>
 ##
+##  constructs the dihedral group of size <n> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPcGroup'.
 DihedralGroup := function ( arg )
 
     if Length(arg) = 1  then
@@ -141,7 +152,6 @@ end;
 
 #############################################################################
 ##
-
 #O  ElementaryAbelianGroupCons( <filter>, <n> )
 ##
 ElementaryAbelianGroupCons := NewConstructor(
@@ -151,8 +161,10 @@ ElementaryAbelianGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  ElementaryAbelianGroup( <n> ) . . . . . . . . .  elementary abelian group
+#F  ElementaryAbelianGroup( [<cat>,]<n> ) . . . . .  elementary abelian group
 ##
+##  constructs the elementary abelian group of size <n> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPcGroup'.
 ElementaryAbelianGroup := function ( arg )
 
     if Length(arg) = 1  then
@@ -173,7 +185,6 @@ end;
 
 #############################################################################
 ##
-
 #O  ExtraspecialGroupCons( <filter>, <order>, <exponent> )
 ##
 ExtraspecialGroupCons := NewConstructor(
@@ -183,8 +194,11 @@ ExtraspecialGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  ExtraspecialGroup( <order>, <exponent> )  . . . . . .  extraspecial group
+#F  ExtraspecialGroup( [<cat>,] <order>, <exponent> ) . .  extraspecial group
 ##
+##  constructs the extraspecial group of size <order> and exponent
+##  <exponent> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPcGroup'.
 ExtraspecialGroup := function ( arg )
 
     if Length(arg) = 2  then
@@ -205,7 +219,6 @@ end;
 
 #############################################################################
 ##
-
 #O  GeneralLinearGroupCons( <filter>, <d>, <q> )
 ##
 GeneralLinearGroupCons := NewConstructor(
@@ -215,8 +228,12 @@ GeneralLinearGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  GeneralLinearGroup( <d>, <q> )  . . . . . . . . . .  general linear group
+#F  GeneralLinearGroup( [<cat>,] <d>, <q> ) . . . . . .  general linear group
+#F  GL( [<cat>,] <d>, <q> )
 ##
+##  constructs the general linear group GL(<d>,<q>)
+##  in the category <cat>.
+##  If <cat> is not given it defaults to `IsMatrixGroup'.
 GeneralLinearGroup := function ( arg )
 
     if Length(arg) = 2  then
@@ -236,7 +253,6 @@ GL := GeneralLinearGroup;
 
 #############################################################################
 ##
-
 #O  SpecialLinearGroupCons( <filter>, <d>, <q> )
 ##
 SpecialLinearGroupCons := NewConstructor(
@@ -246,8 +262,12 @@ SpecialLinearGroupCons := NewConstructor(
 
 #############################################################################
 ##
-#F  SpecialLinearGroup( <d>, <q> )  . . . . . . . . . .  special linear group
+#F  SpecialLinearGroup( [<cat>,] <d>, <q> ) . . . . . .  special linear group
+#F  SL( [<cat>,] <d>, <q> )
 ##
+##  constructs the special linear group SL(<d>,<q>)
+##  in the category <cat>.
+##  If <cat> is not given it defaults to `IsMatrixGroup'.
 SpecialLinearGroup := function ( arg )
 
     if Length(arg) = 2  then
@@ -267,7 +287,6 @@ SL := SpecialLinearGroup;
 
 #############################################################################
 ##
-
 #O  SymmetricGroupCons( <filter>, <deg> )
 ##
 SymmetricGroupCons := NewConstructor(
@@ -279,6 +298,8 @@ SymmetricGroupCons := NewConstructor(
 ##
 #F  SymmetricGroup( <deg> ) . . . . . . . . . . . . . . . . . symmetric group
 ##
+##  constructs the symmetric group of degree <deg> in the category <cat>.
+##  If <cat> is not given it defaults to `IsPermGroup'.
 SymmetricGroup := function ( arg )
 
     if Length(arg) = 1  then

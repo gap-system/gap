@@ -1,0 +1,895 @@
+#!/usr/bin/perl -w
+
+    @msfiles = ("exa");
+    @gdfiles = ("exa");
+    $DIR = ".";
+    $LIB=".";
+
+if ( @ARGV && $ARGV[0] =~ /-f/  )
+  {
+    open( COF, "$ARGV[1]" );
+    while ( $line = <COF> )
+      {
+         if ( $line =~ /DIR/ )
+	   {
+	       @words = split /=/, $line;
+               $DIR = $words[1];
+               $DIR =~ s/;| |"|\n//g;
+	       print "DIR set to $DIR\n";
+           }
+         elsif ( $line =~ /LIB/ )
+	   {
+	       @words = split /=/, $line;
+               $LIB = $words[1];
+               $LIB =~ s/;| |"|\n//g;
+	       print "LIB set to $LIB\n";
+           }
+         elsif ( $line =~ /msfiles/ )
+	   {
+              @words = split /=/, $line;
+              $ms = $words[1];
+              while ( !( $line =~ /;/ ) )
+ 	        { $line = <COF>; $ms .= $line; }
+              $ms =~ s/\(|\)|;|\n|"| //g;
+              @msfiles = split /,/, $ms;
+	   }
+         elsif ( $line =~ /gdfiles/ )
+	   {
+              @words = split /=/, $line;
+              $ms = $words[1];
+              while ( !( $line =~ /;/ ) )
+ 	        { $line = <COF>; $ms .= $line; }
+              $ms =~ s/\(|\)|;|\n|"| //g;
+              @gdfiles = split /,/, $ms;
+	   }
+      }
+  }    
+
+
+sub coll_and_fam
+# cope with `DeclareCategoryFamily' and `DeclareCategoryCollection'
+{
+  if ($line =~ "DeclareCategoryFamily") {
+    @lipa = split /\"/, $line;
+    $line = $lipa[1].":= NewCategory(\"".$lipa[1]."Family\");";
+  }
+
+  if ($line =~ "DeclareCategoryCollection") {
+    @lipa = split /\"/, $line;
+    if ($lipa[1] =~ "Collection") {
+       $lipa[1] =~ s/Collection//g;
+      $line = $lipa[1]."CollColl := NewCategory(\"".$lipa[1]."CollColl\",IsObject);";
+    }
+    else {
+      $line = $lipa[1]."Collection := NewCategory(\"".$lipa[1]."Collection\",IsObject);";
+    }
+  }
+}
+
+
+sub read_table 
+
+{
+  foreach $file ( @gdfiles )
+  {
+
+  if ($file =~ /\.g/ ) {
+    print "reading $LIB/$file\n";
+    open( GDF, "$LIB/$file" );
+    }
+  else {
+    print "reading $LIB/$file.gd\n";
+    open( GDF, "$LIB/$file.gd" );
+  }
+
+  while ( $line = <GDF> )
+   {
+     if ( $line =~ /#[CAPOFMVR]/ ) 
+       {       
+          $nfun = 0;
+          @code = ();
+          @fdec = ();
+          @ldes = ();
+          while ( $line =~ /#[CAPOFMVR]/ )
+	    {
+	       ++$nfun;
+
+# The following piece of code is for long declarations that use several lines.
+# It is assumed that such a long declaration contains "(" on the first line 
+# and ")" on some line below.
+
+	       $des = $line;
+               if ( $line =~ /\(/ )
+	         {
+                    while ( !( $line =~ /\)/ ) )
+		      { 
+                         $line = <GDF>; 
+                         $des .= $line; 
+                      }
+		 }
+
+               @chars = split //, $des;
+               $code[$nfun] = $chars[1];
+
+               if ( $des =~ /\)/ )
+	         {
+		   @words = split /\)/, $des;
+                   $w = $words[0];
+                   $w =~ s/#[A-Z]| //g;
+                   $w .= "\)";
+                   $ldesk = $words[1];
+                   $ldesk =~ s/\.| |\n//g;
+	         }
+               else
+	         {
+                    @chars = split //, $des;
+                    $w = "";
+                    $k = 2;
+                    for (; ($c=$chars[$k]) =~ / /; ++$k){}
+                    for (; ($c=$chars[$k]) =~ /\w/; ++$k) {$w.=$c;}
+                    $ldesk = "";
+                    for (; !( ($c=$chars[$k]) =~ /\n/ ); ++$k ) 
+                      {
+                        if ( !( $c =~ /\./ ) ) { $ldesk.=$c; } 
+		      }
+		 }
+            
+               $fdec[$nfun] = $w;
+               $ldes[$nfun] = $ldesk;
+               $line = <GDF>;
+            }
+
+          $code[0] = $nfun;          
+          $fdec[0] = $nfun; 
+	  $ldes[0] = $nfun;
+
+	  @words = split /\(/, $fdec[1];
+	  $key = $words[0];
+
+	  @args = ();
+	  $args[0] = $nfun;
+          
+	  for ($k=1; $k <= $nfun; ++$k )
+	    {
+	       @argsk = ();
+	       $argsk[0] = 0;
+               if ( $fdec[$k] =~ /\(/ )
+	         {
+                   @aa = split /\(/, $fdec[$k];
+                   $w = $aa[1];
+                   @aa = split /\)/, $w;
+                   $w = $aa[0];
+                   @aa = split /,/, $w;
+                   $noa = 0;
+
+                   foreach $a ( @aa )
+	             {
+		       ++$noa;
+                       $argsk[$noa] = $a;
+	             }
+	         }
+
+               $argsk[0] = $noa;
+               $args[$k] = [ @argsk ];
+	    }
+
+          $expl = "";
+          while ( ($line = <GDF>) =~ /^#/  )
+	    {
+               if ( !( $line =~ /^#T/ ) )
+                 {
+                   $line =~ s/#//g;
+		   # remove two leading spaces
+		   $line =~ s/^ //g;
+		   $line =~ s/^ //g;
+                   $expl .= $line;
+	         }
+	    }
+
+	  @impl = ();
+	  $impl[0] = $nfun;
+	  @ipmt = ();
+	  $ipmt[0] = $nfun;
+	  $ww0 = "";
+	  for ($k=1; $k <= $nfun; ++$k)
+	    {
+	       $ww1 = $ww0;
+               if ( $fdec[$k] =~ /\(/ )
+	          { 
+                    @ww = split /\(/, $fdec[$k]; 
+                    $ww0 = $ww[0]
+                  }
+               else
+	          { $ww0 = $fdec[$k] } 
+
+# If the 'new' declaration is not the same as the old one, then we look for a
+# new implementation line (otherwise we do not).
+
+               if ( !( $ww0 =~ /^$ww1$/ ) )
+	       { 
+		   coll_and_fam();
+                   while ( !( $line =~ /$ww0/ ) ) 
+                     { 
+		       if ( eof GDF ) 
+                         { die "$ww0 is declared but there is no implementation line\n"; } 
+                       $line = <GDF>; 
+		       coll_and_fam();
+                     } 
+
+                   $defn = $line;
+                   while ( !( $line  =~ /;/ ) ) 
+                    { 
+                       $line = <GDF>;
+                       $defn .= $line;
+	             }
+	         }
+
+               @implk = ();
+      	       $implk[0] = 0;
+	       $j = 0;
+               @words = split /,/, $defn;          
+               foreach $w ( @words )
+	         {
+                   if ( !( $w =~ /\(/ ) )
+	             {
+			++$implk[0];
+		        ++$j;
+             	        $implkj = "";
+                        @wds = split / and /, $w;
+                        foreach $v ( @wds )
+                          {
+                             $v =~ s/\)|\[|\]|;| |\n//g;
+                             if ( $implkj =~ /\w/ )                  
+                               { $implkj .= ", ".$v; }
+                             else
+                               { $implkj .= $v; }
+                          }
+
+                        $implk[$j] = $implkj;
+                     } 
+                
+                 }      
+
+               $impl[$k] = [ @implk ];
+
+               @words = split /\(/, $defn;
+               $w = $words[0];
+               if ( $w =~ /:=/ )
+                  {
+                     @wds = split /:=/, $w;
+                     $v = $wds[1];
+		  }
+               else
+	          {
+		     $v = $words[0];
+		  }
+               $ipmt[$k] = $v;
+
+	    }
+
+
+# Some default filling in of tester and setter (if such objects are found 
+# later on, they will be inserted).
+
+          @test = ();
+          @sett = ();
+#          $ntes = 0; $nset = 0;
+	  $test[0]=0; $sett[0]=0;
+          $tab{$key}{test} = [ @test ];
+          $tab{$key}{sett} = [ @sett ];   
+	  $tab{$key}{expl} = $expl;
+          $tab{$key}{code} = [ @code ];
+	  $tab{$key}{args} = [ @args ];
+          $tab{$key}{fdec} = [ @fdec ];
+          $tab{$key}{ldes} = [ @ldes ]; 
+          $tab{$key}{impl} = [ @impl ];
+	  $tab{$key}{ipmt} = [ @ipmt ];
+
+       
+       }
+# The arrays sett and test are bags of setters and testers respectively. This
+# means that they can appear in any order, it cannot be assumed that they
+# correspond to the order in which the fdecs appear (for instance).
+
+# setter and tester are now declared automatically
+#     if ( $line =~ /Set/ )
+#       {
+#	 ++$nset;
+#         ++$sett[0];
+#         @words = split /:=/, $line;
+#         $w = $words[0];
+#         $w =~ s/ //g;
+#         $sett[$nset] = $w;
+#         $tab{$key}{sett} = [ @sett ];
+#       }
+#     elsif ( $line =~ /Has/ )
+#       {
+#	  ++$ntes;
+#          ++$test[0];
+#          @words = split /:=/, $line;
+#          $w = $words[0];
+#          $w =~ s/ //g;
+#          $test[$ntes] = $w;
+#          $tab{$key}{test} = [ @test ];
+#       	}
+
+         
+     if ( $line =~ /#[0-9]/ )
+       {
+	  @chars = split //, $line;
+          $hnum = $chars[1];
+          for ($k=2; ($c=$chars[$k]) =~ /[0-9]/; ++$k) { $hnum .= $c; }
+          
+	  $htxt = "";
+          while ( ($line = <GDF>) =~ /^#/ )
+	    {
+              if ( $line =~ /##/ )
+		{
+                  $line =~ s/#//g;
+                  $htxt .= $line;
+	        }
+	    }
+	  $clef = "_h".$file;
+          $tab{$clef}{$hnum} = $htxt;
+       }	  
+   }
+
+   if ( open( GIF, "$LIB/$file.gi" ) )
+     { 
+       print "reading $LIB/$file.gi\n";
+       $key = ""; $gide="";
+       $first = 1;
+       while ( $line = <GIF> )
+         {
+           if ( $line =~ /#[CAPOFMV]/ )
+	     {
+               if ( $first == 1 )
+             	 {      
+		   $first = 0;
+	           if ( $tab{$key} ) 
+		     {
+                        $tab{$key}{gide} = $gide; 
+                        $tab{$key}{meth} = [ @meth ];
+		     }
+                   @words = split /\(/, $line;
+                   $key = $words[0];
+                   $key =~ s/#[CAPOFMVR]| //g;
+                   $gide = "";
+		   
+                   @mlines = ();
+                   $nom = 0;
+                   $insm = 0;
+                   @meth = (0);
+	         }
+
+               if ( $line =~ /#M/ )
+		 {
+		   ++$nom;
+                   $mlines[0] = $nom;
+                   $mlines[$nom] = $line;
+	         }
+	     }
+           elsif ( $first == 0 )
+             { $first =1; } 
+
+           if ( $line =~ /InstallMethod\(/ ) 
+             { 
+                ++$insm;
+                $meth[0] = $insm;
+                $foundres = 0;
+                while ( $foundres == 0 )
+		  {
+                    while ( !( $line =~ /\[/ ) )
+                      {
+                         $line = <GIF>;                      
+                      }
+                    $met = "  ".$line;
+                    while ( !( $line =~ /\]/ ) )
+	 	      {
+                        $line = <GIF>;
+		        $met .= $line;
+                      }
+                    $met =~ s/\\\[//g;
+                    if ( $met =~ /\[/ )
+		      {		      
+                        @words = split /\[|\]/, $met;
+                        $met = $words[1];
+                        $met =~ s/,|\n/ /g;
+                        $meth[$insm] = $met;
+                        $foundres = 1;
+                      }
+                    else { $line = <GIF>; }
+                  }          
+             } 
+
+	  
+# The next lines of code handle the #M declarations that must go into the 
+# manual from the .gi file. We assume:
+#
+#    * there are as many #M declarations in the header as Install(Other)Method
+#      lines,
+#    * if a method is installed by InstallOtherMethod, and it contains
+#      comments in the body ( #+ lines ), then the corresponding declaration
+#      goes into the manual.
+# 
+# In all comment lines in the body of an InstallOtherMethod, the string
+# NUMBER will be replaced by the number (integer) that reflects the position
+# of this declaration in the list of all declarations.
+
+           if ( $line =~ /InstallOtherMethod/ )
+	     {
+	       ++$insm;
+               $argres = "";
+               if ( $insm <= $nom )
+	         {
+		   $foundres = 0;
+		   $hascom = 0;
+                   while ( !( ($line = <GIF>) =~ /end.*\);/ ) )
+                     {
+                       if ( $line =~ /^(#\+)/ )
+	                 {
+			    $hascom = 1;
+                            $line =~ s/^(#\+)/ /;
+                            @words = split ' ', $line;
+                            foreach $w ( @words ) 
+                              { 
+                                  if ( !($w=~/\n/) ) {$gide .= ($w." ");} 
+                              } 
+                            $gide .= "\n";
+	                 }          
+                       elsif ( $foundres == 0 && $line =~ /\[/ )
+		         {
+                            $argres = $line;
+                            while ( !( $line =~ /\]/ ) )
+			    { $line = <GIF>; $argres .= $line; }
+                            $met = $argres;
+                            $met =~ s/\\\[//g;
+                            if ( $met =~ /\[/ )
+		              {
+                                 @words = split /\[|\]/, $met;
+                                 $met = $words[1];
+                                 $met =~ s/,|\n/ /g;
+                                 $meth[0] = $insm;
+                                 $meth[$insm] = $met;
+                                 $foundres = 1;
+                              }
+			 }
+		     }
+
+                   if ( $hascom == 1 )
+		     { 
+		       if ( $tab{$key} )
+		         {
+                            @code = @{ $tab{$key}{code} };
+                            @fdec = @{ $tab{$key}{fdec} };
+                            @args = @{ $tab{$key}{args} };
+                            @ldes = @{ $tab{$key}{ldes} };
+		            @impl = @{ $tab{$key}{impl} };
+			 }
+                       else
+		         {
+			    @code = ();
+                            @fdec = ();
+                            @args = ();
+                            @ldes = ();
+                            @impl = ();
+                            $code[0] = 0;
+                            $tab{$key}{expl} = "";
+			 }
+
+                       $nfun = $code[0];
+                       ++$nfun;
+                       $gide =~ s/NUMBER/$nfun/g;
+                       $code[0] = $nfun;
+                       $code[$nfun] = "M";
+                       $tab{$key}{code} = [ @code ];
+
+                       @words = split /\)/, $mlines[$insm];
+                       $w = $words[0];
+                       $w .= "\)";
+                       $w =~ s/#M| //g;
+                       $fdec[$nfun] = $w;
+                       $fdec[0] = $nfun;
+                       $tab{$key}{fdec} = [ @fdec ]; 
+                        
+	               @argsk = ();
+	               $argsk[0] = 0;
+                       @aa = split /</, $w;
+                       $noa = 0;
+
+                       foreach $a ( @aa )
+	                 {
+                           if ( $a =~ />/ )
+	                      {
+		                 ++$noa;
+                                 $a =~ s/>| |,|\)//g;
+                                 $argsk[$noa] = $a;
+		              }
+	                 }
+
+                        $argsk[0] = $noa;
+                        $args[0] = $nfun;
+                        $args[$nfun] = [ @argsk ];
+                        $tab{$key}{args} = [ @args ];
+
+                        $w = $words[1];
+                        $w =~ s/\.|  |\n//g;
+                        $ldes[0] = $nfun;
+                        $ldes[$nfun] = $w;
+                        $tab{$key}{ldes} = [ @ldes ];
+
+		        $argres =~ s/\].*/\]/;
+                        @implk = ();
+      	                $implk[0] = 0;
+	                $j = 0;
+                        @words = split /,/, $argres;          
+                        foreach $w ( @words )
+	                  {
+			     ++$implk[0];
+		             ++$j;
+             	             $implkj = "";
+                             @wds = split / and /, $w;
+                             foreach $v ( @wds )
+                               {
+                                 $v =~ s/\)|\[|\]|;| |\n//g;
+                                 if ( $implkj =~ /\w/ )                  
+                                   { $implkj .= ", ".$v; }
+                                 else
+                                   { $implkj .= $v; }
+                               }
+
+                             $implk[$j] = $implkj;
+                
+                          }      
+
+                        $impl[$nfun] = [ @implk ];
+		        $impl[0] = $nfun;
+	   	        $tab{$key}{impl} = [ @impl ];
+
+                     }
+		 }
+               else
+		 {
+                    $meth[0] = $insm;
+                    $foundres = 0;
+                    while ( $foundres == 0 )
+		      {
+                         while ( !( $line =~ /\[/ ) )
+                           {
+                              $line = <GIF>;                      
+                           }
+                         $met = "  ".$line;
+                         while ( !( $line =~ /\]/ ) )
+	 	           {
+                              $line = <GIF>;
+		              $met .= $line;
+                           }
+                         $met =~ s/\\\[//g;
+                         if ( $met =~ /\[/ )
+		           {
+                              @words = split /\[|\]/, $met;
+                              $met = $words[1];
+                              $met =~ s/, |\n//g;
+                              $meth[$insm] = $met;
+                              $foundres = 1;
+                           }
+                         else { $line = <GDF>; }
+                      }          
+		 }
+
+	     }
+
+           if ( $line =~ /^(#\+)/ )
+	     {
+                $line =~ s/^(#\+)/ /;
+                @words = split ' ', $line;
+                foreach $w ( @words ) 
+                  { 
+                    if ( !($w=~/\n/) ) {$gide .= ($w." ");} 
+                  } 
+                $gide .= "\n";
+	     }
+         
+         }
+ 	 if ( $tab{$key} ) 
+           {
+              $tab{$key}{gide} = $gide; 
+              $tab{$key}{meth} = [ @meth ];
+           }      
+          
+     }   
+
+   if ( open( GFI, "$file.g" ) )
+     { 
+       $key = ""; $gdes="";
+       while ( $line = <GFI> )
+         {
+	   if ( $tab{$key} ) { $tab{$key}{gdes} = $gdes; }
+
+           if ( $line =~ /#[CAPOFMVR]/ )
+	     {
+	       @words = split /\(/, $line;
+               $key = $words[0];
+               $key =~ s/#[CAPOFMVR]| //g;
+               $gdes = "";
+             }  
+   
+           if ( $line =~ /^(#\+)/ )
+	     {
+                $line =~ s/^(#\+)/ /;
+                @words = split ' ', $line;
+                foreach $w ( @words ) 
+                  { 
+                    if ( !($w=~/\n/) ) {$gdes .= ($w." ");} 
+                  } 
+                $gdes .= "\n";
+	     }
+         
+         }
+ 	 if ( $tab{$key} ) { $tab{$key}{gdes} = $gdes; }      
+          
+     }   
+   }               
+   %tab;
+}
+
+
+sub make_tex
+{
+
+   print "Reading files...\n";
+   %tab = {};
+   %tab = read_table();
+
+   foreach $ff (@msfiles)
+   {
+     open( MSK, "$ff.msk" );
+     open( TEX, ">$DIR/$ff.tex" );
+
+   print "Composing the TEX file $ff.tex\n";
+   print TEX "% This file was created automatically from $ff.msk.\n";
+   print TEX "% DO NOT EDIT!\n";
+
+   while ( $line = <MSK> )
+     {
+       if ( $line =~ /\\Declaration/ )
+         {
+      	   @words = split /\{/, $line;
+	   $key = $words[1];
+	   $key =~ s/\}//g;
+	   $key =~ s/ |\n//g;
+
+           while ( !( %info = %{ $tab{$key} } ) )
+	     {
+       	       print "$key not found in the database\n";
+               if ( eof MSK ) { exit; }
+               while ( !( ( $line = <MSK> )  =~ /\\Declaration/ ) )
+                 {
+                    if ( eof MSK ) { exit; }
+ 		 }
+      	       @words = split /\{/, $line;
+	       $key = $words[1];
+	       $key =~ s/\}//g;
+	       $key =~ s/ |\n//g;
+              }                    
+
+           @code = @{ $info{code} };     
+	   @fdec = @{ $info{fdec} };
+	   @ldes = @{ $info{ldes} };
+
+	   for ($k=1; $k <= $fdec[0]; ++$k )
+              {
+		$fd = $fdec[$k];
+      
+                $mut = "";
+                if ( $code[$k] =~ /A/ )
+		  {
+		    @impl = @{ $info{impl} };
+                    @implk = @{ $impl[$k] };
+                    if ( $implk[$implk[0]] =~ /muta/ ){ $mut = "M"; }
+		  }
+                        
+                $st = ""; $ts = ""; 
+                if ( $code[$k] =~ /A/ || $code[$k] =~ /P/ )
+		  {
+                    @words = split /\(/, $fd;
+                    $name = $words[0];
+                    $name =~ s/ //g;
+                    foreach $s ( @{ $info{sett} } )
+		      {
+			if ( $s =~ /$name/ ) 
+                          { 
+                            $st = "S"; 
+                            last;
+                          }
+		      }
+
+                    foreach $t ( @{ $info{test} } )
+		      {
+			if ( $t =~ /$name/ ) 
+                          { 
+                            $ts = "T"; 
+                            last;
+                          }
+		      }
+		  }
+
+                $fd =~ s/\(/\( /;
+                $fd =~ s/\)/ \)/;
+                $fd =~ s/,/, /g;
+#was: print TEX "\\>$fd $code[$k]$st$ts$mut $ldes[$k]\n";
+# (the description line is usually garbled)
+            	print TEX "\\>$fd $code[$k]$st$ts$mut\n";
+
+	      }
+
+	   print TEX "\n$info{expl}\n";
+
+           if ( $info{gide} ) { print TEX "$info{gide}\n"; }
+
+           if ( $info{gdes} ) { print TEX "$info{gdes}\n"; }
+ 
+	 }
+
+       elsif ( $line =~ /\\beginexample/ )
+         {
+           print TEX "\\beginexample \n";
+           while ( !( ($line = <MSK>) =~ /\\endexample/ ) )
+	     {
+               print TEX $line;
+	     }
+
+	   print TEX "\\endexample\n";
+	 }
+
+       elsif ( ($line =~ /\\Requirements/) || ($line =~ /\\Implications/) )
+         {
+	   @impl = @{ $info{impl} };
+           @args = @{ $info{args} };
+
+           print TEX "\\beginitems\n";
+           if ( $line =~ /\\Requirements/ )
+	     { 
+                print TEX "Requirements: "; 
+                $lev = 1;
+              }
+           else
+	     { 
+                $lev = 1;
+                if ( $line =~ /\[.*\]/ )
+		  {
+		    @words = split /\[/, $line;
+                    $w = $words[1];
+                    @chars = split //, $w;
+                    $lev = "";
+                    for ($k=0; !( ($c=$chars[$k])=~/\]/ ); ++$k)
+		      { $lev .= $c; }
+		  }
+                if ( $lev == 1 ) 
+		  {  print TEX "Implies: "; }
+                elsif ( $lev == 2 )
+		  {  print TEX "Implied by: "; }
+             }
+
+           if ( $lev == 1 )
+	     {
+             for ($k=1; $k <= $args[0]; ++$k )
+	       {
+# If two consecutive function declarations are the same, then we don't want
+# two of the same requirement lines.
+
+                  @words = split /\(/, $fdec[$k];
+                  $w = $words[0];
+                  if ( !( $k>1 && $fdec[$k-1] =~ /^$w\(/ ) )
+	  	    {
+    	              print TEX " & ";      
+       		      for ($j=1; $j <= $args[$k][0]; ++$j )
+		        {
+                           if ( $j <= $impl[$k][0] )
+		             {
+			        $arg = $args[$k][$j];
+		                $con = $impl[$k][$j];
+                                @cons = split /, /, $con;
+                                $fl = 1;
+                                foreach $c ( @cons )
+			          {
+			             $c .= "\( $arg \)";
+                                     if ($fl==1) { $fl = 0; }
+                                     else        { $c = " and ".$c; }
+                                     print TEX $c;
+			          }
+		             }
+                           print TEX " ";
+                        }
+                      print TEX "\n";
+		    }
+               }
+               print TEX "\\enditems\n"; 
+	     }
+          
+           if ( $lev == 2 )
+	     {
+		@keys = keys %tab;
+		for ($k=1; $k <= $fdec[0]; ++$k)
+		  {
+		    print TEX " & "; 
+		    @words = split /\(/, $fdec[$k];
+		    $w = $words[0];
+                    $w =~ s/ //g; 
+                    foreach $clef ( @keys )
+		      { 
+                        if ( !( $clef =~/^_h/ ) )
+			  {
+			    %tb = %{ $tab{$clef} };
+			    if ( $tb{code}[1] =~ /C/ )
+                              {
+                                 @imp = @{ $tb{impl} };
+                                 for ($j=1; $j<=$tb{code}[0]; ++$j )
+                                    {
+                                       $im = $imp[$j][1];
+                                       if ( $im =~ /$w/ )
+				         { 
+                                            $fd = $tb{fdec}[$j];
+                                            @fds = split /\(/, $fd;
+                                            $fd = $fds[0];
+                                            print TEX "$fd~";
+                                         } 
+			            }
+			      }
+			  }
+		      }
+                    print TEX "\n";
+		  }
+                print TEX "\\enditems\n";
+	     }
+
+         }
+
+       elsif ( $line =~ /\\FileHeader/ )
+         {
+           if ( $line =~ /\[.+\]/ )
+	     {
+	       @words = split /\[|\]/, $line;
+               $hnum = $words[1];
+               $hnum =~ s/ //g;
+             }
+           else
+             {
+               $hnum = "1";
+             }
+
+           @words = split /{|}/, $line;
+           $file = $words[1];
+           $file =~ s/ //g;
+           $clef = "_h".$file;
+           print TEX $tab{$clef}{$hnum}."\n";
+         }
+
+       elsif ( $line =~ /\\Methods/ )
+         {
+           if ( @meth = @{ $info{meth} } )
+             { 
+                print TEX "\\beginitems\n";
+                print TEX "Methods\: ";
+                for ($k=1; $k<=$meth[0]; ++$k)
+                  {  
+		     print TEX " & "; 
+                     print TEX "$meth[$k]\n";
+                  }
+                print TEX "\\enditems\n";
+	     }
+           else { print "No methods found for $key\n"; }
+         }
+       
+       else { print TEX $line; }    
+     }
+
+  }
+}
+
+
+ make_tex();
+ 
+
+
+

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the design of the rings $Z / n Z$ and their elements.
 ##
@@ -51,25 +52,25 @@ Revision.zmodnz_gd :=
 ##  is in 'IsZmodnZObj', since finite field elements in internal
 ##  representation may not know that they lie in the prime field.
 ##
-IsZmodnZObj := NewCategory( "IsZmodnZObj", IsScalar );
-IsZmodnZObjNonprime := NewCategory( "IsZmodnZObjNonprime", IsZmodnZObj );
-IsZmodpZObj := IsZmodnZObj and IsFFE;
-IsZmodpZObjSmall := NewCategory( "IsZmodpZObjSmall", IsZmodpZObj );
-IsZmodpZObjLarge := NewCategory( "IsZmodpZObjLarge", IsZmodpZObj );
+DeclareCategory( "IsZmodnZObj", IsScalar );
+DeclareCategory( "IsZmodnZObjNonprime", IsZmodnZObj );
+DeclareSynonym( "IsZmodpZObj", IsZmodnZObj and IsFFE );
+DeclareCategory( "IsZmodpZObjSmall", IsZmodpZObj );
+DeclareCategory( "IsZmodpZObjLarge", IsZmodpZObj );
 
 
 #############################################################################
 ##
 #C  IsZmodnZObjNonprimeFamily( <obj> )
 ##
-IsZmodnZObjNonprimeFamily := CategoryFamily( IsZmodnZObjNonprime );
+DeclareCategoryFamily( "IsZmodnZObjNonprime" );
 
 
 #############################################################################
 ##
 #C  IsZmodnZObjNonprimeCollection( <obj> )
 ##
-IsZmodnZObjNonprimeCollection := CategoryCollections( IsZmodnZObjNonprime );
+DeclareCategoryCollections( "IsZmodnZObjNonprime" );
 
 
 #############################################################################
@@ -86,9 +87,7 @@ InstallTrueMethod( IsFinite,
 ##
 #O  ZmodnZObj( <Fam>, <i> )
 ##
-ZmodnZObj := NewOperation( "ZmodnZObj",
-    [ IsZmodnZObjNonprimeFamily, IsInt ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+DeclareOperation( "ZmodnZObj", [ IsZmodnZObjNonprimeFamily, IsInt ] );
 
 
 #############################################################################
@@ -96,10 +95,12 @@ ZmodnZObj := NewOperation( "ZmodnZObj",
 #V  Z_MOD_NZ
 ##
 ##  is a list of length 2, the first containing at position <i> the <i>-th
-##  'ZmodnZ( <n> )' that has been constructed already, and the second
-##  containing this ring at position <i>.
+##  value <n> for that `ZmodnZ( <n> )' is stored, and the second containing
+##  this ring at position <i>.
 ##
-Z_MOD_NZ := [ [], [] ];
+DeclareGlobalVariable( "Z_MOD_NZ",
+    "list of lists, at position [1][i] is n s.t. [2][i] is ZmodnZ(n)" );
+InstallFlushableValue( Z_MOD_NZ, [ [], [] ] );
 
 
 #############################################################################
@@ -112,14 +113,12 @@ Z_MOD_NZ := [ [], [] ];
 ##  prime, and is embedded into the family of finite field elements of
 ##  characteristic $n$ otherwise.
 ##
-ZmodnZ := NewOperationArgs( "ZmodnZ" );
-ZmodpZ := NewOperationArgs( "ZmodpZ" );
-ZmodpZNC := NewOperationArgs( "ZmodpZNC" );
+DeclareGlobalFunction( "ZmodnZ" );
+DeclareGlobalFunction( "ZmodpZ" );
+DeclareGlobalFunction( "ZmodpZNC" );
 
 
 #############################################################################
 ##
 #E  zmodnz.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

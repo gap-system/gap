@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the scanner, which is responsible for
 **  all input and output processing.
@@ -25,7 +26,7 @@
 **  dependent module 'system.c' for the low level input/output.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_scanner_h =
+const char * Revision_scanner_h =
    "@(#)$Id$";
 #endif
 
@@ -116,6 +117,7 @@ SYS_CONST char * Revision_scanner_h =
 #define S_BREAK         ((1UL<<29)+0)
 #define S_RETURN        ((1UL<<29)+1)
 #define S_QUIT          ((1UL<<29)+2)
+#define S_QQUIT         ((1UL<<29)+3)
 
 #define S_SEMICOLON     ((1UL<<30))
 
@@ -373,7 +375,7 @@ extern void Match (
 **  must pass 0L if you don't make use of an argument to please lint.
 */
 extern  void            Pr (
-            SYS_CONST Char *    format,
+            const Char *    format,
             Int                 arg1,
             Int                 arg2 );
 
@@ -1191,31 +1193,13 @@ extern  UInt            CloseTest ( void );
 /****************************************************************************
 **
 
-*F  SetupScanner()  . . . . . . . . . . . . .  initialize the scanner package
+*F  InitInfoScanner() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupScanner ( void );
+StructInitInfo * InitInfoScanner ( void );
 
 
 /****************************************************************************
 **
-*F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
-**
-**  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
-**  current input file to '*stdin*' and current output  file  to  '*stdout*'.
-*/
-extern void InitScanner ( void );
-
-
-/****************************************************************************
-**
-*F  CheckScanner()  . . . . . check the initialisation of the scanner package
-*/
-extern void CheckScanner ( void );
-
-
-/****************************************************************************
-**
-
 
 *E  scanner.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

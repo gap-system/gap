@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods mainly for integer primes.
 ##
@@ -23,7 +24,7 @@ Revision.numtheor_gi :=
 ##  too large anyhow.
 ##
 PrimeResiduesSmall := [[],[0],[1],[1,2],[1,3],[1,2,3,4],[1,5],[1,2,3,4,5,6]];
-PrimeResidues := function ( m )
+InstallGlobalFunction( PrimeResidues, function ( m )
     local  residues, p, i;
 
     # make <m> it nonnegative, handle trivial cases
@@ -40,7 +41,7 @@ PrimeResidues := function ( m )
 
     # return the set of residues
     return Set( residues );
-end;
+end );
 
 
 #############################################################################
@@ -53,7 +54,7 @@ end;
 ##  Suppose that $m = p_1^{e_1} p_2^{e_2} .. p_k^{e_k}$.  Then  $\phi(m)$  is
 ##  $p_1^{e_1-1} (p_1-1) p_2^{e_2-1} (p_2-1) ..  p_k^{e_k-1} (p_k-1)$.
 ##
-Phi := function ( m )
+InstallGlobalFunction( Phi, function ( m )
     local  phi, p;
 
     # make <m> it nonnegative, handle trivial cases
@@ -68,7 +69,7 @@ Phi := function ( m )
 
     # return the result
     return phi;
-end;
+end );
 
 
 #############################################################################
@@ -83,7 +84,7 @@ end;
 ##  $Lambda(p^e) = (p-1) p^{e-1}$ (i.e. $Phi(m)$) if $p$ is an odd prime  and
 ##  $Lambda(n*m) = Lcm( Lambda(n), Lambda(m) )$ if $n, m$ are relative prime.
 ##
-Lambda := function ( m )
+InstallGlobalFunction( Lambda, function ( m )
     local  lambda, p, q, k;
 
     # make <m> it nonnegative, handle trivial cases
@@ -106,7 +107,7 @@ Lambda := function ( m )
     od;
 
     return lambda;
-end;
+end );
 
 
 #############################################################################
@@ -119,7 +120,7 @@ end;
 ##
 #N  23-Apr-91 martin improve 'OrderMod' similar to 'IsPrimitiveRootMod'
 ##
-OrderMod := function ( n, m )
+InstallGlobalFunction( OrderMod, function ( n, m )
     local  x, o, d;
 
     # check the arguments and reduce $n$ into the range $0..m-1$
@@ -150,7 +151,7 @@ OrderMod := function ( n, m )
     fi;
 
     return o;
-end;
+end );
 
 
 #############################################################################
@@ -160,7 +161,7 @@ end;
 ##  'IsPrimitiveRootMod' returns  'true' if the  integer <r>  is a  primitive
 ##  root modulo the positive integer <m> and 'false' otherwise.
 ##
-IsPrimitiveRootMod := function ( r, m )
+InstallGlobalFunction( IsPrimitiveRootMod, function ( r, m )
     local   p,  facs,  pows,  i,  pow;
 
     # check the arguments and reduce $r$ into the range $0..m-1$
@@ -214,7 +215,7 @@ IsPrimitiveRootMod := function ( r, m )
 
     # for prime powers $n$ we have to test that $r$ is not a $p$-th root
     return PowerModInt( r, p-1, p^2 ) <> 1;
-end;
+end );
 
 
 #############################################################################
@@ -226,7 +227,7 @@ end;
 ##  integer argument <start> is given 'PrimitiveRootMod' returns the smallest
 ##  primitive root that is strictly larger than <start>.
 ##
-PrimitiveRootMod := function ( arg )
+InstallGlobalFunction( PrimitiveRootMod, function ( arg )
     local   root, m, p, start, mm;
 
     # get and check the arguments
@@ -274,7 +275,7 @@ PrimitiveRootMod := function ( arg )
 
     # no primitive root found
     return false;
-end;
+end );
 
 
 #############################################################################
@@ -289,7 +290,7 @@ end;
 ##
 #N  29-Apr-91 martin remember to change the description of 'Jacobi'
 ##
-Jacobi := function ( n, m )
+InstallGlobalFunction( Jacobi, function ( n, m )
     local  jac, t;
 
     # check the argument
@@ -327,7 +328,7 @@ Jacobi := function ( n, m )
     od;
 
     return jac;
-end;
+end );
 
 
 #############################################################################
@@ -340,7 +341,7 @@ end;
 ##  A description of the Legendre symbol and related topics can be found  in:
 ##  A. Baker, The theory of numbers, Cambridge University Press, 1984,  27-33
 ##
-Legendre := function ( n, m )
+InstallGlobalFunction( Legendre, function ( n, m )
     local  p, q, o;
 
     # check the arguments and reduce $n$ into the range $0..m-1$
@@ -376,7 +377,7 @@ Legendre := function ( n, m )
 
     # else $n$ is a quadratic residue modulo $m$
     return 1;
-end;
+end );
 
 
 #############################################################################
@@ -533,7 +534,7 @@ RootModPrimePower := function ( n, k, p, l )
     return r;
 end;
 
-RootMod := function ( arg )
+InstallGlobalFunction( RootMod, function ( arg )
     local   n,                  # <n>, first argument
             k,                  # <k>, optional second argument
             m,                  # <m>, third argument
@@ -583,7 +584,7 @@ RootMod := function ( arg )
     # return the root $rr$
     Info( InfoNumtheor, 1, "RootMod returns ", r );
     return r;
-end;
+end );
 
 
 #############################################################################
@@ -761,7 +762,7 @@ RootsModPrimePower := function ( n, k, p, l )
     return rr;
 end;
 
-RootsMod := function ( arg )
+InstallGlobalFunction( RootsMod, function ( arg )
     local   n,                  # <n>, first argument
             k,                  # <k>, optional second argument
             m,                  # <m>, third argument
@@ -814,7 +815,7 @@ RootsMod := function ( arg )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsMod returns ", rr );
     return Set( rr );
-end;
+end );
 
 
 #############################################################################
@@ -918,7 +919,7 @@ RootsUnityModPrimePower := function ( k, p, l )
     return rr;
 end;
 
-RootsUnityMod := function ( arg )
+InstallGlobalFunction( RootsUnityMod, function ( arg )
     local   k,                  # <k>, optional first argument
             m,                  # <m>, second argument
             p,                  # prime divisor of <m>
@@ -966,14 +967,14 @@ RootsUnityMod := function ( arg )
     # return the roots $rr$
     Info( InfoNumtheor, 1, "RootsUnityMod returns ", rr );
     return Set( rr );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LogMod( <n>, <r>, <m> ) . . . . . .  discrete logarithm modulo an integer
 ##
-LogMod := function ( n, r, m )
+InstallGlobalFunction( LogMod, function ( n, r, m )
     local   x, l;
     n := n mod m;
     x := 1;
@@ -986,14 +987,14 @@ LogMod := function ( n, r, m )
         fi;
     od;
     return l;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  TwoSquares(<n>) . .  representation of an integer as a sum of two squares
 ##
-TwoSquares := function ( n )
+InstallGlobalFunction( TwoSquares, function ( n )
     local  c, d, p, q, l, x, y;
 
     # check arguments and handle special cases
@@ -1041,7 +1042,7 @@ TwoSquares := function ( n )
 
     # return the representation
     return [ c * x, c * y ];
-end;
+end );
 
 
 #T ##########################################################################

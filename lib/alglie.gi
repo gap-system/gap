@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for Lie algebras.
 ##
@@ -18,20 +19,20 @@ Revision.alglie_gi :=
 #M  UpperCentralSeriesOfAlgebra( <L> )  . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( UpperCentralSeriesOfAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
     local   S,          # upper central series of <L>, result
             C,          # Lie centre
-            hom;        # homomorphisms of <L> to '<L>/<C>'
+            hom;        # homomorphisms of <L> to `<L>/<C>'
 
     S := [ TrivialSubalgebra( L ) ];
     C := LieCentre( L );
     while C <> S[ Length(S) ]  do
 
-      # Replace 'L' by 'L / C', compute its centre, and get the preimage
+      # Replace `L' by `L / C', compute its centre, and get the preimage
       # under the natural homomorphism.
       Add( S, C );
       hom:= NaturalHomomorphismByIdeal( L, C );
@@ -51,7 +52,7 @@ InstallMethod( UpperCentralSeriesOfAlgebra,
 #M  LowerCentralSeriesOfAlgebra( <L> )  . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( LowerCentralSeriesOfAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
@@ -59,7 +60,7 @@ InstallMethod( LowerCentralSeriesOfAlgebra,
     local   S,          # lower central series of <L>, result
             C;          # commutator subalgebras
 
-    # Compute the series by repeated calling of 'ProductSpace'.
+    # Compute the series by repeated calling of `ProductSpace'.
     S := [ L ];
     C := DerivedSubalgebra( L );
     while C <> S[ Length(S) ]  do
@@ -77,7 +78,7 @@ InstallMethod( LowerCentralSeriesOfAlgebra,
 #M  IsSolvableAlgebra( <L> )  . . . . . . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( IsSolvableAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
@@ -94,7 +95,7 @@ InstallMethod( IsSolvableAlgebra,
 #M  IsNilpotentAlgebra( <L> ) . . . . . . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( IsNilpotentAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
@@ -115,13 +116,13 @@ InstallMethod( IsNilpotentAlgebra,
 ##  But if we have already a structure constants table we use it.
 ##
 InstallMethod( IsAbelianLieAlgebra,
-    "method for a Lie algebra with known basis",
+    "for a Lie algebra with known basis",
     true,
     [ IsAlgebra and IsLieAlgebra and HasBasisOfDomain ], 0,
     function( L )
 
-    local B,      # basis of 'L'
-          T,      # structure constants table w.r.t. 'B'
+    local B,      # basis of `L'
+          T,      # structure constants table w.r.t. `B'
           i,      # loop variable
           j;      # loop variable
 
@@ -142,15 +143,15 @@ InstallMethod( IsAbelianLieAlgebra,
     end );
 
 InstallMethod( IsAbelianLieAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
     local i,      # loop variable
           j,      # loop variable
-          zero,   # zero of 'L'
-          gens;   # algebra generators of 'L'
+          zero,   # zero of `L'
+          gens;   # algebra generators of `L'
 
     zero:= Zero( L );
     gens:= GeneratorsOfAlgebra( L );
@@ -186,20 +187,20 @@ InstallMethod( IsAbelianLieAlgebra,
 ##  Additionally we know that the centre of a Lie algebra is an ideal.
 ##
 InstallMethod( LieCentre,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( A )
 
-    local   R,          # left acting domain of 'A'
-            C,          # Lie centre of 'A', result
-            B,          # a basis of 'A'
-            T,          # structure constants table w.r. to 'B'
-            n,          # dimension of 'A'
+    local   R,          # left acting domain of `A'
+            C,          # Lie centre of `A', result
+            B,          # a basis of `A'
+            T,          # structure constants table w.r. to `B'
+            n,          # dimension of `A'
             M,          # matrix of the equation system
             zerovector, #
             i, j,       # loop over ...
-            row;        # one row of 'M'
+            row;        # one row of `M'
 
     R:= LeftActingDomain( A );
 
@@ -262,8 +263,8 @@ InstallMethod( LieCentre,
 ##  (left null space of an $n \times (nm)$ matrix)
 ##
 InstallMethod( LieCentralizer,
-    "method for an abelian Lie algebra and a vector space",
-    IsIdentical,
+    "for an abelian Lie algebra and a vector space",
+    IsIdenticalObj,
     [ IsAlgebra and IsLieAlgebra and IsAbelianLieAlgebra,
       IsVectorSpace ], 0,
     function( A, S )
@@ -276,20 +277,20 @@ InstallMethod( LieCentralizer,
     end );
 
 InstallMethod( LieCentralizer,
-    "method for a Lie algebra and a vector space",
-    IsIdentical,
+    "for a Lie algebra and a vector space",
+    IsIdenticalObj,
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ], 0,
     function( A, S )
 
-    local R,           # left acting domain of 'A'
-          B,           # basis of 'A'
-          T,           # structure constants table w. r. to 'B'
-          n,           # dimension of 'A'
-          m,           # dimension of 'S'
+    local R,           # left acting domain of `A'
+          B,           # basis of `A'
+          T,           # structure constants table w. r. to `B'
+          n,           # dimension of `A'
+          m,           # dimension of `S'
           M,           # matrix of the equation system
-          v,           # coefficients of basis vectors of 'S' w.r. to 'B'
-          zerovector,  # initialize one row of 'M'
-          row,         # one row of 'M'
+          v,           # coefficients of basis vectors of `S' w.r. to `B'
+          zerovector,  # initialize one row of `M'
+          row,         # one row of `M'
           i, j, k, l,  # loop variables
           cil,         #
           offset,
@@ -360,28 +361,29 @@ InstallMethod( LieCentralizer,
 ##  the $a_i$ part).
 ##
 InstallMethod( LieNormalizer,
-    "method for a Lie algebra and a vector space",
-    IsIdentical,
+    "for a Lie algebra and a vector space",
+    IsIdenticalObj,
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ], 0,
     function( L, U )
 
-    local R,          # left acting domain of 'L'
-          B,          # a basis of 'L'
-          T,          # the structure constants table of 'L' w.r.t. 'B'
-          n,          # the dimension of 'L'
-          s,          # the dimension of 'U'
+    local R,          # left acting domain of `L'
+          B,          # a basis of `L'
+          T,          # the structure constants table of `L' w.r.t. `B'
+          n,          # the dimension of `L'
+          s,          # the dimension of `U'
           A,          # the matrix of the equation system
           i, j, k, l, # loop variables
-          v,          # the coefficients of the basis of 'U' wrt 'B'
+          v,          # the coefficients of the basis of `U' wrt `B'
           cij,
           bas,
           b,
           pos;
 
-#T     if IsBound( U.isIdeal ) and U.isIdeal then
-#T       return L;
-#T     fi;
-#T how to do this?
+    # We need not work if `U' knows to be an ideal in its parent `L'.
+    if HasParent( U ) and IsIdenticalObj( L, Parent( U ) )
+       and HasIsLeftIdealInParent( U ) and IsLeftIdealInParent( U ) then
+      return L;
+    fi;
 
     R:= LeftActingDomain( L );
     B:= BasisOfDomain( L );
@@ -425,7 +427,7 @@ InstallMethod( LieNormalizer,
     # Solve the equation system.
     b:= NullspaceMat(A);
 
-    # Extract the 'normalizer part' of the solution.
+    # Extract the `normalizer part' of the solution.
     l:= Length(b);
     bas:= MutableNullMat( l, n, R );
     for i in [ 1..l ] do
@@ -446,7 +448,7 @@ InstallMethod( LieNormalizer,
 ##
 #M  KappaPerp( <L>, <U> ) . . . . . . . . for a Lie algebra and a vector space
 ##
-#T  Should this better be 'OrthogonalSpace( <F>, <U> )' where <F> is a
+#T  Should this better be `OrthogonalSpace( <F>, <U> )' where <F> is a
 #T  bilinear form?
 #T  How to represent forms in GAP?
 #T  (Clearly the form must know about the space <L>.)
@@ -459,14 +461,14 @@ InstallMethod( LieNormalizer,
 ##  $k = 1, \ldots, s$.
 ##
 InstallMethod( KappaPerp,
-    "method for a Lie algebra and a vector space",
-    IsIdentical,
+    "for a Lie algebra and a vector space",
+    IsIdenticalObj,
     [ IsAlgebra and IsLieAlgebra, IsVectorSpace ], 0,
     function( L, U )
 
-    local R,          # left acting domain of 'L'
+    local R,          # left acting domain of `L'
           B,     # a basis of L
-          kap,   # the matrix of the Killing form w.r.t. 'B'	
+          kap,   # the matrix of the Killing form w.r.t. `B'	
           A,     # the matrix of the equation system
           n,     # the dimension of L
           s,     # the dimension of U
@@ -527,19 +529,19 @@ InstallMethod( KappaPerp,
 ##  adjoint matrix is from the left (i.e., on column vectors).
 ##
 InstallMethod( AdjointMatrix,
-    "method for a basis of a Lie algebra, and an element",
+    "for a basis of a Lie algebra, and an element",
     IsCollsElms,
     [ IsBasis, IsRingElement ], 0,
     function( B, x )
 
     local n,            # dimension of the algebra
-          T,            # structure constants table w.r. to 'B'
+          T,            # structure constants table w.r. to `B'
           zerovector,   # zero of the field
           M,            # adjoint matrix, result
           j, i, l,      # loop variables
           cij,          # structure constants vector
           k,            # one position in structure constants vector
-          row;          # one row of 'M'
+          row;          # one row of `M'
 
     x:= Coefficients( B, x );
     n:= Length( BasisVectors( B ) );
@@ -583,20 +585,18 @@ InstallMethod( AdjointMatrix,
 ##  algebra of derivations.
 ##
 InstallMethod( Derivations,
-    "method for a basis of a Lie algebra",
+    "for a basis of a Lie algebra",
     true,
     [ IsBasis ], 0,
     function( B )
 
-    local T,           # structure constants table w.r. to 'B'
+    local T,           # structure constants table w.r. to `B'
           L,           # underlying Lie algebra
-          R,           # left acting domain of 'L'
-          n,           # dimension of 'L'
-          zerovector,  # zero vector of length 'n^2'
-          lower,
+          R,           # left acting domain of `L'
+          n,           # dimension of `L'
+          eqno,
           A,
           i, j, k, m,
-          row,
           M;             # the Lie algebra of derivations
 
     if not IsLieAlgebra( UnderlyingLeftModule( B ) ) then
@@ -612,43 +612,35 @@ InstallMethod( Derivations,
       return NullAlgebra( R );
     fi;
 
-    zerovector:= [ 1 .. n*n ] * Zero( R );
-
-    # The columns in the matrix of the equation system are indexed
-    # by the $d_{ij}$; the $((i-1) n + j)$-th column belongs to $d_{ij}$.
-#T until we have 'RightNullspaceMat' we first construct the matrix,
-#T then transpose, and then compute a base of the (left) nullspace.
-
-    # In characteristic different from 2
-    # we only need the equations for $i > j$.
-    if Characteristic( R ) = 2 then
-      lower:= 0;
-    else
-      lower:= 1;
-    fi;
+    # The rows in the matrix of the equation system are indexed
+    # by the $d_{ij}$; the $((i-1) n + j)$-th row belongs to $d_{ij}$.
 
     # Construct the equation system.
-    A:= [];
+    A:= MutableNullMat( n^2, (n-1)*n*n/2, R );
+    eqno:= 0;
     for i in [ 1 .. n ] do
-      for j in [ lower*i+1 .. n ] do
+      for j in [ i+1 .. n ] do
         for m in [ 1 .. n ] do
-          row:= ShallowCopy( zerovector );
+          eqno:= eqno+1;
           for k in [ 1 .. n ] do
-            row[ (k-1)*n+m ]:= row[ (k-1)*n+m ] + SCTableEntry( T,i,j,k );
-            row[ (i-1)*n+k ]:= row[ (i-1)*n+k ] + SCTableEntry( T,k,j,m );
-            row[ (j-1)*n+k ]:= row[ (j-1)*n+k ] + SCTableEntry( T,i,k,m );
+            A[ (k-1)*n+m ][eqno]:= A[ (k-1)*n+m ][eqno] + 
+                                        SCTableEntry( T,i,j,k );
+            A[ (i-1)*n+k ][eqno]:= A[ (i-1)*n+k ][eqno] - 
+                                        SCTableEntry( T,k,j,m );
+            A[ (j-1)*n+k ][eqno]:= A[ (j-1)*n+k ][eqno] - 
+                                        SCTableEntry( T,i,k,m );
           od;
-          Add( A, row );
         od;
       od;
     od;
 
     # Solve the equation system.
-    # Note that for $n = 1$ the matrix may be empty.
-    if IsEmpty( A ) then
+    # Note that for $n = 1$ the matrix is empty.
+
+    if n = 1 then
       A:= [ [ One( R ) ] ];
     else
-      A:= NullspaceMat( TransposedMat( A ) );
+      A:= NullspaceMat( A );
     fi;
 
     # Construct the generating matrices from the vectors.
@@ -668,7 +660,6 @@ InstallMethod( Derivations,
     return M;
     end );
 
-
 #############################################################################
 ##
 #M  KillingMatrix( <B> )
@@ -680,21 +671,21 @@ InstallMethod( Derivations,
 ##  (anti-)symmetric.)
 ##
 InstallMethod( KillingMatrix,
-    "method for a basis of a Lie algebra",
+    "for a basis of a Lie algebra",
     true,
     [ IsBasis ], 0,
     function( B )
 
-    local T,           # s.c. table w.r. to 'B'
+    local T,           # s.c. table w.r. to `B'
           L,           # the underlying algebra
-          R,           # left acting domain of 'L'
+          R,           # left acting domain of `L'
           kappa,       # the matrix of the killing form, result
-          n,           # dimension of 'L'
-          zero,        # the zero of 'R'
+          n,           # dimension of `L'
+          zero,        # the zero of `R'
           i, j, k, t,  # loop variables
-          row,         # one row of 'kappa'
-          val,         # one entry of 'kappa'
-          cjk;         # 'T[j][k]'
+          row,         # one row of `kappa'
+          val,         # one entry of `kappa'
+          cjk;         # `T[j][k]'
 
     T:= StructureConstantsTable( B );
     L:= UnderlyingLeftModule( B );
@@ -739,14 +730,14 @@ InstallMethod( KillingMatrix,
 ##  is zero, where $n$ denotes the dimension of <L>.
 ##
 InstallMethod( IsNilpotentElement,
-    "method for a Lie algebra, and an element",
+    "for a Lie algebra, and an element",
     IsCollsElms,
     [ IsAlgebra and IsLieAlgebra, IsRingElement ], 0,
     function( L, x )
 
-    local B,     # a basis of 'L'
-          A,     # adjoint matrix of 'x w.r. to 'B'
-          n,     # dimension of 'L'
+    local B,     # a basis of `L'
+          A,     # adjoint matrix of `x w.r. to `B'
+          n,     # dimension of `L'
           i,     # loop variable
           zero;  # zero coefficient
 
@@ -780,28 +771,28 @@ InstallMethod( IsNilpotentElement,
 ##  This function returns a particular basis $C$ of the matrix space generated
 ##  by $ad L$, namely a basis consisting of elements of the form $ad x_i$
 ##  where $x_i$ is a basis element of <B>.
-##  An extra component 'indices' is added to this space.
-##  This is a list of integers such that 'ad <B>.basisVectors[ indices[i] ]'
-##  is the 'i'-th basis vector of <C>, for i in [1..Length(indices)].
+##  An extra component `indices' is added to this space.
+##  This is a list of integers such that `ad <B>.basisVectors[ indices[i] ]'
+##  is the `i'-th basis vector of <C>, for i in [1..Length(indices)].
 ##  (This list is added in order to be able to identify the basis element of
 ##  <B> with the property that its adjoint matrix is equal to a given basis
 ##  vector of <C>.)
 ##
 InstallMethod( AdjointBasis,
-    "method for a basis of a Lie algebra",
+    "for a basis of a Lie algebra",
     true,
     [ IsBasis ], 0,
     function( B )
 
-    local bb,     # the basis vectors of 'B'
-          n,      # the dimension of 'B'
+    local bb,     # the basis vectors of `B'
+          n,      # the dimension of `B'
           F,      # the field over which the algebra is defined
           adL,    # a list of matrices that form a basis of adLsp
           adLsp,  # the matrix space spanned by ad L
           inds,   # the list of indices
           i,      # loop variable
-          adi,    # the adjoint matrix of the i-th basis vector of 'B'
-          adLbas; # the basis of 'adLsp' compatible with 'adL'
+          adi,    # the adjoint matrix of the i-th basis vector of `B'
+          adLbas; # the basis of `adLsp' compatible with `adL'
 
     bb:= BasisVectors( B );
     n:= Length( bb );
@@ -837,7 +828,7 @@ InstallMethod( AdjointBasis,
 ##  (see Jacobson, p. 190).
 ##
 InstallMethod( IsRestrictedLieAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
@@ -873,7 +864,7 @@ InstallMethod( IsRestrictedLieAlgebra,
 ##
 #F  PowerSi( <F>, <i> )
 ##
-PowerSi := function( F, i )
+InstallGlobalFunction( PowerSi, function( F, i )
 
     local si,    # a function of two arguments: seqs, a list of sequences,
                  # and l, a list containing the two arguments of the
@@ -926,7 +917,7 @@ PowerSi := function( F, i )
       Add( seqs, v );
     od;
     return arg -> si( seqs, arg );
-end;
+end );
 
 
 #############################################################################
@@ -934,13 +925,13 @@ end;
 #F  PowerS( <L> )
 ##
 InstallMethod( PowerS,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
     function( L )
 
     local F,    # the coefficients domain
-          p;    # the characteristic of 'F'
+          p;    # the characteristic of `F'
 
     F:= LeftActingDomain( L );
     p:= Characteristic( F );
@@ -953,13 +944,13 @@ InstallMethod( PowerS,
 #F  PthPowerImage( <B>, <x> )
 ##
 InstallMethod( PthPowerImage,
-    "method for a basis of an algebra, and a ring element",
+    "for a basis of an algebra, and a ring element",
     IsCollsElms,
     [ IsBasis, IsRingElement ], 0,
     function( B, x )
 
     local L,     # the Lie algebra of which B is a basis
-          F,     # the coefficients domain of 'L'
+          F,     # the coefficients domain of `L'
           n,     # the dimension of L
           p,     # the characteristic of the ground field
           s,     # the list of s_i functions
@@ -967,8 +958,8 @@ InstallMethod( PthPowerImage,
           cf,    # the coefficients of x wrt the basis of L
           im,    # the image of x under the p-th power map
           i,j,   # loop variables
-          zero,  # zero of 'F'
-          bv,    # basis vectors of 'B'
+          zero,  # zero of `F'
+          bv,    # basis vectors of `B'
           adx,   # adjoint matrix of x
           adL;   # a basis of the matrix space ad L
 
@@ -1026,16 +1017,16 @@ InstallMethod( PthPowerImage,
 #M  PthPowerImages( <B> ) . . . . . . . . . . .  for a basis of a Lie algebra
 ##
 InstallMethod( PthPowerImages,
-    "method for a basis of a Lie algebra",
+    "for a basis of a Lie algebra",
     true,
     [ IsBasis ], 0,
     function( B )
 
     local L,          # the underlying algebra
-          p,          # the characteristic of 'L'
+          p,          # the characteristic of `L'
           adL,        # a basis of the matrix space spanned by ad L
-          basL;       # the list of basis vectors 'b' of 'B' such that
-                      # 'ad b' is a basis vector of 'adL'
+          basL;       # the list of basis vectors `b' of `B' such that
+                      # `ad b' is a basis vector of `adL'
 
     L:= UnderlyingLeftModule( B );
     if not IsRestrictedLieAlgebra( L ) then
@@ -1053,9 +1044,9 @@ InstallMethod( PthPowerImages,
 
     fi;
 
-    # Now 'IndicesOfAdjointBasis( adL )' is a list of indices with 'i'-th
-    # entry the position of the basis vector of 'B'
-    # whose adjoint matrix is the 'i'-th basis vector of 'adL'.
+    # Now `IndicesOfAdjointBasis( adL )' is a list of indices with `i'-th
+    # entry the position of the basis vector of `B'
+    # whose adjoint matrix is the `i'-th basis vector of `adL'.
     basL:= BasisVectors( B ){ IndicesOfAdjointBasis( adL ) };
 
     # We calculate the coefficients of $x_i^{[p]}$ wrt the basis basL.
@@ -1089,21 +1080,21 @@ InstallMethod( PthPowerImages,
 ##  (see Humphreys, proof of Lemma A, p 79).
 ##
 InstallMethod( CartanSubalgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
     function( L )
 
     local n,            # the dimension of L
-          F,            # coefficients domain of 'L'
-          root,         # prim. root of 'F' if 'F' is finite
+          F,            # coefficients domain of `L'
+          root,         # prim. root of `F' if `F' is finite
           K,            # a subalgebra of L (on termination a Cartan subalg.)
           a,b,          # (non nilpotent) elements of L
           A,            # matrix of the equation system (ad a)^n(x)=0
           bas,          # basis of the solution space of Ax=0
           sp,           # the subspace of L generated by bas
           found,ready,  # boolean variables
-          c,            # an element of 'F'
+          c,            # an element of `F'
           newelt,       # an element of L of the form a+c*(b-a)
           i;            # loop variable
 
@@ -1118,13 +1109,13 @@ InstallMethod( CartanSubalgebra,
         a:= NonNilpotentElement( K );
 
         if a = fail then
-          # 'K' is a nilpotent Engel subalgebra, hence a Cartan subalgebra.
+          # `K' is a nilpotent Engel subalgebra, hence a Cartan subalgebra.
           return K;
         fi;
 
-        # 'a' is a non nilpotent element of 'K'.
+        # `a' is a non nilpotent element of `K'.
         # We construct the generalized eigenspace of this element w.r.t.
-        # the eigenvalue 0.  This is a subalgebra of 'K' and of 'L'.
+        # the eigenvalue 0.  This is a subalgebra of `K' and of `L'.
         A:= TransposedMat( AdjointMatrix( BasisOfDomain( K ), a));
         A:= A ^ Dimension( K );
         bas:= NullspaceMat( A );
@@ -1142,11 +1133,11 @@ InstallMethod( CartanSubalgebra,
       a:= NonNilpotentElement( L );
 
       if a = fail then
-        # 'L' is nilpotent.
+        # `L' is nilpotent.
         return L;
       fi;
 
-      # 'K' will be the Engel subalgebra corresponding to 'a'.
+      # `K' will be the Engel subalgebra corresponding to `a'.
 
       A:= TransposedMat( AdjointMatrix( BasisOfDomain( L ), a ) );
       A:= A^n;
@@ -1158,16 +1149,16 @@ InstallMethod( CartanSubalgebra,
 
       b:= NonNilpotentElement( K );
 
-      # If 'b = fail' then 'K' is nilpotent and we are done.
+      # If `b = fail' then `K' is nilpotent and we are done.
       ready:= ( b = fail );
 
       while not ready do
 
         # We locate an element $a + c*(b-a)$ such that the Engel subalgebra
         # belonging to this element is smaller than the Engel subalgebra
-        # belonging to 'a'.
-        # We do this by checking a few values of 'c'
-        # (At most 'n' values of 'c' will not yield a smaller subalgebra.)
+        # belonging to `a'.
+        # We do this by checking a few values of `c'
+        # (At most `n' values of `c' will not yield a smaller subalgebra.)
 
         sp:= VectorSpace( F, BasisVectors( BasisOfDomain(K) ), "basis");
         found:= false;
@@ -1186,7 +1177,7 @@ InstallMethod( CartanSubalgebra,
           fi;
           newelt:= a+c*(b-a);
 
-          # Calculate the Engel subalgebra belonging to 'newelt'.
+          # Calculate the Engel subalgebra belonging to `newelt'.
           A:= TransposedMat( AdjointMatrix( BasisOfDomain( K ), newelt ) );
           A:= A^Dimension( K );
           bas:= NullspaceMat( A );
@@ -1209,7 +1200,7 @@ InstallMethod( CartanSubalgebra,
         K:= SubalgebraNC( L, bas, "basis");
         b:= NonNilpotentElement( K );
 
-        # If 'b = fail' then 'K' is nilpotent and we are done.
+        # If `b = fail' then `K' is nilpotent and we are done.
         ready:= b = fail;
 
       od;
@@ -1227,11 +1218,11 @@ InstallMethod( CartanSubalgebra,
 
 ##############################################################################
 ##
-#M  AdjointAssociativeAlgebra( <L> )
+#M  AdjointAssociativeAlgebra( <L>, <K> )
 ##
 ##  This function calculates a basis of the associative matrix algebra
-##  generated by ad L.
-##  If {x_1,\ldots ,x_n} is a basis of L, then this algebra is spanned
+##  generated by ad_L K, where <K> is a subalgebra of <L>.
+##  If {x_1,\ldots ,x_n} is a basis of K, then this algebra is spanned
 ##  by all words
 ##                          ad x_{i_1}\cdots ad x_{i_t}
 ##  where t>0.
@@ -1242,10 +1233,10 @@ InstallMethod( CartanSubalgebra,
 ##  to consider words where i_1\leq i_2\leq \cdots \leq i_t.
 ##
 InstallMethod( AdjointAssociativeAlgebra,
-    "method for a Lie algebra",
+    "for a Lie algebra and a subalgebra",
     true,
-    [ IsAlgebra and IsLieAlgebra ], 0,
-    function( L )
+    [ IsAlgebra and IsLieAlgebra, IsAlgebra and IsLieAlgebra ], 0,
+    function( L, K )
 
     local n,         # the dimension of L
           F,         # the field of L
@@ -1265,17 +1256,17 @@ InstallMethod( AdjointAssociativeAlgebra,
                      # the matrix asbas[i] has a nonzero entry at position
                      # [p][q] and furthermore the matrices asbas[j] with j>i
                      # will have a zero at that position (so the basis
-                     # constructed will be in 'upper triangular form')
+                     # constructed will be in `upper triangular form')
           l1,l2,     # loop variables
           found;     # a boolean
 
     F:= LeftActingDomain( L );
 
-    if Dimension( L ) = 0 then
+    if Dimension( K ) = 0 then
       return Algebra( F, [ [ [ Zero(F) ] ] ] );
     elif IsAbelianLieAlgebra( L ) then
       return Algebra( F, [ AdjointMatrix( BasisOfDomain( L ),
-                                          GeneratorsOfAlgebra( L )[1] ) ] );
+                                          GeneratorsOfAlgebra( K )[1] ) ] );
     fi;
 
     n:= Dimension( L );
@@ -1283,12 +1274,12 @@ InstallMethod( AdjointAssociativeAlgebra,
     # Initialisations that ensure that the first step of the loop will select
     # a maximal linearly independent set of matrices of degree 1.
 
-    degree1:= List( BasisVectors( BasisOfDomain(L) ),
+    degree1:= List( BasisVectors( BasisOfDomain(K) ),
                         x -> AdjointMatrix( BasisOfDomain(L), x ) );
     posits  := [ [ 1, 1 ] ];
     highdeg := [ MutableIdentityMat( n, F ) ];
     asbas   := [ Immutable( highdeg[1] ) ];
-    lowinds := [ n ];
+    lowinds := [ Dimension( K ) ];
 
     # If after some steps all words of degree t (say) can be reduced modulo
     # lower degree, then all words of degree >t can be reduced to linear
@@ -1302,16 +1293,16 @@ InstallMethod( AdjointAssociativeAlgebra,
 
       for i in [1..Length(highdeg)] do
 
-        # Now we multiply all elements 'highdeg[i]' with all possible
+        # Now we multiply all elements `highdeg[i]' with all possible
         # elements of degree 1 (i.e. elements having an index <= the lowest
-        # index of the word 'highdeg[i]')
+        # index of the word `highdeg[i]')
 
         ind:= lowinds[i];
         for j in [1..ind] do
 
           m:= degree1[j]*highdeg[i];
 
-          # Now we first reduce 'm' on the basis computed so far
+          # Now we first reduce `m' on the basis computed so far
           # and then add it to the basis.
 
           for k in [1..Length(posits)] do
@@ -1322,14 +1313,14 @@ InstallMethod( AdjointAssociativeAlgebra,
 
           if not IsZero( m ) then
 
-            #'m' is not an element of the span of 'asbas'
+            #'m' is not an element of the span of `asbas'
 
             Add( hdeg, m );
             Add( linds, j );
             Add( asbas, m);
 
-            # Now we look for a nonzero entry in 'm'
-            # and add the position of that entry to 'posits'.
+            # Now we look for a nonzero entry in `m'
+            # and add the position of that entry to `posits'.
 
             found:= false;
             l1:= 1; l2:= 1;
@@ -1353,9 +1344,9 @@ InstallMethod( AdjointAssociativeAlgebra,
 
       od;
 
-      if lowinds = [n] then
+      if lowinds = [Dimension(K)] then
 
-        # We are in the first step and hence 'degree1' must be made
+        # We are in the first step and hence `degree1' must be made
         # equal to the linearly independent set that we have just calculated.
 
         degree1:= ShallowCopy( hdeg );
@@ -1377,62 +1368,46 @@ InstallMethod( AdjointAssociativeAlgebra,
 #M  NilRadical( <L> )
 ##
 ##  Let $p$ be the characteristic of the coefficients field of <L>.
-##  If $p = 0$ or then we calculate a sequence of ideals
-##  $I_k = \{ x\in I_{k-1} \mid Tr(ad y_{i_1} \cdots ad y_{i_k} ad x) = 0
-##                              \forall i_1\leq i_2\leq \cdots \leq i_k \}$
-##  where $\{ y_1, \ldots, y_n \}$ is a basis of <L>.
-##  It can be proved that $I_{n-2}$ is equal to the nil radical.
-##  However, in most cases $I_k$ will equal the nil radical for $k$ much
-##  smaller than $n-2$. The calculation of the (increasing) 'words'
-##
-##               ad y_{i_1} \cdots ad y_{i_k}
-##
-##  is similar to the calculation of the basis in 'AdjointAssociativeAlgebra'.
-##  For technical reasons we first calculate the solvable radical of <L>
-##  (then the test whether an ideal is nilpotent is much easier).
+##  If $p=0$ the we use the following characterisation of the nilradical:
+##  Let $S$ be the solvable radical of <L>. And let $H$ be a Cartan subalgebra
+##  of $S$. Decompose $S$ as $S = H \oplus S_1(H)$, where $S_1(H)$ is the
+##  Fitting 1-component of the adjoint action of $H$ on $S$. Let $H*$ be the
+##  associative algebra generated by $ad H$, then $S_1(H)$ is the intersection
+##  of the spaces $H*^i( S )$ for $i>0$. Let $R$ be the radical of the
+##  algebra $H*$. Then the nilradical of <L> consists of $S_1(H)$ together
+##  with all elements $x$ in $H$ such that $ad x\in R$. This last space 
+##  is also characterised as the space of all elements $x$ such that
+##  $ad x$ lies in the vector space spanned by all nilpotent parts of all
+##  $ad h$ for $h\in H$.   
 ##
 ##  In the case where $p>0$ we calculate the radical of the associative
-##  matrix algebra $A$ generated by $ad 'L'$.
+##  matrix algebra $A$ generated by $ad `L'$.
 ##  The nil radical is then equal to $\{ x\in L \mid ad x \in A \}$.
 ##
 InstallMethod( NilRadical,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
-    local F,           # the coefficients domain of 'L'
-          p,           # the characteristic of 'F'
-          bv,          # basis vectors of a basis of 'L'
-          S,           # the solvable radical of 'L'
-          adS,         # the list of matrices ad x_i where x_i runs through a
-                       # basis of 'S'
-          n,           # dimension of 'S'
+    local F,           # the coefficients domain of `L'
+          p,           # the characteristic of `F'
+          bv,          # basis vectors of a basis of `L'
+          S,           # the solvable radical of `L'
+          H,           # Cartan subalgebra of `S'
+          HS,          # Fitting 1-component of `S' wrt `H'
+          adH,         # list of ad x for x in a basis of `H'
+          n,           # dimension of `L'
           t,           # the dimension of an ideal
-          eq,          # an equation
           eqs,         # equation set
-          bb,          # list of coefficients of basis vectors
-          I,           # basis vectors of an ideal of 'L'
-          adI,         # list of the matrices ad x where x in 'I'
-          cfs,         # coefficient vector
-          i,j,k,l1,l2, # loop variables
-          nilpotent,   # boolean
-          elts,        # a list of elements computed in the preceding round
-          hdeg,        # a list of the highest degrees of the elements of
-                       # 'elts'
-          newelts,     # the new list of elements
-          newhdeg,     # the new list of highest degrees
-          basis,       # a basis of the subspace of the enveloping algebra
-                       # computed so far
-          posits,      # a list of positions corresponding to 'basis'
-          X,           # a matrix
+          I,           # basis vectors of an ideal of `L'
+          i,j,k,       # loop variables
           sol,         # solution set
           adL,         # list of matrices ad x where x runs through a basis of
-                       # 'L'
-          A,           # the algebra generated by ad L
+                       # `L'
+          A,           # an associative algebra
           R,           # the radical of this algebra
-          B,           # list of basis vectors of R
-          x;           # element of L
+          B;           # list of basis vectors of R
 
     F:= LeftActingDomain( L );
     p:= Characteristic( F );
@@ -1443,121 +1418,47 @@ InstallMethod( NilRadical,
       # the nilradical of its solvable radical.
 
       S:= SolvableRadical( L );
-      adS:= List( BasisVectors( BasisOfDomain( S ) ),
-                  x -> AdjointMatrix( BasisOfDomain( S ),x ) );
       n:= Dimension( S );
 
-      # First we calculate $I_0$, the ideal of elements <x> of <S> such that
-      # the trace of ad<x> is zero.
+      if n in [ 0, 1 ] then return S; fi;
 
-      eqs:= [ List( adS, x -> TraceMat(x) ) ];
-      sol:= NullspaceMat( TransposedMat( eqs ) );
-      I:= List( sol, x -> LinearCombination( BasisOfDomain(S), x ) );
+      H:= CartanSubalgebra(S);
 
-      cfs:= List( I, x -> Coefficients( BasisOfDomain(S), x ) );
-      adI:= List( cfs, x -> LinearCombination( adS, x ) );
+      if Dimension(H) = n then return S; fi;
 
-      # We check whether the ideal <I> is nilpotent
-      # (this is precisely the case when all matrices ad<x> are nilpotent
-      # where <x> is a basis element of <I>).
+# We calculate the Fitting 1-component $S_1(H)$.
 
-      nilpotent:= true;
-      i:=1;
-      while nilpotent and i <= Length( I ) do
-        nilpotent:= IsZero( adI[ i ]^n );
-        i:= i+1;
+      HS:= ProductSpace( H, S );
+      while Dimension( HS ) + Dimension( H ) <> n do
+        HS:= ProductSpace( H, HS );
       od;
 
-      # At the beginning of the loop, the list of elements of highest degree
-      # consists only of the identity matrix.
-      # The list of basis elements of the adjoint associative algebra
-      # calculated so far consists also only of the identity element.
-      # It follows that the list of positions is '[1,1]]'
-      # and the list of highest degree elements is '[1]'.
+      if Dimension( H ) = 1 then 
+         return IdealNC( L, BasisVectors(Basis(HS)), "basis" );
+      fi;
 
-      elts:= [ MutableIdentityMat(n,F) ];
-      basis:= [ MutableIdentityMat(n,F) ];
-      posits:= [ [1,1] ];
-      hdeg:= [ 1 ];
+# Now we compute the intersection of `R' and `<ad H>'.
+  
+      adH:= List( BasisVectors(Basis(H)), x -> AdjointMatrix(Basis(S),x));
+      R:= RadicalOfAlgebra( AdjointAssociativeAlgebra( S, H ) );
+      B:= BasisVectors( Basis( R ) );
 
-      while not nilpotent do
-
-        newelts:= [ ];
-        newhdeg:= [ ];
-        eqs:= [ ];
-
-        for i in [1..Length(elts)] do
-
-          # We multiply an element of 'elts' by all basis elements
-
-          for j in [hdeg[i]..n] do
-            X:= elts[ i ]*adS[ j ];
-
-            # Reduce 'X' w.r.t. the basis calculated so far.
-
-            for k in [1..Length(basis)] do
-              l1:= posits[k][1];
-              l2:= posits[k][2];
-              X:= X-(X[l1][l2]/basis[k][l1][l2])*basis[k];
-            od;
-
-            # If the reduced 'X' is nonzero, then we add it to the basis
-            # and we calculate a new equation.
-
-            if not IsZero( X ) then
-              Add( newelts, X );
-              Add( basis, X );
-
-              # Find a nonzero entry in 'X'.
-
-              l1:=1; l2:=1;
-              while X[l1][l2]=0 do
-                if l2 < n then
-                  l2:= l2+1;
-                else
-                  l1:= l1+1;
-                  l2:= 1;
-                fi;
-              od;
-              Add( posits, [l1,l2] );
-              Add( newhdeg, j );
-
-              eq:= [ ];
-              for k in [1..Length( I )] do
-                Add( eq, TraceMat( X*adI[k] ) );
-              od;
-              Add( eqs, eq );
-
-            fi;
+      eqs:= MutableNullMat(Dimension(H)+Dimension(R),n^2,F);
+      for i in [1..n] do
+        for j in [1..n] do
+          for k in [1..Dimension(H)] do
+            eqs[k][j+(i-1)*n]:= adH[k][i][j];
+          od;
+          for k in [1..Dimension(R)] do
+            eqs[Dimension(H)+k][j+(i-1)*n]:= B[k][i][j];
           od;
         od;
-
-        # Solve the equations.
-
-        bb:= NullspaceMat( TransposedMat(eqs) );
-
-        I:= List( bb, x -> LinearCombination( I, x ) );
-
-        # Update the list 'elts' of highest degree elements
-        # and the corresponding list 'hdeg'.
-
-        elts:= ShallowCopy( newelts );
-        hdeg:= ShallowCopy( newhdeg );
-        cfs:=List( I, x -> Coefficients( BasisOfDomain(S), x ) );
-
-        adI:=List( cfs, x -> LinearCombination( adS, x ) );
-
-        # Nilpotency test.
-
-        i:=1;
-        nilpotent:= true;
-        while nilpotent and i <= Length( I ) do
-          nilpotent:= IsZero( adI[i]^n );
-          i:=i+1;
-        od;
-
       od;
+      sol:= NullspaceMat( eqs );
+      I:= List( sol, x-> LinearCombination( Basis(H), x{[1..Dimension(H)]} ) );
 
+      Append( I, BasisVectors( Basis( HS ) ) );
+   
       return IdealNC( L, I, "basis" );
 
     else
@@ -1570,7 +1471,7 @@ InstallMethod( NilRadical,
 
       if Dimension( R ) = 0 then
 
-        # In this case the intersection of 'ad L' and 'R' is the centre of L.
+        # In this case the intersection of `ad L' and `R' is the centre of L.
         return LieCentre( L );
 
       fi;
@@ -1578,7 +1479,7 @@ InstallMethod( NilRadical,
       B:= BasisVectors( BasisOfDomain( R ) );
       t:= Dimension( R );
 
-      # Now we compute the intersection of 'R' and '<ad L>'.
+      # Now we compute the intersection of `R' and `<ad L>'.
 
       eqs:= MutableNullMat(n+t,n*n,F);
       for i in [1..n] do
@@ -1592,14 +1493,7 @@ InstallMethod( NilRadical,
         od;
       od;
       sol:= NullspaceMat( eqs );
-      I:= [];
-      for i in [1..Length(sol)] do
-        x:= Zero( L );
-        for j in [1..n] do
-          x:= x+sol[i][j]*bv[j];
-        od;
-        Add( I, x );
-      od;
+      I:= List( sol, x-> LinearCombination( bv, x{[1..n]} ) );
       return SubalgebraNC( L, I, "basis" );
 
     fi;
@@ -1620,7 +1514,7 @@ InstallMethod( NilRadical,
 ##  nil radical).
 ##
 InstallMethod( SolvableRadical,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
     function( L )
@@ -1661,283 +1555,66 @@ InstallMethod( SolvableRadical,
     end );
 
 
-###############################################################################
-##
-#M  LeviDecomposition( <L> )
-##
-##  A Levi subalgebra of 'L' is a semisimple subalgebra complementary to
-##  the solvable radical 'R'. We find a Levi subalgebra of 'L' by first
-##  computing a complementary subspace to 'R'. This subspace is a Levi
-##  subalgebra modulo 'R'. Then we change the basis vectors such that they
-##  form a basis of a Levi subalgebra modulo the second term of the derived
-##  series of 'R' after that we consider the third term of the derived series,
-##  and so on.
-##
-InstallMethod( LeviDecomposition,
-    "method for a Lie algebra",
-    true,
-    [ IsAlgebra and IsLieAlgebra ], 0,
-    function( L )
-
-    local R,             # The solvable radical of 'L'.
-          s,             # The dimension of the Levi subalgebra.
-          F,             # coefficients domain of 'L'
-          bas,bb,        # Lists of basiselements.
-          sp,            # A vector space.
-          subalg,        # Boolean.
-          a,i,j,k,l,m,   # Loop variables.
-          x,             # Element of 'L'.
-          ser,           # The derived series of 'R'.
-          p,             # The length of the derived series.
-          Rbas,          # A special basis of 'R'.
-          levi,          # Basis of a Levi complement.
-          T,             # Structure constants table of 'L', w.r.t. a
-                         # particular basis.
-          cf,cf1,cf2,    # Coefficient vectors.
-          klist,         # List of integers.
-          comp,          # List of basis vectors of a complement.
-          dim,           # The length of 'comp'.
-          B,             # A basis.
-          cij,           # Entry of the table of structure constants.
-          eqs,           # Matrix of equation set.
-          rl,            # Right hand side of the equation system.
-          eqno,          # Number of the equation.
-          sol,           # Solution set to the equations.
-          r;             # Integer.
-
-    R:= SolvableRadical( L );
-    if Dimension( R ) = 0 then
-      return [ L, R ];
-    elif Dimension( R ) = Dimension( L ) then
-      return [ TrivialSubalgebra( L ), R ];
-    fi;  
- 
-    s:= Dimension( L ) - Dimension( R );
-
-    # 'bb' will be a basis of a complement to 'R' in 'L'.
-
-    bas:= ShallowCopy( BasisVectors( BasisOfDomain( R ) ) );
-    F:= LeftActingDomain( L );
-    sp:= MutableBasisByGenerators( F, bas );
-    bb:= [ ];
-    for k in BasisVectors( BasisOfDomain( L ) ) do
-      if Length( bb ) = s then
-        break;
-      elif not IsContainedInSpan( sp, k ) then
-        Add( bb, k );
-        CloseMutableBasis( sp, k );
-      fi;
-    od;
-
-    sp:= MutableBasisByGenerators( F, bb );
-    subalg:= true;    
-    for i in [1..Length(bb)] do 
-      for j in [i+1..Length(bb)] do
-        if not IsContainedInSpan( sp, bb[i]*bb[j] ) then
-          subalg:= false;
-          break;
-        fi;
-      od;
-    od;
-    if subalg then
-      Info( InfoAlgebra, 1,
-            "LeviDecomposition: subalgebra test successful" );
-      return [ SubalgebraNC( L, bb, "basis" ), R ];
-    fi;    
-
-    ser:= DerivedSeriesOfAlgebra( R );
-
-    # We now calculate a basis of 'R' such that the first k1 elements
-    # form a basis of the last nonzero term of the derived series 'ser',
-    # the first k2 ( k2>k1 ) elements form a basis of the next to last
-    # element of the derived series, and so on.
-
-    p:= Length( ser );
-    i:= p-1;
-    Rbas:= ShallowCopy( BasisVectors( BasisOfDomain( ser[p-1] ) ) );
-    sp:= MutableBasisByGenerators( F, Rbas );
-    while Length(Rbas) < Dimension(R) do
-      if Length(Rbas) = Dimension(ser[i]) then
-        i:= i-1;
-        k:= 1;
-      else
-        x:= BasisVectors( BasisOfDomain( ser[i] ) )[k];
-        if not IsContainedInSpan( sp, x ) then
-          Add( Rbas, x );
-          CloseMutableBasis( sp, x );
-        fi;
-        k:= k+1;
-      fi;
-    od;
-
-    levi:= ShallowCopy( bb );
-    Append(bb,Rbas);
-
-    # So now 'bb' is a list of basis vectors of 'L' such that
-    # the first elements form a basis of a complement to 'R'
-    # and the remaining elements are a basis for 'R' of the form
-    # described above.
-    # We now calculate a structure constants table of 'L' w.r.t. this basis.
-
-    sp:= VectorSpace( F, bb );
-    B:= BasisByGeneratorsNC( sp, bb );
-    T:= List([1..s],x->[]);
-    for i in [1..s] do
-      for j in [i+1..s] do
-        cf:= Coefficients( B, levi[i]*levi[j] ){[1..s]};
-        klist:= Filtered([1..s],i->cf[i]<>0);
-        cf:= Filtered(cf,x->x<>0);
-        T[i][j]:= [klist,cf];
-      od;
-    od;
-
-    # Now 'levi' is a Levi subalgebra modulo 'R'.
-    # The loop modifies this modulo statement.
-    # After the first round 'levi' will be a Levi subalgebra modulo
-    # the second element of the derived series.
-    # After the second step 'levi' will be a Levi subalgebra modulo
-    # the third element of the derived series.
-    # And so on.
-
-    for a in [1..p-1] do
-
-      # 'comp' will be a basis of the complement of the 'a+1'-th element
-      # of the derived series in the 'a'-th element of the derived series.
-      # 'B' will be a basis of the 'a'-th term of the derived series,
-      # such that the basis elements of the complement come first.
-      # So if we have an element v of the 'a'-th term of the derived series,
-      # then by taking the coefficients w.r.t. 'B', we can easily find
-      # the part that belongs to 'comp'.
-      # The equations we have are vector equations in the space 'comp',
-      # i.e., in the quotient of two elements of the derived series.
-      # But we do not want to work with this quotient directly.
-
-      comp:= Rbas{ [ Dimension(ser[a+1])+1 .. Dimension(ser[a]) ] };
-      dim:= Length(comp);
-      bb:= ShallowCopy( comp );
-      for i in [1..Dimension(ser[a+1])] do
-        Add(bb,Rbas[i]);
-      od;
-      sp:= VectorSpace( F, bb );
-      B:= BasisByGeneratorsNC( sp, bb );
-
-      cf:= List( comp, x -> Coefficients( B, x ){[1..dim]} );
-      eqs:= MutableNullMat( s*dim, dim*s*(s-1)/2, F );
-      rl:= [];
-      for i in [1..s] do
-        for j in [i+1..s] do
-          cij:= T[i][j];
-          for k in [1..dim] do
-
-            cf1:= Coefficients(B,levi[i]*comp[k]){[1..dim]};
-            cf2:= Coefficients(B,comp[k]*levi[j]){[1..dim]};
-
-            for l in [1..dim] do
-              eqno:=(i-1)*(2*s-i)*dim/2+(j-i-1)*dim+l;
-
-              eqs[(j-1)*dim+k][eqno]:= eqs[(j-1)*dim+k][eqno]+cf1[l];
-              eqs[(i-1)*dim+k][eqno]:= eqs[(i-1)*dim+k][eqno]+cf2[l];
-
-              for m in [1..Length(cij[1])] do
-                r:=cij[1][m];
-                if r <= s then
-                  eqs[(r-1)*dim+k][eqno]:= eqs[(r-1)*dim+k][eqno]-
-                                           cij[2][m]*cf[k][l];
-                fi;
-              od;
-            od;
-          od;
-
-          x:= Zero(L);
-          for m in [1..Length(cij[1])] do
-            if cij[1][m] <= s then
-              x:= x+cij[2][m]*levi[cij[1][m]];
-            fi;
-          od;
-          x:= x-levi[i]*levi[j];
-          Append(rl,Coefficients(B,x){[1..dim]});
-
-        od;
-      od;
-
-      sol:= SolutionMat( eqs, rl );
-
-      for i in [1..s] do
-        for j in [1..dim] do
-          levi[i]:=levi[i]+sol[(i-1)*dim+j]*comp[j];
-        od;
-      od;
-    od;
-
-    return [ SubalgebraNC( L, levi, "basis" ), R ];
-    end );
-
-
 ##############################################################################
 ##
 #M  DirectSumDecomposition( <L> )
 ##
-##  This function calculates a list of ideals of 'L' such that 'L' is equal
+##  This function calculates a list of ideals of `L' such that `L' is equal
 ##  to the direct sum of them.
-##  The existence of a decomposition of 'L' is equivalent to the existence
-##  of a nontrivial idempotent in the centralizer of 'ad L' in the full
-##  matrix algebra 'M_n(F)'. In the general case we try to find such
+##  The existence of a decomposition of `L' is equivalent to the existence
+##  of a nontrivial idempotent in the centralizer of `ad L' in the full
+##  matrix algebra `M_n(F)'. In the general case we try to find such
 ##  idempotents.
-##  In the case where the Killing form of 'L' is nondegenerate we can use 
+##  In the case where the Killing form of `L' is nondegenerate we can use 
 ##  a more elegant method. In this case the action of the Cartan subalgebra 
-##  will 'identify' the direct summands.
+##  will `identify' the direct summands.
 ##
 InstallMethod( DirectSumDecomposition,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
-    local F,                # The field of 'L'.
-          BL,               # basis of 'L'
-          bvl,              # basis vectors of 'BL'
-          n,                # The dimension of 'L'.
+    local F,                # The field of `L'.
+          BL,               # basis of `L'
+          bvl,              # basis vectors of `BL'
+          n,                # The dimension of `L'.
           m,                # An integer.
           set,              # A list of integers.
           ready,            # A boolean.
-          C,                # The centre of 'L'.
-          bvc,              # basis vectors of a basis of 'C'
-          D,                # The derived subalgebra of 'L'.
-          CD,               # The intersection of 'C' and 'D'.
-          H,                # A Cartan subalgebra of 'L'.
-          BH,               # basis of 'H'
-          basH,             # List of basis vectors of 'H'.
-          B,                # A list of bases of subspaces of 'L'.
+          C,                # The centre of `L'.
+          bvc,              # basis vectors of a basis of `C'
+          D,                # The derived subalgebra of `L'.
+          CD,               # The intersection of `C' and `D'.
+          H,                # A Cartan subalgebra of `L'.
+          BH,               # basis of `H'
+          basH,             # List of basis vectors of `H'.
+          B,                # A list of bases of subspaces of `L'.
           cf,               # Coefficient list.
           comlist,          # List of commutators.
           ideals,           # List of ideals.
           bb,               # List of basis vectors.
           B1,B2,            # Bases of the ideals.
           sp,               # A vector space.
-          x,                # An element of 'sp'.
+          x,                # An element of `sp'.
           b,                # A list of basis vectors.
           bas,res,          # Bases of associative algebras.
           u,i,j,k,l,        # Loop variables.
-          centralizer,      # The centralizer of 'adL' in the matrix algebra.
-          Rad,              # The radical of 'centralizer'.
-          c,                # The dimension of 'centralizer'.
-          r,                # The dimension of 'Rad'.
-          M,ad,mat,         # Matrices.
+          centralizer,      # The centralizer of `adL' in the matrix algebra.
+          Rad,              # The radical of `centralizer'.
+          M,mat,            # Matrices.
           facs,             # A list of factors of a polynomial.
           hlist,            # List of polynomials.
-          f,p,g,gcd,        # Polynomials.
+          f,                # Polynomial.
           contained,        # Boolean variable.
-          adL,              # A basis of the matrix space 'ad L'.
-          Q,                # The factor algebra 'centralizer/Rad'
-          bQ,               # A basis of 'Q'.
-          q,                # Number of elements of the field of 'L'.
-          ei,ni,e,          # Elements from 'centralizer'
+          adL,              # A basis of the matrix space `ad L'.
+          Q,                # The factor algebra `centralizer/Rad'
+          q,                # Number of elements of the field of `L'.
+          ei,ni,e,E,        # Elements from `centralizer'
           hom,              # A homomorphism.
-          id,ids,           # A list of idempotents.
-          vv,               # A list of vectors.
-          sol,              # A list of vectors.
-          eq,               # An equation system.
-          elts;             # A list of elements.
+          id,               # A list of idempotents.
+          vv;               # A list of vectors.
+
 
     F:= LeftActingDomain( L );
     n:= Dimension( L );
@@ -1945,19 +1622,19 @@ InstallMethod( DirectSumDecomposition,
     if RankMat( KillingMatrix( BasisOfDomain( L ) ) ) = n then
 
       # The algorithm works as follows.
-      # Let 'H' be a Cartan subalgebra of 'L'.
-      # First we decompose 'L' into a direct sum of subspaces 'B[i]'
+      # Let `H' be a Cartan subalgebra of `L'.
+      # First we decompose `L' into a direct sum of subspaces `B[i]'
       # such that the minimum polynomial of the adjoint action of an element
-      # of 'H' restricted to 'B[i]' is irreducible.
-      # If 'L' is a direct sum of ideals, then each of these subspaces
+      # of `H' restricted to `B[i]' is irreducible.
+      # If `L' is a direct sum of ideals, then each of these subspaces
       # will be contained in precisely one ideal.
-      # If the field 'F' is big enough then we can look for a splitting
-      # element in 'H'.
-      # This is an element 'h' such that the minimum polynomial of 'ad h'
-      # has degree 'dim L - dim H + 1'.
-      # If the size of the field is bigger than '2*m' then there is a 
+      # If the field `F' is big enough then we can look for a splitting
+      # element in `H'.
+      # This is an element `h' such that the minimum polynomial of `ad h'
+      # has degree `dim L - dim H + 1'.
+      # If the size of the field is bigger than `2*m' then there is a 
       # powerful randomised algorithm (Las Vegas type) for finding such an 
-      # element. We just take a random element from 'H' and with probability
+      # element. We just take a random element from `H' and with probability
       # > 1/2 this will be a splitting element. 
       # If the field is small, then we use decomposable elements instead.
       
@@ -1975,7 +1652,8 @@ InstallMethod( DirectSumDecomposition,
           cf:= List([ 1 .. Dimension( H ) ], x -> Random( set ) );
           x:= LinearCombination( BH, cf );
           M:= AdjointMatrix( BL, x );
-          f:= MinimalPolynomial( F, M );
+          f:= CharacteristicPolynomial( F, M );
+          f:= f/Gcd( f, Derivative( f ) );
         until DegreeOfUnivariateLaurentPolynomial( f )
                   = Dimension( L ) - Dimension( H ) + 1;
 
@@ -1992,22 +1670,22 @@ InstallMethod( DirectSumDecomposition,
 
       else
 
-       # Here 'L' is a semisimple Lie algebra over a small field or a field
+       # Here `L' is a semisimple Lie algebra over a small field or a field
        # of characteristic 2 or 3. This means that 
        # the existence of splitting elements is not assured. So we work
        # with decomposable elements rather than with splitting ones. 
        # A decomposable element is an element from the associative
-       # algebra 'T' generated by 'ad H' that has a reducible minimum 
-       # polynomial. Let 'V' be a stable subspace (under the action of 'H')
+       # algebra `T' generated by `ad H' that has a reducible minimum 
+       # polynomial. Let `V' be a stable subspace (under the action of `H')
        # computed in the process. Then we proceed as follows.
-       # We choose a random element from 'T' and restrict it to 'V'. If this
+       # We choose a random element from `T' and restrict it to `V'. If this
        # element has an irreducible minimum polynomial of degree equal to
-       # the dimension of the associative algebra 'T' restricted to 'V', 
-       # then 'V' is irreducible. On the other hand,
-       # if this polynomial is reducible, then we decompose 'V'. 
+       # the dimension of the associative algebra `T' restricted to `V', 
+       # then `V' is irreducible. On the other hand,
+       # if this polynomial is reducible, then we decompose `V'. 
 
-       # 'bas' will be a basis of the associative algebra generated by 
-       # 'ad H'. The computation of this basis is facilitated by the fact 
+       # `bas' will be a basis of the associative algebra generated by 
+       # `ad H'. The computation of this basis is facilitated by the fact 
        # that we know the dimension of this algebra.
 
         bas:= List( BH, x -> AdjointMatrix( Basis( L ), x ) );
@@ -2027,8 +1705,8 @@ InstallMethod( DirectSumDecomposition,
         od;
         Add( bas, IdentityMat( Dimension( L ), F ) );
 
-       # Now 'B' will be a list of subspaces of 'L' stable under 'H'. 
-       # We stop once every element from 'B' is irreducible.
+       # Now `B' will be a list of subspaces of `L' stable under `H'. 
+       # We stop once every element from `B' is irreducible.
 
         cf:= AsList( F );
         B:= [ ProductSpace( H, L ) ];
@@ -2041,7 +1719,7 @@ InstallMethod( DirectSumDecomposition,
             b:= BasisVectors( Basis( B[k] ) );
             M:= LinearCombination( bas, List( bas, x -> Random( cf ) ) );
   
-           # Now we restrict 'M' to the space 'B[k]'.
+           # Now we restrict `M' to the space `B[k]'.
 
             mat:= [ ];
             for i in [1..Length(b)] do
@@ -2055,8 +1733,8 @@ InstallMethod( DirectSumDecomposition,
 
             if Length(facs)=1 then
 
-           # We restrict the basis 'bas' to the space 'B[k]'. If the length
-           # of the result is equal to the degree of 'f' then 'B[k]' is
+           # We restrict the basis `bas' to the space `B[k]'. If the length
+           # of the result is equal to the degree of `f' then `B[k]' is
            # irreducible. 
 
               sp:= MutableBasisByGenerators( F, 
@@ -2106,13 +1784,13 @@ InstallMethod( DirectSumDecomposition,
         B:= List( B, x -> BasisVectors( Basis( x ) ) );
       fi;
 
-      # Now the pieces in 'B' are grouped together.
+      # Now the pieces in `B' are grouped together.
 
       ideals:=[];
 
       while B <> [ ] do
 
-        # Check whether 'B[1]' is contained in any of
+        # Check whether `B[1]' is contained in any of
         # the ideals obtained so far.
 
         contained := false;
@@ -2130,13 +1808,13 @@ InstallMethod( DirectSumDecomposition,
 
         else
 
-          # 'B[1]' generates a new ideal.
-          # We form this ideal by taking 'B[1]' together with
-          # all pieces from 'B' that do not commute with 'B[1]'.
-          # At the end of this process, 'bb' will be a list of elements
-          # commuting with all elements of 'B'.
-          # From this it follows that 'bb' will generate
-          # a subalgebra that is a simple ideal. (No remaining piece of 'B'
+          # `B[1]' generates a new ideal.
+          # We form this ideal by taking `B[1]' together with
+          # all pieces from `B' that do not commute with `B[1]'.
+          # At the end of this process, `bb' will be a list of elements
+          # commuting with all elements of `B'.
+          # From this it follows that `bb' will generate
+          # a subalgebra that is a simple ideal. (No remaining piece of `B'
           # can be in this ideal because in that case this piece would
           # generate a smaller ideal inside this one.)
 
@@ -2169,16 +1847,16 @@ InstallMethod( DirectSumDecomposition,
     else
 
       # First we try to find a central component, i.e., a decomposition
-      # 'L=I_1 \oplus I_2' such that 'I_1' is contained in the center of 'L'.
-      # Such a decomposition exists if and only if the center of 'L' is not
-      # contained in the derived subalgebra of 'L'.
+      # `L=I_1 \oplus I_2' such that `I_1' is contained in the center of `L'.
+      # Such a decomposition exists if and only if the center of `L' is not
+      # contained in the derived subalgebra of `L'.
 
       C:= LieCentre( L );
       bvc:= BasisVectors( BasisOfDomain( C ) );
 
       if Dimension( C ) = Dimension( L ) then
         
-        #Now 'L' is abelian; hence 'L' is the direct sum of 'dim L' ideals.
+        #Now `L' is abelian; hence `L' is the direct sum of `dim L' ideals.
 
         return List( bvc, v -> IdealNC( L, [ v ], "basis" ) );
 
@@ -2194,7 +1872,7 @@ InstallMethod( DirectSumDecomposition,
 
         if Dimension( CD ) < Dimension( C ) then
 
-          # The central component is the complement of 'C \cap D' in 'C'.
+          # The central component is the complement of `C \cap D' in `C'.
 
           B1:=[];
           k:=1;
@@ -2210,9 +1888,9 @@ InstallMethod( DirectSumDecomposition,
           od;
 
           # The second ideal is a complement of the central component
-          # in 'L' containing 'D'.
-
-          B2:= BasisVectors( BasisOfDomain( D ) );
+          # in `L' containing `D'.
+#W next statement modified:
+          B2:= ShallowCopy( BasisVectors( BasisOfDomain( D ) ) );
           k:= 1;
           b:= ShallowCopy( B1 );
           Append( b, B2 );
@@ -2236,8 +1914,8 @@ InstallMethod( DirectSumDecomposition,
 
       fi;
 
-      # Now we assume that 'L' does not have a central component
-      # and compute the centralizer of 'ad L' in 'M_n(F)'.
+      # Now we assume that `L' does not have a central component
+      # and compute the centralizer of `ad L' in `M_n(F)'.
 
       adL:= List( bvl, x -> AdjointMatrix( BL, x ) );
       centralizer:= FullMatrixAlgebraCentralizer( F, adL );
@@ -2246,222 +1924,27 @@ InstallMethod( DirectSumDecomposition,
         return [ L ];
       fi;
 
-      # Let 'Q' be the semisimple commutative associative algebra
-      # 'centralizer/Rad'.
-      # We calculate a complete set of orthogonal idempotents in 'Q'
-      # and then lift them to 'centralizer'.
-      # The orthogonal idempotents in 'Q' correspond to the decomposition
-      # of 'Q' as a direct sum of simple ideals. Now 'ideals' will contain
-      # a list of ideals of 'Q' such that the direct sum of these equals
-      # 'Q'. The variable 'ids' will contain the idempotents corresponding 
-      # to the ideals in 'ids'.
-      # The algorithms has two parts: one for small fields (of size less than
-      # '2*Dimension( Q )', and one for big fields. 
-      # If the field is big, then using a Las Vegas algorithm we find a
-      # splitting element (this is an element that generates 'Q'). By
-      # factoring the minimal polynomial of such element we can find a
-      # complete set of orthogonal idempotents in one step.
-      # However, if the field is small splitting elements might not exist.
-      # In this case we use decomposable elements (of which the minimum
-      # polynomial factors into two (or more) relatively prime factors.
-      # Then using the same procedure as for splitting elements we can
-      # find some idempotents. But in this case the corresponding ideals
-      # might split further. So we have to find decomposable elements in
-      # these and so on. 
-      # Decomposable elements are found as follows: first we calculate
-      # the subalgebra of all elements x such that x^q=x
-      # (where 'q=Size( F )').
-      # This subalgebra is a number of copies of the ground field. So any
-      # element independent from 1 of this subalgebra will have a minimum
-      # polynomial that splits completely. On the other hand, if 1 is the
-      # only basis vector of this subalgebra than the original algebra was
-      # simple.
-      # For a more elaborate description we refer to "W. Eberly and M.
-      # Giesbrecht, Efficient Decomposition of Associative Algebras,
-      # Proceedings of ISSAC 1996."
+      # We calculate a complete set of orthogonal primitive idempotents
+      # in the Abelian algebra `centralizer/Rad'.
 
       hom:= NaturalHomomorphismByIdeal( centralizer, Rad );
       Q:= ImagesSource( hom );
-      bQ:= BasisVectors( BasisOfDomain( Q ) );
-      ids:= [ One( Q ) ];
-      ideals:= [ Q ];
+      SetCentre( Q, Q );
+      SetRadicalOfAlgebra( Q, Subalgebra( Q, [ Zero( Q ) ] ) );
 
-      # The variable 'k' will point to the first element of 'ideals' that 
-      # still has to be decomposed.
-
-      k:=1;
-
-      if Size(F) > 2*Dimension( Q )^2 then
-        set:= [ 0 .. 2*Dimension(Q)^2 ]*One( F );
-      else
-        set:= [ ];
-      fi;
-
-      repeat
-
-        if Length( set ) > 1 then 
-        
-          # We are in the case of a big field.
-
-          repeat
-
-            # We try to find an element of 'Q' that generates it.
-            # If we take the coefficients of such an element randomly
-            # from a set of '2*Dimension(Q)^2' elements,
-            # then this element generates 'Q' with probability > 1/2
-
-            bQ:= BasisVectors( BasisOfDomain( ideals[k] ) );
-            cf:= List( [ 1 .. Length(bQ) ], x -> Random( set ) );
-            e:= LinearCombination( bQ, cf );
-
-            # Now we calculate the minimum polynomial of 'e'.
-  
-            vv:= [ MultiplicativeNeutralElement( ideals[k] ) ];
-            sp:= MutableBasisByGenerators( F, vv );
-            x:= ShallowCopy( e );
-
-            while not IsContainedInSpan( sp, x ) do
-              Add( vv, x );
-              CloseMutableBasis( sp, x );
-              x:= x*e;
-            od;
-            sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
-            cf:= ShallowCopy( 
-                   - Coefficients( BasisByGeneratorsNC( sp, vv ), x )
-                 );
-            Add( cf, One( F ) );
-            f:= ElementsFamily( FamilyObj( F ) );
-            f:= UnivariateLaurentPolynomialByCoefficients( f, cf, 0 );
-
-          until DegreeOfUnivariateLaurentPolynomial( f ) = Dimension( Q );
-
-        else
-  
-          # Here the field is small.
-
-          q:= Size( F );
- 
-        # 'sol' will be a basis of the subalgebra of the k-th ideal
-        # consisting of all elements x such that x^q=x.
-        # If the length of this list is 1, 
-        # then the ideal is simple and we proceed to the next one. If all 
-        # ideals are simple then we quit the loop.
-
-          sol:= [ ];
-          while Length( sol ) < 2 and k <= Length( ideals ) do
-            bQ:= BasisVectors( Basis( ideals[k] ) );
-            eq:= [ ];
-            for i in [1..Dimension( ideals[k] )] do
-              Add( eq, Coefficients( Basis( ideals[k] ), bQ[i]^q-bQ[i] ) );
-            od;
-            sol:= List( NullspaceMat( eq ),
-                        x -> LinearCombination( bQ, x ) );
-            if Length(sol) = 1 then k:=k+1; fi;
-          od; 
-
-          if k>Length(ideals) then break; fi;
-    
-          vv:= [ MultiplicativeNeutralElement( ideals[k] ) ];
-          sp:= MutableBasisByGenerators( F, vv );
-  
-          e:= sol[1];
-          if IsContainedInSpan( sp, e ) then e:=sol[2]; fi;
-
-        # We calculate the minimum polynomial of 'e'.
-
-          x:= ShallowCopy( e );
-          while not IsContainedInSpan( sp, x ) do
-            Add( vv, x );
-            CloseMutableBasis( sp, x );
-            x:= x*e;
-          od;
-          sp:= UnderlyingLeftModule( ImmutableBasis( sp ) );
-          cf:=  ShallowCopy( 
-                  - Coefficients( BasisByGeneratorsNC( sp, vv ), x )
-                );
-          Add( cf, One( F ) );
-
-          f:= ElementsFamily( FamilyObj( F ) );
-          f:= UnivariateLaurentPolynomialByCoefficients( f, cf, 0 );
-
-        fi;
-
-        facs:= Factors( PolynomialRing( F ), f );
-
-      # Now we find elements h1,...,hs such that 'hi = 1 mod facs[i]' and
-      # 'hi = 0 mod facs[j]' if 'i<>j'.
-      # This is possible due to the Chinese remainder theorem.
-
-        hlist:= [ ];
-        for i in [1..Length( facs )] do
-          cf:= List( [ 1..Length( facs ) ], x -> Zero( F ) );
-          cf[i]:= One(F);
-          j:= 1;
-          c:= cf[1];
-          p:= facs[1];
-          while j < Length(facs) do
-            j:= j + 1;
-            g:= GcdRepresentation( p, facs[j] );
-            gcd:= g[1]*p+g[2]*facs[j];
-            c:= p*EuclideanRemainder( ( g[1]*(cf[j]-c) / gcd  ) , facs[j] )
-                           + c;
-            p:= p*facs[j] / gcd;
-          od;
-
-          Add( hlist, EuclideanRemainder( c*facs[i]^0 , p ) );
-
-        od;
-
-      # Now a set of orthogonal idempotents is given by 'hi(e)'.
-      # We evaluate 'hi(e)' in a rather strange way; this in order to make
-      # sure that the one is the one of 'ideals[ k ]' ('e^0' will be the
-      # one of the big algebra 'Q').
-
-        id:= List( hlist, x -> Value( x, e, 
-                        MultiplicativeNeutralElement( ideals[k] ) ) );
-
-        if Length(set) = 0 then
-
-        # We are in the case of a small field;
-        # so we append the new idempotents and ideals
-        # (and erase the old ones). (If 'E' is an idempotent, 
-        # then the corresponding ideal is given by 'E*Q*E'.)
-
-          Append(ids,id); 
-  
-          for l in [1..Length(id)] do
-            bb:=List(BasisVectors(Basis(ideals[k])),x->id[l]*x*id[l]);
-            Add(ideals,Subalgebra(Q,bb));
-          od;
+      id:= List( CentralIdempotentsOfAlgebra( Q ), 
+                                x->PreImagesRepresentative(hom,x));
       
-          ideals:=Filtered(ideals,x->x<>ideals[k]);
-          ids:=Filtered(ids,x->x<>ids[k]);
-        else
-
-        # Here the field is big so we found the complete list of idempotents
-        # in one step.
-          
-          ids:= id;
-          k:=Length(ideals)+1;
-        fi;
-
-        while k<=Length(ideals) and Dimension( ideals[k] ) = 1 do k:=k+1; od;
-
-      until k>Length(ideals);
-
-
-      id:= List( ids, e -> PreImagesRepresentative( hom, e ) );
-   
-      # Now we lift the idempotents to the big algebra 'A'. The
+      # Now we lift the idempotents to the big algebra `A'. The
       # first idempotent is lifted as follows:
-      # We have that 'id[1]^2-id[1]' is an element of 'Rad'.
+      # We have that `id[1]^2-id[1]' is an element of `Rad'.
       # We construct the sequences e_{i+1} = e_i + n_i - 2e_in_i,
       # and n_{i+1}=e_{i+1}^2-e_{i+1}, starting with e_0=id[1].
-      # It can be proved by induction that e_q is an idempotent in 'A'
+      # It can be proved by induction that e_q is an idempotent in `A'
       # because n_0^{2^q}=0.
-      # Now 'E' will be the sum of all idempotents lifted so far.
+      # Now `E' will be the sum of all idempotents lifted so far.
       # Then the next lifted idempotent is obtained by setting
-      # 'ei:=id[i]-E*id[i]-id[i]*E+E*id[i]*E;'
+      # `ei:=id[i]-E*id[i]-id[i]*E+E*id[i]*E;'
       # and lifting as above. It can be proved that in this manner we
       # get an orthogonal system of primitive idempotents.
 
@@ -2482,8 +1965,8 @@ InstallMethod( DirectSumDecomposition,
         E:= E+ei;
       od;
 
-      # For every idempotent of 'centralizer' we calculate
-      # a direct summand of 'L'.
+      # For every idempotent of `centralizer' we calculate
+      # a direct summand of `L'.
 
       ideals:= List( id, e -> List( TransposedMat( e ), v ->
                     LinearCombination( BL, v ) ) );
@@ -2498,6 +1981,7 @@ InstallMethod( DirectSumDecomposition,
     end );
 
 
+
 ##############################################################################
 ##
 #M  IsSimpleAlgebra( <L> )  . . . . . . . . . . . . . . . .  for a Lie algebra
@@ -2506,7 +1990,7 @@ InstallMethod( DirectSumDecomposition,
 ##  It works only over fields of characteristic 0.
 ##
 InstallMethod( IsSimpleAlgebra,
-    "method for a Lie algebra in characteristic zero",
+    "for a Lie algebra in characteristic zero",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
@@ -2524,27 +2008,27 @@ InstallMethod( IsSimpleAlgebra,
 ##
 #F  FindSl2( <L>, <x> )
 ##
-FindSl2 := function( L, x )
+InstallGlobalFunction( FindSl2, function( L, x )
 
-   local n,         # the dimension of 'L'
-         F,         # the field of 'L'
-         B,         # basis of 'L'
-         T,         # the table of structure constants of 'L'
+   local n,         # the dimension of `L'
+         F,         # the field of `L'
+         B,         # basis of `L'
+         T,         # the table of structure constants of `L'
          xc,        # coefficient vector
          eqs,       # a system of equations
          i,j,k,l,   # loop variables
-         cij,       # the element 'T[i][j]'
+         cij,       # the element `T[i][j]'
          b,         # the right hand side of the equation system
          v,         # solution of the equations
-         z,         # element of 'L'
-         h,         # element of 'L'
-         R,         # centralizer of 'x' in 'L'
-         BR,        # basis of 'R'
-         Rvecs,     # basis vectors of 'R'
-         H,         # the matrix of 'ad H' restricted to 'R'
+         z,         # element of `L'
+         h,         # element of `L'
+         R,         # centralizer of `x' in `L'
+         BR,        # basis of `R'
+         Rvecs,     # basis vectors of `R'
+         H,         # the matrix of `ad H' restricted to `R'
          e0,        # coefficient vector
          e1,        # coefficient vector
-         y;         # element of 'L'
+         y;         # element of `L'
 
     if not IsNilpotentElement( L, x ) then
       Error( "<x> must be a nilpotent element of the Lie algebra <L>" );
@@ -2558,10 +2042,10 @@ FindSl2 := function( L, x )
     xc:= Coefficients( B, x );
     eqs:= MutableNullMat( 2*n, 2*n, F );
 
-    # First we try to find elements 'z' and 'h' such that '[x,z]=h'
-    # and '[h,x]=2x' (i.e., such that two of the three defining equations
+    # First we try to find elements `z' and `h' such that `[x,z]=h'
+    # and `[h,x]=2x' (i.e., such that two of the three defining equations
     # of sl_2 are satisfied).
-    # This results in a system of '2n' equations for '2n' variables.
+    # This results in a system of `2n' equations for `2n' variables.
 
     for i in [1..n] do
       for j in [1..n] do
@@ -2595,14 +2079,14 @@ FindSl2 := function( L, x )
     BR:= BasisOfDomain( R );
     Rvecs:= BasisVectors( BR );
 
-    # 'ad h' maps 'R' into 'R'. 'H' will be the matrix of that map.
+    # `ad h' maps `R' into `R'. `H' will be the matrix of that map.
 
     H:= List( Rvecs, v -> Coefficients( BR, h * v ) );
 
     # By the proof of the lemma of Jacobson-Morozov (see Jacobson,
-    # Lie Algebras, p. 98) there is an element 'e1' in 'R' such that
-    # '(H+2)e1=e0' where 'e0=[h,z]+2z'.
-    # If we set 'y=z-e1' then 'x,h,y' will span a subalgebra of 'L'
+    # Lie Algebras, p. 98) there is an element `e1' in `R' such that
+    # `(H+2)e1=e0' where `e0=[h,z]+2z'.
+    # If we set `y=z-e1' then `x,h,y' will span a subalgebra of `L'
     # isomorphic to sl_2.
 
     H:= H+2*IdentityMat( Dimension( R ), F );
@@ -2619,7 +2103,7 @@ FindSl2 := function( L, x )
     y:= z-LinearCombination(Rvecs,e1);
 
     return SubalgebraNC( L, [x,h,y], "basis" );
-end;
+end );
 
 
 #############################################################################
@@ -2632,7 +2116,7 @@ end;
 ##  and these have been classified: a simple Lie algebra is either an element
 ##  of the "great" classes of simple Lie algebas (A_n, B_n, C_n, D_n), or
 ##  an exceptional algebra (E_6, E_7, E_8, F_4, G_2). This function finds
-##  the type of the semisimple Lie algebra 'L'. Since for the calculations
+##  the type of the semisimple Lie algebra `L'. Since for the calculations
 ##  eigenvalues and eigenvectors of the action of a Cartan subalgebra are
 ##  needed, we reduce the Lie algebra mod p (if it is of characteristic 0).
 ##  The p may not divide the determinant of the matrix of the Killing form,
@@ -2640,22 +2124,22 @@ end;
 ##  of an element of the basis of the Cartan subalgebra.
 ##
 InstallMethod( SemiSimpleType,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
     local CartanInteger, # Function that computes the Cartan integer.
-          bvl,           # basis vectors of a basis of 'L'
-          a,             # Element of 'L'.
+          bvl,           # basis vectors of a basis of `L'
+          a,             # Element of `L'.
           T,S,S1,        # Structure constants tables.
           den,           # Denominator of a structure constant.
           denoms,        # List of denominators.
           i,j,k,         # Loop variables.
           scal,          # A scalar.
           K,             # A Lie algebra.
-          BK,            # basis of 'K'
-          d,             # The determinant of the Killing form of 'K'.
+          BK,            # basis of `K'
+          d,             # The determinant of the Killing form of `K'.
           p,             # A prime.
           H,             # Cartan subalgebra.
           s,             # An integer.
@@ -2665,24 +2149,24 @@ InstallMethod( SemiSimpleType,
           simples,       # List of simple subalgebras.
           types,         # List of the types of the elements of simples.
           I,             # An element of simples.
-          BI,            # basis of 'I'
-          bvi,           # basis vectors of 'BI'
-          HI,            # Cartan subalgebra of 'I'.
-          rk,            # The rank of 'I'.
+          BI,            # basis of `I'
+          bvi,           # basis vectors of `BI'
+          HI,            # Cartan subalgebra of `I'.
+          rk,            # The rank of `I'.
           adH,           # List of adjoint matrices.
           R,             # Root system.
-          basR,          # Basis of 'R'.
+          basR,          # Basis of `R'.
           posR,          # List of the positive roots.
           fundR,         # A fundamental system.
           r,r1,r2,rt,    # Roots.
           Rvecs,         # List of root vectors.
-          basH,          # List of basis vectors of a Cartan subalg. of 'I'
+          basH,          # List of basis vectors of a Cartan subalg. of `I'
           sp,            # Vector space.
-          h,             # Element of a Cartan subalgebra of 'I'.
+          h,             # Element of a Cartan subalgebra of `I'.
           cf,            # Coefficient.
           issum,         # Boolean.
           CM,            # Cartan Matrix.
-          endpts;        # The endpoints of the Dynkin diagram of 'I'.
+          endpts;        # The endpoints of the Dynkin diagram of `I'.
 
     if Characteristic( LeftActingDomain( L ) ) in [ 2, 3 ] then
        Info( InfoAlgebra, 1,
@@ -2691,10 +2175,10 @@ InstallMethod( SemiSimpleType,
     fi;
 
     # The following function computes the Cartan integer of two roots
-    # 'r1' and 'r2'.
-    # If 's' and 't' are the largest integers such that 'r1 - s*r2' and
-    # 'r1 + t*r2' are elements of the root system 'R',
-    # then the Cartan integer of 'r1' and 'r2' is 's-t'.
+    # `r1' and `r2'.
+    # If `s' and `t' are the largest integers such that `r1 - s*r2' and
+    # `r1 + t*r2' are elements of the root system `R',
+    # then the Cartan integer of `r1' and `r2' is `s-t'.
 
     CartanInteger := function( R, r1, r2 )
 
@@ -2718,7 +2202,7 @@ InstallMethod( SemiSimpleType,
         return s-t;
     end;
 
-    # We test whether the Killing form of 'L' is nondegenerate.
+    # We test whether the Killing form of `L' is nondegenerate.
 
     d:= DeterminantMat( KillingMatrix( Basis( L ) ) );
     if IsZero( d ) then
@@ -2727,12 +2211,12 @@ InstallMethod( SemiSimpleType,
       return fail;
     fi;
 
-    # First we produce a basis of 'L' such that the first basis elements
-    # form a basis of a Cartan subalgebra of 'L'. Then if 'L' is defined
+    # First we produce a basis of `L' such that the first basis elements
+    # form a basis of a Cartan subalgebra of `L'. Then if `L' is defined
     # over a field of characteristic 0 we do the following. We
     # multiply by an integer in order to ensure that the structure
     # constants are integers.
-    # Finally we reduce modulo an appropriate prime 'p'.
+    # Finally we reduce modulo an appropriate prime `p'.
 
     H:= CartanSubalgebra( L );
     rk:= Dimension( H );
@@ -2790,11 +2274,11 @@ InstallMethod( SemiSimpleType,
       p:= 5;
       s:=7;
 
-      # We determine a prime 'p>5' not dividing 'd' and an integer 's'
+      # We determine a prime `p>5' not dividing `d' and an integer `s'
       # such that the minimum polynomials of the basis elements
       # of the Cartan subalgebra will split into linear factors
-      # over the field of 'p^s' elements,
-      # and such that 'p^s<=2^16'
+      # over the field of `p^s' elements,
+      # and such that `p^s<=2^16'
       # (the maximum size of a finite field in GAP).
 
       while p^s > 65536 do
@@ -2832,9 +2316,9 @@ InstallMethod( SemiSimpleType,
 
     else
 
-      # Here 'L' is defined over a field of characteristic p>0. We determine
-      # an integer 's' such that the Cartan subalgebra splits over
-      # 'GF( p^s )'.
+      # Here `L' is defined over a field of characteristic p>0. We determine
+      # an integer `s' such that the Cartan subalgebra splits over
+      # `GF( p^s )'.
 
       F:= LeftActingDomain( L );
       K:= LieAlgebraByStructureConstants( F, T );
@@ -2856,7 +2340,7 @@ InstallMethod( SemiSimpleType,
     F:= GF( p^s );
     K:= LieAlgebraByStructureConstants( F, S1 );
 
-    # We already know a Cartan subalgebra of 'K'.
+    # We already know a Cartan subalgebra of `K'.
 
     BK:= BasisOfDomain( K );
     H:= SubalgebraNC( K, BasisVectors( BK ){ [ 1 .. rk ] }, "basis" );
@@ -2903,7 +2387,7 @@ InstallMethod( SemiSimpleType,
           # Since the minimum polynomials of the elements of the
           # Cartan subalgebra split completely,
           # after the call of DirectSumDecomposition,
-          # the root vectors are contained in the basis of 'I'.
+          # the root vectors are contained in the basis of `I'.
 
           BI:= BasisOfDomain( I );
           bvi:= BasisVectors( BI );
@@ -2919,8 +2403,8 @@ InstallMethod( SemiSimpleType,
             fi;
           od;
 
-          # A set of roots 'basR' is determined such that the set
-          # { [x_r,x_{-r}] | r\in basR } is a basis of 'HI'.
+          # A set of roots `basR' is determined such that the set
+          # { [x_r,x_{-r}] | r\in basR } is a basis of `HI'.
 
           basH:= [ ];
           basR:= [ ];
@@ -2938,8 +2422,8 @@ InstallMethod( SemiSimpleType,
             i:= i+1;
           od;
 
-          # 'posR' will be the set of positive roots.
-          # A root 'r' is called positive if in the list
+          # `posR' will be the set of positive roots.
+          # A root `r' is called positive if in the list
           # [ < r, basR[i] >, i=1...Length(basR) ] the first nonzero
           # coefficient is positive
           # (< r_1, r_2 > is the Cartan integer of r_1 and r_2).
@@ -2979,7 +2463,7 @@ InstallMethod( SemiSimpleType,
             fi;
           od;
 
-          # 'CM' will be the matrix of Cartan integers
+          # `CM' will be the matrix of Cartan integers
           # of the fundamental roots.
 
           CM:= List( fundR,
@@ -3016,21 +2500,21 @@ InstallMethod( SemiSimpleType,
 #M  NonNilpotentElement( <L> )
 ##
 InstallMethod( NonNilpotentElement,
-    "method for a Lie algebra",
+    "for a Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
-    local n,     # the dimension of 'L'
-          F,     # the field over which 'L' is defined
-          bvecs, # a list of the basisvectors of 'L'
-          D,     # a list of elements of 'L', forming a basis of a nilpotent
+    local n,     # the dimension of `L'
+          F,     # the field over which `L' is defined
+          bvecs, # a list of the basisvectors of `L'
+          D,     # a list of elements of `L', forming a basis of a nilpotent
                  # subspace
-          sp,    # the space spanned by 'D'
-          r,     # the dimension of 'sp'
+          sp,    # the space spanned by `D'
+          r,     # the dimension of `sp'
           found, # a Boolean variable
           i, j,  # loop variables
-          b, c,  # elements of 'L'
+          b, c,  # elements of `L'
           elm;   #
 
     # First rule out some trivial cases.
@@ -3044,15 +2528,15 @@ InstallMethod( NonNilpotentElement,
 
     if Characteristic( F ) <> 0 then
 
-      # 'D' will be a basis of a nilpotent subalgebra of L.
+      # `D' will be a basis of a nilpotent subalgebra of L.
       if IsNilpotentElement( L, bvecs[1] ) then
         D:= [ bvecs[1] ];
       else
         return bvecs[1];
       fi;
 
-      # 'r' will be the dimension of the span of 'D'.
-      # If 'r = n' then 'L' is nilpotent and hence does not contain
+      # `r' will be the dimension of the span of `D'.
+      # If `r = n' then `L' is nilpotent and hence does not contain
       # non nilpotent elements.
       r:= 1;
 
@@ -3060,7 +2544,7 @@ InstallMethod( NonNilpotentElement,
 
         sp:= VectorSpace( F, D, "basis" );
 
-        # We first find an element 'b' of 'L' that does not lie in 'sp'.
+        # We first find an element `b' of `L' that does not lie in `sp'.
         found:= false;
         i:= 2;
         while not found do
@@ -3072,10 +2556,10 @@ InstallMethod( NonNilpotentElement,
           fi;
         od;
 
-        # We now replace 'b' by 'b * D[i]' if
-        # 'b * D[i]' lies outside 'sp' in order to ensure that
-        # '[b,sp] \subset sp'.
-        # Because 'sp' is a nilpotent subalgebra we only need
+        # We now replace `b' by `b * D[i]' if
+        # `b * D[i]' lies outside `sp' in order to ensure that
+        # `[b,sp] \subset sp'.
+        # Because `sp' is a nilpotent subalgebra we only need
         # a finite number of replacement steps.
 
         i:= 1;
@@ -3100,8 +2584,8 @@ InstallMethod( NonNilpotentElement,
 
     else
 
-      # Now 'char F =0'.
-      # In this case either 'L' is nilpotent or one of the
+      # Now `char F =0'.
+      # In this case either `L' is nilpotent or one of the
       # elements $L.1, \ldots , L.n, L.i + L.j; 1 \leq i < j$
       # is non nilpotent.
 
@@ -3123,7 +2607,7 @@ InstallMethod( NonNilpotentElement,
     fi;
 
     # A non nilpotent element has not been found,
-    # hence 'L' is nilpotent.
+    # hence `L' is nilpotent.
     return fail;
 
     end );
@@ -3134,28 +2618,28 @@ InstallMethod( NonNilpotentElement,
 #M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . .  for a Lie algebra
 ##
 InstallMethod( RootSystem,
-    "method for a (semisimple) Lie algebra",
+    "for a (semisimple) Lie algebra",
     true,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
-    local F,          # coefficients domain of 'L'
-          BL,         # basis of 'L'
-          H,          # A Cartan subalgebra of 'L'
-          basH,       # A basis of 'H'
+    local F,          # coefficients domain of `L'
+          BL,         # basis of `L'
+          H,          # A Cartan subalgebra of `L'
+          basH,       # A basis of `H'
           sp,         # A vector space
-          B,          # A list of bases of subspaces of 'L' whose direct sum
-                      # is equal to 'L'
-          newB,       # A new version of 'B' being constructed
+          B,          # A list of bases of subspaces of `L' whose direct sum
+                      # is equal to `L'
+          newB,       # A new version of `B' being constructed
           i,j,l,      # Loop variables
-          facs,       # List of the factors of 'p'
-          V,          # A basis of a subspace of 'L'
+          facs,       # List of the factors of `p'
+          V,          # A basis of a subspace of `L'
           M,          # A matrix
           cf,         # A scalar
           a,          # A root vector
           ind,        # An index
           basR,       # A basis of the root system
-          h,          # An element of 'H'
+          h,          # An element of `H'
           posR,       # A list of the positive roots
           fundR,      # A list of the fundamental roots
           issum,      # A boolean
@@ -3163,16 +2647,16 @@ InstallMethod( RootSystem,
                       # two roots
           C,          # The Cartan matrix
           S,          # A list of the root vectors
-          zero,       # zero of 'F'
+          zero,       # zero of `F'
           hts,        # A list of the heights of the root vectors
-          sorh,       # The set 'Set( hts )'
+          sorh,       # The set `Set( hts )'
           sorR,       # The soreted set of roots
           Rvecs;      # The root vectors.
 
-    # Let 'a' and 'b' be two roots of the rootsystem 'R'.
-    # Let 's' and 't' be the largest integers such that 'a-s*b' and 'a+t*b'
+    # Let `a' and `b' be two roots of the rootsystem `R'.
+    # Let `s' and `t' be the largest integers such that `a-s*b' and `a+t*b'
     # are roots.
-    # Then the Cartan integer of 'a' and 'b' is 's-t'.
+    # Then the Cartan integer of `a' and `b' is `s-t'.
     CartInt := function( R, a, b )
        local s,t,rt;
        s:=0; t:=0;
@@ -3198,9 +2682,9 @@ InstallMethod( RootSystem,
 
 
     # First we compute the common eigenvectors of the adjoint action of a
-    # Cartan subalgebra 'H'. Here 'B' will be a list of bases of subspaces
-    # of 'L' such that 'H' maps each element of 'B' into itself.
-    # Furthermore, 'B' has maximal length w.r.t. this property.
+    # Cartan subalgebra `H'. Here `B' will be a list of bases of subspaces
+    # of `L' such that `H' maps each element of `B' into itself.
+    # Furthermore, `B' has maximal length w.r.t. this property.
 
     H:= CartanSubalgebra( L );
     BL:= BasisOfDomain( L );
@@ -3226,11 +2710,11 @@ InstallMethod( RootSystem,
 
     od;
 
-    # Now we throw away the subspace 'H'.
+    # Now we throw away the subspace `H'.
 
     B:= Filtered( B, x -> ( not x[1] in H ) );
 
-    # If an element of 'B' is not one dimensional then 'H' does not split
+    # If an element of `B' is not one dimensional then `H' does not split
     # completely, and hence we cannot compute the root system.
 
     for i in [ 1 .. Length(B) ] do
@@ -3240,9 +2724,9 @@ InstallMethod( RootSystem,
       fi;
     od;
 
-    # Now we compute the set of roots 'S'.
-    # A root is just the list of eigenvalues of the basis elements of 'H'
-    # on an element of 'B'.
+    # Now we compute the set of roots `S'.
+    # A root is just the list of eigenvalues of the basis elements of `H'
+    # on an element of `B'.
 
     S:= [];
     zero:= Zero( F );
@@ -3262,8 +2746,8 @@ InstallMethod( RootSystem,
 
     Rvecs:= Flat( B );
 
-    # A set of roots 'basR' is calculated such that the set
-    # { [ x_r, x_{-r} ] | r\in R } is a basis of 'H'.
+    # A set of roots `basR' is calculated such that the set
+    # { [ x_r, x_{-r} ] | r\in R } is a basis of `H'.
 
     basH:= [ ];
     basR:= [ ];
@@ -3281,8 +2765,8 @@ InstallMethod( RootSystem,
       i:=i+1;
     od;
 
-    # A root 'a' is said to be positive if the first nonzero element of
-    # '[ CartInt( S, a, basR[j] ) ]' is positive.
+    # A root `a' is said to be positive if the first nonzero element of
+    # `[ CartInt( S, a, basR[j] ) ]' is positive.
     # We calculate the set of positive roots.
 
     posR:= [ ];
@@ -3324,7 +2808,7 @@ InstallMethod( RootSystem,
       fi;
     od;
 
-    # Now we calculate the Cartan matrix 'C' of the root system.
+    # Now we calculate the Cartan matrix `C' of the root system.
 
     C:= List( fundR, i -> List( fundR, j -> CartInt( S, i, j ) ) );
 
@@ -3356,23 +2840,24 @@ InstallMethod( RootSystem,
 ##
 #F  DescriptionOfNormalizedUEAElement( <T>, <listofpairs> )
 ##
-DescriptionOfNormalizedUEAElement := function( T, listofpairs )
+InstallGlobalFunction( DescriptionOfNormalizedUEAElement,
+    function( T, listofpairs )
 
     local normalized,        # ordered list of normalized coeff./monom. pairs
           indices,           # list that stores at position $i$ up to what
                              # position the $i$-th monomial is known to be
                              # normalized
           i, j, k, l,        # loop variables
-          2i,                # '2*i'
+          2i,                # `2*i'
           scalar,            # coefficient of the monomial under work
           mon,               # monomial under work
           len,               # length of the monomial under work
           head,              # initial part of the monomial under work
           middle,            # middle part of the monomial under work
           tail,              # trailing part of the monomial under work
-          index,             # new value of 'indices[i]'
-          Tcoeffs,           # one entry in 'T'
-          lennorm,           # length of 'normalized' at the moment
+          index,             # new value of `indices[i]'
+          Tcoeffs,           # one entry in `T'
+          lennorm,           # length of `normalized' at the moment
           zero;              # zero coefficient
 
     normalized := [];
@@ -3381,18 +2866,18 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
 
       listofpairs:= Compacted( listofpairs );
 
-      # 'indices' is a list of positive integers $[ j_1, j_2, \ldots, j_m ]$
+      # `indices' is a list of positive integers $[ j_1, j_2, \ldots, j_m ]$
       # s.t. the initial part $x_{i_1}^{e_1} \cdots x_{i_{j_k}}^{e_{j_k}}$
       # of the $k$-th monomial is known to be normalized,
       # i.e., $i_1 < i_2 < \cdots < i_{j_k}$.
       # (So $j_k = 1$ for all $k$ will always be correct.)
-      indices:= List( [ 1 .. Length( listofpairs )/2 ], x -> 1 );
+      indices:= ListWithIdenticalEntries( Length( listofpairs )/2, 1 );
 
       # Loop over the monomials that shall be normalized.
       for i in [ 1, 2 .. Length( indices ) ] do
 
-        # If the 'i'-th monomial is already normalized,
-        # put it into 'normalized'.
+        # If the `i'-th monomial is already normalized,
+        # put it into `normalized'.
         # Otherwise swap the first non-ordered generators.
         2i:= 2*i;
         scalar:= listofpairs[ 2i ];
@@ -3403,7 +2888,7 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
 
           if mon[j] < mon[ j+2 ] then
 
-            # 'mon' is better normalized than 'indices' tells.
+            # `mon' is better normalized than `indices' tells.
             j:= j+2;
             indices[i]:= indices[i] + 1;
 
@@ -3437,7 +2922,7 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
               tail:= mon{ [ j+4 .. len ] };
             fi;
 
-            # Adjust 'indices[i]'.
+            # Adjust `indices[i]'.
             index:= indices[i] - 1;
             if index = 0 then
               index:= 1;
@@ -3449,7 +2934,7 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
             listofpairs[ 2i-1 ]:= Concatenation( head, middle, tail );
 
             # Add the coeffs/monomials that are given by the commutator.
-            # The part between 'head' and 'tail' of these listofpairs is
+            # The part between `head' and `tail' of these listofpairs is
             # $\sum_{k=1}^d c_{ijk} x_d$.
             Tcoeffs:= T[ mon[j] ][ mon[ j+2 ] ];
             for k in [ 1 .. Length( Tcoeffs[1] ) ] do
@@ -3465,10 +2950,10 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
 
         od;
 
-        # If the monomial is normalized then move it to 'normalized'.
+        # If the monomial is normalized then move it to `normalized'.
         if len - 2 <= j then
 
-          # Find the correct position in 'normalized',
+          # Find the correct position in `normalized',
           # and insert the monomial.
           lennorm:= Length( normalized );
           k:= 2;
@@ -3491,7 +2976,7 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
             normalized[ lennorm+2 ]:= scalar;
           fi;
 
-          # Remove the monomial from 'listofpairs'.
+          # Remove the monomial from `listofpairs'.
           Unbind( listofpairs[ 2i-1 ] );
           Unbind( listofpairs[  2i  ] );
 
@@ -3515,7 +3000,7 @@ DescriptionOfNormalizedUEAElement := function( T, listofpairs )
 
     # Return the normal form.
     return normalized;
-end;
+end );
 
 
 #############################################################################
@@ -3523,18 +3008,18 @@ end;
 #M  UniversalEnvelopingAlgebra( <L> ) . . . . . . . . . . . for a Lie algebra
 ##
 InstallMethod( UniversalEnvelopingAlgebra,
-    "method for a finite dimensional Lie algebra",
+    "for a finite dimensional Lie algebra",
     true,
     [ IsLieAlgebra ], 0,
     function( L )
 
     local F,          # free associative algebra
           U,          # universal enveloping algebra, result
-          gen,        # loop over algebra generators of 'U'
-          Fam,        # elements family of 'U'
-          T,          # s.c. table of a basis of 'L'
+          gen,        # loop over algebra generators of `U'
+          Fam,        # elements family of `U'
+          T,          # s.c. table of a basis of `L'
           FamMon,     # family of monomials
-          FamFree;    # elements family of 'F'
+          FamFree;    # elements family of `F'
 
     # Check the argument.
     if not IsFiniteDimensional( L ) then
@@ -3542,11 +3027,12 @@ InstallMethod( UniversalEnvelopingAlgebra,
     fi;
 
     # Construct the universal enveloping algebra.
-    F:= FreeAssociativeAlgebra( LeftActingDomain( L ), Dimension( L ), "x" );
+    F:= FreeAssociativeAlgebraWithOne( LeftActingDomain( L ),
+            Dimension( L ), "x" );
     U:= FactorFreeAlgebraByRelators( F, [ Zero( F ) ] );
 #T do not cheat here!
 
-    # Enter knowledge about 'U'.
+    # Enter knowledge about `U'.
     SetDimension( U, infinity );
     for gen in GeneratorsOfLeftOperatorRingWithOne( U ) do
       SetIsNormalForm( gen, true );
@@ -3577,7 +3063,7 @@ InstallMethod( UniversalEnvelopingAlgebra,
 
     SetOne( U, ElementOfFpAlgebra( Fam, One( F ) ) );
 
-    # Enter 'L'; it is used to set up the embedding (as a vector space).
+    # Enter `L'; it is used to set up the embedding (as a vector space).
     Fam!.liealgebra:= L;
 #T is not allowed ...
 
@@ -3587,7 +3073,7 @@ InstallMethod( UniversalEnvelopingAlgebra,
 
 #T missing: embedding of the Lie algebra (as vector space)
 #T missing: relators (only compute them if they are explicitly wanted)
-#T          (attribute 'Relators'?)
+#T          (attribute `Relators'?)
 
 
 #############################################################################
@@ -3596,14 +3082,14 @@ InstallMethod( UniversalEnvelopingAlgebra,
 #F  FreeLieAlgebra( <R>, <rank>, <name> )
 #F  FreeLieAlgebra( <R>, <name1>, <name2>, ... )
 ##
-FreeLieAlgebra := function( arg )
+InstallGlobalFunction( FreeLieAlgebra, function( arg )
 
     local R,          # coefficients ring
           names,      # names of the algebra generators
           M,          # free magma
           F,          # family of magma ring elements
-          one,        # identity of 'R'
-          zero,       # zero of 'R'
+          one,        # identity of `R'
+          zero,       # zero of `R'
           L;          # free Lie algebra, result
 
 
@@ -3625,7 +3111,7 @@ FreeLieAlgebra := function( arg )
     elif Length( arg ) = 3 and IsInt( arg[2] ) and IsString( arg[3] ) then
       names:= List( [ 1 .. arg[2] ],
                     x -> Concatenation( arg[3], String(x) ) );
-    elif ForAll( [ 2 .. Length( arg ) ], IsString ) then
+    elif ForAll( arg{ [ 2 .. Length( arg ) ] }, IsString ) then
       names:= arg{ [ 2 .. Length( arg ) ] };
     else
       Error( "usage: FreeLieAlgebra( <R>, <rank> )\n",
@@ -3640,6 +3126,7 @@ FreeLieAlgebra := function( arg )
     F:= NewFamily( "FreeLieAlgebraObjFamily",
                    IsElementOfMagmaRingModuloRelations,
                    IsJacobianElement and IsZeroSquaredElement );
+    SetFilterObj( F, IsFamilyElementOfFreeLieAlgebra );
 
     one:= One( R );
     zero:= Zero( R );
@@ -3649,6 +3136,12 @@ FreeLieAlgebra := function( arg )
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
 #T no !!
+
+    # Set the characteristic.
+    if HasCharacteristic( R ) or HasCharacteristic( FamilyObj( R ) ) then
+      SetCharacteristic( F, Characteristic( R ) );
+    fi;
+
 
     # Make the magma ring object.
     L:= Objectify( NewType( CollectionsFamily( F ),
@@ -3673,12 +3166,235 @@ FreeLieAlgebra := function( arg )
 
     # Return the ring.
     return L;
-end;
+end );
+
+
+#############################################################################
+##
+#M  NormalizedElementOfMagmaRingModuloRelations( <Fam>, <descr> )
+##
+##  <descr> is a list of the form `[ <z>, <list> ]', <z> being the zero
+##  coefficient of the ring, and <list> being the list of monomials and
+##  their coefficients.
+##  This function returns the element described in <descr> expanded on
+##  the Lyndon basis of the free Lie algebra. In order to do this we do not
+##  need to know this basis; we only need a test whether something is a
+##  Lyndon element (this is done in the function `IsLyndonT'). 
+##  For the algorithm we refer to C. Reutenauer, Free Lie Algebras, Clarendon
+##  Press, Oxford, 1993.
+##
+InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
+     "for family of free Lie algebra elements, and list",
+     true,
+     [ IsFamilyElementOfFreeLieAlgebra, IsList ], 0,
+     function( Fam, descr )
+
+         local todo,            #The list of elements that are to be expanded
+               k,i,             #Loop variables
+               z,s,u,v,x,y,w,   #Bracketed expressions (or `trees')
+               cf,              #Coefficient
+               found,           #Boolean
+               ll,              #List 
+               zero,            #The zero element of the field
+               tlist,           #List of elements of the free Lie algebra
+               Dcopy,IsLyndonT; #Two functions
+
+         Dcopy:=function( l )
+
+           if not IsList(l) then return ShallowCopy( l ); fi;
+           return List( l, Dcopy );
+         end;
+
+         IsLyndonT:= function( t )
+
+            # This function tests whether the bracketed expression `t' is
+            # a Lyndon tree.
+
+             local w,w1,w2,b,y;
+
+             if not IsList( t ) then return true; fi;
+  
+             w:= Flat( t );
+             if IsList( t[1] ) then
+               w1:= Flat( t[1] );
+               b:= false;
+             else
+               w1:= [ t[1] ];
+               b:=true;
+             fi;
+             if IsList( t[2] ) then
+               w2:= Flat( t[2] );
+             else
+               w2:= [ t[2] ];
+             fi;
+ 
+             if w<w2 and w1<w2 then
+               if not b then
+                 y:= Flat( [ t[1][2] ] );
+                 if y  < w2 then return false; fi;
+               fi;
+             else
+               return false;
+             fi;
+
+             if not IsLyndonT( t[1] ) then return false; fi;
+             if not IsLyndonT( t[2] ) then return false; fi;
+             return true;
+
+         end;
+
+         zero:= descr[1];
+         todo:= [ ];
+         i:= 1;
+
+# Every element in `todo' has the following format: [ bool, cf, br ],
+# where bool is a boolean; it is true if the br is a Lyndon tree.
+# cf is the coeffient (number) and br is a bracketed expression.
+# The reason for `tagging' everything is that almost anywhere in the
+# list cancellations may occur. This tagging provides an efficient way
+# of remembering which trees were dealt with before.
+
+         while i+1 <= Length(descr[2]) do
+           Add( todo, [ false, descr[2][i+1], ExtRepOfObj( descr[2][i] ) ] );
+           i:= i+2;
+         od;
+
+         k:= 1;
+         while k<=Length(todo) do
+
+           s:= todo[k][3];
+           cf:= todo[k][2];
+           if not IsList( s ) then
+             # `s' is a Lyndon tree
+             todo[k][1]:= true;   
+             k:= k+1;
+           elif cf = zero or s[1]=s[2] then
+             # `s' is zero
+             ll:=Filtered([1..Length(todo)], x -> x<> k);
+             todo:= todo{ll};
+           elif todo[k][1] then
+             # we already dealt with `s'
+             k:=k+1;
+           elif IsLyndonT( s ) then
+             # we do not need to expand `s'
+             todo[k][1]:=true; 
+             k:=k+1; 
+           else
+             #we expand `s'
+             found:= false; u:=s;
+             z:= Dcopy( s );
+             v:= z;
+             
+             # we look for a subtree `u' such that is not a Lyndon tree
+             # such that its left and right subtrees are Lyndon trees. 
+
+             while not found do
+               if IsLyndonT(u[1]) then
+                 if IsLyndonT(u[2]) then
+                   found:=true;
+                 else
+                   u:= u[2]; v:=v[2];
+                 fi;
+               else
+                 u:= u[1]; v:=v[1];
+               fi;
+             od;
+
+       	     if u[1]=u[2] then
+               # the whole expression `s' reduces to zero.
+	       ll:= Filtered([1..Length(todo)], x->x<>k); 
+               todo:= todo{ll};
+             else
+               if Flat([u[1]]) > Flat([u[2]]) then 
+                 # interchange u[1] and u[2]; this introduces a -.
+                 w:=u[1];
+                 u[1]:=u[2];
+                 u[2]:=w;
+                 i:= 1;
+                 found:= false;
+                 while i<= Length( todo ) and not found do
+                   if todo[i][3] = s and k<>i then
+                     todo[i][2]:= todo[i][2]-cf;
+                     if todo[i][2] = zero then
+                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                     else
+                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                     fi;
+                     todo:= todo{ll};
+                     found:= true;
+                   fi;
+                   i:=i+1;
+                 od;
+                 if not found then todo[k][2]:=-todo[k][2]; fi;
+               else
+                 #use the Jacobi identity.
+                 x:=u[1][1];
+                 y:=u[1][2];
+                 w:= u[2];
+                 u[1]:=[x,w];
+                 u[2]:=y;
+
+                 i:= 1;
+                 found:= false;
+                 while i<= Length( todo ) and not found do
+                   if todo[i][3] = s and k<>i then
+                     todo[i][2]:= todo[i][2]+cf;
+                     if todo[i][2] = zero then
+                       ll:=Filtered([1..Length(todo)],x->(x<>k and x<>i ));
+                     else
+                       ll:=Filtered([1..Length(todo)],x->x<>k);
+                     fi;
+                     todo:= todo{ll};
+                     found:= true;
+                   fi;
+                   i:=i+1;
+                 od;
+
+                 x:=v[1][1];
+                 y:=v[1][2];
+                 w:=v[2];
+                 v[1]:=x;
+                 v[2]:=[y,w];
+
+                 i:= 1;
+                 found:= false;
+                 while i<= Length( todo ) and not found do
+                   if todo[i][3] = z then
+                     todo[i][2]:= todo[i][2]+cf;
+                     found:= true;
+                   fi;
+                   i:= i+1;
+                 od;
+                 if not found then
+                   Add( todo, [false,cf,z] );
+                 fi;
+               fi;
+               k:=1;
+             fi;
+           fi;
+         od;
+
+# wrap the list `todo' into an element of the free Lie algebra.
+
+         todo:= List( todo, x -> [x[3],x[2]] );
+         tlist:= [];
+         for i in [1..Length(todo)] do
+           Append( tlist, todo[i] );
+         od;
+      
+         return ObjByExtRep( Fam, [ zero, tlist ] );
+
+     end );
+
 
 
 #############################################################################
 ##
 #E  alglie.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+
+
 
 
 

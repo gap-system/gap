@@ -1453,7 +1453,7 @@ ALN("L2(81).4_1",["O8-(3).2_1M9"]);
 MOT("L2(81).4_2",
 [
 "origin: ATLAS of finite groups, tests: 1.o.r., pow[2,3,5,41]\n",
-"2powermap determined only up to matrix automorphism (19,20)"
+"2nd power map determined only up to matrix automorphism (19,20)"
 ],
 [1062720,320,162,160,80,80,80,40,40,40,41,41,41,41,41,1440,32,18,32,32,20,20,
 8,8,16,16,16,16],

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the definition of operations and functions for
 ##  weak pointers.
@@ -53,9 +54,13 @@ Revision.wpobj_gd :=
 ##  be appropriate)
 ##
 
-IsWeakPointerObject := NewCategoryKernel( "IsWeakPointerObject",
-    IsList and IsMutable,
+DeclareCategoryKernel( "IsWeakPointerObject",
+    IsList and IsMutable and IsFinite and IsSmallList,
     IsWPObj );
 
 
-
+#############################################################################
+##          
+    
+#E  wpobj.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##                                      

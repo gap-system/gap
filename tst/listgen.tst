@@ -16,7 +16,7 @@ gap> Flat( List( [ 1 .. 5 ], x -> [ 1 .. x ] ) );
 [ 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5 ]
 gap> Reversed( [ 1, 2, 1, 2 ] );
 [ 2, 1, 2, 1 ]
-gap> Reversed( [ 1 .. 10 ] );
+gap> Print(Reversed( [ 1 .. 10 ] ),"\n");
 [ 10, 9 .. 1 ]
 gap> Filtered( [ 1 .. 10 ], x -> x < 5 );
 [ 1, 2, 3, 4 ]
@@ -82,7 +82,7 @@ gap> String( [ 1 .. 10 ] );
 "[ 1 .. 10 ]"
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 590000 );
+gap> STOP_TEST( "listgen.tst", 298860 );
 
 #############################################################################
 ##

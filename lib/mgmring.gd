@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares operations for magma rings.
 ##
@@ -41,15 +42,20 @@
 #T (cannot be the ordering of magma elements)
 ##
 ##  In order to treat elements of free magma rings uniformly, the attribute
-##  'CoefficientsAndMagmaElements' is introduced that allows to take an
+##  `CoefficientsAndMagmaElements' is introduced that allows to take an
 ##  element into pieces.
-##  The element constructor is 'FreeMagmaRingElement', it constructs an
+##  The element constructor is `FreeMagmaRingElement', it constructs an
 ##  element from a given lists of coefficients and magma elements.
 ##
 ##  As the above examples show, there are several possible element
 ##  representations, the one used as default representation of polynomials
 ##  as well as the default representation that simply stores the coefficients
 ##  and magma elements.
+##
+#T add some words about magma rings modulo relations,
+#T in particular state that elements are always normalized.
+#T So the implementation via magma rings modulo relations is *not*
+#T suitable for general f.p. algebras!
 ##
 Revision.mgmring_gd :=
     "@(#)$Id$";
@@ -61,43 +67,46 @@ Revision.mgmring_gd :=
 ##
 ##  This category is used, e. g., for elements of free Lie algebras.
 ##
-IsElementOfMagmaRingModuloRelations := NewCategory(
-    "IsElementOfMagmaRingModuloRelations",
-    IsScalar );
+DeclareCategory( "IsElementOfMagmaRingModuloRelations", IsScalar );
 
 
 #############################################################################
 ##
 #C  IsElementOfMagmaRingModuloRelationsCollection( <obj> )
 ##
-IsElementOfMagmaRingModuloRelationsCollection := CategoryCollections(
-    IsElementOfMagmaRingModuloRelations );
+DeclareCategoryCollections( "IsElementOfMagmaRingModuloRelations" );
 
 
 #############################################################################
 ##
-#C  IsFamilyElementOfMagmaRingModuloRelations( <Fam> )
+#C  IsElementOfMagmaRingModuloRelationsFamily( <Fam> )
 ##
-IsFamilyElementOfMagmaRingModuloRelations := CategoryFamily(
-    IsElementOfMagmaRingModuloRelations );
+DeclareCategoryFamily( "IsElementOfMagmaRingModuloRelations" );
 
 
 #############################################################################
 ##
 #C  IsElementOfFreeMagmaRing( <obj> )
 ##
-##  Objects in this category have efficient methods for `\=' and `\<'.
-##
-IsElementOfFreeMagmaRing := NewCategory( "IsElementOfFreeMagmaRing",
+DeclareCategory( "IsElementOfFreeMagmaRing",
     IsElementOfMagmaRingModuloRelations );
+
+
+#############################################################################
+##
+#C  IsFamilyElementOfFreeMagmaRing( <Fam> )
+##
+##  Elements of families in this category have trivial normalisation, i.e.,
+##  efficient methods for `\=' and `\<'.
+##
+DeclareCategoryFamily( "IsElementOfFreeMagmaRing" );
 
 
 #############################################################################
 ##
 #C  IsElementOfFreeMagmaRingCollection( <obj> )
 ##
-IsElementOfFreeMagmaRingCollection := CategoryCollections(
-    IsElementOfFreeMagmaRing );
+DeclareCategoryCollections( "IsElementOfFreeMagmaRing" );
 
 
 #############################################################################
@@ -107,31 +116,50 @@ IsElementOfFreeMagmaRingCollection := CategoryCollections(
 ##  is a list that contains at the odd positions the magma elements,
 ##  and at the even positions their coefficients in the element <elm>.
 ##
-CoefficientsAndMagmaElements := NewAttribute( "CoefficientsAndMagmaElements",
+DeclareAttribute( "CoefficientsAndMagmaElements",
     IsElementOfMagmaRingModuloRelations );
+
+
+#############################################################################
+##
+#O  NormalizedElementOfMagmaRingModuloRelations( <F>, <descr> )
+##
+##  Let <F> be a family of magma ring elements modulo relations, and <descr>
+##  the description (in the sense of `CoefficientsAndMagmaElements') of an
+##  element in a magma ring modulo relations.
+##  `NormalizedElementOfMagmaRingModuloRelations' returns a description of
+##  the same element, but normalized w.r.t. the relations.
+##  So two elements are equal if and only if the result of 
+##  `NormalizedElementOfMagmaRingModuloRelations' is equal for their internal
+##  data in the sense of `CoefficientsAndMagmaElements'.
+##
+##  `NormalizedElementOfMagmaRingModuloRelations' is allowed to return
+##  <descr> itself, it need not make a copy.
+##
+DeclareOperation( "NormalizedElementOfMagmaRingModuloRelations",
+    [ IsElementOfMagmaRingModuloRelationsFamily, IsList ] );
 
 
 #############################################################################
 ##
 #C  IsMagmaRingModuloRelations( <obj> )
 ##
-IsMagmaRingModuloRelations := NewCategory( "IsMagmaRingModuloRelations",
-    IsFLMLOR );
+DeclareCategory( "IsMagmaRingModuloRelations", IsFLMLOR );
 
 
 #############################################################################
 ##
 #C  IsFreeMagmaRing( <obj> )
 ##
-IsFreeMagmaRing := NewCategory( "IsFreeMagmaRing",
-    IsMagmaRingModuloRelations );
+DeclareCategory( "IsFreeMagmaRing", IsMagmaRingModuloRelations );
 
 
 #############################################################################
 ##
 #C  IsFreeMagmaRingWithOne( <obj> )
 ##
-IsFreeMagmaRingWithOne := IsFreeMagmaRing and IsMagmaWithOne;
+DeclareSynonym( "IsFreeMagmaRingWithOne",
+    IsFreeMagmaRing and IsMagmaWithOne );
 
 
 #############################################################################
@@ -140,25 +168,35 @@ IsFreeMagmaRingWithOne := IsFreeMagmaRing and IsMagmaWithOne;
 ##
 ##  A group ring is a free magma ring where the underlying magma is a group.
 ##
-IsGroupRing := NewProperty( "IsGroupRing", IsFreeMagmaRing );
-SetIsGroupRing := Setter( IsGroupRing );
-HasIsGroupRing := Tester( IsGroupRing );
+DeclareProperty( "IsGroupRing", IsFreeMagmaRing );
 
 
 #############################################################################
 ##
 #A  UnderlyingMagma( <RM> )
 ##
-UnderlyingMagma := NewAttribute( "UnderlyingMagma", IsFreeMagmaRing );
-SetUnderlyingMagma := Setter( UnderlyingMagma );
-HasUnderlyingMagma := Tester( UnderlyingMagma );
+DeclareAttribute( "UnderlyingMagma", IsFreeMagmaRing );
 
 
 #############################################################################
 ##
 #O  ElementOfMagmaRing( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
 ##
-ElementOfMagmaRing := NewOperation( "ElementOfMagmaRing",
+##  `ElementOfMagmaRing' returns the element $\sum_{i=1}^n c_i m_i$,
+##  where $<coeffs> = [ c_1, c_2, \ldots, c_n ]$ and
+##  $<mgmelms> = [ m_1, m_2, \ldots, m_n ]$;
+##  the family of this element is <Fam>, which must be a family of elements
+##  of a free magma ring.
+##  <zerocoeff> must be the zero of the coefficients ring.
+##
+##  Note that both <Fam> and <zerocoeff> are needed at least if <coeff> and
+##  <mgmelms> are empty.
+#T Is it desirable to have a version that takes only <coeff> and <mgmelms>,
+#T and is not applicable to the case of the zero element?
+#T (It would be necessary to store the families of magma ring elements in
+#T the family of ring elements or in the family of magma elements.)
+##
+DeclareOperation( "ElementOfMagmaRing",
     [ IsFamily, IsRingElement, IsHomogeneousList, IsHomogeneousList ] );
 
 
@@ -168,12 +206,29 @@ ElementOfMagmaRing := NewOperation( "ElementOfMagmaRing",
 ##
 ##  is a free magma ring over the ring <R>, free on the magma <M>.
 ##
-FreeMagmaRing := NewOperationArgs( "FreeMagmaRing" );
+DeclareGlobalFunction( "FreeMagmaRing" );
+
+
+#############################################################################
+##
+#F  GroupRing( <R>, <G> )
+##
+##  is the group ring of the group <G>, over the ring <R>.
+##
+DeclareGlobalFunction( "GroupRing" );
+
+
+#############################################################################
+##
+#A  AugmentationIdeal( <RG> )
+##
+##  is the augmentation ideal of the group ring <RG>, i.e., the kernel of the
+##  trivial representation of <RG>.
+##
+DeclareAttribute( "AugmentationIdeal", IsFreeMagmaRing );
 
 
 #############################################################################
 ##
 #E  mgmring.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

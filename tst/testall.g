@@ -43,11 +43,15 @@ STOP_TEST := function( file, fac )
 
     STONE_FILE  := file;
     STONE_RTIME := Runtime() - START_TIME;
-    STONE_STONE := QuoInt( fac, STONE_RTIME );
-    STONE_SUM   := STONE_SUM + STONE_RTIME;
-    STONE_FSUM   := STONE_FSUM + fac;
-    STONE_PROD  := STONE_PROD*STONE_STONE;
-    STONE_COUNT :=STONE_COUNT + 1;
+    if STONE_RTIME <> 0  then
+        STONE_STONE := QuoInt( fac, STONE_RTIME );
+        STONE_SUM   := STONE_SUM + STONE_RTIME;
+        STONE_FSUM  := STONE_FSUM + fac;
+        STONE_PROD  := STONE_PROD*STONE_STONE;
+        STONE_COUNT := STONE_COUNT + 1;
+    else
+        STONE_STONE := 0;
+    fi;
 end;
 
 
@@ -62,7 +66,7 @@ SHOW_STONES := function( next )
            FormattedString(STONE_STONE,8), "       ",
            FormattedString(STONE_RTIME,8) );
     Add( STONE_ALL, STONE_STONE );
-    if 0 < next  then
+    if 0 < next and STONE_FSUM <> 0  then
         Print( "    (next ~ ", Int(STONE_SUM*next*10/STONE_FSUM),
                " sec)\n" );
     else
@@ -73,10 +77,58 @@ end;
 
 #############################################################################
 ##
+#F  TEST_FILES  . . . . . . . . . . . . . . . . . . . . .  list of test files
+##
+##  the following list contains the filename and  the scaling factor given to
+##  `STOP_TEST' at the end of the test file.  The file  names are relative to
+##  the test directory.
+##
+##  The list can be produced using:
+##
+##  grep -h "STOP_TEST" *.tst | 		\
+##    sed -e 's:^gap> STOP_TEST( ":[ ":' | 	\
+##    sed -e 's: );: ],:'
+##
+TEST_FILES := [
+[ "algmat.tst", 2275253357 ],
+[ "algsc.tst", 867313307 ],
+[ "boolean.tst", 10000 ],
+[ "combinat.tst", 39450000 ],
+[ "ctblmoli.tst", 2250828729 ],
+[ "cyclotom.tst", 6575144 ],
+[ "ffe.tst", 6757787 ],
+[ "fldabnum.tst", 13810000 ],
+[ "gaussian.tst", 597720 ],
+[ "grpfree.tst", 2390880 ],
+[ "grplatt.tst", 16802570813 ],
+[ "grpmat.tst", 1170544762 ],
+[ "grppc.tst", 17634147 ],
+[ "grppcnrm.tst", 4599810668 ],
+[ "grpperm.tst", 692757480 ],
+[ "listgen.tst", 298860 ],
+[ "mapping.tst", 15840238 ],
+[ "matblock.tst", 10000 ],
+[ "modfree.tst", 28690858 ],
+[ "morpheus.tst", 611773707 ],
+[ "onecohom.tst", 118948251 ],
+[ "rwspcgrp.tst", 807548686 ],
+[ "rwspcsng.tst", 1072342703 ],
+[ "unknown.tst", 320000 ],
+[ "vspchom.tst", 39749178 ],
+[ "vspcmali.tst", 51405100 ],
+[ "vspcmat.tst", 38554186 ],
+[ "vspcrow.tst", 24208100 ],
+[ "weakptr.tst", 32576255 ],
+[ "zmodnz.tst", 6575053 ],
+];
+
+Sort( TEST_FILES, function(a,b) return a[2] < b[2]; end );
+
+
+#############################################################################
+##
 #X  read all test files
 ##
-TestDir := DirectoriesLibrary("tst");
-
 Print("You should  start  GAP4  using:  `gap -N -M -m 16m'.  The  more\n");
 Print("GAP4stones you get, the faster your  system is.  The runtime of\n");
 Print("the following tests (in general)  increases.  You should expect\n");
@@ -92,32 +144,18 @@ Print("-------------------------------------------\n");
 infoRead1 := InfoRead1;  InfoRead1 := Ignore;
 infoRead2 := InfoRead2;  InfoRead2 := Ignore;
 
-ReadTest( Filename( TestDir, "unknown.tst"  ) );  SHOW_STONES(64);
-ReadTest( Filename( TestDir, "listgen.tst"  ) );  SHOW_STONES(89);
-ReadTest( Filename( TestDir, "gaussian.tst" ) );  SHOW_STONES(218);
-ReadTest( Filename( TestDir, "grpfree.tst"  ) );  SHOW_STONES(481);
-ReadTest( Filename( TestDir, "ffe.tst"      ) );  SHOW_STONES(485);
-ReadTest( Filename( TestDir, "cyclotom.tst" ) );  SHOW_STONES(787);
-ReadTest( Filename( TestDir, "zmodnz.tst"   ) );  SHOW_STONES(986);
-ReadTest( Filename( TestDir, "mapping.tst"  ) );  SHOW_STONES(1381);
-ReadTest( Filename( TestDir, "fldabnum.tst" ) );  SHOW_STONES(2475);
-ReadTest( Filename( TestDir, "vspcrow.tst"  ) );  SHOW_STONES(2307);
-ReadTest( Filename( TestDir, "modfree.tst"  ) );  SHOW_STONES(3556);
-ReadTest( Filename( TestDir, "vspcmat.tst"  ) );  SHOW_STONES(3781);
-ReadTest( Filename( TestDir, "vspchom.tst"  ) );  SHOW_STONES(3800);
-ReadTest( Filename( TestDir, "combinat.tst" ) );  SHOW_STONES(4356);
-ReadTest( Filename( TestDir, "vspcmali.tst" ) );  SHOW_STONES(4636);
-ReadTest( Filename( TestDir, "grppc.tst"    ) );  SHOW_STONES(11221);
-ReadTest( Filename( TestDir, "onecohom.tst" ) );  SHOW_STONES(19983);
-ReadTest( Filename( TestDir, "grpmat.tst"   ) );  SHOW_STONES(57375);
-ReadTest( Filename( TestDir, "rwspcgrp.tst" ) );  SHOW_STONES(74980);
-ReadTest( Filename( TestDir, "morpheus.tst" ) );  SHOW_STONES(73524);
-ReadTest( Filename( TestDir, "algsc.tst"    ) );  SHOW_STONES(78191);
-ReadTest( Filename( TestDir, "rwspcsng.tst" ) );  SHOW_STONES(133191);
-ReadTest( Filename( TestDir, "ctblmoli.tst" ) );  SHOW_STONES(201017);
-ReadTest( Filename( TestDir, "algmat.tst"   ) );  SHOW_STONES(410353);
-ReadTest( Filename( TestDir, "grppcnrm.tst" ) );  SHOW_STONES(1481624);
-ReadTest( Filename( TestDir, "grplatt.tst"  ) );  SHOW_STONES(0);
+TestDir := DirectoriesLibrary("tst");
+
+for i  in [ 1 .. Length(TEST_FILES) ]  do
+    name := Filename( TestDir, TEST_FILES[i][1] );
+    if i < Length(TEST_FILES)  then
+        next := TEST_FILES[i+1][2] / 10^4;
+    else
+        next := 0;
+    fi;
+    ReadTest(name);
+    SHOW_STONES(next);
+od;
 
 Print("-------------------------------------------\n");
 Print( FormattedString("total",-16), "    ",

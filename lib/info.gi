@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This package sets up a GAP level prototype of the new Info messages
 ##  system, parts of which will eventually have to be moved into
@@ -38,8 +39,7 @@ Revision.info_gi :=
 ##  anticipated
 ##
 
-IsInfoClassListRep := NewRepresentation("IsInfoClassListRep",
-                              IsPositionalObjectRep,[]);
+DeclareRepresentation("IsInfoClassListRep", IsPositionalObjectRep,[]);
 
 #############################################################################
 ##
@@ -53,7 +53,7 @@ IsInfoClassListRep := NewRepresentation("IsInfoClassListRep",
 
 if not IsBound(InfoData) then
 
-    InfoData := rec();
+    BIND_GLOBAL( "InfoData", rec() );
     InfoData.CurrentLevels := [];
     InfoData.ClassNames := [];
 fi;
@@ -83,6 +83,17 @@ end;
 
 InstallMethod(NewInfoClass, true, [IsString], 0,
         function(name)
+    local pos;
+    
+    # if we are rereading and this class already exists then 
+    # do not make a new class
+    if REREADING then
+        pos := Position(InfoData.ClassNames,name);
+        if pos <> fail then
+            return InfoData.InfoClass(pos);
+        fi;
+    fi;
+    
     Add(InfoData.CurrentLevels,0);
     Add(InfoData.ClassNames,name);
     return InfoData.InfoClass(Length(InfoData.CurrentLevels));
@@ -91,21 +102,36 @@ end);
 
 #############################################################################
 ##
+#F  DeclareInfoClass( <name> )
+##
+InstallGlobalFunction( DeclareInfoClass, function( name )
+    BIND_GLOBAL( name, NewInfoClass( name ) );
+end );
+
+
+#############################################################################
+##
 #M  Basic methods for Info Classes: =, < (so that we can make Sets),
 ##                                  PrintObj
 ##
 
-InstallMethod(\=, IsIdentical, [IsInfoClassListRep, IsInfoClassListRep], 0,
+InstallMethod(\=,
+    "for two info classes",
+    IsIdenticalObj, [IsInfoClassListRep, IsInfoClassListRep], 0,
         function(ic1,ic2)
     return ic1![1] = ic2![1];
 end);
 
-InstallMethod(\<, IsIdentical, [IsInfoClassListRep, IsInfoClassListRep], 0,
+InstallMethod(\<,
+    "for two info classes",
+    IsIdenticalObj, [IsInfoClassListRep, IsInfoClassListRep], 0,
         function(ic1,ic2)
     return ic1![1] < ic2![1];
 end);
 
-InstallMethod(PrintObj, true, [IsInfoClassListRep], 0,
+InstallMethod(PrintObj,
+    "for an info class",
+    true, [IsInfoClassListRep], 0,
         function(ic)
     Print(InfoData.ClassNames[ic![1]]);
 end);
@@ -120,22 +146,30 @@ end);
 ##  Used to build up InfoSelectors, these are essentially just taking unions
 ##
 
-InstallOtherMethod(\+, IsIdentical, [IsInfoClass, IsInfoClass], 0,
+InstallOtherMethod(\+,
+    "for two info classes",
+    IsIdenticalObj, [IsInfoClass, IsInfoClass], 0,
         function(ic1,ic2)
     return Set([ic1,ic2]);
 end);
 
-InstallOtherMethod(\+, true, [IsInfoClass, IsInfoSelector], 0,
+InstallOtherMethod(\+,
+    "for info class and info selector",
+    true, [IsInfoClass, IsInfoSelector], 0,
         function(ic,is)
     return Union(is,[ic]);
 end);
 
-InstallOtherMethod(\+, true, [IsInfoSelector, IsInfoClass], 0,
+InstallOtherMethod(\+,
+    "for info selector and info class",
+    true, [IsInfoSelector, IsInfoClass], 0,
         function(is,ic)
     return Union(is,[ic]);
 end);
 
-InstallOtherMethod(\+, IsIdentical, [IsInfoSelector, IsInfoSelector], 0,
+InstallOtherMethod(\+,
+    "for two info selectors",
+    IsIdenticalObj, [IsInfoSelector, IsInfoSelector], 0,
         function(is1,is2)
     return Union(is1,is2);
 end);
@@ -150,7 +184,7 @@ InfoData.handler := function(ic,lev)
 end;
 
 InstallMethod(SetInfoLevel, true, 
-        [IsInfoClass and IsInfoClassListRep, IsInt and IsPosRat], 0,
+        [IsInfoClass and IsInfoClassListRep, IsPosInt], 0,
         InfoData.handler);
 
 InstallMethod(SetInfoLevel, true, 
@@ -164,12 +198,12 @@ Unbind(InfoData.handler);
 #F  SetAllInfoLevels(  <level>)   set desired verbosity level for all classes
 ##
 
-SetAllInfoLevels := function( level )
+BIND_GLOBAL( "SetAllInfoLevels", function( level )
     local i;
     for i in [1..Length(InfoData.CurrentLevels)] do
         InfoData.CurrentLevels[i] := level;
     od;
-end;
+end );
                                      
 
 #############################################################################
@@ -190,7 +224,7 @@ end);
 ##  This is called by the kernel
 ##
 
-InfoDecision := function(selectors, level)
+BIND_GLOBAL( "InfoDecision", function(selectors, level)
     local usage;
     usage := "Usage : InfoDecision(<selectors>, <level>)";
     if IsInfoClass(selectors) then
@@ -207,7 +241,7 @@ InfoDecision := function(selectors, level)
     # note that we 'or' the classes together
     
     return ForAny(selectors, ic -> InfoLevel(ic) >= level);
-end;
+end );
     
 #############################################################################
 ##
@@ -216,11 +250,11 @@ end;
 ##  This is called by the kernel to actually produce the message
 ##
 
-InfoDoPrint := function(arglist)
+BIND_GLOBAL( "InfoDoPrint", function(arglist)
     Print("#I  ");
     CallFuncList(Print, arglist);
     Print("\n");
-end;
+end );
 
 
 ##
@@ -249,7 +283,7 @@ end;
 #V  InfoDebug
 ##
 if not IsBound(InfoDebug) then
-    InfoDebug := NewInfoClass("InfoDebug");
+    DeclareInfoClass( "InfoDebug" );
 fi;
 
 
@@ -258,7 +292,7 @@ fi;
 #V  InfoMethodSelection
 ##
 if not IsBound(InfoMethodSelection) then
-    InfoMethodSelection := NewInfoClass("InfoMethodSelection");
+    DeclareInfoClass( "InfoMethodSelection" );
 fi;
 
 
@@ -267,7 +301,7 @@ fi;
 #V  InfoTiming
 ##
 if not IsBound(InfoTiming) then
-    InfoTiming := NewInfoClass("InfoTiming");
+    DeclareInfoClass( "InfoTiming" );
 fi;
 
 #############################################################################
@@ -278,7 +312,7 @@ fi;
 ##  off by setting its level to zero
 ##
 if not IsBound(InfoWarning) then
-    InfoWarning := NewInfoClass( "InfoWarning" );
+    DeclareInfoClass( "InfoWarning" );
     SetInfoLevel( InfoWarning, 1 );
 fi;
 

@@ -4,48 +4,35 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.1  1996/11/18 08:55:28  htheisse
-#H  renamed representations of GHBIs, improved the cokernel gens iterator
-#H
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.ghomperm_gd :=
     "@(#)$Id$";
 
-IsPermGroupGeneralMappingByImages := NewRepresentation
-    ( "IsPermGroupGeneralMappingByImages",
+DeclareRepresentation( "IsPermGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages" ] );
 IsPermGroupHomomorphismByImages := IsPermGroupGeneralMappingByImages
                                and IsMapping;
 
-IsToPermGroupGeneralMappingByImages := NewRepresentation
-    ( "IsToPermGroupGeneralMappingByImages",
+DeclareRepresentation( "IsToPermGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages" ] );
 IsToPermGroupHomomorphismByImages := IsToPermGroupGeneralMappingByImages
                                  and IsMapping;
 
-AddGeneratorsGenimagesExtendSchreierTree := NewOperationArgs( "AddGeneratorsGenimagesExtendSchreierTree" );
-ImageSiftedBaseImage := NewOperationArgs( "ImageSiftedBaseImage" );
-IsCoKernelGensIterator := NewOperationArgs( "IsCoKernelGensIterator" );
-CoKernelGensIterator := NewOperationArgs( "CoKernelGensIterator" );
-CoKernelGensPermHom := NewOperationArgs( "CoKernelGensPermHom" );
-StabChainPermGroupToPermGroupGeneralMappingByImages := NewOperationArgs( "StabChainPermGroupToPermGroupGeneralMappingByImages" );
-MakeStabChainLong := NewOperationArgs( "MakeStabChainLong" );
-ImageKernelBlocksHomomorphism := NewOperationArgs( "ImageKernelBlocksHomomorphism" );
-PreImageSetStabBlocksHomomorphism := NewOperationArgs( "PreImageSetStabBlocksHomomorphism" );
+DeclareGlobalFunction( "AddGeneratorsGenimagesExtendSchreierTree" );
+DeclareGlobalFunction( "ImageSiftedBaseImage" );
+DeclareGlobalFunction( "CoKernelGensIterator" );
+DeclareGlobalFunction( "CoKernelGensPermHom" );
+DeclareGlobalFunction( "StabChainPermGroupToPermGroupGeneralMappingByImages" );
+DeclareGlobalFunction( "MakeStabChainLong" );
+DeclareGlobalFunction( "ImageKernelBlocksHomomorphism" );
+DeclareGlobalFunction( "PreImageSetStabBlocksHomomorphism" );
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##
 #E  ghomperm.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
 

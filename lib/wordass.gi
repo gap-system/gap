@@ -4,6 +4,7 @@
 #W                                                             & Frank Celler
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 #H  @(#)$Id$
 ##
@@ -20,11 +21,7 @@ Revision.wordass_gi :=
 ##  Multiplication of associative words is done by concatenating the words
 ##  and removing adjacent pairs of an abstract generator and its inverse.
 ##
-InstallMethod( \*,
-    "method for two assoc. words",
-    IsIdentical,
-    [ IsAssocWord, IsAssocWord ], 0,
-    function( x, y )
+AssocWord_Product := function( x, y )
 
     local xx,    # external representation of 'x'
           l,     # current length of 'xx', minus 1
@@ -111,8 +108,12 @@ InstallMethod( \*,
       fi;
 
     fi;
-    end );
-
+end;
+InstallMethod( \*,
+    "for two assoc. words",
+    IsIdenticalObj,
+    [ IsAssocWord, IsAssocWord ], 0,
+    AssocWord_Product );
 
 #############################################################################
 ##
@@ -124,9 +125,9 @@ InstallMethod( \*,
 ##  the case of cancellation.
 ##
 InstallMethod( \^,
-    "method for an assoc. word, and a positive integer",
+    "for an assoc. word, and a positive integer",
     true,
-    [ IsAssocWord, IsPosRat and IsInt ], 0,
+    [ IsAssocWord, IsPosInt ], 0,
     function( x, n )
 
     local xx,      # external representation of 'x'
@@ -194,11 +195,7 @@ InstallMethod( \^,
     fi;
     end );
 
-InstallMethod( \^,
-    "method for an assoc. word with inverse, and an integer",
-    true,
-    [ IsAssocWordWithInverse, IsInt ], 0,
-    function( x, n )
+AssocWordWithInverse_Power := function( x, n )
 
     local xx,      # external representation of 'x'
           cxx,     # external repres. of the inverse of 'x'
@@ -310,13 +307,14 @@ InstallMethod( \^,
                               xx[2], head );
 
     fi;
-    end );
-
-InstallMethod( Inverse,
-    "method for an assoc. word with inverse",
+end;
+InstallMethod( \^,
+    "for an assoc. word with inverse, and an integer",
     true,
-    [ IsAssocWordWithInverse ], 0,
-    function( x )
+    [ IsAssocWordWithInverse, IsInt ], 0,
+    AssocWordWithInverse_Power );
+
+AssocWordWithInverse_Inverse := function( x )
 
     local xx,      # external representation of 'x'
           cxx,     # external repres. of the inverse of 'x'
@@ -347,16 +345,20 @@ InstallMethod( Inverse,
     # The exponents in the inverse do not exceed the exponents in 'x'.
 #T ??
     return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], cxx );
-    end );
-
+end;
+InstallMethod( Inverse,
+    "for an assoc. word with inverse",
+    true,
+    [ IsAssocWordWithInverse ], 0,
+    AssocWordWithInverse_Inverse );
 
 #############################################################################
 ##
 
-#M  LengthWord( <w> )
+#M  Length( <w> )
 ##
-InstallMethod( LengthWord,
-    "method for an assoc. word",
+InstallOtherMethod( Length,
+    "for an assoc. word",
     true,
     [ IsAssocWord ], 0,
     function( w )
@@ -375,9 +377,9 @@ InstallMethod( LengthWord,
 #M  ExponentSyllable( <w>, <n> )
 ##
 InstallMethod( ExponentSyllable,
-    "method for an assoc. word, and a positive integer",
+    "for an assoc. word, and a positive integer",
     true,
-    [ IsAssocWord, IsInt and IsPosRat ],
+    [ IsAssocWord, IsPosInt ],
     0,
     function( w, n )
     return ExtRepOfObj( w )[ 2*n ];
@@ -389,9 +391,9 @@ InstallMethod( ExponentSyllable,
 #M  GeneratorSyllable( <w>, <n> )
 ##
 InstallMethod( GeneratorSyllable,
-    "method for an assoc. word, and a positive integer",
+    "for an assoc. word, and a positive integer",
     true,
-    [ IsAssocWord, IsInt and IsPosRat ],
+    [ IsAssocWord, IsPosInt ],
     0,
     function( w, n )
     return ExtRepOfObj( w )[ 2*n-1 ];
@@ -403,7 +405,7 @@ InstallMethod( GeneratorSyllable,
 #M  NumberSyllables( <w> )
 ##
 InstallMethod( NumberSyllables,
-    "method for an assoc. word",
+    "for an assoc. word",
     true,
     [ IsAssocWord ], 0,
     w -> Length( ExtRepOfObj( w ) ) / 2 );
@@ -414,7 +416,7 @@ InstallMethod( NumberSyllables,
 #M  ExponentSums( <w> )
 ##
 InstallMethod( ExponentSums,
-    "method for an assoc. word",
+    "for an assoc. word",
     true,
     [ IsAssocWord ], 0,
     function( w )
@@ -427,8 +429,8 @@ InstallMethod( ExponentSums,
 #M  ExponentSumWord( <w>, <gen> )
 ##
 InstallMethod( ExponentSumWord,
-    "method for associative word and generator",
-    IsIdentical,
+    "for associative word and generator",
+    IsIdenticalObj,
     [ IsAssocWord, IsAssocWord ],
     0,
     function( w, gen )
@@ -457,13 +459,13 @@ InstallMethod( ExponentSumWord,
 #M  Subword( <w>, <from>, <to> )
 ##
 InstallMethod( Subword,
-    "method for associative word and two positions",
+    "for associative word and two positions",
     true,
-    [ IsAssocWord, IsPosRat and IsInt, IsPosRat and IsInt ],
+    [ IsAssocWord, IsPosInt, IsPosInt ],
     0,
     function( w, from, to )
     local extw, pos, nextexp, firstexp, sub;
-   
+
     extw:= ExtRepOfObj( w );
     to:= to - from + 1;
 
@@ -510,21 +512,135 @@ InstallMethod( Subword,
     fi;
 
     return ObjByExtRep( FamilyObj( w ), sub );
-    end );
+end );
 
+#############################################################################
+##
+#M  SubSyllables( <w>, <from>, <to> )
+##
+InstallMethod( SubSyllables,
+  "for associative word and two positions, using ext rep.",true,
+    [ IsAssocWord, IsPosInt, IsPosInt ], 0,
+function( w, from, to )
+local e;
+  e:=ExtRepOfObj(w);
+  if to<from or 2*from>Length(e) then
+    return One(w);
+  else
+    e:=e{[2*from-1..Minimum(Length(e),2*to)]};
+    return ObjByExtRep(FamilyObj(w),e);
+  fi;
+end);
 
 #############################################################################
 ##
 #M  PositionWord( <w>, <sub>, <from> )
 ##
 InstallMethod( PositionWord,
-    "method for two associative words and a positive integer",
-    true,
-    [ IsAssocWord, IsAssocWord, IsPosRat and IsInt ],
-    0,
-    function( w, sub, from )
-    Error( "not yet implemented" );
-    end );
+  "for two associative words and a positive integer, using syllables",
+  IsFamFamX, [ IsAssocWord, IsAssocWord, IsPosInt ], 0,
+function( w, sub, from )
+local i,j,m,n,l,s,e,f,li,nomatch;
+
+  from:=from-1; # make skip number from `from'
+
+  i:=1; #syllableindex in w
+  j:=1; #syllableindex in sub
+  n:=NumberSyllables(w);
+  m:=NumberSyllables(sub);
+
+
+  # skip `from' letters
+  l:=from+1; # index in w
+  s:=0;  # the number of generators to be skipped if a supposed match did
+         # not work.
+
+  while from>0 and i<=n do
+    e:=ExponentSyllable(w,i);
+    if AbsInt(e)<=from then
+      # skip a full syllable
+      from:=from-AbsInt(e);
+      i:=i+1;
+    else
+      f:=ExponentSyllable(sub,1);
+      # skip only part of syllable. Now the behavior will differ depending
+      # on whether sub could start here
+      if GeneratorSyllable(w,i)=GeneratorSyllable(sub,1)
+       and AbsInt(e)-from>=AbsInt(f)
+       and SignInt(e)=SignInt(f) then
+	# special treatment for len(sub)=1
+	if m=1 then
+	  return l;
+	fi;
+
+	s:=AbsInt(f);
+	# offset to make the syllables end fit
+	l:=l+AbsInt(e)-from-s;
+	li:=i;
+        j:=2;
+      else
+        # sub cannot start here, just skip the full syllable
+	l:=l+AbsInt(e)-from;
+	j:=1;
+      fi;
+
+      i:=i+1;
+      from:=0; #break the loop
+    fi;
+  od;
+
+  while i<=n do
+    nomatch:=true;
+    e:=ExponentSyllable(w,i);
+    if GeneratorSyllable(w,i)=GeneratorSyllable(sub,j) then
+      f:=ExponentSyllable(sub,j);
+      if SignInt(e)=SignInt(f) and AbsInt(e)>=AbsInt(f) then
+	if j=m then
+	  # we are at the end and it fits nicely
+	  return l;
+	elif AbsInt(e)=AbsInt(f) then
+	  # we are in the word, so the exponents must match perfectly
+	  if j=1 then
+	    # just start, set up a new possible match
+	    li:=i;
+	    s:=AbsInt(e);
+	  fi;
+	  j:=j+1;
+	  nomatch:=false;
+	elif j=1 then
+	  # now AbsInt(e)>AbsInt(f) but we are just at the start and may
+	  # offset:
+	  s:=AbsInt(f);
+	  l:=l+AbsInt(e)-s;
+	  li:=i;
+	  j:=j+1;
+	  nomatch:=false;
+	fi;
+      fi;
+    fi;
+
+    if nomatch then
+      j:=1;
+      if s=0 then
+        l:=l+AbsInt(e);
+      else
+	# there was a partial match, go one on
+	l:=l+s;
+	s:=0;
+	i:=li;
+      fi;
+    fi;
+    i:=i+1;
+
+    # do we have a chance of hitting?
+    if n-i<m-j then
+      # no, we would run out.
+      return fail;
+    fi;
+
+  od;
+  return fail;
+end );
 
 
 #############################################################################
@@ -532,13 +648,11 @@ InstallMethod( PositionWord,
 #M  SubstitutedWord( <w>, <from>, <to>, <by> )
 ##
 InstallMethod( SubstitutedWord,
-    "method for assoc. word, two positive integers, and assoc. word",
-    true,
-    [ IsAssocWord, IsPosRat and IsInt, IsPosRat and IsInt, IsAssocWord ],
-    0,
-    function( w, from, to, by )
-    Error( "not yet implemented" );
-    end );
+    "for assoc. word, two positive integers, and assoc. word", true,
+    [ IsAssocWord, IsPosInt, IsPosInt, IsAssocWord ], 0,
+function( w, from, to, by )
+  return Subword(w,1,from-1)*by*Subword(w,to+1,Length(w));
+end );
 
 
 #############################################################################
@@ -546,25 +660,47 @@ InstallMethod( SubstitutedWord,
 #M  EliminatedWord( <word>, <gen>, <by> )
 ##
 InstallMethod( EliminatedWord,
-    "method for three associative words",
-    true,
-#T need three argument 'IsIdentical' !
-    [ IsAssocWord, IsAssocWord, IsAssocWord ],
-    0,
-    function( word, gen, by )
-    Error( "not yet implemented" );
-    end );
+  "for three associative words, using the external rep.",IsFamFamFam,
+    [ IsAssocWord, IsAssocWord, IsAssocWord ],0,
+function( word, gen, by )
+local e,l,i,j,app,s;
+  e:=ExtRepOfObj(word);
+  gen:=GeneratorSyllable(gen,1);
+  l:=[];
+  for i in [1,3..Length(e)-1] do
+    if e[i]=gen then
+      app:=ExtRepOfObj(by^e[i+1]);
+    else
+      app:=e{[i,i+1]};
+    fi;
+    j:=Length(l)-1;
+    while j>0 and Length(app)>0 and l[j]=app[1] do
+      s:=l[j+1]+app[2];
+      if s=0 then
+        j:=j-2;
+      else
+        l[j+1]:=s;
+      fi;
+      app:=app{[3..Length(app)]};
+    od;
+
+    if j+1<Length(l) then
+      l:=l{[1..j+1]};
+    fi;
+
+    if Length(app)>0 then
+      Append(l,app);
+    fi;
+  od;
+  return ObjByExtRep(FamilyObj(word),l);
+end );
 
 
 #############################################################################
 ##
 #M  MappedWord( <x>, <gens1>, <gens2> )
 ##
-InstallMethod( MappedWord,
-    "method for an assoc. word, a homogeneous list, and a list",
-    IsElmsCollsX,
-    [ IsAssocWord, IsAssocWordCollection, IsList ], 0,
-    function( x, gens1, gens2 )
+BindGlobal( "MappedWordForAssocWord", function( x, gens1, gens2 )
 
     local i, mapped, exp;
 
@@ -586,6 +722,39 @@ InstallMethod( MappedWord,
     fi;
 
     return mapped;
+end );
+
+InstallMethod( MappedWord,
+    "for an assoc. word, a homogeneous list, and a list",
+    IsElmsCollsX,
+    [ IsAssocWord, IsAssocWordCollection, IsList ], 0,
+    MappedWordForAssocWord );
+
+
+#############################################################################
+##
+#M  Reversed( <word> )  . . . . . . . . . . . . . . . . .  for an assoc. word
+##
+InstallOtherMethod( Reversed,
+    "for an assoc. word",
+    true,
+    [ IsAssocWord ], 0,
+    function( word )
+
+    local extrep, len, rev, i;
+
+    extrep:= ExtRepOfObj( word );
+    if IsEmpty( extrep ) then
+      return word;
+    fi;
+    len:= Length( extrep );
+    rev:= [];
+    for i in [ len-1, len-3 .. 1 ] do
+      Add( rev, extrep[  i  ] );
+      Add( rev, extrep[ i+1 ] );
+    od;
+
+    return AssocWord( TypeObj( word )![ AWP_PURE_TYPE ], rev );
     end );
 
 

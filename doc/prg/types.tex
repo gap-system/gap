@@ -21,7 +21,8 @@ of the object can be computed.
 The type of an object consists of the following parts,
 which describe different aspects of the object.
 It might be useful to identify each type with the set of objects that
-have this type, and likewise to regard each part of a type as a set.
+have this type, and likewise to regard each part of a type as a set,
+whose intersection is the type itself.
 
 The *family* determines the relation of the object to other objects.
 For example, all permutations form a family.
@@ -175,6 +176,7 @@ indented category listed above it.
                     IsAdditiveElementWithInverse
 \endtt
 Every object lies in the category `IsObject'.
+
 The categories `IsExtLElement' and `IsExtRElement' contain objects
 that can be multiplied with other objects via `*' from the left and
 from the right, respectively.
@@ -209,8 +211,8 @@ For example, the category `IsMatrix' is a subcategory of
 Clearly not every matrix has a multiplicative inverse.
 But the category `IsMatrix' makes each matrix an admissible argument of
 the operation `Inverse'.
-% Likewise, two matrices can be multiplied only if they are of appropriate
-% shapes.
+Likewise, two matrices can be multiplied only if they are of appropriate
+shapes.
 
 Analogously to the categories of arithmetic elements,
 there are categories of domains of these elements.
@@ -247,8 +249,7 @@ union of these generators and their inverses.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Representation}
 
-The representation of an object determines how it is actually
-represented.
+The representation of an object determines how it is actually stored.
 
 {\GAP} distinguishes four essentially different ways to represent
 objects.
@@ -272,6 +273,12 @@ the other.
 So the subrepresentations of `IsComponentObjectRep' resp.
 `IsPositionalObjectRep' form trees.
 
+These trees are  typically rather shallow, since  for one representation  to be
+contained in another implies that all the fields of  the data structure implied
+by the containing representation, are present in, and have the same meaning in,
+the smaller   representation (whose  data  structure  presumably  contains some
+additional fields).
+
 Objects may change their representation,
 for example a mutable list of characters can be converted into a string.
 
@@ -288,6 +295,7 @@ constants.
 An important subrepresentation of `IsComponentObjectRep' is
 `IsAttributeStoringRep', which is used for many domains.
 It provides automatical storing of all attribute values (see below).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Attributes}
@@ -324,8 +332,6 @@ depending on whether or not the value of <attr> for the object is known.
 For example, `Tester( Size )( <obj> )' is `true' if the size of the object
 <obj> is known.
 
-% Shall the `HasAttr' and `SetAttr' names be mentioned?
-
 To store a value of the attribute <attr> in an object,
 the setter
 
@@ -345,6 +351,14 @@ Examples of attributes for multiplicative elements are `Inverse', `One',
 and `Order'.
 `Size' is an attribute for domains, `Centre' is an attribute for a magma,
 and `DerivedSubgroup' is an attribute for groups.
+
+For each attribute <attr> that is declared with `DeclareAttribute'
+resp.~`DeclareProperty' (see~"Global Variables in the Library"),
+tester and setter are automatically made accessible by the names
+`Has<attr>' and `Set<attr>', respectively.
+For example, the tester for `Size' is called `HasSize',
+and the setter is called `SetSize'.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties}
@@ -380,6 +394,7 @@ $a \* b = - ( b \* a )$, $a \* ( b + c ) = a \* b + a \* c$,
 and $( a + b ) \* c = a \* c + b \* c$, respectively,
 for all $a$, $b$, $c$ in the domain.
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Filters}
 
@@ -397,7 +412,8 @@ which are special {\GAP} functions that return either `true' or `false',
 depending on whether or not the argument lies in the set defined by the
 filter.
 
-The intersection of two filters <filt1>, <filt2> is again a filter,
+The intersection (or meet) of two filters <filt1>, <filt2> is again a
+filter,
 it can be formed as
 
 \)<filt1> and <filt2>
@@ -422,15 +438,13 @@ created, see the sections about the creation of filters
 "Creating Categories", "Creating Representations",
 "Creating Attributes and Properties", "Creating Other Filters".
 For an arbitrary filter, its rank is given by the sum of incremental
-ranks of the *involved* simple filters (again see the sections about the
-creation of filters).
-
-Note that an object in <filt> does not necessarily lie in all involved
-filters of <filt>.
-For example, `Size' is defined as an attribute for domains,
-and `IsDomain' is an involved filter of the filter `Tester( Size )';
-but there are also methods for `Size' to compute the size of lists,
-which are not domains.
+ranks of the *involved* simple filters;
+additionally to the implied filters, these are also the required filters
+of attributes (again see the sections about the creation of filters).
+In other words, for the purpose of computing the rank and *only* for this
+purpose, attribute testers are treated as if they would imply the
+requirements of their attributes.
+% say something about the implementation via `InstallHiddenTrueMethod'?
 
 \>NamesFilter( <filt> )
 
@@ -460,6 +474,15 @@ residue class modulo <n> contains the modulus <n> as defining data.
 As a consequence, two residue classes mod <n> and <m> can have the same
 type only if `<n> = <m>'.
 The defining data of the type <type> can be accessed as
+%
+% In this case, is it necessary? he family also records this information.
+%
+% The original example was cosets, and there is a small gain there, but
+% I wonder if we need type data at all
+%
+% The only other thing which uses it is the general mapping representation,
+% which is quite nice, but maybe not so important.
+%
 
 \>DataType( <type> )
 

@@ -5,12 +5,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares a fast access  function for structure constants tables
 **  and the multiplication of two elements using a structure constants table.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_sctable_h =
+const char * Revision_sctable_h =
    "@(#)$Id$";
 #endif
 
@@ -24,26 +25,9 @@ SYS_CONST char * Revision_sctable_h =
 /****************************************************************************
 **
 
-*F  SetupSCTable()  . . . . . . . . . .  initialize structure constant tables
+*F  InitInfoSCTable() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupSCTable ( void );
-
-
-/****************************************************************************
-**
-*F  InitSCTable() . . . . . . . . . . .  initialize structure constant tables
-**
-**  Is called  during the initialization  of GAP to initialize  the structure
-**  constant table package.
-*/
-extern void InitSCTable ( void );
-
-
-/****************************************************************************
-**
-*F  CheckSCTable()  . . check the initialisation of structure constant tables
-*/
-extern void CheckSCTable ( void );
+StructInitInfo * InitInfoSCTable ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of variables package.
 **
@@ -16,7 +17,7 @@
 **  global variables, list elements, and record elements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_vars_h =
+const char * Revision_vars_h =
    "@(#)$Id$";
 #endif
 
@@ -33,6 +34,7 @@ SYS_CONST char * Revision_vars_h =
 
 /****************************************************************************
 **
+
 *F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
@@ -219,25 +221,9 @@ extern  Char *          NAME_HVAR (
 /****************************************************************************
 **
 
-*F  SetupVars() . . . . . . . . . . . . . . . .  initialize variables package
+*F  InitInfoVars()  . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupVars ( void );
-
-
-/****************************************************************************
-**
-*F  InitVars()  . . . . . . . . . . . . . . . .  initialize variables package
-**
-**  'InitVars' initializes the variables package.
-*/
-extern void InitVars ( void );
-
-
-/****************************************************************************
-**
-*F  CheckVars() . . . . . . check the initialisation of the variables package
-*/
-extern void CheckVars ( void );
+StructInitInfo * InitInfoVars ( void );
 
 
 /****************************************************************************

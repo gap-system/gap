@@ -2,6 +2,9 @@
 ##
 #W  ghompcgs.gd                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.ghompcgs_gd :=
     "@(#)$Id$";
 
@@ -10,8 +13,7 @@ Revision.ghompcgs_gd :=
 
 #P  IsPcGroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
 ##
-IsPcGroupGeneralMappingByImages := NewRepresentation
-    ( "IsPcGroupGeneralMappingByImages",
+DeclareRepresentation( "IsPcGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages", "sourcePcgs", "sourcePcgsImages" ] );
 IsPcGroupHomomorphismByImages := IsPcGroupGeneralMappingByImages
@@ -21,8 +23,7 @@ IsPcGroupHomomorphismByImages := IsPcGroupGeneralMappingByImages
 ##
 #P  IsToPcGroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
 ##
-IsToPcGroupGeneralMappingByImages := NewRepresentation
-    ( "IsToPcGroupGeneralMappingByImages",
+DeclareRepresentation( "IsToPcGroupGeneralMappingByImages",
       IsGroupGeneralMappingByImages,
       [ "generators", "genimages", "imagePcgs", "imagePcgsPreimages" ] );
 IsToPcGroupHomomorphismByImages := IsToPcGroupGeneralMappingByImages
@@ -32,7 +33,7 @@ IsToPcGroupHomomorphismByImages := IsToPcGroupGeneralMappingByImages
 ##
 #O  NaturalIsomorphismByPcgs( <grp>, <pcgs> ) . . presentation through <pcgs>
 ##
-NaturalIsomorphismByPcgs := NewOperation(
+DeclareOperation(
     "NaturalIsomorphismByPcgs",
     [ IsGroup, IsPcgs ] );
 

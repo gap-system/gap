@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains those functions which mainly deal with characters.
 ##
@@ -21,12 +22,12 @@ Revision.ctblchar_gd :=
 ##
 ##  Let <modtbl> be a Brauer character table.
 ##
-##  In the first version 'DecompositionMatrix' returns the decomposition
+##  In the first version `DecompositionMatrix' returns the decomposition
 ##  matrix of <modtbl>, where the rows are indexed by the irreducible
 ##  characters of the ordinary character table,
-##  and the columns are indexed by 'IBr( <modtbl> )'.
+##  and the columns are indexed by `IBr( <modtbl> )'.
 ##
-##  In the second version 'DecompositionMatrix' returns the decomposition
+##  In the second version `DecompositionMatrix' returns the decomposition
 ##  matrix of the block of <modtbl> with number <blocknr>.
 ##
 ##  An ordinary irreducible character is in block $i$ if and only if all
@@ -35,9 +36,13 @@ Revision.ctblchar_gd :=
 ##  An irreducible Brauer character is in block $i$ if it has nonzero scalar
 ##  product with an ordinary irreducible character in block $i$.
 ##
-DecompositionMatrix := NewOperationArgs( "DecompositionMatrix" );
+#T problem:
+#T There was a documented command `DecompositionMatrix' in the
+#T `specht' package of GAP 3!
+##
+DeclareGlobalFunction( "DecompositionMatrix" );
 
-DecompositionMatrixAttr := NewAttribute( "DecompositionMatrixAttr",
+DeclareAttribute( "DecompositionMatrixAttr",
     IsBrauerTable );
 
 
@@ -49,14 +54,14 @@ DecompositionMatrixAttr := NewAttribute( "DecompositionMatrixAttr",
 ##  is a string that contains {\LaTeX} code to print a decomposition matrix
 ##  (see "DecompositionMatrix") nicely.
 ##
-LaTeXStringDecompositionMatrix := NewOperationArgs(
+DeclareGlobalFunction(
     "LaTeXStringDecompositionMatrix" );
 
 
 ###############################################################################
 ##
 #F  FrobeniusCharacterValue( <value>, <p> )
-## 
+##
 ##  is the value of the Frobenius character corresponding to the Brauer
 ##  character value <value>, where <p> is the characteristic of the field.
 ##
@@ -81,7 +86,7 @@ LaTeXStringDecompositionMatrix := NewOperationArgs(
 ##  $\overline{v} = \sum_{i=0}^{m-1} c_i \hat{y}^i$ over $GF(p)$, which
 ##  gives us $\overline{v} = \sum{i=0}^{m-1} c_i y^i$ in $GF( p^m )$.
 ##
-FrobeniusCharacterValue := NewOperationArgs( "FrobeniusCharacterValue" );
+DeclareGlobalFunction( "FrobeniusCharacterValue" );
 
 
 #############################################################################
@@ -93,7 +98,7 @@ FrobeniusCharacterValue := NewOperationArgs( "FrobeniusCharacterValue" );
 ##  `Tensored' returns the list of tensor products of all in <chars1> with
 ##  all in <chars2>.
 ##
-Tensored := NewOperation( "Tensored",
+DeclareOperation( "Tensored",
     [ IsClassFunctionCollection, IsClassFunctionCollection ] );
 
 
@@ -102,24 +107,23 @@ Tensored := NewOperation( "Tensored",
 #F  Symmetrisations( <tbl>, <characters>, <Sn> )
 #F  Symmetrisations( <tbl>, <characters>, <n> )
 ##
-Symmetrisations := NewOperationArgs( "Symmetrisations" );
+DeclareGlobalFunction( "Symmetrisations" );
 
 Symmetrizations := Symmetrisations;
-#T too early ...
 
 
 #############################################################################
 ##
 #F  SymmetricParts( <tbl>, <character>, <n> )
 ##
-SymmetricParts := NewOperationArgs( "SymmetricParts" );
+DeclareGlobalFunction( "SymmetricParts" );
 
 
 #############################################################################
 ##
 #F  AntiSymmetricParts( <tbl>, <character>, <n> )
 ##
-AntiSymmetricParts := NewOperationArgs( "AntiSymmetricParts" );
+DeclareGlobalFunction( "AntiSymmetricParts" );
 
 
 #############################################################################
@@ -130,7 +134,7 @@ AntiSymmetricParts := NewOperationArgs( "AntiSymmetricParts" );
 ##  which is defined by
 ##  $\chi^{p-}(g):= ( \chi(g)^p - \chi(g^p) ) / p$.
 ##
-MinusCharacter := NewOperationArgs( "MinusCharacter" );
+DeclareGlobalFunction( "MinusCharacter" );
 
 
 #############################################################################
@@ -142,10 +146,10 @@ MinusCharacter := NewOperationArgs( "MinusCharacter" );
 ##  or symplectic ('<func>(x,y)=x-y', see "SymplecticComponents")
 ##  symmetrisations.
 ##
-##  <m> must be an integer in '[ 1 .. 6 ]' in the orthogonal case,
-##  and in '[ 1 .. 5 ]' for the symplectic case.
+##  <m> must be an integer in `[ 1 .. 6 ]' in the orthogonal case,
+##  and in `[ 1 .. 5 ]' for the symplectic case.
 ##
-##  (Note\:\ It suffices to change 'F2' and 'F4' in order to get the
+##  (Note:  It suffices to change `F2' and `F4' in order to get the
 ##  symplectic components from the orthogonal ones.)
 ##
 ##  We have (see J.S. Frame, Recursive computation of tensor power
@@ -183,7 +187,7 @@ MinusCharacter := NewOperationArgs( "MinusCharacter" );
 ##  M51       = L51-L4-L31+L2             L51-L4
 ##  M6        = L6-L4                     L6
 ##
-RefinedSymmetrisations := NewOperationArgs( "RefinedSymmetrisations" );
+DeclareGlobalFunction( "RefinedSymmetrisations" );
 
 
 #############################################################################
@@ -198,7 +202,7 @@ RefinedSymmetrisations := NewOperationArgs( "RefinedSymmetrisations" );
 ##  than the symmetrizations with the symmetric group of degree <m>
 ##  (see "Symmetrizations").
 ##
-##  'OrthogonalComponents' returns the Murnaghan components of the
+##  `OrthogonalComponents' returns the Murnaghan components of the
 ##  characters <chars> of the character table <tbl> up to the power <m>,
 ##  where <m> is an integer between 2 and 6.
 ##
@@ -206,7 +210,7 @@ RefinedSymmetrisations := NewOperationArgs( "RefinedSymmetrisations" );
 ##  Recursive computation of tensor power components, Bayreuther
 ##  Mathematische Schriften 10, 153--159, see "RefinedSymmetrisations".
 ##
-OrthogonalComponents := NewOperationArgs( "OrthogonalComponents" );
+DeclareGlobalFunction( "OrthogonalComponents" );
 
 
 #############################################################################
@@ -221,33 +225,40 @@ OrthogonalComponents := NewOperationArgs( "OrthogonalComponents" );
 ##  than the symmetrizations with the symmetric group of degree <m>
 ##  (see "Symmetrizations").
 ##
-##  'SymplecticComponents' returns the symplectic symmetrisations of the
+##  `SymplecticComponents' returns the symplectic symmetrisations of the
 ##  characters <chars> of the character table <tbl> up to the power <m>,
 ##  where <m> is an integer between 2 and 5.
 ##
-SymplecticComponents := NewOperationArgs( "SymplecticComponents" );
+DeclareGlobalFunction( "SymplecticComponents" );
 
 
 #############################################################################
 ##
-#F  PrimeBlocks( <tbl>, <prime> )
+#F  PrimeBlocks( <ordtbl>, <prime> )
 ##
-##  Two ordinary irreducible characters $\chi, \psi$ are said to lie in the
-##  same block if the images of their central characters $\omega_{\chi},
-##  \omega_{\psi}$ under the homomorphism $\ast: R \rightarrow R / M$ are
-##  equal.  The central character is defined by
+##  For an ordinary character table <ordtbl> and a prime <prime>,
+##  `PrimeBlocks' returns a record with components `block' and `defect',
+##  both lists, where `block[i] = j' means that the `i'--th character
+##  lies in the `j'--th <prime>-block of <ordtbl>,
+##  and `defect[j]' is the defect of this block.
+##
+##  Two ordinary irreducible characters $\chi, \psi$ of a group $G$ are said
+##  to lie in the same $p$-block if the images of their central characters
+##  $\omega_{\chi}, \omega_{\psi}$ under the homomorphism
+##  $\ast \colon R \rightarrow R / M$ are equal.
+##  The central character is the class function defined by
 ##  $\omega_{\chi}(g) = \chi(g) \|Cl_G(g)\| / \chi(1)$.
 ##  $R$ denotes the ring of algebraic integers in the complex numbers, $M$ is
-##  a maximal ideal in $R$ with $pR \subseteq M$.  Thus $F = R/M$ is a field
-##  of characteristics $p$.
+##  a maximal ideal in $R$ with $pR \subseteq M$.
+##  Thus $F = R/M$ is a field of characteristics $p$.
 ##
-##  $\chi$ and $\psi$ lie in the same block if and only if there is an integer
-##  $n$ with the property $(\omega_{chi}(g) - \omega_{\psi}(g))^n \in pR$
+##  $\chi$ and $\psi$ lie in the same $p$-block if and only if there is an
+##  integer $n$ such that $(\omega_{chi}(g) - \omega_{\psi}(g))^n \in pR$
 ##  (see~\cite{Isaacs}, p. 271).
 ##
 ##  Following the proof in~\cite{Isaacs}, a sufficient value for $n$ is
-##  $\varphi(\|g\|)$.  The test must be performed only for one class of each
-##  Galois family.
+##  $\varphi(\|g\|)$.
+##  The test must be performed only for one class of each Galois family.
 ##
 ##  It is sufficient to test $p$-regular classes. (see Feit, p. 150)
 ##
@@ -255,9 +266,9 @@ SymplecticComponents := NewOperationArgs( "SymplecticComponents" );
 ##  (such a character is called defect-zero-character) forms a block of its
 ##  own.
 ##
-##  If 'InfoCharacterTable' has level at least 2,
-##  the defect of the blocks and the height of the characters are printed\:
-##  
+##  If `InfoCharacterTable' has level at least 2,
+##  the defect of the blocks and the height of the characters are printed.
+##
 ##  For $\|G\| = p^a m$ where $p$ does not divide $m$, the defect of a block
 ##  is that $d$ where $p^{a-d}$ is the largest power of $p$ that divides all
 ##  degrees of the characters in the block.
@@ -265,34 +276,28 @@ SymplecticComponents := NewOperationArgs( "SymplecticComponents" );
 ##  The height of a $\chi$ is then the largest exponent $h$ where $p^h$
 ##  divides $\chi(1) / p^{a-d}$.
 ##
-##  'PrimeBlocks' returns a record with components 'block' and 'defect',
-##  both lists, where 'block[i] = j' means that the 'i'--th character
-##  lies in the 'j'--th block,
-##  and 'defect[j]' is the defect of the 'j'--th block.
-##
-PrimeBlocks := NewOperationArgs( "PrimeBlocks" );
+DeclareGlobalFunction( "PrimeBlocks" );
 
 
 #############################################################################
 ##
 #F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2> )
-#F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2>, <scprmatrix> )
+#F  IrreducibleDifferences( <tbl>, <reducibles>, <reducibles2>, <scprmat> )
 #F  IrreducibleDifferences( <tbl>, <reducibles>, \"triangle\" )
-#F  IrreducibleDifferences( <tbl>, <reducibles>, \"triangle\", <scprmatrix> )
+#F  IrreducibleDifferences( <tbl>, <reducibles>, \"triangle\", <scprmat> )
 ##
-##  returns the list of irreducible characters which occur as difference
-##  of two elements of <reducibles> (if \"triangle\" is specified) or of
-##  an element of <reducibles> and an element of <reducibles2>.
+##  `IrreducibleDifferences' returns the list of irreducible characters which
+##  occur as difference of two elements of <reducibles>
+##  (if \"triangle\" is specified)
+##  or of an element of <reducibles> and an element of <reducibles2>.
 ##
-##  Let 'scpr' be the value of '<tbl>.operations.ScalarProduct'.
-##
-##  If <scprmatrix> is not specified it will be calculated,
+##  If <scprmat> is not specified it will be calculated,
 ##  otherwise we must have
-##  $'<scprmatrix>[i][j] = scpr( <tbl>, <reducibles>[j], <reducibles>[i] )'$
+##  $'<scprmat>[i][j]=ScalarProduct(<tbl>,<reducibles>[j],<reducibles>[i])'$
 ##  resp.
-##  $'<scprmatrix>[i][j] = scpr( <tbl>, <reducibles>[j], <reducibles2>[i] )'$.
+##  $'<scprmat>[i][j]=ScalarProduct(<tbl>,<reducibles>[j],<reducibles2>[i])'$.
 ##
-IrreducibleDifferences := NewOperationArgs( "IrreducibleDifferences" );
+DeclareGlobalFunction( "IrreducibleDifferences" );
 
 
 #############################################################################

@@ -1088,9 +1088,7 @@ PG := function ( n )
     return G;
 end;
 
-IsSimple := "2b defined";
-
-PrimitiveGroupSims := function ( deg, nr )
+InstallGlobalFunction( PrimitiveGroupSims, function ( deg, nr )
     local   l, h, m;
 
     # check the arguments
@@ -1120,7 +1118,7 @@ PrimitiveGroupSims := function ( deg, nr )
 
     # finally create the group
     return PG( h+nr-1 );
-end;
+end );
 
 
 #############################################################################

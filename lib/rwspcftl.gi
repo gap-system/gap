@@ -2,6 +2,9 @@
 ##
 #W  rwspcftl.g                  GAP Library                     Werner Nickel
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##
 Revision.rwspcftl_gi :=
     "@(#)$Id$";
@@ -15,8 +18,7 @@ Revision.rwspcftl_gi :=
 ##
 #R  IsFromTheLeftCollectorRep( <obj> )  . . . . . . . . . . . . . . . . . . .
 ##
-IsFromTheLeftCollectorRep :=
-  NewRepresentation( "IsFromTheLeftCollectorRep",
+DeclareRepresentation( "IsFromTheLeftCollectorRep",
           IsPowerConjugateCollector and IsMutable, [] );
           
 FromTheLeftCollectorFamily := NewFamily( "FromTheLeftCollector",
@@ -27,9 +29,7 @@ FromTheLeftCollectorFamily := NewFamily( "FromTheLeftCollector",
 #P  The following property is used to dispatch between a GAP level collector
 #P  and the kernel collector.           . . . . . . . . . . . . . . . . . . .
 ##
-UseKernelCollector := NewProperty( "UseKernelCollector",
-                              IsFromTheLeftCollectorRep  );
-SetUseKernelCollector := Setter( UseKernelCollector );
+DeclareProperty( "UseKernelCollector", IsFromTheLeftCollectorRep  );
 
 #############################################################################
 ##
@@ -37,14 +37,14 @@ SetUseKernelCollector := Setter( UseKernelCollector );
 ##
 #O  FromTheLeftCollector. . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
-FromTheLeftCollector := NewOperation( "FromTheLeftCollector", [IsObject] );
+DeclareOperation( "FromTheLeftCollector", [IsObject] );
 
 ##
 #M  FromTheLeftCollector( <pos int> ) . . . . . . . . . . . . . . . . . . . .
 ##
 InstallMethod( FromTheLeftCollector, 
         true, 
-        [ IsInt and IsPosRat ], 
+        [ IsPosInt ], 
         0,
         function( nrgens )
     local   pcp;
@@ -82,9 +82,9 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <pcc> ) . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+#M  ViewObj( <pcc> )  . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
-InstallMethod( PrintObj, 
+InstallMethod( ViewObj, 
         true,
         [ IsFromTheLeftCollectorRep ],
         0,
@@ -97,11 +97,27 @@ end );
 
 #############################################################################
 ##
+#M  PrintObj( <pcc> ) . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+##
+InstallMethod( PrintObj, 
+        true,
+        [ IsFromTheLeftCollectorRep ],
+        0,
+        function( pcc )
+    
+    Print( "<<from the left collector with ",
+           pcc![PC_NUMBER_OF_GENERATORS ],
+           " generators>>" );
+end );
+#T install a better `PrintObj' method!
+
+#############################################################################
+##
 #M  SetPower( <pcc>, <gen>, <word> )  . . . . . . . . . . . . . . . . . . . .
 ##
 InstallMethod( SetPowerNC,
         true,
-        [ IsFromTheLeftCollectorRep, IsInt and IsPosRat, IsList ], 
+        [ IsFromTheLeftCollectorRep, IsPosInt, IsList ], 
         0,
         function( pcp, g, w )
     
@@ -116,7 +132,7 @@ end );
 
 InstallMethod( SetPower,
         true,
-        [ IsFromTheLeftCollectorRep, IsInt and IsPosRat, IsList ], 
+        [ IsFromTheLeftCollectorRep, IsPosInt, IsList ], 
         0,
         function( pcp, g, w )
     local   n,  i;
@@ -254,7 +270,7 @@ end );
 ##
 InstallMethod( SetRelativeOrderNC,
         true,
-        [ IsFromTheLeftCollectorRep, IsInt and IsPosRat, IsInt and IsPosRat ],
+        [ IsFromTheLeftCollectorRep, IsPosInt, IsPosInt ],
         0,
         function( pcp, g, order )
     
@@ -263,7 +279,7 @@ end );
 
 InstallMethod( SetRelativeOrder,
         true,
-        [ IsFromTheLeftCollectorRep, IsInt and IsPosRat, IsInt and IsPosRat ],
+        [ IsFromTheLeftCollectorRep, IsPosInt, IsPosInt ],
         0,
         function( pcp, g, order )
     

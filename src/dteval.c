@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the part of the deep thought package which uses the
 **  deep thought polynomials to multiply in nilpotent groups.
@@ -24,7 +25,7 @@
 */
 #include       "system.h"
 
-SYS_CONST char * Revision_dteval_c =
+const char * Revision_dteval_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1074,72 +1075,113 @@ Obj       FuncDTQuotient( Obj      self,
 /****************************************************************************
 **
 
-*F  SetupDTEvaluation() . . . . . . .  initialize the Deep Thought Evaluation
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupDTEvaluation ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
 
+    { "Compress", 1, "list",
+      Funccompress, "src/dteval.c:Compress" },
+
+    { "Multiply", 3, "lword, rword, representatives",
+      FuncMultiply, "src/dteval.c:Multiply" },
+
+    { "Pover", 3, "word, exponent, representatives",
+      FuncPower, "src/dteval.c:Pover" },
+
+    { "DTMultiply", 3, "lword, rword, rws",
+      FuncDTMultiply, "src/dteval.c:DTMultiply" },
+
+    { "DTPower", 3, "word, exponent, rws",
+      FuncDTPower, "src/dteval.c:DTPower" },
+
+    { "DTSolution", 3, "lword, rword, rws",
+      FuncDTSolution, "src/dteval.c:DTSolution" },
+
+    { "DTCommutator", 3, "lword, rword, rws",
+      FuncDTCommutator, "src/dteval.c:DTCommutator" },
+
+    { "DTQuotient", 3, "lword, rword, rws",
+      FuncDTQuotient, "src/dteval.c:DTQuotient" },
+
+    { "DTConjugate", 3, "lword, rword, rws",
+      FuncDTConjugate, "src/dteval.c:DTConjugate" },
+
+    { 0 }
+
+};
 
 
 /****************************************************************************
 **
-*F  InitDTEvaluation()  . . . . . . .  initialize the Deep Thought Evaluation
-**
-**  InitDTEvaluation initializes the deep thought multiplication package.
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitDTEvaluation ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
+{
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
+*/
+static Int PostRestore (
+    StructInitInfo *    module )
 {
     evlist    = RNamName("evlist");
     evlistvec = RNamName("evlistvec");
 
-    C_NEW_GVAR_FUNC( "Compress", 1, "list",
-                  Funccompress,
-        "src/dteval.c:Compress" );
-
-    C_NEW_GVAR_FUNC( "Multiply", 3, "lword, rword, representatives",
-                  FuncMultiply,
-        "src/dteval.c:Multiply" );
-
-    C_NEW_GVAR_FUNC( "Pover", 3, "word, exponent, representatives",
-                  FuncPower,
-        "src/dteval.c:Pover" );
-
-    C_NEW_GVAR_FUNC( "DTMultiply", 3, "lword, rword, rws",
-                  FuncDTMultiply,
-        "src/dteval.c:DTMultiply" );
-
-    C_NEW_GVAR_FUNC( "DTPower", 3, "word, exponent, rws",
-                  FuncDTPower,
-        "src/dteval.c:DTPower" );
-
-    C_NEW_GVAR_FUNC( "DTSolution", 3, "lword, rword, rws",
-                  FuncDTSolution,
-        "src/dteval.c:DTSolution" );
-
-    C_NEW_GVAR_FUNC( "DTCommutator", 3, "lword, rword, rws",
-                  FuncDTCommutator,
-        "src/dteval.c:DTCommutator" );
-
-    C_NEW_GVAR_FUNC( "DTQuotient", 3, "lword, rword, rws",
-                  FuncDTQuotient,
-        "src/dteval.c:DTQuotient" );
-
-    C_NEW_GVAR_FUNC( "DTConjugate", 3, "lword, rword, rws",
-                  FuncDTConjugate,
-        "src/dteval.c:DTConjugate" );
+    /* return success                                                      */
+    return 0;
 }
-
 
 
 /****************************************************************************
 **
-*F  CheckDTEvaluation()   check the initialisation of Deep Thought Evaluation
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckDTEvaluation( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "dteval_c",   Revision_dteval_c );
-    SET_REVISION( "dteval_h",   Revision_dteval_h );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return PostRestore( module );
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoDTEvaluation()  . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "dteval",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoDTEvaluation ( void )
+{
+    module.revision_c = Revision_dteval_c;
+    module.revision_h = Revision_dteval_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

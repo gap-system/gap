@@ -195,7 +195,44 @@ for all profiled functions,
 in the second form only the functions in the list <funcs> are
 considered.
 
+\begintt
+gap> ProfileOperationsAndMethods(true);
+gap> Factors(10^42+1);
+[ 29, 101, 281, 9901, 226549, 121499449, 4458192223320340849 ]
+gap> ProfileOperationsAndMethods(false);
+gap> DisplayProfile();
+  count  self/ms   sum/ms  chld/ms  function                                  
+      1        0        0        0  DefaultRingByGenerators: method that tr*  
+      1        0        0      140  Factors: for a ring element               
+      1        0        0        0  ViewObj: for finite lists                 
+      1        0        0        0  ForAll: method for a list/collection, a*  
+      1        0        0        0  DefaultRingByGenerators                   
+      1        0        0        0  ForAll                                    
+      2        0        0      140  Factors                                   
+      2        0        0        0  Flat: for a list                          
+      2        0        0        0  Compacted                                 
+      7        0        0        0  ViewObj: default method using `PrintObj'  
+      8        0        0        0  ViewObj                                   
+      9        0        0        0  Sort: for a mutable small list            
+      9        0        0        0  Sort                                      
+     10        0        0        0  Root: method for two integers             
+     11        0        0        0  EQ: method for 'infinity' and 'infinity'  
+     14        0        0        0  APPEND_LIST                               
+     16        0        0        0  Display: generic: use Print               
+     26        0        0        0  Log: method for two integers              
+     29        0        0        0  Size: for a list that is a collection     
+      6       10       10        0  Compacted: for a list                     
+   4377       20       30       20  ADD_LIST                                  
+      1      140      170        0  Factors: method for integers              
+   2259      450      620      -10  POS_LIST                                  
+             620                    TOTAL                                     
+\endtt
+
 % (Frank, could you describe the format?)
+
+Note that profiling (even the command `ProfileOperationsAndMethods(true)')
+can take substantial time and {\GAP} will perform much slower when profiling
+than when not.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

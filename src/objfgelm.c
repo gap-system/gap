@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This  file contains the  C functions for free  group elements.  There are
 **  basically three different (internal) types: 8  bits, 16 bits, and 32 bits
@@ -73,17 +74,19 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_objfgelm_c =
+const char * Revision_objfgelm_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gvars.h"               /* global variables                */
 #include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
+#include        "opers.h"               /* generic operations              */
+#include        "ariths.h"              /* arithmetic macros               */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -97,8 +100,6 @@ SYS_CONST char * Revision_objfgelm_c =
 #define INCLUDE_DECLARATION_PART
 #include        "objfgelm.h"            /* objects of free groups          */
 #undef  INCLUDE_DECLARATION_PART
-
-extern Obj TRY_NEXT_METHOD;
 
 
 /****************************************************************************
@@ -423,6 +424,30 @@ Obj Func8Bits_HeadByNumber (
 /****************************************************************************
 **
 *F  Func8Bits_Less( <self>, <l>, <r> )
+**
+**  This  function implements    a length-plus-lexicographic   ordering   on
+**  associative words.  This ordering  is translation  invariant, therefore,
+**  we can  skip common prefixes.  This  is done  in  the first loop  of the
+**  function.  When  a difference in  the  two words  is  encountered, it is
+**  decided which is the  lexicographically smaller.  There are several case
+**  that can occur:
+**
+**  The syllables where the difference  occurs have different generators.  In
+**  this case it is sufficient to compare the two generators.  
+**  Example: x^3 < y^3.
+**
+**  The syllables have the same generator but one exponent is the negative of
+**  the other.  In this case the word with  the negative exponent is smaller.
+**  Example: x^-1 < x.
+**
+**  Now it suffices  to compare the  unsigned  exponents.  For the  syllable
+**  with the smaller exponent we  have to take  the  next generator in  that
+**  word into  account.   This  means that  we  are  discarding  the smaller
+**  syllable  as a common prefix.  Note  that if this  happens at the end of
+**  one of the two words, then this word (ignoring the common prefix) is the
+**  empty word and we can immediately decide which word is the smaller.
+**  Examples: y^3 x < y^2 z, y^3 x > y^2 x z,  x^2 < x y^-1,  x^2 < x^3.
+**
 */
 Obj Func8Bits_Less (
     Obj         self,
@@ -439,6 +464,9 @@ Obj Func8Bits_Less (
     Int         nr;             /* number of pairs in <r>                  */
     UInt1 *     pl;             /* data area in <l>                        */
     UInt1 *     pr;             /* data area in <r>                        */
+    Obj         lexico;         /* lexicographic order of <l> and <r>      */
+    Obj         ll;             /* length of <l>                           */
+    Obj         lr;             /* length of <r>                           */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -447,36 +475,72 @@ Obj Func8Bits_Less (
         return ( nr != 0 ) ? True : False;
     }
 
-    /* compare the generator/exponent pairs                                */
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+    
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+    
+    /* Skip the common prefix and determine if the first word is smaller   */
+    /* with respect to the lexicographic ordering.                         */
     pl = (UInt1*)DATA_WORD(l);
     pr = (UInt1*)DATA_WORD(r);
-    for ( ;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ ) {
-
-        /* got a difference                                                */
+    for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
-
-            /* get the number of bits for exponents                        */
-            ebits = EBITS_WORD(l);
-
-            /* get the exponent masks                                      */
-            exps = 1UL << (ebits-1);
-            expm = exps - 1;
+            /* got a difference                                            */
 
             /* get the generator mask                                      */
             genm = ((1UL << (8-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
-                return ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                lexico = ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                break;
             }
 
-            /* comapre the exponents                                       */
-            exl = (*pl & expm) - ((*pl & exps)?exps:0);
-            exr = (*pr & expm) - ((*pr & exps)?exps:0);
-            return ( exl < exr ) ? True : False;
+            /* get the unsigned exponents                                  */
+            exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+            exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+
+            /* compare the sign of the exponents                           */
+            if( exl == exr && (*pl & exps) != (*pr & exps) ) {
+                lexico = (*pl & exps) ? True : False;
+                break;
+            }
+
+            /* compare the exponents, and check the next generator.  This  */
+            /* amounts to stripping off the common prefix  x^|expl-expr|.  */
+            if( exl > exr ) 
+                if( nr > 0 ) {
+                  lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
+                  break;
+                }
+                else
+                    /* <r> is now essentially the empty word.             */
+                    return False;
+
+            if( nl > 0 ) {  /* exl < exr                                  */
+                lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
+                break;
+            }
+            /* <l> is now essentially the empty word.                     */
+            return True;
         }
+
+    /* compute the lengths of the rest                                    */
+    for ( ll = INTOBJ_INT(0);  0 < nl;  nl--,  pl++ ) {
+        exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+        C_SUM_FIA(ll,ll,INTOBJ_INT(exl));
     }
-    return ( nr != 0 ) ? True : False;
+    for ( lr = INTOBJ_INT(0);  0 < nr;  nr--,  pr++ ) {
+        exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+        C_SUM_FIA(lr,lr,INTOBJ_INT(exr));
+    }
+
+    if( EQ( ll, lr ) ) return lexico;
+
+    return LT( ll, lr ) ? True : False;
 }
 
 
@@ -993,10 +1057,41 @@ Obj Func8Bits_Quotient (
     return obj;
 }
 
+/****************************************************************************
+**
+*F  Func8Bits_LengthWord( <self>, <w> )
+*/
+
+Obj Func8Bits_LengthWord (
+    Obj         self,
+    Obj         w )
+{
+  UInt npairs,i,ebits,exps,expm;
+  Obj len, uexp;
+  UInt1 *data, pair;
+  npairs = NPAIRS_WORD(w);
+  ebits = EBITS_WORD(w);
+  data = (UInt1*)DATA_WORD(w);
+  
+  /* get the exponent masks                                              */
+  exps = 1UL << (ebits-1);
+  expm = exps - 1;
+  
+  len = INTOBJ_INT(0);
+  for (i = 0; i < npairs; i++)
+    {
+      pair = data[i];
+      if (pair & exps)
+	uexp = INTOBJ_INT(exps - (pair & expm));
+      else
+	uexp = INTOBJ_INT(pair & expm);
+      C_SUM_FIA(len,len,uexp);
+    }
+  return len;
+}
 
 /****************************************************************************
 **
-
 *F * * * * * * * * * * * * * * * * 16 bits word * * * * * * * * * * * * * * *
 */
 
@@ -1316,6 +1411,9 @@ Obj Func16Bits_HeadByNumber (
 /****************************************************************************
 **
 *F  Func16Bits_Less( <self>, <l>, <r> )
+**
+**  For an explanation of this function, see the comments before
+**  Func8Bits_Less(). 
 */
 Obj Func16Bits_Less (
     Obj         self,
@@ -1332,6 +1430,9 @@ Obj Func16Bits_Less (
     Int         nr;             /* number of pairs in <r>                  */
     UInt2 *     pl;             /* data area in <l>                        */
     UInt2 *     pr;             /* data area in <r>                        */
+    Obj         lexico;         /* lexicographic order of <l> and <r>      */
+    Obj         ll;             /* length of <l>                           */
+    Obj         lr;             /* length of <r>                           */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -1340,36 +1441,72 @@ Obj Func16Bits_Less (
         return ( nr != 0 ) ? True : False;
     }
 
-    /* compare the generator/exponent pairs                                */
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+    
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+    
+    /* Skip the common prefix and determine if the first word is smaller   */
+    /* with respect to the lexicographic ordering.                         */
     pl = (UInt2*)DATA_WORD(l);
     pr = (UInt2*)DATA_WORD(r);
-    for ( ;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ ) {
-
-        /* got a difference                                                */
+    for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
-
-            /* get the number of bits for exponents                        */
-            ebits = EBITS_WORD(l);
-
-            /* get the exponent masks                                      */
-            exps = 1UL << (ebits-1);
-            expm = exps - 1;
+            /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (16-ebits)) - 1) << ebits;
+            genm = ((1UL << (8-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
-                return ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                lexico = ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                break;
             }
 
-            /* compare the exponents                                       */
-            exl = (*pl & expm) - ((*pl & exps)?exps:0);
-            exr = (*pr & expm) - ((*pr & exps)?exps:0);
-            return ( exl < exr ) ? True : False;
+            /* get the unsigned exponents                                  */
+            exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+            exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+
+            /* compare the sign of the exponents                           */
+            if( exl == exr && (*pl & exps) != (*pr & exps) ) {
+                lexico = (*pl & exps) ? True : False;
+                break;
+            }
+
+            /* compare the exponents, and check the next generator.  This  */
+            /* amounts to stripping off the common prefix  x^|expl-expr|.  */
+            if( exl > exr ) 
+                if( nr > 0 ) {
+                  lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
+                  break;
+                }
+                else
+                    /* <r> is now essentially the empty word.             */
+                    return False;
+
+            if( nl > 0 ) {  /* exl < exr                                  */
+                lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
+                break;
+            }
+            /* <l> is now essentially the empty word.                     */
+            return True;
         }
+
+    /* compute the lengths of the rest                                    */
+    for ( ll = INTOBJ_INT(0);  0 < nl;  nl--,  pl++ ) {
+        exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+        C_SUM_FIA(ll,ll,INTOBJ_INT(exl));
     }
-    return ( nr != 0 ) ? True : False;
+    for ( lr = INTOBJ_INT(0);  0 < nr;  nr--,  pr++ ) {
+        exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+        C_SUM_FIA(lr,lr,INTOBJ_INT(exr));
+    }
+
+    if( EQ( ll, lr ) ) return lexico;
+
+    return LT( ll, lr ) ? True : False;
 }
 
 
@@ -1886,6 +2023,39 @@ Obj Func16Bits_Quotient (
     return obj;
 }
 
+/****************************************************************************
+**
+*F  Func16Bits_LengthWord( <self>, <w> )
+*/
+
+Obj Func16Bits_LengthWord (
+    Obj         self,
+    Obj         w )
+{
+  UInt npairs,i,ebits,exps,expm;
+  Obj len, uexp;
+  UInt2 *data, pair;
+  
+  npairs = NPAIRS_WORD(w);
+  ebits = EBITS_WORD(w);
+  data = (UInt2*)DATA_WORD(w);
+  
+  /* get the exponent masks                                              */
+  exps = 1UL << (ebits-1);
+  expm = exps - 1;
+  
+  len = INTOBJ_INT(0);
+  for (i = 0; i < npairs; i++)
+    {
+      pair = data[i];
+      if (pair & exps)
+	uexp = INTOBJ_INT(exps - (pair & expm));
+      else
+	uexp = INTOBJ_INT(pair & expm);
+      C_SUM_FIA(len,len,uexp);
+    }
+  return len;
+}
 
 /****************************************************************************
 **
@@ -2209,6 +2379,9 @@ Obj Func32Bits_HeadByNumber (
 /****************************************************************************
 **
 *F  Func32Bits_Less( <self>, <l>, <r> )
+**
+**  For an explanation of this function, see the comments before
+**  Func8Bits_Less(). 
 */
 Obj Func32Bits_Less (
     Obj         self,
@@ -2225,6 +2398,9 @@ Obj Func32Bits_Less (
     Int         nr;             /* number of pairs in <r>                  */
     UInt4 *     pl;             /* data area in <l>                        */
     UInt4 *     pr;             /* data area in <r>                        */
+    Obj         lexico;         /* lexicographic order of <l> and <r>      */
+    Obj         ll;             /* length of <l>                           */
+    Obj         lr;             /* length of <r>                           */
 
     /* if <l> or <r> is the identity it is easy                            */
     nl = NPAIRS_WORD(l);
@@ -2233,36 +2409,72 @@ Obj Func32Bits_Less (
         return ( nr != 0 ) ? True : False;
     }
 
-    /* compare the generator/exponent pairs                                */
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+    
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+    
+    /* Skip the common prefix and determine if the first word is smaller   */
+    /* with respect to the lexicographic ordering.                         */
     pl = (UInt4*)DATA_WORD(l);
     pr = (UInt4*)DATA_WORD(r);
-    for ( ;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ ) {
-
-        /* got a difference                                                */
+    for ( lexico = False;  0 < nl && 0 < nr;  nl--, nr--, pl++, pr++ )
         if ( *pl != *pr ) {
-
-            /* get the number of bits for exponents                        */
-            ebits = EBITS_WORD(l);
-
-            /* get the exponent masks                                      */
-            exps = 1UL << (ebits-1);
-            expm = exps - 1;
+            /* got a difference                                            */
 
             /* get the generator mask                                      */
-            genm = ((1UL << (32-ebits)) - 1) << ebits;
+            genm = ((1UL << (8-ebits)) - 1) << ebits;
 
             /* compare the generators                                      */
             if ( (*pl & genm) != (*pr & genm) ) {
-                return ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                lexico = ( (*pl & genm) < (*pr & genm) ) ? True : False;
+                break;
             }
 
-            /* compare the exponents                                       */
-            exl = (*pl & expm) - ((*pl & exps)?exps:0);
-            exr = (*pr & expm) - ((*pr & exps)?exps:0);
-            return ( exl < exr ) ? True : False;
+            /* get the unsigned exponents                                  */
+            exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+            exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+
+            /* compare the sign of the exponents                           */
+            if( exl == exr && (*pl & exps) != (*pr & exps) ) {
+                lexico = (*pl & exps) ? True : False;
+                break;
+            }
+
+            /* compare the exponents, and check the next generator.  This  */
+            /* amounts to stripping off the common prefix  x^|expl-expr|.  */
+            if( exl > exr ) 
+                if( nr > 0 ) {
+                  lexico = (*pl & genm) < (*(pr+1) & genm) ? True : False;
+                  break;
+                }
+                else
+                    /* <r> is now essentially the empty word.             */
+                    return False;
+
+            if( nl > 0 ) {  /* exl < exr                                  */
+                lexico = (*(pl+1) & genm) < (*pr & genm) ? True : False;
+                break;
+            }
+            /* <l> is now essentially the empty word.                     */
+            return True;
         }
+
+    /* compute the lengths of the rest                                    */
+    for ( ll = INTOBJ_INT(0);  0 < nl;  nl--,  pl++ ) {
+        exl = (*pl & exps) ? (exps - (*pl & expm)) : (*pl & expm);
+        C_SUM_FIA(ll,ll,INTOBJ_INT(exl));
     }
-    return ( nr != 0 ) ? True : False;
+    for ( lr = INTOBJ_INT(0);  0 < nr;  nr--,  pr++ ) {
+        exr = (*pr & exps) ? (exps - (*pr & expm)) : (*pr & expm);
+        C_SUM_FIA(lr,lr,INTOBJ_INT(exr));
+    }
+
+    if( EQ( ll, lr ) ) return lexico;
+
+    return LT( ll, lr ) ? True : False;
 }
 
 
@@ -2781,6 +2993,39 @@ Obj Func32Bits_Quotient (
     return obj;
 }
 
+/****************************************************************************
+**
+*F  Func32Bits_LengthWord( <self>, <w> )
+*/
+
+Obj Func32Bits_LengthWord (
+    Obj         self,
+    Obj         w )
+{
+  UInt npairs,i,ebits,exps,expm;
+  Obj len, uexp;
+  UInt4 *data, pair;
+  
+  npairs = NPAIRS_WORD(w);
+  ebits = EBITS_WORD(w);
+  data = (UInt4*)DATA_WORD(w);
+  
+  /* get the exponent masks                                              */
+  exps = 1UL << (ebits-1);
+  expm = exps - 1;
+  
+  len = INTOBJ_INT(0);
+  for (i = 0; i < npairs; i++)
+    {
+      pair = data[i];
+      if (pair & exps)
+	uexp = INTOBJ_INT(exps - (pair & expm));
+      else
+	uexp = INTOBJ_INT(pair & expm);
+      C_SUM_FIA(len,len,uexp);
+    }
+  return len;
+}
 
 /****************************************************************************
 **
@@ -2811,222 +3056,224 @@ Obj FuncNBits_NumberSyllables (
 /****************************************************************************
 **
 
-*F  SetupFreeGroupElements()  . . . initialize the free group element helpers
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupFreeGroupElements ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "8Bits_Equal", 2, "8_bits_word, 8_bits_word",
+      Func8Bits_Equal, "src/objfgelm.c:8Bits_Equal" },
+
+    { "8Bits_ExponentSums1", 1, "8_bits_word",
+      Func8Bits_ExponentSums1, "src/objfgelm.c:8Bits_ExponentSums1" },
+
+    { "8Bits_ExponentSums3", 3, "8_bits_word, start, end",
+      Func8Bits_ExponentSums3, "src/objfgelm.c:8Bits_ExponentSums3" },
+
+    { "8Bits_ExponentSyllable", 2, "8_bits_word, position",
+      Func8Bits_ExponentSyllable, "src/objfgelm.c:8Bits_ExponentSyllable" },
+
+    { "8Bits_ExtRepOfObj", 1, "8_bits_word",
+      Func8Bits_ExtRepOfObj, "src/objfgelm.c:8Bits_ExtRepOfObj" },
+
+    { "8Bits_GeneratorSyllable", 2, "8_bits_word, position",
+      Func8Bits_GeneratorSyllable, "src/objfgelm.c:8Bits_GeneratorSyllable" },
+
+    { "8Bits_Less", 2, "8_bits_word, 8_bits_word",
+      Func8Bits_Less, "src/objfgelm.c:8Bits_Less" },
+
+    { "8Bits_AssocWord", 2, "kind, data",
+      Func8Bits_AssocWord, "src/objfgelm.c:8Bits_AssocWord" },
+
+    { "8Bits_NumberSyllables", 1, "8_bits_word",
+      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+
+    { "8Bits_ObjByVector", 2, "kind, data",
+      Func8Bits_ObjByVector, "src/objfgelm.c:8Bits_ObjByVector" },
+
+    { "8Bits_HeadByNumber", 2, "16_bits_word, gen_num",
+      Func8Bits_HeadByNumber, "src/objfgelm.c:8Bits_HeadByNumber" },
+
+    { "8Bits_Power", 2, "8_bits_word, small_integer",
+      Func8Bits_Power, "src/objfgelm.c:8Bits_Power" },
+
+    { "8Bits_Product", 2, "8_bits_word, 8_bits_word",
+      Func8Bits_Product, "src/objfgelm.c:8Bits_Product" },
+
+    { "8Bits_Quotient", 2, "8_bits_word, 8_bits_word",
+      Func8Bits_Quotient, "src/objfgelm.c:8Bits_Quotient" },
+
+    { "8Bits_LengthWord", 1, "8_bits_word",
+      Func8Bits_LengthWord, "src/objfgelm.c:8Bits_LengthWord" },
+
+    { "16Bits_Equal", 2, "16_bits_word, 16_bits_word",
+      Func16Bits_Equal, "src/objfgelm.c:16Bits_Equal" },
+
+    { "16Bits_ExponentSums1", 1, "16_bits_word",
+      Func16Bits_ExponentSums1, "src/objfgelm.c:16Bits_ExponentSums1" },
+
+    { "16Bits_ExponentSums3", 3, "16_bits_word, start, end",
+      Func16Bits_ExponentSums3, "src/objfgelm.c:16Bits_ExponentSums3" },
+
+    { "16Bits_ExponentSyllable", 2, "16_bits_word, position",
+      Func16Bits_ExponentSyllable, "src/objfgelm.c:16Bits_ExponentSyllable" },
+
+    { "16Bits_ExtRepOfObj", 1, "16_bits_word",
+      Func16Bits_ExtRepOfObj, "src/objfgelm.c:16Bits_ExtRepOfObj" },
+
+    { "16Bits_GeneratorSyllable", 2, "16_bits_word, pos",
+      Func16Bits_GeneratorSyllable, "src/objfgelm.c:16Bits_GeneratorSyllable" },
+
+    { "16Bits_Less", 2, "16_bits_word, 16_bits_word",
+      Func16Bits_Less, "src/objfgelm.c:16Bits_Less" },
+
+    { "16Bits_AssocWord", 2, "kind, data",
+      Func16Bits_AssocWord, "src/objfgelm.c:16Bits_AssocWord" },
+
+    { "16Bits_NumberSyllables", 1, "16_bits_word",
+      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+
+    { "16Bits_ObjByVector", 2, "kind, data",
+      Func16Bits_ObjByVector, "src/objfgelm.c:16Bits_ObjByVector" },
+
+    { "16Bits_HeadByNumber", 2, "16_bits_word, gen_num",
+      Func16Bits_HeadByNumber, "src/objfgelm.c:16Bits_HeadByNumber" },
+
+    { "16Bits_Power", 2, "16_bits_word, small_integer",
+      Func16Bits_Power, "src/objfgelm.c:16Bits_Power" },
+
+    { "16Bits_Product", 2, "16_bits_word, 16_bits_word",
+      Func16Bits_Product, "src/objfgelm.c:16Bits_Product" },
+
+    { "16Bits_Quotient", 2, "16_bits_word, 16_bits_word",
+      Func16Bits_Quotient, "src/objfgelm.c:16Bits_Quotient" },
+
+    { "16Bits_LengthWord", 1, "16_bits_word",
+      Func16Bits_LengthWord, "src/objfgelm.c:16Bits_LengthWord" },
+
+    { "32Bits_Equal", 2, "32_bits_word, 32_bits_word",
+      Func32Bits_Equal, "src/objfgelm.c:32Bits_Equal" },
+
+    { "32Bits_ExponentSums1", 1, "32_bits_word",
+      Func32Bits_ExponentSums1, "src/objfgelm.c:32Bits_ExponentSums1" },
+
+    { "32Bits_ExponentSums3", 3, "32_bits_word, start, end",
+      Func32Bits_ExponentSums3, "src/objfgelm.c:32Bits_ExponentSums3" },
+
+    { "32Bits_ExponentSyllable", 2, "32_bits_word, position",
+      Func32Bits_ExponentSyllable, "src/objfgelm.c:32Bits_ExponentSyllable" },
+
+    { "32Bits_ExtRepOfObj", 1, "32_bits_word",
+      Func32Bits_ExtRepOfObj, "src/objfgelm.c:32Bits_ExtRepOfObj" },
+
+    { "32Bits_GeneratorSyllable", 2, "32_bits_word, pos",
+      Func32Bits_GeneratorSyllable, "src/objfgelm.c:32Bits_GeneratorSyllable" },
+
+    { "32Bits_Less", 2, "32_bits_word, 32_bits_word",
+      Func32Bits_Less, "src/objfgelm.c:32Bits_Less" },
+
+    { "32Bits_AssocWord", 2, "kind, data",
+      Func32Bits_AssocWord, "src/objfgelm.c:32Bits_AssocWord" },
+
+    { "32Bits_NumberSyllables", 1, "32_bits_word",
+      FuncNBits_NumberSyllables, "src/objfgelm.c:NBits_NumberSyllables" },
+
+    { "32Bits_ObjByVector", 2, "kind, data",
+      Func32Bits_ObjByVector, "src/objfgelm.c:32Bits_ObjByVector" },
+
+    { "32Bits_HeadByNumber", 2, "16_bits_word, gen_num",
+      Func32Bits_HeadByNumber, "src/objfgelm.c:32Bits_HeadByNumber" },
+
+    { "32Bits_Power", 2, "32_bits_word, small_integer",
+      Func32Bits_Power, "src/objfgelm.c:32Bits_Power" },
+
+    { "32Bits_Product", 2, "32_bits_word, 32_bits_word",
+      Func32Bits_Product, "src/objfgelm.c:32Bits_Product" },
+
+    { "32Bits_Quotient", 2, "32_bits_word, 32_bits_word",
+      Func32Bits_Quotient, "src/objfgelm.c:32Bits_Quotient" },
+
+    { "32Bits_LengthWord", 1, "32_bits_word",
+      Func32Bits_LengthWord, "src/objfgelm.c:32Bits_LengthWord" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitFreeGroupElements()   . . . initialize the free group element helpers
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitFreeGroupElements ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-
     /* export position numbers 'AWP_SOMETHING'                             */
-    if ( ! SyRestoring ) {
-        AssGVar( GVarName( "AWP_FIRST_ENTRY" ),
-                 INTOBJ_INT(AWP_FIRST_ENTRY) );
-        AssGVar( GVarName( "AWP_PURE_TYPE" ),
-                 INTOBJ_INT(AWP_PURE_TYPE) );
-        AssGVar( GVarName( "AWP_NR_BITS_EXP" ),
-                 INTOBJ_INT(AWP_NR_BITS_EXP) );
-        AssGVar( GVarName( "AWP_NR_GENS" ),
-                 INTOBJ_INT(AWP_NR_GENS) );
-        AssGVar( GVarName( "AWP_NR_BITS_PAIR" ),
-                 INTOBJ_INT(AWP_NR_BITS_PAIR) );
-        AssGVar( GVarName( "AWP_FUN_OBJ_BY_VECTOR" ),
-                 INTOBJ_INT(AWP_FUN_OBJ_BY_VECTOR) );
-        AssGVar( GVarName( "AWP_FUN_ASSOC_WORD" ),
-                 INTOBJ_INT(AWP_FUN_ASSOC_WORD) );
-        AssGVar( GVarName( "AWP_FIRST_FREE" ),
-                 INTOBJ_INT(AWP_FIRST_FREE) );
-    }
+    AssGVar( GVarName( "AWP_FIRST_ENTRY" ),
+             INTOBJ_INT(AWP_FIRST_ENTRY) );
+    AssGVar( GVarName( "AWP_PURE_TYPE" ),
+             INTOBJ_INT(AWP_PURE_TYPE) );
+    AssGVar( GVarName( "AWP_NR_BITS_EXP" ),
+             INTOBJ_INT(AWP_NR_BITS_EXP) );
+    AssGVar( GVarName( "AWP_NR_GENS" ),
+             INTOBJ_INT(AWP_NR_GENS) );
+    AssGVar( GVarName( "AWP_NR_BITS_PAIR" ),
+             INTOBJ_INT(AWP_NR_BITS_PAIR) );
+    AssGVar( GVarName( "AWP_FUN_OBJ_BY_VECTOR" ),
+             INTOBJ_INT(AWP_FUN_OBJ_BY_VECTOR) );
+    AssGVar( GVarName( "AWP_FUN_ASSOC_WORD" ),
+             INTOBJ_INT(AWP_FUN_ASSOC_WORD) );
+    AssGVar( GVarName( "AWP_FIRST_FREE" ),
+             INTOBJ_INT(AWP_FIRST_FREE) );
 
-    /* '8Bits' methods                                                     */
-    C_NEW_GVAR_FUNC( "8Bits_Equal", 2, "8_bits_word, 8_bits_word",
-                  Func8Bits_Equal,
-      "src/objfgelm.c:8Bits_Equal" );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "8Bits_ExponentSums1", 1, "8_bits_word",
-                  Func8Bits_ExponentSums1,
-      "src/objfgelm.c:8Bits_ExponentSums1" );
-
-    C_NEW_GVAR_FUNC( "8Bits_ExponentSums3", 3, "8_bits_word, start, end",
-                  Func8Bits_ExponentSums3,
-      "src/objfgelm.c:8Bits_ExponentSums3" );
-
-    C_NEW_GVAR_FUNC( "8Bits_ExponentSyllable", 2, "8_bits_word, position",
-                  Func8Bits_ExponentSyllable,
-      "src/objfgelm.c:8Bits_ExponentSyllable" );
-
-    C_NEW_GVAR_FUNC( "8Bits_ExtRepOfObj", 1, "8_bits_word",
-                  Func8Bits_ExtRepOfObj,
-      "src/objfgelm.c:8Bits_ExtRepOfObj" );
-
-    C_NEW_GVAR_FUNC( "8Bits_GeneratorSyllable", 2, "8_bits_word, position",
-                  Func8Bits_GeneratorSyllable,
-      "src/objfgelm.c:8Bits_GeneratorSyllable" );
-
-    C_NEW_GVAR_FUNC( "8Bits_Less", 2, "8_bits_word, 8_bits_word",
-                  Func8Bits_Less,
-      "src/objfgelm.c:8Bits_Less" );
-
-    C_NEW_GVAR_FUNC( "8Bits_AssocWord", 2, "kind, data",
-                  Func8Bits_AssocWord,
-      "src/objfgelm.c:8Bits_AssocWord" );
-
-    C_NEW_GVAR_FUNC( "8Bits_NumberSyllables", 1, "8_bits_word",
-                  FuncNBits_NumberSyllables,
-      "src/objfgelm.c:NBits_NumberSyllables" );
-
-    C_NEW_GVAR_FUNC( "8Bits_ObjByVector", 2, "kind, data",
-                  Func8Bits_ObjByVector,
-      "src/objfgelm.c:8Bits_ObjByVector" );
-
-    C_NEW_GVAR_FUNC( "8Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-                  Func8Bits_HeadByNumber,
-      "src/objfgelm.c:8Bits_HeadByNumber" );
-
-    C_NEW_GVAR_FUNC( "8Bits_Power", 2, "8_bits_word, small_integer",
-                  Func8Bits_Power,
-      "src/objfgelm.c:8Bits_Power" );
-
-    C_NEW_GVAR_FUNC( "8Bits_Product", 2, "8_bits_word, 8_bits_word",
-                  Func8Bits_Product,
-      "src/objfgelm.c:8Bits_Product" );
-
-    C_NEW_GVAR_FUNC( "8Bits_Quotient", 2, "8_bits_word, 8_bits_word",
-                  Func8Bits_Quotient,
-      "src/objfgelm.c:8Bits_Quotient" );
-
-    /* '16Bits' methods                                                    */
-    C_NEW_GVAR_FUNC( "16Bits_Equal", 2, "16_bits_word, 16_bits_word",
-                  Func16Bits_Equal,
-      "src/objfgelm.c:16Bits_Equal" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ExponentSums1", 1, "16_bits_word",
-                  Func16Bits_ExponentSums1,
-      "src/objfgelm.c:16Bits_ExponentSums1" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ExponentSums3", 3, "16_bits_word, start, end",
-                  Func16Bits_ExponentSums3,
-      "src/objfgelm.c:16Bits_ExponentSums3" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ExponentSyllable", 2, "16_bits_word, position",
-                  Func16Bits_ExponentSyllable,
-      "src/objfgelm.c:16Bits_ExponentSyllable" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ExtRepOfObj", 1, "16_bits_word",
-                  Func16Bits_ExtRepOfObj,
-      "src/objfgelm.c:16Bits_ExtRepOfObj" );
-
-    C_NEW_GVAR_FUNC( "16Bits_GeneratorSyllable", 2, "16_bits_word, pos",
-                  Func16Bits_GeneratorSyllable,
-      "src/objfgelm.c:16Bits_GeneratorSyllable" );
-
-    C_NEW_GVAR_FUNC( "16Bits_Less", 2, "16_bits_word, 16_bits_word",
-                  Func16Bits_Less,
-      "src/objfgelm.c:16Bits_Less" );
-
-    C_NEW_GVAR_FUNC( "16Bits_AssocWord", 2, "kind, data",
-                  Func16Bits_AssocWord,
-      "src/objfgelm.c:16Bits_AssocWord" );
-
-    C_NEW_GVAR_FUNC( "16Bits_NumberSyllables", 1, "16_bits_word",
-                   FuncNBits_NumberSyllables,
-      "src/objfgelm.c:NBits_NumberSyllables" );
-
-    C_NEW_GVAR_FUNC( "16Bits_ObjByVector", 2, "kind, data",
-                  Func16Bits_ObjByVector,
-      "src/objfgelm.c:16Bits_ObjByVector" );
-
-    C_NEW_GVAR_FUNC( "16Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-                  Func16Bits_HeadByNumber,
-      "src/objfgelm.c:16Bits_HeadByNumber" );
-
-    C_NEW_GVAR_FUNC( "16Bits_Power", 2, "16_bits_word, small_integer",
-                  Func16Bits_Power,
-      "src/objfgelm.c:16Bits_Power" );
-
-    C_NEW_GVAR_FUNC( "16Bits_Product", 2, "16_bits_word, 16_bits_word",
-                  Func16Bits_Product,
-      "src/objfgelm.c:16Bits_Product" );
-
-    C_NEW_GVAR_FUNC( "16Bits_Quotient", 2, "16_bits_word, 16_bits_word",
-                  Func16Bits_Quotient,
-      "src/objfgelm.c:16Bits_Quotient" );
-
-
-    /* '32Bits' methods                                                    */
-    C_NEW_GVAR_FUNC( "32Bits_Equal", 2, "32_bits_word, 32_bits_word",
-                  Func32Bits_Equal,
-      "src/objfgelm.c:32Bits_Equal" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ExponentSums1", 1, "32_bits_word",
-                  Func32Bits_ExponentSums1,
-      "src/objfgelm.c:32Bits_ExponentSums1" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ExponentSums3", 3, "32_bits_word, start, end",
-                  Func32Bits_ExponentSums3,
-      "src/objfgelm.c:32Bits_ExponentSums3" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ExponentSyllable", 2, "32_bits_word, position",
-                  Func32Bits_ExponentSyllable,
-      "src/objfgelm.c:32Bits_ExponentSyllable" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ExtRepOfObj", 1, "32_bits_word",
-                  Func32Bits_ExtRepOfObj,
-      "src/objfgelm.c:32Bits_ExtRepOfObj" );
-
-    C_NEW_GVAR_FUNC( "32Bits_GeneratorSyllable", 2, "32_bits_word, pos",
-                  Func32Bits_GeneratorSyllable,
-      "src/objfgelm.c:32Bits_GeneratorSyllable" );
-
-    C_NEW_GVAR_FUNC( "32Bits_Less", 2, "32_bits_word, 32_bits_word",
-                  Func32Bits_Less,
-      "src/objfgelm.c:32Bits_Less" );
-
-    C_NEW_GVAR_FUNC( "32Bits_AssocWord", 2, "kind, data",
-                  Func32Bits_AssocWord,
-      "src/objfgelm.c:32Bits_AssocWord" );
-
-    C_NEW_GVAR_FUNC( "32Bits_NumberSyllables", 1, "32_bits_word",
-                   FuncNBits_NumberSyllables,
-      "src/objfgelm.c:NBits_NumberSyllables" );
-
-    C_NEW_GVAR_FUNC( "32Bits_ObjByVector", 2, "kind, data",
-                  Func32Bits_ObjByVector,
-      "src/objfgelm.c:32Bits_ObjByVector" );
-
-    C_NEW_GVAR_FUNC( "32Bits_HeadByNumber", 2, "16_bits_word, gen_num",
-                  Func32Bits_HeadByNumber,
-      "src/objfgelm.c:32Bits_HeadByNumber" );
-
-    C_NEW_GVAR_FUNC( "32Bits_Power", 2, "32_bits_word, small_integer",
-                  Func32Bits_Power,
-      "src/objfgelm.c:32Bits_Power" );
-
-    C_NEW_GVAR_FUNC( "32Bits_Product", 2, "32_bits_word, 32_bits_word",
-                  Func32Bits_Product,
-      "src/objfgelm.c:32Bits_Product" );
-
-    C_NEW_GVAR_FUNC( "32Bits_Quotient", 2, "32_bits_word, 32_bits_word",
-                  Func32Bits_Quotient,
-      "src/objfgelm.c:32Bits_Quotient" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckFreeGroupElements()  . . . . .  check the free group element helpers
+*F  InitInfoFreeGroupElements() . . . . . . . . . . . table of init functions
 */
-void CheckFreeGroupElements ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "objfgelm",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoFreeGroupElements ( void )
 {
-    SET_REVISION( "objfgelm_c", Revision_objfgelm_c );
-    SET_REVISION( "objfgelm_h", Revision_objfgelm_h );
+    module.revision_c = Revision_objfgelm_c;
+    module.revision_h = Revision_objfgelm_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -5,6 +5,7 @@
 #H  @(#)$Id$ 
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains declarations for orbits on subgroups
 ##
@@ -19,21 +20,19 @@ Revision.oprtglat_gd:=
 ##  from the list as long as they are not needed any longer to save space.
 ##  if all is true, the full orbits are kept, otherwise only representatives.
 ##
-SubgroupsOrbitsAndNormalizers := NewOperation(
-  "SubgroupsOrbitsAndNormalizers",[IsGroup,IsObject,IsBool]);
+DeclareOperation( "SubgroupsOrbitsAndNormalizers",[IsGroup,IsObject,IsBool]);
 
 #############################################################################
 ##
 #O  GroupOnSubgroupsOrbit(G,H) . . . . . . . . . . . . . . orbit of H under G
 ##
-GroupOnSubgroupsOrbit := NewOperationArgs("GroupOnSubgroupsOrbits");
+DeclareGlobalFunction("GroupOnSubgroupsOrbit");
 
 #############################################################################
 ##
 #O  MinimumGroupOnSubgroupsOrbit(G,H [,N_G(H)]) minimum of orbit of H under G
 ##
-MinimumGroupOnSubgroupsOrbit :=
-  NewOperationArgs("MinimumGroupOnSubgroupsOrbits");
+DeclareGlobalFunction("MinimumGroupOnSubgroupsOrbit");
 
 #############################################################################
 ##

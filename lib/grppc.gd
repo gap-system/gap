@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for groups with a polycyclic collector.
 ##
@@ -14,7 +15,7 @@
 ##  IsPcGroup
 ##    a poylcyclic group whose elements family is defined by a collector
 ##
-##  IsPcgsComputable
+##  CanEasilyComputePcgs
 ##    a group that knows how to compute a pcgs relatively fast
 ##
 ##  HasDefiningPcgs
@@ -26,44 +27,31 @@
 Revision.grppc_gd :=
     "@(#)$Id$";
 
-InfoPcGroup:=NewInfoClass("InfoPcGroup");
+DeclareInfoClass("InfoPcGroup");
 
 
 #############################################################################
 ##
-
 #A  CanonicalPcgsWrtFamilyPcgs( <grp> )	. . . . . . .  with respect to family
 ##
-CanonicalPcgsWrtFamilyPcgs := NewAttribute(
-    "CanonicalPcgsWrtFamilyPcgs",
-    IsGroup );
+DeclareAttribute( "CanonicalPcgsWrtFamilyPcgs", IsGroup );
 
-SetCanonicalPcgsWrtFamilyPcgs := Setter(CanonicalPcgsWrtFamilyPcgs);
-HasCanonicalPcgsWrtFamilyPcgs := Tester(CanonicalPcgsWrtFamilyPcgs);
 
 
 #############################################################################
 ##
 #A  CanonicalPcgsWrtHomePcgs( <grp> ) . . . . . . . . .  with respect to home
 ##
-CanonicalPcgsWrtHomePcgs := NewAttribute(
-    "CanonicalPcgsWrtHomePcgs",
-    IsGroup );
+DeclareAttribute( "CanonicalPcgsWrtHomePcgs", IsGroup );
 
-SetCanonicalPcgsWrtHomePcgs := Setter(CanonicalPcgsWrtHomePcgs);
-HasCanonicalPcgsWrtHomePcgs := Tester(CanonicalPcgsWrtHomePcgs);
 
 
 #############################################################################
 ##
 #A  FamilyPcgs( <grp> ) . . . . . . . . . . . . . . . . .  pcgs of the family
 ##
-FamilyPcgs := NewAttribute(
-    "FamilyPcgs",
-    IsGroup );
+DeclareAttribute( "FamilyPcgs", IsGroup );
 
-SetFamilyPcgs := Setter(FamilyPcgs);
-HasFamilyPcgs := Tester(FamilyPcgs);
 
 InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
 
@@ -72,12 +60,8 @@ InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
 ##
 #A  HomePcgs( <grp> ) . . . . . . . . . . . . . . . . . . .  pcgs of the home
 ##
-HomePcgs := NewAttribute(
-    "HomePcgs",
-    IsGroup );
+DeclareAttribute( "HomePcgs", IsGroup );
 
-SetHomePcgs := Setter(HomePcgs);
-HasHomePcgs := Tester(HomePcgs);
 
 InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
 
@@ -86,85 +70,170 @@ InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
 ##
 #A  InducedPcgsWrtFamilyPcgs( <grp> ) . . . . . . . .  with respect to family
 ##
-InducedPcgsWrtFamilyPcgs := NewAttribute(
-    "InducedPcgsWrtFamilyPcgs",
-    IsGroup );
+DeclareAttribute( "InducedPcgsWrtFamilyPcgs", IsGroup );
 
-SetInducedPcgsWrtFamilyPcgs := Setter(InducedPcgsWrtFamilyPcgs);
-HasInducedPcgsWrtFamilyPcgs := Tester(InducedPcgsWrtFamilyPcgs);
+
+#############################################################################
+##
+#O  InducedPcgs( <pcgs>, <grp> )
+##
+##  computes a pcgs for <group> which is induced by (the parent of) <pcgs>.
+DeclareOperation( "InducedPcgs", [IsPcgs,IsGroup] );
 
 
 #############################################################################
 ##
 #A  InducedPcgsWrtHomePcgs( <grp> ) . . . . . . . . . .  with respect to home
 ##
-InducedPcgsWrtHomePcgs := NewAttribute(
+##  returns an induced pcgs for <grp> with respect to the home pcgs.
+DeclareAttribute(
     "InducedPcgsWrtHomePcgs",
     IsGroup );
 
-SetInducedPcgsWrtHomePcgs := Setter(InducedPcgsWrtHomePcgs);
-HasInducedPcgsWrtHomePcgs := Tester(InducedPcgsWrtHomePcgs);
 
 
 #############################################################################
 ##
 #A  Pcgs( <grp> ) . . . . . . . . . . . . . . . . . . . . . . pcgs of a group
 ##
-Pcgs := NewAttribute(
-    "Pcgs",
-    IsGroup );
+##  returns a pcgs for <grp>. If <grp> is not solvable it returns `fail'
+##  *and this result is not stored as attribute value*!
+DeclareAttribute( "Pcgs", IsGroup );
 
-SetPcgs := Setter( Pcgs );
-HasPcgs := Tester( Pcgs );
 
 
 #############################################################################
 ##
-
-#P  IsPcgsComputable( <grp> ) . . . . . . .  group is willing to compute pcgs
+#F  CanEasilyComputePcgs( <grp> ) . . . . .  group is willing to compute pcgs
 ##
-IsPcgsComputable := NewProperty(
-    "IsPcgsComputable",
-    IsGroup );
+##  This filter indicates whether a group can compute a pcgs comparatively
+##  cheaply. A group of this sort must be solvable, but not every solvable
+##  group can compute a pcgs cheaply. The reason for this is that some
+##  groups may be known to be solvable but still cannot compute a pcgs
+##  cheaply. It is used in the method selection to decide for algorithms
+##  that require a Pcgs.
+##  The willingness of GAP may change over time, depending which further
+##  information is known. Therefore this is not implemented as a property,
+##  but as a filter.
+##
+DeclareFilter( "CanEasilyComputePcgs" );
 
-SetIsPcgsComputable := Setter(IsPcgsComputable);
-HasIsPcgsComputable := Tester(IsPcgsComputable);
-
+# to satisfy method installation requirements
+InstallTrueMethod(IsGroup,CanEasilyComputePcgs);
 
 #############################################################################
 ##
-#M  IsPcgsComputable( <pcgrp> ) . . . . . . . . . . . . . . . . . .  pc group
+#M  CanEasilyComputePcgs( <pcgrp> ) . . . . . . . . . . . . . . . .  pc group
 ##
 InstallTrueMethod(
-    IsPcgsComputable,
+    CanEasilyComputePcgs,
     IsPcGroup );
 
 InstallTrueMethod(
-    IsPcgsComputable,
+    CanEasilyComputePcgs,
     HasPcgs );
 
+#############################################################################
+##
+#M  CanEasilyComputePcgs( <grp> ) . . . . . . . . . home or family pcgs known
+##
+InstallTrueMethod( CanEasilyComputePcgs, IsGroup and HasHomePcgs );
+InstallTrueMethod( CanEasilyComputePcgs, IsGroup and HasFamilyPcgs );
 
 #############################################################################
 ##
-#M  IsPcgsComputable( <grp> ) . . . . . . . . . . . home or family pcgs known
+#M  CanEasilyComputePcgs( <grp> ) . . . . . . . . . subset or factor relations
 ##
-InstallTrueMethod( IsPcgsComputable, IsGroup and HasHomePcgs );
-InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
+#T  As CanEasilyComputePcgs is a filter and not a property, we cannot use
+##  'InstallSubsetMaintainedMethod', but have to do this 'by hand'.
+InstallMethod(UseSubsetRelation,"inherit 'CanEasilyComputePcgs' to subgroups",
+              IsIdenticalObj,[IsGroup and CanEasilyComputePcgs,IsGroup],0,
+function(super,sub)
+  SetFilterObj(sub,CanEasilyComputePcgs);
+  TryNextMethod();
+end);
+
+#T  factor groups might be in a different representation and therefore should
+#T  not become 'CanEasilyComputePcgs' automatically.
 
 
 #############################################################################
 ##
+#P  IsPcgsElementaryAbelianSeries( <pcgs> )
+##
+##  indicates whether <pcgs> refines an elementary abelian series.
+##  If this is the case, `IndicesNormalSteps' gives the indices of the pc
+##  elements, which start a new step in the descending elementary abelian
+##  series.
+DeclareProperty(
+  "IsPcgsElementaryAbelianSeries", IsPcgs );
 
+InstallTrueMethod(IsPcgsElementaryAbelianSeries,IsSpecialPcgs);
+
+#############################################################################
+##
+#A  PcgsElementaryAbelianSeries( <G> )
+##
+##  computes a pcgs for <G> that refines an elementary abelian series. See
+##  `IsPcgsElementaryAbelianSeries'.
+##
+DeclareAttribute( "PcgsElementaryAbelianSeries",
+  IsGroup );
+
+#############################################################################
+##
+#P  IsPcgsCentralSeries( <pcgs> )
+##
+##  indicates whether <pcgs> refines a central series.
+##  If this is the case, `IndicesNormalSteps' gives the indices of the pc
+##  elements, which start a new elementary abelian step in the descending
+##  central series.
+DeclareProperty( "IsPcgsCentralSeries", IsPcgs );
+
+InstallTrueMethod(IsPcgsCentralSeries,IsSpecialPcgs);
+
+#############################################################################
+##
+#A  PcgsCentralSeries( <G> )
+##
+##  computes a pcgs for <G> that refines a central series. See
+##  `IsPcgsCentralSeries'.
+##
+DeclareAttribute( "PcgsCentralSeries", IsGroup );
+
+
+#############################################################################
+##
+#P  IsPcgsPCentralSeriesPGroup( <pcgs> )
+##
+##  indicates whether <pcgs> refines a p-central series in a p group.
+##  If this is the case, `IndicesNormalSteps' gives the indices of the pc
+##  elements, which start a new elementary abelian step in the descending
+##  p-central series.
+DeclareProperty( "IsPcgsPCentralSeriesPGroup", IsPcgs );
+
+#############################################################################
+##
+#A  PcgsPCentralSeriesPGroup( <G> )
+##
+##  computes a pcgs for <G> that refines a central series. See
+##  `IsPcgsCentralSeries'.
+##
+DeclareAttribute( "PcgsPCentralSeriesPGroup", IsGroup );
+
+
+#############################################################################
+##
 #O  SubgroupByPcgs( <G>, <pcgs> )
 ##
-SubgroupByPcgs := NewOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
+DeclareOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 
 
 #############################################################################
 ##
 #O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
-AffineOperation := NewOperation(
+DeclareOperation(
     "AffineOperation", 
     [ IsList, IsMatrix, IsFunction, IsFunction ] );
 
@@ -173,7 +242,7 @@ AffineOperation := NewOperation(
 ##
 #O  LinearOperation( <gens>, <basisvectors>, <linear> )
 ##
-LinearOperation := NewOperation(
+DeclareOperation(
     "LinearOperation",
     [ IsList, IsMatrix, IsFunction ] );
 
@@ -191,52 +260,50 @@ InstallTrueMethod(
 ##
 #F  AffineOperationLayer( <G>, <gens>, <pcgs>, <transl> )
 ##
-AffineOperationLayer := NewOperationArgs( "AffineOperationLayer" );
+DeclareGlobalFunction( "AffineOperationLayer" );
 
 
 #############################################################################
 ##
 #F  GeneratorsCentrePGroup( <G> )
 ##
-GeneratorsCentrePGroup := NewOperationArgs( "GeneratorsCentrePGroup" );
+DeclareGlobalFunction( "GeneratorsCentrePGroup" );
 
 
 #############################################################################
 ##
 #F  LinearOperationLayer( <G>, <gens>, <pcgs> )
 ##
-LinearOperationLayer := NewOperationArgs( "LinearOperationLayer" );
+DeclareGlobalFunction( "LinearOperationLayer" );
 
 
 #############################################################################
 ##
 #F  VectorSpaceByPcgsOfElementaryAbelianGroup( <pcgs>, <fld> )
 ##
-VectorSpaceByPcgsOfElementaryAbelianGroup := NewOperationArgs(
+DeclareGlobalFunction(
     "VectorSpaceByPcgsOfElementaryAbelianGroup" );
 
 #############################################################################
 ##
 #F  GapInputPcGroup( <grp>, <string> )
 ##
-GapInputPcGroup := NewOperationArgs( "GapInputPcGroup" );
+DeclareGlobalFunction( "GapInputPcGroup" );
 
 #############################################################################
 ##
 #O  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
 ##
-CanonicalSubgroupRepresentativePcGroup :=
-  NewOperationArgs( "CanonicalSubgroupRepresentativePcGroup" );
+DeclareGlobalFunction( "CanonicalSubgroupRepresentativePcGroup" );
 
 
 #############################################################################
 ##
 #A  OmegaSeries( G )
 ##
-OmegaSeries := NewAttribute( "OmegaSeries", IsGroup );
+DeclareAttribute( "OmegaSeries", IsGroup );
 
 #############################################################################
 ##
-
 #E  grppc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

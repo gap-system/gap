@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains a single collector for finite polycyclic groups.
 **
@@ -22,7 +23,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_objscoll_c =
+const char * Revision_objscoll_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1503,13 +1504,20 @@ Obj CollectWordOrFail (
         *ptr = (Obj)INT_INTOBJ(*ptr);
 
     /* now collect <w> into <vv>                                           */
-    if ( fc->collectWord( sc, vv, w ) == -1 )
+    if ( fc->collectWord( sc, vv, w ) == -1 ) {
+         /* If the collector fails, we return the vector clean.            */
+        ptr = ADDR_OBJ(vv)+1;
+        for ( i = LEN_PLIST(vv);  0 < i;  i--, ptr++ )
+            *ptr = INTOBJ_INT(0);
+
         return Fail;
+    }
 
     /* and convert back                                                    */
     ptr = ADDR_OBJ(vv)+1;
     for ( i = LEN_PLIST(vv);  0 < i;  i--, ptr++ )
         *ptr = INTOBJ_INT((Int)*ptr);
+
     return True;
 }
 
@@ -1971,110 +1979,147 @@ Obj FuncFinPowConjCol_ReducedQuotient ( Obj self, Obj sc, Obj w, Obj u )
 /****************************************************************************
 **
 
-*F  SetupSingleCollector()  . . . . . . . . .  initalize the single collector
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupSingleCollector ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "FinPowConjCol_CollectWordOrFail", 3, "sc, list, word",
+      FuncFinPowConjCol_CollectWordOrFail, 
+      "src/objscoll.c:FinPowConjCol_CollectWordOrFail" },
+
+    { "FinPowConjCol_ReducedComm", 3, "sc, word, word",
+      FuncFinPowConjCol_ReducedComm, 
+      "src/objscoll.c:FinPowConjCol_ReducedComm" },
+
+    { "FinPowConjCol_ReducedForm", 2, "sc, word",
+      FuncFinPowConjCol_ReducedForm, 
+      "src/objscoll.c:FinPowConjCol_ReducedForm" },
+
+    { "FinPowConjCol_ReducedLeftQuotient", 3, "sc, word, word",
+      FuncFinPowConjCol_ReducedLeftQuotient, 
+      "src/objscoll.c:FinPowConjCol_ReducedLeftQuotient" },
+
+    { "FinPowConjCol_ReducedPowerSmallInt", 3, "sc, word, int",
+      FuncFinPowConjCol_ReducedPowerSmallInt,
+      "src/objscoll.c:FinPowConjCol_ReducedPowerSmallInt" },
+
+    { "FinPowConjCol_ReducedProduct", 3, "sc, word, word",
+      FuncFinPowConjCol_ReducedProduct,
+      "src/objscoll.c:FinPowConjCol_ReducedProduct" },
+
+    { "FinPowConjCol_ReducedQuotient", 3, "sc, word, word",
+      FuncFinPowConjCol_ReducedQuotient,
+      "src/objscoll.c:FinPowConjCol_ReducedQuotient" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitSingleCollector() . . . . . . . . . .  initalize the single collector
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitSingleCollector ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
     /* export position numbers 'SCP_SOMETHING'                             */
-    if ( ! SyRestoring ) {
-        AssGVar( GVarName( "SCP_UNDERLYING_FAMILY" ),
-                 INTOBJ_INT(SCP_UNDERLYING_FAMILY) );
-        AssGVar( GVarName( "SCP_RWS_GENERATORS" ),
-                 INTOBJ_INT(SCP_RWS_GENERATORS) );
-        AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
-                 INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
-        AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
-                 INTOBJ_INT(SCP_DEFAULT_TYPE) );
-        AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
-                 INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
-        AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
-                 INTOBJ_INT(SCP_RELATIVE_ORDERS) );
-        AssGVar( GVarName( "SCP_POWERS" ),
-                 INTOBJ_INT(SCP_POWERS) );
-        AssGVar( GVarName( "SCP_CONJUGATES" ),
-                 INTOBJ_INT(SCP_CONJUGATES) );
-        AssGVar( GVarName( "SCP_INVERSES" ),
-                 INTOBJ_INT(SCP_INVERSES) );
-        AssGVar( GVarName( "SCP_NW_STACK" ),
-                 INTOBJ_INT(SCP_NW_STACK) );
-        AssGVar( GVarName( "SCP_LW_STACK" ),
-                 INTOBJ_INT(SCP_LW_STACK) );
-        AssGVar( GVarName( "SCP_PW_STACK" ),
-                 INTOBJ_INT(SCP_PW_STACK) );
-        AssGVar( GVarName( "SCP_EW_STACK" ),
-                 INTOBJ_INT(SCP_EW_STACK) );
-        AssGVar( GVarName( "SCP_GE_STACK" ),
-                 INTOBJ_INT(SCP_GE_STACK) );
-        AssGVar( GVarName( "SCP_CW_VECTOR" ),
-                 INTOBJ_INT(SCP_CW_VECTOR) );
-        AssGVar( GVarName( "SCP_CW2_VECTOR" ),
-                 INTOBJ_INT(SCP_CW2_VECTOR) );
-        AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
-                 INTOBJ_INT(SCP_MAX_STACK_SIZE) );
-        AssGVar( GVarName( "SCP_COLLECTOR" ),
-                 INTOBJ_INT(SCP_COLLECTOR) );
-        AssGVar( GVarName( "SCP_AVECTOR" ),
-                 INTOBJ_INT(SCP_AVECTOR) );
-    }
+    AssGVar( GVarName( "SCP_UNDERLYING_FAMILY" ),
+             INTOBJ_INT(SCP_UNDERLYING_FAMILY) );
+    AssGVar( GVarName( "SCP_RWS_GENERATORS" ),
+             INTOBJ_INT(SCP_RWS_GENERATORS) );
+    AssGVar( GVarName( "SCP_NUMBER_RWS_GENERATORS" ),
+             INTOBJ_INT(SCP_NUMBER_RWS_GENERATORS) );
+    AssGVar( GVarName( "SCP_DEFAULT_TYPE" ),
+             INTOBJ_INT(SCP_DEFAULT_TYPE) );
+    AssGVar( GVarName( "SCP_IS_DEFAULT_TYPE" ),
+             INTOBJ_INT(SCP_IS_DEFAULT_TYPE) );
+    AssGVar( GVarName( "SCP_RELATIVE_ORDERS" ),
+             INTOBJ_INT(SCP_RELATIVE_ORDERS) );
+    AssGVar( GVarName( "SCP_POWERS" ),
+             INTOBJ_INT(SCP_POWERS) );
+    AssGVar( GVarName( "SCP_CONJUGATES" ),
+             INTOBJ_INT(SCP_CONJUGATES) );
+    AssGVar( GVarName( "SCP_INVERSES" ),
+             INTOBJ_INT(SCP_INVERSES) );
+    AssGVar( GVarName( "SCP_NW_STACK" ),
+             INTOBJ_INT(SCP_NW_STACK) );
+    AssGVar( GVarName( "SCP_LW_STACK" ),
+             INTOBJ_INT(SCP_LW_STACK) );
+    AssGVar( GVarName( "SCP_PW_STACK" ),
+             INTOBJ_INT(SCP_PW_STACK) );
+    AssGVar( GVarName( "SCP_EW_STACK" ),
+             INTOBJ_INT(SCP_EW_STACK) );
+    AssGVar( GVarName( "SCP_GE_STACK" ),
+             INTOBJ_INT(SCP_GE_STACK) );
+    AssGVar( GVarName( "SCP_CW_VECTOR" ),
+             INTOBJ_INT(SCP_CW_VECTOR) );
+    AssGVar( GVarName( "SCP_CW2_VECTOR" ),
+             INTOBJ_INT(SCP_CW2_VECTOR) );
+    AssGVar( GVarName( "SCP_MAX_STACK_SIZE" ),
+             INTOBJ_INT(SCP_MAX_STACK_SIZE) );
+    AssGVar( GVarName( "SCP_COLLECTOR" ),
+             INTOBJ_INT(SCP_COLLECTOR) );
+    AssGVar( GVarName( "SCP_AVECTOR" ),
+             INTOBJ_INT(SCP_AVECTOR) );
 
     /* export collector number                                             */
-    if ( ! SyRestoring ) {
-        AssGVar( GVarName( "8Bits_SingleCollector" ),
-                INTOBJ_INT(C8Bits_SingleCollectorNo) );
-        AssGVar( GVarName( "16Bits_SingleCollector" ),
-                INTOBJ_INT(C16Bits_SingleCollectorNo) );
-        AssGVar( GVarName( "32Bits_SingleCollector" ),
-                INTOBJ_INT(C32Bits_SingleCollectorNo) );
-    }
+    AssGVar( GVarName( "8Bits_SingleCollector" ),
+             INTOBJ_INT(C8Bits_SingleCollectorNo) );
+    AssGVar( GVarName( "16Bits_SingleCollector" ),
+             INTOBJ_INT(C16Bits_SingleCollectorNo) );
+    AssGVar( GVarName( "32Bits_SingleCollector" ),
+             INTOBJ_INT(C32Bits_SingleCollectorNo) );
 
-    /* collector methods                                                   */
-    C_NEW_GVAR_FUNC( "FinPowConjCol_CollectWordOrFail", 3, "sc, list, word",
-                  FuncFinPowConjCol_CollectWordOrFail,
-      "src/objscoll.c:FinPowConjCol_CollectWordOrFail" );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedComm", 3, "sc, word, word",
-                  FuncFinPowConjCol_ReducedComm,
-      "src/objscoll.c:FinPowConjCol_ReducedComm" );
-
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedForm", 2, "sc, word",
-                  FuncFinPowConjCol_ReducedForm,
-      "src/objscoll.c:FinPowConjCol_ReducedForm" );
-
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedLeftQuotient", 3, "sc, word, word",
-                  FuncFinPowConjCol_ReducedLeftQuotient,
-      "src/objscoll.c:FinPowConjCol_ReducedLeftQuotient" );
-
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedPowerSmallInt", 3, "sc, word, int",
-                  FuncFinPowConjCol_ReducedPowerSmallInt,
-      "src/objscoll.c:FinPowConjCol_ReducedPowerSmallInt" );
-
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedProduct", 3, "sc, word, word",
-                  FuncFinPowConjCol_ReducedProduct,
-      "src/objscoll.c:FinPowConjCol_ReducedProduct" );
-
-    C_NEW_GVAR_FUNC( "FinPowConjCol_ReducedQuotient", 3, "sc, word, word",
-                  FuncFinPowConjCol_ReducedQuotient,
-      "src/objscoll.c:FinPowConjCol_ReducedQuotient" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckSingleCollector()   check the initialisation of the single collector
+*F  InitInfoSingleCollector() . . . . . . . . . . . . table of init functions
 */
-void CheckSingleCollector ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "objscoll",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoSingleCollector ( void )
 {
-    SET_REVISION( "objscoll_c", Revision_objscoll_c );
-    SET_REVISION( "objscoll_h", Revision_objscoll_h );
+    module.revision_c = Revision_objscoll_c;
+    module.revision_h = Revision_objscoll_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

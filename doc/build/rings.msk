@@ -1,0 +1,93 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  rings.msk                    GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Rings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Generating Rings}
+
+\Declaration{IsRing}
+
+\Declaration{Ring}
+\Declaration{DefaultRing}
+
+\Declaration{RingByGenerators}
+\Declaration{DefaultRingByGenerators}
+
+\Declaration{GeneratorsOfRing}
+
+\Declaration{AsRing}
+
+\Declaration{Subring}
+
+\Declaration{ClosureRing}
+
+\Declaration{Quotient}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Rings With One}
+
+\Declaration{IsRingWithOne}
+\Declaration{One}
+\Declaration{RingWithOne}
+\Declaration{RingWithOneByGenerators}
+\Declaration{SubringWithOne}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties of Rings}
+
+\Declaration{IsCommutative}
+\Declaration{IsIntegralRing}
+\Declaration{IsUniqueFactorizationRing}
+\Declaration{IsLDistributive}
+\Declaration{IsRDistributive}
+\Declaration{IsDistributive}
+\Declaration{IsAnticommutative}
+\Declaration{IsZeroSquaredRing}
+
+\Declaration{IsJacobianRing}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Units and Factorizations}
+
+\Declaration{IsUnit}
+\Declaration{Units}
+\Declaration{IsAssociated}
+\Declaration{Associates}
+\Declaration{StandardAssociate}
+\Declaration{IsIrreducible}
+\Declaration{IsPrime}
+\Declaration{Factors}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Euclidean Rings}
+
+\Declaration{IsEuclideanRing}
+\Declaration{EuclideanDegree}
+\Declaration{EuclideanQuotient}
+\Declaration{EuclideanRemainder}
+\Declaration{QuotientRemainder}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Gcd and Lcm}
+
+\Declaration{Gcd}
+\Declaration{GcdOp}
+\Declaration{GcdRepresentation}
+\Declaration{GcdRepresentationOp}
+\Declaration{Lcm}
+\Declaration{LcmOp}
+
+
+\Declaration{QuotientMod}
+\Declaration{PowerMod}
+
+
+\Declaration{InterpolatedPolynomial}
+

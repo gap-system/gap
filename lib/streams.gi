@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for streams.
 ##
@@ -322,7 +323,7 @@ end );
 
 #R  IsInputTextStringRep
 ##
-IsInputTextStringRep := NewRepresentation(
+DeclareRepresentation(
     "IsInputTextStringRep",
     IsPositionalObjectRep,
     [] );
@@ -522,7 +523,7 @@ end );
 
 #R  IsInputTextFileRep	. . . . .  representation of a input text file stream
 ##
-IsInputTextFileRep := NewRepresentation(
+DeclareRepresentation(
     "IsInputTextFileRep",
     IsPositionalObjectRep,
     [] );
@@ -698,7 +699,7 @@ end );
 
 #R  IsInputTextNoneRep	. . . . . . representation of dummy input text stream
 ##
-IsInputTextNoneRep := NewRepresentation(
+DeclareRepresentation(
     "IsInputTextNoneRep",
     IsPositionalObjectRep,
     [] );
@@ -717,9 +718,9 @@ InputTextNoneType := NewType(
 ##
 #M  InputTextNone() . . . . . . . . . .  create a new dummy input text stream
 ##
-InputTextNone := function()
+InstallGlobalFunction( InputTextNone, function()
     return Objectify( InputTextNoneType, [] );
-end;
+end );
 
 
 
@@ -842,7 +843,7 @@ InstallMethod( SeekPositionStream,
 
 #R  IsOutputTextStringRep
 ##
-IsOutputTextStringRep := NewRepresentation(
+DeclareRepresentation(
     "IsOutputTextStringRep",
     IsPositionalObjectRep,
     [] );
@@ -951,7 +952,7 @@ end );
 
 #R  IsOutputTextFileRep
 ##
-IsOutputTextFileRep := NewRepresentation(
+DeclareRepresentation(
     "IsOutputTextFileRep",
     IsPositionalObjectRep,
     [] );
@@ -1070,7 +1071,7 @@ end );
 
 #R  IsOutputTextNoneRep	. . . . .  representation of dummy output text stream
 ##
-IsOutputTextNoneRep := NewRepresentation(
+DeclareRepresentation(
     "IsOutputTextNoneRep",
     IsPositionalObjectRep,
     [] );
@@ -1089,9 +1090,9 @@ OutputTextNoneType := NewType(
 ##
 #M  OutputTextNone()  . . . . . . . . . create a new dummy output text stream
 ##
-OutputTextNone := function()
+InstallGlobalFunction( OutputTextNone, function()
     return Objectify( OutputTextNoneType, [] );
-end;
+end );
 
 
 #############################################################################
@@ -1159,18 +1160,18 @@ end );
 ##
 #M  InputTextUser() . . . . . . . . . . . . . input text stream from the user
 ##
-InputTextUser := function()
+InstallGlobalFunction( InputTextUser, function()
     return InputTextFile("*stdin*");
-end;
+end );
 
 
 #############################################################################
 ##
 #M  OutputTextUser()  . . . . . . . . . . . .  output text stream to the user
 ##
-OutputTextUser := function()
+InstallGlobalFunction( OutputTextUser, function()
     return OutputTextFile("*stdout*",false);
-end;
+end );
 
 
 #############################################################################

@@ -5,12 +5,24 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains  the generic  methods  for elements in families  that
 ##  allow certain arithmetical operations.
 ##
 Revision.arith_gi :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#M  IsImpossible( <matrix> )
+##
+##  Forbid that a matrix is both an ordinary matrix and a Lie matrix.
+##
+InstallImmediateMethod( IsImpossible,
+    IsOrdinaryMatrix and IsLieMatrix, 0,
+    matrix -> Error( "<matrix> cannot be both assoc. and Lie matrix" ) );
 
 
 #############################################################################
@@ -111,7 +123,7 @@ InstallMethod( LeftQuotient,
 ##
 InstallMethod( \^,
     "method for two mult.-elm.-with-inverse",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -124,7 +136,7 @@ InstallMethod( \^,
 ##
 InstallMethod( Comm,
     "method for two mult.-elm.-with-inverse",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -137,7 +149,7 @@ InstallMethod( Comm,
 ##
 InstallMethod( LieBracket,
     "method for two ring elements",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsRingElement, IsRingElement ], 0,
     function ( elm1, elm2 )
     return ( elm1 * elm2 ) - ( elm2 * elm1 );
@@ -150,13 +162,13 @@ InstallMethod( LieBracket,
 ##
 InstallOtherMethod( \*,
     "positive integer * additive element",
-    true, [ IsInt and IsPosRat, IsAdditiveElement ], 0,
+    true, [ IsPosInt, IsAdditiveElement ], 0,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "zero integer * additive element with zero",
     true,
-    [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], 0,
+    [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], SUM_FLAGS,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
@@ -173,7 +185,7 @@ InstallOtherMethod( \*,
 InstallMethod( \^,
     "method for mult. element, and positive integer",
     true,
-    [ IsMultiplicativeElement, IsInt and IsPosRat ], 0,
+    [ IsMultiplicativeElement, IsPosInt ], 0,
     POW_OBJ_INT );
 
 InstallMethod( \^,

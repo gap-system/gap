@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for Molien series.
 ##
@@ -96,7 +97,7 @@ end;
 ##  \[ \sum_{j=0}^{\min\{g,u\}} c_{j r + v}
 ##                 \prod_{\mu=1}^{k-1} \frac{g-j+\mu}{\mu}\ . \]
 ##
-CoefficientTaylorSeries := function( numer, r, k, l )
+InstallGlobalFunction( CoefficientTaylorSeries, function( numer, r, k, l )
 
     local i, m, u, v, g, coeff, lower, summand, mu;
 
@@ -129,14 +130,14 @@ CoefficientTaylorSeries := function( numer, r, k, l )
     od;
 
     return coeff;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SummandMolienSeries( <tbl>, <psi>, <chi>, <i> )
 ##
-SummandMolienSeries := function( tbl, psi, chi, i )
+InstallGlobalFunction( SummandMolienSeries, function( tbl, psi, chi, i )
 
     local x,          # indeterminate
           ev,         # eigenvalues of 'psi' at class 'i'
@@ -176,7 +177,7 @@ SummandMolienSeries := function( tbl, psi, chi, i )
 
     return rec( numer := numer,
                 a     := a );
-end;
+end );
 
 
 #############################################################################
@@ -186,7 +187,7 @@ end;
 #F  MolienSeries( <tbl>, <psi> )
 #F  MolienSeries( <tbl>, <psi>, <chi> )
 ##
-MolienSeries := function( arg )
+InstallGlobalFunction( MolienSeries, function( arg )
 
     local tbl,          # character table, first argument
           psi,          # character of 'tbl', second argument
@@ -527,7 +528,7 @@ MolienSeries := function( arg )
 
     # Return the series.
     return series;
-end;
+end );
 
 
 #############################################################################
@@ -549,7 +550,7 @@ InstallMethod( PrintObj,
 ##
 #F  ValueMolienSeries( series, i )
 ##
-ValueMolienSeries := function( series, i )
+InstallGlobalFunction( ValueMolienSeries, function( series, i )
 
     local value;
 
@@ -569,7 +570,7 @@ ValueMolienSeries := function( series, i )
     fi;
 
     return value / series.size;
-end;
+end );
 
 
 #############################################################################

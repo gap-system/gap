@@ -5,12 +5,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the  various read-eval-print loops and streams related
 **  stuff.  The system depend part is in "sysfiles.c".
 */
 #ifdef INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_streams_h =
+const char * Revision_streams_h =
    "@(#)$Id$";
 #endif
 
@@ -70,23 +71,9 @@ extern Int READ_GAP_ROOT ( Char * filename );
 /****************************************************************************
 **
 
-*F  SetupStreams(). . . . . . . . . . . . . . . intialize the streams package
+*F  InitInfoStreams() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupStreams ( void );
-
-
-/****************************************************************************
-**
-*F  InitStreams() . . . . . . . . . . . . . . . intialize the streams package
-*/
-extern void InitStreams ( void );
-
-
-/****************************************************************************
-**
-*F  CheckStreams()  . . . . . check the initialisation of the streams package
-*/
-extern void CheckStreams ( void );
+StructInitInfo * InitInfoStreams ( void );
 
 
 /****************************************************************************

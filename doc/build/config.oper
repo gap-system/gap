@@ -1,0 +1,5 @@
+@msfiles = ("grpoper","grpperm","permutat");
+@gdfiles = ("permutat.g","oprt","ratfun","grpperm","stbc","stbcbckt",
+            "grppc","list","gpprmsya","ghom","factgrp");
+$DIR = "../ref";
+$LIB = "../../lib"; 

@@ -6,6 +6,8 @@ ReadLib( "tuples.gd"   );
 
 ReadLib( "rvecempt.gd" );
 ReadLib( "matrix.gd"   );
+ReadLib( "matint.gd"   );
+ReadLib( "matblock.gd" );
 
 ReadLib( "domain.gd"   );
 ReadLib( "extaset.gd"  );
@@ -24,13 +26,15 @@ ReadLib( "grp.gd"      );
 ReadLib( "addmagma.gd" );
 ReadLib( "addcoset.gd" );
 ReadLib( "ring.gd"     );
+ReadLib( "ideal.gd"    );
 ReadLib( "module.gd"   );
 ReadLib( "basis.gd"    );
 ReadLib( "basismut.gd" );
 ReadLib( "vspc.gd"     );
 ReadLib( "vspchom.gd"  );
-ReadLib( "lattice.gd"  );
+ReadLib( "zlattice.gd" );
 ReadLib( "algebra.gd"  );
+ReadLib( "mgmring.gd"  );
 ReadLib( "algfp.gd"    );
 ReadLib( "alglie.gd"   );
 ReadLib( "algsc.gd"    );
@@ -38,6 +42,7 @@ ReadLib( "alghom.gd"   );
 ReadLib( "liefam.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );
+ReadLib( "string.gd"   );
 
 ReadLib( "ratfun.gd"   );
 
@@ -78,7 +83,6 @@ ReadLib( "pcgsspec.gd" );
 ReadLib( "grppc.gd"    );
 ReadLib( "grppcnrm.gd" );
 
-ReadLib( "mgmring.gd"  );
 ReadLib( "grptbl.gd"   );
 
 ReadLib( "grpperm.gd"  );
@@ -107,15 +111,20 @@ ReadLib( "grppccom.gd" );
 ReadLib( "twocohom.gd" );
 ReadLib( "grppcext.gd");
 ReadLib( "grppcfp.gd");
+ReadLib( "randiso.gd");
+ReadLib( "fratfree.gd");
+ReadLib( "frattext.gd");
 
 ReadLib( "morpheus.gd" );
 ReadLib( "grplatt.gd"  );
 ReadLib( "oprtglat.gd" );
 ReadLib( "grppclat.gd" );
 
+ReadLib( "grppcaut.gd" );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
+ReadLib( "grpfree.gd"  );
 ReadLib( "sgpres.gd" );
 ReadLib( "tietze.gd" );
 
@@ -140,13 +149,8 @@ ReadLib( "grpnice.gd"  );
 # files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
 ReadLib( "grpmat.gd"   );
 ReadLib( "grpffmat.gd" );
+ReadLib( "grpramat.gd" );
 
 # group library
 ReadGrp( "basic.gd"    );
 ReadGrp( "perf.gd"     );
-ReadPrim( "primitiv.gd" );
-ReadSmall( "small.gd" );
-
-# group constructions
-ReadLib( "frattfree.gd" );
-ReadLib( "frattext.gd" );

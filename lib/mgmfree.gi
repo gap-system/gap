@@ -6,8 +6,9 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
-##  This file contains the methods for free magmas.
+##  This file contains the methods for free magmas and free magma-with-ones.
 ##
 ##  Element objects of free magmas are nonassociative words.
 ##  For the external representation see the file 'word.gi'.
@@ -64,7 +65,7 @@ InstallMethod( IsFinite,
 InstallMethod( Size,
     "method for a free magma",
     true,
-    [ IsMagma and IsNonassocWordWithOneCollection ], 0,
+    [ IsMagma and IsNonassocWordCollection ], 0,
     function( M )
     if IsTrivial( M ) then
       return 1;
@@ -133,7 +134,8 @@ InstallMethod( GeneratorsMagmaFamily,
 #F  FreeMagma( <name1>, <name2>, ... )
 #F  FreeMagma( <names> )
 ##
-FreeMagma := function( arg )
+InstallGlobalFunction( FreeMagma,
+    function( arg )
 
     local   names,      # list of generators names
             F,          # family of free magma element objects
@@ -175,7 +177,66 @@ FreeMagma := function( arg )
     SetIsWholeFamily( M, true );
     SetIsTrivial( M, false );
     return M;
-end;
+end );
+
+
+#############################################################################
+##
+#F  FreeMagmaWithOne( <rank> )
+#F  FreeMagmaWithOne( <rank>, <name> )
+#F  FreeMagmaWithOne( <name1>, <name2>, ... )
+#F  FreeMagmaWithOne( <names> )
+##
+InstallGlobalFunction( FreeMagmaWithOne,
+    function( arg )
+
+    local   names,      # list of generators names
+            F,          # family of free magma element objects
+            M;          # free magma, result
+
+    # Get and check the argument list, and construct names if necessary.
+    if   Length( arg ) = 1 and arg[1] = infinity then
+      names:= InfiniteListOfNames( "x" );
+    elif Length( arg ) = 2 and arg[1] = infinity then
+      names:= InfiniteListOfNames( arg[2] );
+    elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( "x", String(i) ) );
+    elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
+      names:= List( [ 1 .. arg[1] ],
+                    i -> Concatenation( arg[2], String(i) ) );
+    elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
+      names:= arg;
+    elif Length( arg ) = 1 and IsList( arg[1] ) and not IsEmpty( arg[1]) then
+      names:= arg[1];
+    else
+      Error( "usage: FreeMagmaWithOne(<name1>,<name2>..),",
+             "FreeMagmaWithOne(<rank>)" );
+    fi;
+
+    # Handle the trivial case.
+    if IsEmpty( names ) then
+      return FreeGroup( 0 );
+    fi;
+
+    # Construct the family of element objects of our magma-with-one.
+    F:= NewFamily( "FreeMagmaWithOneElementsFamily", IsNonassocWordWithOne );
+
+    # Store the names and the default type.
+    F!.names:= names;
+    F!.defaultType:= NewType( F, IsNonassocWordWithOne and IsBracketRep );
+
+    # Make the magma.
+    if IsFinite( names ) then
+      M:= MagmaWithOneByGenerators( GeneratorsMagmaFamily( F ) );
+    else
+      M:= MagmaWithOneByGenerators( InfiniteListOfGenerators( F ) );
+    fi;
+
+    SetIsWholeFamily( M, true );
+    SetIsTrivial( M, false );
+    return M;
+end );
 
 
 #############################################################################

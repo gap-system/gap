@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains the methods  for polycylic generating systems dealing
 ##  with or defined by a pc series.
@@ -32,7 +33,7 @@ function( efam, pcs )
     local   pcgs;
 
     # quick check
-    if not IsIdentical( efam, ElementsFamily(FamilyObj(pcs)) )  then
+    if not IsIdenticalObj( efam, ElementsFamily(FamilyObj(pcs)) )  then
         Error( "elements family of <pcs> does not match <efam>" );
     fi;
 
@@ -222,10 +223,9 @@ function( pcgs )
 
     # construct the series
     series := [ grp ];
-    for i  in [ 2 .. Length(pcgs) ]  do
+    for i  in [ 2 .. Length(pcgs)+1 ]  do
         Add( series, SubgroupNC( grp, pcgs{[ i .. Length(pcgs) ]} ) );
     od;
-    Add( series, TrivialSubgroup(grp) );
 
     return series;
 

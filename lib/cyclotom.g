@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file deals with cyclotomics.
 ##
@@ -15,74 +16,73 @@ Revision.cyclotom_g :=
 
 #############################################################################
 ##
-
-#C  IsCyclotomic  . . . . . . . . . . . . . . . . category of all cyclotomics
+#C  IsCyclotomic(<obj>) . . . . . . . . . . . . . . category of all cyclotomics
 ##
-IsCyclotomic := NewCategory( "IsCyclotomic",
+##  is the category of cyclotomic numbers
+DeclareCategory( "IsCyclotomic",
     IsScalar and IsAssociativeElement and IsCommutativeElement );
 
 
 #############################################################################
 ##
-#C  IsCyclotomicsCollection . . . . . . category of collection of cyclotomics
+#C  IsCyclotomicCollection  . . . . . . category of collection of cyclotomics
+#C  IsCyclotomicCollColl  . . . . . . .  category of collection of collection
+#C  IsCyclotomicCollCollColl  . . . .  category of collection of coll of coll
 ##
-IsCyclotomicsCollection := CategoryCollections( IsCyclotomic );
+DeclareCategoryCollections( "IsCyclotomic" );
+DeclareCategoryCollections( "IsCyclotomicCollection" );
+DeclareCategoryCollections( "IsCyclotomicCollColl" );
 
 
 #############################################################################
 ##
-#C  IsCyclotomicsCollColl . . . . . . .  category of collection of collection
+#C  IsCyc(<obj>)
 ##
-IsCyclotomicsCollColl := CategoryCollections( IsCyclotomicsCollection );
-
-
-#############################################################################
-##
-#C  IsCyclotomicsCollCollColl . . . .  category of collection of coll of coll
-##
-IsCyclotomicsCollCollColl := CategoryCollections( IsCyclotomicsCollColl );
-
-
-#############################################################################
-##
-#C  IsCyc . . . . . . . . . . . . . . . . . . . . . . .  internal cyclotomics
-##
-IsCyc := NewCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
+##  is the category of kernel cyclotomics.
+DeclareCategoryKernel( "IsCyc", IsCyclotomic, IS_CYC );
 
 
 #############################################################################
 ##
 #C  IsRat . . . . . . . . . . . . . . . . . . . . . . . .  internal rationals
 ##
-IsRat := NewCategoryKernel( "IsRat", IsCyc, IS_RAT );
+DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 
 
 #############################################################################
 ##
 #C  IsInt . . . . . . . . . . . . . . . . . . . . . . . . . internal integers
 ##
-IsInt := NewCategoryKernel( "IsInt", IsRat, IS_INT );
+DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 
 
 #############################################################################
 ##
 #C  IsPosRat  . . . . . . . . . . . . . . . . . . internal positive rationals
 ##
-IsPosRat := NewCategory( "IsPosRat", IsRat );
+DeclareCategory( "IsPosRat", IsRat );
+
+
+#############################################################################
+##
+#C  IsPosInt
+##
+##  is the category for positive integers
+DeclareSynonym( "IsPosInt", IsInt and IsPosRat );
 
 
 #############################################################################
 ##
 #C  IsNegRat  . . . . . . . . . . . . . . . . . . internal negative rationals
 ##
-IsNegRat := NewCategory( "IsNegRat", IsRat );
+DeclareCategory( "IsNegRat", IsRat );
 
 
 #############################################################################
 ##
 #C  IsZeroCyc . . . . . . . . . . . . . . . . . . . . . internal zero integer
 ##
-IsZeroCyc := NewCategory( "IsZeroCyc", IsInt );
+DeclareCategory( "IsZeroCyc", IsInt );
 
 
 #############################################################################
@@ -90,7 +90,8 @@ IsZeroCyc := NewCategory( "IsZeroCyc", IsInt );
 
 #V  CyclotomicsFamily . . . . . . . . . . . . . . . . . family of cyclotomics
 ##
-CyclotomicsFamily := NewFamily( "CyclotomicsFamily", IsCyclotomic );
+BIND_GLOBAL( "CyclotomicsFamily",
+    NewFamily( "CyclotomicsFamily", IsCyclotomic ) );
 
 
 #############################################################################
@@ -98,69 +99,70 @@ CyclotomicsFamily := NewFamily( "CyclotomicsFamily", IsCyclotomic );
 
 #R  IsSmallIntRep . . . . . . . . . . . . . . . . . .  small internal integer
 ##
-IsSmallIntRep := NewRepresentation( "IsSmallIntRep", IsInternalRep, [] );
+DeclareRepresentation( "IsSmallIntRep", IsInternalRep, [] );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_SMALL_ZERO . . . . . . . . . . . . . . type of the internal zero
 ##
-TYPE_INT_SMALL_ZERO := NewType( CyclotomicsFamily,
-                            IsInt and IsZeroCyc and IsSmallIntRep );
+BIND_GLOBAL( "TYPE_INT_SMALL_ZERO", NewType( CyclotomicsFamily,
+                            IsInt and IsZeroCyc and IsSmallIntRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_SMALL_NEG  . . . . . . type of a small negative internal integer
 ##
-TYPE_INT_SMALL_NEG := NewType( CyclotomicsFamily,
-                            IsInt and IsNegRat and IsSmallIntRep );
+BIND_GLOBAL( "TYPE_INT_SMALL_NEG", NewType( CyclotomicsFamily,
+                            IsInt and IsNegRat and IsSmallIntRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_SMALL_POS  . . . . . . type of a small positive internal integer
 ##
-TYPE_INT_SMALL_POS := NewType( CyclotomicsFamily,
-                            IsInt and IsPosRat and IsSmallIntRep );
+BIND_GLOBAL( "TYPE_INT_SMALL_POS", NewType( CyclotomicsFamily,
+                            IsPosInt and IsSmallIntRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_LARGE_NEG  . . . . . . type of a large negative internal integer
 ##
-TYPE_INT_LARGE_NEG := NewType( CyclotomicsFamily,
-                            IsInt and IsNegRat and IsInternalRep );
+BIND_GLOBAL( "TYPE_INT_LARGE_NEG", NewType( CyclotomicsFamily,
+                            IsInt and IsNegRat and IsInternalRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_INT_LARGE_POS  . . . . . . type of a large positive internal integer
 ##
-TYPE_INT_LARGE_POS := NewType( CyclotomicsFamily,
-                            IsInt and IsPosRat and IsInternalRep );
+BIND_GLOBAL( "TYPE_INT_LARGE_POS", NewType( CyclotomicsFamily,
+                            IsPosInt and IsInternalRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_RAT_NEG  . . . . . . . . . . .  type of a negative internal rational
 ##
-TYPE_RAT_NEG := NewType( CyclotomicsFamily,
-                            IsRat and IsNegRat and IsInternalRep );
+BIND_GLOBAL( "TYPE_RAT_NEG", NewType( CyclotomicsFamily,
+                            IsRat and IsNegRat and IsInternalRep ) );
 
 
 #############################################################################
 ##
 #V  TYPE_RAT_POS  . . . . . . . . . . .  type of a positive internal rational
 ##
-TYPE_RAT_POS := NewType( CyclotomicsFamily,
-                            IsRat and IsPosRat and IsInternalRep );
+BIND_GLOBAL( "TYPE_RAT_POS", NewType( CyclotomicsFamily,
+                            IsRat and IsPosRat and IsInternalRep ) );
 
 #############################################################################
 ##
 #V  TYPE_CYC  . . . . . . . . . . . . . . . . type of an internal cyclotomics
 ##
-TYPE_CYC := NewType( CyclotomicsFamily, IsCyc and IsInternalRep );
+BIND_GLOBAL( "TYPE_CYC",
+    NewType( CyclotomicsFamily, IsCyc and IsInternalRep ) );
 
 
 #############################################################################
@@ -196,119 +198,142 @@ SetIsUFDFamily( CyclotomicsFamily, true );
 
 #C  IsInfinity  . . . . . . . . . . . . . . . . . . . .  category of infinity
 ##
-IsInfinity := NewCategory( "IsInfinity", IsCyclotomic );
+DeclareCategory( "IsInfinity", IsCyclotomic );
 
 
 #############################################################################
 ##
 #V  infinity  . . . . . . . . . . . . . . . . . . . . . .  the value infinity
 ##
-infinity := Objectify( NewType( CyclotomicsFamily, IsInfinity
-                 and IsPositionalObjectRep ), rec() );
+UNBIND_GLOBAL( "infinity" );
+BIND_GLOBAL( "infinity",
+    Objectify( NewType( CyclotomicsFamily, IsInfinity
+                        and IsPositionalObjectRep ), rec() ) );
 
 InstallMethod( PrintObj,
-    "method for infinity",
+    "for infinity",
     true, [ IsInfinity ], 0, function(obj) Print("infinity"); end );
 
 InstallMethod( \=,
-    "method for cyclotomic and 'infinity'",
-    IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnFalse );
+    "for cyclotomic and `infinity'",
+    IsIdenticalObj, [ IsCyc, IsInfinity ], 0, ReturnFalse );
 
 InstallMethod( \=,
-    "method for 'infinity' and cyclotomic",
-    IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+    "for `infinity' and cyclotomic",
+    IsIdenticalObj, [ IsInfinity, IsCyc ], 0, ReturnFalse );
 
 InstallMethod( \=,
-    "method for 'infinity' and 'infinity'",
-    IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnTrue );
+    "for `infinity' and `infinity'",
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], 0, ReturnTrue );
 
 InstallMethod( \<,
-    "method for cyclotomic and 'infinity'",
-    IsIdentical, [ IsCyc, IsInfinity ], 0, ReturnTrue );
+    "for cyclotomic and `infinity'",
+    IsIdenticalObj, [ IsCyc, IsInfinity ], 0, ReturnTrue );
 
 InstallMethod( \<,
-    "method for 'infinity' and cyclotomic",
-    IsIdentical, [ IsInfinity, IsCyc ], 0, ReturnFalse );
+    "for `infinity' and cyclotomic",
+    IsIdenticalObj, [ IsInfinity, IsCyc ], 0, ReturnFalse );
 
 InstallMethod( \<,
-    "method for 'infinity' and 'infinity'",
-    IsIdentical, [ IsInfinity, IsInfinity ], 0, ReturnFalse );
+    "for `infinity' and `infinity'",
+    IsIdenticalObj, [ IsInfinity, IsInfinity ], 0, ReturnFalse );
 
 
 #############################################################################
 ##
+#F  IsIntegralCyclotomic( <obj> ) . . . . . . . . . . .  integral cyclotomics
+##
+##  returns  `true'  if  <obj>  is a cyclotomic integer  (see  "Cyclotomic
+##  Integers"), `false' otherwise.
+##
+DeclareProperty( "IsIntegralCyclotomic", IsObject );
 
-#F  IsCycInt  . . . . . . . . . . . . . . . . . internal integral cyclotomics
-##
-##  Eventually this could become a property call 'IsIntegralCyclotomic'.
-##
-IsCycInt := IS_CYC_INT;
+DeclareSynonym( "IsCycInt", IsIntegralCyclotomic );
+
+InstallMethod( IsIntegralCyclotomic,
+    "for an internal object",
+    true,
+    [ IsInternalRep ], 0,
+    IS_CYC_INT );
 
 
 #############################################################################
 ##
+#A  Conductor( <cyc> )
 #A  Conductor( <F> )
-#A  Conductor( <z> )
+#A  Conductor( <list> )
 ##
-##  is the smallest integer $n$ such that the field <F> or the field element
-##  <z> is contained in the $n$-th cyclotomic field.
-##  If <F> is not an abelian extension of the rationals or if <z> is not a
-##  cyclotomic then 'fail' is returned.
+##  For an element <cyc> of a cyclotomic field, `Conductor' returns the
+##  smallest integer $n$ such that <cyc> is contained in the $n$-th
+##  cyclotomic field.
+##  For a field <F> or a list <list> of cyclotomics, `Conductor' returns the
+##  smallest integer $n$ such that all elements of <F> resp.~all entries in
+##  <list> are contained in the $n$-th cyclotomic field.
 ##
-Conductor := NewAttributeKernel( "Conductor", IsCyc, CONDUCTOR );
-SetConductor := Setter( Conductor );
-HasConductor := Tester( Conductor );
+DeclareAttributeKernel( "Conductor", IsCyc, CONDUCTOR );
 
 
 #############################################################################
 ##
-#O  GaloisCyc( <cyc>, <int> ) . . . . . . . . . . . . . . .  galois conjugate
+#O  GaloisCyc( <cyc>, <k> ) . . . . . . . . . . . . . . . .  Galois conjugate
 ##
-GaloisCyc := NewOperationKernel( "GaloisCyc", [ IsCyc, IsInt ], GALOIS_CYC );
+##  returns  the cyclotomic obtained on raising the roots  of unity in the
+##  representation of  the cyclotomic <z> to  the <k>-th power.  If <k> is
+##  a fixed integer coprime to the integer $n$, `GaloisCyc( ., <k> )' acts
+##  as a Galois automorphism of the $n$-th cyclotomic field
+##  (see   "GaloisGroup  for   Number  Fields"); to get the Galois
+##  automorphisms themselves, use "GaloisGroup" `GaloisGroup'.
+##
+##  The complex conjugate of <cyc> is `GaloisCyc( <cyc>, -1 )',
+##  which can also be computed using `ComplexConjugate'
+##  (see "ComplexConjugate").
+##
+DeclareOperationKernel( "GaloisCyc", [ IsCyc, IsInt ], GALOIS_CYC );
 
 
 #############################################################################
 ##
-
 #F  NumeratorRat( <rat> ) . . . . . . . . . .  numerator of internal rational
 ##
-NumeratorRat   := NUMERATOR_RAT;
+BIND_GLOBAL( "NumeratorRat", NUMERATOR_RAT );
 
 
 #############################################################################
 ##
 #F  DenominatorRat( <rat> ) . . . . . . . .  denominator of internal rational
 ##
-DenominatorRat := DENOMINATOR_RAT;
+BIND_GLOBAL( "DenominatorRat", DENOMINATOR_RAT );
 
 
 #############################################################################
 ##
 #F  QuoInt( <a>, <b> )  . . . . . . . . . . . . quotient of internal integers
 ##
-QuoInt := QUO_INT;
+BIND_GLOBAL( "QuoInt", QUO_INT );
 
 
 #############################################################################
 ##
 #F  RemInt( <a>, <b> )  . . . . . . . . . . .  remainder of internal integers
 ##
-RemInt := REM_INT;
+BIND_GLOBAL( "RemInt", REM_INT );
 
 
 #############################################################################
 ##
 #F  GcdInt( <a>, <b> )  . . . . . . . . . . . . . .  gcd of internal integers
 ##
-GcdInt := GCD_INT;
+BIND_GLOBAL( "GcdInt", GCD_INT );
 
 
 #############################################################################
 ##
-
 #M  Order( <z> ) . . . . . . . . . . . . . . . . . .  order of an alg. number
 ##
-InstallMethod( Order, true, [ IsCyc ], 0,
+InstallMethod( Order,
+    "for a cyclotomic",
+    true,
+    [ IsCyc ], 0,
     function ( cyc )
     local ord, val;
     if cyc = 0 then
@@ -328,11 +353,14 @@ InstallMethod( Order, true, [ IsCyc ], 0,
     end );
 
 
-##########################################################################
+#############################################################################
 ##
 #M  Int( <cyc> )  . . . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
-InstallMethod( Int, true, [ IsCyc ], 0,
+InstallMethod( Int,
+    "for a cyclotomic",
+    true,
+    [ IsCyc ], 0,
     function ( x )
     local i, int, n, cfs;
     n:= Conductor( x );
@@ -349,7 +377,10 @@ InstallMethod( Int, true, [ IsCyc ], 0,
 ##
 #M  Int( <rat> ) . . . . . . . . . . . .   convert a rational into an integer
 ##
-InstallMethod( Int, true, [ IsRat ], 0,
+InstallMethod( Int,
+    "for a rational",
+    true,
+    [ IsRat ], 0,
     obj -> QuoInt( NumeratorRat( obj ), DenominatorRat( obj ) ) );
 
 
@@ -357,14 +388,21 @@ InstallMethod( Int, true, [ IsRat ], 0,
 ##
 #M  Int( <n> )
 ##
-InstallMethod( Int, true, [ IsInt ], 0, IdFunc );
+InstallMethod( Int,
+    "for an integer",
+    true,
+    [ IsInt ], 0,
+    IdFunc );
 
 
 #############################################################################
 ##
 #M  String( <cyc> ) . . . . . . . . . . . .  convert cyclotomic into a string
 ##
-InstallMethod( String, true, [ IsCyc ], 0,
+InstallMethod( String,
+    "for a cyclotomic",
+    true,
+    [ IsCyc ], 0,
     function( cyc )
     local i, j, En, coeffs, str;
 
@@ -427,7 +465,10 @@ InstallMethod( String, true, [ IsCyc ], 0,
 ##
 #M  String( <rat> ) . . . . . . . . . . . .  convert a rational into a string
 ##
-InstallMethod( String, true, [ IsRat ], 0,
+InstallMethod( String,
+    "for a rational",
+    true,
+    [ IsRat ], 0,
     function ( rat )
     local   str;
 
@@ -445,7 +486,7 @@ InstallMethod( String, true, [ IsRat ], 0,
 #M  String( <n> ) . . . . . . . . . . . . . . . . . . . . . .  for an integer
 ##
 InstallMethod( String,
-    "method for an integer",
+    "for an integer",
     true,
     [ IsInt ], 0,
     STRING_INT );
@@ -453,10 +494,10 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#M  String( <infinity> )  . . . . . . . . . . . . . . . . . . .  for infinity
+#M  String( <infinity> )  . . . . . . . . . . . . . . . . . .  for `infinity'
 ##
 InstallMethod( String,
-    "method for infinity",
+    "for infinity",
     true,
     [ IsInfinity ], 0,
     x -> "infinity" );
@@ -465,5 +506,5 @@ InstallMethod( String,
 #############################################################################
 ##
 
-#E  permutat.g	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  cyclotom.g	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

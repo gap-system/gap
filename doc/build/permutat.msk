@@ -1,0 +1,150 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  permutat.msk                GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Permutations}
+
+{\GAP} offers a data type *permutation* to describe the elements of permutation groups.
+
+The points on  which permutations   in  {\GAP} operate  are the  positive
+integers less than  $2^{28}-1$,  and the image   of a point <i> under   a
+permutation <p> is written $i^p$,  which is expressed  as `<i> ^ <p>'  in
+{\GAP}. (This operation is also implemented by the function `OnPoints', see
+"OnPoints".)
+If `<i> ^ $p\ne i$', we say that <i> is *moved* by~<p>, otherwise
+it is _fixed_. Permutations in {\GAP} are  entered and displayed in cycle
+notation, such as `(1,2,3)(4,5)'.
+
+In the  names of the  {\GAP} functions  that deal with  permutations, the
+word  `Permutation' is usually abbreviated  to `Perm', to  save typing. For
+example,   the category  test  function  for permutations is called
+`IsPerm'.
+
+\Declaration{IsPerm}
+\Declaration{IsPermCollection}
+\Declaration{PermutationsFamily}
+
+Internally, {\GAP}  stores a permutation as a  list of the  <d> images of
+the  integers  $1,\ldots, d$,  where the ``internal  degree'' <d>  is the
+largest integer moved by the permutation or bigger. When a permutation is
+read  in  in  cycle  notation, <d> is  always  set  to  the largest moved
+integer,   but a bigger   <d> can  result  from  a multiplication of  two
+permutations, because the product is  not shortened if it fixes~<d>.  The
+images are either all stored as 16-bit integers or all as 32-bit integers
+(actually as {\GAP} immediate integers less  than $2^{28}$), depending on
+whether  $d\le 65536$  or not. This  means that  the identity permutation
+`()'  takes <4m> bytes  if it was calculated as   `(1, \dots, <m>) \* (1,
+\dots, <m>) ^ -1'. It  can take even more  because the internal list  has
+sometimes room for more than <d> images.  For example, the maximal degree
+of   any permutation in  {\GAP}  is  $m  = 2^{22}-1024 =  4{,}193{,}280$,
+because  bigger permutations  would have  an  internal list with room for
+more than $2^{22}$ images, requiring  more than $2^{24}$~bytes. $2^{24}$,
+however, is  the  largest possible size   of  an object that  the  {\GAP}
+storage manager can deal with.
+
+Permutations  do  not belong to  a specific group.   That means
+that one can work  with permutations without defining a permutation group
+that contains them. 
+
+\beginexample
+gap> (1,2,3);
+(1,2,3)
+gap> (1,2,3) * (2,3,4);
+(1,3)(2,4)
+gap> 17^(2,5,17,9,8);
+9
+gap> OnPoints(17,(2,5,17,9,8));
+9
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Comparison of permutations}
+
+\>`<p_1> = <p_2>'{equality test}!{for permutations}
+\>`<p_1> \< <p_2>'{precedence test}!{for permutations}
+
+Two permutations are equal if they move the same points and all these points
+have the same images under both permutations.
+
+The permutation $p_1$ is smaller than $p_2$ if $p_1\not=p_2$ and
+$i^{p_1}\<i^{p_2}$ where $i$ is the smallest point with
+$i^{p_1}\not=i^{p_2}$. Therefore the identity permutation is the smallest
+permutation.
+
+\beginexample
+gap> (1,2,3) = (2,3,1);
+true
+gap> (1,2,3) * (2,3,4) = (1,3)(2,4);
+true
+gap> (1,2,3)<(1,3,2);
+true
+\endexample
+
+\Declaration{SmallestGeneratorPerm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Moved points of permutations}
+
+\Declaration{SmallestMovedPointPerm}
+\Declaration{LargestMovedPointPerm}
+\Declaration{NrMovedPointsPerm}
+\Declaration{MovedPointsPerms}
+\Declaration{NrMovedPointsPerms}
+\Declaration{SmallestMovedPointPerms}
+\Declaration{LargestMovedPointPerms}
+
+\beginexample
+gap> SmallestMovedPointPerm((4,5,6)(7,2,8));
+2
+gap> LargestMovedPointPerm((4,5,6)(7,2,8)); 
+8
+gap> NrMovedPointsPerm((4,5,6)(7,2,8));    
+6
+gap> MovedPointsPerms([(2,3,4),(7,6,3),(5,47)]);
+[ 2, 3, 4, 5, 6, 7, 47 ]
+gap> NrMovedPointsPerms([(2,3,4),(7,6,3),(5,47)]);
+7
+gap> SmallestMovedPointPerms([(2,3,4),(7,6,3),(5,47)]);
+2
+gap> LargestMovedPointPerms([(2,3,4),(7,6,3),(5,47)]);
+47
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sign and Cycle Structure}
+
+\Declaration{SignPerm}
+\Declaration{CycleStructurePerm}
+\beginexample
+gap> SignPerm((1,2,3)(4,5));  
+-1
+gap> CycleStructurePerm((1,2,3)(4,5,9,7,8)); 
+[ , 1,, 1 ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Creating permutations}
+
+\Declaration{ListPerm}
+\Declaration{PermList}
+\Declaration{MappingPermListList}
+\Declaration{RestrictedPerm}
+
+\beginexample
+gap> ListPerm((3,4,5));
+[ 1, 2, 4, 5, 3 ]
+gap> PermList([1,2,4,5,3]);
+(3,4,5)
+gap> MappingPermListList([2,5,1,6],[7,12,8,2]);
+( 1, 8, 5,12,11,10, 9, 6, 2, 7, 4, 3)
+gap> RestrictedPerm((1,2)(3,4),[3..5]);
+(3,4)
+\endexample
+
+\Declaration{Permuted}
+

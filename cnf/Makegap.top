@@ -1,0 +1,16 @@
+#############################################################################
+##
+#W  Makefile                    GAP source                       Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This  file compiles    and links  GAP.    It is  created from   the  file
+##  "Makegap.in" in the directory `cnf/'.
+##
+COPTS=
+CFLAGS=@CFLAGS@ $(COPTS)
+LOPTS=
+LDFLAGS=@LDFLAGS@ $(LOPTS)
+CC=@CC@

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the generic record package.
 **
@@ -12,7 +13,7 @@
 **  records and the elements for the other packages in the GAP kernel.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_records_h =
+const char * Revision_records_h =
    "@(#)$Id$";
 #endif
 
@@ -174,25 +175,9 @@ extern UInt completion_rnam (
 /****************************************************************************
 **
 
-*F  SetupRecords()  . . . . . . . . .  initialize the generic records package
+*F  InitInfoRecords() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupRecords ( void );
-
-
-/****************************************************************************
-**
-*F  InitRecords() . . . . . . . . . .  initialize the generic records package
-**
-**  'InitRecords' initializes the generic records package.
-*/
-extern void InitRecords ( void );
-
-
-/****************************************************************************
-**
-*F  CheckRecords()  . check the initialisation of the generic records package
-*/
-extern void CheckRecords ( void );
+StructInitInfo * InitInfoRecords ( void );
 
 
 /****************************************************************************

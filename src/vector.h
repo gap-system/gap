@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions  that mainly  operate  on vectors  whose
 **  elements are integers, rationals, or elements from cyclotomic fields.  As
@@ -27,7 +28,7 @@
 **  is just that the kernel does not known this.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_vector_h =
+const char * Revision_vector_h =
    "@(#)$Id$";
 #endif
 
@@ -42,25 +43,9 @@ SYS_CONST char * Revision_vector_h =
 /****************************************************************************
 **
 
-*F  SetupVector() . . . . . . . . . . . . . . . initialize the vector package
+*F  InitInfoVector()  . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupVector ( void );
-
-
-/****************************************************************************
-**
-*F  InitVector()  . . . . . . . . . . . . . . . initialize the vector package
-**
-**  'InitVector' initializes the vector package.
-*/
-extern void InitVector ( void );
-
-
-/****************************************************************************
-**
-*F  CheckVector() . . . . . .  check the initialisation of the vector package
-*/
-extern void CheckVector ( void );
+StructInitInfo * InitInfoVector ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file  contains the  methods for univariate polynomials
 ##
@@ -17,7 +18,7 @@ DOULP:=DegreeOfUnivariateLaurentPolynomial;
 ##
 #M  \<( <upol>, <upol> )  comparison
 ##
-InstallMethod(\<,IsIdentical,
+InstallMethod(\<,IsIdenticalObj,
               [IsUnivariateLaurentPolynomial,IsUnivariateLaurentPolynomial],0,
 function(a,b)
   a:=CoefficientsOfUnivariateLaurentPolynomial(a);
@@ -94,11 +95,23 @@ InstallOtherMethod( Value,
 InstallMethod(LeadingCoefficient,true,[IsUnivariateLaurentPolynomial],0,
 function(f)
   if f=Zero(f) then
-    return Zero(CoefficientsRing(FamilyObj(f)));
+    return Zero(CoefficientsFamily(FamilyObj(f)));
   fi;
   f:=CoefficientsOfUnivariateLaurentPolynomial(f);
   return f[1][Length(f[1])];
 end);
+
+#############################################################################
+##
+#F  LeadingMonomial . . . . . . . . . . . for a univariate laurent polynomial
+##
+InstallMethod( LeadingMonomial,
+        "for a univariate laurent polynomial",
+        true,
+        [ IsUnivariateLaurentPolynomial ],
+        0,
+  p -> [ IndeterminateNumberOfUnivariateLaurentPolynomial( p ),DOULP( p ) ]
+);
 
 #############################################################################
 ##
@@ -133,7 +146,7 @@ end);
 ##
 #M  \mod( <upol>, <upol> )
 ##
-InstallMethod(\mod,"univariate polynomials",IsIdentical,
+InstallMethod(\mod,"univariate polynomials",IsIdenticalObj,
   [IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function(a,b)
   return EuclideanRemainder(0,a,b);
@@ -143,7 +156,7 @@ end);
 ##
 #M  StandardAssociate( <pring>, <upol> )
 ##
-InstallMethod(StandardAssociate,"StdAssoc Pol",true,[IsPolynomialRing,
+InstallMethod(StandardAssociate,"StdAssoc Pol",IsCollsElms,[IsPolynomialRing,
                 IsUnivariatePolynomial],0,
 function(R,f)
 local l,a,ind;
@@ -190,7 +203,7 @@ end);
 ##
 #M  QuotientRemainder( <pring>, <upol>, <upol> )
 ##
-InstallMethod(QuotientRemainder,"QR Pol/Pol",true,[IsPolynomialRing,
+InstallMethod(QuotientRemainder,"Pol/Pol",true,[IsPolynomialRing,
                 IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function (R,f,g)
 local m,n,i,k,c,q,val,brci;
@@ -212,7 +225,8 @@ local m,n,i,k,c,q,val,brci;
 
   # if <f> is zero return it
   if 0=Length(f[1])  then
-    return UnivariateLaurentPolynomialByCoefficients(brci[1],[],0,brci[2]);
+    f:=UnivariateLaurentPolynomialByCoefficients(brci[1],[],0,brci[2]);
+    return [f,f];
   fi;
 
   # remove the valuation of <f> and <g>
@@ -429,7 +443,8 @@ end;
 ##
 #F  Discriminant( <f> ) . . . . . . . . . . . . discriminant of polynomial f
 ##
-Discriminant := function(f)
+InstallMethod(Discriminant,"upol",true,[IsUnivariateLaurentPolynomial],0,
+function(f)
 local d;
   # the discriminant is \prod_i\prod_{j\not= i}(\alpha_i-\alpha_j), but
   # to avoid chaos with symmetric polynomials, we better compute it as
@@ -437,24 +452,46 @@ local d;
   d:=DegreeOfUnivariateLaurentPolynomial(f);
   return (-1)^(d*(d-1)/2)*Resultant(f,Derivative(f),
     IndeterminateNumberOfUnivariateLaurentPolynomial(f))/LeadingCoefficient(f);
-end;
+end);
+
 
 #############################################################################
 ##
-#M  IsIrreducible(<pol>) . . . . Irreducibility test for polynomials
+#M  IsIrreducibleRingElement(<pol>) . . . Irreducibility test for polynomials
 ##
-InstallMethod(IsIrreducible,"Pol",true,
+InstallMethod(IsIrreducibleRingElement,"Pol",true,
   [IsPolynomialRing,IsPolynomial],0,
 function(R,f)
   return Length(Factors(R,f))<=1;
 end);
+
+#############################################################################
+##
+#F  RootsOfUPol(<upol>) . . . . . . . . . . . . . . . . roots of a polynomial
+##
+InstallGlobalFunction( RootsOfUPol, function(f)
+  local roots,factor;
+  roots:=[];
+  for factor in Factors(f) do
+    if DOULP(factor)=1 then
+      factor:=CoefficientsOfUnivariateLaurentPolynomial(factor);
+      # work around new representation of polynomials
+      if factor[2]=0 then
+	Add(roots,-factor[1][1]/factor[1][2]);
+      else
+	Add(roots,0*factor[1][1]);
+      fi;
+    fi;
+  od;
+  return roots;
+end );
 
 
 #############################################################################
 ##
 #F  CyclotomicPol( <n> )  . . .  coefficients of <n>-th cyclotomic polynomial
 ##
-CyclotomicPol := function( n )
+InstallGlobalFunction( CyclotomicPol, function( n )
 
     local f,   # result (after stripping off other cyclotomic polynomials)
           div, # divisors of 'n'
@@ -504,7 +541,7 @@ CyclotomicPol := function( n )
 
     # return the coefficients list
     return f;
-end;
+end );
 
 
 ############################################################################
@@ -513,7 +550,7 @@ end;
 ##
 ##  returns the <n>-th cyclotomic polynomial over the ring <F>.
 ##
-CyclotomicPolynomial := function( F, n )
+InstallGlobalFunction( CyclotomicPolynomial, function( F, n )
 
     local char;   # characteristic of 'F'
 
@@ -530,7 +567,7 @@ CyclotomicPolynomial := function( F, n )
       od;
     fi;
     return UnivariatePolynomial( F, One( F ) * CyclotomicPol(n) );
-end;
+end );
 
 
 #############################################################################

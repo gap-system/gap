@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.stbc_gi :=
     "@(#)$Id$";
@@ -13,21 +14,21 @@ Revision.stbc_gi :=
 ##
 #F  StabChain( <G>, <options> ) . . . . . . . . . . . . make stabilizer chain
 ##
-StabChain := function( arg )
+InstallGlobalFunction( StabChain, function( arg )
     if Length( arg ) = 1  then
-        return StabChainImmAttr( arg[ 1 ] );
+        return StabChainImmutable( arg[ 1 ] );
     else
         return Immutable( StabChainOp( arg[ 1 ], arg[ 2 ] ) );
     fi;
-end;
+end );
 
-InstallMethod( StabChainImmAttr, true, [ IsObject ], 0, StabChainAttr );
+InstallMethod( StabChainImmutable, true, [ IsObject ], 0, StabChainMutable );
 
-InstallMethod( StabChainAttr, true, [ IsGroup ], 0,
+InstallMethod( StabChainMutable, true, [ IsGroup ], 0,
     G -> StabChainOp( G, rec(  ) ) );
 
 InstallOtherMethod( StabChainOp, true, [ IsPermGroup,
-        IsList and IsCyclotomicsCollection ], 0,
+        IsList and IsCyclotomicCollection ], 0,
     function( G, base )
     return StabChainOp( G, rec( base := base ) );
 end );
@@ -61,8 +62,8 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
     local   S,  T,  degree,  pcgs,  name,  gens,  pnt,  pos,  i;
     
     # If a stabilizer chain <S> is already known, modify it.
-    if HasStabChain( G )  then
-        S := StructuralCopy( StabChainAttr( G ) );
+    if HasStabChainMutable( G )  then
+        S := StructuralCopy( StabChainMutable( G ) );
         if IsBound( options.base )  then
             if not IsBound( options.reduced )  then
                 options.reduced := DefaultStabChainOptions.reduced;
@@ -82,7 +83,13 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
         # For solvable groups, use the pcgs algorithm.
         pcgs := [  ];
         if     options.tryPcgs
-           and ( not HasIsSolvableGroup( G )  or  IsSolvableGroup( G ) )  then
+           and (# the group is know to be solvable
+	     (HasIsSolvableGroup(G) and IsSolvableGroup(G))
+		# or the degree is small and the group is not known to be
+		# insolvable
+	        or (Length(MovedPoints(G))<=100 and not
+		    (HasIsSolvableGroup(G) and not IsSolvableGroup(G))
+		    )) then
             S := EmptyStabChain( [  ], One( G ) );
             if IsBound( options.base )  then  S.base := options.base;
                                         else  S.base := [  ];          fi;
@@ -142,7 +149,7 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
         StabChainOptions( G ).random := options.random;
     fi;
     
-    SetStabChain( G, S );
+    SetStabChainMutable( G, S );
     return S;
 end );
 
@@ -159,7 +166,7 @@ end );
 ##  This is useful for  stabiliser sub-chains that  have been obtained as the
 ##  (iterated) `stabilizer' component of a bigger chain.
 ##
-CopyStabChain := function( C )
+InstallGlobalFunction(CopyStabChain,function( C )
     local   Xlabels,  S,  len,  xlab,  need,  poss,  i;
     
     # To begin with, make a deep copy.
@@ -221,7 +228,7 @@ CopyStabChain := function( C )
     od;
 
     return C;
-end;
+end);
 
 #############################################################################
 ##
@@ -234,29 +241,29 @@ InstallMethod( StabChainOptions, true, [ IsPermGroup ], 0,
 ##
 #V  DefaultStabChainOptions . . . . . .  options record for stabilizer chains
 ##
-DefaultStabChainOptions := rec( reduced := true,
+InstallValue( DefaultStabChainOptions,rec( reduced := true,
                                  random := 1000,
-                                tryPcgs := true );
+                                tryPcgs := true ));
 
 #############################################################################
 ##
 #F  CopyOptionsDefaults( <G>, <options> ) . . . . . . . copy options defaults
 ##
-CopyOptionsDefaults := function( G, options )
+InstallGlobalFunction(CopyOptionsDefaults,function( G, options )
     local   P,  name;
 
     # See whether we know a base for <G>.
     if not IsBound( options.knownBase )  then
-        if   HasBase( G )  then
-            options.knownBase := Base( G );
+        if   HasBaseOfGroup( G )  then
+            options.knownBase := BaseOfGroup( G );
         else
             P := Parent( G );
-            while     not HasBase( P )
-                  and not IsIdentical( P, Parent( P ) )  do
+            while     not HasBaseOfGroup( P )
+                  and not IsIdenticalObj( P, Parent( P ) )  do
                 P := Parent( P );
             od;
-            if HasBase( P )  then
-                options.knownBase := Base( P );
+            if HasBaseOfGroup( P )  then
+                options.knownBase := BaseOfGroup( P );
             fi;
         fi;
     fi;
@@ -293,7 +300,7 @@ CopyOptionsDefaults := function( G, options )
                 P := Parent( G );
                 while     not HasSize( P )
                       and not IsBound( StabChainOptions( P ).limit )
-                      and not IsIdentical( P, Parent( P ) )  do
+                      and not IsIdenticalObj( P, Parent( P ) )  do
                     P := Parent( P );
                 od;
                 if HasSize( P )  then
@@ -305,13 +312,13 @@ CopyOptionsDefaults := function( G, options )
         fi;
     fi;
 
-end;
+end);
 
 #############################################################################
 ##
 #F  StabChainBaseStrongGenerators( <base>, <sgs> )  stab chain from known sgs
 ##
-StabChainBaseStrongGenerators := function( base, sgs )
+InstallGlobalFunction(StabChainBaseStrongGenerators,function( base, sgs )
     local   S,  T,  pnt;
 
     S := EmptyStabChain( [  ], () );
@@ -323,13 +330,13 @@ StabChainBaseStrongGenerators := function( base, sgs )
         T := T.stabilizer;
     od;
     return S;
-end;
+end);
     
 #############################################################################
 ##
 #F  GroupStabChain( <arg> ) . . . . . . make (sub)group from stabilizer chain
 ##
-GroupStabChain := function( arg )
+InstallGlobalFunction(GroupStabChain,function( arg )
     local   S,  G,  P;
     
     if Length( arg ) = 1  then
@@ -344,16 +351,16 @@ GroupStabChain := function( arg )
             G := Subgroup( P, S.generators );
         fi;
     fi;
-    SetStabChain( G, S );
+    SetStabChainMutable( G, S );
 
     return G;
-end;
+end);
 
 #############################################################################
 ##
 #F  DepthSchreierTrees( <S> ) . . . . . . . . . . . . depth of Schreier trees
 ##
-DepthSchreierTrees := function( S )
+InstallGlobalFunction( DepthSchreierTrees, function( S )
     local   depths,  gens,  dep,  pnt,  sum,  i;
     
     depths := "";
@@ -380,16 +387,15 @@ DepthSchreierTrees := function( S )
     od;
     Append( depths, Concatenation( String( Length( gens ) ), " gens" ) );
     return depths;
-end;
+end );
 
 #############################################################################
 ##
-
 #F  AddGeneratorsExtendSchreierTree( <S>, <new> ) . . . . . .  add generators
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-AddGeneratorsExtendSchreierTree := function( S, new )
+InstallGlobalFunction( AddGeneratorsExtendSchreierTree, function( S, new )
     local   gen,  pos,  # new generator and its position in <S>.labels
             old,  ald,  # genlabels before extension
             len,        # initial length of the orbit of <S>
@@ -459,13 +465,13 @@ AddGeneratorsExtendSchreierTree := function( S, new )
             i := i + 1;
         od;
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  ChooseNextBasePoint( <S>, <base>, <newgens> ) . . . . . . . . . . . local
 ##
-ChooseNextBasePoint := function( S, base, newgens )
+InstallGlobalFunction( ChooseNextBasePoint, function( S, base, newgens )
     local   i,  pnt,  bpt,  pos;
     
     i := 1;
@@ -503,13 +509,13 @@ ChooseNextBasePoint := function( S, base, newgens )
         fi;
     fi; 
     
-end;
+end );
 
 #############################################################################
 ##
 #F  StabChainStrong( <S>, <newgens>, <options> )  . . Schreier-Sims algorithm
 ##
-StabChainStrong := function( S, newgens, options )
+InstallGlobalFunction( StabChainStrong, function( S, newgens, options )
     local   gen,        # one generator from <newgens>
             pnt,        # next base point to use
             len,        # length of orbit of <S>
@@ -611,14 +617,14 @@ StabChainStrong := function( S, newgens, options )
           fi;
         od;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  StabChainForcePoint( <S>, <pnt> ) . . . . . . . .  force <pnt> into orbit
 ##
-StabChainForcePoint := function( S, pnt )
+InstallGlobalFunction( StabChainForcePoint, function( S, pnt )
     
     # Do nothing if <pnt> is already in the orbit of <S>.
     if    not IsBound( S.translabels )
@@ -638,13 +644,13 @@ StabChainForcePoint := function( S, pnt )
 
     fi;
     return true;
-end;
+end );
 
 #############################################################################
 ##
 #F  StabChainSwap( <S> )  . . . . . . . . . . . . . . .  swap two base points
 ##
-StabChainSwap := function( S )
+InstallGlobalFunction( StabChainSwap, function( S )
     local   a,  b,      # basepoints that are to be switched
             T,  Tstab,  # copy of $S$ with $Tstab$ becomes $S_b$
             len,        # length of $Tstab.orbit$ to be reached
@@ -734,7 +740,7 @@ StabChainSwap := function( S )
     fi;
     
     return true;
-end;
+end );
 
 #############################################################################
 ##
@@ -742,31 +748,31 @@ end;
 ##
 ##  Perhaps this should be an internal function?
 ##
-InsertElmList := function( list, pos, elm )
+InstallGlobalFunction( InsertElmList, function( list, pos, elm )
     local   len;
     
     len := Length( list );
     list{ [ pos + 1 .. len + 1 ] } := list{ [ pos .. len ] };
     list[ pos ] := elm;
-end;
+end );
 
 #############################################################################
 ##
 #F  RemoveElmList( <list>, <pos> )  . . . . . . . .  remove element from list
 ##
-RemoveElmList := function( list, pos )
+InstallGlobalFunction( RemoveElmList, function( list, pos )
     local   len;
     
     len := Length( list );
     list{ [ pos .. len - 1 ] } := list{ [ pos + 1 .. len ] };
     Unbind( list[ len ] );
-end;
+end );
 
 #############################################################################
 ##
 #F  LabsLims( <lab>, <hom>, <labs>, <lims> )  . . . .  help for next function
 ##
-LabsLims := function( lab, hom, labs, lims )
+InstallGlobalFunction( LabsLims, function( lab, hom, labs, lims )
     local   pos;
     
     pos := Position( labs, lab );
@@ -780,13 +786,13 @@ LabsLims := function( lab, hom, labs, lims )
         fi;
     fi;
     return lims[ pos ];
-end;
+end );
 
 #############################################################################
 ##
 #F  ConjugateStabChain( <arg> ) . . . . . . . . .  conjugate stabilizer chain
 ##
-ConjugateStabChain := function( arg )
+InstallGlobalFunction( ConjugateStabChain, function( arg )
     local   S,  T,  hom,  map,  cond,           # arguments
             newlevs,                            # new labels lists
             len,                                # number of labels in <S>
@@ -817,7 +823,7 @@ ConjugateStabChain := function( arg )
                 labels := OnTuples( S.labels, hom );
                 labpos := [ 1 .. len ];
             else
-                if IsIdentical( S, T )  then  labels := [ T.identity ];
+                if IsIdenticalObj( S, T )  then  labels := [ T.identity ];
                                         else  labels := T.labels;        fi;
                 labpos := ListWithIdenticalEntries( len, 0 );
                 labpos[ 1 ] := 1;
@@ -930,7 +936,7 @@ ConjugateStabChain := function( arg )
     # satisfied (i.e., the ``end'' of the original chain).
     return T;
     
-end;
+end );
 
 #############################################################################
 ##
@@ -940,7 +946,7 @@ end;
 ##  reduced = false : change stabilizer chain, do not reduce it
 ##  reduced = true  : change stabilizer chain, reduce it
 ##
-ChangeStabChain := function( arg )
+InstallGlobalFunction(ChangeStabChain,function( arg )
     local   G,  base,  reduced,
             cnj,  S,  newBase,  old,  new,  i,  name;
     
@@ -1031,31 +1037,30 @@ ChangeStabChain := function( arg )
     fi;
     
     return true;
-end;
+end);
 
 #############################################################################
 ##
 #F  ExtendStabChain( <S>, <base> )  . . . . . . . . extend a stabilizer chain
 ##
-ExtendStabChain := function( S, base )
+InstallGlobalFunction(ExtendStabChain,function( S, base )
     ChangeStabChain( S, base, -1 );
-end;
+end);
 
 
 #############################################################################
 ##
 #F  ReduceStabChain( <S> )  . . . . . . . . . . . . reduce a stabilizer chain
 ##
-ReduceStabChain := function( S )
+InstallGlobalFunction(ReduceStabChain,function( S )
     ChangeStabChain( S, [  ], true );
-end;
+end);
 
 #############################################################################
 ##
-
 #F  EmptyStabChain( <labels>,<id>[,<limgs>,<idimg>][,<pnt>] ) . .  stab chain
 ##
-EmptyStabChain := function( arg )
+InstallGlobalFunction(EmptyStabChain,function( arg )
     local   S;
     
     S := rec(  labels := arg[ 1 ],
@@ -1077,26 +1082,26 @@ EmptyStabChain := function( arg )
         InitializeSchreierTree( S, arg[ Length( arg ) ] );
     fi;
     return S;
-end;
+end);
 
 #############################################################################
 ##
 #F  InitializeSchreierTree( <S>, <pnt> )  . . . .  initialize a Schreier tree
 ##
-InitializeSchreierTree := function( S, pnt )
+InstallGlobalFunction( InitializeSchreierTree, function( S, pnt )
     S.orbit       := [ pnt ];
     S.translabels := [  ];  S.translabels[ pnt ] := 1;
     S.transversal := [  ];  S.transversal[ pnt ] := S.identity;
     if IsBound( S.idimage )  then
         S.transimages := [  ];  S.transimages[ pnt ] := S.idimage;
     fi;
-end;
+end );
     
 #############################################################################
 ##
 #F  InsertTrivialStabilizer( <S>, <pnt> ) . .  add redundant base point <pnt>
 ##
-InsertTrivialStabilizer := function( S, pnt )
+InstallGlobalFunction( InsertTrivialStabilizer, function( S, pnt )
     S.stabilizer := ShallowCopy( S );
     S.genlabels  := ShallowCopy( S.stabilizer.genlabels );
     if IsBound( S.generators )  then
@@ -1106,13 +1111,13 @@ InsertTrivialStabilizer := function( S, pnt )
         fi;
     fi;
     InitializeSchreierTree( S, pnt );
-end;
+end );
 
 #############################################################################
 ##
 #F  RemoveStabChain( <S> )  . . . . . . . .  cut off rest of stabilizer chain
 ##
-RemoveStabChain := function( S )
+InstallGlobalFunction(RemoveStabChain,function( S )
     local  name;
     
     for name  in RecNames( S )  do
@@ -1123,39 +1128,39 @@ RemoveStabChain := function( S )
     S.labels     := [ S.identity ];
     S.genlabels  := [  ];
     S.generators := [  ];
-end;
+end);
 
 #############################################################################
 ##
 #F  BasePoint( <S> )  . . . . . . . . . . . . . . . . . . . base point of <S>
 ##
-BasePoint := function( S )
+InstallGlobalFunction( BasePoint, function( S )
     if IsBound( S.orbit )  then  return S.orbit[ 1 ];
                            else  return false;         fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  IsInBasicOrbit( <S>, <pnt> )  . . . . . . . . .  is <pnt> in basic orbit?
 ##
-IsInBasicOrbit := function( S, pnt )
+InstallGlobalFunction( IsInBasicOrbit, function( S, pnt )
     return     IsBound( S.translabels )
            and IsBound( S.translabels[ pnt ] );
-end;
+end );
 
 #############################################################################
 ##
 #F  IsFixedStabilizer( <S>, <pnt> ) . . . . . . . . .  is <pnt> fixed by <S>?
 ##
-IsFixedStabilizer := function( S, pnt )
+InstallGlobalFunction( IsFixedStabilizer, function( S, pnt )
     return ForAll( S.generators, gen -> pnt ^ gen = pnt );
-end;
+end );
 
 #############################################################################
 ##
 #F  InverseRepresentative( <S>, <pnt> ) . .  perm mapping <pnt> to base point
 ##
-InverseRepresentative := function( S, pnt )
+InstallGlobalFunction( InverseRepresentative, function( S, pnt )
     local   bpt,  rep;
     
     bpt := S.orbit[ 1 ];
@@ -1164,13 +1169,13 @@ InverseRepresentative := function( S, pnt )
         rep := rep * S.transversal[ pnt ^ rep ];
     od;
     return rep;
-end;
+end );
 
 #############################################################################
 ##
 #F  QuickInverseRepresentative( <S>, <pnt> )  . . . . . . . same, but quicker
 ##
-QuickInverseRepresentative := function( S, pnt )
+InstallGlobalFunction( QuickInverseRepresentative, function( S, pnt )
     local   bpt,  rep,  lab,  pow;
     
     bpt := S.orbit[ 1 ];
@@ -1188,13 +1193,13 @@ QuickInverseRepresentative := function( S, pnt )
         fi;
     od;
     return rep;
-end;
+end );
 
 #############################################################################
 ##
 #F  InverseRepresentativeWord( <S>, <pnt> ) . . . . . . . inverse rep as word
 ##
-InverseRepresentativeWord := function( S, pnt )
+InstallGlobalFunction( InverseRepresentativeWord, function( S, pnt )
     local   word,  bpt;
     
     word := [  ];
@@ -1204,7 +1209,7 @@ InverseRepresentativeWord := function( S, pnt )
         pnt := pnt ^ S.transversal[ pnt ];
     od;
     return word;
-end;
+end );
 
 #############################################################################
 ##
@@ -1212,7 +1217,7 @@ end;
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-SiftedPermutation := function( S, g )
+InstallGlobalFunction(SiftedPermutation,function( S, g )
     local   bpt,  img;
     
     # The  following     condition   tests     `IsBound(S.stabilizer)',   not
@@ -1233,7 +1238,7 @@ SiftedPermutation := function( S, g )
         fi;
     od;
     return g;
-end;
+end);
 
 #############################################################################
 ##
@@ -1241,7 +1246,7 @@ end;
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-MinimalElementCosetStabChain := function( S, g )
+InstallGlobalFunction(MinimalElementCosetStabChain,function( S, g )
     local   p;
     
     while not IsEmpty( S.genlabels )  do
@@ -1252,7 +1257,7 @@ MinimalElementCosetStabChain := function( S, g )
         S := S.stabilizer;
     od;
     return g;
-end;
+end);
         
 #############################################################################
 ##
@@ -1261,7 +1266,7 @@ end;
 ##  This function may be called with a generatorless <S>.
 ##
 InstallMethod( MembershipTestKnownBase, true, [ IsRecord,
-        IsList and IsCyclotomicsCollection, IsList ], 0,
+        IsList and IsCyclotomicCollection, IsList ], 0,
     function( S, knownBase, word )
     local   base,  g,  i,  j,  bpt;
     
@@ -1296,19 +1301,18 @@ InstallOtherMethod( MembershipTestKnownBase, true, [ IsRecord,
 end );
 
 InstallOtherMethod( MembershipTestKnownBase, true, [ IsRecord,
-        IsGroup and HasBase, IsPerm ], 0,
+        IsGroup and HasBaseOfGroup, IsPerm ], 0,
     function( S, G, t )
-    return MembershipTestKnownBase( S, Base( G ), [ t ] );
+    return MembershipTestKnownBase( S, BaseOfGroup( G ), [ t ] );
 end );
 
 #############################################################################
 ##
-
 #F  BaseStabChain( <S> )  . . . . . . . . . . . . . . . . . . . . . . .  base
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-BaseStabChain := function( S )
+InstallGlobalFunction(BaseStabChain,function( S )
     local   base;
     
     base := [  ];
@@ -1317,7 +1321,7 @@ BaseStabChain := function( S )
         S := S.stabilizer;
     od;
     return base;
-end;
+end);
 
 #############################################################################
 ##
@@ -1325,7 +1329,7 @@ end;
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-SizeStabChain := function( S )
+InstallGlobalFunction(SizeStabChain,function( S )
     local   size;
     
     size := 1;
@@ -1334,13 +1338,13 @@ SizeStabChain := function( S )
         S := S.stabilizer;
     od;
     return size;
-end;
+end);
 
 #############################################################################
 ##
 #F  StrongGeneratorsStabChain( <S> )  . . . . . . . . . . . strong generators
 ##
-StrongGeneratorsStabChain := function( S )
+InstallGlobalFunction(StrongGeneratorsStabChain,function( S )
     local   sgs;
     
     sgs := [  ];
@@ -1349,7 +1353,7 @@ StrongGeneratorsStabChain := function( S )
         S := S.stabilizer;
     od;
     return sgs;
-end;
+end);
 
 #############################################################################
 ##
@@ -1357,7 +1361,7 @@ end;
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-IndicesStabChain := function( S )
+InstallGlobalFunction(IndicesStabChain,function( S )
     local   ind;
     
     ind := [  ];
@@ -1366,7 +1370,7 @@ IndicesStabChain := function( S )
         S := S.stabilizer;
     od;
     return ind;
-end;
+end);
 
 #############################################################################
 ##
@@ -1374,7 +1378,7 @@ end;
 ##
 ##  This function may be called with a generatorless <S>.
 ##
-ListStabChain := function( S )
+InstallGlobalFunction(ListStabChain,function( S )
     local   list;
     
     list := [  ];
@@ -1384,19 +1388,19 @@ ListStabChain := function( S )
     od;
     Add( list, S );
     return list;
-end;
+end);
 
 #############################################################################
 ##
 #F  OrbitStabChain( <S>, <pnt> )  . . . . . . . . . orbit of stabilizer chain
 ##
-OrbitStabChain := function( S, pnt )
+InstallGlobalFunction(OrbitStabChain,function( S, pnt )
     if IsBound( S.edges )  and  IsBound( S.edges[ pnt ] )  then
         return ShallowCopy( S.orbit );
     else
         return OrbitPerms( S.generators, pnt );
     fi;
-end;
+end);
 
 #############################################################################
 ##
@@ -1407,13 +1411,6 @@ InstallMethod( MinimalStabChain, "Perm", true, [ IsPermGroup] , 0,
     return StabChainOp( G, rec( base := [ 1 .. LargestMovedPoint( G ) ] ) );
 end );
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

@@ -6,34 +6,57 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for associative words.
 ##
 ##  An *associative word* in {\GAP} is a word formed from generators under an
 ##  associative multiplication.
 ##
+Revision.wordass_gd :=
+    "@(#)$Id$";
+
+#1
 ##  There is an external representation of the category of associative words,
 ##  a list of generators and exponents.
 ##  For example, the word $w = g_1^4 * g_2^3 * g_1$
-##  has external representation '[ 1, 4, 2, 3, 1, 1 ]', where $g_i$ means
+##  has external representation `[ 1, 4, 2, 3, 1, 1 ]', where $g_i$ means
 ##  the $i$-th generator of the family of $w$.
 ##  The empty list describes the identity element (if exists) of the family.
 ##  Exponents may be negative if the family allows inverses.
+##  The external representation of a word is guaranteed to be freely reduced.
+##  For example, $g_1 * g_2 * g_2^{-1} * g_1$ has the external representation
+##  `[ 1, 2 ]'.
 ##
-Revision.wordass_gd :=
-    "@(#)$Id$";
+##  The ordering of associative words is defined by length and lexicography,
+##  that is, shorter words are smaller than longer words,
+##  and words of the same length are compared lexicographically.
+##  If $g$ is an invertible generators of the family then we have
+##  $g^{-1} \< g$.
 
 
 #############################################################################
 ##
 #C  IsAssocWord( <obj> )
+##
+##  is the category of associative words in free semigroups.
+IsAssocWord            := IsWord and IsAssociativeElement;
+
+#############################################################################
+##
 #C  IsAssocWordWithOne( <obj> )
+##
+##  is the category of associative words in free monoids (which have an
+##  identity).
+IsAssocWordWithOne     := IsAssocWord and IsWordWithOne;
+
+#############################################################################
+##
 #C  IsAssocWordWithInverse( <obj> )
 ##
-IsAssocWord            := IsWord and IsAssociativeElement;
-IsAssocWordWithOne     := IsAssocWord and IsWordWithOne;
+##  is the category of associative words in free groups (which have
+##  inverse).
 IsAssocWordWithInverse := IsAssocWord and IsWordWithInverse;
-
 
 #############################################################################
 ##
@@ -41,20 +64,13 @@ IsAssocWordWithInverse := IsAssocWord and IsWordWithInverse;
 #C  IsAssocWordWithOneCollection( <obj> )
 #C  IsAssocWordWithInverseCollection( <obj> )
 ##
-IsAssocWordCollection            := CategoryCollections( IsAssocWord );
+DeclareCategoryCollections( "IsAssocWord" );
+DeclareCategoryCollections( "IsAssocWordWithOne" );
+DeclareCategoryCollections( "IsAssocWordWithInverse" );
 
-IsAssocWordWithOneCollection     := CategoryCollections(
-    IsAssocWordWithOne );
-
-IsAssocWordWithInverseCollection := CategoryCollections(
-    IsAssocWordWithInverse );
-
-
-IsAssocWordFamily := CategoryFamily( IsAssocWord );
-
-IsAssocWordWithOneFamily := CategoryFamily( IsAssocWordWithOne );
-
-IsAssocWordWithInverseFamily := CategoryFamily( IsAssocWordWithInverse );
+DeclareCategoryFamily( "IsAssocWord" );
+DeclareCategoryFamily( "IsAssocWordWithOne" );
+DeclareCategoryFamily( "IsAssocWordWithInverse" );
 
 
 #############################################################################
@@ -64,10 +80,10 @@ IsAssocWordWithInverseFamily := CategoryFamily( IsAssocWordWithInverse );
 #C  Is32BitsFamily
 #C  IsInfBitsFamily
 ##
-Is8BitsFamily := NewCategory( "Is8BitsFamily", IsFamily );
-Is16BitsFamily := NewCategory( "Is16BitsFamily", IsFamily );
-Is32BitsFamily := NewCategory( "Is32BitsFamily", IsFamily );
-IsInfBitsFamily := NewCategory( "IsInfBitsFamily", IsFamily );
+DeclareCategory( "Is8BitsFamily", IsFamily );
+DeclareCategory( "Is16BitsFamily", IsFamily );
+DeclareCategory( "Is32BitsFamily", IsFamily );
+DeclareCategory( "IsInfBitsFamily", IsFamily );
 
 
 #############################################################################
@@ -76,11 +92,12 @@ IsInfBitsFamily := NewCategory( "IsInfBitsFamily", IsFamily );
 #T  IsFreeMonoid( <obj> )
 #C  IsFreeGroup( <obj> )
 ##
-#T  Note that we cannot define 'IsFreeMonoid' as
-#T  'IsAssocWordWithOneCollection and IsMonoid' because then
+#T  Note that we cannot define `IsFreeMonoid' as
+#T  `IsAssocWordWithOneCollection and IsMonoid' because then
 #T  every free group would be a free monoid, which is not true!
 ##
-IsFreeGroup := IsAssocWordWithInverseCollection and IsGroup;
+DeclareSynonym( "IsFreeGroup",
+    IsAssocWordWithInverseCollection and IsGroup );
 
 
 #############################################################################
@@ -90,9 +107,9 @@ IsFreeGroup := IsAssocWordWithInverseCollection and IsGroup;
 ##  Let <w> be an associative word of the form
 ##  $x_1^{n_1} x_2^{n_2} \cdots x_k^{n_k}$, such that $x_i \not= x_{i+1}$
 ##  for $1 \leq i \leq k-1$.
-##  Then 'NumberSyllables( <w> )' is $k$.
+##  Then `NumberSyllables( <w> )' is $k$.
 ##
-NumberSyllables := NewAttribute( "NumberSyllables", IsAssocWord );
+DeclareAttribute( "NumberSyllables", IsAssocWord );
 
 
 #############################################################################
@@ -102,7 +119,7 @@ NumberSyllables := NewAttribute( "NumberSyllables", IsAssocWord );
 ##
 ##  ???
 ##
-ExponentSums := NewOperation( "ExponentSums", [ IsAssocWord ] );
+DeclareOperation( "ExponentSums", [ IsAssocWord ] );
 
 
 #############################################################################
@@ -114,8 +131,7 @@ ExponentSums := NewOperation( "ExponentSums", [ IsAssocWord ] );
 ##  If <gen> and its inverse do not occur in <w>, 0 is returned.
 ##  <gen> may also be the inverse of a generator.
 ##
-ExponentSumWord := NewOperation( "ExponentSumWord",
-    [ IsAssocWord, IsAssocWord ] );
+DeclareOperation( "ExponentSumWord", [ IsAssocWord, IsAssocWord ] );
 
 
 #############################################################################
@@ -127,9 +143,20 @@ ExponentSumWord := NewOperation( "ExponentSumWord",
 ##  <from> and <to> must be positive integers.
 ##  Indexing is done with origin 1.
 ##
-Subword := NewOperation( "Subword",
-    [ IsAssocWord, IsInt and IsPosRat, IsInt and IsPosRat ] );
+DeclareOperation( "Subword",
+    [ IsAssocWord, IsPosInt, IsPosInt ] );
 
+
+#############################################################################
+##
+#O  SubSyllables( <w>, <from>, <to> )
+##
+##  is the subword of the associative word <w> that consists of the
+##  syllables from positions <from> to <to>.
+##  <from> and <to> must be positive integers.
+##  Indexing is done with origin 1.
+##
+DeclareOperation( "SubSyllables", [ IsAssocWord, IsPosInt, IsPosInt ] );
 
 #############################################################################
 ##
@@ -137,16 +164,16 @@ Subword := NewOperation( "Subword",
 ##
 ##  is the position of the first occurrence of the associative word <sub>
 ##  in the associative word <w> starting at position <from>.
-##  If there is no such occurrence, 'fail' is returned.
+##  If there is no such occurrence, `fail' is returned.
 ##  <from> must be a positive integer.
 ##  Indexing is done with origin 1.
 ##
-##  In other words, 'PositionWord(<w>,<sub>,<from>)' is the smallest
+##  In other words, `PositionWord(<w>,<sub>,<from>)' is the smallest
 ##  integer <i> larger than or equal to <from> such that
-##  'Subword( <w>, <i>, <i>+LengthWord(<sub>)-1 ) = <sub>' (see "Subword").
+##  `Subword( <w>, <i>, <i>+Length(<sub>)-1 ) = <sub>' (see "Subword").
 ##
-PositionWord := NewOperation( "PositionWord",
-    [ IsAssocWord, IsAssocWord, IsInt and IsPosRat ] );
+DeclareOperation( "PositionWord",
+    [ IsAssocWord, IsAssocWord, IsPosInt ] );
 
 
 #############################################################################
@@ -159,12 +186,12 @@ PositionWord := NewOperation( "PositionWord",
 ##  <from> and <to> must be positive integers.
 ##  Indexing is done with origin 1.
 ##
-##  In other words 'SubstitutedWord(<w>,<from>,<to>,<by>)' is the word
-##  'Subword(<w>,1,<from>-1) \*\ <by> \*\ Subword(<w>,<to>+1,LengthWord(<w>)'
+##  In other words `SubstitutedWord(<w>,<from>,<to>,<by>)' is the word
+##  `Subword(<w>,1,<from>-1) \*\ <by> \*\ Subword(<w>,<to>+1,Length(<w>)'
 ##  (see "Subword").
 ##
-SubstitutedWord := NewOperation( "SubstitutedWord",
-    [ IsAssocWord, IsInt and IsPosRat, IsInt and IsPosRat, IsAssocWord ] );
+DeclareOperation( "SubstitutedWord",
+    [ IsAssocWord, IsPosInt, IsPosInt, IsAssocWord ] );
 
 
 #############################################################################
@@ -174,7 +201,7 @@ SubstitutedWord := NewOperation( "SubstitutedWord",
 ##  is a new associative word where each occurrence of the generator <gen>
 ##  in the associative word <word> is replaced by the word <by>.
 ##
-EliminatedWord := NewOperation( "EliminatedWord",
+DeclareOperation( "EliminatedWord",
     [ IsAssocWord, IsAssocWord, IsAssocWord ] );
 
 
@@ -184,8 +211,7 @@ EliminatedWord := NewOperation( "EliminatedWord",
 ##
 ##  is the exponent of the <i>-th syllable of the associative word <w>.
 ##
-ExponentSyllable := NewOperation( "ExponentSyllable",
-    [ IsAssocWord, IsInt and IsPosRat ] );
+DeclareOperation( "ExponentSyllable", [ IsAssocWord, IsPosInt ] );
 
 
 #############################################################################
@@ -194,8 +220,7 @@ ExponentSyllable := NewOperation( "ExponentSyllable",
 ##
 ##  is the generator of the <i>-th syllable of the associative word <w>.
 ##
-GeneratorSyllable := NewOperation( "GeneratorSyllable",
-    [ IsAssocWord, IsInt ] );
+DeclareOperation( "GeneratorSyllable", [ IsAssocWord, IsInt ] );
 
 
 #############################################################################
@@ -203,8 +228,8 @@ GeneratorSyllable := NewOperation( "GeneratorSyllable",
 #O  AssocWord( <Fam>, <extrep> )  . . . .  construct word from external repr.
 #O  AssocWord( <Type>, <extrep> ) . . . .  construct word from external repr.
 ##
-AssocWord := NewOperationArgs( "AssocWord" );
-#T maybe this will become a constructor of 'TypeArg1' type again
+DeclareGlobalFunction( "AssocWord" );
+#T maybe this will become a constructor of `TypeArg1' type again
 
 
 #############################################################################
@@ -215,17 +240,15 @@ AssocWord := NewOperationArgs( "AssocWord" );
 ##  is the associative word in the family <Fam> that has exponents vector
 ##  <exponents>.
 ##
-ObjByVector := NewOperationArgs( "ObjByVector" );
-#T maybe this will become a constructor of 'TypeArg1' type again
+DeclareGlobalFunction( "ObjByVector" );
+#T maybe this will become a constructor of `TypeArg1' type again
 
 
 #############################################################################
 ##
 #O  CyclicReducedWordList( <word>, <gens> )
 ##
-CyclicReducedWordList := NewOperation(
-    "CyclicReducedWordList",
-    [ IsAssocWord, IsList ] );
+DeclareOperation( "CyclicReducedWordList", [ IsAssocWord, IsList ] );
 
 
 #############################################################################
@@ -238,23 +261,23 @@ CyclicReducedWordList := NewOperation(
 ##
 ##  <F> is the family of objects, <names> is a list of generators names,
 ##  and <req> is the required category for the elements, that is,
-##  'IsAssocWord', 'IsAssocWordWithOne', or 'IsAssocWordWithInverse'.
+##  `IsAssocWord', `IsAssocWordWithOne', or `IsAssocWordWithInverse'.
 ##
-StoreInfoFreeMagma := NewOperationArgs( "StoreInfoFreeMagma" );
+DeclareGlobalFunction( "StoreInfoFreeMagma" );
 
 
 #############################################################################
 ##
 #F  InfiniteListOfNames( <string> )
 ##
-InfiniteListOfNames := NewOperationArgs( "InfiniteListOfNames" );
+DeclareGlobalFunction( "InfiniteListOfNames" );
 
 
 #############################################################################
 ##
 #F  InfiniteListOfGenerators( <F> )
 ##
-InfiniteListOfGenerators := NewOperationArgs( "InfiniteListOfGenerators" );
+DeclareGlobalFunction( "InfiniteListOfGenerators" );
 
 
 #############################################################################
@@ -262,4 +285,4 @@ InfiniteListOfGenerators := NewOperationArgs( "InfiniteListOfGenerators" );
 
 #E  wordass.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-##
+

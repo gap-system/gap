@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for external right sets.
 ##
@@ -19,7 +20,7 @@ Revision.extrset_gd :=
 ##  An external right set is a domain with an action of a domain
 ##  from the right.
 ##
-IsExtRSet := NewCategory( "IsExtRSet", IsDomain );
+DeclareCategory( "IsExtRSet", IsDomain );
 
 
 #############################################################################
@@ -29,7 +30,7 @@ IsExtRSet := NewCategory( "IsExtRSet", IsDomain );
 ##  is 'true' iff $( x \* y ) \* a = x \* ( y \* a )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsAssociativeROpDProd := NewCategory( "IsAssociativeROpDProd", IsExtRSet );
+DeclareCategory( "IsAssociativeROpDProd", IsExtRSet );
 
 
 #############################################################################
@@ -39,7 +40,7 @@ IsAssociativeROpDProd := NewCategory( "IsAssociativeROpDProd", IsExtRSet );
 ##  is 'true' iff $( x \* a ) \* b = x \* ( a \* b )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsAssociativeROpEProd := NewCategory( "IsAssociativeROpEProd", IsExtRSet );
+DeclareCategory( "IsAssociativeROpEProd", IsExtRSet );
 
 
 #############################################################################
@@ -49,7 +50,7 @@ IsAssociativeROpEProd := NewCategory( "IsAssociativeROpEProd", IsExtRSet );
 ##  is 'true' iff $( x \* y ) \* a = ( x \* a ) \* ( y \* a )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsDistributiveROpDProd := NewCategory( "IsDistributiveROpDProd", IsExtRSet );
+DeclareCategory( "IsDistributiveROpDProd", IsExtRSet );
 
 
 #############################################################################
@@ -59,7 +60,7 @@ IsDistributiveROpDProd := NewCategory( "IsDistributiveROpDProd", IsExtRSet );
 ##  is 'true' iff $( x + y ) \* a = ( x \* a ) + ( y \* a )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsDistributiveROpDSum := NewCategory( "IsDistributiveROpDSum", IsExtRSet );
+DeclareCategory( "IsDistributiveROpDSum", IsExtRSet );
 
 
 #############################################################################
@@ -69,7 +70,7 @@ IsDistributiveROpDSum := NewCategory( "IsDistributiveROpDSum", IsExtRSet );
 ##  is 'true' iff $x \* ( a \* b ) = ( x \* a ) \* ( x \* b )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsDistributiveROpEProd := NewCategory( "IsDistributiveROpEProd", IsExtRSet );
+DeclareCategory( "IsDistributiveROpEProd", IsExtRSet );
 
 
 #############################################################################
@@ -79,7 +80,7 @@ IsDistributiveROpEProd := NewCategory( "IsDistributiveROpEProd", IsExtRSet );
 ##  is 'true' iff $x \* ( a + b ) = ( x \* a ) + ( x \* b )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsDistributiveROpESum := NewCategory( "IsDistributiveROpESum", IsExtRSet );
+DeclareCategory( "IsDistributiveROpESum", IsExtRSet );
 
 
 #############################################################################
@@ -90,7 +91,7 @@ IsDistributiveROpESum := NewCategory( "IsDistributiveROpESum", IsExtRSet );
 ##  that is, $x \* e = x$ for $x \in D$.
 #T necessary?
 ##
-IsTrivialROpEOne := NewCategory( "IsTrivialROpEOne", IsExtRSet );
+DeclareCategory( "IsTrivialROpEOne", IsExtRSet );
 
 
 #############################################################################
@@ -101,21 +102,21 @@ IsTrivialROpEOne := NewCategory( "IsTrivialROpEOne", IsExtRSet );
 ##  that is, $x \* z = Z$ for $x \in D$ and the zero element $Z$ of $D$.
 #T necessary?
 ##
-IsTrivialROpEZero := NewCategory( "IsTrivialROpEZero", IsExtRSet );
+DeclareCategory( "IsTrivialROpEZero", IsExtRSet );
 
 
 #############################################################################
 ##
 #C  IsRightActedOnByRing( <D> )
 ##
-IsRightActedOnByRing := NewCategory( "IsRightActedOnByRing", IsExtRSet );
+DeclareCategory( "IsRightActedOnByRing", IsExtRSet );
 
 
 #############################################################################
 ##
 #C  IsRightActedOnByDivisionRing( <D> )
 ##
-IsRightActedOnByDivisionRing := NewCategory( "IsRightActedOnByDivisionRing",
+DeclareCategory( "IsRightActedOnByDivisionRing",
     IsRightActedOnByRing );
 
 
@@ -123,7 +124,7 @@ IsRightActedOnByDivisionRing := NewCategory( "IsRightActedOnByDivisionRing",
 ##
 #C  IsRightActedOnBySuperset( <D> )
 ##
-IsRightActedOnBySuperset := NewCategory( "IsRightActedOnBySuperset",
+DeclareCategory( "IsRightActedOnBySuperset",
     IsExtRSet );
 
 
@@ -131,18 +132,14 @@ IsRightActedOnBySuperset := NewCategory( "IsRightActedOnBySuperset",
 ##
 #A  GeneratorsOfExtRSet( <D> )
 ##
-GeneratorsOfExtRSet := NewAttribute( "GeneratorsOfExtRSet", IsExtRSet );
-SetGeneratorsOfExtRSet := Setter( GeneratorsOfExtRSet );
-HasGeneratorsOfExtRSet := Tester( GeneratorsOfExtRSet );
+DeclareAttribute( "GeneratorsOfExtRSet", IsExtRSet );
 
 
 #############################################################################
 ##
 #A  RightActingDomain( <D> )
 ##
-RightActingDomain := NewAttribute( "RightActingDomain", IsExtRSet );
-SetRightActingDomain := Setter( RightActingDomain );
-HasRightActingDomain := Tester( RightActingDomain );
+DeclareAttribute( "RightActingDomain", IsExtRSet );
 
 
 #############################################################################

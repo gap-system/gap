@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions  that mainly  operate  on vectors  whose
 **  elements are integers, rationals, or elements from cyclotomic fields.  As
@@ -17,7 +18,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_vector_c =
+const char * Revision_vector_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -658,7 +659,7 @@ Obj             ProdVectorVector (
 
 /****************************************************************************
 **
-*F  ProdVectorMatrix(<vecL>,<vecR>) . . . . .  product of a vector and a matrix
+*F  ProdVectorMatrix(<vecL>,<vecR>) . . . .  product of a vector and a matrix
 **
 **  'ProdVectorMatrix' returns the product of the vector <vecL> and the matrix
 **  <vecR>.  The product is the sum of the  rows  of <vecR>, each multiplied by
@@ -774,9 +775,10 @@ Obj             ProdVectorMatrix (
 /****************************************************************************
 **
 
-*F  SetupVector() . . . . . . . . . . . . . . . initialize the vector package
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupVector ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     Int                 t1;
     Int                 t2;
@@ -801,28 +803,36 @@ void SetupVector ( void )
         }
     }
 
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitVector()  . . . . . . . . . . . . . . . initialize the vector package
-**
-**  'InitVector' initializes the vector package.
+*F  InitInfoVector()  . . . . . . . . . . . . . . . . table of init functions
 */
-void InitVector ( void )
-{
-}
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "vector",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    0,                                  /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
 
-
-/****************************************************************************
-**
-*F  CheckVector() . . . . . .  check the initialisation of the vector package
-*/
-void CheckVector ( void )
+StructInitInfo * InitInfoVector ( void )
 {
-    SET_REVISION( "vector_c",   Revision_vector_c );
-    SET_REVISION( "vector_h",   Revision_vector_h );
+    module.revision_c = Revision_vector_c;
+    module.revision_h = Revision_vector_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for process.
 ##
@@ -17,7 +18,8 @@ Revision.process_gd :=
 
 #O  Process( <dir>, <prg>, <in>, <out>, <args> )  . . . . . . start a process
 ##
-Process := NewOperation(
+UNBIND_GLOBAL( "Process" );
+DeclareOperation(
     "Process",
     [ IsDirectory, IsString, IsInputStream, IsOutputStream, IsList ] );
 

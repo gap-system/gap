@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This contains the generic methods for domains.
 ##
@@ -19,8 +20,8 @@ Revision.domain_gi :=
 ##  A domain is equal to the strictly sorted list of its elements.
 ##
 InstallMethod( \=,
-    "method for a list and a domain",
-    IsIdentical,
+    "for a list and a domain",
+    IsIdenticalObj,
     [ IsCollection and IsList, IsDomain ], 0,
     function( C, D )
     return IsSSortedList( C ) and AsListSorted( D ) = C;
@@ -34,8 +35,8 @@ InstallMethod( \=,
 ##  A domain is equal to the strictly sorted list of its elements.
 ##
 InstallMethod( \=,
-    "method for a domain and a list",
-    IsIdentical,
+    "for a domain and a list",
+    IsIdenticalObj,
     [ IsDomain, IsCollection and IsList ], 0,
     function( D, C )
     return IsSSortedList( C ) and AsListSorted( D ) = C;
@@ -49,8 +50,8 @@ InstallMethod( \=,
 ##  Two domains are equal if their elements lists are equal.
 ##
 InstallMethod( \=,
-    "method for two domains",
-    IsIdentical,
+    "for two domains",
+    IsIdenticalObj,
     [ IsDomain, IsDomain ], 0,
     function( D1, D2 )
     return AsListSorted( D1 ) = AsListSorted( D2 );
@@ -62,8 +63,8 @@ InstallMethod( \=,
 #M  \<( <C>, <D> )  . . . . . . . . . . . . . . . . . . . for list and domain
 ##
 InstallMethod( \<,
-    "method for a list and a domain",
-    IsIdentical,
+    "for a list and a domain",
+    IsIdenticalObj,
     [ IsCollection and IsList, IsDomain ], 0,
     function( C, D )
     return C < AsListSorted( D );
@@ -75,8 +76,8 @@ InstallMethod( \<,
 #M  \<( <D>, <C> )  . . . . . . . . . . . . . . . . . . . for domain and list
 ##
 InstallMethod( \<,
-    "method for a domain and a list",
-    IsIdentical,
+    "for a domain and a list",
+    IsIdenticalObj,
     [ IsDomain, IsCollection and IsList ], 0,
     function( D, C )
     return AsListSorted( D ) < C;
@@ -89,7 +90,7 @@ InstallMethod( \<,
 ##
 InstallMethod( SetParent,
     "method that calls 'UseSubsetRelation'",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsDomain, IsDomain ], SUM_FLAGS,
     function( D, P )
     UseSubsetRelation( P, D );
@@ -102,7 +103,7 @@ InstallMethod( SetParent,
 #M  DomainByGenerators(<F>,<empty>) . . . . . . . . for family and empty list
 ##
 InstallOtherMethod( DomainByGenerators,
-    "method for family and empty list",
+    "for family and empty list",
     true,
     [ IsFamily, IsList and IsEmpty ], 0,
     function ( F, generators )
@@ -120,12 +121,12 @@ InstallOtherMethod( DomainByGenerators,
 #M  DomainByGenerators(<F>,<generators>)  . . . . . for family and collection
 ##
 InstallMethod( DomainByGenerators,
-    "method for family and collection",
+    "for family and collection",
     true,
     [ IsFamily, IsCollection ], 0,
     function ( F, generators )
     local   D;
-    if IsNotIdentical( CollectionsFamily(F), FamilyObj(generators) ) then
+    if IsNotIdenticalObj( CollectionsFamily(F), FamilyObj(generators) ) then
         Error( "<generators> must lie in <F>" );
     fi;
     D := Objectify( NewType( FamilyObj( generators ),
@@ -141,7 +142,7 @@ InstallMethod( DomainByGenerators,
 #M  DomainByGenerators( <generators> )  . . . . . . . . . . .  for collection
 ##
 InstallOtherMethod( DomainByGenerators,
-    "method for a collection",
+    "for a collection",
     true,
     [ IsCollection ], 0,
     function ( generators )
@@ -196,7 +197,7 @@ InstallImmediateMethod( Enumerator,
 ##  <elm> lies in this set.
 ##
 InstallMethod( \in,
-    "method for a domain, and an element",
+    "for a domain, and an element",
     IsElmsColls,
     [ IsObject, IsDomain ], 0,
     function( elm, D )
@@ -206,13 +207,36 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-#M  Representative( <D> ) . . . . . . . . . . . . . representative of a domain
+#M  Representative( <D> ) . . . . . . . . . . . .  representative of a domain
 ##
 InstallMethod( Representative,
-    "method for a domain",
+    "for a domain with known elements list",
     true,
-    [ IsDomain ], 0,
+    [ IsDomain and HasAsList ], 0,
     RepresentativeFromGenerators( GeneratorsOfDomain ) );
+
+
+#############################################################################
+##
+#M  ViewObj( <enum> ) . . . . . . . . . . . . . . .  view a domain enumerator
+##
+InstallMethod( ViewObj,
+    "for a domain enumerator with underlying collection",
+    true,
+    [ IsDomainEnumerator and HasUnderlyingCollection ], 0,
+    function( enum )
+    Print( "<enumerator of " );
+    View( UnderlyingCollection( enum ) );
+    Print( ">" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a domain enumerator",
+    true,
+    [ IsDomainEnumerator ], 0,
+    function( enum )
+    Print( "<enumerator of a domain>" );
+    end );
 
 
 #############################################################################
@@ -220,19 +244,20 @@ InstallMethod( Representative,
 #M  PrintObj( <enum> )  . . . . . . . . . . . . . . print a domain enumerator
 ##
 InstallMethod( PrintObj,
-    "method for a domain enumerator with underlying collection",
+    "for a domain enumerator with underlying collection",
     true,
     [ IsDomainEnumerator and HasUnderlyingCollection ], 0,
-    function( enum ) Print( "<enumerator of ",
-    UnderlyingCollection( enum ), ">" );
+    function( enum )
+    Print( "<enumerator of ", UnderlyingCollection( enum ), ">" );
     end );
 
 InstallMethod( PrintObj,
-    "method for a domain enumerator",
+    "for a domain enumerator",
     true,
     [ IsDomainEnumerator ], 0,
     function( enum ) Print( "<enumerator of a domain>" );
     end );
+#T this is not nice!
 
 
 #############################################################################
@@ -240,7 +265,7 @@ InstallMethod( PrintObj,
 #M  Length( <enum> )  . . . . . . . . . . . . . length of a domain enumerator
 ##
 InstallMethod( Length,
-    "method for a domain enumerator with underlying collection",
+    "for a domain enumerator with underlying collection",
     true,
     [ IsDomainEnumerator and HasUnderlyingCollection ], 0,
     enum -> Size( UnderlyingCollection( enum ) ) );
@@ -251,11 +276,11 @@ InstallMethod( Length,
 #M  IsSubset( <D>, <E> )  . . . . . . . . . . . . . . . . for <E> with parent
 ##
 InstallMethod( IsSubset,
-    "method for domain and domain with parent",
-    IsIdentical,
+    "for domain and domain with parent",
+    IsIdenticalObj,
     [ IsDomain, IsDomain and HasParent ], SUM_FLAGS,
     function ( D, E )
-    if not IsIdentical( D, Parent( E ) ) then
+    if not IsIdenticalObj( D, Parent( E ) ) then
         TryNextMethod();
     fi;
     return true;

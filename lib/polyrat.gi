@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions for polynomials over the rationals
 ##
@@ -414,10 +415,12 @@ end;
 
 #############################################################################
 ##
-#F  IntegerPolynomial(<R>,<f>) . . . remove denominator and coefficients gcd
+#F  PrimitivePolynomial(<f>) . . . remove denominator and coefficients gcd
 ##
-IntegerPolynomial := function(R,f)
-local lcm, c, fc;
+InstallMethod(PrimitivePolynomial,"univariate polynomial",true,
+  [IsUnivariatePolynomial],0,
+function(f)
+local lcm, c, fc,fac;
 
   fc:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
   # compute lcm of denominator
@@ -428,12 +431,37 @@ local lcm, c, fc;
 
   # remove all denominators
   f := f*lcm;
+  fac:=1/lcm;
   fc:=CoefficientsOfUnivariateLaurentPolynomial(f)[1];
 
   # remove gcd of coefficients
-  return f*(1/Gcd(fc));
+  if Length(fc)>0 then
+    fc:=Gcd(fc);
+  else
+    fc:=1;
+  fi;
+  fac:=fac*fc;
+  return [f*(1/fc),fac];
 
-end;
+end);
+
+InstallMethod(PrimitivePolynomial,"rational polynomial",true,
+  [IsPolynomial],0,
+function(f)
+local e,d,lcm,i,fac;
+  e:=ExtRepOfObj(f)[2];
+  d:=e{[2,4..Length(e)]};
+  lcm:=1;
+  for i in d do
+    lcm := LcmInt(lcm,DenominatorRat(i));
+  od;
+  fac:=1/lcm;
+  d:=d*lcm;
+  if Length(d)>0 then
+    fac:=fac*Gcd(d);
+  fi;
+  return [f/fac,fac];
+end);
 
 
 #############################################################################
@@ -674,8 +702,8 @@ function(R,f,g)
   fi;
 
   # convert polynomials into integer polynomials
-  f := IntegerPolynomial(R,f);
-  g := IntegerPolynomial(R,g);
+  f := PrimitivePolynomial(f)[1];
+  g := PrimitivePolynomial(g)[1];
   Info(InfoPoly,3,"<f> = ",f);
   Info(InfoPoly,3,"<g> = ",g);
 
@@ -1568,7 +1596,7 @@ end;
 ##  <f> must be square free and must have a constant term.
 ##
 InstallOtherMethod(FactorsSquarefree,"RatPol",true,
-  [IsRationalsPolynomialRing,IsPolynomial,IsRecord],0,
+  [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
 function(R,f,opt)
 local t, h, fac, g, tmp;
 
@@ -1674,7 +1702,7 @@ local   fc,ind,l, v, g, q, s, r, x,shift;
 
   # make <f> integral,primitive and square free
   g:=Gcd(R,f,Derivative(f));
-  q:=IntegerPolynomial(R,Quotient(R,f,g));
+  q:=PrimitivePolynomial(Quotient(R,f,g))[1];
   q:=q * SignInt(LeadingCoefficient(q));
   Info(InfoPoly,3,"factorizing polynomial of degree ",DOULP(q));
 
@@ -1751,7 +1779,7 @@ local r,R,cr,f,opt,irf,i;
   fi;
 
   # compute the integer factors
-  r:=RPIFactors(R,IntegerPolynomial(R,f),opt);
+  r:=RPIFactors(R,PrimitivePolynomial(f)[1],opt);
 
   # convert into standard associates and sort
   r:=List(r,x -> StandardAssociate(R,x));
@@ -1777,28 +1805,196 @@ end;
 ##
 #M  Factors(<R>,<f> [,<opt>]) . .  factors of rational polynomial
 ##
-InstallMethod(Factors,"FactRatPol",true,
-  [IsRationalsPolynomialRing,IsPolynomial],0,
+InstallMethod(Factors,"FactRatPolNew",true,
+  [IsRationalsPolynomialRing,IsUnivariatePolynomial],0,
 function(R,f)
   return RPFactors(R,f);
 end);
 
-InstallOtherMethod(Factors,"FactRatPol",true,
-  [IsRationalsPolynomialRing,IsPolynomial,IsRecord],0,
+InstallOtherMethod(Factors,"FactRatPolNew2",true,
+  [IsRationalsPolynomialRing,IsUnivariatePolynomial,IsRecord],0,
 function(R,f,opt)
   return RPFactors(R,f,opt);
 end);
 
 #############################################################################
 ##
-#M  IsIrreducible(<pol>) . . . . Irreducibility test for rational polynomials
+#M  IsIrreducibleRingElement(<pol>) . . . . . . . .  for rational polynomials
 ##
-InstallMethod(IsIrreducible,"RatPol",true,
+InstallMethod(IsIrreducibleRingElement,"RatPol",true,
   [IsRationalsPolynomialRing,IsPolynomial],0,
 function(R,f)
   return Length(Factors(R,f,rec(stopdegs:=[1..DOULP(f)])))<=1;
 end);
 
+# specialize one indeterminate in an external representation
+SpecializedExtRepPol:=function(fam,ext,ind,val,zer)
+local e,i,p,m,c;
+  e:=[];
+  for i in [1,3..Length(ext)-1] do
+    # is the indeterminate used in the monomial
+    p:=PositionProperty([1,3..Length(ext[i])-1],j->ext[i][j]=ind);
+    if p=fail then
+      m:=ext[i];
+      c:=ext[i+1];
+    else
+      # yes, compute changed monomial and coefficient
+      p:=2*p-1; #actual position 1,3..
+      m:=ext[i]{Concatenation([1..p-1],[p+2..Length(ext[i])])};
+      c:=ext[i+1]*val^ext[i][p+1];
+    fi;
+    e:=ZippedSum(e,[m,c],zer,fam!.zippedSum);
+  od;
+  return e;
+end;
+
+#############################################################################
+##
+#F  GcdHeuIntPolys(<a>,<b>)
+##
+##  takes two primitive polynomials with integer coefficients and tries to
+##  compute a Gcd expanding Gcds of specializations.
+##  Source: Geddes,Czapor,Labahn: Algorithm 7.4
+GcdHeuIntPolys:=function(a,b)
+local d,e,x,xd,er,i,j,k,m,p,sel,xi,gamma,G,g,loop,xp,zero;
+  d:=ExtRepOfObj(a)[2];
+  e:=ExtRepOfObj(b)[2];
+
+  # find the indeterminates and their degrees:
+  x:=[];
+  xd:=[[],[]];
+  er:=[d,e];
+  for k in [1,2] do
+    for i in [1,3..Length(er[k])-1] do
+      m:=er[k][i];
+      for j in [1,3..Length(m)-1] do
+	p:=Position(x,m[j]);
+	if p=fail then
+	  Add(x,m[j]);
+	  p:=Length(x);
+	  xd[1][p]:=0;
+	  xd[2][p]:=0;
+	fi;
+	xd[k][p]:=Maximum(xd[k][p],m[j+1]);
+      od;
+    od;
+  od;
+
+  # discard the indeterminates which occur in only one of the polynomials
+  sel:=[];
+  for i in [1..Length(x)] do
+    if xd[1][i]>0 and xd[2][i]>0 then
+      Add(sel,i);
+    fi;
+  od;
+  x:=x{sel};
+  xd:=List(xd,i->i{sel});
+  
+  # are the variables disjoint or do we have no variables at all?
+  if Length(x)=0 then
+    # return the gcd of all coefficients involved
+    G:=Gcd(Concatenation(d{[2,4..Length(d)]},e{[2,4..Length(e)]}));
+    return G;
+  fi;
+
+  # pick the first indeterminate
+  x:=x[1];
+  xp:=Indeterminate(Rationals,x);
+  xd:=[xd[1][1],xd[2][1]];
+
+  xi:=2*Minimum(Maximum(List(d{[2,4..Length(d)]},AbsInt)),
+                Maximum(List(e{[2,4..Length(e)]},AbsInt)))+2;
+
+  for loop in [1..6] do
+    if LogInt(AbsInt(Int(xi)),10)*Maximum(xd)>5000 then
+      return fail;
+    fi;
+    # specialize both polynomials at x=xi
+    # and compute their heuristic Gcd
+    gamma:=GcdHeuIntPolys(
+      ObjByExtRep(FamilyObj(a),
+                   [0,SpecializedExtRepPol(FamilyObj(a),d,x,xi,0)]),
+      ObjByExtRep(FamilyObj(a),
+                   [0,SpecializedExtRepPol(FamilyObj(b),e,x,xi,0)]) );
+
+    if gamma<>fail then
+      # generate G from xi-adic expansion
+      G:=0;
+      i:=0;
+      zero:=0*gamma;
+      while gamma<>zero do
+	if IsInt(gamma) then
+	  # gamma is an integer value
+	  g:=gamma mod xi;
+	  if g>xi/2 then
+	    g:=g-xi; # symmetric rep.
+	  fi;
+	  gamma:=(gamma-g)/xi;
+	else
+	  # gamma is a polynomial
+	  p:=ShallowCopy(ExtRepOfObj(gamma)[2]);
+	  g:=[];
+	  for j in [2,4..Length(p)] do
+	    k:=p[j] mod xi;
+	    if k>xi/2 then
+	      k:=k - xi; #symmetric rep
+	    fi;
+	    if k<>0*k then
+	      Add(g,p[j-1]);
+	      Add(g,k);
+	    fi;
+	  od;
+	  g:=ObjByExtRep(FamilyObj(a),[0,g]);
+	  gamma:=(gamma-g)/xi;
+	fi;
+	G:=G+g*xp^i;
+	i:=i+1;
+      od;
+      if Quotient(a,G)<>fail and Quotient(b,G)<>fail then
+	return G;
+      fi;
+    fi;
+    xi:=QuoInt(xi*73794,27011); #square of golden ratio
+  od;
+  return fail;
+end;
+
+
+
+#############################################################################
+##
+#M  TryGcdCancelExtRepPol(<fam>,<a>,<b>,<zero>);
+##
+InstallMethod(TryGcdCancelExtRepPol,"rational polynomials",true,
+  [IsRationalFunctionsFamily,IsList,IsList,IsRat],0,
+function(fam,a,b,z)
+local g;
+  if not (HasCoefficientsFamily(fam)
+     and IsIdenticalObj(CoefficientsFamily(fam),CyclotomicsFamily)
+     and ForAll(a{[2,4..Length(a)]},IsRat) 
+     and ForAll(b{[2,4..Length(b)]},IsRat)) then
+    # the coefficients are not all rationals
+    TryNextMethod();
+  fi;
+  a:=PrimitivePolynomial(ObjByExtRep(fam,[z,a]));
+  b:=PrimitivePolynomial(ObjByExtRep(fam,[z,b]));
+  g:=GcdHeuIntPolys(a[1],b[1]);
+  if g=fail then
+    TryNextMethod(); # Don't return `fail' as a betrter method may still exist
+  fi;
+  # cancel out gcd
+  if IsRat(g) then
+    a:=PrimitivePolynomial(a[1]*(a[2]/g));
+    b:=PrimitivePolynomial(b[1]*(b[2]/g));
+  else
+    a:=PrimitivePolynomial(Quotient(a[1],g)*a[2]);
+    b:=PrimitivePolynomial(Quotient(b[1],g)*b[2]);
+  fi;
+  g:=a[2]/b[2];
+  # return the parts of the external representation
+  return [ExtRepOfObj(a[1]*NumeratorRat(g))[2],
+          ExtRepOfObj(b[1]*DenominatorRat(g))[2]];
+end);
 
 #############################################################################
 ##

@@ -9,6 +9,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for matrices.
 ##
@@ -18,13 +19,111 @@ Revision.matrix_gi :=
 
 #############################################################################
 ##
+#F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
+##
+PrintArray := function( array )
+
+    local   arr,  max,  l,  k;
+
+    if not IsDenseList( array ) then
+        Error( "<array> must be a dense list" );
+    elif Length( array ) = 0  then
+	Print( "[ ]\n" );
+    elif array = [[]]  then
+    	Print( "[ [ ] ]\n" );
+    elif not ForAll( array, IsList )  then
+	arr := List( array, String );
+	max := Maximum( List( arr, Length ) );
+	Print( "[ ", FormattedString( arr[ 1 ], max + 1 ) );
+	for l  in [ 2 .. Length( arr ) ]  do
+	    Print( ", ", FormattedString( arr[ l ], max + 1 ) );
+	od;
+	Print( " ]\n" );
+    else
+    	arr := List( array, x -> List( x, String ) );
+    	max := Maximum( List( arr, x -> Maximum( List(x,Length) ) ) );
+        Print( "[ " );
+    	for l  in [ 1 .. Length( arr ) ]  do
+    	    if l > 1  then
+    	    	Print( "  " );
+    	    fi;
+            Print( "[ " );
+            for k  in [ 1 .. Length( arr[ l ] ) ]  do
+            	Print( FormattedString( arr[ l ][ k ], max + 1 ) );
+            	if k = Length( arr[ l ] )  then
+                    Print( " ]" );
+            	else
+                    Print( ", " );
+            	fi;
+            od;
+            if l = Length( arr )  then
+            	Print( " ]\n" );
+            else
+            	Print( ",\n" );
+            fi;
+    	od;
+    fi;
+end;
+
+
+##########################################################################
+##
+#M  Display( <mat> )
+##
+InstallMethod( Display,
+    "for a matrix",
+    true,
+    [IsMatrix ],
+    0, PrintArray );
+
+
+#############################################################################
+##
+#M  IsGeneralizedCartanMatrix( <A> )
+##
+InstallMethod( IsGeneralizedCartanMatrix,
+    "for a matrix",
+    true,
+    [ IsMatrix ], 0,
+    function( A )
+
+    local n, i, j;
+
+    if Length( A ) <> Length( A[1] ) then
+      Error( "<A> must be a square matrix" );
+    fi;
+
+    n:= Length( A );
+    for i in [ 1 .. n ] do
+      if A[i][i] <> 2 then
+        return false;
+      fi;
+    od;
+    for i in [ 1 .. n ] do
+      for j in [ i+1 .. n ] do
+        if not IsInt( A[i][j] ) or not IsInt( A[j][i] )
+           or 0 < A[i][j] or 0 < A[j][i] then
+          return false;
+        elif  ( A[i][j] = 0 and A[j][i] <> 0 )
+           or ( A[j][i] = 0 and A[i][j] <> 0 ) then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
+    end );
+
+
+#############################################################################
+##
+
 #M  DiagonalOfMat(<mat>)  . . . . . . . . . . . . . . . .  diagonal of matrix
 ##
 ##  'DiagonalOfMat' returns  the diagonal of  the matrix <mat>.  The diagonal
 ##  has the  same length  as the rows of  <mat>,  it is padded with zeros  if
 ##  <mat> has fewer rows than columns.
-
-DiagonalOfMat := function ( mat )
+##
+InstallGlobalFunction( DiagonalOfMat, function ( mat )
     local   diag, i;
 
     diag := [];
@@ -38,7 +137,7 @@ DiagonalOfMat := function ( mat )
         i := i + 1;
     od;
     return diag;
-end;
+end );
 
 
 #############################################################################
@@ -46,46 +145,68 @@ end;
 
 #R  IsNullMapMatrix . . . . . . . . . . . . . . . . . . .  null map as matrix
 ##
-IsNullMapMatrix := NewRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
+DeclareRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
 
-NullMapMatrix := Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] );
+BindGlobal( "NullMapMatrix",
+    Objectify( NewType( ListsFamily, IsNullMapMatrix ), [  ] ) );
 
 InstallMethod( Length,
-    "method for null map matrix",
+    "for null map matrix",
     true,
     [ IsNullMapMatrix ], 0,
-    function( null )
-    return 0;
-    end );
+    null -> 0 );
 
-InstallMethod( \*, true, [ IsVector, IsNullMapMatrix ], 0,
+InstallMethod( \*,
+    "for vector and null map matrix",
+    true,
+    [ IsVector, IsNullMapMatrix ], 0,
     function( v, null )
     return [  ];
 end );
 
-InstallOtherMethod( \*, true, [ IsList and IsEmpty, IsNullMapMatrix ], 0,
+InstallOtherMethod( \*,
+    "for empty list and null map matrix",
+    true,
+    [ IsList and IsEmpty, IsNullMapMatrix ], 0,
     function( v, null )
     return [  ];
 end );
 
-InstallMethod( \*, true, [ IsMatrix, IsNullMapMatrix ], 0,
+InstallMethod( \*,
+    "for matrix and null map matrix",
+    true,
+    [ IsMatrix, IsNullMapMatrix ], 0,
     function( A, null )
     return List( A, row -> [  ] );
 end );
-        
-InstallOtherMethod( \*, true, [ IsList, IsNullMapMatrix ], 0,
+
+InstallOtherMethod( \*,
+    "for list and null map matrix",
+    true,
+    [ IsList, IsNullMapMatrix ], 0,
     function( A, null )
     return List( A, row -> [  ] );
 end );
-        
-InstallMethod( PrintObj, true, [ IsNullMapMatrix ], 0,
+
+InstallMethod( ViewObj,
+    "for null map matrix",
+    true,
+    [ IsNullMapMatrix ], 0,
     function( null )
     Print( "<null map>" );
 end );
 
+InstallMethod( PrintObj,
+    "for null map matrix",
+    true,
+    [ IsNullMapMatrix ], 0,
+    function( null )
+    Print( "NullMapMatrix" );
+end );
+
+
 #############################################################################
 ##
-
 #F  Matrix_CharacteristicPolynomialSameField( <fld>, <mat>, <ind> )
 ##
 Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind )
@@ -174,8 +295,8 @@ end;
 #F  Matrix_MinimalPolynomialSameField( <fld>, <mat>, <ind> )
 ##
 Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
-    local   W,  d,  P,  one,  zero,  vs,  dim,  v,  L,  R,  M,  p,  w,  
-            h;
+    local   W,  d,  P,  one,  zero,  vs,  dim,  v,  L,  R,  M,  p,  w,
+            h,  zv;
 
     # <W> will contain a spinned up basis
     W := [];
@@ -198,6 +319,7 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
 
     # get the vectorspace
     vs := FullRowSpace( fld, d );
+    zv := Zero(vs);
 
     # span the whole vector space
     dim := 0;
@@ -206,7 +328,7 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
         # next random vector
         repeat
             v := Random(vs);
-        until v <> Zero(vs);
+        until v <> zv;
 
         # clear right <R> and left sides <L>
         L := [];
@@ -225,24 +347,26 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
 
             # divide by known left sides
             w := ShallowCopy(v);
-            h := PositionNot( w, zero );
-            while h <= Length(w) and IsBound(L[h])  do
+            ShrinkCoeffs(w);
+            h := Length(w);
+            while 0 < h and IsBound(L[h])  do
                 AddCoeffs( p, R[h], -w[h] );
-                AddCoeffs( w, L[h], -w[h] );
-                h := PositionNot( w, zero );
+                h := AddCoeffs( w, L[h], -w[h] );
             od;
+            ShrinkCoeffs(p);
+            ShrinkCoeffs(w);
 
             # if <w> is not the zero vector try next power
-            if h <= Length(w)  then
+            if 0 < h  then
                 R[h] := p * w[h]^-1;
                 L[h] := w * w[h]^-1;
 
                 # enter vectors seen in <W>
-                while h <= Length(w) and IsBound(W[h])  do
-                    AddCoeffs( w, W[h], -w[h] );
-                    h := PositionNot( w, zero );
+                while 0 < h and IsBound(W[h])  do
+                    h := AddCoeffs( w, W[h], -w[h] );
                 od;
-                if h <= Length(w) then 
+                ShrinkCoeffs(w);
+                if 0 < h then
                     W[h] := w * w[h]^-1;
                     dim  := dim + 1;
                 fi;
@@ -255,7 +379,6 @@ Matrix_MinimalPolynomialSameField := function( fld, mat, ind )
             else
                 Add( P, UnivariatePolynomialByCoefficients(
                     ElementsFamily(FamilyObj(fld)), p, ind ) );
-                h := 0;
             fi;
         until h = 0;
     od;
@@ -277,6 +400,7 @@ end;
 #M  Display( <ffe-mat> )
 ##
 InstallMethod( Display,
+    "for matrix of FFEs",
     true,
     [ IsFFECollColl and IsMatrix ],
     0,
@@ -358,16 +482,12 @@ end );
 
 #############################################################################
 ##
-#M  CharacteristicPolynomial( <ff>, <ffe-mat> )
+#M  CharacteristicPolynomial( <ff>, <ffe-mat>, <indnum> )
 ##
-InstallMethod( CharacteristicPolynomial,
-    "spinning over finite field",
-    IsElmsColls,
-    [ IsField and IsFinite,
-      IsMatrix and IsFFECollColl ],
-    0,
-
-function( r, mat )
+InstallMethod( CharacteristicPolynomial, "spinning over finite field",
+    IsElmsCollsX,
+    [ IsField and IsFinite, IsOrdinaryMatrix and IsFFECollColl,IsPosInt ], 0,
+function( r, mat,inum )
     local   fld,  dr,  df,  pol;
 
     fld := DefaultFieldOfMatrix(mat);
@@ -375,11 +495,11 @@ function( r, mat )
     df  := DegreeOverPrimeField(fld);
     if dr mod df = 0  then
         pol := Matrix_CharacteristicPolynomialSameField(
-                   r, mat, Indeterminate(r) );
+                   r, mat, Indeterminate(r,inum) );
     else
         fld := GF( r, LcmInt( df, dr ) / DegreeOverPrimeField(r) );
         pol := Matrix_CharacteristicPolynomialSameField(
-                   r, BlownUpMat(Basis(fld),mat), Indeterminate(r) );
+                   r, BlownUpMat(Basis(fld),mat), Indeterminate(r,inum) );
     fi;
     return pol;
 end );
@@ -387,16 +507,11 @@ end );
 
 ##########################################################################
 ##
-#M  CharacteristicPolynomial( <field>, <matrix> )
+#M  CharacteristicPolynomial( <field>, <matrix>, <indnum> )
 ##
-InstallMethod( CharacteristicPolynomial,
-    "spinning over the same field",
-    IsElmsColls,
-    [ IsField,
-      IsMatrix ],
-    0,
-
-function( r, mat )
+InstallMethod( CharacteristicPolynomial, "spinning over the same field",
+    IsElmsCollsX, [ IsField, IsOrdinaryMatrix,IsPosInt ], 0,
+function( r, mat,inum )
     local   fld;
 
     fld := DefaultFieldOfMatrix(mat);
@@ -404,22 +519,18 @@ function( r, mat )
         TryNextMethod();
     fi;
     return Matrix_CharacteristicPolynomialSameField(
-                   r, mat, Indeterminate(r) );
+                   r, mat, Indeterminate(r,inum) );
 end );
 
 
 ##########################################################################
 ##
-#M  MinimalPolynomial( <ff>, <ffe-mat> )
+#M  MinimalPolynomial( <ff>, <ffe-mat>, <indnum> )
 ##
-InstallMethod( MinimalPolynomial,
-    "spinning over the same field",
-    IsElmsColls,
-    [ IsField and IsFinite,
-      IsMatrix and IsFFECollColl ],
-    0,
-
-function( r, mat )
+InstallMethod( MinimalPolynomial,"spinning over the same field",
+    IsElmsCollsX,
+    [ IsField and IsFinite, IsOrdinaryMatrix and IsFFECollColl,IsPosInt ], 0,
+function( r, mat,inum )
     local   fld,  dr,  df,  pol;
 
     fld := DefaultFieldOfMatrix(mat);
@@ -427,11 +538,11 @@ function( r, mat )
     df  := DegreeOverPrimeField(fld);
     if dr mod df = 0  then
         pol := Matrix_MinimalPolynomialSameField(
-                   r, mat, Indeterminate(r) );
+                   r, mat, Indeterminate(r,inum) );
     else
         fld := GF( r, LcmInt( df, dr ) / DegreeOverPrimeField(r) );
         pol := Matrix_MinimalPolynomialSameField(
-                   r, BlownUpMat(Basis(fld),mat), Indeterminate(r) );
+                   r, BlownUpMat(Basis(fld),mat), Indeterminate(r,inum) );
     fi;
     return pol;
 end );
@@ -439,16 +550,11 @@ end );
 
 #############################################################################
 ##
-#M  MinimalPolynomial( <field>, <matrix> )
+#M  MinimalPolynomial( <field>, <matrix>,<indnum> )
 ##
-InstallMethod( MinimalPolynomial,
-    "spinning over finite field",
-    IsElmsColls,
-    [ IsField,
-      IsMatrix ],
-    0,
-
-function( r, mat )
+InstallMethod( MinimalPolynomial, "spinning over finite field",
+    IsElmsCollsX, [ IsField, IsOrdinaryMatrix,IsPosInt ], 0,
+function( r, mat,inum )
     local   fld;
 
     fld := DefaultFieldOfMatrix(mat);
@@ -456,7 +562,7 @@ function( r, mat )
         TryNextMethod();
     fi;
     return Matrix_MinimalPolynomialSameField(
-                   r, mat, Indeterminate(r) );
+                   r, mat, Indeterminate(r,inum) );
 end );
 
 
@@ -467,9 +573,9 @@ end );
 OrderMatLimit := 1000;
 
 InstallOtherMethod( Order,
-    "generic method for matrices",
+    "generic method for ordinary matrices",
     true,
-    [ IsMatrix ],
+    [ IsOrdinaryMatrix ],
     0,
 
 function ( mat )
@@ -519,7 +625,7 @@ end );
 InstallMethod( Order,
     "matrix of finite field elements",
     true,
-    [ IsMatrix and IsFFECollColl ],
+    [ IsOrdinaryMatrix and IsFFECollColl ],
     0,
 
 function( mat )
@@ -562,7 +668,7 @@ InstallMethod( IsZero,
 ##
 InstallMethod( AbelianInvariantsOfList,
     true,
-    [ IsCyclotomicsCollection ],
+    [ IsCyclotomicCollection ],
     0,
 
 function ( list )
@@ -607,13 +713,13 @@ function ( mat )
 
     base := [];
 
-    if mat <> [] then
+    if not IsEmpty( mat ) then
 
        # make a copy to avoid changing the original argument
        mat := List( mat, ShallowCopy );
        m := Length(mat);
        n := Length(mat[1]);
-       zero := 0*mat[1][1];
+       zero := Zero( mat[1][1] );
 
        # triangulize the matrix
        TriangulizeMat( mat );
@@ -662,7 +768,7 @@ end );
 InstallMethod( DefaultFieldOfMatrix,
     "method for a matrix over the cyclotomics",
     true,
-    [ IsMatrix and IsCyclotomicsCollColl ],
+    [ IsMatrix and IsCyclotomicCollColl ],
     0,
 
 function( mat )
@@ -702,20 +808,20 @@ function( mat )
 
 end);
 
-InstallOtherMethod( SumIntersectionMat, 
-  true, [ IsEmpty, IsMatrix ], 0, 
+InstallOtherMethod( SumIntersectionMat,
+  true, [ IsEmpty, IsMatrix ], 0,
 function(a,b)
   return [b,a];
 end);
 
-InstallOtherMethod( SumIntersectionMat, 
-  true, [ IsMatrix, IsEmpty ], 0, 
+InstallOtherMethod( SumIntersectionMat,
+  true, [ IsMatrix, IsEmpty ], 0,
 function(a,b)
   return [a,b];
 end);
 
-InstallOtherMethod( SumIntersectionMat, 
-  IsIdentical, [ IsEmpty, IsEmpty ], 0, 
+InstallOtherMethod( SumIntersectionMat,
+  IsIdenticalObj, [ IsEmpty, IsEmpty ], 0,
 function(a,b)
   return [a,b];
 end);
@@ -731,7 +837,7 @@ end);
 InstallMethod( DeterminantMat,
     "generic method",
     true,
-    [ IsMatrix ],
+    [ IsOrdinaryMatrix ],
     100,
 
 function( mat )
@@ -889,7 +995,7 @@ end );
 ##
 #F  MutableTransposedMat( <mat> ) . . . . . . . . . .  transposed of a matrix
 ##
-MutableTransposedMat := function( mat )
+InstallGlobalFunction( MutableTransposedMat, function( mat )
     local trn, n, m, j;
 
     m:= Length( mat );
@@ -908,7 +1014,7 @@ MutableTransposedMat := function( mat )
 
     # return the transposed
     return trn;
-end;
+end );
 
 
 #############################################################################
@@ -916,9 +1022,9 @@ end;
 #M  NullspaceMat( <mat> ) . . . . . . basis of solutions of <vec> * <mat> = 0
 ##
 InstallMethod( NullspaceMat,
-    "generic method for matrices",
+    "generic method for ordinary matrices",
     true,
-    [ IsMatrix ],
+    [ IsOrdinaryMatrix ],
     0,
 
 function ( mat )
@@ -973,9 +1079,9 @@ end );
 #M  ProjectiveOrder( <mat> )  . . . . . . . . . . . . . . . order mod scalars
 ##
 InstallMethod( ProjectiveOrder,
-    "matrix of finite field elements",
+    "ordinary matrix of finite field elements",
     true,
-    [ IsMatrix and IsFFECollColl ],
+    [ IsOrdinaryMatrix and IsFFECollColl ],
     0,
 
 function( mat )
@@ -989,7 +1095,7 @@ function( mat )
     if c[1] = Zero(c[1])  then
         Error( "matrix <mat> must be invertible" );
     fi;
- 
+
     # compute the order of <p>
     return ProjectiveOrder(p);
 end );
@@ -1179,7 +1285,7 @@ end );
 ##
 #M  SemiEchelonMats( <mats> )
 ##
-SemiEchelonMats := function( mats )
+InstallGlobalFunction( SemiEchelonMats, function( mats )
 
     local zero,      # zero coefficient
           m,         # number of rows
@@ -1195,7 +1301,7 @@ SemiEchelonMats := function( mats )
     zero:= Zero( mats[1][1][1] );
     m:= Length( mats[1]    );
     n:= Length( mats[1][1] );
- 
+
     # Compute an echelonized basis.
     vectors := [];
     heads   := ListWithIdenticalEntries( n, 0 );
@@ -1235,7 +1341,7 @@ SemiEchelonMats := function( mats )
         heads[i][j]:= Length( vectors );
 
       fi;
-  
+
     od;
 
     # Return the result.
@@ -1243,7 +1349,7 @@ SemiEchelonMats := function( mats )
                 vectors := vectors,
                 heads   := heads
                );
-end;
+end );
 
 
 #############################################################################
@@ -1256,6 +1362,15 @@ InstallMethod( TransposedMat,
     [ IsMatrix ],
     0,
     MutableTransposedMat );
+
+InstallOtherMethod(TransposedMat,
+  "method for empty matrices",true,[IsList],0,
+function(mat)
+  if mat<>[] and mat<>[[]] then
+    TryNextMethod();
+  fi;
+  return mat;
+end);
 
 
 ############################################################################
@@ -1358,7 +1473,7 @@ end );
 ##
 InstallMethod( KroneckerProduct,
     "generic method for matrices",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMatrix,
       IsMatrix ],
     0,
@@ -1388,9 +1503,9 @@ end );
 ##  One solution <x> of <x> * <mat> = <vec> or `fail'.
 ##
 InstallMethod( SolutionMat,
-    "generic method for matrix and vector",
+    "generic method for ordinary matrix and vector",
     IsCollsElms,
-    [ IsMatrix,
+    [ IsOrdinaryMatrix,
       IsRowVector ],
     0,
 
@@ -1476,7 +1591,7 @@ end );
 ##  semi-echelon form.
 ##
 InstallMethod( SumIntersectionMat,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMatrix,
       IsMatrix ],
     0,
@@ -1552,7 +1667,7 @@ end );
 #M  TriangulizeMat( <mat> ) . . . . . bring a matrix in upper triangular form
 ##
 InstallMethod( TriangulizeMat,
-    "generic method for matrices",
+    "generic method for mutable matrices",
     true,
     [ IsMatrix and IsMutable ],
     0,
@@ -1614,6 +1729,9 @@ function ( mat )
     Info( InfoMatrix, 1, "TriangulizeMat returns" );
 end );
 
+# special method to cope with 0-dimensional matrices
+InstallOtherMethod(TriangulizeMat,"empty list",true,
+  [IsList and IsEmpty and IsPlistRep],0,Ignore);
 
 #############################################################################
 ##
@@ -1622,7 +1740,7 @@ end );
 InstallMethod( UpperSubdiagonal,
     true,
     [ IsMatrix,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( mat, l )
@@ -1651,7 +1769,7 @@ end );
 ##  'BaseFixedSpace' returns a base of the vector space $V$ such that
 ##  $M v = v$ for all $v$ in $V$ and all matrices $M$ in the list <mats>.
 ##
-BaseFixedSpace := function( matrices )
+InstallGlobalFunction( BaseFixedSpace, function( matrices )
 
     local I,            # identity matrix
           size,         # dimension of vector space
@@ -1670,7 +1788,7 @@ BaseFixedSpace := function( matrices )
         od;
     od;
     return NullspaceMat( E );
-end;
+end );
 
 
 ##########################################################################
@@ -1691,7 +1809,7 @@ end;
 ##                  then the vector is in subspace.
 ##
 ##
-BaseSteinitzVectors := function(bas,mat)
+InstallGlobalFunction( BaseSteinitzVectors, function(bas,mat)
 local z,d,l,b,i,j,k,stop,v,dim,h,zv;
 
   # catch trivial case
@@ -1721,6 +1839,7 @@ local z,d,l,b,i,j,k,stop,v,dim,h,zv;
 	if v<>fail then
 	  # add the vector
 	  v:=bas[v];
+	  v:=1/v[j]*v; # normed
 	  Add(b,v);
 	  h[j]:=Length(b);
 	# if fail, then this dimension is only dependent (and not needed)
@@ -1731,6 +1850,7 @@ local z,d,l,b,i,j,k,stop,v,dim,h,zv;
 	if i<=Length(mat) then
 	  # has a step, clean with basis vector
 	  v:=mat[i];
+	  v:=1/v[j]*v; # normed
 	  h[j]:=-i;
         else
 	  v:=fail;
@@ -1749,7 +1869,7 @@ local z,d,l,b,i,j,k,stop,v,dim,h,zv;
     i:=i+1;
   od;
   # add subspace indices
-  while i<=Length(mat) do 
+  while i<=Length(mat) do
     if mat[i][j]<>z then
       h[j]:=-i;
       i:=i+1;
@@ -1760,7 +1880,7 @@ local z,d,l,b,i,j,k,stop,v,dim,h,zv;
              factorzero:=zv,
 	     subspace:=mat,
 	     heads:=h);
-end;
+end );
 
 #############################################################################
 ##
@@ -1781,7 +1901,7 @@ end;
 ##  Note that the linear transformations act on *row* vectors, i.e., the rows
 ##  of the matrix contains vectors that consist of <B>-coefficients.
 ##
-BlownUpMat := function ( B, mat )
+InstallGlobalFunction( BlownUpMat, function ( B, mat )
 
     local result,  # blown up matrix, result
           vectors, # basis vectors of 'B'
@@ -1805,13 +1925,14 @@ BlownUpMat := function ( B, mat )
 
     # Return the result.
     return result;
-    end;
+end );
+
 
 #############################################################################
 ##
 #F  BlownUpVector( <B>, <vector> )
 ##
-BlownUpVector := function ( B, vector )
+InstallGlobalFunction( BlownUpVector, function ( B, vector )
 
     local result,  # blown up vector, result
           entry;   # loop over 'vector'
@@ -1825,7 +1946,7 @@ BlownUpVector := function ( B, vector )
     # Return the result.
     return result;
 
-end;
+end );
 
 
 #############################################################################
@@ -1856,7 +1977,7 @@ end;
 ##
 #T  Should this test for mutability? SL
 
-DiagonalizeIntMatNormDriven := function ( mat )
+InstallGlobalFunction( DiagonalizeIntMatNormDriven, function ( mat )
     local   nrrows,     # number of rows    (length of <mat>)
             nrcols,     # number of columns (length of <mat>[1])
             rownorms,   # norms of rows
@@ -2143,18 +2264,7 @@ DiagonalizeIntMatNormDriven := function ( mat )
     # close with some more information
     Info( InfoMatrix, 3, "  overall maximal entry ", omax );
     Info( InfoMatrix, 1, "DiagonalizeMat returns" );
-end;
-
-DiagonalizeIntMat := DiagonalizeIntMatNormDriven;
-
-
-#############################################################################
-##
-#F  DiagonalizeMat(<mat>) . . . . . . . . . . . . . . .  diagonalize a matrix
-##
-#N  1996/05/06 mschoene should be extended for other rings
-##
-DiagonalizeMat := DiagonalizeIntMat;
+end );
 
 
 #############################################################################
@@ -2164,7 +2274,7 @@ DiagonalizeMat := DiagonalizeIntMat;
 ##
 #T change this to 2nd argument the identity of the field/ring?
 ##
-MutableIdentityMat := function ( arg )
+InstallGlobalFunction( MutableIdentityMat, function ( arg )
     local   id, m, zero, one, row, i, k;
 
     # check the arguments and get dimension, zero and one
@@ -2206,9 +2316,9 @@ MutableIdentityMat := function ( arg )
 
     # return the identity matrix
     return id;
-end;
+end );
 
-IdentityMat := function ( arg )
+InstallGlobalFunction( IdentityMat, function ( arg )
     if Length(arg) = 1  then
       return Immutable( MutableIdentityMat( arg[1] ) );
     elif Length(arg) = 2 then
@@ -2216,7 +2326,7 @@ IdentityMat := function ( arg )
     else
       Error("usage: IdentityMat( <m>[, <F>] )");
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -2224,7 +2334,7 @@ end;
 #F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
 #F  MutableNullMat( <m>, <n> [, <F>] )  . . . . . null matrix of a given size
 ##
-MutableNullMat := function ( arg )
+InstallGlobalFunction( MutableNullMat, function ( arg )
     local   null, m, n, zero, row, i, k;
 
     if Length(arg) = 2  then
@@ -2256,9 +2366,9 @@ MutableNullMat := function ( arg )
 
     # return the null matrix
     return null;
-end;
+end );
 
-NullMat := function ( arg )
+InstallGlobalFunction( NullMat, function ( arg )
     if Length(arg) = 2  then
       return Immutable( MutableNullMat( arg[1], arg[2] ) );
     elif Length(arg) = 3 then
@@ -2266,7 +2376,7 @@ NullMat := function ( arg )
     else
       Error("usage: NullMat( <m>, <n> [, <F>] )");
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -2277,7 +2387,7 @@ end;
 ##  'NullspaceModQ' returns  the set of  all vectors of  integers modulo <q>,
 ##  which solve the homogeneous equation system given by <E> modulo <q>.
 ##
-NullspaceModQ := function( E, q )
+InstallGlobalFunction( NullspaceModQ, function( E, q )
 
     local  facs,         # factors of <q>
            p,            # prime of facs
@@ -2333,14 +2443,14 @@ NullspaceModQ := function( E, q )
         newelem := [ ];
     od;
     return elem;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PermutationMat( <perm>, <dim> [, <F> ] ) . . . . . .  permutation matrix
 ##
-PermutationMat := function( arg )
+InstallGlobalFunction( PermutationMat, function( arg )
 
     local i,       # loop variable
           perm,    # permutation
@@ -2369,15 +2479,15 @@ PermutationMat := function( arg )
     od;
 
     return mat;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DiagonalMat( <vector> )
 ##
-DiagonalMat := function( vector )
-    
+InstallGlobalFunction( DiagonalMat, function( vector )
+
     local zerovec,
           M,
           i;
@@ -2391,7 +2501,7 @@ DiagonalMat := function( vector )
     od;
     ConvertToVectorRep( M[i] );
     return M;
-end;
+end );
 
 
 #############################################################################
@@ -2401,7 +2511,7 @@ end;
 #F  ReflectionMat( <coeffs>, <conj> )
 #F  ReflectionMat( <coeffs>, <conj>, <root> )
 ##
-ReflectionMat := function( arg )
+InstallGlobalFunction( ReflectionMat, function( arg )
 
     local coeffs,     # coefficients vector, first argument
           w,          # root of unity, second argument (optional)
@@ -2462,18 +2572,18 @@ ReflectionMat := function( arg )
 
     # Return the result.
     return M;
-end;
+end );
 
 
 #########################################################################
 ##
 #F  RandomInvertibleMat( <m> [, <R>] )  . . . make a random invertible matrix
 ##
-##  'RandomInvertableMat' returns a invertible   random matrix with  <m> rows
+##  'RandomInvertibleMat' returns a invertible   random matrix with  <m> rows
 ##  and columns  with elements  taken from  the  ring <R>, which defaults  to
 ##  'Integers'.
 ##
-RandomInvertibleMat := function ( arg )
+InstallGlobalFunction( RandomInvertibleMat, function ( arg )
     local   mat, m, R, i, row, k;
 
     # check the arguments and get the list of elements
@@ -2501,7 +2611,7 @@ RandomInvertibleMat := function ( arg )
     od;
 
     return mat;
-end;
+end );
 
 
 #############################################################################
@@ -2511,7 +2621,7 @@ end;
 ##  'RandomMat' returns a random matrix with <m> rows and  <n>  columns  with
 ##  elements taken from the ring <R>, which defaults to 'Integers'.
 ##
-RandomMat := function ( arg )
+InstallGlobalFunction( RandomMat, function ( arg )
     local   mat, m, n, R, i, row, k;
 
     # check the arguments and get the list of elements
@@ -2539,14 +2649,14 @@ RandomMat := function ( arg )
     od;
 
     return mat;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  RandomUnimodularMat( <m> )  . . . . . . . . . .  random unimodular matrix
 ##
-RandomUnimodularMat := function ( m )
+InstallGlobalFunction( RandomUnimodularMat, function ( m )
     local  mat, c, i, j, k, l, a, b, v, w, gcd;
 
     # start with the identity matrix
@@ -2564,8 +2674,8 @@ RandomUnimodularMat := function ( m )
             gcd := Gcdex( a, b );
         until gcd.gcd = 1;
         v := mat[i];  w := mat[j];
-        mat[i] := gcd.coeff1 * v + gcd.coeff2 * w;
-        mat[j] := gcd.coeff3 * v + gcd.coeff4 * w;
+        mat[i] := ShallowCopy(gcd.coeff1 * v + gcd.coeff2 * w);
+        mat[j] := ShallowCopy(gcd.coeff3 * v + gcd.coeff4 * w);
 
         # multiply two random cols with a random? unimodular 2x2 matrix
         k := Random([1..m]);
@@ -2586,7 +2696,7 @@ RandomUnimodularMat := function ( m )
     od;
 
     return mat;
-end;
+end );
 
 
 #############################################################################
@@ -2604,9 +2714,11 @@ end;
 ##  matrix in <matlist> and the eigenspaces of  the different matrices to the
 ##  eigenvalues ksi^a_{i,j} for fixed j are equal.
 ##
-SimultaneousEigenvalues := function( matlist, expo )
+InstallGlobalFunction( SimultaneousEigenvalues,
+    function( arg )
 
-    local   q,       # characteristic of field of matrices
+    local matlist, expo,
+            q,       # characteristic of field of matrices
             r,       # such that <q>^r is splitting field
             field,   # GF(<q>^r)
             ksi,     # <expo>-root of field
@@ -2636,16 +2748,23 @@ SimultaneousEigenvalues := function( matlist, expo )
         od;
     end;
 
-    # get characteritic
-    q := Characteristic( matlist[1][1][1] );
+    matlist := arg[1];
+    expo    := arg[2];
 
-    # get splitting field
-    r := 1;
-    while EuclideanRemainder( q^r - 1, expo ) <> 0  do
-        r := r+1;
-    od;
-    field := GF(q^r);
-    ksi   := GeneratorsOfField(field)[1]^((q^r - 1) / expo);
+    # compute ksi
+    if Length( arg ) = 2 then
+        q := Characteristic( matlist[1][1][1] );
+
+        # get splitting field
+        r := 1;
+        while EuclideanRemainder( q^r - 1, expo ) <> 0  do
+            r := r+1;
+        od;
+        field := GF(q^r);
+        ksi   := GeneratorsOfField(field)[1]^((q^r - 1) / expo);
+    else
+        ksi := arg[3];
+    fi;
 
     # set up eigenvalues and spaces and Idmat
     eival  := List( matlist, x -> [] );
@@ -2674,13 +2793,13 @@ SimultaneousEigenvalues := function( matlist, expo )
 
     # return
     return eigen;
-end;
+end );
 
 #############################################################################
 ##
 #F  FlatBlockMat( <blockmat> ) . . . . . . . . . . . convert block mat to mat
 ##
-FlatBlockMat := function( block )
+InstallGlobalFunction( FlatBlockMat, function( block )
     local d, l, mat, i, j, h, k, a, b;
 
     d := Length( block );
@@ -2697,45 +2816,15 @@ FlatBlockMat := function( block )
             od;
         od;
     od;
-    return mat; 
-end;
+    return mat;
+end );
 
-#############################################################################
-##
-#F  BlownUpMat( <mat>, <K> ) . . . . . . . . . . . blow up by field extension
-##
-BlownUpMat := function( mat, K )
-    local base, vecs, d, new, l, i, j, k, bl, e, x;
- 
-    # the trivial case
-    d := Dimension( K );
-    if d = 1 then return mat; fi;
-
-    # set up
-    base := Basis( K );
-    vecs := BasisVectors( base );
-    l    := Length( mat );
-    new  := List( [1..l], x -> List( [1..l], y -> false ) );
-
-    # start to substitute
-    bl := List( [1..d], x -> false );
-    for i in [1..l] do
-        for j in [1..l] do
-            e := mat[i][j];
-            for k in [1..d] do
-                bl[k] := Coefficients( base, e * vecs[k] );
-            od;
-            new[i][j] := TransposedMat( bl );
-        od;
-    od;
-    return FlatBlockMat( new );
-end;
 
 #############################################################################
 ##
 #F  TraceMat( <mat> ) . . . . . . . . . . . . . . . . . . . trace of a matrix
 ##
-TraceMat := function ( mat )
+InstallGlobalFunction( TraceMat, function ( mat )
     local   trc, m, i;
 
     # check that the element is a square matrix
@@ -2752,13 +2841,68 @@ TraceMat := function ( mat )
 
     # return the trace
     return trc;
-end;
+end );
 
+
+#############################################################################
+##
+#M  Trace( <mat> )  . . . . . . . . . . . . . . . . . . . . . .  for a matrix
+##
 InstallOtherMethod( Trace,
     "generic method for matrices",
-    true, [ IsMatrix ], 0,
+    true,
+    [ IsMatrix ], 0,
     TraceMat );
 
+
+#############################################################################
+##
+#M JordanDecomposition( <mat> )
+##
+InstallMethod( JordanDecomposition,
+           "method for matrices",
+           true,
+           [IsMatrix], 0,
+function( mat )
+
+  local F,p,B,f,g,fac,ff,h,w;
+
+# The algorithm is due to R. Beals
+
+  F:= DefaultFieldOfMatrix( mat );
+  p:= Characteristic( F );
+
+# First we determine a squarefree polynomial 'g' such that 'g^d(mat)=0'.
+
+  f:= CharacteristicPolynomial( F, mat );
+  if p = 0 or p > Length( mat ) then
+    g:= f/Gcd( f, Derivative( f ) );
+  else
+    fac:= Factors(f);
+    g:= One( F );
+    ff:= [ ];
+    for h in fac do
+      if not h in ff then
+        g:= g*h;
+        Add( ff, h );
+      fi;
+    od;
+  fi;
+
+  if f=g then return [ mat, 0*mat ]; fi;
+
+# Now 'B' will be the semisimple part of the matrix 'mat'.
+
+  w:= GcdRepresentation( g, Derivative( g ) )[2];
+  w:= w*g;
+  B:= ShallowCopy( mat );
+  while Value( g, B ) <> 0*B do
+    B:= B - Value( w, B );
+  od;
+
+  return [ B, mat-B ];
+
+end );
 
 #############################################################################
 ##
@@ -2875,35 +3019,6 @@ InstallOtherMethod( Trace,
 #T # BaseOrthogonalSpaceMat := function( mat )
 #T #     return NullspaceMat( TransposedMat( mat ) );
 #T #     end;
-
-
-##########################################################################
-##
-#F  NOT READY: MatricesOps.SpecialLinearGroup( Matrices, <n>, <q> )
-#F  NOT READY: MatricesOps.GeneralLinearGroup( Matrices, <n>, <q> )
-#F  NOT READY: MatricesOps.SymplecticGroup( Matrices, <n>, <q> )
-#F  NOT READY: MatricesOps.GeneralUnitaryGroup( Matrices, <n>, <q> )
-#F  NOT READY: MatricesOps.SpecialUnitaryGroup( Matrices, <n>, <q> )
-##
-#T MatricesOps.SpecialLinearGroup := function ( M, n, q )
-#T     return MatGroupLib( "SpecialLinearGroup", n, q );
-#T end;
-#T
-#T MatricesOps.GeneralLinearGroup := function ( M, n, q )
-#T     return MatGroupLib( "GeneralLinearGroup", n, q );
-#T end;
-#T
-#T MatricesOps.SymplecticGroup := function ( M, n, q )
-#T     return MatGroupLib( "SymplecticGroup", n, q );
-#T end;
-#T
-#T MatricesOps.GeneralUnitaryGroup := function ( M, n, q )
-#T     return MatGroupLib( "GeneralUnitaryGroup", n, q );
-#T end;
-#T
-#T MatricesOps.SpecialUnitaryGroup := function ( M, n, q )
-#T     return MatGroupLib( "SpecialUnitaryGroup", n, q );
-#T end;
 
 
 #############################################################################

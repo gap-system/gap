@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for the computation of complements in
 ##  'white box groups'
@@ -12,11 +13,9 @@
 Revision.grpcompl_gi :=
     "@(#)$Id$";
 
-SetInfoLevel(InfoComplement,3);
-
 ComplementclassesSolvableWBG:=function(G,N)
 local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
-      ncen,nlcen,i,j,k,fpcgs,ocr,l,opfun,v,dimran;
+      ncen,nlcen,i,j,k,fpcgs,ocr,l,opfun,v,dimran,ocrels;
 
   # compute a series through N
   s:=ChiefSeriesUnderAction(G,N);
@@ -43,13 +42,15 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
   com:=[G];
   comgens:=[List(factorpres[3],i->PreImagesRepresentative(h,i))];
   cen:=[s[1]];
+  ocrels:=false;
 
   # step down
   for i in [2..Length(s)] do
     Info(InfoComplement,1,"Step ",i-1);
     # we know the complements after s[i-1], we want them after s[i].
-    fpcgs:=Pcgs(s[i-1]); # the factor pcgs
-    fpcgs:=fpcgs mod InducedPcgsByGenerators(fpcgs,GeneratorsOfGroup(s[i]));
+    #fpcgs:=Pcgs(s[i-1]); # the factor pcgs
+    #fpcgs:=fpcgs mod InducedPcgsByGenerators(fpcgs,GeneratorsOfGroup(s[i]));
+    fpcgs:=ModuloPcgs(s[i-1],s[i]);
 
     ncom:=[];
     ncomgens:=[];
@@ -60,47 +61,67 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
       nlcomgens:=[];
       nlcen:=[];
       # compute complements
-      ocr:=rec(group:=G,
+      ocr:=rec(group:=com[j],
                generators:=comgens[j],
 	       modulePcgs:=fpcgs,
 	       factorpres:=factorpres
 	       );
+      if ocrels<>false then
+        ocr.relators:=ocrels;
+	Assert(2,ForAll(ocr.relators,
+	                k->Product(List([1..Length(k.generators)],
+			      l->ocr.generators[k.generators[l]]^k.powers[l]))
+			      in s[i-1]));
+      fi;
 
       OCOneCocycles(ocr,true);
+      ocrels:=ocr.relators;
 
-      l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
-                             BasisVectors(Basis(ocr.oneCoboundaries)));
+      if IsBound(ocr.complement) then
+	# special treatment for trivial case:
+	if Dimension(ocr.oneCocycles)=Dimension(ocr.oneCoboundaries) then
+	  l:=[ExternalSet(cen[j],[Zero(ocr.oneCocycles)])];
+	  SetStabilizerOfExternalSet(l[1],cen[j]);
+        else
+	  l:=BaseSteinitzVectors(BasisVectors(Basis(ocr.oneCocycles)),
+				 BasisVectors(Basis(ocr.oneCoboundaries)));
 
-      v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
-                                l.factorspace,Zero(ocr.oneCocycles)));
+	  v:=Enumerator(VectorSpace(LeftActingDomain(ocr.oneCocycles),
+				    l.factorspace,Zero(ocr.oneCocycles)));
 
-      dimran:=[1..Length(v[1])];
+	  dimran:=[1..Length(v[1])];
 
-      # fuse
-      Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
-       Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
+	  # fuse
+	  Info(InfoComplement,2,"fuse ",Length(v)," classes; working in dim ",
+	   Dimension(ocr.oneCocycles),"/",Dimension(ocr.oneCoboundaries));
 
-      opfun:=function(z,g)
-        Assert(3,z in v);
-        z:=ocr.cocycleToList(z);
-	for k in [1..Length(z)] do
-	  z[k]:=Inverse(ocr.generators[k])*(ocr.generators[k]*z[k])^g;
-	od;
-	Assert(2,ForAll(z,k->k in s[i-1]));
-        z:=ocr.listToCocycle(z);
-	Assert(2,z in ocr.oneCocycles);
-	# sift z
-	for k in dimran do
-	  if IsBound(l.heads[k]) and l.heads[k]<0 then
-	    z:=z-z[k]*l.subspace[-l.heads[k]];
-	  fi;
-        od;
-	Assert(1,z in v);
-	return z;
-      end;
+	  opfun:=function(z,g)
+	    Assert(3,z in AsList(v));
+	    z:=ocr.cocycleToList(z);
+	    for k in [1..Length(z)] do
+	      z[k]:=Inverse(ocr.complementGens[k])*(ocr.complementGens[k]*z[k])^g;
+	    od;
+	    Assert(2,ForAll(z,k->k in s[i-1]));
+	    z:=ocr.listToCocycle(z);
+	    Assert(2,z in ocr.oneCocycles);
+	    # sift z
+	    for k in dimran do
+	      if IsBound(l.heads[k]) and l.heads[k]<0 then
+		z:=z-z[k]*l.subspace[-l.heads[k]];
+	      fi;
+	    od;
+	    Assert(1,z in AsList(v));
+	    return z;
+	  end;
 
-      l:=ExternalOrbitsStabilizers(cen[j],v,opfun);
-      Info(InfoComplement,2,"splits in ",Length(l)," complements");
+	  l:=ExternalOrbitsStabilizers(cen[j],v,opfun);
+	fi;
+
+	Info(InfoComplement,2,"splits in ",Length(l)," complements");
+      else
+        l:=[];
+	Info(InfoComplement,2,"no complements");
+      fi;
 
       for k in l do
 	v:=StabilizerOfExternalSet(k);
@@ -108,12 +129,6 @@ local s,h,q,fpi,factorpres,com,ncom,nlcom,comgens,ncomgens,nlcomgens,cen,
 	Assert(3,Length(GeneratorsOfGroup(k))=Length(fpi!.genimages));
 	# correct stabilizer to obtain centralizer
 	v:=Normalizer(v,ClosureGroup(s[i],k));
-
-if
-ForAny(GeneratorsOfGroup(v),j->ForAny(GeneratorsOfGroup(k),
-                 l->not Comm(j,l) in s[i])) then
-  Error("does not centralize modulo");
-fi;
 
 	Add(ncen,v);
         Add(nlcom,k);
@@ -134,7 +149,7 @@ fi;
 
 end;
 
-InstallMethod(ComplementclassesSolvableNC,"using cohomology",IsIdentical,
+InstallMethod(ComplementclassesSolvableNC,"using cohomology",IsIdenticalObj,
   [IsGroup,IsGroup],1,
   ComplementclassesSolvableWBG);
 

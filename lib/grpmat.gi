@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for matrix groups.
 ##
@@ -16,7 +17,6 @@ InstallMethod( KnowsHowToDecompose, "matrix groups", true,
 
 #############################################################################
 ##
-
 #M  DefaultFieldOfMatrixGroup( <mat-grp> )
 ##
 InstallMethod( DefaultFieldOfMatrixGroup,
@@ -98,7 +98,7 @@ InstallMethod( IsomorphismPermGroup, true, [ IsMatrixGroup and IsFinite ], 0,
     nice := SparseOperationHomomorphism( grp, One( grp ) );
     SetRange( nice, Image( nice ) );
     SetIsBijective( nice, true );
-    SetBase( UnderlyingExternalSet( nice ), One( grp ) );
+    SetBaseOfGroup( UnderlyingExternalSet( nice ), One( grp ) );
     SetFilterObj( nice, IsOperationHomomorphismByBase );
     return nice;
 end );
@@ -121,9 +121,30 @@ InstallMethod( NiceMonomorphism, true, [ IsMatrixGroup and IsFinite ], 0,
 #    return nice;
 #end );
 
+#############################################################################
+##
+#M  ViewObj(<G>)
+##
+InstallMethod(ViewObj,"matrix group",true,[IsMatrixGroup],0,
+function(G)
+local gens;
+  gens:=GeneratorsOfGroup(G);
+  if Length(gens)>0 and Length(gens)*Length(gens[1])^2/VIEWLEN>8 then
+    Print("<matrix group");
+    if HasSize(G) then
+      Print(" of size ",Size(G));
+    fi;
+    Print(" with ",Length(GeneratorsOfGroup(G)),
+          " generators>");
+  else
+    Print("Group(");
+    ViewObj(GeneratorsOfGroup(G));
+    Print(")");
+  fi;
+end);
+
 
 #############################################################################
 ##
-
 #E  grpmat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

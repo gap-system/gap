@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains support for share packages.
 ##
@@ -74,6 +75,36 @@ end;
 
 #############################################################################
 ##
+#F  RereadPkg( <name>, <file> ) . . . . . . . . . . . . reload a package file
+##
+##  This and the previous function could probably be done with less repetition
+##
+RereadPkg := function( arg )
+    local   file;
+
+    # unravel the argument
+    if IsList(arg[1]) and not IsString(arg[1]) then
+        arg := arg[1];
+    fi;
+
+    # check that we know the package
+    if not IsBound(LOADED_PACKAGES.(arg[1]))  then
+        Error( "package \"", arg[1], "\" not loaded" );
+    fi;
+
+    # and read the file
+    file := Filename( LOADED_PACKAGES.(arg[1]), arg[2] );
+    if file = fail  then
+       Error("cannot locate file \"",arg[2],"\" in package \"",arg[1],"\"");
+    fi;
+
+    # read it
+    Reread(file);
+
+end;
+
+#############################################################################
+##
 #F  DeclarePackageDocumentation( <pkg>, <doc> ) . . location of documentation
 ##
 DeclarePackageDocumentation := function( pkg, doc )
@@ -89,6 +120,8 @@ DeclarePackageDocumentation := function( pkg, doc )
         Concatenation( "pkg/", pkg, "/", doc ),
         Concatenation( "Share Package `", pkg, "'" ) ] );
 end;
+
+
 
 
 #############################################################################

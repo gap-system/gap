@@ -2,6 +2,9 @@
 ##
 #W  rwspcclt.gi                 GAP Library                      Frank Celler
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This file contains generic methods polycyclic rewriting systems.
 ##
 Revision.rwspcclt_gi :=
@@ -11,40 +14,40 @@ Revision.rwspcclt_gi :=
 #############################################################################
 ##
 
-#F  IsIdenticalFamiliesColObjObj( <rws>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesColObjObj( <rws>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesColObjObj := function( a, b, c )
-    return IsIdentical( a!.underlyingFamily, b )
-       and IsIdentical( b, c );
+IsIdenticalObjFamiliesColObjObj := function( a, b, c )
+    return IsIdenticalObj( a!.underlyingFamily, b )
+       and IsIdenticalObj( b, c );
 end;
 
 
 #############################################################################
 ##
-#F  IsIdenticalFamiliesColObjObjObj( <rws>, <obj>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesColObjObjObj( <rws>, <obj>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesColObjObjObj := function( a, b, c, d )
-    return IsIdentical( a!.underlyingFamily, b )
-       and IsIdentical( b, c )
-       and IsIdentical( b, d );
+IsIdenticalObjFamiliesColObjObjObj := function( a, b, c, d )
+    return IsIdenticalObj( a!.underlyingFamily, b )
+       and IsIdenticalObj( b, c )
+       and IsIdenticalObj( b, d );
 end;
 
 
 #############################################################################
 ##
-#F  IsIdenticalFamiliesColXXXObj( <col>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesColXXXObj( <col>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesColXXXObj := function( a, b, c )
-    return IsIdentical( a!.underlyingFamily, c );
+IsIdenticalObjFamiliesColXXXObj := function( a, b, c )
+    return IsIdenticalObj( a!.underlyingFamily, c );
 end;
 
 
 #############################################################################
 ##
-#F  IsIdenticalFamiliesColXXXXXXObj( <rws>, <obj>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesColXXXXXXObj( <rws>, <obj>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesColXXXXXXObj := function( a, b, c, d )
-    return IsIdentical( a!.underlyingFamily, d );
+IsIdenticalObjFamiliesColXXXXXXObj := function( a, b, c, d )
+    return IsIdenticalObj( a!.underlyingFamily, d );
 end;
 
 
@@ -335,6 +338,36 @@ end );
 
 #############################################################################
 ##
+#M  ViewObj( <col> )
+##
+
+
+#############################################################################
+InstallMethod( ViewObj, true, [ IsPolycyclicCollector ], 0,
+
+function( col )
+    Print( "<<polycyclic collector>>");
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj, true, [ IsPowerConjugateCollector ], 0,
+
+function( col )
+    Print( "<<polycyclic collector with conjugates>>");
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj, true, [ IsPowerCommutatorCollector ], 0,
+
+function( col )
+    Print( "<<polycyclic collector with commutators>>");
+end );
+
+
+#############################################################################
+##
 #M  PrintObj( <col> )
 ##
 
@@ -345,6 +378,7 @@ InstallMethod( PrintObj, true, [ IsPolycyclicCollector ], 0,
 function( col )
     Print( "<<polycyclic collector>>");
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -353,6 +387,7 @@ InstallMethod( PrintObj, true, [ IsPowerConjugateCollector ], 0,
 function( col )
     Print( "<<polycyclic collector with conjugates>>");
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -361,6 +396,7 @@ InstallMethod( PrintObj, true, [ IsPowerCommutatorCollector ], 0,
 function( col )
     Print( "<<polycyclic collector with commutators>>");
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -369,7 +405,7 @@ end );
 #M  CollectWord( <col>, <v>, <w> )
 ##
 InstallMethod( CollectWord,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPolycyclicCollector,
       IsList,
       IsMultiplicativeElementWithInverse ],
@@ -399,7 +435,7 @@ end );
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj,
+    IsIdenticalObjFamiliesColXXXObj,
     [ IsPolycyclicCollector,
       IsList,
       IsMultiplicativeElementWithInverse ],
@@ -419,7 +455,7 @@ end );
 
 #############################################################################
 InstallMethod( CollectWordOrFail,
-    IsIdenticalFamiliesColXXXObj, 
+    IsIdenticalObjFamiliesColXXXObj, 
     [ IsPolycyclicCollector and IsUpToDatePolycyclicCollector,
       IsList,
       IsMultiplicativeElementWithInverse ], 0,
@@ -435,7 +471,7 @@ end );
 ##
 InstallMethod( ReducedForm,
     "CollectWordOrFail",
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsPolycyclicCollector,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -461,7 +497,7 @@ end );
 ##
 InstallMethod( ReducedPower,
     "ReducedInverse/CollectWordOrFail",
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [ IsPolycyclicCollector,
       IsMultiplicativeElementWithInverse,
       IsInt ],
@@ -485,7 +521,7 @@ function( col, obj, pow )
         if pow = 1  then
             return obj;
         elif pow = 2  then
-            res := [ 1 .. NumberGeneratorsOfRws(col) ] * 0;
+            res := ListWithIdenticalEntries( NumberGeneratorsOfRws(col), 0 );
             if CollectWordOrFail( col, res, obj ) = fail  then
                 return ReducedPower( col, obj, pow );
             fi;
@@ -494,7 +530,7 @@ function( col, obj, pow )
             fi;
             return ObjByExponents( col, res );
         elif pow = 3  then
-            res := [ 1 .. NumberGeneratorsOfRws(col) ] * 0;
+            res := ListWithIdenticalEntries( NumberGeneratorsOfRws(col), 0 );
             if CollectWordOrFail( col, res, obj ) = fail  then
                 return ReducedPower( col, obj, pow );
             fi;
@@ -506,7 +542,7 @@ function( col, obj, pow )
             fi;
             return ObjByExponents( col, res );
         elif pow = 4  then
-            res := [ 1 .. NumberGeneratorsOfRws(col) ] * 0;
+            res := ListWithIdenticalEntries( NumberGeneratorsOfRws(col), 0 );
             if CollectWordOrFail( col, res, obj ) = fail  then
                 return ReducedPower( col, obj, pow );
             fi;
@@ -519,7 +555,7 @@ function( col, obj, pow )
             fi;
             return ObjByExponents( col, res );
         elif pow = 5  then
-            res := [ 1 .. NumberGeneratorsOfRws(col) ] * 0;
+            res := ListWithIdenticalEntries( NumberGeneratorsOfRws(col), 0 );
             if CollectWordOrFail( col, res, obj ) = fail  then
                 return ReducedPower( col, obj, pow );
             fi;
@@ -558,7 +594,7 @@ end );
 
 #############################################################################
 InstallMethod( SetCommutator,
-    IsIdenticalFamiliesColObjObjObj,
+    IsIdenticalObjFamiliesColObjObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,
@@ -574,7 +610,7 @@ end );
 
 #############################################################################
 InstallMethod( SetCommutatorNC, 
-    IsIdenticalFamiliesColObjObjObj,
+    IsIdenticalObjFamiliesColObjObjObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,
@@ -590,7 +626,7 @@ end );
 
 #############################################################################
 InstallMethod( SetCommutatorNC,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsInt,
       IsInt,
@@ -604,7 +640,7 @@ end );
 
 #############################################################################
 InstallMethod( SetCommutator,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerConjugateCollector and IsMutable,
       IsInt,
       IsInt,
@@ -624,7 +660,7 @@ end );
 
 #############################################################################
 InstallMethod( SetConjugate,
-    IsIdenticalFamiliesColObjObjObj,
+    IsIdenticalObjFamiliesColObjObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,
@@ -640,7 +676,7 @@ end );
 
 #############################################################################
 InstallMethod( SetConjugateNC,
-    IsIdenticalFamiliesColObjObjObj,
+    IsIdenticalObjFamiliesColObjObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,
@@ -656,7 +692,7 @@ end );
 
 #############################################################################
 InstallMethod( SetConjugate,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerCommutatorCollector and IsMutable,
       IsInt,
       IsInt,
@@ -670,7 +706,7 @@ end );
 
 #############################################################################
 InstallMethod( SetConjugateNC,
-    IsIdenticalFamiliesColXXXXXXObj,
+    IsIdenticalObjFamiliesColXXXXXXObj,
     [ IsPowerCommutatorCollector and IsMutable,
       IsInt,
       IsInt,
@@ -690,7 +726,7 @@ end );
 
 #############################################################################
 InstallMethod( SetPower,
-    IsIdenticalFamiliesColObjObj,
+    IsIdenticalObjFamiliesColObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -703,7 +739,7 @@ end );
 
 #############################################################################
 InstallMethod( SetPowerNC,
-    IsIdenticalFamiliesColObjObj,
+    IsIdenticalObjFamiliesColObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -722,7 +758,7 @@ end );
 
 #############################################################################
 InstallMethod( SetRelativeOrder,
-    IsIdenticalFamiliesColObjObj,
+    IsIdenticalObjFamiliesColObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsInt ],
@@ -735,7 +771,7 @@ end );
 
 #############################################################################
 InstallMethod( SetRelativeOrderNC,
-    IsIdenticalFamiliesColObjObj,
+    IsIdenticalObjFamiliesColObjObj,
     [ IsPolycyclicCollector and IsMutable,
       IsMultiplicativeElementWithInverse,
       IsInt ],

@@ -7,12 +7,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of for coset tables.
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_costab_c =
+const char * Revision_costab_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -2826,61 +2827,55 @@ Obj FuncAddAbelianRelator (
 /****************************************************************************
 **
 
-*F  SetupCosetTable() . . . . . . . . . .  initialize the coset table package
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupCosetTable ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
+
+    { "ApplyRel", 2, "app, relator",
+      FuncApplyRel, "src/costab.c:ApplyRel" },
+
+    { "MakeConsequences", 1, "list",
+      FuncMakeConsequences, "src/costab.c:MakeConsequences" },
+
+    { "StandardizeTable", 1, "table",
+      FuncStandardizeTable, "src/costab.c:StandardizeTable" },
+
+    { "ApplyRel2", 3, "app, relators, nums",
+      FuncApplyRel2, "src/costab.c:ApplyRel2" },
+
+    { "CopyRel", 1, "relator",
+      FuncCopyRel, "src/costab.c:CopyRel" },
+
+    { "MakeCanonical", 1, "relator",
+      FuncMakeCanonical, "src/costab.c:MakeCanonical" },
+
+    { "TreeEntry", 2, "relator, word",
+      FuncTreeEntry, "src/costab.c:TreeEntry" },
+
+    { "MakeConsequences2", 1, "list",
+      FuncMakeConsequences2, "src/costab.c:MakeConsequences2" },
+
+    { "StandardizeTable2", 2, "table, table",
+      FuncStandardizeTable2, "src/costab.c:StandardizeTable2" },
+
+    { "AddAbelianRelator", 2, "rels, number",
+      FuncAddAbelianRelator, "src/costab.c:AddAbelianRelator" },
+
+    { 0 }
+
+};
 
 
 /****************************************************************************
 **
-*F  InitCosetTable()  . . . . . . . . . .  initialize the coset table package
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitCosetTable ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-
-    /* functions for coset tables                                          */
-    C_NEW_GVAR_FUNC( "ApplyRel", 2, "app, relator",
-                  FuncApplyRel,
-         "src/costab.c:ApplyRel" );
-
-    C_NEW_GVAR_FUNC( "MakeConsequences", 1, "list",
-                  FuncMakeConsequences,
-        "src/costab.c:MakeConsequences" );
-
-    C_NEW_GVAR_FUNC( "StandardizeTable", 1, "table",
-                  FuncStandardizeTable,
-        "src/costab.c:StandardizeTable" );
-
-    C_NEW_GVAR_FUNC( "ApplyRel2", 3, "app, relators, nums",
-                  FuncApplyRel2,
-        "src/costab.c:ApplyRel2" );
-
-    C_NEW_GVAR_FUNC( "CopyRel", 1, "relator",
-                  FuncCopyRel,
-        "src/costab.c:CopyRel" );
-
-    C_NEW_GVAR_FUNC( "MakeCanonical", 1, "relator",
-                  FuncMakeCanonical,
-        "src/costab.c:MakeCanonical" );
-
-    C_NEW_GVAR_FUNC( "TreeEntry", 2, "relator, word",
-                  FuncTreeEntry,
-        "src/costab.c:TreeEntry" );
-
-    C_NEW_GVAR_FUNC( "MakeConsequences2", 1, "list",
-                  FuncMakeConsequences2,
-        "src/costab.c:MakeConsequences2" );
-
-    C_NEW_GVAR_FUNC( "StandardizeTable2", 2, "table, table",
-                  FuncStandardizeTable2,
-        "src/costab.c:StandardizeTable2" );
-
-    C_NEW_GVAR_FUNC( "AddAbelianRelator", 2, "rels, number",
-                  FuncAddAbelianRelator,
-        "src/costab.c:AddAbelianRelator" );
-
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* static variables                                                    */
     InitGlobalBag( &objRel      , "src/costab.c:objRel"       );
@@ -2895,17 +2890,52 @@ void InitCosetTable ( void )
     InitGlobalBag( &objTree2    , "src/costab.c:objTree2"     );
     InitGlobalBag( &objWordValue, "src/costab.c:objWordValue" );
     InitGlobalBag( &objExponent , "src/costab.c:objExponent"  );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckCosetTable() . . check the initialisation of the coset table package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckCosetTable ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "costab_c",   Revision_costab_c );
-    SET_REVISION( "costab_h",   Revision_costab_h );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoCosetTable()  . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "costab",                           /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoCosetTable ( void )
+{
+    module.revision_c = Revision_costab_c;
+    module.revision_h = Revision_costab_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

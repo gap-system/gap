@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains those functions that mainly deal with matrix algebras,
 ##  that is, associative matrix algebras and matrix Lie algebras.
@@ -22,15 +23,15 @@ Revision.algmat_gi :=
 ##  algebra over its prime field.
 ##
 InstallOtherMethod( RingByGenerators,
-    "method for a list of matrices over a finite field",
+    "for a list of matrices over a finite field",
     true,
     [ IsFFECollCollColl ], 0,
     mats -> FLMLORByGenerators( GF( Characteristic( mats ) ), mats ) );
 
 InstallOtherMethod( RingByGenerators,
-    "method for a list of matrices over the Cyclotomics",
+    "for a list of matrices over the Cyclotomics",
     true,
-    [ IsCyclotomicsCollCollColl ], 0,
+    [ IsCyclotomicCollCollColl ], 0,
     mats -> FLMLORByGenerators( Integers, mats ) );
 
 
@@ -40,19 +41,19 @@ InstallOtherMethod( RingByGenerators,
 ##
 ##  If <mats> is a list of matrices over a field then we construct a matrix
 ##  algebra over its prime field.
-##  (So this may differ from the result of 'RingByGenerators' if the
+##  (So this may differ from the result of `RingByGenerators' if the
 ##  characteristic is zero.)
 ##
 InstallOtherMethod( DefaultRingByGenerators,
-    "method for a list of matrices over a finite field",
+    "for a list of matrices over a finite field",
     true,
     [ IsFFECollCollColl ], 0,
     mats -> FLMLORByGenerators( GF( Characteristic( mats ) ), mats ) );
 
 InstallOtherMethod( DefaultRingByGenerators,
-    "method for a list of matrices over the Cyclotomics",
+    "for a list of matrices over the Cyclotomics",
     true,
-    [ IsCyclotomicsCollCollColl ], 0,
+    [ IsCyclotomicCollCollColl ], 0,
     mats -> FLMLORByGenerators( Rationals, mats ) );
 
 
@@ -64,7 +65,7 @@ InstallOtherMethod( DefaultRingByGenerators,
 ##  a matrix Lie algebra over its prime field.
 ##
 InstallOtherMethod( RingByGenerators,
-    "method for a list of Lie matrices over a finite field",
+    "for a list of Lie matrices over a finite field",
     true,
     [ IsLieObjectCollection and IsMatrixCollection ], 0,
     function( mats )
@@ -87,7 +88,7 @@ InstallOtherMethod( RingByGenerators,
     # are FFEs or cyclotomics.
     if IsFFEFamily( Fam ) then
       return FLMLORByGenerators( GF( Characteristic( Fam ) ), mats );
-    elif IsIdentical( Fam, CyclotomicsFamily ) then
+    elif IsIdenticalObj( Fam, CyclotomicsFamily ) then
       return FLMLORByGenerators( Integers, mats );
     else
       TryNextMethod();
@@ -101,11 +102,11 @@ InstallOtherMethod( RingByGenerators,
 ##
 ##  If <mats> is a list of Lie matrices over a field then we construct
 ##  a matrix Lie algebra over its prime field.
-##  (So this may differ from the result of 'RingByGenerators' if the
+##  (So this may differ from the result of `RingByGenerators' if the
 ##  characteristic is zero.)
 ##
 InstallOtherMethod( DefaultRingByGenerators,
-    "method for a list of Lie matrices",
+    "for a list of Lie matrices",
     true,
     [ IsLieObjectCollection and IsMatrixCollection ], 0,
     function( mats )
@@ -128,7 +129,7 @@ InstallOtherMethod( DefaultRingByGenerators,
     # are FFEs or cyclotomics.
     if IsFFEFamily( Fam ) then
       return AlgebraByGenerators( GF( Characteristic( Fam ) ), mats );
-    elif IsIdentical( Fam, CyclotomicsFamily ) then
+    elif IsIdenticalObj( Fam, CyclotomicsFamily ) then
       return AlgebraByGenerators( Rationals, mats );
     else
       TryNextMethod();
@@ -144,15 +145,15 @@ InstallOtherMethod( DefaultRingByGenerators,
 ##  algebra over its prime field.
 ##
 InstallOtherMethod( RingWithOneByGenerators,
-    "method for a list of matrices over a finite field",
+    "for a list of matrices over a finite field",
     true,
     [ IsFFECollCollColl ], 0,
     mats -> FLMLORWithOneByGenerators( GF( Characteristic(mats) ), mats ) );
 
 InstallOtherMethod( RingWithOneByGenerators,
-    "method for a list of matrices over the Cyclotomics",
+    "for a list of matrices over the Cyclotomics",
     true,
-    [ IsCyclotomicsCollCollColl ], 0,
+    [ IsCyclotomicCollCollColl ], 0,
     mats -> FLMLORWithOneByGenerators( Integers, mats ) );
 
 #T how to formulate this for any field?
@@ -165,19 +166,19 @@ InstallOtherMethod( RingWithOneByGenerators,
 #M  FLMLORByGenerators( <F>, <mats>, <zero> )
 ##
 InstallMethod( FLMLORByGenerators,
-    "method for division ring and list of matrices over it",
+    "for division ring and list of ordinary matrices over it",
     IsElmsCollColls,
     [ IsDivisionRing, IsCollection and IsList ], 0,
     function( F, mats )
     local dims, A;
 
-    # Check that all entries in 'mats' are square matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are square matrices of the same shape.
+    if not IsOrdinaryMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsOrdinaryMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -200,7 +201,7 @@ InstallMethod( FLMLORByGenerators,
     SetGeneratorsOfLeftOperatorRing( A, AsList( mats ) );
     A!.vectordim:= dims;
 
-    # If the generators are associative elements then so is 'A'.
+    # If the generators are associative elements then so is `A'.
     if ForAll( mats, IsAssociativeElement ) then
       SetIsAssociative( A, true );
     fi;
@@ -210,18 +211,17 @@ InstallMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for division ring, empty list, and square matrix",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsMatrix ], 0,
+    "for division ring, empty list, and square ordinary matrix",
+    function( FamF, Famempty, Famzero )
+        return IsElmsColls( FamF, Famzero );
+    end,
+    [ IsDivisionRing, IsList and IsEmpty, IsOrdinaryMatrix ], 0,
     function( F, empty, zero )
     local dims, A;
 
     # Check whether this method is the right one.
     dims:= DimensionsMat( zero );
-    if not IsElmsColls( FamilyObj( F ), FamilyObj( zero ) ) then
-#T explicit 2nd argument above!
-      TryNextMethod();
-    elif dims[1] <> dims[2] then
+    if dims[1] <> dims[2] then
       Error( "<zero> must be a square matrix" );
     fi;
 
@@ -241,25 +241,21 @@ InstallOtherMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for division ring, list of matrices	over it, and matrix",
-    true,
-    [ IsDivisionRing, IsCollection and IsList, IsMatrix ], 0,
+    "for division ring, list of matrices over it, and ordinary matrix",
+    function( FamF, Fammats, Famzero )
+        return IsElmsCollColls( FamF, Fammats );
+    end,
+    [ IsDivisionRing, IsCollection and IsList, IsOrdinaryMatrix ], 0,
     function( F, mats, zero )
     local dims, A;
 
-    # Check whether this method is the right one.
-    if not IsElmsCollColls( FamilyObj( F ), FamilyObj( mats ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
-
-    # Check that all entries in 'mats' are matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are matrices of the same shape.
+    if not IsOrdinaryMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsOrdinaryMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -283,7 +279,7 @@ InstallOtherMethod( FLMLORByGenerators,
     SetZero( A, zero );
     A!.vectordim:= dims;
 
-    # If the generators are associative elements then so is 'A'.
+    # If the generators are associative elements then so is `A'.
     if ForAll( mats, IsAssociativeElement ) then
       SetIsAssociative( A, true );
     fi;
@@ -300,19 +296,19 @@ InstallOtherMethod( FLMLORByGenerators,
 #M  FLMLORByGenerators( <F>, <lie-mats>, <lie-zero> )
 ##
 InstallMethod( FLMLORByGenerators,
-    "method for division ring and list of Lie matrices over it",
+    "for division ring and list of Lie matrices over it",
     IsElmsCollLieColls,
     [ IsDivisionRing, IsLieObjectCollection and IsList ], 0,
     function( F, mats )
     local dims, A;
 
-    # Check that all entries in 'mats' are square matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are square matrices of the same shape.
+    if not IsLieMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsLieMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -335,7 +331,7 @@ InstallMethod( FLMLORByGenerators,
     SetGeneratorsOfLeftOperatorRing( A, AsList( mats ) );
     A!.vectordim:= dims;
 
-    # 'A' consists of Lie objects, so it is a Lie algebra.
+    # `A' consists of Lie objects, so it is a Lie algebra.
     SetIsLieAlgebra( A, true );
 
     # Return the result.
@@ -343,18 +339,17 @@ InstallMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for division ring, empty list, and Lie matrix",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsMatrix and IsLieObject ], 0,
+    "for division ring, empty list, and Lie matrix",
+    function( FamF, Famempty, Famzero )
+        return IsElmsLieColls( FamF, Famzero );
+    end,
+    [ IsDivisionRing, IsList and IsEmpty, IsLieMatrix and IsLieObject ], 0,
     function( F, empty, zero )
     local dims, A;
 
     # Check whether this method is the right one.
     dims:= DimensionsMat( zero );
-    if not IsElmsLieColls( FamilyObj( F ), FamilyObj( zero ) ) then
-#T explicit 2nd argument above!
-      TryNextMethod();
-    elif dims[1] <> dims[2] then
+    if dims[1] <> dims[2] then
       Error( "<zero> must be a square matrix" );
     fi;
 
@@ -374,26 +369,22 @@ InstallOtherMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for division ring, list of Lie matrices over it, and Lie matrix",
-    true,
+    "for division ring, list of Lie matrices over it, and Lie matrix",
+    function( FamF, Fammats, Famzero )
+        return IsElmsCollLieColls( FamF, Fammats );
+    end,
     [ IsDivisionRing, IsLieObjectCollection and IsList,
-      IsLieObject and IsMatrix ], 0,
+      IsLieObject and IsLieMatrix ], 0,
     function( F, mats, zero )
     local dims, A;
 
-    # Check whether this method is the right one.
-    if not IsElmsCollLieColls( FamilyObj( F ), FamilyObj( mats ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
-
-    # Check that all entries in 'mats' are matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are matrices of the same shape.
+    if not IsLieMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsLieMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -417,7 +408,7 @@ InstallOtherMethod( FLMLORByGenerators,
     SetZero( A, zero );
     A!.vectordim:= dims;
 
-    # 'A' consists of Lie objects, so it is a Lie algebra.
+    # `A' consists of Lie objects, so it is a Lie algebra.
     SetIsLieAlgebra( A, true );
 
     # Return the result.
@@ -432,19 +423,19 @@ InstallOtherMethod( FLMLORByGenerators,
 #M  FLMLORWithOneByGenerators( <F>, <mats>, <zero> )
 ##
 InstallMethod( FLMLORWithOneByGenerators,
-    "method for division ring and list of matrices over it",
+    "for division ring and list of ordinary matrices over it",
     IsElmsCollColls,
     [ IsDivisionRing, IsCollection and IsList ], 0,
     function( F, mats )
     local dims, A;
 
-    # Check that all entries in 'mats' are square matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are square matrices of the same shape.
+    if not IsOrdinaryMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsOrdinaryMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -467,7 +458,7 @@ InstallMethod( FLMLORWithOneByGenerators,
     SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( mats ) );
     A!.vectordim:= dims;
 
-    # If the generators are associative elements then so is 'A'.
+    # If the generators are associative elements then so is `A'.
     if ForAll( mats, IsAssociativeElement ) then
       SetIsAssociative( A, true );
     fi;
@@ -477,17 +468,16 @@ InstallMethod( FLMLORWithOneByGenerators,
     end );
 
 InstallOtherMethod( FLMLORWithOneByGenerators,
-    "method for division ring, empty list, and square matrix",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsMatrix ], 0,
+    "for division ring, empty list, and square ordinary matrix",
+    function( FamF, Famempty, Famzero )
+        return IsElmsColls( FamF, Famzero );
+    end,
+    [ IsDivisionRing, IsList and IsEmpty, IsOrdinaryMatrix ], 0,
     function( F, empty, zero )
     local A;
 
     # Check whether this method is the right one.
-    if not IsElmsColls( FamilyObj( F ), FamilyObj( zero ) ) then
-#T explicit 2nd argument above!
-      TryNextMethod();
-    elif Length( zero ) <> Length( zero[1] ) then
+    if Length( zero ) <> Length( zero[1] ) then
       Error( "<zero> must be a square matrix" );
     fi;
 
@@ -507,27 +497,22 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     end );
 
 InstallOtherMethod( FLMLORWithOneByGenerators,
-    "method for division ring, list of matrices	over it, and matrix",
-    true,
-    [ IsDivisionRing, IsCollection and IsList, IsMatrix ], 0,
+    "for division ring, list of matrices over it, and ordinary matrix",
+    function( FamF, Fammats, Famzero )
+        return     HasCollectionsFamily( FamF )
+               and IsElmsColls( CollectionsFamily( FamF ), Fammats );
+    end,
+    [ IsDivisionRing, IsCollection and IsList, IsOrdinaryMatrix ], 0,
     function( F, mats, zero )
     local dims, A;
 
-    # Check whether this method is the right one.
-    if    not HasCollectionsFamily( FamilyObj( F ) )
-       or not IsElmsColls( CollectionsFamily( FamilyObj( F ) ),
-                           FamilyObj( mats ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
-
-    # Check that all entries in 'mats' are matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are matrices of the same shape.
+    if not IsOrdinaryMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
     if    dims[1] <> dims[2]
-       or not ForAll( mats, mat ->     IsMatrix( mat )
+       or not ForAll( mats, mat ->     IsOrdinaryMatrix( mat )
                                    and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -551,7 +536,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     SetZero( A, zero );
     A!.vectordim:= dims;
 
-    # If the generators are associative elements then so is 'A'.
+    # If the generators are associative elements then so is `A'.
     if ForAll( mats, IsAssociativeElement ) then
       SetIsAssociative( A, true );
     fi;
@@ -563,10 +548,289 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
 
 #############################################################################
 ##
+#M  TwoSidedIdealByGenerators( <A>, <mats> )
+##
+InstallMethod( TwoSidedIdealByGenerators,
+    "for Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfTwoSidedIdeal( I, mats );
+    SetLeftActingRingOfIdeal( I, A );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( TwoSidedIdealByGenerators,
+    "for non-Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsNonGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsVectorSpace
+                            and IsNonGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfTwoSidedIdeal( I, mats );
+    SetLeftActingRingOfIdeal( I, A );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( TwoSidedIdealByGenerators,
+    "for matrix algebra and empty list",
+    true,
+    [ IsMatrixFLMLOR, IsList and IsEmpty ], 0,
+    function( A, mats )
+    local dims, I;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep
+                            and IsTrivial ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfTwoSidedIdeal( I, mats );
+    SetGeneratorsOfLeftOperatorRing( I, mats );
+    SetGeneratorsOfLeftModule( I, mats );
+    SetLeftActingRingOfIdeal( I, A );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= A!.vectordim;
+
+    # Return the result.
+    return I;
+    end );
+
+
+#############################################################################
+##
+#M  LeftIdealByGenerators( <A>, <mats> )
+##
+InstallMethod( LeftIdealByGenerators,
+    "for Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfLeftIdeal( I, AsList( mats ) );
+    SetLeftActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( LeftIdealByGenerators,
+    "for non-Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsNonGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsVectorSpace
+                            and IsNonGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfLeftIdeal( I, AsList( mats ) );
+    SetLeftActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( LeftIdealByGenerators,
+    "for matrix algebra and empty list",
+    true,
+    [ IsMatrixFLMLOR, IsList and IsEmpty ], 0,
+    function( A, mats )
+    local dims, I;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep
+                            and IsTrivial ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfLeftIdeal( I, mats );
+    SetGeneratorsOfLeftOperatorRing( I, mats );
+    SetGeneratorsOfLeftModule( I, mats );
+    SetLeftActingRingOfIdeal( I, A );
+    I!.vectordim:= A!.vectordim;
+
+    # Return the result.
+    return I;
+    end );
+
+
+#############################################################################
+##
+#M  RightIdealByGenerators( <A>, <mats> )
+##
+InstallMethod( RightIdealByGenerators,
+    "for Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfRightIdeal( I, mats );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( RightIdealByGenerators,
+    "for non-Gaussian matrix algebra and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsNonGaussianMatrixSpaceRep,
+      IsCollection and IsList ], 0,
+    function( A, mats )
+    local dims, I;
+
+    # Check that all entries in `mats' are square matrices of the same shape.
+    dims:= A!.vectordim;
+    if not ForAll( mats, mat ->     IsMatrix( mat )
+                                and DimensionsMat( mat ) = dims ) then
+      Error( "entries of <mats> do not have the right dimension" );
+    fi;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsVectorSpace
+                            and IsNonGaussianMatrixSpaceRep ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfRightIdeal( I, mats );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= dims;
+
+    # Return the result.
+    return I;
+    end );
+
+
+InstallMethod( RightIdealByGenerators,
+    "for matrix algebra and empty list",
+    true,
+    [ IsMatrixFLMLOR, IsList and IsEmpty ], 0,
+    function( A, mats )
+    local dims, I;
+
+    I:= Objectify( NewType( FamilyObj( mats ),
+                                IsFLMLOR
+                            and IsGaussianSpace
+                            and IsGaussianMatrixSpaceRep
+                            and IsTrivial ),
+                   rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfRightIdeal( I, mats );
+    SetGeneratorsOfLeftOperatorRing( I, mats );
+    SetGeneratorsOfLeftModule( I, mats );
+    SetRightActingRingOfIdeal( I, A );
+    I!.vectordim:= A!.vectordim;
+
+    # Return the result.
+    return I;
+    end );
+
+
+#############################################################################
+##
 #M  IsUnit( <A>, <mat> )  . . . . . . . . . . .  for matrix FLMLOR and matrix
 ##
 InstallMethod( IsUnit,
-    "method for matrix FLMLOR and matrix",
+    "for matrix FLMLOR and matrix",
     IsCollsElms,
     [ IsMatrixFLMLOR, IsMatrix ], 0,
     function ( A, m )
@@ -587,7 +851,7 @@ InstallMethod( IsUnit,
 ##  Gaussian matrix algebra case.
 ##
 InstallMethod( RadicalOfAlgebra,
-    "method for associative Gaussian matrix algebra",
+    "for associative Gaussian matrix algebra",
     true,
     [ IsAlgebra and IsGaussianMatrixSpaceRep and IsMatrixFLMLOR ], 0,
     function( A )
@@ -629,7 +893,7 @@ InstallMethod( RadicalOfAlgebra,
 
       # First we treat the characteristic 0 case.
       # According to Dickson's theorem we have that in this case
-      # the radical of 'A' is $\{ x\in A \mid Tr(xy) = 0 \forall y \in A \}$,
+      # the radical of `A' is $\{ x\in A \mid Tr(xy) = 0 \forall y \in A \}$,
       # so it can be computed by solving a system of linear equations.
 
       eqs:= List( [ 1 .. n ], x -> [] );
@@ -647,16 +911,16 @@ InstallMethod( RadicalOfAlgebra,
 
     else
 
-      # If 'p' is greater than 0, then the situation is more difficult.
+      # If `p' is greater than 0, then the situation is more difficult.
       # We follow the algorithm presented in
       # "L. Ronyai, Computing the Structure of Finite Algebras,
       # J. Symbolic Computation (1990), 355-373".
       # The calculation splits into two cases.
       # In the first case we have $'F' = F_p$ the prime field.
       # Then a sequence of ideals $I_0, \ldots, I_l$ is calculated such that
-      # $I_l$ is the radical of 'A'.
+      # $I_l$ is the radical of `A'.
       # The second case where $'F' = F_{p^d}$ is more complicated.
-      # Here we transform 'A' to an algebra over $F_p$ and then
+      # Here we transform `A' to an algebra over $F_p$ and then
       # calculate the radical.  Finally this radical is transformed back.
 
       d:= DegreeOverPrimeField( F );
@@ -694,13 +958,13 @@ InstallMethod( RadicalOfAlgebra,
 
       fi;
 
-      # We calculate the radical of the algebra over 'F_p'.
+      # We calculate the radical of the algebra over `F_p'.
 
       B:= ShallowCopy( bb );
       lemat:= Length( B[1] );
       Add( B, IdentityMat( lemat, G ) );
 
-      # 'l' is the unique integer satisfying 'p^l <= lemat < p^{l+1}'.
+      # `l' is the unique integer satisfying `p^l <= lemat < p^{l+1}'.
       l:= LogInt( lemat, p );
 
       I:= ShallowCopy( bb );
@@ -775,7 +1039,7 @@ CentralizerInAssociativeGaussianMatrixAlgebra := function( base, gens )
       mat:= List( base, b -> Concatenation( b * gen - gen * b ) );
       sol:= NullspaceMat( mat );
 
-      # Replace 'base' by a vector space base of the centralizer.
+      # Replace `base' by a vector space base of the centralizer.
       base:= List( sol, x -> LinearCombination( base, x ) );
       
     od;
@@ -789,10 +1053,10 @@ end;
 #M  Centralizer( <A>, <mat> ) . . . . . . . . .  for matrix FLMLOR and matrix
 ##
 InstallMethod( CentralizerOp,
-    "method for associative Gaussian matrix FLMLOR, and matrix",
+    "for associative Gaussian matrix FLMLOR, and ordinary matrix",
     IsCollsElms,
     [ IsMatrixFLMLOR and IsAssociative and IsGaussianSpace,
-      IsMatrix ], 0,
+      IsOrdinaryMatrix ], 0,
     function( A, mat )
     return SubalgebraNC( A,
                CentralizerInAssociativeGaussianMatrixAlgebra(
@@ -807,8 +1071,8 @@ InstallMethod( CentralizerOp,
 #M  Centralizer( <A>, <C> ) . . . . . . . for matrix FLMLOR and matrix FLMLOR
 ##
 InstallMethod( CentralizerOp,
-    "method for associative Gaussian matrix FLMLOR, and FLMLOR",
-    IsIdentical,
+    "for associative Gaussian matrix FLMLOR, and FLMLOR",
+    IsIdenticalObj,
     [ IsMatrixFLMLOR and IsAssociative and IsGaussianSpace,
       IsMatrixFLMLOR ], 0,
     function( A, C )
@@ -825,11 +1089,11 @@ InstallMethod( CentralizerOp,
 #M  Centralizer( <A>, <mat> ) . . . . . for matrix FLMLOR-with-one and matrix
 ##
 InstallMethod( CentralizerOp,
-    "method for associative Gaussian matrix FLMLOR-with-one, and matrix",
+    "for associative Gaussian matrix FLMLOR-with-one, and ordinary matrix",
     IsCollsElms,
     [ IsMatrixFLMLOR and IsFLMLORWithOne
                      and IsAssociative and IsGaussianSpace,
-      IsMatrix ], 0,
+      IsOrdinaryMatrix ], 0,
     function( A, mat )
     return SubalgebraWithOneNC( A,
                CentralizerInAssociativeGaussianMatrixAlgebra(
@@ -844,8 +1108,8 @@ InstallMethod( CentralizerOp,
 #M  Centralizer( <A>, <C> ) . .  for matrix FLMLOR-with-one and matrix FLMLOR
 ##
 InstallMethod( CentralizerOp,
-    "method for associative Gaussian matrix FLMLOR-with-one, and FLMLOR",
-    IsIdentical,
+    "for associative Gaussian matrix FLMLOR-with-one, and FLMLOR",
+    IsIdenticalObj,
     [ IsMatrixFLMLOR and IsFLMLORWithOne
                      and IsAssociative and IsGaussianSpace,
       IsMatrixFLMLOR ], 0,
@@ -865,12 +1129,12 @@ InstallMethod( CentralizerOp,
 ##  Compute the centralizer of the list of matrices <lst> in the full
 ##  matrix algebra over <F>. 
 ##
-FullMatrixAlgebraCentralizer := function( F, lst )
+InstallGlobalFunction( FullMatrixAlgebraCentralizer, function( F, lst )
 
-    local len,      # length of 'lst'
+    local len,      # length of `lst'
           dims,     # dimensions of the matrices
           n,        # number of rows/columns
-          n2,       # square of 'n'
+          n2,       # square of `n'
           eq,       # equation system
           u,i,j,k,  # loop variables
           bc,       # basis of solutions of the equation system
@@ -886,8 +1150,8 @@ FullMatrixAlgebraCentralizer := function( F, lst )
     n:= dims[1];
     n2:= n*n;
 
-    # In the equations matrices are viewed as vectors of length 'n*n'.
-    # Position '(i,j)' in the matrix corresponds with position '(i-1)*n+j'
+    # In the equations matrices are viewed as vectors of length `n*n'.
+    # Position `(i,j)' in the matrix corresponds with position `(i-1)*n+j'
     # in the vector.
 
     eq:= MutableNullMat( n2, n2 * len, F );
@@ -915,18 +1179,22 @@ FullMatrixAlgebraCentralizer := function( F, lst )
       Add( Bcen, M );
     od;
 
-    return Algebra( F, Bcen, "basis" );
-end;
+    return AlgebraWithOne( F, Bcen, "basis" );
+
+end );
 
 
 #############################################################################
 ##
-#M  Centralizer( <A>, <S> ) . . . . . . . for full associative matrix algebra
+#M  CentralizerOp( <A>, <S> ) . . . . . . for full associative matrix algebra
 ##
 InstallMethod( CentralizerOp,
-    "method for full (associative) matrix FLMLOR, and FLMLOR",
-    IsIdentical,
-    [ IsMatrixFLMLOR and IsFullMatrixModule, IsFLMLOR ], 0,
+    "for full (associative) matrix FLMLOR, and FLMLOR",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsFLMLORWithOne
+                     and IsAssociative and IsGaussianSpace
+                     and IsFullMatrixModule,
+      IsMatrixFLMLOR ], 0,
     function( A, S )
     if not IsAssociative( A ) then
       TryNextMethod();
@@ -936,9 +1204,12 @@ InstallMethod( CentralizerOp,
     end );
 
 InstallMethod( CentralizerOp,
-    "method for full (associative) matrix FLMLOR, and left module",
-    IsIdentical,
-    [ IsMatrixFLMLOR and IsFullMatrixModule, IsLeftModule ], 0,
+    "for full (associative) matrix FLMLOR, and left module",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsFLMLORWithOne
+                     and IsAssociative and IsGaussianSpace
+                     and IsFullMatrixModule,
+      IsLeftModule ], 0,
     function( A, S )
     if not IsAssociative( A ) then
       TryNextMethod();
@@ -948,9 +1219,12 @@ InstallMethod( CentralizerOp,
     end );
 
 InstallMethod( CentralizerOp,
-    "method for full (associative) matrix FLMLOR, and list of matrices",
-    IsIdentical,
-    [ IsMatrixFLMLOR and IsFullMatrixModule, IsCollection and IsList ], 0,
+    "for full (associative) matrix FLMLOR, and list of matrices",
+    IsIdenticalObj,
+    [ IsMatrixFLMLOR and IsFLMLORWithOne
+                     and IsAssociative and IsGaussianSpace
+                     and IsFullMatrixModule,
+      IsCollection and IsList ], 0,
     function( A, S )
     if not IsAssociative( A ) then
       TryNextMethod();
@@ -959,7 +1233,7 @@ InstallMethod( CentralizerOp,
     end );
 
 InstallMethod( CentralizerOp,
-    "method for full (associative) matrix FLMLOR, and empty list",
+    "for full (associative) matrix FLMLOR, and empty list",
     true,
     [ IsMatrixFLMLOR and IsFullMatrixModule, IsList and IsEmpty ], 0,
     function( A, S )
@@ -982,7 +1256,7 @@ InstallMethod( CentralizerOp,
 ##  $(1, 2, \ldots, n)$.  Then $E_{i,j} = F^{i-1} E_{1,1} F^{1-j}$.
 ##  Thus $F$ and $E_{1,1}$ are sufficient to generate the algebra.
 ##
-FullMatrixFLMLOR := function( R, n )
+InstallGlobalFunction( FullMatrixFLMLOR, function( R, n )
 
     local i,      # loop over the rows
           gens,   # list of generators
@@ -1003,14 +1277,11 @@ FullMatrixFLMLOR := function( R, n )
     # Construct the FLMLOR.
     A:= AlgebraWithOneByGenerators( R, gens );
     SetIsFullMatrixModule( A, true );
+    SetRadicalOfAlgebra( A, TrivialSubalgebra( A ) );
 
     # Return the FLMLOR.
     return A;
-end;
-
-FullMatrixAlgebra := FullMatrixFLMLOR;
-MatrixAlgebra := FullMatrixFLMLOR;
-MatAlgebra := FullMatrixFLMLOR;
+end );
 
 
 #############################################################################
@@ -1025,7 +1296,7 @@ MatAlgebra := FullMatrixFLMLOR;
 FullMatrixLieFLMLOR := function( F, n )
 
     local null,   # null matrix
-          one,    # identity of 'F'
+          one,    # identity of `F'
           gen,    # one generator
           gens,   # list of generators
           i,      # loop over the rows
@@ -1075,17 +1346,17 @@ MatLieAlgebra := FullMatrixLieFLMLOR;
 #T embeddings/projections should be provided!
 ##
 InstallOtherMethod( DirectSumOfAlgebras,
-    "method for two associative matrix FLMLORs",
-    IsIdentical,
+    "for two associative matrix FLMLORs",
+    IsIdenticalObj,
     [ IsMatrixFLMLOR and IsAssociative,
       IsMatrixFLMLOR and IsAssociative ], 0,
     function( A1, A2 )
 
-    local b1,   # Basis vectors of 'A1'.
-          b2,   # Basis vectors of 'A2'.
-          p1,   # Length of the matrices of 'b1'.
-          p2,   # Length of the matrices of 'b2'.
-          B,    # A basis of 'A1 \oplus A2'.
+    local b1,   # Basis vectors of `A1'.
+          b2,   # Basis vectors of `A2'.
+          p1,   # Length of the matrices of `b1'.
+          p2,   # Length of the matrices of `b2'.
+          B,    # A basis of `A1 \oplus A2'.
           i,    # Loop variable.
           Q,    # A matrix.
           A;    # result
@@ -1142,17 +1413,17 @@ InstallOtherMethod( DirectSumOfAlgebras,
 #T embeddings/projections should be provided!
 ##
 InstallOtherMethod( DirectSumOfAlgebras,
-    "method for two matrix Lie FLMLORs",
-    IsIdentical,
+    "for two matrix Lie FLMLORs",
+    IsIdenticalObj,
     [ IsMatrixFLMLOR and IsLieAlgebra,
       IsMatrixFLMLOR and IsLieAlgebra ], 0,
     function( A1, A2 )
 
-    local b1,   # Basis vectors of 'A1'.
-          b2,   # Basis vectors of 'A2'.
-          p1,   # Length of the matrices of 'b1'.
-          p2,   # Length of the matrices of 'b2'.
-          B,    # A basis of 'A1 \oplus A2'.
+    local b1,   # Basis vectors of `A1'.
+          b2,   # Basis vectors of `A2'.
+          p1,   # Length of the matrices of `b1'.
+          p2,   # Length of the matrices of `b2'.
+          B,    # A basis of `A1 \oplus A2'.
           i,    # Loop variable.
           Q,    # A matrix.
           A;    # result
@@ -1201,12 +1472,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
 ##
 #F  EmptyMatrix( <char> )
 ##
-##  is an empty matrix in characteristic <char> that acts on empty lists
-##  and can be added to or multiplied with empty lists.
-##
-#T store in the family as an attribute?
-##
-EmptyMatrix := function( char )
+InstallGlobalFunction( EmptyMatrix, function( char )
 
     local Fam, mat;
 
@@ -1221,7 +1487,7 @@ EmptyMatrix := function( char )
     mat:= Objectify( NewType( Fam,
                                   IsList
                               and IsEmpty
-                              and IsMatrix
+                              and IsOrdinaryMatrix
                               and IsZero
                               and IsAssociativeElement
                               and IsCommutativeElement
@@ -1230,50 +1496,67 @@ EmptyMatrix := function( char )
                      rec() );
 
     SetName( mat, Concatenation( "EmptyMatrix( ", String( char ), " )" ) );
-    SetInverse( mat, EmptyMatrix );
-    SetAdditiveInverse( mat, EmptyMatrix );
+    SetInverse( mat, mat );
+    SetAdditiveInverse( mat, mat );
     SetDimensionsMat( mat, [ 0, 0 ] );
     SetLength( mat, 0 );
 
     return mat;
-end;
+end );
 
 
-InstallMethod( \+, IsIdentical,
+InstallMethod( \+,
+    "for two empty matrices",
+    IsIdenticalObj,
     [ IsMatrix and IsEmpty, IsMatrix and IsEmpty ], 0,
     function( m1, m2 ) return m1; end );
 
-InstallOtherMethod( \*, IsIdentical,
+InstallOtherMethod( \*,
+    "for two empty matrices",
+    IsIdenticalObj,
     [ IsMatrix and IsEmpty, IsMatrix and IsEmpty ], 0,
     function( m1, m2 ) return m1; end );
 
-InstallOtherMethod( \*, true,
+InstallOtherMethod( \*,
+    "for empty matrix, and empty list",
+    true,
     [ IsMatrix and IsEmpty, IsList and IsEmpty ], 0,
     function( m1, m2 ) return []; end );
 
-InstallOtherMethod( \*, true,
+InstallOtherMethod( \*,
+    "for empty list, and empty matrix",
+    true,
     [ IsList and IsEmpty, IsMatrix and IsEmpty ], 0,
     function( m1, m2 ) return []; end );
 
-InstallOtherMethod( \*, true,
+InstallOtherMethod( \*,
+    "for empty matrix, and ring element",
+    true,
     [ IsMatrix and IsEmpty, IsRingElement ], 0,
     function( m, scalar ) return m; end );
 
-InstallOtherMethod( \*, true,
+InstallOtherMethod( \*,
+    "for ring element, and empty matrix",
+    true,
     [ IsRingElement, IsMatrix and IsEmpty ], 0,
     function( scalar, m ) return m; end );
 
-InstallMethod( \^, true,
+InstallMethod( \^,
+    "for empty matrix, and integer",
+    true,
     [ IsMatrix and IsEmpty, IsInt ], 0,
     function( emptymat, n ) return emptymat; end );
 
 
 #############################################################################
 ##
-#F  NullAlgebra( <R> )  . . . . . . . . . . . . .  null algebra over ring <R>
+#M  NullAlgebra( <R> )  . . . . . . . . . . . . .  null algebra over ring <R>
 ##
-NullAlgebra := R -> FLMLORByGenerators( R, [],
-                        EmptyMatrix( Characteristic( R ) ) );
+InstallMethod( NullAlgebra,
+    "for a ring",
+    true,
+    [ IsRing ], 0,
+    R -> FLMLORByGenerators( R, [], EmptyMatrix( Characteristic( R ) ) ) );
     
 
 #T #############################################################################
@@ -1325,7 +1608,7 @@ NullAlgebra := R -> FLMLORByGenerators( R, [],
 #T     local fp,     # fingerprint, result
 #T           a,      # first generator
 #T           b,      # second generator
-#T           ab,     # product of 'a' and 'b'
+#T           ab,     # product of `a' and `b'
 #T           word;   # actual word
 #T 
 #T     if list = "standard" then
@@ -1378,7 +1661,7 @@ NullAlgebra := R -> FLMLORByGenerators( R, [],
 ##  or on their free modules via `OnRight' or `OnTuples'.)
 ##
 InstallMethod( RepresentativeLinearOperation,
-    "method for a matrix FLMLOR, two row vectors, and `OnRight'",
+    "for a matrix FLMLOR, two row vectors, and `OnRight'",
     IsCollCollsElmsElmsX,
     [ IsMatrixFLMLOR, IsRowVector, IsRowVector, IsFunction ], 0,
     function( A, v, w, opr )
@@ -1413,9 +1696,10 @@ InstallMethod( RepresentativeLinearOperation,
     end );
 
 InstallMethod( RepresentativeLinearOperation,
-    "method for a matrix FLMLOR, two lists of row vectors, and `OnTuples'",
+    "for a matrix FLMLOR, two lists of row vectors, and `OnTuples'",
     IsCollsElmsElmsX,
     [ IsFLMLOR, IsMatrix, IsMatrix, IsFunction ], 0,
+#T IsOrdinaryMatrix?
     function( A, vs, ws, opr )
 
     local B, vectors, a;
@@ -1453,7 +1737,7 @@ InstallMethod( RepresentativeLinearOperation,
 #M  IsomorphismMatrixFLMLOR( <A> )  . . . . . . . . . . . for a matrix FLMLOR
 ##
 InstallMethod( IsomorphismMatrixFLMLOR,
-    "method for a matrix FLMLOR",
+    "for a matrix FLMLOR",
     true,
     [ IsMatrixFLMLOR ], 0,
     IdentityMapping );

@@ -57,11 +57,11 @@ subobjects as <list>, that is it returns a *shallow* weak copy of <list>.
     WeakPointerObj( [ 1, , , fail] )
 \endtt
 
-Note that 'w' has failed to keep its list  and record subobjects alive during
-the garbage collection.  Certain   subobjects,  such as small   integers  and
-elements of small finite fields, are not stored  in the workspace, and so are
-not subject to  garbage collection, while  certain other objects, such as the
-Boolea values,  are always reachable from global  variables or the kernel and
+Note that 'w' has failed to keep its  list and record subobjects alive during
+the garbage    collection.  Certain subobjects, such  as   small integers and
+elements of small finite fields, are not stored in  the workspace, and so are
+not subject  to garbage collection, while certain  other objects, such as the
+Boolean values, are always reachable from  global variables or the kernel and
 so are never garbage collected.
 
 Subobjects reachable without  going  through  a weak  pointer object  do  not
@@ -74,7 +74,7 @@ evaporate, as in:
    WeakPointerObj( [ [ 1, 2, 3 ], , , fail] )
    gap> GASMAN("collect");
    gap> w;                
-   WeakPointerObj( [ , , , fail] )
+   WeakPointerObj( [ [ 1, 2, 3 ], , , fail] )
 \endtt
 
 Note also  that the global  variables  'last', 'last2' and 'last3'  will keep
@@ -165,14 +165,14 @@ object. An immutable weak pointer object is a contradiction in terms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{The GASMAN Interface for weak pointer objects}
 
-The  key support for weak  pointers  is in 'gasman.c'  and 'gasman.h'.   This
-document  assumes  familiarity with  the rest of  the  opeation of GASMAN.  A
-kernel type (tnum)  of  bags which are intended   to act as weak  pointers to
-their subobjects  must meet three  conditions.  Firstly, the marking function
-installed for that tnum must use 'MarkBagWeakly' to for those subbags, rather
-than 'MARK_BAG'. Secondly,  before any accesss to such  a subbag,  it must be
-checked with  'IS_WEAK_DEAD_BAG'. If that returns  true,  then the subbag has
-evaporated in a recent garbage collection and must  not be accessed. Typiclly
+The  key support for  weak  pointers is in   'gasman.c' and 'gasman.h'.  This
+document assumes  familiarity  with the rest of  the  opeation of  GASMAN.  A
+kernel type (tnum) of   bags which are  intended  to act as weak  pointers to
+their  subobjects must meet  three conditions.  Firstly, the marking function
+installed for that tnum must  use  'MarkBagWeakly' for those subbags,  rather
+than 'MARK_BAG'.  Secondly,  before any accesss to  such a subbag, it must be
+checked with 'IS_WEAK_DEAD_BAG'. If that   returns true, then the subbag  has
+evaporated in a recent garbage collection and must not be accessed. Typically
 the reference to it should be removed. Thirdly, a *sweeping function* must be
 installed for that tnum which copies the bag, removing all references to dead
 weakly held subbags.

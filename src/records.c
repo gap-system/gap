@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the generic record package.
 **
@@ -13,23 +14,22 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_records_c =
+const char * Revision_records_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
 #include        "objects.h"             /* objects                         */
 #include        "scanner.h"             /* scanner                         */
 
-#include        "gvars.h"               /* global variables                */
+#include        "gap.h"                 /* error handling, initialisation  */
 
+#include        "gvars.h"               /* global variables                */
 #include        "calls.h"               /* generic call mechanism          */
 #include        "opers.h"               /* generic operations              */
 
 #define INCLUDE_DECLARATION_PART
 #include        "records.h"             /* generic records                 */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "bool.h"                /* booleans                        */
 
@@ -259,8 +259,8 @@ Obj             NameRNamHandler (
 **  'IS_REC' returns a nonzero value if the object <obj> is a  record  and  0
 **  otherwise.
 **
-**  Note that 'IS_REC' is a record, so do not call  it  with  arguments  that
-**  sideeffects.
+**  Note that 'IS_REC' is a macro, so do not call  it  with  arguments  that
+**  have sideeffects.
 **
 **  'IS_REC' is defined in the declaration part of this package as follows
 **
@@ -550,11 +550,78 @@ UInt            completion_rnam (
 /****************************************************************************
 **
 
-*F  SetupRecords()  . . . . . . . . .  initialize the generic records package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupRecords ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_REC", "obj", &IsRecFilt,
+      IsRecHandler, "src/records.c:IS_REC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    { "ELM_REC",  2, "obj, rnam", &ElmRecOper, 
+      ElmRecHandler, "src/records.c:ELM_REC" },
+
+    { "ISB_REC",  2, "obj, rnam", &IsbRecOper, 
+      IsbRecHandler, "src/records.c:ISB_REC" },
+
+    { "ASS_REC",  3, "obj, rnam, val", &AssRecOper, 
+      AssRecHandler, "src/records.c:ASS_REC" },
+
+    { "UNB_REC",  2, "obj, rnam", &UnbRecOper, 
+      UnbRecHandler, "src/records.c:UNB_REC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "RNamObj", 1, "obj",
+      RNamObjHandler, "src/records.c:RNamObj" },
+
+    { "NameRNam", 1, "rnam",
+      NameRNamHandler, "src/records.c:NameRNam" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                type;           /* loop variable                   */
+
+    /* make the list of names of record names                              */
+    InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
+
+    /* make the hash list of record names                                  */
+    InitGlobalBag( &HashRNam, "src/records.c:HashRNam" );
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrOpersFromTable( GVarOpers );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make and install the 'IS_REC' filter                                */
     for ( type = FIRST_REAL_TNUM; type <= LAST_REAL_TNUM; type++ ) {
@@ -602,87 +669,82 @@ void SetupRecords ( void )
     for ( type = FIRST_EXTERNAL_TNUM; type <= LAST_EXTERNAL_TNUM; type++ ) {
         UnbRecFuncs[ type ] = UnbRecObject;
     }
-}
 
+    /* return success                                                      */
+    return 0;
+}
 
 
 /****************************************************************************
 **
-*F  InitRecords() . . . . . . . . . .  initialize the generic records package
-**
-**  'InitRecords' initializes the generic records package.
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void InitRecords ( void )
+static Int PostRestore (
+    StructInitInfo *    module )
 {
     /* make the list of names of record names                              */
-    InitGlobalBag( &NamesRNam, "src/records.c:NamesRNam" );
-    if ( 1 || ! SyRestoring ) {
-        CountRNam = 0;
-        NamesRNam = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( NamesRNam, 0 );
-    }
-    else {
-        CountRNam = LEN_PLIST(NamesRNam);
-    }
-
+    CountRNam = LEN_PLIST(NamesRNam);
 
     /* make the hash list of record names                                  */
-    InitGlobalBag( &HashRNam, "src/records.c:HashRNam" );
-    if ( 1 || ! SyRestoring ) {
-        SizeRNam = 997;
-        HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
-        SET_LEN_PLIST( HashRNam, SizeRNam );
-    }
-    else {
-        SizeRNam = LEN_PLIST(HashRNam);
-    }
+    SizeRNam = LEN_PLIST(HashRNam);
 
-
-    /* make and install the 'RNamObj' and 'NameRName' functions            */
-    C_NEW_GVAR_FUNC( "RNamObj", 1, "obj",
-                      RNamObjHandler,
-       "src/records.c:RNamObj" );
-
-    C_NEW_GVAR_FUNC( "NameRNam", 1, "rnam",
-                      NameRNamHandler,
-       "src/records.c:NameRNam" );
-
-
-    /* make and install the 'IS_REC' filter                                */
-    C_NEW_GVAR_FILT( "IS_REC", "obj", IsRecFilt, IsRecHandler,
-       "src/records.c:IS_REC" );
-
-
-    /* make and install the 'ELM_REC' operations                           */
-    C_NEW_GVAR_OPER( "ELM_REC",  2L, "obj, rnam", ElmRecOper, ElmRecHandler,
-       "src/records.c:ELM_REC" );
-
-
-    /* make and install the 'ISB_REC' operation                            */
-    C_NEW_GVAR_OPER( "ISB_REC",  2L, "obj, rnam", IsbRecOper, IsbRecHandler,
-       "src/records.c:ISB_REC" );
-
-
-    /* make and install the 'ASS_REC' operation                            */
-    C_NEW_GVAR_OPER( "ASS_REC",  3L, "obj, rnam, val", AssRecOper, AssRecHandler,
-       "src/records.c:ASS_REC" );
-
-
-    /* make and install the 'UNB_REC' operation                            */
-    C_NEW_GVAR_OPER( "UNB_REC",  2L, "obj, rnam", UnbRecOper, UnbRecHandler,
-       "src/records.c:UNB_REC" );
+    /* return success                                                      */
+    return 0;
 }
-
 
 
 /****************************************************************************
 **
-*F  CheckRecords()  . check the initialisation of the generic records package
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckRecords ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "records_c",  Revision_records_c );
-    SET_REVISION( "records_h",  Revision_records_h );
+    /* make the list of names of record names                              */
+    CountRNam = 0;
+    NamesRNam = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( NamesRNam, 0 );
+
+    /* make the hash list of record names                                  */
+    SizeRNam = 997;
+    HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
+    SET_LEN_PLIST( HashRNam, SizeRNam );
+
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarOpersFromTable( GVarOpers );
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoRecords() . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "records",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoRecords ( void )
+{
+    module.revision_c = Revision_records_c;
+    module.revision_h = Revision_records_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

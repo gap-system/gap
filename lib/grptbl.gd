@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation of magmas, monoids, and groups via
 ##  the multiplication table.
@@ -24,16 +25,14 @@ Revision.grptbl_gd :=
 ##
 #C  IsMagmaByMultiplicationTable( <M> )
 ##
-IsMagmaByMultiplicationTable := NewCategory(
-    "IsMagmaByMultiplicationTable", IsMagma );
+DeclareCategory( "IsMagmaByMultiplicationTable", IsMagma );
 
 
 #############################################################################
 ##
 #C  IsMagmaByMultiplicationTableObj( <obj> )
 ##
-IsMagmaByMultiplicationTableObj := NewRepresentation(
-    "IsMagmaByMultiplicationTableObj",
+DeclareRepresentation( "IsMagmaByMultiplicationTableObj",
     IsMultiplicativeElement,
     [] );
 
@@ -42,75 +41,66 @@ IsMagmaByMultiplicationTableObj := NewRepresentation(
 ##
 #C  IsMagmaByMultiplicationTableObjFamily( <F> )
 ##
-IsMagmaByMultiplicationTableObjFamily := CategoryFamily(
-    IsMagmaByMultiplicationTableObj );
+DeclareCategoryFamily( "IsMagmaByMultiplicationTableObj" );
 
 
 #############################################################################
 ##
 #F  MagmaElement( <M>, <i> ) . . . . . . . . . .  <i>-th element of magma <M>
 ##
-MagmaElement := NewOperationArgs( "MagmaElement" );
+DeclareGlobalFunction( "MagmaElement" );
 
 
 #############################################################################
 ##
 #F  MagmaByMultiplicationTable( <A> )
 ##
-MagmaByMultiplicationTable := NewOperationArgs(
-    "MagmaByMultiplicationTable" );
+DeclareGlobalFunction( "MagmaByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  MagmaWithOneByMultiplicationTable( <A> )
 ##
-MagmaWithOneByMultiplicationTable := NewOperationArgs(
-    "MagmaWithOneByMultiplicationTable" );
+DeclareGlobalFunction( "MagmaWithOneByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  MagmaWithInversesByMultiplicationTable( <A> )
 ##
-MagmaWithInversesByMultiplicationTable := NewOperationArgs(
-    "MagmaWithInversesByMultiplicationTable" );
+DeclareGlobalFunction( "MagmaWithInversesByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  SemigroupByMultiplicationTable( <A> )
 ##
-SemigroupByMultiplicationTable := NewOperationArgs(
-    "SemigroupByMultiplicationTable" );
+DeclareGlobalFunction( "SemigroupByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  MonoidByMultiplicationTable( <A> )
 ##
-MonoidByMultiplicationTable := NewOperationArgs(
-    "MonoidByMultiplicationTable" );
+DeclareGlobalFunction( "MonoidByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  GroupByMultiplicationTable( <A> )
 ##
-GroupByMultiplicationTable := NewOperationArgs(
-    "GroupByMultiplicationTable" );
+DeclareGlobalFunction( "GroupByMultiplicationTable" );
 
 
 #############################################################################
 ##
 #F  MultiplicationTable( <elmlist> )
 ##
-MultiplicationTable := NewOperationArgs( "MultiplicationTable" );
+DeclareGlobalFunction( "MultiplicationTable" );
 
 
 #############################################################################
 ##
 #E  grptbl.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

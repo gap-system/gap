@@ -5,22 +5,31 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file defines all family predicates
 ##
 Revision.fampred_g :=
     "@(#)$Id$";
 
+IsFamFamX := function(a,b,c)
+  return IsIdenticalObj(a,b);
+end;
+
+IsFamFamXY := function(a,b,c,d)
+  return IsIdenticalObj(a,b);
+end;
+
 #############################################################################
 ##
 #O  IsFamFamFam(<F1>,<F2>,<F3>)  test whether F1=F2=F3
 ##
 IsFamFamFam := function(F1,F2,F3)
-  return IsIdentical(F1,F2) and IsIdentical(F2,F3);
+  return IsIdenticalObj(F1,F2) and IsIdenticalObj(F2,F3);
 end;
 
 IsFamFamFamX := function( F1, F2, F3, F4 )
-    return IsIdentical( F1, F2 ) and IsIdentical( F1, F3 );
+    return IsIdenticalObj( F1, F2 ) and IsIdenticalObj( F1, F3 );
 end;
 
 
@@ -30,23 +39,23 @@ end;
 ##
 IsElmsColls := function ( F1, F2 )
     return HasElementsFamily( F2 )
-       and IsIdentical( F1, ElementsFamily(F2) );
+       and IsIdenticalObj( F1, ElementsFamily(F2) );
 end;
 
 IsNotElmsColls := function ( F1, F2 )
     return not HasElementsFamily( F2 )
-       or IsNotIdentical( F1, ElementsFamily(F2) );
+       or IsNotIdenticalObj( F1, ElementsFamily(F2) );
 end;
 
 IsElmsCollColls := function ( F1, F2 )
     return HasElementsFamily( F2 )
        and HasElementsFamily( ElementsFamily( F2 ) )
-       and IsIdentical( F1, ElementsFamily( ElementsFamily( F2 ) ) );
+       and IsIdenticalObj( F1, ElementsFamily( ElementsFamily( F2 ) ) );
 end;
 
 IsElmsCollsX := function( F1, F2, F3 )
     return     HasElementsFamily( F2 )
-           and IsIdentical( F1, ElementsFamily( F2 ) );
+           and IsIdenticalObj( F1, ElementsFamily( F2 ) );
 end;
 
 
@@ -56,20 +65,20 @@ end;
 ##
 IsCollsElms := function ( F1, F2 )
     return HasElementsFamily( F1 )
-       and IsIdentical( ElementsFamily(F1), F2 );
+       and IsIdenticalObj( ElementsFamily(F1), F2 );
 end;
 
 IsCollCollsElms := function ( F1, F2 )
     return HasElementsFamily( F1 )
        and HasElementsFamily( ElementsFamily( F1 ) )
-       and IsIdentical( ElementsFamily( ElementsFamily( F1 ) ), F2 );
+       and IsIdenticalObj( ElementsFamily( ElementsFamily( F1 ) ), F2 );
 end;
 
 IsCollCollsElmsElmsX := function ( F1, F2, F3, F4 )
     return     HasElementsFamily( F1 )
            and HasElementsFamily( ElementsFamily( F1 ) )
-           and IsIdentical( ElementsFamily( ElementsFamily( F1 ) ), F2 )
-           and IsIdentical( F2, F3 );
+           and IsIdenticalObj( ElementsFamily( ElementsFamily( F1 ) ), F2 )
+           and IsIdenticalObj( F2, F3 );
 end;
 
 
@@ -79,56 +88,58 @@ end;
 ##
 IsCollsElmsX := function( F1, F2, F3 )
     return HasElementsFamily(F1)
-       and IsIdentical( ElementsFamily(F1), F2 );
+       and IsIdenticalObj( ElementsFamily(F1), F2 );
 end;
 
 IsCollsElmsElms := function( F1, F2, F3 )
     return HasElementsFamily(F1)
-       and IsIdentical( ElementsFamily(F1), F2 )
-       and IsIdentical( F2, F3 );
+       and IsIdenticalObj( ElementsFamily(F1), F2 )
+       and IsIdenticalObj( F2, F3 );
 end;
 
 IsCollsElmsElmsElms := function( F1, F2, F3, F4 )
     return HasElementsFamily(F1)
-       and IsIdentical( ElementsFamily(F1), F2 )
-       and IsIdentical( F2, F3 )
-       and IsIdentical( F2, F4 );
+       and IsIdenticalObj( ElementsFamily(F1), F2 )
+       and IsIdenticalObj( F2, F3 )
+       and IsIdenticalObj( F2, F4 );
 end;
 
 IsCollsElmsElmsX := function( F1, F2, F3, F4 )
     return HasElementsFamily(F1)
-       and IsIdentical( ElementsFamily(F1), F2 )
-       and IsIdentical( F2, F3 );
+       and IsIdenticalObj( ElementsFamily(F1), F2 )
+       and IsIdenticalObj( F2, F3 );
 end;
 
 IsCollCollsElmsElms := function( F1, F2, F3 )
     return HasElementsFamily(F1)
        and HasElementsFamily( ElementsFamily(F1) )
-       and IsIdentical( ElementsFamily( ElementsFamily(F1) ), F2 )
-       and IsIdentical( F2, F3 );
+       and IsIdenticalObj( ElementsFamily( ElementsFamily(F1) ), F2 )
+       and IsIdenticalObj( F2, F3 );
 end;
 
 IsCollsCollsElms := function( F1, F2, F3 )
     return HasElementsFamily( F1 )
-       and IsIdentical( F1, F2 )
-       and IsIdentical( ElementsFamily( F1 ), F3 );
+       and IsIdenticalObj( F1, F2 )
+       and IsIdenticalObj( ElementsFamily( F1 ), F3 );
+end;
+
+IsCollsCollsElmsX := function( F1, F2, F3, F4 )
+    return HasElementsFamily( F1 )
+       and IsIdenticalObj( F1, F2 )
+       and IsIdenticalObj( ElementsFamily( F1 ), F3 );
 end;
 
 IsCollsElmsColls := function(a,b,c)
-  return IsIdentical(a,c) and HasElementsFamily(a) and
-    IsIdentical(b,ElementsFamily(a));
+  return IsIdenticalObj(a,c) and HasElementsFamily(a) and
+    IsIdenticalObj(b,ElementsFamily(a));
 end;
 
 
 IsCollsXElms := function( F1, F2, F3 )
     return     HasElementsFamily( F1 )
-           and IsIdentical( F3, ElementsFamily( F1 ) );
+           and IsIdenticalObj( F3, ElementsFamily( F1 ) );
 end;
 
-
-IsFamFamXY := function(a,b,c,d)
-  return IsIdentical(a,b);
-end;
 
 
 #############################################################################
@@ -139,24 +150,24 @@ end;
 #F  IsElmsCollLieColls( <Fam1>, <Fam2> )  . . . . . . . . .  family predicate
 ##
 IsLieFamFam := function( LieFam, Fam )
-    return HasLieFamily( Fam ) and IsIdentical( LieFamily( Fam ), LieFam );
+    return HasLieFamily( Fam ) and IsIdenticalObj( LieFamily( Fam ), LieFam );
 end;
 
 IsFamLieFam := function( Fam, LieFam )
-    return HasLieFamily( Fam ) and IsIdentical( LieFamily( Fam ), LieFam );
+    return HasLieFamily( Fam ) and IsIdenticalObj( LieFamily( Fam ), LieFam );
 end;
 
 IsElmsLieColls := function( Fam1, Fam2 )
     return     HasCollectionsFamily( Fam1 )
            and HasLieFamily( CollectionsFamily( Fam1 ) )
-           and IsIdentical( LieFamily( CollectionsFamily( Fam1 ) ), Fam2 );
+           and IsIdenticalObj( LieFamily( CollectionsFamily( Fam1 ) ), Fam2 );
 end;
 
 IsElmsCollLieColls := function( Fam1, Fam2 )
     return     HasCollectionsFamily( Fam1 )
            and HasLieFamily( CollectionsFamily( Fam1 ) )
            and HasCollectionsFamily( LieFamily( CollectionsFamily( Fam1 ) ) )
-           and IsIdentical( CollectionsFamily( LieFamily(
+           and IsIdenticalObj( CollectionsFamily( LieFamily(
                                 CollectionsFamily( Fam1 ) ) ), Fam2 );
 end;
 
@@ -164,7 +175,7 @@ IsCollLieCollsElms := function( Fam1, Fam2 )
     return     HasCollectionsFamily( Fam2 )
            and HasLieFamily( CollectionsFamily( Fam2 ) )
            and HasCollectionsFamily( LieFamily( CollectionsFamily( Fam2 ) ) )
-           and IsIdentical( CollectionsFamily( LieFamily(
+           and IsIdenticalObj( CollectionsFamily( LieFamily(
                                 CollectionsFamily( Fam2 ) ) ), Fam1 );
 end;
 
@@ -175,7 +186,7 @@ end;
 ##
 IsCoeffsElms := function( F1, F2 )
     return HasCoefficientsFamily(F2)
-       and IsIdentical( F1, CoefficientsFamily(F2) );
+       and IsIdenticalObj( F1, CoefficientsFamily(F2) );
 end;
 
 
@@ -185,7 +196,7 @@ end;
 ##
 IsElmsCoeffs := function( F1, F2 )
     return HasCoefficientsFamily(F1)
-       and IsIdentical( CoefficientsFamily(F1), F2 );
+       and IsIdenticalObj( CoefficientsFamily(F1), F2 );
 end;
 
 
@@ -201,7 +212,7 @@ end;
 ##
 FamRangeEqFamElm := function( FamMap, FamElm )
     return     HasFamilyRange( FamMap )
-           and IsIdentical( FamElm, FamilyRange( FamMap ) );
+           and IsIdenticalObj( FamElm, FamilyRange( FamMap ) );
 end;
 
 
@@ -211,7 +222,7 @@ end;
 ##
 FamSourceEqFamElm := function( FamMap, FamElm )
     return     HasFamilySource( FamMap )
-           and IsIdentical( FamElm, FamilySource( FamMap ) );
+           and IsIdenticalObj( FamElm, FamilySource( FamMap ) );
 end;
 
 
@@ -222,7 +233,7 @@ end;
 CollFamRangeEqFamElms := function( FamMap, FamElms )
     return     HasFamilyRange( FamMap )
            and HasElementsFamily( FamElms )
-           and IsIdentical( ElementsFamily( FamElms ),
+           and IsIdenticalObj( ElementsFamily( FamElms ),
                             FamilyRange( FamMap ) );
 end;
 
@@ -234,7 +245,7 @@ end;
 CollFamSourceEqFamElms := function( FamMap, FamElms )
     return     HasFamilySource( FamMap )
            and HasElementsFamily( FamElms )
-           and IsIdentical( ElementsFamily( FamElms ),
+           and IsIdenticalObj( ElementsFamily( FamElms ),
                             FamilySource( FamMap ) );
 end;
 
@@ -245,7 +256,7 @@ end;
 ##
 FamElmEqFamRange := function( FamElm, FamMap )
     return     HasFamilyRange( FamMap )
-           and IsIdentical( FamElm, FamilyRange( FamMap ) );
+           and IsIdenticalObj( FamElm, FamilyRange( FamMap ) );
 end;
 
 
@@ -255,7 +266,7 @@ end;
 ##
 FamElmEqFamSource := function( FamElm, FamMap )
     return     HasFamilySource( FamMap )
-           and IsIdentical( FamElm, FamilySource( FamMap ) );
+           and IsIdenticalObj( FamElm, FamilySource( FamMap ) );
 end;
 
 
@@ -266,7 +277,7 @@ end;
 FamSource2EqFamRange1 := function( Fam1, Fam2 )
     return     HasFamilySource( Fam2 )
            and HasFamilyRange(  Fam1 )
-           and IsIdentical( FamilyRange( Fam1 ), FamilySource( Fam2 ) );
+           and IsIdenticalObj( FamilyRange( Fam1 ), FamilySource( Fam2 ) );
 end;
 
 
@@ -277,7 +288,7 @@ end;
 FamSource1EqFamRange2 := function( Fam1, Fam2 )
     return     HasFamilySource( Fam1 )
            and HasFamilyRange(  Fam2 )
-           and IsIdentical( FamilyRange( Fam2 ), FamilySource( Fam1 ) );
+           and IsIdenticalObj( FamilyRange( Fam2 ), FamilySource( Fam1 ) );
 end;
 
 
@@ -288,7 +299,7 @@ end;
 FamRange1EqFamRange2 := function( Fam1, Fam2 )
     return     HasFamilyRange( Fam1 )
            and HasFamilyRange( Fam2 )
-           and IsIdentical( FamilyRange( Fam1 ), FamilyRange( Fam2 ) );
+           and IsIdenticalObj( FamilyRange( Fam1 ), FamilyRange( Fam2 ) );
 end;
 
 
@@ -299,7 +310,7 @@ end;
 FamSource1EqFamSource2 := function( Fam1, Fam2 )
     return     HasFamilySource( Fam1 )
            and HasFamilySource( Fam2 )
-           and IsIdentical( FamilySource( Fam1 ), FamilySource( Fam2 ) );
+           and IsIdenticalObj( FamilySource( Fam1 ), FamilySource( Fam2 ) );
 end;
 
 
@@ -310,8 +321,8 @@ end;
 FamMapFamSourceFamRange := function( FamMap, FamElm1, FamElm2 )
     return     HasFamilySource( FamMap )
            and HasFamilyRange(  FamMap )
-           and IsIdentical( FamilySource( FamMap ), FamElm1 )
-           and IsIdentical( FamilyRange(  FamMap ), FamElm2 );
+           and IsIdenticalObj( FamilySource( FamMap ), FamElm1 )
+           and IsIdenticalObj( FamilyRange(  FamMap ), FamElm2 );
 end;
 
 
@@ -322,9 +333,9 @@ end;
 FamSourceRgtEqFamsLft := function( FamLft, FamRgt )
     return     HasFamilySource( FamLft )
            and HasFamilyRange(  FamLft )
-           and IsIdentical( FamilySource( FamLft ), FamilyRange(  FamLft ) )
+           and IsIdenticalObj( FamilySource( FamLft ), FamilyRange(  FamLft ) )
            and HasFamilySource( FamRgt )
-           and IsIdentical( FamilySource( FamRgt ), FamilyRange(  FamLft ) );
+           and IsIdenticalObj( FamilySource( FamRgt ), FamilyRange(  FamLft ) );
 end;
 
 
@@ -348,24 +359,52 @@ end;
 
 #############################################################################
 ##
-#F  IsMagmaRingsRings( <FamRM>, <FamR> )  . . . . . . . . .  family predicate
-#F  IsRingsMagmaRings( <FamR>, <FamRM> )  . . . . . . . . .  family predicate
-#F  IsMagmasMagmaRings( <FamM>, <FamRM> ) . . . . . . . . .  family predicate
+#F  IsMagmaRingsRings( <FamRMelm>, <FamRelm> )  . . . . . .  family predicate
+#F  IsMagmaRingsMagmas( <FamRMelm>, <FamMelm> ) . . . . . .  family predicate
+#F  IsRingsMagmaRings( <FamRelm>, <FamRMelm> )  . . . . . .  family predicate
+#F  IsMagmasMagmaRings( <FamMelm>, <FamRMelm> ) . . . . . .  family predicate
 ##
 IsMagmaRingsRings := function( FamRM, FamR )
     return     IsBound( FamRM!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
+           and IsIdenticalObj( ElementsFamily( FamRM!.familyRing ), FamR );
+end;
+
+IsMagmaRingsMagmas := function( FamRM, FamM )
+    return     IsBound( FamRM!.familyMagma )
+           and IsIdenticalObj( ElementsFamily( FamRM!.familyMagma ), FamM );
 end;
 
 IsRingsMagmaRings := function( FamR, FamRM )
     return     IsBound( FamRM!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
+           and IsIdenticalObj( ElementsFamily( FamRM!.familyRing ), FamR );
 end;
 
 IsMagmasMagmaRings := function( FamM, FamRM )
     return     IsBound( FamRM!.familyMagma )
-           and IsIdentical( ElementsFamily( FamRM!.familyMagma ), FamM );
+           and IsIdenticalObj( ElementsFamily( FamRM!.familyMagma ), FamM );
 end;
+
+IsMagmaCollsMagmaRingColls := function( FamM, FamRM )
+    return     HasElementsFamily( FamM )
+           and HasElementsFamily( FamRM )
+           and IsBound( ElementsFamily( FamRM )!.familyMagma )
+           and IsIdenticalObj( ElementsFamily( FamRM )!.familyMagma, FamM );
+end;
+
+IsRingCollsMagmaRingColls := function( FamR, FamRM )
+    return     HasElementsFamily( FamR )
+           and HasElementsFamily( FamRM )
+           and IsBound( ElementsFamily( FamRM )!.familyRing )
+           and IsIdenticalObj( ElementsFamily( FamRM )!.familyRing, FamR );
+end;
+
+
+#############################################################################
+##
+#F  IsIdenticalObjObjXObj( <F1>, <F2>, <F3> )
+IsIdenticalObjObjXObj := function( F1, F2, F3 )
+    return IsIdenticalObj( F1, F3 );
+end;                                            
 
 
 #############################################################################

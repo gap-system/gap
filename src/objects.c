@@ -5,12 +5,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the objects package.
 */
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
 
-SYS_CONST char * Revision_objects_c =
+const char * Revision_objects_c =
    "@(#)$Id$";
 
 #include        "sysfiles.h"            /* file input/output               */
@@ -704,7 +705,6 @@ Obj MutableCopyObjHandler (
 
 /****************************************************************************
 **
-
 *F  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . . . print an object
 **
 **  'PrintObj' prints the object <obj>.
@@ -721,20 +721,56 @@ Obj PrintObjThiss [1024];
 
 Int PrintObjIndices [1024];
 
+/****************************************************************************
+**
+*F  ViewObj( <obj> ) . . . . . . . . . . . . . . . . . . . . view an object
+**
+**  'ViewObj' views the object <obj>.
+**
+**  ViewObj shares all the assocaited variables with PrintObj, so that
+**  recursion works nicely.
+*/
+
+/* These macros and the in-line function are used to keep track of
+which objects are already being prted or viewed to trigger the use of
+~ when needed. The names (and the no-op macros) are hangovers from an
+earlier version in which the bags themselves were marked, rather than
+checking the list. This had to be changed to ensure that the method
+selection process (for ViewObj) only sees "pristine" bags"   SL 9/4/98 */
+
 #define IS_MARKABLE(obj)    (FIRST_RECORD_TNUM <= TNUM_OBJ(obj) \
                             && TNUM_OBJ(obj) <= LAST_LIST_TNUM)
 
-#define IS_MARKED(obj)      (FIRST_PRINTING_TNUM <= TNUM_OBJ(obj) \
-                            && TNUM_OBJ(obj) <= LAST_PRINTING_TNUM)
+static inline UInt IS_MARKED( Obj obj )
+{
+  UInt i;
+  if (!IS_MARKABLE(obj))
+    return 0;
+  for (i = 0; i < PrintObjDepth-1; i++)
+    if (PrintObjThiss[i] == obj)
+      return 1;
+  return 0;
+}
+     
+#define MARK(obj)
+#define UNMARK(obj)
 
-#define MARK(obj)           RetypeBag( obj, TNUM_OBJ(obj)+PRINTING )
+/* This variable is used to allow a ViewObj method to call PrintObj on
+   the same object without triggering use of ~ */
 
-#define UNMARK(obj)         RetypeBag( obj, TNUM_OBJ(obj)-PRINTING )
-
+static UInt LastPV = 0; /* This variable contains one of the values
+			   0, 1 and 2 according to whether (1) there
+			   is no dynamically enc losing call to
+			   PrintObj or ViewObj still open (0), or the
+			   innermost such is Print (1) or View (2) */
+     
 void            PrintObj (
     Obj                 obj )
 {
     Int                 i;              /* loop variable                   */
+    UInt                lastPV;        /* save LastPV */
+    UInt                fromview;      /* non-zero when we were called
+				        from viewObj of the SAME object */
 
     /* check for interrupts                                                */
     if ( SyIsIntr() ) {
@@ -748,17 +784,29 @@ void            PrintObj (
         PrintObjDepth = i;
     }
 
-    /* if <obj> is a subobject, then mark and remember the superobject     */
-    if ( 0 < PrintObjDepth ) {
+    /* First check if <obj> is actually the current object being Viewed
+       Since ViewObj(<obj>) may result in a call to PrintObj(<obj>) */
+
+    lastPV = LastPV;
+    LastPV = 1;
+    fromview = (lastPV == 2) && (obj == PrintObjThis);
+    
+    /* if <obj> is a subobject, then mark and remember the superobject
+       unless ViewObj has done that job already */
+    
+    if ( !fromview  && 0 < PrintObjDepth ) {
         if ( IS_MARKABLE(PrintObjThis) )  MARK( PrintObjThis );
         PrintObjThiss[PrintObjDepth-1]   = PrintObjThis;
         PrintObjIndices[PrintObjDepth-1] = PrintObjIndex;
     }
 
     /* handle the <obj>                                                    */
-    PrintObjDepth += 1;
-    PrintObjThis   = obj;
-    PrintObjIndex  = 0;
+    if (!fromview)
+      {
+	PrintObjDepth += 1;
+	PrintObjThis   = obj;
+	PrintObjIndex  = 0;
+      }
 
     /* dispatch to the appropriate printing function                       */
     if ( ! IS_MARKED( PrintObjThis ) ) {
@@ -769,20 +817,25 @@ void            PrintObj (
     else {
         Pr( "~", 0L, 0L );
         for ( i = 0; PrintObjThis != PrintObjThiss[i]; i++ ) {
-            (*PrintPathFuncs[ TNUM_OBJ(PrintObjThiss[i])-PRINTING ])
+            (*PrintPathFuncs[ TNUM_OBJ(PrintObjThiss[i])])
                 ( PrintObjThiss[i], PrintObjIndices[i] );
         }
     }
 
-    /* done with <obj>                                                     */
-    PrintObjDepth -= 1;
 
-    /* if <obj> is a subobject, then restore and unmark the superobject    */
-    if ( 0 < PrintObjDepth ) {
-        PrintObjThis  = PrintObjThiss[PrintObjDepth-1];
-        PrintObjIndex = PrintObjIndices[PrintObjDepth-1];
-        if ( IS_MARKED(PrintObjThis) )  UNMARK( PrintObjThis );
-    }
+    /* done with <obj>                                                     */
+    if (!fromview)
+      {
+	PrintObjDepth -= 1;
+	
+	/* if <obj> is a subobject, then restore and unmark the superobject    */
+	if ( 0 < PrintObjDepth ) {
+	  PrintObjThis  = PrintObjThiss[PrintObjDepth-1];
+	  PrintObjIndex = PrintObjIndices[PrintObjDepth-1];
+	  if ( IS_MARKED(PrintObjThis) )  UNMARK( PrintObjThis );
+	}
+      }
+    LastPV = lastPV;
 
 }
 
@@ -797,7 +850,7 @@ void            PrintObj (
 **  is the function '<func>(<obj>)' that should be called to print the object
 **  <obj> of this type.
 */
-void (* PrintObjFuncs [ LAST_REAL_TNUM+PRINTING+1 ])( Obj obj );
+void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ])( Obj obj );
 
 
 /****************************************************************************
@@ -826,6 +879,89 @@ Obj PrintObjHandler (
 }
 
 
+Obj FuncSET_PRINT_OBJ_INDEX (Obj self, Obj ind)
+{
+  if (IS_INTOBJ(ind))
+    PrintObjIndex = INT_INTOBJ(ind);
+  return 0;
+}
+
+
+/****************************************************************************
+**
+*F  ViewObj(<obj> )  . . .. . . . . . . . . . . . . . . . . .  view an object
+**
+**  This should really be merged with PrintObj
+*/
+
+Obj ViewObjOper;
+
+void            ViewObj (
+    Obj                 obj )
+{
+    Int                 i;              /* loop variable                   */
+    UInt                lastPV;
+
+    /* No check for interrupts here, viewing should not take so long that
+       it is necessary */
+
+    lastPV = LastPV;
+    LastPV = 2;
+    
+    /* if <obj> is a subobject, then mark and remember the superobject     */
+    if ( 0 < PrintObjDepth ) {
+        if ( IS_MARKABLE(PrintObjThis) )  MARK( PrintObjThis );
+        PrintObjThiss[PrintObjDepth-1]   = PrintObjThis;
+        PrintObjIndices[PrintObjDepth-1] =  PrintObjIndex;
+    }
+
+    /* handle the <obj>                                                    */
+    PrintObjDepth += 1;
+    PrintObjThis   = obj;
+    PrintObjIndex  = 0;
+
+    /* dispatch to the appropriate viewing function                       */
+
+    if ( ! IS_MARKED( PrintObjThis ) ) {
+      DoOperation1Args( ViewObjOper, obj );
+    }
+
+    /* or view the path                                                   */
+    else {
+        Pr( "~", 0L, 0L );
+        for ( i = 0; PrintObjThis != PrintObjThiss[i]; i++ ) {
+            (*PrintPathFuncs[ TNUM_OBJ(PrintObjThiss[i]) ])
+                ( PrintObjThiss[i], PrintObjIndices[i] );
+        }
+    }
+
+    /* done with <obj>                                                     */
+    PrintObjDepth -= 1;
+
+    /* if <obj> is a subobject, then restore and unmark the superobject    */
+    if ( 0 < PrintObjDepth ) {
+        PrintObjThis  = PrintObjThiss[PrintObjDepth-1];
+        PrintObjIndex = PrintObjIndices[PrintObjDepth-1];
+        if ( IS_MARKED(PrintObjThis) )  UNMARK( PrintObjThis );
+    }
+
+    LastPV = lastPV;
+}
+
+
+/****************************************************************************
+**
+*F  FuncViewObj( <self>, <obj> )  . . . . . . . .  handler for 'ViewObj'
+*/
+Obj FuncViewObj (
+    Obj                 self,
+    Obj                 obj )
+{
+    ViewObj( obj );
+    return 0L;
+}
+
+
 /****************************************************************************
 **
 *V  PrintPathFuncs[<type>]  . . . . . . printer for subobjects of type <type>
@@ -836,7 +972,7 @@ Obj PrintObjHandler (
 **  should be  called  to print  the  selector   that selects  the  <indx>-th
 **  subobject of the object <obj> of this type.
 */
-void (* PrintPathFuncs [ LAST_REAL_TNUM+PRINTING+1 ])( Obj obj, Int indx );
+void (* PrintPathFuncs [ LAST_REAL_TNUM /* +PRINTING */+1 ])( Obj obj, Int indx );
 
 void PrintPathError (
     Obj                 obj,
@@ -1010,7 +1146,7 @@ Obj IsIdenticalHandler (
 **  No saving function may allocate any bag
 */
 
-void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
+void (*SaveObjFuncs[ 256 ]) (Obj obj);
 
 void SaveObjError (
                    Obj obj
@@ -1039,7 +1175,7 @@ void SaveObjError (
 **  No loading function may allocate any bag
 */
 
-void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Bag bag);
+void (*LoadObjFuncs[ 256 ]) (Bag bag);
 
 void LoadObjError (
                    Obj obj
@@ -1168,6 +1304,81 @@ void LoadDatObj( Obj datobj)
   return;
 }
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * *  GAP functions for "to be defined" objects * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  FuncCLONE_OBJ( <self>, <dst>, <src> ) . . . . . . .  clone <src> to <dst>
+**
+**  `CLONE_OBJ' clones  the source  <src> into  <dst>.  It  is not allowed to
+**  clone small integers or finite field elements.
+**
+**  If <src> is a constant, than a "shallow" copy, that is to say, a bit-copy
+**  of the bag of <src>  is created.  If <src>  is mutable than a "structural
+**  copy is created, which is then in turn "shallow" cloned into <dst>.
+**
+**  WARNING: at the moment the functions breaks on cloning `[1,~]'.  This can
+**  be fixed if necessary.
+*/
+Obj IsToBeDefinedObj;
+
+static Obj REREADING;
+
+Obj FuncCLONE_OBJ (
+    Obj             self,
+    Obj             dst,
+    Obj             src )
+{
+    Obj *           psrc;
+    Obj *           pdst;
+    Int             i;
+
+    /* check <src>                                                         */
+    if ( IS_INTOBJ(src) ) {
+        ErrorReturnVoid( "small integers cannot be cloned", 0, 0,
+                         "you can `return' to skip the cloneing" );
+        return 0;
+    }
+    if ( IS_FFE(src) ) {
+        ErrorReturnVoid( "finite field elements cannot be cloned", 0, 0,
+                         "you can `return' to skip the cloneing" );
+        return 0;
+    }
+
+    /* check <dst>                                                         */
+    if ( !REREADING && CALL_1ARGS( IsToBeDefinedObj, dst ) != True ) {
+        ErrorReturnVoid( "the destination must a `to-be-defined' (not a %s)",
+                         (Int)TNAM_OBJ(dst), 0,
+                         "you can `return' to skip the cloneing" );
+        return 0;
+    }
+
+    /* if object is mutable, produce a structural copy                     */
+    if ( IS_MUTABLE_OBJ(src) ) {
+        src = CopyObj( src, 1 );
+    }
+
+    /* now shallow clone the object                                        */
+    ResizeBag( dst, SIZE_OBJ(src) );
+    RetypeBag( dst, TNUM_OBJ(src) );
+    psrc = ADDR_OBJ(src);
+    pdst = ADDR_OBJ(dst);
+    for ( i = SIZE_OBJ(src)/sizeof(Obj);  0 < i;  i-- ) {
+        *pdst++ = *psrc++;
+    }
+    CHANGED_BAG(dst);
+
+    return 0;
+}
+
+
 /****************************************************************************
 **
 
@@ -1178,9 +1389,104 @@ void LoadDatObj( Obj datobj)
 /****************************************************************************
 **
 
-*F  SetupObjects()  . . . . . . . . . . . . .  initialize the objects package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupObjects ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_MUTABLE_OBJ", "obj", &IsMutableObjFilt,
+      IsMutableObjHandler, "src/objects.c:IS_MUTABLE_OBJ" },
+
+    { "IS_COPYABLE_OBJ", "obj", &IsCopyableObjFilt,
+      IsCopyableObjHandler, "src/objects.c:IS_COPYABLE_OBJ" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    { "SHALLOW_COPY_OBJ", 1, "obj", &ShallowCopyObjOper,
+      ShallowCopyObjHandler, "src/objects.c:SHALLOW_COPY_OBJ" },
+
+    { "PRINT_OBJ", 1, "obj", &PrintObjOper,
+      PrintObjHandler, "src/objects.c:PRINT_OBJ" },
+
+    { "VIEW_OBJ", 1, "obj", &ViewObjOper,
+      FuncViewObj, "src/objects.c:VIEW_OBJ" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "FAMILY_TYPE", 1, "kind",
+      FamilyTypeHandler, "src/objects.c:FAMILY_TYPE" },
+
+    { "TYPE_OBJ", 1, "obj",
+      TypeObjHandler, "src/objects.c:TYPE_OBJ" },
+
+    { "FAMILY_OBJ", 1, "obj",
+      FamilyObjHandler, "src/objects.c:FAMILY_OBJ" },
+
+    { "IMMUTABLE_COPY_OBJ", 1, "obj", 
+      ImmutableCopyObjHandler, "src/objects.c:IMMUTABLE_COPY_OBJ" },
+
+    { "DEEP_COPY_OBJ", 1, "obj",
+          MutableCopyObjHandler, "src/objects.c:DEEP_COPY_OBJ" },
+
+    { "IS_IDENTICAL_OBJ", 2, "obj1, obj2", 
+      IsIdenticalHandler, "src/objects.c:IS_IDENTICAL_OBJ" },
+
+    { "IS_COMOBJ", 1, "obj",
+      IS_COMOBJ_Handler, "src/objects.c:IS_COMOBJ" },
+
+    { "SET_TYPE_COMOBJ", 2, "obj, type",
+      SET_TYPE_COMOBJ_Handler, "src/objects.c:SET_TYPE_COMOBJ" },
+
+    { "IS_POSOBJ", 1, "obj",
+      IS_POSOBJ_Handler, "src/objects.c:IS_POSOBJ" },
+    
+    { "SET_TYPE_POSOBJ", 2, "obj, type",
+      SET_TYPE_POSOBJ_Handler, "src/objects.c:SET_TYPE_POSOBJ" },
+    
+    { "LEN_POSOBJ", 1, "obj",
+      LEN_POSOBJ_Handler, "src/objects.c:LEN_POSOBJ" },
+    
+    { "IS_DATOBJ", 1, "obj",
+      IS_DATOBJ_Handler, "src/objects.c:IS_DATOBJ" },
+    
+    { "SET_TYPE_DATOBJ", 2, "obj, type",
+      SET_TYPE_DATOBJ_Handler, "src/objects.c:SET_TYPE_DATOBJ" },
+
+    { "CLONE_OBJ", 2, "obj, dst, src",
+      FuncCLONE_OBJ, "src/objects.c:CLONE_OBJ" },
+
+    { "SET_PRINT_OBJ_INDEX", 1, "index",
+      FuncSET_PRINT_OBJ_INDEX, "src/objects.c:SET_PRINT_OBJ_INDEX" },
+    
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     Int                 t;              /* loop variable                   */
 
@@ -1193,11 +1499,26 @@ void SetupObjects ( void )
     InitMarkFuncBags( T_POSOBJ          , MarkAllSubBags  );
     InfoBags[         T_POSOBJ +COPYING ].name = "object (positional,copied)";
     InitMarkFuncBags( T_POSOBJ +COPYING , MarkAllSubBags  );
-    InfoBags[         T_DATOBJ          ].name = "object (data,copied)";
+    InfoBags[         T_DATOBJ          ].name = "object (data)";
     InitMarkFuncBags( T_DATOBJ          , MarkOneSubBags  );
     InfoBags[         T_DATOBJ +COPYING ].name = "object (data,copied)";
     InitMarkFuncBags( T_DATOBJ +COPYING , MarkOneSubBags  );
 
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+        TypeObjFuncs[ t ] = TypeObjError;
+
+    TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
+    TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
+    TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
+
+    /* functions for 'to-be-defined' objects                               */
+    ImportFuncFromLibrary( "IsToBeDefinedObj", &IsToBeDefinedObj );
+    ImportGVarFromLibrary( "REREADING", &REREADING );
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrOpersFromTable( GVarOpers );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
@@ -1207,7 +1528,6 @@ void SetupObjects ( void )
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsMutableObjFuncs[ t ] = IsMutableObjObject;
 
-
     /* make and install the 'IS_COPYABLE_OBJ' filter                       */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjError;
@@ -1215,7 +1535,6 @@ void SetupObjects ( void )
         IsCopyableObjFuncs[ t ] = IsCopyableObjNot;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         IsCopyableObjFuncs[ t ] = IsCopyableObjObject;
-
 
     /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
@@ -1228,7 +1547,6 @@ void SetupObjects ( void )
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjDefault;
     for ( t = FIRST_EXTERNAL_TNUM; t <= LAST_EXTERNAL_TNUM; t++ )
         ShallowCopyObjFuncs[ t ] = ShallowCopyObjObject;
-
 
     /* make and install the 'COPY_OBJ' function                            */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ ) {
@@ -1252,15 +1570,13 @@ void SetupObjects ( void )
     CleanObjFuncs[ T_DATOBJ           ] = CleanObjDatObj;
     CleanObjFuncs[ T_DATOBJ + COPYING ] = CleanObjDatObjCopy;
 
-
     /* make and install the 'PRINT_OBJ' operation                          */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         PrintObjFuncs[ t ] = PrintObjObject;
 
     /* enter 'PrintUnknownObj' in the dispatching tables                   */
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
         PrintPathFuncs[ t ] = PrintPathError;
-
 
     /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
     for ( t = FIRST_REAL_TNUM;  t <= LAST_REAL_TNUM;  t++ ) {
@@ -1277,116 +1593,98 @@ void SetupObjects ( void )
     LoadObjFuncs[ T_COMOBJ ] = LoadComObj;
     LoadObjFuncs[ T_POSOBJ ] = LoadPosObj;
     LoadObjFuncs[ T_DATOBJ ] = LoadDatObj;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
-**
-** 'InitObjects' initializes the objects package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitObjects ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    Int                 t;              /* loop variable                   */
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarOpersFromTable( GVarOpers );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    /* make and install the 'FAMILY_TYPE' function                         */
-    C_NEW_GVAR_FUNC( "FAMILY_TYPE", 1, "kind",
-                      FamilyTypeHandler,
-       "src/objects.c:FAMILY_TYPE" );
+    /* export certain TNUM values as global variable */
+    AssGVar(GVarName("FIRST_CONSTANT_TNUM"), INTOBJ_INT(FIRST_CONSTANT_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_CONSTANT_TNUM"));
 
-
-    /* make and install the 'TYPE_OBJ' function                            */
-    C_NEW_GVAR_FUNC( "TYPE_OBJ", 1, "obj",
-                      TypeObjHandler,
-       "src/objects.c:TYPE_OBJ" );
-
-    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
-        TypeObjFuncs[ t ] = TypeObjError;
-
-    TypeObjFuncs[ T_COMOBJ ] = TypeComObj;
-    TypeObjFuncs[ T_POSOBJ ] = TypePosObj;
-    TypeObjFuncs[ T_DATOBJ ] = TypeDatObj;
-
-
-    /* make and install the 'FAMILY_OBJ' function                          */
-    C_NEW_GVAR_FUNC( "FAMILY_OBJ", 1, "obj",
-                      FamilyObjHandler,
-       "src/objects.c:FAMILY_OBJ" );
-
-
-    /* make and install the 'IS_MUTABLE_OBJ' filter                        */
-    C_NEW_GVAR_FILT( "IS_MUTABLE_OBJ", "obj", IsMutableObjFilt, IsMutableObjHandler,
-       "src/objects.c:IS_MUTABLE_OBJ" );
-
-
-    /* make and install the 'IS_COPYABLE_OBJ' filter                       */
-    C_NEW_GVAR_FILT( "IS_COPYABLE_OBJ", "obj", IsCopyableObjFilt, IsCopyableObjHandler,
-       "src/objects.c:IS_COPYABLE_OBJ" );
-
-
-    /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
-    C_NEW_GVAR_OPER( "SHALLOW_COPY_OBJ", 1, "obj", ShallowCopyObjOper, ShallowCopyObjHandler,
-       "src/objects.c:SHALLOW_COPY_OBJ" );
-
-
-    /* make and install the 'COPY_OBJ' function                            */
-    C_NEW_GVAR_FUNC( "IMMUTABLE_COPY_OBJ", 1, "obj", ImmutableCopyObjHandler,
-       "src/objects.c:IMMUTABLE_COPY_OBJ" );
-
-    C_NEW_GVAR_FUNC( "DEEP_COPY_OBJ", 1, "obj", MutableCopyObjHandler,
-       "src/objects.c:DEEP_COPY_OBJ" );
-
-
-    /* make and install the 'PRINT_OBJ' operation                          */
-    C_NEW_GVAR_OPER( "PRINT_OBJ", 1, "obj", PrintObjOper, PrintObjHandler,
-       "src/objects.c:PRINT_OBJ" );
-
-
-    /* make and install the 'IS_IDENTICAL_OBJ' function                    */
-    C_NEW_GVAR_FUNC( "IS_IDENTICAL_OBJ", 2, "obj1, obj2", IsIdenticalHandler,
-       "src/objects.c:IS_IDENTICAL_OBJ" );
-
-
-    /* make and install the functions for low level accessing of objects   */
-    C_NEW_GVAR_FUNC( "IS_COMOBJ", 1, "obj",
-                      IS_COMOBJ_Handler,
-       "src/objects.c:IS_COMOBJ" );
-
-    C_NEW_GVAR_FUNC( "SET_TYPE_COMOBJ", 2, "obj, type",
-                      SET_TYPE_COMOBJ_Handler,
-       "src/objects.c:SET_TYPE_COMOBJ" );
-
-    C_NEW_GVAR_FUNC( "IS_POSOBJ", 1, "obj",
-                      IS_POSOBJ_Handler,
-       "src/objects.c:IS_POSOBJ" );
+    AssGVar(GVarName("LAST_CONSTANT_TNUM"), INTOBJ_INT(LAST_CONSTANT_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_CONSTANT_TNUM"));
     
-    C_NEW_GVAR_FUNC( "SET_TYPE_POSOBJ", 2, "obj, type",
-                      SET_TYPE_POSOBJ_Handler,
-       "src/objects.c:SET_TYPE_POSOBJ" );
+    AssGVar(GVarName("FIRST_RECORD_TNUM"), INTOBJ_INT(FIRST_RECORD_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_RECORD_TNUM"));
+
+    AssGVar(GVarName("LAST_RECORD_TNUM"), INTOBJ_INT(LAST_RECORD_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_RECORD_TNUM"));
+
+    AssGVar(GVarName("FIRST_LIST_TNUM"), INTOBJ_INT(FIRST_LIST_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_LIST_TNUM"));
+
+    AssGVar(GVarName("LAST_LIST_TNUM"), INTOBJ_INT(LAST_LIST_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_LIST_TNUM"));
     
-    C_NEW_GVAR_FUNC( "LEN_POSOBJ", 1, "obj",
-                      LEN_POSOBJ_Handler,
-       "src/objects.c:LEN_POSOBJ" );
+    AssGVar(GVarName("FIRST_EXTERNAL_TNUM"), INTOBJ_INT(FIRST_EXTERNAL_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_EXTERNAL_TNUM"));
+
+    AssGVar(GVarName("LAST_EXTERNAL_TNUM"), INTOBJ_INT(LAST_EXTERNAL_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_EXTERNAL_TNUM"));
     
-    C_NEW_GVAR_FUNC( "IS_DATOBJ", 1, "obj",
-                      IS_DATOBJ_Handler,
-       "src/objects.c:IS_DATOBJ" );
+    AssGVar(GVarName("FIRST_REAL_TNUM"), INTOBJ_INT(FIRST_REAL_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_REAL_TNUM"));
+
+    AssGVar(GVarName("LAST_REAL_TNUM"), INTOBJ_INT(LAST_REAL_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_REAL_TNUM"));
     
-    C_NEW_GVAR_FUNC( "SET_TYPE_DATOBJ", 2, "obj, type",
-                      SET_TYPE_DATOBJ_Handler,
-       "src/objects.c:SET_TYPE_DATOBJ" );
+    AssGVar(GVarName("FIRST_VIRTUAL_TNUM"), INTOBJ_INT(FIRST_VIRTUAL_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_VIRTUAL_TNUM"));
+
+    AssGVar(GVarName("LAST_VIRTUAL_TNUM"), INTOBJ_INT(LAST_VIRTUAL_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_VIRTUAL_TNUM"));
+    
+    AssGVar(GVarName("FIRST_IMM_MUT_TNUM"), INTOBJ_INT(FIRST_IMM_MUT_TNUM));
+    MakeReadOnlyGVar(GVarName("FIRST_IMM_MUT_TNUM"));
+
+    AssGVar(GVarName("LAST_IMM_MUT_TNUM"), INTOBJ_INT(LAST_IMM_MUT_TNUM));
+    MakeReadOnlyGVar(GVarName("LAST_IMM_MUT_TNUM"));
+    
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckObjects()  . . . . . check the initialisation of the objects package
+*F  InitInfoObjects() . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckObjects ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "objects",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoObjects ( void )
 {
-    SET_REVISION( "objects_c",  Revision_objects_c );
-    SET_REVISION( "objects_h",  Revision_objects_h );
+    module.revision_c = Revision_objects_c;
+    module.revision_h = Revision_objects_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

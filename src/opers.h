@@ -5,12 +5,13 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the  filters, operations, attributes,
 **  and properties package.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_opers_h =
+const char * Revision_opers_h =
    "@(#)$Id$";
 #endif
 
@@ -18,24 +19,256 @@ SYS_CONST char * Revision_opers_h =
 /****************************************************************************
 **
 
-*F  IS_OPERATION( <func> )  . . . . . . . . .  check if function is operation
+*V  TRY_NEXT_METHOD . . . . . . . . . . . . . . . . . `TRY_NEXT_MESSAGE' flag
+*/
+extern Obj TRY_NEXT_METHOD;
+
+
+/****************************************************************************
+**
+
+*F  IS_OPERATION( <obj> ) . . . . . . . . . . check if object is an operation
 */
 #define IS_OPERATION(func) \
     (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
 
+/****************************************************************************
+**
+*F  FLAG1_FILT( <oper> )  . . . . . . . . . .  flag 1 list of an `and' filter
+*/
 #define FLAG1_FILT(oper)        (*            (ADDR_OBJ(oper) +16     ) )
+
+
+/****************************************************************************
+**
+*F  FLAG2_FILT( <oper> )  . . . . . . . . . .  flag 2 list of an `and' filter
+*/
 #define FLAG2_FILT(oper)        (*            (ADDR_OBJ(oper) +17     ) )
+
+
+/****************************************************************************
+**
+*F  FLAGS_FILT( <oper> )  . . . . . . . . . . . . . . . . . flags of a filter
+*/
 #define FLAGS_FILT(oper)        (*            (ADDR_OBJ(oper) +18     ) )
+
+
+/****************************************************************************
+**
+*F  SETTER_FILT( <oper> ) . . . . . . . . . . . . . . . .  setter of a filter
+*/
 #define SETTR_FILT(oper)        (*            (ADDR_OBJ(oper) +19     ) )
+
+
+/****************************************************************************
+**
+*F  TESTR_FILT( <oper> )  . . . . . . . . . . . . . . . .  tester of a filter
+*/
 #define TESTR_FILT(oper)        (*            (ADDR_OBJ(oper) +20     ) )
+
+
+/****************************************************************************
+**
+*F  METHS_OPER( <oper> )  . . . . . . . . . . . . method list of an operation
+*/
 #define METHS_OPER(oper,i)      (*            (ADDR_OBJ(oper) +21+ (i)) )
+
+
+/****************************************************************************
+**
+*F  CACHE_OPER( <oper> )  . . . . . . . . . . . . . . . cache of an operation
+*/
 #define CACHE_OPER(oper,i)      (*            (ADDR_OBJ(oper) +29+ (i)) )
+
+
+/****************************************************************************
+**
+*V  SIZE_OPER . . . . . . . . . . . . . . . . . . . . .  size of an operation
+*/
 #define SIZE_OPER               (37*sizeof(Bag))
 
 
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * internal flags functions * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  NEW_FLAGS( <flags>, <size> )  . . . . . . . . . . . . . .  new flags list
+*/
+#define NEW_FLAGS( flags, size ) \
+    ( flags = NewBag( T_FLAGS, SIZE_PLEN_FLAGS(size) ) )
+
+
+/****************************************************************************
+**
+*F  SIZE_PLEN_FLAGS( <plen> ) . .  size for a flags list with physical length
+*/
+#define SIZE_PLEN_FLAGS(plen) \
+  (4*sizeof(Obj)+((plen)+BIPEB-1)/BIPEB*sizeof(Obj))
+
+
+
+/****************************************************************************
+**
+*F  TRUES_FLAGS( <flags> )  . . . . . . . . . . list of trues of a flags list
+**
+**  returns the list of trues of <flags> or 0 if the list is not known yet.
+*/
+#define TRUES_FLAGS(flags)              (ADDR_OBJ(flags)[0])
+
+
+/****************************************************************************
+**
+*F  SET_TRUES_FLAGS( <flags>, <trues> ) . set number of trues of a flags list
+*/
+#define SET_TRUES_FLAGS(flags,trues)    (ADDR_OBJ(flags)[0] = trues)
+
+
+/****************************************************************************
+**
+*F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
+*/
+#define HASH_FLAGS(flags)               (ADDR_OBJ(flags)[1])
+
+
+/****************************************************************************
+**
+*F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
+*/
+#define SET_HASH_FLAGS(flags,hash)      (ADDR_OBJ(flags)[1] = hash)
+
+
+/****************************************************************************
+**
+*F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
+*/
+#define LEN_FLAGS(list)                 (INT_INTOBJ(ADDR_OBJ(list)[2]))
+
+
+/****************************************************************************
+**
+*F  SET_LEN_FLAGS( <flags>, <len> ) . . . . .  set the length of a flags list
+*/
+#define SET_LEN_FLAGS(flags,len)        (ADDR_OBJ(flags)[2]=INTOBJ_INT(len))
+
+
+/****************************************************************************
+**
+*F  AND_CACHE_FLAGS( <flags> )  . . . . . . . . . `and' cache of a flags list
+*/
+#define AND_CACHE_FLAGS(list)           (ADDR_OBJ(list)[3])
+
+
+/****************************************************************************
+**
+*F  SET_AND_CACHE_FLAGS( <flags>, <len> ) set the `and' cache of a flags list
+*/
+#define SET_AND_CACHE_FLAGS(flags,and)  (ADDR_OBJ(flags)[3]=(and))
+
+
+/****************************************************************************
+**
+*F  NRB_FLAGS( <flags> )  . . . . . .  number of basic blocks of a flags lits
+*/
+#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
+
+
+
+/****************************************************************************
+**
+*F  BLOCKS_FLAGS( <flags> ) . . . . . . . . . . . . data area of a flags list
+*/
+#define BLOCKS_FLAGS(flags)             ((UInt*)(ADDR_OBJ(flags)+4))
+
+
+/****************************************************************************
+**
+*F  BLOCK_ELM_FLAGS( <list>, <pos> )  . . . . . . . .  block  of a flags list
+**
+**  'BLOCK_ELM_FLAGS' return the block containing the <pos>-th element of the
+**  flags list <list> as a UInt value, which is also a  valid left hand side.
+**  <pos>  must be a positive  integer  less than or  equal  to the length of
+**  <list>.
+**
+**  Note that 'BLOCK_ELM_FLAGS' is a macro, so do not call it  with arguments
+**  that have sideeffects.
+*/
+#define BLOCK_ELM_FLAGS(list, pos)      (BLOCKS_FLAGS(list)[((pos)-1)/BIPEB])
+
+
+/****************************************************************************
+**
+*F  MASK_POS_FLAGS( <pos> ) . . .  . .  bit mask for position of a flags list
+**
+**  MASK_POS_FLAGS(<pos>) returns  a UInt with a  single set  bit in position
+**  (pos-1) % BIPEB, useful for accessing the pos'th element of a FLAGS
+**
+**  Note that 'MASK_POS_FLAGS'  is a macro, so  do not call it with arguments
+**  that have sideeffects.
+*/
+#define MASK_POS_FLAGS(pos)             (((UInt) 1)<<((pos)-1)%BIPEB)
+
+
+/****************************************************************************
+**
+*F  ELM_FLAGS( <list>, <pos> )  . . . . . . . . . . . element of a flags list
+**
+**  'ELM_FLAGS' return the <pos>-th element of the flags list <list>, which
+**  is either 'true' or 'false'.  <pos> must  be a positive integer less than
+**  or equal to the length of <hdList>.
+**
+**  Note that 'ELM_FLAGS' is a macro, so do not call it  with arguments  that
+**  have sideeffects.
+*/
+#define ELM_FLAGS(list,pos) \
+  ((BLOCK_ELM_FLAGS(list,pos) & MASK_POS_FLAGS(pos)) ?  True : False)
+
+
+/****************************************************************************
+**
+*F  SET_ELM_FLAGS( <list>, <pos>, <val> ) . .  set an element of a flags list
+**
+**  'SET_ELM_FLAGS' sets  the element at position <pos>   in the flags list
+**  <list> to the value <val>.  <pos> must be a positive integer less than or
+**  equal to the length of <hdList>.  <val> must be either 'true' or 'false'.
+**
+**  Note that  'SET_ELM_FLAGS' is  a macro, so do not  call it with arguments
+**  that have sideeffects.
+*/
+#define SET_ELM_FLAGS(list,pos,val)  \
+ ((val) == True ? \
+  (BLOCK_ELM_FLAGS(list, pos) |= MASK_POS_FLAGS(pos)) : \
+  (BLOCK_ELM_FLAGS(list, pos) &= ~MASK_POS_FLAGS(pos)))
+
+/****************************************************************************
+**
+*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> ) . . . . . . subset test
+*/
+
+extern Obj FuncIS_SUBSET_FLAGS( Obj self, Obj flags1, Obj flags2 );
+     
+/****************************************************************************
+**
+
+*F * * * * * * * * * * *  internal filter functions * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+*/
+extern Int CountFlags;
+
+
+/****************************************************************************
+**
 *V  SET_FILTER_OBJ  . . . . . . . . . . . .  library function to set a filter
 */
 extern Obj SET_FILTER_OBJ;
@@ -51,69 +284,118 @@ extern Obj RESET_FILTER_OBJ;
 
 /****************************************************************************
 **
-*V  CountFlags  . . . . . . . . . . . . . . . . . . . . next free flag number
+
+*F  SetterFilter( <oper> )  . . . . . . . . . . . . . . .  setter of a filter
 */
-extern Int CountFlags;
+extern Obj SetterFilter (
+    Obj                 oper );
 
 
 /****************************************************************************
 **
-*F  RESERVE_FILTER( <filt>, <numr> )  . . . . . . . . reserve a filter number
+*F  SetterAndFilter( <getter> )  . . . . . .  setter of a concatenated filter
 */
-#define RESERVE_FILTER( filt, numr ) \
-    do { \
-        if ( CountFlags < numr )  CountFlags = numr; \
-        filt = INTOBJ_INT(numr); \
-    } \
-    while (0)
+extern Obj DoSetAndFilter (
+    Obj                 self,
+    Obj                 obj,
+    Obj                 val );
+
+extern Obj SetterAndFilter (
+    Obj                 getter );
+        
+
+/****************************************************************************
+**
+*F  TesterFilter( <oper> )  . . . . . . . . . . . . . . .  tester of a filter
+*/
+extern Obj TesterFilter (
+    Obj                 oper );
 
 
 /****************************************************************************
 **
-*F  RESERVE_PROPERTY( <filt>, <num1>, <num2> )  . . reserve a property number
+*F  TestAndFilter( <getter> )  . . . . . . . .tester of a concatenated filter
 */
-#define RESERVE_PROPERTY( filt, num1, num2 ) \
-    do { \
-        if ( CountFlags < num1 )  CountFlags = num1; \
-        if ( CountFlags < num2 )  CountFlags = num2; \
-        filt = INTOBJ_INT( (num1 << 10) + num2 ); \
-    } \
-    while (0)
+extern Obj DoTestAndFilter (
+    Obj                 self,
+    Obj                 obj );
+
+extern Obj TesterAndFilter (
+    Obj                 getter );
 
 
 /****************************************************************************
 **
-
-*F  NewFilter( <name> ) . . . . . . . . . . . . . . . . . . make a new filter
+*F  NewFilter( <name>, <narg>, <nams>, <hdlr> )  . . . . .  make a new filter
 */
+extern Obj DoTestFilter (
+    Obj                 self,
+    Obj                 obj );
+
+extern Obj NewTesterFilter (
+    Obj                 getter );
+
+extern Obj DoSetFilter (
+    Obj                 self,
+    Obj                 obj,
+    Obj                 val );
+
+extern Obj NewSetterFilter (
+    Obj                 getter );
+
 extern Obj DoFilter (
-            Obj                 self,
-            Obj                 obj );
+    Obj                 self,
+    Obj                 obj );
 
 extern Obj NewFilter (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-
-extern Obj NewFilterC (
-            SYS_CONST Char *    name,
-            Int                 narg,
-            SYS_CONST Char *    nams,
-            ObjFunc             hdlr );
+    Obj                 name,
+    Int                 narg,
+    Obj                 nams,
+    ObjFunc             hdlr );
 
 
 /****************************************************************************
 **
-*F  NewAndFilter( <filt1>, <filt2> )  . . . .  make a new concatenated filter
+*F  NewFilterC( <name>, <narg>, <nams>, <hdlr> )  . . . . . make a new filter 
 */
-extern Obj NewAndFilter (
-            Obj                 oper1,
-            Obj                 oper2 );
+extern Obj NewFilterC (
+    const Char *        name,
+    Int                 narg,
+    const Char *        nams,
+    ObjFunc             hdlr );
 
 
 /****************************************************************************
 **
+*F  NewAndFilter( <filt1>, <filt2> ) . . . . . make a new concatenated filter
+*/
+extern Obj DoAndFilter (
+    Obj                 self,
+    Obj                 obj );
+
+extern Obj NewAndFilter (
+    Obj                 oper1,
+    Obj                 oper2 );
+
+
+/****************************************************************************
+**
+
+*V  ReturnTrueFilter . . . . . . . . . . . . . . . . the return 'true' filter
+*/
+extern Obj ReturnTrueFilter;
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * *  internal operation functions  * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  NewOperation( <name> )  . . . . . . . . . . . . . .  make a new operation
 */
 extern Obj DoOperation0Args (
@@ -215,26 +497,9 @@ extern Obj NewOperation (
             ObjFunc             hdlr );
 
 extern Obj NewOperationC (
-            SYS_CONST Char *    name,
+            const Char *        name,
             Int                 narg,
-            SYS_CONST Char *    nams,
-            ObjFunc             hdlr );
-
-
-/****************************************************************************
-**
-*F  NewOperationKA1( <name> ) . . . . . . . . . . . . .  make a new operation
-*/
-extern Obj NewOperationKA1 (
-            Obj                 name,
-            Int                 narg,
-            Obj                 nams,
-            ObjFunc             hdlr );
-
-extern Obj NewOperationKA1C (
-            SYS_CONST Char *    name,
-            Int                 narg,
-            SYS_CONST Char *    nams,
+            const Char *        nams,
             ObjFunc             hdlr );
 
 
@@ -257,9 +522,9 @@ extern  Obj NewAttribute (
             ObjFunc             hdlr );
 
 extern  Obj NewAttributeC (
-            SYS_CONST Char *    name,
+            const Char *        name,
             Int                 narg,
-            SYS_CONST Char *    nams,
+            const Char *        nams,
             ObjFunc             hdlr );
 
 
@@ -278,10 +543,24 @@ extern Obj NewProperty (
             ObjFunc             hdlr );
 
 extern Obj NewPropertyC (
-            SYS_CONST Char *    name,
+            const Char *        name,
             Int                 narg,
-            SYS_CONST Char *    nams,
+            const Char *        nams,
             ObjFunc             hdlr );
+
+
+/****************************************************************************
+**
+
+*F  InstallMethodArgs( <oper>, <func> ) . . . . . . . . . . .  clone function
+**
+**  There is a problem  with uncompleted functions: if  they are  cloned then
+**  only   the orignal and not  the  clone will be  completed.  Therefore the
+**  clone must postpone the real cloning.
+*/
+extern void InstallMethodArgs (
+    Obj                 oper,
+    Obj                 func );
 
 
 /****************************************************************************
@@ -295,7 +574,7 @@ extern void ChangeDoOperations (
 
 /****************************************************************************
 **
-*F  SaveOperationExtras( <oper> ) . . . .additional savng for functions which
+*F  SaveOperationExtras( <oper> ) . . .  additional savng for functions which
 **                                       are operations
 **
 **  This is called by SaveFunction when the function bag is too large to be
@@ -307,7 +586,7 @@ extern void SaveOperationExtras( Obj oper );
 
 /****************************************************************************
 **
-*F  LoadOperationExtras( <oper> ) . . . .additional loading for functions which
+*F  LoadOperationExtras( <oper> ) . .  additional loading for functions which
 **                                       are operations
 **
 **  This is called by LoadFunction when the function bag is too large to be
@@ -328,23 +607,9 @@ extern void LoadOperationExtras( Obj oper );
 /****************************************************************************
 **
 
-*F  SetupOpers() . . . . . . . . . . . . . . initialize the operations package
+*F  InitInfoOpers() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupOpers ( void );
-
-
-/****************************************************************************
-**
-*F  InitOpers() . . . . . . . . . . . . . . initialize the operations package
-*/
-extern void InitOpers ( void );
-
-
-/****************************************************************************
-**
-*F  CheckOpers()  . . . .  check the initialisation of the operations package
-*/
-extern void CheckOpers ( void );
+StructInitInfo * InitInfoOpers ( void );
 
 
 /****************************************************************************

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file defines the functions of the objects package.
 **
@@ -13,7 +14,7 @@
 **  dispatcher for the printing of objects, etc.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_objects_h =
+const char * Revision_objects_h =
    "@(#)$Id$";
 #endif
 
@@ -24,8 +25,11 @@ SYS_CONST char * Revision_objects_h =
 *T  Obj . . . . . . . . . . . . . . . . . . . . . . . . . . . type of objects
 **
 **  'Obj' is the type of objects.
-*/
+**
+**  The following is defined in "system.h"
+**
 #define Obj             Bag
+*/
 
 
 /****************************************************************************
@@ -234,15 +238,12 @@ SYS_CONST char * Revision_objects_h =
 #define LAST_PLIST_TNUM         (T_PLIST_CYC_SSORT+IMMUTABLE)
 #define T_RANGE_NSORT           (FIRST_LIST_TNUM+28)
 #define T_RANGE_SSORT           (FIRST_LIST_TNUM+30)
-#define T_VECFFE                (FIRST_LIST_TNUM+32)
-#define T_VECFFE_NSORT          (FIRST_LIST_TNUM+34)
-#define T_VECFFE_SSORT          (FIRST_LIST_TNUM+36)
-#define T_BLIST                 (FIRST_LIST_TNUM+38)
-#define T_BLIST_NSORT           (FIRST_LIST_TNUM+40)
-#define T_BLIST_SSORT           (FIRST_LIST_TNUM+42)
-#define T_STRING                (FIRST_LIST_TNUM+44)
-#define T_STRING_NSORT          (FIRST_LIST_TNUM+46)
-#define T_STRING_SSORT          (FIRST_LIST_TNUM+48)
+#define T_BLIST                 (FIRST_LIST_TNUM+32)
+#define T_BLIST_NSORT           (FIRST_LIST_TNUM+34)
+#define T_BLIST_SSORT           (FIRST_LIST_TNUM+36)
+#define T_STRING                (FIRST_LIST_TNUM+38)
+#define T_STRING_NSORT          (FIRST_LIST_TNUM+40)
+#define T_STRING_SSORT          (FIRST_LIST_TNUM+42)
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
@@ -271,10 +272,6 @@ SYS_CONST char * Revision_objects_h =
 #define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
 #define TESTING                 COPYING
 #define LAST_TESTING_TNUM       LAST_COPYING_TNUM
-
-#define FIRST_PRINTING_TNUM     (LAST_TESTING_TNUM + 1)
-#define PRINTING                (FIRST_PRINTING_TNUM - FIRST_RECORD_TNUM)
-#define LAST_PRINTING_TNUM      (LAST_LIST_TNUM + PRINTING)
 
 
 
@@ -468,7 +465,7 @@ extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
 **  No saving function may allocate any bag
 */
 
-extern void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
+extern void (*SaveObjFuncs[ 256 ]) (Obj obj);
 
 extern void SaveObjError ( Obj obj );
 
@@ -488,7 +485,7 @@ extern void SaveObjError ( Obj obj );
 **  No loading function may allocate any bag
 */
 
-extern void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Bag bag);
+extern void (*LoadObjFuncs[ 256 ]) (Bag bag);
 
 extern void LoadObjError (
                    Bag bag
@@ -600,7 +597,6 @@ extern void (*CleanObjFuncs[ LAST_REAL_TNUM+COPYING+1 ]) ( Obj obj );
 
 /****************************************************************************
 **
-
 *F  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . . . print an object
 **
 **  'PrintObj' prints the object <obj>.
@@ -624,7 +620,19 @@ extern Int  PrintObjIndex;
 
 extern Int  PrintObjFull;
 
-extern void (* PrintObjFuncs [ LAST_REAL_TNUM+PRINTING+1 ]) ( Obj obj );
+extern void (* PrintObjFuncs [ LAST_REAL_TNUM  +1 ]) ( Obj obj );
+
+
+/****************************************************************************
+**
+*F  ViewObj( <obj> ) . . . . . . . . . . . . . . . . . . . . view an object
+**
+**  'ViewObj' views the object <obj>.
+*/
+extern void ViewObj (
+            Obj                 obj );
+
+
 
 
 /****************************************************************************
@@ -636,8 +644,10 @@ extern void (* PrintObjFuncs [ LAST_REAL_TNUM+PRINTING+1 ]) ( Obj obj );
 **  that type.  The path  printer is the function '<func>(<obj>,<indx>)' that
 **  should be  called  to print  the  selector   that selects  the  <indx>-th
 **  subobject of the object <obj> of this type.
+**
+**  These are also used for viewing
 */
-extern void (* PrintPathFuncs [ LAST_REAL_TNUM+PRINTING+1 ]) (
+extern void (* PrintPathFuncs [ LAST_REAL_TNUM  +1 ]) (
     Obj                 obj,
     Int                 indx );
 
@@ -718,29 +728,13 @@ extern void (* PrintPathFuncs [ LAST_REAL_TNUM+PRINTING+1 ]) (
 /****************************************************************************
 **
 
-*F  SetupObjects()  . . . . . . . . . . . . .  initialize the objects package
+*F  InitInfoObjects() . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupObjects ( void );
-
-
-/****************************************************************************
-**
-*F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
-**
-** 'InitObjects' initializes the objects package.
-*/
-extern void InitObjects ( void );
-
-
-/****************************************************************************
-**
-*F  CheckObjects()  . . . . . check the initialisation of the objects package
-*/
-extern void CheckObjects ( void );
+StructInitInfo * InitInfoObjects ( void );
 
 
 /****************************************************************************
 **
 
-*E  objects.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*E  objects.h . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

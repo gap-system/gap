@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This   file contains the functions   that calculate ordinary and rational
 ##  classes for permutation groups.
 ##
@@ -14,8 +17,7 @@ Revision.clasperm_gi :=
 ##
 #R  IsConjugacyClassPermGroupEnumerator . . . enumerator for perm group class
 ##
-IsConjugacyClassPermGroupEnumerator := NewRepresentation
-    ( "IsConjugacyClassPermGroupEnumerator",
+DeclareRepresentation( "IsConjugacyClassPermGroupEnumerator",
       IsExternalOrbitByStabilizerEnumerator, [ "rightTransversal" ] );
 
 #############################################################################
@@ -59,10 +61,10 @@ end );
 ##
 #M  <cl1> = <cl2> . . . . . . . . . . . . . . . . . . . for conjugacy classes
 ##
-InstallMethod( \=, IsIdentical, [ IsConjugacyClassPermGroupRep,
+InstallMethod( \=, IsIdenticalObj, [ IsConjugacyClassPermGroupRep,
                                   IsConjugacyClassPermGroupRep ], 0,
     function( cl1, cl2 )
-    if not IsIdentical( ActingDomain( cl1 ), ActingDomain( cl2 ) )  then
+    if not IsIdenticalObj( ActingDomain( cl1 ), ActingDomain( cl2 ) )  then
         TryNextMethod();
     fi;
     return RepOpElmTuplesPermGroup( true, ActingDomain( cl1 ),
@@ -102,8 +104,7 @@ end );
 
 #R  IsRationalClassPermGroupEnumerator  . .  enumerator for perm groups class
 ##
-IsRationalClassPermGroupEnumerator := NewRepresentation
-    ( "IsRationalClassPermGroupEnumerator",
+DeclareRepresentation( "IsRationalClassPermGroupEnumerator",
       IsRationalClassGroupEnumerator, [ "rightTransversal" ] );
 
 #############################################################################
@@ -123,7 +124,7 @@ InstallMethod( Enumerator, true, [ IsRationalClassPermGroupRep ], 0,
 end );
 
 InstallMethod( PositionCanonical, true,
-        [ IsRationalClassGroupEnumerator, IsObject ], 0,
+        [ IsRationalClassPermGroupEnumerator, IsObject ], 0,
     function( enum, elm )
     local   rcl,  G,  rep,  gal,  T,  pow,  t;
     
@@ -133,6 +134,7 @@ InstallMethod( PositionCanonical, true,
     gal := RightTransversalInParent( GaloisGroup( rcl ) );
     T := enum!.rightTransversal;
     for pow  in [ 1 .. Length( gal ) ]  do
+	# if gal[pow]=0 then the rep is the identity , no need to worry.
         t := RepOpElmTuplesPermGroup( true, G,
                      [ elm ], [ rep ^ Int( gal[ pow ] ) ],
                      TrivialSubgroup( G ),
@@ -155,13 +157,16 @@ InstallOtherMethod( CentralizerOp, true, [ IsRationalClassGroupRep ], 0,
 ##
 #M  <cl1> = <cl2> . . . . . . . . . . . . . . . . . . .  for rational classes
 ##
-InstallMethod( \=, IsIdentical, [ IsRationalClassPermGroupRep,
+InstallMethod( \=, IsIdenticalObj, [ IsRationalClassPermGroupRep,
         IsRationalClassPermGroupRep ], 0,
     function( cl1, cl2 )
     if ActingDomain( cl1 ) <> ActingDomain( cl2 )  then
         TryNextMethod();
     fi;
-    return ForAny( RightTransversalInParent( GaloisGroup( cl1 ) ), e ->
+    # the Galois group of the identity is <0>, therefore we have to do this
+    # extra test.
+    return Order(Representative(cl1))=Order(Representative(cl2)) and
+      ForAny( RightTransversalInParent( GaloisGroup( cl1 ) ), e ->
                    RepOpElmTuplesPermGroup( true, ActingDomain( cl1 ),
                            [ Representative( cl1 ) ],
                            [ Representative( cl2 ) ^ Int( e ) ],
@@ -178,7 +183,10 @@ InstallMethod( \in, true, [ IsPerm, IsRationalClassPermGroupRep ], 0,
     local   G;
     
     G := ActingDomain( cl );
-    return ForAny( RightTransversalInParent( GaloisGroup( cl ) ), e ->
+    # the Galois group of the identity is <0>, therefore we have to do this
+    # extra test.
+    return Order(Representative(cl))=Order(g) and
+     ForAny( RightTransversalInParent( GaloisGroup( cl ) ), e ->
                    RepOpElmTuplesPermGroup( true, G,
                            [ g ^ Int( e ) ],
                            [ Representative( cl ) ],
@@ -198,7 +206,7 @@ end );
 ##  Galois group.  <power> must the <p>-th power of <cl> .  If <p> = 2, there
 ##  is nothing to be done, since the Galois group is a 2-group then.
 ##
-CompleteGaloisGroupPElement := function( class, gal, power, p )
+InstallGlobalFunction( CompleteGaloisGroupPElement, function( class, gal, power, p )
     local  G,  rep,  order,  F,
            phi,             # size of the prime residue class group
            primitiveRoot,   # generator of the cyclic prime residue class group
@@ -296,13 +304,13 @@ CompleteGaloisGroupPElement := function( class, gal, power, p )
 
     fi;
     return gal;
-end;
+end );
 
 #############################################################################
 ##
 #F  RatClasPElmArrangeClasses( <T>, <list>, <roots>, <power> )
 ##
-RatClasPElmArrangeClasses := function( T, list, roots, power )
+InstallGlobalFunction( RatClasPElmArrangeClasses, function( T, list, roots, power )
     local  i,  j,  allRoots;
     
     allRoots := [ power ];
@@ -316,7 +324,7 @@ RatClasPElmArrangeClasses := function( T, list, roots, power )
         fi;
     od;
     return allRoots;
-end;
+end );
 
 #############################################################################
 ##
@@ -325,7 +333,7 @@ end;
 ##  Sort the classes according to increasing  order, then decreasing <p>-part
 ##  of centralizer order, then decreasing <p>-part of Galois group order.
 ##
-SortRationalClasses := function( rationalClasses, p )
+InstallGlobalFunction( SortRationalClasses, function( rationalClasses, p )
     Sort( rationalClasses, function( cl1, cl2 )
         local  ppart;
         if   Order( cl1.representative ) <
@@ -346,13 +354,13 @@ SortRationalClasses := function( rationalClasses, p )
             fi;
         fi;
       end );
-end;
+end );
 
 #############################################################################
 ##
 #F  FusionRationalClassesPSubgroup( <N>, <S>, <rationalClasses> )  pre-fusion
 ##
-FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
+InstallGlobalFunction( FusionRationalClassesPSubgroup, function( N, S, rationalClasses )
     local  representatives,  classreps,  classimages,  fusedClasses,
            gens,  gensS,  gensNmodS,  genimages,  gen,
            prm,  i,  orbs,  orb,  cl,  pos,  porb;
@@ -362,11 +370,11 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
         # Construct the fusing operation of the group <N>.
         representatives := List( rationalClasses, cl -> cl.representative );
         classreps := [  ];
-        gens := TryPcgsPermGroup( [ N, S, TrivialSubgroup( N ) ],
-                        false, false, false );
-        if not IsPcgs( gens )  then
+#        gens := TryPcgsPermGroup( [ N, S, TrivialSubgroup( N ) ],
+#                        false, false, false );
+#        if not IsPcgs( gens )  then
             gens := GeneratorsOfGroup( N );
-        fi;
+#        fi;
         gensS := [  ];  gensNmodS := [  ];
         for gen  in gens  do
             if gen in S  then
@@ -376,8 +384,9 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
                 Append( classreps, OnTuples( representatives, gen ) );
             fi;
         od;
-        classimages := List( ClassesSolvableGroup( S, S, true, 1, classreps ),
-                             cl -> cl.representative );
+        classimages := List( ClassesSolvableGroup( S, 1,
+	  rec(candidates:= classreps) ),
+	  cl -> cl.representative );
         genimages := [  ];
         for i  in [ 1 .. Length( gensNmodS ) ]  do
             prm := List( [ 1 + ( i - 1 ) * Length( rationalClasses )
@@ -418,13 +427,13 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
     else
         return rationalClasses;
     fi;
-end;
+end );
 
 #############################################################################
 ##
 #F  RationalClassesPElements( <G>, <p> )  . .  rational classes of p-elements
 ##
-RationalClassesPElements := function( arg )
+InstallGlobalFunction( RationalClassesPElements, function( arg )
     local  G,               # the group
            p,               # the prime
            minprime,        # is <p> the minimal prime dividing $|G|$?
@@ -497,7 +506,7 @@ RationalClassesPElements := function( arg )
     else
         Info( InfoClasses, 1,
               "Calculating rational classes in Sylow subgroup" );
-        rationalSClasses := ClassesSolvableGroup( S, S, true, 3 );
+        rationalSClasses := ClassesSolvableGroup( S, 3 );
         
         # Fuse the classes with the Sylow normalizer.
         rationalSClasses := FusionRationalClassesPSubgroup
@@ -577,13 +586,13 @@ RationalClassesPElements := function( arg )
     od;
 
     return rationalClasses;
-end;
+end );
 
 #############################################################################
 ##
 #F  RationalClassesPermGroup(<G>[,<primes>]) rational classes for perm groups
 ##
-RationalClassesPermGroup := function( G, primes )
+InstallGlobalFunction( RationalClassesPermGroup, function( G, primes )
     local  rationalClasses,  # rational classes of <G>, result
            p,                # next (largest) prime to be processed
            pRationalClasses, # rational classes of <p>-elements in <G> 
@@ -724,7 +733,7 @@ RationalClassesPermGroup := function( G, primes )
         fi;
     od;
     return rationalClasses;
-end;
+end );
 
 #############################################################################
 ##
@@ -763,13 +772,6 @@ InstallMethod( ConjugacyClasses, "perm group", true, [ IsPermGroup ], 0,
     fi;
 end );
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

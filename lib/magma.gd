@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file   declares   the categories   of  magmas,   their  properties,
 ##  attributes, and operations.  Note that the  meaning of generators for the
@@ -22,9 +23,7 @@ Revision.magma_gd:=
 ##  A magma  in {\GAP}  is a  domain  $S$ with (not  necessarily associative)
 ##  multiplication $'\*' \: S \times S \rightarrow S$.
 ##
-IsMagma :=
-    NewCategory( "IsMagma",
-        IsDomain and IsMultiplicativeElementCollection );
+DeclareCategory( "IsMagma", IsDomain and IsMultiplicativeElementCollection );
 
 
 #############################################################################
@@ -34,8 +33,7 @@ IsMagma :=
 ##  A  magma-with-one in  {\GAP} is a magma $S$   with an operation '^0' that
 ##  yields the identity of the magma.
 ##
-IsMagmaWithOne :=
-    NewCategory( "IsMagmaWithOne",
+DeclareCategory( "IsMagmaWithOne",
         IsMagma and IsMultiplicativeElementWithOneCollection );
 
 
@@ -49,8 +47,7 @@ IsMagmaWithOne :=
 ##  with $Z$ either empty or containing the zero element of $S$,
 ##  that maps each nonzero element of $S$ to its inverse.
 ##
-IsMagmaWithInversesIfNonzero :=
-    NewCategory( "IsMagmaWithInversesIfNonzero",
+DeclareCategory( "IsMagmaWithInversesIfNonzero",
         IsMagmaWithOne and IsMultiplicativeElementWithOneCollection );
 
 
@@ -69,8 +66,7 @@ IsMagmaWithInversesIfNonzero :=
 ##  if either it contains no zero element or consists of a zero element that
 ##  has itself as zero-th power.
 ##
-IsMagmaWithInverses :=
-    NewCategory( "IsMagmaWithInverses",
+DeclareCategory( "IsMagmaWithInverses",
             IsMagmaWithInversesIfNonzero
         and IsMultiplicativeElementWithInverseCollection );
 
@@ -84,63 +80,63 @@ InstallTrueMethod( IsMagmaWithInverses, IsMagmaWithOne and IsTrivial );
 ##
 #F  Magma( <F>, <generators> )
 ##
-Magma := NewOperationArgs( "Magma" );
+DeclareGlobalFunction( "Magma" );
 
 
 #############################################################################
 ##
 #F  Submagma( <M>, <generators> )
 ##
-Submagma := NewOperationArgs( "Submagma" );
+DeclareGlobalFunction( "Submagma" );
 
 
 #############################################################################
 ##
 #F  SubmagmaNC( <M>, <generators> )
 ##
-SubmagmaNC := NewOperationArgs( "SubmagmaNC" );
+DeclareGlobalFunction( "SubmagmaNC" );
 
 
 #############################################################################
 ##
 #F  MagmaWithOne(<F>,<generators>)
 ##
-MagmaWithOne := NewOperationArgs( "MagmaWithOne" );
+DeclareGlobalFunction( "MagmaWithOne" );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithOne( <M>, <generators> )
 ##
-SubmagmaWithOne := NewOperationArgs( "SubmagmaWithOne" );
+DeclareGlobalFunction( "SubmagmaWithOne" );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithOneNC( <M>, <generators> )
 ##
-SubmagmaWithOneNC := NewOperationArgs( "SubmagmaWithOneNC" );
+DeclareGlobalFunction( "SubmagmaWithOneNC" );
 
 
 #############################################################################
 ##
 #F  MagmaWithInverses(<F>,<generators>)
 ##
-MagmaWithInverses := NewOperationArgs( "MagmaWithInverses" );
+DeclareGlobalFunction( "MagmaWithInverses" );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithInverses( <M>, <generators> )
 ##
-SubmagmaWithInverses := NewOperationArgs( "SubmagmaWithInverses" );
+DeclareGlobalFunction( "SubmagmaWithInverses" );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithInversesNC( <M>, <generators> )
 ##
-SubmagmaWithInversesNC := NewOperationArgs( "SubmagmaWithInversesNC" );
+DeclareGlobalFunction( "SubmagmaWithInversesNC" );
 
 
 #############################################################################
@@ -148,7 +144,7 @@ SubmagmaWithInversesNC := NewOperationArgs( "SubmagmaWithInversesNC" );
 #O  MagmaByGenerators(<generators>)
 #O  MagmaByGenerators(<F>,<generators>)
 ##
-MagmaByGenerators := NewOperation( "MagmaByGenerators", [ IsCollection ] );
+DeclareOperation( "MagmaByGenerators", [ IsCollection ] );
 
 
 #############################################################################
@@ -156,8 +152,7 @@ MagmaByGenerators := NewOperation( "MagmaByGenerators", [ IsCollection ] );
 #O  MagmaWithOneByGenerators(<generators>)
 #O  MagmaWithOneByGenerators(<F>,<generators>)
 ##
-MagmaWithOneByGenerators := NewOperation(
-    "MagmaWithOneByGenerators", [ IsCollection ] );
+DeclareOperation( "MagmaWithOneByGenerators", [ IsCollection ] );
 
 
 #############################################################################
@@ -165,58 +160,42 @@ MagmaWithOneByGenerators := NewOperation(
 #O  MagmaWithInversesByGenerators(<generators>)
 #O  MagmaWithInversesByGenerators(<F>,<generators>)
 ##
-MagmaWithInversesByGenerators := NewOperation(
-    "MagmaWithInversesByGenerators", [ IsCollection ] );
+DeclareOperation( "MagmaWithInversesByGenerators", [ IsCollection ] );
 
 
 #############################################################################
 ##
 #A  GeneratorsMagmaFamily( <F> )
 ##
-GeneratorsMagmaFamily := NewAttribute( "GeneratorsMagmaFamily", IsFamily );
+DeclareAttribute( "GeneratorsMagmaFamily", IsFamily );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfMagma(<M>)
 ##
-GeneratorsOfMagma    :=
-    NewAttribute( "GeneratorsOfMagma",
-        IsMagma );
-SetGeneratorsOfMagma := Setter( GeneratorsOfMagma );
-HasGeneratorsOfMagma := Tester( GeneratorsOfMagma );
+DeclareAttribute( "GeneratorsOfMagma", IsMagma );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfMagmaWithOne(<M>)
 ##
-GeneratorsOfMagmaWithOne :=
-    NewAttribute( "GeneratorsOfMagmaWithOne",
-        IsMagmaWithOne );
-SetGeneratorsOfMagmaWithOne := Setter( GeneratorsOfMagmaWithOne );
-HasGeneratorsOfMagmaWithOne := Tester( GeneratorsOfMagmaWithOne );
+DeclareAttribute( "GeneratorsOfMagmaWithOne", IsMagmaWithOne );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfMagmaWithInverses(<M>)
 ##
-GeneratorsOfMagmaWithInverses :=
-    NewAttribute( "GeneratorsOfMagmaWithInverses",
-        IsMagmaWithInverses );
-SetGeneratorsOfMagmaWithInverses := Setter( GeneratorsOfMagmaWithInverses );
-HasGeneratorsOfMagmaWithInverses := Tester( GeneratorsOfMagmaWithInverses );
+DeclareAttribute( "GeneratorsOfMagmaWithInverses", IsMagmaWithInverses );
 
 
 #############################################################################
 ##
 #A  TrivialSubmagmaWithOne( <M> ) . . . . . . . . . . .  for a magma-with-one
 ##
-TrivialSubmagmaWithOne := NewAttribute( "TrivialSubmagmaWithOne",
-    IsMagmaWithOne );
-SetTrivialSubmagmaWithOne := Setter( TrivialSubmagmaWithOne );
-HasTrivialSubmagmaWithOne := Tester( TrivialSubmagmaWithOne );
+DeclareAttribute( "TrivialSubmagmaWithOne", IsMagmaWithOne );
 
 
 #############################################################################
@@ -226,11 +205,7 @@ HasTrivialSubmagmaWithOne := Tester( TrivialSubmagmaWithOne );
 ##  A magma  <M> is associative  if  for all elements   $a, b, c  \in M$  the
 ##  equality $( a \* b ) \* c = a \* ( b \* c )$ holds.
 ##
-IsAssociative :=
-    NewProperty( "IsAssociative",
-        IsMagma );
-SetIsAssociative := Setter( IsAssociative );
-HasIsAssociative := Tester( IsAssociative );
+DeclareProperty( "IsAssociative", IsMagma );
 
 InstallTrueMethod( IsAssociative,
     IsAssociativeElementCollection and IsMagma );
@@ -239,7 +214,7 @@ InstallSubsetMaintainedMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma );
 
 InstallFactorMaintainedMethod( IsAssociative,
-    IsMagma and IsAssociative, IsMagma, IsMagma );
+    IsMagma and IsAssociative, IsCollection, IsMagma );
 
 InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 
@@ -251,11 +226,7 @@ InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 ##  A magma <M> is commutative if for all elements $a,  b \in M$ the equality
 ##  $a \* b = b \* a$ holds.
 ##
-IsCommutative :=
-    NewProperty( "IsCommutative",
-        IsMagma );
-SetIsCommutative := Setter( IsCommutative );
-HasIsCommutative := Tester( IsCommutative );
+DeclareProperty( "IsCommutative", IsMagma );
 
 IsAbelian    := IsCommutative;
 SetIsAbelian := SetIsCommutative;
@@ -268,7 +239,7 @@ InstallSubsetMaintainedMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma );
 
 InstallFactorMaintainedMethod( IsCommutative,
-    IsMagma and IsCommutative, IsMagma, IsMagma );
+    IsMagma and IsCommutative, IsCollection, IsMagma );
 
 InstallTrueMethod( IsCommutative, IsMagma and IsTrivial );
 
@@ -280,11 +251,7 @@ InstallTrueMethod( IsCommutative, IsMagma and IsTrivial );
 ##  A magma  that is not a  magma-with-one can have a  multiplicative neutral
 ##  element although this cannot be obtained as 0-th power of elements.
 ##
-MultiplicativeNeutralElement :=
-    NewAttribute(  "MultiplicativeNeutralElement",
-        IsMagma );
-SetMultiplicativeNeutralElement := Setter( MultiplicativeNeutralElement );
-HasMultiplicativeNeutralElement := Tester( MultiplicativeNeutralElement );
+DeclareAttribute( "MultiplicativeNeutralElement", IsMagma );
 
 
 #############################################################################
@@ -294,11 +261,7 @@ HasMultiplicativeNeutralElement := Tester( MultiplicativeNeutralElement );
 ##  'Centre' returns  the centre of  the  magma <M>, i.e.,   the set of those
 ##  elements $m \in <M>$ that commute with all elements of <M>.
 ##
-Centre :=
-    NewAttribute( "Centre",
-        IsMagma );
-SetCentre := Setter( Centre );
-HasCentre := Tester( Centre );
+DeclareAttribute( "Centre", IsMagma );
 
 
 #############################################################################
@@ -308,9 +271,7 @@ HasCentre := Tester( Centre );
 ##  'IsCentral' returns true if the  object <obj>,  which  must either be  an
 ##  element of a subset of the magma <M>, commutes with all elements in <M>.
 ##
-IsCentral :=
-    NewOperation( "IsCentral",
-        [ IsMagma, IsObject ] );
+DeclareOperation( "IsCentral", [ IsMagma, IsObject ] );
 
 
 #############################################################################
@@ -321,12 +282,7 @@ IsCentral :=
 ##  of the magma <M>.  This is the domain of those elements  $m \in <M>$ that
 ##  commute with <obj>.
 ##
-tmp:= InParentFOA( "Centralizer", IsMagma, IsObject, NewAttribute );
-Centralizer         := tmp[1];
-CentralizerOp       := tmp[2];
-CentralizerInParent := tmp[3];
-SetCentralizerInParent := Setter( CentralizerInParent );
-HasCentralizerInParent := Tester( CentralizerInParent );
+InParentFOA( "Centralizer", IsMagma, IsObject, NewAttribute );
 
 
 #############################################################################
@@ -336,8 +292,7 @@ HasCentralizerInParent := Tester( CentralizerInParent );
 ##  is the set of all elements <r> in the magma <M>
 ##  such that '<r> \* <r> = <elm>'.
 ##
-SquareRoots := NewOperation( "SquareRoots",
-    [ IsMagma, IsMultiplicativeElement ] );
+DeclareOperation( "SquareRoots", [ IsMagma, IsMultiplicativeElement ] );
 
 
 #############################################################################
@@ -347,7 +302,17 @@ SquareRoots := NewOperation( "SquareRoots",
 #F  FreeMagma( <name1>, <name2>, ... )
 #F  FreeMagma( <names> )
 ##
-FreeMagma := NewOperationArgs( "FreeMagma" );
+DeclareGlobalFunction( "FreeMagma" );
+
+
+#############################################################################
+##
+#F  FreeMagmaWithOne( <rank> )
+#F  FreeMagmaWithOne( <rank>, <name> )
+#F  FreeMagmaWithOne( <name1>, <name2>, ... )
+#F  FreeMagmaWithOne( <names> )
+##
+DeclareGlobalFunction( "FreeMagmaWithOne" );
 
 
 #############################################################################
@@ -406,21 +371,17 @@ end;
 ##
 #A  AsMagma( <C> )  . . . . . . . . . . . . . .  view a collection as a magma
 ##
-AsMagma := NewAttribute( "AsMagma", IsCollection );
-SetAsMagma := Setter( AsMagma );
-HasAsMagma := Tester( AsMagma );
+DeclareAttribute( "AsMagma", IsCollection );
 
 
 #############################################################################
 ##
 #O  AsSubmagma( <M>, <N> )  . . . view a magma as a submagma of another magma
 ##
-AsSubmagma := NewOperation( "AsSubmagma", [ IsMagma, IsMagma ] );
+DeclareOperation( "AsSubmagma", [ IsMagma, IsMagma ] );
 
 
 #############################################################################
 ##
 #E  magma.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the operations for the computation of complements in
 ##  pc groups
@@ -17,62 +18,70 @@ Revision.grppccom_gd :=
 ##
 #F  InfoComplement
 ##
-InfoComplement := NewInfoClass("InfoComplement");
+##  Information function for the complement routines
+DeclareInfoClass("InfoComplement");
 
 #############################################################################
 ##
 #O  COAffineBlocks( <S>, <mats> ) . . . . . . . . . . . . . . . . . . . local
 ##
-COAffineBlocks := NewOperationArgs("COAffineBlocks");
+DeclareGlobalFunction("COAffineBlocks");
 
 #############################################################################
 ##
 #O  CONextCentralizer( <ocr>, <S>, <H> )  . . . . . . . . . . . . . . . local
 ##
-CONextCentralizer := NewOperationArgs("CONextCentralizer");
+DeclareGlobalFunction("CONextCentralizer");
 
 #############################################################################
 ##
 #O  CONextCocycles( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . . local
 ##
-CONextCocycles := NewOperationArgs("CONextCocycles");
+DeclareGlobalFunction("CONextCocycles");
 
 #############################################################################
 ##
 #O  CONextCentral( <cor>, <ocr>, <S> ) . . . . . . . . . . . . . . . . local
 ##
-CONextCentral := NewOperationArgs("CONextCentral");
+DeclareGlobalFunction("CONextCentral");
 
 #############################################################################
 ##
 #O  CONextComplements( <cor>, <S>, <K>, <M> ) . . . . . . . . . . . . . local
 ##
-CONextComplements := NewOperationArgs("CONextComplements");
+DeclareGlobalFunction("CONextComplements");
 
 #############################################################################
 ##
 #O  COComplements( <cor>, <G>, <N>, <all> ) . . . . . . . . . . . . . . local
 ##
-COComplements := NewOperationArgs("COComplements");
+DeclareGlobalFunction("COComplements");
 
 #############################################################################
 ##
 #O  COComplementsMain( <G>, <N>, <all>, <fun> )  . . . . . . . . . . . . . local
 ##
-COComplementsMain := NewOperationArgs("COComplementsMain");
+DeclareGlobalFunction("COComplementsMain");
 
 #############################################################################
 ##
 #O  ComplementclassesSolvableNC( <G>, <N> )
 ##
-ComplementclassesSolvableNC := NewOperation("ComplementclassesSolvableNC",
+##  computes a set of representatives of the complement classes of <N> in
+##  <G> by cohomological methods. <N> must be a solvable normal subgroup
+##  of <G>.
+DeclareOperation("ComplementclassesSolvableNC",
   [IsGroup,IsGroup]);
 
 #############################################################################
 ##
 #O  Complementclasses( <G>, <N> ) . . . . . . . . . . . . find all complement
 ##
-Complementclasses := NewOperation("Complementclasses",[IsGroup,IsGroup]);
+##  Let <N> be a normal subgroup of <G>. This command returns a set of
+##  representatives for the conjugacy classes of complements of <N> in <G>.
+##  Complements are subgroups <U> of <G> which intersect trivially with <N>
+##  and together with <N> generate <G>.
+DeclareOperation("Complementclasses",[IsGroup,IsGroup]);
 
 #############################################################################
 ##

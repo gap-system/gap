@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for character tables.
 ##
@@ -31,16 +32,17 @@ Revision.ctbl_gi :=
 ##  For the following ``groupy'' operations, there are methods that allow
 ##  an ordinary character table instead of a group.
 ##
-##  'CharacterDegreesAttr',
-##  'CharacterTable',
-##  'ClassMultiplicationCoefficient',
-##  'OrdinaryCharacterTable',
-##  'Irr',
-##  'NrConjugacyClasses',
-##  'Size',
-##  'SizesConjugacyClasses',
-##  'SizesCentralizers',
-##  'OrdersClassRepresentatives'
+##  `CharacterDegreesAttr',
+##  `CharacterTable',
+##  `ClassMultiplicationCoefficient',
+##  `OrdinaryCharacterTable',
+##  `Irr',
+##  `NrConjugacyClasses',
+##  `TableOfMarks',
+##  `Size',
+##  `SizesConjugacyClasses',
+##  `SizesCentralizers',
+##  `OrdersClassRepresentatives'
 ##
 ##  For the following ``tably'' operations, there are methods that allow
 ##  a group instead of an ordinary character table.
@@ -60,7 +62,7 @@ Revision.ctbl_gi :=
 #F  CharacterDegrees( <G>, <p> )  . . . . . . . . . . for a group and a prime
 #F  CharacterDegrees( <tbl> ) . . . . . . . . . . . . . for a character table
 ##
-CharacterDegrees := function( arg )
+InstallGlobalFunction( CharacterDegrees, function( arg )
     if     Length( arg ) = 1
        and ( IsGroup( arg[1] ) or IsCharacterTable( arg[1] ) ) then
       return CharacterDegreesAttr( arg[1] );
@@ -68,7 +70,7 @@ CharacterDegrees := function( arg )
       return CharacterDegreesOp( arg[1], arg[2] );
     fi;
     Error( "usage: CharacterDegrees(<G>[,<p>]) or CharacterDegrees(<tbl>)" );
-end;
+end );
 
 
 #############################################################################
@@ -80,13 +82,13 @@ end;
 ##  The operation delegates to 'Irr'.
 ##
 InstallMethod( CharacterDegreesAttr,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     G -> CharacterDegreesOp( G, 0 ) );
 
 InstallOtherMethod( CharacterDegreesOp,
-    "method for a group, and zero",
+    "for a group, and zero",
     true,
     [ IsGroup, IsZeroCyc ], 0,
     function( G, zero )
@@ -94,9 +96,9 @@ InstallOtherMethod( CharacterDegreesOp,
     end );
 
 InstallOtherMethod( CharacterDegreesOp,
-    "method for a group, and positive integer",
+    "for a group, and positive integer",
     true,
-    [ IsGroup, IsInt and IsPosRat ], 0,
+    [ IsGroup, IsPosInt ], 0,
     function( G, p )
     if Size( G ) mod p = 0 then
       return CharacterDegreesAttr( CharacterTable( G, p ) );
@@ -114,13 +116,13 @@ InstallOtherMethod( CharacterDegreesOp,
 ##  The ordinary table may ask its group.
 ##
 InstallOtherMethod( CharacterDegreesAttr,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl -> Collected( List( Irr( tbl ), DegreeOfCharacter ) ) );
 
 InstallOtherMethod( CharacterDegreesAttr,
-    "method for an ordinary character table with group",
+    "for an ordinary character table with group",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     tbl -> CharacterDegreesAttr( UnderlyingGroup( tbl ) ) );
@@ -143,7 +145,7 @@ AttributeMethodByNiceMonomorphism( CharacterDegreesAttr,
 ##  We delegate to 'OrdinaryCharacterTable' or 'BrauerCharacterTable'.
 ##
 InstallMethod( CharacterTable,
-    "method for a group and a prime",
+    "for a group and a prime",
     true,
     [ IsGroup, IsInt ], 0,
     function( G, p )
@@ -155,13 +157,13 @@ InstallMethod( CharacterTable,
     end );
 
 InstallOtherMethod( CharacterTable,
-    "method for an ordinary table and a prime",
+    "for an ordinary table and a prime",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     BrauerCharacterTable );
 
 InstallOtherMethod( CharacterTable,
-    "method for a group (delegate to 'OrdinaryCharacterTable')",
+    "for a group (delegate to 'OrdinaryCharacterTable')",
     true,
     [ IsGroup ], 0,
     OrdinaryCharacterTable );
@@ -174,20 +176,20 @@ InstallOtherMethod( CharacterTable,
 ##  We either delegate to the group or use the irreducibles (if known)
 ##
 InstallOtherMethod( ClassMultiplicationCoefficient,
-    "method for an ord. table with group, and three pos. integers",
+    "for an ord. table with group, and three pos. integers",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup,
-      IsInt and IsPosRat, IsInt and IsPosRat, IsInt and IsPosRat ], 0,
+      IsPosInt, IsPosInt, IsPosInt ], 0,
     function( ordtbl, c1 ,c2, c3 )
     return ClassMultiplicationCoefficient( UnderlyingGroup( ordtbl ),
                                            c1, c2, c3 );
     end );
 
 InstallOtherMethod( ClassMultiplicationCoefficient,
-    "method for an ord. table with irreducibles, and three pos. integers",
+    "for an ord. table with irreducibles, and three pos. integers",
     true,
     [ IsOrdinaryTable and HasIrr,
-      IsInt and IsPosRat, IsInt and IsPosRat, IsInt and IsPosRat ], 10,
+      IsPosInt, IsPosInt, IsPosInt ], 10,
     function( ordtbl, c1 ,c2, c3 )
 
     local res, chi, char, classes;
@@ -206,7 +208,7 @@ InstallOtherMethod( ClassMultiplicationCoefficient,
 ##
 #F  ClassStructureCharTable(<tbl>,<classes>)  . gener. class mult. coefficent
 ##
-ClassStructureCharTable := function( tbl, classes )
+InstallGlobalFunction( ClassStructureCharTable, function( tbl, classes )
 
     local exp;
 
@@ -220,20 +222,20 @@ ClassStructureCharTable := function( tbl, classes )
                 0 )
            * Product( SizesConjugacyClasses( tbl ){ classes }, 1 )
            / Size( tbl );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MatClassMultCoeffsCharTable( <tbl>, <class> )
 ##
-MatClassMultCoeffsCharTable := function( tbl, class )
+InstallGlobalFunction( MatClassMultCoeffsCharTable, function( tbl, class )
     local nccl;
     nccl:= NrConjugacyClasses( tbl );
     return List( [ 1 .. nccl ],
                  j -> List( [ 1 .. nccl ],
                  k -> ClassMultiplicationCoefficient( tbl, class, j, k ) ) );
-end;
+end );
 
 
 #############################################################################
@@ -246,7 +248,7 @@ end;
 ##  group.
 ##
 InstallMethod( OrdinaryCharacterTable,
-    "method for a group",
+    "for a group",
     true,
     [ IsGroup ], 0,
     function( G )
@@ -264,7 +266,7 @@ InstallMethod( OrdinaryCharacterTable,
     end );
 
 InstallOtherMethod( OrdinaryCharacterTable,
-    "method for a Brauer character table with group",
+    "for a Brauer character table with group",
     true,
     [ IsBrauerTable and HasUnderlyingGroup ], 0,
     modtbl -> OrdinaryCharacterTable( UnderlyingGroup( modtbl ) ) );
@@ -278,7 +280,7 @@ InstallOtherMethod( OrdinaryCharacterTable,
 ##  Note that Brauer tables are stored in the ordinary table and not in the
 ##  group.
 ##
-BrauerCharacterTable := function( ordtbl, p )
+InstallGlobalFunction( BrauerCharacterTable, function( ordtbl, p )
 
     local known;
     if IsGroup( ordtbl ) then
@@ -299,7 +301,7 @@ BrauerCharacterTable := function( ordtbl, p )
 
     # return the <p>-modular table
     return known[p];
-end;
+end );
 
 
 #############################################################################
@@ -310,9 +312,9 @@ end;
 ##  since 'BrauerCharacterTable' delegates this to the ordinary table.
 ##
 InstallMethod( BrauerCharacterTableOp,
-    "method for ordinary character table, and positive integer",
+    "for ordinary character table, and positive integer",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     function( ordtbl, p )
     local tbl;
 
@@ -320,7 +322,7 @@ InstallMethod( BrauerCharacterTableOp,
     tbl:= Objectify( NewType( NearlyCharacterTablesFamily,
                               IsBrauerTable and IsAttributeStoringRep ),
                      rec() );
- 
+
     SetOrdinaryCharacterTable( tbl, ordtbl );
     SetUnderlyingCharacteristic( tbl, p );
 
@@ -333,7 +335,7 @@ InstallMethod( BrauerCharacterTableOp,
 #M  ComputedBrauerCharacterTables( <ordtbl> ) . . for an ord. character table
 ##
 InstallMethod( ComputedBrauerCharacterTables,
-    "method for an ordinary character table",
+    "for an ordinary character table",
     true,
     [ IsOrdinaryTable ], 0,
     ordtbl -> [] );
@@ -344,9 +346,9 @@ InstallMethod( ComputedBrauerCharacterTables,
 #M  \mod( <ordtbl>, <p> ) . . . . . . . . . . . . . . . . . <p>-modular table
 ##
 InstallMethod( \mod,
-    "method for ordinary character table, and positive integer",
+    "for ordinary character table, and positive integer",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     BrauerCharacterTableOp );
 
 
@@ -355,7 +357,7 @@ InstallMethod( \mod,
 #F  IBr( <G>, <p> )
 #F  IBr( <modtbl> )
 ##
-IBr := function( arg )
+InstallGlobalFunction( IBr, function( arg )
     if Length( arg ) = 1 and IsBrauerTable( arg[1] ) then
       return Irr( arg[1] );
     elif Length( arg ) = 2 and IsGroup( arg[1] ) and IsInt( arg[2] )
@@ -365,7 +367,7 @@ IBr := function( arg )
     else
       Error( "usage: IBr( <G>, <p> ) for group <G> and prime <p>" );
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -376,7 +378,7 @@ end;
 ##  using the Fong-Swan theorem.
 ##
 InstallOtherMethod( Irr,
-    "method for a <p>-solvable Brauer table (use the Fong-Swan theorem)",
+    "for a <p>-solvable Brauer table (use the Fong-Swan theorem)",
     true,
     [ IsBrauerTable ], 0,
     function( modtbl )
@@ -432,7 +434,7 @@ InstallOtherMethod( Irr,
 ##  We must delegate this to the underlying group.
 ##
 InstallOtherMethod( Irr,
-    "method for an ordinary character table",
+    "for an ordinary character table",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     ordtbl -> Irr( UnderlyingGroup( ordtbl ) ) );
@@ -451,32 +453,32 @@ InstallOtherMethod( Irr,
 ##  known ordinary character table.
 ##
 InstallOtherMethod( NrConjugacyClasses,
-    "method for an ordinary character table with underlying group",
+    "for an ordinary character table with underlying group",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     ordtbl -> NrConjugacyClasses( UnderlyingGroup( ordtbl ) ) );
 
 InstallOtherMethod( NrConjugacyClasses,
-    "method for a Brauer character table",
+    "for a Brauer character table",
     true,
     [ IsBrauerTable ], 0,
     modtbl -> Length( GetFusionMap( modtbl,
                                     OrdinaryCharacterTable( modtbl ) ) ) );
 
 InstallOtherMethod( NrConjugacyClasses,
-    "method for a character table with known centralizer sizes",
+    "for a character table with known centralizer sizes",
     true,
     [ IsNearlyCharacterTable and HasSizesCentralizers ], 0,
     tbl -> Length( SizesCentralizers( tbl ) ) );
 
 InstallOtherMethod( NrConjugacyClasses,
-    "method for a character table with known class lengths",
+    "for a character table with known class lengths",
     true,
     [ IsNearlyCharacterTable and HasSizesConjugacyClasses ], 0,
     tbl -> Length( SizesConjugacyClasses( tbl ) ) );
 
 InstallOtherMethod( NrConjugacyClasses,
-    "method for a group with known ordinary character table",
+    "for a group with known ordinary character table",
     true,
     [ IsGroup and HasOrdinaryCharacterTable ], 100,
 #T ?
@@ -503,14 +505,14 @@ InstallOtherMethod( NrConjugacyClasses,
 ##  known ordinary character table.
 ##
 InstallOtherMethod( Size,
-    "method for a character table with underlying group",
+    "for a character table with underlying group",
     true,
     [ IsCharacterTable and HasUnderlyingGroup ], 0,
     tbl -> Size( UnderlyingGroup( tbl ) ) );
-   
+
 
 InstallOtherMethod( Size,
-    "method for a character table with known centralizer sizes",
+    "for a character table with known centralizer sizes",
     true,
     [ IsNearlyCharacterTable and HasSizesCentralizers ], 100,
     tbl -> SizesCentralizers( tbl )[1] );
@@ -518,7 +520,7 @@ InstallOtherMethod( Size,
 
 
 InstallOtherMethod( Size,
-    "method for a group with known ordinary character table",
+    "for a group with known ordinary character table",
     true,
     [ IsGroup and HasOrdinaryCharacterTable ], 100,
 #T ?
@@ -546,13 +548,13 @@ InstallOtherMethod( Size,
 ##  known ordinary character table.
 ##
 InstallOtherMethod( SizesConjugacyClasses,
-    "method for an ordinary character table with underlying group",
+    "for an ordinary character table with underlying group",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     ordtbl -> SizesConjugacyClasses( UnderlyingGroup( ordtbl ) ) );
 
 InstallOtherMethod( SizesConjugacyClasses,
-    "method for a Brauer character table",
+    "for a Brauer character table",
     true,
     [ IsBrauerTable ], 0,
     function( modtbl )
@@ -563,7 +565,7 @@ InstallOtherMethod( SizesConjugacyClasses,
     end );
 
 InstallOtherMethod( SizesConjugacyClasses,
-    "method for a character table with known centralizer sizes",
+    "for a character table with known centralizer sizes",
     true,
     [ IsNearlyCharacterTable and HasSizesCentralizers ], 100,
     function( tbl )
@@ -574,7 +576,7 @@ InstallOtherMethod( SizesConjugacyClasses,
     end );
 
 InstallOtherMethod( SizesConjugacyClasses,
-    "method for a group with known ordinary character table",
+    "for a group with known ordinary character table",
     true,
     [ IsGroup and HasOrdinaryCharacterTable ], 100,
 #T ?
@@ -602,13 +604,13 @@ InstallOtherMethod( SizesConjugacyClasses,
 ##  the known ordinary character table.
 ##
 InstallOtherMethod( SizesCentralizers,
-    "method for an ordinary character table with underlying group",
+    "for an ordinary character table with underlying group",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     ordtbl -> SizesCentralizers( UnderlyingGroup( ordtbl ) ) );
 
 InstallOtherMethod( SizesCentralizers,
-    "method for a Brauer character table",
+    "for a Brauer character table",
     true,
     [ IsBrauerTable ], 0,
     function( modtbl )
@@ -618,7 +620,7 @@ InstallOtherMethod( SizesCentralizers,
     end );
 
 InstallOtherMethod( SizesCentralizers,
-    "method for a character table with known class lengths",
+    "for a character table with known class lengths",
     true,
     [ IsNearlyCharacterTable and HasSizesConjugacyClasses ], 100,
     function( tbl )
@@ -629,7 +631,7 @@ InstallOtherMethod( SizesCentralizers,
     end );
 
 InstallOtherMethod( SizesCentralizers,
-    "method for a group with known ordinary character table",
+    "for a group with known ordinary character table",
     true,
     [ IsGroup and HasOrdinaryCharacterTable ], 100,
 #T ?
@@ -657,13 +659,13 @@ InstallOtherMethod( SizesCentralizers,
 ##  the known ordinary character table.
 ##
 InstallOtherMethod( OrdersClassRepresentatives,
-    "method for an ordinary table with underlying group",
+    "for an ordinary table with underlying group",
     true,
     [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
     tbl -> OrdersClassRepresentatives( UnderlyingGroup( tbl ) ) );
 
 InstallOtherMethod( OrdersClassRepresentatives,
-    "method for a Brauer character table",
+    "for a Brauer character table",
     true,
     [ IsBrauerTable ], 0,
     function( modtbl )
@@ -676,7 +678,7 @@ InstallOtherMethod( OrdersClassRepresentatives,
 #T missing: method to compute orders from power maps
 
 InstallOtherMethod( OrdersClassRepresentatives,
-    "method for a group with known ordinary character table",
+    "for a group with known ordinary character table",
     true,
     [ IsGroup and HasOrdinaryCharacterTable ], 100,
 #T ?
@@ -705,7 +707,7 @@ InstallOtherMethod( OrdersClassRepresentatives,
 ##  initialize with empty records
 ##
 InstallMethod( IrredInfo,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> List( [ 1 .. NrConjugacyClasses( tbl ) ],
@@ -722,7 +724,7 @@ InstallMethod( IrredInfo,
 #T !!
 ##
 InstallMethod( ComputedClassFusions,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> [] );
@@ -732,11 +734,11 @@ InstallMethod( ComputedClassFusions,
 ##
 #F  PowerMapByComposition( <tbl>, <n> ) . .  for char. table and pos. integer
 ##
-PowerMapByComposition := function( tbl, n )
+InstallGlobalFunction( PowerMapByComposition, function( tbl, n )
 
     local powermap, nth_powermap, i;
 
-    if not ( IsInt( n ) and IsPosRat( n ) ) then
+    if not IsPosInt( n ) then
       Error( "<n> must be a positive integer" );
     fi;
     powermap:= ComputedPowerMaps( tbl );
@@ -751,7 +753,7 @@ PowerMapByComposition := function( tbl, n )
 
     # Return the map;
     return nth_powermap;
-end;
+end );
 
 
 #############################################################################
@@ -764,7 +766,7 @@ end;
 ##  We do not store power maps in groups, the group delegates to its ordinary
 ##  character table.
 ##
-PowerMap := function( arg )
+InstallGlobalFunction( PowerMap, function( arg )
 
     local tbl, n, known;
 
@@ -814,7 +816,7 @@ PowerMap := function( arg )
       Error( "usage: PowerMap( <tbl>, <n>[, <class>] )" );
     fi;
 
-end;
+end );
 
 
 #############################################################################
@@ -822,14 +824,18 @@ end;
 #M  PowerMapOp( <ordtbl>, <n> ) . . . . . .  for ord. table, and pos. integer
 ##
 InstallMethod( PowerMapOp,
-    "method for ordinary table with group, and positive integer",
+    "for ordinary table with group, and positive integer",
     true,
-    [ IsOrdinaryTable and HasUnderlyingGroup, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable and HasUnderlyingGroup, IsPosInt ], 0,
     function( tbl, n )
 
     local G, map, p;
 
-    if IsPrimeInt( n ) then
+    if n = 1 then
+
+      map:= [ 1 .. NrConjugacyClasses( tbl ) ];
+
+    elif IsPrimeInt( n ) then
 
       G:= UnderlyingGroup( tbl );
       map:= PowerMapOfGroup( G, n, ConjugacyClasses( G ) );
@@ -851,18 +857,19 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <ordtbl>, <n> ) . . . . . .  for ord. table, and pos. integer
 ##
 InstallMethod( PowerMapOp,
-    "method for ordinary table, and positive integer",
+    "for ordinary table, and positive integer",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     function( tbl, n )
-    local i, powermap, nth_powermap, range, pmap;
+    local i, powermap, nth_powermap, pmap;
 
-    if HasUnderlyingGroup( tbl ) then
+    nth_powermap:= [ 1 .. NrConjugacyClasses( tbl ) ];
+    if n = 1 then
+      return nth_powermap;
+    elif HasUnderlyingGroup( tbl ) then
       TryNextMethod();
     fi;
 
-    range:= [ 1 .. NrConjugacyClasses( tbl ) ];
-    nth_powermap:= range;
     powermap:= ComputedPowerMaps( tbl );
 
     for i in Factors( n ) do
@@ -889,9 +896,9 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <ordtbl>, <n>, <class> )
 ##
 InstallOtherMethod( PowerMapOp,
-    "method for ordinary table, and two positive integers",
+    "for ordinary table, and two positive integers",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt, IsPosInt ], 0,
     function( tbl, n, class )
 
     local i, powermap, image, range, pmap;
@@ -934,7 +941,7 @@ InstallOtherMethod( PowerMapOp,
 #M  PowerMapOp( <tbl>, <n> )
 ##
 InstallMethod( PowerMapOp,
-    "method for character table and negative integer",
+    "for character table and negative integer",
     true,
     [ IsCharacterTable, IsInt and IsNegRat ], 0,
     function( tbl, n )
@@ -947,11 +954,11 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <tbl>, <zero> )
 ##
 InstallMethod( PowerMapOp,
-    "method for character table and zero",
+    "for character table and zero",
     true,
     [ IsCharacterTable, IsZeroCyc ], 0,
     function( tbl, zero )
-    return List( [ 1 .. NrConjugacyClasses( tbl ) ], i -> 1 );
+    return ListWithIdenticalEntries( NrConjugacyClasses( tbl ), 1 );
     end );
 
 
@@ -960,9 +967,9 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <modtbl>, <n> )
 ##
 InstallMethod( PowerMapOp,
-    "method for Brauer table and positive integer",
+    "for Brauer table and positive integer",
     true,
-    [ IsBrauerTable, IsInt and IsPosRat ], 0,
+    [ IsBrauerTable, IsPosInt ], 0,
     function( tbl, n )
     local fus, ordtbl;
     ordtbl:= OrdinaryCharacterTable( tbl );
@@ -976,9 +983,9 @@ InstallMethod( PowerMapOp,
 #M  PowerMapOp( <modtbl>, <n>, <class> )
 ##
 InstallOtherMethod( PowerMapOp,
-    "method for Brauer table and two integers",
+    "for Brauer table and two integers",
     true,
-    [ IsBrauerTable, IsInt and IsPosRat, IsInt and IsPosRat ], 0,
+    [ IsBrauerTable, IsPosInt, IsPosInt ], 0,
     function( tbl, n, class )
     local fus, ordtbl;
 #T check whether the map is stored already!
@@ -993,7 +1000,7 @@ InstallOtherMethod( PowerMapOp,
 #M  ComputedPowerMaps( <tbl> )  . . . . . . . .  for a nearly character table
 ##
 InstallMethod( ComputedPowerMaps,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> [] );
@@ -1013,7 +1020,7 @@ InstallMethod( ComputedPowerMaps,
 ##  <tbl>, and check if the first orthogonality relation is satisfied.
 ##
 InstallMethod( IsInternallyConsistent,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     function( tbl )
@@ -1097,7 +1104,7 @@ InstallMethod( IsInternallyConsistent,
           flag:= false;
         fi;
       od;
-  
+
       # If the power maps of all prime divisors of the order are stored,
       # check if they are consistent with the representative orders.
       if     IsBound( orders )
@@ -1176,7 +1183,7 @@ InstallMethod( IsInternallyConsistent,
 #F  InverseMap( <paramap> )  . . . . . . . . .  Inverse of a parametrized map
 ##
 ##
-InverseMap := function( paramap )
+InstallGlobalFunction( InverseMap, function( paramap )
     local i, inversemap, im;
     inversemap:= [];
     for i in [ 1 .. Length( paramap ) ] do
@@ -1202,14 +1209,14 @@ InverseMap := function( paramap )
       fi;
     od;
     return inversemap;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  NrPolyhedralSubgroups( <tbl>, <c1>, <c2>, <c3>)  . # polyhedral subgroups
 ##
-NrPolyhedralSubgroups := function(tbl, c1, c2, c3)
+InstallGlobalFunction( NrPolyhedralSubgroups, function(tbl, c1, c2, c3)
     local orders, res, ord;
 
     orders:= OrdersClassRepresentatives( tbl );
@@ -1232,14 +1239,14 @@ NrPolyhedralSubgroups := function(tbl, c1, c2, c3)
              return rec(number:= res, type:= "V4");
           elif orders[c3] > 2 then   # D2n
              ord:= orders[c3];
-             if c1 <> c2 then 
+             if c1 <> c2 then
                 res:= res * 2;
              fi;
              res:= res * Length(ClassOrbitCharTable(tbl,c3))/(ord*Phi(ord));
              if not IsInt(res) then
                 Error("noninteger result");
              fi;
-             return rec(number:= res, 
+             return rec(number:= res,
                         type:= Concatenation("D" ,String(2*ord)));
           fi;
        elif orders[c2] = 3 then
@@ -1264,7 +1271,7 @@ NrPolyhedralSubgroups := function(tbl, c1, c2, c3)
           fi;
        fi;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1272,7 +1279,7 @@ end;
 #M  ClassParameters( <tbl> )  . . . . . . . . .  for a nearly character table
 ##
 InstallMethod( ClassParameters,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     function( tbl )
@@ -1360,7 +1367,7 @@ InstallMethod( ClassNames,
 ##  'ClassNames', '<tbl>.<name>' is the position of the class with this name.
 ##
 InstallMethod( \.,
-    "method for class names of a nearly character table",
+    "for class names of a nearly character table",
     true,
     [ IsNearlyCharacterTable, IsString ], 0,
     function( tbl, name )
@@ -1380,7 +1387,7 @@ InstallMethod( \.,
 #M  DisplayOptions( <tbl> )
 ##
 InstallMethod( DisplayOptions,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> rec() );
@@ -1398,7 +1405,7 @@ InstallMethod( DisplayOptions,
 #M  InfoText( <tbl> ) . . . . . . . . . . . . .  for a nearly character table
 ##
 InstallMethod( InfoText,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> "" );
@@ -1409,7 +1416,7 @@ InstallMethod( InfoText,
 #M  InverseClasses( <tbl> ) . . .  method for an ord. table with irreducibles
 ##
 InstallMethod( InverseClasses,
-    "method for a character table with known irreducibles",
+    "for a character table with known irreducibles",
     true,
     [ IsCharacterTable and HasIrr ], 0,
     function( tbl )
@@ -1457,18 +1464,18 @@ InstallMethod( InverseClasses,
 #M  InverseClasses( <tbl> ) . . . . . . . . . .  method for a character table
 ##
 InstallMethod( InverseClasses,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl -> PowerMap( tbl, -1 ) );
-    
+
 
 #############################################################################
 ##
 #M  NamesOfFusionSources( <tbl> ) . . . . . . .  for a nearly character table
 ##
 InstallMethod( NamesOfFusionSources,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     tbl -> [] );
@@ -1476,18 +1483,10 @@ InstallMethod( NamesOfFusionSources,
 
 #############################################################################
 ##
-#M  AutomorphismsOfTable( <tbl> )
-##
-
-#T missing!
-
-
-#############################################################################
-##
 #M  CharacterTableDirectProduct( <ordtbl1>, <ordtbl2> )
 ##
 InstallMethod( CharacterTableDirectProduct,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsOrdinaryTable, IsOrdinaryTable ], 0,
     function( tbl1, tbl2 )
 
@@ -1499,7 +1498,7 @@ InstallMethod( CharacterTableDirectProduct,
           vals2,         # list of 'tbl2'
           vals_direct,   # corresponding list of the result
           powermap_k,    # 'k'-th power map
-          ncc2_i,        # 
+          ncc2_i,        #
           fus;           # projection/embedding map
 
     direct:= ConvertToLibraryCharacterTableNC(
@@ -1538,7 +1537,7 @@ InstallMethod( CharacterTableDirectProduct,
       od;
     od;
     SetOrdersClassRepresentatives( direct, vals_direct );
-    
+
     # Compute power maps for all prime divisors of the result order.
     vals_direct:= ComputedPowerMaps( direct );
     for k in Union( FactorsInt( Size( tbl1 ) ),
@@ -1611,8 +1610,8 @@ InstallMethod( CharacterTableDirectProduct,
 #M  CharacterTableDirectProduct( <modtbl>, <ordtbl> )
 ##
 InstallMethod( CharacterTableDirectProduct,
-    "method for one Brauer and one ordinary character table",
-    IsIdentical,
+    "for one Brauer and one ordinary character table",
+    IsIdenticalObj,
     [ IsBrauerTable, IsOrdinaryTable ], 0,
     function( tbl1, tbl2 )
 
@@ -1674,8 +1673,8 @@ InstallMethod( CharacterTableDirectProduct,
 #M  CharacterTableDirectProduct( <ordtbl>, <modtbl> )
 ##
 InstallMethod( CharacterTableDirectProduct,
-    "method for one ordinary and one Brauer character table",
-    IsIdentical,
+    "for one ordinary and one Brauer character table",
+    IsIdenticalObj,
     [ IsOrdinaryTable, IsBrauerTable ], 0,
     function( tbl1, tbl2 )
 
@@ -1737,8 +1736,8 @@ InstallMethod( CharacterTableDirectProduct,
 #M  CharacterTableDirectProduct( <modtbl1>, <modtbl2> )
 ##
 InstallMethod( CharacterTableDirectProduct,
-    "method for two Brauer character tables",
-    IsIdentical,
+    "for two Brauer character tables",
+    IsIdenticalObj,
     [ IsBrauerTable, IsBrauerTable ], 0,
     function( tbl1, tbl2 )
 
@@ -1802,7 +1801,7 @@ InstallMethod( CharacterTableDirectProduct,
 #M  \*( <tbl1>, <tbl2> )  . . . . . . . . . . . . .  direct product of tables
 ##
 InstallOtherMethod( \*,
-    "method for two nearly character tables",
+    "for two nearly character tables",
     true,
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ], 0,
     CharacterTableDirectProduct );
@@ -1813,9 +1812,9 @@ InstallOtherMethod( \*,
 #M  CharacterTableFactorGroup( <tbl>, <classes> )
 ##
 InstallMethod( CharacterTableFactorGroup,
-    "method for an ordinary table, and a list of class positions",
+    "for an ordinary table, and a list of class positions",
     true,
-    [ IsOrdinaryTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsOrdinaryTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, classes )
 
     local F,              # table of the factor group, result
@@ -1909,9 +1908,9 @@ InstallMethod( CharacterTableFactorGroup,
 #M  \/( <tbl>, <list> )  . . . . . . . . .  character table of a factor group
 ##
 InstallOtherMethod( \/,
-    "method for character table and list of class positions",
+    "for character table and list of class positions",
     true,
-    [ IsNearlyCharacterTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsNearlyCharacterTable, IsList and IsCyclotomicCollection ], 0,
     CharacterTableFactorGroup );
 
 
@@ -1920,7 +1919,7 @@ InstallOtherMethod( \/,
 #M  CharacterTableIsoclinic( <ordtbl> ) . . . . . . . . for an ordinary table
 ##
 InstallMethod( CharacterTableIsoclinic,
-    "method for an ordinary character table",
+    "for an ordinary character table",
     true,
     [ IsOrdinaryTable ], 0,
     function( tbl )
@@ -1943,9 +1942,9 @@ InstallMethod( CharacterTableIsoclinic,
 #M  CharacterTableIsoclinic( <ordtbl>, <nsg> )  . . . . for an ordinary table
 ##
 InstallOtherMethod( CharacterTableIsoclinic,
-    "method for an ordinary character table, and a list of classes",
+    "for an ordinary character table, and a list of classes",
     true,
-    [ IsOrdinaryTable, IsList and IsCyclotomicsCollection ], 0,
+    [ IsOrdinaryTable, IsList and IsCyclotomicCollection ], 0,
     function( tbl, nsg )
     local centralizers,    # attribute of 'tbl'
           classes,         # attribute of 'tbl'
@@ -2045,7 +2044,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
         od;
 
       elif p mod 4 = 3 then
-  
+
         # For $g^p = h$, we have $(gi)^p = hi^p = hiz$, so again
         # we must choose the other preimage under the
         # factorfusion, if exists; the 'p'-th powers lie outside
@@ -2082,7 +2081,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
 ##  and adjust the irreducibles.
 ##
 InstallMethod( CharacterTableIsoclinic,
-    "method for a Brauer table",
+    "for a Brauer table",
     true,
     [ IsBrauerTable ], 0,
     function( tbl )
@@ -2130,7 +2129,7 @@ InstallMethod( CharacterTableIsoclinic,
 ##
 #F  CharacterTableOfNormalSubgroup( <tbl>, <classes> )
 ##
-CharacterTableOfNormalSubgroup := function( tbl, classes )
+InstallGlobalFunction( CharacterTableOfNormalSubgroup, function( tbl, classes )
 
     local sizesclasses,   # class lengths of the result
           size,           # size of the result
@@ -2235,14 +2234,14 @@ CharacterTableOfNormalSubgroup := function( tbl, classes )
 
     # Return the result.
     return result;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CharacterTableQuaternionic( <4n> )
 ##
-CharacterTableQuaternionic := function( 4n )
+InstallGlobalFunction( CharacterTableQuaternionic, function( 4n )
 
     local quaternionic;
 
@@ -2258,7 +2257,7 @@ CharacterTableQuaternionic := function( 4n )
     SetIdentifier( quaternionic, Concatenation( "Q", String( 4n ) ) );
 #T not allowed ...
     return quaternionic;
-end;
+end );
 
 
 #############################################################################
@@ -2266,9 +2265,9 @@ end;
 #M  CharacterTableRegular( <ordtbl>, <p> )  . restriction to <p>-reg. classes
 ##
 InstallMethod( CharacterTableRegular,
-    "method for an ordinary character table, and a positive integer",
+    "for an ordinary character table, and a positive integer",
     true,
-    [ IsNearlyCharacterTable, IsInt and IsPosRat ], 0,
+    [ IsNearlyCharacterTable, IsPosInt ], 0,
     function( ordtbl, prime )
 
     local fusion,
@@ -2311,7 +2310,7 @@ InstallMethod( CharacterTableRegular,
         regular.ComputedPowerMaps[i]:= inverse{ power[i]{ fusion } };
       fi;
     od;
-    
+
     regular:= ConvertToBrauerTableNC( regular );
     StoreFusion( regular, rec( map:= fusion, type:= "choice" ), ordtbl );
 
@@ -2321,35 +2320,10 @@ InstallMethod( CharacterTableRegular,
 
 #############################################################################
 ##
-#M  CharacterTableSpecialized( <tbl>, <q> )
-##
-
-#T missing!
-
-
-#############################################################################
-##
-#F  PossibleClassFusions( <subtbl>, <tbl> )
-#F  PossibleClassFusions( <subtbl>, <tbl>, <options> )
-##
-
-#T missing!
-
-
-#############################################################################
-##
-#F  PossiblePowerMaps( <tbl>, <p> )
-#F  PossiblePowerMaps( <tbl>, <p>, <options> )
-##
-
-#T missing!
-
-
-#############################################################################
-##
-#M  PrintObj( <tbl> ) . . . . . . . . . . . . . . . . print a character table
+#M  PrintObj( <tbl> ) . . . . . . . . . . . . . . . . . for a character table
 ##
 InstallMethod( PrintObj,
+    "for an ordinary table",
     true,
     [ IsOrdinaryTable ], 0,
     function( tbl )
@@ -2361,6 +2335,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
+    "for a Brauer table",
     true,
     [ IsBrauerTable ], 0,
     function( tbl )
@@ -2376,10 +2351,43 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  ViewObj( <tbl> )  . . . . . . . . . . . . . . . . . for a character table
+##
+InstallMethod( ViewObj,
+    "for an ordinary table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    function( tbl )
+    Print( "CharacterTable( " );
+    if HasUnderlyingGroup( tbl ) then
+      View( UnderlyingGroup( tbl ) );
+    else
+      View( Identifier( tbl ) );
+    fi;
+    Print(  " )" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a Brauer table",
+    true,
+    [ IsBrauerTable ], 0,
+    function( tbl )
+    Print( "BrauerTable( " );
+    if HasUnderlyingGroup( tbl ) then
+      View( UnderlyingGroup( tbl ) );
+    else
+      View( Identifier( OrdinaryCharacterTable( tbl ) ) );
+    fi;
+    Print( ", ", UnderlyingCharacteristic( tbl ), " )" );
+    end );
+
+
+#############################################################################
+##
 #M  AutomorphismsOfTable( <tbl> ) . . . . . . . . . . . for a character table
 ##
 InstallMethod( AutomorphismsOfTable,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl -> TableAutomorphisms( tbl, Irr( tbl ) ) );
@@ -2392,9 +2400,9 @@ InstallMethod( AutomorphismsOfTable,
 #M  Indicator( <modtbl>, 2 )
 ##
 InstallMethod( Indicator,
-    "method for an ordinary character table and a positive integer",
+    "for an ordinary character table and a positive integer",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     function( tbl, n )
 
     local indicator,
@@ -2417,9 +2425,9 @@ InstallMethod( Indicator,
     end );
 
 InstallOtherMethod( Indicator,
-    "method for an ord. character table, a hom. list, and a pos. integer",
+    "for an ord. character table, a hom. list, and a pos. integer",
     true,
-    [ IsOrdinaryTable, IsHomogeneousList, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsHomogeneousList, IsPosInt ], 0,
     function( tbl, characters, n )
 
     local principal, map;
@@ -2431,9 +2439,9 @@ InstallOtherMethod( Indicator,
     end );
 
 InstallMethod( Indicator,
-    "method for a Brauer character table and <n> = 2",
+    "for a Brauer character table and <n> = 2",
     true,
-    [ IsBrauerTable, IsInt and IsPosRat ], 0,
+    [ IsBrauerTable, IsPosInt ], 0,
     function( modtbl, n )
 
     local ordtbl,
@@ -2500,13 +2508,13 @@ InstallMethod( Indicator,
 #M  InducedCyclic( <tbl>, <classes>, \"all\" )
 ##
 InstallMethod( InducedCyclic,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl ->InducedCyclic( tbl, [ 1 .. NrConjugacyClasses( tbl ) ] ) );
 
 InstallOtherMethod( InducedCyclic,
-    "method for a character table and a string",
+    "for a character table and a string",
     true,
     [ IsCharacterTable, IsString ], 0,
     function( tbl, all )
@@ -2514,7 +2522,7 @@ InstallOtherMethod( InducedCyclic,
     end );
 
 InstallOtherMethod( InducedCyclic,
-    "method for a character table and a hom. list",
+    "for a character table and a hom. list",
     true,
     [ IsCharacterTable, IsHomogeneousList ], 0,
     function( tbl, classes )
@@ -2562,7 +2570,7 @@ InstallOtherMethod( InducedCyclic,
     end );
 
 InstallOtherMethod( InducedCyclic,
-    "method for a character table, a hom. list, and a string",
+    "for a character table, a hom. list, and a string",
     true,
     [ IsCharacterTable, IsHomogeneousList, IsString ], 0,
     function( tbl, classes, all )
@@ -2628,7 +2636,7 @@ InstallOtherMethod( InducedCyclic,
 #F  GetFusionMap( <source>, <destin> )
 #F  GetFusionMap( <source>, <destin>, <specification> )
 ##
-GetFusionMap := function( arg )
+InstallGlobalFunction( GetFusionMap, function( arg )
 
     local source,
           destin,
@@ -2699,7 +2707,7 @@ GetFusionMap := function( arg )
 
     # No fusion map was found.
     return fail;
-end;
+end );
 
 
 #############################################################################
@@ -2707,7 +2715,7 @@ end;
 #F  StoreFusion( <source>, <fusion>, <destination> )
 #F  StoreFusion( <source>, <fusionmap>, <destination> )
 ##
-StoreFusion := function( source, fusion, destination )
+InstallGlobalFunction( StoreFusion, function( source, fusion, destination )
 
     local fus;
 
@@ -2766,7 +2774,7 @@ StoreFusion := function( source, fusion, destination )
     # The fusion is new, simply add it.
     Add( ComputedClassFusions( source ), fusion );
     Add( NamesOfFusionSources( destination ), Identifier( source ) );
-end;
+end );
 
 
 #############################################################################
@@ -2777,7 +2785,7 @@ end;
 ##  We do not store class fusions in groups, the groups delegates to their
 ##  ordinary character tables.
 ##
-FusionConjugacyClasses := function( tbl1, tbl2 )
+InstallGlobalFunction( FusionConjugacyClasses, function( tbl1, tbl2 )
 
     local fus;
 
@@ -2805,16 +2813,16 @@ FusionConjugacyClasses := function( tbl1, tbl2 )
     else
       Error( "<tbl1> and <tbl2> must be nearly character tables" );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
-#M  FusionConjugacyClassesOp( tbl1, tbl2 )
+#M  FusionConjugacyClassesOp( <tbl1>, <tbl2> )
 ##
 InstallMethod( FusionConjugacyClassesOp,
-    "method for two ordinary tables with groups",
-    IsIdentical,
+    "for two ordinary tables with groups",
+    IsIdenticalObj,
     [ IsOrdinaryTable and HasUnderlyingGroup,
       IsOrdinaryTable and HasUnderlyingGroup ], 0,
     function( tbl1, tbl2 )
@@ -2823,8 +2831,8 @@ InstallMethod( FusionConjugacyClassesOp,
     end );
 
 InstallMethod( FusionConjugacyClassesOp,
-    "method for two ordinary tables",
-    IsIdentical,
+    "for two ordinary tables",
+    IsIdenticalObj,
     [ IsOrdinaryTable, IsOrdinaryTable ], 0,
     function( tbl1, tbl2 )
 
@@ -2871,8 +2879,8 @@ InstallMethod( FusionConjugacyClassesOp,
     end );
 
 InstallMethod( FusionConjugacyClassesOp,
-    "method for two Brauer tables",
-    IsIdentical,
+    "for two Brauer tables",
+    IsIdenticalObj,
     [ IsBrauerTable, IsBrauerTable ], 0,
     function( tbl1, tbl2 )
     local fus, ord1, ord2;
@@ -2902,7 +2910,7 @@ InstallMethod( FusionConjugacyClassesOp,
 #M  Display( <tbl>, <record> )
 ##
 InstallMethod( Display,
-    "method for a nearly character table",
+    "for a nearly character table",
     true,
     [ IsNearlyCharacterTable ], 0,
     function( tbl )
@@ -2910,7 +2918,7 @@ InstallMethod( Display,
     end );
 
 InstallMethod( Display,
-    "method for a nearly character table with display options",
+    "for a nearly character table with display options",
     true,
     [ IsNearlyCharacterTable and HasDisplayOptions ], 0,
     function( tbl )
@@ -2918,7 +2926,7 @@ InstallMethod( Display,
     end );
 
 InstallOtherMethod( Display,
-    "method for a nearly character table and a list",
+    "for a nearly character table and a list",
     true,
     [ IsNearlyCharacterTable, IsList ], 0,
     function( tbl, list )
@@ -2926,7 +2934,7 @@ InstallOtherMethod( Display,
     end );
 
 InstallOtherMethod( Display,
-    "method for a nearly character table and a record",
+    "for a nearly character table and a record",
     true,
     [ IsNearlyCharacterTable, IsRecord ], 0,
     function( tbl, options )
@@ -3069,7 +3077,7 @@ InstallOtherMethod( Display,
 
     # choice of characters
     if IsBound( options.chars ) then
-       if IsCyclotomicsCollection( options.chars ) then
+       if IsCyclotomicCollection( options.chars ) then
           cnr:= options.chars;
           chars:= List( Irr( tbl ){ cnr }, ValuesOfClassFunction );
        elif IsInt( options.chars ) then
@@ -3087,6 +3095,7 @@ InstallOtherMethod( Display,
       cnr:= [ 1 .. Length( chars ) ];
     else
       chars:= [];
+      cnr:= [];
     fi;
 
     if IsBound( options.letter ) and options.letter in letters then
@@ -3129,7 +3138,7 @@ InstallOtherMethod( Display,
        if options.indicator = true then
           indicator:= [2];
        elif IsRowVector( options.indicator ) then
-          indicator:= Set( Filtered( options.indicator, IsInt and IsPosRat ) );
+          indicator:= Set( Filtered( options.indicator, IsPosInt ) );
        fi;
     fi;
 
@@ -3378,7 +3387,7 @@ InstallOtherMethod( Display,
 #F  ConvertToOrdinaryTable( <record> )  . . . . create character table object
 #F  ConvertToOrdinaryTableNC( <record> )  . . . create character table object
 ##
-ConvertToOrdinaryTableNC := function( record )
+InstallGlobalFunction( ConvertToOrdinaryTableNC, function( record )
 
     local names,    # list of component names
           i;        # loop over 'SupportedOrdinaryTableInfo'
@@ -3404,7 +3413,7 @@ ConvertToOrdinaryTableNC := function( record )
               record!.( SupportedOrdinaryTableInfo[ i+1 ] ) );
         fi;
       od;
-  
+
       # Make the lists of character values into character objects.
       if "Irr" in names then
         SetIrr( record, List( record!.Irr,
@@ -3415,11 +3424,11 @@ ConvertToOrdinaryTableNC := function( record )
 
     # Return the object.
     return record;
-end;
+end );
 
-ConvertToOrdinaryTable := function( record )
+InstallGlobalFunction( ConvertToOrdinaryTable, function( record )
     Error( "not yet implemented!" );
-end;
+end );
 
 
 #############################################################################
@@ -3427,7 +3436,7 @@ end;
 #F  ConvertToBrauerTable( <record> ) . . . . . . . create Brauer table object
 #F  ConvertToBrauerTableNC( <record> ) . . . . . . create Brauer table object
 ##
-ConvertToBrauerTableNC := function( record )
+InstallGlobalFunction( ConvertToBrauerTableNC, function( record )
 
     local names,    # list of component names
           i;        # loop over 'SupportedBrauerTableInfo'
@@ -3456,18 +3465,69 @@ ConvertToBrauerTableNC := function( record )
 
     # Return the object.
     return record;
-end;
+end );
 
-ConvertToBrauerTable := function( record )
+InstallGlobalFunction( ConvertToBrauerTable, function( record )
     Error( "not yet implemented!" );
-end;
+end );
+
+
+#############################################################################
+##
+#F  ConvertToLibraryCharacterTableNC( <record> )
+##
+InstallGlobalFunction( ConvertToLibraryCharacterTableNC, function( record )
+
+    local names,    # list of component names
+          i;        # loop over 'SupportedOrdinaryTableInfo'
+
+    names:= RecNames( record );
+
+    # Make the object.
+    if IsBound( record.isGenericTable ) and record.isGenericTable then
+      Objectify( NewType( NearlyCharacterTablesFamily,
+                          IsGenericCharacterTableRep ),
+                 record );
+    elif not IsBound( record.UnderlyingCharacteristic ) then
+      Error( "<record> must have one of 'isGenericTable' or ",
+             "'UnderlyingCharacteristic'" );
+    elif record.UnderlyingCharacteristic = 0 then
+      Objectify( NewType( NearlyCharacterTablesFamily,
+                              IsOrdinaryTable
+                          and IsLibraryCharacterTableRep ),
+                 record );
+    else
+      Objectify( NewType( NearlyCharacterTablesFamily,
+                              IsBrauerTable
+                          and IsLibraryCharacterTableRep ),
+                 record );
+    fi;
+
+    # Enter the properties and attributes.
+    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
+      if     SupportedOrdinaryTableInfo[i] in names
+         and SupportedOrdinaryTableInfo[i] <> "Irr" then
+        Setter( SupportedOrdinaryTableInfo[ i-1 ] )( record,
+                            record!.( SupportedOrdinaryTableInfo[i] ) );
+      fi;
+    od;
+
+    # Make the lists of character values into character objects.
+    if "Irr" in names then
+      SetIrr( record, List( record!.Irr,
+                            chi -> CharacterByValues( record, chi ) ) );
+    fi;
+
+    # Return the object.
+    return record;
+end );
 
 
 #############################################################################
 ##
 #F  PrintCharacterTable( <tbl>, <varname> )
 ##
-PrintCharacterTable := function( tbl, varname )
+InstallGlobalFunction( PrintCharacterTable, function( tbl, varname )
 
     local i, info, comp;
 
@@ -3518,49 +3578,60 @@ PrintCharacterTable := function( tbl, varname )
     else
       Print( "ConvertToOrdinaryTableNC(tbl);\n" );
     fi;
-        
+
     # Print the rest of the construction.
     Print( "return tbl;\n" );
     Print( "end;\n" );
     Print( varname, ":= ", varname, "();\n" );
-end;
+end );
 
-PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
+PrintCharTable := function( tbl )
+    PrintCharacterTable( tbl, "t" );
+end;
 #T compat3 ?
 
 
-#T #############################################################################
-#T ##
-#T #M  IsCommutative( <tbl> )
-#T ##
-#T InstallOtherMethod( IsCommutative, true, [ IsOrdinaryTable ], 0,
-#T     tbl -> NrConjugacyClasses( tbl ) = Size( tbl ) );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  IsCyclic( <tbl> )
-#T ##
-#T InstallOtherMethod( IsCyclic, true, [ IsOrdinaryTable ], 0,
-#T     tbl -> Size( tbl ) in OrdersClassRepresentatives( tbl ) );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  IsSimple( <tbl> )
-#T ##
-#T InstallOtherMethod( IsSimple, true, [ IsOrdinaryTable ], 0,
-#T     tbl -> Length( ClassPositionsOfNormalSubgroups( tbl ) ) = 2 );
-#T 
-#T 
 #############################################################################
 ##
-#M  IsPSolvable( <tbl>, <p> )
+#M  IsCommutative( <tbl> )  . . . . . . . . . for an ordinary character table
+##
+InstallOtherMethod( IsCommutative,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    tbl -> NrConjugacyClasses( tbl ) = Size( tbl ) );
+
+
+#############################################################################
+##
+#M  IsCyclic( <tbl> ) . . . . . . . . . . . . for an ordinary character table
+##
+InstallOtherMethod( IsCyclic,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    tbl -> Size( tbl ) in OrdersClassRepresentatives( tbl ) );
+
+
+#############################################################################
+##
+#M  IsSimpleCharacterTable( <tbl> ) . . . . . for an ordinary character table
+##
+InstallOtherMethod( IsSimpleCharacterTable,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    tbl -> Length( ClassPositionsOfNormalSubgroups( tbl ) ) = 2 );
+
+
+#############################################################################
+##
+#M  IsPSolvableOp( <tbl>, <p> ) . . . .  for ord. character table and integer
 ##
 InstallOtherMethod( IsPSolvableOp,
-    "method for an ordinary character table, an a positive integer",
+    "for an ordinary character table, an a positive integer",
     true,
-    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    [ IsOrdinaryTable, IsPosInt ], 0,
     function( tbl, p )
 
     local nsg,       # list of all normal subgroups
@@ -3606,14 +3677,17 @@ InstallOtherMethod( IsPSolvableOp,
     end );
 
 
-#T #############################################################################
-#T ##
-#T #M  IsSolvable( <tbl> )
-#T ##
-#T InstallOtherMethod( IsSolvable, true, [ IsOrdinaryTable ], 0,
-#T     tbl -> IsPSolvable( tbl, 0 ) );
-#T 
-#T 
+#############################################################################
+##
+#M  IsSolvableCharacterTable( <tbl> ) . . . . for an ordinary character table
+##
+InstallOtherMethod( IsSolvableCharacterTable,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    tbl -> IsPSolvable( tbl, 0 ) );
+
+
 #T #############################################################################
 #T ##
 #T #M  IsSupersolvable( <tbl> )
@@ -3783,7 +3857,7 @@ InstallOtherMethod( IsPSolvableOp,
 #T 
 #T     series:= [];
 #T     series[1]:= [ 1 .. NrConjugacyClasses( tbl ) ];
-#T     K:= DerivedSubgroup( tbl );
+#T     K:= ClassesOfDerivedSubgroup( tbl );
 #T     if K = series[1] then
 #T       return series;
 #T     fi;
@@ -3883,77 +3957,86 @@ InstallOtherMethod( IsPSolvableOp,
 #T end;
 #T 
 #T 
-#T ##############################################################################
-#T ##
-#T #M  AbelianInvariants( <tbl> )
-#T ##
-#T ##  For all Sylow p subgroups of '<tbl> / DerivedSubgroup( <tbl> )' compute
-#T ##  the abelian invariants by repeated factoring by a cyclic group of maximal
-#T ##  order.
-#T ##
-#T InstallOtherMethod( AbelianInvariants,
-#T     "method for a character table",
-#T     true,
-#T     [ IsOrdinaryTable ], 0,
-#T     function( tbl )
-#T 
-#T     local kernel,  # cyclic group to be factored out
-#T           inv,     # list of invariants, result
-#T           primes,  # list of prime divisors of actual size
-#T           max,     # list of actual maximal orders, for 'primes'
-#T           pos,     # list of positions of maximal orders
-#T           orders,  # list of representative orders
-#T           i,       # loop over classes
-#T           j;       # loop over primes
-#T 
-#T     # Do all computations modulo the derived subgroup.
-#T     kernel:= ClassesOfDerivedSubgroup( tbl );
-#T     if Length( kernel ) > 1 then
-#T       tbl:= tbl / kernel;
-#T     fi;
-#T 
-#T     inv:= [];
-#T 
-#T     while 1 < Size( tbl ) do
-#T 
-#T       # For all prime divisors $p$ of the size,
-#T       # compute the element of maximal $p$ power order.
-#T       primes:= Set( FactorsInt( Size( tbl ) ) );
-#T       max:= List( primes, x -> 1 );
-#T       pos:= [];
-#T       orders:= OrdersClassRepresentatives( tbl );
-#T       for i in [ 2 .. Length( orders ) ] do
-#T         if IsPrimePowerInt( orders[i] ) then
-#T           j:= 1;
-#T           while orders[i] mod primes[j] <> 0 do
-#T             j:= j+1;
-#T           od;
-#T           if orders[i] > max[j] then
-#T             max[j]:= orders[i];
-#T             pos[j]:= i;
-#T           fi;
-#T         fi;
-#T       od;
-#T         
-#T       # Update the list of invariants.
-#T       Append( inv, max );
-#T 
-#T       # Factor out the cyclic subgroup.
-#T       tbl:= tbl / ClassesOfNormalClosure( tbl, pos );
-#T 
-#T     od;
-#T 
-#T     return AbelianInvariantsOfList( inv );
-#T     end );
-#T 
-#T 
+##############################################################################
+##
+#M  AbelianInvariants( <tbl> )
+##
+##  For all Sylow p subgroups of '<tbl> / ClassesOfDerivedSubgroup( <tbl> )'
+##  compute the abelian invariants by repeated factoring by a cyclic group
+##  of maximal order.
+#T for a table with group, is it better to delegate to the group?
+#T when is it better to delegate from the group to the table?
+#T (at least orders & power maps should be known)
+##
+InstallOtherMethod( AbelianInvariants,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    function( tbl )
+
+    local kernel,  # cyclic group to be factored out
+          inv,     # list of invariants, result
+          primes,  # list of prime divisors of actual size
+          max,     # list of actual maximal orders, for 'primes'
+          pos,     # list of positions of maximal orders
+          orders,  # list of representative orders
+          i,       # loop over classes
+          j;       # loop over primes
+
+    # Do all computations modulo the derived subgroup.
+    kernel:= ClassesOfDerivedSubgroup( tbl );
+    if 1 < Length( kernel ) then
+      tbl:= tbl / kernel;
+    fi;
+#T cheaper to use only orders and power maps,
+#T and to avoid computing several tables!
+#T (especially avoid to compute the irreducibles of the original
+#T table if they are not known!)
+
+    inv:= [];
+
+    while 1 < Size( tbl ) do
+
+      # For all prime divisors $p$ of the size,
+      # compute the element of maximal $p$ power order.
+      primes:= Set( FactorsInt( Size( tbl ) ) );
+      max:= List( primes, x -> 1 );
+      pos:= [];
+      orders:= OrdersClassRepresentatives( tbl );
+      for i in [ 2 .. Length( orders ) ] do
+        if IsPrimePowerInt( orders[i] ) then
+          j:= 1;
+          while orders[i] mod primes[j] <> 0 do
+            j:= j+1;
+          od;
+          if orders[i] > max[j] then
+            max[j]:= orders[i];
+            pos[j]:= i;
+          fi;
+        fi;
+      od;
+
+      # Update the list of invariants.
+      Append( inv, max );
+
+      # Factor out the cyclic subgroup.
+      tbl:= tbl / ClassesOfNormalClosure( tbl, pos );
+
+    od;
+
+    return AbelianInvariantsOfList( inv );
+#T if we call this function anyhow, we can also take factors by the largest
+#T cyclic subgroup of the commutator factor group!
+    end );
+
+
 #T #############################################################################
 #T ##
 #T #M  Agemo( <tbl>, <p> )
 #T ##
-#T InstallOtherMethod( Agemo, true, [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+#T InstallOtherMethod( Agemo, true, [ IsOrdinaryTable, IsPosInt ], 0,
 #T     function( tbl, p )
-#T     return NormalClosure( tbl, Set( PowerMap( tbl, p ) ) );
+#T     return ClassesOfNormalClosure( tbl, Set( PowerMap( tbl, p ) ) );
 #T     end );
 #T 
 #T 
@@ -3970,28 +4053,32 @@ InstallOtherMethod( IsPSolvableOp,
 #T                      x -> centralizers[x] = size );
 #T     end );
 #T #T CentreClasses!
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  DerivedSubgroup( <tbl> )
-#T ##
-#T InstallOtherMethod( DerivedSubgroup, true, [ IsOrdinaryTable ], 0,
-#T     function( tbl )
-#T 
-#T     local der,   # derived subgroup, result
-#T           chi;   # one irreducible character
-#T 
-#T     der:= [ 1 .. NrConjugacyClasses( tbl ) ];
-#T     for chi in Irr( tbl ) do
-#T       if Degree( chi ) = 1 then
-#T         IntersectSet( der, KernelChar( chi ) );
-#T       fi;
-#T     od;
-#T     return der;
-#T     end );
-#T 
-#T 
+
+
+#############################################################################
+##
+#M  ClassesOfDerivedSubgroup( <tbl> )
+##
+InstallMethod( ClassesOfDerivedSubgroup,
+    "for an ordinary table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    function( tbl )
+
+    local der,   # derived subgroup, result
+          chi;   # one irreducible character
+
+    der:= [ 1 .. NrConjugacyClasses( tbl ) ];
+    for chi in Irr( tbl ) do
+#T support `Lin' ?
+      if DegreeOfCharacter( chi ) = 1 then
+        IntersectSet( der, KernelChar( chi ) );
+      fi;
+    od;
+    return der;
+    end );
+
+
 #T #############################################################################
 #T ##
 #T #M  ElementaryAbelianSeries( <tbl> )
@@ -4072,7 +4159,7 @@ InstallOtherMethod( IsPSolvableOp,
 #T     od;
 #T 
 #T     # Return the normal closure.
-#T     return NormalClosure( tbl, ppord );
+#T     return ClassesOfNormalClosure( tbl, ppord );
 #T     end );
 #T 
 #T 
@@ -4112,37 +4199,40 @@ InstallOtherMethod( IsPSolvableOp,
 #T 
 #T     return maximal;
 #T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  NormalClosure( <tbl>, <classes> )
-#T ##
-#T InstallOtherMethod( NormalClosureOp, true, [ IsOrdinaryTable, IsList ], 0,
-#T     function( tbl, classes )
-#T 
-#T     local closure,   # classes forming the normal closure, result
-#T           chi,       # one irreducible character of 'tbl'
-#T           ker;       # classes forming the kernel of 'chi'
-#T 
-#T     closure:= [ 1 .. NrConjugacyClasses( tbl ) ];
-#T     for chi in Irr( tbl ) do
-#T       ker:= KernelChar( chi );
-#T       if IsSubset( ker, classes ) then
-#T         IntersectSet( closure, ker );
-#T       fi;
-#T     od;
-#T 
-#T     return closure;
-#T     end );
-#T 
-#T 
+
+
+#############################################################################
+##
+#M  ClassesOfNormalClosure( <tbl>, <classes> )
+##
+InstallMethod( ClassesOfNormalClosure,
+    "for an ordinary character table",
+    true,
+    [ IsOrdinaryTable, IsHomogeneousList and IsCyclotomicCollection ], 0,
+    function( tbl, classes )
+
+    local closure,   # classes forming the normal closure, result
+          chi,       # one irreducible character of 'tbl'
+          ker;       # classes forming the kernel of 'chi'
+
+    closure:= [ 1 .. NrConjugacyClasses( tbl ) ];
+    for chi in Irr( tbl ) do
+      ker:= KernelChar( chi );
+      if IsSubset( ker, classes ) then
+        IntersectSet( closure, ker );
+      fi;
+    od;
+
+    return closure;
+    end );
+
+
 #############################################################################
 ##
 #M  ClassPositionsOfNormalSubgroups( <tbl> )
 ##
 InstallOtherMethod( ClassPositionsOfNormalSubgroups,
-    "method for an ordinary character table",
+    "for an ordinary character table",
     true,
     [ IsOrdinaryTable ], 0,
     function( tbl )
@@ -4283,7 +4373,7 @@ PermutationToSortCharacters := function( tbl, chars, degree, norm )
                           rational( chars[i] ), i ];
       od;
     else
-      Error( "<degree> or <norm> must be 'true'" );
+      Error( "at least one of <degree> or <norm> must be `true'" );
     fi;
     Sort( listtosort );
     len:= Length( listtosort[1] );
@@ -4298,11 +4388,11 @@ end;
 ##
 #F  RealClassesCharTable( <tbl> ) . . . .  the real-valued classes of a table
 ##
-RealClassesCharTable := function( tbl )
+InstallGlobalFunction( RealClassesCharTable, function( tbl )
     local inv;
     inv:= PowerMap( tbl, -1 );
     return Filtered( [ 1 .. NrConjugacyClasses( tbl ) ], i -> inv[i] = i );
-end;
+end );
 
 
 #############################################################################
@@ -4310,7 +4400,7 @@ end;
 #M  CharacterTableWithSortedCharacters( <tbl> )
 ##
 InstallMethod( CharacterTableWithSortedCharacters,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl -> CharacterTableWithSortedCharacters( tbl,
@@ -4322,7 +4412,7 @@ InstallMethod( CharacterTableWithSortedCharacters,
 #M  CharacterTableWithSortedCharacters( <tbl>, <perm> )
 ##
 InstallOtherMethod( CharacterTableWithSortedCharacters,
-    "method for an ordinary character table, and a permutation",
+    "for an ordinary character table, and a permutation",
     true,
     [ IsOrdinaryTable, IsPerm ], 0,
     function( tbl, perm )
@@ -4357,7 +4447,7 @@ InstallOtherMethod( CharacterTableWithSortedCharacters,
 #M  SortedCharacters( <tbl>, <chars> )
 ##
 InstallMethod( SortedCharacters,
-    "method for a character table, and a homogeneous list",
+    "for a character table, and a homogeneous list",
     true,
     [ IsNearlyCharacterTable, IsHomogeneousList ], 0,
     function( tbl, chars )
@@ -4372,7 +4462,7 @@ InstallMethod( SortedCharacters,
 #M  SortedCharacters( <tbl>, <chars>, \"degree\" )
 ##
 InstallOtherMethod( SortedCharacters,
-    "method for a character table, a homogeneous list, and a string",
+    "for a character table, a homogeneous list, and a string",
     true,
     [ IsNearlyCharacterTable, IsHomogeneousList, IsString ], 0,
     function( tbl, chars, string )
@@ -4431,7 +4521,7 @@ end;
 #M  CharacterTableWithSortedClasses( <tbl> )
 ##
 InstallMethod( CharacterTableWithSortedClasses,
-    "method for a character table",
+    "for a character table",
     true,
     [ IsCharacterTable ], 0,
     tbl -> CharacterTableWithSortedClasses( tbl,
@@ -4444,7 +4534,7 @@ InstallMethod( CharacterTableWithSortedClasses,
 #M  CharacterTableWithSortedClasses( <tbl>, \"representatives\" )
 ##
 InstallOtherMethod( CharacterTableWithSortedClasses,
-    "method for a character table, and string",
+    "for a character table, and string",
     true,
     [ IsCharacterTable, IsString ], 0,
     function( tbl, string )
@@ -4465,7 +4555,7 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
 #M  CharacterTableWithSortedClasses( <tbl>, <permutation> )
 ##
 InstallOtherMethod( CharacterTableWithSortedClasses,
-    "method for an ordinary character table, and a permutation",
+    "for an ordinary character table, and a permutation",
     true,
     [ IsOrdinaryTable, IsPerm ], 0,
     function( tbl, perm )
@@ -4484,7 +4574,7 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
     fi;
 
     # Set supported attributes that do not need adjustion.
-    for attr in [ Identifier, InfoText, IrredInfo, IsSimpleGroup,
+    for attr in [ Identifier, InfoText, IrredInfo, IsSimpleCharacterTable,
                   Maxes, NamesOfFusionSources, UnderlyingCharacteristic ] do
       if Tester( attr )( tbl ) then
         Setter( attr )( new, attr( tbl ) );
@@ -4557,7 +4647,7 @@ InstallOtherMethod( CharacterTableWithSortedClasses,
 #F  SortedCharacterTable( <tbl>, <normalseries> )
 #F  SortedCharacterTable( <tbl>, <facttbl>, <kernel> )
 ##
-SortedCharacterTable := function( arg )
+InstallGlobalFunction( SortedCharacterTable, function( arg )
 
     local i, j, tbl, kernels, list, columns, rows, chi, F, facttbl, kernel,
           trans, ker, fus, new;
@@ -4676,14 +4766,14 @@ SortedCharacterTable := function( arg )
     new:= CharacterTableWithSortedClasses( tbl, columns );
     new:= CharacterTableWithSortedCharacters( new, rows );
     return new;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CASString( <tbl> )
 ##
-CASString := function( tbl )
+InstallGlobalFunction( CASString, function( tbl )
 
     local ll,                 # line length
           CAS,                # the string, result
@@ -4703,15 +4793,18 @@ CASString := function( tbl )
     fi;
     Append( CAS, "00/00/00. 00.00.00.\n" );           # date
     if HasSizesCentralizers( tbl ) then               # nccl, cvw, ctw
-      Append( CAS, Concatenation(
-              "(", String( Length( SizesCentralizers( tbl ) ) ), ",",
-              String( Length( SizesCentralizers( tbl ) ) ), ",0," ) );
+      Append( CAS, "(" );
+      Append( CAS, String( Length( SizesCentralizers( tbl ) ) ) );
+      Append( CAS, "," );
+      Append( CAS, String( Length( SizesCentralizers( tbl ) ) ) );
+      Append( CAS, ",0," );
     else
       Append( CAS, "(0,0,0," );
     fi;
 
     if HasIrr( tbl ) then                             # max
-      Append( CAS, Concatenation( String( Length( Irr( tbl ) ) ), "," ) );
+      Append( CAS, String( Length( Irr( tbl ) ) ) );
+      Append( CAS, "," );
       if Length( Irr( tbl ) ) = Length( Set( Irr( tbl ) ) ) then
         Append( CAS, "-1," );                         # link
       else
@@ -4720,10 +4813,13 @@ CASString := function( tbl )
     fi;
     Append( CAS, "0)\n" );                            # tilt
     if HasInfoText( tbl ) then                        # text
-      Append( CAS, Concatenation( "text:\n(#", InfoText( tbl ), "#),\n" ) );
+      Append( CAS, "text:\n(#" );
+      Append( CAS, InfoText( tbl ) );
+      Append( CAS, "#),\n" );
     fi;
     if HasSize( tbl ) then                            # order
-      Append( CAS, Concatenation( "order=", String( Size( tbl ) ) ) );
+      Append( CAS, "order=" );
+      Append( CAS, String( Size( tbl ) ) );
     fi;
 
     convertcyclotom:= function( cyc )
@@ -4731,7 +4827,7 @@ CASString := function( tbl )
     coeffs:= COEFFS_CYC( cyc );
     str:= Concatenation( "\n<w", String( Length( coeffs ) ), "," );
     if coeffs[1] <> 0 then
-      str:= Concatenation( str, String( coeffs[1] ) );
+      Append( str, String( coeffs[1] ) );
     fi;
     i:= 2;
     while i <= Length( coeffs ) do
@@ -4742,17 +4838,17 @@ CASString := function( tbl )
         str:= "";
       fi;
       if coeffs[i] < 0 then
-        str:= Concatenation( str, "-" );
+        Append( str, "-" );
         if coeffs[i] <> -1 then
-          str:= Concatenation( str, String( -coeffs[i] ) );
+          Append( str, String( -coeffs[i] ) );
         fi;
-        str:= Concatenation( str, "w", String( i-1 ) );
+        Append( str, "w", String( i-1 ) );
       elif coeffs[i] > 0 then
-        str:= Concatenation( str, "+" );
+        Append( str, "+" );
         if coeffs[i] <> 1 then
-          str:= Concatenation( str, String( coeffs[i] ) );
+          Append( str, String( coeffs[i] ) );
         fi;
-        str:= Concatenation( str, "w", String( i-1 ) );
+        Append( str, "w", String( i-1 ) );
       fi;
       i:= i+1;
     od;
@@ -4779,7 +4875,7 @@ CASString := function( tbl )
         str:= "";
       elif IsUnknown( list[i] ) or IsList( list[i] ) then
         if Length( str ) + 4 < ll then
-          str:= Concatenation( str, ",?" );
+          Append( str, ",?" );
         else
           Append( CAS, str );
           Append( CAS, ",?\n" );
@@ -4787,7 +4883,7 @@ CASString := function( tbl )
         fi;
       else
         if Length(str) + Length( String(list[i]) ) + 5 < ll then
-          str:= Concatenation( str, ",", String( list[i] ) );
+          Append( str, ",", String( list[i] ) );
         else
           Append( CAS, str );
           Append( CAS, ",\n" );
@@ -4915,7 +5011,7 @@ CASString := function( tbl )
       Append( CAS, ";\n///" );
     fi;
     return CAS;
-end;
+end );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the declaration of functions and data around
 ##  Conway polynomials.
@@ -29,7 +30,7 @@ Revision.polyconw_gd :=
 ##
 ##  (this function is used in 'ConwayPol'.)
 ##
-PowerModEvalPol := NewOperationArgs( "PowerModEvalPol" );
+DeclareGlobalFunction( "PowerModEvalPol" );
 
 
 ############################################################################
@@ -43,7 +44,7 @@ CONWAYPOLYNOMIALS := [];
 ##
 #F  ConwayPol( <p>, <n> ) . . . . . <n>-th Conway polynomial in charact. <p>
 ##
-ConwayPol := NewOperationArgs( "ConwayPol" );
+DeclareGlobalFunction( "ConwayPol" );
 
 
 ############################################################################
@@ -75,7 +76,7 @@ ConwayPol := NewOperationArgs( "ConwayPol" );
 ##  With respect to the ordering defined above, $\Phi_{n,p}$ shall be
 ##  minimal.
 ##
-ConwayPolynomial := NewOperationArgs( "ConwayPolynomial" );
+DeclareGlobalFunction( "ConwayPolynomial" );
 
 
 #############################################################################

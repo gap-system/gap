@@ -2,6 +2,9 @@
 ##
 #W  rwspcclt.gd                 GAP Library                      Frank Celler
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This file contains operations for  polycyclic rewriting systems, with  or
 ##  without torsion free  generators.   There are  two  subcategories, namely
 ##  polycyclic rewriting  systems defined by a  power/commutator presentation
@@ -46,7 +49,7 @@ Revision.rwspcclt_gd :=
 
 #C  IsPolycyclicCollector( <obj> )
 ##
-IsPolycyclicCollector := NewCategory(
+DeclareCategory(
     "IsPolycyclicCollector",
     IsRewritingSystem and IsBuiltFromGroup );
 
@@ -55,7 +58,7 @@ IsPolycyclicCollector := NewCategory(
 ##
 #C  IsPowerConjugateCollector( <obj> )
 ##
-IsPowerConjugateCollector := NewCategory(
+DeclareCategory(
     "IsPowerConjugateCollector",
     IsPolycyclicCollector );
 
@@ -64,7 +67,7 @@ IsPowerConjugateCollector := NewCategory(
 ##
 #C  IsPowerCommutatorCollector( <obj> )
 ##
-IsPowerCommutatorCollector := NewCategory(
+DeclareCategory(
     "IsPowerCommutatorCollector",
     IsPolycyclicCollector );
 
@@ -74,12 +77,10 @@ IsPowerCommutatorCollector := NewCategory(
 
 #A  RelativeOrders( <col> )
 ##
-RelativeOrders := NewAttribute(
+DeclareAttribute(
     "RelativeOrders",
     IsObject );
 
-HasRelativeOrders := Tester( RelativeOrders );
-SetRelativeOrders := Setter( RelativeOrders );
 
 
 #############################################################################
@@ -87,14 +88,14 @@ SetRelativeOrders := Setter( RelativeOrders );
 
 #P  IsUpToDatePolycyclicCollector( <col> )
 ##
-IsUpToDatePolycyclicCollector := NewFilter("IsUpToDatePolycyclicCollector");
+DeclareFilter("IsUpToDatePolycyclicCollector");
 
 
 #############################################################################
 ##
 #O  OutdatePolycyclicCollector( <col> )
 ##
-OutdatePolycyclicCollector := NewOperation(
+DeclareOperation(
     "OutdatePolycyclicCollector",
     [ IsPolycyclicCollector and IsMutable ] );
 
@@ -103,7 +104,7 @@ OutdatePolycyclicCollector := NewOperation(
 ##
 #O  UpdatePolycyclicCollector( <col> )
 ##
-UpdatePolycyclicCollector := NewOperation(
+DeclareOperation(
     "UpdatePolycyclicCollector",
     [ IsPolycyclicCollector ] );
 
@@ -113,7 +114,7 @@ UpdatePolycyclicCollector := NewOperation(
 
 #O  CollectWord( <col>, <v>, <w> )
 ##
-CollectWord := NewOperation(
+DeclareOperation(
     "CollectWord", 
     [ IsPolycyclicCollector, IsList, IsObject ] );
 
@@ -122,7 +123,7 @@ CollectWord := NewOperation(
 ##
 #O  CollectWordOrFail( <col>, <v>, <w> )
 ##
-CollectWordOrFail := NewOperation(
+DeclareOperation(
     "CollectWordOrFail",
     [ IsPolycyclicCollector, IsList, IsObject ] );
 
@@ -131,7 +132,7 @@ CollectWordOrFail := NewOperation(
 ##
 #O  NonTrivialRightHandSides( <col> )
 ##
-NonTrivialRightHandSides := NewOperation(
+DeclareOperation(
     "NonTrivialRightHandSides",
     [ IsPolycyclicCollector ] );
 
@@ -140,8 +141,8 @@ NonTrivialRightHandSides := NewOperation(
 ##
 #O  ObjByExponents( <col>, <data> )
 ##
-ObjByExponents := NewOperation(
-    "ObjExponents",
+DeclareOperation(
+    "ObjByExponents",
     [ IsPolycyclicCollector, IsObject ] );
 
 
@@ -149,11 +150,11 @@ ObjByExponents := NewOperation(
 ##
 #O  SetCommutator( <col>, <i>, <j>, <rhs> )
 ##
-SetCommutator := NewOperation(
+DeclareOperation(
     "SetCommutator",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
-SetCommutatorNC := NewOperation(
+DeclareOperation(
     "SetCommutatorNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
@@ -162,11 +163,11 @@ SetCommutatorNC := NewOperation(
 ##
 #O  SetConjugate( <col>, <i>, <j>, <rhs> )
 ##
-SetConjugate := NewOperation(
+DeclareOperation(
     "SetConjugate",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
-SetConjugateNC := NewOperation(
+DeclareOperation(
     "SetConjugateNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject, IsObject ] );
 
@@ -175,11 +176,11 @@ SetConjugateNC := NewOperation(
 ##
 #O  SetPower( <col>, <i>, <rhs> )
 ##
-SetPower := NewOperation(
+DeclareOperation(
     "SetPower",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
-SetPowerNC := NewOperation(
+DeclareOperation(
     "SetPowerNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
@@ -188,11 +189,11 @@ SetPowerNC := NewOperation(
 ##
 #O  SetRelativeOrder( <col>, <i>, <order> )
 ##
-SetRelativeOrder := NewOperation(
+DeclareOperation(
     "SetRelativeOrder",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
-SetRelativeOrderNC := NewOperation(
+DeclareOperation(
     "SetRelativeOrderNC",
     [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
@@ -202,7 +203,7 @@ SetRelativeOrderNC := NewOperation(
 
 #O  SingleCollector( <fgrp>, <orders> )
 ##
-SingleCollector := NewOperation(
+DeclareOperation(
     "SingleCollector",
     [ IsObject, IsObject ] );
 
@@ -211,7 +212,7 @@ SingleCollector := NewOperation(
 ##
 #O  SingleCollectorByGenerators( <fam>, <gens>, <orders> )
 ##
-SingleCollectorByGenerators := NewOperation(
+DeclareOperation(
     "SingleCollectorByGenerators",
     [ IsFamily, IsList, IsList ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
@@ -221,7 +222,7 @@ SingleCollectorByGenerators := NewOperation(
 ##
 #O  DeepThoughtCollector( <fgrp>, <orders> )
 ##
-DeepThoughtCollector := NewOperation(
+DeclareOperation(
     "DeepThoughtCollector",
     [ IsObject, IsObject ] );
 
@@ -230,8 +231,8 @@ DeepThoughtCollector := NewOperation(
 ##
 #O  DeepThoughtCollectorByGenerators( <fam>, <gens>, <orders> )
 ##
-DeepThoughtCollectorByGenerators := NewOperation(
-    "DeepthoughtCollectorByGenerators",
+DeclareOperation(
+    "DeepThoughtCollectorByGenerators",
     [ IsFamily, IsList, IsList ] );
 
 

@@ -1,0 +1,5 @@
+@msfiles = ("grplib");
+@gdfiles = ("grp/basic","grp/perf","trans/trans","lib/grpperm",
+            "prim/primitiv","small/small");
+$DIR = "../ref";
+$LIB = "../.."; 

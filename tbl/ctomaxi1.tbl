@@ -39,6 +39,9 @@ ARC("2^4:s5","projectives",["2.M22M5",[[6,-2,-2,2,0,0,1,0,0,-2,0,0],[6,-2,2,
 0,0,-1],[20,4,0,0,0,-1,0,-2,2,0,0,1],[24,-8,0,0,0,0,-1,0,0,0,0,
 0]],"4.M22M5",[[16,0,0,0,0,-2,1,0,0,0,0,0],[16,0,0,0,0,1,1,0,0,0,0,
 E(3)-E(3)^2],[24,0,0,0,0,0,-1,0,0,0,2*E(8),0]],]);
+ARC("2^4:s5","tomidentifier","2^4:S5`");
+ARC("2^4:s5","tomfusion",rec(map:=[1,2,4,12,15,5,20,3,14,18,38,22],
+text:="unique by check of characters"));
 ALF("2^4:s5","M22",[1,2,2,4,5,3,6,2,4,5,10,7],[
 "fusion is unique, equal to that on the CAS table"
 ]);
@@ -79,6 +82,7 @@ ARC("2.S4","CAS",[rec(name:="2.s4",
 permchars:=(),
 permclasses:=(),
 text:="")]);
+ARC("2.S4","tomidentifier","M8:S3");
 ALF("2.S4","M11",[1,2,4,2,7,8,3,6],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -112,6 +116,7 @@ E(11)^6,E(11)^7,E(11)^8,E(11)^9,E(11)^10],
 0,0,0,0],
 [GALOIS,[12,5]]],
 [( 4, 5, 7,11, 8,13,12,10, 6, 9),(2,3)]);
+ARC("23:11","tomidentifier","23:11");
 ALF("23:11","M23",[1,16,17,10,11,10,10,10,11,11,11,10,11],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -135,6 +140,9 @@ E(7)^3+E(7)^5+E(7)^6],
 14,-2,2,2,-2,0,0,-1,1,0,0],[21,-3,1,-3,1,-1,1,0,0,0,0],[21,-3,-3,1,1,1,-1,0,0,
 0,0]],
 [(10,11),(3,4)(6,7)]);
+ARC("2^3:sl(3,2)","tomidentifier","2^3:L3(2)");
+ARC("2^3:sl(3,2)","tomfusion",rec(map:=[1,2,3,4,13,17,18,5,19,22,22],
+text:="unique up to table automorphisms"));
 ALF("2^3:sl(3,2)","M22",[1,2,2,2,4,4,5,3,7,8,9],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -172,6 +180,7 @@ text:=Concatenation(
 "Berechnet 6.6.88 mit Cayley.\n",
 "test: 1.OR, JAMES, JAMES,n=3,\n",
 "and restricted characters decompose properly."))]);
+ARC("2^4:(3xA5).2","tomidentifier","2^4:(3xA5).2");
 ALF("2^4:(3xA5).2","J3.2",[1,2,3,2,5,7,3,4,7,6,14,14,18,19,19,22,20],[
 "fusion map is unique"
 ]);
@@ -231,6 +240,7 @@ ARC("2^4:a6","projectives",["2.M22M2",[[6,-2,2,-2,0,3,1,0,0,0,1,1],[10,2,2,2,
 [GALOIS,[8,3]]],"12.M22M2",[[24,0,0,0,0,0,0,0,0,2*E(8),-1,-1],
 [GALOIS,[1,5]],[48,0,0,0,0,0,0,0,0,0,-E(5)-E(5)^4,-E(5)^2-E(5)^3],
 [GALOIS,[3,2]]],]);
+ARC("2^4:a6","tomidentifier","2^4:A6");
 ALF("2^4:a6","A6",[1,1,2,2,2,3,3,4,5,5,6,7],[
 "factor fusion equal to that on the CAS table"
 ]);
@@ -440,6 +450,7 @@ E(7)^3+E(7)^5+E(7)^6],
 -E(7)^3-E(7)^5-E(7)^6],
 [GALOIS,[9,3]],[90,-6,6,-2,0,0,0,0,0,0,0,-1,1,-1,1],[105,-7,-3,1,0,0,2,-1,1,0,
 0,0,0,0,0],[120,-8,0,0,0,0,-2,0,0,0,0,1,-1,1,-1]],]);
+ARC("2^4:a7","tomidentifier","2^4:A7");
 ALF("2^4:a7","M23",[1,2,2,4,3,3,6,4,9,5,6,7,12,8,13],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -647,6 +658,10 @@ ARC("2x2^3:L3(2)","projectives",["4.M22M6",[[8,8*E(4),0,0,0,0,0,0,0,0,0,0,0,0,
 24,24*E(4),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,E(7)^3+E(7)^5+E(7)^6,
 E(28)^3+E(28)^19+E(28)^27,E(7)+E(7)^2+E(7)^4,E(28)^11+E(28)^15+E(28)^23],
 [GALOIS,[4,5]]],]);
+ARC("2x2^3:L3(2)","tomidentifier","2^3:L3(2)x2");
+ARC("2x2^3:L3(2)","tomfusion",rec(map:=[1,2,3,4,6,5,8,7,22,26,34,41,39,40,9,
+50,45,46,52,148,52,148],
+text:="unique by check of characters"));
 ALF("2x2^3:L3(2)","2.M22",[1,2,3,4,3,4,4,3,8,7,7,8,9,9,5,6,12,13,14,15,16,
 17],[
 "fusion map is unique up to table automorphisms"
@@ -907,7 +922,7 @@ MOT("2^4:a8",
 "        ann.mat.pura appl [4] 71\n",
 "        (1966),199-238\n",
 " comments: 2^4:a8 is maximal subgroup of m24\n",
-" test: orth.1, min, sym(3)         \n",
+" test: orth.1, min, sym(3)\n",
 "tests: 1.o.r., pow[2,3,5,7]"
 ],
 [322560,21504,1536,512,384,128,180,72,24,384,64,64,32,16,16,15,12,12,12,14,14,
@@ -940,6 +955,10 @@ E(7)+E(7)^2+E(7)^4,-E(7)-E(7)^2-E(7)^4,E(7)^3+E(7)^5+E(7)^6,
 -21,3,-5,-9,3,0,0,0,3,-1,3,-1,1,-1,0,0,0,0,0,0,0,0,0,0],[315,-21,-21,3,3,-1,0,
 0,0,3,3,-1,-1,-1,1,0,0,0,0,0,0,0,0,0,0]],
 [(24,25),(20,22)(21,23)]);
+ARC("2^4:a8","tomidentifier","2^4:A8");
+ARC("2^4:a8","tomfusion",rec(map:=[1,2,3,4,5,33,6,7,43,32,34,35,36,37,166,38,
+44,45,191,46,192,46,192,193,193],
+text:="unique by check of characters"));
 ALF("2^4:a8","M24",[1,2,2,3,2,7,4,4,10,6,7,6,8,7,14,9,10,10,17,12,19,13,
 20,21,22],[
 "fusion is unique up to table automorphisms,\n",
@@ -954,7 +973,7 @@ MOT("2^6:(psl(3,2)xs3)",
 " number of classes: 33\n",
 " source/origin: pahlings,h.\n",
 " comments: 2^6:(psl(3,2)xs3) is maximal subgroup of m24\n",
-" test: orth.1, min, sym(3)         \n",
+" test: orth.1, min, sym(3)\n",
 "tests: 1.o.r., pow[2,3,7]"
 ],
 [64512,3072,1536,256,768,128,128,72,24,504,36,12,32,96,24,42,42,12,21,21,2688,
@@ -1000,6 +1019,10 @@ E(7)+E(7)^2+E(7)^4,E(7)^3+E(7)^5+E(7)^6],
 0,0,0,0,0],
 [TENSOR,[32,2]]],
 [(16,17)(19,20)(32,33)]);
+ARC("2^6:(psl(3,2)xs3)","tomidentifier","2^6:(L3(2)xS3)");
+ARC("2^6:(psl(3,2)xs3)","tomfusion",rec(map:=[1,2,4,6,5,32,27,9,56,8,10,61,45,
+33,58,64,64,247,606,606,3,16,7,36,51,30,44,43,196,62,249,258,258],
+text:="unique by check of characters"));
 ALF("2^6:(psl(3,2)xs3)","M24",[1,2,3,2,3,7,6,4,10,5,5,11,7,8,11,12,13,18,
 23,24,2,6,3,7,8,6,8,6,14,10,17,19,20],[
 "fusion is unique up to table automorphisms,\n",
@@ -1015,7 +1038,7 @@ MOT("2^6:3.s6",
 "number of classes: 33\n",
 "source/origin: pahlings,h.\n",
 "comments: 2^6:3.s6 is maximal subgroup of m24 and he\n",
-"test: orth.1, min, sym[3]         \n",
+"test: orth.1, min, sym[3]\n",
 "tests: 1.o.r., pow[2,3,5]"
 ],
 [138240,3072,7680,1080,768,256,24,128,128,72,24,72,24,12,32,96,60,20,15,15,
@@ -1058,6 +1081,10 @@ MOT("2^6:3.s6",
 3,1,-1,-1,0,0,0,0],
 [TENSOR,[32,2]]],
 [(19,20)]);
+ARC("2^6:3.s6","tomidentifier","2^6:3.S6");
+ARC("2^6:3.s6","tomfusion",rec(map:=[1,5,2,8,6,3,65,47,44,9,64,10,62,263,51,
+46,53,225,264,264,7,43,49,4,45,50,220,48,52,66,262,63,261],
+text:="unique by check of characters"));
 ALF("2^6:3.s6","M24",[1,2,3,4,2,3,10,7,6,4,10,5,11,17,8,6,9,15,21,22,2,6,
 7,3,6,8,14,7,8,10,17,11,18],[
 "fusion is unique up to table automorphisms,\n",
@@ -1096,8 +1123,11 @@ text:=Concatenation(
 " number of classes: 14\n",
 " source/origin:     generated by cas-algorithms, aachen\n",
 " comments:          2xs5 is maximal subgroup of m12\n",
-" test:              orth.1, min, sym[3]             \n",
+" test:              orth.1, min, sym[3]\n",
 ""))]);
+ARC("2xS5","tomidentifier","2xS5");
+ARC("2xS5","tomfusion",rec(map:=[1,5,7,17,3,13,22,2,6,23,32,4,15,18],
+text:="unique by check of characters"));
 ALF("2xS5","M12",[1,3,5,8,2,6,9,2,2,9,13,2,7,9],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -1124,11 +1154,12 @@ text:=Concatenation(
 " number of classes: 11\n",
 " source/origin:     pahlings,h.\n",
 " comments:          3^2.2.s4 is maximal subgroup of m12\n",
-" test:              orth.1, min, sym(3)             \n",
+" test:              orth.1, min, sym(3)\n",
 "")),rec(name:="m12hut",
 permchars:=(4,7)(5,6),
 permclasses:=(2,4,7,9,8,3),
 text:="")]);
+ARC("3^2.2.S4","tomidentifier","M9:S3");
 ALF("3^2.2.S4","M12",[1,4,3,7,4,5,10,3,10,12,12],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"
@@ -1160,8 +1191,11 @@ text:=Concatenation(
 " number of classes: 14\n",
 " source/origin:     pahlings,h.\n",
 " comments:          2^2+3.s3 is maximal subgroup of m12\n",
-" test:              orth.1, min, sym[3]             \n",
+" test:              orth.1, min, sym[3]\n",
 ""))]);
+ARC("4^2:D12","tomidentifier","4^2:D12");
+ARC("4^2:D12","tomfusion",rec(map:=[1,2,9,10,7,3,4,20,6,5,16,14,47,43],
+text:="unique by check of characters"));
 ALF("4^2:D12","4^2:D12.2",[1,2,3,3,6,4,5,7,8,8,9,9,10,10],[
 "fusion map is unique"
 ]);
@@ -1193,6 +1227,10 @@ MOT("4^2:D12.2",
 0,0,0,0,0],
 [TENSOR,[15,3]]],
 [(15,16)]);
+ARC("4^2:D12.2","tomidentifier","4^2:D12.2");
+ARC("4^2:D12.2","tomfusion",rec(map:=[1,2,11,3,5,7,23,6,16,44,4,18,19,22,25,
+25],
+text:="unique by check of characters"));
 ALF("4^2:D12.2","M12.2",[1,3,6,2,3,5,8,2,6,10,13,14,14,15,16,16],[
 "fusion map is unique"
 ]);
@@ -1220,8 +1258,9 @@ text:=Concatenation(
 " number of classes: 12\n",
 " source/origin:     generatedhby[cas-algorithms, aachen\n",
 " comments:          a4xs3 is maximal subgroup of m12\n",
-" test:              orth.1, min, sym(3]             \n",
+" test:              orth.1, min, sym(3]\n",
 ""))]);
+ARC("A4xS3","tomidentifier","A4xS3");
 ALF("A4xS3","M12",[1,2,4,4,3,2,10,10,5,9,5,5],[
 "fusion is unique, equal to that on the CAS table"
 ]);
@@ -1241,10 +1280,10 @@ ALF("M12M7","M12",[1,4,3,6,4,5,10,3,10,11,11],[
 "fusion of M12M6, mapped under autom."
 ]);
 
-MOT("M22.2M5",
+MOT("M22.2M4",
 [
 "origin: Dixon's Algorithm,\n",
-"5th maximal subgroup of M22.2,\n",
+"4th maximal subgroup of M22.2,\n",
 "table is sorted w.r. to normal series 2^4<2^4.A5<2^4.S5<2^4.(S5x2)"
 ],
 [3840,256,64,64,32,12,10,96,32,16,16,12,640,384,64,64,32,12,10,96,32,16,16,
@@ -1296,9 +1335,12 @@ text:=Concatenation(
 "  number of classes: 13\n",
 "  source/origin:     pahlings,h.\n",
 "  comments:          q8.s4 is maximal subgroup of m12\n",
-"  test:              orth.1, min, sym[3]             \n",
+"  test:              orth.1, min, sym[3]\n",
 "tests: 1.o.r., pow[2,3]\n",
 ""))]);
+ARC("M8.S4","tomidentifier","M8.S4");
+ARC("M8.S4","tomfusion",rec(map:=[1,2,7,4,3,8,6,21,5,37,12,13,38],
+text:="unique up to table automorphisms"));
 ALF("M8.S4","M12",[1,3,6,2,3,7,4,10,3,11,6,7,12],[
 "fusion is unique up to table automorphisms,\n",
 "the representative is equal to the fusion map on the CAS table"

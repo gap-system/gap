@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for modules.
 ##
@@ -180,7 +181,7 @@ InstallMethod( AsLeftModule,
 ##
 InstallMethod( SetGeneratorsOfLeftModule,
     "method that checks for 'IsFiniteDimensional'",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsFreeLeftModule and IsAttributeStoringRep, IsList ], SUM_FLAGS + 1,
     function( M, gens )
     SetIsFiniteDimensional( M, IsFinite( gens ) );
@@ -236,7 +237,7 @@ InstallMethod( ClosureLeftModule, IsCollsElms, [ IsLeftModule, IsVector ], 0,
 ##
 #M  ClosureLeftModule( <V>, <W> ) . . . . . . . . .  closure of a left module
 ##
-InstallOtherMethod( ClosureLeftModule, IsIdentical,
+InstallOtherMethod( ClosureLeftModule, IsIdenticalObj,
     [ IsLeftModule, IsLeftModule ], 0,
     function( V, W )
     local C, v;
@@ -258,7 +259,7 @@ InstallOtherMethod( ClosureLeftModule, IsIdentical,
 ##
 InstallOtherMethod( \+,
     "method for two left modules",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsLeftModule, IsLeftModule ], 0,
     function( V, W )
 
@@ -286,7 +287,7 @@ InstallOtherMethod( \+,
 #F  Submodule( <M>, <gens>, "basis" )
 #F  SubmoduleNC( <M>, <gens>, "basis" )
 ##
-Submodule := function( arg )
+InstallGlobalFunction( Submodule, function( arg )
     local S;
     if Length( arg ) < 2
        or not IsLeftModule( arg[1] )
@@ -294,7 +295,7 @@ Submodule := function( arg )
       Error( "first argument must be a left module, second a list\n" );
     elif IsEmpty( arg[2] ) then
       return SubmoduleNC( arg[1], arg[2] );
-    elif     IsIdentical( FamilyObj( arg[1] ), FamilyObj( arg[2] ) )
+    elif     IsIdenticalObj( FamilyObj( arg[1] ), FamilyObj( arg[2] ) )
          and IsSubset( arg[1], arg[2] ) then
       S:= LeftModuleByGenerators( LeftActingDomain( arg[1] ), arg[2] );
       SetParent( S, arg[1] );
@@ -304,9 +305,9 @@ Submodule := function( arg )
       return S;
     fi;
     Error( "usage: Submodule( <V>, <gens> [, \"basis\"] )" );
-end;
+end );
 
-SubmoduleNC := function( arg )
+InstallGlobalFunction( SubmoduleNC, function( arg )
     local S;
     if IsEmpty( arg[2] ) then
       S:= Objectify( NewType( FamilyObj( arg[1] ),
@@ -324,7 +325,7 @@ SubmoduleNC := function( arg )
     fi;
     SetParent( S, arg[1] );
     return S;
-end;
+end );
 
 
 #############################################################################

@@ -4,80 +4,24 @@
 ##
 #H  @(#)$Id$
 ##
-##  The first part of this file is a semi-automatic translation from
-##  GAP-3.4/lib/permcser.g.
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.grpprmcs_gi :=
     "@(#)$Id$";
 
-CSPG_attrs := [
-[ RNamObj( "generators" ),      GeneratorsOfGroup ],
-[ RNamObj( "identity" ),        One               ],
-[ RNamObj( "stabChain" ),       StabChainAttr     ],
-[ RNamObj( "size" ),            Size              ],
-[ RNamObj( "derivedSubgroup" ), DerivedSubgroup   ],
-[ RNamObj( "isNilpotent" ),     IsNilpotentGroup  ]
-];
-
-CSPG_comps := [  ];
-for attr  in [ "orbit", "transversal", "stabilizer" ]  do
-    Add( CSPG_comps, [ RNamObj( attr ), attr ] );
-od;
-
-InstallMethod( \., true, [ IsPermGroup, IsPosRat and IsInt ], 0,
-    function( G, rnam )
-    local   attr;
-    
-    if rnam = CSPG_attrs[ 1 ][ 1 ]  then
-        if HasStabChain( G )  then  return StabChainAttr( G ).generators;
-                              else  return GeneratorsOfGroup( G );        fi;
-    fi;
-    for attr  in CSPG_attrs  do
-        if rnam = attr[ 1 ]  then
-            return attr[ 2 ]( G );
-        fi;
-    od;
-    for attr  in CSPG_comps  do
-        if rnam = attr[ 1 ]  then
-            return StabChainAttr( G ).( attr[ 2 ] );
-        fi;
-    od;
-    TryNextMethod();
-end );
-
-InstallMethod( IsBound\., true, [ IsPermGroup, IsPosRat and IsInt ], 0,
-    function( G, rnam )
-    local   attr;
-    
-    for attr  in CSPG_attrs  do
-        if rnam = attr[ 1 ]  then
-            return Tester( attr[ 2 ] )( G );
-        fi;
-    od;
-    TryNextMethod();
-end );
-
-InstallMethod( \.\:\=, true, [ IsPermGroup, IsPosRat and IsInt, IsObject ], 0,
-    function( G, rnam, val )
-    local   attr;
-    
-    for attr  in CSPG_attrs  do
-        if rnam = attr[ 1 ]  then
-            Setter( attr[ 2 ] )( G, val );
-            return;
-        fi;
-    od;
-    TryNextMethod();
-end );
 
 #############################################################################
 ##
-#F  GInverses( <G> )  . . . . . . . . . . . . . . . . . . . . . . . . . local
+#F  GInverses( <S> )  . . . . . . . . . . . . . . . . . . . . . . . . . local
 ##
-GInverses := function( G )
-    local   S,  inverses,  set,  i;
-    
-    S := StabChainAttr( G );
+##  <S> must be a stabilizer chain.
+##
+##  `GInverses' changes `<S>.generators' !
+##
+GInverses := function( S )
+    local   inverses,  set,  i;
+
     set := Set( S.translabels );
     RemoveSet( set, 1 );
     S.generators := S.labels{ set };
@@ -90,15 +34,15 @@ GInverses := function( G )
     fi;
     return inverses;
 end;
-    
+
 #############################################################################
 ##
 
 #F  DisplayCompositionSeries( <S> ) . . . . . . . . . . . .  display function
 ##
-DisplayCompositionSeries := function( S )
+InstallGlobalFunction( DisplayCompositionSeries, function( S )
     local   f,  i;
-    
+
     # ok, we accept groups too
     if IsGroup( S )  then
         S := CompositionSeries( S );
@@ -119,33 +63,36 @@ DisplayCompositionSeries := function( S )
             Print( GroupString( S[i], "1" ), "\n" );
         fi;
     od;
-end;
+end );
 
 #############################################################################
 ##
 #M  CompositionSeries( <G> )  . . . . composition series of permutation group
 ##
-##  'CompositionSeriesPermGroup' returns the composition series of <G>  as  a
+##  `CompositionSeriesPermGroup' returns the composition series of <G>  as  a
 ##  list.
 ##
-##  The subgroups in this list have a slightly modified 'FactorGroup' method,
+##  The subgroups in this list have a slightly modified `FactorGroup' method,
 ##  which notices if you compute the factor group of one subgroup by the next
 ##  and return the factor group as a  primitive  permutation  group  in  this
 ##  case (which is also computed by the function below).  The  factor  groups
 ##  remember the natural homomorphism since the images of the  generators  of
 ##  the subgroup are known and the natural  homomorphism can thus be  written
-##  as 'GroupHomomorphismByImages'.
+##  as `GroupHomomorphismByImages'.
 ##
 ##  The program works for  permutation  groups  of  degree  < 2^20 = 1048576.
-##  For higher degrees  'IsSimple'  and  'CasesCSPG'  must  be  extended with
+##  For higher degrees  `IsSimple'  and  `CasesCSPG'  must  be  extended with
 ##  longer lists of primitive  groups  from  extensions  in  Kantor's  tables
 ##  (see JSC. 12(1991), pp. 517-526).  It may also be  neccessary  to  modify
-##  'FindNormalCSPG'.
+##  `FindNormalCSPG'.
 ##
 ##  A general reference for the algorithm is:
 ##  Beals-Seress, 24th Symp. on Theory of Computing 1992.
 ##
-InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
+InstallMethod( CompositionSeries,
+    "for a permutation group",
+    true,
+    [ IsPermGroup ], 0,
     function( Gr )
     local   pcgs,
             normals,    # first component of output; normals[i] contains
@@ -160,6 +107,7 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
             index,      # variable recording how many elements of normals are
                         # computed
             workgroup,  # the subnormal factor group we currently work with
+            workgrouporbit,
             lastpt,     # degree of workgroup
             tchom,      # transitive constituent homomorphism applied to
                         # intransitive workgroup
@@ -172,7 +120,7 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
             i, s,  t,   #
             fac,        # factor group as permutation group
             list;       # output of CompositionSeries
-    
+
     # Solvable groups first.
     pcgs := Pcgs( Gr );
     if pcgs <> fail  then
@@ -183,7 +131,7 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
             fac := CyclicGroup( IsPermGroup,
                            RelativeOrders( pcgs )[ i - 1 ] );
             Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-                    GroupHomomorphismByImages( s, fac,
+                    GroupHomomorphismByImagesNC( s, fac,
                     pcgs{ [ i - 1 .. Length( pcgs ) ] },
                     Concatenation( GeneratorsOfGroup( fac ),
                     List( [ i .. Length( pcgs ) ], k -> One( fac ) ) ) ) );
@@ -192,7 +140,7 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
         od;
         return list;
     fi;
-        
+
     # initialize output and work arrays
     normals := [];
     factors := [];
@@ -210,8 +158,9 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
             lastpt := LargestMovedPoint(workgroup);
 
             # if workgroup is not transitive
-            if Length(workgroup.orbit) < lastpt   then
-                tchom := OperationHomomorphism(workgroup,workgroup.orbit);
+            workgrouporbit:= StabChainMutable( workgroup ).orbit;
+            if Length(workgrouporbit) < lastpt   then
+                tchom := OperationHomomorphism(workgroup,workgrouporbit);
                 Add(homlist,tchom);
                 workgroup := Image(tchom,workgroup);
             else
@@ -253,7 +202,7 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
                              homlist[lenhomlist] );
 
             # if auxiliary[lenhmlist] is bounded, it is faster to augment it
-            # by generators of the kernel of 'homlist[lenhomlist]'
+            # by generators of the kernel of `homlist[lenhomlist]'
             if IsBound(auxiliary[lenhomlist])  then
                 workgroup := auxiliary[lenhomlist];
                 workgroup := ClosureGroup( workgroup, GeneratorsOfGroup(
@@ -267,17 +216,17 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
     od;
 
     # loop over the subgroups
-    s := Subgroup( Gr, normals[1] );
+    s := SubgroupNC( Gr, normals[1] );
     SetSize( s, Size( Gr ) );
     list := [ s ];
     for i  in [2..Length(normals)]  do
-        t := Subgroup( s, normals[i] );
+        t := SubgroupNC( s, normals[i] );
         SetSize( t, Size( s ) / factorsize[i-1] );
         fac := GroupByGenerators( factors[i-1] );
         SetSize( fac, factorsize[i-1] );
         SetIsSimpleGroup( fac, true );
         Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-                GroupHomomorphismByImages( s, fac,
+                GroupHomomorphismByImagesNC( s, fac,
                         normals[i-1], factors[i-1] ) );
         Add( list, t );
         s := t;
@@ -290,10 +239,10 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
     SetSize( fac, factorsize[Length(normals)] );
     SetIsSimpleGroup( fac, true );
     Setter( NaturalHomomorphismByNormalSubgroupInParent )( t,
-            GroupHomomorphismByImages( s, fac,
+            GroupHomomorphismByImagesNC( s, fac,
                     normals[Length(normals)], factors[Length(normals)] ) );
     Add( list, t );
-        
+
     # return output
     return list;
 end );
@@ -307,7 +256,8 @@ end );
 ##  commutator subgroup with cyclic factors.
 ##  Output is the first index in normals which remains undefined
 ##
-NonPerfectCSPG := function( homlist, normals, factors, auxiliary,
+InstallGlobalFunction( NonPerfectCSPG,
+    function( homlist, normals, factors, auxiliary,
                             factorsize, top, index, D, workgroup )
     local   listlength,   # number of cyclic factors to add to factors
             indexup,      # loop variable for adding the cyclic factors
@@ -328,10 +278,11 @@ NonPerfectCSPG := function( homlist, normals, factors, auxiliary,
     # each addition produces a cyclic factor group on top of previous;
     # appropriate powers of g will divide the cyclic factor group into
     # factors of prime length
-    for g in workgroup.generators do
+    for g in StabChainMutable( workgroup ).generators do
         if not (g in oldworkup)  then
             # check for error in random computation of derived subgroup
-            if ForAny ( oldworkup.generators, x->not(x^g in oldworkup) ) then
+            if ForAny ( StabChainMutable( oldworkup ).generators,
+                        x->not(x^g in oldworkup) ) then
                Error("this shouldn't happen");
             fi;
             workup := ClosureGroup(oldworkup, g);
@@ -345,7 +296,7 @@ NonPerfectCSPG := function( homlist, normals, factors, auxiliary,
                 # construct entries in factors, normals
                 factors[indexup -1] := [];
                 normals[indexup -1] := [];
-                for p in oldworkup.generators do
+                for p in StabChainMutable( oldworkup ).generators do
 
                     # p acts trivially in factor group
                     Add(factors[indexup -1],());
@@ -377,7 +328,7 @@ NonPerfectCSPG := function( homlist, normals, factors, auxiliary,
     od;
 
     return index+listlength;
-end;
+end );
 
 
 #############################################################################
@@ -389,7 +340,8 @@ end;
 ##  Output is the maximal normal subgroup NN. In case NN=1 (i.e. K simple),
 ##  the kernel of homomorphism which produced K is returned
 ##
-PerfectCSPG := function( homlist, normals, factors, auxiliary,
+InstallGlobalFunction( PerfectCSPG,
+    function( homlist, normals, factors, auxiliary,
                          factorsize, index, K )
     local   whichcase,  # var indicating to which case of the O'Nan-Scott
                         # theorem K belongs. When Size(K) and degree do not
@@ -411,8 +363,9 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
             g,          # generator of subgroups
             lenhomlist, # length of homlist
             kernel,     # output
-            ready;      # boolean variable indicating whether normal subgroup
+            ready,      # boolean variable indicating whether normal subgroup
                         # was found
+            chainK;
 
     while not IsSimpleGroup(K)  do
         whichcase := CasesCSPG(K);
@@ -428,52 +381,59 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
             if 1 < Size(N)  and Size(N) < Size(K)  then
                 # K is a factor group with N in the kernel
                 K := NinKernelCSPG(K,N,homlist,auxiliary);
-                K.derivedSubgroup := K;
+                SetDerivedSubgroup( K, K );
+#T better set that K is perfect?
                 ready := true;
             fi;
 
        fi;
 
         # apply regular normal subgroup with nontrivial centralizer method
-        if not (ready)  then
-            stab2 := Stabilizer(K,[K.orbit[1],K.stabilizer.orbit[1]],
+        if not ready then
+            chainK:= StabChainMutable( K );
+            stab2 := Stabilizer(K,[ chainK.orbit[1],
+                                    chainK.stabilizer.orbit[1]],
                              OnTuples);
-            if IsTrivial(stab2) then 
-               # a perfect Frobenius group must have SL(2,5) as 
+            if IsTrivial(stab2) then
+               # a perfect Frobenius group must have SL(2,5) as
                # one-point stabilizer; 1/120 chance to hit socle
-               prime := FactorsInt(whichcase[2])[1]; 
-               stab1 := Stabilizer(K, K.orbit[1]);
+               prime := FactorsInt(whichcase[2])[1];
+               stab1 := chainK.stabilizer;
                i := 0;
-               y := K.stabilizer.orbit[1];
-               repeat 
+               y := stab1.orbit[1];
+               repeat
                   i := i+1;
-                  x := K.orbit[1];
+                  x := chainK.orbit[1];
                   word := CosetRepAsWord(y,stab1.orbit[i],stab1.transversal);
-                  Add(word, K.transversal[K.orbit[2]]);
+                  Add( word, chainK.transversal[ chainK.orbit[2] ] );
                   for j in [1..prime] do
                       x := ImageInWord(x, word);
                   od;
-               until x = K.orbit[1];
+               until x = chainK.orbit[1];
                kerelement := Product(word);
-               N := NormalClosure(K, Subgroup(K,[kerelement]));
+               N := NormalClosure(K, SubgroupNC(K,[kerelement]));
             else
                H := NormalizerStabCSPG(K);
-               stab2 := Stabilizer(K,[K.orbit[1],K.stabilizer.orbit[1]],
-                                OnTuples);
-               if whichcase[1] = 2 then 
+               if whichcase[1] = 2 then
+                 stab2 := Stabilizer( K, [ chainK.orbit[1],
+                                           chainK.stabilizer.orbit[1] ],
+                                  OnTuples);
                   H := CentralizerNormalCSPG( H, stab2 );
                else
-                  L := Orbit(H,H.orbit[1]);
+                  L := Orbit( H, StabChainMutable( H ).orbit[1] );
                   tchom := OperationHomomorphism(H,L);
                   op := Image( tchom );
-                  H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1])); 
+                  H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1]));
                   H := Centre(H);
-                  H.isNilpotent := true;
+                  SetIsNilpotentGroup( H, true );
+#T what is this good for?
+#T The centre is abelian and not only nilpotent ...
               fi;
               N := FindRegularNormalCSPG(K,H,whichcase);
            fi;
            K := NinKernelCSPG(K,N,homlist,auxiliary);
-           K.derivedSubgroup := K;
+           SetDerivedSubgroup( K, K );
+#T better set that K is perfect?
         fi;
 
     od;
@@ -482,7 +442,7 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
     factors[index] := [];
     normals[index] := [];
     factorsize[index] := Size(K);
-    for g in K.generators do
+    for g in StabChainMutable( K ).generators do
         Add(factors[index],g); # store generators for image
         Add(normals[index],PullbackCSPG(g,homlist));
     od;
@@ -508,7 +468,7 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
     fi;
 
     return kernel;
-end;
+end );
 
 
 #############################################################################
@@ -525,7 +485,7 @@ end;
 ##  the output is as in case of nonregular minimal normal subgroup.
 ##  This computation duplicates some of what is done in IsSimple.
 ##
-CasesCSPG := function(G)
+InstallGlobalFunction( CasesCSPG, function(G)
     local   degree,     # degree of G
             g,          # order of G
             primes,     # list of primes in prime decomposition of degree
@@ -599,7 +559,7 @@ CasesCSPG := function(G)
 
     fi;
 
-end;
+end );
 
 
 #############################################################################
@@ -609,7 +569,7 @@ end;
 ##  given perfect, primitive G with unique nonregular minimal normal
 ##  subgroup, the routine returns a proper normal subgroup of G
 ##
-FindNormalCSPG := function ( G, whichcase )
+InstallGlobalFunction( FindNormalCSPG, function ( G, whichcase )
     local   n,          # degree of G
             i,          # loop variable
             stabgroup,  # stabilizer subgroup of first point
@@ -627,7 +587,7 @@ FindNormalCSPG := function ( G, whichcase )
     # whichcase[1]=1 if G has no normal subgroup with nontrivial
     # centralizer or we cannot determine this fact from Size(G)
     n := LargestMovedPoint(G);
-    stabgroup := Stabilizer(G,G.orbit[1],OnPoints);
+    stabgroup := Stabilizer(G, StabChainMutable( G ).orbit[1],OnPoints);
     orbits := Orbits(stabgroup,[1..n]);
 
     # find shortest orbit of stabgroup
@@ -664,9 +624,9 @@ FindNormalCSPG := function ( G, whichcase )
     fi;
 
     # in ambiguous case, return trivial subgroup
-    N := Subgroup(Parent(G),[()]);
+    N := TrivialSubgroup( Parent(G) );
     return N;
-end;
+end );
 
 
 #############################################################################
@@ -676,7 +636,7 @@ end;
 ##  given perfect, primitive G with regular minimal normal
 ##  subgroup(s), the routine returns one
 ##
-FindRegularNormalCSPG := function ( G, H, whichcase )
+InstallGlobalFunction( FindRegularNormalCSPG, function ( G, H, whichcase )
 
     local core,         # p-core of H
           cosetrep,     # a cosetrep of H.stabilizer
@@ -687,16 +647,16 @@ FindRegularNormalCSPG := function ( G, H, whichcase )
           chain;
 
     # case of abelian normal subgroup
-    if whichcase[1] <> 2 then 
+    if whichcase[1] <> 2 then
        core := PCore( H, FactorsInt(whichcase[2])[1] );
-       chain := StabChainOp(core, rec(base := Base(G), reduced := false) );
+       chain:=StabChainOp(core,rec(base:=BaseOfGroup(G),reduced:=false));
        cosetrep := chain.transversal[chain.orbit[2]];
-       candidates := AsList(Stabilizer(core,Base(G)[1]))*cosetrep;
+       candidates := AsList(Stabilizer(core,BaseOfGroup(G)[1]))*cosetrep;
        ready := false;
        i:= 0;
        while not ready do
           i := i+1;
-          N := NormalClosure(G, Subgroup(G, [candidates[i]]) );
+          N := NormalClosure(G, SubgroupNC(G, [candidates[i]]) );
           if Size(N) = whichcase[2] then
              ready := true;
           fi;
@@ -704,14 +664,14 @@ FindRegularNormalCSPG := function ( G, H, whichcase )
 
      # case of two simple regular normal subgroups
      else
-       chain := StabChainOp(H, rec(base := Base(G), reduced := false) );
+       chain := StabChainOp(H, rec(base := BaseOfGroup(G), reduced := false) );
        cosetrep := chain.transversal[chain.orbit[2]];
-       candidates := cosetrep*AsList(Stabilizer(H,Base(G)[1]));
+       candidates := cosetrep*AsList(Stabilizer(H,BaseOfGroup(G)[1]));
        ready := false;
        i:= 0;
        while not ready do
           i := i+1;
-          N := NormalClosure(G, Subgroup(G, [candidates[i]]) );
+          N := NormalClosure(G, SubgroupNC(G, [candidates[i]]) );
           if Size(N) = whichcase[2] then
              ready := true;
           fi;
@@ -719,7 +679,7 @@ FindRegularNormalCSPG := function ( G, H, whichcase )
      fi;
 
      return N;
-end;    
+end );
 
 #############################################################################
 ##
@@ -732,7 +692,8 @@ end;
 ##  homomorphism.
 ##  Output is the image at homomorphism
 ##
-NinKernelCSPG := function ( G, N, homlist, auxiliary )
+InstallGlobalFunction( NinKernelCSPG,
+    function ( G, N, homlist, auxiliary )
     local   i,j,        # loop variables
             base,       # base of G
             stab,       # stabilizer of first two base points
@@ -751,19 +712,20 @@ NinKernelCSPG := function ( G, N, homlist, auxiliary )
 
     # find smallest subgroup of G in stabilizer chain which, together with N,
     # generates G
-    base := Base(G);
-    G1 := ListStabChain( StabChainAttr( G ) );
+    G1:=StabChainMutable(G);
+    base := BaseStabChain(G1);
+    G1 := ListStabChain( G1 );
     i := Length(base)+1;
     # first try the stabilizer of first two points
-    if Size(N) = LargestMovedPoint(G) then 
+    if Size(N) = LargestMovedPoint(G) then
        stab := AsSubgroup(Parent(G),Stabilizer(G,[base[1],base[2]],OnTuples));
        H := ClosureGroup
-             ( stab, N.generators, rec(size:=Size(N)*Size(stab)) ); 
-    else 
+             ( stab, GeneratorsOfGroup( N ), rec(size:=Size(N)*Size(stab)) );
+    else
        H := ClosureGroup( N, G1[3].generators );
     fi;
-    if Size(H) < Size(G) then 
-       HOld := H; 
+    if Size(H) < Size(G) then
+       HOld := H;
        i := 2;
     else
     # if did not work, start from bottom of stabilizer chain
@@ -785,19 +747,19 @@ NinKernelCSPG := function ( G, N, homlist, auxiliary )
 
     # now G is the previous G1[i]
     # find primitive action on images of block
-    newrep := MaximalBlocks( G, G.orbit, block );
+    newrep := MaximalBlocks( G, StabChainMutable( G ).orbit, block );
     if Length(newrep) > 1 then
         bhom := OperationHomomorphism(G,newrep,OnSets);
         Add(homlist,bhom);
         G := Image(bhom,G);
     else
-        tchom:=OperationHomomorphism(G,G.orbit);
+        tchom:=OperationHomomorphism(G, StabChainMutable( G ).orbit);
         Add(homlist,tchom);
         G := Image(tchom,G);
     fi;
 
     return G;
-end;
+end );
 
 
 #############################################################################
@@ -809,12 +771,16 @@ end;
 ##  then the action of G on cosets of a maximal subgroup K containing H
 ##  reference: Beals-Seress Lemma 4.3.
 ##
-RegularNinKernelCSPG := function ( G, H, homlist )
+InstallGlobalFunction( RegularNinKernelCSPG,
+    function ( G, H, homlist )
     local   i,j,k,      # loop variables
             base,       # base of G
+            chainG,     # stabilizer chain of `G'
+            chainH,     # stabilizer chain of `H'
             G1,H1,      # stabilizer chain of G,H
             x,y,        # first two base points of G
             stabgroup,  # stabilizer of x in G
+            chainstabgroup,
             Ginverses,  # list of inverses of generators of G
             hgens,      # list of generators of H
             Hinverses,  # list of inverses of generators of H
@@ -847,15 +813,17 @@ RegularNinKernelCSPG := function ( G, H, homlist )
                         # newrep
             hom;        # the homomorphism G->K
 
-    base := Base(G);
-    G1 := ListStabChain( StabChainAttr( G ) );
+    chainG:= StabChainMutable( G );
+    base := BaseStabChain(chainG);
+    G1 := ListStabChain( chainG );
     H1 := ListStabChain( StabChainOp( H, rec( base := base,
                                            reduced := false ) ) );
     block := Set( H1[2].orbit );
-    stabgroup := Stabilizer(G,G.orbit[1],OnPoints);
-    x := G.orbit[1];
-    y := stabgroup.orbit[1];
+    x := chainG.orbit[1];
+    stabgroup := Stabilizer( G, x, OnPoints );
     orbits := Orbit(stabgroup,block,OnSets);
+    chainstabgroup:= StabChainMutable( stabgroup );
+    y := chainstabgroup.orbit[1];
     a := Length(orbits);
     b := Length(block);
     reprlist := [];
@@ -865,16 +833,18 @@ RegularNinKernelCSPG := function ( G, H, homlist )
         od;
     od;
 
-    Ginverses := GInverses( G );
-    Hinverses := GInverses( H );
-    hgens := H.generators;
+    Ginverses := GInverses( chainG );
+    chainH:= StabChainMutable( H );
+    Hinverses := GInverses( chainH );
+    hgens := chainH.generators;
 
-    stabinverses := GInverses( stabgroup );
-    stabgens := stabgroup.generators;
+    stabinverses := GInverses( chainstabgroup );
+    stabgens := chainstabgroup.generators;
 
     reps := []; inversereps := [];
     for i in [1..a] do
-        reps[i] := CosetRepAsWord(y,orbits[i][1],stabgroup.transversal);
+        reps[i] := CosetRepAsWord( y, orbits[i][1],
+                                   chainstabgroup.transversal );
         inversereps[i] := InverseAsWord(reps[i],stabgens,stabinverses);
     od;
 
@@ -884,14 +854,14 @@ RegularNinKernelCSPG := function ( G, H, homlist )
     # the product with G.generators[i] fixes x. Then the image of the coset
     # can be read from the position in orbits (cf. Lemma 4.3)
     images := [];
-    for i in [1..Length(G.generators)] do
+    for i in [1..Length( chainG.generators )] do
         images[i] := [];
         for j in [1..a] do
             v := ImageInWord(x^Ginverses[i],reps[j]);
-            tau := CosetRepAsWord(x,v,H.transversal);
+            tau := CosetRepAsWord( x, v, chainH.transversal );
             tauinverse := InverseAsWord(tau,hgens,Hinverses);
             word := Concatenation(tauinverse,inversereps[j],
-                                  [G.generators[i]]);
+                                  [ chainG.generators[i] ]);
             images[i][j] := reprlist[ImageInWord(y,word)];
         od;
         images[i] := PermList(images[i]);
@@ -911,7 +881,7 @@ RegularNinKernelCSPG := function ( G, H, homlist )
             od;
         od;
         newimages := [];
-        for i in [1..Length(G.generators)] do
+        for i in [1..Length( chainG.generators )] do
             newimages[i] := [];
             for k in [1..c] do
                 newimages[i][k] := reprlist[newrep[k][1]^images[i]];
@@ -919,17 +889,20 @@ RegularNinKernelCSPG := function ( G, H, homlist )
             newimages[i] := PermList(newimages[i]);
         od;
         K := GroupByGenerators(newimages,());
-        hom := GroupHomomorphismByImages(G,K,G.generators,newimages);
+        hom := GroupHomomorphismByImagesNC( G, K,
+                   chainG.generators, newimages );
     else
-        hom := GroupHomomorphismByImages(G,K,G.generators,images);
+        hom := GroupHomomorphismByImagesNC( G, K,
+                   chainG.generators, images );
     fi;
     j := Length(homlist)+1;
     homlist[j] := hom;
     K := Image(homlist[j],G);
-    K.derivedSubgroup := K;
+    SetDerivedSubgroup( K, K );
+#T better set that K is perfect?
 
     return K;
-end;
+end );
 
 
 #############################################################################
@@ -939,15 +912,16 @@ end;
 ##  given primitive, perfect group which has regular normal subgroup
 ##  with nontrivial centralizer, the output is N_G(G_{xy})
 ##
-NormalizerStabCSPG := function(G)
+InstallGlobalFunction( NormalizerStabCSPG, function(G)
     local   n,          # degree of G
-            stabgroup,  # stabilizer group of G
+            chainG,     # stablizer chain of `G'
+            chainstab,  # stabilizer chain of a point stabilizer in `G'
             orbits,     # orbits of stabgroup
             len,        # minimal length of stabgroup orbits
             where,      # index of minimal length orbit
             i,          # loop variable
             base,       # base of G
-            stabgroup2, # stabilizer of first two base points in G
+            chainstab2, # chain of stabilizer of first two base points in G
             x,y,        # first two base points
             normalizer, # output group N_G(G_{xy})
             L,          # fixed points of stabgroup2
@@ -961,11 +935,13 @@ NormalizerStabCSPG := function(G)
             Ltau;       # image of L under tau
 
     n := LargestMovedPoint(G);
-    stabgroup := Stabilizer(G,G.orbit[1],OnPoints);
+    chainG:= StabChainMutable( G );
+    chainstab := chainG.stabilizer;
+    base := BaseStabChain(chainG);
 
     # If necessary, make base change to achieve that second base point is
     # in smallest orbit of stabilizer.
-    orbits := Orbits(stabgroup,[1..n]);
+    orbits := OrbitsPerms( chainstab.generators, [1..n] );
     len := n; where := 1;
     for i in [1..Length(orbits)] do
         if (1<Length(orbits[i])) and (Length(orbits[i])< len)  then
@@ -973,39 +949,38 @@ NormalizerStabCSPG := function(G)
             len := Length(orbits[i]);
         fi;
     od;
-    if Length(stabgroup.orbit) > len  then
-        SetStabChain( G, StabChainOp(G,[G.orbit[1],orbits[where][1]]) );
-        stabgroup := Stabilizer(G,G.orbit[1],OnPoints);
+    if Length( chainstab.orbit ) > len  then
+      chainG:= StabChainOp( G, [ chainG.orbit[1], orbits[where][1] ] );
+      chainstab:= chainG.stabilizer;
     fi;
-    base := Base(G);
-    x := G.orbit[1];
-    y := stabgroup.orbit[1];
-    stabgroup2 := Stabilizer(stabgroup,y,OnPoints);
+    x := chainG.orbit[1];
+    y := chainstab.orbit[1];
+    chainstab2 := chainstab.stabilizer;
 
     # compute normalizer. Method: Beals-Seress, Lemma 7.1
-    L := Difference([1..n],MovedPoints(stabgroup2));
-    yL := Intersection(L,stabgroup.orbit);
+    L := Difference( [1..n], MovedPointsPerms( chainstab2.generators ) );
+    yL := Intersection( L, chainstab.orbit );
 
     # initialize normalizer to G_{xy}
-    normalizer := rec( generators := ShallowCopy(stabgroup2.generators) );
+    normalizer := rec( generators := ShallowCopy( chainstab2.generators) );
     orbity := OrbitPerms(normalizer.generators,y);
     while Length(orbity) < Length(yL) do
         v := Difference(yL,orbity)[1];
-        p := Product(CosetRepAsWord(y,v,stabgroup.transversal));
+        p := Product( CosetRepAsWord( y, v, chainstab.transversal ) );
         Add(normalizer.generators,p);
         orbity := OrbitPerms(normalizer.generators,y);
     od;
     normalizer.stabChain2 := EmptyStabChain( [  ], (), y );
     AddGeneratorsExtendSchreierTree(normalizer.stabChain2,normalizer.generators);
-    normalizer.stabChain2.stabilizer:=stabgroup2.stabChain;
+    normalizer.stabChain2.stabilizer:= chainstab2;
 
     orbitx := OrbitPerms(normalizer.generators,x);
     while Length(orbitx) < Length(L) do
         v := Difference(L,orbitx)[1];
-        tau := Product(CosetRepAsWord(x,v,G.transversal));
+        tau := Product( CosetRepAsWord( x, v, chainG.transversal ) );
         Ltau := OnSets(L,tau);
-        u := Intersection(Ltau,stabgroup.orbit)[1];
-        sigma := Product(CosetRepAsWord(y,u,stabgroup.transversal));
+        u := Intersection( Ltau, chainstab.orbit )[1];
+        sigma := Product( CosetRepAsWord( y, u, chainstab.transversal ) );
         Add(normalizer.generators,tau*sigma);
         orbitx := OrbitPerms(normalizer.generators,x);
     od;
@@ -1015,7 +990,7 @@ NormalizerStabCSPG := function(G)
 
     normalizer := GroupStabChain( Parent( G ), normalizer.stabChain, true );
     return normalizer;
-end;
+end );
 
 
 #############################################################################
@@ -1026,11 +1001,15 @@ end;
 ##  first two points in G, and a theoretical guarantee that there is a
 ##  proper transitive subgroup K containing H, the routine finds such K
 ##
-TransStabCSPG := function(G,H)
+InstallGlobalFunction( TransStabCSPG, function(G,H)
     local   n,          # degree of G
+            chainG,     # stabilizer chain of `G'
+            chainH,     # stabilizer chain of `H'
             x,y,        # first two points of the base of G
             stabgroup,  # stabilizer of x in G
+            chainstabgroup,
             hstabgroup, # stabilizer of x in H
+            chainhstabgroup,
             u,v,        # indices of points in G.orbit, stabgroup.orbit
             g,          # list of permutations whose product is
                         # (semi)random element of G
@@ -1046,12 +1025,16 @@ TransStabCSPG := function(G,H)
 
     #Print(Size(G),",",Size(H));
     n := LargestMovedPoint(G);
-    x := G.orbit[1];
+    chainG:= StabChainMutable( G );
+    x := chainG.orbit[1];
     stabgroup := Stabilizer(G,x,OnPoints);
-    y := stabgroup.orbit[1];
+    chainstabgroup := StabChainMutable( stabgroup );
+    y := chainstabgroup.orbit[1];
     hstabgroup := Stabilizer(H,x,OnPoints);
-    ExtendStabChain(StabChainAttr(H),Base(G));
-    ExtendStabChain(StabChainAttr(hstabgroup),Base(stabgroup));
+    chainhstabgroup:= StabChainMutable( hstabgroup );
+    chainH:= StabChainMutable( H );
+    ExtendStabChain( chainH, BaseStabChain(chainG) );
+    ExtendStabChain( chainhstabgroup, BaseStabChain( chainstabgroup ) );
 
     # try to embed H into bigger subgroups; stop when result is transitive
     repeat
@@ -1059,19 +1042,20 @@ TransStabCSPG := function(G,H)
 
         # first, take random element of G\H
         repeat
-            v := Random([1..Length(G.orbit)]);
-            g := CosetRepAsWord(x,G.orbit[v],G.transversal);
-            u := Random([1..Length(stabgroup.orbit)]);
-            Append(g,CosetRepAsWord(y,stabgroup.orbit[u],
-                                      stabgroup.transversal));
+            v := Random([1..Length( chainG.orbit )]);
+            g := CosetRepAsWord( x, chainG.orbit[v], chainG.transversal );
+            u := Random([1..Length( chainstabgroup.orbit )]);
+            Append(g,CosetRepAsWord( y, chainstabgroup.orbit[u],
+                                        chainstabgroup.transversal ));
             notinH := false;
             v := ImageInWord(x,g);
-            if not IsBound(H.transversal[v])  then
+            if not IsBound( chainH.transversal[v] ) then
                 notinH := true;
             else
                 u := ImageInWord(y,g);
-                u := ImageInWord(u,CosetRepAsWord(x,v,H.transversal));
-                if not IsBound(hstabgroup.transversal[u])  then
+                u := ImageInWord( u, CosetRepAsWord( x, v,
+                                         chainH.transversal ) );
+                if not IsBound( chainhstabgroup.transversal[u] ) then
                     notinH := true;
                 fi;
             fi;
@@ -1082,11 +1066,11 @@ TransStabCSPG := function(G,H)
             # construct semirandom element of <H,g>
             word := [];
             for j in [1..5] do
-                len := Length(word); 
+                len := Length(word);
                 for k in [1..Length(g)] do
                     word[len+k] := g[k];
                 od;
-                len := Length(word); 
+                len := Length(word);
                 hword := RandomElmAsWord(H);
                 for k in [1..Length(hword)] do
                     word[len+k] := hword[k];
@@ -1096,22 +1080,23 @@ TransStabCSPG := function(G,H)
             # check whether word is in H;
             # if not, then let g=cosetrep of word in G_{xy}
             v := ImageInWord(x,word);
-            tau := CosetRepAsWord(x,v,H.transversal);
+            tau := CosetRepAsWord( x, v, chainH.transversal );
             if tau = []  then
-                tau1 := CosetRepAsWord(x,v,G.transversal);
+                tau1 := CosetRepAsWord( x, v, chainG.transversal );
                 u := ImageInWord(y,word);
                 u := ImageInWord(u,tau1);
-                sigma1 := CosetRepAsWord(y,u,stabgroup.transversal);
+                sigma1 := CosetRepAsWord( y, u, chainstabgroup.transversal );
                 g := Concatenation(tau1,sigma1);
             else
                 u := ImageInWord(y,word);
                 u := ImageInWord(u,tau);
-                sigma := CosetRepAsWord(y,u,hstabgroup.transversal);
+                sigma := CosetRepAsWord( y, u, chainhstabgroup.transversal );
                 if sigma = []  then
-                    tau1 := CosetRepAsWord(x,v,G.transversal);
+                    tau1 := CosetRepAsWord( x, v, chainG.transversal );
                     u := ImageInWord(y,word);
                     u := ImageInWord(u,tau1);
-                    sigma1 := CosetRepAsWord(y,u,stabgroup.transversal);
+                    sigma1 := CosetRepAsWord( y, u,
+                                  chainstabgroup.transversal );
                     g := Concatenation(tau1,sigma1);
                 fi;
             fi;
@@ -1121,23 +1106,26 @@ TransStabCSPG := function(G,H)
         K := ClosureGroup(H,Product(g));
         if 1 < Size(G)/Size(K)  then
             H := K;
+            chainH:= StabChainMutable( H );
             #Print(Size(H));
             hstabgroup := Stabilizer(H,x,OnPoints);
-            ExtendStabChain(StabChainAttr(hstabgroup),Base(stabgroup));
-            ExtendStabChain(StabChainAttr(H),Base(G));
+            chainhstabgroup:= StabChainMutable( hstabgroup );
+            ExtendStabChain( chainhstabgroup, BaseStabChain(chainstabgroup) );
+            ExtendStabChain( chainH, BaseStabChain(chainG) );
         fi;
 
-    until Length(H.orbit) = n;
+    until Length( chainH.orbit ) = n;
 
     return H;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PullbackKernelCSPG()  . . . . . . . . . . . . . . . pull back the kernels
 ##
-PullbackKernelCSPG := function( homlist, normals, factors, auxiliary, index )
+InstallGlobalFunction( PullbackKernelCSPG,
+    function( homlist, normals, factors, auxiliary, index )
     local   lenhomlist, # length of homlist
             i, j,       # loop variables
             gens,       # list of generators in kernels
@@ -1152,7 +1140,7 @@ PullbackKernelCSPG := function( homlist, normals, factors, auxiliary, index )
        if IsBound(auxiliary[i])  then
            gens := Union( GeneratorsOfGroup(
                        KernelOfMultiplicativeGeneralMapping(homlist[i]) ),
-                         auxiliary[i].generators);
+                         StabChainMutable( auxiliary[i] ).generators);
        else
            gens := GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                           homlist[i] ) );
@@ -1165,14 +1153,14 @@ PullbackKernelCSPG := function( homlist, normals, factors, auxiliary, index )
            Add(factors[index],());
        od;
     od;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  PullbackCSPG()  . . . . . . . . . . . . . . . . . . . . . . . . pull back
 ##
-PullbackCSPG := function(p,homlist)
+InstallGlobalFunction( PullbackCSPG, function(p,homlist)
     local   i,          # loop variable
             lenhomlist; # length of homlist
 
@@ -1182,7 +1170,7 @@ PullbackCSPG := function(p,homlist)
         p := PreImagesRepresentative(homlist[lenhomlist+1-i],p);
     od;
     return p;
-end;
+end );
 
 
 #############################################################################
@@ -1192,7 +1180,7 @@ end;
 ##  returns the cosetrep carrying y to the base point x as a word in the
 ##  generators. If y is not in the orbit of x, returns []
 ##
-CosetRepAsWord := function(x,y,transversal)
+InstallGlobalFunction( CosetRepAsWord, function(x,y,transversal)
     local   word,       # list of permutations
             point;      # element of permutation domain
 
@@ -1205,7 +1193,7 @@ CosetRepAsWord := function(x,y,transversal)
         until point = x;
     fi;
     return word;
-end;
+end );
 
 
 #############################################################################
@@ -1214,7 +1202,7 @@ end;
 ##
 ##  computes the image of x when the list of permutations word is applied
 ##
-ImageInWord := function(x,word)
+InstallGlobalFunction( ImageInWord, function(x,word)
     local   i,          # loop variable
             value;      # element of permutation domain
 
@@ -1223,50 +1211,53 @@ ImageInWord := function(x,word)
         value := value^word[i];
     od;
     return value;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  SiftAsWord()  . . . . . . . . . . . . shift a permutation written as word
+#F  SiftAsWord( <chain>, <perm> ) . . . .  sift a permutation written as word
 ##
-##  given a list of permutations perm, the routine computes the residue
-##  at the sifting of perm through the SGS of G
-##  the output is a list of length 2: the first component is the siftee,
-##  as a word, the second component is 0 if perm in G, and i if the siftee
+##  given a list <perm> of permutations and a stabilizer chain <chain> for
+##  the group $G$, the routine computes the residue at the sifting of perm
+##  through the SGS of $G$.
+##  The output is a list of length 2: the first component is the siftee,
+##  as a word, the second component is 0 if perm in $G$, and i if the siftee
 ##  on the i^th level could not be computed.
 ##
-SiftAsWord := function(G,perm)
+#T <perm> is changed!
+##
+InstallGlobalFunction( SiftAsWord, function( chain, perm )
     local   i,          # loop variable
             y,          # element of permutation domain
             word,       # the list collecting the siftee of perm
             len,        # length of word
             coset,      # word representing a coset in a stabilizer
             index,      # the level where the siftee cannot be computed
-            stb;        #the stabilizer group we currently work with
+            stb;        # the stabilizer group we currently work with
 
     # perm must be a list of permutations itself!
-    stb := G;
+    stb :=  chain;
     word := perm;
     index := 0;
-    while IsBound(stb.stabilizer) do 
+    while IsBound(stb.stabilizer) do
        index:=index+1;
        y:=ImageInWord(stb.orbit[1],word);
-       if IsBound(stb.transversal[y]) then 
+       if IsBound(stb.transversal[y]) then
           coset :=  CosetRepAsWord(stb.orbit[1],y,stb.transversal);
-          len := Length(word); 
+          len := Length(word);
           for i in [1..Length(coset)] do
               word[len+i] := coset[i];
-          od; 
+          od;
           stb:=stb.stabilizer;
-       else 
+       else
           return([word,index]);
        fi;
     od;
 
     index := 0;
     return [word,index];
-end;
+end );
 
 
 #############################################################################
@@ -1277,7 +1268,7 @@ end;
 ##  in inverselist, and a list of permutations "word" with elements from
 ##  list, returns the inverse of word as a list of inverses from inverselist
 ##
-InverseAsWord := function(word,list,inverselist)
+InstallGlobalFunction( InverseAsWord, function(word,list,inverselist)
     local   i,          # loop variable
             inverse;    # the inverse of word
 
@@ -1289,26 +1280,27 @@ InverseAsWord := function(word,list,inverselist)
         inverse[i] := inverselist[Position(list,word[Length(word)+1-i])];
     od;
     return inverse;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  RandomElmAsWord() . . . . . . . . . . . .  random element written as word
+#F  RandomElmAsWord( <chain> )  . . . . . . .  random element written as word
 ##
-##  given an SGS for G, returns a uniformly distributed random element of G
+##  given an stabilizer chain <chain> for the group $G$, returns a uniformly
+##  distributed random element of $G$,
 ##  as a word in the strong generators
 ##
-RandomElmAsWord := function(G)
-    local  i,       # loop variable 
+InstallGlobalFunction( RandomElmAsWord, function( chain )
+    local  i,       # loop variable
            word,    # the random element
            len,     # length of word
            stb,     # the stabilizer group we currently work with
            v,       # index of random element of stb.orbit
-           coset;   # word representing a coset 
+           coset;   # word representing a coset
     word:=[];
-    stb:=G;
-    while IsBound(stb.stabilizer) do 
+    stb:= chain;
+    while IsBound(stb.stabilizer) do
        v := Random([1..Length(stb.orbit)]);
        coset := CosetRepAsWord(stb.orbit[1],stb.orbit[v],stb.transversal);
        len := Length(word);
@@ -1319,7 +1311,7 @@ RandomElmAsWord := function(G)
     od;
     return  word;
 
-end;
+end );
 
 #############################################################################
 ##
@@ -1330,7 +1322,10 @@ end;
 ##  Output of routine: the subgroup O_p(workgroup)
 ##  reference: Luks-Seress
 ##
-InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
+InstallMethod( PCoreOp,
+    "for a permutation group, and a positive integer",
+    true,
+    [ IsPermGroup, IsPosInt ], 0,
     function(workgroup,p)
     local   n,          # degree of workgroup
             G,          # a factor group of workgroup
@@ -1354,6 +1349,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
                         # is redefined as last nontrivial term of series
             actionlist, # record of G action on transitive
                         # constituent pieces of H
+            Ggens,      # generators of stab. chain of `G'
             i, j,       # loop variables
             image,      # list of images of generators of G
                         # acting on pieces of H
@@ -1370,20 +1366,20 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
         return TrivialSubgroup(workgroup);
     fi;
     if Size(workgroup) mod p <> 0 then
-       # p does not divide Size(workgroup) 
+       # p does not divide Size(workgroup)
        return TrivialSubgroup(workgroup);
     fi;
 
-    #handle nilpotent case directly 
-    if IsNilpotentGroup( workgroup ) then 
+    #handle nilpotent case directly
+    if IsNilpotentGroup( workgroup ) then
            # compute the p-part of generators of workgroup
            primes := Collected( Factors( Size(workgroup) ) );
            ppart := p^primes[PositionProperty( primes, x->x[1]=p )][2];
            pgenlist := [];
-           for g in workgroup.generators do
+           for g in StabChainMutable( workgroup ).generators do
                Add( pgenlist, g^( Size(workgroup)/( ppart ) ) );
            od;
-           return Subgroup( workgroup, pgenlist );
+           return SubgroupNC( workgroup, pgenlist );
     fi;
 
     n := LargestMovedPoint(workgroup);
@@ -1391,7 +1387,8 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
     list := CompositionSeries(G);
     # normals := Copy(list[1]);
     # factorsize := list[3];
-    normals := List([1..Length(list)-1],i->ShallowCopy(list[i].generators));
+    normals := List( [1..Length(list)-1],
+                     i->ShallowCopy(StabChainMutable(list[i]).generators));
     factorsize := List([1..Length(list)-1],i->Size(list[i])/Size(list[i+1]));
     Add(normals, [()]);
     homlist := [];
@@ -1408,7 +1405,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
         if factorsize[index] <> p  then
             index := index-1;
         else
-            N := Subgroup(Parent(G),normals[index+1]);
+            N := SubgroupNC(Parent(G),normals[index+1]);
 
             # define K := SubGroup(Parent(G),normals[index]);
             # N has trivial p-core; check whether K has nontrivial one
@@ -1422,17 +1419,18 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
                 # O_p(K) is cyclic or trivial; it must show up in C
                 # C is always abelian; check whether it has p-part
                 D := [];
-                for i in [1..Length(C.generators)] do
-                    order := OrderPerm(C.generators[i]);
+                C:= GeneratorsOfGroup( C );
+                for i in [1..Length( C )] do
+                    order := OrderPerm(C[i]);
                     if order mod p = 0  then
-                        D[i] := C.generators[i]^(order/p);
+                        D[i] := C[i]^(order/p);
                     else
                         D[i] := ();
                     fi;
                 od;
 
                 # redefine C as the p-core of C
-                C := Subgroup(Parent(K),D);
+                C := SubgroupNC(Parent(K),D);
                 if IsTrivial(C)  then
                     index := index-1;
                 else
@@ -1444,15 +1442,13 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
                     # define new action of G with H in the kernel
                     actionlist := ActionAbelianCSPG(H,n);
 
-                    image := [];
-                    for i in [1..Length(G.generators)] do
-                        image[i] :=
-                              ImageOnAbelianCSPG(G.generators[i],actionlist);
-                    od;
+                    Ggens:= StabChainMutable( G ).generators;
+                    image:= List( Ggens,
+                                g -> ImageOnAbelianCSPG( g, actionlist ) );
 
                     # take homomorphic image of G
                     GG := GroupByGenerators(image,());
-                    hom:=GroupHomomorphismByImages(G,GG,G.generators,image);
+                    hom:=GroupHomomorphismByImagesNC(G,GG,Ggens,image);
                     Add(homlist,hom);
                     #force makemapping
                     KernelOfMultiplicativeGeneralMapping( hom );
@@ -1493,7 +1489,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
             od;
         od;
     fi;
-    return Subgroup(workgroup,pgenlist);
+    return SubgroupNC(workgroup,pgenlist);
 end );
 
 
@@ -1505,7 +1501,10 @@ end );
 ##  output of routine: the subgroup radical of workgroup
 ##  reference: Luks-Seress
 ##
-InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
+InstallMethod( RadicalGroup,
+    " for a permutation group",
+    true,
+    [ IsPermGroup ], 0,
     function(workgroup)
     local   n,          # degree of workgroup
             G,          # a factor group of workgroup
@@ -1526,6 +1525,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
                         # is redefined as last nontrivial term of series
             actionlist, # record of G action on transitive
                         # constituent pieces of H
+            Ggens,      # generators of stab. chain of `G'
             i, j,       # loop variables
             image,      # list of images of generators of G
                         # acting on pieces of H
@@ -1537,7 +1537,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
         return TrivialSubgroup(workgroup);
     fi;
 
-    if IsSolvableGroup(workgroup) then 
+    if IsSolvableGroup(workgroup) then
         return workgroup;
     fi;
 
@@ -1546,7 +1546,8 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
     list := CompositionSeries(G);
     # normals := Copy(list[1]);
     # factorsize := list[3];
-    normals := List([1..Length(list)-1],i->ShallowCopy(list[i].generators));
+    normals := List( [1..Length(list)-1],
+                     i->ShallowCopy(StabChainMutable(list[i]).generators));
     factorsize := List([1..Length(list)-1],i->Size(list[i])/Size(list[i+1]));
     Add(normals, [()]);
     homlist := [];
@@ -1566,7 +1567,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
         if Length(primes) > 1  then
             index := index-1;
         else
-            N := Subgroup(Parent(G),normals[index+1]);
+            N := SubgroupNC(Parent(G),normals[index+1]);
 
             # define K := SubGroup(Parent(G),normals[index]);
             # N has trivial radical; check whether K has nontrivial one
@@ -1590,16 +1591,14 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
                     # define new action of G with H in the kernel
                     actionlist := ActionAbelianCSPG(H,n);
 
-                    image := [];
-                    for i in [1..Length(G.generators)] do
-                        image[i] :=
-                              ImageOnAbelianCSPG(G.generators[i],actionlist);
-                    od;
+                    Ggens:= StabChainMutable( G ).generators;
+                    image:= List( Ggens,
+                                g -> ImageOnAbelianCSPG( g, actionlist ) );
 
                     # take homomorphic image of G
                     GG := GroupByGenerators(image,());
-                    hom := GroupHomomorphismByImages(G,GG,
-                                                     G.generators,image);
+                    hom := GroupHomomorphismByImagesNC(G,GG,
+                                                     Ggens,image);
                     Add(homlist,hom);
                     #force makemapping
                     KernelOfMultiplicativeGeneralMapping( hom );
@@ -1640,18 +1639,21 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
         od;
     fi;
 
-    return Subgroup(workgroup,solvable);
+    return SubgroupNC(workgroup,solvable);
 end );
 
 
 #############################################################################
 ##
-#M  Centre()  . . . . . . . . . . . . . . . . . center of a permutation group
+#M  Centre( <G> ) . . . . . . . . . . . . . . . center of a permutation group
 ##
 ##  constructs the center of G.
 ##  Reference: Beals-Seress, 24th Symp. on Theory of Computing 1992, sect. 9
 ##
-InstallMethod( Centre, true, [ IsPermGroup ], 0,
+InstallMethod( Centre,
+    "for a permutation group",
+    true,
+    [ IsPermGroup ], 0,
     function(G)
     local   n,          # degree of G
             orbits,     # list of orbits of G
@@ -1667,6 +1669,8 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
             len,        # length of domain
             tchom,      # trans. const. homom, restricting G to domain
             GG,         # the image of tchom
+            chainGG,    # stabilizer chain of `GG'
+            chainGGG,   # stabilizer chain of `GGG'
             orbit,      # an orbit of GG
             tchom2,     # trans. const. homom, restricting GG to orbit
             GGG,        # the image of GG at tchom2
@@ -1683,16 +1687,16 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
        return TrivialSubgroup(G);
     fi;
 
-    base := Base(G);
+    base := BaseStabChain(StabChainMutable(G));
     n := Maximum( Maximum( base ), LargestMovedPoint(G) );
     orbits := Orbits(G,[1..n]);
     # orbits := List( orbits, Set );
 
     # handle case of transitive G directly
     if Length(orbits) = 1  then
-        centr := CentralizerTransSymmCSPG(G);
-        if Length(centr.generators) = 0 then 
-           return TrivialSubgroup(Parent(G));
+        centr := CentralizerTransSymmCSPG( G, StabChainMutable( G ) );
+        if IsEmpty( GeneratorsOfGroup( centr ) ) then
+           return TrivialSubgroup( G );
         else
            order := Size(centr);
            cent := IntersectionNormalClosurePermGroup(G,centr,order*Size(G));
@@ -1700,7 +1704,7 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
         fi;
     fi;
 
-    # for intransitive G, find which orbit contains which 
+    # for intransitive G, find which orbit contains which
     # points of permutation domain
     reps := [];
     for i in [1..Length(orbits)] do
@@ -1732,11 +1736,11 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
 
     # handle case of transitive GG directly
     if Length(significant) = 1  then
-        centr := CentralizerTransSymmCSPG(GG);
-        if Length(centr.generators) = 0 then 
-           return TrivialSubgroup(Parent(G));
+        centr := CentralizerTransSymmCSPG( GG, StabChainMutable( GG ) );
+        if IsEmpty( GeneratorsOfGroup( centr ) ) then
+           return TrivialSubgroup( G );
         else
-           order := centr.size;
+           order := Size( centr );
            cent := IntersectionNormalClosurePermGroup(GG,centr,order*Size(GG));
            return PreImages(tchom,cent);
         fi;
@@ -1751,36 +1755,37 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
     order := 1;
     for i in significant do
         if n = len then
-           orbit := orbits[i]; 
+           orbit := orbits[i];
         else
            orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
         tchom2 := OperationHomomorphism(GG,orbit);
         GGG := Image(tchom2,GG);
-        SetStabChain( GG, StabChainOp( GG, [ orbit[1] ] ) );
-        GGG!.stabFxdPnts:=[ orbit[1]^tchom2!.conperm, 
+        chainGG:= StabChainOp( GG, [ orbit[1] ] );
+        chainGGG:= StabChainMutable( GGG );
+        chainGGG.stabFxdPnts:=[ orbit[1]^tchom2!.conperm,
             OnTuples( Difference(orbit, MovedPointsPerms
-                ( GG.stabilizer.generators ) ), tchom2!.conperm ) ];
-        centr := CentralizerTransSymmCSPG(GGG);
-        if Length(centr.generators) > 0 then
-           order := order * centr.size;
+                ( chainGG.stabilizer.generators ) ), tchom2!.conperm ) ];
+        centr := CentralizerTransSymmCSPG( GGG, chainGGG );
+        if not IsEmpty( GeneratorsOfGroup( centr ) ) then
+           order := order * Size( centr );
            inverse2 := tchom2!.conperm^(-1);
-           for g in centr.generators do
+           for g in StabChainMutable( centr ).generators do
                Add(hgens,g^inverse2);
            od;
         fi;
     od;
 
-    if order = 1 then 
-        return TrivialSubgroup(Parent(G));
+    if order = 1 then
+        return TrivialSubgroup( G );
     else
         cent := IntersectionNormalClosurePermGroup
                  ( GG, GroupByGenerators(hgens,()), order*Size(GG) );
-    fi;
-    if n = len then 
-        return cent;
-    else 
-        return PreImages(tchom,cent);
+        if n = len then
+          return cent;
+        else
+          return PreImages(tchom,cent);
+        fi;
     fi;
 end );
 
@@ -1795,7 +1800,7 @@ end );
 ##  computes the centralizer of a NORMAL subgroup N in G.
 ##  Reference: Luks-Seress
 ##
-CentralizerNormalCSPG := function(G,N)
+InstallGlobalFunction( CentralizerNormalCSPG, function(G,N)
     local   n,          # degree of G
             orbits,     # list of orbits of G
             list,       # ordering of permutation domain
@@ -1839,7 +1844,7 @@ CentralizerNormalCSPG := function(G,N)
         return centrnorm;
     fi;
 
-    # for intransitive G, find which orbit contains which 
+    # for intransitive G, find which orbit contains which
     #points of permutation domain
     reps := [];
     for i in [1..Length(orbits)] do
@@ -1851,7 +1856,7 @@ CentralizerNormalCSPG := function(G,N)
     #MakeStabChain(G,list);
 
     # take union of significant orbits which contain base points
-    base := Base(G);
+    base := BaseStabChain(StabChainMutable(G));
     max := reps[base[1]];
     significant := [max];
     domain := ShallowCopy(orbits[max]);
@@ -1866,9 +1871,9 @@ CentralizerNormalCSPG := function(G,N)
 
     # restrict G,N to significant orbits
     if n = len then
-       GG := G; 
+       GG := G;
        NN := N;
-    else 
+    else
        tchom := OperationHomomorphism(G,domain);
        GG := Image(tchom,G);
        NN := Image(tchom,N);
@@ -1888,9 +1893,9 @@ CentralizerNormalCSPG := function(G,N)
     hgens := [];
     order := 1;
     for i in significant do
-        if n = len then 
+        if n = len then
             orbit := orbits[i];
-        else 
+        else
             orbit := OnTuples(orbits[i],tchom!.conperm);
         fi;
         # restrict GG, NN to orbit
@@ -1904,12 +1909,12 @@ CentralizerNormalCSPG := function(G,N)
         order := order * Size(centrnorm);
 
         # determine how the centralizer acts on domain
-        for g in centrnorm.generators do
+        for g in StabChainMutable( centrnorm ).generators do
             Add(hgens,g^inverse2);
         od;
     od;
 
-    if order = 1 then 
+    if order = 1 then
        return TrivialSubgroup( Parent(G) );
     else
        central := IntersectionNormalClosurePermGroup
@@ -1918,10 +1923,10 @@ CentralizerNormalCSPG := function(G,N)
 
     if n = len then
        return central;
-    else 
+    else
        return PreImages(tchom,central);
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -1931,14 +1936,17 @@ end;
 ##  computes C_G(N) with G transitive, N normal in G
 ##  reference: Luks-Seress
 ##
-CentralizerNormalTransCSPG := function(G,N)
-    local   n,          # degree of G
+InstallGlobalFunction( CentralizerNormalTransCSPG, function(G,N)
+    local   chainG,     # stabilizer chain of `G'
+            chainN,     # stabilizer chain of `N'
+            n,          # degree of G
             x,          # the first base point of G
             stabgroup,  # stabilizer of x in N
             U,          # an orbit of centralizer of N in S_n
             orbits,     # list of orbits of centralizer of N is S_n
             bhom,       # block homomorphism from G to action on orbits
             GG,         # the kernel of bhom
+            GGgens,     # generators of a stabilizer chain of `GG'
             Ginverses,  # list of inverses of generators of G
             Ninverses,  # list of inverses of generators of N
             norbits,    # list of orbits of N
@@ -1967,7 +1975,9 @@ CentralizerNormalTransCSPG := function(G,N)
             tchom,      # transitive constituent homomorphism restricting
                         # N to N.orbit
             inverse,    # the inverse of tchom.conperm
+            img,        # image of `N' under `tchom'
             centr,      # the centralizer of N in Sym(N.orbit)
+            chaincentr, # stabilizer chain of `centr'
             hom,        # homomorphism of GG whose kernel is C_G(N)
             images,     # list of images of generators of GG at hom
             top,bottom,g,
@@ -1978,24 +1988,26 @@ CentralizerNormalTransCSPG := function(G,N)
         return G;
     fi;
 
-    x := G.orbit[1];
-    SetStabChain( N, StabChainOp(N,[x]) );
+    chainG:= StabChainMutable( G );
+    x := chainG.orbit[1];
+    chainN:= StabChainOp( N, [x] );
 
     # handle transitive N directly
-    if Length(N.orbit) = Length(G.orbit) then
-        centr := CentralizerTransSymmCSPG(N);
+    if Length( chainN.orbit ) = Length( chainG.orbit ) then
+        centr := CentralizerTransSymmCSPG( N, chainN );
         if Size(centr) > 1 then
-        return IntersectionNormalClosurePermGroup(G,centr,centr.size*Size(G));
+        return IntersectionNormalClosurePermGroup( G, centr,
+                   Size( centr ) * Size( G ) );
         else
-           return Subgroup(Parent(G), []);
+           return TrivialSubgroup( Parent(G) );
         fi;
     fi;
 
     n := LargestMovedPoint(G);
     stabgroup := Stabilizer(N,x,OnPoints);
     U := Difference([1..n],MovedPoints(stabgroup));
-    if Length(U) = 1 then 
-        return Subgroup(Parent(G),[()]);
+    if Length(U) = 1 then
+        return TrivialSubgroup( Parent(G) );
     fi;
     orbits:=Blocks(G,[1..n],U);
 
@@ -2004,25 +2016,26 @@ CentralizerNormalTransCSPG := function(G,N)
     bhom := OperationHomomorphism(G,orbits,OnSets);
     GG := KernelOfMultiplicativeGeneralMapping( bhom );
     if IsTrivial(GG)  then
-        return Subgroup(Parent(G),[()]);
+        return TrivialSubgroup( Parent(G) );
     fi;
 
-    Ginverses := GInverses( G );
-    Ninverses := GInverses( N );
+    Ginverses := GInverses( chainG );
+    Ninverses := GInverses( chainN );
 
     # we partition [1..n] into the orbits of N, and compute the
     # identification between equivalent orbits (equivalent in the sense
     # that the centralizer of N in S_n exchanges them). After that, we
     # conjugate the union of equivalent orbits to cover [1..n]
-    norbits := [N.orbit];
-    orbitlength := Length(N.orbit);
+    norbits := [ chainN.orbit ];
+    orbitlength := Length( chainN.orbit );
     positionlist := [];
     reprlist := [];
     positiongenlist := [];
     for i in [1..orbitlength] do
-        positionlist[N.orbit[i]] := i;
-        reprlist[N.orbit[i]] := 1;
-        positiongenlist[i]:=Position(N.generators,N.transversal[N.orbit[i]]);
+        positionlist[ chainN.orbit[i] ] := i;
+        reprlist[ chainN.orbit[i] ] := 1;
+        positiongenlist[i]:= Position( chainN.generators,
+                                 chainN.transversal[ chainN.orbit[i] ] );
     od;
     diff := Difference(U,norbits[1]);
     len := 1;
@@ -2035,7 +2048,7 @@ CentralizerNormalTransCSPG := function(G,N)
         positionlist[y] := 1;
         reprlist[y] := len;
         for i in [2..orbitlength] do
-            u := N.orbit[i]^N.generators[positiongenlist[i]];
+            u := chainN.orbit[i] ^ chainN.generators[ positiongenlist[i] ];
             new[i] := new[positionlist[u]]^Ninverses[positiongenlist[i]];
             positionlist[new[i]] := i;
             reprlist[new[i]] := len;
@@ -2050,8 +2063,8 @@ CentralizerNormalTransCSPG := function(G,N)
         for k in [2..n/(len*orbitlength)] do
             newlen := (k-1)*len;
             y := set[1];
-            word := CosetRepAsWord(x,y,G.transversal);
-            word := InverseAsWord(word,G.generators,Ginverses);
+            word := CosetRepAsWord( x, y, chainG.transversal );
+            word := InverseAsWord( word, chainG.generators, Ginverses );
             for i in [1..len] do
                 norbits[newlen+i] := [];
                 for j in [1..orbitlength] do
@@ -2066,40 +2079,44 @@ CentralizerNormalTransCSPG := function(G,N)
 
     # compute centralizer of N in first orbit; centralizer in other orbits
     # is obtained from identification between orbits
-    tchom := OperationHomomorphism(N,N.orbit);
+    tchom := OperationHomomorphism( N, chainN.orbit );
     inverse := tchom!.conperm^(-1);
-    centr := CentralizerTransSymmCSPG(Image(tchom,N));
+    img:= Image( tchom, N );
+    centr := CentralizerTransSymmCSPG( img, StabChainMutable( img ) );
 
-    # compute transversal of centr
-    centr.stabChain := EmptyStabChain( [  ], (), x^tchom!.conperm );
-    AddGeneratorsExtendSchreierTree(centr.stabChain,GeneratorsOfGroup(centr));
+    # compute (and store) transversal of centr
+    chaincentr:= EmptyStabChain( [  ], (), x^tchom!.conperm );
+    AddGeneratorsExtendSchreierTree( chaincentr, GeneratorsOfGroup(centr));
 
     # compute images at homomorphism of GG, g -> g c_g^{-1} (cf. Luks-Seress)
     # the kernel of this homomorphism is C_G(N)
     images := [];
-    for i in [1..Length(GG.generators)] do
+    GGgens := StabChainMutable( GG ).generators;
+    for i in [1..Length( GGgens)] do
         images[i] := [];
 
         # top is the permutation in the wreath product which pulls back g to
         # orbits of N
         top := [];
         for j in [1..Length(norbits)] do
-            k := reprlist[norbits[j][1]^GG.generators[i]];
+            k := reprlist[norbits[j][1]^GGgens[i]];
             for m in [1..orbitlength] do
                 top[norbits[k][m]] := norbits[j][m];
             od;
         od;
         top := PermList(top);
-        g := GG.generators[i]*top;
+        g := GGgens[i]*top;
 
         # pull back each leading point in norbits by centralizer of N
         bottom := [];
         for j in [1..Length(norbits)] do
             k := positionlist[norbits[j][1]^g];
-            word := CosetRepAsWord(x^tchom!.conperm,N.orbit[k]^tchom!.conperm,
-                                 centr.transversal);
+            word := CosetRepAsWord( x^tchom!.conperm,
+                                    chainN.orbit[k]^tchom!.conperm,
+                                 chaincentr.transversal);
             for m in [1..orbitlength] do
-                s := (ImageInWord(N.orbit[m]^tchom!.conperm,word))^inverse;
+                s := (ImageInWord( chainN.orbit[m]^tchom!.conperm,
+                                   word ))^inverse;
                 bottom[norbits[j][m]] := norbits[j][positionlist[s]];
             od;
          od;
@@ -2108,9 +2125,9 @@ CentralizerNormalTransCSPG := function(G,N)
     od;
 
     K := GroupByGenerators(images,());
-    hom := GroupHomomorphismByImages(GG,K,GG.generators,images);
+    hom := GroupHomomorphismByImagesNC(GG,K,GGgens,images);
     return KernelOfMultiplicativeGeneralMapping( hom );
-end;
+end );
 
 
 #############################################################################
@@ -2119,9 +2136,8 @@ end;
 ##
 ##  computes the centralizer of a transitive group G in S_n
 ##
-CentralizerTransSymmCSPG := function(G)
+InstallGlobalFunction( CentralizerTransSymmCSPG, function( G, chainG )
     local   n,          # the degree of G
-            stabgroup,  # subgroup of G stabilizing first base point
             x,          # the first base point
             L,          # the set of fixed points of stabgroup
             orbitx,     # the orbit of x in the centralizer;
@@ -2137,26 +2153,26 @@ CentralizerTransSymmCSPG := function(G)
             Ginverses,  # list of inverses for the generators of G
             H;          # output group
     if IsTrivial(G)  then
-        return Subgroup(Parent(G),[()]);
-    fi;
-    
-    if IsBound(G!.stabFxdPnts) then 
-       x := G!.stabFxdPnts[1];
-       L := G!.stabFxdPnts[2];
-       n := LargestMovedPoint(G);
-       if not IsBound(G.stabChain.orbit) or G.stabChain.orbit[1] <> x then
-          G.stabChain := EmptyStabChain( [  ], (), x );
-          AddGeneratorsExtendSchreierTree(G.stabChain,GeneratorsOfGroup(G));
-       fi;
-    else 
-       n := LargestMovedPoint(G);
-       x := G.orbit[1];
-       stabgroup := GroupByGenerators(G.stabilizer.generators,());
-       L := Difference([1..n],MovedPoints(stabgroup));
+        return TrivialSubgroup( Parent(G) );
     fi;
 
-    Ginverses := GInverses( G );
-    Ggens := G.generators;
+    if IsBound( chainG.stabFxdPnts ) then
+       x := chainG.stabFxdPnts[1];
+       L := chainG.stabFxdPnts[2];
+       n := LargestMovedPoint(G);
+       if not IsBound( chainG.orbit ) or chainG.orbit[1] <> x then
+          chainG := EmptyStabChain( [  ], (), x );
+          AddGeneratorsExtendSchreierTree( chainG, GeneratorsOfGroup(G) );
+       fi;
+    else
+       n := LargestMovedPoint(G);
+       x := chainG.orbit[1];
+       L := Difference( [ 1 .. n ],
+                        MovedPointsPerms( chainG.stabilizer.generators ) );
+    fi;
+
+    Ginverses := GInverses( chainG );
+    Ggens := chainG.generators;
 
     # the centralizer of G is semiregular, acting transitively on L
     orbitx := [x];
@@ -2167,7 +2183,7 @@ CentralizerTransSymmCSPG := function(G)
         gen := [];
         y := Difference(L,orbitx)[1];
         for z in [1..n] do
-            h := CosetRepAsWord(x,z,G.transversal);
+            h := CosetRepAsWord( x, z, chainG.transversal );
             h := InverseAsWord(h,Ggens,Ginverses);
             gen[z] := ImageInWord(y,h);
         od;
@@ -2176,9 +2192,9 @@ CentralizerTransSymmCSPG := function(G)
     od;
 
     H := SubgroupNC( G, gens );
-    H.size := Length(L);
-    return H; 
-end;
+    SetSize( H, Length( L ) );
+    return H;
+end );
 
 
 #############################################################################
@@ -2188,7 +2204,8 @@ end;
 ##
 ##  computes $H^G \cap G$ as subgroup of Parent(G)
 ##
-IntersectionNormalClosurePermGroup := function(arg)
+InstallGlobalFunction( IntersectionNormalClosurePermGroup,
+    function(arg)
     local   G,H,        # the groups to be handled
             n,          # maximum of degrees of G,H
             i,j,        # loop variables
@@ -2199,7 +2216,7 @@ IntersectionNormalClosurePermGroup := function(arg)
             group;      # the group generated by newgens
                         # stabilizing the second n points, we get H^G \cap G
 
-    G := arg[1]; 
+    G := arg[1];
     H := arg[2];
 
     if IsTrivial(G) or IsTrivial(H)  then
@@ -2208,17 +2225,15 @@ IntersectionNormalClosurePermGroup := function(arg)
 
     n := Maximum(LargestMovedPoint(G),
                  LargestMovedPoint(H));
-    newgens := [];
     conperm := PermList( Concatenation( [n+1 .. 2*n] , [1 .. n] ) );
     # extend the generators of G acting on [n+1..2n] exactly as on [1..n]
-    for i in [1..Length(G.generators)] do
-        newgens[i] := G.generators[i] * (G.generators[i] ^ conperm);
-    od;
+    newgens := List( StabChainMutable( G ).generators,
+                     g -> g * ( g^conperm ) );
 
     # from the generators of H, create permutations which act on [n+1..2n]
     # as the original generator on [1..n] and which act trivially on [1..n]
-    for i in [1..Length(H.generators)] do
-        Add( newgens, H.generators[i]^conperm );
+    for i in StabChainMutable( H ).generators do
+      Add( newgens, i^conperm );
     od;
 
     group := GroupByGenerators(newgens,());
@@ -2226,22 +2241,23 @@ IntersectionNormalClosurePermGroup := function(arg)
     # create options record for stabilizer chain computation
     options := rec( base := [n+1..2*n] );
     #if size of group is part of input, use it
-    if Length(arg) = 3 then 
+    if Length(arg) = 3 then
        options.size := arg[3];
        # if H is normalized by G and G,H already have stabilizer chains
        # then compute base for group
-       #if ( IsBound(G.size) or IsBound(G.stabChain) ) and 
+       #if ( IsBound(G.size) or IsBound(G.stabChain) ) and
        #   ( IsBound(H.size) or IsBound(H.stabChain) )  then
        #   if Size(G) * Size(H) = arg[3] then
-       #      options.knownBase := 
+       #      options.knownBase :=
        #      Concatenation( List( Base(H), x -> n + x ), Base(G) ) ;
        #   fi;
        #fi;
     fi;
     StabChain(group,options);
+#T is this meaningful ??
     group := Stabilizer(group,[n+1 .. 2*n],OnTuples);
     return AsSubgroup( Parent(G),group);
-end;
+end );
 
 
 #############################################################################
@@ -2252,15 +2268,19 @@ end;
 ##  H on its orbits. The output is an array of length 7, describing this
 ##  action; the components of this array are described at the local variable
 ##  section
-ActionAbelianCSPG := function(H,n)
+##
+InstallGlobalFunction( ActionAbelianCSPG, function(H,n)
     local   i,j,k,      # loop variables
             orbits,     # list of orbits of H; 6th element of output
             action,     # list; the i^th element contains a list of
                         # generators for the action of H on i^th orbit
             inverse,    # inverse[i][k] is the inverse of action[i][k]
                         # 1st element of output
-            C,          # C[i] is the group generated by action[i]
+            Hgens,      # generators of `H'
+            C,          # C[i] is the stabilizer chain of the group
+                        # generated by action[i]
                         # 2nd element of output
+            chainC,     # one stabilizer chain in `C'
             positionlist,
                         # for i in [1..n], positionlist[i] gives the position
                         # of i in its H orbit. 3rd element of output
@@ -2293,13 +2313,14 @@ ActionAbelianCSPG := function(H,n)
     # viewed as a permutation on [1..Length(orbits[i])]
     action := [];
     inverse := [];
+    Hgens:= StabChainMutable( H ).generators;
     for i in [1..Length(orbits)] do
         action[i] := [];
         inverse[i] := [];
-        for k in [1..Length(H.generators)] do
+        for k in [1..Length(Hgens)] do
             action[i][k] := [];
             for j in [1..Length(orbits[i])] do
-                action[i][k][j]:=positionlist[orbits[i][j]^H.generators[k]];
+                action[i][k][j]:=positionlist[orbits[i][j]^Hgens[k]];
             od;
             action[i][k] := PermList(action[i][k]);
             inverse[i][k] := action[i][k]^(-1);
@@ -2310,43 +2331,44 @@ ActionAbelianCSPG := function(H,n)
     cpositiongenlist := [];
     for i in [1..Length(orbits)] do
         cpositiongenlist[i] := [];
-        C[i] := GroupByGenerators(action[i],());
 
-        # create transversal of C[i]
-        C[i].stabChain := EmptyStabChain( [  ], (), 1 );
+        # create stabilizer chain C[i]
+        chainC := EmptyStabChain( [  ], (), 1 );
+        AddGeneratorsExtendSchreierTree( chainC, action[i] );
+        C[i]:= chainC;
         Add(action[i],());
         Add(inverse[i],());
-        AddGeneratorsExtendSchreierTree(C[i].stabChain,
-                                        GeneratorsOfGroup(C[i]));
 
         # determine position of generators occuring in transversal
-        for j in [1..Length(C[i].orbit)] do
-            cpositiongenlist[i][j]:=Position(action[i],C[i].transversal[j]);
+        for j in [1..Length( chainC.orbit )] do
+            cpositiongenlist[i][j]:=Position(action[i],chainC.transversal[j]);
         od;
 
     od;
 
     return [inverse,C,positionlist,reprlist,
             cpositiongenlist,orbits,cumulativelength];
-end;
+end );
 
 
 #############################################################################
 ##
-#F  ImageOnAbelianCSPG()  . image of normalizing element on orbits of abelian
+#F  ImageOnAbelianCSPG( <g>, <actionlist> ) . .  image of normalizing element
+#F  . . . . . . . . . . . . . . . . . . . . . . . . . .  on orbits of abelian
 ##
-##  given the action of an abelian group H encoded in actionlist by the
-##  subroutine ActionAbelianCSPG, and a permutation g normalizing H,
-##  this subroutine computes the conjugation action of g on the transitive
-##  constituent pieces of H
+##  Given the action of an abelian group $H$ encoded in <actionlist> by the
+##  subroutine `ActionAbelianCSPG', and a permutation <g> normalizing H,
+##  this subroutine computes the conjugation action of <g> on the transitive
+##  constituent pieces of $H$.
 ##
-ImageOnAbelianCSPG := function(g,actionlist)
+InstallGlobalFunction( ImageOnAbelianCSPG, function(g,actionlist)
     local   i,s,        # loop variables
             orbits,     # list of orbits of H
       # let action denote the list with the i^th element containing a list of
       # generators for the action of H on i^th orbit
             inverse,    # inverse[i][k] is the inverse of action[i][k]
-            C,          # C[i] is the group generated by action[i]
+            C,          # C[i] is a stabilizer chain of the group generated
+                        # by action[i]
             positionlist,
                         # for i in [1..n], positionlist[i] gives the position
                         # of i in its H orbit
@@ -2412,13 +2434,14 @@ ImageOnAbelianCSPG := function(g,actionlist)
 
     gimage := PermList(gimage);
     return gimage;
-end;
+end );
+
 
 #############################################################################
 ##
 #F  ChiefSeriesPermGroup([<H>,]<G>[,<through>])
 ##
-ChiefSeriesPermGroup := function(arg)
+InstallGlobalFunction( ChiefSeriesPermGroup, function(arg)
 local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
       through;
   G:=arg[1];
@@ -2429,7 +2452,7 @@ local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
       H:=arg[1];
       G:=arg[2];
     else
-      through:=arg[2]; 
+      through:=arg[2];
     fi;
   elif Length(arg)>2 then
     H:=arg[1];
@@ -2547,7 +2570,8 @@ local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
     U:=n;
   od;
   return nser;
-end;
+end );
+
 
 #############################################################################
 ##
@@ -2568,13 +2592,6 @@ InstallOtherMethod(ChiefSeriesThrough,"perm group under perm group action",
               true,[IsPermGroup,IsPermGroup,IsList],0,
   ChiefSeriesPermGroup);
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

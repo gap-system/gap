@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for matrix spaces.
 ##  A matrix space is a vector space whose elements are matrices.
@@ -14,14 +15,14 @@
 ##  with better methods to deal with bases.
 ##  If it does not then the bases use the mechanism of associated bases.
 ##
-##  All matrix spaces have the component 'vectordim', a list of length 2,
+##  All matrix spaces have the component `vectordim', a list of length 2,
 ##  the first entry being the number of rows and the second being the number
 ##  of columns.
 ##
 ##  Note that we must distinguish spaces of Lie matrices and spaces of
 ##  ordinary matrices because of the different family relations.
 ##
-##  (See the file 'vspcrow.gi' for methods for row spaces.)
+##  (See the file `vspcrow.gi' for methods for row spaces.)
 ##
 ##  1. Domain constructors for matrix spaces
 ##  2. Methods for bases of non-Gaussian matrix spaces
@@ -38,7 +39,7 @@ Revision.vspcmat_gi :=
 ##
 #R  IsMatrixSpace( <V> )
 ##
-IsMatrixSpace := IsMatrixModuleRep and IsVectorSpace;
+DeclareSynonym( "IsMatrixSpace", IsMatrixModuleRep and IsVectorSpace );
 
 
 #############################################################################
@@ -53,9 +54,8 @@ IsMatrixSpace := IsMatrixModuleRep and IsVectorSpace;
 ##  We will need a flag for this to write down methods that delegate from
 ##  non-Gaussian spaces to Gaussian ones.)
 ##
-IsGaussianMatrixSpaceRep :=     IsGaussianSpace
-                            and IsMatrixModuleRep
-                            and IsAttributeStoringRep;
+DeclareSynonym( "IsGaussianMatrixSpaceRep",
+    IsGaussianSpace and IsMatrixModuleRep and IsAttributeStoringRep );
 
 
 #############################################################################
@@ -68,10 +68,9 @@ IsGaussianMatrixSpaceRep :=     IsGaussianSpace
 ##  The nice vector of a matrix is defined by concatenating its rows.
 ##  So the associated nice space is a (not nec. Gaussian) row space.
 ##
-IsNonGaussianMatrixSpaceRep := NewRepresentation(
-    "IsNonGaussianMatrixSpaceRep",
+DeclareRepresentation( "IsNonGaussianMatrixSpaceRep",
     IsAttributeStoringRep and IsMatrixModuleRep and IsHandledByNiceBasis,
-    [] );
+    [ "vectordim" ] );
 
 
 #############################################################################
@@ -84,18 +83,18 @@ IsNonGaussianMatrixSpaceRep := NewRepresentation(
 #M  LeftModuleByGenerators( <F>, <mats> ) . . . . . . . for ordinary matrices
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for division ring and list of ordinary matrices over it",
+    "for division ring and list of ordinary matrices over it",
     IsElmsCollColls,
     [ IsDivisionRing, IsCollection and IsList ], 0,
     function( F, mats )
     local dims, V;
 
-    # Check that all entries in 'mats' are matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are matrices of the same shape.
+    if not IsOrdinaryMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
-    if not ForAll( mats, mat ->     IsMatrix( mat )
+    if not ForAll( mats, mat ->     IsOrdinaryMatrix( mat )
                                 and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -125,17 +124,13 @@ InstallMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <empty>, <zeromat> ) . for ordinary matrices
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for division ring, empty list, and matrix",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsMatrix ], 0,
+    "for division ring, empty list, and ordinary matrix",
+    function( FamF, Famempty, Famzero )
+        return IsElmsColls( FamF, Famzero );
+    end,
+    [ IsDivisionRing, IsList and IsEmpty, IsOrdinaryMatrix ], 0,
     function( F, empty, zero )
     local V;
-
-    # Check whether this method is the right one.
-    if not IsElmsColls( FamilyObj( F ), FamilyObj( zero ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
 
     V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsGaussianSpace
@@ -155,19 +150,15 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <mats>, <zeromat> )  . for ordinary matrices
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for division ring, list of matrices over it, and matrix",
-    true,
-    [ IsDivisionRing, IsCollection and IsList, IsMatrix ], 0,
+    "for div. ring, list of ord. matrices over it, and ord. matrix",
+    function( FamF, Fammats, Famzero )
+        return IsElmsCollColls( FamF, Fammats );
+    end,
+    [ IsDivisionRing, IsCollection and IsList, IsOrdinaryMatrix ], 0,
     function( F, mats, zero )
     local dims, V;
 
-    # Check whether this method is the right one.
-    if not IsElmsCollColls( FamilyObj( F ), FamilyObj( mats ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
-
-    # Check that all entries in 'mats' are matrices of the same shape.
+    # Check that all entries in `mats' are matrices of the same shape.
     if not IsMatrix( mats[1] ) then
       TryNextMethod();
     fi;
@@ -203,18 +194,18 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <mats> ) . . . . . . . . .  for Lie matrices
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for division ring and list of Lie matrices over it",
+    "for division ring and list of Lie matrices over it",
     IsElmsCollLieColls,
     [ IsDivisionRing, IsLieObjectCollection and IsList ], 0,
     function( F, mats )
     local dims, V;
 
-    # Check that all entries in 'mats' are Lie matrices of the same shape.
-    if not IsMatrix( mats[1] ) then
+    # Check that all entries in `mats' are Lie matrices of the same shape.
+    if not IsLieMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
-    if not ForAll( mats, mat ->     IsMatrix( mat )
+    if not ForAll( mats, mat ->     IsLieMatrix( mat )
                                 and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -244,17 +235,13 @@ InstallMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <empty>, <zeromat> ) . . .  for Lie matrices
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for division ring, empty list, and Lie matrix",
-    true,
-    [ IsDivisionRing, IsList and IsEmpty, IsMatrix and IsLieObject ], 0,
+    "for division ring, empty list, and Lie matrix",
+    function( FamF, Famempty, Famzero )
+        return IsElmsLieColls( FamF, Famzero );
+    end,
+    [ IsDivisionRing, IsList and IsEmpty, IsLieMatrix and IsLieObject ], 0,
     function( F, empty, zero )
     local V;
-
-    # Check whether this method is the right one.
-    if not IsElmsLieColls( FamilyObj( F ), FamilyObj( zero ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
 
     V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsGaussianSpace
@@ -274,26 +261,22 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <mats>, <zeromat> )  . . .  for Lie matrices
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for division ring, list of Lie matrices over it, and Lie matrix",
-    true,
+    "for division ring, list of Lie matrices over it, and Lie matrix",
+    function( FamF, Fammats, Famzero )
+        return IsElmsCollLieColls( FamF, Fammats );
+    end,
     [ IsDivisionRing,
       IsLieObjectCollection and IsList,
-      IsMatrix and IsLieObject ], 0,
+      IsLieMatrix and IsLieObject ], 0,
     function( F, mats, zero )
     local dims, V;
 
-    # Check whether this method is the right one.
-    if not IsElmsCollLieColls( FamilyObj( F ), FamilyObj( mats ) ) then
-      TryNextMethod();
-    fi;
-#T explicit 2nd argument above!
-
-    # Check that all entries in 'mats' are Lie matrices of the same shape.
+    # Check that all entries in `mats' are Lie matrices of the same shape.
     if not IsMatrix( mats[1] ) then
       TryNextMethod();
     fi;
     dims:= DimensionsMat( mats[1] );
-    if not ForAll( mats, mat ->     IsMatrix( mat )
+    if not ForAll( mats, mat ->     IsLieMatrix( mat )
                                 and DimensionsMat( mat ) = dims ) then
       TryNextMethod();
     fi;
@@ -331,7 +314,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 ##  Nothing is to do \ldots
 ##
 InstallMethod( PrepareNiceFreeLeftModule,
-    "method for non-Gaussian matrix space",
+    "for non-Gaussian matrix space",
     true,
     [ IsVectorSpace and IsNonGaussianMatrixSpaceRep ], 0,
     Ignore );
@@ -342,7 +325,7 @@ InstallMethod( PrepareNiceFreeLeftModule,
 #M  NiceVector( <V>, <mat> )
 ##
 InstallMethod( NiceVector,
-    "method for non-Gaussian matrix space and matrix",
+    "for non-Gaussian matrix space and matrix",
     IsCollsElms,
     [ IsVectorSpace and IsNonGaussianMatrixSpaceRep, IsMatrix ], 0,
     function( V, mat )
@@ -359,7 +342,7 @@ InstallMethod( NiceVector,
 #M  UglyVector( <V>, <row> )  . . .  for ordinary matrix space and row vector
 ##
 InstallMethod( UglyVector,
-    "method for non-Gaussian ordinary matrix space and row vector",
+    "for non-Gaussian ordinary matrix space and row vector",
     IsCollCollsElms,
     [ IsVectorSpace and IsNonGaussianMatrixSpaceRep, IsRowVector ], 0,
     function( V, row )
@@ -386,7 +369,7 @@ InstallMethod( UglyVector,
 #M  UglyVector( <V>, <row> )  . . . . . . for Lie matrix space and row vector
 ##
 InstallMethod( UglyVector,
-    "method for non-Gaussian Lie matrix space and row vector",
+    "for non-Gaussian Lie matrix space and row vector",
     IsCollLieCollsElms,
     [ IsVectorSpace and IsNonGaussianMatrixSpaceRep, IsRowVector ], 0,
     function( V, row )
@@ -419,14 +402,16 @@ InstallMethod( UglyVector,
 ##
 ##  A basis of a Gaussian matrix space is either semi-echelonized or it is a
 ##  relative basis.
-##  (So there is no need for 'IsBasisGaussianMatrixSpace').
+##  (So there is no need for `IsBasisGaussianMatrixSpace').
 ##
-##  If basis vectors are known then the component 'heads' is bound.
+##  If basis vectors are known then the component `heads' is bound.
 ##
-IsSemiEchelonBasisOfGaussianMatrixSpaceRep := NewRepresentation(
-    "IsSemiEchelonBasisOfGaussianMatrixSpaceRep",
+DeclareRepresentation( "IsSemiEchelonBasisOfGaussianMatrixSpaceRep",
     IsAttributeStoringRep,
     [ "heads" ] );
+
+InstallTrueMethod( IsSmallList,
+    IsList and IsSemiEchelonBasisOfGaussianMatrixSpaceRep );
 
 
 #############################################################################
@@ -434,13 +419,13 @@ IsSemiEchelonBasisOfGaussianMatrixSpaceRep := NewRepresentation(
 #M  Coefficients( <B>, <v> )  .  method for semi-ech. basis of Gaussian space
 ##
 InstallMethod( Coefficients,
-    "method for semi-ech. basis of a Gaussian matrix space, and a matrix",
+    "for semi-ech. basis of a Gaussian matrix space, and a matrix",
     IsCollsElms,
     [ IsBasis and IsSemiEchelonBasisOfGaussianMatrixSpaceRep, IsMatrix ], 0,
     function( B, v )
 
     local coeff,   # coefficients list, result
-          vectors, # basis vectors of 'B'
+          vectors, # basis vectors of `B'
           zero,    # zero of the field
           m,       # number of rows
           n,       # number of columns
@@ -472,7 +457,7 @@ InstallMethod( Coefficients,
 
           coeff[ B!.heads[i][j] ]:= val;
 
-          # Subtract 'v[i][j]' times the 'B!.heads[i][j]'-th basis vector.
+          # Subtract `v[i][j]' times the `B!.heads[i][j]'-th basis vector.
           bvec:= vectors[ B!.heads[i][j] ];
           for k in [ 1 .. m ] do
             AddRowVector( v[k], bvec[k], -val );
@@ -491,44 +476,35 @@ InstallMethod( Coefficients,
 
 #############################################################################
 ##
-#M  SiftedVector( <B>, <v> )
+#F  SiftedVectorForGaussianMatrixSpace( <F>, <vectors>, <heads>, <v> )
 ##
-##  If '<B>!.heads[<i>][<j>]' is nonzero this means that the entry in the
-##  <i>-th row and <j>-th column is leading entry of the
-##  '<B>!.heads[<i>][<j>]'-th vector in the basis.
+##  is the remainder of the matrix <v> after sifting through the (mutable)
+##  <F>-basis with besis vectors <vectors> and heads information <heads>.
 ##
-InstallMethod( SiftedVector,
-    "method for semi-ech. basis of Gaussian matrix space, and matrix",
-    IsCollsElms,
-    [ IsBasis and IsSemiEchelonBasisOfGaussianMatrixSpaceRep, IsMatrix ], 0,
-    function( B, v )
+SiftedVectorForGaussianMatrixSpace := function( F, vectors, heads, v )
 
-    local F,        # field of scalars
-          zero,     # zero of the field
+    local zero,     # zero of `F'
           m,        # number of rows
-          vectors,  # basis vectors of 'B'
           i, j, k,  # loop over rows and columns
           scalar,   # one field element
           bvec;     # one basis vector
 
-    F:= LeftActingDomain( UnderlyingLeftModule( B ) );
     if not ForAll( v, row -> IsSubset( F, row ) ) then
       return fail;
     fi;
 
     v:= List( v, ShallowCopy );
     zero:= Zero( v[1][1] );
-    vectors:= BasisVectors( B );
-    m:= Length( B!.heads );
+    m:= Length( heads );
 
-    # Compute the coefficients of the 'B' vectors.
+    # Compute the coefficients of the basis vectors.
     for i in [ 1 .. m ] do
-      for j in [ 1 .. Length( B!.heads[i] ) ] do
-        if B!.heads[i][j] <> 0 and v[i][j] <> zero then
+      for j in [ 1 .. Length( heads[i] ) ] do
+        if heads[i][j] <> 0 and v[i][j] <> zero then
 
-          # Subtract 'v[i][j]' times the 'B!.heads[i][j]'-th basis vector.
+          # Subtract `v[i][j]' times the `heads[i][j]'-th basis vector.
           scalar:= -v[i][j];
-          bvec:= vectors[ B!.heads[i][j] ];
+          bvec:= vectors[ heads[i][j] ];
           for k in [ 1 .. m ] do
             AddRowVector( v[k], bvec[k], scalar );
           od;
@@ -537,12 +513,31 @@ InstallMethod( SiftedVector,
       od;
     od;
 
-    if IsLieObjectCollection( B ) then
+    if IsLieObjectCollection( vectors ) then
       v:= LieObject( v );
     fi;
 
     # Return the remainder.
     return v;
+end;
+
+
+#############################################################################
+##
+#M  SiftedVector( <B>, <v> )
+##
+##  If `<B>!.heads[<i>][<j>]' is nonzero this means that the entry in the
+##  <i>-th row and <j>-th column is leading entry of the
+##  `<B>!.heads[<i>][<j>]'-th vector in the basis.
+##
+InstallMethod( SiftedVector,
+    "for semi-ech. basis of Gaussian matrix space, and matrix",
+    IsCollsElms,
+    [ IsBasis and IsSemiEchelonBasisOfGaussianMatrixSpaceRep, IsMatrix ], 0,
+    function( B, v )
+    return SiftedVectorForGaussianMatrixSpace(
+               LeftActingDomain( UnderlyingLeftModule( B ) ),
+               BasisVectors( B ), B!.heads, v );
     end );
 
 
@@ -550,9 +545,10 @@ InstallMethod( SiftedVector,
 ##
 #F  HeadsInfoOfSemiEchelonizedMats( <mats>, <dims> )
 ##
-##  is the 'heads' information of the list of matrices <mats> of dimensions
+##  is the `heads' information of the list of matrices <mats> of dimensions
 ##  <dims> if <mats> can be viewed as a semi-echelonized basis
-##  of a Gaussian matrix space, and 'fail' otherwise.
+##  of a Gaussian matrix space, and `fail' otherwise.
+#T move to `matrix.gi'?
 ##
 HeadsInfoOfSemiEchelonizedMats := function( mats, dims )
 
@@ -581,7 +577,7 @@ HeadsInfoOfSemiEchelonizedMats := function( mats, dims )
 
       # Loop over the columns.
       for i in [ 1 .. nmats ] do
-  
+
         # Get the pivot.
         row:= 1;
         j:= PositionNot( mats[i][row], zero );
@@ -592,7 +588,7 @@ HeadsInfoOfSemiEchelonizedMats := function( mats, dims )
 
         if dimrow < row or mats[i][ row ][j] <> one then
 
-          # No nonzero entry in the whole matrix, or pivot is not 'one'.
+          # No nonzero entry in the whole matrix, or pivot is not `one'.
           return fail;
         fi;
 
@@ -602,7 +598,7 @@ HeadsInfoOfSemiEchelonizedMats := function( mats, dims )
           fi;
         od;
         heads[ row ][j]  := i;
-  
+
       od;
 
     fi;
@@ -620,7 +616,7 @@ end;
 ##  row space basis.
 ##
 InstallMethod( IsSemiEchelonized,
-    "method for basis of a Gaussian matrix space",
+    "for basis of a Gaussian matrix space",
     true,
     [ IsBasis ], 0,
     function( B )
@@ -648,7 +644,7 @@ InstallMethod( IsSemiEchelonized,
 #M  \in( <mat>, <V> ) . . . . . . . . .  for matrix and Gaussian matrix space
 ##
 InstallMethod( \in,
-    "method for matrix and Gaussian matrix space",
+    "for matrix and Gaussian matrix space",
     IsElmsColls,
     [ IsMatrix, IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     function( mat, V )
@@ -682,18 +678,18 @@ InstallMethod( \in,
 ##
 ##  Otherwise the mechanism of associated bases is used.
 ##  In this case the default methods have been installed by
-##  'NewRepresentationBasisByNiceBasis'.
+##  `NewRepresentationBasisByNiceBasis'.
 #T ?
 ##
 InstallMethod( BasisOfDomain,
-    "method for Gaussian matrix space (construct a semi-echelonized basis)",
+    "for Gaussian matrix space (construct a semi-echelonized basis)",
     true,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     SemiEchelonBasisOfDomain );
 
 InstallMethod( BasisByGenerators,
-    "method for Gaussian matrix space and list of matrices (try semi-ech.)",
-    IsIdentical,
+    "for Gaussian matrix space and list of matrices (try semi-ech.)",
+    IsIdenticalObj,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep, IsHomogeneousList ], 0,
     function( V, gens )
 
@@ -702,7 +698,7 @@ InstallMethod( BasisByGenerators,
           B,
           v;
 
-    # Check whether the entries of 'gens' are matrices of the right shape.
+    # Check whether the entries of `gens' are matrices of the right shape.
     dims:= V!.vectordim;
     if not ForAll( gens, entry ->     IsMatrix( entry )
                                   and DimensionsMat( entry ) = dims ) then
@@ -742,8 +738,8 @@ InstallMethod( BasisByGenerators,
     end );
 
 InstallMethod( BasisByGeneratorsNC,
-    "method for Gaussian matrix space and list of matrices (try semi-ech.)",
-    IsIdentical,
+    "for Gaussian matrix space and list of matrices (try semi-ech.)",
+    IsIdenticalObj,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep, IsHomogeneousList ], 0,
     function( V, gens )
 
@@ -784,7 +780,7 @@ InstallImmediateMethod( SemiEchelonBasisOfDomain,
     CanonicalBasis );
 
 InstallMethod( SemiEchelonBasisOfDomain,
-    "method for Gaussian matrix space",
+    "for Gaussian matrix space",
     true,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     function( V )
@@ -799,8 +795,8 @@ InstallMethod( SemiEchelonBasisOfDomain,
     end );
 
 InstallMethod( SemiEchelonBasisByGenerators,
-    "method for Gaussian matrix space and list of matrices",
-    IsIdentical,
+    "for Gaussian matrix space and list of matrices",
+    IsIdenticalObj,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep, IsHomogeneousList ], 0,
     function( V, gens )
 
@@ -839,8 +835,8 @@ InstallMethod( SemiEchelonBasisByGenerators,
     end );
 
 InstallMethod( SemiEchelonBasisByGeneratorsNC,
-    "method for Gaussian matrix space and list of matrices",
-    IsIdentical,
+    "for Gaussian matrix space and list of matrices",
+    IsIdenticalObj,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep, IsHomogeneousList ], 0,
     function( V, gens )
 
@@ -856,7 +852,7 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
     SetBasisVectors( B, gens );
     SetIsEmpty( B, IsEmpty( gens ) );
 
-    # Provide the 'heads' information.
+    # Provide the `heads' information.
     B!.heads:= HeadsInfoOfSemiEchelonizedMats( gens, V!.vectordim );
 
     # Return the basis.
@@ -869,7 +865,7 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
 #M  BasisVectors( <B> ) . . . .  for semi-ech. basis of Gaussian matrix space
 ##
 InstallMethod( BasisVectors,
-    "method for semi-ech. basis of a Gaussian matrix space",
+    "for semi-ech. basis of a Gaussian matrix space",
     true,
     [ IsBasis and IsSemiEchelonBasisOfGaussianMatrixSpaceRep ], 0,
     function( B )
@@ -907,7 +903,7 @@ InstallMethod( BasisVectors,
 #M  Zero( <V> )
 ##
 InstallOtherMethod( Zero,
-    "method for a matrix space",
+    "for a matrix space",
     true,
     [ IsMatrixSpace ], 0,
     function( V )
@@ -929,15 +925,15 @@ InstallOtherMethod( Zero,
 ##  a full Gauss algorithm to the generators of the space.
 ##
 InstallMethod( CanonicalBasis,
-    "method for Gaussian matrix space",
+    "for Gaussian matrix space",
     true,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     function( V )
 
     local B,        # semi-echelonized basis
-          vectors,  # basis vectors of 'B'
+          vectors,  # basis vectors of `B'
           base,     # vectors of the canonical basis
-          newheads, # 'heads' component of the canonical basis
+          newheads, # `heads' component of the canonical basis
           m, n,     # dimensions of the matrices
           i, j,     # loop over rows and columns
           k, l,     # loop over rows and columns
@@ -961,9 +957,9 @@ InstallMethod( CanonicalBasis,
 
       for i in [ 1 .. m ] do
         for j in [ 1 .. n ] do
-          
+
           if B!.heads[i][j] <> 0 then
-  
+
             # Reduce every vector with all those that
             # have bigger pivot positions and are stored later.
             v:= vectors[ newheads[i][j] ];
@@ -984,7 +980,7 @@ InstallMethod( CanonicalBasis,
 
             Add( base, v );
             newheads[i][j]:= Length( base );
-  
+
           fi;
 
         od;
@@ -1024,19 +1020,19 @@ InstallMethod( CanonicalBasis,
 #M  IsFullMatrixModule( V )
 ##
 InstallMethod( IsFullMatrixModule,
-    "method for Gaussian matrix space",
+    "for Gaussian matrix space",
     true,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep ], 0,
     V -> Dimension( V ) = V!.vectordim[1] * V!.vectordim[2] );
-     
+
 InstallMethod( IsFullMatrixModule,
-    "method for non-Gaussian matrix space",
+    "for non-Gaussian matrix space",
     true,
     [ IsVectorSpace and IsNonGaussianMatrixSpaceRep ], 0,
     ReturnFalse );
-     
+
 InstallOtherMethod( IsFullMatrixModule,
-    "method for arbitrary free left module",
+    "for arbitrary free left module",
     true,
     [ IsLeftModule ], 0,
     function( V )
@@ -1067,7 +1063,7 @@ InstallOtherMethod( IsFullMatrixModule,
 #M  CanonicalBasis( <V> )
 ##
 InstallMethod( CanonicalBasis,
-    "method for full matrix space",
+    "for full matrix space",
     true,
     [ IsGaussianSpace and IsGaussianMatrixSpaceRep and IsFullMatrixModule ],
     0,
@@ -1101,15 +1097,14 @@ InstallMethod( CanonicalBasis,
 ##
 ##  The default mutable bases of Gaussian matrix spaces are semi-echelonized.
 ##  Note that we switch to a mutable basis of representation
-##  'IsMutableBasisByImmutableBasisRep' if the mutable basis is closed by a
+##  `IsMutableBasisByImmutableBasisRep' if the mutable basis is closed by a
 ##  vector that makes the space non-Gaussian.
 #T better switch to mutable basis by nice mutable basis !
 ##
-##  Note that the 'basisVectors' component consists of ordinary matrices
+##  Note that the `basisVectors' component consists of ordinary matrices
 ##  also if the defining matrices are Lie matrices.
 ##
-IsMutableBasisOfGaussianMatrixSpaceRep := NewRepresentation(
-    "IsMutableBasisOfGaussianMatrixSpaceRep",
+DeclareRepresentation( "IsMutableBasisOfGaussianMatrixSpaceRep",
     IsComponentObjectRep and IsMutable,
     [ "heads", "basisVectors", "leftActingDomain", "zero" ] );
 
@@ -1119,7 +1114,7 @@ IsMutableBasisOfGaussianMatrixSpaceRep := NewRepresentation(
 #M  MutableBasisByGenerators( <R>, <mats> ) . . . . . . for matrices over <R>
 ##
 InstallMethod( MutableBasisByGenerators,
-    "method to construct mutable bases of Gaussian matrix spaces",
+    "to construct mutable bases of Gaussian matrix spaces",
     IsElmsCollColls,
     [ IsRing, IsCollection ], 0,
     function( R, mats )
@@ -1133,7 +1128,7 @@ InstallMethod( MutableBasisByGenerators,
 
     else
 
-      # Note that 'mats' is not empty.
+      # Note that `mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
       B:= Objectify( NewType( FamilyObj( mats ),
@@ -1157,7 +1152,7 @@ InstallMethod( MutableBasisByGenerators,
 #M  MutableBasisByGenerators( <R>, <mats> ) . . . . . . . .  for Lie matrices
 ##
 InstallMethod( MutableBasisByGenerators,
-    "method to construct a mutable basis of a Lie matrix space",
+    "to construct a mutable basis of a Lie matrix space",
     IsElmsCollLieColls,
     [ IsDivisionRing, IsLieObjectCollection ], 0,
     function( R, mats )
@@ -1171,7 +1166,7 @@ InstallMethod( MutableBasisByGenerators,
 
     else
 
-      # Note that 'mats' is not empty.
+      # Note that `mats' is not empty.
       newmats:= SemiEchelonMats( mats );
 
       B:= Objectify( NewType( FamilyObj( mats ),
@@ -1195,17 +1190,14 @@ InstallMethod( MutableBasisByGenerators,
 #M  MutableBasisByGenerators( <R>, <mats>, <zero> ) . . for matrices over <R>
 ##
 InstallOtherMethod( MutableBasisByGenerators,
-    "method to construct mutable bases of matrix spaces",
-    true,
+    "to construct mutable bases of matrix spaces",
+    function( FamR, Fammats, Famzero )
+        return    IsElmsColls( FamR, Famzero )
+               or IsElmsLieColls( FamR, Famzero );
+    end,
     [ IsRing, IsHomogeneousList, IsMatrix ], 0,
     function( R, mats, zero )
     local B, z;
-
-    # Check whether this method is the right one.
-    if not (    IsElmsColls( FamilyObj( R ), FamilyObj( zero ) )
-             or IsElmsLieColls( FamilyObj( R ), FamilyObj( zero ) ) ) then
-      TryNextMethod();
-    fi;
 
     if ForAny( mats, mat -> ForAny( mat, v -> not IsSubset( R, v ) ) ) then
 
@@ -1245,10 +1237,10 @@ InstallOtherMethod( MutableBasisByGenerators,
 
 #############################################################################
 ##
-#M  PrintObj( <MB> )  . . . .  print mutable basis of a Gaussian matrix space
+#M  ViewObj( <MB> ) . . . . . . view mutable basis of a Gaussian matrix space
 ##
-InstallMethod( PrintObj,
-    "method for a mutable basis of a Gaussian matrix space",
+InstallMethod( ViewObj,
+    "for a mutable basis of a Gaussian matrix space",
     true,
     [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep ], 0,
     function( MB )
@@ -1259,10 +1251,28 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  PrintObj( <MB> )  . . . .  print mutable basis of a Gaussian matrix space
+##
+InstallMethod( PrintObj,
+    "for a mutable basis of a Gaussian matrix space",
+    true,
+    [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep ], 0,
+    function( MB )
+    Print( "MutableBasisByGenerators( ", MB!.leftActingDomain, ", " );
+    if NrBasisVectors( MB ) = 0 then
+      Print( "[], ", Zero( MB!.leftActingDomain ), " )" );
+    else
+      Print( MB!.basisVectors, " )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  BasisVectors( <MB> )  . . .  for mutable basis of a Gaussian matrix space
 ##
 InstallOtherMethod( BasisVectors,
-    "method for a mutable basis of a Gaussian matrix space",
+    "for a mutable basis of a Gaussian matrix space",
     true,
     [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep ], 0,
     function( MB )
@@ -1279,7 +1289,7 @@ InstallOtherMethod( BasisVectors,
 #M  CloseMutableBasis( <MB>, <v> )  . for mut. basis of Gaussian matrix space
 ##
 InstallMethod( CloseMutableBasis,
-    "method for a mut. basis of a Gaussian matrix space, and a matrix",
+    "for a mut. basis of a Gaussian matrix space, and a matrix",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep,
       IsMatrix ], 0,
@@ -1289,7 +1299,7 @@ InstallMethod( CloseMutableBasis,
           n,              # number of columns
           heads,          # heads info of the basis
           zero,           # zero coefficient
-          basisvectors,   # list of basis vectors of 'MB'
+          basisvectors,   # list of basis vectors of `MB'
           i, j, k,        # loop variables
           scalar,         # one coefficient
           bv;             # one basis vector
@@ -1325,7 +1335,7 @@ InstallMethod( CloseMutableBasis,
       zero:= Zero( v[1][1] );
       basisvectors:= MB!.basisVectors;
 
-      # Reduce 'v' with the known basis vectors.
+      # Reduce `v' with the known basis vectors.
       for i in [ 1 .. m ] do
         for j in [ 1 .. n ] do
           if heads[i][j] <> 0 then
@@ -1361,7 +1371,7 @@ InstallMethod( CloseMutableBasis,
 #M  IsContainedInSpan( <MB>, <v> )  . for mut. basis of Gaussian matrix space
 ##
 InstallMethod( IsContainedInSpan,
-    "method for a mut. basis of a Gaussian matrix space, and a matrix",
+    "for a mut. basis of a Gaussian matrix space, and a matrix",
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep,
       IsMatrix ], 0,
@@ -1371,7 +1381,7 @@ InstallMethod( IsContainedInSpan,
           n,              # number of columns
           heads,          # heads info of the basis
           zero,           # zero coefficient
-          basisvectors,   # list of basis vectors of 'MB'
+          basisvectors,   # list of basis vectors of `MB'
           i, j, k,        # loop variables
           scalar,         # one coefficient
           bv;             # one basis vector
@@ -1389,7 +1399,7 @@ InstallMethod( IsContainedInSpan,
       zero:= Zero( v[1][1] );
       basisvectors:= MB!.basisVectors;
 
-      # Reduce 'v' with the known basis vectors.
+      # Reduce `v' with the known basis vectors.
       for i in [ 1 .. m ] do
         for j in [ 1 .. n ] do
           if heads[i][j] <> 0 then
@@ -1411,10 +1421,29 @@ InstallMethod( IsContainedInSpan,
 
 #############################################################################
 ##
+#M  SiftedVector( <MB>, <v> )
+##
+##  If `<MB>!.heads[<i>][<j>]' is nonzero this means that the entry in the
+##  <i>-th row and <j>-th column is leading entry of the
+##  `<MB>!.heads[<i>][<j>]'-th vector in the basis.
+##
+InstallOtherMethod( SiftedVector,
+    "for mutable basis of Gaussian matrix space, and matrix",
+    IsCollsElms,
+    [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep,
+      IsMatrix ], 0,
+    function( MB, v )
+    return SiftedVectorForGaussianMatrixSpace( MB!.leftActingDomain,
+               MB!.basisVectors, MB!.heads, v );
+    end );
+
+
+#############################################################################
+##
 #M  ImmutableBasis( <MB> )  . .  for mutable basis of a Gaussian matrix space
 ##
 InstallMethod( ImmutableBasis,
-    "method for a mutable basis of a Gaussian matrix space",
+    "for a mutable basis of a Gaussian matrix space",
     true,
     [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep ], 0,
     function( MB )
@@ -1423,13 +1452,12 @@ InstallMethod( ImmutableBasis,
                         BasisVectors( MB ),
                         MB!.zero );
     MB:= SemiEchelonBasisByGeneratorsNC( V, BasisVectors( MB ) );
-#T use known 'heads' info !!
+#T use known `heads' info !!
     UseBasis( V, MB );
     return MB;
     end );
 
 
-#T mutable bases for Gaussian row and matrix spaces should allow 'SiftedVector'!
 #T mutable bases for Gaussian row and matrix spaces are always semi-ech.
 #T (note that we construct a mutable basis only if we want to do successive
 #T closures)
@@ -1438,6 +1466,4 @@ InstallMethod( ImmutableBasis,
 #############################################################################
 ##
 #E  vspcmat.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

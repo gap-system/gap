@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for magma rings and their elements.
 ##
@@ -33,10 +34,25 @@ Revision.mgmring_gi :=
 ##  It is assumed that the arithmetic operations of $M$ produce only
 ##  normalized elements.
 ##
-IsMagmaRingObjDefaultRep := NewRepresentation(
-    "IsMagmaRingObjDefaultRep", 
-    IsPositionalObjectRep,
+DeclareRepresentation( "IsMagmaRingObjDefaultRep", IsPositionalObjectRep,
     [ 1, 2 ] );
+
+
+#############################################################################
+##
+#M  NormalizedElementOfMagmaRingModuloRelations( <Fam>, <descr> )
+##
+##  A free magma ring element is normalized if <descr> is sorted according to
+##  the involved magma elements.
+##  Thus normalization is trivial.
+##
+InstallMethod( NormalizedElementOfMagmaRingModuloRelations,
+    "for a family of elements in a *free* magma ring, and a list",
+    true,
+    [ IsElementOfFreeMagmaRingFamily, IsList ], 0,
+    function( Fam, descr )
+    return descr;
+    end );
 
 
 #############################################################################
@@ -45,11 +61,12 @@ IsMagmaRingObjDefaultRep := NewRepresentation(
 ##
 ##  removes all pairs from <coeffs_and_words> where the coefficient
 ##  is <zero>.
+##  Note that <coeffs_and_words> is assumed to be sorted.
 ##
 FMRRemoveZero := function( coeffs_and_words, zero )
 
     local i,    # offset of old and new position
-          lenw, # length of 'words' and 'coeff'
+          lenw, # length of `words' and `coeff'
           pos;  # loop over the lists
 
     i:= 0;
@@ -61,7 +78,6 @@ FMRRemoveZero := function( coeffs_and_words, zero )
         coeffs_and_words[ pos-i-1 ]:= coeffs_and_words[ pos-1 ];
         coeffs_and_words[ pos-i   ]:= coeffs_and_words[ pos   ];
       fi;
-#T better use PositionNot( v, from ) !!
     od;
     for pos in [ lenw-i+1 .. lenw ] do
       Unbind( coeffs_and_words[ pos ] );
@@ -78,35 +94,63 @@ end;
 ##  and remove zeroes.
 ##
 InstallMethod( ElementOfMagmaRing,
-    "method for family, ring element, and two homogeneous lists",
+    "for family, ring element, and two homogeneous lists",
     true,
     [ IsFamily, IsRingElement, IsHomogeneousList, IsHomogeneousList ], 0,
     function( Fam, zerocoeff, coeff, words )
-    local rep, i;
+    local rep, i, j;
 
     # Check that the data is admissible.
     if not IsBound( Fam!.defaultType ) then
       TryNextMethod();
-    elif not IsIdentical( FamilyObj( coeff ), Fam!.familyRing ) then
+    elif not IsIdenticalObj( FamilyObj( coeff ), Fam!.familyRing ) then
       Error( "<coeff> are not all in the correct domain" );
-    elif not IsIdentical( FamilyObj( words ), Fam!.familyMagma ) then
+    elif not IsIdenticalObj( FamilyObj( words ), Fam!.familyMagma ) then
       Error( "<words> are not all in the correct domain" );
     elif Length( coeff ) <> Length( words ) then
       Error( "<coeff> and <words> must have same length" );
     fi;
 
-    # Create the default representation.
+    # Make sure that the list of words is strictly sorted.
+    if not IsSSortedList( words ) then
+      words:= ShallowCopy( words );
+      coeff:= ShallowCopy( coeff );
+      SortParallel( words, coeff );
+      if not IsSSortedList( words ) then
+        j:= 1;
+        for i in [ 2 .. Length( coeff ) ] do
+          if words[i] = words[j] then
+            coeff[j]:= coeff[j] + coeff[i];
+          else
+            j:= j+1;
+            words[j]:= words[i];
+            coeff[j]:= coeff[i];
+          fi;
+        od;
+        for i in [ j+1 .. Length( coeff ) ] do
+          Unbind( words[i] );
+          Unbind( coeff[i] );
+        od;
+      fi;
+    fi;
+
+    # Create the default representation, and remove zeros.
     rep:= [];
+    j:= 1;
     for i in [ 1 .. Length( coeff ) ] do
-#T better look for zeros already here ...
-#T what about the ordering of monomials ?? (SortParallel by default?)
-      rep[ 2*i-1 ]:= words[i];
-      rep[ 2*i   ]:= coeff[i];
+      if coeff[i] <> zerocoeff then
+        rep[  j  ]:= words[i];
+        rep[ j+1 ]:= coeff[i];
+        j:= j+2;
+      fi;
     od;
 
-    # Remove all words with zero coefficients.
-    return Objectify( Fam!.defaultType,
-               [ zerocoeff, FMRRemoveZero( rep, Fam!.zeroRing ) ] );
+    # Normalize the result.
+    rep:= NormalizedElementOfMagmaRingModuloRelations( Fam,
+              [ zerocoeff, rep ] );
+
+    # Return the result.
+    return Objectify( Fam!.defaultType, rep );
     end );
 
 
@@ -115,18 +159,18 @@ InstallMethod( ElementOfMagmaRing,
 #M  CoefficientsAndMagmaElements( <elm> )
 ##
 InstallMethod( CoefficientsAndMagmaElements,
-    "method for magma ring element in default repr.",
+    "for magma ring element in default repr.",
     true,
     [ IsElementOfMagmaRingModuloRelations and IsMagmaRingObjDefaultRep ], 0,
     elm -> elm![2] );
-    
+
 
 #############################################################################
 ##
 #M  PrintObj( <elm> ) . . . . . . . . for magma ring element in default repr.
 ##
 InstallMethod( PrintObj,
-    "method for magma ring element",
+    "for magma ring element",
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     function( elm )
@@ -153,8 +197,9 @@ InstallMethod( PrintObj,
 ##
 InstallMethod( \=,
     "for two free magma ring elements",
-    IsIdentical,
-    [ IsElementOfFreeMagmaRing, IsElementOfFreeMagmaRing ], 0,
+    IsIdenticalObj,
+    [ IsElementOfMagmaRingModuloRelations,
+      IsElementOfMagmaRingModuloRelations ], 0,
     function( x, y )
     return   CoefficientsAndMagmaElements( x )
            = CoefficientsAndMagmaElements( y );
@@ -167,8 +212,9 @@ InstallMethod( \=,
 ##
 InstallMethod( \<,
     "for two free magma ring elements",
-    IsIdentical,
-    [ IsElementOfFreeMagmaRing, IsElementOfFreeMagmaRing ], 0,
+    IsIdenticalObj,
+    [ IsElementOfMagmaRingModuloRelations,
+      IsElementOfMagmaRingModuloRelations ], 0,
     function( x, y )
     local i;
     x:= CoefficientsAndMagmaElements( x );
@@ -190,59 +236,18 @@ InstallMethod( \<,
 ##
 InstallMethod( \+,
     "for two magma ring elements",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsElementOfMagmaRingModuloRelations,
       IsElementOfMagmaRingModuloRelations ], 0,
     function( x, y )
-
-    local F,           # family of 'x'
-          zero,        # the zero of the ring
-          coeff,       # the data of the result
-          lenx,        # length of the data of 'x'
-          leny,        # length of the data of 'y'
-          posx,        # position in 'x'
-          posy,        # position in 'y'
-          coe;         # one coefficient in the sum
-
-    F    := FamilyObj( x );
-    zero := F!.zeroRing;
-    x    := CoefficientsAndMagmaElements( x );
-    y    := CoefficientsAndMagmaElements( y );
-
-    coeff := [];
-    lenx  := Length( x );
-    leny  := Length( y );
-    posx  := 1;
-    posy  := 1;
-
-    while posy <= leny do
-      while     posx <= lenx
-            and x[ posx ] < y[ posy ] do
-        Add( coeff, x[ posx ]   );
-        Add( coeff, x[ posx+1 ] );
-        posx:= posx + 2;
-      od;
-      if lenx < posx then
-        Append( coeff, y{ [ posy .. leny ] } );
-        posy:= leny + 2;
-      elif x[ posx ] = y[ posy ] then
-        coe:= x[ posx+1 ] + y[ posy+1 ];
-        if coe <> zero then
-          Add( coeff, x[ posx ] );
-          Add( coeff, coe );
-        fi;
-        posx:= posx + 2;
-        posy:= posy + 2;
-      else
-        Add( coeff, y[ posy ] );
-        Add( coeff, y[ posy+1 ] );
-        posy:= posy + 2;
-      fi;
-    od;
-
-    Append( coeff, x{ [ posx .. lenx ] } );
-
-    return Objectify( F!.defaultType, [ zero, coeff ] );
+    local F, sum;
+    F := FamilyObj( x );
+    x := CoefficientsAndMagmaElements( x );
+    y := CoefficientsAndMagmaElements( y );
+    sum:= ZippedSum( x, y, F!.zeroRing, [ \<, \+ ] );
+    sum:= NormalizedElementOfMagmaRingModuloRelations( F,
+              [ F!.zeroRing, sum ] );
+    return Objectify( F!.defaultType, sum );
     end );
 
 
@@ -255,13 +260,15 @@ InstallMethod( AdditiveInverse,
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     function( x )
-    local ext, i, Fam;
+    local ext, i, Fam, inv;
     ext:= ShallowCopy( CoefficientsAndMagmaElements( x ) );
     for i in [ 2, 4 .. Length( ext ) ] do
       ext[i]:= AdditiveInverse( ext[i] );
     od;
     Fam:= FamilyObj( x );
-    return Objectify( Fam!.defaultType, [ Fam!.zeroRing, ext ] );
+    inv:= NormalizedElementOfMagmaRingModuloRelations( Fam,
+              [ Fam!.zeroRing, ext ] );
+    return Objectify( Fam!.defaultType, inv );
     end );
 
 
@@ -271,69 +278,19 @@ InstallMethod( AdditiveInverse,
 ##
 InstallMethod( \*,
     "for two magma ring elements",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsElementOfMagmaRingModuloRelations,
       IsElementOfMagmaRingModuloRelations ], 0,
     function( x, y )
-
-    local F,           # family of 'x' and 'y'
-          coeff,       # the data of the result
-          words,       # list of words in the result
-          coef,        # one coefficient of the result
-          word,        # one word of the result
-          lenx,        # length of the data of 'x'
-          leny,        # length of the data of 'y'
-          posx,        # position in 'x'
-          posy,        # position in 'y'
-          pos,         # position of a single word
-          coe,         # one coefficient in the sum
-          i;
-
+    local F, prod;
     F := FamilyObj( x );
     x := CoefficientsAndMagmaElements( x );
     y := CoefficientsAndMagmaElements( y );
-
-    coeff := [];
-    words := [];
-    lenx  := Length( x );
-    leny  := Length( y );
-    posx  := 2;
-    posy  := 2;
-
-    for posx in [ 2, 4 .. lenx ] do
-      for posy in [ 2, 4 .. leny ] do
-
-        coef:= x[ posx ] * y[ posy ];
-        word:= x[ posx-1 ] * y[ posy-1 ];
-        pos := PositionSorted( words, word );
-        if   IsBound( words[ pos ] ) and words[ pos ] = word then
-          pos:= 2*pos;
-          coeff[ pos ]:= coeff[ pos ] + coef;
-        else
-          if   pos <= Length( words ) then
-            for i in [ Length( words ), Length( words )-1 .. pos ] do
-              words[ i+1 ]:= words[i];
-            od;
-            for i in [ Length( coeff ), Length( coeff )-1 .. 2*pos-1 ] do
-              coeff[ i+2 ]:= coeff[i];
-            od;
-          fi;
-          words[ pos ]:= word;
-          pos:= 2*pos;
-          coeff[ pos ]:= coef;
-          coeff[ pos-1 ]:= word;
-        fi;
-
-      od;
-    od;
-
-    # Remove all words with zero coefficients.
-    return Objectify( F!.defaultType,
-                      [ F!.zeroRing, FMRRemoveZero( coeff, F!.zeroRing ) ] );
+    prod:= ZippedProduct( x, y, F!.zeroRing, [ \*, \<, \+, \* ] );
+    prod:= NormalizedElementOfMagmaRingModuloRelations( F,
+               [ F!.zeroRing, prod ] );
+    return Objectify( F!.defaultType, prod );
     end );
-
-
-#T install multiplication with magma elements from left and right !
 
 
 #############################################################################
@@ -349,24 +306,25 @@ InstallMethod( \*,
 #T  Should the nonexistence of zero divisors be known/used?
 ##
 ElmTimesRingElm := function( x, y )
-    local F, i;
+    local F, i, prod;
     F:= FamilyObj( x );
     x:= ShallowCopy( CoefficientsAndMagmaElements( x ) );
     for i in [ 2, 4 .. Length(x) ] do
       x[i]:= x[i] * y;
     od;
-    return Objectify( F!.defaultType,
-                      [ F!.zeroRing, FMRRemoveZero( x, F!.zeroRing ) ] );
+    prod:= NormalizedElementOfMagmaRingModuloRelations( F,
+               [ F!.zeroRing, FMRRemoveZero( x, F!.zeroRing ) ] );
+    return Objectify( F!.defaultType, prod );
 end;
 
 InstallMethod( \*,
-    "method for magma ring element, and ring element",
+    "for magma ring element, and ring element",
     IsMagmaRingsRings,
     [ IsElementOfMagmaRingModuloRelations, IsRingElement ], 0,
     ElmTimesRingElm );
 
 InstallMethod( \*,
-    "method for magma ring element, and integer",
+    "for magma ring element, and integer",
     true,
     [ IsElementOfMagmaRingModuloRelations, IsInt ], 0,
     ElmTimesRingElm );
@@ -374,30 +332,134 @@ InstallMethod( \*,
 
 #############################################################################
 ##
-#M  \*( r, x )  . . . . . . . . . . .  for coefficient and magma ring element
+#M  \*( <r>, <x> )  . . . . . . . . .  for coefficient and magma ring element
+#M  \*( <r>, <x> )  . . . . . . . . . . .  for integer and magma ring element
 ##
 RingElmTimesElm := function( x, y )
-    local F, i;
+    local F, i, prod;
     F:= FamilyObj( y );
     y:= ShallowCopy( CoefficientsAndMagmaElements( y ) );
     for i in [ 2, 4 .. Length(y) ] do
       y[i]:= x * y[i];
     od;
-    return Objectify( F!.defaultType,
-                      [ F!.zeroRing, FMRRemoveZero( y, F!.zeroRing ) ] );
+    prod:= NormalizedElementOfMagmaRingModuloRelations( F,
+               [ F!.zeroRing, FMRRemoveZero( y, F!.zeroRing ) ] );
+    return Objectify( F!.defaultType, prod );
 end;
 
 InstallMethod( \*,
-    "method for ring element, and magma ring element",
+    "for ring element, and magma ring element",
     IsRingsMagmaRings,
     [ IsRingElement, IsElementOfMagmaRingModuloRelations ],0,
     RingElmTimesElm );
 
 InstallMethod( \*,
-    "method for integer, and magma ring element",
+    "for integer, and magma ring element",
     true,
     [ IsInt, IsElementOfMagmaRingModuloRelations ],0,
     RingElmTimesElm );
+
+
+#############################################################################
+##
+#M  \*( <m>, <x> )  . . . . . . . .  for magma element and magma ring element
+#M  \*( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
+##
+InstallMethod( \*,
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ], 0,
+    function( m, x )
+    local F;
+    F:= FamilyObj( x );
+    x:= ZippedProduct( [ m, One( F!.zeroRing ) ],
+                       CoefficientsAndMagmaElements( x ),
+                       F!.zeroRing,
+                       [ \*, \<, \+, \* ] );
+    x:= NormalizedElementOfMagmaRingModuloRelations( F,
+            [ F!.zeroRing, x ] );
+    return Objectify( F!.defaultType, x );
+    end );
+
+InstallMethod( \*,
+    "for magma ring element and magma element",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ], 0,
+    function( x, m )
+    local F;
+    F:= FamilyObj( x );
+    x:= ZippedProduct( CoefficientsAndMagmaElements( x ),
+                       [ m, One( F!.zeroRing ) ],
+                       F!.zeroRing,
+                       [ \*, \<, \+, \* ] );
+    x:= NormalizedElementOfMagmaRingModuloRelations( F,
+            [ F!.zeroRing, x ] );
+    return Objectify( F!.defaultType, x );
+    end );
+
+
+#############################################################################
+##
+#M  \+( <m>, <x> )  . . . . . . . .  for magma element and magma ring element
+#M  \+( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
+##
+InstallOtherMethod( \+,
+    "for magma element and magma ring element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ], 0,
+    function( m, x )
+    local F;
+    F:= FamilyObj( x );
+    x:= ZippedSum( [ m, One( F!.zeroRing ) ],
+                   CoefficientsAndMagmaElements( x ),
+                   F!.zeroRing, [ \<, \+ ] );
+    x:= NormalizedElementOfMagmaRingModuloRelations( F,
+            [ F!.zeroRing, x ] );
+    return Objectify( F!.defaultType, x );
+    end );
+
+InstallOtherMethod( \+,
+    "for magma ring element and magma element",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ], 0,
+    function( x, m )
+    local F;
+    F:= FamilyObj( x );
+    x:= ZippedSum( CoefficientsAndMagmaElements( x ),
+                   [ m, One( F!.zeroRing ) ],
+                   F!.zeroRing, [ \<, \+ ] );
+    x:= NormalizedElementOfMagmaRingModuloRelations( F,
+            [ F!.zeroRing, x ] );
+    return Objectify( F!.defaultType, x );
+    end );
+
+
+#############################################################################
+##
+#M  \-( <x>, <m> )  . . . . . . . .  for magma ring element and magma element
+#M  \-( <m>, <x> )  . . . . . . . .  for magma ring element and magma element
+##
+InstallOtherMethod( \-,
+    "for magma ring element and magma element",
+    IsMagmaRingsMagmas,
+    [ IsElementOfMagmaRingModuloRelations, IsMultiplicativeElement ], 0,
+    function( x, m )
+    local F;
+    F:= FamilyObj( x );
+    return x - ElementOfMagmaRing( F, F!.zeroRing,
+                   [ One( F!.zeroRing ) ], [ m ] );
+    end );
+
+InstallOtherMethod( \-,
+    "for magma ring element and magma element",
+    IsMagmasMagmaRings,
+    [ IsMultiplicativeElement, IsElementOfMagmaRingModuloRelations ], 0,
+    function( m, x )
+    local F;
+    F:= FamilyObj( x );
+    return ElementOfMagmaRing( F, F!.zeroRing,
+               [ One( F!.zeroRing ) ], [ m ] ) - x;
+    end );
 
 
 #############################################################################
@@ -415,13 +477,13 @@ ElmDivRingElm := function( x, y )
 end;
 
 InstallOtherMethod( \/,
-    "method for magma ring element, and ring element",
+    "for magma ring element, and ring element",
     IsMagmaRingsRings,
     [ IsElementOfMagmaRingModuloRelations, IsRingElement ], 0,
     ElmDivRingElm );
 
 InstallMethod( \/,
-    "method for magma ring element, and integer",
+    "for magma ring element, and integer",
     true,
     [ IsElementOfMagmaRingModuloRelations, IsInt ], 0,
     ElmDivRingElm );
@@ -432,7 +494,7 @@ InstallMethod( \/,
 #M  Inverse( <elm> ) . . . . . . . . . . . .  inverse of a magma ring element
 ##
 InstallOtherMethod( Inverse,
-    "method for free magma ring element",
+    "for free magma ring element",
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     function( elm )
@@ -453,17 +515,18 @@ InstallOtherMethod( Inverse,
 #M  One( <elm> )
 ##
 InstallMethod( One,
-    "method for magma ring element",
+    "for magma ring element",
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     function( elm )
     local F, zerocoeff;
     F:= FamilyObj( elm );
+    if not IsBound( F!.oneMagma ) then
+      return fail;
+    fi;
     zerocoeff:= F!.zeroRing;
     return Objectify( F!.defaultType,
-               [ zerocoeff, [ One( ElementsFamily( F!.familyMagma ) ),
-                              One( zerocoeff ) ] ] );
-#T problem!!
+               [ zerocoeff, [ F!.oneMagma, One( zerocoeff ) ] ] );
     end );
 
 
@@ -472,7 +535,7 @@ InstallMethod( One,
 #M  Zero( <elm> )
 ##
 InstallMethod( Zero,
-    "method for magma ring element",
+    "for magma ring element",
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     x -> Objectify( FamilyObj(x)!.defaultType,
@@ -490,7 +553,7 @@ InstallMethod( Zero,
 #M  IsGroupRing( <RM> ) . . . . . . . . . . . . . . . . . for free magma ring
 ##
 InstallMethod( IsGroupRing,
-    "method for free magma ring",
+    "for free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM -> IsGroup( UnderlyingMagma( RM ) ) );
@@ -501,7 +564,7 @@ InstallMethod( IsGroupRing,
 #M  PrintObj( <MR> )  . . . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( PrintObj,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     function( MR )
@@ -514,18 +577,18 @@ InstallMethod( PrintObj,
 ##
 #F  FreeMagmaRing( <R>, <M> )
 ##
-FreeMagmaRing := function( R, M )
+InstallGlobalFunction( FreeMagmaRing, function( R, M )
 
     local F,     # family of magma ring elements
-          one,   # identity of 'R'
-          zero,  # zero of 'R'
+          one,   # identity of `R'
+          zero,  # zero of `R'
+          m,     # one element of `M'
           RM,    # free magma ring, result
           gens;  # generators of the magma ring
 
     # Check the arguments.
     if not IsRing( R ) or One( R ) = fail then
-#T change?
-      Error( "<R> must be a ring-with-one" );
+      Error( "<R> must be a ring with identity" );
     fi;
 
     # Construct the family of elements of our ring.
@@ -542,7 +605,6 @@ FreeMagmaRing := function( R, M )
                      IsElementOfFreeMagmaRing,
                      IsMultiplicativeElement );
     fi;
-#T how to improve?
 
     one:= One( R );
     zero:= Zero( R );
@@ -552,6 +614,16 @@ FreeMagmaRing := function( R, M )
     F!.familyMagma := FamilyObj( M );
     F!.zeroRing    := zero;
 #T no !!
+
+    # Set the characteristic.
+    if HasCharacteristic( R ) or HasCharacteristic( FamilyObj( R ) ) then
+      SetCharacteristic( F, Characteristic( R ) );
+    fi;
+
+    m:= Representative( M );
+    if IsMultiplicativeElementWithOne( m ) then
+      F!.oneMagma:= One( m );
+    fi;
 
     # Make the magma ring object.
     if IsMagmaWithOne( M ) then
@@ -574,9 +646,13 @@ FreeMagmaRing := function( R, M )
     if HasIsFinite( M ) then
       SetIsFiniteDimensional( RM, IsFinite( M ) );
     fi;
-    if IsMagmaWithInverses( M ) and HasIsAssociative( M )
-                                and IsAssociative( M ) then
-      SetIsGroupRing( RM, IsGroup( M ) );
+    if HasIsAssociative( M ) then
+      if IsMagmaWithInverses( M ) then
+        SetIsGroupRing( RM, IsGroup( M ) );
+      fi;
+      if HasIsAssociative( R ) then
+        SetIsAssociative( RM, IsAssociative( R ) and IsAssociative( M ) );
+      fi;
     fi;
     if HasIsCommutative( R ) and HasIsCommutative( M ) then
       SetIsCommutative( RM, IsCommutative( R ) and IsCommutative( M ) );
@@ -598,7 +674,7 @@ FreeMagmaRing := function( R, M )
         SetGeneratorsOfLeftOperatorRing( RM,
                 [ ElementOfMagmaRing( F, zero, [ one ], [ One( M ) ] ) ] );
       fi;
-        
+
     else
 
       SetGeneratorsOfLeftOperatorRing( RM,
@@ -609,15 +685,51 @@ FreeMagmaRing := function( R, M )
 
     # Return the ring.
     return RM;
-end;
+end );
+
+
+#############################################################################
+##
+#F  GroupRing( <R>, <G> )
+##
+InstallGlobalFunction( GroupRing, function( R, G )
+
+    if not IsGroup( G ) then
+      Error( "<G> must be a group" );
+    fi;
+    R:= FreeMagmaRing( R, G );
+    SetIsGroupRing( R, true );
+    return R;
+end );
+
+
+#############################################################################
+##
+#M  AugmentationIdeal( <RG> ) . . . . . . . . . . . . . for a free magma ring
+##
+InstallMethod( AugmentationIdeal,
+    "for a free magma ring",
+    true,
+    [ IsFreeMagmaRing ], 0,
+    function( RG )
+    local one, G, gens, I;
+    one:= One( RG );
+    if one = fail then
+      TryNextMethod();
+    fi;
+    G:= UnderlyingMagma( RG );
+    gens:= List( GeneratorsOfMagma( G ), g -> g - one );
+    I:= TwoSidedIdealByGenerators( RG, gens );
+    SetGeneratorsOfAlgebra( I, gens );
+    return I;
+    end );
 
 
 #############################################################################
 ##
 #R  IsCanonicalBasisFreeMagmaRingRep( <B> )
 ##
-IsCanonicalBasisFreeMagmaRingRep := NewRepresentation(
-    "IsCanonicalBasisFreeMagmaRingRep",
+DeclareRepresentation( "IsCanonicalBasisFreeMagmaRingRep",
     IsCanonicalBasis and IsAttributeStoringRep,
     [ "zerovector" ] );
 
@@ -627,7 +739,7 @@ IsCanonicalBasisFreeMagmaRingRep := NewRepresentation(
 #M  Coefficients( <B>, <v> )  . . . . . . for canon. basis of free magma ring
 ##
 InstallMethod( Coefficients,
-    "method for canon. basis of a free magma ring, and a vector",
+    "for canon. basis of a free magma ring, and a vector",
     IsCollsElms,
     [ IsCanonicalBasisFreeMagmaRingRep, IsElementOfFreeMagmaRing ], 0,
     function( B, v )
@@ -652,7 +764,7 @@ InstallMethod( Coefficients,
 #M  BasisOfDomain( <RM> ) . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( BasisOfDomain,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ],
     10,  # must be higher than default method for (asssoc.) FLMLOR(WithOne)
@@ -664,7 +776,7 @@ InstallMethod( BasisOfDomain,
 #M  CanonicalBasis( <RM> )  . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( CanonicalBasis,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     function( RM )
@@ -698,10 +810,10 @@ InstallMethod( CanonicalBasis,
 
 #############################################################################
 ##
-#M  IsFinite( <RM> )
+#M  IsFinite( <RM> )  . . . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( IsFinite,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM ->     IsFinite( LeftActingDomain( RM ) )
@@ -713,7 +825,7 @@ InstallMethod( IsFinite,
 #M  IsFiniteDimensional( <RM> ) . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( IsFiniteDimensional,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM -> IsFinite( UnderlyingMagma( RM ) ) );
@@ -721,10 +833,32 @@ InstallMethod( IsFiniteDimensional,
 
 #############################################################################
 ##
-#M  Dimension( <RM> )
+#M  IsFiniteDimensional( <R> )  . .  for left module of free magma ring elms.
+##
+InstallMethod( IsFiniteDimensional,
+    "for a left module of free magma ring elements",
+    true,
+    [ IsFreeLeftModule and IsElementOfFreeMagmaRingCollection
+                       and HasGeneratorsOfLeftOperatorRing ], 0,
+    function( R )
+    local gens;
+    gens:= Concatenation( List( GeneratorsOfLeftOperatorRing( R ),
+                                CoefficientsAndMagmaElements ) );
+    gens:= gens{ [ 1, 3 .. Length( gens ) - 1 ] };
+    if IsEmpty( gens ) or IsFinite( Magma( gens ) ) then
+      return true;
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  Dimension( <RM> ) . . . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( Dimension,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM -> Size( UnderlyingMagma( RM ) ) );
@@ -732,10 +866,10 @@ InstallMethod( Dimension,
 
 #############################################################################
 ##
-#M  GeneratorsOfLeftModule( <RM> )
+#M  GeneratorsOfLeftModule( <RM> )  . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( GeneratorsOfLeftModule,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     function( RM )
@@ -754,7 +888,7 @@ InstallMethod( GeneratorsOfLeftModule,
 
 #############################################################################
 ##
-#M  Centre( <RM> )
+#M  Centre( <RM> )  . . . . . . . . . . . . . . . . . . . .  for a group ring
 ##
 ##  The centre of a group ring $RG$ of a finite group $G$ is the FLMLOR
 ##  over the centre of $R$ generated by the conjugacy class sums in $G$.
@@ -773,16 +907,16 @@ InstallMethod( GeneratorsOfLeftModule,
 ##  of $R$.
 ##
 InstallMethod( Centre,
-    "method for a group ring",
+    "for a group ring",
     true,
     [ IsGroupRing ], 0,
     function( RG )
 
-    local F,      # family of elements of 'RG'
+    local F,      # family of elements of `RG'
           one,    # identity of the coefficients ring
           zero,   # zero of the coefficients ring
           gens,   # list of (module) generators of the result
-          c,      # loop over 'ccl'
+          c,      # loop over `ccl'
           elms,   # set of elements of a conjugacy class
           coeff;  # coefficients vector
 
@@ -807,7 +941,7 @@ InstallMethod( Centre,
 #M  \in( <r>, <RM> )  . . . . . . . . .  for ring element and free magma ring
 ##
 InstallMethod( \in,
-    "method for ring element, and magma ring",
+    "for ring element, and magma ring",
     IsElmsColls,
     [ IsElementOfMagmaRingModuloRelations, IsMagmaRingModuloRelations ], 0,
     function( r, RM )
@@ -839,15 +973,14 @@ InstallMethod( \in,
 ##  Especially, the first element in the enumerator of <RM> is the zero
 ##  element of <RM>.
 ##
-IsFreeMagmaRingEnumerator := NewRepresentation(
-    "IsFreeMagmaRingEnumerator",
+DeclareRepresentation( "IsFreeMagmaRingEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "zerocoeff", "ringenum", "magmaenum", "zero" ] );
 
 InstallMethod( \[\],
-    "method for enumerator of a free magma ring",
+    "for enumerator of a free magma ring",
     true,
-    [ IsFreeMagmaRingEnumerator, IsPosRat and IsInt ], 0,
+    [ IsFreeMagmaRingEnumerator, IsPosInt ], 0,
     function( enum, nr )
 
     local elm,  # element, result
@@ -867,7 +1000,7 @@ InstallMethod( \[\],
     end );
 
 InstallMethod( Position,
-    "method for enumerator of a free magma ring",
+    "for enumerator of a free magma ring",
     IsCollsElmsX,
     [ IsFreeMagmaRingEnumerator, IsElementOfFreeMagmaRing, IsZeroCyc ], 0,
     function( enum, elm, zero )
@@ -897,7 +1030,7 @@ InstallMethod( Position,
 
 
 InstallMethod( Enumerator,
-    "method for enumerator of a free magma ring with finite ring",
+    "for enumerator of a free magma ring with finite ring",
     true,
     [ IsFreeMagmaRing ], 0,
     function( RM )
@@ -926,7 +1059,7 @@ InstallMethod( Enumerator,
 #M  IsAssociative( <RM> ) . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( IsAssociative,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM ->     IsAssociative( LeftActingDomain( RM ) )
@@ -938,7 +1071,7 @@ InstallMethod( IsAssociative,
 #M  IsCommutative( <RM> ) . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( IsCommutative,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM ->     IsCommutative( LeftActingDomain( RM ) )
@@ -950,7 +1083,7 @@ InstallMethod( IsCommutative,
 #M  IsWholeFamily( <RM> ) . . . . . . . . . . . . . . . for a free magma ring
 ##
 InstallMethod( IsWholeFamily,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     RM ->     IsWholeFamily( LeftActingDomain( RM ) )
@@ -967,7 +1100,7 @@ InstallMethod( IsWholeFamily,
 ##  with the images of the ring generators under the natural embedding.
 ##
 InstallMethod( GeneratorsOfRing,
-    "method for a free magma ring",
+    "for a free magma ring",
     true,
     [ IsFreeMagmaRing ], 0,
     function( RM )
@@ -984,7 +1117,7 @@ InstallMethod( GeneratorsOfRing,
     end );
 
 InstallMethod( GeneratorsOfRingWithOne,
-    "method for a free magma ring-with-one",
+    "for a free magma ring-with-one",
     true,
     [ IsFreeMagmaRingWithOne ], 0,
     function( RM )
@@ -1005,7 +1138,7 @@ InstallMethod( GeneratorsOfRingWithOne,
 ##
 #R  IsEmbeddingRingMagmaRing( <R>, <RM> )
 ##
-IsEmbeddingRingMagmaRing := NewRepresentation( "IsEmbeddingRingMagmaRing",
+DeclareRepresentation( "IsEmbeddingRingMagmaRing",
         IsNonSPGeneralMapping
     and IsMapping
     and IsInjective
@@ -1017,7 +1150,7 @@ IsEmbeddingRingMagmaRing := NewRepresentation( "IsEmbeddingRingMagmaRing",
 ##
 #R  IsEmbeddingMagmaMagmaRing( <M>, <RM> )
 ##
-IsEmbeddingMagmaMagmaRing := NewRepresentation( "IsEmbeddingMagmaMagmaRing",
+DeclareRepresentation( "IsEmbeddingMagmaMagmaRing",
         IsNonSPGeneralMapping
     and IsMapping
     and IsInjective
@@ -1027,10 +1160,11 @@ IsEmbeddingMagmaMagmaRing := NewRepresentation( "IsEmbeddingMagmaMagmaRing",
 
 #############################################################################
 ##
-#M  Embedding( <R>, <RM> )
+#M  Embedding( <R>, <RM> )  . . . . . . . . . . . . . for ring and magma ring
 ##
 InstallMethod( Embedding,
-    IsRingsMagmaRings,
+    "for ring and magma ring",
+    IsRingCollsMagmaRingColls,
     [ IsRing, IsFreeMagmaRing ], 0,
     function( R, RM )
 
@@ -1053,6 +1187,7 @@ InstallMethod( Embedding,
     end );
 
 InstallMethod( ImagesElm,
+    "for embedding of ring into magma ring, and ring element",
     FamSourceEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsRingElement ], 0,
     function ( emb, elm )
@@ -1063,7 +1198,9 @@ InstallMethod( ImagesElm,
     end );
 
 
-InstallMethod( PreImagesElm, FamRangeEqFamElm,
+InstallMethod( PreImagesElm,
+    "for embedding of ring into magma ring, and free magma ring element",
+    FamRangeEqFamElm,
     [ IsEmbeddingRingMagmaRing, IsElementOfFreeMagmaRing ], 0,
     function ( emb, elm )
     local R, extrep;
@@ -1080,10 +1217,11 @@ InstallMethod( PreImagesElm, FamRangeEqFamElm,
 
 #############################################################################
 ##
-#F  Embedding( <M>, <RM> )
+#F  Embedding( <M>, <RM> )  . . . . . . . . . . . .  for magma and magma ring
 ##
 InstallMethod( Embedding,
-    IsMagmasMagmaRings,
+    "for magma and magma ring",
+    IsMagmaCollsMagmaRingColls,
     [ IsMagma, IsFreeMagmaRing ], 0,
     function( M, RM )
 
@@ -1104,6 +1242,7 @@ InstallMethod( Embedding,
     end );
 
 InstallMethod( ImagesElm,
+    "for embedding of magma into magma ring, and mult. element",
     FamSourceEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsMultiplicativeElement ], 0,
     function ( emb, elm )
@@ -1116,6 +1255,7 @@ InstallMethod( ImagesElm,
 
 
 InstallMethod( PreImagesElm,
+    "for embedding of magma into magma ring, and free magma ring element",
     FamRangeEqFamElm,
     [ IsEmbeddingMagmaMagmaRing, IsElementOfFreeMagmaRing ], 0,
     function ( emb, elm )
@@ -1141,9 +1281,10 @@ InstallMethod( PreImagesElm,
 ##  of the monomials and their coefficients.
 ##
 InstallMethod( ExtRepOfObj,
-    "method for magma ring element",
+    "for magma ring element",
 #T eventually more specific!
 #T allow this only if the magma elements have an external representation!
+#T (make this explicit!)
     true,
     [ IsElementOfMagmaRingModuloRelations ], 0,
     function( elm )
@@ -1153,7 +1294,6 @@ InstallMethod( ExtRepOfObj,
     for i in [ 1, 3 .. Length( elm ) - 1 ] do
       elm[i]:= ExtRepOfObj( elm[i] );
     od;
-#T sort this !!
     return [ zero, elm ];
     end );
 
@@ -1167,19 +1307,20 @@ InstallMethod( ExtRepOfObj,
 ##
 ##  We need this mainly for free and f.p. algebras.
 ##
+##  Note that <descr> must describe a *normalized* element (sorted w.r.t. the
+##  magma elements, normalized w.r.t. the relations if there are some).
+##
 InstallMethod( ObjByExtRep,
-    "method for magma ring elements family, and list",
+    "for magma ring elements family, and list",
     true,
-    [ IsFamilyElementOfMagmaRingModuloRelations, IsList ], 0,
+    [ IsElementOfMagmaRingModuloRelationsFamily, IsList ], 0,
     function( Fam, descr )
     local FM, elm, i;
     FM:= ElementsFamily( Fam!.familyMagma );
-#T why not store the elements family itself?
     elm:= ShallowCopy( descr[2] );
     for i in [ 1, 3 .. Length( elm ) - 1 ] do
       elm[i]:= ObjByExtRep( FM, elm[i] );
     od;
-#T sort this !!
     return Objectify( Fam!.defaultType, [ descr[1], elm ] );
     end );
 
@@ -1196,7 +1337,7 @@ InstallMethod( ObjByExtRep,
 ##  Then the row vector of coefficients w.r.t. $S$ is the nice vector of an
 ##  element in $V$.
 ##
-##  The computation of $S$ is done by 'PrepareNiceFreeLeftModule'.
+##  The computation of $S$ is done by `PrepareNiceFreeLeftModule'.
 ##
 
 #############################################################################
@@ -1206,20 +1347,19 @@ InstallMethod( ObjByExtRep,
 ##  is the representation of free left modules of free magma ring elements
 ##  that are handled via nice bases.
 ##
-##  'family' : \\
+##  `family' :
 ##     elements family of <V>
 ##
-##  'monomials' : \\
+##  `monomials' :
 ##     the list of magma elements that occur in elements of <V>.
 ##
-##  'zerocoeff' : \\
+##  `zerocoeff' :
 ##     zero coefficient of elements in <V>
 ##
-##  'zerovector' : \\
+##  `zerovector' :
 ##     zero row vector in the nice left module
 ##
-IsSpaceOfElementsOfFreeMagmaRingRep := NewRepresentation(
-    "IsSpaceOfElementsOfFreeMagmaRingRep",
+DeclareRepresentation( "IsSpaceOfElementsOfFreeMagmaRingRep",
     IsHandledByNiceBasis and IsAttributeStoringRep,
     [ "family", "monomials", "zerocoeff", "zerovector" ] );
 
@@ -1229,7 +1369,7 @@ IsSpaceOfElementsOfFreeMagmaRingRep := NewRepresentation(
 #M  PrepareNiceFreeLeftModule( <V> )
 ##
 InstallMethod( PrepareNiceFreeLeftModule,
-    "method for free left module of free magma ring elements",
+    "for free left module of free magma ring elements",
     true,
     [ IsFreeLeftModule and IsSpaceOfElementsOfFreeMagmaRingRep ], 0,
     function( V )
@@ -1242,7 +1382,6 @@ InstallMethod( PrepareNiceFreeLeftModule,
           zero;
 
     gens:= GeneratorsOfLeftModule( V );
-#T may we assume here that the generators are in default rep.?
     monomials:= [];
 
     for gen in gens do
@@ -1265,11 +1404,11 @@ InstallMethod( PrepareNiceFreeLeftModule,
 ##
 #M  NiceVector( <V>, <v> )
 ##
-##  is the row vector in 'NiceFreeLeftModule( <V> )' that corresponds
+##  is the row vector in `NiceFreeLeftModule( <V> )' that corresponds
 ##  to the vector <v> of <V>.
 ##
 InstallMethod( NiceVector,
-    "method for free left module of free magma ring elements, and element",
+    "for free left module of free magma ring elements, and element",
     IsCollsElms,
     [ IsFreeLeftModule and IsSpaceOfElementsOfFreeMagmaRingRep,
       IsElementOfFreeMagmaRing ],
@@ -1293,10 +1432,10 @@ InstallMethod( NiceVector,
 #M  UglyVector( <V>, <r> )
 ##
 ##  returns the vector in <V> that corresponds to the vector <r> in
-##  'NiceFreeLeftModule( <V> )'.
+##  `NiceFreeLeftModule( <V> )'.
 ##
 InstallMethod( UglyVector,
-    "method for left module of free magma ring elements, and row vector",
+    "for left module of free magma ring elements, and row vector",
     true,
     [ IsFreeLeftModule and IsSpaceOfElementsOfFreeMagmaRingRep,
       IsRowVector ], 0,
@@ -1311,32 +1450,12 @@ InstallMethod( UglyVector,
 
 #############################################################################
 ##
-#M  MutableBasisByGenerators( <R>, <gens> )
-#M  MutableBasisByGenerators( <R>, <gens>, <zero> )
-##
-##  We choose a mutable basis that stores a mutable basis for a nice module.
-##
-InstallMethod( MutableBasisByGenerators,
-    "method for ring and collection of free magma ring elements",
-    true,
-    [ IsRing, IsElementOfFreeMagmaRingCollection ], 0,
-    MutableBasisViaNiceMutableBasisMethod2 );
-
-InstallOtherMethod( MutableBasisByGenerators,
-    "method for ring, (possibly empty) list, and zero in free magma ring",
-    true,
-    [ IsRing, IsList, IsElementOfFreeMagmaRing ], 0,
-    MutableBasisViaNiceMutableBasisMethod3 );
-
-
-#############################################################################
-##
-#M  LeftModuleByGenerators( <F>, <gens> ) . create vector space of field elms
+#M  LeftModuleByGenerators( <F>, <gens> )
 ##
 InstallMethod( LeftModuleByGenerators,
-    "method for ring and collection of free magma ring elements",
+    "for ring and collection of free magma ring elements",
     true,
-    [ IsRing, IsElementOfFreeMagmaRingCollection ] , 0,
+    [ IsRing, IsElementOfFreeMagmaRingCollection ], 0,
     function( F, gens )
     local V;
     V:= Objectify( NewType( FamilyObj( gens ),
@@ -1354,13 +1473,13 @@ InstallMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <gens>, <zero> )
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for ring and collection of free magma ring elements",
+    "for ring and collection of free magma ring elements",
     true,
     [ IsRing, IsElementOfFreeMagmaRingCollection, IsElementOfFreeMagmaRing ],
     0,
     function( F, gens, zero )
     local V;
-    V:= Objectify( NewType( FamilyObj( F ),
+    V:= Objectify( NewType( CollectionsFamily( FamilyObj( zero ) ),
                                 IsFreeLeftModule
                             and IsSpaceOfElementsOfFreeMagmaRingRep ),
                    rec() );
@@ -1376,7 +1495,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  LeftModuleByGenerators( <F>, <empty>, <zero> )
 ##
 InstallOtherMethod( LeftModuleByGenerators,
-    "method for ring, empty list, and free magma ring element",
+    "for ring, empty list, and free magma ring element",
     true,
     [ IsRing, IsList and IsEmpty, IsElementOfFreeMagmaRing ], 0,
     function( F, empty, zero )
@@ -1400,7 +1519,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 #M  FLMLORByGenerators( <R>, <elms>, <zero> )
 ##
 InstallMethod( FLMLORByGenerators,
-    "method for ring and list of free magma ring elements",
+    "for ring and list of free magma ring elements",
     true,
     [ IsRing, IsElementOfFreeMagmaRingCollection and IsList ], 0,
     function( R, elms )
@@ -1419,7 +1538,7 @@ InstallMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for ring, empty list, and free magma ring element",
+    "for ring, empty list, and free magma ring element",
     true,
     [ IsRing, IsList and IsEmpty, IsElementOfFreeMagmaRing ], 0,
     function( R, empty, zero )
@@ -1439,7 +1558,7 @@ InstallOtherMethod( FLMLORByGenerators,
     end );
 
 InstallOtherMethod( FLMLORByGenerators,
-    "method for ring, list of free magma ring elements, and zero",
+    "for ring, list of free magma ring elements, and zero",
     true,
     [ IsRing, IsElementOfFreeMagmaRingCollection and IsList,
       IsElementOfFreeMagmaRing ], 0,
@@ -1467,7 +1586,7 @@ InstallOtherMethod( FLMLORByGenerators,
 #M  FLMLORWithOneByGenerators( <R>, <elms>, <zero> )
 ##
 InstallMethod( FLMLORWithOneByGenerators,
-    "method for ring and list of free magma ring elements",
+    "for ring and list of free magma ring elements",
     true,
     [ IsRing, IsElementOfFreeMagmaRingCollection and IsList ], 0,
     function( R, elms )
@@ -1486,7 +1605,7 @@ InstallMethod( FLMLORWithOneByGenerators,
     end );
 
 InstallOtherMethod( FLMLORWithOneByGenerators,
-    "method for ring, empty list, and free magma ring element",
+    "for ring, empty list, and free magma ring element",
     true,
     [ IsRing, IsList and IsEmpty, IsElementOfFreeMagmaRing ], 0,
     function( R, empty, zero )
@@ -1506,7 +1625,7 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
     end );
 
 InstallOtherMethod( FLMLORWithOneByGenerators,
-    "method for ring, list of free magma ring elements, and zero",
+    "for ring, list of free magma ring elements, and zero",
     true,
     [ IsRing, IsElementOfFreeMagmaRingCollection and IsList,
       IsElementOfFreeMagmaRing ], 0,
@@ -1529,7 +1648,143 @@ InstallOtherMethod( FLMLORWithOneByGenerators,
 
 #############################################################################
 ##
+#M  TwoSidedIdealByGenerators( <A>, <elms> )
+#M  LeftIdealByGenerators( <A>, <elms> )
+#M  RightIdealByGenerators( <A>, <elms> )
+##
+InstallMethod( TwoSidedIdealByGenerators,
+    "for free magma ring, and list of free magma ring elements",
+    IsIdenticalObj,
+    [ IsFreeMagmaRing, IsElementOfFreeMagmaRingCollection and IsList ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfTwoSidedIdeal( I, elms );
+    SetLeftActingRingOfIdeal( I, A );
+    SetRightActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+InstallMethod( LeftIdealByGenerators,
+    "for free magma ring, and list of free magma ring elements",
+    IsIdenticalObj,
+    [ IsFreeMagmaRing, IsElementOfFreeMagmaRingCollection and IsList ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfLeftIdeal( I, elms );
+    SetLeftActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+InstallMethod( RightIdealByGenerators,
+    "for free magma ring, and list of free magma ring elements",
+    IsIdenticalObj,
+    [ IsFreeMagmaRing, IsElementOfFreeMagmaRingCollection and IsList ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfRightIdeal( I, elms );
+    SetRightActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+InstallMethod( TwoSidedIdealByGenerators,
+    "for free magma ring, and empty list",
+    true,
+    [ IsFreeMagmaRing, IsList and IsEmpty ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsTrivial
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfTwoSidedIdeal( I, elms );
+    SetGeneratorsOfLeftOperatorRing( I, elms );
+    SetGeneratorsOfLeftModule( I, elms );
+    SetLeftActingRingOfIdeal( I, A );
+    SetRightActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+InstallMethod( LeftIdealByGenerators,
+    "for free magma ring, and empty list",
+    true,
+    [ IsFreeMagmaRing, IsList and IsEmpty ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsTrivial
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfLeftIdeal( I, elms );
+    SetGeneratorsOfLeftOperatorRing( I, elms );
+    SetGeneratorsOfLeftModule( I, elms );
+    SetLeftActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+InstallMethod( RightIdealByGenerators,
+    "for free magma ring, and empty list",
+    true,
+    [ IsFreeMagmaRing, IsList and IsEmpty ], 0,
+    function( A, elms )
+    local I;
+
+    I:= Objectify( NewType( FamilyObj( A ),
+                                IsFLMLOR
+                            and IsTrivial
+                            and IsSpaceOfElementsOfFreeMagmaRingRep ),
+                     rec() );
+
+    SetLeftActingDomain( I, LeftActingDomain( A ) );
+    SetGeneratorsOfRightIdeal( I, elms );
+    SetGeneratorsOfLeftOperatorRing( I, elms );
+    SetGeneratorsOfLeftModule( I, elms );
+    SetRightActingRingOfIdeal( I, A );
+
+    # Return the result.
+    return I;
+    end );
+
+
+#############################################################################
+##
 #E  mgmring.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

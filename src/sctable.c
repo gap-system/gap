@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,        CWI,        Amsterdam,        The Netherlands
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains a fast access function  for structure constants tables
 **  and the multiplication of two elements using a structure constants table.
@@ -37,7 +38,7 @@
 */
 #include        "system.h"              /* system dependent part           */
 
-SYS_CONST char * Revision_sctable_c =
+const char * Revision_sctable_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -66,7 +67,7 @@ SYS_CONST char * Revision_sctable_c =
 /****************************************************************************
 **
 
-*F  SCTableEntry(<table>,<i>,<j>,<k>) . . . . . . .  entry of structure table
+*F  SCTableEntry( <table>, <i>, <j>, <k> )  . . . .  entry of structure table
 **
 **  'SCTableEntry' returns the coefficient $c_{i,j}^{k}$ from the structure
 **  constants table <table>.
@@ -200,7 +201,7 @@ Obj SCTableEntryHandler (
 
 /****************************************************************************
 **
-*F  SCTableProduct(<table>,<list1>,<list2>) . . . product wrt structure table
+*F  SCTableProduct( <table>, <list1>, <list2> ) . product wrt structure table
 **
 **  'SCTableProduct'  returns the product   of  the two elements <list1>  and
 **  <list2> with respect to the structure constants table <table>.
@@ -372,40 +373,77 @@ Obj SCTableProductHandler (
 /****************************************************************************
 **
 
-*F  SetupSCTable()  . . . . . . . . . .  initialize structure constant tables
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupSCTable ( void )
+static StructGVarFunc GVarFuncs [] = {
+
+    { "SC_TABLE_ENTRY", 4, "table, i, j, k",
+      SCTableEntryHandler, "src/sctable.c:SC_TABLE_ENTRY" },
+
+    { "SC_TABLE_PRODUCT", 3, "table, list1, list2",
+      SCTableProductHandler, "src/sctable.c:SC_TABLE_PRODUCT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitSCTable() . . . . . . . . . . .  initialize structure constant tables
-**
-**  Is called  during the initialization  of GAP to initialize  the structure
-**  constant table package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitSCTable ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    C_NEW_GVAR_FUNC( "SC_TABLE_ENTRY", 4, "table, i, j, k",
-                      SCTableEntryHandler,
-       "src/sctable.c:SC_TABLE_ENTRY" );
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    C_NEW_GVAR_FUNC( "SC_TABLE_PRODUCT", 3, "table, list1, list2",
-                      SCTableProductHandler,
-       "src/sctable.c:SC_TABLE_PRODUCT" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckSCTable()  . . check the initialisation of structure constant tables
+*F  InitInfoSCTable() . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckSCTable ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "sctable",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoSCTable ( void )
 {
-    SET_REVISION( "sctable_c",  Revision_sctable_c );
-    SET_REVISION( "sctable_h",  Revision_sctable_h );
+    module.revision_c = Revision_sctable_c;
+    module.revision_h = Revision_sctable_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

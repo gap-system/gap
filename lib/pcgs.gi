@@ -5,26 +5,18 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for polycylic generating systems.
 ##
 Revision.pcgs_gi :=
     "@(#)$Id$";
 
-
-#############################################################################
-##
-
-#M  IsPcgsComputable( <G> ) . . . . . . . . . . . . . . . . . .  normally not
-##
-InstallMethod( IsPcgsComputable, true, [ IsGroup ], 0, ReturnFalse );
-
-
 #############################################################################
 ##
 #M  Pcgs( <A> ) . . . . . . . .  from independent generators of abelian group
 ##
-PcgsByIndependentGeneratorsOfAbelianGroup := function( A )
+InstallGlobalFunction( PcgsByIndependentGeneratorsOfAbelianGroup, function( A )
     local   pcgs,  pcs,  rel,  gen,  f;
     
     pcs := [  ];
@@ -41,19 +33,26 @@ PcgsByIndependentGeneratorsOfAbelianGroup := function( A )
     SetRelativeOrders( pcgs, rel );
     SetIsPrimeOrdersPcgs( pcgs, true );
     return pcgs;
-end;
+end );
 
 InstallMethod( Pcgs, "from independent generators of abelian group", true,
     [ IsGroup and IsAbelian and HasIndependentGeneratorsOfAbelianGroup ], 0,
-    PcgsByIndependentGeneratorsOfAbelianGroup );
-        
+function(A)
+  if HasHomePcgs(A) then
+    TryNextMethod();
+  else
+    return PcgsByIndependentGeneratorsOfAbelianGroup(A);
+  fi;
+end);
 
 #############################################################################
 ##
 #M  SetPcgs( <G>, fail )  . . . . . . . . . . . . . . . . .  never set `fail'
 ##
-##  `HasPcgs' implies  `IsPcgsComputable',  which implies `IsSolvable',  so a
-##  pcgs cannot be set for insoluble permutation groups.
+##  `HasPcgs' implies  `CanEasilyComputePcgs',  which implies `IsSolvable',
+##  so a  pcgs cannot be set for insoluble permutation groups.
+##  As Pcgs may return 'fail' for insolvable permutation groups, this method
+##  is necessary.
 ##
 InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], SUM_FLAGS,
     function( G, fail )
@@ -70,7 +69,7 @@ InstallMethod( IsBound\[\],
     "pcgs",
     true,
     [ IsPcgs,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, pos )
@@ -130,7 +129,7 @@ InstallMethod( \[\],
     "pcgs, pos int",
     true,
     [ IsPcgs and IsPcgsDefaultRep,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, pos )
@@ -140,7 +139,6 @@ end );
 
 #############################################################################
 ##
-
 #M  PcgsByPcSequenceCons( <req-filter>, <imp-filter>, <fam>, <pcs> )
 ##
 InstallMethod( PcgsByPcSequenceCons,
@@ -282,7 +280,7 @@ InstallMethod( ExponentOfPcElement,
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
     [ IsPcgs,
       IsObject,
-      IsInt and IsPosRat ],
+      IsPosInt ],
     0,
 
 function( pcgs, elm, pos )
@@ -388,7 +386,7 @@ InstallMethod( PcElementByExponents,
     "generic method",
     true,
     [ IsPcgs,
-      IsRowVector and IsCyclotomicsCollection ],
+      IsRowVector and IsCyclotomicCollection ],
     0,
 
 function( pcgs, list )
@@ -466,7 +464,7 @@ InstallOtherMethod( PcElementByExponents,
     true,
     [ IsPcgs,
       IsList,
-      IsRowVector and IsCyclotomicsCollection ],
+      IsRowVector and IsCyclotomicCollection ],
     0,
 
 function( pcgs, basis, list )
@@ -553,7 +551,7 @@ end );
 InstallMethod( RelativeOrderOfPcElement,
     "generic method using RelativeOrders",
     IsCollsElms,
-    [ IsPcgs,
+    [ IsPcgs and IsPrimeOrdersPcgs,
       IsObject ],
     0,
 
@@ -642,17 +640,19 @@ end );
 #############################################################################
 ##
 
-#M  ExtendedIntersectionSumPcgs( <parent-pcgs>, <n>, <u> )
+#M  ExtendedIntersectionSumPcgs( <parent-pcgs>, <n>, <u>, <modpcgs> )
 ##
 InstallMethod( ExtendedIntersectionSumPcgs,
-    "generic method",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    "generic method for modulo pcgs",
+    true,
+    #function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList,
-      IsList ],
+      IsList,
+      IsObject ],
     0,
 
-function( pcgs, n, u )
+function( pcgs, n, u, pcgsM )
     local   id,  G,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,  
             sum,  int;
 
@@ -689,6 +689,9 @@ function( pcgs, n, u )
     ros := RelativeOrders(pcgs);
     for al  in I  do
         ar := id;
+        if not IsBool( pcgsM ) then 
+            al := SiftedPcElement( pcgsM, al );
+        fi;
         z  := DepthOfPcElement( pcgs, al );
 
         # shift through and reduced from the left
@@ -697,6 +700,9 @@ function( pcgs, n, u )
                    / LeadingExponentOfPcElement( pcgs, ls[z] )
                    mod ros[z];
             al := LeftQuotient( ls[z]^tmp, al );
+            if not IsBool( pcgsM ) then
+                al := SiftedPcElement( pcgsM, al );
+            fi;
             ar := LeftQuotient( rs[z]^tmp, ar );
             z  := DepthOfPcElement( pcgs, al );
         od;
@@ -709,6 +715,9 @@ function( pcgs, n, u )
             z := DepthOfPcElement( pcgs, ar );
             while ar <> id and is[z] <> id  do
                 ar := ReducedPcElement( pcgs, ar, is[z] );
+                if not IsBool( pcgsM ) then
+                    ar := SiftedPcElement( pcgsM, ar );
+                fi;
                 z  := DepthOfPcElement( pcgs, ar );
             od;
             if ar <> id  then
@@ -738,12 +747,14 @@ end );
 ##
 InstallMethod( IntersectionSumPcgs,
     "using 'ExtendedIntersectionSumPcgs'",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList,
       IsList ],
     0,
-    ExtendedIntersectionSumPcgs );
+    function( pcgs, n, u ) 
+        return ExtendedIntersectionSumPcgs(pcgs, n, u, true);
+    end );
 
 
 #############################################################################
@@ -752,14 +763,14 @@ InstallMethod( IntersectionSumPcgs,
 ##
 InstallMethod( NormalIntersectionPcgs,
     "using 'ExtendedIntersectionSumPcgs'",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList,
       IsList ],
     0,
 
 function( p, n, u )
-   return ExtendedIntersectionSumPcgs(p,n,u).intersection;
+   return ExtendedIntersectionSumPcgs(p,n,u,true).intersection;
 end );
 
 
@@ -769,7 +780,7 @@ end );
 ##
 InstallMethod( SumPcgs,
     "generic method",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList,
       IsList ],
@@ -827,21 +838,23 @@ end );
 
 #############################################################################
 ##
-#M  SumFactorizationFunctionPcgs( <parent-pcgs>, <u>, <n> )
+#M  SumFactorizationFunctionPcgs( <parent-pcgs>, <u>, <n>, <modpcgs> )
 ##
 InstallMethod( SumFactorizationFunctionPcgs,
     "generic method",
-    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    #function(a,b,c) return IsIdenticalObj(a,b) and IsIdenticalObj(a,c); end,
+    true,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList,
-      IsList ],
+      IsList,
+      IsObject ],
     0,
 
-function( pcgs, u, n )
+function( pcgs, u, n, pcgsM )
     local   id,  S,  f;
 
     id := OneOfPcgs( pcgs );
-    S  := ExtendedIntersectionSumPcgs( pcgs, n, u );
+    S  := ExtendedIntersectionSumPcgs( pcgs, n, u, pcgsM );
 
     # decomposition function
     f := function( un )
@@ -972,7 +985,7 @@ end );
 
 #R  IsEnumeratorByPcgsRep
 ##
-IsEnumeratorByPcgsRep := NewRepresentation( "IsEnumeratorByPcgsRep",
+DeclareRepresentation( "IsEnumeratorByPcgsRep",
     IsEnumerator and IsAttributeStoringRep,
     [ "pcgs", "sublist" ] );
 
@@ -1032,7 +1045,7 @@ InstallMethod( Length,
 InstallMethod( \[\],
     true,
     [ IsEnumerator and IsEnumeratorByPcgsRep,
-      IsPosRat and IsInt ],
+      IsPosInt ],
     0,
 
 function( enum, pos )
@@ -1102,6 +1115,29 @@ end );
 
 #############################################################################
 ##
+#M  NormalSeriesByPcgs( <pcgs> )
+##
+InstallMethod(NormalSeriesByPcgs,"via SubgroupByPcgs",true,
+  [IsPcgs],0,
+function(pcgs)
+local p,l,g,h,i;
+  l:=IndicesNormalSteps(pcgs);
+  p:=Group(pcgs);
+  g:=[p];
+  for i in [2..Length(l)-1] do
+    h:=SubgroupByPcgs(p,
+      InducedPcgsByPcSequenceNC(pcgs,pcgs{[l[i]..Length(pcgs)]}));
+    if not HasHomePcgs(h) then
+      SetHomePcgs(h,pcgs);
+    fi;
+    Add(g,h);
+  od;
+  Add(g,TrivialSubgroup(p));
+  return g;
+end);
 
+
+#############################################################################
+##
 #E  pcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the functions of the immediate interpreter package.
 **
@@ -17,7 +18,7 @@
 #include        <assert.h>              /* assert                          */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_intrprtr_c =
+const char * Revision_intrprtr_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -1065,8 +1066,35 @@ void            IntrQuit ( void )
     CountObj = 0;
     PushVoidObj();
 
+    
     /* indicate that a quit-statement was interpreted                      */
-    IntrReturning = 8;
+    IntrReturning = STATUS_QUIT;
+}
+
+/****************************************************************************
+**
+*F  IntrQUIT()  . . . . . . . . . . . . . . . . . .  interpret quit-statement
+**
+**  'IntrQUIT' is the  action to interpret   a quit-statement.  It  is called
+**  when the reader encounters a 'QUIT;'.
+*/
+void            IntrQUIT ( void )
+{
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+
+    /* 'quit' is not allowed in functions (by the reader)                  */
+    assert( IntrCoding == 0 );
+
+    /* empty the values stack and push the void value                      */
+    SET_LEN_PLIST( StackObj, 0 );
+    CountObj = 0;
+    PushVoidObj();
+
+    
+    /* indicate that a quit-statement was interpreted                      */
+    IntrReturning = STATUS_QQUIT;
 }
 
 
@@ -1898,7 +1926,7 @@ void            IntrListExprBegin (
     if ( CompNowFuncs != 0 ) { return; }
 
     /* allocate the new list                                               */
-    list = NEW_PLIST( T_PLIST, 0 );
+    list = NEW_PLIST( T_PLIST_EMPTY, 0 );
     SET_LEN_PLIST( list, 0 );
 
     /* if this is an outmost list, save it for reference in '~'            */
@@ -2331,6 +2359,8 @@ void            IntrAssDVar (
 {
     Obj                 rhs;            /* right hand side                 */
     Obj                 currLVars;
+    UInt                upstack;
+    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2344,7 +2374,12 @@ void            IntrAssDVar (
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    ASS_HVAR( dvar, rhs );
+    upstack = dvar >>20;
+    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    while (upstack--)
+      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+    ASS_HVAR( ashvar, rhs );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the right hand side again                                      */
@@ -2355,6 +2390,8 @@ void            IntrUnbDVar (
     UInt                dvar )
 {
     Obj                 currLVars;
+    UInt                upstack;
+    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2365,7 +2402,12 @@ void            IntrUnbDVar (
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    ASS_HVAR( dvar, (Obj)0 );
+    upstack = dvar >>20;
+    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    while (upstack--)
+      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+    ASS_HVAR( ashvar, (Obj)0 );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push void                                                           */
@@ -2382,6 +2424,8 @@ void            IntrRefDVar (
 {
     Obj                 val;            /* value, result                   */
     Obj                 currLVars;
+    UInt                upstack;
+    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2391,17 +2435,21 @@ void            IntrRefDVar (
 
     if ( IntrCoding > 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
-                   dvar >> 16, dvar & 0xFFFF );
+                   dvar >> 10, dvar & 0x3FF );
     }
 
     /* get and check the value                                             */
     currLVars = CurrLVars;
+    upstack = dvar >>20;
+    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    val = OBJ_HVAR( dvar );
+    while (upstack--)
+      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+    val = OBJ_HVAR( ashvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
         ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
-                   dvar >> 16, dvar & 0xFFFF );
+                   dvar >> 10, dvar & 0xFFFF );
     }
 
     /* push the value                                                      */
@@ -2413,6 +2461,8 @@ void            IntrIsbDVar (
 {
     Obj                 val;            /* value, result                   */
     Obj                 currLVars;
+    UInt                upstack;
+    UInt                ashvar;
 
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
@@ -2423,7 +2473,12 @@ void            IntrIsbDVar (
     /* get the value                                                       */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
-    val = OBJ_HVAR( dvar );
+    upstack = dvar >>20;
+    ashvar = ((dvar & 0xFFC00) <<6)  + (dvar & 0x3FF);
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
+    while (upstack--)
+      SWITCH_TO_OLD_LVARS( PTR_BAG(CurrLVars) [2] );
+    val = OBJ_HVAR( ashvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the value                                                      */
@@ -3985,48 +4040,68 @@ void              IntrSaveWSEnd ( void )
 /****************************************************************************
 **
 
-*F  SetupIntrprtr() . . . . . . . . . . . . . . .  initialize the interpreter
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void SetupIntrprtr ( void )
+static Int InitKernel (
+    StructInitInfo *    module )
 {
-}
-
-
-/****************************************************************************
-**
-*F  InitIntrprtr()  . . . . . . . . . . . . . . .  initialize the interpreter
-**
-**  'InitIntrprtr' initializes the interpreter.
-*/
-void InitIntrprtr ( void )
-{
-    UInt            lev;
-
     InitGlobalBag( &IntrResult, "src/intrprtr.c:IntrResult" );
     InitGlobalBag( &IntrState,  "src/intrprtr.c:IntrState"  );
     InitGlobalBag( &StackObj,   "src/intrprtr.c:StackObj"   );
+    InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
-
-    /* The Assertion level is also controlled at GAP level */
-    lev = GVarName("CurrentAssertionLevel");
-    InitCopyGVar( "CurrentAssertionLevel", &CurrentAssertionLevel );
-    if ( ! SyRestoring ) {
-        AssGVar( lev, INTOBJ_INT(0) );
-    }
+ 
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckIntrprtr() . . . . . . . check the initialisation of the interpreter
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckIntrprtr ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "intrprtr_c", Revision_intrprtr_c );
-    SET_REVISION( "intrprtr_h", Revision_intrprtr_h );
+    UInt            lev;
+
+    /* The Assertion level is also controlled at GAP level                 */
+    lev = GVarName("CurrentAssertionLevel");
+    AssGVar( lev, INTOBJ_INT(0) );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoIntrprtr()  . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "intrprtr",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoIntrprtr ( void )
+{
+    module.revision_c = Revision_intrprtr_c;
+    module.revision_h = Revision_intrprtr_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

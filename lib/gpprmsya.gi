@@ -7,6 +7,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for symmetric and alternating groups
 ##
@@ -194,7 +195,7 @@ end);
 
 
 InstallMethod(SylowSubgroupOp,"alternating",true,
-  [IsNaturalAlternatingGroup, IsPosRat and IsInt],0,
+  [IsNaturalAlternatingGroup, IsPosInt],0,
 function ( G, p )
     local   S,          # <p>-Sylow subgroup of <G>, result
             sgs,        # strong generating set of <G>
@@ -368,7 +369,7 @@ end);
 ##
 InstallOtherMethod( StabilizerOp,
     true,
-    [ IsNaturalSymmetricGroup, IsPosRat and IsInt, IsFunction ],
+    [ IsNaturalSymmetricGroup, IsPosInt, IsFunction ],
     0,
 
 function( sym, p, opr )
@@ -483,7 +484,7 @@ local dom,sortfun,max,cd,ce;
 end);
 
 InstallMethod(SylowSubgroupOp,"symmetric",true,
-  [IsNaturalSymmetricGroup, IsPosRat and IsInt],0,
+  [IsNaturalSymmetricGroup, IsPosInt],0,
 function ( G, p )
 local   S,          # <p>-Sylow subgroup of <G>, result
 	sgs,        # strong generating set of <G>
@@ -580,6 +581,7 @@ local   F,      # free group
     F:=F/relators;
 
     SetSize(F,Size(G));
+    UseIsomorphismRelation( G, F );
 
     # compute the bijection
     imgs:=[];
@@ -587,23 +589,60 @@ local   F,      # free group
       Add(imgs,(mov[i-1],mov[i]));
     od;
 
-    hom:=GroupHomomorphismByImages(G,F,imgs,GeneratorsOfGroup(F));
-
-    # return the finitely presented group
+    # return the isomorphism to the finitely presented group
+    hom:= GroupHomomorphismByImagesNC(G,F,imgs,GeneratorsOfGroup(F));
+    SetIsBijective( hom, true );
     return hom;
 end);
+
+
+#############################################################################
+##
+#M  ViewObj( <nat-sym-grp> )
+##
+InstallMethod( ViewObj,
+    "for natural symmetric group",
+    true,
+    [ IsNaturalSymmetricGroup ], 0,
+function(sym)
+    sym:=MovedPoints(sym);
+    IsRange(sym);
+    Print( "Sym( ",sym, " )" );
+end );
+
+InstallMethod( ViewObj,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    Print( "Alt( ", alt, " )" );
+end );
+
 
 #############################################################################
 ##
 #M  PrintObj( <nat-sym-grp> )
 ##
 InstallMethod( PrintObj,
+    "for natural symmetric group",
     true,
-    [ IsNaturalSymmetricGroup ],
-    0,
-
+    [ IsNaturalSymmetricGroup ], 0,
 function(sym)
-    Print( "Sym( ", MovedPoints(sym), " )" );
+    sym:=MovedPoints(sym);
+    IsRange(sym);
+    Print( "SymmetricGroup( ",sym, " )" );
+end );
+
+InstallMethod( PrintObj,
+    "for natural alternating group",
+    true,
+    [ IsNaturalAlternatingGroup ], 0,
+function(alt)
+    alt:=MovedPoints(alt);
+    IsRange(alt);
+    Print( "AlternatingGroup( ", alt, " )" );
 end );
 
 

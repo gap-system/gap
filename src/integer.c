@@ -7,6 +7,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file implements the  functions  handling  arbitrary  size  integers.
 **
@@ -83,7 +84,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_integer_c =
+const char * Revision_integer_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -191,10 +192,34 @@ Obj             TypeIntLargeNeg (
 **  Large integers are first converted into  base  10000  and  then  printed.
 **  The time for a conversion depends quadratically on the number of  digits.
 **  For 2000 decimal digit integers, a screenfull,  it  is  reasonable  fast.
+**
+**  The number  of digits  needed in PrIntD[] is the ceiling of the logarithm
+**  with respect to base PRINT_BASE of
+**
+**           ( (1<<NR_DIGIT_BITS) )^1000 - 1.
+**
+**  The latter is the largest number that can be represented with 1000 digits
+**  of type TypDigit.
+**
+**  If NR_DIGIT_BITS is 16, we get 1205.
+**  If NR_DIGIT_BITS is 32, we get 1071.
 */
 
 TypDigit        PrIntC [1000];          /* copy of integer to be printed   */
+
+#ifdef SYS_IS_64_BIT
+
+#define PRINT_BASE 1000000000L          /* 10^9                            */
+#define PRINT_FORMAT "%09d"             /* print 9 decimals at a time      */
+TypDigit        PrIntD [1071];          /* integer converted to base 10^9  */
+
+#else
+
+#define PRINT_BASE 10000
+#define PRINT_FORMAT "%04d"             /* print 4 decimals at a time      */
 TypDigit        PrIntD [1205];          /* integer converted to base 10000 */
+
+#endif
 
 void            PrintInt (
     Obj                 op )
@@ -217,7 +242,7 @@ void            PrintInt (
         if ( TNUM_OBJ(op) == T_INTNEG )
             Pr("-",0L,0L);
 
-        /* convert the integer into base 10000                             */
+        /* convert the integer into base PRINT_BASE                        */
         i = 0;
         for ( k = 0; k < SIZE_INT(op); k++ )
             PrIntC[k] = ADDR_INT(op)[k];
@@ -225,18 +250,17 @@ void            PrintInt (
         while ( k > 0 ) {
             for ( c = 0, p = PrIntC+k-1; p >= PrIntC; p-- ) {
                 c  = (c<<NR_DIGIT_BITS) + *p;
-                *p = c / 10000;
-                c  = c - 10000 * *p;
+                *p = c / PRINT_BASE;
+                c  = c - PRINT_BASE * *p;
             }
             PrIntD[i++] = c;
             while ( k > 0 && PrIntC[k-1] == 0 )  k--;
         }
 
-        /* print the base 10000 digits                                     */
+        /* print the base PRINT_BASE digits                                 */
         Pr( "%d", (Int)PrIntD[--i], 0L );
         while ( i > 0 )
-            Pr( "%04d", (Int)PrIntD[--i], 0L );
-
+            Pr( PRINT_FORMAT, (Int)PrIntD[--i], 0L );
         Pr("%<",0L,0L);
 
     }
@@ -1613,18 +1637,18 @@ Obj             ModInt (
 
 /****************************************************************************
 **
-*F  IsIntHandler(<self>,<val>)  . . . . . . . . . . internal function 'IsInt'
+*F  FuncIS_INT( <self>, <val> ) . . . . . . . . . . internal function 'IsInt'
 **
-**  'IsIntHandler' implements the internal filter 'IsInt'.
+**  'FuncIS_INT' implements the internal filter 'IsInt'.
 **
 **  'IsInt( <val> )'
 **
 **  'IsInt'  returns 'true'  if the  value  <val>  is an integer  and 'false'
 **  otherwise.
 */
-Obj             IsIntFilt;
+Obj IsIntFilt;
 
-Obj             IsIntHandler (
+Obj FuncIS_INT (
     Obj                 self,
     Obj                 val )
 {
@@ -2604,24 +2628,69 @@ void LoadInt( Obj bigint)
 /****************************************************************************
 **
 
-*F  SetupInt()  . . . . . . . . . . . . . . . initializes the integer package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupInt ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_INT", "obj", &IsIntFilt,
+      FuncIS_INT, "src/integer.c:IS_INT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "QUO_INT", 2, "int1, int2",
+      FuncQUO_INT, "src/integer.c:QUO_INT" },
+
+    { "REM_INT", 2, "int1, int2",
+      FuncREM_INT, "src/integer.c:REM_INT" },
+
+    { "GCD_INT", 2, "int1, int2",
+      FuncGCD_INT, "src/integer.c:GCD_INT" },
+
+    { "PROD_INT_OBJ", 2, "int, obj",
+      FuncPROD_INT_OBJ, "src/integer.c:PROD_INT_OBJ" },
+
+    { "POW_OBJ_INT", 2, "obj, int",
+      FuncPOW_OBJ_INT, "src/integer.c:POW_OBJ_INT" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     UInt                t1,  t2;
 
-    /* install the marking functions                                       */
-    InfoBags[           T_INT           ].name = "integer";
-    InitMarkFuncBags(   T_INTPOS        , MarkNoSubBags );
-    InitMarkFuncBags(   T_INTNEG        , MarkNoSubBags );
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
+    /* install the marking functions                                       */
+    InfoBags[         T_INT    ].name = "integer";
 #ifdef SYS_IS_64_BIT
-    InfoBags[           T_INTPOS        ].name = "integer (>= 2^60)";
-    InfoBags[           T_INTNEG        ].name = "integer (< -2^60)";
+    InfoBags[         T_INTPOS ].name = "integer (>= 2^60)";
+    InfoBags[         T_INTNEG ].name = "integer (< -2^60)";
 #else
-    InfoBags[           T_INTPOS        ].name = "integer (>= 2^28)";
-    InfoBags[           T_INTNEG        ].name = "integer (< -2^28)";
+    InfoBags[         T_INTPOS ].name = "integer (>= 2^28)";
+    InfoBags[         T_INTNEG ].name = "integer (< -2^28)";
 #endif
+    InitMarkFuncBags( T_INTPOS, MarkNoSubBags );
+    InitMarkFuncBags( T_INTNEG, MarkNoSubBags );
 
     /* Install the saving methods */
     SaveObjFuncs [ T_INTPOS ] = SaveInt;
@@ -2629,12 +2698,10 @@ void SetupInt ( void )
     LoadObjFuncs [ T_INTPOS ] = LoadInt;
     LoadObjFuncs [ T_INTNEG ] = LoadInt;
 
-
     /* install the printing function                                       */
-    PrintObjFuncs[      T_INT           ] = PrintInt;
-    PrintObjFuncs[      T_INTPOS        ] = PrintInt;
-    PrintObjFuncs[      T_INTNEG        ] = PrintInt;
-
+    PrintObjFuncs[ T_INT    ] = PrintInt;
+    PrintObjFuncs[ T_INTPOS ] = PrintInt;
+    PrintObjFuncs[ T_INTNEG ] = PrintInt;
 
     /* install the comparison methods                                      */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
@@ -2644,14 +2711,12 @@ void SetupInt ( void )
         }
     }
 
-
     /* install the unary arithmetic methods                                */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
         ZeroFuncs[ t1 ] = ZeroInt;
         AInvFuncs[ t1 ] = AInvInt;
         OneFuncs [ t1 ] = OneInt;
     }    
-
 
     /* install the default product and power methods                       */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
@@ -2673,7 +2738,6 @@ void SetupInt ( void )
         }
     }
 
-
     /* install the binary arithmetic methods                               */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
         for ( t2 = T_INT; t2 <= T_INTNEG; t2++ ) {
@@ -2686,65 +2750,65 @@ void SetupInt ( void )
             ModFuncs [ t1 ][ t2 ] = ModInt;
         }
     }
-}
 
-
-/****************************************************************************
-**
-*F  InitInt() . . . . . . . . . . . . . . . . initializes the integer package
-**
-**  'InitInt' initializes the arbitrary size integer package.
-*/
-void InitInt ( void )
-{
-    /* install the kind functions                                          */
+    /* gvars to import from the library                                    */
     ImportGVarFromLibrary( "TYPE_INT_SMALL_ZERO", &TYPE_INT_SMALL_ZERO );
     ImportGVarFromLibrary( "TYPE_INT_SMALL_POS",  &TYPE_INT_SMALL_POS );
     ImportGVarFromLibrary( "TYPE_INT_SMALL_NEG",  &TYPE_INT_SMALL_NEG );
     ImportGVarFromLibrary( "TYPE_INT_LARGE_POS",  &TYPE_INT_LARGE_POS );
     ImportGVarFromLibrary( "TYPE_INT_LARGE_NEG",  &TYPE_INT_LARGE_NEG );
 
+    /* install the kind functions                                          */
     TypeObjFuncs[ T_INT    ] = TypeIntSmall;
     TypeObjFuncs[ T_INTPOS ] = TypeIntLargePos;
     TypeObjFuncs[ T_INTNEG ] = TypeIntLargeNeg;
 
-
-    /* install the internal function                                       */
-    C_NEW_GVAR_FILT( "IS_INT", "obj", IsIntFilt, IsIntHandler,
-       "src/integer.c:IS_INT" );
-
-    C_NEW_GVAR_FUNC( "QUO_INT", 2, "int1, int2",
-                  FuncQUO_INT,
-       "src/integer.c:QUO_INT" );
-
-    C_NEW_GVAR_FUNC( "REM_INT", 2, "int1, int2",
-                  FuncREM_INT,
-       "src/integer.c:REM_INT" );
-
-    C_NEW_GVAR_FUNC( "GCD_INT", 2, "int1, int2",
-                  FuncGCD_INT,
-       "src/integer.c:GCD_INT" );
-
-    C_NEW_GVAR_FUNC( "PROD_INT_OBJ", 2, "int, obj",
-                  FuncPROD_INT_OBJ,
-       "src/integer.c:PROD_INT_OBJ" );
-
-    C_NEW_GVAR_FUNC( "POW_OBJ_INT", 2, "obj, int",
-                  FuncPOW_OBJ_INT,
-       "src/integer.c:POW_OBJ_INT" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckInt()  . . . . . . . check the initialisation of the integer package
-**
-**  'InitInt' initializes the arbitrary size integer package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void CheckInt ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "integer_c",  Revision_integer_c );
-    SET_REVISION( "integer_h",  Revision_integer_h );
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoInt() . . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "integer",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoInt ( void )
+{
+    module.revision_c = Revision_integer_c;
+    module.revision_h = Revision_integer_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

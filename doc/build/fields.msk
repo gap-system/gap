@@ -1,0 +1,92 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  fields.msk                   GAP documentation              Thomas Breuer
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Fields and Division Rings}
+
+\index{fields}
+\index{division rings}
+
+\FileHeader{field}[1]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Generating Fields}
+
+\Declaration{IsDivisionRing}
+\Declaration{IsField}
+\Declaration{Field}
+\Declaration{DefaultField}
+\Declaration{DefaultFieldByGenerators}
+\Declaration{GeneratorsOfDivisionRing}
+\Declaration{GeneratorsOfField}
+\Declaration{DivisionRingByGenerators}
+\Declaration{AsDivisionRing}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subfields of Fields}
+
+\Declaration{Subfield}
+\Declaration{FieldOverItselfByGenerators}
+\Declaration{PrimitiveElement}
+\Declaration{PrimeField}
+\Declaration{IsPrimeField}
+\Declaration{DegreeOverPrimeField}
+\Declaration{DefiningPolynomial}
+\Declaration{RootOfDefiningPolynomial}
+\Declaration{FieldExtension}
+\Declaration{Subfields}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Galois Action}
+
+\Declaration{GaloisGroup}
+\Declaration{Norm}
+\Declaration{Trace}
+\Declaration{Conjugates}
+\beginexample
+gap> GaloisGroup(CF(8));
+Group( [ ANFAutomorphism( CF(8), 7 ), ANFAutomorphism( CF(8), 5 ) ], ... )
+gap> Norm(CF(8),E(8));    
+1
+gap> Trace(CF(8),E(8));
+0
+gap> Norm(Field(CF(8),[E(8)]),E(8));
+E(8)
+gap> Conjugates(CF(8),E(8));
+[ E(8), E(8)^3, -E(8), -E(8)^3 ]
+gap> Conjugates(E(8));      
+[ E(8), E(8)^3, -E(8), -E(8)^3 ]
+gap> Conjugates(CF(16),E(8)); 
+[ E(8), E(8)^3, -E(8), -E(8)^3, E(8), E(8)^3, -E(8), -E(8)^3 ]
+\endexample
+
+\>MinimalPolynomial(<F>,<z>[,<ind>])
+
+returns the minimal polynomial of <z> over the field <F>. This is the
+generator of the ideal of $<F>[x]$ of polynomials which vanish on <z>.
+(This definition is consistent with the general definition of
+`MinimalPolynomial' for rings.)
+
+\Declaration{TracePolynomial}
+
+(Such a polynomial is sometimes called ``characteristic polynomial''.
+Therefore methods are installed for `CharacteristicPolynomial' that call
+`TracePolynomial' in the case of field extensions.)
+
+\beginexample
+gap> MinimalPolynomial(CF(8),E(8));
+-E(8)+x_1
+gap> MinimalPolynomial(CF(8),E(16));
+-E(8)+x_1^2
+gap> TracePolynomial(CF(8),CF(16),E(8));
+E(4)+-2*E(8)*x_1+x_1^2
+gap> TracePolynomial(CF(8),CF(16),E(16));
+-E(8)+x_1^2
+\endexample
+
+\Declaration{NormalBase}
+

@@ -8,7 +8,7 @@
 */
 #include "system.h"
 
-SYS_CONST char * Revision_objcftl_c =
+const char * Revision_objcftl_c =
    "@(#)$Id$";
 
 
@@ -384,91 +384,141 @@ Obj FunBinaryPower( Obj self, Obj pcp, Obj w, Obj e ) {
 /****************************************************************************
 **
 
-*F  SetupPcc()  . . . . . . . . . . . . . initialize the polycyclic collector
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
 */
-void SetupPcc ( void )
-{
-}
+static StructGVarFunc GVarFuncs [] = {
+
+    { "CollectPolycyclic", 3, "pcp, list, word",
+      FuncCollectPolycyc, "src/objcftl.c:CollectPolycyclic" },
+
+    { "BinaryPower", 3, "pcp, word, exponent",
+      FunBinaryPower, "src/objcftl.c:BinaryPower" },
+
+    { 0 }
+
+};
 
 
 /****************************************************************************
 **
-*F  InitPcc() . . . . . . . . . . . . . . initialize the polycyclic collector
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
 */
-void InitPcc ( void ) {
-
-    DebugPcc = GVarName( "DebugPcc" );
-    if ( ! SyRestoring ) {
-        AssGVar( GVarName( "DTBound" ), INTOBJ_INT(1) );
-
-        AssGVar( DebugPcc, False );
-
-        AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
-                INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
-        AssGVar( GVarName( "PC_GENERATORS" ),
-                INTOBJ_INT( PC_GENERATORS ) );
-        AssGVar( GVarName( "PC_INVERSES" ),
-                INTOBJ_INT( PC_INVERSES ) );
-        AssGVar( GVarName( "PC_COMMUTE" ),
-                INTOBJ_INT( PC_COMMUTE ) );
-        AssGVar( GVarName( "PC_POWERS" ),
-                INTOBJ_INT( PC_POWERS ) );
-        AssGVar( GVarName( "PC_INVERSEPOWERS" ),
-                INTOBJ_INT( PC_INVERSEPOWERS ) );
-        AssGVar( GVarName( "PC_EXPONENTS" ),
-                INTOBJ_INT( PC_EXPONENTS ) );
-        AssGVar( GVarName( "PC_CONJUGATES" ),
-                INTOBJ_INT( PC_CONJUGATES ) );
-        AssGVar( GVarName( "PC_INVERSECONJUGATES" ),
-                INTOBJ_INT( PC_INVERSECONJUGATES ) );
-        AssGVar( GVarName( "PC_CONJUGATESINVERSE" ),
-                INTOBJ_INT( PC_CONJUGATESINVERSE ) );
-        AssGVar( GVarName( "PC_INVERSECONJUGATESINVERSE" ),
-                INTOBJ_INT( PC_INVERSECONJUGATESINVERSE ) );
-        AssGVar( GVarName( "PC_DEEP_THOUGHT_POLS" ),
-                INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
-        AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
-                INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
-        AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
-        AssGVar( GVarName( "PC_WORD_STACK" ),
-                INTOBJ_INT( PC_WORD_STACK ) );
-        AssGVar( GVarName( "PC_STACK_SIZE" ),
-                INTOBJ_INT( PC_STACK_SIZE ) );
-        AssGVar( GVarName( "PC_WORD_EXPONENT_STACK" ),
-                INTOBJ_INT( PC_WORD_EXPONENT_STACK ) );
-        AssGVar( GVarName( "PC_SYLLABLE_STACK" ),
-                INTOBJ_INT( PC_SYLLABLE_STACK ) );
-        AssGVar( GVarName( "PC_EXPONENT_STACK" ),
-                INTOBJ_INT( PC_EXPONENT_STACK ) );
-        AssGVar( GVarName( "PC_STACK_POINTER" ),
-                INTOBJ_INT( PC_STACK_POINTER ) );
-        AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
-    }
-
-    /* Install internal functions. */
-
-    C_NEW_GVAR_FUNC( "CollectPolycyclic", 3, "pcp, list, word",
-                  FuncCollectPolycyc,
-      "src/objcftl.c:CollectPolycyclic" );
-
-    C_NEW_GVAR_FUNC( "BinaryPower", 3, "pcp, word, exponent",
-                   FunBinaryPower,
-      "src/objcftl.c:BinaryPower" );
-
-    /* Keep track of variables containing library functions called in this
-    ** module. */
+static Int InitKernel (
+    StructInitInfo *    module )
+{
+    /* Keep track of variables containing library functions called in this */
+    /* module.                                                             */
     InitFopyGVar( "PowerAutomorphism", &PowerAutomorphism );
 
+    /* init filters and functions                                          */
+    InitHdlrFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
 }
+
 
 /****************************************************************************
 **
-*F  CheckPcc()  . . . . . .  check the initialisation of polycyclic collector
+*F  PostRestore( <module> ) . . . . . . . . . . . . . after restore workspace
 */
-void CheckPcc ( void )
+static Int PostRestore (
+    StructInitInfo *    module )
 {
-    SET_REVISION( "objcftl_c",  Revision_objcftl_c  );
-    SET_REVISION( "objcftl_h",  Revision_objcftl_h  );
+    DebugPcc = GVarName( "DebugPcc" );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
+*/
+static Int InitLibrary (
+    StructInitInfo *    module )
+{
+    DebugPcc = GVarName( "DebugPcc" );
+    AssGVar( DebugPcc, False );
+
+    AssGVar( GVarName( "DTBound" ), INTOBJ_INT(1) );
+
+    AssGVar( GVarName( "PC_NUMBER_OF_GENERATORS" ),
+             INTOBJ_INT( PC_NUMBER_OF_GENERATORS ) );
+    AssGVar( GVarName( "PC_GENERATORS" ),
+             INTOBJ_INT( PC_GENERATORS ) );
+    AssGVar( GVarName( "PC_INVERSES" ),
+             INTOBJ_INT( PC_INVERSES ) );
+    AssGVar( GVarName( "PC_COMMUTE" ),
+             INTOBJ_INT( PC_COMMUTE ) );
+    AssGVar( GVarName( "PC_POWERS" ),
+             INTOBJ_INT( PC_POWERS ) );
+    AssGVar( GVarName( "PC_INVERSEPOWERS" ),
+             INTOBJ_INT( PC_INVERSEPOWERS ) );
+    AssGVar( GVarName( "PC_EXPONENTS" ),
+             INTOBJ_INT( PC_EXPONENTS ) );
+    AssGVar( GVarName( "PC_CONJUGATES" ),
+             INTOBJ_INT( PC_CONJUGATES ) );
+    AssGVar( GVarName( "PC_INVERSECONJUGATES" ),
+             INTOBJ_INT( PC_INVERSECONJUGATES ) );
+    AssGVar( GVarName( "PC_CONJUGATESINVERSE" ),
+             INTOBJ_INT( PC_CONJUGATESINVERSE ) );
+    AssGVar( GVarName( "PC_INVERSECONJUGATESINVERSE" ),
+             INTOBJ_INT( PC_INVERSECONJUGATESINVERSE ) );
+    AssGVar( GVarName( "PC_DEEP_THOUGHT_POLS" ),
+             INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
+    AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
+             INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
+    AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
+    AssGVar( GVarName( "PC_WORD_STACK" ),
+             INTOBJ_INT( PC_WORD_STACK ) );
+    AssGVar( GVarName( "PC_STACK_SIZE" ),
+             INTOBJ_INT( PC_STACK_SIZE ) );
+    AssGVar( GVarName( "PC_WORD_EXPONENT_STACK" ),
+             INTOBJ_INT( PC_WORD_EXPONENT_STACK ) );
+    AssGVar( GVarName( "PC_SYLLABLE_STACK" ),
+             INTOBJ_INT( PC_SYLLABLE_STACK ) );
+    AssGVar( GVarName( "PC_EXPONENT_STACK" ),
+             INTOBJ_INT( PC_EXPONENT_STACK ) );
+    AssGVar( GVarName( "PC_STACK_POINTER" ),
+             INTOBJ_INT( PC_STACK_POINTER ) );
+    AssGVar( GVarName( "PC_DEFAULT_TYPE" ), INTOBJ_INT( PC_DEFAULT_TYPE ) );
+
+    /* init filters and functions                                          */
+    InitGVarFuncsFromTable( GVarFuncs );
+
+    /* return success                                                      */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  InitInfoPcc() . . . . . . . . . . . . . . . . . . table of init functions
+*/
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "objcftl",                          /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    PostRestore                         /* postRestore                    */
+};
+
+StructInitInfo * InitInfoPcc ( void )
+{
+    module.revision_c = Revision_objcftl_c;
+    module.revision_h = Revision_objcftl_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

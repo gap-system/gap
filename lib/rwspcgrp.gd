@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file   contains the operations  for groups   defined by a polycyclic
 ##  collector.
@@ -18,22 +19,21 @@ Revision.rwspcgrp_gd :=
 
 #C  IsMultiplicativeElementWithInverseByPolycyclicCollector
 ##
-IsMultiplicativeElementWithInverseByPolycyclicCollector := NewCategory(
+DeclareCategory(
     "IsMultiplicativeElementWithInverseByPolycyclicCollector",
     IsMultiplicativeElementWithInverseByRws and IsAssociativeElement );
 
-IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection :=
-  CategoryCollections(
-    IsMultiplicativeElementWithInverseByPolycyclicCollector );
+DeclareCategoryCollections(
+    "IsMultiplicativeElementWithInverseByPolycyclicCollector" );
 
 
 #############################################################################
 ##
 #C  IsPcGroup
 ##
-IsPcGroup :=
+DeclareSynonym( "IsPcGroup",
     IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection
-    and IsGroup;
+    and IsGroup );
 
 
 #############################################################################
@@ -41,12 +41,10 @@ IsPcGroup :=
 
 #A  DefiningPcgs( <obj> )
 ##
-DefiningPcgs := NewAttribute(
+DeclareAttribute(
     "DefiningPcgs",
     IsObject );
 
-SetDefiningPcgs := Setter(DefiningPcgs);
-HasDefiningPcgs := Tester(DefiningPcgs);
 
 
 #############################################################################
@@ -54,7 +52,7 @@ HasDefiningPcgs := Tester(DefiningPcgs);
 
 #C  IsElementsFamilyBy8BitsSingleCollector
 ##
-IsElementsFamilyBy8BitsSingleCollector := NewCategory(
+DeclareCategory(
     "IsElementsFamilyBy8BitsSingleCollector",
     IsElementsFamilyByRws );
 
@@ -63,7 +61,7 @@ IsElementsFamilyBy8BitsSingleCollector := NewCategory(
 ##
 #C  IsElementsFamilyBy16BitsSingleCollector
 ##
-IsElementsFamilyBy16BitsSingleCollector := NewCategory(
+DeclareCategory(
     "IsElementsFamilyBy16BitsSingleCollector",
     IsElementsFamilyByRws );
 
@@ -72,7 +70,7 @@ IsElementsFamilyBy16BitsSingleCollector := NewCategory(
 ##
 #C  IsElementsFamilyBy32BitsSingleCollector
 ##
-IsElementsFamilyBy32BitsSingleCollector := NewCategory(
+DeclareCategory(
     "IsElementsFamilyBy32BitsSingleCollector",
     IsElementsFamilyByRws );
 
@@ -82,7 +80,7 @@ IsElementsFamilyBy32BitsSingleCollector := NewCategory(
 
 #O  PolycyclicFactorGroup( <fgrp>, <rels> )
 ##
-PolycyclicFactorGroup := NewOperation(
+DeclareOperation(
     "PolycyclicFactorGroup",
     [ IsObject, IsList ] );
 
@@ -91,7 +89,7 @@ PolycyclicFactorGroup := NewOperation(
 ##
 #O  PolycyclicFactorGroupByRelators( <fam>, <gens>, <rels> )
 ##
-PolycyclicFactorGroupByRelators := NewOperation(
+DeclareOperation(
     "PolycyclicFactorGroupByRelators",
     [ IsFamily, IsList, IsList ] );
 

@@ -4,6 +4,9 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.oprtpcgs_gi :=
     "@(#)$Id$";
 
@@ -90,7 +93,8 @@ end );
 ##
 #F  SetCanonicalRepresentativeOfExternalOrbitByPcgs( <xset> ) . . . . . . . .
 ##
-SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
+InstallGlobalFunction( SetCanonicalRepresentativeOfExternalOrbitByPcgs,
+    function( xset )
     local   G,  D,  pnt,  pcgs,  oprs,  opr,
             orb,  bit,  # orbit, as list and bit-list
             len,        # lengths of orbit before each extension
@@ -200,7 +204,7 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
         SetStabilizerOfExternalSet( xset, stab );
     fi;
     
-end;
+end );
 
 #############################################################################
 ##
@@ -336,7 +340,7 @@ end );
 
 InstallOtherMethod( StabilizerOp,
         "G (solv.), pnt, gens, gens, opr", true,
-        [ IsGroup and IsPcgsComputable, IsObject,
+        [ IsGroup and CanEasilyComputePcgs, IsObject,
           IsList,
           IsList,
           IsFunction ], 0,
@@ -348,13 +352,5 @@ InstallOtherMethod( StabilizerOp,
     fi;
 end );
 
-#############################################################################
-##
 
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for rewriting systems.
 ##
@@ -27,7 +28,7 @@ function( rws, gens )
     local   lst;
 
     lst := GeneratorsOfRws(rws);
-    if not IsEmpty( Intersection( rws, gens ) )  then
+    if not IsEmpty( Intersection( lst, gens ) )  then
         Error( "new generators contain old ones" );
     fi;
     lst := Concatenation( lst, gens );
@@ -67,6 +68,33 @@ end );
 
 #############################################################################
 ##
+#M  ViewObj( <rws> )
+##
+
+
+#############################################################################
+InstallMethod( ViewObj,
+    true,
+    [ IsRewritingSystem ],
+    0,
+
+function( rws )
+    Print( "<<rewriting system>>" );
+end );
+
+
+#############################################################################
+InstallMethod( ViewObj, true,
+    [ IsRewritingSystem and IsBuiltFromGroup ],
+    0,
+
+function( rws )
+    Print( "<<group rewriting system>>" );
+end );
+
+
+#############################################################################
+##
 #M  PrintObj( <rws> )
 ##
 
@@ -80,6 +108,7 @@ InstallMethod( PrintObj,
 function( rws )
     Print( "<<rewriting system>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -90,6 +119,7 @@ InstallMethod( PrintObj, true,
 function( rws )
     Print( "<<group rewriting system>>" );
 end );
+#T install a better `PrintObj' method!
 
 
 #############################################################################
@@ -106,29 +136,29 @@ InstallMethod( ReduceRules,
 #############################################################################
 ##
 
-#F  IsIdenticalFamiliesRwsObj( <rws>, <obj> )
+#F  IsIdenticalObjFamiliesRwsObj( <rws>, <obj> )
 ##
-IsIdenticalFamiliesRwsObj := function( a, b )
-    return IsIdentical( a!.underlyingFamily, b );
+IsIdenticalObjFamiliesRwsObj := function( a, b )
+    return IsIdenticalObj( a!.underlyingFamily, b );
 end;
 
 
 #############################################################################
 ##
-#F  IsIdenticalFamiliesRwsObjObj( <rws>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesRwsObjObj( <rws>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesRwsObjObj := function( a, b, c )
-    return IsIdentical( a!.underlyingFamily, b )
-       and IsIdentical( b, c );
+IsIdenticalObjFamiliesRwsObjObj := function( a, b, c )
+    return IsIdenticalObj( a!.underlyingFamily, b )
+       and IsIdenticalObj( b, c );
 end;
 
 
 #############################################################################
 ##
-#F  IsIdenticalFamiliesRwsObjXXX( <rws>, <obj>, <obj> )
+#F  IsIdenticalObjFamiliesRwsObjXXX( <rws>, <obj>, <obj> )
 ##
-IsIdenticalFamiliesRwsObjXXX := function( a, b, c )
-    return IsIdentical( a!.underlyingFamily, b );
+IsIdenticalObjFamiliesRwsObjXXX := function( a, b, c )
+    return IsIdenticalObj( a!.underlyingFamily, b );
 end;
 
 
@@ -139,7 +169,7 @@ end;
 ##
 InstallMethod( ReducedAdditiveInverse,
     "ReducedForm",
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsRewritingSystem and IsBuiltFromAdditiveMagmaWithInverses,
       IsAdditiveElementWithInverse ],
     0,
@@ -155,7 +185,7 @@ end );
 ##
 InstallMethod( ReducedComm, 
     "ReducedLeftQuotient/ReducedProduct",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromGroup, 
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -174,7 +204,7 @@ end );
 ##
 InstallMethod( ReducedConjugate,
     "ReducedLeftQuotient/ReducedProduct",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromGroup, 
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ], 0,
@@ -191,7 +221,7 @@ end );
 ##
 InstallMethod( ReducedDifference,
     "ReducedSum/ReducedAdditiveInverse",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromAdditiveMagmaWithInverses,
       IsAdditiveElementWithInverse,
       IsAdditiveElementWithInverse ],
@@ -208,7 +238,7 @@ end );
 ##
 InstallMethod( ReducedInverse, 
     "ReducedForm",
-    IsIdenticalFamiliesRwsObj,
+    IsIdenticalObjFamiliesRwsObj,
     [ IsRewritingSystem and IsBuiltFromMagmaWithInverses,
       IsMultiplicativeElementWithInverse ],
     0,
@@ -224,7 +254,7 @@ end );
 ##
 InstallMethod( ReducedLeftQuotient,
     "ReducedProduct/ReducedInverse",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromMagmaWithInverses,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -256,7 +286,7 @@ end );
 ##
 InstallMethod( ReducedPower, 
     "ReducedProduct/ReducedInverse",
-    IsIdenticalFamiliesRwsObjXXX,
+    IsIdenticalObjFamiliesRwsObjXXX,
     [ IsRewritingSystem and IsBuiltFromGroup,
       IsMultiplicativeElement,
       IsInt ],
@@ -317,7 +347,7 @@ end );
 ##
 InstallMethod( ReducedProduct,
     "ReducedForm",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromMagma,
       IsMultiplicativeElement,
       IsMultiplicativeElement ],
@@ -334,7 +364,7 @@ end );
 ##
 InstallMethod( ReducedQuotient,
     "ReducedProduct/ReducedInverse",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromMagmaWithInverses,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -351,7 +381,7 @@ end );
 ##
 InstallMethod( ReducedSum,
     "ReducedForm",
-    IsIdenticalFamiliesRwsObjObj,
+    IsIdenticalObjFamiliesRwsObjObj,
     [ IsRewritingSystem and IsBuiltFromAdditiveMagmaWithInverses,
       IsAdditiveElement,
       IsAdditiveElement ],

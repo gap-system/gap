@@ -1,0 +1,5 @@
+@msfiles = ("rings","module","fields","fieldfin");
+@gdfiles = ("integer","numtheor","ring","field","module","magma","domain",
+            "arith","ffe");
+$DIR = "../ref";
+$LIB = "../../lib"; 

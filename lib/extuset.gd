@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for external upper sets.
 ##
@@ -16,96 +17,91 @@ Revision.extuset_gd :=
 ##
 #C  IsExtUSet
 ##
-IsExtUSet := NewCategory( "ExtUSet", IsDomain );
+DeclareCategory( "IsExtUSet", IsDomain );
 
 
 #############################################################################
 ##
 #C  IsAssociativeUOpDProd
 ##
-IsAssociativeUOpDProd := NewCategory( "IsAssociativeUOpDProd", IsExtUSet );
+DeclareCategory( "IsAssociativeUOpDProd", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsAssociativeUOpEProd
 ##
-IsAssociativeUOpEProd := NewCategory( "IsAssociativeUOpEProd", IsExtUSet );
+DeclareCategory( "IsAssociativeUOpEProd", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsDistributiveUOpDProd
 ##
-IsDistributiveUOpDProd := NewCategory( "IsDistributiveUOpDProd", IsExtUSet );
+DeclareCategory( "IsDistributiveUOpDProd", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsDistributiveUOpDSum
 ##
-IsDistributiveUOpDSum := NewCategory( "IsDistributiveUOpDSum", IsExtUSet );
+DeclareCategory( "IsDistributiveUOpDSum", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsDistributiveUOpEProd
 ##
-IsDistributiveUOpEProd := NewCategory( "IsDistributiveUOpEProd", IsExtUSet );
+DeclareCategory( "IsDistributiveUOpEProd", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsDistributiveUOpESum
 ##
-IsDistributiveUOpESum := NewCategory( "IsDistributiveUOpESum", IsExtUSet );
+DeclareCategory( "IsDistributiveUOpESum", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsTrivialUOpEOne
 ##
-IsTrivialUOpEOne := NewCategory( "IsTrivialUOpEOne", IsExtUSet );
+DeclareCategory( "IsTrivialUOpEOne", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsTrivialUOpEZero
 ##
-IsTrivialUOpEZero := NewCategory( "IsTrivialUOpEZero", IsExtUSet );
+DeclareCategory( "IsTrivialUOpEZero", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsUpperActedOnByGroup
 ##
-IsUpperActedOnByGroup := NewCategory( "IsUpperActedOnByGroup", IsExtUSet );
+DeclareCategory( "IsUpperActedOnByGroup", IsExtUSet );
 
 
 #############################################################################
 ##
 #C  IsUpperActedOnBySuperset
 ##
-IsUpperActedOnBySuperset := NewCategory( "IsUpperActedOnBySuperset",
-    IsExtUSet );
+DeclareCategory( "IsUpperActedOnBySuperset", IsExtUSet );
 
 
 #############################################################################
 ##
 #A  GeneratorsOfExtUSet
 ##
-GeneratorsOfExtUSet := NewAttribute( "GeneratorsOfExtUSet", IsExtUSet );
-SetGeneratorsOfExtUSet := Setter( GeneratorsOfExtUSet );
-HasGeneratorsOfExtUSet := Tester( GeneratorsOfExtUSet );
+DeclareAttribute( "GeneratorsOfExtUSet", IsExtUSet );
 
 
 #############################################################################
 ##
 #A  UpperActingDomain( <D> )
 ##
-UpperActingDomain := NewAttribute( "UpperActingDomain", IsExtRSet );
-SetUpperActingDomain := Setter( UpperActingDomain );
-HasUpperActingDomain := Tester( UpperActingDomain );
+DeclareAttribute( "UpperActingDomain", IsExtRSet );
 
 
 #############################################################################

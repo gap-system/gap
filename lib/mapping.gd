@@ -7,9 +7,11 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for general mappings.
 ##
+#1
 ##  A *general mapping* $F$ in {\GAP} is described by
 ##  its source $S$, its range $R$, and a subset $Rel$ of the direct product
 ##  $S \times R$, which is called the underlying relation of $F$.
@@ -33,6 +35,8 @@
 ##  Analogously, for $r \in R$, the set $\{ s \in S | (s,r) \in Rel \}$
 ##  is called the set of *preimages* of $r$.
 ##
+
+#2
 ##  'Source' and 'Range' are basic operations for mappings.
 ##  'UnderlyingRelation' is secondary, its default method sets up a
 ##  domain that delegates tasks to the general mapping.
@@ -142,11 +146,11 @@ Revision.mapping_gd :=
 ##  What we want to express is that 'IsGeneralMapping' is the disjoint union
 ##  of 'IsSPGeneralMapping' and 'IsNonSPGeneralMapping'.
 ##
-IsGeneralMapping := NewCategory( "IsGeneralMapping",
+DeclareCategory( "IsGeneralMapping",
     IsMultiplicativeElementWithInverse and IsAssociativeElement );
 
-IsSPGeneralMapping := NewCategory( "IsSPGeneralMapping", IsObject );
-IsNonSPGeneralMapping := NewCategory( "IsNonSPGeneralMapping", IsObject );
+DeclareCategory( "IsSPGeneralMapping", IsObject );
+DeclareCategory( "IsNonSPGeneralMapping", IsObject );
 
 InstallTrueMethod( IsGeneralMapping, IsSPGeneralMapping );
 InstallTrueMethod( IsGeneralMapping, IsNonSPGeneralMapping );
@@ -156,14 +160,14 @@ InstallTrueMethod( IsGeneralMapping, IsNonSPGeneralMapping );
 ##
 #C  IsGeneralMappingCollection( <obj> )
 ##
-IsGeneralMappingCollection := CategoryCollections( IsGeneralMapping );
+DeclareCategoryCollections( "IsGeneralMapping" );
 
 
 #############################################################################
 ##
-#C  IsGeneralMappingsFamily( <obj> )
+#C  IsGeneralMappingFamily( <obj> )
 ##
-IsGeneralMappingsFamily := CategoryFamily( IsGeneralMapping );
+DeclareCategoryFamily( "IsGeneralMapping" );
 
 
 #############################################################################
@@ -173,9 +177,7 @@ IsGeneralMappingsFamily := CategoryFamily( IsGeneralMapping );
 ##  is the elements family of the family of the range of each general
 ##  mapping in the family <Fam>.
 ##
-FamilyRange := NewAttribute( "FamilyRange", IsGeneralMappingsFamily );
-SetFamilyRange := Setter( FamilyRange );
-HasFamilyRange := Tester( FamilyRange );
+DeclareAttribute( "FamilyRange", IsGeneralMappingFamily );
 
 
 #############################################################################
@@ -185,9 +187,7 @@ HasFamilyRange := Tester( FamilyRange );
 ##  is the elements family of the family of the source of each general
 ##  mapping in the family <Fam>.
 ##
-FamilySource := NewAttribute( "FamilySource", IsGeneralMappingsFamily );
-SetFamilySource := Setter( FamilySource );
-HasFamilySource := Tester( FamilySource );
+DeclareAttribute( "FamilySource", IsGeneralMappingFamily );
 
 
 #############################################################################
@@ -198,12 +198,8 @@ HasFamilySource := Tester( FamilySource );
 ##  mappings with source in the family <Fam>, at the even positions the
 ##  families of ranges of the general mappings.
 ##
-FamiliesOfGeneralMappingsAndRanges := NewAttribute(
-    "FamiliesOfGeneralMappingsAndRanges", IsFamily, "mutable" );
-SetFamiliesOfGeneralMappingsAndRanges := Setter(
-    FamiliesOfGeneralMappingsAndRanges );
-HasFamiliesOfGeneralMappingsAndRanges := Tester(
-    FamiliesOfGeneralMappingsAndRanges );
+DeclareAttribute( "FamiliesOfGeneralMappingsAndRanges",
+    IsFamily, "mutable" );
 
 
 #############################################################################
@@ -216,12 +212,7 @@ HasFamiliesOfGeneralMappingsAndRanges := Tester(
 ##  In the former case, <map> is allowed to use this list for calls to
 ##  'ImagesElm' etc.
 ##
-IsConstantTimeAccessGeneralMapping := NewProperty(
-    "IsConstantTimeAccessGeneralMapping", IsGeneralMapping );
-SetIsConstantTimeAccessGeneralMapping := Setter(
-    IsConstantTimeAccessGeneralMapping );
-HasIsConstantTimeAccessGeneralMapping := Tester(
-    IsConstantTimeAccessGeneralMapping );
+DeclareProperty( "IsConstantTimeAccessGeneralMapping", IsGeneralMapping );
 
 
 #############################################################################
@@ -231,10 +222,7 @@ HasIsConstantTimeAccessGeneralMapping := Tester(
 ##  If a general mapping has this property then its source and range are
 ##  equal.
 ##
-IsEndoGeneralMapping := NewProperty( "IsEndoGeneralMapping",
-    IsGeneralMapping );
-SetIsEndoGeneralMapping := Setter( IsEndoGeneralMapping );
-HasIsEndoGeneralMapping := Tester( IsEndoGeneralMapping );
+DeclareProperty( "IsEndoGeneralMapping", IsGeneralMapping );
 
 
 #############################################################################
@@ -246,9 +234,7 @@ HasIsEndoGeneralMapping := Tester( IsEndoGeneralMapping );
 ##  $s^{<map>} \not= \emptyset$ for all $s\in S$,
 ##  and 'false' otherwise.
 ##
-IsTotal := NewProperty( "IsTotal", IsGeneralMapping );
-SetIsTotal := Setter( IsTotal );
-HasIsTotal := Tester( IsTotal );
+DeclareProperty( "IsTotal", IsGeneralMapping );
 
 
 #############################################################################
@@ -263,9 +249,7 @@ HasIsTotal := Tester( IsTotal );
 ##  Equivalently, 'IsSingleValued( <map> )' is 'true' if and only if
 ##  the preimages of different elements in $R$ are disjoint.
 ##
-IsSingleValued := NewProperty( "IsSingleValued", IsGeneralMapping );
-SetIsSingleValued := Setter( IsSingleValued );
-HasIsSingleValued := Tester( IsSingleValued );
+DeclareProperty( "IsSingleValued", IsGeneralMapping );
 
 
 #############################################################################
@@ -275,9 +259,8 @@ HasIsSingleValued := Tester( IsSingleValued );
 ##  A mapping <map> is a general mapping that assigns to each element 'elm'
 ##  of its source a unique element 'Image( <map>, <elm> )' of its range.
 ##
-IsMapping := IsGeneralMapping and IsTotal and IsSingleValued;
-SetIsMapping := Setter( IsMapping );
-HasIsMapping := Tester( IsMapping );
+DeclareSynonymAttr( "IsMapping",
+    IsGeneralMapping and IsTotal and IsSingleValued );
 
 
 #############################################################################
@@ -292,9 +275,7 @@ HasIsMapping := Tester( IsMapping );
 ##  Equivalently, 'IsInjective( <map> )' is 'true' if and only if each
 ##  element in the range of <map> has at most one preimage in $S$.
 ##
-IsInjective := NewProperty( "IsInjective", IsGeneralMapping );
-SetIsInjective := Setter( IsInjective );
-HasIsInjective := Tester( IsInjective );
+DeclareProperty( "IsInjective", IsGeneralMapping );
 
 
 #############################################################################
@@ -306,45 +287,36 @@ HasIsInjective := Tester( IsInjective );
 ##  $\{ s\in S; x\in s^{<map>} \} \not= \emptyset$ for all $x\in R$,
 ##  and 'false' otherwise.
 ##
-IsSurjective := NewProperty( "IsSurjective", IsGeneralMapping );
-SetIsSurjective := Setter( IsSurjective );
-HasIsSurjective := Tester( IsSurjective );
+DeclareProperty( "IsSurjective", IsGeneralMapping );
 
 
 #############################################################################
 ##
 #P  IsBijective( <map> )  . . . . . .  test if a general mapping is bijective
 ##
-IsBijective := IsSingleValued and IsTotal and IsInjective and IsSurjective;
-SetIsBijective := Setter( IsBijective );
-HasIsBijective := Tester( IsBijective );
+DeclareSynonymAttr( "IsBijective",
+    IsSingleValued and IsTotal and IsInjective and IsSurjective );
 
 
 #############################################################################
 ##
 #A  Range( <map> )  . . . . . . . . . . . . . . .  range of a general mapping
 ##
-Range := NewAttribute( "Range", IsGeneralMapping );
-SetRange := Setter( Range );
-HasRange := Tester( Range );
+DeclareAttribute( "Range", IsGeneralMapping );
 
 
 #############################################################################
 ##
 #A  Source( <map> ) . . . . . . . . . . . . . . . source of a general mapping
 ##
-Source := NewAttribute( "Source", IsGeneralMapping );
-SetSource := Setter( Source );
-HasSource := Tester( Source );
+DeclareAttribute( "Source", IsGeneralMapping );
 
 
 #############################################################################
 ##
 #A  UnderlyingRelation( <map> ) . .  underlying relation of a general mapping
 ##
-UnderlyingRelation := NewAttribute( "UnderlyingRelation", IsGeneralMapping );
-SetUnderlyingRelation := Setter( UnderlyingRelation );
-HasUnderlyingRelation := Tester( UnderlyingRelation );
+DeclareAttribute( "UnderlyingRelation", IsGeneralMapping );
 
 
 #############################################################################
@@ -353,10 +325,7 @@ HasUnderlyingRelation := Tester( UnderlyingRelation );
 ##
 ##  attribute for underlying relations of general mappings
 ##
-UnderlyingGeneralMapping := NewAttribute( "UnderlyingGeneralMapping",
-    IsCollection );
-SetUnderlyingGeneralMapping := Setter( UnderlyingGeneralMapping );
-HasUnderlyingGeneralMapping := Tester( UnderlyingGeneralMapping );
+DeclareAttribute( "UnderlyingGeneralMapping", IsCollection );
 
 
 #############################################################################
@@ -366,7 +335,7 @@ HasUnderlyingGeneralMapping := Tester( UnderlyingGeneralMapping );
 ##  All general mappings with same source family <FS> and same range family
 ##  <FR> lie in the family 'GeneralMappingsFamily( <FS>, <FR> )'.
 ##
-GeneralMappingsFamily := NewOperationArgs( "GeneralMappingsFamily" );
+DeclareGlobalFunction( "GeneralMappingsFamily" );
 
 
 #############################################################################
@@ -376,17 +345,14 @@ GeneralMappingsFamily := NewOperationArgs( "GeneralMappingsFamily" );
 ##  is the type of mappings with 'IsDefaultGeneralMappingRep' with source
 ##  <source> and range <range> and additional categories <filter>.
 ##
-TypeOfDefaultGeneralMapping := NewOperationArgs(
-    "TypeOfDefaultGeneralMapping" );
+DeclareGlobalFunction( "TypeOfDefaultGeneralMapping" );
 
 
 #############################################################################
 ##
 #A  IdentityMapping( <D> )  . . . . . . . .  identity mapping of a collection
 ##
-IdentityMapping := NewAttribute( "IdentityMapping", IsCollection );
-SetIdentityMapping := Setter( IdentityMapping );
-HasIdentityMapping := Tester( IdentityMapping );
+DeclareAttribute( "IdentityMapping", IsCollection );
 
 
 #############################################################################
@@ -398,10 +364,7 @@ HasIdentityMapping := Tester( IdentityMapping );
 ##  If <map> knows to be bijective its inverse general mapping will know to
 ##  be a mapping.  In this case also 'Inverse( <map> )' works.
 ##
-InverseGeneralMapping := NewAttribute( "InverseGeneralMapping",
-    IsGeneralMapping );
-SetInverseGeneralMapping := Setter( InverseGeneralMapping );
-HasInverseGeneralMapping := Tester( InverseGeneralMapping );
+DeclareAttribute( "InverseGeneralMapping", IsGeneralMapping );
 
 
 #############################################################################
@@ -413,9 +376,7 @@ HasInverseGeneralMapping := Tester( InverseGeneralMapping );
 ##  'ImagesSource' delegates to 'ImagesSet',
 ##  it is introduced only to store the image of <map> as attribute value.
 ##
-ImagesSource := NewAttribute( "ImagesSource", IsGeneralMapping );
-SetImagesSource := Setter( ImagesSource );
-HasImagesSource := Tester( ImagesSource );
+DeclareAttribute( "ImagesSource", IsGeneralMapping );
 
 
 #############################################################################
@@ -427,9 +388,7 @@ HasImagesSource := Tester( ImagesSource );
 ##  'PreImagesRange' delegates to 'PreImagesSet',
 ##  it is introduced only to store the preimage of <map> as attribute value.
 ##
-PreImagesRange := NewAttribute( "PreImagesRange", IsGeneralMapping );
-SetPreImagesRange := Setter( PreImagesRange );
-HasPreImagesRange := Tester( PreImagesRange );
+DeclareAttribute( "PreImagesRange", IsGeneralMapping );
 
 
 #############################################################################
@@ -441,7 +400,7 @@ HasPreImagesRange := Tester( PreImagesRange );
 ##
 ##  Anything may happen if <elm> is not an element of the source of <map>.
 ##
-ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
@@ -455,8 +414,7 @@ ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 ##
 ##  Anything may happen if <elm> is not an element of the source of <map>.
 ##
-ImagesRepresentative := NewOperation( "ImagesRepresentative",
-    [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "ImagesRepresentative", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
@@ -468,7 +426,7 @@ ImagesRepresentative := NewOperation( "ImagesRepresentative",
 ##
 ##  Anything may happen if <elms> is not a subset of the source of <map>.
 ##
-ImagesSet := NewOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
+DeclareOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
 
 
 #############################################################################
@@ -481,7 +439,7 @@ ImagesSet := NewOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
 ##
 ##  Anything may happen if <elm> is not an element of the source of <map>.
 ##
-ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
+DeclareOperation( "ImageElm", [ IsMapping, IsObject ] );
 
 
 #############################################################################
@@ -515,7 +473,7 @@ ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  If the second argument is not an element or a subset of the source of
 ##  the first argument, an error is signalled.
 ##
-Image := NewOperationArgs( "Image" );
+DeclareGlobalFunction( "Image" );
 
 
 #############################################################################
@@ -544,7 +502,7 @@ Image := NewOperationArgs( "Image" );
 ##  If the second argument is not an element or a subset of the source of
 ##  the first argument, an error is signalled.
 ##
-Images := NewOperationArgs( "Images" );
+DeclareGlobalFunction( "Images" );
 
 
 #############################################################################
@@ -556,8 +514,7 @@ Images := NewOperationArgs( "Images" );
 ##
 ##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
-PreImagesElm := NewOperation( "PreImagesElm",
-    [ IsGeneralMapping, IsObject ] );
+DeclareOperation( "PreImagesElm", [ IsGeneralMapping, IsObject ] );
 
 
 #############################################################################
@@ -570,14 +527,14 @@ PreImagesElm := NewOperation( "PreImagesElm",
 ##
 ##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
-PreImageElm := NewOperation( "PreImageElm",
+DeclareOperation( "PreImageElm",
     [ IsGeneralMapping and IsInjective and IsSurjective, IsObject ] );
 
 
 #############################################################################
 ##
 #O  PreImagesRepresentative( <map>, <img> ) . . .  one preimage of an element
-#O                                                       under a gen. mapping
+##                                                       under a gen. mapping
 ##
 ##  If <elm> is an element of the range of the general mapping <map> then
 ##  'PreImagesRepresentative' returns either a representative of the set of
@@ -586,7 +543,7 @@ PreImageElm := NewOperation( "PreImageElm",
 ##
 ##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
-PreImagesRepresentative := NewOperation( "PreImagesRepresentative",
+DeclareOperation( "PreImagesRepresentative",
     [ IsGeneralMapping, IsObject ] );
 
 
@@ -599,8 +556,7 @@ PreImagesRepresentative := NewOperation( "PreImagesRepresentative",
 ##
 ##  Anything may happen if <elms> is not a subset of the range of <map>.
 ##
-PreImagesSet := NewOperation( "PreImagesSet",
-    [ IsGeneralMapping, IsCollection ] );
+DeclareOperation( "PreImagesSet", [ IsGeneralMapping, IsCollection ] );
 
 
 #############################################################################
@@ -634,7 +590,7 @@ PreImagesSet := NewOperation( "PreImagesSet",
 ##  If the second argument is not an element or a subset of the range of
 ##  the first argument, an error is signalled.
 ##
-PreImage := NewOperationArgs( "PreImage" );
+DeclareGlobalFunction( "PreImage" );
 
 
 #############################################################################
@@ -664,7 +620,7 @@ PreImage := NewOperationArgs( "PreImage" );
 ##  If the second argument is not an element or a subset of the range of
 ##  the first argument, an error is signalled.
 ##
-PreImages := NewOperationArgs( "PreImages" );
+DeclareGlobalFunction( "PreImages" );
 
 
 #############################################################################
@@ -677,7 +633,7 @@ PreImages := NewOperationArgs( "PreImages" );
 ##
 ##  (Note the reverse ordering of arguments in the composition via '\*'.
 ##
-CompositionMapping2 := NewOperation( "CompositionMapping2",
+DeclareOperation( "CompositionMapping2",
     [ IsGeneralMapping, IsGeneralMapping ] );
 
 
@@ -695,7 +651,7 @@ CompositionMapping2 := NewOperation( "CompositionMapping2",
 ##  (So one should not call 'CompositionMapping2' directly if one wants to
 ##  maintain these properties.)
 ##
-CompositionMapping := NewOperationArgs( "CompositionMapping" );
+DeclareGlobalFunction( "CompositionMapping" );
 
 
 #############################################################################
@@ -707,7 +663,7 @@ CompositionMapping := NewOperationArgs( "CompositionMapping" );
 ##
 ##  (Each mapping with empty source is a zero mapping.)
 ##
-ZeroMapping := NewOperation( "ZeroMapping", [ IsCollection, IsCollection ] );
+DeclareOperation( "ZeroMapping", [ IsCollection, IsCollection ] );
 
 
 #############################################################################
@@ -716,7 +672,7 @@ ZeroMapping := NewOperation( "ZeroMapping", [ IsCollection, IsCollection ] );
 #O  Embedding( <S>, <T>, <i> )
 #O  Embedding( <S>, <i> )
 ##
-Embedding := NewOperation( "Embedding", [ IsDomain, IsObject ] );
+DeclareOperation( "Embedding", [ IsDomain, IsObject ] );
 
 
 #############################################################################
@@ -725,7 +681,7 @@ Embedding := NewOperation( "Embedding", [ IsDomain, IsObject ] );
 #O  Projection( <S>, <T>, <i> )
 #O  Projection( <S>, <i> )
 ##
-Projection := NewOperation( "Projection", [ IsDomain, IsObject ] );
+DeclareOperation( "Projection", [ IsDomain, IsObject ] );
 
 
 #############################################################################
@@ -735,7 +691,7 @@ Projection := NewOperation( "Projection", [ IsDomain, IsObject ] );
 ##  is the general mapping with source <S> and range <R>,
 ##  and with underlying relation consisting of the tuples collection <elms>.
 ##
-GeneralMappingByElements := NewOperationArgs( "GeneralMappingByElements" );
+DeclareGlobalFunction( "GeneralMappingByElements" );
 
 
 #############################################################################
@@ -757,6 +713,4 @@ InstallTrueMethod( IsTotal, IsGeneralMapping and IsZero );
 #############################################################################
 ##
 #E  mapping.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

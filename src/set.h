@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declaress the functions which mainly deal with proper sets.
 **
@@ -13,7 +14,7 @@
 **  Read also section "More about Sets" about the internal flag for sets.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_set_h =
+const char * Revision_set_h =
    "@(#)$Id$";
 #endif
 
@@ -62,25 +63,9 @@ extern  Int             IsSet (
 /****************************************************************************
 **
 
-*F  SetupSet()  . . . . . . . . . . . . . . . . .  initialize the set package
+*F  InitInfoSet() . . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupSet ( void );
-
-
-/****************************************************************************
-**
-*F  InitSet() . . . . . . . . . . . . . . . . . .  initialize the set package
-**
-**  'InitSet' initializes the set package.
-*/
-extern void InitSet ( void );
-
-
-/****************************************************************************
-**
-*F  CheckSet()  . . . . . . . . . check the initialisation of the set package
-*/
-extern void CheckSet ( void );
+StructInitInfo * InitInfoSet ( void );
 
 
 /****************************************************************************

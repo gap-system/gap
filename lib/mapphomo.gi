@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for properties of mappings preserving
 ##  algebraic structure.
@@ -302,15 +303,16 @@ InstallMethod( ImagesSet,
                           gen -> ImagesRepresentative( map, gen ) ) );
     UseIsomorphismRelation( elms, img );
     if     IsOperationHomomorphism( map )
-       and HasBase( UnderlyingExternalSet( map ) )
-       and not HasBase( img )
-       and not HasStabChain( img )  then
+       and HasBaseOfGroup( UnderlyingExternalSet( map ) )
+       and not HasBaseOfGroup( img )
+       and not HasStabChainMutable( img )  then
         if not IsBound( UnderlyingExternalSet( map )!.basePermImage )  then
-            UnderlyingExternalSet( map )!.basePermImage := List
-              ( Base( UnderlyingExternalSet( map ) ), b -> PositionCanonical
-                ( HomeEnumerator( UnderlyingExternalSet( map ) ), b ) );
+            UnderlyingExternalSet( map )!.basePermImage :=
+	     List(BaseOfGroup(UnderlyingExternalSet(map)),
+	          b->PositionCanonical(HomeEnumerator(
+		         UnderlyingExternalSet( map ) ), b ) );
         fi;
-        SetBase( img, UnderlyingExternalSet( map )!.basePermImage );
+        SetBaseOfGroup( img, UnderlyingExternalSet( map )!.basePermImage );
 #T is this the right place?
 #T and is it allowed to access `!.basePermImage'?
     fi;

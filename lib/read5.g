@@ -2,10 +2,14 @@
 ##
 #X  now read all the implementation parts
 ##
+ReadLib( "listcoef.gi" );
+
 ReadLib( "rvecempt.gi" );
 ReadLib( "matrix.gi"   );
+ReadLib( "matint.gi"   );
+ReadLib( "matblock.gi" );
 
-ReadLib("tuples.gi"    );
+ReadLib( "tuples.gi"   );
 
 
 ReadLib( "domain.gi"   );
@@ -23,6 +27,7 @@ ReadLib( "addmagma.gi" );
 ReadLib( "addcoset.gi" );
 
 ReadLib( "ring.gi"     );
+ReadLib( "ideal.gi"    );
 ReadLib( "mgmring.gi"  );
 
 ReadLib( "module.gi"   );
@@ -35,15 +40,16 @@ ReadLib( "vspc.gi"     );
 ReadLib( "vspcrow.gi"  );
 ReadLib( "vspcmat.gi"  );
 ReadLib( "vspchom.gi"  );
-ReadLib( "lattice.gi"  );
+ReadLib( "zlattice.gi" );
 
 ReadLib( "algebra.gi"  );
+ReadLib( "idealalg.gi" );
+ReadLib( "alghom.gi"   );
 ReadLib( "algfp.gi"    );
 ReadLib( "alglie.gi"   );
 ReadLib( "algliess.gi" );
 ReadLib( "algsc.gi"    );
 ReadLib( "algmat.gi"   );
-ReadLib( "alghom.gi"   );
 ReadLib( "liefam.gi"   );
 
 ReadLib( "integer.gi"  );
@@ -71,6 +77,7 @@ ReadLib( "cyclotom.gi" );
 ReadLib( "fldabnum.gi" );
 ReadLib( "padics.gi"   );
 
+ReadLib( "vecmat.gi"   );
 ReadLib( "meataxe.gi"  );
 
 ReadLib( "word.gi"     );
@@ -145,10 +152,15 @@ ReadLib( "onecohom.gi" );
 ReadLib( "grppccom.gi" );
 ReadLib( "grpcompl.gi" );
 
+# files dealing with extensions
 ReadLib( "twocohom.gi" );
 ReadLib( "grppcext.gi");
+ReadLib( "randiso.gi");
+ReadLib( "randiso2.gi");
+ReadLib( "fratfree.gi");
+ReadLib( "frattext.gi");
 ReadLib( "grppcfp.gi");
-
+ReadLib( "upext.gi");
 
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );
@@ -164,6 +176,7 @@ ReadLib( "grppcaut.gi" );
 # files dealing with matrix groups
 ReadLib( "grpmat.gi"   );
 ReadLib( "grpffmat.gi" );
+ReadLib( "grpramat.gi" );
 
 
 # files dealing with fp groups
@@ -174,7 +187,3 @@ ReadLib( "tietze.gi" );
 
 # files dealing with trees and hash tables
 ReadLib( "hash.gi"     );
-
-# files dealing with construction of groups
-ReadLib( "frattfree.gi" );
-ReadLib( "frattext.gi" );

@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file implements the arithmetic for elements from  cyclotomic  fields
 **  $Q(e^{{2 \pi i}/n}) = Q(e_n)$,  which  we  call  cyclotomics  for  short.
@@ -87,7 +88,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_cyclotom_c =
+const char * Revision_cyclotom_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -110,8 +111,6 @@ SYS_CONST char * Revision_cyclotom_c =
 #define INCLUDE_DECLARATION_PART
 #include        "cyclotom.h"            /* cyclotomics                     */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -140,12 +139,12 @@ SYS_CONST char * Revision_cyclotom_c =
 **
 **  'ResultCyc' is used  by all the arithmetic functions  as a buffer for the
 **  result.  Unlike bags of type 'T_CYC' it  stores the cyclotomics unpacked,
-**  i.e., 'ADDR_OBJ( ResultCyc )[<i>]' is the coefficient of $e_n^i$.
+**  i.e., 'ADDR_OBJ( ResultCyc )[<i+1>]' is the coefficient of $e_n^i$.
 **
 **  It is created in 'InitCyc' with room for up to 1000 coefficients  and  is
 **  resized when need arises.
 */
-Obj                     ResultCyc;
+Obj ResultCyc;
 
 
 /****************************************************************************
@@ -166,8 +165,8 @@ Obj                     ResultCyc;
 **  is called to compute $e_n^i$ and can then do this easier by just  putting
 **  1 at the <i>th place in 'ResultCyc' and then calling 'Cyclotomic'.
 */
-Obj                     LastECyc;
-UInt                    LastNCyc;
+Obj  LastECyc;
+UInt LastNCyc;
 
 
 /****************************************************************************
@@ -443,7 +442,7 @@ void            ConvertToBase (
     Obj                 sum;            /* sum of two coefficients         */
 
     /* get a pointer to the cyclotomic and a copy of n to factor           */
-    res = ADDR_OBJ( ResultCyc );
+    res = &(ELM_PLIST( ResultCyc, 1 ));
     nn  = n;
 
     /* first handle 2                                                      */
@@ -462,7 +461,7 @@ void            ConvertToBase (
                       || ! DIFF_INTOBJS( sum, res[l], res[k] ) ) {
                         CHANGED_BAG( ResultCyc );
                         sum = DIFF( res[l], res[k] );
-                        res = ADDR_OBJ( ResultCyc );
+                        res = &(ELM_PLIST( ResultCyc, 1 ));
                     }
                     res[l] = sum;
                     res[k] = INTOBJ_INT(0);
@@ -477,7 +476,7 @@ void            ConvertToBase (
                       || ! DIFF_INTOBJS( sum, res[l], res[k] ) ) {
                         CHANGED_BAG( ResultCyc );
                         sum = DIFF( res[l], res[k] );
-                        res = ADDR_OBJ( ResultCyc );
+                        res = &(ELM_PLIST( ResultCyc, 1 ));
                     }
                     res[l] = sum;
                     res[k] = INTOBJ_INT(0);
@@ -509,7 +508,7 @@ void            ConvertToBase (
                           || ! DIFF_INTOBJS( sum, res[l%n], res[k] ) ) {
                             CHANGED_BAG( ResultCyc );
                             sum = DIFF( res[l%n], res[k] );
-                            res = ADDR_OBJ( ResultCyc );
+                            res = &(ELM_PLIST( ResultCyc, 1 ));
                         }
                         res[l%n] = sum;
                     }
@@ -525,7 +524,7 @@ void            ConvertToBase (
                           || ! DIFF_INTOBJS( sum, res[l%n], res[k] ) ) {
                             CHANGED_BAG( ResultCyc );
                             sum = DIFF( res[l%n], res[k] );
-                            res = ADDR_OBJ( ResultCyc );
+                            res = &(ELM_PLIST( ResultCyc, 1 ));
                         }
                         res[l%n] = sum;
                     }
@@ -593,7 +592,7 @@ Obj             Cyclotomic (
     static UInt         nrp;            /* number of its prime factors     */
 
     /* get a pointer to the cyclotomic and a copy of n to factor           */
-    res = ADDR_OBJ( ResultCyc );
+    res = &(ELM_PLIST( ResultCyc, 1 ));
 
     /* count the terms and compute the gcd of the exponents with n         */
     len = 0;
@@ -687,7 +686,7 @@ Obj             Cyclotomic (
                       || (cof == INTOBJ_INT(-(1L<<28))) ) {
                         CHANGED_BAG( ResultCyc );
                         cof = DIFF( INTOBJ_INT(0), cof );
-                        res = ADDR_OBJ( ResultCyc );
+                        res = &(ELM_PLIST( ResultCyc, 1 ));
                         res[i] = cof;
                     }
                     for ( k = i+n/p; k < i+n && eql; k += n/p )
@@ -723,7 +722,7 @@ Obj             Cyclotomic (
         cfs[0] = INTOBJ_INT(n);
         exs[0] = 0;
         k = 1;
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 0; i < n; i++ ) {
             if ( res[i] != INTOBJ_INT(0) ) {
                 cfs[k] = res[i];
@@ -778,15 +777,16 @@ Obj             SumCyc (
     mr = n / nr;
 
     /* make sure that the result back is large enough                      */
-    if ( SIZE_OBJ(ResultCyc) < n * sizeof(Obj) ) {
-        ResizeBag( ResultCyc, n * sizeof(Obj) );
-        res = ADDR_OBJ( ResultCyc );
+    if ( LEN_PLIST(ResultCyc) < n ) {
+        GROW_PLIST( ResultCyc, n );
+        SET_LEN_PLIST( ResultCyc, n );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
     }
 
     /* copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         res[0] = opL;
         CHANGED_BAG( ResultCyc );
     }
@@ -794,7 +794,7 @@ Obj             SumCyc (
         len = SIZE_CYC(opL);
         cfs = COEFS_CYC(opL);
         exs = EXPOS_CYC(opL,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
                 res[exs[i]] = cfs[i];
@@ -808,17 +808,17 @@ Obj             SumCyc (
 
     /* add the right operand to the result                                 */
     if ( TNUM_OBJ(opR) != T_CYC ) {
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         sum = SUM( res[0], opR );
-        res = ADDR_OBJ( ResultCyc );
-        res[ 0 ] = sum;
+        res = &(ELM_PLIST( ResultCyc, 1 ));
+        res[0] = sum;
         CHANGED_BAG( ResultCyc );
     }
     else {
         len = SIZE_CYC(opR);
         cfs = COEFS_CYC(opR);
         exs = EXPOS_CYC(opR,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! SUM_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
@@ -826,7 +826,7 @@ Obj             SumCyc (
                 sum = SUM( res[exs[i]*mr], cfs[i] );
                 cfs = COEFS_CYC(opR);
                 exs = EXPOS_CYC(opR,len);
-                res = ADDR_OBJ( ResultCyc );
+                res = &(ELM_PLIST( ResultCyc, 1 ));
             }
             res[exs[i]*mr] = sum;
         }
@@ -930,23 +930,24 @@ Obj             DiffCyc (
     mr = n / nr;
 
     /* make sure that the result back is large enough                      */
-    if ( SIZE_OBJ(ResultCyc) < n * sizeof(Obj) ) {
-        ResizeBag( ResultCyc, n * sizeof(Obj) );
-        res = ADDR_OBJ( ResultCyc );
+    if ( LEN_PLIST(ResultCyc) < n ) {
+        GROW_PLIST( ResultCyc, n );
+        SET_LEN_PLIST( ResultCyc, n );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
     }
 
     /* copy the left operand into the result                               */
     if ( TNUM_OBJ(opL) != T_CYC ) {
-        res = ADDR_OBJ( ResultCyc );
-        res[ 0 ] = opL;
+        res = &(ELM_PLIST( ResultCyc, 1 ));
+        res[0] = opL;
         CHANGED_BAG( ResultCyc );
     }
     else {
         len = SIZE_CYC(opL);
         cfs = COEFS_CYC(opL);
         exs = EXPOS_CYC(opL,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         if ( ml == 1 ) {
             for ( i = 1; i < len; i++ )
                 res[exs[i]] = cfs[i];
@@ -960,9 +961,9 @@ Obj             DiffCyc (
 
     /* subtract the right operand from the result                          */
     if ( TNUM_OBJ(opR) != T_CYC ) {
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         sum = DIFF( res[0], opR );
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         res[0] = sum;
         CHANGED_BAG( ResultCyc );
     }
@@ -970,7 +971,7 @@ Obj             DiffCyc (
         len = SIZE_CYC(opR);
         cfs = COEFS_CYC(opR);
         exs = EXPOS_CYC(opR,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*mr], cfs[i] )
               || ! DIFF_INTOBJS( sum, res[exs[i]*mr], cfs[i] ) ) {
@@ -978,7 +979,7 @@ Obj             DiffCyc (
                 sum = DIFF( res[exs[i]*mr], cfs[i] );
                 cfs = COEFS_CYC(opR);
                 exs = EXPOS_CYC(opR,len);
-                res = ADDR_OBJ( ResultCyc );
+                res = &(ELM_PLIST( ResultCyc, 1 ));
             }
             res[exs[i]*mr] = sum;
         }
@@ -1137,9 +1138,10 @@ Obj             ProdCyc (
     mr = n / nr;
 
     /* make sure that the result back is large enough                      */
-    if ( SIZE_OBJ(ResultCyc) < n * sizeof(Obj) ) {
-        ResizeBag( ResultCyc, n * sizeof(Obj) );
-        res = ADDR_OBJ( ResultCyc );
+    if ( LEN_PLIST(ResultCyc) < n ) {
+        GROW_PLIST( ResultCyc, n );
+        SET_LEN_PLIST( ResultCyc, n );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 0; i < n; i++ ) { res[i] = INTOBJ_INT(0); }
     }
 
@@ -1153,7 +1155,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = ADDR_OBJ( ResultCyc );
+            res = &(ELM_PLIST( ResultCyc, 1 ));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! SUM_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
@@ -1161,7 +1163,7 @@ Obj             ProdCyc (
                     sum = SUM( res[(e+exs[i]*ml)%n], cfs[i] );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = ADDR_OBJ( ResultCyc );
+                    res = &(ELM_PLIST( ResultCyc, 1 ));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1173,7 +1175,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = ADDR_OBJ( ResultCyc );
+            res = &(ELM_PLIST( ResultCyc, 1 ));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( res[(e+exs[i]*ml)%n], cfs[i] )
                   || ! DIFF_INTOBJS( sum, res[(e+exs[i]*ml)%n], cfs[i] ) ) {
@@ -1181,7 +1183,7 @@ Obj             ProdCyc (
                     sum = DIFF( res[(e+exs[i]*ml)%n], cfs[i] );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = ADDR_OBJ( ResultCyc );
+                    res = &(ELM_PLIST( ResultCyc, 1 ));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1193,7 +1195,7 @@ Obj             ProdCyc (
             len = SIZE_CYC(opL);
             cfs = COEFS_CYC(opL);
             exs = EXPOS_CYC(opL,len);
-            res = ADDR_OBJ( ResultCyc );
+            res = &(ELM_PLIST( ResultCyc, 1 ));
             for ( i = 1; i < len; i++ ) {
                 if ( ! ARE_INTOBJS( cfs[i], res[(e+exs[i]*ml)%n] )
                   || ! PROD_INTOBJS( prd, cfs[i], c )
@@ -1201,11 +1203,11 @@ Obj             ProdCyc (
                     CHANGED_BAG( ResultCyc );
                     prd = PROD( cfs[i], c );
                     exs = EXPOS_CYC(opL,len);
-                    res = ADDR_OBJ( ResultCyc );
+                    res = &(ELM_PLIST( ResultCyc, 1 ));
                     sum = SUM( res[(e+exs[i]*ml)%n], prd );
                     cfs = COEFS_CYC(opL);
                     exs = EXPOS_CYC(opL,len);
-                    res = ADDR_OBJ( ResultCyc );
+                    res = &(ELM_PLIST( ResultCyc, 1 ));
                 }
                 res[(e+exs[i]*ml)%n] = sum;
             }
@@ -1220,10 +1222,10 @@ Obj             ProdCyc (
                 cfs = COEFS_CYC(opL);
                 prd = PROD( cfs[i], c );
                 exs = EXPOS_CYC(opL,len);
-                res = ADDR_OBJ( ResultCyc );
+                res = &(ELM_PLIST( ResultCyc, 1 ));
                 sum = SUM( res[(e+exs[i]*ml)%n], prd );
                 exs = EXPOS_CYC(opL,len);
-                res = ADDR_OBJ( ResultCyc );
+                res = &(ELM_PLIST( ResultCyc, 1 ));
                 res[(e+exs[i]*ml)%n] = sum;
             }
             CHANGED_BAG( ResultCyc );
@@ -1294,7 +1296,7 @@ Obj             InvCyc (
             /* permute the terms                                           */
             cfs = COEFS_CYC(op);
             exs = EXPOS_CYC(op,len);
-            res = ADDR_OBJ( ResultCyc );
+            res = &(ELM_PLIST( ResultCyc, 1 ));
             for ( k = 1; k < len; k++ )
                 res[(i*exs[k])%n] = cfs[k];
             CHANGED_BAG( ResultCyc );
@@ -1351,7 +1353,7 @@ Obj             PowCyc (
     /* for $e_n^exp$ just put a 1 at the <exp>th position and convert      */
     else if ( opL == LastECyc ) {
         exp = (exp % LastNCyc + LastNCyc) % LastNCyc;
-        COEFS_CYC(ResultCyc)[ exp ] = INTOBJ_INT(1);
+        SET_ELM_PLIST( ResultCyc, exp, INTOBJ_INT(1) );
         CHANGED_BAG( ResultCyc );
         ConvertToBase( LastNCyc );
         pow = Cyclotomic( LastNCyc, 1 );
@@ -1362,7 +1364,7 @@ Obj             PowCyc (
         n = INT_INTOBJ( NOF_CYC(opL) );
         pow = POW( COEFS_CYC(opL)[1], opR );
         i = EXPOS_CYC(opL,2)[1];
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         res[((exp*i)%n+n)%n] = pow;
         CHANGED_BAG( ResultCyc );
         ConvertToBase( n );
@@ -1395,18 +1397,18 @@ Obj             PowCyc (
 
 /****************************************************************************
 **
-*F  EHandler( <self>, <n> ) . . . . . . . . . . . create a new primitive root
+*F  FuncE( <self>, <n> )  . . . . . . . . . . . . create a new primitive root
 **
-**  'EHandler' implements the internal function 'E'.
+**  'FuncE' implements the internal function 'E'.
 **
 **  'E( <n> )'
 **
 **  'E' return a the primitive root of order <n>, which must  be  a  positive
 **  integer, represented as cyclotomic.
 */
-Obj             EOper;
+Obj EOper;
 
-Obj             EHandler (
+Obj FuncE (
     Obj                 self,
     Obj                 n )
 {
@@ -1435,12 +1437,13 @@ Obj             EHandler (
     /* if the root is not known already construct it                       */
     if ( LastNCyc != INT_INTOBJ(n) ) {
         LastNCyc = INT_INTOBJ(n);
-        if ( SIZE_OBJ(ResultCyc) < LastNCyc * sizeof(Obj) ) {
-            ResizeBag( ResultCyc, LastNCyc * sizeof(Obj) );
-            res = ADDR_OBJ( ResultCyc );
+        if ( LEN_PLIST(ResultCyc) < LastNCyc ) {
+            GROW_PLIST( ResultCyc, LastNCyc );
+            SET_LEN_PLIST( ResultCyc, LastNCyc );
+            res = &(ELM_PLIST( ResultCyc, 1 ));
             for ( i = 0; i < LastNCyc; i++ ) { res[i] = INTOBJ_INT(0); }
         }
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         res[1] = INTOBJ_INT(1);
         CHANGED_BAG( ResultCyc );
         ConvertToBase( LastNCyc );
@@ -1454,18 +1457,18 @@ Obj             EHandler (
 
 /****************************************************************************
 **
-*F  IsCycHandler( <self>, <val> ) . . . . .  test if an object is a cyclomtic
+*F  FuncIS_CYC( <self>, <val> ) . . . . . .  test if an object is a cyclomtic
 **
-**  'IsCycHandler' implements the internal function 'IsCyc'.
+**  'FuncIS_CYC' implements the internal function 'IsCyc'.
 **
 **  'IsCyc( <val> )'
 **
 **  'IsCyc' returns 'true'  if the value <val> is   a cyclotomic and  'false'
 **  otherwise.
 */
-Obj             IsCycFilt;
+Obj IsCycFilt;
 
-Obj             IsCycHandler (
+Obj FuncIS_CYC (
     Obj                 self,
     Obj                 val )
 {
@@ -1485,9 +1488,9 @@ Obj             IsCycHandler (
 
 /****************************************************************************
 **
-*F  IsCycIntHandler( <self>, <val> ) test if an object is a cyclomtic integer
+*F  FuncIS_CYC_INT( <self>, <val> )  test if an object is a cyclomtic integer
 **
-**  'IsCycIntHandler' implements the internal function 'IsCycInt'.
+**  'FuncIS_CYC_INT' implements the internal function 'IsCycInt'.
 **
 **  'IsCycInt( <val> )'
 **
@@ -1496,9 +1499,9 @@ Obj             IsCycHandler (
 **
 **  'IsCycInt' relies on the fact that the base is an integral base.
 */
-Obj             IsCycIntOper;
+Obj IsCycIntOper;
 
-Obj             IsCycIntHandler (
+Obj FuncIS_CYC_INT (
     Obj                 self,
     Obj                 val )
 {
@@ -1534,18 +1537,18 @@ Obj             IsCycIntHandler (
 
 /****************************************************************************
 **
-*F  NofCycHandler( <self>, <cyc> )  . . . . . . . . . . . . N of a cyclotomic
+*F  FuncCONDUCTOR( <self>, <cyc> )  . . . . . . . . . . . . N of a cyclotomic
 **
-**  'NofCycHandler' implements the internal function 'NofCyc'.
+**  'FuncCONDUCTOR' implements the internal function 'Conductor'.
 **
-**  'NofCyc( <cyc> )'
+**  'Conductor( <cyc> )'
 **
-**  'NofCyc' returns the N of the cyclotomic <cyc>, i.e., the  order  of  the
+**  'Conductor' returns the N of the cyclotomic <cyc>, i.e., the order of the
 **  roots of which <cyc> is written as a linear combination.
 */
-Obj             NofCycAttr;
+Obj ConductorAttr;
 
-Obj             NofCycHandler (
+Obj FuncCONDUCTOR (
     Obj                 self,
     Obj                 cyc )
 {
@@ -1557,7 +1560,7 @@ Obj             NofCycHandler (
 
     /* do full operation                                                   */
     if ( FIRST_EXTERNAL_TNUM <= TNUM_OBJ(cyc) ) {
-        return DoAttribute( NofCycAttr, cyc );
+        return DoAttribute( ConductorAttr, cyc );
     }
 
     /* check the argument                                                  */
@@ -1613,9 +1616,9 @@ Obj             NofCycHandler (
 
 /****************************************************************************
 **
-*F  CoeffsCycHandler( <self>, <cyc> ) . . . . .  coefficients of a cyclotomic
+*F  FuncCOEFFS_CYC( <self>, <cyc> ) . . . . . .  coefficients of a cyclotomic
 **
-**  'CoeffsCycHandler' implements the internal function 'COEFFSCYC'.
+**  'FuncCOEFFS_CYC' implements the internal function 'COEFFSCYC'.
 **
 **  'COEFFSCYC( <cyc> )'
 **
@@ -1624,9 +1627,9 @@ Obj             NofCycHandler (
 **  of which <cyc> is written as a linear combination.  The <i>th element  of
 **  the list is the coefficient of $e_l^{i-1}$.
 */
-Obj             CoeffsCycOper;
+Obj CoeffsCycOper;
 
-Obj             CoeffsCycHandler (
+Obj FuncCOEFFS_CYC (
     Obj                 self,
     Obj                 cyc )
 {
@@ -1683,9 +1686,9 @@ Obj             CoeffsCycHandler (
 
 /****************************************************************************
 **
-*F  GaloisCycHandler(<self>,<cyc>,<ord>). . image of a cyc. under galois aut.
+*F  FuncGALOIS_CYC( <self>, <cyc>, <ord> )   image of a cyc. under galois aut
 **
-**  'GaloisCycHandler' implements the internal function 'GaloisCyc'.
+**  'FuncGALOIS_CYC' implements the internal function 'GaloisCyc'.
 **
 **  'GaloisCyc( <cyc>, <ord> )'
 **
@@ -1696,9 +1699,9 @@ Obj             CoeffsCycHandler (
 **  <ord> may be any integer, of course if it is not relative prime to  $ord$
 **  the mapping will not be an automorphism, though still an endomorphism.
 */
-Obj             GaloisCycOper;
+Obj GaloisCycOper;
 
-Obj             GaloisCycHandler (
+Obj FuncGALOIS_CYC (
     Obj                 self,
     Obj                 cyc,
     Obj                 ord )
@@ -1722,13 +1725,21 @@ Obj             GaloisCycHandler (
     }
 
     /* get and check <ord>                                                 */
-    while ( TNUM_OBJ(ord) != T_INT ) {
+    while ( TNUM_OBJ(ord) != T_INT && TNUM_OBJ(ord) != T_INTNEG 
+            && TNUM_OBJ(ord) != T_INTPOS )
+    {
         ord = ErrorReturnObj(
             "GaloisCyc: <ord> must be an integer (not a %s)",
             (Int)TNAM_OBJ(ord), 0L,
             "you can return an integer for <ord>" );
     }
-    o = INT_INTOBJ(ord);
+    if ( TNAM_OBJ(ord) == T_INT ) {
+	o = INT_INTOBJ(ord);
+    }
+    else {
+	ord = MOD( ord, FuncCONDUCTOR( 0, cyc ) );
+	o = INT_INTOBJ(ord);
+    }
 
     /* get and check the cyclotomic                                        */
     while ( TNUM_OBJ(cyc) != T_INT    && TNUM_OBJ(cyc) != T_RAT
@@ -1810,7 +1821,7 @@ Obj             GaloisCycHandler (
         len = SIZE_CYC(cyc);
         cfs = COEFS_CYC(cyc);
         exs = EXPOS_CYC(cyc,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
             res[exs[i]*o%n] = cfs[i];
         }
@@ -1834,7 +1845,7 @@ Obj             GaloisCycHandler (
         len = SIZE_CYC(cyc);
         cfs = COEFS_CYC(cyc);
         exs = EXPOS_CYC(cyc,len);
-        res = ADDR_OBJ( ResultCyc );
+        res = &(ELM_PLIST( ResultCyc, 1 ));
         for ( i = 1; i < len; i++ ) {
             if ( ! ARE_INTOBJS( res[exs[i]*o%n], cfs[i] )
               || ! SUM_INTOBJS( sum, res[exs[i]*o%n], cfs[i] ) ) {
@@ -1842,7 +1853,7 @@ Obj             GaloisCycHandler (
                 sum = SUM( res[exs[i]*o%n], cfs[i] );
                 cfs = COEFS_CYC(cyc);
                 exs = EXPOS_CYC(cyc,len);
-                res = ADDR_OBJ( ResultCyc );
+                res = &(ELM_PLIST( ResultCyc, 1 ));
             }
             res[exs[i]*o%n] = sum;
         }
@@ -1866,7 +1877,7 @@ Obj             GaloisCycHandler (
 
 /****************************************************************************
 **
-*F  MarkCycSubBags(<bag>) . . . . . . . . .  marking function for cyclotomics
+*F  MarkCycSubBags( <bag> ) . . . . . . . .  marking function for cyclotomics
 **
 **  'MarkCycSubBags' is the marking function for bags of type 'T_CYC'.
 */
@@ -1887,12 +1898,12 @@ void            MarkCycSubBags (
 
 /****************************************************************************
 **
-*F  SaveCyc() . . . . . . . . . . . . . . . save a cyclotyomic 
+
+*F  SaveCyc() . . . . . . . . . . . . . . . . . . . . . .  save a cyclotyomic
 **
 **  We do not save the XXX_CYC field, since it is not used.
 */
-
-void  SaveCyc( Obj cyc)
+void  SaveCyc ( Obj cyc )
 {
   UInt len, i;
   Obj *coefs;
@@ -1910,12 +1921,11 @@ void  SaveCyc( Obj cyc)
 
 /****************************************************************************
 **
-*F  LoadCyc() . . . . . . . . . . . . . . . load a cyclotyomic 
+*F  LoadCyc() . . . . . . . . . . . . . . . . . . . . . .  load a cyclotyomic
 **
 **  We do not load the XXX_CYC field, since it is not used.
 */
-
-void  LoadCyc( Obj cyc)
+void  LoadCyc ( Obj cyc )
 {
   UInt len, i;
   Obj *coefs;
@@ -1943,23 +1953,88 @@ void  LoadCyc( Obj cyc)
 /****************************************************************************
 **
 
-*F  SetupCyc()  . . . . . . . . . . . . . . initialize the cyclotomic package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupCyc ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_CYC", "obj", &IsCycFilt,
+      FuncIS_CYC, "src/cyclotom.c:IS_CYC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarAttrs . . . . . . . . . . . . . . . . .  list of attributes to export
+*/
+static StructGVarAttr GVarAttrs [] = {
+
+    { "CONDUCTOR", "cyc", &ConductorAttr,
+      FuncCONDUCTOR, "src/cyclotom.c:CONDUCTOR" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarOpers . . . . . . . . . . . . . . . . .  list of operations to export
+*/
+static StructGVarOper GVarOpers [] = {
+
+    { "E", 1, "n", &EOper,
+      FuncE, "src/cyclotom.c:E" },
+
+    { "IS_CYC_INT", 1, "obj", &IsCycIntOper,
+      FuncIS_CYC_INT, "src/cyclotom.c:IS_CYC_INT" },
+                     
+    { "COEFFS_CYC", 1, "cyc", &CoeffsCycOper,
+      FuncCOEFFS_CYC, "src/cyclotom.c:COEFFS_CYC" },
+
+    { "GALOIS_CYC", 2, "cyc, n", &GaloisCycOper,
+      FuncGALOIS_CYC, "src/cyclotom.c:GALOIS_CYC" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking function                                        */
-    InfoBags[           T_CYC           ].name = "cyclotomic";
-    InitMarkFuncBags(   T_CYC           , MarkCycSubBags );
+    InfoBags[ T_CYC ].name = "cyclotomic";
+    InitMarkFuncBags( T_CYC, MarkCycSubBags );
 
+    /* create the result buffer                                            */
+    InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
+
+    /* tell Gasman about the place were we remember the primitive root     */
+    InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
+
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
+    TypeObjFuncs[ T_CYC ] = TypeCyc;
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrAttrsFromTable( GVarAttrs );
+    InitHdlrOpersFromTable( GVarOpers );
 
     /* and the saving function                                             */
     SaveObjFuncs[ T_CYC ] = SaveCyc;
     LoadObjFuncs[ T_CYC ] = LoadCyc;
 
-
     /* install the evaluation and print function                           */
     PrintObjFuncs[ T_CYC ] = PrintCyc;
-
 
     /* install the comparison methods                                      */
     EqFuncs[   T_CYC    ][ T_CYC    ] = EqCyc;
@@ -1973,13 +2048,11 @@ void SetupCyc ( void )
     LtFuncs[   T_CYC    ][ T_INTNEG ] = LtCycNot;
     LtFuncs[   T_CYC    ][ T_RAT    ] = LtCycNot;
 
-
     /* install the unary arithmetic methods                                */
     ZeroFuncs[ T_CYC ] = ZeroCyc;
     AInvFuncs[ T_CYC ] = AInvCyc;
     OneFuncs [ T_CYC ] = OneCyc;
     InvFuncs [ T_CYC ] = InvCyc;
-
 
     /* install the arithmetic methods                                      */
     SumFuncs[  T_CYC    ][ T_CYC    ] = SumCyc;
@@ -2009,70 +2082,63 @@ void SetupCyc ( void )
     ProdFuncs[ T_CYC    ][ T_INTPOS ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_INTNEG ] = ProdCycInt;
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitCyc() . . . . . . . . . . . . . . . initialize the cyclotomic package
-**
-**  'InitCyc' initializes the cyclotomic package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitCyc ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
     Obj *               res;            /* pointer into the result         */
     UInt                i;              /* loop variable                   */
 
     /* create the result buffer                                            */
-    InitGlobalBag( &ResultCyc , "src/cyclotom.c:ResultCyc" );
-    if ( ! SyRestoring ) {
-        ResultCyc = NEW_PLIST( T_PLIST, 1024 );
-        res = ADDR_OBJ( ResultCyc );
-        for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
-    }
+    ResultCyc = NEW_PLIST( T_PLIST, 1024 );
+    SET_LEN_PLIST( ResultCyc, 1024 );
+    res = &(ELM_PLIST( ResultCyc, 1 ));
+    for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
 
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarAttrsFromTable( GVarAttrs );
+    InitGVarOpersFromTable( GVarOpers );
 
-    /* tell Gasman about the place were we remember the primitive root     */
-    InitGlobalBag( &LastECyc, "src/cyclotom.c:LastECyc" );
-
-
-    /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_CYC", &TYPE_CYC );
-    TypeObjFuncs[ T_CYC ] = TypeCyc;
-
-
-    /* and finally install the internal functions                          */
-    C_NEW_GVAR_OPER( "E", 1, "n", EOper, EHandler,
-      "src/cyclotom.c:E" );
-
-    C_NEW_GVAR_FILT( "IS_CYC", "obj", IsCycFilt, IsCycHandler,
-      "src/cyclotom.c:IS_CYC" );
-
-    C_NEW_GVAR_OPER( "IS_CYC_INT", 1, "obj", IsCycIntOper, IsCycIntHandler,
-      "src/cyclotom.c:IS_CYC_INT" );
-                     
-    C_NEW_GVAR_ATTR( "CONDUCTOR", "cyc", NofCycAttr, NofCycHandler,
-      "src/cyclotom.c:CONDUCTOR" );
-
-    C_NEW_GVAR_OPER( "COEFFS_CYC", 1, "cyc", CoeffsCycOper, CoeffsCycHandler,
-      "src/cyclotom.c:COEFFS_CYC" );
-
-    C_NEW_GVAR_OPER( "GALOIS_CYC", 2, "cyc, n", GaloisCycOper,
-                      GaloisCycHandler,
-      "src/cyclotom.c:GALOIS_CYC" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckCyc()  . . . . .  check the initialisation of the cyclotomic package
-**
-**  'InitCyc' initializes the cyclotomic package.
+*F  InitInfoCyc() . . . . . . . . . . . . . . . . . . table of init functions
 */
-void CheckCyc ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "cyclotom",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoCyc ( void )
 {
-    SET_REVISION( "cyclotom_c", Revision_cyclotom_c );
-    SET_REVISION( "cyclotom_h", Revision_cyclotom_h );
+    module.revision_c = Revision_cyclotom_c;
+    module.revision_h = Revision_cyclotom_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

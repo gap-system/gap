@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for external left sets.
 ##
@@ -19,7 +20,7 @@ Revision.extlset_gd :=
 ##  An external left set is a domain with an action of a domain
 ##  from the left.
 ##
-IsExtLSet := NewCategory( "IsExtLSet", IsDomain );
+DeclareCategory( "IsExtLSet", IsDomain );
 
 
 #############################################################################
@@ -29,7 +30,7 @@ IsExtLSet := NewCategory( "IsExtLSet", IsDomain );
 ##  is 'true' iff $a \* ( x \* y ) = ( a \* x ) \* y$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsAssociativeLOpDProd := NewCategory( "IsAssociativeLOpDProd", IsExtLSet );
+DeclareCategory( "IsAssociativeLOpDProd", IsExtLSet );
 
 
 #############################################################################
@@ -39,7 +40,7 @@ IsAssociativeLOpDProd := NewCategory( "IsAssociativeLOpDProd", IsExtLSet );
 ##  is 'true' iff $a \* ( b \* x ) = ( a \* b ) \* x$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsAssociativeLOpEProd := NewCategory( "IsAssociativeLOpEProd", IsExtLSet );
+DeclareCategory( "IsAssociativeLOpEProd", IsExtLSet );
 
 
 #############################################################################
@@ -49,7 +50,7 @@ IsAssociativeLOpEProd := NewCategory( "IsAssociativeLOpEProd", IsExtLSet );
 ##  is 'true' iff $a \* ( x \* y ) = ( a \* x ) \* ( a \* y )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsDistributiveLOpDProd := NewCategory( "IsDistributiveLOpDProd", IsExtLSet );
+DeclareCategory( "IsDistributiveLOpDProd", IsExtLSet );
 
 
 #############################################################################
@@ -59,7 +60,7 @@ IsDistributiveLOpDProd := NewCategory( "IsDistributiveLOpDProd", IsExtLSet );
 ##  is 'true' iff $a \* ( x + y ) = ( a \* x ) + ( a \* y )$
 ##  for $a \in E$ and $x, y \in D$.
 ##
-IsDistributiveLOpDSum := NewCategory( "IsDistributiveLOpDSum", IsExtLSet );
+DeclareCategory( "IsDistributiveLOpDSum", IsExtLSet );
 
 
 #############################################################################
@@ -69,7 +70,7 @@ IsDistributiveLOpDSum := NewCategory( "IsDistributiveLOpDSum", IsExtLSet );
 ##  is 'true' iff $( a \* b ) \* x = ( a \* x ) \* ( b \* x )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsDistributiveLOpEProd := NewCategory( "IsDistributiveLOpEProd", IsExtLSet );
+DeclareCategory( "IsDistributiveLOpEProd", IsExtLSet );
 
 
 #############################################################################
@@ -79,7 +80,7 @@ IsDistributiveLOpEProd := NewCategory( "IsDistributiveLOpEProd", IsExtLSet );
 ##  is 'true' iff $( a + b ) \* x = ( a \* x ) + ( b \* x )$
 ##  for $a, b \in E$ and $x \in D$.
 ##
-IsDistributiveLOpESum := NewCategory( "IsDistributiveLOpESum", IsExtLSet );
+DeclareCategory( "IsDistributiveLOpESum", IsExtLSet );
 
 
 #############################################################################
@@ -90,7 +91,7 @@ IsDistributiveLOpESum := NewCategory( "IsDistributiveLOpESum", IsExtLSet );
 ##  that is, $e \* x = x$ for $x \in D$.
 #T necessary?
 ##
-IsTrivialLOpEOne := NewCategory( "IsTrivialLOpEOne", IsExtLSet );
+DeclareCategory( "IsTrivialLOpEOne", IsExtLSet );
 
 
 #############################################################################
@@ -101,14 +102,14 @@ IsTrivialLOpEOne := NewCategory( "IsTrivialLOpEOne", IsExtLSet );
 ##  that is, $z \* x = Z$ for $x \in D$ and the zero element $Z$ of $D$.
 #T necessary?
 ##
-IsTrivialLOpEZero := NewCategory( "IsTrivialLOpEZero", IsExtLSet );
+DeclareCategory( "IsTrivialLOpEZero", IsExtLSet );
 
 
 #############################################################################
 ##
 #C  IsLeftActedOnByRing( <D> )
 ##
-IsLeftActedOnByRing := NewCategory( "IsLeftActedOnByRing", IsExtLSet );
+DeclareCategory( "IsLeftActedOnByRing", IsExtLSet );
 
 
 #############################################################################
@@ -118,17 +119,15 @@ IsLeftActedOnByRing := NewCategory( "IsLeftActedOnByRing", IsExtLSet );
 ##  This is a property because then we need not duplicate code that creates
 ##  either left modules or left vector spaces.
 ##
-IsLeftActedOnByDivisionRing := NewProperty( "IsLeftActedOnByDivisionRing",
+DeclareProperty( "IsLeftActedOnByDivisionRing",
     IsExtLSet and IsLeftActedOnByRing );
-SetIsLeftActedOnByDivisionRing := Setter( IsLeftActedOnByDivisionRing );
-HasIsLeftActedOnByDivisionRing := Tester( IsLeftActedOnByDivisionRing );
 
 
 #############################################################################
 ##
 #C  IsLeftActedOnBySuperset( <D> )
 ##
-IsLeftActedOnBySuperset := NewCategory( "IsLeftActedOnBySuperset",
+DeclareCategory( "IsLeftActedOnBySuperset",
     IsExtLSet );
 
 
@@ -136,18 +135,14 @@ IsLeftActedOnBySuperset := NewCategory( "IsLeftActedOnBySuperset",
 ##
 #A  GeneratorsOfExtLSet( <D> )
 ##
-GeneratorsOfExtLSet := NewAttribute( "GeneratorsOfExtLSet", IsExtLSet );
-SetGeneratorsOfExtLSet := Setter( GeneratorsOfExtLSet );
-HasGeneratorsOfExtLSet := Tester( GeneratorsOfExtLSet );
+DeclareAttribute( "GeneratorsOfExtLSet", IsExtLSet );
 
 
 #############################################################################
 ##
 #A  LeftActingDomain( <D> )
 ##
-LeftActingDomain := NewAttribute( "LeftActingDomain", IsExtLSet );
-SetLeftActingDomain := Setter( LeftActingDomain );
-HasLeftActingDomain := Tester( LeftActingDomain );
+DeclareAttribute( "LeftActingDomain", IsExtLSet );
 
 
 #############################################################################

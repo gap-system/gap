@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
 ##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $G_2$, $F_4$,
@@ -115,17 +116,32 @@ end;
 ##  (Here we use the notation $d_{ij}$ for the number which is 1 if $i = j$,
 ##  and 0 otherwise.)
 ##
+##  The root vectors are the $E_{ij}$. The root system lives in an
+##  <n>-dimensional vector space with basis $\{e_1,\ldots ,e_n\}$. 
+##  The roots are $r_{k,l} = -e_{k-1}+e_{k}+e_{l-1}-e_{l}$ for 
+##  $1\leq k\neq l\leq n+1$, where $e_i=0$ if $i<1$ or $i>n$.
+##  The positive roots are $r_{kl}$ for $k<l$. A fundamental system is
+##  given by $r_{k,k+1}$ for $k = 1,\ldots ,n$. The height of a root
+##  is $ht( r_{kl} ) = l-k$.
+##
+ 
 SimpleLieAlgebraTypeA := function( n, F )
 
     local T,               # The table of the Lie algebra constructed.
-          i,j,k,l,         # Loop variables.
+          i,j,k,l,d,       # Loop variables.
           ind1,ind2,jnd,   # Indices.
           lst,             # A list.
           val,
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          posR,
+          posRv,negRv,
+          bL,
+          root,
+          CM;
+          
 
     # Initialize the s.c. table
     T:= EmptySCTable( n^2+2*n, Zero( F ), "antisymmetric" );
@@ -255,6 +271,42 @@ SimpleLieAlgebraTypeA := function( n, F )
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
 
+    bL:= BasisVectors( Basis( L ) );
+    posRv:= [ ]; negRv:= [ ];
+    posR:= [ ]; 
+    for d in [1..n] do
+      for k in [1..n-d+1] do
+        l:= k+d; 
+        Add( posRv, bL[ (k-1)*n + l-1 ] );         
+        Add( negRv, bL[ (l-1)*n + k ] );
+        root:= ListWithIdenticalEntries( n, Zero( F ) );
+        if k>1 then root[k-1]:= -One(F); fi;
+        if l<=n then root[l]:= -One(F); fi;
+        root[k]:= root[k] + One(F);
+        root[l-1]:= root[l-1] + One(F);
+        Add( posR, root );
+      od;
+    od;
+
+    CM:= MutableNullMat( n, n );
+    for i in [1..n-1] do
+      CM[i][i]:= 2;
+      CM[i][i+1]:= -1;
+      CM[i+1][i]:= -1;
+    od;
+    CM[n][n]:= 2;
+
+    Append( posRv, negRv );
+    Append( posR, -posR );
+
+    SetRootSystem( L, rec( roots:= posR,
+                           rootvecs:= posRv,
+                           fundroots:= posR{[1..n]},
+                           cartanmat:= CM
+                          )
+                 );
+    
+
     return L;
 end;
 
@@ -293,15 +345,33 @@ end;
 ##
 ##  Furthermore we use the ralations B_{ji} = B_{ij} and C_{ji} = C_{ij}.
 ##
+##  The basis elements are also the root vectors. The root system lives
+##  in an <n>-dimensional vector space with basis $\{e_1,\ldots ,e_n\}$.
+##  Then the basis elements correspond to roots in the following way:
+##  
+##      A_{kl} ----> e_{k} - e_{2n+1-l}        ( = \alpha_{kl} )
+##      B_{kl} ----> e_{k} + e_{l}             ( = \beta_{kl} )
+##      C_{kl} ----> -e_{2n+1-k} - e_{2n+1-l}  ( = \gamma_{kl} )
+##  
+##  A fundamental system is given by $\alpha_{k,2n-k}$ for $k=1,\ldots n-1$
+##  together with $\beta_{nn}$. The heights of the roots are given by
+##  $ht( \alpha_{kl} ) = 2n+1-k-l$ and $ht( \beta_{kl} ) = 2n+1-k-l$.
+##
+
 SimpleLieAlgebraTypeC := function( n, F )
 
     local T,               # The table of the Lie algebra constructed.
-          i,j,k,l,         # Loop variables.
+          i,j,k,l,d,       # Loop variables.
           ind1,ind2,jnd,   # Indices.
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          posRv,negRv,
+          posR,
+          bL,
+          root,
+          CM;
 
     # Initialize the s.c. table
     T:= EmptySCTable( 2*n^2+n, Zero(F), "antisymmetric" );
@@ -426,6 +496,48 @@ SimpleLieAlgebraTypeC := function( n, F )
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
 
+    bL:= BasisVectors( Basis( L ) );
+    posRv:= [ ]; negRv:= [ ];
+    posR:= [ ];
+    for d in [1..2*n-1] do
+      for k in [1..n] do
+        l:= 2*n+1-d-k;
+
+        if ( n+1 <= l ) and ( l <= 2*n ) and ( 2*n+1-l > k ) then
+          Add( posRv, bL[ (k-1)*n + l-n ] );
+          Add( negRv, bL[ (2*n-l)*n + n+1-k ] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[2*n+1-l]:= -One( F );
+          Add( posR, root );
+        fi;
+
+        if ( l <= n ) and ( l >= k ) then
+          Add( posRv, bL[ n^2 + (k-1)*(n+1-k/2) +l-k+1 ] );
+          Add( negRv, bL[ (3*n^2+n)/2 + (n-l)*(n+1-(n+1-l)/2)+l-k+1 ] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[l]:= root[l]+One( F );
+          Add( posR, root );   
+        fi;
+           
+      od;
+    od;
+
+    Append( posR, -posR );
+    Append( posRv, negRv );
+    CM:= MutableNullMat( n, n );
+    for i in [1..n-1] do
+      CM[i][i]:= 2;
+      CM[i][i+1]:= -1;
+      CM[i+1][i]:= -1;
+    od;
+    CM[n][n-1]:= -2; CM[n][n]:= 2;
+    SetRootSystem( L, rec( roots:= posR,
+                           rootvecs:= posRv,
+                           fundroots:= posR{[1..n]},
+                           cartanmat:= CM
+                         )
+                 );
+
     return L;
 end;
 
@@ -459,15 +571,36 @@ end;
 ##
 ##  and the relation $B_{ji} = -B_{ij}$.
 ##
+##  The root system lives in an <n>-dimensional vector space with basis
+##  $\{e_1,\ldots ,e_n\}$. The basis vectors correspond to roots in the 
+##  following way:
+##                 { e_{k-1}     if 2 <= k <= n+1,
+##       A_k ----> {
+##                 { -e_{2n+2-k} if n+2 <= k <= 2n+1
+##
+##                      {  e_{k-1}+e_{l-1}  if  2 <= k,l <= n+1 
+##       B_{k,l} ---->  {  e_{k-1}-e_{2n+2-l} if 2<=k<=n+1 and n+2<=l<=2n+1 
+##                      {  -e_{2n+2-k}-e_{2n+2-l} if n+2 <= k,l <= 2n+1
+##
+##  A fundamental system is given by B_{k,2n+2-k} for $k=2,\ldots ,n$, 
+##  together with A_{n+1}. The heights of the roots are given by
+##  $ht( e_k ) = n-l+1$, $ht(e_k+e_l) = n-k+n-l+2$, $ht(e_k-e_l) = l-k$.
+##
+
 SimpleLieAlgebraTypeB := function( n, F )
 
     local T,               # The table of the Lie algebra constructed.
-          i,j,k,l,         # Loop variables.
+          i,j,k,l,d,       # Loop variables.
           ind1,ind2,jnd,   # Indices.
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          posRv,negRv,
+          posR,
+          bL,
+          CM,
+          root;
 
     # Initialize the s.c. table
     T:= EmptySCTable( 2*n^2+n, Zero(F), "antisymmetric" );
@@ -561,6 +694,62 @@ SimpleLieAlgebraTypeB := function( n, F )
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
 
+    bL:= BasisVectors( Basis( L ) );
+    posRv:= [ ]; negRv:= [ ];
+    posR:= [ ];
+    for d in [1..2*n-1] do
+      for k in [1..n] do
+        l:= k+d;
+
+        if ( l <= n ) then
+          Add( posRv, bL[ 2*n+(k-1)*(2*n-k/2)+2*n+2-l-k-1 ] );
+          Add( negRv, bL[ 2*n+(l-1)*(2*n-l/2)+2*n+2-k-l-1 ] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[l]:= -One( F );
+          Add( posR, root );
+        fi;
+
+        l:= 2*n+2-k-d;
+
+        if ( l <= n ) and ( l > k ) then
+          Add( posRv, bL[ 2*n+(k-1)*(2*n-k/2)+l-k ] );
+          Add( negRv, bL[ 2*n+(2*n-l)*(2*n-(2*n+1-l)/2)+l-k] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[l]:= One( F );
+          Add( posR, root );   
+        fi;
+           
+      od;
+
+        l:= n+1-d;
+        if ( l <= n ) and ( l >= 1 ) then
+          Add( posRv, bL[l] );
+          Add( negRv, bL[2*n+1-l] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[l]:= One( F ); 
+          Add( posR, root );   
+        fi;     
+
+    od;
+
+    Append( posR, -posR );
+    Append( posRv, negRv );
+    CM:= MutableNullMat( n, n );
+    for i in [1..n-1] do
+      CM[i][i]:= 2;
+      CM[i][i+1]:= -1;
+      CM[i+1][i]:= -1;
+    od;
+    CM[n-1][n]:= -2; CM[n][n]:= 2;
+    SetRootSystem( L, rec( roots:= posR,
+                           rootvecs:= posRv,
+                           fundroots:= posR{[1..n]},
+                           cartanmat:= CM
+                         )
+                 );
+
+
+
     return L;
 end;
 
@@ -588,15 +777,33 @@ end;
 ##
 ##  and the relation $A_{ji} = -A_{ij}$.
 ##
+##  The root system lives in an <n>-dimensonal vector space with basis
+##  $\{e_1,\ldots ,e_n\}$. The basis vectors correspond to roots in the
+##  following way:
+##
+##                     { e_k+e_l                 if 1 <= k < l <= n
+##       A_{kl} ---->  { e_k-e_{2n+1-l}          if 1<=k<=n and n+1<=l<=2n
+##                     { -e_{2n+1-k}-e_{2n+1-l}  if n+1<=k<l<=2n
+##  
+##  A fundamental system is given by $A_{k,2n-k}$ for $k=1,\ldots, n-1$ and
+##  $A_{n-1,n}$. The heights of the roots are given by
+##  $ht( e_k+e_l ) = 2n-k-l$ and $ht( e_k-e_{2n+1-l} ) = 2n+1-k-l$.
+##
+
 SimpleLieAlgebraTypeD := function( n, F )
 
     local T,               # The table of the Lie algebra constructed.
-          i,j,k,l,         # Loop variables.
+          i,j,k,l,d,       # Loop variables.
           ind1,ind2,jnd,   # Indices.
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          posRv,negRv,
+          posR,
+          CM,
+          bL,
+          root;
 
     # Initialize the s.c. table
     T:= EmptySCTable( 2*n^2-n, Zero( F ), "antisymmetric" );
@@ -665,6 +872,61 @@ SimpleLieAlgebraTypeD := function( n, F )
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F )>0 );
 
+    bL:= BasisVectors( Basis( L ) );
+    posRv:= [ ]; negRv:= [ ];
+    posR:= [ ];
+    for d in [1..2*n-3] do
+      for k in [1..n] do
+        l:= k+d;
+
+        if ( l <= n ) and ( l <> 2*n+1-k ) then
+          Add( posRv, bL[ (k-1)*(2*n-k/2)+2*n+1-l-k ] );
+          Add( negRv, bL[ (l-1)*(2*n-l/2)+2*n+1-k-l ] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[l]:= -One( F );
+          Add( posR, root );
+        fi;
+
+        l:= 2*n-k-d;
+
+        if ( l <= n ) and ( l > k ) then
+          Add( posRv, bL[ (k-1)*(2*n-k/2)+l-k ] );
+          Add( negRv, bL[ (2*n-l)*(2*n-(2*n+1-l)/2)+l-k] );
+          root:= ListWithIdenticalEntries( n, Zero( F ) );
+          root[k]:= One( F ); root[l]:= One( F );
+          Add( posR, root );   
+        fi;
+           
+      od;
+    od;
+
+    Append( posR, -posR );
+    Append( posRv, negRv );
+    CM:= MutableNullMat( n, n );
+    for i in [1..n-1] do
+      CM[i][i]:= 2;
+      CM[i][i+1]:= -1;
+      CM[i+1][i]:= -1;
+    od;
+    if n >=2 then
+      CM[n-1][n]:= 0;
+      CM[n][n-1]:= 0;
+    fi;
+    if n >= 3 then
+      CM[n-2][n]:= -1;
+      CM[n][n-2]:= -1;
+    fi;
+    
+    CM[n][n]:= 2;
+    SetRootSystem( L, rec( roots:= posR,
+                           rootvecs:= posRv,
+                           fundroots:= posR{[1..n]},
+                           cartanmat:= CM
+                         )
+                 );
+
+
+
     return L;
 end;
 
@@ -695,8 +957,14 @@ SimpleLieAlgebraTypeE := function( n, F )
           C,               # The Cartan matrix of $E_n$
           L,               # Lie algebra, result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          bL,
+          eqs,sol,rl,      # equation system, solution vector and right 
+                           # hand side.
+          basH,            # basis of a Cartan subalgebra.
+          sp,              # vector space.
+          cf;
 
     R:= [
       [ 1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 1, 0, 0, 0, 0, 0, 0 ],
@@ -803,6 +1071,27 @@ SimpleLieAlgebraTypeE := function( n, F )
     # Initialize the s.c. table
     T:= EmptySCTable( dim, Zero(F), "antisymmetric" );
 
+    # Calculate a basis of a Cartan subalgebra relative to which the
+    # root system is as above. 
+
+    eqs:= MutableNullMat( Length(C)^2, Length(C)^2, Rationals );
+    rl:= ShallowCopy( Zero(Rationals)*[1..Length(C)^2] );
+    for i in [1..Length(C)] do
+      for k in [1..Length(C)] do
+        for j in [1..Length(C)] do
+          cc:= R[j]*C*R[k];
+          eqs[(i-1)*Length(C)+k][(i-1)*Length(C)+j]:= cc*One( Rationals );
+          rl[(i-1)*Length(C)+k]:= R[k][i]*One( Rationals );
+        od;
+      od;
+    od;
+
+    sol:= SolutionMat( TransposedMat( eqs ), rl );
+
+    basH:= List( [1..Length(C)], x -> 
+                            sol{[(x-1)*Length(C)+1..x*Length(C)]} );
+    sp:= VectorSpace( Rationals, basH );
+
     lst:= [ 1 .. Length( C ) ] + 2 * lenR;
 
     for i in [1..lenR] do
@@ -814,27 +1103,34 @@ SimpleLieAlgebraTypeE := function( n, F )
           SetEntrySCTable( T, i+lenR, j+lenR,
                               [ eps(R[i],R[j],epsmat)*One(F), k+lenR ] );
         fi;
-        if i = j then
-          T[i][j+lenR]:= [ lst, -One(F)*R[i] ];
-          T[i+lenR][j]:= [ lst,  One(F)*R[i] ];
+        if i = j and T[i][j+lenR] = [[],[]] then
+          # The product will be an element of the Cartan subalgebra. We write
+          # its coefficients relative to the basis computed above.
+
+          cf:= Coefficients( Basis(sp,basH), R[i]*One( Rationals ) );
+          SetEntrySCTable( T, i, j+lenR, Flat( List(
+                          [1..Length(lst)], x->[-cf[x]*One(F),lst[x]] ) ) );
+          SetEntrySCTable( T, i+lenR, j, Flat( List(
+                          [1..Length(lst)], x->[cf[x]*One(F),lst[x]] ) ) );
         fi;
         Rij:= R[i]-R[j];
         if Rij in R then
           k:= Position(R,Rij);
-          T[i][j+lenR]:= [[k],[One(F)*eps(R[i],-R[j],epsmat)]];
-          T[j+lenR][i]:= [[k],[-One(F)*eps(R[i],-R[j],epsmat)]];
+          SetEntrySCTable( T, i, j+lenR, [One(F)*eps(R[i],-R[j],epsmat),k] );
         elif -Rij in R then
           k:= Position(R,-Rij);
-          T[i][j+lenR]:= [[k+lenR],[One(F)*eps(R[i],-R[j],epsmat)]];
-          T[j+lenR][i]:= [[k+lenR],[-One(F)*eps(R[i],-R[j],epsmat)]];
+          SetEntrySCTable( T, i, j+lenR, 
+                           [One(F)*eps(R[i],-R[j],epsmat),k+lenR] );
         fi;
       od;
       for j in [1..Length(C)] do
-        cc:=R[j]*C*R[i];
-        T[2*lenR+j][i]:=[[i],[One(F)*cc]];
-        T[i][2*lenR+j]:=[[i],[-One(F)*cc]];
-        T[2*lenR+j][i+lenR]:=[[i+lenR],[-One(F)*cc]];
-        T[i+lenR][2*lenR+j]:=[[i+lenR],[One(F)*cc]];
+        cc:=R[i][j];
+        if cc <> 0*cc then
+          T[2*lenR+j][i]:=[[i],[One(F)*cc]];
+          T[i][2*lenR+j]:=[[i],[-One(F)*cc]];
+          T[2*lenR+j][i+lenR]:=[[i+lenR],[-One(F)*cc]];
+          T[i+lenR][2*lenR+j]:=[[i+lenR],[One(F)*cc]];
+        fi;
       od;
     od;
 
@@ -845,6 +1141,16 @@ SimpleLieAlgebraTypeE := function( n, F )
     vectors:= BasisVectors( CanonicalBasis( L ) ){ CSA };
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
+
+    bL:= BasisVectors( Basis( L ) );
+    Append( R, -R );
+    R:= R*One( F );
+    SetRootSystem( L, rec( roots:= R,
+                           rootvecs:= bL{[1..Length(R)]},
+                           fundroots:= R{[1..n]},
+                           cartanmat:= C
+                         )
+                 );
 
     return L;
 end;
@@ -863,32 +1169,55 @@ SimpleLieAlgebraTypeF4 := function( F )
           v,               # basis vectors of 'L'
           K,               # Lie algebra isomorphic to the result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          b;
 
     L:= SimpleLieAlgebraTypeE( 6, F );
     v:= BasisVectors( CanonicalBasis( L ) );
 
-K:= Subalgebra( L,
-                [ v[2], v[4], v[1]+v[6], v[3]+v[5], v[38], v[40], v[37]+v[42],
-                  v[39]+v[41], v[8], v[74], v[9]-v[10], v[76], v[7]-v[11],
-                  v[73]+v[78], v[75]+v[77], v[44], v[45]-v[46], v[43]-v[47],
-                  v[13]-v[14], v[12]+v[16], v[15], v[49]-v[50], v[48]+v[52],
-                  v[51], v[17]+v[20], v[19], v[18]-v[21], v[53]+v[56], v[55],
-                  v[54]-v[57], v[22]-v[25], v[24], v[23], v[58]-v[61],
-                  v[60], v[59], v[26]-v[28], v[27], v[62]-v[64], v[63],
-                  v[30], v[29]+v[31], v[66], v[65]+v[67], v[32]-v[33],
-                  v[68]-v[69], v[34], v[70], v[35], v[71], v[36], v[72] ],
-             "basis" );
+    b:= [ v[2], v[4], v[1]+v[6], v[3]+v[5], v[8], v[9]-v[10], 
+          v[7]-v[11], v[13]-v[14], v[12]+v[16], v[15], v[17]+v[20], v[19], 
+          v[18]-v[21], v[24], v[22]-v[25], v[23], v[26]-v[28], v[27], v[30], 
+          v[29]+v[31], v[32]-v[33], v[34], v[35], v[36], v[38], v[40], 
+          v[37]+v[42], v[39]+v[41], v[44], v[45]-v[46], v[43]-v[47], 
+          v[49]-v[50], v[48]+v[52], v[51], v[53]+v[56], v[55], v[54]-v[57], 
+          v[60], v[58]-v[61], v[59], v[62]-v[64], v[63], v[66], v[65]+v[67], 
+          v[68]-v[69], v[70], v[71], v[72], v[74], v[76], v[73]+v[78], 
+          v[75]+v[77]];
 
-    T:= StructureConstantsTable( BasisOfDomain( K ) );
+    K:= Subalgebra( L, b, "basis" );
+ 
+    T:= StructureConstantsTable( Basis( K, b ) );
 
     L:= LieAlgebraByStructureConstants( F, T );
 
-    CSA:= [ 10, 12, 14, 15 ];
+    CSA:= [ 49, 50, 51, 52 ];
     vectors:= BasisVectors( CanonicalBasis( L ) ){ CSA };
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
+
+    SetRootSystem( L, rec(
+  roots := [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ], 
+      [ 1, 1, 0, 0 ], [ 0, 1, 0, 1 ], [ 0, 0, 1, 1 ], [ 1, 1, 0, 1 ], 
+      [ 0, 1, 1, 1 ], [ 0, 1, 0, 2 ], [ 1, 1, 1, 1 ], [ 1, 1, 0, 2 ], 
+      [ 0, 1, 1, 2 ], [ 1, 2, 0, 2 ], [ 1, 1, 1, 2 ], [ 0, 1, 2, 2 ], 
+      [ 1, 2, 1, 2 ], [ 1, 1, 2, 2 ], [ 1, 2, 2, 2 ], [ 1, 2, 1, 3 ], 
+      [ 1, 2, 2, 3 ], [ 1, 2, 2, 4 ], [ 1, 3, 2, 4 ], [ 2, 3, 2, 4 ], 
+      [ -1, 0, 0, 0 ], [ 0, -1, 0, 0 ], [ 0, 0, -1, 0 ], [ 0, 0, 0, -1 ], 
+      [ -1, -1, 0, 0 ], [ 0, -1, 0, -1 ], [ 0, 0, -1, -1 ], [ -1, -1, 0, -1 ],
+      [ 0, -1, -1, -1 ], [ 0, -1, 0, -2 ], [ -1, -1, -1, -1 ], 
+      [ -1, -1, 0, -2 ], [ 0, -1, -1, -2 ], [ -1, -2, 0, -2 ], 
+      [ -1, -1, -1, -2 ], [ 0, -1, -2, -2 ], [ -1, -2, -1, -2 ], 
+      [ -1, -1, -2, -2 ], [ -1, -2, -2, -2 ], [ -1, -2, -1, -3 ], 
+      [ -1, -2, -2, -3 ], [ -1, -2, -2, -4 ], [ -1, -3, -2, -4 ], 
+      [ -2, -3, -2, -4 ] ],
+      rootvecs := BasisVectors( CanonicalBasis( L ) ){[1..48]},
+      fundroots := [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], 
+                     [ 0, 0, 0, 1 ] ],
+      cartanmat := [ [ 2, -1, 0, 0 ], [ -1, 2, 0, -2 ], [ 0, 0, 2, -1 ], 
+                     [ 0, -1, -1, 2 ] ] 
+                ) );
 
     return L;
 end;
@@ -898,7 +1227,7 @@ end;
 ##
 #F  SimpleLieAlgebraTypeG2( <F> )
 ##
-##  $G_2$ is constructed as subalgebra of $D_4$.
+##  $G_2$ is constructed as subalgebra of $D_4$[
 ##
 SimpleLieAlgebraTypeG2 := function( F )
 
@@ -907,28 +1236,34 @@ SimpleLieAlgebraTypeG2 := function( F )
           v,               # basis vectors of 'L'
           K,               # Lie algebra isomorphic to the result
           vectors,         # vectors spanning a Cartan subalgebra
-          CSA;             # List of indices of the basis vectors of a Cartan
+          CSA,             # List of indices of the basis vectors of a Cartan
                            # subalgebra.
+          b;
 
     L:= SimpleLieAlgebraTypeD( 4, F );
     v:= BasisVectors( CanonicalBasis( L ) );
 
-    K:= Subalgebra( L,
-                [ v[6]+v[14]+v[15], v[11], v[13]+v[20]+v[23], v[17],
-                  v[5]-v[9]-v[10], v[7]-v[12]+(2)*v[16],
-                  v[12]-v[16], v[18]-v[21]-v[24],
-                  v[3]+v[4]+v[8], v[22]+v[25]+v[26], v[2], v[27], v[1],
-                  v[28] ],
-             "basis" );
-    T:= StructureConstantsTable( BasisOfDomain( K ) );
+    b:= [ v[18]-v[21]-v[24], v[1], v[3]+v[4]+v[8], v[6]+v[14]+v[15],
+          v[17], v[2], v[5]-v[9]-v[10], v[28], v[22]+v[25]+v[26],
+          v[13]+v[20]+v[23], v[11], v[27], v[7]-v[12]+(2)*v[16], v[12]-v[16]];
+
+    K:= Subalgebra( L, b, "basis" );
+    T:= StructureConstantsTable( Basis( K, b ) );
 
     L:= LieAlgebraByStructureConstants( F, T );
 
-    CSA:= [ 6, 7 ];
+    CSA:= [ 13, 14 ];
     vectors:= BasisVectors( CanonicalBasis( L ) ){ CSA };
     SetCartanSubalgebra( L, SubalgebraNC( L, vectors, "basis" ) );
     SetIsRestrictedLieAlgebra( L, Characteristic( F ) > 0 );
-
+    SetRootSystem( L, 
+              rec( roots := [ [ 1, -1 ], [ 0, 1 ], [ 1, 0 ], [ 2, -1 ], 
+                              [ 3, -2 ], [ 3, -1 ], [ -1, 1 ], [ 0, -1 ], 
+                              [ -1, 0 ], [ -2, 1 ], [ -3, 2 ], [ -3, 1 ] ],
+                   rootvecs := BasisVectors( CanonicalBasis( L ) ){[1..12]},
+                   fundroots := [ [ 1, -1 ], [ 0, 1 ] ],
+                   cartanmat := [ [ 2, -1 ], [ -3, 2 ] ] )
+                 );
     return L;
 end;
 
@@ -1486,7 +1821,7 @@ end;
 #F  SimpleLieAlgebra( <type>, <n>, <F> )
 ##
 
-SimpleLieAlgebra := function( type, n, F )
+InstallGlobalFunction( SimpleLieAlgebra, function( type, n, F )
 
     # Check the arguments.
     if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and 
@@ -1520,7 +1855,7 @@ SimpleLieAlgebra := function( type, n, F )
       Error( "<type> must be one of \"A\", \"B\", \"C\", \"D\", \"E\", ",
              "\"F\", \"G\", \"H\", \"K\", \"S\", \"W\" " );
     fi;
-end;
+end );
 
 
 #############################################################################

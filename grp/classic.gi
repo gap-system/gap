@@ -43,6 +43,7 @@ Revision.classic_gi :=
 ##
 
 #F  Sp( <d>, <q> )  . . . . . . . . . . . . . . . . . . . .  symplectic group
+#F  SymplecticGroup( <d>, <q> )
 ##
 Sp := function( d, q )
     local   g,  f,  z,  o,  mat1,  mat2,  i,  size,  qi,  c;
@@ -132,9 +133,13 @@ Sp := function( d, q )
 
 end;
 
+SymplecticGroup := Sp;
+
+
 #############################################################################
 ##
 #F  GU( <n>, <q> )  . . . . . . . . . . . . . . . . . . general unitary group
+#F  GeneralUnitaryGroup( <n>, <q> )
 ##
 GU := function( n, q )
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
@@ -222,9 +227,13 @@ GU := function( n, q )
      return g;
 end;
 
+GeneralUnitaryGroup := GU;
+
+
 #############################################################################
 ##
 #F  SU( <n>, <q> )  . . . . . . . . . . . . . . . . . . special unitary group
+#F  SpecialUnitaryGroup( <n>, <q> )
 ##
 SU := function( n, q )
      local g, i, e, f, z, o, mat1, mat2, size, qi, eps, c;
@@ -327,6 +336,9 @@ SU := function( n, q )
      return g;
 end;
  
+SpecialUnitaryGroup := SU;
+
+
 #############################################################################
 ##
 
@@ -1458,13 +1470,6 @@ CentralProductOfMatrixGroups := function( M, N )
     return G;
 end;
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

@@ -6,11 +6,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the GAP to C compiler.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_compiler_h =
+const char * Revision_compiler_h =
    "@(#)$Id$";
 #endif
 
@@ -37,23 +38,9 @@ extern Int CompileFunc (
 /****************************************************************************
 **
 
-*F  SetupCompiler() . . . . . . . . . . . . . . . . . initialize the compiler
+*F  InitInfoCompiler() . . . . . . . . . . . . . . .  table of init functions
 */
-extern void SetupCompiler ( void );
-
-
-/****************************************************************************
-**
-*F  InitCompiler()  . . . . . . . . . . . . . . . . . initialize the compiler
-*/
-extern void InitCompiler ( void );
-
-
-/****************************************************************************
-**
-*F  CheckCompiler() . . . . . . . .  check the initialisation of the compiler
-*/
-extern void CheckCompiler ( void );
+StructInitInfo * InitInfoCompiler ( void );
 
 
 /****************************************************************************

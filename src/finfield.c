@@ -6,6 +6,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file contains the  functions  to compute  with elements  from  small
 **  finite fields.
@@ -50,7 +51,7 @@
 */
 #include        "system.h"              /* Ints, UInts                     */
 
-SYS_CONST char * Revision_finfield_c =
+const char * Revision_finfield_c =
    "@(#)$Id$";
 
 #include        "gasman.h"              /* garbage collector               */
@@ -73,8 +74,6 @@ SYS_CONST char * Revision_finfield_c =
 #define INCLUDE_DECLARATION_PART
 #include        "finfield.h"            /* finite fields and ff elements   */
 #undef  INCLUDE_DECLARATION_PART
-
-#include        "gap.h"                 /* error handling, initialisation  */
 
 #include        "records.h"             /* generic records                 */
 #include        "precord.h"             /* plain records                   */
@@ -658,15 +657,13 @@ FF              CommonFF (
 **  'CharFFE' returns the characteristic of the small finite field  in  which
 **  the element <ffe> lies.
 */
-UInt            CharFFE (
+UInt CharFFE (
     Obj                 ffe )
 {
     return CHAR_FF( FLD_FFE(ffe) );
 }
 
-Obj             CharFFEDefaultFunc;
-
-Obj             CharFFEDefaultHandler (
+Obj FuncCHAR_FFE_DEFAULT (
     Obj                 self,
     Obj                 ffe )
 {
@@ -681,7 +678,7 @@ Obj             CharFFEDefaultHandler (
 **  'DegreeFFE' returns the degree of the smallest finite field in which  the
 **  element <ffe> lies.
 */
-UInt            DegreeFFE (
+UInt DegreeFFE (
     Obj                 ffe )
 {
     UInt                d;              /* degree, result                  */
@@ -714,9 +711,7 @@ UInt            DegreeFFE (
     return d;
 }
 
-Obj             DegreeFFEDefaultFunc;
-
-Obj             DegreeFFEDefaultHandler (
+Obj FunDEGREE_FFE_DEFAULT (
     Obj                 self,
     Obj                 ffe )
 {
@@ -1623,17 +1618,17 @@ Obj PowFFEFFE (
 
 /****************************************************************************
 **
-*F  FunIsFFE( <hdCall> )  . . . . . . . . . .  test for finite field elements
+*F  FuncIS_FFE( <self>, <obj> ) . . . . . . .  test for finite field elements
 **
-**  'FunIsFFE' implements the internal function 'IsFFE( <obj> )'.
+**  'FuncIsFFE' implements the internal function 'IsFFE( <obj> )'.
 **
 **  'IsFFE' returns  'true' if its argument  <obj> is a finite  field element
 **  and 'false' otherwise.   'IsFFE' will cause  an  error if  called with an
 **  unbound variable.
 */
-Obj             IsFFEFilt;
+Obj IsFFEFilt;
 
-Obj             IsFFEHandler (
+Obj FuncIS_FFE (
     Obj                 self,
     Obj                 obj )
 {
@@ -1652,18 +1647,16 @@ Obj             IsFFEHandler (
 
 /****************************************************************************
 **
-*F  LogFFEHandler(<self>,<opZ>,<opR>) .  logarithm of a finite field constant
+*F  FuncLOG_FFE_DEFAULT( <self>, <opZ>, <opR> ) .  logarithm of a ff constant
 **
-**  'LogFFEHandler' implements the internal function 'LogFFE( <z>, <r> )'.
+**  'FuncLOG_FFE_DEFAULT' implements the function 'LogFFE( <z>, <r> )'.
 **
 **  'LogFFE'  returns the logarithm of  the nonzero finite  field element <z>
 **  with respect to the root <r> which must lie in the same field like <z>.
 */
-Obj             LOG_FFE_LARGE;
+Obj LOG_FFE_LARGE;
 
-Obj             LogFFEDefaultFunc;
-
-Obj             LogFFEDefaultHandler (
+Obj FuncLOG_FFE_DEFAULT (
     Obj                 self,
     Obj                 opZ,
     Obj                 opR )
@@ -1679,14 +1672,14 @@ Obj             LogFFEDefaultHandler (
             "LogFFE: <z> must be a nonzero finite field element",
              0L, 0L,
              "you can return a new <z>" );
-        return LogFFEDefaultHandler( self, opZ, opR );
+        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
     if ( ! IS_FFE(opR) || VAL_FFE(opR) == 0 ) {
         opR = ErrorReturnObj(
             "LogFFE: <r> must be a nonzero finite field element",
              0L, 0L,
              "you can return a new <r>" );
-        return LogFFEDefaultHandler( self, opZ, opR );
+        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
 
     /* get the values, handle trivial cases                                */
@@ -1737,7 +1730,7 @@ Obj             LogFFEDefaultHandler (
             "LogFFE: <z> must be a power of <r>",
              0L, 0L,
              "you can return a new <z>" );
-        return LogFFEDefaultHandler( self, opZ, opR );
+        return FuncLOG_FFE_DEFAULT( self, opZ, opR );
     }
 
     /* return the logarithm                                                */
@@ -1748,17 +1741,17 @@ Obj             LogFFEDefaultHandler (
 
 /****************************************************************************
 **
-*F  FunIntFFE( <hdCall> ) . . .  convert a finite field element to an integer
+*F  FuncINT_FFE_DEFAULT( <self>, <z> )  . . . .   convert a ffe to an integer
 **
-**  'FunIntFFE' implements the internal function 'IntFFE( <z> )'.
+**  'FuncINT_FFE_DEFAULT' implements the internal function 'IntFFE( <z> )'.
 **
 **  'IntFFE'  returns  the integer  that  corresponds  to  the  finite  field
 **  element <z>, which must of course be  an element  of a prime field, i.e.,
 **  the smallest integer <i> such that '<i> * <z>^0 = <z>'.
 */
-Obj             IntFF;
+Obj IntFF;
 
-Obj             INT_FF (
+Obj INT_FF (
     FF                  ff )
 {
     Obj                 conv;           /* conversion table, result        */
@@ -1792,9 +1785,7 @@ Obj             INT_FF (
     return ELM_PLIST( IntFF, ff );
 }
 
-Obj             IntFFEDefaultFunc;
-
-Obj             IntFFEDefaultHandler (
+Obj FuncINT_FFE_DEFAULT (
     Obj                 self,
     Obj                 z )
 {
@@ -1824,7 +1815,7 @@ Obj             IntFFEDefaultHandler (
             "IntFFE: <z> must lie in prime field",
             0L, 0L,
             "you can return a new <z>" );
-        return IntFFEDefaultHandler( self, z );
+        return FuncINT_FFE_DEFAULT( self, z );
     }
 
     /* convert the value into the prime field                              */
@@ -1837,16 +1828,14 @@ Obj             IntFFEDefaultHandler (
 
 /****************************************************************************
 **
-*F  ZHandler(<self>,<q>)  . . .  return the generator of a small finite field
+*F  FuncZ( <self>, <q> )  . . .  return the generator of a small finite field
 **
-**  'ZHandler' implements the internal function 'Z( <q> )'.
+**  'FuncZ' implements the internal function 'Z( <q> )'.
 **
 **  'Z' returns the generators  of the small finite  field with <q> elements.
 **  <q> must be a positive prime power.
 */
-Obj             ZFunc;
-
-Obj             ZHandler (
+Obj FuncZ (
     Obj                 self,
     Obj                 q )
 {
@@ -1861,7 +1850,7 @@ Obj             ZHandler (
             "Z: <q> must be a positive prime power (not a %s)",
             (Int)TNAM_OBJ(q), 0L,
             "you can return a positive integer for <q>" );
-        return ZHandler( self, q );
+        return FuncZ( self, q );
     }
 
     /* compute the prime and check that <q> is a prime power               */
@@ -1885,7 +1874,7 @@ Obj             ZHandler (
             "Z: <q> must be a positive prime power (not a %s)",
             (Int)TNAM_OBJ(q), 0L,
             "you can return a positive integer for <q>" );
-        return ZHandler( self, q );
+        return FuncZ( self, q );
     }
 
     /* get the finite field                                                */
@@ -1906,23 +1895,84 @@ Obj             ZHandler (
 /****************************************************************************
 **
 
-*F  SetupFinfield() . . . . . . . . . . . initialize the finite field package
+*V  GVarFilts . . . . . . . . . . . . . . . . . . . list of filters to export
 */
-void SetupFinfield ( void )
+static StructGVarFilt GVarFilts [] = {
+
+    { "IS_FFE", "obj", &IsFFEFilt,
+      FuncIS_FFE, "src/finifield.c:IS_FFE" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+*V  GVarFuncs . . . . . . . . . . . . . . . . . . list of functions to export
+*/
+static StructGVarFunc GVarFuncs [] = {
+
+    { "CHAR_FFE_DEFAULT", 1, "z",
+      FuncCHAR_FFE_DEFAULT, "src/finifield.c:CHAR_FFE_DEFAULT" },
+
+    { "DEGREE_FFE_DEFAULT", 1, "z",
+      FunDEGREE_FFE_DEFAULT, "src/finifield.c:DEGREE_FFE_DEFAULT" },
+
+    { "LOG_FFE_DEFAULT", 2, "z, root",
+      FuncLOG_FFE_DEFAULT, "src/finifield.c:LOG_FFE_DEFAULT" },
+
+    { "INT_FFE_DEFAULT", 1, "z",
+      FuncINT_FFE_DEFAULT, "src/finifield.c:INT_FFE_DEFAULT" },
+
+    { "Z", 1, "q",
+      FuncZ, "src/finifield.c:Z" },
+
+    { 0 }
+
+};
+
+
+/****************************************************************************
+**
+
+*F  InitKernel( <module> )  . . . . . . . . initialise kernel data structures
+*/
+static Int InitKernel (
+    StructInitInfo *    module )
 {
     /* install the marking function                                        */
-    InfoBags[ T_FFE ].name = "ffe should never happen";
-    /* InitMarkFuncBags( T_FFE, MarkNoSubBags );                           */
+    InfoBags[ T_FFE ].name = "ffe";
+    /* InitMarkFuncBags( T_FFE, MarkNoSubBags ); */
 
+    /* install the kind function                                           */
+    ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
+    TypeObjFuncs[ T_FFE ] = TypeFFE;
+
+    /* create the fields and integer conversion bags                       */
+    InitGlobalBag( &CharFF, "src/finfield.c:CharFF" );
+    InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
+    InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
+    InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
+    InitGlobalBag( &IntFF, "src/finifield.c:IntFF" );
+
+    /* install the functions that handle overflow                          */
+    ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
+    ImportFuncFromLibrary( "DIFF_FFE_LARGE", &DIFF_FFE_LARGE );
+    ImportFuncFromLibrary( "PROD_FFE_LARGE", &PROD_FFE_LARGE );
+    ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
+    ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
+
+    /* init filters and functions                                          */
+    InitHdlrFiltsFromTable( GVarFilts );
+    InitHdlrFuncsFromTable( GVarFuncs );
 
     /* install the printing method                                         */
     PrintObjFuncs[ T_FFE ] = PrFFE;
 
-
     /* install the comparison methods                                      */
     EqFuncs[   T_FFE ][ T_FFE ] = EqFFE;
     LtFuncs[   T_FFE ][ T_FFE ] = LtFFE;
-
 
     /* install the arithmetic methods                                      */
     ZeroFuncs[ T_FFE ] = ZeroFFE;
@@ -1943,96 +1993,69 @@ void SetupFinfield ( void )
     QuoFuncs[  T_INT ][ T_FFE ] = QuoIntFFE;
     PowFuncs[  T_FFE ][ T_INT ] = PowFFEInt;
     PowFuncs[  T_FFE ][ T_FFE ] = PowFFEFFE;
+
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  InitFinfield()  . . . . . . . . . . . initialize the finite field package
-**
-**  'InitFinfield' initializes the finite field package.
+*F  InitLibrary( <module> ) . . . . . . .  initialise library data structures
 */
-void InitFinfield ( void )
+static Int InitLibrary (
+    StructInitInfo *    module )
 {
-    /* install the kind function                                           */
-    ImportFuncFromLibrary( "TYPE_FFE", &TYPE_FFE );
-    TypeObjFuncs[ T_FFE ] = TypeFFE;
-
-
     /* create the fields and integer conversion bags                       */
-    InitGlobalBag( &CharFF, "src/finfield.c:CharFF" );
-    if ( ! SyRestoring ) {
-        CharFF = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( CharFF, 0 );
-    }
+    CharFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( CharFF, 0 );
 
-    InitGlobalBag( &DegrFF, "src/finfield.c:DegrFF" );
-    if ( ! SyRestoring ) {
-        DegrFF = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( DegrFF, 0 );
-    }
+    DegrFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( DegrFF, 0 );
 
-    InitGlobalBag( &SuccFF, "src/finfield.c:SuccFF" );
-    if ( ! SyRestoring ) {
-        SuccFF = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( SuccFF, 0 );
-    }
+    SuccFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( SuccFF, 0 );
 
-    InitGlobalBag( &TypeFF, "src/finfield.c:TypeFF" );
-    if ( ! SyRestoring ) {
-        TypeFF = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( TypeFF, 0 );
-    }
+    TypeFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( TypeFF, 0 );
 
-    InitGlobalBag( &IntFF, "src/finifield.c:IntFF" );
-    if ( ! SyRestoring ) {
-        IntFF = NEW_PLIST( T_PLIST, 0 );
-        SET_LEN_PLIST( IntFF, 0 );
-    }
+    IntFF = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( IntFF, 0 );
 
+    /* init filters and functions                                          */
+    InitGVarFiltsFromTable( GVarFilts );
+    InitGVarFuncsFromTable( GVarFuncs );
 
-    /* install the functions that handle overflow                          */
-    ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
-    ImportFuncFromLibrary( "DIFF_FFE_LARGE", &DIFF_FFE_LARGE );
-    ImportFuncFromLibrary( "PROD_FFE_LARGE", &PROD_FFE_LARGE );
-    ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
-    ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
-
-
-    /* install the internal functions                                      */
-    C_NEW_GVAR_FILT( "IS_FFE", "obj", IsFFEFilt, IsFFEHandler,
-     "src/finifield.c:IS_FFE" );
-
-    C_NEW_GVAR_FUNC( "CHAR_FFE_DEFAULT", 1, "z",
-                      CharFFEDefaultHandler,
-     "src/finifield.c:CHAR_FFE_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "DEGREE_FFE_DEFAULT", 1, "z",
-                      DegreeFFEDefaultHandler,
-     "src/finifield.c:DEGREE_FFE_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "LOG_FFE_DEFAULT", 2, "z, root",
-                      LogFFEDefaultHandler,
-     "src/finifield.c:LOG_FFE_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "INT_FFE_DEFAULT", 1, "z",
-                      IntFFEDefaultHandler,
-     "src/finifield.c:INT_FFE_DEFAULT" );
-
-    C_NEW_GVAR_FUNC( "Z", 1, "q",
-                      ZHandler,
-     "src/finifield.c:Z" );
+    /* return success                                                      */
+    return 0;
 }
 
 
 /****************************************************************************
 **
-*F  CheckFinfield() . .  check the initialisation of the finite field package
+*F  InitInfoFinfield()  . . . . . . . . . . . . . . . table of init functions
 */
-void CheckFinfield ( void )
+static StructInitInfo module = {
+    MODULE_BUILTIN,                     /* type                           */
+    "finfield",                         /* name                           */
+    0,                                  /* revision entry of c file       */
+    0,                                  /* revision entry of h file       */
+    0,                                  /* version                        */
+    0,                                  /* crc                            */
+    InitKernel,                         /* initKernel                     */
+    InitLibrary,                        /* initLibrary                    */
+    0,                                  /* checkInit                      */
+    0,                                  /* preSave                        */
+    0,                                  /* postSave                       */
+    0                                   /* postRestore                    */
+};
+
+StructInitInfo * InitInfoFinfield ( void )
 {
-    SET_REVISION( "finfield_c", Revision_finfield_c );
-    SET_REVISION( "finfield_h", Revision_finfield_h );
+    module.revision_c = Revision_finfield_c;
+    module.revision_h = Revision_finfield_h;
+    FillInVersion( &module );
+    return &module;
 }
 
 

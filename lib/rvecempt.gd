@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the implementation of immutable empty row vectors.
 ##  An empty row vector is an empty list whose family is a collections
@@ -26,9 +27,7 @@ Revision.rvecempt_gd :=
 ##
 ##  is an empty row vector whose family is the collections family of <F>.
 ##
-EmptyRowVector := NewAttribute( "EmptyRowVector", IsFamily );
-SetEmptyRowVector := Setter( EmptyRowVector );
-HasEmptyRowVector := Tester( EmptyRowVector );
+DeclareAttribute( "EmptyRowVector", IsFamily );
 
 
 #############################################################################

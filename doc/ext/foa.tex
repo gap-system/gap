@@ -112,8 +112,8 @@ follows:
 \beginlist
 \item{$\bullet$}
   If it is called  with exactly two arguments  <super> and <sub>,  and if
-  `HasParent( <sub> )' and `IsIdentical( <super>, Parent( <sub> ) )', the
-  tester `HasIndexInParent( <sub> )' is consulted.
+  `HasParent( <sub> )' and  `IsIdenticalObj( <super>, Parent( <sub> ) )',
+  the tester `HasIndexInParent( <sub> )' is consulted.
   \itemitem{$\circ$}
     If  the  tester returns `true',  `IndexInParent(  <sub> )'  is called
     (which  will then hopefully choose  the system getter) and the result
@@ -259,22 +259,22 @@ file ``lib/oprt.gd'' contains the following code:
     Orbit   := tmp[1];
     OrbitOp := tmp[2];
 \endtt
-The  third argument <famrel> is used  to test the family relation between
-the second and  third  argument  of  `Orbit( <G>,  <D>, <pnt>   )', where
+The third argument <famrel>  is used to  test the family relation between
+the  second  and third  argument of  `Orbit(  <G>, <D>,  <pnt> )',  where
 `IsCollsElms' means that <pnt> must be an element of <D>. By contrast, in
-`Blocks( <G>, <D>,  <seed> )', <seed> must  be  a subset of <D>,  and the
-family relation  is `IsIdentical'. This  relation testing is necessary to
-decide  whether  the argument <D>  was specified  at  all,  because it is
-possible to  leave  it out in  `Orbit' (see  "ref:Operation functions!for
-groups" in the reference   manual). Similarly, the third  argument <seed>
-can be left out  in  `Blocks', but {\GAP} treats   both rules as one:  It
+`Blocks( <G>, <D>,  <seed> )', <seed> must be   a subset of <D>, and  the
+family relation is `IsIdenticalObj'. This  relation testing is  necessary
+to decide whether  the argument <D> was  specified at all,  because it is
+possible to leave it  out  in `Orbit' (see  "ref:Operation  functions!for
+groups" in the reference  manual).  Similarly, the third argument  <seed>
+can be  left out in  `Blocks', but {\GAP}   treats both rules as  one: It
 simply checks whether only one of the arguments <D> and <pnt> is present,
-and if so,  a command like `Orbit( <G>,  <pnt> )' calls the  operation as
-`OrbitOp( <G>, <pnt>, <gens>, <oprs>, <opr>  )' instead of `OrbitOp( <G>,
-<D>, <pnt>, <gens>, <oprs>, <opr> )'. Respectively,  `Blocks( <G>, <D> )'
-leads to a call of `BlocksOp( <G>, <D>, <gens>,  <oprs>, <opr> )' instead
-of  `BlocksOp(  <G>, <operation domain>, <D>,   <gens>,  <oprs>, <opr> )'
-because {\GAP}  thinks the argument <D> is   something like the  <pnt> in
+and if so, a command  like `Orbit( <G>, <pnt> )'  calls the operation  as
+`OrbitOp( <G>, <pnt>, <gens>, <oprs>,  <opr> )' instead of `OrbitOp( <G>,
+<D>, <pnt>, <gens>, <oprs>, <opr> )'.  Respectively, `Blocks( <G>, <D> )'
+leads to a call of `BlocksOp( <G>,  <D>, <gens>, <oprs>, <opr> )' instead
+of `BlocksOp(  <G>,  <operation domain>,  <D>,  <gens>,  <oprs>, <opr> )'
+because {\GAP} thinks  the  argument <D> is  something like  the <pnt> in
 `Orbit', but it is really the operation domain!
 
 As a  consequence of  these rules, there  must be  not  only methods  for
@@ -300,7 +300,7 @@ declaration file ``lib/oprt.gd'' contains the following lines:
 	[ IsGroup, IsList, IsList,
 	  IsList,
 	  IsList,
-	  IsFunction ], IsIdentical, BlocksAttr );
+	  IsFunction ], IsIdenticalObj, BlocksAttr );
     Blocks   := tmp[1];
     BlocksOp := tmp[2];
 \endtt

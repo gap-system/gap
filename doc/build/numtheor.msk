@@ -1,0 +1,40 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  numtheor.msk                GAP documentation            Martin Schoenert
+%A                                                           Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Number Theory}
+
+{\GAP} provides a couple of elementary number theoretic functions. Most of
+these deal with the group of integers modulo <m> under multiplication. This
+group is called the *prime residue group*.
+
+\Declaration{PrimeResidues}
+\Declaration{OrderMod}
+\Declaration{LogMod}
+
+\Declaration{PrimitiveRootMod}
+\Declaration{IsPrimitiveRootMod}
+
+\Declaration{Phi}
+\Declaration{Lambda}
+\Declaration{Jacobi}
+\Declaration{Legendre}
+
+\Declaration{RootMod}
+\Declaration{RootsMod}
+\Declaration{RootsUnityMod}
+
+\Declaration{Sigma}
+\Declaration{Tau}
+\Declaration{MoebiusMu}
+\Declaration{TwoSquares}
+
+
+
+
+

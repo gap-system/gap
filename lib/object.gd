@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the operations for all objects.
 ##
@@ -23,26 +24,25 @@ Revision.object_gd :=
 ##  It can be used as a filter in  'InstallMethod', when one of the arguments
 ##  can be anything.
 ##
-IsObject := NewCategoryKernel(
-    "IsObject",
+DeclareCategoryKernel( "IsObject",
     IS_OBJECT,
     IS_OBJECT );
 
 
 #############################################################################
 ##
-#F  IsIdentical( <obj1>, <obj2> ) . . . . . . . . . are two objects identical
+#F  IsIdenticalObj( <obj1>, <obj2> )  . . . . . . . are two objects identical
 ##
-IsIdentical := IS_IDENTICAL_OBJ;
+BIND_GLOBAL( "IsIdenticalObj", IS_IDENTICAL_OBJ );
 
 
 #############################################################################
 ##
-#F  IsNotIdentical( <obj1>, <obj2> )  . . . . . are two objects not identical
+#F  IsNotIdenticalObj( <obj1>, <obj2> ) . . . . are two objects not identical
 ##
-IsNotIdentical := function ( obj1, obj2 )
-    return not IsIdentical( obj1, obj2 );
-end;
+BIND_GLOBAL( "IsNotIdenticalObj", function ( obj1, obj2 )
+    return not IsIdenticalObj( obj1, obj2 );
+end );
 
 
 #############################################################################
@@ -50,7 +50,7 @@ end;
 
 #O  <obj1> = <obj2> . . . . . . . . . . . . . . . . . . are two objects equal
 ##
-\= := NewOperationKernel( "=",
+DeclareOperationKernel( "=",
     [ IsObject, IsObject ],
     EQ );
 
@@ -59,7 +59,7 @@ end;
 ##
 #O  <obj1> < <obj2> . . . . . . . . . . .  is one object smaller than another
 ##
-\< := NewOperationKernel( "<",
+DeclareOperationKernel( "<",
     [ IsObject, IsObject ],
     LT );
 
@@ -68,7 +68,7 @@ end;
 ##
 #O  <obj1> in <obj2>  . . . . . . . . . . . is one object a member of another
 ##
-\in := NewOperationKernel( "in",
+DeclareOperationKernel( "in",
     [ IsObject, IsObject ],
     IN );
 
@@ -78,8 +78,7 @@ end;
 
 #C  IsCopyable( <obj> ) . . . . . . . . . . . . test if an object is copyable
 ##
-IsCopyable := NewCategoryKernel(
-    "IsCopyable",
+DeclareCategoryKernel( "IsCopyable",
     IsObject,
     IS_COPYABLE_OBJ );
 
@@ -88,7 +87,7 @@ IsCopyable := NewCategoryKernel(
 ##
 #C  IsMutable( <obj> )  . . . . . . . . . . . .  test if an object is mutable
 ##
-IsMutable := NewCategoryKernel( "IsMutable",
+DeclareCategoryKernel( "IsMutable",
     IsObject,
     IS_MUTABLE_OBJ );
 
@@ -97,15 +96,14 @@ IsMutable := NewCategoryKernel( "IsMutable",
 ##
 #O  Immutable( <obj> )
 ##
-Immutable := IMMUTABLE_COPY_OBJ;
+BIND_GLOBAL( "Immutable", IMMUTABLE_COPY_OBJ );
 
 
 #############################################################################
 ##
 #O  ShallowCopy( <obj> )  . . . . . . . . . . . . . shallow copy of an object
 ##
-ShallowCopy := NewOperationKernel(
-    "ShallowCopy",
+DeclareOperationKernel( "ShallowCopy",
     [ IsObject ],
     SHALLOW_COPY_OBJ );
 
@@ -114,7 +112,7 @@ ShallowCopy := NewOperationKernel(
 ##
 #O  StructuralCopy( <obj> ) . . . . . . . . . .  structural copy of an object
 ##
-StructuralCopy := DEEP_COPY_OBJ;
+BIND_GLOBAL( "StructuralCopy", DEEP_COPY_OBJ );
 
 
 #############################################################################
@@ -122,18 +120,18 @@ StructuralCopy := DEEP_COPY_OBJ;
 
 #A  Name( <obj> ) . . . . . . . . . . . . . . . . . . . . . name of an object
 ##
-Name    := NewAttribute( "Name", IsObject );
-SetName := Setter( Name );
-HasName := Tester( Name );
+##  The name of an object is used *only* for printing the object via this
+##  name.
+##
+DeclareAttribute( "Name", IsObject );
 
 
 #############################################################################
 ##
 #A  String( <obj> ) . . . . . . . . . . .  string representation of an object
 ##
-String    := NewAttribute( "String", IsObject );
-SetString := Setter( String );
-HasString := Tester( String );
+##  returns a string that will print similar as <obj> does.
+DeclareAttribute( "String", IsObject );
 
 
 #############################################################################
@@ -141,7 +139,7 @@ HasString := Tester( String );
 
 #O  FormattedString( <obj>, <nr> )  . . formatted string repres. of an object
 ##
-FormattedString := NewOperation( "FormattedString",
+DeclareOperation( "FormattedString",
     [ IsObject, IS_INT ] );
 
 
@@ -149,7 +147,19 @@ FormattedString := NewOperation( "FormattedString",
 ##
 #O  PrintObj( <obj> ) . . . . . . . . . . . . . . . . . . . . print an object
 ##
-PrintObj := NewOperationKernel( "PrintObj",
+##  `PrintObj' prints information about the object <obj>.
+##  This information is in general more detailed as that obtained from
+##  `ViewObj',
+##  but still it need not be sufficient to construct <obj> from it,
+##  and in general it is not {\GAP} readable.
+##
+##  If <obj> has a name (see~"Name") then it will be printed via this name,
+##  and a domain without name is in many cases printed via its generators.
+#T write that many domains (without name) are in fact GAP readable?
+##
+##  {\GAP} readable data can be produced with `SaveObj'.                 
+##
+DeclareOperationKernel( "PrintObj",
     [ IsObject ],
     PRINT_OBJ );
 
@@ -158,7 +168,7 @@ PrintObj := NewOperationKernel( "PrintObj",
 ##
 #O  Display( <obj> )  . . . . . . . . . . . . . . . . . . . display an object
 ##
-Display := NewOperation( "Display",
+DeclareOperation( "Display",
     [ IsObject ] );
 
 
@@ -176,15 +186,30 @@ Display := NewOperation( "Display",
 ##
 ##  (Note that 'IsInternallyConsistent' is not an attribute.)
 ##
-IsInternallyConsistent := NewOperation( "IsInternallyConsistent",
+DeclareOperation( "IsInternallyConsistent",
     [ IsObject ] );
+
+
+#############################################################################
+##
+#A  IsImpossible( <obj> )
+##
+##  For debugging purposes, it may be useful to install immediate methods
+##  that raise an error if an object lies in a filter which is impossible.
+##  For example, if a matrix is in the two fiters `IsOrdinaryMatrix' and
+##  `IsLieMatrix' then apparently something went wrong.
+##  Since we can install these immediate methods only for attributes
+##  (and not for the operation `IsInternallyConsistent'),
+##  we need such an attribute.
+##
+DeclareAttribute( "IsImpossible", IsObject );
 
 
 #############################################################################
 ##
 #O  ExtRepOfObj( <obj> )  . . . . . . .  external representation of an object
 ##
-ExtRepOfObj := NewOperation( "ExtRepOfObj",
+DeclareOperation( "ExtRepOfObj",
     [ IsObject ] );
 
 
@@ -192,7 +217,7 @@ ExtRepOfObj := NewOperation( "ExtRepOfObj",
 ##
 #O  ObjByExtRep( <F>, <descr> ) . object in family <F> and ext. repr. <descr>
 ##
-ObjByExtRep := NewOperation( "ObjByExtRep",
+DeclareOperation( "ObjByExtRep",
     [ IsFamily, IsObject ] );
 
 
@@ -200,8 +225,7 @@ ObjByExtRep := NewOperation( "ObjByExtRep",
 ##
 #O  KnownAttributesOfObject( <object> ) . . . . . list of names of attributes
 ##
-KnownAttributesOfObject := NewOperation(
-    "KnownAttributesOfObject",
+DeclareOperation( "KnownAttributesOfObject",
     [ IsObject ] );
 
 
@@ -209,8 +233,7 @@ KnownAttributesOfObject := NewOperation(
 ##
 #O  KnownPropertiesOfObject( <object> ) . . . . . list of names of properties
 ##
-KnownPropertiesOfObject := NewOperation(
-    "KnownPropertiesOfObject",
+DeclareOperation( "KnownPropertiesOfObject",
     [ IsObject ] );
 
 
@@ -218,8 +241,7 @@ KnownPropertiesOfObject := NewOperation(
 ##
 #O  KnownTruePropertiesOfObject( <object> )  list of names of true properties
 ##
-KnownTruePropertiesOfObject := NewOperation(
-    "KnownTruePropertiesOfObject",
+DeclareOperation( "KnownTruePropertiesOfObject",
     [ IsObject ]  );
 
 
@@ -227,8 +249,7 @@ KnownTruePropertiesOfObject := NewOperation(
 ##
 #O  CategoriesOfObject( <object> )  . . . . . . . list of names of categories
 ##
-CategoriesOfObject := NewOperation(
-    "CategoriesOfObject",
+DeclareOperation( "CategoriesOfObject",
     [ IsObject ] );
 
 
@@ -236,8 +257,7 @@ CategoriesOfObject := NewOperation(
 ##
 #O  RepresentationsOfObject( <object> ) . .  list of names of representations
 ##
-RepresentationsOfObject := NewOperation(
-    "RepresentationsOfObject",
+DeclareOperation( "RepresentationsOfObject",
     [ IsObject ] );
 
 

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This package sets up a mechanism for diagnostic assertions at GAP
 ##  level. 
@@ -37,17 +38,16 @@ Revision.assert_gd :=
 
 #############################################################################
 ##
-#V  SetAssertionLevel() . . . . . . . . .sets the level of assertion checking
-#V  AssertionLevel() . . . . . . gets the current level of assertion checking
+#V  SetAssertionLevel() . . . . . . . .  sets the level of assertion checking
+#V  AssertionLevel()  . . . . .  gets the current level of assertion checking
 ##
-
-SetAssertionLevel := NewOperationArgs("SetAssertionLevel");
-AssertionLevel := NewOperationArgs("AssertionLevel");
+DeclareGlobalFunction("SetAssertionLevel");
+DeclareGlobalFunction("AssertionLevel");
 
         
 #############################################################################
 ##
-#E  assert.gd ends here  
+#E  assert.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here  
 ##
 
         

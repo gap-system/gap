@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains generic methods for magmas.
 ##
@@ -18,7 +19,7 @@ Revision.magma_gi :=
 #M  PrintObj( <M> ) . . . . . . . . . . . . . . . . . . . . . . print a magma
 ##
 InstallMethod( PrintObj,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
@@ -26,7 +27,7 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a magma with generators",
+    "for a magma with generators",
     true,
     [ IsMagma and HasGeneratorsOfMagma ], 0,
     function( M )
@@ -34,19 +35,75 @@ InstallMethod( PrintObj,
     end );
 
 InstallMethod( PrintObj,
-    "method for a magma-with-one with generators",
+    "for a magma-with-one with generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     function( M )
-    Print( "MagmaWithOne( ", GeneratorsOfMagmaWithOne( M ), " )" );
+    if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
+      Print( "MagmaWithOne( ", One( M ), " )" );
+    else
+      Print( "MagmaWithOne( ", GeneratorsOfMagmaWithOne( M ), " )" );
+    fi;
     end );
 
 InstallMethod( PrintObj,
-    "method for a magma-with-inverses with generators",
+    "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     function( M )
-    Print( "MagmaWithInverses( ", GeneratorsOfMagmaWithInverses( M ), " )" );
+    if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
+      Print( "MagmaWithInverses( ", One( M ), " )" );
+    else
+      Print( "MagmaWithInverses( ", GeneratorsOfMagmaWithInverses(M), " )" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  ViewObj( <M> )  . . . . . . . . . . . . . . . . . . . . . .  view a magma
+##
+InstallMethod( ViewObj,
+    "for a magma",
+    true,
+    [ IsMagma ], 0,
+    function( M )
+    Print( "<magma>" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a magma with generators",
+    true,
+    [ IsMagma and HasGeneratorsOfMagma ], 0,
+    function( M )
+    Print( "<magma with ", Length( GeneratorsOfMagma(M) ), " generators>" );
+    end );
+
+InstallMethod( ViewObj,
+    "for a magma-with-one with generators",
+    true,
+    [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
+    function( M )
+    if IsEmpty( GeneratorsOfMagmaWithOne( M ) ) then
+      Print( "<trivial magma-with-one>" );
+    else
+      Print( "<magma-with-one with ", Length( GeneratorsOfMagmaWithOne(M) ),
+             " generators>" );
+    fi;
+    end );
+
+InstallMethod( ViewObj,
+    "for a magma-with-inverses with generators",
+    true,
+    [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
+    function( M )
+    if IsEmpty( GeneratorsOfMagmaWithInverses( M ) ) then
+      Print( "<trivial magma-with-inverses>" );
+    else
+      Print( "<magma-with-inverses with ",
+             Length( GeneratorsOfMagmaWithInverses( M ) ),
+             " generators>" );
+    fi;
     end );
 
 
@@ -80,7 +137,7 @@ InstallImmediateMethod( IsTrivial,
 #M  IsAssociative( <M> )  . . . . . . . . test whether a magma is associative
 ##
 InstallMethod( IsAssociative,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
@@ -141,25 +198,25 @@ InstallImmediateMethod( IsCommutative,
     end );
 
 InstallMethod( IsCommutative,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     IsCommutativeFromGenerators( GeneratorsOfDomain ) );
 
 InstallMethod( IsCommutative,
-    "method for an associative magma",
+    "for an associative magma",
     true,
     [ IsMagma and IsAssociative ], 0,
     IsCommutativeFromGenerators( GeneratorsOfMagma ) );
 
 InstallMethod( IsCommutative,
-    "method for an associative magma with one",
+    "for an associative magma with one",
     true,
     [ IsMagmaWithOne and IsAssociative ], 0,
     IsCommutativeFromGenerators( GeneratorsOfMagmaWithOne ) );
 
 InstallMethod( IsCommutative,
-    "method for an associative magma with inverses",
+    "for an associative magma with inverses",
     true,
     [ IsMagmaWithInverses and IsAssociative ], 0,
     IsCommutativeFromGenerators( GeneratorsOfMagmaWithInverses ) );
@@ -171,7 +228,7 @@ InstallMethod( IsCommutative,
 #M  Centralizer( <M>, <N> ) . . . . . . . . centralizer of a magma in a magma
 ##
 InstallMethod( CentralizerOp,
-    "method for a magma, and a mult. element",
+    "for a magma, and a mult. element",
     IsCollsElms,
     [ IsMagma, IsMultiplicativeElement ], 0,
     function( M, obj )
@@ -179,7 +236,7 @@ InstallMethod( CentralizerOp,
     end );
 
 InstallMethod( CentralizerOp,
-    "method for a commutative magma, and a mult. element",
+    "for a commutative magma, and a mult. element",
     IsCollsElms,
     [ IsMagma and IsCommutative, IsMultiplicativeElement ], SUM_FLAGS,
     function( M, obj )
@@ -191,16 +248,16 @@ InstallMethod( CentralizerOp,
     end );
 
 InstallMethod( CentralizerOp,
-    "method for two magmas",
-    IsIdentical,
+    "for two magmas",
+    IsIdenticalObj,
     [ IsMagma, IsMagma ], 0,
     function( M, N )
     return Filtered( M, x -> ForAll( N, y -> x * y = y * x ) );
     end );
 
 InstallMethod( CentralizerOp,
-    "method for two magmas, the first being commutative",
-    IsIdentical,
+    "for two magmas, the first being commutative",
+    IsIdenticalObj,
     [ IsMagma and IsCommutative, IsMagma ], SUM_FLAGS,
     function( M, N )
     if IsSubset( M, N ) then
@@ -210,19 +267,25 @@ InstallMethod( CentralizerOp,
     fi;
     end );
 
+InstallOtherMethod( CentralizerOp,"dummy to ignore optional third argument",
+  true,[ IsMagma, IsObject,IsObject ], 0,
+function( M, obj,x )
+  return CentralizerOp(M,obj);
+end );
+
 
 #############################################################################
 ##
 #M  Centre( <M> ) . . . . . . . . . . . . . . . . . . . . . centre of a magma
 ##
 InstallMethod( Centre,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     M -> Centralizer( M, M ) );
 
 InstallMethod( Centre,
-    "method for a commutative magma",
+    "for a commutative magma",
     true,
     [ IsMagma and IsCommutative ], SUM_FLAGS,
     IdFunc );
@@ -233,7 +296,7 @@ InstallMethod( Centre,
 #F  Magma( <gens> )
 #F  Magma( <Fam>, <gens> )
 ##
-Magma := function( arg )
+InstallGlobalFunction( Magma, function( arg )
 
     # list of generators
     if Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
@@ -250,14 +313,14 @@ Magma := function( arg )
 
     # no argument given, error
     Error("usage: Magma(<gens>), Magma(<Fam>,<gens>)");
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Submagma( <M>, <gens> ) . . . . . . . submagma of <M> generated by <gens>
 ##
-Submagma := function( M, gens )
+InstallGlobalFunction( Submagma, function( M, gens )
     local S;
 
     if not IsMagma( M ) then
@@ -266,24 +329,24 @@ Submagma := function( M, gens )
         return SubmagmaNC( M, gens );
     elif not IsHomogeneousList(gens)  then
         Error( "<gens> must be a homogeneous list of elements" );
-    elif not IsIdentical( FamilyObj(M), FamilyObj(gens) )  then
+    elif not IsIdenticalObj( FamilyObj(M), FamilyObj(gens) )  then
         Error( "families of <gens> and <M> are different" );
     fi;
     if not ForAll( gens, x -> x in M ) then
         Error( "<gens> must be elements in <M>" );
     fi;
     return SubmagmaNC( M, gens );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SubmagmaNC( <M>, <gens> )
 ##
-##  Note that 'SubmagmaNC' is allowed to call 'Objectify'
+##  Note that `SubmagmaNC' is allowed to call `Objectify'
 ##  in the case that <gens> is empty.
 ##
-SubmagmaNC := function( M, gens )
+InstallGlobalFunction( SubmagmaNC, function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
@@ -298,7 +361,7 @@ SubmagmaNC := function( M, gens )
     fi;
     SetParent( S, M );
     return S;
-end;
+end );
 
 
 #############################################################################
@@ -306,7 +369,7 @@ end;
 #F  MagmaWithOne( <gens> )
 #F  MagmaWithOne( <Fam>, <gens> )
 ##
-MagmaWithOne := function( arg )
+InstallGlobalFunction( MagmaWithOne, function( arg )
 
     # list of generators
     if Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
@@ -323,14 +386,14 @@ MagmaWithOne := function( arg )
 
     # no argument given, error
     Error("usage: MagmaWithOne(<gens>), MagmaWithOne(<Fam>,<gens>)");
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithOne( <M>, <gens> )  . submagma-with-one of <M> gen. by <gens>
 ##
-SubmagmaWithOne := function( M, gens )
+InstallGlobalFunction( SubmagmaWithOne, function( M, gens )
     local S;
 
     if not IsMagmaWithOne( M ) then
@@ -339,27 +402,27 @@ SubmagmaWithOne := function( M, gens )
         return SubmagmaWithOneNC( M, gens );
     elif not IsHomogeneousList(gens)  then
         Error( "<gens> must be a homogeneous list of elements" );
-    elif not IsIdentical( FamilyObj(M), FamilyObj(gens) )  then
+    elif not IsIdenticalObj( FamilyObj(M), FamilyObj(gens) )  then
         Error( "families of <gens> and <M> are different" );
     fi;
     if not ForAll( gens, x -> x in M ) then
         Error( "<gens> must be elements in <M>" );
     fi;
     return SubmagmaWithOneNC( M, gens );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithOneNC( <M>, <gens> )
 ##
-##  Note that 'SubmagmaWithOneNC' is allowed to call 'Objectify'
+##  Note that `SubmagmaWithOneNC' is allowed to call `Objectify'
 ##  in the case that <gens> is empty.
 ##
 ##  Furthermore note that a trivial submagma-with-one is automatically
 ##  a group.
 ##
-SubmagmaWithOneNC := function( M, gens )
+InstallGlobalFunction( SubmagmaWithOneNC, function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
@@ -374,7 +437,7 @@ SubmagmaWithOneNC := function( M, gens )
     fi;
     SetParent( S, M );
     return S;
-end;
+end );
 
 
 #############################################################################
@@ -382,7 +445,7 @@ end;
 #F  MagmaWithInverses( <gens> )
 #F  MagmaWithInverses( <Fam>, <gens> )
 ##
-MagmaWithInverses := function( arg )
+InstallGlobalFunction( MagmaWithInverses, function( arg )
 
     # list of generators
     if Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
@@ -400,7 +463,7 @@ MagmaWithInverses := function( arg )
     # no argument given, error
     Error("usage: MagmaWithInverses(<gens>), ",
           "MagmaWithInverses(<Fam>,<gens>)");
-end;
+end );
 
 
 #############################################################################
@@ -408,7 +471,7 @@ end;
 #F  SubmagmaWithInverses( <M>, <gens> )
 #F                    . . . . . . .  submagma-with-inv. of <M> gen. by <gens>
 ##
-SubmagmaWithInverses := function( M, gens )
+InstallGlobalFunction( SubmagmaWithInverses, function( M, gens )
     local S;
 
     if not IsMagmaWithInverses( M ) then
@@ -417,24 +480,24 @@ SubmagmaWithInverses := function( M, gens )
         return SubmagmaWithInversesNC( M, gens );
     elif not IsHomogeneousList(gens)  then
         Error( "<gens> must be a homogeneous list of elements" );
-    elif not IsIdentical( FamilyObj(M), FamilyObj(gens) )  then
+    elif not IsIdenticalObj( FamilyObj(M), FamilyObj(gens) )  then
         Error( "families of <gens> and <M> are different" );
     fi;
     if not ForAll( gens, x -> x in M ) then
         Error( "<gens> must be elements in <M>" );
     fi;
     return SubmagmaWithInversesNC( M, gens );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  SubmagmaWithInversesNC( <M>, <gens> )
 ##
-##  Note that 'SubmagmaWithInversesNC' is allowed to call 'Objectify'
+##  Note that `SubmagmaWithInversesNC' is allowed to call `Objectify'
 ##  in the case that <gens> is empty.
 ##
-SubmagmaWithInversesNC := function( M, gens )
+InstallGlobalFunction( SubmagmaWithInversesNC, function( M, gens )
     local K, S;
 
     if IsEmpty( gens ) then
@@ -449,7 +512,7 @@ SubmagmaWithInversesNC := function( M, gens )
     fi;
     SetParent( S, M );
     return S;
-end;
+end );
 
 
 #############################################################################
@@ -457,7 +520,7 @@ end;
 #M  MagmaByGenerators( <gens> ) . . . . . . . . . . . . . .  for a collection
 ##
 InstallMethod( MagmaByGenerators,
-    "method for collection",
+    "for collection",
     true,
     [ IsCollection ] , 0,
     function( gens )
@@ -475,12 +538,12 @@ InstallMethod( MagmaByGenerators,
 #M  MagmaByGenerators( <Fam>, <gens> )  . . . . . . . . . for family and list
 ##
 InstallOtherMethod( MagmaByGenerators,
-    "method for family and list",
+    "for family and list",
     true,
     [ IsFamily, IsList ], 0,
     function( family, gens )
     local M;
-    if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
+    if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
     M:= Objectify( NewType( family,
@@ -496,7 +559,7 @@ InstallOtherMethod( MagmaByGenerators,
 #M  MagmaWithOneByGenerators( <gens> )  . . . . . . . . . .  for a collection
 ##
 InstallMethod( MagmaWithOneByGenerators,
-    "method for collection",
+    "for collection",
     true,
     [ IsCollection ] , 0,
     function( gens )
@@ -514,12 +577,12 @@ InstallMethod( MagmaWithOneByGenerators,
 #M  MagmaWithOneByGenerators( <Fam>, <gens> ) . . . . . . for family and list
 ##
 InstallOtherMethod( MagmaWithOneByGenerators,
-    "method for family and list",
+    "for family and list",
     true,
     [ IsFamily, IsList ], 0,
     function( family, gens )
     local M;
-    if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
+    if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
     M:= Objectify( NewType( family,
@@ -535,7 +598,7 @@ InstallOtherMethod( MagmaWithOneByGenerators,
 #M  MagmaWithInversesByGenerators( <gens> ) . . . . . . . .  for a collection
 ##
 InstallMethod( MagmaWithInversesByGenerators,
-    "method for collection",
+    "for collection",
     true,
     [ IsCollection ] , 0,
     function( gens )
@@ -553,12 +616,12 @@ InstallMethod( MagmaWithInversesByGenerators,
 #M  MagmaWithInversesByGenerators( <Fam>, <gens> )  . . . for family and list
 ##
 InstallOtherMethod( MagmaWithInversesByGenerators,
-    "method for family and list",
+    "for family and list",
     true,
     [ IsFamily, IsList ], 0,
     function( family, gens )
     local M;
-    if not ( IsEmpty(gens) or IsIdentical( FamilyObj(gens), family ) ) then
+    if not ( IsEmpty(gens) or IsIdenticalObj( FamilyObj(gens), family ) ) then
       Error( "<family> and family of <gens> do not match" );
     fi;
     M:= Objectify( NewType( family,
@@ -574,7 +637,7 @@ InstallOtherMethod( MagmaWithInversesByGenerators,
 #M  TrivialSubmagmaWithOne( <M> ) . . . . . . . . . . .  for a magma-with-one
 ##
 InstallMethod( TrivialSubmagmaWithOne,
-    "method for magma-with-one",
+    "for magma-with-one",
     true,
     [ IsMagmaWithOne ], 0,
     M -> SubmagmaWithOneNC( M, [] ) );
@@ -589,10 +652,10 @@ InstallMethod( TrivialSubmagmaWithOne,
 ##  If nothing special is known about the magma <M> we have no chance to
 ##  get the required generators.
 ##
-##  If we know 'GeneratorsOfMagma',
-##  they are also 'GeneratorsOfMagmaWithOne'.
-##  If we know 'GeneratorsOfMagmaWithOne',
-##  they are also 'GeneratorsOfMagmaWithInverses'.
+##  If we know `GeneratorsOfMagma',
+##  they are also `GeneratorsOfMagmaWithOne'.
+##  If we know `GeneratorsOfMagmaWithOne',
+##  they are also `GeneratorsOfMagmaWithInverses'.
 ##
 InstallImmediateMethod( GeneratorsOfMagma,
     IsMagma and HasGeneratorsOfDomain, 0,
@@ -608,19 +671,19 @@ InstallImmediateMethod( GeneratorsOfMagmaWithInverses,
 
 
 InstallMethod( GeneratorsOfMagma,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     GeneratorsOfDomain );
 
 InstallMethod( GeneratorsOfMagma,
-    "method for a magma-with-one with generators",
+    "for a magma-with-one with generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     M -> Set( Concatenation( GeneratorsOfMagmaWithOne( M ), [ One(M) ] ) ) );
 
 InstallMethod( GeneratorsOfMagma,
-    "method for a magma-with-inverses with generators",
+    "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     M -> Set( Concatenation( GeneratorsOfMagmaWithInverses( M ),
@@ -628,7 +691,7 @@ InstallMethod( GeneratorsOfMagma,
                 List( GeneratorsOfMagmaWithInverses( M ), Inverse ) ) ) );
 
 InstallMethod( GeneratorsOfMagmaWithOne,
-    "method for a magma-with-inverses with generators",
+    "for a magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     M -> Set( Concatenation( GeneratorsOfMagmaWithInverses( M ),
@@ -636,7 +699,7 @@ InstallMethod( GeneratorsOfMagmaWithOne,
 
 
 InstallMethod( GeneratorsOfMagma,
-    "method for a magma-with-one with generators, all elms. of finite order",
+    "for a magma-with-one with generators, all elms. of finite order",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne
       and IsFiniteOrderElementCollection ], 0,
@@ -651,7 +714,7 @@ InstallMethod( GeneratorsOfMagma,
     end );
 
 InstallMethod( GeneratorsOfMagma,
-    "method for a magma-with-inv. with gens., all elms. of finite order",
+    "for a magma-with-inv. with gens., all elms. of finite order",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses
       and IsFiniteOrderElementCollection ], 0,
@@ -666,7 +729,7 @@ InstallMethod( GeneratorsOfMagma,
     end );
 
 InstallMethod( GeneratorsOfMagmaWithOne,
-    "method for a magma-with-inv. with gens., all elms. of finite order",
+    "for a magma-with-inv. with gens., all elms. of finite order",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses
       and IsFiniteOrderElementCollection ], 0,
@@ -678,25 +741,25 @@ InstallMethod( GeneratorsOfMagmaWithOne,
 #M  Representative( <M> ) . . . . . . . . . . . . . .  one element of a magma
 ##
 InstallMethod( Representative,
-    "method for magma with generators",
+    "for magma with generators",
     true,
     [ IsMagma and HasGeneratorsOfMagma ], 0,
     RepresentativeFromGenerators( GeneratorsOfMagma ) );
 
 InstallMethod( Representative,
-    "method for magma-with-one with generators",
+    "for magma-with-one with generators",
     true,
     [ IsMagmaWithOne and HasGeneratorsOfMagmaWithOne ], 0,
     RepresentativeFromGenerators( GeneratorsOfMagmaWithOne ) );
 
 InstallMethod( Representative,
-    "method for magma-with-inverses with generators",
+    "for magma-with-inverses with generators",
     true,
     [ IsMagmaWithInverses and HasGeneratorsOfMagmaWithInverses ], 0,
     RepresentativeFromGenerators( GeneratorsOfMagmaWithInverses ) );
 
 InstallMethod( Representative,
-    "method for magma-with-one with known one",
+    "for magma-with-one with known one",
     true,
     [ IsMagmaWithOne and HasOne ], SUM_FLAGS,
     One );
@@ -707,7 +770,7 @@ InstallMethod( Representative,
 #M  MultiplicativeNeutralElement( <M> ) . . . . . . . . . . . . . for a magma
 ##
 InstallMethod( MultiplicativeNeutralElement,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
@@ -730,7 +793,7 @@ InstallMethod( MultiplicativeNeutralElement,
 #M  MultiplicativeNeutralElement( <M> ) . . . . . . . .  for a magma-with-one
 ##
 InstallMethod( MultiplicativeNeutralElement,
-    "method for a magma-with-one",
+    "for a magma-with-one",
     true,
     [ IsMagmaWithOne ], 0,
     One );
@@ -741,7 +804,7 @@ InstallMethod( MultiplicativeNeutralElement,
 #M  One( <M> )  . . . . . . . . . . . . . . . . . . . . . identity of a magma
 ##
 InstallOtherMethod( One,
-    "method for a magma",
+    "for a magma",
     true,
     [ IsMagma ], 0,
     function( M )
@@ -769,13 +832,13 @@ InstallOtherMethod( One,
     end );
 
 InstallOtherMethod( One,
-    "method for a magma-with-one that has a parent",
+    "for a magma-with-one that has a parent",
     true,
     [ IsMagmaWithOne and HasParent ], SUM_FLAGS,
     M -> One( Parent( M ) ) );
 
 InstallOtherMethod( One,
-    "method for a magma-with-one",
+    "for a magma-with-one",
     true,
     [ IsMagmaWithOne ], 0,
     M -> One( Representative( M ) ) );
@@ -789,13 +852,13 @@ InstallOtherMethod( One,
 EnumeratorOfTrivialMagmaWithOne := M -> Immutable( [ One( M ) ] );
 
 InstallMethod( Enumerator,
-    "method for trivial magma-with-one",
+    "for trivial magma-with-one",
     true,
     [ IsMagmaWithOne and IsTrivial ], 0,
     EnumeratorOfTrivialMagmaWithOne );
 
 InstallMethod( EnumeratorSorted,
-    "method for trivial magma-with-one",
+    "for trivial magma-with-one",
     true,
     [ IsMagmaWithOne and IsTrivial ], 0,
     EnumeratorOfTrivialMagmaWithOne );
@@ -807,9 +870,9 @@ InstallMethod( EnumeratorSorted,
 ##
 ClosureMagmaDefault := function( M, elm )
 
-    local   C,          # closure '\< <M>, <obj> \>', result
-            gens,       # generators of <M>
-            gen,        # generator of <M> or <C>
+    local   C,          # closure of `M' with `obj', result
+            gens,       # generators of `M'
+            gen,        # generator of `M' or `C'
             Celements,  # intermediate list of elements
             len;        # current number of elements
 
@@ -906,8 +969,8 @@ InstallMethod( EnumeratorSorted,
 #M  IsCentral( <M>, <N> ) . . . . . . . . . . . . . . . . . .  for two magmas
 ##
 InstallMethod( IsCentral,
-    "method for two magmas",
-    IsIdentical,
+    "for two magmas",
+    IsIdenticalObj,
     [ IsMagma, IsMagma ], 0,
     IsCentralFromGenerators( GeneratorsOfMagma, GeneratorsOfMagma ) );
 
@@ -917,8 +980,8 @@ InstallMethod( IsCentral,
 #M  IsCentral( <M>, <N> ) . . . . . . . . . . . . . . for two magmas with one
 ##
 InstallMethod( IsCentral,
-    "method for two magmas-with-one",
-    IsIdentical,
+    "for two magmas-with-one",
+    IsIdenticalObj,
     [ IsMagmaWithOne, IsMagmaWithOne ], 0,
     IsCentralFromGenerators( GeneratorsOfMagmaWithOne,
                              GeneratorsOfMagmaWithOne ) );
@@ -929,8 +992,8 @@ InstallMethod( IsCentral,
 #M  IsCentral( <M>, <N> ) . . . . . . . . . . .  for two magmas with inverses
 ##
 InstallMethod( IsCentral,
-    "method for two magmas-with-inverses",
-    IsIdentical,
+    "for two magmas-with-inverses",
+    IsIdenticalObj,
     [ IsMagmaWithInverses, IsMagmaWithInverses ], 0,
     IsCentralFromGenerators( GeneratorsOfMagmaWithInverses,
                              GeneratorsOfMagmaWithInverses ) );
@@ -941,8 +1004,8 @@ InstallMethod( IsCentral,
 #M  IsSubset( <M>, <N> )  . . . . . . . . . . . . . . . . . .  for two magmas
 ##
 InstallMethod( IsSubset,
-    "method for two magmas",
-    IsIdentical,
+    "for two magmas",
+    IsIdenticalObj,
     [ IsMagma, IsMagma ], 0,
     function( M, N )
     return IsSubset( M, GeneratorsOfMagma( N ) );
@@ -954,8 +1017,8 @@ InstallMethod( IsSubset,
 #M  IsSubset( <M>, <N> )  . . . . . . . . . . . . . . for two magmas with one
 ##
 InstallMethod( IsSubset,
-    "method for two magmas with one",
-    IsIdentical,
+    "for two magmas with one",
+    IsIdenticalObj,
     [ IsMagmaWithOne, IsMagmaWithOne ], 0,
     function( M, N )
     return IsSubset( M, GeneratorsOfMagmaWithOne( N ) );
@@ -967,8 +1030,8 @@ InstallMethod( IsSubset,
 #M  IsSubset( <M>, <N> )  . . . . . . . . . . .  for two magmas with inverses
 ##
 InstallMethod( IsSubset,
-    "method for two magmas with inverses",
-    IsIdentical,
+    "for two magmas with inverses",
+    IsIdenticalObj,
     [ IsMagmaWithInverses, IsMagmaWithInverses ], 0,
     function( M, N )
     return IsSubset( M, GeneratorsOfMagmaWithInverses( N ) );
@@ -1015,7 +1078,7 @@ InstallMethod( AsMagma,
 ##
 InstallMethod( AsSubmagma,
     "generic method for magmas",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsMagma, IsMagma ], 0,
     function( G, U )
     local S;
@@ -1032,6 +1095,4 @@ InstallMethod( AsSubmagma,
 #############################################################################
 ##
 #E  magma.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

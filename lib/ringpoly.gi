@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods  for attributes, properties and operations
 ##  for polynomial rings.
@@ -15,7 +16,29 @@ Revision.ringpoly_gi :=
 
 #############################################################################
 ##
+#M  GiveNumbersNIndeterminates(<ratfunfam>,<count>,<names>,<avoid>)
+GiveNumbersNIndeterminates := function(rfam,cnt,nam,avoid)
+local idn,i,nbound;
+  avoid:=List(avoid,IndeterminateNumberOfUnivariateLaurentPolynomial);
+  idn:=[];
+  i:=1;
+  while Length(idn)<cnt do
+    nbound:=IsBound(nam[Length(idn)+1]);
+    # skip unwanted indeterminates
+    while (i in avoid) or (nbound and HasIndeterminateName(rfam,i)) do
+      i:=i+1;
+    od;
+    Add(idn,i);
+    if nbound then
+      SetIndeterminateName(rfam,i,nam[Length(idn)]);
+    fi;
+    i:=i+1;
+  od;
+  return idn;
+end;
 
+#############################################################################
+##
 #M  PolynomialRing( <ring>, <rank> )  . . .  full polynomial ring over a ring
 ##
 #T polynomial rings should be special cases of free magma rings!  one needs
@@ -26,14 +49,13 @@ Revision.ringpoly_gi :=
 ##
 
 #############################################################################
-InstallMethod( PolynomialRing,
-    true,
-    [ IsRing,
-      IsList ],
-    0,
-
+InstallMethod( PolynomialRing,"indetlist", true, [ IsRing, IsList ], 0,
 function( r, n )
     local   efam,  rfun,  zero,  one,  ind,  i,  type,  prng;
+
+    if not IsInt(n[1]) then
+      TryNextMethod();
+    fi;
 
     # get the elements family of the ring
     efam := ElementsFamily( FamilyObj(r) );
@@ -58,6 +80,11 @@ function( r, n )
         type := type and IsUnivariatePolynomialRing and IsFLMLORWithOne;
     elif Length(n) = 1  then
         type := type and IsUnivariatePolynomialRing;
+    fi;
+
+    # Polynomial rings over commutative rings are themselves commutative.
+    if HasIsCommutative( r ) and IsCommutative( r ) then
+      type:= type and IsCommutative;
     fi;
 
     # set categories to allow method selection according to base ring
@@ -99,19 +126,33 @@ function( r, n )
 end );
 
 
-#############################################################################
-InstallMethod( PolynomialRing,
-    true,
-    [ IsRing,
-      IsInt and IsPosRat ],
-    0,
-
+InstallMethod( PolynomialRing,"rank",true, [ IsRing, IsPosInt ], 0,
 function( r, n )
-    if n = 1  then
-        return UnivariatePolynomialRing(r);
-    else
-        return PolynomialRing( r, [ 1 .. n ] );
-    fi;
+  return PolynomialRing( r, [ 1 .. n ] );
+end );
+
+InstallOtherMethod( PolynomialRing,"rank,avoid",true,
+  [ IsRing, IsPosInt,IsList ], 0,
+function( r, n,a )
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+           RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),n,[],a));
+end );
+
+InstallMethod( PolynomialRing,"names",true, [ IsRing, IsList ], 0,
+function( r, nam )
+  if not IsString(nam[1]) then
+    TryNextMethod();
+  fi;
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
+	                             Length(nam),nam,[]));
+end );
+
+InstallOtherMethod(PolynomialRing,"names,avoid",true,[IsRing,IsList,IsList],0,
+function( r, nam,a )
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),
+	                             Length(nam),nam,a));
 end );
 
 
@@ -122,7 +163,7 @@ InstallOtherMethod( PolynomialRing,
     0,
 
 function( r )
-    return UnivariatePolynomialRing(r);
+    return PolynomialRing(r,[1]);
 end );
 
 
@@ -130,13 +171,61 @@ end );
 ##
 #M  UnivariatePolynomialRing( <ring> )  . .  full polynomial ring over a ring
 ##
-InstallMethod( UnivariatePolynomialRing,
+InstallMethod( UnivariatePolynomialRing,"indet 1", true, [ IsRing ], 0,
+function( r )
+  return PolynomialRing( r, [1] );
+end );
+
+InstallOtherMethod(UnivariatePolynomialRing,"indet number",true,
+  [ IsRing,IsPosInt ], 0,
+function( r,n )
+  return PolynomialRing( r, [n] );
+end );
+
+InstallOtherMethod(UnivariatePolynomialRing,"name",true,
+  [ IsRing,IsString], 0,
+function( r,n )
+  if not IsString(n) then
+    TryNextMethod();
+  fi;
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[n],[]));
+end);
+
+InstallOtherMethod(UnivariatePolynomialRing,"avoid",true,
+  [ IsRing,IsList], 0,
+function( r,a )
+  if not IsRationalFunction(a[1]) then
+    TryNextMethod();
+  fi;
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+            RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[],a));
+end);
+
+InstallOtherMethod(UnivariatePolynomialRing,"name,avoid",true,
+  [ IsRing,IsString,IsList], 0,
+function( r,n,a )
+  if not IsString(n[1]) then
+    TryNextMethod();
+  fi;
+  return PolynomialRing( r, GiveNumbersNIndeterminates(
+	    RationalFunctionsFamily(ElementsFamily(FamilyObj(r))),1,[n],a));
+end);
+
+
+#############################################################################
+##
+#M  ViewObj( <pring> )
+##
+InstallMethod( ViewObj,
+    "for a polynomial ring",
     true,
-    [ IsRing ],
+    [ IsPolynomialRing ],
     0,
 
-function( r )
-    return PolynomialRing( r, [1..1] );
+function( obj )
+    Print( "PolynomialRing(..., ",
+        IndeterminatesOfPolynomialRing(obj), ")" );
 end );
 
 
@@ -145,30 +234,63 @@ end );
 #M  PrintObj( <pring> )
 ##
 InstallMethod( PrintObj,
+    "for a polynomial ring",
     true,
     [ IsPolynomialRing ],
     0,
 
 function( obj )
-    Print( "PolynomialRing( ..., ",
-        Length(IndeterminatesOfPolynomialRing(obj)), " )" );
+    Print( "PolynomialRing( ", LeftActingDomain( obj ), ", ",
+        IndeterminatesOfPolynomialRing(obj), " )" );
 end );
 
 
 #############################################################################
 ##
-
-#M  Indeterminate( <ring> ) . . . . . . . . . . . . indeterminate over a ring
+#M  Indeterminate( <ring>,<nr> )
 ##
-InstallMethod( Indeterminate,
-    true,
-    [ IsRing ],
-    0,
+InstallMethod( Indeterminate,"number", true, [ IsRing,IsPosInt ],0,
+function( r,n )
+  return UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(r)),
+           [Zero(r),One(r)],n);
+end);
 
-function( ring )
-    return IndeterminatesOfPolynomialRing(PolynomialRing(ring,1))[1];
-end );
+InstallOtherMethod( Indeterminate,"number 1", true, [ IsRing ],0,
+function( r )
+  return UnivariatePolynomialByCoefficients(ElementsFamily(FamilyObj(r)),
+           [Zero(r),One(r)],1);
+end);
 
+InstallOtherMethod( Indeterminate,"number, avoid", true, [ IsRing,IsList ],0,
+function( r,a )
+  if not IsRationalFunction(a[1]) then
+    TryNextMethod();
+  fi;
+  r:=ElementsFamily(FamilyObj(r));
+  return UnivariatePolynomialByCoefficients(r,[Zero(r),One(r)],
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[],a)[1]);
+end);
+
+InstallOtherMethod( Indeterminate,"number, name", true, [ IsRing,IsString ],0,
+function( r,n )
+  if not IsString(n) then
+    TryNextMethod();
+  fi;
+  r:=ElementsFamily(FamilyObj(r));
+  return UnivariatePolynomialByCoefficients(r,[Zero(r),One(r)],
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[n],[])[1]);
+end);
+
+InstallOtherMethod( Indeterminate,"number, name, avoid",true,
+  [ IsRing,IsString,IsList ],0,
+function( r,n,a )
+  if not IsString(n) then
+    TryNextMethod();
+  fi;
+  r:=ElementsFamily(FamilyObj(r));
+  return UnivariatePolynomialByCoefficients(r,[Zero(r),One(r)],
+          GiveNumbersNIndeterminates(RationalFunctionsFamily(r),1,[n],a)[1]);
+end);
 
 #############################################################################
 ##
@@ -245,13 +367,39 @@ function( gens )
             Add( cfs, i );
         od;
     od;
+
+    if Length(cfs)=0 then
+      # special case for zero polynomial
+      Add(cfs,Zero(CoefficientsFamily(FamilyObj(gens[1]))));
+    fi;
+
+    if Length(ind)=0 then
+      # this can only happen if the polynomials are univariate
+      ind:=[IndeterminateNumberOfUnivariateLaurentPolynomial(gens[1])];
+    fi;
+
     return PolynomialRing( DefaultField(cfs), ind );
     
 end );
 
+#############################################################################
+##
+#M  MinimalPolynomial( <ring>, <elm> )
+#M  CharacteristicPolynomial( <ring>, <elm> )
+##
+InstallOtherMethod( MinimalPolynomial,"supply indeterminate 1",true,
+    [ IsRing, IsMultiplicativeElement and IsAdditiveElement],0,
+function(r,e)
+  return MinimalPolynomial(r,e,1);
+end);
+
+InstallOtherMethod( CharacteristicPolynomial,"supply indeterminate 1",true,
+    [ IsRing, IsMultiplicativeElement and IsAdditiveElement],0,
+function(r,e)
+  return CharacteristicPolynomial(r,e,1);
+end);
 
 #############################################################################
 ##
-
 #E  ringpoly.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

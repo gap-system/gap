@@ -2,6 +2,9 @@
 ##
 #W  grppcfp.gi                  GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 ##  This file contains some functions to convert a pc group into an
 ##  fp group and vice versa.
 ##
@@ -12,11 +15,11 @@ Revision.grppcfp_gi :=
 ##
 #F  PcGroupFpGroup( F )
 ##
-PcGroupFpGroup := function( F )
+InstallGlobalFunction( PcGroupFpGroup, function( F )
     return PolycyclicFactorGroup(
         FreeGroupOfFpGroup( F ),
         RelatorsOfFpGroup( F ) );
-end;
+end );
 
 #############################################################################
 ##
@@ -32,7 +35,7 @@ function( G, gens, str )
     rels := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( hom ) );
     H := F /rels;
     gensH := GeneratorsOfGroup( H );
-    iso := GroupHomomorphismByImages( G, H, gens, gensH );
+    iso := GroupHomomorphismByImagesNC( G, H, gens, gensH );
     SetIsBijective( iso, true );
     SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup(G) );
     return iso;
@@ -49,8 +52,8 @@ end );
 ##
 #F  IsomorphismFpGroupByPcgs( pcgs, str )
 ##
-IsomorphismFpGroupByPcgs := function( pcgs, str )
-    local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H;
+InstallGlobalFunction( IsomorphismFpGroupByPcgs, function( pcgs, str )
+    local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H, phi;
 
     n    := Length( pcgs );
     F    := FreeGroup( n, str );
@@ -81,9 +84,14 @@ IsomorphismFpGroupByPcgs := function( pcgs, str )
         od;
     od;
     H := F / rels;
-    return GroupHomomorphismByImages( GroupOfPcgs(pcgs), H, AsList( pcgs ),
-                                      GeneratorsOfGroup( H ) );
-end;
+    phi := 
+      GroupHomomorphismByImagesNC( GroupOfPcgs(pcgs), H, AsList( pcgs ),
+                                        GeneratorsOfGroup( H ) );
+
+    SetIsBijective( phi, true );
+    return phi;
+    
+end );
 
 #############################################################################
 ##
@@ -92,7 +100,7 @@ end;
 InstallMethod( IsomorphismFpGroupByCompositionSeries, 
                "method for pc groups",
                true,
-               [IsGroup and IsPcgsComputable, IsString],
+               [IsGroup and CanEasilyComputePcgs, IsString],
                0,
 function( G, str )
     return IsomorphismFpGroupByPcgs( Pcgs(G), str );
@@ -101,7 +109,7 @@ end);
 InstallOtherMethod( IsomorphismFpGroupByCompositionSeries, 
                "method for pc groups",
                true,
-               [IsGroup and IsPcgsComputable],
+               [IsGroup and CanEasilyComputePcgs],
                0,
 function( G )
     return IsomorphismFpGroupByPcgs( Pcgs(G), "F" );
@@ -114,7 +122,7 @@ end);
 InstallMethod( IsomorphismFpGroup, 
                "method for pc groups",
                true,
-               [IsGroup and IsPcgsComputable],
+               [IsGroup and CanEasilyComputePcgs],
                0,
 function( G )
     return IsomorphismFpGroupByPcgs( Pcgs( G ), "F" );
@@ -126,7 +134,7 @@ end );
 ##
 ##  returns D = diagonalised form, M = P * D * Q, I = Q^-1
 ##
-SmithNormalFormSQ := function( M )
+InstallGlobalFunction( SmithNormalFormSQ, function( M )
 	local	divisor, minimum, diagonal,
 	    	col_add, row_add, reduce_col, reduce_row,
 		    k, l, pos, h, i, j, P, Q, I;
@@ -268,13 +276,13 @@ SmithNormalFormSQ := function( M )
 	    fi;
 	od;
 	return( rec( D := M, P := P, Q := Q, I := I ) );
-end;
+end );
 
 #############################################################################
 ##
 #F  InitEpimorphismSQ( F )
 ##
-InitEpimorphismSQ := function( F )
+InstallGlobalFunction( InitEpimorphismSQ, function( F )
 	local g, gens, r, rels, ng, nr, pf, pn, pp, D, P, M, Q, I, A, G, min,
       	  gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n;
 
@@ -289,7 +297,7 @@ InitEpimorphismSQ := function( F )
 	    M[i] := List( [ 1..ng ], i->0 );
 	    if i <= nr then
   		    r := rels[i];
-		    for j in [ 1..LengthWord( r ) ] do
+		    for j in [ 1..Length( r ) ] do
 		        g := Subword( r, j, j );
 		        k := 1;
 		        while (g <> gens[k]) and (g^-1<>gens[k]) do
@@ -396,13 +404,13 @@ InitEpimorphismSQ := function( F )
                 image  := G,
                 imgs   := imgs,
                 prei   := prei );
-end;
+end );
 
 #############################################################################
 ##
 #F  LiftEpimorphismSQ( epi, M, c )
 ##
-LiftEpimorphismSQ := function( epi, M, c )
+InstallGlobalFunction( LiftEpimorphismSQ, function( epi, M, c )
     local F, G, pcgsG, n, H, pcgsH, d, gensf, pcgsN, htil, gtil, mtil,
           w, e, g, m, i, A, V, rel, l, v, mats, j, t, mat, k, elms, imgs,
           lift, null, vec, new, U, sol, sub, elm, r;
@@ -442,7 +450,7 @@ LiftEpimorphismSQ := function( epi, M, c )
 
     # for each relator of G add 
     for rel in RelatorsOfFpGroup( F ) do
-        l := LengthWord( rel );
+        l := Length( rel );
 
         # right hand side
         v := MappedWord( rel, gensf, gtil );
@@ -523,13 +531,13 @@ LiftEpimorphismSQ := function( epi, M, c )
 
     # give up 
     return false;
-end; 
+end );
 
 #############################################################################
 ##
 #F  BlowUpCocycleSQ( v, K, F )
 ##
-BlowUpCocycleSQ := function( v, K, F )
+InstallGlobalFunction( BlowUpCocycleSQ, function( v, K, F )
     local Q, B, vectors, hlp, i, k;
 
     if F = K then return v; fi;
@@ -544,13 +552,13 @@ BlowUpCocycleSQ := function( v, K, F )
         od;
     od;
     return hlp;
-end;
+end );
 
 #############################################################################
 ##
 #F  TryModuleSQ( epi, M )
 ##
-TryModuleSQ := function( epi, M )
+InstallGlobalFunction( TryModuleSQ, function( epi, M )
     local  C, lift, co, cb, cc, tmp, r, q, i, j, k, l, v, qi, c;
 
     # first try a split extension
@@ -611,13 +619,13 @@ TryModuleSQ := function( epi, M )
 
     # give up
     return false;
-end;
+end );
 
 #############################################################################
 ##
 #F  TryLayerSQ( epi, layer )
 ##
-TryLayerSQ := function( epi, layer )
+InstallGlobalFunction( TryLayerSQ, function( epi, layer )
     local field, dim, reps, rep, lift;
 
     # compute modules for prime
@@ -637,13 +645,13 @@ TryLayerSQ := function( epi, layer )
     
     # give up
     return false;
-end;
+end );
 
 #############################################################################
 ##
 #F  SQ( <F>, <...> ) / SolvableQuotient( <F>, <...> )
 ##
-SolvableQuotient := function ( F, primes )
+InstallGlobalFunction( SolvableQuotient, function ( F, primes )
     local G, epi, tup, lift, i, found, fac, j, p;
 
     # initialise epimorphism
@@ -719,6 +727,7 @@ SolvableQuotient := function ( F, primes )
 
     # this is the result - should be G only with setted epimorphism
     return epi;
-end;
+end );
 
-SQ := SolvableQuotient;
+InstallGlobalFunction( SQ, SolvableQuotient );
+

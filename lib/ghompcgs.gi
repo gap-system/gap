@@ -2,6 +2,9 @@
 ##
 #W  ghompcgs.gi                 GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.ghompcgs_gi :=
     "@(#)$Id$";
 
@@ -9,11 +12,11 @@ Revision.ghompcgs_gi :=
 #############################################################################
 ##
 
-#M  GroupHomomorphismByImages( <G>, <H>, <gens>, <imgs> )
+#M  GroupHomomorphismByImagesNC( <G>, <H>, <gens>, <imgs> )
 ##
 ##  Add NC later
 ##
-InstallMethod( GroupHomomorphismByImages, 
+InstallMethod( GroupHomomorphismByImagesNC, 
     "generic method for pc homs",
     true, 
     [ IsPcGroup, IsPcGroup, IsList, IsList ],
@@ -49,7 +52,7 @@ function( G, H, gens, imgs )
 end );
 
 
-InstallMethod( GroupHomomorphismByImages, 
+InstallMethod( GroupHomomorphismByImagesNC, 
     "generic method for pc homs",
     true, 
     [ IsPcGroup, IsGroup, IsList, IsList ],
@@ -260,45 +263,104 @@ end;
 #M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping, 
-               "method for homs into pc group",
+               "method for homs from pc group into pc group or perm group",
+               true,
+               [ IsPcGroupHomomorphismByImages and
+                 IsToPcGroupHomomorphismByImages ],
+               0,
+function( a )
+
+    local   gensInv, imgsInv, gensKer, u, v, uw, vw, gens, imgs, idR, idD,
+            tmp, i, j, K, pcgs;
+
+    idR := Identity( Range( a ) );
+    idD := Identity( Source( a ) );
+
+    # Compute kernel -- this is a Zassenhaus-algorithm.
+    gensInv := [];
+    imgsInv := [];
+    gensKer := [];
+    gens := a!.sourcePcgs;
+    imgs := a!.sourcePcgsImages;
+    pcgs := Pcgs( Range( a ) );
+    for i  in Reversed( [ 1 .. Length( imgs ) ] )  do
+        u  := imgs[ i ];
+        v  := gens[ i ];
+        uw := DepthOfPcElement( pcgs, u );
+        while u <> idR and IsBound( gensInv[ uw ] )  do
+            tmp := LeadingExponentOfPcElement( pcgs, u )
+                    /  LeadingExponentOfPcElement( pcgs, gensInv[ uw ] )
+                   mod RelativeOrderOfPcElement( pcgs, u );
+            u := gensInv[ uw ] ^ -tmp * u;
+            v := imgsInv[ uw ] ^ -tmp * v;
+            uw := DepthOfPcElement( pcgs, u );
+        od;
+        if u = idR  then
+            vw := DepthOfPcElement( gens, v );
+            while v <> idD and IsBound( gensKer[ vw ] )  do
+                v  := ReducedPcElement( v, gensKer[ vw ] );
+                vw := DepthOfPcElement( gens, v );
+            od;
+            if v <> idD  then
+                gensKer[ vw ] := v;
+            fi;
+        else
+            gensInv[ uw ] := u;
+            imgsInv[ uw ] := v;
+        fi;
+    od;
+    return Subgroup( Source( a ), Compacted( gensKer ) );
+end );
+
+#############################################################################
+##
+#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
+##
+InstallMethod( KernelOfMultiplicativeGeneralMapping, 
+               "method for homs from pc group",
                true,
                [ IsPcGroupHomomorphismByImages ],
                0,
-
 function( hom )
-    local idR, idS, pcgs, gens, gensKer, i, u, v, uw, tmp, kernel, j; 
+    local S, idS, ggens, m, sk, im, gexps, x, y, i, j, k, l, K;
 
-    idR := Identity( Range( hom ) );
-    idS := Identity( Source( hom ) );
+    S       := Source( hom );
+    idS     := Identity( S );
+    ggens   := Pcgs( S );
+    gexps   := RelativeOrders( ggens );
+    m       := Length( ggens );
+    sk      := List( [1..m], x -> idS );
+    im      := [];
+    im[m+1] := TrivialSubgroup( Range( hom ) );
 
-    gens := hom!.sourcePcgs;
-    pcgs := hom!.sourcePcgsImages;
-
-    # Compute kernel 
-    gensKer := [];
-    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
-        u  := pcgs[ i ];
-        v  := gens[ i ];
-        uw := DepthOfPcElement( gens, v );
-        while u <> idR do
-            tmp := LeadingExponentOfPcElement( gens, v )
-                    /  LeadingExponentOfPcElement( gens, gens[uw] )
-                   mod RelativeOrderOfPcElement( gens, v );
-            u := pcgs[ uw ] ^ -tmp * u;
-            v := gens[ uw ] ^ -tmp * v;
-            uw := DepthOfPcElement( gens, v );
-        od;
-        if v <> idS then
-            AddSet( gensKer, v );
+    for j in Reversed( [1..m] ) do
+        if Image( hom, ggens[j] ) in im[j+1]  then
+            y := ggens[j];
+            for k in [j+1..m] do
+                if sk[k] = idS then
+                    if gexps[k] <> gexps[j] then
+                        y := y ^ gexps[k];
+                    else
+                        l := 0;
+                        while l < gexps[k] do
+                            x := y * (ggens[k] ^ l);
+                            if Image( hom, x ) in im[k+1]  then
+                                y := x;
+                                l := gexps[k];
+                            else
+                                l := l + 1;
+                            fi;
+                        od;
+                    fi;
+                fi;
+            od;
+            sk[j] := y;
+            im[j] := im[j+1];
+        else
+    	    im[j] := ClosureGroup( im[j+1], Image( hom, ggens[j] ) );
         fi;
     od;
-
-    # add the kernel
-    kernel := SubgroupNC( Source( hom ), gensKer );
-    SetKernelOfMultiplicativeGeneralMapping( hom, kernel );
-
-    # Return.
-    return kernel;
+    return Subgroup( S, sk );
 end );
 
 #############################################################################
@@ -332,7 +394,7 @@ end);
 
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . . . . for pc groups
 ##
-InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
     local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom;
@@ -364,7 +426,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
     return hom;
 end );
 
-InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
+InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdenticalObj,
         [ IsGroup and HasSpecialPcgs, 
           IsGroup and HasInducedPcgsWrtSpecialPcgs ], 0,
     function( G, N )
@@ -386,10 +448,34 @@ InstallMethod( NaturalHomomorphismByNormalSubgroupOp, IsIdentical,
     return hom;
 end );
 
-InstallMethod( PrintObj, true, [ IsNaturalHomomorphismPcGroupRep ], 0,
+
+#############################################################################
+##
+#M  ViewObj( <hom> )  . . . . . . . . . . . . . . . for nat. hom. of pc group
+##
+InstallMethod( ViewObj,
+    "for nat. hom. of pc group",
+    true,
+    [ IsNaturalHomomorphismPcGroupRep ], 0,
     function( hom )
     Print( Source( hom ), " -> ", Range( hom ) );
 end );
+
+
+#############################################################################
+##
+#M  PrintObj( <hom> ) . . . . . . . . . . . . . . . for nat. hom. of pc group
+##
+InstallMethod( PrintObj,
+    "for nat. hom. of pc group",
+    true,
+    [ IsNaturalHomomorphismPcGroupRep ], 0,
+    function( hom )
+    Print( "NaturalHomomorphismByNormalSubgroup( ",
+           Source( hom ), ", ",
+           KernelOfMultiplicativeGeneralMapping( hom ), " )" );
+end );
+
 
 #############################################################################
 ##
@@ -423,7 +509,7 @@ end );
 ##
 #M  <hom1> = <hom2> . . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( \=, IsIdentical, 
+InstallMethod( \=, IsIdenticalObj, 
                [ IsPcGroupHomomorphismByImages, 
                  IsPcGroupHomomorphismByImages ], 1,
     function( hom1, hom2 )
@@ -451,7 +537,7 @@ InstallMethod( PrintObj,
 #M  NaturalIsomorphismByPcgs( <grp>, <pcgs> ) . . presentation through <pcgs>
 ##
 InstallMethod( NaturalIsomorphismByPcgs,
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup,
       IsPcgs ],
     0,
@@ -471,7 +557,7 @@ function( grp, pcgs )
     fi;
 
     # return the isomomorphism
-    new := GroupHomomorphismByImages( grp, new, pcgs, FamilyPcgs(new) );
+    new := GroupHomomorphismByImagesNC( grp, new, pcgs, FamilyPcgs(new) );
     SetIsBijective( new, true );
     return new;
 

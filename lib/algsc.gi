@@ -5,24 +5,25 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains methods for elements of algebras given by structure
-##  constants (s.c.).
+##  constants (s.~c.).
 ##
-##  The family of s.c. algebra elements has the following components.
+##  The family of s.~c. algebra elements has the following components.
 ##
-##  'sctable' :
+##  `sctable' :
 ##        the structure constants table,
-##  'names' :
+##  `names' :
 ##        list of names of the basis vectors (for printing only),
-##  'zerocoeff' :
-##        the zero coefficient (needed already for the s.c. table),
-##  'defaultTypeDenseCoeffVectorRep' :
-##        the type of s.c. algebra elements that are represented by
+##  `zerocoeff' :
+##        the zero coefficient (needed already for the s.~c. table),
+##  `defaultTypeDenseCoeffVectorRep' :
+##        the type of s.~c. algebra elements that are represented by
 ##        a dense list of coefficients.
 ##
-##  If the family has *not* the category 'IsFamilyOverFullCoefficientsFamily'
-##  then it has the component 'coefficientsDomain'.
+##  If the family has *not* the category `IsFamilyOverFullCoefficientsFamily'
+##  then it has the component `coefficientsDomain'.
 ##
 Revision.algsc_gi :=
     "@(#)$Id$";
@@ -30,10 +31,10 @@ Revision.algsc_gi :=
 
 #############################################################################
 ##
-#M  IsWholeFamily( <V> )  . . . . . . .  for s.c. algebra elements collection
+#M  IsWholeFamily( <V> )  . . . . . . . for s.~c. algebra elements collection
 ##
 InstallMethod( IsWholeFamily,
-    "method for s.c. algebra elements collection",
+    "for s. c. algebra elements collection",
     true,
     [ IsSCAlgebraObjCollection and IsLeftModule and IsFreeLeftModule ], 0,
     function( V )
@@ -51,6 +52,17 @@ InstallMethod( IsWholeFamily,
 
 #############################################################################
 ##
+#M  IsFullSCAlgebra( <V> )  . . . . . . for s.~c. algebra elements collection
+##
+InstallMethod( IsFullSCAlgebra,
+    "for s. c. algebra elements collection",
+    true,
+    [ IsSCAlgebraObjCollection and IsAlgebra ], 0,
+    V -> Dimension(V) = Length( ElementsFamily( FamilyObj( V ) )!.names ) );
+
+
+#############################################################################
+##
 #R  IsDenseCoeffVectorRep( <obj> )
 ##
 ##  This representation uses a coefficients vector
@@ -59,13 +71,13 @@ InstallMethod( IsWholeFamily,
 ##  The external representation is the coefficients vector,
 ##  which is stored at position 1 in the object.
 ##
-IsDenseCoeffVectorRep := NewRepresentation( "IsDenseCoeffVectorRep",
+DeclareRepresentation( "IsDenseCoeffVectorRep",
     IsPositionalObjectRep, [ 1 ] );
 
 
 #############################################################################
 ##
-#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . . . for s.c. algebra elements
+#M  ObjByExtRep( <Fam>, <descr> ) . . . . . . . .  for s.~c. algebra elements
 ##
 ##  Check whether the coefficients list <coeffs> has the right length,
 ##  and lies in the correct family.
@@ -74,7 +86,7 @@ IsDenseCoeffVectorRep := NewRepresentation( "IsDenseCoeffVectorRep",
 ##  collections family of the coefficients family of <Fam>.
 ##
 InstallMethod( ObjByExtRep,
-    "method for s.c. algebra elements family",
+    "for s. c. algebra elements family",
     true,
     [ IsSCAlgebraObjFamily, IsHomogeneousList ], 0,
     function( Fam, coeffs )
@@ -84,19 +96,19 @@ InstallMethod( ObjByExtRep,
     elif Length( coeffs ) <> Length( Fam!.names ) then
       Error( "<coeffs> must be a list of length ", Fam!.names );
     elif not ForAll( coeffs, c -> c in Fam!.coefficientsDomain ) then
-      Error( "all in <coeffs> must lie in '<Fam>!.coefficientsDomain'" );
+      Error( "all in <coeffs> must lie in `<Fam>!.coefficientsDomain'" );
     fi;
     return Objectify( Fam!.defaultTypeDenseCoeffVectorRep,
                       [ Immutable( coeffs ) ] );
     end );
 
 InstallMethod( ObjByExtRep,
-    "method for s.c. alg. elms. family with coefficients family",
+    "for s. c. alg. elms. family with coefficients family",
     true,
     [ IsSCAlgebraObjFamily and IsFamilyOverFullCoefficientsFamily,
       IsHomogeneousList ], 0,
     function( Fam, coeffs )
-    if not IsIdentical( CoefficientsFamily( Fam ),
+    if not IsIdenticalObj( CoefficientsFamily( Fam ),
                         ElementsFamily( FamilyObj( coeffs ) ) ) then
       Error( "family of <coeffs> does not fit to <Fam>" );
     elif Length( coeffs ) <> Length( Fam!.names ) then
@@ -109,10 +121,10 @@ InstallMethod( ObjByExtRep,
 
 #############################################################################
 ##
-#M  ExtRepOfObj( <elm> )  . . . . . . . . . . . . . for s.c. algebra elements
+#M  ExtRepOfObj( <elm> )  . . . . . . . . . . . .  for s.~c. algebra elements
 ##
 InstallMethod( ExtRepOfObj,
-    "method for s.c. algebra element in dense coeff. vector rep.",
+    "for s. c. algebra element in dense coeff. vector rep.",
     true,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     elm -> elm![1] );
@@ -120,22 +132,22 @@ InstallMethod( ExtRepOfObj,
 
 #############################################################################
 ##
-#M  Print( <elm> )  . . . . . . . . . . . . . . . . for s.c. algebra elements
+#M  Print( <elm> )  . . . . . . . . . . . . . . .  for s.~c. algebra elements
 ##
 InstallMethod( PrintObj,
-    "method for s.c. algebra element",
+    "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     function( elm )
 
-    local F,      # family of 'elm'
+    local F,      # family of `elm'
           names,  # generators names
           len,    # dimension of the algebra
           zero,   # zero element of the ring
           depth,  # first nonzero position in coefficients list
           one,    # identity element of the ring
           i;      # loop over the coefficients list
-   
+
     F     := FamilyObj( elm );
     names := F!.names;
     elm   := ExtRepOfObj( elm );
@@ -143,15 +155,15 @@ InstallMethod( PrintObj,
 
     # Treat the case that the algebra is trivial.
     if len = 0 then
-      Print( "<zero of zero s.c. algebra>" );
+      Print( "<zero of trivial s.c. algebra>" );
       return;
     fi;
 
     zero  := Zero( elm[1] );
     depth := PositionNot( elm, zero );
-  
+
     if len < depth then
- 
+
       # Print the zero element.
       # (Note that the unique element of a zero algebra has a name.)
       Print( "0*", names[1] );
@@ -183,10 +195,10 @@ InstallMethod( PrintObj,
 ##
 #M  One( <Fam> )
 ##
-##  Compute the identity (if exists) from the s.c. table.
+##  Compute the identity (if exists) from the s.~c. table.
 ##
 InstallOtherMethod( One,
-    "method for family of s.c. algebra elements",
+    "for family of s. c. algebra elements",
     true,
     [ IsSCAlgebraObjFamily ], 0,
     function( F )
@@ -201,52 +213,52 @@ InstallOtherMethod( One,
 
 #############################################################################
 ##
-#M  \=( <x>, <y> )  . . . . . . . . . .  equality of two s.c. algebra objects
-#M  \<( <x>, <y> )  . . . . . . . . .  comparison of two s.c. algebra objects
-#M  \+( <x>, <y> )  . . . . . . . . . . . . . sum of two s.c. algebra objects
-#M  \-( <x>, <y> )  . . . . . . . . .  difference of two s.c. algebra objects
-#M  \*( <x>, <y> )  . . . . . . . . . . . product of two s.c. algebra objects
-#M  Zero( <x> ) . . . . . . . . . . . . . . . zero of an s.c. algebra element
-#M  AdditiveInverse( <x> )  . . . additive inverse of an s.c. algebra element
-#M  Inverse( <x> )  . . . . . . . . . . .  inverse of an s.c. algebra element
+#M  \=( <x>, <y> )  . . . . . . . . . . equality of two s.~c. algebra objects
+#M  \<( <x>, <y> )  . . . . . . . . . comparison of two s.~c. algebra objects
+#M  \+( <x>, <y> )  . . . . . . . . . . . .  sum of two s.~c. algebra objects
+#M  \-( <x>, <y> )  . . . . . . . . . difference of two s.~c. algebra objects
+#M  \*( <x>, <y> )  . . . . . . . . . .  product of two s.~c. algebra objects
+#M  Zero( <x> ) . . . . . . . . . . . . . .  zero of an s.~c. algebra element
+#M  AdditiveInverse( <x> )  . .  additive inverse of an s.~c. algebra element
+#M  Inverse( <x> )  . . . . . . . . . . . inverse of an s.~c. algebra element
 ##
 InstallMethod( \=,
-    "method for s.c. algebra elements",
-    IsIdentical,
+    "for s. c. algebra elements",
+    IsIdenticalObj,
     [ IsSCAlgebraObj, IsSCAlgebraObj ], 0,
     function( x, y ) return ExtRepOfObj( x ) = ExtRepOfObj( y ); end );
 
 InstallMethod( \=,
-    "method for s.c. algebra elements in dense vector rep.",
-    IsIdentical,
+    "for s. c. algebra elements in dense vector rep.",
+    IsIdenticalObj,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep,
       IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y ) return x![1] = y![1]; end );
 
 InstallMethod( \<,
-    "method for s.c. algebra elements",
-    IsIdentical,
+    "for s. c. algebra elements",
+    IsIdenticalObj,
     [ IsSCAlgebraObj, IsSCAlgebraObj ], 0,
     function( x, y ) return ExtRepOfObj( x ) < ExtRepOfObj( y ); end );
 
 InstallMethod( \<,
-    "method for s.c. algebra elements in dense vector rep.",
-    IsIdentical,
+    "for s. c. algebra elements in dense vector rep.",
+    IsIdenticalObj,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep,
       IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \+,
-    "method for s.c. algebra elements",
-    IsIdentical,
+    "for s. c. algebra elements",
+    IsIdenticalObj,
     [ IsSCAlgebraObj, IsSCAlgebraObj ], 0,
     function( x, y )
     return ObjByExtRep( FamilyObj(x), ExtRepOfObj(x) + ExtRepOfObj(y) );
     end );
 
 InstallMethod( \+,
-    "method for s.c. algebra elements in dense vector rep.",
-    IsIdentical,
+    "for s. c. algebra elements in dense vector rep.",
+    IsIdenticalObj,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep,
       IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y )
@@ -254,16 +266,16 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \-,
-    "method for s.c. algebra elements",
-    IsIdentical,
+    "for s. c. algebra elements",
+    IsIdenticalObj,
     [ IsSCAlgebraObj, IsSCAlgebraObj ], 0,
     function( x, y )
     return ObjByExtRep( FamilyObj(x), ExtRepOfObj(x) - ExtRepOfObj(y) );
     end );
 
 InstallMethod( \-,
-    "method for s.c. algebra elements in dense vector rep.",
-    IsIdentical,
+    "for s. c. algebra elements in dense vector rep.",
+    IsIdenticalObj,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep,
       IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y )
@@ -271,8 +283,8 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra elements",
-    IsIdentical,
+    "for s. c. algebra elements",
+    IsIdenticalObj,
     [ IsSCAlgebraObj, IsSCAlgebraObj ], 0,
     function( x, y )
     local F;
@@ -282,8 +294,8 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra elements in dense vector rep.",
-    IsIdentical,
+    "for s. c. algebra elements in dense vector rep.",
+    IsIdenticalObj,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep,
       IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y )
@@ -293,7 +305,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for ring element and s.c. algebra element",
+    "for ring element and s. c. algebra element",
     IsCoeffsElms,
     [ IsRingElement, IsSCAlgebraObj ], 0,
     function( x, y )
@@ -301,7 +313,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for ring element and s.c. algebra element in dense vector rep.",
+    "for ring element and s. c. algebra element in dense vector rep.",
     IsCoeffsElms,
     [ IsRingElement, IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y )
@@ -309,7 +321,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra element and ring element",
+    "for s. c. algebra element and ring element",
     IsElmsCoeffs,
     [ IsSCAlgebraObj, IsRingElement ], 0,
     function( x, y )
@@ -317,7 +329,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra element in dense vector rep. and ring element",
+    "for s. c. algebra element in dense vector rep. and ring element",
     IsElmsCoeffs,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep, IsRingElement ], 0,
     function( x, y )
@@ -325,7 +337,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for integer and s.c. algebra element",
+    "for integer and s. c. algebra element",
     true,
     [ IsInt, IsSCAlgebraObj ], 0,
     function( x, y )
@@ -333,7 +345,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for integer and s.c. algebra element in dense vector rep.",
+    "for integer and s. c. algebra element in dense vector rep.",
     true,
     [ IsInt, IsSCAlgebraObj and IsDenseCoeffVectorRep ], 0,
     function( x, y )
@@ -341,7 +353,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra element and integer",
+    "for s. c. algebra element and integer",
     true,
     [ IsSCAlgebraObj, IsInt ], 0,
     function( x, y )
@@ -349,7 +361,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for s.c. algebra element in dense vector rep. and integer",
+    "for s. c. algebra element in dense vector rep. and integer",
     true,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep, IsInt ], 0,
     function( x, y )
@@ -357,7 +369,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \/,
-    "method for s.c. algebra element and scalar",
+    "for s. c. algebra element and scalar",
     IsElmsCoeffs,
     [ IsSCAlgebraObj, IsScalar ], 0,
     function( x, y )
@@ -365,7 +377,7 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
-    "method for s.c. algebra element in dense vector rep. and scalar",
+    "for s. c. algebra element in dense vector rep. and scalar",
     IsElmsCoeffs,
     [ IsSCAlgebraObj and IsDenseCoeffVectorRep, IsScalar ], 0,
     function( x, y )
@@ -373,20 +385,20 @@ InstallMethod( \/,
     end );
 
 InstallMethod( Zero,
-    "method for s.c. algebra element",
+    "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     x -> ObjByExtRep( FamilyObj( x ), Zero( ExtRepOfObj( x ) ) ) );
 
 InstallMethod( AdditiveInverse,
-    "method for s.c. algebra element",
+    "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     x -> ObjByExtRep( FamilyObj( x ),
                       AdditiveInverse( ExtRepOfObj( x ) ) ) );
 
 InstallOtherMethod( One,
-    "method for s.c. algebra element",
+    "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     function( x )
@@ -400,7 +412,7 @@ InstallOtherMethod( One,
     end );
 
 InstallOtherMethod( Inverse,
-    "method for s.c. algebra element",
+    "for s. c. algebra element",
     true,
     [ IsSCAlgebraObj ], 0,
     function( x )
@@ -410,7 +422,7 @@ InstallOtherMethod( Inverse,
       F:= FamilyObj( x );
       one:= QuotientFromSCTable( F!.sctable, ExtRepOfObj( one ),
                                              ExtRepOfObj( x ) );
-      if one <> fail then 
+      if one <> fail then
         one:= ObjByExtRep( F, one );
       fi;
     fi;
@@ -423,12 +435,11 @@ InstallOtherMethod( Inverse,
 #M  \in( <a>, <A> )
 ##
 InstallMethod( \in,
-    "method for s.c. algebra element and full s.c. algebra",
+    "for s. c. algebra element, and full s. c. algebra",
     IsElmsColls,
     [ IsSCAlgebraObj, IsFullSCAlgebra ], 0,
     function( a, A )
-    A:= LeftActingDomain( A );
-    return ForAll( ExtRepOfObj( a ), x -> x in A );
+    return IsSubset( LeftActingDomain( A ), ExtRepOfObj( a ) );
     end );
 
 
@@ -444,19 +455,19 @@ InstallMethod( \in,
 ##  The generators of $A$ are linearly independent abstract space generators
 ##  $x_1, x_2, \ldots, x_n$ which are multiplied according to the formula
 ##  $ x_i x_j = \sum_{k=1}^n c_{ijk} x_k$
-##  where '$c_{ijk}$ = <sctable>[i][j][1][i_k]'
-##  and '<sctable>[i][j][2][i_k] = k'.
+##  where `$c_{ijk}$ = <sctable>[i][j][1][i_k]'
+##  and `<sctable>[i][j][2][i_k] = k'.
 ##
-AlgebraByStructureConstantsArg := function( arglist, filter )
+BindGlobal( "AlgebraByStructureConstantsArg", function( arglist, filter )
 
     local   sctable,    # structure constants table
             n,          # dimensions of structure matrices
             R,          # coefficients field
-            zero,       # zero of 'R'
+            zero,       # zero of `R'
             names,      # names of the algebra generators
             Fam,        # the family of algebra elements
             A,          # the algebra, result
-            gens;       # algebra generators of 'A'
+            gens;       # algebra generators of `A'
 
     # Check the argument list.
     if not (     1 < Length( arglist )
@@ -469,7 +480,7 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
              "AlgebraByStructureConstantsArg([<R>,<sctable>,<name1>,...])" );
     fi;
 
-    # Check the s.c. table.
+    # Check the s.~c. table.
 #T really do this!
     sctable := Immutable( arglist[2] );
     R       := arglist[1];
@@ -497,9 +508,9 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
     fi;
 
     # Construct the family of elements of our algebra.
-    # If the elements family of 'R' has a uniquely determined zero element,
+    # If the elements family of `R' has a uniquely determined zero element,
     # then all coefficients in this family are admissible.
-    # Otherwise only coefficients from 'R' itself are allowed.
+    # Otherwise only coefficients from `R' itself are allowed.
     Fam:= NewFamily( "SCAlgebraObjFamily", filter );
     if Zero( ElementsFamily( FamilyObj( R ) ) ) <> fail then
       SetFilterObj( Fam, IsFamilyOverFullCoefficientsFamily );
@@ -537,18 +548,18 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
 
     # Return the algebra.
     return A;
-end;
+end );
 
-AlgebraByStructureConstants := function( arg )
+InstallGlobalFunction( AlgebraByStructureConstants, function( arg )
     return AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
-end;
+end );
 
-LieAlgebraByStructureConstants := function( arg )
+InstallGlobalFunction( LieAlgebraByStructureConstants, function( arg )
     local A;
     A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
     SetIsLieAlgebra( A, true );
     return A;
-end;
+end );
 
 
 #############################################################################
@@ -556,7 +567,7 @@ end;
 #F  QuaternionAlgebra( <F>, <a>, <b> )
 #F  QuaternionAlgebra( <F> )
 ##
-QuaternionAlgebra := function( arg )
+InstallGlobalFunction( QuaternionAlgebra, function( arg )
     local F, a, b, e, A;
 
     if Length( arg ) = 1 then
@@ -589,12 +600,12 @@ QuaternionAlgebra := function( arg )
        and ForAll( GeneratorsOfDivisionRing( F ),
                    x -> x = ComplexConjugate( x ) ) then
       SetFilterObj( A, IsMagmaWithInversesIfNonzero );
-#T better: use 'DivisionRingByGenerators' !
+#T better: use `DivisionRingByGenerators' !
     fi;
 
     # Return the quaternion algebra.
     return A;
-end;
+end );
 
 
 #############################################################################
@@ -602,7 +613,7 @@ end;
 #M  One( <quat> ) . . . . . . . . . . . . . . . . . . . . .  for a quaternion
 ##
 InstallMethod( One,
-    "method for a quaternion",
+    "for a quaternion",
     true,
     [ IsQuaternion and IsSCAlgebraObj ], 0,
     quat -> ObjByExtRep( FamilyObj( quat ), [ 1, 0, 0, 0 ] ) );
@@ -617,7 +628,7 @@ InstallMethod( One,
 ##  where $z = c_1^2 + c_2^2 + c_3^2 + c_4^2$.
 ##
 InstallMethod( Inverse,
-    "method for a quaternion",
+    "for a quaternion",
     true,
     [ IsQuaternion and IsSCAlgebraObj ], 0,
     function( quat )
@@ -637,7 +648,7 @@ InstallMethod( Inverse,
 #M  ComplexConjugate( <quat> )  . . . . . . . . . . . . . .  for a quaternion
 ##
 InstallMethod( ComplexConjugate,
-    "method for a quaternion",
+    "for a quaternion",
     true,
     [ IsQuaternion and IsSCAlgebraObj ], 0,
     function( quat )
@@ -655,7 +666,7 @@ InstallMethod( ComplexConjugate,
 #F  ComplexificationQuat( <vector> )
 #F  ComplexificationQuat( <matrix> )
 ##
-ComplexificationQuat := function( matrixorvector )
+InstallGlobalFunction( ComplexificationQuat, function( matrixorvector )
 
     local result,
           i, e,
@@ -703,14 +714,14 @@ ComplexificationQuat := function( matrixorvector )
     fi;
 
     return result;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  OctaveAlgebra( <F> )
 ##
-OctaveAlgebra := F -> AlgebraByStructureConstants(
+InstallGlobalFunction( OctaveAlgebra, F -> AlgebraByStructureConstants(
     F,
     [ [ [[1],[1]],[[],[]],[[3],[1]],[[],[]],[[5],[1]],[[],[]],[[],[]],
         [[8],[1]] ],
@@ -729,14 +740,14 @@ OctaveAlgebra := F -> AlgebraByStructureConstants(
       [ [[],[]],[[8],[1]],[[6],[-1]],[[],[]],[[4],[1]],[[],[]],[[1],[-1]],
         [[],[]] ],
       0, Zero(F) ],
-    "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" );
+    "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" ) );
 
 
 #############################################################################
 ##
 #M  PrepareNiceFreeLeftModule( <V> )
 ##
-##  We do not need additional data to perform 'NiceVector' and 'UglyVector'.
+##  We do not need additional data to perform `NiceVector' and `UglyVector'.
 ##
 InstallMethod( PrepareNiceFreeLeftModule, true,
     [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep ], 0,
@@ -748,7 +759,7 @@ InstallMethod( PrepareNiceFreeLeftModule, true,
 #M  NiceVector( <V>, <v> )
 ##
 InstallMethod( NiceVector,
-    "method for s.c. algebra elements space and s.c. algebra element",
+    "for s. c. algebra elements space and s. c. algebra element",
     IsCollsElms,
     [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep, IsSCAlgebraObj ], 0,
     function( V, v )
@@ -761,7 +772,7 @@ InstallMethod( NiceVector,
 #M  UglyVector( <V>, <r> )
 ##
 InstallMethod( UglyVector,
-    "method for s.c. algebra elements space and s.c. algebra element",
+    "for s. c. algebra elements space and s. c. algebra element",
     true,
     [ IsFreeLeftModule and IsSCAlgebraObjSpaceRep, IsRowVector ], 0,
     function( V, r )
@@ -782,13 +793,13 @@ InstallMethod( UglyVector,
 ##  We choose a mutable basis that stores a mutable basis for a nice module.
 ##
 InstallMethod( MutableBasisByGenerators,
-    "method for ring and collection of s.c. algebra elements",
+    "for ring and collection of s. c. algebra elements",
     true,
     [ IsRing, IsSCAlgebraObjCollection ], 0,
     MutableBasisViaNiceMutableBasisMethod2 );
 
 InstallOtherMethod( MutableBasisByGenerators,
-    "method for ring, (possibly empty) list, and zero element",
+    "for ring, (possibly empty) list, and zero element",
     true,
     [ IsRing, IsList, IsSCAlgebraObj ], 0,
     MutableBasisViaNiceMutableBasisMethod3 );
@@ -799,7 +810,7 @@ InstallOtherMethod( MutableBasisByGenerators,
 #M  Coefficients( <B>, <v> )  . . . . . . coefficients w.r.t. canonical basis
 ##
 InstallMethod( Coefficients,
-    "method for canonical basis of full s.c. algebra",
+    "for canonical basis of full s. c. algebra",
     IsCollsElms,
     [ IsBasis and IsCanonicalBasisFullSCAlgebra, IsSCAlgebraObj ], 0,
     function( B, v )
@@ -812,7 +823,7 @@ InstallMethod( Coefficients,
 #M  LinearCombination( <B>, <coeffs> )  . . . . . . . . . for canonical basis
 ##
 InstallMethod( LinearCombination,
-    "method for canonical basis of full s.c. algebra",
+    "for canonical basis of full s. c. algebra",
     true,
     [ IsBasis and IsCanonicalBasisFullSCAlgebra, IsRowVector ], 0,
     function( B, coeffs )
@@ -822,10 +833,10 @@ InstallMethod( LinearCombination,
 
 #############################################################################
 ##
-#M  BasisVectors( <B> ) . . . . . .  for canonical basis of full s.c. algebra
+#M  BasisVectors( <B> ) . . . . . . for canonical basis of full s.~c. algebra
 ##
 InstallMethod( BasisVectors,
-    "method for canonical basis of full s.c. algebra",
+    "for canonical basis of full s. c. algebra",
     true,
     [ IsBasis and IsCanonicalBasisFullSCAlgebra ], 0,
     B -> ElementsFamily( FamilyObj(
@@ -834,10 +845,10 @@ InstallMethod( BasisVectors,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . . . . . . . . . . .  basis of a full s.c. algebra
+#M  BasisOfDomain( <A> )  . . . . . . . . . . . basis of a full s.~c. algebra
 ##
 InstallMethod( BasisOfDomain,
-    "method for full s.c. algebra (call 'CanonicalBasis')",
+    "for full s. c. algebra (call `CanonicalBasis')",
     true,
     [ IsFreeLeftModule and IsSCAlgebraObjCollection and IsFullSCAlgebra ], 0,
     CanonicalBasis );
@@ -845,10 +856,10 @@ InstallMethod( BasisOfDomain,
 
 #############################################################################
 ##
-#M  CanonicalBasis( <A> ) . . . . . . . . . . .  basis of a full s.c. algebra
+#M  CanonicalBasis( <A> ) . . . . . . . . . . . basis of a full s.~c. algebra
 ##
 InstallMethod( CanonicalBasis,
-    "method for full s.c. algebras",
+    "for full s. c. algebras",
     true,
     [ IsFreeLeftModule and IsSCAlgebraObjCollection and IsFullSCAlgebra ], 0,
     function( A )
@@ -865,13 +876,27 @@ InstallMethod( CanonicalBasis,
     return B;
     end );
 
+
+#############################################################################
+##
+#M  IsCanonicalBasisFullSCAlgebra( <B> )
+##
+InstallMethod( IsCanonicalBasisFullSCAlgebra,
+    "for a basis",
+    true,
+    [ IsBasis ], 0,
+    function( B )
+    local A;
+    A:= UnderlyingLeftModule( B );
+    return     IsSCAlgebraObjCollection( A )
+           and IsFullSCAlgebra( A )
+           and IsCanonicalBasis( B );
+    end );
+
 #T change implementation: bases of their own right, as for Gaussian row spaces,
 #T if the algebra is Gaussian
-
 
 #############################################################################
 ##
 #E  algsc.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

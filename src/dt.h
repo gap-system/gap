@@ -1,5 +1,5 @@
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_dt_h =
+const char * Revision_dt_h =
    "@(#)$Id$";
 #endif
 
@@ -145,25 +145,9 @@ extern Obj Power(
 /****************************************************************************
 **
 
-*F  SetupDeepThought()  . . . . . . . . . initialize the Deep Thought package
+*F  InitInfoDeepThought() . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupDeepThought( void );
-
-
-/****************************************************************************
-**
-*F  InitDeepThought() . . . . . . . . . . initialize the Deep Thought package
-**
-**  'InitDeepThought' initializes the Deep Thought package.
-*/
-extern void InitDeepThought( void );
-
-
-/****************************************************************************
-**
-*F  CheckDeepThought()   check the initialisation of the Deep Thought package
-*/
-extern void CheckDeepThought( void );
+StructInitInfo * InitInfoDeepThought ( void );
 
 
 /****************************************************************************

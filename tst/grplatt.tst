@@ -17,7 +17,7 @@ gap> li:=List(l,i->[Size(Representative(i)),Size(i)]);;
 gap> Sort(li);
 gap> Length(li);
 147
-gap> List(li,i->i);
+gap> Print(List(li,i->i),"\n");
 [ [ 1, 1 ], [ 2, 396 ], [ 2, 495 ], [ 3, 880 ], [ 3, 1320 ], [ 4, 495 ], 
   [ 4, 1320 ], [ 4, 1485 ], [ 4, 1485 ], [ 4, 1980 ], [ 4, 2970 ], 
   [ 5, 2376 ], [ 6, 1320 ], [ 6, 2640 ], [ 6, 2640 ], [ 6, 3960 ], 
@@ -48,8 +48,15 @@ gap> List(li,i->i);
   [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], [ 720, 66 ], 
   [ 1440, 66 ], [ 1440, 66 ], [ 7920, 12 ], [ 7920, 12 ], [ 95040, 1 ] ]
 
+gap> LatticeSubgroups(Group((1,2,3,4,5,6)));;
+gap> g := Group( (1,2,3,4)(5,6,7,8), (1,5,3,7)(2,8,4,6) );;
+gap> List(ConjugacyClassesSubgroups(g),i->Size(Representative(i)));
+[ 1, 2, 4, 4, 4, 8 ]
+gap> List(NormalSubgroups(g),Size);
+[ 1, 2, 4, 4, 4, 8 ]
+
 # thats all, folks
-gap> STOP_TEST( "grplatt.tst", 14816240000 );
+gap> STOP_TEST( "grplatt.tst", 16802570813 );
 
 #############################################################################
 ##

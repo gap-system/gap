@@ -2,6 +2,9 @@
 ##
 #W  gprdpc.gi                   GAP library                      Bettina Eick
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen, Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+##
 Revision.gprdpc_gi :=
     "@(#)$Id$";
 
@@ -9,7 +12,7 @@ Revision.gprdpc_gi :=
 ##
 #F  DirectProductOfPcGroups( list )
 ##
-DirectProductOfPcGroups := function( list )
+InstallGlobalFunction( DirectProductOfPcGroups, function( list )
     local len, F, gensF, relsF, s, G, pcgsG, isoG, FG, relsG, gensG, n, D,
           info, first;
 
@@ -43,7 +46,7 @@ DirectProductOfPcGroups := function( list )
                  projections := [] );
     SetDirectProductInfo( D, info );
     return D;
-end;
+end );
  
 #############################################################################
 ##
@@ -52,7 +55,7 @@ end;
 InstallMethod( Embedding,
         "of pc group and integer",
          true, 
-         [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
+         [ IsPcGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
     local info, G, imgs, hom, gens;
@@ -67,7 +70,7 @@ InstallMethod( Embedding,
     G   := info.groups[i];
     gens := Pcgs( G );
     imgs := Pcgs(D){[info.first[i] .. info.first[i+1]-1]};
-    hom := GroupHomomorphismByImages( G, D, gens, imgs );
+    hom := GroupHomomorphismByImagesNC( G, D, gens, imgs );
     SetIsInjective( hom, true );
 
     # store information
@@ -82,7 +85,7 @@ end );
 InstallMethod( Projection,
         "of pc group and integer",
          true, 
-         [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
+         [ IsPcGroup and HasDirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
     local info, G, imgs, hom, N, list, gens;
@@ -99,7 +102,7 @@ InstallMethod( Projection,
     imgs := Concatenation( List( [1..info.first[i]-1], x -> One( G ) ),
                            Pcgs( G ),
                            List( [info.first[i+1]..Length(gens)], x -> One(G)));
-    hom := GroupHomomorphismByImages( D, G, gens, imgs );
+    hom := GroupHomomorphismByImagesNC( D, G, gens, imgs );
     N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
                            [info.first[i+1]..Length(gens)] )} );
     SetIsSurjective( hom, true );
@@ -117,7 +120,7 @@ end );
 InstallMethod( SemidirectProduct,
     "generic method for pc groups",
     true, 
-    [ IsPcGroup, IsGroupHomomorphism, IsPcGroup ],
+    [ CanEasilyComputePcgs, IsGroupHomomorphism, CanEasilyComputePcgs ],
     0,
 function( G, aut, N )
     local info, H;
@@ -168,7 +171,7 @@ end );
 InstallMethod( Embedding,
         "of semidirect pc group and integer",
          true, 
-         [ IsPcGroup and HasSemidirectProductInfo, IsInt and IsPosRat ], 
+         [ IsPcGroup and HasSemidirectProductInfo, IsPosInt ], 
          0,
     function( D, i )
     local info, G, imgs, hom;
@@ -182,7 +185,7 @@ InstallMethod( Embedding,
     # compute embedding
     G := info.groups[i];
     imgs := Pcgs(D){[info.lenlist[i]+1 .. info.lenlist[i+1]]};
-    hom := GroupHomomorphismByImages( G, D, AsList( Pcgs(G) ), imgs );
+    hom := GroupHomomorphismByImagesNC( G, D, AsList( Pcgs(G) ), imgs );
     SetIsInjective( hom, true );
 
     # store information
@@ -213,7 +216,7 @@ InstallOtherMethod( Projection,
     list := info.lenlist;
     imgs := Concatenation( AsList( Pcgs(G) ),
                            List( [list[2]+1..list[3]], x -> One(G)) );
-    hom := GroupHomomorphismByImages( D, G, AsList( Pcgs(D) ), imgs );
+    hom := GroupHomomorphismByImagesNC( D, G, AsList( Pcgs(D) ), imgs );
     N := Subgroup( D, Pcgs(D){[list[2]+1..list[3]]});
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );

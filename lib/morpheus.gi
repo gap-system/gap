@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This  file  contains declarations for Morpheus
 ##
@@ -17,20 +18,21 @@ Revision.morpheus_gi:=
 ##
 MORPHEUSELMS := 50000;
 
-IsOperationHomomorphismAutomGroup := NewRepresentation(
+DeclareRepresentation(
   "IsOperationHomomorphismAutomGroup",
   IsOperationHomomorphismDirectly and IsOperationHomomorphismByBase,
   ["basepos"]);
 
 #############################################################################
 ##
-#F  StoreNiceMonomorphismAutomGroup    for small automorphism groups
+#F  StoreNiceMonomorphismAutomGroup
 ##
-StoreNiceMonomorphismAutomGroup := function(aut,elms,elmsgens)
+InstallGlobalFunction(StoreNiceMonomorphismAutomGroup,function(aut,elms,elmsgens)
 local xset,fam,hom;
+  One(aut); # to avoid infinite recursion once the niceo is set
   elmsgens:=Filtered(elmsgens,i->i in elms);
   xset:=ExternalSet(aut,elms);
-  SetBase(xset,elmsgens);
+  SetBaseOfGroup(xset,elmsgens);
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
 				PermutationsFamily );
   hom := rec(  );
@@ -44,7 +46,7 @@ local xset,fam,hom;
   Setter(IsomorphismPermGroup)(aut,OperationHomomorphism(xset,"surjective"));
   SetNiceMonomorphism(aut,OperationHomomorphism(xset,"surjective"));
   SetIsHandledByNiceMonomorphism(aut,true);
-end;
+end);
 
 #############################################################################
 ##
@@ -58,7 +60,7 @@ local xset,g,imgs;
   g:=Source(One(ActingDomain(xset)));
   imgs:=OnTuples(hom!.basepos,elm);
   imgs:=Enumerator(xset){imgs};
-  elm:=GroupHomomorphismByImages(g,g,Base(xset),imgs);
+  elm:=GroupHomomorphismByImagesNC(g,g,BaseOfGroup(xset),imgs);
   SetIsBijective(elm,true);
   return elm;
 end);
@@ -68,7 +70,7 @@ end);
 ##
 #F  MorFroWords(<gens>) . . . . . . create some pseudo-random words in <gens>
 ##                                                featuring the MeatAxe's FRO
-MorFroWords := function(gens)
+InstallGlobalFunction(MorFroWords,function(gens)
 local list,a,b,ab,i;
   list:=[];
   ab:=gens[1];
@@ -81,14 +83,14 @@ local list,a,b,ab,i;
 	 ab*(ab*b)^2*ab^3*b]);
   od;
   return list;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  MorRatClasses(<G>) . . . . . . . . . . . local rationalization of classes
 ##
-MorRatClasses := function(GR)
+InstallGlobalFunction(MorRatClasses,function(GR)
 local r,c,u,j,i,flag;
   Info(InfoMorph,2,"RationalizeClasses");
   r:=[];
@@ -105,13 +107,13 @@ local r,c,u,j,i,flag;
     i.size:=Sum(i.classes,Size);
   od;
   return r;
-end;
+end);
 
 #############################################################################
 ##
 #F  MorMaxFusClasses(<l>) . .  maximal possible morphism fusion of classlists
 ##
-MorMaxFusClasses := function(r)
+InstallGlobalFunction(MorMaxFusClasses,function(r)
 local i,j,flag,cl;
   # cl is the maximal fusion among the rational classes.
   cl:=[]; 
@@ -136,7 +138,7 @@ local i,j,flag,cl;
     Sum(a,i->i.size)
       <Sum(b,i->i.size);end);
   return cl;
-end;
+end);
 
 #############################################################################
 ##
@@ -162,7 +164,7 @@ end;
 ##  4     surjective
 ##  8     find all (in contrast to one)
 ##
-MorClassLoop := function(range,clali,params,action)
+InstallGlobalFunction(MorClassLoop,function(range,clali,params,action)
 local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
       mp,cen,i,imgs,ok,size,l;
 
@@ -314,7 +316,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
   od;
 
   return result;
-end;
+end);
 
 
 #############################################################################
@@ -322,7 +324,7 @@ end;
 #F  MorFindGeneratingSystem(<G>,<cl>) . .  find generating system with an few 
 ##                      as possible generators from the first classes in <cl>
 ##
-MorFindGeneratingSystem := function(G,cl)
+InstallGlobalFunction(MorFindGeneratingSystem,function(G,cl)
 local lcl,len,comb,combc,com,a;
   Info(InfoMorph,1,"FindGenerators");
   # throw out the 1-Class
@@ -331,11 +333,11 @@ local lcl,len,comb,combc,com,a;
   #create just a list of ordinary classes.
   lcl:=List(cl,i->Concatenation(List(i,j->j.classes)));
   len:=1;
-  Print("#W  no IrreducibleGeneratingSet implemented\n");
-  #len:=Maximum(1,Length(IrreducibleGeneratingSet(
-#		    AgGroup((G/DerivedSubgroup(G)))))-1);
+  len:=Maximum(1,Length(MinimalGeneratingSet(
+		    Image(IsomorphismPcGroup((G/DerivedSubgroup(G))))))-1);
   while true do
     len:=len+1;
+    Info(InfoMorph,2,"Trying length ",len);
     # now search for <len>-generating systems
     comb:=UnorderedTuples([1..Length(lcl)],len); 
     combc:=List(comb,i->List(i,j->lcl[j]));
@@ -350,7 +352,7 @@ local lcl,len,comb,combc,com,a;
       fi;
     od;
   od;
-end;
+end);
 
 #############################################################################
 ##
@@ -361,17 +363,12 @@ end;
 ##       Iso- and Automorphisms.
 ##       It needs, that both groups are not cyclic.
 ##
-Morphium := function(G,H,DoAuto)
+InstallGlobalFunction(Morphium,function(G,H,DoAuto)
 local 
       len,comb,combc,com,combi,l,m,mp,cen,Gr,Gcl,Ggc,Hr,Hcl,
       ind,gens,i,j,c,cla,u,lcl,hom,isom,free,elms,price,result,rels,inns;
 
-  # try the given generating system
-  #if IsAgGroup(G) then
-  #  gens:=IrreducibleGeneratingSet(G);
-  #else
-    gens:=GeneratorsOfGroup(G);
-  #fi;
+  gens:=SmallGeneratingSet(G);
   len:=Length(gens);
   Gr:=MorRatClasses(G);
   Gcl:=MorMaxFusClasses(Gr);
@@ -381,15 +378,15 @@ local
   price:=Product(combi,i->Sum(i,Size));
   Info(InfoMorph,1,"generating system of price:",price,"");
 
-  if #not IsAgGroup(G) and 
-    price>20000  then
+  if not HasMinimalGeneratingSet(G) and price/Size(G)>10000  then
 
-    #if IsSolvable(G) and what=2 then
-    #  gens:=AgGroup(G);
-    #  gens:=List(IrreducibleGeneratingSet(gens),i->Image(gens.bijection,i));
-    #else
+    if IsSolvableGroup(G) then
+      gens:=IsomorphismPcGroup(G);
+      gens:=List(MinimalGeneratingSet(Image(gens)),
+                 i->PreImagesRepresentative(gens,i));
+    else
       gens:=MorFindGeneratingSystem(G,Gcl);
-    #fi;
+    fi;
 
     Ggc:=List(gens,i->First(Gcl,j->ForAny(j,j->ForAny(j.classes,k->i in k))));
     combi:=List(Ggc,i->Concatenation(List(i,i->i.classes)));
@@ -440,8 +437,17 @@ local
   if DoAuto then
 
     inns:=List(GeneratorsOfGroup(G),i->InnerAutomorphism(G,i));
-    if Size(G)<=MORPHEUSELMS then
-      elms:=Union(List(Set(List(Flat(combi),Representative)),i->Orbit(G,i)));
+    if Sum(Flat(combi),Size)<=MORPHEUSELMS then
+      elms:=[];
+      for i in Flat(combi) do
+        if not ForAny(elms,j->Representative(i)=Representative(j)) then
+	  # avoid duplicate classes
+	  Add(elms,i);
+	fi;
+      od;
+      elms:=Union(List(elms,AsList));
+
+      Assert(2,ForAll(GeneratorsOfGroup(G),i->ForAll(elms,j->j^i in elms)));
       result.dom:=elms;
       inns:=Group(inns,IdentityMapping(G));
       StoreNiceMonomorphismAutomGroup(inns,elms,gens);
@@ -464,18 +470,22 @@ local
 
   return result;
 
-end;
+end);
 
 #############################################################################
 ##
 #F  AutomorphismGroupAbelianGroup(<G>)
 ##
-AutomorphismGroupAbelianGroup := function(G)
+InstallGlobalFunction(AutomorphismGroupAbelianGroup,function(G)
 local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 
   # trivial case
   if Size(G)=1 then
-    return Group(IdentityMapping(G));
+    au:=Group(IdentityMapping(G));
+    StoreNiceMonomorphismAutomGroup(au,[One(G)],[One(G)]);
+    SetIsAutomorphismGroup( au, true );
+    SetIsFinite(au,true);
+    return au;
   fi;
 
   # get standard generating system
@@ -508,15 +518,15 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 
       # the permutations and addition
       if r>1 then
-	Add(au,GroupHomomorphismByImages(G,G,Concatenation(nl,nj,j[2]),
+	Add(au,GroupHomomorphismByImagesNC(G,G,Concatenation(nl,nj,j[2]),
 	    #(1,2)
 	    Concatenation(nl,nj,j[2]{[2]},j[2]{[1]},j[2]{[3..Length(j[2])]})));
-	Add(au,GroupHomomorphismByImages(G,G,Concatenation(nl,nj,j[2]),
+	Add(au,GroupHomomorphismByImagesNC(G,G,Concatenation(nl,nj,j[2]),
 	    #(1,..,n)
 	    Concatenation(nl,nj,j[2]{[2..Length(j[2])]},j[2]{[1]})));
 	#for k in [0..j[1]-1] do
         k:=0;
-	  Add(au,GroupHomomorphismByImages(G,G,Concatenation(nl,nj,j[2]),
+	  Add(au,GroupHomomorphismByImagesNC(G,G,Concatenation(nl,nj,j[2]),
 	      #1->1+i^k*2
 	      Concatenation(nl,nj,[j[2][1]*j[2][2]^(i^k)],
 	                          j[2]{[2..Length(j[2])]})));
@@ -528,7 +538,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
       for k in List( Flat( GeneratorsPrimeResidues(i^j[1])!.generators ),
               Int )  do
 
-	Add(au,GroupHomomorphismByImages(G,G,Concatenation(nl,nj,j[2]),
+	Add(au,GroupHomomorphismByImagesNC(G,G,Concatenation(nl,nj,j[2]),
 	    #1->1^k
 	    Concatenation(nl,nj,[j[2][1]^k],j[2]{[2..Length(j[2])]})));
       od;
@@ -547,7 +557,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 	    max:=0;
 	  fi;
 	  for m in [0..max] do
-	    Add(au,GroupHomomorphismByImages(G,G,
+	    Add(au,GroupHomomorphismByImagesNC(G,G,
 	       Concatenation(nl,nj,e[j][2],e[k][2]),
 	       Concatenation(nl,nj,[e[j][2][1]*e[k][2][1]^(i^(offs+m))],
 				    e[j][2]{[2..Length(e[j][2])]},e[k][2])));
@@ -563,6 +573,7 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   od;
 
   au:=Group(au,IdentityMapping(G));
+  SetIsAutomorphismGroup( au, true );
 
   if Size(G)<MORPHEUSELMS then
     # note permutation action
@@ -572,14 +583,18 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
   fi;
   SetInnerAutomorphismsAutomorphismGroup(au,TrivialSubgroup(au));
 
+  if IsFinite(G) then
+    SetIsFinite(au,true);
+  fi;
+
   return au;
-end;
+end);
 
 #############################################################################
 ##
 #F  IsomorphismAbelianGroups(<G>)
 ##
-IsomorphismAbelianGroups := function(G,H)
+InstallGlobalFunction(IsomorphismAbelianGroups,function(G,H)
 local o,p,gens,hens;
 
   # get standard generating system
@@ -590,6 +605,7 @@ local o,p,gens,hens;
   else
     gens:=IndependentGeneratorsOfAbelianGroup(G);
   fi;
+  gens:=ShallowCopy(gens);
 
   # get standard generating system
   if not IsPermGroup(H) then
@@ -599,6 +615,7 @@ local o,p,gens,hens;
   else
     hens:=IndependentGeneratorsOfAbelianGroup(H);
   fi;
+  hens:=ShallowCopy(hens);
 
   o:=List(gens,i->Order(i));
   p:=List(hens,i->Order(i));
@@ -610,17 +627,17 @@ local o,p,gens,hens;
     return fail;
   fi;
 
-  o:=GroupHomomorphismByImages(G,H,gens,hens);
+  o:=GroupHomomorphismByImagesNC(G,H,gens,hens);
   SetIsBijective(o,true);
 
   return o;
-end;
+end);
 
 #############################################################################
 ##
 #M  AutomorphismGroup(<G>) . . group of automorphisms, given as Homomorphisms
 ##
-InstallMethod(AutomorphismGroup,"Group",true,[IsGroup],0,
+InstallMethod(AutomorphismGroup,"Group",true,[IsGroup and IsFinite],0,
 function(G)
 local a;
   if IsAbelian(G) then
@@ -636,6 +653,8 @@ local a;
     a.inner:=SubgroupNC(a.aut,a.inner);
   fi;
   SetInnerAutomorphismsAutomorphismGroup(a.aut,a.inner);
+  SetIsFinite(a.aut,true);
+  SetIsAutomorphismGroup( a.aut, true );
   if HasIsFinite(G) and IsFinite(G) then
     SetIsFinite(a.aut,true);
   fi;
@@ -645,9 +664,78 @@ end);
 
 #############################################################################
 ##
+#M AutomorphismGroup( G )
+##
+InstallMethod( AutomorphismGroup, 
+               "finite abelian groups",
+               true,
+               [IsGroup and IsFinite and IsAbelian],
+               0,
+AutomorphismGroupAbelianGroup);
+
+
+#############################################################################
+##
+#M IsomorphismPermGroup 
+##
+InstallMethod( IsomorphismPermGroup,
+               "for automorphism groups",
+               true,
+               [IsAutomorphismGroup and IsFinite],
+               0,
+function( A )
+local G, elms,stack,i,j,img;
+
+    G  := Source( Identity(A) );
+    # fuse orbits of generators by their conjugacy classes
+    elms:=[];
+    stack:=[];
+    for i in SmallGeneratingSet(G) do
+      if not i in elms then
+	Add(stack,i);
+	elms:=Union(elms,AsList(ConjugacyClass(G,i)));
+      fi;
+    od;
+    # orbit algorithm on classes
+    for i in stack do
+      for j in GeneratorsOfGroup(A) do
+	img:=Image(j,i);
+	if not img in elms then
+	  Add(stack,img);
+	  elms:=Union(elms,AsList(ConjugacyClass(G,img)));
+	fi;
+      od;
+    od;
+
+    StoreNiceMonomorphismAutomGroup(A,elms,SmallGeneratingSet(G));
+
+    return NiceMonomorphism(A);
+end);
+
+#############################################################################
+##
+#M InnerAutomorphismsAutomorphismGroup(<A>) 
+##
+InstallMethod( InnerAutomorphismsAutomorphismGroup,
+               "for automorphism groups",
+               true,
+               [IsAutomorphismGroup and IsFinite],
+               0,
+function( A )
+local G,gens;
+  G:=Source(Identity(A));
+  gens:=GeneratorsOfGroup(G);
+  # get the non-central generators
+  gens:=Filtered(gens,i->not ForAll(gens,j->i*j=j*i));
+  return List(gens,i->InnerAutomorphism(G,i));
+end);
+
+
+#############################################################################
+##
 #F  IsomorphismGroups(<G>,<H>) . . . . . . . . . .  isomorphism from G onto H
 ##
-IsomorphismGroups := function(G,H)
+InstallGlobalFunction(IsomorphismGroups,function(G,H)
 local m,n;
 
   #AH: Spezielle Methoden ?
@@ -655,7 +743,7 @@ local m,n;
     if Size(H)<>1 then
       return fail;
     else
-      return GroupHomomorphismByImages(G,H,[],[]);
+      return GroupHomomorphismByImagesNC(G,H,[],[]);
     fi;
   fi;
   if IsAbelian(G) then
@@ -670,7 +758,7 @@ local m,n;
   if Size(G)<>Size(H) or
      Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H))
      or (Size(G)<=1000 and (not Size(G) in [512,768])
-         and IdGroup(G)<>IdGroup(H))
+         and SMALL_AVAILABLE and IdGroup(G)<>IdGroup(H))
      then
    return fail;
   fi;
@@ -682,7 +770,7 @@ local m,n;
     return m;
   fi;
 
-end;
+end);
 
 
 #############################################################################
@@ -707,7 +795,7 @@ local Fgens,	# generators of F
       cnt;	# countdown for finish
 
   # if we have a pontentially infinite fp group we cannot be clever
-  if IsSubgroupFpGroup(F) and not HasParent(F) and
+  if IsSubgroupFpGroup(F) and
     (not HasSize(F) or Size(F)=infinity) then
     TryNextMethod();
   fi;
@@ -722,7 +810,7 @@ local Fgens,	# generators of F
     u:=GQuotients(fak,G);
     cl:=[];
     for i in u do
-      i:=GroupHomomorphismByImages(F,G,Fgens,
+      i:=GroupHomomorphismByImagesNC(F,G,Fgens,
 	     List(Fgens,j->Image(i,Image(h,j))));
       Add(cl,i);
     od;
@@ -730,10 +818,10 @@ local Fgens,	# generators of F
   fi;
 
   if Size(G)=1 then
-    return [GroupHomomorphismByImages(F,G,Fgens,
+    return [GroupHomomorphismByImagesNC(F,G,Fgens,
 			  List(Fgens,i->One(G)))];
   elif IsCyclic(F) then
-    Info(InfoMorph,1,"Cyclic grouyp: only one quotient possible");
+    Info(InfoMorph,1,"Cyclic group: only one quotient possible");
     # a cyclic group has at most one quotient
     if not IsCyclic(G) or not IsInt(Size(F)/Size(G)) then
       return [];
@@ -742,7 +830,7 @@ local Fgens,	# generators of F
       u:=First(AsList(F),i->Order(i)=Size(F));
       h:=First(AsList(G),i->Order(i)=Size(G));
       # just map them
-      return [GroupHomomorphismByImages(F,G,[u],[h])];
+      return [GroupHomomorphismByImagesNC(F,G,[u],[h])];
     fi;
   fi;
 
@@ -817,7 +905,6 @@ InstallMethod(GQuotients,"without computing element orders",true,
   [IsSubgroupFpGroup,IsGroup and IsFinite],1,
 function (F,G)
 local Fgens,	# generators of F
-      Fam,	# free elements family
       rels,	# power relations
       cl,	# classes of G
       u,	# trial generating set's group
@@ -837,12 +924,12 @@ local Fgens,	# generators of F
     if Size(G)>1 then
       return [];
     else
-      return [GroupHomomorphismByImages(F,G,[],[])];
+      return [GroupHomomorphismByImagesNC(F,G,[],[])];
     fi;
   fi;
 
   if Size(G)=1 then
-    return [GroupHomomorphismByImages(F,G,Fgens,
+    return [GroupHomomorphismByImagesNC(F,G,Fgens,
 			  List(Fgens,i->One(G)))];
   elif Length(Fgens)=1 then
     Info(InfoMorph,1,"Cyclic group: only one quotient possible");
@@ -853,7 +940,7 @@ local Fgens,	# generators of F
       # get the cyclic gens
       h:=First(AsList(G),i->Order(i)=Size(G));
       # just map them
-      return [GroupHomomorphismByImages(F,G,Fgens,[h])];
+      return [GroupHomomorphismByImagesNC(F,G,Fgens,[h])];
     fi;
   fi;
 
@@ -862,14 +949,13 @@ local Fgens,	# generators of F
   # search relators in only one generator
   rels:=ListWithIdenticalEntries(Length(Fgens),false);
   if IsSubgroupFpGroup(F) and IsWholeFamily(F) then
-    Fam:=ElementsFamily(FamilyObj(F));
-    for i in Fam!.relators do
-      u:=List([1..LengthWord(i)],j->Subword(i,j,j));
+    for i in RelatorsOfFpGroup(F) do
+      u:=List([1..Length(i)],j->Subword(i,j,j));
       if Length(Set(u))=1 then
         # found relator in only one generator
-	val:=Position(GeneratorsOfGroup(Fam!.freeGroup),u[1]);
+	val:=Position(FreeGeneratorsOfFpGroup(F),u[1]);
 	if val=fail then
-	  val:=Position(GeneratorsOfGroup(Fam!.freeGroup),u[1]^-1);
+	  val:=Position(FreeGeneratorsOfFpGroup(F),u[1]^-1);
 	  if val=fail then Error();fi;
 	fi;
 	u:=Length(u);

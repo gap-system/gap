@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions for strings.
 ##
@@ -14,83 +15,22 @@ Revision.string_gi :=
 
 #############################################################################
 ##
-#F  PrintArray( <array> ) . . . . . . . . . . . . . . . . pretty print matrix
-##
-PrintArray := function( array )
-
-    local   arr,  max,  l,  k;
-
-    if not IsDenseList( array ) then
-        Error( "<array> must be a dense list" );
-    elif Length( array ) = 0  then
-	Print( "[ ]\n" );
-    elif array = [[]]  then
-    	Print( "[ [ ] ]\n" );
-    elif not ForAll( array, IsList )  then
-	arr := List( array, String );
-	max := Maximum( List( arr, Length ) );
-	Print( "[ ", FormattedString( arr[ 1 ], max + 1 ) );
-	for l  in [ 2 .. Length( arr ) ]  do
-	    Print( ", ", FormattedString( arr[ l ], max + 1 ) );
-	od;
-	Print( " ]\n" );
-    else
-    	arr := List( array, x -> List( x, String ) );
-    	max := Maximum( List( arr, x -> Maximum( List(x,Length) ) ) );
-        Print( "[ " );
-    	for l  in [ 1 .. Length( arr ) ]  do
-    	    if l > 1  then
-    	    	Print( "  " );
-    	    fi;
-            Print( "[ " );
-            for k  in [ 1 .. Length( arr[ l ] ) ]  do
-            	Print( FormattedString( arr[ l ][ k ], max + 1 ) );
-            	if k = Length( arr[ l ] )  then
-                    Print( " ]" );
-            	else
-                    Print( ", " );
-            	fi;
-            od;
-            if l = Length( arr )  then
-            	Print( " ]\n" );
-            else
-            	Print( ",\n" );
-            fi;
-    	od;
-    fi;
-end;
-
-
-##########################################################################
-##
-#M  Display( <mat> )
-##
-InstallMethod( Display,
-    true,
-    [IsMatrix ],
-    0,PrintArray);
-
-
-#############################################################################
-##
 #F  DaysInYear( <year> )  . . . . . . . . .  days in a year, knows leap-years
-#F  DaysInMonth( <month>, <year> )  . . . . days in a month, knows leap-years
-#F  DMYDay( <day> ) . . .  convert days since 01-Jan-1970 into day-month-year
-#F  DayDMY( <dmy> ) . . .  convert day-month-year into days since 01-Jan-1970
-#V  NamesWeekDay
-#F  WeekDay( <date> ) . . . . . . . . . . . . . . . . . . . weekday of a date
-#V  NameMonth
-#F  StringDate( <date> )  . . . . . . . . convert date into a readable string
 ##
-DaysInYear := function ( year )
+InstallGlobalFunction(DaysInYear , function ( year )
     if year mod 4 in [1,2,3]  or year mod 400 in [100,200,300]  then
         return 365;
     else
         return 366;
     fi;
-end;
+end);
 
-DaysInMonth := function ( month, year )
+
+#############################################################################
+##
+#F  DaysInMonth( <month>, <year> )  . . . . days in a month, knows leap-years
+##
+InstallGlobalFunction(DaysInMonth , function ( month, year )
     if month in [ 1, 3, 5, 7, 8, 10, 12 ]  then
         return 31;
     elif month in [ 4, 6, 9, 11 ]  then
@@ -100,9 +40,14 @@ DaysInMonth := function ( month, year )
     else
         return 29;
     fi;
-end;
+end);
 
-DMYDay := function ( day )
+
+#############################################################################
+##
+#F  DMYDay( <day> ) . . .  convert days since 01-Jan-1970 into day-month-year
+##
+InstallGlobalFunction(DMYDay , function ( day )
     local  year, month;
     year := 1970;
     while DaysInYear(year) <= day  do
@@ -115,9 +60,14 @@ DMYDay := function ( day )
         month := month + 1;
     od;
     return [ day+1, month, year ];
-end;
+end);
 
-DayDMY := function ( dmy )
+
+#############################################################################
+##
+#F  DayDMY( <dmy> ) . . .  convert day-month-year into days since 01-Jan-1970
+##
+InstallGlobalFunction(DayDMY , function ( dmy )
     local  year, month, day;
     day   := dmy[1]-1;
     month := dmy[2];
@@ -131,45 +81,61 @@ DayDMY := function ( dmy )
         day   := day + DaysInYear( year );
     od;
     return day;
-end;
+end);
 
-NameWeekDay := Immutable( ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] );
-WeekDay := function ( date )
+
+#############################################################################
+##
+#F  WeekDay( <date> ) . . . . . . . . . . . . . . . . . . . weekday of a date
+##
+InstallGlobalFunction(WeekDay , function ( date )
     if IsList( date )  then date := DayDMY( date );  fi;
     return NameWeekDay[ (date + 3) mod 7 + 1 ];
-end;
+end);
 
-NameMonth := Immutable( [ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ] );
-StringDate := function ( date )
+
+#############################################################################
+##
+#F  StringDate( <date> )  . . . . . . . . convert date into a readable string
+##
+InstallGlobalFunction(StringDate , function ( date )
     if IsInt( date )  then date := DMYDay( date );  fi;
     return Concatenation(
         FormattedString(date[1],2), "-",
         NameMonth[date[2]], "-",
         FormattedString(date[3],4) );
-end;
+end);
 
 
 #############################################################################
 ##
-#F  StringTime( <time> )  . convert hour-min-sec-milli into a readable string
+
 #F  HMSMSec( <sec> )  . . . . . . . .  convert seconds into hour-min-sec-mill
-#F  SecHMSM( <hmsm> ) . . . . . . . . convert hour-min-sec-milli into seconds
 ##
-HMSMSec := function ( sec )
+InstallGlobalFunction(HMSMSec , function ( sec )
     local  hour, minute, second, milli;
     hour   := QuoInt( sec, 3600000 );
     minute := QuoInt( sec,   60000 ) mod 60;
     second := QuoInt( sec,    1000 ) mod 60;
     milli  :=         sec            mod 1000;
     return [ hour, minute, second, milli ];
-end;
+end);
 
-SecHMSM := function ( hmsm )
+
+#############################################################################
+##
+#F  SecHMSM( <hmsm> ) . . . . . . . . convert hour-min-sec-milli into seconds
+##
+InstallGlobalFunction(SecHMSM , function ( hmsm )
     return 3600000*hmsm[1] + 60000*hmsm[2] + 1000*hmsm[3] + hmsm[4];
-end;
+end);
 
-StringTime := function ( time )
+
+#############################################################################
+##
+#F  StringTime( <time> )  . convert hour-min-sec-milli into a readable string
+##
+InstallGlobalFunction(StringTime , function ( time )
     local   string;
     if IsInt( time )  then time := HMSMSec( time );  fi;
     string := "";
@@ -186,14 +152,14 @@ StringTime := function ( time )
     if time[4] <  10  then Append( string, "0" );  fi;
     Append( string, String(time[4]) );
     return string;
-end;
+end);
 
 
 #############################################################################
 ##
 #F  StringPP( <int> ) . . . . . . . . . . . . . . . . . . . . P1^E1 ... Pn^En
 ##
-StringPP := function( n )
+InstallGlobalFunction(StringPP , function( n )
     local   l, p, e, i, prime, str;
 
     if n = 1  then
@@ -233,18 +199,18 @@ StringPP := function( n )
     od;
 
     return str;
-end;
+end);
 
 
 ############################################################################
 ##
 #F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
 ##
-##  returns a string that is the <nr>-th word over the alphabet <alpha>,
-##  w.r. to word length and lexicographical order.
-##  The empty word is 'WordAlp( <alpha>, 0 )'.
+##  returns  a string  that  is the <nr>-th  word  over the alphabet <alpha>,
+##  w.r.  to word  length   and  lexicographical order.   The  empty  word is
+##  'WordAlp( <alpha>, 0 )'.
 ##
-WordAlp := function( alpha, nr )
+InstallGlobalFunction(WordAlp , function( alpha, nr )
 
     local lalpha,   # length of the alphabet
           word,     # the result
@@ -259,13 +225,13 @@ WordAlp := function( alpha, nr )
       nr:= ( nr - nrmod ) / lalpha;
     od;
     return Reversed( word );
-end;
+end);
 
 #############################################################################
 ##
 #F  LowercaseString( <string> ) . . . string consisting of lower case letters
 ##
-LowercaseString := function( str )
+InstallGlobalFunction(LowercaseString , function( str )
 
     local alp, ALP, result, i, pos;
 
@@ -282,13 +248,104 @@ LowercaseString := function( str )
     od;
     ConvertToStringRep( result );
     return result;
-end;
+end);
 
 
 
 #############################################################################
 ##
-#E  string.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  Int( <str> )  . . . . . . . . . . . . . . . .  integer described by <str>
+##
+InstallOtherMethod( Int,
+    "for strings",
+    true,
+    [ IsString ],
+    0,
 
+function( str )
+    local   m,  z,  d,  i,  s;
+
+    m := 1;
+    z := 0;
+    d := 1;
+    for i  in [ 1 .. Length(str) ]  do
+        if i = d and str[i] = '-'  then
+            m := m * -1;
+            d := i+1;
+        else
+            s := Position( "0123456789", str[i] );
+            if s <> fail  then
+                z := 10 * z + (s-1);
+            else
+                return fail;
+            fi;
+        fi;
+    od;
+    return z * m;
+end );
+
+
+#############################################################################
+##
+#M  Rat( <str> )  . . . . . . . . . . . . . . . .  rational described by <str>
+##
+InstallOtherMethod( Rat,
+    "for strings",
+    true,
+    [ IsString ],
+    0,
+
+function( string )
+    local   z,  m,  i,  s,  n,  p,  d;
+
+    z := 0;
+    m := 1;
+    p := 1;
+    d := false;
+    for i  in [ 1 .. Length(string) ]  do
+        if i = p and string[i] = '-'  then
+            m := -1;
+        elif string[i] = '/' and IsBound(n)  then
+            return fail;
+        elif string[i] = '/' and not IsBound(n)  then
+            if IsRat(d)  then
+                z := d * z;
+            fi;
+            d := false;
+            n := m * z;
+            m := 1;
+            p := i+1;
+            z := 0;
+        elif string[i] = '.' and IsRat(d)  then
+            return fail;
+        elif string[i] = '.' and not IsRat(d)  then
+            d := 1;
+        else
+            s := Position( "0123456789", string[i] );
+            if s <> false  then
+                z := 10 * z + (s-1);
+            else
+                return false;
+            fi;
+            if IsRat(d)  then
+                d := d / 10;
+            fi;
+        fi;
+    od;
+    if IsRat(d)  then
+        z := d * z;
+    fi;
+    if IsBound(n)  then
+        return m * n / z;
+    else
+        return m * z;
+    fi;
+end );
+
+
+#############################################################################
+##
+
+#E  string.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

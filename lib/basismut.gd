@@ -5,9 +5,10 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file declares the categories and operations for mutable bases.
-##
+#1
 ##  It is useful to have a *mutable basis* of a free module when successively
 ##  closures with new vectors are formed, since one does not want to create
 ##  a new module and a corresponding basis for each step.
@@ -17,14 +18,18 @@
 ##  need to know about the groups they describe.
 ##  There are several reasons to store the underlying module
 ##  in an immutable basis.
-##  - One cannot have bases without vectors if the module is not stored.
-##    (The call 'BasisOfDomain( <V> )' may return such a basis.)
-##  - In some cases it is cheaper to compute coefficients only after a
+##
+##  \beginitems
+##  - & One cannot have bases without vectors if the module is not stored.
+##    (The call `BasisOfDomain( <V> )' may return such a basis.)
+##
+##  - & In some cases it is cheaper to compute coefficients only after a
 ##    (positive) membership test, which is a question to the module.
 ##    This occurs for example for finite fields and cyclotomic fields,
-##    of course it is not allowed where 'Coefficients' is used to
+##    of course it is not allowed where `Coefficients' is used to
 ##    implement the membership test.
-##  
+##  \enditems
+## 
 ##  So immutable bases and mutable bases are different categories of objects.
 ##  The only thing they have in common is that one can ask both for
 ##  their basis vectors and for the coefficients of a given vector
@@ -32,18 +37,26 @@
 ##  as in FBA).
 ##
 ##  A mutable basis of a free left module is
-##  - an object in 'IsMutable'
+##  \beginitems
+##  - & an object in `IsMutable'
 ##    (hence unable to store attributes and properties)
-##  - that is constructed by 'MutableBasisByGenerators',
-##  - that can be asked for the number of basis vectors by
-##    'NrBasisVectors',
-##  - that can be asked for membership of an element by
-##    'IsContainedInSpan',
-##  - that can be first argument of 'Coefficients' and 'BasisVectors',
-##  - that can be modified by 'CloseMutableBasis' 
+##
+##  - & that is constructed by `MutableBasisByGenerators',
+##
+##  - & that can be asked for the number of basis vectors by
+##    `NrBasisVectors',
+##
+##  - & that can be asked for membership of an element by
+##    `IsContainedInSpan',
+##
+##  - & that can be first argument of `Coefficients' and `BasisVectors',
+##
+##  - & that can be modified by `CloseMutableBasis' 
 ##    (whose methods have to guarantee consistency),
-##  - and for that one can eventually get an immutable basis with same
-##    basis vectors by 'ImmutableBasis'.
+##
+##  - & and for that one can eventually get an immutable basis with same
+##    basis vectors by `ImmutableBasis'.
+##  \enditems
 ##  
 ##  Since mutable bases do not admit arbitrary changes of their lists of
 ##  basis vectors, a mutable basis is *not* a list.
@@ -52,17 +65,26 @@
 ##
 ##  Similar to the situation with bases,
 ##  {\GAP} supports three types of mutable bases, namely
-##  1. mutable bases that store an immutable basis;
-##     this is the default
-##  2. mutable bases that store a mutable basis for a nicer module;
+##
+##  \beginitems
+##  1. & mutable bases that store an immutable basis;
+##     this is the default of `MutableBasisByGenerators',
+##
+##  2. & mutable bases that store a mutable basis for a nicer module;
 ##     this works if we have access to the mechanism of computing
 ##     nice vectors, and requires the construction with
-##     'MutableBasisViaNiceMutableBasisMethod2' or
-##     'MutableBasisViaNiceMutableBasisMethod3'
-##  3. mutable bases that use special information to perform their tasks;
-##     examples are mutable bases of Gaussian row and matrix spaces
+##     `MutableBasisViaNiceMutableBasisMethod2' or
+##     `MutableBasisViaNiceMutableBasisMethod3';
+##     note that this is meaningful only if the mechanism of taking
+##     nice/ugly vectors is invariant under closures of the basis,
+##     which is the case for example if the vectors are elements of
+##     s.c.~algebras, matrices, or Lie objects,
 ##
-##  *Constructor* for mutable bases is 'MutableBasisByGenerators'.
+##  3. & mutable bases that use special information to perform their tasks;
+##     examples are mutable bases of Gaussian row and matrix spaces.
+##  \enditems
+##
+##  The *constructor* for mutable bases is `MutableBasisByGenerators'.
 ##
 Revision.basismut_gd :=
     "@(#)$Id$";
@@ -72,7 +94,7 @@ Revision.basismut_gd :=
 ##
 #C  IsMutableBasis( <obj> )
 ##
-IsMutableBasis := NewCategory( "IsMutableBasis", IsMutable );
+DeclareCategory( "IsMutableBasis", IsMutable );
 
 
 #############################################################################
@@ -86,29 +108,30 @@ IsMutableBasis := NewCategory( "IsMutableBasis", IsMutable );
 ##
 ##  *Note* that <vectors> will in general *not* be the basis vectors of the
 ##  mutable basis!
-#T provide 'AddBasisVector' to achieve this?
+#T provide `AddBasisVector' to achieve this?
 ##
-MutableBasisByGenerators := NewOperation( "MutableBasisByGenerators",
+DeclareOperation( "MutableBasisByGenerators",
     [ IsRing, IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
-#F  MutableBasisViaNiceMutableBasisMethod2( <M>, <vectors> )
-#F  MutableBasisViaNiceMutableBasisMethod3( <M>, <vectors>, <zero> )
+#F  MutableBasisViaNiceMutableBasisMethod2( <R>, <vectors> )
+#F  MutableBasisViaNiceMutableBasisMethod3( <R>, <vectors>, <zero> )
 ##
-##  Let <M> be a free $R$-left module that is handled via nice bases.
-##  'MutableBasisViaNiceMutableBasisMethod?' returns a mutable basis for the
-##  $R$-free module generated by the vectors in the list <vectors>.
+##  Let $M$ be the <R>-free left module generated by the vectors in the list
+##  <vectors>, and assume that $M$ is handled via nice bases.
+##  `MutableBasisViaNiceMutableBasisMethod?' returns a mutable basis for $M$.
 ##  The optional argument <zero> is the zero vector of the module.
 ##
-##  *Note* that <M> is only used in calls to 'NiceVector' and 'UglyVector'.
+##  *Note* that $M$ is stored, and that it is used in calls to `NiceVector'
+##  and `UglyVector', and for accessing <R>.
+##  (See the remark in the beginning of the file.)
 ##
-MutableBasisViaNiceMutableBasisMethod2 := NewOperationArgs(
+DeclareGlobalFunction(
     "MutableBasisViaNiceMutableBasisMethod2" );
 
-MutableBasisViaNiceMutableBasisMethod3 := NewOperationArgs(
+DeclareGlobalFunction(
     "MutableBasisViaNiceMutableBasisMethod3" );
 
 
@@ -116,7 +139,9 @@ MutableBasisViaNiceMutableBasisMethod3 := NewOperationArgs(
 ##
 #O  NrBasisVectors( <MB> )
 ##
-NrBasisVectors := NewOperation( "NrBasisVectors", [ IsMutableBasis ] );
+##  Is the number of basis vectors of <MB>.
+##
+DeclareOperation( "NrBasisVectors", [ IsMutableBasis ] );
 
 
 #############################################################################
@@ -127,7 +152,7 @@ NrBasisVectors := NewOperation( "NrBasisVectors", [ IsMutableBasis ] );
 ##  mutable basis <MB>, and with underlying module constructed from these
 ##  vectors.
 ##
-ImmutableBasis := NewOperation( "ImmutableBasis", [ IsMutableBasis ] );
+DeclareOperation( "ImmutableBasis", [ IsMutableBasis ] );
 
 
 #############################################################################
@@ -140,7 +165,7 @@ ImmutableBasis := NewOperation( "ImmutableBasis", [ IsMutableBasis ] );
 ##  *Note* that this does in general *not* mean that <v> is added to the
 ##  basis vectors of <MB> if <v> enlarges the dimension.
 ##
-CloseMutableBasis := NewOperation( "CloseMutableBasis",
+DeclareOperation( "CloseMutableBasis",
     [ IsMutableBasis, IsVector ] );
 
 
@@ -148,10 +173,10 @@ CloseMutableBasis := NewOperation( "CloseMutableBasis",
 ##
 #O  IsContainedInSpan( <MB>, <v> )
 ##
-##  is 'true' if the element <v> is contained in the module described by the
-##  mutable basis <MB>, and 'false' otherwise.
+##  is `true' if the element <v> is contained in the module described by the
+##  mutable basis <MB>, and `false' otherwise.
 ##
-IsContainedInSpan := NewOperation( "IsContainedInSpan",
+DeclareOperation( "IsContainedInSpan",
     [ IsMutableBasis, IsVector ] );
 
 

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the help system.
 ##
@@ -21,15 +22,31 @@ Revision.help_g :=
 
 #############################################################################
 ##
-
 #F  MATCH_BEGIN( <a>, <b> )
 ##
 MATCH_BEGIN := function( a, b )
+local p,q;
+
+    if Length(a)=0 and Length(b)=0 then
+      return true;
+    fi;
 
     if 0 = Length(b) or Length(a) < Length(b)  then
         return false;
     fi;
-    return a{[1..Length(b)]} = b;
+
+    p:=Position(b,' ');
+    if p=fail then
+      return a{[1..Length(b)]} = b;
+    else
+      q:=Position(a,' ');
+      if q=fail then
+        q:=Length(a)+1;
+      fi;
+      # cope with blanks
+      return MATCH_BEGIN(a{[1..q-1]},b{[1..p-1]}) and
+             MATCH_BEGIN(a{[q+1..Length(a)]},b{[p+1..Length(b)]});
+    fi;
 
 end;
 
@@ -149,15 +166,15 @@ HELP_MAIN_BOOKS := Immutable( [
 ##
 HELP_BOOKS := ShallowCopy(HELP_MAIN_BOOKS);
 
+HELP_NUMBERSTRING:=Immutable("0123456789");
 
 #############################################################################
 ##
-
 #F  HELP_BOOK_INFO( <book> )  . . . . . . . . . . . . . get info about a book
 ##
 HELP_BOOK_INFO := function( book )
-    local   nums,  readNumber,  path,  i,  bnam,  six,  stream,  c,  
-            s,  f,  line,  c1,  c2,  pos,  name,  num,  x,  s1,  sec,
+    local   readNumber,  path,  i,  bnam,  six,  stream,  c,  
+            s,  f,  line, subline, c1,  c2,  pos,  name,  num,  x,  s1,  sec,
             s2,  dirs,  j,  x1,  f1;
 
     # if this is already a record return it
@@ -170,7 +187,6 @@ HELP_BOOK_INFO := function( book )
     fi;
 
     # numbers
-    nums := "0123456789";
     readNumber := function( str )
         local   n;
 
@@ -179,7 +195,7 @@ HELP_BOOK_INFO := function( book )
         od;
         n := 0;
         while str[pos] <> '.'  do
-            n := n * 10 + (Position(nums,str[pos])-1);
+            n := n * 10 + (Position(HELP_NUMBERSTRING,str[pos])-1);
             pos := pos+1;
         od;
         pos := pos+1;
@@ -219,16 +235,24 @@ HELP_BOOK_INFO := function( book )
         repeat
             line := ReadLine(stream);
             if line <> fail  then
+		subline:=line{[3..Length(line)-1]} ;
                 if line[1] = 'C'  then
                     if line{[1..10]} <> "C appendix"  then
-                        Add( c, line{[3..Length(line)-1]} );
+                        Add( c, subline);
                     fi;
                 elif line[1] = 'S'  then
-                    Add( s, line{[3..Length(line)-1]} );
+                    Add( s, subline);
                 elif line[1] = 'I'  then
-                    Add( x, line{[3..Length(line)-1]} );
+                    Add( x, subline);
                 elif line[1] = 'F'  then
-                    Add( f, line{[3..Length(line)-1]} );
+		    # there are sometimes multiple definitions we have to
+		    # cope with. For the time being we just check the last
+		    # 10 entries to be quick.
+		    if not ForAny([Maximum(Length(f)-9,1)..Length(f)],
+		                  i->f[i]=subline)
+		      then
+			Add( f, subline);
+		    fi;
                 else
                     Print( "#W  corrupted 'manual.six': ", line );
                 fi;
@@ -266,10 +290,13 @@ HELP_BOOK_INFO := function( book )
             sec := readNumber(i);
 
             # then the section name
-            while i[pos] = ' '  do pos := pos+1;  od;
+            while pos < Length(i) and i[pos] = ' '  do pos := pos+1;  od;
 
             # store the information in <s1>
             s1[num][sec] := i{[pos..Length(i)]};
+            if pos = Length(i) then
+                Print("#W Empty section name ", num, ".", sec,"\n");
+            fi;
         od;
 
         # convert sections and chapters to lower case
@@ -385,25 +412,47 @@ end;
 
 #############################################################################
 ##
-
 #F  # # # # # # # # # # # # # utility functions # # # # # # # # # # # # # # #
 ##
 
 
 #############################################################################
 ##
-
-
 #F  HELP_PRINT_LINES( <lines> )	. . . . . . . . . . . . . . . .  format lines
 ##
 HELP_PRINT_LINES := function( lines )
-    local   size,  stream,  count,  halt,  line,  i,  char;
+local   size,  stream,  count,  halt,  linepos,  i,  char,backstep;
+
+    # cope with overfull lines
+    count:=1;
+    while count<=Length(lines) do
+      if Length(lines[count])>78 then
+	# find the last blank before position 78
+        i:=78;
+	while i>0 and lines[count][i]<>' ' do
+	  i:=i-1;
+	od;
+	if i>0 then
+	  if not IsBound(lines[count+1]) then
+	    lines[count+1]:="";
+	  fi;
+	  lines[count+1]:=Concatenation(
+	         lines[count]{[i+1..Length(lines[count])]}," ",
+		 lines[count+1]);
+	  lines[count]:=lines[count]{[1..i-1]};
+	fi;
+      fi;
+      count:=count+1;
+    od;
+
 
     size   := SizeScreen();
     stream := InputTextFile("*errin*");
     count  := 0;
     halt   := "    -- <space> for more, <q> to quit --";
-    for line  in lines  do
+    linepos:=1;
+    backstep:=size[2]-1;
+    while linepos<=Length(lines) do
         if count = size[2]-1  then
             Print( halt, "\c" );
             for i  in halt  do Print( "\b" );  od;
@@ -414,14 +463,23 @@ HELP_PRINT_LINES := function( lines )
             Print( "\c" );
             if char = 113 or char = 81  then
                 Print( "\n" );
+		backstep:=size[2]-1;
                 return;
+	    elif char=98 or char=66 then
+	        Print("\n   < back >\n");
+		count:=-1;
+		backstep:=backstep+size[2]-1;
+		linepos:=Maximum(1,linepos-backstep);
             elif char = 13  then
                 count := size[2]-2;
+		backstep:=size[2]-1;
             else
                 count := 1;
+		backstep:=size[2]-1;
             fi;
         fi;
-        Print( "    ", line, "\n" );
+        Print(lines[linepos], "\n" );
+        linepos := linepos+1;
         count := count+1;
     od;
     CloseStream(stream);
@@ -431,11 +489,29 @@ end;
 
 #############################################################################
 ##
-#F  HELP_PRINT_SECTION( <book>, <chapter>, <section> )	. . . . . print entry
+#F  HELP_PRINT_SECTION( <book>, <chapter>, <section> [,<key>] ) . print entry
 ##
-HELP_PRINT_SECTION := function( book, chapter, section )
-    local   info,  chap,  filename,  stream,  done,  line,  lines,
+HELP_PRINT_SECTION_SCREEN := function(arg)
+local   book, chapter, section,key,p,lico,
+	info,  chap,  filename,  stream,  done,  line,  lines,
             verbatim;
+
+    book:=arg[1];
+    chapter:=arg[2];
+    section:=arg[3];
+
+    # did we get the section only via a keyword?
+    if Length(arg)>3 then
+      key:=arg[4];
+      # ignore appended numbers of a keyword (they are only used to cope
+      # with multiply defined identifiers)
+      p:=Position(key,'_');
+      if p<>fail and p<Length(key) and key[p+1]='(' then
+        key:=key{[1..p-1]};
+      fi;
+    else
+      key:=fail;
+    fi;
 
     # get the chapter info
     info := HELP_BOOK_INFO(book);
@@ -461,17 +537,51 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                                  info.chapters[chapter], '_' ) );
     fi;
     ReadLine(stream);
+
+    if key<>fail then
+      # we got the section only via a keyword.
+      Add( lines, "");
+      Add( lines, "[...]");
+      Add( lines, "");
+    fi;
+
     verbatim := false;
     repeat
         line := ReadLine(stream);
         if line <> fail  then
+
             if MATCH_BEGIN( line, HELP_SECTION_BEGIN )  then
                 done := true;
+
+
             else
                 line := line{[1..Length(line)-1]};
 
+		if key<>fail then
+		  # we got the section only via a keyword. Ignore the first
+		  # part of the section and start only at the interesting
+		  # bits.
+
+		  # try to match the key in the line
+		  lico:=STRING_LOWER(line);
+		  p:=Position(lico,key[1]);
+		  while p<>fail and key<>fail do
+                    lico:=lico{[p..Length(lico)]};
+		    if MATCH_BEGIN(lico,key) then
+		      # key has been found, disable the skip mode
+		      key:=fail;
+		    else
+		      p:=Position(lico,key[1],2);
+		    fi;
+		  od;
+		fi;
+
+		if key<>fail then
+                  # keyword not yet found, ignore.
+		  line:=line;
+
                 # blanks lines are ok
-                if 0 = Length(line)  then
+                elif 0 = Length(line)  then
                     if not verbatim  then
                         Add( lines, line );
                     fi;
@@ -496,6 +606,8 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                         Add( lines, "" );
                     fi;
                     
+		elif MATCH_BEGIN(line,"\\index{") then
+		  line:="";
                 # example environment
                 elif MATCH_BEGIN(line,"\\beginexample")
                   or MATCH_BEGIN(line,"\\begintt")
@@ -542,6 +654,37 @@ HELP_PRINT_SECTION := function( book, chapter, section )
 
 end;
 
+
+HTML_BROWSER:="netscape -remote ";
+
+HELP_PRINT_SECTION_BROWSER := function(arg)
+local   book, chapter, section,key,path;
+
+    book:=arg[1];
+    chapter:=String(arg[2]);
+    while Length(chapter)<3 do
+      chapter:=Concatenation("0",chapter);
+    od;
+    section:=arg[3];
+
+    book:=book{[1..3]};
+    if book="pro" then book:="prg";fi;
+
+    path:=Concatenation(GAP_ROOT_PATHS[1],"doc/htm/",book,"/CHAP",chapter,
+                        ".htm");
+
+
+    if section>0 then
+      section:=String(section);
+      while Length(section)<3 do
+	section:=Concatenation("0",section);
+      od;
+      path:=Concatenation(path,"#SECT",section);
+    fi;
+    Exec(Concatenation(HTML_BROWSER," \"openURL(",path,")\""));
+end;
+
+HELP_PRINT_SECTION:=HELP_PRINT_SECTION_SCREEN;
 
 #############################################################################
 ##
@@ -720,8 +863,21 @@ HELP_LAST_BOOK    := "tutorial";
 HELP_LAST_CHAPTER := 1;
 HELP_LAST_SECTION := 0;
 
+HELP_LAST_TOPICS:=[]; # is used to shortcut several matching topics
+
 HELP_SHOW_TOPIC := function( book, topic )
-    local   info,  match,  exact,  line,  lines,  i;
+local   info,  match,  exact,  line,  lines,  i, isfun,cnt,n;
+
+    # is the topic a number?
+    if ForAll(topic,i->i in HELP_NUMBERSTRING) then
+      i:=Int(topic);
+      if IsBound(HELP_LAST_TOPICS[i]) then
+	topic:=HELP_LAST_TOPICS[i];
+        i:=Position(topic,':');
+	book:=topic{[1..i-1]};
+	topic:=topic{[i+1..Length(topic)]};
+      fi;
+    fi;
 
     # lower case the <topic>
     topic := STRING_LOWER(topic);
@@ -747,37 +903,50 @@ HELP_SHOW_TOPIC := function( book, topic )
         od;
     fi;
 
+    isfun:=false; # indicates whether it is a function name (in contrast to
+                  # a section name)
+
     # look throught the section and chapter names
     for i  in [ 1 .. Length(info) ]  do
-        for line  in info[i][2].secchaps  do
-            if line[1] = topic  then
-                Add( exact, [info[i][1],line] );
-                Add( match, [info[i][1],line] );
-            elif MATCH_BEGIN( line[1], topic )  then
-                Add( match, [info[i][1],line] );
-            fi;
-        od;
+	if info[i][2]<>fail then
+	  for line  in info[i][2].secchaps  do
+	      if line[1] = topic  then
+		  Add( exact, [info[i][1],line] );
+		  Add( match, [info[i][1],line] );
+	      elif MATCH_BEGIN( line[1], topic )  then
+		  Add( match, [info[i][1],line] );
+	      fi;
+	  od;
+        fi;
     od;
 
     # no topic function try a function name
     if 0 = Length(match)  then
         for i  in [ 1 .. Length(info) ]  do
+	  if info[i][2]<>fail then
             for line in  info[i][2].functions  do
                 if line[1] = topic  then
                     Add( exact, [info[i][1],line] );
+		    isfun:=true;
                     Add( match, [info[i][1],line] );
                 elif MATCH_BEGIN( line[1], topic )  then
                     Add( match, [info[i][1],line] );
+		    isfun:=true;
                 fi;
             od;
+	  fi;
         od;
+
     elif 0 = Length(exact)  then
         for i  in [ 1 .. Length(info) ]  do
+	  if info[i][2]<>fail then
             for line in  info[i][2].functions  do
                 if line[1] = topic  then
                     Add( exact, [info[i][1],line] );
+		    isfun:=true;
                 fi;
             od;
+	  fi;
         od;
     fi;
 
@@ -788,7 +957,12 @@ HELP_SHOW_TOPIC := function( book, topic )
 
     # one exact match
     elif 1 = Length(exact)  then
-        HELP_PRINT_SECTION( exact[1][1], exact[1][2][2], exact[1][2][3] );
+	if isfun then
+	  HELP_PRINT_SECTION( exact[1][1], exact[1][2][2], exact[1][2][3],
+			      exact[1][2][1] );
+	else
+	  HELP_PRINT_SECTION( exact[1][1], exact[1][2][2], exact[1][2][3]);
+	fi;
         HELP_LAST_BOOK    := exact[1][1];
         HELP_LAST_CHAPTER := exact[1][2][2];
         HELP_LAST_SECTION := exact[1][2][3];
@@ -796,7 +970,12 @@ HELP_SHOW_TOPIC := function( book, topic )
 
     # one topic found
     elif 1 = Length(match)  then
-        HELP_PRINT_SECTION( match[1][1], match[1][2][2], match[1][2][3] );
+	if isfun then
+	  HELP_PRINT_SECTION( match[1][1], match[1][2][2], match[1][2][3],
+			      match[1][2][1]);
+	else
+	  HELP_PRINT_SECTION( match[1][1], match[1][2][2], match[1][2][3]);
+	fi;
         HELP_LAST_BOOK    := match[1][1];
         HELP_LAST_CHAPTER := match[1][2][2];
         HELP_LAST_SECTION := match[1][2][3];
@@ -806,8 +985,21 @@ HELP_SHOW_TOPIC := function( book, topic )
     else
         Print( "Help: several sections match this topic\n" );
         lines := [];
-        for i  in match  do
-            Add( lines, Concatenation( i[1], ":", i[2][1] ) );
+	HELP_LAST_TOPICS:=[];
+	cnt:=0;
+        for i in [1..Length(match)]  do
+	    # cope with multiple entries
+	    n:=Number([1..i-1],j->match[j][1]=match[i][1]
+	                          and match[j][2][1]=match[i][2][1]);
+	    if n>0 then
+	      # change the entry to permit separate display
+	      Append(match[i][2][1],Concatenation("_(",Ordinal(n+1),")"));
+	    fi;
+
+	    cnt:=cnt+1;
+	    topic:=Concatenation(match[i][1],":",match[i][2][1]);
+	    Add(HELP_LAST_TOPICS,topic);
+            Add(lines,Concatenation("[",String(cnt),"] ",topic));
         od;
         HELP_PRINT_LINES(lines);
         return false;
@@ -924,7 +1116,7 @@ end;
 #F  HELP_SHOW_INDEX( <book>, <topic> )  . . . . . . . . . .  search the index
 ##
 HELP_SHOW_INDEX := function( book, topic )
-    local   match,  info,  i,  what,  line,  lines;
+    local   match,  info,  i,  what,  line,  lines,cnt;
 
     # lower case the <topic>
     topic := STRING_LOWER(topic);
@@ -949,14 +1141,16 @@ HELP_SHOW_INDEX := function( book, topic )
 
     # look throught the section & chapter names, index, functions
     for i  in [ 1 .. Length(info) ]  do
-        what := Concatenation(info[i][2].secchaps,info[i][2].index,
-                              info[i][2].functions);
+	if info[i][2]<>fail then
+	  what := Concatenation(info[i][2].secchaps,info[i][2].index,
+				info[i][2].functions);
 
-        for line  in what  do
-            if IS_SUBSTRING( line[1], topic )  then
-                Add( match, [info[i][1],line] );
-            fi;
-        od;
+	  for line  in what  do
+	      if IS_SUBSTRING( line[1], topic )  then
+		  Add( match, [info[i][1],line] );
+	      fi;
+	  od;
+      fi;
     od;
 
     # no topic found
@@ -976,8 +1170,13 @@ HELP_SHOW_INDEX := function( book, topic )
     else
         Print( "Help: several entries match this topic\n" );
         lines := [];
+	HELP_LAST_TOPICS:=[];
+	cnt:=0;
         for i  in match  do
-            Add( lines, Concatenation( i[1], ":", i[2][1] ) );
+	    cnt:=cnt+1;
+	    topic:=Concatenation(i[1],":",i[2][1]);
+	    Add(HELP_LAST_TOPICS,topic);
+            Add(lines,Concatenation("[",String(cnt),"] ",topic));
         od;
         HELP_PRINT_LINES(lines);
         return false;
@@ -1108,6 +1307,5 @@ end;
 
 #############################################################################
 ##
-
 #E  help.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

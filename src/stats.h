@@ -5,6 +5,7 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions of the statements package.
 **
@@ -12,7 +13,7 @@
 **  statements for their effects and prints statements.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_stats_h =
+const char * Revision_stats_h =
    "@(#)$Id$";
 #endif
 
@@ -139,23 +140,9 @@ extern  void            (* PrintStatFuncs[256] ) ( Stat stat );
 /****************************************************************************
 **
 
-*F  SetupStats()  . . . . . . . . . . . . . initialize the statements package
+*F  InitInfoStats() . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupStats ( void );
-
-
-/****************************************************************************
-**
-*F  InitStats() . . . . . . . . . . . . . . initialize the statements package
-*/
-extern void InitStats ( void );
-
-
-/****************************************************************************
-**
-*F  CheckStats() . . . . . check the initialisation of the statements package
-*/
-extern void CheckStats ( void );
+StructInitInfo * InitInfoStats ( void );
 
 
 /****************************************************************************

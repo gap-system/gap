@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains functions that mainly deal with lattices in the
 ##  context of character tables.
@@ -17,7 +18,7 @@ Revision.ctbllatt_gi :=
 ##  
 #F  LLL( <tbl>, <characters> [, <y>] [, \"sort\"] [, \"linearcomb\"] )
 ##
-LLL := function( arg )
+InstallGlobalFunction( LLL, function( arg )
 
     local tbl,         # character table, first argument
           characters,  # list of virtual characters, second argument
@@ -121,14 +122,14 @@ LLL := function( arg )
 
     # 8. Return the result.
     return lll;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Extract( <tbl>, <reducibles>, <gram-matrix> [, <missing> ] )
 ##
-Extract := function( arg )
+InstallGlobalFunction( Extract, function( arg )
 
     local  
     
@@ -567,14 +568,14 @@ Extract := function( arg )
        od;
     od;
     return( solution );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  Decreased( <tbl>, <chars>, <decompmat>, [ <choice> ] )
 ##
-Decreased := function( arg ) 
+InstallGlobalFunction( Decreased, function( arg ) 
     local 
         # indices
           m, n, m1, n1, i, i1, i2, i3, i4, j, jj, j1, j2, j3, 
@@ -1058,7 +1059,7 @@ Decreased := function( arg )
     return rec( irreducibles := irred,
                 remainders   := red,
                 matrix       := remmat2 );
-end;
+end );
 
 
 #############################################################################
@@ -1066,7 +1067,7 @@ end;
 #F  OrthogonalEmbeddingsSpecialDimension( <tbl>, <reducibles>, <grammat>,
 #F                                        [, \"positive\" ], <integer> )
 ##
-OrthogonalEmbeddingsSpecialDimension := function ( arg )  
+InstallGlobalFunction( OrthogonalEmbeddingsSpecialDimension, function ( arg )  
     local  red, dim, reducibles, matrix, tbl, emb, dec, i, s, irred;
     # check input
     if Length( arg ) < 4 then
@@ -1114,14 +1115,14 @@ OrthogonalEmbeddingsSpecialDimension := function ( arg )
     red:= ReducedClassFunctions( tbl, irred, reducibles );
     Append( irred, red.irreducibles );
     return rec( irreducibles:= irred, remainders:= red.remainders );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DnLattice( <tbl>, <g1>, <y1> )
 ##
-DnLattice := function( tbl, g1, y1 )
+InstallGlobalFunction( DnLattice, function( tbl, g1, y1 )
     local
     # indices
       i, i1, j, j1, k, k1, l, next,
@@ -1649,14 +1650,14 @@ DnLattice := function( tbl, g1, y1 )
        g := [];
     fi;
     return rec( gram:=g, remainders:=y2, irreducibles:=irred );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DnLatticeIterative( <tbl>, <red> )
 ##
-DnLatticeIterative := function( tbl, red )
+InstallGlobalFunction( DnLatticeIterative, function( tbl, red )
     local dnlat, red1, norms, i, reduc, irred, norm2, g;
     
     # check input parameters
@@ -1698,7 +1699,7 @@ DnLatticeIterative := function( tbl, red )
        norms:= List( reduc, x -> ScalarProduct( tbl, x, x ) );
     until dnlat.irreducibles=[] and red1.irreducibles=[];
     return rec( irreducibles:=irred, remainders:=reduc , norms := norms );
-end;
+end );
 
 
 #############################################################################

@@ -5,6 +5,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 Revision.pcgsspec_gi :=
     "@(#)$Id$";
@@ -43,6 +44,9 @@ ModifyPcgs := function( pcgs, wf, list, weights, work, g, wt )
 
     # insert h in base 
     if weights[ d ] < wt  then
+
+        Info(InfoSpecPcgs, 3, " insert ", g );
+        Info(InfoSpecPcgs, 3, " at position ",d," with weight ", wt);
         tmp := weights[ d ];
         weights[ d ] := wt;
         list[ d ] := g;
@@ -103,6 +107,7 @@ PcgsSystemWithWf := function( pcgs, wf )
             j := 1;
             while j <= i  do
                 if wf.relevant( pcgs, weights, i, j, h ) and work[i][j]  then
+                    Info(InfoSpecPcgs, 3, " try ",i," ",j);
  
                     # set work flag new
                     if wf.useful( weights, i, j, h ) then
@@ -613,7 +618,7 @@ end );
 InstallOtherMethod( SpecialPcgs,
     "generic method for groups",
     true,
-    [ IsGroup and IsPcgsComputable ],
+    [ IsGroup and CanEasilyComputePcgs ],
     0,
 
 function( group )
@@ -627,6 +632,22 @@ function( group )
     fi;
     return spec;
 end );
+
+InstallOtherMethod( SpecialPcgs,"last resort method which tests solvability",
+    true,[IsGroup],0,
+function(G)
+  # this test should always fail (because otherwise the other method
+  # that uses 'CanEasilyComputePcgs' will have been called). It is there
+  # just to avoid infinite recursion if methods get sorted in a strange way.
+  if HasIsSolvableGroup(G) then
+    TryNextMethod();
+  fi;
+  if not IsSolvableGroup(G) then
+    Error("<G> must be solvable to permit computation of a special pcgs");
+  else
+    return SpecialPcgs(G);
+  fi;
+end);
 
 #############################################################################
 ##
@@ -709,14 +730,28 @@ end );
 
 #############################################################################
 ##
-#M  NormalPcFirst( <pcgs> )
+#M  IndicesNormalSteps( <pcgs> )
 ##
-InstallMethod( NormalPcFirst, "special pcgs: LGFirst", true,
+InstallMethod( IndicesNormalSteps, "special pcgs: LGFirst", true,
         [ IsSpecialPcgs ], 0, LGFirst );
+
+InstallOtherMethod( PcgsCentralSeries, "if special pcgs is known",
+  true,[HasSpecialPcgs],0,SpecialPcgs);
+
+InstallOtherMethod( PcgsCentralSeries, "for pc groups use SpecialPcgs",
+  true,[IsPcGroup],0,SpecialPcgs);
+
+InstallOtherMethod( PcgsPCentralSeriesPGroup, "for pc groups use SpecialPcgs",
+  true,[IsPcGroup],0,SpecialPcgs);
+
+InstallOtherMethod( PcgsElementaryAbelianSeries, "if special pcgs is known",
+  true,[HasSpecialPcgs],0,SpecialPcgs);
+
+InstallOtherMethod( PcgsElementaryAbelianSeries,
+  "for pc groups use SpecialPcgs", true,[IsPcGroup],0,SpecialPcgs);
 
 
 #############################################################################
 ##
-
 #E  pcgsspec.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

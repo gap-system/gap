@@ -7,11 +7,12 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions handling arbitrary size integers.
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_integer_h =
+const char * Revision_integer_h =
    "@(#)$Id$";
 #endif
 
@@ -207,27 +208,10 @@ extern  Obj             GcdInt (
 /****************************************************************************
 **                                              \
                                                 \
-*F  SetupInt()  . . . . . . . . . . . . . . . initializes the integer package
+
+*F  InitInfoInt() . . . . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupInt ( void );
-
-
-/****************************************************************************
-**                                              \
-*F  InitInt() . . . . . . . . . . . . . . . . initializes the integer package
-**
-**  'InitInt' initializes the arbitrary size integer package.
-*/
-extern void InitInt ( void );
-
-
-/****************************************************************************
-**                                              \
-*F  CheckInt()  . . . . . . . check the initialisation of the integer package
-**
-**  'InitInt' initializes the arbitrary size integer package.
-*/
-extern void CheckInt ( void );
+StructInitInfo * InitInfoInt ( void );
 
 
 /****************************************************************************

@@ -1,0 +1,193 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  coll.msk                    GAP documentation            Alexander Hulpke
+%%
+%A  @(#)$Id$
+%%
+%Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
+%%
+\Chapter{Collections}
+
+\FileHeader{coll}[1]
+
+\Declaration{IsCollection}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{In}
+
+\> `<orb> in <coll>'{membership test!for domains}
+\){\fmark \\{in}(<obj>,<coll>)}
+
+tests if the object <obj> is contained in the collection <coll> and returns
+`true' or `false' accordingly. The inline version of the command calls the
+operation `\\{in}' for which methods must be installed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties of Collections}
+
+\Declaration{IsEmpty}
+\Declaration{IsFinite}
+\Declaration{IsTrivial}
+
+\beginexample
+gap> IsEmpty([]);
+true
+gap> IsFinite(Integers);
+false
+gap> IsTrivial(Group(()));
+true
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes for collections}
+
+\Declaration{Size}
+\beginexample
+gap> Size([1,2,3]);
+3
+gap> Size(Integers);
+infinity
+\endexample
+
+\Declaration{Representative}
+\Declaration{RepresentativeSmallest}
+\beginexample
+gap> Representative(Rationals);
+1
+\endexample
+
+\Declaration{AsList}
+\Declaration{AsListSorted}
+\beginexample
+gap> AsList(Group((1,2,3),(1,2)));
+[ (), (1,3,2), (1,2,3), (2,3), (1,3), (1,2) ]
+gap> AsListSorted(Group((1,2,3),(1,2)));
+[ (), (2,3), (1,2), (1,2,3), (1,3,2), (1,3) ]
+\endexample
+
+\Declaration{ListSorted}
+\beginexample
+gap> List([1,,3,2]);
+[ 1,, 3, 2 ]
+gap> ListSorted([1,,3,2]);
+[ 1, 2, 3 ]
+gap> List(Group((1,2,3)));
+[ (), (1,3,2), (1,2,3) ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for collections}
+
+\Declaration{Random}
+\Declaration{PseudoRandom}
+\beginexample
+gap> Random(Rationals);
+-4
+\endexample
+
+\Declaration{IsSubset}
+\Declaration{Intersection}
+\Declaration{Union}
+\Declaration{Difference}
+
+\beginexample
+gap> IsSubset(Integers,[1,3,2]);
+true
+gap> Intersection([(1,2,3),(1,2,3,4)],Group((1,2,3),(1,2)));
+[ (1,2,3) ]
+gap> Union([(1,2,3),(1,2,3,4)],Group((1,2,3),(1,2)));
+[ (), (2,3), (1,2), (1,2,3), (1,2,3,4), (1,3,2), (1,3) ]
+gap> Difference([(1,2,3),(1,2,3,4)],Group((1,2,3),(1,2)));
+[ (1,2,3,4) ]
+\endexample
+
+\Declaration{Sum}
+\Requirements
+\Declaration{Product}
+\Requirements
+
+\beginexample
+gap> Sum([1,2,3]);
+6
+gap> Sum([1,2,3],i->i^2);
+14
+gap> Product([1,2,3]);   
+6
+gap> Product([1,2,3],i->i^2);
+36
+\endexample
+
+\Declaration{Filtered}
+\Requirements
+\Declaration{Number}
+\Requirements
+
+\beginexample
+gap> Filtered([1,2,3],IsEvenInt);
+[ 2 ]
+gap> Number([1,2,3],IsOddInt);   
+2
+\endexample
+
+
+\Declaration{ForAll}
+\Requirements
+\Declaration{ForAny}
+\Requirements
+
+\beginexample
+gap> ForAny(Integers,i->i>0 and ForAll([0,2..4],j->IsPrime(i+j)));
+true
+gap> ForAll(Group((1,2),(1,2,3)),i->SignPerm(i)=1);
+false
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Collection Families}
+
+\Declaration{CollectionsFamily}
+\Declaration{ElementsFamily}
+\Declaration{IsWholeFamily}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The X Functions}
+
+\Declaration{ListX}
+\Declaration{SetX}
+\Declaration{SumX}
+\Declaration{ProductX}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Iterators}
+
+Iterators permit to loop over a collection without the need to store all
+elements of this collection in memory.
+
+For example it is possible to loop over all rational numbers, while a list
+of all rational numbers cannot be held in memory.
+
+In difference to enumerators (see "Enumerators") iterators do not permit
+random access.
+
+It is possible to have `for'-loops run over iterators instead of lists.
+
+\Declaration{Iterator}
+\Declaration{IteratorSorted}
+\Declaration{IsIterator}
+\Declaration{IsDoneIterator}
+\Declaration{NextIterator}
+\Declaration{IteratorList}
+\Declaration{TrivialIterator}
+
+\beginexample
+gap> ir:=Iterator(Rationals);
+<iterator>
+gap> l:=[];; for i in [1..20] do Add(l,NextIterator(ir));od;l;
+[ 0, 1, -1, 1/2, 2, -1/2, -2, 1/3, 2/3, 3/2, 3, -1/3, -2/3, -3/2, -3, 1/4, 
+  3/4, 4/3, 4, -1/4 ]
+\endexample
+
+See also section "Enumerators" on enumerators.
+

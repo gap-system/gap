@@ -34,17 +34,23 @@ Revision.ctadmin_tbi :=
 ##  the components are mainly computed by the `awk' script `maketbl',
 ##  and they are stored in the file 'ctprimar.tbl',
 ##
-AUTO( ReadTbl, "ctprimar.tbl", "LIBLIST" );
+#V  TOM_TBL_INFO
+##
+##  is a list of length 2, the first containing identifiers of library
+##  character tables, the second containing the corresponding identifiers
+##  of tables of marks.
+##
+AUTO( ReadTbl, "ctprimar.tbl", "LIBLIST", "TOM_TBL_INFO" );
 
 
 #############################################################################
 ##
 #F  SET_TABLEFILENAME( <filename> )
 ##
-SET_TABLEFILENAME := function( filename )
+InstallGlobalFunction( SET_TABLEFILENAME, function( filename )
     LIBTABLE.TABLEFILENAME:= filename;
     LIBTABLE.( filename ):= rec();
-end;
+end );
 
 
 #############################################################################
@@ -53,27 +59,27 @@ end;
 #F  TENSOR( <chars>, <list> )
 #F  EvalChars( <chars> )
 ##
-GALOIS := function( chars, li )
+InstallGlobalFunction( GALOIS, function( chars, li )
     return List( chars[ li[1] ], x -> GaloisCyc( x, li[2] ) );
-end;
+end );
 
-TENSOR := function( chars, list )
+InstallGlobalFunction( TENSOR, function( chars, list )
     local i, chi, psi, result;
     chi:= chars[ list[1] ];
     psi:= chars[ list[2] ];
     result:= [];
     for i in [ 1 .. Length( chi ) ] do result[i]:= chi[i] * psi[i]; od;
     return result;
-end;
+end );
 
-EvalChars := function( chars )
+InstallGlobalFunction( EvalChars, function( chars )
     local i;
     for i in [ 1 .. Length( chars ) ] do
       if IsFunction( chars[i][1] ) then
         chars[i]:= chars[i][1]( chars, chars[i][2] );
       fi;
     od;
-end;
+end );
 
 
 #############################################################################
@@ -81,7 +87,7 @@ end;
 #F  ALF( <from>, <to>, <map> ) . . . . . . . . . .  add library table fusions
 #F  ALF( <from>, <to>, <map>, <text> )
 ##
-ALF := function( arg )
+InstallGlobalFunction( ALF, function( arg )
 
     local pos, text;
 
@@ -120,29 +126,29 @@ ALF := function( arg )
                arg[1] ).ComputedClassFusions,
            rec( name:= arg[2], map:= arg[3] ) );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ACM( <spec>, <dim>, <val> ) . . . . . . . . . . . . . add Clifford matrix
 ##
-ACM := function( spec, dim, val )
+InstallGlobalFunction( ACM, function( spec, dim, val )
     spec:= LIBTABLE.( Concatenation( "clm", spec ) );
     if not IsBound( spec[ dim ] ) then
       spec[ dim ]:= [];
     fi;
     Add( spec[ dim ], val );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ARC( <name>, <comp>, <val> ) . . . . . . . add component of library table
 ##
-ARC := function( name, comp, val )
+InstallGlobalFunction( ARC, function( name, comp, val )
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).( name ).( comp ):= val;
-end;
+end );
 
 
 #############################################################################
@@ -153,7 +159,8 @@ end;
 ##  first name <firstname>, if there is no other table yet for that some of
 ##  these names are admissible.
 ##
-NotifyNameOfCharacterTable := function( firstname, newnames )
+InstallGlobalFunction( NotifyNameOfCharacterTable,
+    function( firstname, newnames )
 
     local lower,
           pos,
@@ -186,14 +193,7 @@ NotifyNameOfCharacterTable := function( firstname, newnames )
     SortParallel( LIBLIST.allnames, LIBLIST.position );
     LIBLIST.allnames := Immutable( LIBLIST.allnames );
     LIBLIST.position := Immutable( LIBLIST.position );
-end;
-
-
-#############################################################################
-##
-#F  ALN( <name>, <names> )  . . . . . . . . . . . . . add library table names
-##
-ALN := NotifyNameOfCharacterTable;
+end );
 
 
 #############################################################################
@@ -209,7 +209,8 @@ ALN := NotifyNameOfCharacterTable;
 ##  having checked that there is no other table yet with admissible name
 ##  equal to <firstname> or contained in <othernames>.
 ##
-NotifyCharacterTable := function( firstname, filename, othernames )
+InstallGlobalFunction( NotifyCharacterTable,
+    function( firstname, filename, othernames )
 
     local len, pos;
 
@@ -245,14 +246,14 @@ NotifyCharacterTable := function( firstname, filename, othernames )
 
     # Allow natural names.
 #T !!
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MBT( <arg> )
 ##
-MBT := function( arg )
+InstallGlobalFunction( MBT, function( arg )
 
     local i, record;
 
@@ -281,14 +282,14 @@ MBT := function( arg )
     fi;
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).(
                  Concatenation( arg[1], "mod", String( arg[2] ) ) ):= record;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  MOT( <arg> )
 ##
-MOT := function( arg )
+InstallGlobalFunction( MOT, function( arg )
 
     local record, i;
 
@@ -316,26 +317,30 @@ MOT := function( arg )
 
     # Store the table record.
     LIBTABLE.( LIBTABLE.TABLEFILENAME ).( arg[1] ):= record;
-end;
+end );
 
 
 #############################################################################
 ##
+#V  GEN_Q_P
+##
 #F  PrimeBase( <q> )
 ##
-PrimeBase := function( q )
+InstallFlushableValue( GEN_Q_P, [] );
+
+InstallGlobalFunction( PrimeBase, function( q )
     if not IsBound( GEN_Q_P[q] ) then
       GEN_Q_P[q]:= FactorsInt( q )[1];
     fi;
     return GEN_Q_P[q];
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LibInfoCharacterTable( <tblname> )
 ##
-LibInfoCharacterTable := function( tblname )
+InstallGlobalFunction( LibInfoCharacterTable, function( tblname )
 
     local i, ordinfo, obj, pos;
 
@@ -381,14 +386,14 @@ LibInfoCharacterTable := function( tblname )
     fi;
 
     return fail;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LibraryTables( <filename> )
 ##
-LibraryTables := function( filename )
+InstallGlobalFunction( LibraryTables, function( filename )
 
     local file;
 
@@ -425,7 +430,7 @@ LibraryTables := function( filename )
     fi;
 
     return LIBTABLE.( filename );
-end;
+end );
 
 
 #############################################################################
@@ -433,7 +438,7 @@ end;
 #F  CharacterTableFromLibrary( [ <tblname> ] )
 #F  CharacterTableFromLibrary( [ <series>, <parameters> ] )
 ##
-CharacterTableFromLibrary := function( arglist )
+InstallGlobalFunction( CharacterTableFromLibrary, function( arglist )
 
     local i,
           j,
@@ -536,7 +541,6 @@ CharacterTableFromLibrary := function( arglist )
         fi;
 
         # initialize some components
-#       libtbl.Identifier:= firstname;
         if     IsBound( libtbl.ComputedPowerMaps )
            and not IsEmpty( libtbl.ComputedPowerMaps )
            and not IsBound( libtbl.OrdersClassRepresentatives ) then
@@ -551,6 +555,11 @@ CharacterTableFromLibrary := function( arglist )
 
         if IsBound( libtbl.maxes ) then
           libtbl.Maxes:= libtbl.maxes;
+          Unbind( libtbl.maxes );
+        fi;
+
+        if IsBound( libtbl.isSimple ) then
+          libtbl.IsSimpleCharacterTable:= libtbl.isSimple;
         fi;
 
         # Evaluate characters encoded as '[GALOIS,[i,j]]', '[TENSOR,[i,j]]'.
@@ -694,7 +703,7 @@ CharacterTableFromLibrary := function( arglist )
                    CharacterTableFromLibrary( [ arglist[1] ] ), arglist[2] );
       fi;
     fi;
-end;
+end );
 
 
 #############################################################################
@@ -703,15 +712,15 @@ end;
 #M  CharacterTable( <series>, <parameters> )
 ##
 InstallOtherMethod( CharacterTable,
-    "method for a string",
+    "for a string",
     true,
     [ IsString ], 0,
     name -> CharacterTableFromLibrary( [ name ] ) );
 
 InstallOtherMethod( CharacterTable,
-    "method for a string and an object",
+    "for a string and an object",
     true,
-    [ IsString, IsObject ], 1,
+    [ IsString, IsObject ], 0,
     function( series, parameters )
     return CharacterTableFromLibrary( [ series, parameters ] );
     end );
@@ -721,7 +730,7 @@ InstallOtherMethod( CharacterTable,
 ##
 #F  PartsBrauerTableName( <modname> )
 ##
-PartsBrauerTableName := function( modname )
+InstallGlobalFunction( PartsBrauerTableName, function( modname )
 
     local i, primestring, ordname, prime, digits;
 
@@ -754,14 +763,14 @@ PartsBrauerTableName := function( modname )
     od;
 
     return rec( ordname:= ordname, prime:= prime );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  BasicSetBrauerTree( <brauertree> )
 ##
-BasicSetBrauerTree := function( brauertree )
+InstallGlobalFunction( BasicSetBrauerTree, function( brauertree )
 
     local i,
           degrees,
@@ -797,14 +806,14 @@ BasicSetBrauerTree := function( brauertree )
     od;
 
     return basicset;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  DecMatBrauerTree( <brauertree> )
 ##
-DecMatBrauerTree := function( brauertree )
+InstallGlobalFunction( DecMatBrauerTree, function( brauertree )
 
     local i,
           j,
@@ -815,21 +824,21 @@ DecMatBrauerTree := function( brauertree )
     for i in brauertree do
       max:= Maximum( max, Maximum(i) );
     od;
-    decmat:= NullMat( max, Length( brauertree ) );
+    decmat:= MutableNullMat( max, Length( brauertree ) );
     for i in [ 1 .. Length( brauertree ) ] do
       for j in brauertree[i] do
         decmat[j][i]:= 1;
       od;
     od;
     return decmat;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  BrauerTree( <decmat> )
 ##
-BrauerTree := function( decmat )
+InstallGlobalFunction( BrauerTree, function( decmat )
 
     local i, j, brauertree, edge, len;
 
@@ -872,14 +881,14 @@ BrauerTree := function( decmat )
       fi;
     od;
     return brauertree;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  BrauerTable( <name>, <ordtbl> )
 ##
-BrauerTable := function( name, ordtbl )
+InstallGlobalFunction( BrauerTable, function( name, ordtbl )
 
     local filename,      # name of the file containing the Brauer table
           fld,           # library tables of the whole library file
@@ -1139,7 +1148,7 @@ BrauerTable := function( name, ordtbl )
     fi;
 
 #T BAD HACK until incomplete tables disappeared ...
-#T only Co2mod2 ...
+#T only file ctborth2 ...
     if IsBound( libtbl.warning ) then
       Print( "#W warning for table of '", libtbl.identifier, "':\n",
              libtbl.warning, "\n" );
@@ -1150,7 +1159,7 @@ BrauerTable := function( name, ordtbl )
 
     # Return the Brauer table.
     return reg;
-end;
+end );
 
 
 #############################################################################
@@ -1161,7 +1170,7 @@ end;
 ##  library if possible.
 ##
 InstallMethod( \mod,
-    "method for a library character table and a positive integer",
+    "for a library character table and a positive integer",
     true,
     [ IsOrdinaryTable and IsLibraryCharacterTableRep,
       IsPosRat and IsInt ], 0,
@@ -1179,7 +1188,7 @@ InstallMethod( \mod,
 ##
 #F  CharacterTableSpecialized( <generic_table>, <q> )  . . . . specialise <q>
 ##
-CharacterTableSpecialized := function( gtab, q )
+InstallGlobalFunction( CharacterTableSpecialized, function( gtab, q )
 
     local taf,         # record of the specialized table, result
           genclass,    #
@@ -1265,8 +1274,8 @@ CharacterTableSpecialized := function( gtab, q )
 
       # Compute the power maps.
       taf.ComputedPowerMaps := [];
-      if IsBound( gtab!.powermap ) and IsBound( taf!.size ) then
-        for i in Reversed( Set( Factors( taf!.size ) ) ) do
+      if IsBound( gtab!.powermap ) and IsBound( taf.Size ) then
+        for i in Reversed( Set( Factors( taf.Size ) ) ) do
           taf.ComputedPowerMaps[i] := [];
           for class in Reversed( [1 .. Length( classparam ) ] ) do
             parm := gtab!.powermap[genclass[class]](q, classparam[class],i);
@@ -1315,65 +1324,15 @@ CharacterTableSpecialized := function( gtab, q )
     # Objectify and return the table.
     ConvertToLibraryCharacterTableNC( taf );
     return taf;
-end;
-
-
-#############################################################################
-##
-#F  ConvertToLibraryCharacterTableNC( <record> )
-##
-ConvertToLibraryCharacterTableNC := function( record )
-
-    local names,    # list of component names
-          i;        # loop over 'SupportedOrdinaryTableInfo'
-
-    names:= RecNames( record );
-
-    # Make the object.
-    if IsBound( record.isGenericTable ) and record.isGenericTable then
-      Objectify( NewType( NearlyCharacterTablesFamily,
-                          IsGenericCharacterTableRep ),
-                 record );
-    elif not IsBound( record.UnderlyingCharacteristic ) then
-      Error( "<record> must have one of 'isGenericTable' or ",
-             "'UnderlyingCharacteristic'" );
-    elif record.UnderlyingCharacteristic = 0 then
-      Objectify( NewType( NearlyCharacterTablesFamily,
-                              IsOrdinaryTable
-                          and IsLibraryCharacterTableRep ),
-                 record );
-    else
-      Objectify( NewType( NearlyCharacterTablesFamily,
-                              IsBrauerTable
-                          and IsLibraryCharacterTableRep ),
-                 record );
-    fi;
-
-    # Enter the properties and attributes.
-    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
-      if     SupportedOrdinaryTableInfo[i] in names
-         and SupportedOrdinaryTableInfo[i] <> "Irr" then
-        Setter( SupportedOrdinaryTableInfo[ i-1 ] )( record,
-                            record!.( SupportedOrdinaryTableInfo[i] ) );
-      fi;
-    od;
-
-    # Make the lists of character values into character objects.
-    if "Irr" in names then
-      SetIrr( record, List( record!.Irr,
-                            chi -> CharacterByValues( record, chi ) ) );
-    fi;
-
-    # Return the object.
-    return record;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  TransferComponentsToLibraryTableRecord( <t>, <tbl> )
 ##
-TransferComponentsToLibraryTableRecord := function( t, tbl )
+InstallGlobalFunction( TransferComponentsToLibraryTableRecord,
+    function( t, tbl )
 
     local names, i, fld;
 
@@ -1400,14 +1359,15 @@ TransferComponentsToLibraryTableRecord := function( t, tbl )
     if HasIrr( t ) and not IsBound( tbl!.Irr ) then
       tbl.Irr:= List( Irr( t ), ValuesOfClassFunction );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ConstructMixed( <tbl>, <subname>, <factname>, <plan>, <perm> )
 ##
-ConstructMixed := function( tbl, subname, factname, plan, perm )
+InstallGlobalFunction( ConstructMixed,
+    function( tbl, subname, factname, plan, perm )
 
     local factfus,  # factor fusion from 'tbl' to 'fact'
           subfus,   # subgroup fusion from 'sub' to 'tbl'
@@ -1429,7 +1389,7 @@ ConstructMixed := function( tbl, subname, factname, plan, perm )
     Append( irreds, List( plan, entry ->
          Concatenation( Sum( Irr( subname ){ entry } ){ proj }, zero ) ) );
     tbl.Irr:= Permuted( irreds, perm );
-end;
+end );
 
 
 #############################################################################
@@ -1439,7 +1399,7 @@ end;
 ##  constructs irreducibles for projective tables from projectives of
 ##  a factor group table.
 ##
-ConstructProj := function( tbl )
+InstallGlobalFunction( ConstructProj, function( tbl )
 
     local i, j, factor, fus, mult, irreds, linear, omegasquare, I,
           d, name, factfus, proj, adjust, Adjust,
@@ -1603,7 +1563,7 @@ ConstructProj := function( tbl )
       fi;
     od;
     tbl.Irr:= irreds;
-end;
+end );
 
 
 #############################################################################
@@ -1611,7 +1571,7 @@ end;
 #F  ConstructDirectProduct( <tbl> )
 #F  ConstructDirectProduct( <tbl>, <permclasses>, <permchars> )
 ##
-ConstructDirectProduct := function( arg )
+InstallGlobalFunction( ConstructDirectProduct, function( arg )
 
     local tbl, t, i;
 
@@ -1632,14 +1592,14 @@ ConstructDirectProduct := function( arg )
     if 1 < Length( tbl.factors ) then
       Append( tbl.ComputedClassFusions, ComputedClassFusions( t ) );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ConstructSubdirect( <tbl>, <factors>, <choice> )
 ##
-ConstructSubdirect := function( tbl, factors, choice  )
+InstallGlobalFunction( ConstructSubdirect, function( tbl, factors, choice  )
 
     local t, i;
 
@@ -1650,7 +1610,7 @@ ConstructSubdirect := function( tbl, factors, choice  )
     od;
     t:= CharacterTableOfNormalSubgroup( t, choice );
     TransferComponentsToLibraryTableRecord( t, tbl );
-end;
+end );
 
 
 #############################################################################
@@ -1658,7 +1618,7 @@ end;
 #F  ConstructIsoclinic( <tbl> )
 #F  ConstructIsoclinic( <tbl>, <nsg> )
 ##
-ConstructIsoclinic := function( arg )
+InstallGlobalFunction( ConstructIsoclinic, function( arg )
 
     local tbl, t, i, fld;
 
@@ -1674,14 +1634,14 @@ ConstructIsoclinic := function( arg )
       t:= CharacterTableIsoclinic( t, arg[2] );
     fi;
     TransferComponentsToLibraryTableRecord( t, tbl );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ConstructV4G( <tbl>, <facttbl>, <aut> )
 ##
-ConstructV4G := function( tbl, facttbl, aut )
+InstallGlobalFunction( ConstructV4G, function( tbl, facttbl, aut )
 
     local fus, chars;
 
@@ -1692,7 +1652,7 @@ ConstructV4G := function( tbl, facttbl, aut )
                   x -> Permuted( x, aut ) );
     Append( tbl.Irr, chars );
     Append( tbl.Irr, List( chars, x -> Permuted( x, aut ) ) );
-end;
+end );
 
 
 #############################################################################
@@ -1701,7 +1661,8 @@ end;
 ##
 ##  is the list of class function values lists
 ##
-InducedLibraryCharacters := function( subtbl, tblrec, chars, fusion )
+InstallGlobalFunction( InducedLibraryCharacters,
+    function( subtbl, tblrec, chars, fusion )
 
     local j,              # loop variables
           centralizers,   # centralizer orders in hte supergroup
@@ -1724,7 +1685,7 @@ InducedLibraryCharacters := function( subtbl, tblrec, chars, fusion )
     for char in chars do
 
       # preset the character with zeros
-      singleinduced:= Zero( centralizers );
+      singleinduced:= ListWithIdenticalEntries( nccl, 0 );
 
       # add the contribution of each class of the subgroup
       for j in [ 1 .. subnccl ] do
@@ -1745,14 +1706,15 @@ InducedLibraryCharacters := function( subtbl, tblrec, chars, fusion )
 
     # Return the list of values lists.
     return induced;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ConstructGS3( <tbls3>, <tbl2>, <tbl3>, <ind2>, <ind3>, <ext>, <perm> )
 ##
-ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
+InstallGlobalFunction( ConstructGS3,
+    function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
 
     local fus2,       # fusion map 'tbl2' in 'tbls3'
           fus3,       # fusion map 'tbl3' in 'tbls3'
@@ -1811,7 +1773,7 @@ ConstructGS3 := function( tbls3, tbl2, tbl3, ind2, ind3, ext, perm )
 
     # Store the irreducibles.
     tbls3.Irr:= irr;
-end;
+end );
 
 
 #############################################################################
@@ -1822,7 +1784,8 @@ end;
 ##  name <libnam>, whose classes and characters must be permuted by the
 ##  permutations <prmclasses> and <prmchars>, respectively.
 ##
-ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
+InstallGlobalFunction( ConstructPermuted,
+    function( tbl, libnam, prmclasses, prmchars )
 
     local t;
 
@@ -1843,14 +1806,35 @@ ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
 
     # Store the components in 'tbl'.
     TransferComponentsToLibraryTableRecord( t, tbl );
-end;
+end );
+
+
+#############################################################################
+##
+#F  ConstructFactor( <tbl>, <libnam>, <kernel> )
+##
+##  The library table <tbl> is completed with help of the library table with
+##  name <libnam>, whose classes and characters must be permuted by the
+##  permutations <prmclasses> and <prmchars>, respectively.
+##
+InstallGlobalFunction( ConstructFactor,
+    function( tbl, libnam, kernel )
+    local t;
+
+    # Construct the required table of the factor group.
+    t:= CharacterTableFactorGroup( CharacterTableFromLibrary( libnam ),
+                                   kernel );
+
+    # Store the components in 'tbl'.
+    TransferComponentsToLibraryTableRecord( t, tbl );
+end );
 
 
 #############################################################################
 ##
 #F  ConstructClifford( <tbl> )
 ##
-ConstructClifford := function( tbl )
+InstallGlobalFunction( ConstructClifford, function( tbl )
 
     local i, j, n,
           AnzTi,
@@ -1957,14 +1941,14 @@ ConstructClifford := function( tbl )
     od;
 
     tbl.Irr := newct;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  UnpackedCll( <cll> )
 ##
-UnpackedCll := function( cll )
+InstallGlobalFunction( UnpackedCll, function( cll )
 
     local l, clmlist,  # library list of the possible matrices
           clf,         # Clifford matrix record, result
@@ -2011,14 +1995,14 @@ UnpackedCll := function( cll )
     fi;
 
     return clf;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  CllToClf( <tbl>, <cll> )
 ##
-CllToClf := function( tbl, cll )
+InstallGlobalFunction( CllToClf, function( tbl, cll )
 
     local Ti,          #
           factor,      # character table of the factor group G/N
@@ -2103,14 +2087,14 @@ CllToClf := function( tbl, cll )
     fi;
 
     return clf;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  AddDecMats( <modtbl> )
 ##
-AddDecMats := function( modtbl )
+InstallGlobalFunction( AddDecMats, function( modtbl )
 
     local ordtbl,
           fus,
@@ -2134,7 +2118,7 @@ AddDecMats := function( modtbl )
         block.decmat:= Decomposition( modchars, ordchars, "nonnegative" );
       fi;
     od;
-end;
+end );
 
 
 #############################################################################
@@ -2143,28 +2127,25 @@ end;
 #F  IsSporadicSimple( <G> )
 #F  SchurCover()
 ##
-##  dummy functions for selection function
-##
-OfThose          := function( ) Error("this is just a dummy function" ); end;
-IsSporadicSimple := function(G) Error("this is just a dummy function" ); end;
-#T make this a property!
-SchurCover  := function( ) Error("this is just a dummy function" ); end;
-#T make this an attribute!
+InstallGlobalFunction( OfThose,
+    function( ) Error("this is just a dummy function" ); end );
+InstallGlobalFunction( IsSporadicSimple,
+    function(G) Error("this is just a dummy function" ); end );
+InstallGlobalFunction( SchurCover,
+    function( ) Error("this is just a dummy function" ); end );
 
 
 #############################################################################
 ##
 #F  AllCharacterTableNames( ) . . . . all ordinary table names in the library
-#F  AllCharacterTableNames( IsSimpleGroup, true )
+#F  AllCharacterTableNames( IsSimple, true )
 #F  AllCharacterTableNames( IsSporadicSimple, true )
 #F  AllCharacterTableNames( <func>, <val> )
 #F  AllCharacterTableNames( ..., OfThose, AutomorphismGroup )
 #F  AllCharacterTableNames( ..., OfThose, SchurCover )
 #F  AllCharacterTableNames( ..., OfThose, <func> )
 ##
-##  selection function for {\GAP} library tables
-##
-AllCharacterTableNames := function( arg )
+InstallGlobalFunction( AllCharacterTableNames, function( arg )
 
     local sporsimp, list, pos, i, t, pp, oft, funcs, resul,
           newlist, multinfo, autoinfo, simpinfo;
@@ -2185,10 +2166,10 @@ AllCharacterTableNames := function( arg )
     autoinfo:= List( LIBLIST.simpleInfo, x -> x[3] );
 
     # initialize the names list;
-    # supported up to now: special cases 'IsSimpleGroup', 'IsSporadicSimple'
+    # supported up to now: special cases 'IsSimple', 'IsSporadicSimple'
 
-#T     if     ( arg[1] = IsSimple or arg[1] = IsSimpleGroup )
-    if     arg[1] = IsSimpleGroup
+    if     ( arg[1] = IsSimple or arg[1] = IsSimpleGroup
+                               or arg[1] = IsSimpleCharacterTable )
        and arg[2] = true then
       list:= simpinfo;
     elif arg[1] = IsSporadicSimple and arg[2] = true then
@@ -2292,48 +2273,48 @@ AllCharacterTableNames := function( arg )
     od;
 
     return list;
-end;
+end );
 #T change strategy: if necessary construct the character table once,
 #T then trace it through the whole argument!
 
 
-#############################################################################
-##
-#F  ShrinkClifford( <tbl> )
-##
-ShrinkClifford := function( tbl )
-
-    local i, flds, cltbl;
-
-    cltbl:= tbl!.cliffordTable;
-    cltbl.Ti.tables := cltbl.Ti.ident;
-
-    cltbl.cliffordrecords:= [];
-
-    for i in  [1..cltbl.size] do
-
-      cltbl.cliffordrecords[i]:= ClfToCll( cltbl.(i) );
-      Unbind( cltbl.(i) );
-
-    od;
-
-    Unbind( tbl.irreducibles);
-#T how to remove attributes ??
-    Unbind( cltbl.Ti.ident );
-    Unbind( cltbl.Ti.expN );
-
-    for flds in [ "name", "grpname", "elements", "isDomain", "operations",
-                  "charTable", "size", "expN" ] do
-      Unbind( cltbl.(flds) );
-    od;
-end;
+#T #############################################################################
+#T ##
+#T #F  ShrinkClifford( <tbl> )
+#T ##
+#T InstallGlobalFunction( ShrinkClifford, function( tbl )
+#T 
+#T     local i, flds, cltbl;
+#T 
+#T     cltbl:= tbl!.cliffordTable;
+#T     cltbl.Ti.tables := cltbl.Ti.ident;
+#T 
+#T     cltbl.cliffordrecords:= [];
+#T 
+#T     for i in  [1..cltbl.size] do
+#T 
+#T       cltbl.cliffordrecords[i]:= ClfToCll( cltbl.(i) );
+#T       Unbind( cltbl.(i) );
+#T 
+#T     od;
+#T 
+#T     Unbind( tbl.irreducibles);
+#T #T how to remove attributes ??
+#T     Unbind( cltbl.Ti.ident );
+#T     Unbind( cltbl.Ti.expN );
+#T 
+#T     for flds in [ "name", "grpname", "elements", "isDomain", "operations",
+#T                   "charTable", "size", "expN" ] do
+#T       Unbind( cltbl.(flds) );
+#T     od;
+#T end );
 
 
 #############################################################################
 ##
 #F  TextString( <text> )
 ##
-TextString := function( text )
+InstallGlobalFunction( TextString, function( text )
     local str, start, stop, line, len, pos;
     str:=  "[\n\"";
     stop:= 1;
@@ -2358,58 +2339,60 @@ TextString := function( text )
     od;
     Append( str, "\"\n]" );
     return str;
-end;
+end );
 
 
 #############################################################################
 ##
-#F  BlanklessPrint( <obj> )
+#F  BlanklessPrintTo( <stream>, <obj> )
 ##
-BlanklessPrint := function( obj )
+InstallGlobalFunction( BlanklessPrintTo, function( stream, obj )
     local i, names;
     if   IsEmptyString( obj ) then
-      Print( "\"\"" );
+      PrintTo( stream, "\"\"" );
     elif IsList( obj ) and IsEmpty( obj ) then
-      Print( "[]" );
+      PrintTo( stream, "[]" );
     elif IsString( obj ) then
       if '\n' in obj then
-        Print( TextString( obj ) );
+        PrintTo( stream, TextString( obj ) );
       else
-        Print( "\"", obj, "\"" );
+        PrintTo( stream, "\"", obj, "\"" );
       fi;
     elif IsList( obj ) then
-      Print( "[" );
+      PrintTo( stream, "[" );
       for i in [ 1 .. Length( obj ) - 1 ] do
-        if IsBound( obj[i] ) then BlanklessPrint( obj[i] ); fi;
-        Print( "," );
+        if IsBound( obj[i] ) then BlanklessPrintTo( stream, obj[i] ); fi;
+        PrintTo( stream, "," );
       od;
-      if obj <> [] then BlanklessPrint( obj[ Length( obj ) ] ); fi;
-      Print( "]" );
+      if not IsEmpty( obj ) then
+        BlanklessPrintTo( stream, obj[ Length( obj ) ] );
+      fi;
+      PrintTo( stream, "]" );
     elif IsRecord( obj ) then
-      Print( "rec(" );
+      PrintTo( stream, "rec(" );
       names:= RecNames( obj );
       for i in [ 1 .. Length( names ) - 1 ] do
-        Print( names[i], ":=" );
-        BlanklessPrint( obj.( names[i] ) );
-        Print( ",\n" );
+        PrintTo( stream, names[i], ":=" );
+        BlanklessPrintTo( stream, obj.( names[i] ) );
+        PrintTo( stream, ",\n" );
       od;
       if not IsEmpty( names  ) then
         i:= Length( names );
-        Print( names[i], ":=" );
-        BlanklessPrint( obj.( names[i] ) );
+        PrintTo( stream, names[i], ":=" );
+        BlanklessPrintTo( stream, obj.( names[i] ) );
       fi;
-      Print( ")" );
+      PrintTo( stream, ")" );
     else
-      Print( obj );
+      PrintTo( stream, obj );
     fi;
-end;
+end );
 
 
 #############################################################################
 ##
 #F  ShrinkChars( <chars> )
 ##
-ShrinkChars := function( chars )
+InstallGlobalFunction( ShrinkChars, function( chars )
     local i, j, k, N, oldchars, linear, chi, fams, pos, ppos;
 
     linear:= Filtered( chars, x -> x[1] = 1 );
@@ -2438,8 +2421,11 @@ ShrinkChars := function( chars )
         for j in [ 2 .. Length( fams[i][1] ) ] do
           if fams[i][1][j] <= Length( chars ) then
             chi:= chars[ fams[i][1][j] ];
+            if IsClassFunction( chi ) then
+              chi:= ValuesOfClassFunction( chi );
+            fi;
             if not IsString( chi ) then
-              N:= Lcm( Conductor( chi ) );
+              N:= Conductor( chi );
               k:= First( [ 2..N ], x -> chi = List( oldchars[i],
                                                     y -> GaloisCyc(y,x) ) );
               chars[ fams[i][1][j] ]:= Concatenation("\n[GALOIS,[",
@@ -2451,14 +2437,14 @@ ShrinkChars := function( chars )
     od;
 
     return chars;
-end;
+end );
 
 
 #T #############################################################################
 #T ##
 #T #F  ClfToCll( <clf> )
 #T ##
-#T ClfToCll := function( clf )
+#T InstallGlobalFunction( ClfToCll, function( clf )
 #T 
 #T     local p,       # position of the Clifford matrix clm in CLM[*]
 #T           cll,     # compressed record
@@ -2556,346 +2542,339 @@ end;
 #T     fi;
 #T 
 #T     return cll;
-#T end;
+#T end );
 
 
 #############################################################################
 ##
-#F  PrintFusion( <name>, <fus> )
+#F  LibraryFusion( <name>, <fus> )
 ##
-PrintFusion := function( name, fus )
+InstallGlobalFunction( LibraryFusion, function( name, fus )
 
-    local i, linelen;
+    local string, linelen, i, str;
 
+    # Initialize the result string.
+    string:= "";
+
+    # Print the source and destination.
+    Append( string, "ALF(\"" );
+    Append( string, name );
+    Append( string, "\",\"" );
+    Append( string, fus.name );
+
+    # Initialize the current position in the line.
     linelen:= Length( name ) + Length( fus.name ) + 11;
-    Print( "ALF(\"", name, "\",\"", fus.name, "\",[" );
+
+    # Add the values of the fusion map.
+    Append( string, "\",[" );
     for i in [ 1 .. Length( fus.map ) - 1 ] do
-      if linelen + Length( String( fus.map[i] ) ) + 1 < 75 then
-        linelen:= linelen + Length( String( fus.map[i] ) ) + 1;
+      str:= String( fus.map[i] );
+      if linelen + Length( str ) + 1 < 75 then
+        linelen:= linelen + Length( str ) + 1;
       else
-        Print( "\n" );
-        linelen:= Length( String( fus.map[i] ) ) + 1;
+        Append( string, "\n" );
+        linelen:= Length( str ) + 1;
       fi;
-      Print( fus.map[i], "," );
+      Append( string, str );
+      Append( string, "," );
     od;
     i:= Length( fus.map );
-    if linelen + Length( String( fus.map[i] ) ) + 1 < 75 then
-      linelen:= linelen + Length( String( fus.map[i] ) ) + 1;
+    str:= String( fus.map[i] );
+    if linelen + Length( str ) + 1 < 75 then
+      linelen:= linelen + Length( str ) + 1;
     else
-      Print( "\n" );
-      linelen:= Length( String( fus.map[i] ) ) + 1;
+      Append( string, "\n" );
+      linelen:= Length( str ) + 1;
     fi;
-    Print( fus.map[i], "]" );
+    Append( string, str );
+    Append( string, "]" );
+
+    # If a text is bound, add it.
     if IsBound( fus.text ) then
-      Print( ",", TextString( fus.text ) );
+      Append( string, "," );
+      Append( string, TextString( fus.text ) );
     fi;
-    Print( ");\n" );
-end;
+    Append( string, ");\n" );
+
+    return string;
+end );
 
 
-#T #############################################################################
-#T ##
-#T #F  PrintToLib( <file>, <tbl> )
-#T ##
-#T PrintToLib := function( file, tbl )
-#T 
-#T     local special,
-#T           func;
-#T 
-#T     if not ( IsOrdinaryTable( tbl ) and HasIdentifier( tbl ) ) then
-#T       Error( "usage: PrintToLib( <file>, <tbl> ) for char. table <tbl>" );
-#T     fi;
-#T 
-#T     # if 'file' has already extension '.tbl', remove this
-#T     if     3 < Length( file )
-#T        and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
-#T       file:= file{ [ 1 .. Length( file ) - 4 ] };
-#T     fi;
-#T 
-#T     # special cases are 'Irr( tbl )' and 'tbl!.projectives' since
-#T     # after the call of 'ShrinkChars' they may
-#T     # contain strings, which shall be printed without '"'
-#T 
-#T     special:= function( chars )
-#T         local j;
-#T         Print( "[" );
-#T         for j in [ 1 .. Length( chars ) - 1 ] do
-#T           if IsBound( chars[j] ) then
-#T             if IsString( chars[j] ) then
-#T               Print( chars[j] );            # strip the '"'
-#T             else
-#T               BlanklessPrint( chars[j] );
-#T             fi;
-#T           fi;
-#T           Print( "," );
-#T         od;
-#T         if chars <> [] then
-#T           j:= Length( chars );
-#T           if IsString( chars[j] ) then
-#T             Print( chars[j] );                # strip the '"'
-#T           else
-#T             BlanklessPrint( chars[j] );
-#T           fi;
-#T         fi;
-#T         Print( "]" );
-#T     end;
-#T 
-#T     func:= function( tbl )
-#T 
-#T     local flds,
-#T           i, j,
-#T           name,
-#T           tblinfo,
-#T           chars,
-#T           fld, 
-#T           info,
-#T           newirredinfo,
-#T           fus,
-#T           names,
-#T           linelen,
-#T           done,
-#T           libinfo,
-#T           maxes;
-#T 
-#T     name:= Identifier( tbl );
-#T 
-#T     # Step 1:  preparatory work
-#T     # Shrink the Clifford records, remove the irreducibles.
-#T     if IsBound( tbl!.cliffordTable ) then
-#T       if HasIrr( tbl ) then
-#T Error( "handling of Clifford tables not yet installed!" );
-#T         tbl.cliffordTable:= StructuralCopy( tbl.cliffordTable );
-#T #T semi-shallow ?
-#T         ShrinkClifford( tbl );
+#############################################################################
+##
+#F  PrintToLib( <file>, <tbl> )
+##
+InstallGlobalFunction( PrintToLib, function( file, tbl )
+
+    local special,
+          string,
+          out,
+          flds,
+          i, j,
+          name,
+          tblinfo,
+          chars,
+          fld,
+          info,
+          newirredinfo,
+          fus,
+          names,
+          linelen,
+          done,
+          libinfo,
+          maxes,
+          pos;
+
+    if not ( IsOrdinaryTable( tbl ) and HasIdentifier( tbl ) ) then
+      Error( "usage: PrintToLib( <file>, <tbl> ) ",
+             "for ord. char. table <tbl>" );
+    elif not IsAttributeStoringRep( tbl ) then
+      Error("sorry, don't know the representation of this character table");
+    fi;
+
+    # Special cases are `Irr( tbl )' and `tbl!.projectives' since
+    # after the call of `ShrinkChars' they may
+    # contain strings, which shall be printed without `"'
+
+    special:= function( chars )
+        local j;
+        PrintTo( out, "[" );
+        for j in [ 1 .. Length( chars ) - 1 ] do
+          if IsBound( chars[j] ) then
+            if IsString( chars[j] ) then
+              PrintTo( out, chars[j] );            # strip the `"'
+            else
+              BlanklessPrintTo( out, chars[j] );
+            fi;
+          fi;
+          PrintTo( out, "," );
+        od;
+        if not IsEmpty( chars ) then
+          j:= Length( chars );
+          if IsString( chars[j] ) then
+            PrintTo( out, chars[j] );                # strip the `"'
+          else
+            BlanklessPrintTo( out, chars[j] );
+          fi;
+        fi;
+        PrintTo( out, "]" );
+    end;
+
+    # Create the output stream.
+    string:= "";
+    out:= OutputTextString( string, true );
+
+    name:= Identifier( tbl );
+
+    # Step 1:  Do the preparatory work, i.e.,
+    #          shrink the Clifford records and remove the irreducibles.
+    if IsBound( tbl!.cliffordTable ) then
+#T allowed access?
+      if HasIrr( tbl ) then
+Error( "handling of Clifford tables not yet installed!" );
+        tbl.cliffordTable:= StructuralCopy( tbl.cliffordTable );
+#T semi-shallow ?
+        ShrinkClifford( tbl );
+      fi;
+      if IsRecord( tbl!.cliffordTable ) then
+        tbl!.cliffordTable:= [ tbl!.cliffordTable.Ti.fusions,
+                               tbl!.cliffordTable.Ti.tables,
+                               tbl!.cliffordTable.cliffordrecords ];
+      fi;
+    fi;
+
+    # Step 2:  Print the compulsory components.
+    PrintTo( out, "MOT(\"", Identifier( tbl ), "\",\n" );
+    if HasInfoText( tbl ) then
+      PrintTo( out, TextString( InfoText( tbl ) ), ",\n" );
+    else
+      PrintTo( out, "0,\n" );
+    fi;
+
+    if HasSizesCentralizers( tbl ) then
+      BlanklessPrintTo( out, SizesCentralizers( tbl ) );
+      PrintTo( out, ",\n" );
+    else
+      PrintTo( out, "0,\n" );
+    fi;
+
+    if     HasComputedPowerMaps( tbl )
+       and not IsEmpty( ComputedPowerMaps( tbl ) ) then
+      BlanklessPrintTo( out, ComputedPowerMaps( tbl ) );
+      PrintTo( out, ",\n" );
+    else
+      PrintTo( out, "0,\n" );
+    fi;
+
+    if HasIrr( tbl ) then
+      special( ShrinkChars( Irr( tbl ) ) );
+      PrintTo( out, ",\n" );
+    else
+      PrintTo( out, "0,\n" );
+    fi;
+
+    if HasAutomorphismsOfTable( tbl ) then
+      BlanklessPrintTo( out, GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ) );
+    else
+      PrintTo( out, "0" );
+    fi;
+
+    if IsBound( tbl!.construction ) then
+#T allowed access?
+      pos:= Position( TABLE_CONSTRUCTORS[1], tbl!.construction );
+      if pos = fail then
+        PrintTo( out, ",\n", tbl!.construction, ");\n" );
+      else
+        PrintTo( out, ",\n", TABLE_CONSTRUCTORS[2][ pos ], ");\n" );
+      fi;
+    else
+      PrintTo( out, ");\n" );
+    fi;
+
+    # Step 3:  Print the optional components.
+
+    # Print the representative orders only if they are not redundant.
+    if HasOrdersClassRepresentatives( tbl ) and
+       ( IsEmpty( ComputedPowerMaps( tbl ) )
+         or OrdersClassRepresentatives( tbl )
+           <> ElementOrdersPowerMap( ComputedPowerMaps( tbl ) ) ) then
+
+      PrintTo( out, "ARC(\"", name, "\",\"OrdersClassRepresentatives\"," );
+      BlanklessPrintTo( out, OrdersClassRepresentatives( tbl ) );
+      PrintTo( out, ");\n" );
+
+    fi;
+
+    # Shrink and print the projectives.
+    if IsBound( tbl!.projectives ) then
+#T allowed access?
+
+      PrintTo( out, "ARC(\"", name, "\",\"projectives\",[" );
+      for j in tbl!.projectives do
+        PrintTo( out, "\"", j.name, "\"," );
+        EvalChars( j.chars );
+        special( ShrinkChars( j.chars ) );
+        PrintTo( out, "," );
+      od;
+      PrintTo( out, "]);\n" );
+
+    fi;
+
+    # Encode and print the 'IrredInfo' component.
+    if HasIrredInfo( tbl ) then
+
+      tblinfo:= IrredInfo( tbl );
+      newirredinfo:= rec();
+      for fld in RecNames( tblinfo[1] ) do
+        newirredinfo.( fld ):= [];
+        info:= tblinfo[1].( fld );
+        for i in [ 1 .. Length( info ) ] do
+          if IsBound( info[i] ) then
+            newirredinfo.( fld )[i]:= List( tblinfo, x -> x.( fld )[i] );
+          fi;
+        od;
+      od;
+      PrintTo( out, "ARC(\"", name, "\",\"irredinfo\"," );
+      BlanklessPrintTo( out, newirredinfo );
+      PrintTo( out, ");\n" );
+
+    fi;
+
+    # Print remaining supported components of library tables.
+    flds:= Difference( SupportedLibraryTableComponents, [
+#T PrintToLib also for ``tables with group'' !!
+               "cliffordTable",
+               "construction",
+               "projectives",
+              ] );
+
+    for fld in flds do
+      if IsBound( tbl!.( fld ) ) then
+        PrintTo( out, "ARC(\"", name, "\",\"", fld, "\"," );
+        BlanklessPrintTo( out, tbl!.( fld ) );
+        PrintTo( out, ");\n" );
+      fi;
+    od;
+
+    # Print remaining supported attributes of ordinary tables.
+    done:= [
+             "AutomorphismsOfTable",
+             "ComputedClassFusions",
+             "ComputedPowerMaps",
+             "Identifier",
+             "InfoText",
+             "Irr",
+             "IrredInfo",
+             "NamesOfFusionSources",
+             "OrdersClassRepresentatives",
+             "SizesCentralizers",
+             "SizesConjugacyClasses",
+             "UnderlyingCharacteristic",
+             ];
+
+    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
+      fld:= SupportedOrdinaryTableInfo[i];
+      if     not fld in done
+         and Tester( SupportedOrdinaryTableInfo[ i-1 ] )( tbl ) then
+        PrintTo( out, "ARC(\"", name, "\",\"", fld, "\"," );
+        BlanklessPrintTo( out, SupportedOrdinaryTableInfo[ i-1 ]( tbl ) );
+        PrintTo( out, ");\n" );
+      fi;
+    od;
+
+    # Write the fusion assignments to the file.
+    for fus in ComputedClassFusions( tbl ) do
+      PrintTo( out, LibraryFusion( name, fus ) );
+    od;
+
+    # Write the names information to the file.
+    libinfo:= LibInfoCharacterTable( name );
+    if libinfo <> fail then
+      names:= [];
+#T       if IsBound( libinfo.othernames ) then
+#T         Append( names, libinfo.othernames );
 #T       fi;
-#T       if IsRecord( tbl!.cliffordTable ) then
-#T         tbl!.cliffordTable:= [ tbl!.cliffordTable.Ti.fusions,
-#T                                tbl!.cliffordTable.Ti.tables,
-#T                                tbl!.cliffordTable.cliffordrecords ];
+#T       if IsBound( libinfo.CASnames ) then
+#T         Append( names, libinfo.CASnames );
 #T       fi;
-#T     fi;
-#T 
-#T     # Step 2:  Print the compulsory components.
-#T     Print( "MOT(\"", Identifier( tbl ), "\",\n" );
-#T     if HasInfoText( tbl ) then
-#T       Print( TextString( InfoText( tbl ) ), ",\n" );
-#T     else
-#T       Print( "0,\n" );
-#T     fi;
-#T 
-#T     if HasSizesCentralizers( tbl ) then
-#T       BlanklessPrint( SizesCentralizers( tbl ) );
-#T       Print( ",\n" );
-#T     else
-#T       Print( "0,\n" );
-#T     fi;
-#T 
-#T     if not IsEmpty( ComputedPowerMaps( tbl ) ) then
-#T       BlanklessPrint( ComputedPowerMaps( tbl ) );
-#T       Print( ",\n" );
-#T     else
-#T       Print( "0,\n" );
-#T     fi;
-#T 
-#T     if HasIrr( tbl ) then
-#T       special( ShrinkChars( Irr( tbl ) ) );
-#T       Print( ",\n" );
-#T     else
-#T       Print( "0,\n" );
-#T     fi;
-#T 
-#T     if HasAutomorphismsOfTable( tbl ) then
-#T       BlanklessPrint( GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ) );
-#T     else
-#T       Print( "0" );
-#T     fi;
-#T 
-#T     if IsBound( tbl!.construction ) then
-#T       if   tbl!.construction = ConstructClifford then
-#T         Print( ",\nConstructClifford" );
-#T       elif tbl!.construction = ConstructDirectProduct then
-#T         Print( ",\nConstructDirectProduct" );
-#T       elif tbl!.construction = ConstructGS3 then
-#T         Print( ",\nConstructGS3" );
-#T       elif tbl!.construction = ConstructIsoclinic then
-#T         Print( ",\nConstructIsoclinic" );
-#T       elif tbl!.construction = ConstructMixed then
-#T         Print( ",\nConstructMixed" );
-#T       elif tbl!.construction = ConstructProj then
-#T         Print( ",\nConstructProj" );
-#T       elif tbl!.construction = ConstructV4G then
-#T         Print( ",\nConstructV4G" );
-#T       else
-#T         Print( ",\n", tbl!.construction );
-#T       fi;
-#T     fi;
-#T     Print( ");\n" );
-#T 
-#T     # Step 3:  Print the optional components.
-#T 
-#T     # Print the representative orders only if they are not redundant.
-#T     if    IsEmpty( ComputedPowerMaps( tbl ) )
-#T        or not HasOrdersClassRepresentatives( tbl )
-#T        or OrdersClassRepresentatives( tbl )
-#T            <> ElementOrdersPowerMap( ComputedPowerMaps( tbl ) ) then
-#T 
-#T       Print( "ARC(\"", name, "\",\"OrdersClassRepresentatives\"," );
-#T       BlanklessPrint( tbl.( fld ) );
-#T       Print( ");\n" );
-#T       
-#T     fi;
-#T 
-#T     # Shrink and print the projectives.
-#T     if IsBound( tbl!.projectives ) then
-#T 
-#T       Print( "ARC(\"", name, "\",\"projectives\",[" );
-#T       for j in tbl!.projectives do
-#T         Print( "\"", j.name, "\"," );
-#T         EvalChars( j.chars );
-#T         special( ShrinkChars( j.chars ) );
-#T         Print( "," );
-#T       od;
-#T       Print( "]);\n" );
-#T 
-#T     fi;
-#T 
-#T     # Encode and print the 'IrredInfo' component.
-#T     if HasIrredInfo( tbl ) then
-#T 
-#T       tblinfo:= IrredInfo( tbl );
-#T       newirredinfo:= rec();
-#T       for fld in RecNames( tblinfo[1] ) do
-#T         newirredinfo.( fld ):= [];
-#T         info:= info[1].( fld );
-#T         for i in [ 1 .. Length( info ) ] do
-#T           if IsBound( info[i] ) then
-#T             newirredinfo.( fld )[i]:= List( tblinfo, x -> x.( fld )[i] );
-#T           fi;
-#T         od;
-#T       od;
-#T       Print( "ARC(\"", name, "\",\"irredinfo\"," );
-#T       BlanklessPrint( newirredinfo );
-#T       Print( ");\n" );
-#T 
-#T     fi;
-#T 
-#T     # Print remaining supported components of library tables.
-#T     flds:= Difference( SupportedLibraryTableComponents, [
-#T                "cliffordTable",
-#T                "construction",
-#T                "projectives",
-#T               ] );
-#T 
-#T     for fld in flds do
-#T       if IsBound( tbl!.( fld ) ) then
-#T         Print( "ARC(\"", name, "\",\"", fld, "\"," );
-#T         BlanklessPrint( tbl.( fld ) );
-#T         Print( ");\n" );
-#T       fi;
-#T     od;
-#T 
-#T     # Print remaining supported attributes of ordinary tables.
-#T     done:= [
-#T              "AutomorphismsOfTable",
-#T              "ComputedClassFusions",
-#T              "ComputedPowerMaps",
-#T              "Identifier",
-#T              "InfoText",
-#T              "Irr",
-#T              "OrdersClassRepresentatives",
-#T              "SizesCentralizers",
-#T              "SizesConjugacyClasses",
-#T              "UnderlyingCharacteristic",
-#T              ];
-#T        
-#T     for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
-#T       fld:= SupportedOrdinaryTableInfo[i];
-#T       if     not name in done
-#T          and Tester( SupportedOrdinaryTableInfo[ i-1 ] )( tbl ) then
-#T         Print( "ARC(\"", name, "\",\"", fld, "\"," );
-#T         BlanklessPrint( SupportedOrdinaryTableInfo( tbl ) );
-#T         Print( ");\n" );
-#T       fi;
-#T     od;
-#T         
-#T     # Write the fusion assignments to the file.
-#T     for fus in ComputedClassFusions( tbl ) do
-#T       PrintFusion( name, fus );
-#T     od;
-#T 
-#T     # Write the names information to the file.
-#T     libinfo:= LibInfoCharacterTable( name );
-#T     if libinfo <> fail then
-#T       names:= [];
-#T #T       if IsBound( libinfo.othernames ) then
-#T #T         Append( names, libinfo.othernames );
-#T #T       fi;
-#T #T       if IsBound( libinfo.CASnames ) then
-#T #T         Append( names, libinfo.CASnames );
-#T #T       fi;
-#T #T get the other names from somewhere ...
-#T       if names <> [] then
-#T         linelen:= Length( name ) + 8;
-#T         Print( "ALN(\"", name, "\",[" );
-#T         for i in [ 1 .. Length( names )-1 ] do
-#T           if linelen + Length( names[i] ) + 3 < 77 then
-#T             linelen:= linelen + Length( names[i] ) + 3;
-#T           else
-#T             Print( "\n" );
-#T             linelen:= Length( names[i] ) + 3;
-#T           fi;
-#T           Print( "\"", names[i], "\"," );
-#T         od;
-#T         if linelen + Length( names[ Length( names ) ] ) + 5 >= 77 then
-#T           Print( "\n" );
-#T         fi;
-#T         Print( "\"", names[ Length( names ) ], "\"]);\n" );
-#T       fi;
-#T     fi;
-#T 
-#T maxes belong to supported info, or ?
-#T #T     # Write the 'maxes' information to the file.
-#T #T     if HasMaxes( tbl ) then
-#T #T       linelen:= Length( name ) + 16;
-#T #T       maxes:= Maxes( tbl );
-#T #T       Print( "ARC(\"", name, "\",\"maxes\",[" );
-#T #T       for i in [ 1 .. Length( maxes )-1 ] do
-#T #T         if IsBound( maxes[i] ) then
-#T #T           if linelen + Length( maxes[i] ) + 3 < 77 then
-#T #T             linelen:= linelen + Length( maxes[i] ) + 3;
-#T #T           else
-#T #T             Print( "\n" );
-#T #T             linelen:= Length( maxes[i] ) + 3;
-#T #T           fi;
-#T #T           Print( "\"", maxes[i], "\"," );
-#T #T         else
-#T #T           if linelen + 1 < 77 then
-#T #T             linelen:= linelen + 1;
-#T #T           else
-#T #T             Print( "\n" );
-#T #T             linelen:= 1;
-#T #T           fi;
-#T #T           Print( "," );
-#T #T         fi;
-#T #T       od;
-#T #T       if linelen + Length( maxes[ Length( maxes ) ] ) + 5 >= 77 then
-#T #T         Print( "\n" );
-#T #T       fi;
-#T #T       Print( "\"", maxes[ Length( maxes ) ], "\"]);\n" );
-#T #T     fi;
-#T 
-#T     end;
-#T 
-#T     # Call the local function.
-#T     AppendTo( Concatenation( file, ".tbl" ), func( tbl ), "\n" );
-#T end;
+#T get the other names from somewhere ...
+      if not IsEmpty( names ) then
+        linelen:= Length( name ) + 8;
+        PrintTo( out, "ALN(\"", name, "\",[" );
+        for i in [ 1 .. Length( names )-1 ] do
+          if linelen + Length( names[i] ) + 3 < 77 then
+            linelen:= linelen + Length( names[i] ) + 3;
+          else
+            PrintTo( out, "\n" );
+            linelen:= Length( names[i] ) + 3;
+          fi;
+          PrintTo( out, "\"", names[i], "\"," );
+        od;
+        if linelen + Length( names[ Length( names ) ] ) + 5 >= 77 then
+          PrintTo( out, "\n" );
+        fi;
+        PrintTo( out, "\"", names[ Length( names ) ], "\"]);\n" );
+      fi;
+    fi;
+
+    # Close the stream.
+    CloseStream( out );
+
+    # Finally, print the string to the file.
+    if     3 < Length( file )
+       and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
+      AppendTo( file, string, "\n" );
+    else
+      AppendTo( Concatenation( file, ".tbl" ), string, "\n" );
+    fi;
+end );
 
 
 #T ################################################################################
 #T ##
 #T #F  PrintClmsToLib( <file>, <clms> )
 #T ##
-#T PrintClmsToLib := function( filename, clms )
+#T InstallGlobalFunction( PrintClmsToLib, function( filename, clms )
 #T 
 #T     local  ind, i, il, lclms, clm, size,
 #T         l,               # clmname
@@ -2972,14 +2951,14 @@ end;
 #T     PrintTo( filename, ir, "\n" );
 #T 
 #T     return;
-#T end;
+#T end );
 
 
 #############################################################################
 ##
 #F  OrbitsResidueClass( <pq>, <set> )
 ##
-OrbitsResidueClass := function( pq, set )
+InstallGlobalFunction( OrbitsResidueClass, function( pq, set )
 
     local gen,
           orbs,
@@ -3000,7 +2979,7 @@ OrbitsResidueClass := function( pq, set )
       SubtractSet( set, orb );
     od;
     return orbs;
-end;
+end );
 
 
 #############################################################################

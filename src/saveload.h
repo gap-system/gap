@@ -5,13 +5,14 @@
 *H  @(#)$Id$
 **
 *Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 **
 **  This file declares the functions concerned with saving and loading
 **  the workspace. There are support functions in gasman.c and elsewhere
 **  throughout the kernel
 */
 #ifdef  INCLUDE_DECLARATION_PART
-SYS_CONST char * Revision_saveload_h =
+const char * Revision_saveload_h =
    "@(#)$Id$";
 #endif
 
@@ -32,7 +33,7 @@ SYS_CONST char * Revision_saveload_h =
 
 extern Obj SaveWorkspace( Obj fname );
 
-extern void RecordLoadedModule( Obj filename, UInt crc);
+extern void LoadWorkspace( Char *fname);
 
 extern void SaveUInt1(UInt1 x);
 extern void SaveUInt2(UInt2 x);
@@ -68,24 +69,10 @@ extern ObjFunc LoadHandler();
 /****************************************************************************
 **
 
-*F  SetupSaveLoad( void ) . . . . . . . .  initialize the save/load workspace
+*F  InitInfoSaveLoad()  . . . . . . . . . . . . . . . table of init functions
 */
-extern void SetupSaveLoad ( void );
-               
+StructInitInfo * InitInfoSaveLoad ( void );
 
-/****************************************************************************
-**
-*F  InitSaveLoad( void )  . . . . . . . .  initialize the save/load workspace
-*/
-extern void InitSaveLoad ( void );
-               
-
-/****************************************************************************
-**
-*F  CheckSaveLoad( void ) check the initialisation of the save/load workspace
-*/
-extern void CheckSaveLoad ( void );
-               
 
 /****************************************************************************
 **

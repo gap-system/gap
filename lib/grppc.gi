@@ -6,6 +6,7 @@
 #H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  (C) 1998 School Math and Comp. Sci., University of St.  Andrews, Scotland
 ##
 ##  This file contains the methods for groups with a polycyclic collector.
 ##
@@ -75,20 +76,33 @@ end );
 
 #############################################################################
 ##
-#M  InducedPcgsWrtHomePcgs( <grp> )
+#M  InducedPcgsWrtHomePcgs( <G> )
 ##
-InstallMethod( InducedPcgsWrtHomePcgs, "default method",
-    true,
-    [ IsGroup and HasHomePcgs ],
-    0,
-
-function( grp )
-    if HasPcgs(grp) and IsInducedPcgs(Pcgs(grp))  then
-        if HomePcgs(grp) = ParentPcgs(Pcgs(grp))  then
-            return Pcgs(grp);
+InstallMethod( InducedPcgsWrtHomePcgs, true, [ IsGroup ], 0,
+    function( G )
+    local   home;
+    
+    home := HomePcgs( G );
+    if HasPcgs(G) and IsInducedPcgs(Pcgs(G))  then
+        if IsIdenticalObj(home,ParentPcgs(Pcgs(G)))  then
+            return Pcgs(G);
         fi;
     fi;
-    return InducedPcgsByGenerators( HomePcgs(grp), GeneratorsOfGroup(grp) );
+    return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+end );
+
+
+#############################################################################
+##
+#M  InducedPcgs( <pcgs>,<G> )
+##
+InstallMethod( InducedPcgs, true, [ IsPcgs,IsGroup ], 0,
+function(pcgs, G )
+  if IsIdenticalObj(ParentPcgs(HomePcgs(G)),ParentPcgs(pcgs)) then
+    return InducedPcgsWrtHomePcgs(G);
+  else
+    return InducedPcgsByGenerators( ParentPcgs(pcgs), GeneratorsOfGroup( G ) );
+  fi;
 end );
 
 
@@ -182,7 +196,7 @@ InstallMethod( \in,
     "for pcgs computable groups",
     IsElmsColls,
     [ IsMultiplicativeElementWithInverse,
-      IsGroup and HasFamilyPcgs and IsPcgsComputable
+      IsGroup and HasFamilyPcgs and CanEasilyComputePcgs
     ],
     0,
 
@@ -197,7 +211,7 @@ end );
 ##
 InstallMethod( \=,
     "pcgs computable groups using home pcgs",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -216,7 +230,7 @@ end );
 ##
 InstallMethod( \=,
     "pcgs computable groups using family pcgs",
-    IsIdentical,
+    IsIdenticalObj,
     [ IsGroup and HasFamilyPcgs,
       IsGroup and HasFamilyPcgs ],
     0,
@@ -236,8 +250,8 @@ end );
 ##
 InstallMethod( IsSubgroup,
     "pcgs computable groups",
-    IsIdentical,
-    [ IsGroup and HasFamilyPcgs and IsPcgsComputable,
+    IsIdenticalObj,
+    [ IsGroup and HasFamilyPcgs and CanEasilyComputePcgs,
       IsGroup ],
     0,
 
@@ -278,7 +292,7 @@ end);
 
 #F  VectorSpaceByPcgsOfElementaryAbelianGroup( <pcgs>, <f> )
 ##
-VectorSpaceByPcgsOfElementaryAbelianGroup := function( arg )
+InstallGlobalFunction( VectorSpaceByPcgsOfElementaryAbelianGroup, function( arg )
     local   pcgs,  dim,  field;
 
     pcgs := arg[1];
@@ -291,14 +305,14 @@ VectorSpaceByPcgsOfElementaryAbelianGroup := function( arg )
         Error("trivial vectorspace, need field \n");
     fi;
     return VectorSpace( field, IdentityMat( dim, field ) );
-end;
+end );
 
 
 #############################################################################
 ##
 #F  LinearOperationLayer( <G>, <gens>, <pcgs>  )
 ##
-LinearOperationLayer := function( arg )
+InstallGlobalFunction( LinearOperationLayer, function( arg )
 local gens, pcgs, V, field, linear;
 
     # catch arguments
@@ -329,13 +343,13 @@ local gens, pcgs, V, field, linear;
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
     return LinearOperation( gens, V, linear );
-end;
+end );
     
 #############################################################################
 ##
 #F  AffineOperationLayer( <G>, <pcgs>, <transl> )
 ##
-AffineOperationLayer := function( arg )
+InstallGlobalFunction( AffineOperationLayer, function( arg )
     local gens, pcgs, transl, V, field, linear;
 
     # catch arguments
@@ -368,7 +382,7 @@ AffineOperationLayer := function( arg )
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
     return AffineOperation( gens, V, linear, transl );
-end;
+end );
 
 #############################################################################
 ##
@@ -446,7 +460,7 @@ end );
 ##
 InstallMethod( ClosureGroup,
     "groups with home pcgs",
-    IsIdentical, 
+    IsIdenticalObj, 
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -458,8 +472,8 @@ function( U, H )
     if home <> HomePcgs( H ) then
         TryNextMethod();
     fi;
-    pcgsU := InducedPcgsWrtHomePcgs(U);
-    pcgsH := InducedPcgsWrtHomePcgs(H);
+    pcgsU := InducedPcgs(home,U);
+    pcgsH := InducedPcgs(home,H);
     if Length( pcgsU ) < Length( pcgsH )  then
         new := InducedPcgsByPcSequenceAndGenerators( home, pcgsH, 
                GeneratorsOfGroup( U ) );
@@ -620,7 +634,7 @@ end );
 ##
 InstallMethod( ConjugateSubgroups, 
     "groups with home pcgs",
-    IsIdentical, 
+    IsIdenticalObj, 
     [ IsGroup and HasHomePcgs,
       IsGroup and HasHomePcgs ],
     0,
@@ -663,7 +677,7 @@ end );
 InstallMethod( CoreOp,
     "pcgs computable groups",
     true, 
-    [ IsGroup and IsPcgsComputable,
+    [ IsGroup and CanEasilyComputePcgs,
       IsGroup ],
     0,
 
@@ -705,8 +719,8 @@ end );
 InstallMethod( EulerianFunction,
     "pcgs computable groups using special pcgs",
     true, 
-    [ IsGroup and IsPcgsComputable,
-      IsPosRat and IsInt ],
+    [ IsGroup and CanEasilyComputePcgs,
+      IsPosInt ],
     0,
 
 function( G, n )
@@ -917,7 +931,7 @@ end );
 InstallMethod( Random,
     "pcgs computable groups",
     true,
-    [ IsGroup and IsPcgsComputable and IsFinite ],
+    [ IsGroup and CanEasilyComputePcgs and IsFinite ],
     0,
 
 function(grp)
@@ -931,6 +945,118 @@ function(grp)
     fi;
 end );
 
+CentralizerSolvableGroup:=function(H,U,elm)
+local  G,  home,  # the supergroup (of <H> and <U>), the home pcgs
+       Upcgs,    # induced Pcgs of U
+       Hp,    # a pcgs for <H>
+       inequal,	# G<>H flag
+       eas,     # elementary abelian series in <G> through <U>
+       step,    # counter looping over <eas>
+       K,  L,   # members of <eas>
+       Kp,Lp, # induced and modulo pcgs's
+       KcapH,LcapH, # pcgs's of intersections with <H>
+       N,   cent,   # elementary abelian factor, for affine action
+       cls,  # classes in range/source of homomorphism
+       opr,     # (elm^opr)=cls.representative
+       p,       # prime dividing $|G|$
+       ord;     # order of a rational class modulo <L>
+
+  # Treat the case of a trivial group.
+  if IsTrivial( U )  then
+    return H;
+  fi;
+  
+  if H=U then
+    G:=H;
+    inequal:=false;
+  else
+    G:=ClosureGroup( H, U );
+    inequal:=true;
+  fi;
+
+  home:=HomePcgs(G);
+  # Calculate a (central)  elementary abelian series  with all pcgs induced
+  # w.r.t. <home>.
+
+  if IsPrimePowerInt( Size( G ) )  then
+    p:=FactorsInt( Size( G ) )[ 1 ];
+    home:=PcgsCentralSeries(G);
+    eas:=NormalSeriesByPcgs(home);
+    cent:=ReturnTrue;
+  else
+    home:=PcgsElementaryAbelianSeries(G);
+    eas:=NormalSeriesByPcgs(home);
+    cent:=function( cl, N, L )
+      return ForAll( N, k -> ForAll
+        ( InducedPcgs( home,cl.centralizer ),
+#T  was: Only those elements form the induced PCGS. The subset seemed to
+#T enforce taking only the elements up, but the ordering of the series used
+#T may be different then the ordering in the PCGS. So this will fail. AH
+#T one might pick the right ones, but this would be almost the same work.
+#T { [ 1 .. Length( InducedPcgsWrtHomePcgs( cl.centralizer ) )
+#T - Length( InducedPcgsWrtHomePcgs( L ) ) ] },
+           c -> Comm( k, c ) in L ) );
+    end;
+  fi;
+
+  Upcgs:=InducedPcgs(home,U);
+  Hp:=InducedPcgs(home,H);
+
+  # Initialize the algorithm for the trivial group.
+  step:=1;
+  while IsSubset( eas[ step + 1 ], U )  do
+    step:=step + 1;
+  od;
+  L :=eas[ step ];
+  Lp:=InducedPcgs(home,L);
+  if inequal then
+    LcapH:=NormalIntersectionPcgs( home, Hp, Lp );
+  fi;
+
+  cls:=[rec( representative:=elm,centralizer:=H )];
+  opr:=One( U );
+
+  # Now go back through the factors by all groups in the elementary abelian
+  # series.
+  for step  in [ step + 1 .. Length( eas ) ]  do
+
+    # We apply the homomorphism principle to the homomorphism G/L -> G/K.
+    # The  actual   computations  are all  done   in <G>,   factors are
+    # represented by modulo pcgs.
+    K :=L;
+    Kp:=Lp;
+    L :=eas[ step ];
+    Lp:=InducedPcgs(home,L );
+    N :=Kp mod Lp;  # modulo pcgs representing the kernel
+
+#    #T What is this? Obviously it is needed somewhere, but it is
+#    #T certainly not good programming style. AH
+#    SetFilterObj( N, IsPcgs );
+
+    if inequal then
+      KcapH  :=LcapH;
+      LcapH  :=NormalIntersectionPcgs( home, Hp, Lp );
+      N!.capH:=KcapH mod LcapH;
+      #T See above
+#      SetFilterObj( N!.capH, IsPcgs );
+    else
+      N!.capH:=N;
+    fi;
+    
+    cls[ 1 ].candidates:=cls[ 1 ].representative;
+    if cent( cls[ 1 ], N, L )  then
+      cls:=CentralStepClEANS( home,H, U, N, cls[ 1 ] );
+    else
+      cls:=GeneralStepClEANS( home,H, U, N, cls[ 1 ] );
+    fi;
+    opr:=opr * cls[ 1 ].operator;
+
+  od;
+
+  return ConjugateSubgroup( cls[ 1 ].centralizer, opr ^ -1 );
+
+end;
+
 
 #############################################################################
 ##
@@ -939,26 +1065,26 @@ end );
 InstallMethod( CentralizerOp,
     "pcgs computable group and element",
     IsCollsElms,
-    [ IsGroup and IsPcgsComputable and IsFinite,
+    [ IsGroup and CanEasilyComputePcgs and IsFinite,
       IsMultiplicativeElementWithInverse ],
     0,  # in solvable permutation groups, backtrack seems preferable
         
 function( G, g )
-    return ClassesSolvableGroup( G, Group( g ), true, 0, g );
+    return CentralizerSolvableGroup( G, Group( g ), g );
 end );
 
 InstallMethod( CentralizerOp,
     "pcgs computable groups",
-    IsIdentical,
-    [ IsGroup and IsPcgsComputable and IsFinite,
-      IsGroup and IsPcgsComputable and IsFinite ],
+    IsIdenticalObj,
+    [ IsGroup and CanEasilyComputePcgs and IsFinite,
+      IsGroup and CanEasilyComputePcgs and IsFinite ],
     0,  # in solvable permutation groups, backtrack seems preferable
 
 function( G, H )
     local   h;
     
     for h  in MinimalGeneratingSet( H )  do
-        G := ClassesSolvableGroup( G, H, true, 0, h );
+        G := CentralizerSolvableGroup( G, H, h );
     od;
     return G;
 end );
@@ -969,7 +1095,7 @@ end );
 ##
 InstallOtherMethod( RepresentativeOperationOp,
     "element conjugacy in pcgs computable groups", IsCollsElmsElmsX,
-    [ IsGroup and IsPcgsComputable and IsFinite,
+    [ IsGroup and CanEasilyComputePcgs and IsFinite,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,
       IsFunction ],
@@ -979,7 +1105,7 @@ function( G, d, e, opr )
     if opr <> OnPoints or not (IsPcGroup(G) or (d in G and e in G)) then
         TryNextMethod();
     fi;
-    return ClassesSolvableGroup( G, G, true, 4, [ d, e ] );
+    return ClassesSolvableGroup( G, 4,rec(candidates:= [ d, e ] ));
 end );
 
 #############################################################################
@@ -987,15 +1113,15 @@ end );
 #M  CentralizerModulo(<H>,<N>,<elm>)   full preimage of C_(H/N)(elm.N)
 ##
 InstallMethod(CentralizerModulo,"pcgs computable groups, for elm",
-  IsCollsCollsElms,[IsGroup and IsPcgsComputable, IsGroup and
-  IsPcgsComputable, IsMultiplicativeElementWithInverse],0,
+  IsCollsCollsElms,[IsGroup and CanEasilyComputePcgs, IsGroup and
+  CanEasilyComputePcgs, IsMultiplicativeElementWithInverse],0,
 function(H,NT,elm)
 local G,	   # common parent
       home,Hp,     # the home pcgs, induced pcgs
       eas, step,   # elementary abelian series in <G> through <U>
       ea2,	   # used for factor series
       K,    L,     # members of <eas>
-      Kp,mK,Lp,mL, # induced and modulo pcgs's
+      Kp,mK,Lp,    # induced and modulo pcgs's
       KcapH,LcapH, # pcgs's of intersections with <H>
       N,   cent,   # elementary abelian factor, for affine action
       tra,         # transversal for candidates
@@ -1006,7 +1132,7 @@ local G,	   # common parent
       new, power,  # auxiliary variables for determination of power tree
       cl,  c,  i;  # loop variables
 
-    # Treat the trivial case.
+    # Treat trivial cases.
     if Index(H,NT)=1 or (HasAbelianFactorGroup(H,NT) and elm in H)
      or elm in NT then
       return H;
@@ -1018,22 +1144,23 @@ local G,	   # common parent
       G:=ClosureGroup(H,elm);
     fi;
 
+    home := HomePcgs( G );
+
     # Calculate a (central) elementary abelian series.
-    if not IsPermGroup( G )  then
-        HomePcgs( G );
-    fi;
 
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
-        eas := PCentralSeries( G, p );
+	home:=PcgsCentralSeries(G);
+	eas:=NormalSeriesByPcgs(home);
         cent := ReturnTrue;
     else
-        eas := ElementaryAbelianSeries( G );
+	home:=PcgsElementaryAbelianSeries(G);
+	eas:=NormalSeriesByPcgs(home);
         cent := function( cl, N, L )
             return ForAll( N, k -> ForAll
-              ( InducedPcgsWrtHomePcgs( cl.centralizer )
-                   { [ 1 .. Length( InducedPcgsWrtHomePcgs( cl.centralizer ) )
-                          - Length( InducedPcgsWrtHomePcgs( L ) ) ] },
+              ( InducedPcgs( home,cl.centralizer )
+                   { [ 1 .. Length( InducedPcgs(home, cl.centralizer ) )
+                          - Length( InducedPcgs(home, L ) ) ] },
                    c -> Comm( k, c ) in L ) );
         end;
     fi;
@@ -1047,9 +1174,7 @@ local G,	   # common parent
       fi;
     od;
 
-    home := HomePcgs( G );
-    H:=AsSubgroup(G,H);
-    Hp:=InducedPcgsWrtHomePcgs(H);
+    Hp:=InducedPcgs(home,H);
 
     # Initialize the algorithm for the trivial group.
     step := 1;
@@ -1057,12 +1182,11 @@ local G,	   # common parent
         step := step + 1;
     od;
     L  := eas[ step ];
-    Lp := InducedPcgsWrtHomePcgs( L );
-    if not IsIdentical( G, H )  then
+    Lp := InducedPcgs(home, L );
+    if not IsIdenticalObj( G, H )  then
         LcapH := NormalIntersectionPcgs( home, Hp, Lp );
     fi;
 
-    mL := ModuloPcgsByPcSequenceNC( home, Pcgs( H ), Lp );
     cl := rec( representative := elm,
 		  centralizer := H );
     tra := One( H );
@@ -1077,10 +1201,10 @@ local G,	   # common parent
         K  := L;
         Kp := Lp;
         L  := eas[ step ];
-        Lp := InducedPcgsWrtHomePcgs( L );
+        Lp := InducedPcgs(home, L );
         N  := Kp mod Lp;
         SetFilterObj( N, IsPcgs );
-	if not IsIdentical( G, H )  then
+	if not IsIdenticalObj( G, H )  then
 	  KcapH   := LcapH;
 	  LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
 	  N!.capH := KcapH mod LcapH;
@@ -1090,9 +1214,9 @@ local G,	   # common parent
     
 	cl.candidates := cl.representative;
 	if cent( cl, N, L )  then
-	    cl := CentralStepClEANS( G, H, N, cl )[1];
+	    cl := CentralStepClEANS( home,G, H, N, cl )[1];
 	else
-	    cl := GeneralStepClEANS( G, H, N, cl )[1];
+	    cl := GeneralStepClEANS( home,G, H, N, cl )[1];
 	fi;
 	tra := tra * cl.operator;
 	
@@ -1106,8 +1230,8 @@ local G,	   # common parent
 end);
 
 InstallMethod(CentralizerModulo,"group centralizer via generators",
-  IsFamFamFam,[IsGroup and IsPcgsComputable, IsGroup and
-  IsPcgsComputable, IsGroup],0,
+  IsFamFamFam,[IsGroup and CanEasilyComputePcgs, IsGroup and
+  CanEasilyComputePcgs, IsGroup],0,
 function(G,NT,U)
 local i;
   for i in GeneratorsOfGroup(U) do
@@ -1120,12 +1244,12 @@ end);
 ##
 #F  ElementaryAbelianSeries( <list> )
 ##
-InstallOtherMethod(ElementaryAbelianSeries,"lists of pc groups",
+InstallOtherMethod( ElementaryAbelianSeries,"list of pcgs computable groups",
   true,[IsList],10, # there is a generic groups function with value 0
 function( S )
-local   i,  N,  O,  I,  E,  L;
+local   home,i,  N,  O,  I,  E,  L;
 
-  if Length(S)=0 or not IsPcGroup(S[1]) then 
+  if Length(S)=0 or not CanEasilyComputePcgs(S[1]) then 
     TryNextMethod();
   fi;
 
@@ -1135,17 +1259,20 @@ local   i,  N,  O,  I,  E,  L;
       Add( S, TrivialSubgroup(S[1]) );
   fi;
 
-  # start with the elementay series of the first group of <S>
+  # start with the elementary series of the first group of <S>
   L := ElementaryAbelianSeries( S[ 1 ] );
+  # enforce the same parent for 'HomePcgs' purposes.
+  home:=HomePcgs(S[1]);
+
   N := [ S[ 1 ] ];
   for i  in [ 2 .. Length( S ) - 1 ]  do
     O := L;
     L := [ S[ i ] ];
     for E  in O  do
-      I := IntersectionSumPcgs(HomePcgs(S[1]), InducedPcgsWrtHomePcgs(E),
-	InducedPcgsWrtHomePcgs(S[ i ]) );
-      I.sum:=Subgroup(S[1],I.sum);
-      I.intersection:=Subgroup(S[1],I.intersection);
+      I := IntersectionSumPcgs(home, InducedPcgs(home,E),
+	InducedPcgs(home,S[ i ]) );
+      I.sum:=SubgroupNC(S[1],I.sum);
+      I.intersection:=SubgroupNC(S[1],I.intersection);
       if not I.sum in N  then
 	  Add( N, I.sum );
       fi;
@@ -1160,8 +1287,21 @@ local   i,  N,  O,  I,  E,  L;
       fi;
   od;
 
+  # remove spurious factors
+  L:=[N[1]];
+  I:=N[1];
+  i:=2;
+  repeat
+    while i<Length(N) and HasElementaryAbelianFactorGroup(I,N[i+1]) 
+      and (IsIdenticalObj(I,N[i]) or not N[i] in S) do
+      i:=i+1;
+    od;
+    I:=N[i];
+    Add(L,I);
+  until Size(I)=1;
+
   # return it.
-  return N;
+  return L;
 
 end);
 
@@ -1169,7 +1309,7 @@ end);
 ##
 #M  \<(G,H) . . . . . . . . . . . . . . . . .  comparison of pc groups by CGS
 ##
-InstallMethod(\<,"cgs comparison",IsIdentical,[IsPcGroup,IsPcGroup],0,
+InstallMethod(\<,"cgs comparison",IsIdenticalObj,[IsPcGroup,IsPcGroup],0,
 function( G, H )
   return Reversed( CanonicalPcgsWrtFamilyPcgs(G) ) 
        < Reversed( CanonicalPcgsWrtFamilyPcgs(H) );
@@ -1183,7 +1323,7 @@ end);
 ##  Return  this  input  as  string.  The group  will  be  named  <name>,the
 ##  generators "g<i>".
 ##
-GapInputPcGroup:=function(U,name)
+InstallGlobalFunction( GapInputPcGroup, function(U,name)
 
     local   gens,
             wordString,
@@ -1317,17 +1457,17 @@ GapInputPcGroup:=function(U,name)
     IsString(lines[1]);
     return lines[1];
 
-end;
+end );
 
 #############################################################################
 ##
 #M  Enumerator( <G> ) . . . . . . . . . . . . . . . . . .  enumerator by pcgs
 ##
 InstallMethod( Enumerator, true,
-        [ IsGroup and IsPcgsComputable and IsFinite ], 0,
+        [ IsGroup and CanEasilyComputePcgs and IsFinite ], 0,
     G -> EnumeratorByPcgs( Pcgs( G ), [ 1 .. Length( Pcgs( G ) ) ] ) );
 
-InstallMethod(KnowsHowToDecompose,"pc group: always true",IsIdentical,
+InstallMethod(KnowsHowToDecompose,"pc group: always true",IsIdenticalObj,
   [IsPcGroup,IsList],0,ReturnTrue);
 
 InstallOtherMethod(KnowsHowToDecompose,"pc group: always true",true,
@@ -1336,11 +1476,13 @@ InstallOtherMethod(KnowsHowToDecompose,"pc group: always true",true,
 
 #############################################################################
 ##
-#M  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
+#F  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
 ##
-CanonicalSubgroupRepresentativePcGroup:=function(G,U)
+InstallGlobalFunction( CanonicalSubgroupRepresentativePcGroup,
+    function(G,U)
 local e,	# EAS
       pcgs,     # himself
+      home,	# homepcgs
   #   hom,	# isomorphism to EAS group
       start,	# index of largest abelian quotient
       i,	# loop
@@ -1362,7 +1504,7 @@ local e,	# EAS
     G:=Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(G),
                                         GeneratorsOfGroup(U)));
   fi;
-  e:=ElementaryAbelianSeries(G);
+  home:=HomePcgs(G);
   #if not IsParent(G) or not IsElementaryAbelianAgSeries(G) then
   #  e:=ElementaryAbelianSeries(G);
   #  hom:=IsomorphismAgGroup(e);
@@ -1371,11 +1513,14 @@ local e,	# EAS
   #else
   #  hom:=false;
   #fi;
-  e:=ElementaryAbelianSeries(G);
-  pcgs:=Concatenation(List([1..Length(e)-1],i->
-    InducedPcgsWrtHomePcgs(e[i]) mod InducedPcgsWrtHomePcgs(e[i+1])));
-  pcgs:=PcgsByPcSequence(ElementsFamily(FamilyObj(G)),pcgs);
-  #AH evtl. noch neue Gruppe
+
+  # compute a pcgs fitting the EAS
+  pcgs:=PcgsElementaryAbelianSeries(G);
+  e:=NormalSeriesByPcgs(pcgs);
+  #pcgs:=Concatenation(List([1..Length(e)-1],i->
+  #  InducedPcgs(home,e[i]) mod InducedPcgs(home,e[i+1])));
+  #pcgs:=PcgsByPcSequence(ElementsFamily(FamilyObj(G)),pcgs);
+  ##AH evtl. noch neue Gruppe
 
   # find the largest abelian quotient
   start:=2;
@@ -1402,8 +1547,7 @@ local e,	# EAS
 
     nno:=Normalizer(no,fv);
     rep:=RightTransversal(no,nno);
-    orb:=List(rep,i->CanonicalPcgs(InducedPcgsByGenerators(pcgs,
-                                      GeneratorsOfGroup(fv^i))));
+    orb:=List(rep,i->CanonicalPcgs(InducedPcgs(pcgs,fv^i)));
     min:=orb[1];
     minrep:=rep[1];
     for o in [2..Length(orb)] do
@@ -1455,7 +1599,7 @@ local e,	# EAS
   #  ce:=PreImagesRepresentative(hom,ce);
   #fi;
   return [V,no,ce];
-end;
+end );
 
 
 #############################################################################
@@ -1464,7 +1608,7 @@ end;
 ##  This method installs 'CanonicalSubgroupRepresentativePcGroup' as
 ##  CanonicalRepresentativeDeterminator
 ##
-InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsPcGroup,IsPcGroup],0,
+InstallMethod(ConjugacyClassSubgroups,IsIdenticalObj,[IsPcGroup,IsPcGroup],0,
 function(G,U)
 local cl;
 
@@ -1502,10 +1646,11 @@ end);
 ##
 InstallMethod( ChiefSeriesUnderAction,
     "method for a pcgs computable group",
-    IsIdentical,
-    [ IsGroup, IsGroup and IsPcgsComputable ], 0,
+    IsIdenticalObj,
+    [ IsGroup, IsGroup and CanEasilyComputePcgs ], 0,
 function( U, G )
-local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
+local home,e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
+  home:=HomePcgs(G);
   e:=ElementaryAbelianSeries(G);
   ser:=[G];
   for i in [2..Length(e)] do
@@ -1513,8 +1658,8 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     if IsPrimeInt(Index(e[i-1],e[i])) then
       Add(ser,e[i]);
     else
-      pcgs:=InducedPcgsWrtHomePcgs(e[i-1]);
-      mpcgs:=pcgs mod InducedPcgsWrtHomePcgs(e[i]);
+      pcgs:=InducedPcgs(home,e[i-1]);
+      mpcgs:=pcgs mod InducedPcgs(home,e[i]);
       op:=LinearOperationLayer(U,GeneratorsOfGroup(U),mpcgs);
       m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(pcgs,pcgs[1])));
       cs:=MTX.BasesCompositionSeries(m);
@@ -1533,9 +1678,40 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
   return ser;
 end);
 
+InstallMethod(IsSimpleGroup,"for solvable groups",true,
+  [IsSolvableGroup],
+  # this is also better for permutation groups, so we increse the value to
+  # be above the value for `IsPermGroup'.
+  Maximum(SIZE_FLAGS(FLAGS_FILTER(IsSolvableGroup)),
+          SIZE_FLAGS(FLAGS_FILTER(IsPermGroup))+1)
+    -SIZE_FLAGS(FLAGS_FILTER(IsSolvableGroup))+1,
+function(G)
+  return IsInt(Size(G)) and (Size(G)=1 or IsPrimeInt(Size(G)));
+end);
 
 #############################################################################
 ##
+#M  ViewObj(<G>)
+##
+InstallMethod(ViewObj,"pc group",true,[IsPcGroup],0,
+function(G)
+  if (not HasParent(G)) or
+   Length(GeneratorsOfGroup(G))*Length(GeneratorsOfGroup(Parent(G)))
+     /VIEWLEN>50 then
+    Print("<pc group");
+    if HasSize(G) then
+      Print(" of size ",Size(G));
+    fi;
+    Print(" with ",Length(GeneratorsOfGroup(G)),
+          " generators>");
+  else
+    Print("Group(");
+    ViewObj(GeneratorsOfGroup(G));
+    Print(")");
+  fi;
+end);
 
+#############################################################################
+##
 #E  grppc.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
