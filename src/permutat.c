@@ -3397,8 +3397,9 @@ void            InitPermutat ( void )
 
 
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_PERM2"), &KIND_PERM2 );
-    InitCopyGVar( GVarName("KIND_PERM4"), &KIND_PERM4 );
+    ImportGVarFromLibrary( "KIND_PERM2", &KIND_PERM2 );
+    ImportGVarFromLibrary( "KIND_PERM4", &KIND_PERM4 );
+
     KindObjFuncs[ T_PERM2 ] = KindPerm2;
     KindObjFuncs[ T_PERM4 ] = KindPerm4;
 

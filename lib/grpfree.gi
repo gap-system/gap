@@ -410,7 +410,7 @@ FreeGroup := function ( arg )
                     i -> Concatenation( "f.", String(i) ) );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 <= arg[1] then
       names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( arg[2], ".", String(i) ) );
+                    i -> Concatenation( arg[2], String(i) ) );
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
     elif Length( arg ) = 1 and IsList( arg[1] ) then

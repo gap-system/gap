@@ -421,7 +421,7 @@ InstallMethod( CommutatorSubgroup,
     0,
 
 function( U, V )
-    local   pcgsU,  pcgsV,  home,  C,  u,  v,  tmp;
+    local   pcgsU,  pcgsV,  home,  C,  u,  v;
 
     # check 
     home := HomePcgs(U);
@@ -917,7 +917,6 @@ end);
 GapInputPcGroup:=function(U,name)
 
     local   gens,
-            word,
             wordString,
             newLines,
             lines,
@@ -1065,6 +1064,7 @@ InstallMethod(KnowsHowToDecompose,"pc group: always true",IsIdentical,
 InstallOtherMethod(KnowsHowToDecompose,"pc group: always true",true,
   [IsPcGroup],0,ReturnTrue);
 
+
 #############################################################################
 ##
 #M  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
@@ -1072,7 +1072,7 @@ InstallOtherMethod(KnowsHowToDecompose,"pc group: always true",true,
 CanonicalSubgroupRepresentativePcGroup:=function(G,U)
 local e,	# EAS
       pcgs,     # himself
-      hom,	# isomorphism to EAS group
+  #   hom,	# isomorphism to EAS group
       start,	# index of largest abelian quotient
       i,	# loop
       n,	# e[i]
@@ -1085,7 +1085,7 @@ local e,	# EAS
       nno,	# growing normalizer
       min,
       minrep,	# minimum indicator
-      p,	# orbit pos.
+  #   p,	# orbit pos.
       ce;	# conj. elm
 
   if not IsSubgroup(G,U) then
@@ -1197,7 +1197,7 @@ end;
 ##
 InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsPcGroup,IsPcGroup],0,
 function(G,U)
-local filter,cl;
+local cl;
 
     cl:=Objectify(NewKind(CollectionsFamily(FamilyObj(G)),
       IsConjugacyClassSubgroupsRep),rec());
@@ -1226,6 +1226,42 @@ local c1,c2;
   fi;
   return c1[3]/c2[3];
 end);
+
+#############################################################################
+##
+#F  ChiefSeriesPcGroup(G)
+##
+ChiefSeriesPcGroup := function(G)
+local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
+  e:=ElementaryAbelianSeries(G);
+  ser:=[G];
+  for i in [2..Length(e)] do
+    Info(InfoPcGroup,1,"Step ",i,": ",Index(e[i-1],e[i]));
+    if IsPrimeInt(Index(e[i-1],e[i])) then
+      Add(ser,e[i]);
+    else
+      pcgs:=InducedPcgsWrtHomePcgs(e[i-1]);
+      mpcgs:=pcgs mod InducedPcgsWrtHomePcgs(e[i]);
+      op:=LinearOperationLayer(G,mpcgs);
+      m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(pcgs,pcgs[1])));
+      cs:=MTX.BasesCompositionSeries(m);
+      Sort(cs,function(a,b) return Length(a)>Length(b);end);
+      cs:=cs{[2..Length(cs)]};
+      Info(InfoPcGroup,2,Length(cs)-1," compositionFactors");
+      for j in cs do
+	n:=e[i];
+	for k in j do
+	  n:=ClosureGroup(n,PcElementByExponents(mpcgs,List(k,IntFFE)));
+	od;
+	Add(ser,n);
+      od;
+    fi;
+  od;
+  return ser;
+end;
+
+InstallMethod(ChiefSeries,"pc group",true,[IsPcGroup],0,
+  ChiefSeriesPcGroup);
 
 #############################################################################
 ##

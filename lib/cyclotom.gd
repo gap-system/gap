@@ -118,12 +118,15 @@ EI := NewOperationArgs( "EI" );
 ##
 #F  StarCyc( <cyc> )  . . . . the unique nontrivial galois conjugate of <cyc>
 ##
+##  If <cyc> is not contained in a quadratic field or if <cyc> is rational
+##  then 'fail' is returned.
+##
 StarCyc := NewOperationArgs( "StarCyc" );
 
 
 #############################################################################
 ##
-#F  Quadratic( <cyc> ) . . . . . informations about quadratic irrationalities
+#F  Quadratic( <cyc> ) . . . . .  information about quadratic irrationalities
 ##
 ##  If <cyc> is a quadratic irrationality, Quadratic( <cyc> ) calculates the
 ##  representation $<cyc> = \frac{ a + b \sqrt{ 'root' } }{'d'}$ and a

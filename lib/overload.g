@@ -81,7 +81,7 @@ InstallMethod( CoKernel, true,
 ##
 Degree := NewOperation( "Degree", [ IsObject ] );
 
-#T InstallMethod( Degree, true, [ IsCharacter ], 0, DegreeOfCharacter );
+InstallMethod( Degree, true, [ IsClassFunction ], 0, DegreeOfCharacter );
 
 
 #############################################################################
@@ -100,11 +100,73 @@ InstallMethod( DerivedSeries, true, [ IsGroup   ], 0,
 ##
 #O  Determinant( <obj> )
 ##
-##  is the determinant of a matrix, a linear maapping, a character ...
+##  is the determinant of a matrix, a linear mapping, a character ...
 ##
 Determinant := NewOperation( "Determinant", [ IsObject ] );
 
 InstallMethod( Determinant, true, [ IsMatrix ], 0, DeterminantMat );
+InstallMethod( Determinant, true, [ IsClassFunction ], 0,
+    DeterminantOfCharacter );
+
+
+#############################################################################
+##
+#O  Eigenvalues( <obj> )
+##
+Eigenvalues := NewOperation( "Eigenvalues", [ IsObject ] );
+
+InstallOtherMethod( Eigenvalues, true,
+    [ IsClassFunction, IsInt and IsPosRat ], 0,
+    EigenvaluesChar );
+
+
+#############################################################################
+##
+#O  Induced( <chi>, <G> )
+#O  Induced( <chi>, <tbl> )
+#O  Induced( <chars>, <G> )
+#O  Induced( <chars>, <tbl> )
+#O  Induced( <subtbl>, <tbl>, <chars> )
+#O  Induced( <subtbl>, <tbl>, <chars>, <specification> )
+#M  Induced( <subtbl>, <tbl>, <chars>, <fusionmap> )
+##
+##  delegates to 'InducedClassFunction' or ...
+##
+Induced := NewOperation( "Induced", [ IsObject, IsObject ] );
+
+InstallMethod( Induced, true,
+    [ IsClassFunctionWithGroup, IsGroup ], 0,
+    InducedClassFunction );
+
+InstallMethod( Induced, true,
+    [ IsClassFunction, IsNearlyCharacterTable ], 0,
+    InducedClassFunction );
+
+InstallMethod( Induced, true,
+    [ IsList and IsEmpty, IsGroup ], 0,
+    InducedClassFunctions );
+
+InstallMethod( Induced, true,
+    [ IsClassFunctionWithGroupCollection, IsGroup ], 0,
+    InducedClassFunctions );
+
+InstallMethod( Induced, true,
+    [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
+    InducedClassFunctions );
+
+InstallOtherMethod( Induced, true,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
+    InducedClassFunctions );
+
+InstallOtherMethod( Induced, true,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable,
+      IsHomogeneousList, IsString ], 0,
+    InducedClassFunctions );
+
+InstallOtherMethod( Induced, true,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable,
+      IsHomogeneousList, IsHomogeneousList and IsCyclotomicsCollection ], 0,
+    InducedClassFunctions );
 
 
 #############################################################################
@@ -200,6 +262,8 @@ InstallMethod( Kernel, true,
                        and RespectsMultiplication and RespectsOne ], 0,
     map -> Error( "specify additive or multiplicative kernel of <map>" ) );
 
+InstallMethod( Kernel, true, [ IsClassFunction ], 0, KernelOfCharacter );
+
 
 #############################################################################
 ##
@@ -211,6 +275,49 @@ InstallMethod( LowerCentralSeries, true, [ IsAlgebra ], 0,
     LowerCentralSeriesOfAlgebra );
 InstallMethod( LowerCentralSeries, true, [ IsGroup   ], 0,
     LowerCentralSeriesOfGroup   );
+
+
+#############################################################################
+##
+#O  Restricted( <chi>, <H> )
+#O  Restricted( <chi>, <tbl> )
+#O  Restricted( <chars>, <H> )
+#O  Restricted( <chars>, <tbl> )
+##
+##  delegates to 'RestrictedClassFunction' or ...
+##
+Restricted := NewOperation( "Restricted", [ IsObject, IsObject ] );
+
+Inflated := Restricted;
+
+InstallMethod( Restricted, true,
+    [ IsClassFunction, IsGroup ], 0,
+    RestrictedClassFunction );
+
+InstallMethod( Restricted, true,
+    [ IsClassFunction, IsNearlyCharacterTable ], 0,
+    RestrictedClassFunction );
+
+InstallMethod( Restricted, true,
+    [ IsClassFunctionCollection, IsGroup ], 0,
+    RestrictedClassFunctions );
+
+InstallMethod( Restricted, true,
+    [ IsClassFunctionCollection, IsNearlyCharacterTable ], 0,
+    RestrictedClassFunctions );
+
+InstallOtherMethod( Restricted, true,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsHomogeneousList ], 0,
+    RestrictedClassFunctions );
+
+InstallOtherMethod( Restricted, true,
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable, IsMatrix,
+      IsString ], 0,
+    RestrictedClassFunctions );
+
+InstallOtherMethod( Restricted, true,
+    [ IsMatrix, IsList and IsCyclotomicsCollection ], 0,
+    RestrictedClassFunctions );
 
 
 #############################################################################

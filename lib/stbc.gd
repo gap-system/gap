@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.23  1997/03/04 12:29:16  htheisse
+#H  introduced `ChooseNextBasePoint', debugged soluble stab chains
+#H
 #H  Revision 4.22  1997/02/26 14:00:33  htheisse
 #H  changed algorithm for stab chain with base in solvable groups
 #H
@@ -101,6 +104,7 @@ StabChainBaseStrongGenerators := NewOperationArgs( "StabChainBaseStrongGenerator
 GroupStabChain := NewOperationArgs( "GroupStabChain" );
 DepthSchreierTrees := NewOperationArgs( "DepthSchreierTrees" );
 AddGeneratorsExtendSchreierTree := NewOperationArgs( "AddGeneratorsExtendSchreierTree" );
+ChooseNextBasePoint := NewOperationArgs( "ChooseNextBasePoint" );
 StabChainStrong := NewOperationArgs( "StabChainStrong" );
 StabChainForcePoint := NewOperationArgs( "StabChainForcePoint" );
 StabChainSwap := NewOperationArgs( "StabChainSwap" );

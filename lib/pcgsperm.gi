@@ -70,18 +70,10 @@ AddNormalizingElementPcgs := function( G, z )
     while z <> S.identity  do
 
 	# If necessary, extend the stabilizer chain.
-	if not IsBound( S.stabilizer )  then
-            if IsBound( G.base )  then
-                pnt := PositionProperty( G.base, p -> p ^ z <> p );
-                if pnt = fail  then
-                    pnt := SmallestMovedPointPerm( z );
-                else
-                    pnt := G.base[ pnt ];
-                fi;
-            else
-                pnt := SmallestMovedPointPerm( z );
-            fi;
-            InsertTrivialStabilizer( S, pnt );
+        if IsBound( G.base )  then
+            ChooseNextBasePoint( S, G.base, [ z ] );
+        elif not IsBound( S.stabilizer )  then
+            InsertTrivialStabilizer( S, SmallestMovedPointPerm( z ) );
             Unbind( S.stabilizer.relativeOrders );
         fi;
         
@@ -330,11 +322,7 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     if not IsGroup( G )  then
         U := G[ Length( G ) ];
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
-            if IsFactorGroup( U )  then
-                U := DeepCopy( Pcgs( U )!.preimage!.stabChain );
-            else
-                U := DeepCopy( Pcgs( U )!.stabChain );
-            fi;
+            U := DeepCopy( Pcgs( U )!.stabChain );
         fi;
     else
         U := TrivialSubgroup( G );
@@ -345,9 +333,6 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     # Otherwise start  with stabilizer chain  of  <U> with identical `labels'
     # components on all levels.
     if IsGroup( U )  then                               
-        if IsFactorGroup( U )  then
-            U := U.factorNum;
-        fi;
         if IsTrivial( U )  and  not HasStabChain( U )  then
             U := EmptyStabChain( [  ], One( U ) );
         else
@@ -371,14 +356,6 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
 
     grp := G[ 1 ];
     whole := IsTrivial( G[ Length( G ) ] );
-    
-    # Deal with the factor group case.
-    if IsFactorGroup( grp )  then
-        for i  in [ 1 .. Length( G ) ]  do
-            G[ i ] := G[ i ].factorNum;
-        od;
-        Add( G, grp.factorDen );
-    fi;
     
     oldlen := Length( U.labels );
     series := [ U ];
@@ -427,10 +404,8 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     fi;
     
     # Construct the pcgs object.
-    filter := IsPcgsPermGroupRep;
-    if not whole  then
-        filter := filter and IsModuloPcgs;
-    fi;
+    if whole  then  filter := IsPcgsPermGroupRep;
+              else  filter := IsModuloPcgsPermGroupRep;  fi;
     if desc  and  elab = false  then
         if cent         then  seriesAttr := LowerCentralSeriesOfGroup;
                         else  seriesAttr := DerivedSeriesOfGroup;     fi;
@@ -449,6 +424,7 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
             Setter( seriesAttr )( grp, series );
         fi;
     else
+        pcgs!.denominator := G[ Length( G ) ];
         if     HasIsSolvableGroup( G[ Length( G ) ] )
            and IsSolvableGroup( G[ Length( G ) ] )  then
             SetIsSolvableGroup( grp, true );
@@ -480,6 +456,7 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     for i  in [ 1 .. Length( series ) ]  do
         Add( pcgs!.nrGensSeries, Length( series[ i ].genlabels ) );
         Unbind( series[ i ].relativeOrders );
+        Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
         SetHomePcgs ( series[ i ], pcgs );
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
@@ -728,8 +705,8 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
     if G{ [ Length( G ) - Length( N ) + 1 .. Length( G ) ] } = N  then
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
-                IsPcgs and IsModuloPcgs and IsPcgsPermGroupRep
-                                        and IsPrimeOrdersPcgs,
+                IsPcgs and IsModuloPcgsPermGroupRep and
+                IsModuloPcgs and IsPrimeOrdersPcgs,
                 FamilyObj( OneOfPcgs( G ) ),
                 G{ [ 1 .. Length( G ) - Length( N ) ] } );
         pcgs!.stabChain := G!.stabChain;
@@ -745,8 +722,8 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
-                IsPcgs and IsModuloPcgs and IsPcgsPermGroupRep
-                                        and IsPrimeOrdersPcgs,
+                IsPcgs and IsModuloPcgsPermGroupRep and
+                IsModuloPcgs and IsPrimeOrdersPcgs,
                 FamilyObj( OneOfPcgs( G ) ),
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
@@ -757,9 +734,26 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
     SetNumeratorOfModuloPcgs  ( pcgs, G );
     SetDenominatorOfModuloPcgs( pcgs, N );
+    pcgs!.denominator := GroupOfPcgs( N );
     pcgs!.nrGensSeries := pcgs!.nrGensSeries - Length( N );
     return pcgs;
 end );
+
+#############################################################################
+##
+#M  NumeratorOfModuloPcgs( <pcgs> ) . . . . . . . . . .  for perm modulo pcgs
+##
+InstallOtherMethod( NumeratorOfModuloPcgs, true,
+    [ IsModuloPcgsPermGroupRep ], 0,
+    pcgs -> Pcgs( GroupOfPcgs( pcgs ) ) );
+
+#############################################################################
+##
+#M  DenominatorOfModuloPcgs( <pcgs> ) . . . . . . . . .  for perm modulo pcgs
+##
+InstallOtherMethod( DenominatorOfModuloPcgs, true,
+    [ IsModuloPcgsPermGroupRep ], 0,
+    pcgs -> Pcgs( pcgs!.denominator ) );
 
 #############################################################################
 ##
@@ -1060,7 +1054,7 @@ end );
 #############################################################################
 ##
 
-#M  IsomorphismPcGroup( <G> ) . . . . . . . . . . . .  perm group ac pc group
+#M  IsomorphismPcGroup( <G> ) . . . . . . . . . . . .  perm group as pc group
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     function( G )

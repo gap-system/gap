@@ -2872,7 +2872,7 @@ void InitCosetTable ( void )
                     FuncMakeConsequences2 ) );
 
     AssGVar( GVarName( "StandardizeTable2" ),
-         NewFunctionC( "StandardizeTable2", 1L, "table, table",
+         NewFunctionC( "StandardizeTable2", 2L, "table, table",
                     FuncStandardizeTable2 ) );
 
     AssGVar( GVarName( "AddAbelianRelator" ),

@@ -216,7 +216,7 @@ end;
 ##
 MutableBasisViaNiceMutableBasisMethod3 := function( R, vectors, zero )
 
-    local M, nice, B;
+    local   M,  B;
 
     M:= LeftModuleByGenerators( R, vectors, zero );
     B:= rec( leftModule:= M );
@@ -343,7 +343,6 @@ InstallMethod( IsContainedInSpan,
     IsCollsElms,
     [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep, IsVector ], 0,
     function( MB, v )
-    local R, M;
     if IsBound( MB!.niceMutableBasis ) then
       return IsContainedInSpan( MB!.niceMutableBasis,
                                 NiceVector( MB!.leftModule, v ) );

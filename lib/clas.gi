@@ -483,7 +483,6 @@ end );
 
 RationalClassesTry := function(  G, classes, elm  )
     local   C,          # new class
-            D,          # another new class
             i;          # loop variable
 
     # if the element is not in one of the known classes add a new class

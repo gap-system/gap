@@ -1017,7 +1017,7 @@ void            ExecBegin ( void )
     ADDR_OBJ(execState)[2] = CurrLVars;
     /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
     CHANGED_BAG( CurrLVars );
-    ADDR_OBJ(execState)[3] = CurrStat;
+    ADDR_OBJ(execState)[3] = (Obj)(Int)CurrStat;
     ExecState = execState;
 
     /* set up new state                                                    */
@@ -1036,7 +1036,7 @@ void            ExecEnd (
         assert( CurrStat  == 0 );
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( ADDR_OBJ(ExecState)[3] );
+        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
@@ -1046,7 +1046,7 @@ void            ExecEnd (
     else {
 
         /* switch back to the old state                                    */
-        SET_BRK_CURR_STAT( ADDR_OBJ(ExecState)[3] );
+        SET_BRK_CURR_STAT( (Stat)(Int)(ADDR_OBJ(ExecState)[3]) );
         SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 

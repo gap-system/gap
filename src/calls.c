@@ -1097,7 +1097,7 @@ Obj NewFunctionT (
     ObjFunc             hdlr )
 {
     Obj                 func;           /* function, result                */
-    Bag                 prof;           /* profiling bag                   */
+    Obj                 prof;           /* profiling bag                   */
 
     /* make the function object                                            */
     func = NewBag( type, size );
@@ -1275,7 +1275,7 @@ void PrintFunction (
         }
 
         /* print the body                                                  */
-        if ( BODY_FUNC(func) == 0 ) {
+        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
             Pr("<<compiled code>>",0L,0L);
         }
         else {
@@ -1531,6 +1531,9 @@ Obj NARG_FUNC_Handler (
     Obj                 func )
 {
     if ( TYPE_OBJ(func) == T_FUNCTION ) {
+	if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
+	    return INTOBJ_INT(-1);
+	}
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1550,6 +1553,9 @@ Obj NAMS_FUNC_Handler (
     Obj                 func )
 {
     if ( TYPE_OBJ(func) == T_FUNCTION ) {
+	if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
+	    Complete( BODY_FUNC(func) );
+	}
         return NAMS_FUNC(func);
     }
     else {
@@ -1747,7 +1753,7 @@ void            InitCalls ()
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_FUNCTION"), &KIND_FUNCTION );
+    ImportGVarFromLibrary( "KIND_FUNCTION", &KIND_FUNCTION );
     KindObjFuncs[     T_FUNCTION ] = KindFunction;
 
     /* install the printer                                                 */

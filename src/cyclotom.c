@@ -1900,7 +1900,7 @@ void            InitCyc ( void )
     InitGlobalBag( &LastECyc );
 
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_CYC"), &KIND_CYC );
+    ImportGVarFromLibrary( "KIND_CYC", &KIND_CYC );
     KindObjFuncs[ T_CYC ] = KindCyc;
 
     /* install the evaluation and print function                           */

@@ -70,56 +70,68 @@ end;
 #############################################################################
 ##
 
-#F  ReadPath( <path>, <name>, <ext>, <infomsg> )
+#F  Read( <name> )  . . . . . . . . . . . . . . . . read in file named <name>
 ##
 READ_INDENT := "";
 
-if not IsBound( InfoRead1 )  then InfoRead1 := Ignore;  fi;
-if not IsBound( InfoRead2 )  then InfoRead2 := Ignore;  fi;
+if DEBUG_LOADING           then InfoRead1 := Print;   fi;
+if not IsBound(InfoRead1)  then InfoRead1 := Ignore;  fi;
+if not IsBound(InfoRead2)  then InfoRead2 := Ignore;  fi;
 
-ReadPath := function ( path, name, ext, infomsg )
-    local   readIndent, i, k, file, found;
+Read := function ( name )
+    local   readIndent,  found;
 
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
-    InfoRead1( "#I",READ_INDENT,infomsg,"( \"", name, "\" )\n" );
-    i := 1;
-    found := false;
-    while not found  and i <= LEN_LIST(path)+1 do
-        k := POS_LIST( path, ';', i-1 );
-        if k = FAIL  then k := LEN_LIST(path)+1;  fi;
-        file := path{[i..k-1]};
-        APPEND_LIST_INTR( file, name );
-        APPEND_LIST_INTR( file, ext );
-        InfoRead2("#I  trying '",file,"'\n");
-        found := READ( file );
-        i := k + 1;
-    od;
+    InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
+    found := READ(name);
     READ_INDENT := readIndent;
     if found and READ_INDENT = ""  then
-        InfoRead1( "#I  ",infomsg,"( \"", name, "\" ) done\n" );
+        InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
     fi;
-    return found;
+    if not found  then
+        Error( "file \"", name, "\" must exist and be readable" );
+    fi;
+    #return found;
 end;
 
 
 #############################################################################
 ##
-#F  Read( <name> )
+#F  ReadGapRoot( <name> ) . . . . . . . . . .  read file from GAP's root area
 ##
-Read := function ( name )
-    if not ReadPath( "", name, "", "Read" )  then
-        Error("the file '",name,"' must exist and be readable");
+ReadGapRoot := function( name )
+    if not READ_GAP_ROOT(name)  then
+        Error( "file \"", name, "\" must exist and be readable" );
     fi;
 end;
 
 
 #############################################################################
 ##
-
-#V  LIBNAME
+#F  ReadAndCheckFunc( <path> )  . . . . . .  create a read and check function
 ##
-##  is exported from the kernel
+READED_FILES := [];
+
+ReadAndCheckFunc := function( path )
+
+    return function( name )
+        local    ext,  libname;
+
+        libname := SHALLOW_COPY_OBJ(path);
+        APPEND_LIST_INTR( libname, "/" );
+        APPEND_LIST_INTR( libname, name );
+        if not READ_GAP_ROOT(libname)  then
+            Error("the library file '",name,"' must exist and be readable");
+        fi;
+        ADD_LIST( READED_FILES, libname );
+        ext := ReplacedString( name, ".", "_" );
+        if not IsBound(Revision.(ext))  then
+            Print( "#W  revision entry missing in \"", name, "\"\n" );
+        fi;
+    end;
+
+end;
 
 
 #############################################################################
@@ -129,136 +141,104 @@ end;
 ##  'ReadLib'  reads  in a  file  named  <name>,  this  name must include  an
 ##  extension.  The file must also define 'Revision.<name_ext>'.
 ##
-ReadLib := function ( name )
-    local   ext;
-
-    if not ReadPath( LIBNAME, name, "", "ReadLib" )  then
-        Error("the library file '",name,"' must exist and be readable");
-    fi;
-    ext := ReplacedString( name, ".", "_" );
-    if not IsBound(Revision.(ext))  then
-        Print( "#W  revision entry missing in \"", name, "\"\n" );
-    fi;
-end;
-
-
-#############################################################################
-##
-#V  GRPNAME
-##
-GRPNAME := ReplacedString( LIBNAME, "lib", "grp" );
-if GRPNAME = "./"  then GRPNAME := "../grp/";  fi;
+ReadLib := ReadAndCheckFunc("lib");
 
 
 #############################################################################
 ##
 #F  ReadGrp( <name> )
 ##
-ReadGrp := function ( name )
-    local   ext;
-
-    if not ReadPath( GRPNAME, name, "", "ReadGrp" )  then
-        Error("the group file '",name,"' must exist and be readable");
-    fi;
-    ext := ReplacedString( name, ".", "_" );
-    if not IsBound(Revision.(ext))  then
-        Print( "#W  revision entry missing in \"", name, "\"\n" );
-    fi;
-end;
-
-
-#############################################################################
-##
-#V  TBLNAME
-##
-TBLNAME := ReplacedString( LIBNAME, "lib", "tbl" );
-if TBLNAME = "./"  then TBLNAME := "../tbl/";  fi;
+ReadGrp := ReadAndCheckFunc("grp");
 
 
 #############################################################################
 ##
 #F  ReadTbl( <name> )
 ##
-ReadTbl := function ( name )
-    local   ext;
-
-    if not ReadPath( TBLNAME, name, ".tbl", "ReadTbl" )  then
-     Error("the character table file '",name,"' must exist and be readable");
-    fi;
-    ext := SHALLOW_COPY_OBJ(name);
-    APPEND_LIST_INTR( ext, "_tbl" );
-    if not IsBound(Revision.(ext))  then
-        Print( "#W  revision entry missing in \"", name, ".tbl\"\n" );
-    fi;
-end;
-
-
-#############################################################################
-##
-#V  SMALLNAME
-##
-SMALLNAME := ReplacedString( LIBNAME, "lib", "small" );
-if SMALLNAME = "./"  then SMALLNAME := "../small/";  fi;
+ReadTbl := ReadAndCheckFunc("tbl");
 
 
 #############################################################################
 ##
 #F  ReadSmall( <name> )
 ##
-ReadSmall := function ( name )
-    local   ext;
-
-    if not ReadPath( SMALLNAME, name, "", "ReadSmall" )  then
-        Error("the group table file '",name,"' must exist and be readable");
-    fi;
-    ext := ReplacedString( name, ".", "_" );
-    if not IsBound(Revision.(ext))  then
-        Print( "#W  revision entry missing in \"", name, "\"\n" );
-    fi;
-end;
-
-
-#############################################################################
-##
-#V  TRANSNAME
-##
-TRANSNAME := ReplacedString( LIBNAME, "lib", "trans" );
-if TRANSNAME = "./"  then TRANSNAME := "../trans/";  fi;
-
-
-#############################################################################
-##
-#V  PRIMNAME
-##
-PRIMNAME := ReplacedString( LIBNAME, "lib", "prim" );
-if PRIMNAME = "./"  then PRIMNAME := "../prim/";  fi;
+ReadSmall := ReadAndCheckFunc("small");
 
 
 #############################################################################
 ##
 #F  ReadPrim( <name> )
 ##
-ReadPrim := function ( name )
-    local   ext;
+ReadPrim := ReadAndCheckFunc("prim");
 
-    if not ReadPath( PRIMNAME, name, "", "ReadPrim" )  then
-        Error("the primitive group file `",name,
-              "' must exist and be readable");
-    fi;
-    ext := ReplacedString( name, ".", "_" );
-    if not IsBound(Revision.(ext))  then
-        Print( "#W  revision entry missing in \"", name, "\"\n" );
+
+#############################################################################
+##
+#F  ReadTrans( <name> )
+##
+ReadTrans := ReadAndCheckFunc("trans");
+
+
+#############################################################################
+##
+#F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
+##
+COMPLETABLE_FILES := [];
+
+ReadOrComplete := function( name )
+    local   comp;
+
+    READED_FILES := [];
+    if CHECK_FOR_COMP_FILES  then
+        comp := ReplacedString( name, "read", "comp" );
+        if not READ_GAP_ROOT(comp)  then
+            InfoRead1( "#I  reading ", name, "\n" );
+            if not READ_GAP_ROOT(name)  then
+                Error( "cannot read or complete file ", name );
+            fi;
+            ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES ] );
+        else
+            InfoRead1( "#I  completed ", name, "\n" );
+        fi;
+    else
+        if not READ_GAP_ROOT(name)  then
+            Error( "cannot read file ", name );
+        fi;
+        ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES ] );    
     fi;
 end;
 
 
 #############################################################################
 ##
+#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compx.g" files
+##
+CreateCompletionFiles := function( path )
+    local   i,  com,  j,  tmp;
 
-#V  Banner
+    for i  in COMPLETABLE_FILES  do
+        com := SHALLOW_COPY_OBJ(path);
+        APPEND_LIST_INTR( com, ReplacedString( i[1], "read", "comp" ) );
+        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
+        for j  in i[2]  do
+            Print( "#I    parsing \"", j, "\"\n" );
+        od;
+        tmp := [ com ];
+        APPEND_LIST_INTR( tmp, i[2] );
+
+        # the names should be relative to 'GapRootDirectory'
+        CALL_FUNC_LIST( MAKE_INIT, tmp );
+    od;
+end;
+
+
+#############################################################################
+##
+
+#F  Banner
 ##
 if not QUIET and BANNER then
-ReadPath( LIBNAME, "version.g", "", "ReadLib" );
+READ_GAP_ROOT( "lib/version.g" );
 P := function(a) Print( a, "\n" );  end;
 
 P("");
@@ -291,369 +271,25 @@ fi;
 
 #############################################################################
 ##
-
-#X  first read the very basic stuff that the kernel needs to function at all
+#X  read in the files
 ##
-ReadLib( "kernel.g"    );
-ReadLib( "oper.g"      );
-ReadLib( "kind.g"      );
-ReadLib( "methsel.g"   );
+ReadOrComplete( "lib/read1.g" );
+ExportToKernelFinished();
 
-ReadLib( "object.gd"   );
-ReadLib( "coll.gd"     );
-ReadLib( "list.gd"     );
-ReadLib( "arith.gd"    );
-ReadLib( "rest.gd"     );
-ReadLib( "ffe.gd"      );
-ReadLib( "listcoef.gd" );
+ReadOrComplete( "lib/read2.g" );
+ReadOrComplete( "lib/read3.g" );
+ReadOrComplete( "lib/read4.g" );
 
-ReadLib( "object.gi"   );
-ReadLib( "coll.gi"     );
-ReadLib( "listkind.gi" );
-ReadLib( "arith.gi"    );
-ReadLib( "rest.gi"     );
-ReadLib( "listcoef.gi" );
-#T  Does combinat.gi really need to be so early?
-ReadLib( "combinat.gi" );
-
-
-#############################################################################
-##
-#T  SL 1996/09/10 I think that this is the earliest place
-#T                at which the present info.g? could be read
-##
-##  The assert stuff probbly could go earlier if we wanted it to
-##
-ReadLib( "info.gd"     );
-ReadLib( "assert.gd"   );
-ReadLib( "info.gi"     );
-ReadLib( "assert.gi"   );
-
-
-#############################################################################
-##
-#X  now read all the definition parts
-##
-ReadLib( "tuples.gd"   );
-
-ReadLib( "matrix.gd"   );
-
-ReadLib( "domain.gd"   );
-ReadLib( "extaset.gd"  );
-ReadLib( "extlset.gd"  );
-ReadLib( "extrset.gd"  );
-ReadLib( "extuset.gd"  );
-
-ReadLib( "mapping.gd"  );
-ReadLib( "mapphomo.gd" );
-
-ReadLib( "magma.gd"    );
-ReadLib( "semigrp.gd"  );
-ReadLib( "monoid.gd"   );
-ReadLib( "grp.gd"      );
-
-ReadLib( "addmagma.gd" );
-ReadLib( "addcoset.gd" );
-ReadLib( "ring.gd"     );
-ReadLib( "module.gd"   );
-ReadLib( "basis.gd"    );
-ReadLib( "basismut.gd" );
-ReadLib( "vspc.gd"     );
-ReadLib( "vspchom.gd"  );
-ReadLib( "algebra.gd"  );
-ReadLib( "alglie.gd"   );
-ReadLib( "algsc.gd"    );
-ReadLib( "liefam.gd"   );
-ReadLib( "integer.gd"  );
-ReadLib( "numtheor.gd" );
-
-ReadLib( "ratfun.gd"   );
-
-ReadLib( "field.gd"    );
-ReadLib( "zmodnz.gd"   );
-ReadLib( "cyclotom.gd" );
-ReadLib( "fldabnum.gd" );
-ReadLib( "padics.gd"   );
-ReadLib( "ringpoly.gd" );
-ReadLib( "upoly.gd"    );
-ReadLib( "polyrat.gd"  );
-ReadLib( "algfld.gd"   );
-
-ReadLib( "unknown.gd"  );
-
-ReadLib( "word.gd"     );
-
-# files dealing with rewriting systems
-ReadLib( "rws.gd"      );
-ReadLib( "rwspcclt.gd" );
-ReadLib( "rwsgrp.gd"   );
-ReadLib( "rwspcgrp.gd" );
-
-# files dealing with polycyclic generating systems
-ReadLib( "pcgs.gd"     );
-ReadLib( "pcgsind.gd"  );
-ReadLib( "pcgspcg.gd"  );
-ReadLib( "pcgsmodu.gd" );
-ReadLib( "pcgsperm.gd" );
-ReadLib( "pcgsspec.gd" );
-
-# files dealing with finite polycyclic groups
-ReadLib( "grppc.gd"    );
-
-ReadLib( "mgmring.gd"  );
-ReadLib( "grptbl.gd"   );
-
-ReadLib( "grpperm.gd"  );
-ReadLib( "grpprmcs.gd" );
-ReadLib( "stbcbckt.gd" );
-ReadLib( "ghom.gd"     );
-ReadLib( "ghompcgs.gd" );
-ReadLib( "gprd.gd"     );
-ReadLib( "ghomperm.gd" );
-ReadLib( "oprt.gd"     );
-ReadLib( "stbc.gd"     );
-ReadLib( "clas.gd"     );
-ReadLib( "csetgrp.gd"  );
-ReadLib( "factgrp.gd"  );
-ReadLib( "grppcrep.gd" );
-
-ReadLib( "onecohom.gd" );
-ReadLib( "grppccom.gd" );
-
-ReadLib( "twocohom.gd" );
-ReadLib( "grppcext.gd");
-ReadLib( "grppcfp.gd");
-
-ReadLib( "morpheus.gd" );
-ReadLib( "grplatt.gd"  );
-
-# files dealing with fp groups
-ReadLib( "grpfp.gd"    );
-
-# files dealing with trees and hash tables
-ReadLib( "hash.gd"     );
-
-# files needed for deep thought
-ReadLib( "dt.g" );
-
-# family predicates (needed for all 'InstallMethod')
-ReadLib( "fampred.g"   );
-
-ReadLib( "list.gi"     ); # was too early
-
-# files dealing with nice monomorphism
-# grpnice uses some family predicates, so fampred.g must be known
-ReadLib( "grpnice.gd"  );
-
-# files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
-ReadLib( "grpmat.gd"   );
-ReadLib( "grpffmat.gd" );
-
-# group library
-ReadGrp( "basic.gd"    );
-ReadGrp( "perf.gd"     );
-
-
-#############################################################################
-##
-#X  now read profiling functions
-##
-ReadLib( "profile.g"   );
-
-
-#############################################################################
-##
 #T  1996/09/01 M.Schoenert this helps performance
-##
 IMPLICATIONS:=IMPLICATIONS{[Length(IMPLICATIONS),Length(IMPLICATIONS)-1..1]};
 HIDDEN_IMPS:=HIDDEN_IMPS{[Length(HIDDEN_IMPS),Length(HIDDEN_IMPS)-1..1]};
 
-
-#############################################################################
-##
-#X  now read all the implementation parts
-##
-ReadLib( "matrix.gi"   );
-
-ReadLib("tuples.gi"    );
-
-
-ReadLib( "domain.gi"   );
-ReadLib( "mapping.gi"  );
-ReadLib( "mapprep.gi"  );
-ReadLib( "mapphomo.gi" );
-
-ReadLib( "magma.gi"    );
-ReadLib( "semigrp.gi"  );
-ReadLib( "monoid.gi"   );
-
-ReadLib( "grp.gi"      );
-
-ReadLib( "addmagma.gi" );
-ReadLib( "addcoset.gi" );
-
-ReadLib( "ring.gi"     );
-
-ReadLib( "module.gi"   );
-ReadLib( "modfree.gi"  );
-ReadLib( "modulrow.gi" );
-ReadLib( "modulmat.gi" );
-ReadLib( "basis.gi"    );
-ReadLib( "basismut.gi" );
-ReadLib( "vspc.gi"     );
-ReadLib( "vspcrow.gi"  );
-ReadLib( "vspcmat.gi"  );
-ReadLib( "vspchom.gi"  );
-
-ReadLib( "algebra.gi"  );
-ReadLib( "alglie.gi"   );
-ReadLib( "algliess.gi" );
-ReadLib( "algsc.gi"    );
-ReadLib( "algmat.gi"   );
-ReadLib( "liefam.gi"   );
-
-ReadLib( "integer.gi"  );
-ReadLib( "numtheor.gi" );
-
-ReadLib( "ratfun.gi"   );
-ReadLib( "ratfunul.gi" );
-ReadLib( "ringpoly.gi" );
-ReadLib( "upoly.gi"    );
-ReadLib( "polyfinf.gi" );
-ReadLib( "polyrat.gi"  );
-ReadLib( "algfld.gi"   );
-
-ReadLib( "unknown.gi"  );
-
-ReadLib( "field.gi"    );
-ReadLib( "fieldfin.gi" );
-ReadLib( "zmodnz.gi"   );
-ReadLib( "ffe.gi"      );
-ReadLib( "rational.gi" );
-ReadLib( "gaussian.gi" );
-ReadLib( "cyclotom.gi" );
-ReadLib( "fldabnum.gi" );
-ReadLib( "padics.gi"   );
-
-ReadLib( "meataxe.gi"  );
-
-ReadLib( "word.gi"     );
-ReadLib( "wordrep.gi"  );
-
-# files dealing with free semigroups, monoids, groups
-ReadLib( "smgrpfre.gi" );
-ReadLib( "monofree.gi" );
-ReadLib( "grpfree.gi"  );
-
-# files dealing with rewriting systems
-ReadLib( "rws.gi"      );
-ReadLib( "rwspcclt.gi" );
-ReadLib( "rwspcsng.gi" );
-ReadLib( "rwspcftl.gi" );
-ReadLib( "rwsgrp.gi"   );
-ReadLib( "rwspcgrp.gi" );
-ReadLib( "rwsdt.gi" );
-
-# files dealing with polycyclic generating systems
-ReadLib( "pcgs.gi"     );
-ReadLib( "pcgsind.gi"  );
-ReadLib( "pcgspcg.gi"  );
-ReadLib( "pcgsmodu.gi" );
-ReadLib( "pcgscomp.gi" );
-ReadLib( "pcgsperm.gi" );
-ReadLib( "pcgsspec.gi" );
-
-# files dealing with finite polycyclic groups
-ReadLib( "grppc.gi"    );
-ReadLib( "grppcint.gi" );
-ReadLib( "grppcprp.gi" );
-ReadLib( "grppcatr.gi" );
-
-ReadLib( "mgmring.gi"  );
-ReadLib( "grptbl.gi"   );
-
-ReadLib( "ghom.gi"     );
-ReadLib( "ghompcgs.gi" );
-ReadLib( "gprd.gi"     );
-ReadLib( "ghomperm.gi" );
-ReadLib( "grpperm.gi"  );
-ReadLib( "gprdperm.gi" );
-ReadLib( "oprt.gi"     );
-ReadLib( "oprtperm.gi" );
-ReadLib( "oprtpcgs.gi" );
-ReadLib( "partitio.gi" );
-ReadLib( "stbc.gi"     );
-ReadLib( "stbcbckt.gi" );
-ReadLib( "stbcrand.gi" );
-ReadLib( "clas.gi"     );
-ReadLib( "claspcgs.gi" );
-ReadLib( "clasperm.gi" );
-ReadLib( "csetgrp.gi"  );
-ReadLib( "csetperm.gi" );
-ReadLib( "csetpc.gi"   );
-ReadLib( "factgrp.gi"  );
-ReadLib( "grppcrep.gi" );
-
-ReadLib( "onecohom.gi" );
-ReadLib( "grppccom.gi" );
-
-ReadLib( "twocohom.gi" );
-ReadLib( "grppcext.gi");
-ReadLib( "grppcfp.gi");
-
-# files dealing with nice monomorphism
-ReadLib( "grpnice.gi"  );
-
-ReadLib( "morpheus.gi" );
-ReadLib( "grplatt.gi"  );
-
-# files dealing with matrix groups
-ReadLib( "grpmat.gi"   );
-ReadLib( "grpffmat.gi" );
-
-# files dealing with fp groups
-ReadLib( "grpfp.gi"    );
-#ReadLib( "grpfpelm.gi" );
-
-# files dealing with trees and hash tables
-ReadLib( "hash.gi"     );
-
-# files dealing with overloaded operations
-ReadLib( "overload.g"  );
-
-# semi-automatically translated code uses overloaded functions
-ReadLib( "grpprmcs.gi" );
+ReadOrComplete( "lib/read5.g" );
+ReadOrComplete( "lib/read6.g" );
 
 
 #############################################################################
 ##
-#X  group library
-##
-ReadGrp( "basicpcg.gi" );
-ReadGrp( "basicprm.gi" );
-ReadGrp( "basicmat.gi" );
-ReadGrp( "perf.grp"    );
-ReadGrp( "classic.gi" );
 
-
-#############################################################################
-##
-#X  Read library of groups of order up to 1000 without 512 and 768
-##
-ReadSmall( "smallgrp.g" );
-
-
-#############################################################################
-##
-#X  Read transitive groups library
-##
-if not ReadPath( TRANSNAME, "trans", ".grp","ReadTrans") then
-  Error(
-    "the transitive group library file trans.grp must exist and be readable"
-    );
-fi;
-
-#############################################################################
-##
 #E  init.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -206,36 +206,6 @@ HasAsGroup := Tester( AsGroup );
 
 #############################################################################
 ##
-#A  CharacterDegrees( <G> )
-##
-##  is a collected list of the degrees of the irreducible characters of
-##  the group <G>.
-##
-CharacterDegrees := NewAttribute( "CharacterDegrees", IsGroup );
-SetCharacterDegrees := Setter( CharacterDegrees );
-HasCharacterDegrees := Tester( CharacterDegrees );
-
-
-#############################################################################
-##
-#A  CharacterTable( <G> )
-##
-CharacterTable := NewAttribute( "CharacterTable", IsGroup );
-SetCharacterTable := Setter( CharacterTable );
-HasCharacterTable := Tester( CharacterTable );
-
-
-#############################################################################
-##
-#A  CharacterTableHead( <G> )
-##
-CharacterTableHead := NewAttribute( "CharacterTableHead", IsGroup );
-SetCharacterTableHead := Setter( CharacterTableHead );
-HasCharacterTableHead := Tester( CharacterTableHead );
-
-
-#############################################################################
-##
 #A  ChiefSeries( <G> )
 ##
 ChiefSeries := NewAttribute( "ChiefSeries", IsGroup );
@@ -396,29 +366,6 @@ HasInvariantForm := Tester( InvariantForm );
 
 #############################################################################
 ##
-#A  ComputedIBrs( <G> )
-##
-##  is the list where position <p> is reserved for 'IBr( <G>, <p> )'.
-##
-ComputedIBrs := NewAttribute( "ComputedIBrs", IsGroup, "mutable" );
-SetComputedIBrs := Setter( ComputedIBrs );
-HasComputedIBrs := Tester( ComputedIBrs );
-
-
-#############################################################################
-##
-#A  Irr( <G> )
-##
-##  is the list of all complex ordinary irreducible characters of the finite
-##  group <G>.
-##
-Irr := NewAttribute( "Irr", IsGroup );
-SetIrr := Setter( Irr );
-HasIrr := Tester( Irr );
-
-
-#############################################################################
-##
 #A  JenningsSeries( <G> )
 ##
 JenningsSeries := NewAttribute( "JenningsSeries", IsGroup );
@@ -489,11 +436,13 @@ NormalSubgroups := NewAttribute( "NormalSubgroups", IsGroup );
 SetNormalSubgroups := Setter( NormalSubgroups );
 HasNormalSubgroups := Tester( NormalSubgroups );
 
+
 #############################################################################
 ##
 #F  NormalSubgroupsAbove
 ##
 NormalSubgroupsAbove:=NewOperationArgs("NormalSubgroupsAbove");
+
 
 ############################################################################
 ##
@@ -792,16 +741,6 @@ FusionConjugacyClasses := NewOperation( "FusionConjugacyClasses",
 
 #############################################################################
 ##
-#O  IBr( <G>, <p> )
-##
-##  is the list of all complex irreducible Brauer characters in
-##  characteristic <p> of the finite group <G>.
-##
-IBr := NewOperation( "IBr", [ IsGroup, IsPosRat and IsInt ] );
-
-
-#############################################################################
-##
 #O  Index( <G>, <U> )
 ##
 Index := NewOperation( "Index", [ IsGroup, IsGroup ] );
@@ -873,15 +812,6 @@ IsSubnormal := NewOperation( "IsSubnormal", [ IsGroup, IsGroup ] );
 
 #############################################################################
 ##
-#A  NiceGroup( <G> )  . . . . . . . . . . . . .  nice group isomorphic to <G>
-##
-NiceGroup := NewAttribute( "NiceGroup", IsGroup );
-SetNiceGroup := Setter( NiceGroup );
-HasNiceGroup := Tester( NiceGroup );
-
-
-#############################################################################
-##
 #O  NormalClosure( <G>, <U> )
 ##
 NormalClosure := NewOperation( "NormalClosure", [ IsGroup, IsGroup ] );
@@ -902,6 +832,7 @@ HasNormalClosureInParent := Tester( NormalClosureInParent );
 ##
 NormalIntersection := NewOperation( "NormalIntersection",
     [ IsGroup, IsGroup ] );
+
 
 #############################################################################
 ##
@@ -1205,11 +1136,13 @@ HasGeneratorsAndRelators := Tester(GeneratorsAndRelators);
 ##
 KnowsHowToDecompose := NewOperation("KnowsHowToDecompose",[IsGroup,IsList]);
 
+
 #############################################################################
 ##
 #O  HasAbelianFactorGroup(<G>,<N>)   test whether G/N is abelian
 ##
 HasAbelianFactorGroup := NewOperationArgs("HasAbelianFactorGroup");
+
 
 #############################################################################
 ##

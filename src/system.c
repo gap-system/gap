@@ -1,12 +1,12 @@
 /****************************************************************************
 **
-*A  system.c                    GAP source                   Martin Schoenert
-*A                                                      & Frank Celler (MACH)
-*A                                                    & Steve Linton (MS/DOS)
-*A                                                  & Harald Boegeholz (OS/2)
-*A                                                         & Paul Doyle (VMS)
-*A                                                         & Dave Bayer (MAC)
-*A                                                  & Burkhard Hoefling (MAC)
+*W  system.c                    GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
+*W                                                         & Dave Bayer (MAC)
+*W                                                  & Harald Boegeholz (OS/2)
+*W                                                         & Paul Doyle (VMS)
+*W                                                  & Burkhard Hoefling (MAC)
+*W                                                    & Steve Linton (MS/DOS)
 **
 *H  @(#)$Id$
 **
@@ -19,12 +19,19 @@
 **      For  Berkeley UNIX systems, such as  4.2 BSD,  4.3 BSD,  free 386BSD,
 **      and DEC's Ultrix.
 **
-**  SYS_IS_USG
-**      For System V UNIX systems, such as SUN's SunOS 4.0, Hewlett Packard's
-**      HP-UX, Masscomp's RTU, free Linux, and MIPS Risc/OS.
+**  SYS_IS_MAC_MPW
+**      For Apple's Macintosh with the Mac Programmers Workshop compiler.
+**
+**  SYS_IS_MAC_SYC
+**      For  Apple's  Macintosh  with the  Symantec C++ 7.0 (or  Think C 6.0)
+**      compiler.
 **
 **  SYS_IS_MACH
 **      For Mach derived systems, such as NeXT's NextStep.
+**
+**  SYS_IS_USG
+**      For System V UNIX systems, such as SUN's SunOS 4.0, Hewlett Packard's
+**      HP-UX, Masscomp's RTU, free Linux, and MIPS Risc/OS.
 **
 **  SYS_IS_OS2_EMX
 **      For OS/2 2.x and DOS with the EMX port of the GNU C compiler.
@@ -38,12 +45,15 @@
 **  SYS_IS_VMS
 **      For DEC's VMS 5.0 or later with the VAX C compiler 3.0 or later.
 **
-**  SYS_IS_MAC_MPW
-**      For Apple's Macintosh with the Mac Programmers Workshop compiler.
+**  The following must be set on 64 bit systems:
 **
-**  SYS_IS_MAC_SYC
-**      For  Apple's  Macintosh  with the  Symantec C++ 7.0 (or  Think C 6.0)
-**      compiler.
+**  SYS_IS_64_BIT
+**      For systems having 64 bit pointers.
+**
+**  The following labels determine if and how dynamic loading is supported.
+**
+**  SYS_HAS_DL_LIBRARY
+**      For systems supporting 'dlopen' and 'dlsym'.
 **
 **  Also the file contains prototypes for all the system calls and/or library
 **  function used as defined in  ``Harbison & Steele, A C Reference Manual''.
@@ -66,6 +76,17 @@
 **      and you use the  traditional prototypes by defining 'SYS_HAS_ANSI=0'.
 **      For  non ANSI compilers the default uses the  traditional prototypes,
 **      and you can use the ANSI prototypes by defining 'SYS_HAS_ANSI=1'.
+**
+**  SYS_HAS_BROKEN_STRNCAT
+**      Use  this if   your 'strncat'  is   broken.  At least  in  SCO ODT2.0
+**      (SVR3.2) 'strncat' has problems if the len is a multiple of 4.
+**
+**  SYS_HAS_BROKEN_TMPNAM
+**      Use this if your 'tmpnam' generates only  a small number of temporary
+**      file names.  At least NEXTSTEP 3.3 has such a problem.
+**
+**  SYS_HAS_CALLOC_PROTO
+**      Use this to undefine the prototype for 'calloc'.
 **
 **  SYS_HAS_CONST=<const_q>
 **      Some  functions do  not modifiy  some of  their  arguments,  and have
@@ -107,13 +128,10 @@
 **  SYS_HAS_MISC_PROTO
 **      Use this to undefine the prototypes for 'exit',  'system',  'tmpnam',
 **      'sbrk', 'getenv', 'atoi', 'isatty', and 'ttyname'.
-**
-**  SYS_HAS_BROKEN_STRNCAT
-**      Use this if your 'strncat' is broken.  At least in SCO ODT2.0
-**      (SVR3.2) 'strncat' has problems if the len is a multiple of 4.
 */
-char *          Revision_system_c =
+char * Revision_system_c =
    "@(#)$Id$";
+
 
 #define INCLUDE_DECLARATION_PART
 #include        "system.h"              /* declaration part of the package */
@@ -139,25 +157,48 @@ char *          Revision_system_c =
 # endif
 #endif
 
+#ifdef __MWERKS__
+# define SYS_IS_MAC_MPW             1
+# define SYS_HAS_CALLOC_PROTO       1
+#endif
+
+#ifndef SYS_STDIO_H                     /* standard input/output functions */
+# include       <stdio.h>
+# define SYS_STDIO_H
+#endif
+
+#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
+# include       <unistd.h>
+# define SYS_UNISTD_H
+#endif
+
+#ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
+extern FILE * fopen ( SYS_CONST char *, SYS_CONST char * );
+extern int    fclose ( FILE * );
+extern void   setbuf ( FILE *, char * );
+extern char * fgets ( char *, int, FILE * );
+extern int    fputs ( SYS_CONST char *, FILE * );
+#endif
+
 
 /****************************************************************************
 **
+
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
 **  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
 **  'UInt4', 'UInt' are the integer types.
 **
-** Note that to get this to work, all files must be compiled with or without
-** -DSYS_IS_64_BIT, not just system.c
+**  Note that to get this to work, all files must be compiled with or without
+**  '-DSYS_IS_64_BIT', not just "system.c".
 **
-** (U)Int<n> should be exactly <n> bytes long
-** (U)Int should be the same length as a bag identifier
+**  '(U)Int<n>' should be exactly <n> bytes long
+**  '(U)Int' should be the same length as a bag identifier
 **
 **  'Char',   'Int1', 'Int2',   'Int4',  'Int',  'UChar',   'UInt1', 'UInt2',
 **  'UInt4', 'UInt' are defined  in the declaration  part of this package  as
 **  follows.
-
-
+**
 #ifdef SYS_IS_64_BIT
 typedef char                    Char;
 typedef char                    Int1;
@@ -247,11 +288,6 @@ Char            SyFlags [] = {
 # define SYS_VMS        0
 #endif
 
-#ifdef __MWERKS__
-# define SYS_IS_MAC_MPW
-# define SYS_HAS_CALLOC_PROTO
-#endif
-
 #ifdef SYS_IS_MAC_MPW
     'm', 'a', 'c', ' ', 'm', 'p', 'w',
 # define SYS_MAC_MPW    1
@@ -282,71 +318,74 @@ Char            SyFlags [] = {
 
 /****************************************************************************
 **
-*V  SyStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
+
+*F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
+*/
+
+/****************************************************************************
 **
-**  'SyStackSpace' is the amount of stackspace that GAP gets.
+
+*V  syStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
+**
+**  'syStackSpace' is the amount of stackspace that GAP gets.
 **
 **  Under TOS and on the  Mac special actions must  be  taken to ensure  that
 **  enough space is available.
 */
 #if SYS_TOS_GCC2
 # define __NO_INLINE__
-int             _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
-UInt            SyStackSpace = 64 * 1024;
+int _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
+static UInt syStackSpace = 64 * 1024;
 #endif
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
-UInt            SyStackSpace = 64 * 1024;
+static UInt syStackSpace = 64 * 1024;
 #endif
 
 
 /****************************************************************************
 **
-*V  SyLibname . . . . . . . . . . . . . . . . . name of the library directory
-**
-**  'SyLibname' is the name of the directory where the GAP library files  are
-**  located.
-**
-**  This is per default the subdirectory 'lib/'  of  the  current  directory.
-**  It is usually changed with the '-l' option in the script that starts GAP.
-**
-**  Is copied into the GAP variable called 'LIBNAME'  and used by  'Readlib'.
-**  This is also used in 'LIBNAME/init.g' to find the group library directory
-**  by replacing 'lib' with 'grp', etc.
-**
-**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
-**  library file 'strcat( SyLibname, "init.g" );' must be a  valid  filename.
-**  Further neccessary transformation of the filename are done  in  'SyOpen'.
-**
-**  Put in this package because the command line processing takes place here.
+*V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-Char            SyLibname [256] = "lib/";
-#endif
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-Char            SyLibname [256] = "lib\\";
-#endif
-#if SYS_VMS
-Char            SyLibname [256] = "[.lib]";
-#endif
-#if SYS_MAC_MPW || SYS_MAC_SYC
-Char            SyLibname [256] = ":lib:";
+#ifndef SYS_ARCH
+Char * SyArchitecture = "unknown";
+#else
+Char * SyArchitecture = SYS_ARCH;
 #endif
 
 
 /****************************************************************************
 **
-*V  SyHelpname  . . . . . . . . . . . . . . name of the online help directory
+*V  SyGapRootPath . . . . . . . . . . . . . . . . . . . . . . . . . root path
 **
-**  'SyHelpname' is the name of the directory where the GAP online help files
+**  'SyGapRootPath' conatins the names of the directories where the GAP files
 **  are located.
 **
-**  By default it is computed from 'SyLibname' by replacing 'lib' with 'doc'.
-**  It can be changed with the '-h' option.
+**  This is  per default the current  directory.  It  is usually changed with
+**  the '-l' option in the script that starts GAP.
 **
-**  It is used by 'SyHelp' to find the online documentation.
-*/
-Char            SyHelpname [256];
+**  Is copied    into  the  GAP   variable  called    'GAPROOT' and  used  by
+**  'ReadGapRoot'.  This  is also  used in  'GAPROOT/lib/init.g' to find  the
+**  group and table library directories.
+**
+**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
+**  library   file 'strcat( SyGapRootPath,  "lib/init.g" );'  must be a valid
+**  filename.  Further neccessary transformation of  the filename are done in
+**  'SyOpen'.
+**
+**  Put in this package because the command line processing takes place here.  */
+Char SyGapRootPath [16*256];
+
+
+/****************************************************************************
+**
+*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
+**
+**  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
+**  files are located, it is derived from 'SyGapRootPath'.
+**
+**  Put in this package because the command line processing takes place here.  */
+Char SyGapRootPaths [16] [256];
 
 
 /****************************************************************************
@@ -362,7 +401,7 @@ Char            SyHelpname [256];
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt            SyBanner = 1;
+UInt SyBanner = 1;
 
 
 /****************************************************************************
@@ -379,7 +418,14 @@ UInt            SyBanner = 1;
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt            SyQuiet = 0;
+UInt SyQuiet = 0;
+
+
+/****************************************************************************
+**
+*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
+*/
+Int SyDebugLoading = 0;
 
 
 /****************************************************************************
@@ -396,7 +442,7 @@ UInt            SyQuiet = 0;
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt            SyNrCols = 80;
+UInt SyNrCols = 80;
 
 
 /****************************************************************************
@@ -410,7 +456,7 @@ UInt            SyNrCols = 80;
 **
 **  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
 */
-UInt            SyNrRows = 24;
+UInt SyNrRows = 24;
 
 
 /****************************************************************************
@@ -427,7 +473,7 @@ UInt            SyNrRows = 24;
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt            SyMsgsFlagBags = 0;
+UInt SyMsgsFlagBags = 0;
 
 
 /****************************************************************************
@@ -444,19 +490,23 @@ UInt            SyMsgsFlagBags = 0;
 **  Put in this package because the command line processing takes place here.
 */
 #if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-Int             SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 4 * 1024 * 1024;
 #endif
+
 #if SYS_MSDOS_DJGPP
-Int             SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 4 * 1024 * 1024;
 #endif
+
 #if SYS_TOS_GCC2
-Int             SyStorMin = 0;
+Int SyStorMin = 0;
 #endif
+
 #if SYS_VMS
-Int             SyStorMin = 4 * 1024 * 1024;
+Int SyStorMin = 4 * 1024 * 1024;
 #endif
+
 #if SYS_MAC_MPW || SYS_MAC_SYC
-Int             SyStorMin = 0;
+Int SyStorMin = 0;
 #endif
 
 
@@ -466,14 +516,14 @@ Int             SyStorMin = 0;
 **
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
 **
-**  This is per default 16 MByte,  which is often a  reasonable value.  It is
+**  This is per default 64 MByte,  which is often a  reasonable value.  It is
 **  usually changed with the '-t' option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-Int             SyStorMax = 64 * 1024 * 1024L;
+Int SyStorMax = 64 * 1024 * 1024L;
 
 
 /****************************************************************************
@@ -490,12 +540,14 @@ Int             SyStorMax = 64 * 1024 * 1024L;
 **  This value is passed to 'InitBags'.
 */
 #ifdef  SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
 #endif
+
 #ifndef SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN sizeof(UInt *)
+#define SYS_STACK_ALIGN         sizeof(UInt *)
 #endif
-UInt            SyStackAlign = SYS_STACK_ALIGN;
+
+UInt SyStackAlign = SYS_STACK_ALIGN;
 
 
 /****************************************************************************
@@ -511,7 +563,14 @@ UInt            SyStackAlign = SYS_STACK_ALIGN;
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt            SyCacheSize = 0;
+UInt SyCacheSize = 0;
+
+
+/****************************************************************************
+**
+*V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
+*/
+Char SySystemInitFile [256];
 
 
 /****************************************************************************
@@ -529,24 +588,73 @@ UInt            SyCacheSize = 0;
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-Char            SyInitfiles [16] [256];
+Char SyInitfiles [16] [256];
 
 
 /****************************************************************************
 **
-*V  syWindow  . . . . . . . . . . . . . . . .  running under a window handler
+*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
+*/
+Int SyCheckForCompFiles = 1;
+
+
+/****************************************************************************
 **
-**  'syWindow' is 1 if GAP  is running under  a window handler front end such
+*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*/
+Int SyCompilePlease = 0;
+
+
+/****************************************************************************
+**
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
+*/
+Char SyCompileOutput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
+*/
+Char SyCompileInput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
+*/
+Char SyCompileName [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
+*/
+Char * SyCompileMagic1;
+
+
+/****************************************************************************
+**
+*V  SyWindow  . . . . . . . . . . . . . . . .  running under a window handler
+**
+**  'SyWindow' is 1 if GAP  is running under  a window handler front end such
 **  as 'xgap', and 0 otherwise.
 **
 **  If running under  a window handler front  end, GAP adds various  commands
 **  starting with '@' to the output to let 'xgap' know what is going on.
 */
-UInt            syWindow = 0;
+UInt SyWindow = 0;
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *V  syStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
 *V  syStopTime  . . . . . . . . . . . . . . . . . . time when reading started
 */
@@ -556,11 +664,196 @@ UInt   syStopTime;
 
 /****************************************************************************
 **
+*F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
+**
+**  'SyTime' returns the number of milliseconds spent by GAP so far.
+**
+**  Should be as accurate as possible,  because it  is  used  for  profiling.
+*/
+
+
+/****************************************************************************
+**
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . .  BSD/Mach/DJGPP
+**
+**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
+**  can use 'getrusage', which gives us a much better resolution.
+*/
+#if SYS_BSD || SYS_MACH || SYS_MSDOS_DJGPP
+
+#ifndef SYS_HAS_NO_GETRUSAGE
+
+#ifndef SYS_RESOURCE_H                  /* definition of 'struct rusage'   */
+# include       <sys/time.h>            /* definition of 'struct timeval'  */
+# include       <sys/resource.h>
+# define SYS_RESOURCE_H
+#endif
+
+#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
+extern int getrusage ( int, struct rusage * );
+#endif
+
+UInt SyTime ( void )
+{
+    struct rusage       buf;
+
+    if ( getrusage( RUSAGE_SELF, &buf ) ) {
+        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -syStartTime;
+}
+
+#endif
+
+#ifdef SYS_HAS_NO_GETRUSAGE
+
+#ifndef SYS_TIMES_H                     /* time functions                  */
+# include       <sys/types.h>
+# include       <sys/times.h>
+# define SYS_TIMES_H
+#endif
+#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
+extern int times ( struct tms * );
+#endif
+
+UInt SyTime ( void )
+{
+    struct tms          tbuf;
+
+    if ( times( &tbuf ) == -1 ) {
+        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return 100 * tbuf.tms_utime / (60/10) - syStartTime;
+}
+
+#endif
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG/OS2
+**
+**  For UNIX System V and OS/2 the clock ticks in 1/HZ,  this is usually 1/60
+**  or 1/100.
+*/
+#if SYS_USG || SYS_OS2_EMX
+
+#ifndef SYS_TIMES_H                     /* time functions                  */
+# include       <sys/param.h>           /* definition of 'HZ'              */
+# include       <sys/types.h>
+# include       <sys/times.h>
+# define SYS_TIMES_H
+#endif
+#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
+extern int times ( struct tms * );
+#endif
+
+UInt SyTime ( void )
+{
+    struct tms          tbuf;
+
+    if ( times( &tbuf ) == -1 ) {
+        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
+        SyExit( 1 );
+    }
+    return 100 * tbuf.tms_utime / (HZ / 10) - syStartTime;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . TOS/VMS
+**
+**  For TOS and VMS we use the function 'clock' and allow to stop the clock.
+*/
+#if SYS_TOS_GCC2 || SYS_VMS
+
+#ifndef SYS_TIME_H                      /* time functions                  */
+# include       <time.h>
+# define SYS_TIME_H
+#endif
+#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.2    */
+# if SYS_ANSI
+extern  clock_t         clock ( void );
+# define SYS_CLOCKS     CLOCKS_PER_SEC
+# else
+extern  long            clock ( void );
+#  if SYS_TOS_GCC2
+#   define SYS_CLOCKS   200
+#  else
+#   define SYS_CLOCKS   100
+#  endif
+# endif
+#endif
+
+UInt SyTime ( void )
+{
+    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - syStartTime;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyTime()  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC
+**
+**  For  MAC with MPW we  use the 'TickCount' function  and allow to stop the
+**  clock.
+*/
+#if SYS_MAC_MPW || SYS_MAC_SYC
+
+#ifndef SYS_TYPES_H                     /* various types                   */
+# include       <Types.h>
+# define SYS_TYPES_H
+#endif
+
+#ifndef SYS_EVENTS_H                    /* system events, high level:      */
+# include       <Events.h>              /* 'TickCount'                     */
+# define SYS_EVENTS_H
+#endif
+
+UInt SyTime ( void )
+{
+    return 100 * (UInt)TickCount() / (60/10) - syStartTime;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
-*F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
 **
 **  'IsAlpha' returns 1 if its character argument is a normal character  from
 **  the range 'a..zA..Z' and 0 otherwise.
+**
+**  'IsAlpha' and 'IsDigit' are implemented in the declaration part  of  this
+**  package as follows:
+**
+#include        <ctype.h>
+#define IsAlpha(ch)     (isalpha(ch))
+#define IsDigit(ch)     (isdigit(ch))
+*/
+
+
+/****************************************************************************
+**
+*F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
 **
 **  'IsDigit' returns 1 if its character argument is a digit from  the  range
 **  '0..9' and 0 otherwise.
@@ -585,6 +878,7 @@ UInt   syStopTime;
 # include      <string.h>
 # define SYS_STRING_H
 #endif
+
 #ifndef SYS_HAS_STRING_PROTO            /* ANSI/TRAD decl. from H&S 13     */
 # if SYS_ANSI
 extern  char *          strncat ( char *, SYS_CONST char *, size_t );
@@ -599,7 +893,7 @@ extern  int             strlen ( SYS_CONST char * );
 # endif
 #endif
 
-UInt            SyStrlen (
+UInt SyStrlen (
     Char *              str )
 {
     return strlen( str );
@@ -614,7 +908,7 @@ UInt            SyStrlen (
 **  according to whether <str1> is greater  than,  equal  to,  or  less  than
 **  <str2> lexicographically.
 */
-Int             SyStrcmp (
+Int SyStrcmp (
     Char *              str1,
     Char *              str2 )
 {
@@ -630,7 +924,7 @@ Int             SyStrcmp (
 **  according  to whether  <str1>  is greater than,  equal  to,  or less than
 **  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
 */
-Int             SyStrncmp (
+Int SyStrncmp (
     Char *              str1,
     Char *              str2,
     UInt                len )
@@ -649,7 +943,8 @@ Int             SyStrncmp (
 **  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
 */
 #ifdef SYS_HAS_BROKEN_STRNCAT
-Char *          SyStrncat (
+
+Char * SyStrncat (
     Char *              dst,
     Char *              src,
     UInt                len )
@@ -667,7 +962,7 @@ Char *          SyStrncat (
 
 #else
 
-Char *          SyStrncat (
+Char * SyStrncat (
     Char *              dst,
     Char *              src,
     UInt                len )
@@ -680,34 +975,26 @@ Char *          SyStrncat (
 
 /****************************************************************************
 **
-*V  'syBuf' . . . . . . . . . . . . .  buffer and other info for files, local
+
+*F * * * * * * * * * * * * * * * * input/output * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
 **  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating theis  buffers  using  'malloc',  which would
+**  routines  from   allocating their  buffers  using  'malloc',  which would
 **  otherwise confuse Gasman.
 */
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
-# include       <unistd.h>
-# define SYS_UNISTD_H
-#endif
-#ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
-extern  FILE *          fopen ( SYS_CONST char *, SYS_CONST char * );
-extern  int             fclose ( FILE * );
-extern  void            setbuf ( FILE *, char * );
-extern  char *          fgets ( char *, int, FILE * );
-extern  int             fputs ( SYS_CONST char *, FILE * );
-#endif
-
 struct {
     FILE *      fp;                     /* file pointer for this file      */
     FILE *      echo;                   /* file pointer for the echo       */
     UInt        pipe;                   /* file is really a pipe           */
     Char        buf [BUFSIZ];           /* the buffer for this file        */
-}       syBuf [16];
+} syBuf [16];
 
 
 /****************************************************************************
@@ -732,7 +1019,7 @@ struct {
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-Int             SyFopen (
+Int SyFopen (
     Char *              name,
     Char *              mode )
 {
@@ -801,7 +1088,7 @@ Int             SyFopen (
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-void            SyFclose (
+void SyFclose (
     Int                 fid )
 {
     /* check file identifier                                               */
@@ -829,6 +1116,1384 @@ void            SyFclose (
 
 /****************************************************************************
 **
+
+*F  syStartraw( <fid> ) . . . . . . start raw mode on input file <fid>, local
+**
+**  The  following four  functions are  the  actual system  dependent part of
+**  'SyFgets'.
+**
+**  'syStartraw' tries to put the file with the file  identifier  <fid>  into
+**  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
+**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
+**  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
+**
+**  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
+**  back into whatever mode the terminal had before 'syStartraw'.
+**
+**  'syGetch' reads one character from the file <fid>, which must  have  been
+**  turned into raw mode before, and returns it.
+**
+**  'syEchoch' puts the character <ch> to the file opened by 'syStartraw' for
+**  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
+**  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
+*/
+extern UInt syStartraw (
+            Int                 fid );
+
+extern void syStopraw (
+            Int                 fid );
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+**
+**  For Berkeley UNIX, input/output redirection and typeahead are  supported.
+**  We switch the terminal line into 'CBREAK' mode and also disable the echo.
+**  We do not switch to 'RAW'  mode because  this would flush  all typeahead.
+**  Because 'CBREAK' leaves signals enabled we have to disable the characters
+**  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
+**  We also turn  off  the  xon/xoff  start and  stop characters,  which  are
+**  usually set  to '<ctr>-S' and '<ctr>-Q' so  we can get  those characters.
+**  We  do not  change the  suspend  character, which  is usually  '<ctr>-Z',
+**  instead we catch the signal, so that we  can turn  the terminal line back
+**  to cooked mode before stopping GAP and back to raw mode when continueing.
+*/
+#if SYS_BSD || SYS_MACH
+
+#ifndef SYS_SGTTY_H                     /* terminal control functions      */
+# include       <sgtty.h>
+# define SYS_SGTTY_H
+#endif
+
+#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
+extern  int             ioctl ( int, unsigned long, char * );
+#endif
+
+struct sgttyb   syOld, syNew;           /* old and new terminal state      */
+struct tchars   syOldT, syNewT;         /* old and new special characters  */
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
+#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
+extern  int             read ( int, char *, int );
+extern  int             write ( int, char *, int );
+#endif
+
+#ifdef SIGTSTP
+
+Int syFid;
+
+SYS_SIG_T syAnswerCont (
+    int                 signr )
+{
+    syStartraw( syFid );
+    signal( SIGCONT, SIG_DFL );
+    kill( getpid(), SIGCONT );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+SYS_SIG_T syAnswerTstp (
+    int                 signr )
+{
+    syStopraw( syFid );
+    signal( SIGCONT, syAnswerCont );
+    kill( getpid(), SIGTSTP );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+#endif
+
+UInt syStartraw (
+    Int                 fid )
+{
+    /* if running under a window handler, tell it that we want to read     */
+    if ( SyWindow ) {
+        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
+        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
+        else {                                             return 0; }
+    }
+
+    /* try to get the terminal attributes, will fail if not terminal       */
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCGETP, (char*)&syOld ) == -1 )
+        return 0;
+
+    /* disable interrupt, quit, start and stop output characters           */
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCGETC, (char*)&syOldT ) == -1 )
+        return 0;
+    syNewT = syOldT;
+    syNewT.t_intrc  = -1;
+    syNewT.t_quitc  = -1;
+    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
+    /*C syNewT.t_startc = -1;                                              */
+    /*C syNewT.t_stopc  = -1;                                              */
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETC, (char*)&syNewT ) == -1 )
+        return 0;
+
+    /* disable input buffering, line editing and echo                      */
+    syNew = syOld;
+    syNew.sg_flags |= CBREAK;
+    syNew.sg_flags &= ~ECHO;
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETN, (char*)&syNew ) == -1 )
+        return 0;
+
+#ifdef SIGTSTP
+    /* install signal handler for stop                                     */
+    syFid = fid;
+    signal( SIGTSTP, syAnswerTstp );
+#endif
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . . . USG
+**
+**  For UNIX System V, input/output redirection and typeahead are  supported.
+**  We  turn off input buffering  and canonical input editing and  also echo.
+**  Because we leave the signals enabled  we  have  to disable the characters
+**  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
+**  We   also turn off the  xon/xoff  start  and  stop  characters, which are
+**  usually set to  '<ctr>-S'  and '<ctr>-Q' so we  can get those characters.
+**  We do  not turn of  signals  'ISIG' because  we want   to catch  stop and
+**  continue signals if this particular version  of UNIX supports them, so we
+**  can turn the terminal line back to cooked mode before stopping GAP.
+*/
+#if SYS_USG
+
+#ifndef SYS_TERMIO_H                    /* terminal control functions      */
+# include       <termio.h>
+# define SYS_TERMIO_H
+#endif
+
+#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
+extern  int             ioctl ( int, int, struct termio * );
+#endif
+
+struct termio   syOld, syNew;           /* old and new terminal state      */
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
+#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
+extern  int             read ( int, char *, int );
+extern  int             write ( int, char *, int );
+#endif
+
+#ifdef SIGTSTP
+
+Int syFid;
+
+SYS_SIG_T syAnswerCont (
+    int                 signr )
+{
+    syStartraw( syFid );
+    signal( SIGCONT, SIG_DFL );
+    kill( getpid(), SIGCONT );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+SYS_SIG_T syAnswerTstp (
+    int                 signr )
+{
+    syStopraw( syFid );
+    signal( SIGCONT, syAnswerCont );
+    kill( getpid(), SIGTSTP );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+#endif
+
+UInt syStartraw (
+    Int                 fid )
+{
+    /* if running under a window handler, tell it that we want to read     */
+    if ( SyWindow ) {
+        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
+        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
+        else {                                             return 0; }
+    }
+
+    /* try to get the terminal attributes, will fail if not terminal       */
+    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
+
+    /* disable interrupt, quit, start and stop output characters           */
+    syNew = syOld;
+    syNew.c_cc[VINTR] = 0377;
+    syNew.c_cc[VQUIT] = 0377;
+    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
+    /*C syNew.c_iflag    &= ~(IXON|INLCR|ICRNL);                           */
+    syNew.c_iflag    &= ~(INLCR|ICRNL);
+
+    /* disable input buffering, line editing and echo                      */
+    syNew.c_cc[VMIN]  = 1;
+    syNew.c_cc[VTIME] = 0;
+    syNew.c_lflag    &= ~(ECHO|ICANON);
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+
+#ifdef SIGTSTP
+    /* install signal handler for stop                                     */
+    syFid = fid;
+    signal( SIGTSTP, syAnswerTstp );
+#endif
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+**
+**  OS/2 is almost the same as UNIX System V, except for function keys.
+*/
+#if SYS_OS2_EMX
+
+#ifndef SYS_TERMIO_H                    /* terminal control functions      */
+# include       <termio.h>
+# define SYS_TERMIO_H
+#endif
+#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
+extern  int             ioctl ( int, int, struct termio * );
+#endif
+
+struct termio   syOld, syNew;           /* old and new terminal state      */
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
+#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
+extern  int             read ( int, char *, int );
+extern  int             write ( int, char *, int );
+#endif
+
+#ifdef SIGTSTP
+
+Int             syFid;
+
+SYS_SIG_T syAnswerCont (
+    int                 signr )
+{
+    syStartraw( syFid );
+    signal( SIGCONT, SIG_DFL );
+    kill( getpid(), SIGCONT );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+SYS_SIG_T syAnswerTstp (
+    int                 signr )
+{
+    syStopraw( syFid );
+    signal( SIGCONT, syAnswerCont );
+    kill( getpid(), SIGTSTP );
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+#endif
+
+UInt syStartraw (
+    Int                 fid )
+{
+    /* if running under a window handler, tell it that we want to read     */
+    if ( SyWindow ) {
+        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
+        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
+        else {                                             return 0; }
+    }
+
+    /* try to get the terminal attributes, will fail if not terminal       */
+    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
+
+    /* disable interrupt, quit, start and stop output characters           */
+    syNew = syOld;
+    syNew.c_cc[VINTR] = 0377;
+    syNew.c_cc[VQUIT] = 0377;
+    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
+    /*C syNew.c_iflag    &= ~(IXON|INLCR|ICRNL);                           */
+    syNew.c_iflag    &= ~(INLCR|ICRNL);
+
+    /* disable input buffering, line editing and echo                      */
+    syNew.c_cc[VMIN]  = 1;
+    syNew.c_cc[VTIME] = 0;
+    syNew.c_lflag    &= ~(ECHO|ICANON|IDEFAULT);
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
+
+#ifdef SIGTSTP
+    /* install signal handler for stop                                     */
+    syFid = fid;
+    signal( SIGTSTP, syAnswerTstp );
+#endif
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+**
+**  For MS-DOS we read  directly  from the  keyboard.   Note that the  window
+**  handler is not currently supported.
+*/
+#if SYS_MSDOS_DJGPP
+
+#ifndef SYS_KBD_H                       /* keyboard functions              */
+# include       <pc.h>
+# define GETKEY()       getkey()
+# define PUTCHAR(C)     putchar(C)
+# define KBHIT()        kbhit()
+# define SYS_KBD_H
+#endif
+
+UInt            syStopout;              /* output is stopped by <ctr>-'S'  */
+
+Char            syTypeahead [256];      /* characters read by 'SyIsIntr'   */
+
+Char            syAltMap [35] = "QWERTYUIOP    ASDFGHJKL     ZXCVBNM";
+
+UInt syStartraw (
+    Int                 fid )
+{
+    /* check if the file is a terminal                                     */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return 0;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . . . TOS
+**
+**  For TOS we read directly from the keyboard.  Note that the window handler
+**  is not currently supported.
+*/
+#if SYS_TOS_GCC2
+
+#ifndef SYS_KBD_H                       /* keyboard functions              */
+# include       <unixlib.h>             /* declaration of 'isatty'         */
+# include       <osbind.h>              /* operating system binding        */
+# define GETKEY()       Bconin( 2 )
+# define PUTCHAR(C)     do{if(C=='\n')Bconout(2,'\r');Bconout(2,C);}while(0)
+# define KBHIT()        Bconstat( 2 )
+# define SYS_KBD_H
+#endif
+
+UInt            syStopout;              /* output is stopped by <ctr>-'S'  */
+
+Char            syTypeahead [256];      /* characters read by 'SyIsIntr'   */
+
+Int syStartraw (
+    Int                 fid )
+{
+    /* check if the file is a terminal                                     */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return 0;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . . . VMS
+**
+**  For VMS we use a virtual keyboard to read and  write from the unique tty.
+**  We do not support the window handler.
+*/
+#if SYS_VMS
+
+#ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
+extern  int             isatty ( int );
+#endif
+
+UInt            syVirKbd;       /* virtual (raw) keyboard          */
+
+UInt syStartraw (
+    Int                 fid )
+{
+    /* test whether the file is connected to a terminal                    */
+    return isatty( fileno(syBuf[fid].fp) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
+**
+**  For the MAC with MPW we do not really know how to do this.
+*/
+#if SYS_MAC_MPW
+
+Int syStartraw (
+    Int                 fid )
+{
+    /* clear away pending <command>-'.'                                    */
+    SyIsIntr();
+
+    return 0;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStartraw( <fid> ) . . . . . . . . . . . . . . . . . . . . . . . MAC SYC
+**
+**  For the MAC with Symantec C we use the  console input/output package.  We
+**  must  set the console to  raw mode and  back to echo   mode.  In raw mode
+**  there is no cursor, so we reverse the current character.
+*/
+#if SYS_MAC_SYC
+
+#ifndef SYS_UNIX_H                      /* unix stuff:                     */
+# include       <unix.h>                /* 'isatty'                        */
+# define SYS_UNIX_H
+#endif
+
+#ifndef SYS_CONSOLE_H                   /* console stuff:                  */
+# include       <Console.h>             /* 'csetmode'                      */
+# define SYS_CONSOLE_H
+#endif
+
+#ifndef SYS_OSUTILS_H                   /* system utils:                   */
+# include       <OSUtils.h>             /* 'SysBeep'                       */
+# define SYS_OSUTILS_H
+#endif
+
+UInt syStartraw (
+    Int                 fid )
+{
+
+    /* cannot switch ordinary files to raw mode                            */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return 0;
+
+    /* turn terminal to raw mode                                           */
+    csetmode( C_RAW, syBuf[fid].fp );
+    return 1;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  syStopraw( <fid> )  . . . . . .  stop raw mode on input file <fid>, local
+*/
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+void syStopraw (
+    Int                 fid )
+{
+    /* if running under a window handler, don't do nothing                 */
+    if ( SyWindow )
+        return;
+
+#ifdef SIGTSTP
+    /* remove signal handler for stop                                      */
+    signal( SIGTSTP, SIG_DFL );
+#endif
+
+    /* enable input buffering, line editing and echo again                 */
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETN, (char*)&syOld ) == -1 )
+        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+
+    /* enable interrupt, quit, start and stop output characters again      */
+    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETC, (char*)&syOldT ) == -1 )
+        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+void syStopraw (
+    Int                 fid )
+{
+    /* if running under a window handler, don't do nothing                 */
+    if ( SyWindow )
+        return;
+
+#ifdef SIGTSTP
+    /* remove signal handler for stop                                      */
+    signal( SIGTSTP, SIG_DFL );
+#endif
+
+    /* enable input buffering, line editing and echo again                 */
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
+        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+void syStopraw (
+    Int                 fid )
+{
+    /* if running under a window handler, don't do nothing                 */
+    if ( SyWindow )
+        return;
+
+#ifdef SIGTSTP
+    /* remove signal handler for stop                                      */
+    signal( SIGTSTP, SIG_DFL );
+#endif
+
+    /* enable input buffering, line editing and echo again                 */
+    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
+        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+void syStopraw (
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+void syStopraw (
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+void syStopraw (
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+void syStopraw (
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syStopraw( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+void syStopraw (
+    Int                 fid )
+{
+    /* probably only paranoid                                              */
+    if ( isatty( fileno(syBuf[fid].fp) ) )
+        return;
+
+    /* turn terminal back to echo mode                                     */
+    csetmode( C_ECHO, syBuf[fid].fp );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  syGetch( <fid> )  . . . . . . . . . . . . .  get a char from <fid>, local
+*/
+#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
+#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
+#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+Int syGetch (
+    Int                 fid )
+{
+    Char                ch;
+
+    /* read a character                                                    */
+    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
+        ;
+
+    /* if running under a window handler, handle special characters        */
+    if ( SyWindow && ch == '@' ) {
+        do {
+            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
+                ;
+        } while ( ch < '@' || 'z' < ch );
+        if ( ch == 'y' ) {
+            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
+            ch = syGetch(fid);
+        }
+        else if ( 'A' <= ch && ch <= 'Z' )
+            ch = CTR(ch);
+    }
+
+    /* return the character                                                */
+    return ch;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+Int syGetch (
+    Int                 fid )
+{
+    Char                ch;
+
+    /* read a character                                                    */
+    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
+        ;
+
+    /* if running under a window handler, handle special characters        */
+    if ( SyWindow && ch == '@' ) {
+        do {
+            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
+                ;
+        } while ( ch < '@' || 'z' < ch );
+        if ( ch == 'y' ) {
+            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
+            ch = syGetch(fid);
+        }
+        else if ( 'A' <= ch && ch <= 'Z' )
+            ch = CTR(ch);
+    }
+
+    /* return the character                                                */
+    return ch;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+#ifndef SYS_KBD_H                       /* keyboard scan codes             */
+# include       <sys/kbdscan.h>
+# define SYS_KBD_H
+#endif
+
+Int syGetch (
+    Int                 fid )
+{
+    UChar               ch;
+    Int                 ch2;
+
+syGetchAgain:
+    /* read a character                                                    */
+    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
+        ;
+
+    /* if running under a window handler, handle special characters        */
+    if ( SyWindow && ch == '@' ) {
+        do {
+            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 )
+                ;
+        } while ( ch < '@' || 'z' < ch );
+        if ( ch == 'y' ) {
+            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
+            ch = syGetch(fid);
+        }
+        else if ( 'A' <= ch && ch <= 'Z' )
+            ch = CTR(ch);
+    }
+
+    ch2 = ch;
+
+    /* handle function keys                                                */
+    if ( ch == '\0' ) {
+        while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
+            ;
+        switch ( ch ) {
+        case K_LEFT:            ch2 = CTR('B');  break;
+        case K_RIGHT:           ch2 = CTR('F');  break;
+        case K_UP:
+        case K_PAGEUP:          ch2 = CTR('P');  break;
+        case K_DOWN:
+        case K_PAGEDOWN:        ch2 = CTR('N');  break;
+        case K_DEL:             ch2 = CTR('D');  break;
+        case K_HOME:            ch2 = CTR('A');  break;
+        case K_END:             ch2 = CTR('E');  break;
+        case K_CTRL_END:        ch2 = CTR('K');  break;
+        case K_CTRL_LEFT:
+        case K_ALT_B:           ch2 = ESC('B');  break;
+        case K_CTRL_RIGHT:
+        case K_ALT_F:           ch2 = ESC('F');  break;
+        case K_ALT_D:           ch2 = ESC('D');  break;
+        case K_ALT_DEL:
+        case K_ALT_BACKSPACE:   ch2 = ESC(127);  break;
+        case K_ALT_U:           ch2 = ESC('U');  break;
+        case K_ALT_L:           ch2 = ESC('L');  break;
+        case K_ALT_C:           ch2 = ESC('C');  break;
+        case K_CTRL_PAGEUP:     ch2 = ESC('<');  break;
+        case K_CTRL_PAGEDOWN:   ch2 = ESC('>');  break;
+        default:                goto syGetchAgain;
+        }
+    }
+
+    /* return the character                                                */
+    return ch2;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+Int syGetch (
+    Int                 fid )
+{
+    Int                 ch;
+
+    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
+    if ( syTypeahead[0] != '\0' ) {
+        ch = syTypeahead[0];
+        strcpy( syTypeahead, syTypeahead+1 );
+    }
+
+    /* otherwise read from the keyboard                                    */
+    else {
+        ch = GETKEY();
+    }
+
+    /* postprocess the character                                           */
+    if ( 0x110 <= ch && ch <= 0x132 )   ch = ESC( syAltMap[ch-0x110] );
+    else if ( ch == 0x147 )             ch = CTR('A');
+    else if ( ch == 0x14f )             ch = CTR('E');
+    else if ( ch == 0x148 )             ch = CTR('P');
+    else if ( ch == 0x14b )             ch = CTR('B');
+    else if ( ch == 0x14d )             ch = CTR('F');
+    else if ( ch == 0x150 )             ch = CTR('N');
+    else if ( ch == 0x153 )             ch = CTR('D');
+    else                                ch &= 0xFF;
+
+    /* return the character                                                */
+    return ch;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+Int syGetch (
+    Int                 fid )
+{
+    Int                 ch;
+
+    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
+    if ( syTypeahead[0] != '\0' ) {
+        ch = syTypeahead[0];
+        strcpy( syTypeahead, syTypeahead+1 );
+    }
+
+    /* otherwise read from the keyboard                                    */
+    else {
+        ch = GETKEY();
+    }
+
+    /* postprocess the character                                           */
+    if (      ch == 0x00480000 )        ch = CTR('P');
+    else if ( ch == 0x004B0000 )        ch = CTR('B');
+    else if ( ch == 0x004D0000 )        ch = CTR('F');
+    else if ( ch == 0x00500000 )        ch = CTR('N');
+    else if ( ch == 0x00730000 )        ch = CTR('Y');
+    else if ( ch == 0x00740000 )        ch = CTR('Z');
+    else                                ch = ch & 0xFF;
+
+    /* return the character                                                */
+    return ch;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+Int syGetch (
+    Int                 fid )
+{
+    Char                ch;
+
+    /* read a character                                                    */
+    smg$read_keystroke( &syVirKbd, &ch );
+
+    /* return the character                                                */
+    return ch;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+int syGetch (
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+Int syGetch2 (
+    Int                 fid,
+    Int                 cur )
+{
+    Int                 ch;
+
+    /* probably only paranoid                                              */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return EOF;
+
+    /* make the current character reverse to simulate a cursor             */
+    syEchoch( (cur != '\0' ? cur : ' ') | 0x80, fid );
+    syEchoch( '\b', fid );
+
+    /* get a character, ignore EOF and chars beyond 0x7F (reverse video)   */
+    while ( ((ch = getchar()) == EOF) || (0x7F < ch) )
+        ;
+
+    /* handle special characters                                           */
+    if (      ch == 28 )  ch = CTR('B');
+    else if ( ch == 29 )  ch = CTR('F');
+    else if ( ch == 30 )  ch = CTR('P');
+    else if ( ch == 31 )  ch = CTR('N');
+
+    /* make the current character normal again                             */
+    syEchoch( (cur != '\0' ? cur : ' '), fid );
+    syEchoch( '\b', fid );
+
+    /* return the character                                                */
+    return ch;
+}
+
+Int syGetch (
+    Int                 fid )
+{
+    /* return character                                                    */
+    return syGetch2( fid, '\0' );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  syEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
+*/
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    PUTCHAR( ch );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    PUTCHAR( ch );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+
+    /* probably only paranoid                                              */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return;
+
+    /* echo the character                                                  */
+    if ( 31 < (ch & 0x7F) || ch == '\b' || ch == '\n' || ch == '\r' )
+        putchar( ch );
+    else if ( ch == CTR('G') )
+        SysBeep( 1 );
+    else
+        putchar( '?' );
+
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  syEchos( <ch>, <fid> )  . . . . . . . . . . . echo a char to <fid>, local
+*/
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* handle stopped output                                               */
+    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
+
+    /* echo the string                                                     */
+    for ( s = str; *s != '\0'; s++ )
+        PUTCHAR( *s );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* handle stopped output                                               */
+    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
+
+    /* echo the string                                                     */
+    for ( s = str; *s != '\0'; s++ )
+        PUTCHAR( *s );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+void            syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+    for ( s = str; *s != '\0'; s++ )
+        putchar( *s );
+    fflush( stdout );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* probably only paranoid                                              */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return;
+
+    /* print the string                                                    */
+    for ( s = str; *s != '\0'; s++ )
+        putchar( *s );
+
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
 *F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
 **
 **  'SyFgets' is called to read a line from the file  with  identifier <fid>.
@@ -884,28 +2549,26 @@ void            SyFclose (
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-extern  UInt            syStartraw ( Int fid );
-extern  void            syStopraw  ( Int fid );
-extern  Int             syGetch    ( Int fid );
-#if SYS_MAC_SYC
-extern  Int             syGetch2   ( Int fid, Int cur );
-#endif
-extern  void            syEchoch   ( Int ch, Int fid );
-extern  void            syEchos    ( Char * str, Int fid );
+extern UInt iscomplete_rnam (
+            Char *              name,
+            UInt                len );
 
-extern  UInt            iscomplete_rnam ( Char *     name,
-                                     UInt       len );
-extern  UInt            completion_rnam ( Char *     name,
-                                     UInt       len );
+extern UInt completion_rnam (
+            Char *              name,
+            UInt                len );
 
-extern  UInt            iscomplete_gvar ( Char *     name,
-                                     UInt       len );
-extern  UInt            completion_gvar ( Char *     name,
-                                     UInt       len );
+extern UInt iscomplete_gvar (
+            Char *              name,
+            UInt                len );
 
-extern  void            syWinPut   ( Int        fid,
-                                     Char *     cmd,
-                                     Char *     str );
+extern UInt completion_gvar (
+            Char *              name,
+            UInt                len );
+
+extern void syWinPut (
+            Int                 fid,
+            Char *              cmd,
+            Char *              str );
 
 UInt            syLineEdit = 1;         /* 0: no line editing              */
                                         /* 1: line editing if terminal     */
@@ -918,13 +2581,9 @@ Char            syHistory [8192];       /* history of command lines        */
 Char *          syHi = syHistory;       /* actual position in history      */
 UInt            syCTRO;                 /* number of '<ctr>-O' pending     */
 
-#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
-#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
-#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
-
 #define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
 
-Char *          SyFgets (
+Char * SyFgets (
     Char *              line,
     UInt                length,
     Int                 fid )
@@ -1454,1051 +3113,19 @@ Char *          SyFgets (
 
 /****************************************************************************
 **
-*F  syStartraw(<fid>) . . . . . . . start raw mode on input file <fid>, local
-*F  syStopraw(<fid>)  . . . . . . .  stop raw mode on input file <fid>, local
-*F  syGetch(<fid>)  . . . . . . . . . . . . . .  get a char from <fid>, local
-*F  syEchoch(<ch>,<fid>)  . . . . . . . . . . . . echo a char to <fid>, local
-**
-**  This four functions are the actual system dependent  part  of  'SyFgets'.
-**
-**  'syStartraw' tries to put the file with the file  identifier  <fid>  into
-**  raw mode.  I.e.,  disabling  echo  and  any  buffering.  It also finds  a
-**  place to put the echoing  for  'syEchoch'.  If  'syStartraw'  succedes it
-**  returns 1, otherwise, e.g., if the <fid> is not a terminal, it returns 0.
-**
-**  'syStopraw' stops the raw mode for the file  <fid>  again,  switching  it
-**  back into whatever mode the terminal had before 'syStartraw'.
-**
-**  'syGetch' reads one character from the file <fid>, which must  have  been
-**  turned into raw mode before, and returns it.
-**
-**  'syEchoch' puts the character <ch> to the file opened by 'syStartraw' for
-**  echoing.  Note that if the user redirected 'stdout' but not 'stdin',  the
-**  echo for 'stdin' must go to 'ttyname(fileno(stdin))' instead of 'stdout'.
-*/
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Berkeley UNIX, input/output redirection and typeahead are  supported.
-**  We switch the terminal line into 'CBREAK' mode and also disable the echo.
-**  We do not switch to 'RAW'  mode because  this would flush  all typeahead.
-**  Because 'CBREAK' leaves signals enabled we have to disable the characters
-**  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
-**  We also turn  off  the  xon/xoff  start and  stop characters,  which  are
-**  usually set  to '<ctr>-S' and '<ctr>-Q' so  we can get  those characters.
-**  We  do not  change the  suspend  character, which  is usually  '<ctr>-Z',
-**  instead we catch the signal, so that we  can turn  the terminal line back
-**  to cooked mode before stopping GAP and back to raw mode when continueing.
-*/
-#if SYS_BSD || SYS_MACH
-
-#ifndef SYS_SGTTY_H                     /* terminal control functions      */
-# include       <sgtty.h>
-# define SYS_SGTTY_H
-#endif
-#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
-extern  int             ioctl ( int, unsigned long, char * );
-#endif
-
-struct sgttyb   syOld, syNew;           /* old and new terminal state      */
-struct tchars   syOldT, syNewT;         /* old and new special characters  */
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
-#endif
-
-#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
-extern  int             read ( int, char *, int );
-extern  int             write ( int, char *, int );
-#endif
-
-#ifdef SIGTSTP
-
-Int             syFid;
-
-SYS_SIG_T       syAnswerCont (
-    int                 signr )
-{
-    syStartraw( syFid );
-    signal( SIGCONT, SIG_DFL );
-    kill( getpid(), SIGCONT );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-SYS_SIG_T       syAnswerTstp (
-    int                 signr )
-{
-    syStopraw( syFid );
-    signal( SIGCONT, syAnswerCont );
-    kill( getpid(), SIGTSTP );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-#endif
-
-UInt            syStartraw (
-    Int                 fid )
-{
-    /* if running under a window handler, tell it that we want to read     */
-    if ( syWindow ) {
-        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
-        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
-        else {                                             return 0; }
-    }
-
-    /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCGETP, (char*)&syOld ) == -1 )
-        return 0;
-
-    /* disable interrupt, quit, start and stop output characters           */
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCGETC, (char*)&syOldT ) == -1 )
-        return 0;
-    syNewT = syOldT;
-    syNewT.t_intrc  = -1;
-    syNewT.t_quitc  = -1;
-    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
-    /*C syNewT.t_startc = -1;                                              */
-    /*C syNewT.t_stopc  = -1;                                              */
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETC, (char*)&syNewT ) == -1 )
-        return 0;
-
-    /* disable input buffering, line editing and echo                      */
-    syNew = syOld;
-    syNew.sg_flags |= CBREAK;
-    syNew.sg_flags &= ~ECHO;
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETN, (char*)&syNew ) == -1 )
-        return 0;
-
-#ifdef SIGTSTP
-    /* install signal handler for stop                                     */
-    syFid = fid;
-    signal( SIGTSTP, syAnswerTstp );
-#endif
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-    /* if running under a window handler, don't do nothing                 */
-    if ( syWindow )
-        return;
-
-#ifdef SIGTSTP
-    /* remove signal handler for stop                                      */
-    signal( SIGTSTP, SIG_DFL );
-#endif
-
-    /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETN, (char*)&syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-
-    /* enable interrupt, quit, start and stop output characters again      */
-    if ( ioctl( fileno(syBuf[fid].fp), TIOCSETC, (char*)&syOldT ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( syWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    Char                ch2;
-
-    /* write the character to the associate echo output device             */
-    ch2 = ch;
-    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-
-    /* if running under a window handler, duplicate '@'                    */
-    if ( syWindow && ch == '@' ) {
-        ch2 = ch;
-        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-    }
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
-
-    /* otherwise, write it to the associate echo output device             */
-    else
-        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For UNIX System V, input/output redirection and typeahead are  supported.
-**  We  turn off input buffering  and canonical input editing and  also echo.
-**  Because we leave the signals enabled  we  have  to disable the characters
-**  for interrupt and quit, which are usually set to '<ctr>-C' and '<ctr>-B'.
-**  We   also turn off the  xon/xoff  start  and  stop  characters, which are
-**  usually set to  '<ctr>-S'  and '<ctr>-Q' so we  can get those characters.
-**  We do  not turn of  signals  'ISIG' because  we want   to catch  stop and
-**  continue signals if this particular version  of UNIX supports them, so we
-**  can turn the terminal line back to cooked mode before stopping GAP.
-*/
-#if SYS_USG
-
-#ifndef SYS_TERMIO_H                    /* terminal control functions      */
-# include       <termio.h>
-# define SYS_TERMIO_H
-#endif
-#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
-extern  int             ioctl ( int, int, struct termio * );
-#endif
-
-struct termio   syOld, syNew;           /* old and new terminal state      */
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
-#endif
-
-#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
-extern  int             read ( int, char *, int );
-extern  int             write ( int, char *, int );
-#endif
-
-#ifdef SIGTSTP
-
-Int             syFid;
-
-SYS_SIG_T       syAnswerCont (
-    int                 signr )
-{
-    syStartraw( syFid );
-    signal( SIGCONT, SIG_DFL );
-    kill( getpid(), SIGCONT );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-SYS_SIG_T       syAnswerTstp (
-    int                 signr )
-{
-    syStopraw( syFid );
-    signal( SIGCONT, syAnswerCont );
-    kill( getpid(), SIGTSTP );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-#endif
-
-UInt            syStartraw (
-    Int                 fid )
-{
-    /* if running under a window handler, tell it that we want to read     */
-    if ( syWindow ) {
-        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
-        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
-        else {                                             return 0; }
-    }
-
-    /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
-
-    /* disable interrupt, quit, start and stop output characters           */
-    syNew = syOld;
-    syNew.c_cc[VINTR] = 0377;
-    syNew.c_cc[VQUIT] = 0377;
-    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
-    /*C syNew.c_iflag    &= ~(IXON|INLCR|ICRNL);                           */
-    syNew.c_iflag    &= ~(INLCR|ICRNL);
-
-    /* disable input buffering, line editing and echo                      */
-    syNew.c_cc[VMIN]  = 1;
-    syNew.c_cc[VTIME] = 0;
-    syNew.c_lflag    &= ~(ECHO|ICANON);
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
-
-#ifdef SIGTSTP
-    /* install signal handler for stop                                     */
-    syFid = fid;
-    signal( SIGTSTP, syAnswerTstp );
-#endif
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-    /* if running under a window handler, don't do nothing                 */
-    if ( syWindow )
-        return;
-
-#ifdef SIGTSTP
-    /* remove signal handler for stop                                      */
-    signal( SIGTSTP, SIG_DFL );
-#endif
-
-    /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( syWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    Char                ch2;
-
-    /* write the character to the associate echo output device             */
-    ch2 = ch;
-    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-
-    /* if running under a window handler, duplicate '@'                    */
-    if ( syWindow && ch == '@' ) {
-        ch2 = ch;
-        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-    }
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
-
-    /* otherwise, write it to the associate echo output device             */
-    else
-        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  OS/2 is almost the same as UNIX System V, except for function keys.
-*/
-#if SYS_OS2_EMX
-
-#ifndef SYS_TERMIO_H                    /* terminal control functions      */
-# include       <termio.h>
-# define SYS_TERMIO_H
-#endif
-#ifndef SYS_HAS_IOCTL_PROTO             /* UNIX decl. from 'man'           */
-extern  int             ioctl ( int, int, struct termio * );
-#endif
-
-struct termio   syOld, syNew;           /* old and new terminal state      */
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
-#endif
-
-#ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
-extern  int             read ( int, char *, int );
-extern  int             write ( int, char *, int );
-#endif
-
-#ifdef SIGTSTP
-
-Int             syFid;
-
-SYS_SIG_T       syAnswerCont (
-    int                 signr )
-{
-    syStartraw( syFid );
-    signal( SIGCONT, SIG_DFL );
-    kill( getpid(), SIGCONT );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-SYS_SIG_T       syAnswerTstp (
-    int                 signr )
-{
-    syStopraw( syFid );
-    signal( SIGCONT, syAnswerCont );
-    kill( getpid(), SIGTSTP );
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-#endif
-
-UInt            syStartraw (
-    Int                 fid )
-{
-    /* if running under a window handler, tell it that we want to read     */
-    if ( syWindow ) {
-        if      ( fid == 0 ) { syWinPut( fid, "@i", "" );  return 1; }
-        else if ( fid == 2 ) { syWinPut( fid, "@e", "" );  return 1; }
-        else {                                             return 0; }
-    }
-
-    /* try to get the terminal attributes, will fail if not terminal       */
-    if ( ioctl( fileno(syBuf[fid].fp), TCGETA, &syOld ) == -1 )   return 0;
-
-    /* disable interrupt, quit, start and stop output characters           */
-    syNew = syOld;
-    syNew.c_cc[VINTR] = 0377;
-    syNew.c_cc[VQUIT] = 0377;
-    /*C 27-Nov-90 martin changing '<ctr>S' and '<ctr>Q' does not work      */
-    /*C syNew.c_iflag    &= ~(IXON|INLCR|ICRNL);                           */
-    syNew.c_iflag    &= ~(INLCR|ICRNL);
-
-    /* disable input buffering, line editing and echo                      */
-    syNew.c_cc[VMIN]  = 1;
-    syNew.c_cc[VTIME] = 0;
-    syNew.c_lflag    &= ~(ECHO|ICANON|IDEFAULT);
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syNew ) == -1 )  return 0;
-
-#ifdef SIGTSTP
-    /* install signal handler for stop                                     */
-    syFid = fid;
-    signal( SIGTSTP, syAnswerTstp );
-#endif
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-    /* if running under a window handler, don't do nothing                 */
-    if ( syWindow )
-        return;
-
-#ifdef SIGTSTP
-    /* remove signal handler for stop                                      */
-    signal( SIGTSTP, SIG_DFL );
-#endif
-
-    /* enable input buffering, line editing and echo again                 */
-    if ( ioctl( fileno(syBuf[fid].fp), TCSETAW, &syOld ) == -1 )
-        fputs("gap: 'ioctl' could not turn off raw mode!\n",stderr);
-}
-
-#ifndef SYS_KBD_H                       /* keyboard scan codes             */
-# include       <sys/kbdscan.h>
-# define SYS_KBD_H
-#endif
-
-Int             syGetch (
-    Int                 fid )
-{
-    UChar               ch;
-    Int                 ch2;
-
-syGetchAgain:
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( syWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    ch2 = ch;
-
-    /* handle function keys                                                */
-    if ( ch == '\0' ) {
-        while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
-            ;
-        switch ( ch ) {
-        case K_LEFT:            ch2 = CTR('B');  break;
-        case K_RIGHT:           ch2 = CTR('F');  break;
-        case K_UP:
-        case K_PAGEUP:          ch2 = CTR('P');  break;
-        case K_DOWN:
-        case K_PAGEDOWN:        ch2 = CTR('N');  break;
-        case K_DEL:             ch2 = CTR('D');  break;
-        case K_HOME:            ch2 = CTR('A');  break;
-        case K_END:             ch2 = CTR('E');  break;
-        case K_CTRL_END:        ch2 = CTR('K');  break;
-        case K_CTRL_LEFT:
-        case K_ALT_B:           ch2 = ESC('B');  break;
-        case K_CTRL_RIGHT:
-        case K_ALT_F:           ch2 = ESC('F');  break;
-        case K_ALT_D:           ch2 = ESC('D');  break;
-        case K_ALT_DEL:
-        case K_ALT_BACKSPACE:   ch2 = ESC(127);  break;
-        case K_ALT_U:           ch2 = ESC('U');  break;
-        case K_ALT_L:           ch2 = ESC('L');  break;
-        case K_ALT_C:           ch2 = ESC('C');  break;
-        case K_CTRL_PAGEUP:     ch2 = ESC('<');  break;
-        case K_CTRL_PAGEDOWN:   ch2 = ESC('>');  break;
-        default:                goto syGetchAgain;
-        }
-    }
-
-    /* return the character                                                */
-    return ch2;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    Char                ch2;
-
-    /* write the character to the associate echo output device             */
-    ch2 = ch;
-    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-
-    /* if running under a window handler, duplicate '@'                    */
-    if ( syWindow && ch == '@' ) {
-        ch2 = ch;
-        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-    }
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
-        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
-
-    /* otherwise, write it to the associate echo output device             */
-    else
-        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For MS-DOS we read directly from the keyboard.
-**  Note that the window handler is not currently supported.
-*/
-#if SYS_MSDOS_DJGPP
-
-#ifndef SYS_KBD_H                       /* keyboard functions              */
-# include       <pc.h>
-# define GETKEY()       getkey()
-# define PUTCHAR(C)     putchar(C)
-# define KBHIT()        kbhit()
-# define SYS_KBD_H
-#endif
-
-UInt            syStopout;              /* output is stopped by <ctr>-'S'  */
-
-Char            syTypeahead [256];      /* characters read by 'SyIsIntr'   */
-
-Char            syAltMap [35] = "QWERTYUIOP    ASDFGHJKL     ZXCVBNM";
-
-UInt            syStartraw (
-    Int                 fid )
-{
-    /* check if the file is a terminal                                     */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return 0;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    Int                 ch;
-
-    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
-    if ( syTypeahead[0] != '\0' ) {
-        ch = syTypeahead[0];
-        strcpy( syTypeahead, syTypeahead+1 );
-    }
-
-    /* otherwise read from the keyboard                                    */
-    else {
-        ch = GETKEY();
-    }
-
-    /* postprocess the character                                           */
-    if ( 0x110 <= ch && ch <= 0x132 )   ch = ESC( syAltMap[ch-0x110] );
-    else if ( ch == 0x147 )             ch = CTR('A');
-    else if ( ch == 0x14f )             ch = CTR('E');
-    else if ( ch == 0x148 )             ch = CTR('P');
-    else if ( ch == 0x14b )             ch = CTR('B');
-    else if ( ch == 0x14d )             ch = CTR('F');
-    else if ( ch == 0x150 )             ch = CTR('N');
-    else if ( ch == 0x153 )             ch = CTR('D');
-    else                                ch &= 0xFF;
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    PUTCHAR( ch );
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    Char *              s;
-
-    /* handle stopped output                                               */
-    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
-
-    /* echo the string                                                     */
-    for ( s = str; *s != '\0'; s++ )
-        PUTCHAR( *s );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For TOS we read directly from the keyboard.
-**  Note that the window handler is not currently supported.
-*/
-#if SYS_TOS_GCC2
-
-#ifndef SYS_KBD_H                       /* keyboard functions              */
-# include       <unixlib.h>             /* declaration of 'isatty'         */
-# include       <osbind.h>              /* operating system binding        */
-# define GETKEY()       Bconin( 2 )
-# define PUTCHAR(C)     do{if(C=='\n')Bconout(2,'\r');Bconout(2,C);}while(0)
-# define KBHIT()        Bconstat( 2 )
-# define SYS_KBD_H
-#endif
-
-UInt            syStopout;              /* output is stopped by <ctr>-'S'  */
-
-Char            syTypeahead [256];      /* characters read by 'SyIsIntr'   */
-
-Int             syStartraw (
-    Int                 fid )
-{
-    /* check if the file is a terminal                                     */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return 0;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    Int                 ch;
-
-    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
-    if ( syTypeahead[0] != '\0' ) {
-        ch = syTypeahead[0];
-        strcpy( syTypeahead, syTypeahead+1 );
-    }
-
-    /* otherwise read from the keyboard                                    */
-    else {
-        ch = GETKEY();
-    }
-
-    /* postprocess the character                                           */
-    if (      ch == 0x00480000 )        ch = CTR('P');
-    else if ( ch == 0x004B0000 )        ch = CTR('B');
-    else if ( ch == 0x004D0000 )        ch = CTR('F');
-    else if ( ch == 0x00500000 )        ch = CTR('N');
-    else if ( ch == 0x00730000 )        ch = CTR('Y');
-    else if ( ch == 0x00740000 )        ch = CTR('Z');
-    else                                ch = ch & 0xFF;
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    PUTCHAR( ch );
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    Char *              s;
-
-    /* handle stopped output                                               */
-    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
-
-    /* echo the string                                                     */
-    for ( s = str; *s != '\0'; s++ )
-        PUTCHAR( *s );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For VMS we use a virtual keyboard to read and  write from the unique tty.
-**  We do not support the window handler.
-*/
-#if SYS_VMS
-
-#ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern  int             isatty ( int );
-#endif
-
-UInt            syVirKbd;       /* virtual (raw) keyboard          */
-
-UInt            syStartraw (
-    Int                 fid )
-{
-    /* test whether the file is connected to a terminal                    */
-    return isatty( fileno(syBuf[fid].fp) );
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    smg$read_keystroke( &syVirKbd, &ch );
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-    Char                ch2;
-
-    /* write the character to the associate echo output device             */
-    ch2 = ch;
-    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For the MAC with MPW we do not really know how to do this.
-*/
-#if SYS_MAC_MPW
-
-Int             syStartraw (
-    Int                 fid )
-{
-    /* clear away pending <command>-'.'                                    */
-    SyIsIntr();
-
-    return 0;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-}
-
-int             syGetch (
-    Int                 fid )
-{
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    Char *              s;
-    for ( s = str; *s != '\0'; s++ )
-        putchar( *s );
-    fflush( stdout );
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For the MAC with Symantec C we use the console input/output package.
-**  We must set the console to raw mode and back to echo mode.
-**  In raw mode there is no cursor, so we reverse the current character.
-*/
-#if SYS_MAC_SYC
-
-#ifndef SYS_UNIX_H                      /* unix stuff:                     */
-# include       <unix.h>                /* 'isatty'                        */
-# define SYS_UNIX_H
-#endif
-
-#ifndef SYS_CONSOLE_H                   /* console stuff:                  */
-# include       <Console.h>             /* 'csetmode'                      */
-# define SYS_CONSOLE_H
-#endif
-
-#ifndef SYS_OSUTILS_H                   /* system utils:                   */
-# include       <OSUtils.h>             /* 'SysBeep'                       */
-# define SYS_OSUTILS_H
-#endif
-
-UInt            syStartraw (
-    Int                 fid )
-{
-
-    /* cannot switch ordinary files to raw mode                            */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return 0;
-
-    /* turn terminal to raw mode                                           */
-    csetmode( C_RAW, syBuf[fid].fp );
-    return 1;
-}
-
-void            syStopraw (
-    Int                 fid )
-{
-    /* probably only paranoid                                              */
-    if ( isatty( fileno(syBuf[fid].fp) ) )
-        return;
-
-    /* turn terminal back to echo mode                                     */
-    csetmode( C_ECHO, syBuf[fid].fp );
-}
-
-Int             syGetch (
-    Int                 fid )
-{
-    /* return character                                                    */
-    return syGetch2( fid, '\0' );
-}
-
-Int             syGetch2 (
-    Int                 fid,
-    Int                 cur )
-{
-    Int                 ch;
-
-    /* probably only paranoid                                              */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return EOF;
-
-    /* make the current character reverse to simulate a cursor             */
-    syEchoch( (cur != '\0' ? cur : ' ') | 0x80, fid );
-    syEchoch( '\b', fid );
-
-    /* get a character, ignore EOF and chars beyond 0x7F (reverse video)   */
-    while ( ((ch = getchar()) == EOF) || (0x7F < ch) )
-        ;
-
-    /* handle special characters                                           */
-    if (      ch == 28 )  ch = CTR('B');
-    else if ( ch == 29 )  ch = CTR('F');
-    else if ( ch == 30 )  ch = CTR('P');
-    else if ( ch == 31 )  ch = CTR('N');
-
-    /* make the current character normal again                             */
-    syEchoch( (cur != '\0' ? cur : ' '), fid );
-    syEchoch( '\b', fid );
-
-    /* return the character                                                */
-    return ch;
-}
-
-void            syEchoch (
-    Int                 ch,
-    Int                 fid )
-{
-
-    /* probably only paranoid                                              */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return;
-
-    /* echo the character                                                  */
-    if ( 31 < (ch & 0x7F) || ch == '\b' || ch == '\n' || ch == '\r' )
-        putchar( ch );
-    else if ( ch == CTR('G') )
-        SysBeep( 1 );
-    else
-        putchar( '?' );
-
-}
-
-void            syEchos (
-    Char *              str,
-    Int                 fid )
-{
-    Char *              s;
-
-    /* probably only paranoid                                              */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return;
-
-    /* print the string                                                    */
-    for ( s = str; *s != '\0'; s++ )
-        putchar( *s );
-
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS || SYS_MAC_MPW || SYS_MAC_SYC
 
-void            SyFputs (
+
+/****************************************************************************
+**
+*f  SyFputs( <line>, <fid> )  . . .  BSD/MACH/USG/OS2 EMX/VMS/MAC MPW/MAC SYC
+*/
+#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||SYS_MAC_SYC
+
+void SyFputs (
     Char *              line,
     Int                 fid )
 {
@@ -2521,7 +3148,7 @@ void            SyFputs (
     }
 
     /* if running under a window handler, send the line to it              */
-    if ( syWindow && fid < 4 )
+    if ( SyWindow && fid < 4 )
         syWinPut( fid, (fid == 1 ? "@n" : "@f"), line );
 
     /* otherwise, write it to the output file                              */
@@ -2536,9 +3163,14 @@ void            SyFputs (
 
 #endif
 
+
+/****************************************************************************
+**
+*f  SyFputs( <line>, <fid> )  . . . . . . . . . . . . . . . . . . . MSDOS/TOS
+*/
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
 
-void            SyFputs (
+void SyFputs (
     Char *              line,
     Int                 fid )
 {
@@ -2576,7 +3208,506 @@ void            SyFputs (
 
 /****************************************************************************
 **
-*F  syWinPut(<fid>,<cmd>,<str>) . . . . . . send a line to the window handler
+*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
+**
+**  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
+**  wether the user hit '<ctr>-C' to interrupt a computation.
+**
+**  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
+*/
+
+
+/****************************************************************************
+**
+*f  SyIsIntr()  . . . . . . . . . . . . . . . . . .  BSD/MACH/USG/OS2 EMX/VMS
+**
+**  For  UNIX, OS/2  and VMS  we  install 'syAnswerIntr' to  answer interrupt
+**  'SIGINT'.   If two interrupts  occur within 1 second 'syAnswerIntr' exits
+**  GAP.
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
+#ifndef SYS_TIME_H                      /* time functions                  */
+# if SYS_VMS
+#  include      <types.h>               /* declaration of type 'time_t'    */
+# endif
+# include       <time.h>
+# define SYS_TIME_H
+#endif
+
+#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.1    */
+# if SYS_ANSI
+extern  time_t          time ( time_t * buf );
+# else
+extern  long            time ( long * buf );
+# endif
+#endif
+
+UInt            syLastIntr;             /* time of the last interrupt      */
+
+extern void     InterruptExecStat ( void );
+
+
+SYS_SIG_T syAnswerIntr (
+    int                 signr )
+{
+    UInt                nowIntr;
+
+    /* get the current wall clock time                                     */
+    nowIntr = time(0);
+
+    /* if the last '<ctr>-C' was less than a second ago, exit GAP          */
+    if ( syLastIntr && nowIntr-syLastIntr < 1 ) {
+        fputs("gap: you hit '<ctr>-C' twice in a second, goodbye.\n",stderr);
+        SyExit( 1 );
+    }
+
+    /* reinstall 'syAnswerIntr' as signal handler                          */
+#if ! SYS_OS2_EMX
+    signal( SIGINT, syAnswerIntr );
+#else
+    signal( signr, SIG_ACK );
+#endif
+
+    /* remember time of this interrupt                                     */
+    syLastIntr = nowIntr;
+
+#ifdef SYS_HAS_SIGNALS
+    /* interrupt the executor                                              */
+    InterruptExecStat();
+#endif
+
+#ifdef SYS_HAS_SIG_T
+    return 0;                           /* is ignored                      */
+#endif
+}
+
+
+UInt SyIsIntr ( void )
+{
+    UInt                isIntr;
+
+    isIntr = (syLastIntr != 0);
+    syLastIntr = 0;
+    return isIntr;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyIsIntr()  . . . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS/TOS
+**
+**  In DOS we check the input queue to look for <ctr>-'C', chars read are put
+**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
+**  Actually with the current DOS extender we cannot trap  <ctr>-'C', because
+**  the DOS extender does so already, so be use <ctr>-'Z' and <alt>-'C'.
+**
+**  In TOS we check the input queue to look for <ctr>-'C', chars read are put
+**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
+**  There is however a problem, if 2 or  more characters are pending (that is
+**  waiting to be read by either 'SyIsIntr' or 'SyGetch') and the second is a
+**  <ctr>-'C', GAP will be killed when 'SyIsIntr' or  'syGetch' tries to read
+**  the first character.  Thus  if you typed ahead  and want to interrupt the
+**  computation, wait some time to make sure that  the typed ahead characters
+**  have been read by 'SyIsIntr' befor you hit <ctr>-'C'.
+*/
+#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
+
+UInt            syIsIntrFreq = 20;
+
+UInt            syIsIntrCount = 0;
+
+UInt SyIsIntr ( void )
+{
+    Int                 ch;
+    UInt                i;
+
+    /* don't check for interrupts every time 'SyIsIntr' is called          */
+    if ( 0 < --syIsIntrCount )
+        return 0;
+    syIsIntrCount = syIsIntrFreq;
+
+    /* check for interrupts stuff the rest in typeahead buffer             */
+    if ( syLineEdit && KBHIT() ) {
+        while ( KBHIT() ) {
+            ch = GETKEY();
+            if ( ch == CTR('C') || ch == CTR('Z') || ch == 0x12E ) {
+                PUTCHAR('^'); PUTCHAR('C');
+                syTypeahead[0] = '\0';
+                syStopout = 0;
+                return 1L;
+            }
+            else if ( ch == CTR('X') ) {
+                PUTCHAR('^'); PUTCHAR('X');
+                syTypeahead[0] = '\0';
+                syStopout = 0;
+            }
+            else if ( ch == CTR('S') ) {
+                syStopout = 1;
+            }
+            else if ( syStopout ) {
+                syStopout = 0;
+            }
+            else {
+                for ( i = 0; i < sizeof(syTypeahead)-1; ++i ) {
+                    if ( syTypeahead[i] == '\0' ) {
+                        PUTCHAR(ch);
+                        syTypeahead[i] = ch;
+                        syTypeahead[i+1] = '\0';
+                        break;
+                    }
+                }
+            }
+        }
+        return 0L;
+    }
+    return 0L;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyIsIntr()  . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
+**
+**  For a  MPW Tool, we install 'syAnswerIntr'  to answer interrupt 'SIGINT'.
+**  However, the interrupt is  only delivered when  the system has a control,
+**  namely  when  we call the  toolbox   function 'SpinCursor' in 'SyIsIntr'.
+**  Thus the mechanism is effectively polling.
+**
+**  For a MPW SIOW, we search the event queue for a <cmd>-'.' or a <cnt>-'C'.
+**  If one is found, all keyboard events are flushed.
+**
+*/
+#if SYS_MAC_MPW
+
+#ifdef  SYS_HAS_TOOL
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <Signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+#endif
+
+#ifndef SYS_CURSORCTL_H                 /* cursor control functions:       */
+# include       <CursorCtl.h>           /* 'Show_Cursor', 'SpinCursor'     */
+# define SYS_CURSORCTL_H
+#endif
+
+UInt            syNrIntr;               /* number of interrupts            */
+
+UInt            syLastIntr;             /* time of the last interrupt      */
+
+UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
+
+UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
+
+
+void syAnswerIntr (
+    int                 signr )
+{
+    /* reinstall the signal handler                                        */
+    signal( SIGINT, &syAnswerIntr );
+
+    /* exit if two interrupts happen within one second                     */
+    /*N 1993/05/28 martin this doesn't work, because interrupts are only   */
+    /*N                   delivered when we call 'SpinCursor' below        */
+    if ( syNrIntr && SyTime()-syLastIntr <= 1000 )
+        SyExit( 1 );
+
+    /* got one more interrupt                                              */
+    syNrIntr   = syNrIntr + 1;
+    syLastIntr = SyTime();
+}
+
+
+UInt SyIsIntr ( void )
+{
+    UInt                syIsIntr;
+
+    /* don't check for interrupts every time 'SyIsIntr' is called          */
+    if ( 0 < --syIsIntrCount )
+        return 0;
+    syIsIntrCount = syIsIntrFreq;
+
+    /* spin the beachball                                                  */
+    Show_Cursor( HIDDEN_CURSOR );
+    SpinCursor( 8 );
+
+    /* check for interrupts                                                */
+    syIsIntr = (syNrIntr != 0);
+
+    /* every interrupt leaves a <eof>, which we want to remove             */
+    while ( syNrIntr ) {
+        while ( getchar() != EOF ) ;
+        clearerr( stdin );
+        syNrIntr = syNrIntr - 1;
+    }
+
+    /* return whether an interrupt has happened                            */
+    return syIsIntr;
+}
+
+#else
+
+#ifndef SYS_TYPES_H                     /* various types                   */
+# include       <Types.h>
+# define SYS_TYPES_H
+#endif
+
+#ifndef SYS_OSUTILS_H                   /* system utils:                   */
+# include       <OSUtils.h>             /* 'QHdr'                          */
+# define SYS_OSUTILS_H
+#endif
+
+#ifndef SYS_OSEVENTS_H                  /* system events, low level:       */
+# include       <OSEvents.h>            /* 'EvQEl', 'GetEvQHdr',           */
+                                        /* 'FlushEvents'                   */
+# define SYS_OSEVENTS_H
+#endif
+
+#ifndef SYS_EVENTS_H                    /* system events, high level:      */
+# include       <Events.h>              /* 'EventRecord', 'GetNextEvent'   */
+# define SYS_EVENTS_H
+#endif
+
+UInt            syNrIntr;               /* number of interrupts            */
+
+UInt            syLastIntr;             /* time of the last interrupt      */
+
+UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
+
+UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
+
+
+UInt SyIsIntr ( void )
+{
+    UInt                syIsIntr;
+    struct QHdr *       queue;
+    struct EvQEl *      qentry;
+
+    /* don't check for interrupts every time 'SyIsIntr' is called          */
+    if ( 0 < --syIsIntrCount )
+        return 0;
+    syIsIntrCount = syIsIntrFreq;
+
+    /* look through the event queue for <command>-'.' or <control>-'C'     */
+    queue = GetEvQHdr();
+    qentry = (struct EvQEl *)(queue->qHead);
+    while ( qentry ) {
+        if ( qentry->evtQWhat == keyDown
+            &&   ( ((qentry->evtQModifiers & controlKey) != 0)
+                && ((qentry->evtQMessage & charCodeMask) ==   3))
+              || ( ((qentry->evtQModifiers & cmdKey    ) != 0)
+                && ((qentry->evtQMessage & charCodeMask) == '.')) ) {
+            syNrIntr++;
+        }
+        qentry = (struct EvQEl *)(qentry->qLink);
+    }
+
+    /* check for interrupts                                                */
+    syIsIntr = (syNrIntr != 0);
+
+    /* flush away all keyboard events after an interrupt                   */
+    if ( syNrIntr ) {
+        FlushEvents( keyDownMask, 0 );
+        syNrIntr = 0;
+    }
+
+    /* return whether an interrupt has happened                            */
+    return syIsIntr;
+}
+
+#endif
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyIsIntr()  . . . . . . . . . . . . . . . . . . . . . . . . . . . MAC SYC
+**
+**  For Symantec C, we search the event queue for a <cmd>-'.' or a <cnt>-'C'.
+**  If one is found, all keyboard events are flushed, and 'true' is returned.
+**  We also  check for signals  just to  be safe.   Because signals are  only
+**  delivered when the system is in control, e.g., when we call 'SystemTask',
+**  there is no point to test for two interrupts within a second.
+*/
+#if SYS_MAC_SYC
+
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+#endif
+
+#ifndef SYS_TYPES_H                     /* various types                   */
+# include       <Types.h>
+# define SYS_TYPES_H
+#endif
+
+#ifndef SYS_LOWMEM_H                    /* variables in low memory:        */
+# include       <LowMem.h>              /* 'LMGetTicks'                    */
+# define SYS_LOWMEM_H
+#endif
+
+#ifndef SYS_OSUTILS_H                   /* system utils:                   */
+# include       <OSUtils.h>             /* 'QHdr'                          */
+# define SYS_OSUTILS_H
+#endif
+
+#ifndef SYS_OSEVENTS_H                  /* system events, low level:       */
+# include       <OSEvents.h>            /* 'EvQEl', 'GetEvQHdr',           */
+                                        /* 'FlushEvents'                   */
+# define SYS_OSEVENTS_H
+#endif
+
+#ifndef SYS_EVENTS_H                    /* system events, high level:      */
+# include       <Events.h>              /* 'EventRecord', 'GetNextEvent'   */
+# define SYS_EVENTS_H
+#endif
+
+#ifndef SYS_LOMEM_H                     /* variables in low memory         */
+# include       <LoMem.h>               /* 'SEvtEnb'                       */
+# define SYS_LOMEM_H
+#endif
+
+#ifndef SYS_DESK_H
+# include       <Desk.h>                /* 'SystemTask'                    */
+# define SYS_DESK_H
+#endif
+
+UInt            syNrIntr;               /* number of interrupts            */
+
+UInt            syIsIntrFreq  =  60;    /* frequency to test interrupts    */
+
+UInt            syIsIntrCount =   0;    /* countdown to test interrupts    */
+
+UInt            syIsBackFreq  = 600;    /* frequence background switching  */
+
+UInt            syIsBackCount =   0;    /* countdown background switching  */
+
+
+void syAnswerIntr (
+    int                 signr )
+{
+    /* reinstall the signal handler                                        */
+    signal( SIGINT, &syAnswerIntr );
+
+    /* got one more interrupt                                              */
+    syNrIntr = syNrIntr + 1;
+}
+
+
+UInt SyIsIntr ( void )
+{
+    UInt                syIsIntr;
+    struct QHdr *       queue;
+    struct EvQEl *      qentry;
+    EventRecord         theEvent;
+
+    /* don't check for interrupts every time 'SyIsIntr' is called          */
+    if ( (*(unsigned long*)0x016A) <= syIsIntrCount )
+        return 0;
+    syIsIntrCount = (*(unsigned long*)0x016A) + syIsIntrFreq;
+
+    /* allow for system activities                                         */
+    if ( syIsBackCount < (*(unsigned long*)0x016A) ) {
+        syIsBackCount = (*(unsigned long*)0x016A) + syIsBackFreq;
+        SystemTask();
+        SEvtEnb = false;
+        GetNextEvent( activMask, &theEvent );
+    }
+
+    /* check for caught interrupts                                         */
+    syIsIntr = (syNrIntr != 0);
+
+    /* every caught interrupt leaves a <eof>, which we want to remove      */
+    while ( syNrIntr ) {
+        while ( getchar() != EOF ) ;
+        clearerr( stdin );
+        syNrIntr = syNrIntr - 1;
+    }
+
+    /* look through the event queue for <command>-'.' or <control>-'C'     */
+    queue = GetEvQHdr();
+    qentry = (struct EvQEl *)(queue->qHead);
+    while ( qentry ) {
+        if ( qentry->evtQWhat == keyDown
+            &&   ( ((qentry->evtQModifiers & controlKey) != 0)
+                && ((qentry->evtQMessage & charCodeMask) ==   3))
+              || ( ((qentry->evtQModifiers & cmdKey    ) != 0)
+                && ((qentry->evtQMessage & charCodeMask) == '.')) ) {
+            syNrIntr++;
+        }
+        qentry = (struct EvQEl *)(qentry->qLink);
+    }
+
+    /* check for interrupts                                                */
+    syIsIntr = syIsIntr || (syNrIntr != 0);
+
+    /* flush away all keyboard events after an interrupt                   */
+    if ( syNrIntr ) {
+        FlushEvents( keyDownMask, 0 );
+        syNrIntr = 0;
+    }
+
+    /* return whether an interrupt has happened                            */
+    return syIsIntr;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
 **
 **  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
 **  handler associated with the  file identifier <fid>.   In the string <str>
@@ -2595,8 +3726,8 @@ void            syWinPut (
     Char *              s;              /* pointer into the string         */
     Char *              t;              /* pointer into the temporary      */
 
-    /* if not running under a window handler, don't do nothing             */
-    if ( ! syWindow || 4 <= fid )
+    /* if not running under a window handler, don't do anything            */
+    if ( ! SyWindow || 4 <= fid )
         return;
 
     /* get the file descriptor                                             */
@@ -2666,7 +3797,7 @@ Char *          SyWinCmd (
     UInt                i;              /* loop variable                   */
 
     /* if not running under a window handler, don't do nothing             */
-    if ( ! syWindow )
+    if ( ! SyWindow )
         return "I1+S52000000No Window Handler Present";
 
     /* compute the length of the (expanded) string (and ignore argument)   */
@@ -2752,472 +3883,304 @@ Char *          SyWinCmd (
 
 /****************************************************************************
 **
-*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
-**
-**  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
-**  wether the user hit '<ctr>-C' to interrupt a computation.
-**
-**  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
+
+*F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
 **
-**  For  UNIX, OS/2  and VMS  we  install 'syAnswerIntr' to  answer interrupt
-**  'SIGINT'.   If two interrupts  occur within 1 second 'syAnswerIntr' exits
-**  GAP.
+
+*F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
+**
+**  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
+**  It does not check if the file is readable, writable or excuteable. <name>
+**  is a system dependent description of the file.
 */
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX || SYS_VMS
 
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
-#endif
 
-#ifndef SYS_TIME_H                      /* time functions                  */
-# if SYS_VMS
-#  include      <types.h>               /* declaration of type 'time_t'    */
-# endif
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.1    */
-# if SYS_ANSI
-extern  time_t          time ( time_t * buf );
-# else
-extern  long            time ( long * buf );
-# endif
-#endif
+/****************************************************************************
+**
+*f  SyIsExistingFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
 
-UInt            syLastIntr;             /* time of the last interrupt      */
-
-extern  void            InterruptExecStat ( void );
-
-SYS_SIG_T       syAnswerIntr (
-    int                 signr )
+Int SyIsExistingFile ( Char * name )
 {
-    UInt                nowIntr;
-
-    /* get the current wall clock time                                     */
-    nowIntr = time(0);
-
-    /* if the last '<ctr>-C' was less than a second ago, exit GAP          */
-    if ( syLastIntr && nowIntr-syLastIntr < 1 ) {
-        fputs("gap: you hit '<ctr>-C' twice in a second, goodbye.\n",stderr);
-        SyExit( 1 );
+    if ( access( name, F_OK ) == 0 ) {
+        return 1;
     }
-
-    /* reinstall 'syAnswerIntr' as signal handler                          */
-#if ! SYS_OS2_EMX
-    signal( SIGINT, syAnswerIntr );
-#else
-    signal( signr, SIG_ACK );
-#endif
-
-    /* remember time of this interrupt                                     */
-    syLastIntr = nowIntr;
-
-#ifdef SYS_HAS_SIGNALS
-    /* interrupt the executor                                              */
-    InterruptExecStat();
-#endif
-
-#ifdef SYS_HAS_SIG_T
-    return 0;                           /* is ignored                      */
-#endif
-}
-
-UInt            SyIsIntr ( void )
-{
-    UInt                isIntr;
-
-    isIntr = (syLastIntr != 0);
-    syLastIntr = 0;
-    return isIntr;
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  In DOS we check the input queue to look for <ctr>-'C', chars read are put
-**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
-**  Actually with the current DOS extender we cannot trap  <ctr>-'C', because
-**  the DOS extender does so already, so be use <ctr>-'Z' and <alt>-'C'.
-**
-**  In TOS we check the input queue to look for <ctr>-'C', chars read are put
-**  on the 'osTypeahead' buffer. The buffer is flushed if <ctr>-'C' is found.
-**  There is however a problem, if 2 or  more characters are pending (that is
-**  waiting to be read by either 'SyIsIntr' or 'SyGetch') and the second is a
-**  <ctr>-'C', GAP will be killed when 'SyIsIntr' or  'syGetch' tries to read
-**  the first character.  Thus  if you typed ahead  and want to interrupt the
-**  computation, wait some time to make sure that  the typed ahead characters
-**  have been read by 'SyIsIntr' befor you hit <ctr>-'C'.
-*/
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-
-UInt            syIsIntrFreq = 20;
-
-UInt            syIsIntrCount = 0;
-
-UInt            SyIsIntr ( void )
-{
-    Int                 ch;
-    UInt                i;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( 0 < --syIsIntrCount )
+    else {
         return 0;
-    syIsIntrCount = syIsIntrFreq;
-
-    /* check for interrupts stuff the rest in typeahead buffer             */
-    if ( syLineEdit && KBHIT() ) {
-        while ( KBHIT() ) {
-            ch = GETKEY();
-            if ( ch == CTR('C') || ch == CTR('Z') || ch == 0x12E ) {
-                PUTCHAR('^'); PUTCHAR('C');
-                syTypeahead[0] = '\0';
-                syStopout = 0;
-                return 1L;
-            }
-            else if ( ch == CTR('X') ) {
-                PUTCHAR('^'); PUTCHAR('X');
-                syTypeahead[0] = '\0';
-                syStopout = 0;
-            }
-            else if ( ch == CTR('S') ) {
-                syStopout = 1;
-            }
-            else if ( syStopout ) {
-                syStopout = 0;
-            }
-            else {
-                for ( i = 0; i < sizeof(syTypeahead)-1; ++i ) {
-                    if ( syTypeahead[i] == '\0' ) {
-                        PUTCHAR(ch);
-                        syTypeahead[i] = ch;
-                        syTypeahead[i+1] = '\0';
-                        break;
-                    }
-                }
-            }
-        }
-        return 0L;
     }
-    return 0L;
 }
 
 #endif
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
 **
-**  For a  MPW Tool, we install 'syAnswerIntr'  to answer interrupt 'SIGINT'.
-**  However, the interrupt is  only delivered when  the system has a control,
-**  namely  when  we call the  toolbox   function 'SpinCursor' in 'SyIsIntr'.
-**  Thus the mechanism is effectively polling.
+*F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
 **
-**  For a MPW SIOW, we search the event queue for a <cmd>-'.' or a <cnt>-'C'.
-**  If one is found, all keyboard events are flushed.
-**
-*N  1995/04/30 mschoene these should be merged
+**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
+**  otherwise. <name> is a system dependent description of the file.
 */
-#if SYS_MAC_MPW
-
-#ifdef  SYS_HAS_TOOL
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <Signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-#endif
-
-#ifndef SYS_CURSORCTL_H                 /* cursor control functions:       */
-# include       <CursorCtl.h>           /* 'Show_Cursor', 'SpinCursor'     */
-# define SYS_CURSORCTL_H
-#endif
-
-UInt            syNrIntr;               /* number of interrupts            */
-
-UInt            syLastIntr;             /* time of the last interrupt      */
-
-UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
-
-UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
-
-void            syAnswerIntr (
-    int                 signr )
-{
-    /* reinstall the signal handler                                        */
-    signal( SIGINT, &syAnswerIntr );
-
-    /* exit if two interrupts happen within one second                     */
-    /*N 1993/05/28 martin this doesn't work, because interrupts are only   */
-    /*N                   delivered when we call 'SpinCursor' below        */
-    if ( syNrIntr && SyTime()-syLastIntr <= 1000 )
-        SyExit( 1 );
-
-    /* got one more interrupt                                              */
-    syNrIntr   = syNrIntr + 1;
-    syLastIntr = SyTime();
-}
-
-UInt            SyIsIntr ( void )
-{
-    UInt                syIsIntr;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( 0 < --syIsIntrCount )
-        return 0;
-    syIsIntrCount = syIsIntrFreq;
-
-    /* spin the beachball                                                  */
-    Show_Cursor( HIDDEN_CURSOR );
-    SpinCursor( 8 );
-
-    /* check for interrupts                                                */
-    syIsIntr = (syNrIntr != 0);
-
-    /* every interrupt leaves a <eof>, which we want to remove             */
-    while ( syNrIntr ) {
-        while ( getchar() != EOF ) ;
-        clearerr( stdin );
-        syNrIntr = syNrIntr - 1;
-    }
-
-    /* return whether an interrupt has happened                            */
-    return syIsIntr;
-}
-
-#else
-
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
-#endif
-
-#ifndef SYS_OSUTILS_H                   /* system utils:                   */
-# include       <OSUtils.h>             /* 'QHdr'                          */
-# define SYS_OSUTILS_H
-#endif
-
-#ifndef SYS_OSEVENTS_H                  /* system events, low level:       */
-# include       <OSEvents.h>            /* 'EvQEl', 'GetEvQHdr',           */
-                                        /* 'FlushEvents'                   */
-# define SYS_OSEVENTS_H
-#endif
-
-#ifndef SYS_EVENTS_H                    /* system events, high level:      */
-# include       <Events.h>              /* 'EventRecord', 'GetNextEvent'   */
-# define SYS_EVENTS_H
-#endif
-
-UInt            syNrIntr;               /* number of interrupts            */
-
-UInt            syLastIntr;             /* time of the last interrupt      */
-
-UInt            syIsIntrFreq = 100;     /* frequency to test interrupts    */
-
-UInt            syIsIntrCount =  0;     /* countdown to test interrupts    */
-
-UInt            SyIsIntr ( void )
-{
-    UInt                syIsIntr;
-    struct QHdr *       queue;
-    struct EvQEl *      qentry;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( 0 < --syIsIntrCount )
-        return 0;
-    syIsIntrCount = syIsIntrFreq;
-
-    /* look through the event queue for <command>-'.' or <control>-'C'     */
-    queue = GetEvQHdr();
-    qentry = (struct EvQEl *)(queue->qHead);
-    while ( qentry ) {
-        if ( qentry->evtQWhat == keyDown
-            &&   ( ((qentry->evtQModifiers & controlKey) != 0)
-                && ((qentry->evtQMessage & charCodeMask) ==   3))
-              || ( ((qentry->evtQModifiers & cmdKey    ) != 0)
-                && ((qentry->evtQMessage & charCodeMask) == '.')) ) {
-            syNrIntr++;
-        }
-        qentry = (struct EvQEl *)(qentry->qLink);
-    }
-
-    /* check for interrupts                                                */
-    syIsIntr = (syNrIntr != 0);
-
-    /* flush away all keyboard events after an interrupt                   */
-    if ( syNrIntr ) {
-        FlushEvents( keyDownMask, 0 );
-        syNrIntr = 0;
-    }
-
-    /* return whether an interrupt has happened                            */
-    return syIsIntr;
-}
-
-#endif
-
-#endif
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
 **
-**  For Symantec C, we search the event queue for a <cmd>-'.' or a <cnt>-'C'.
-**  If one is found, all keyboard events are flushed, and 'true' is returned.
-**  We also  check for signals  just to  be safe.   Because signals are  only
-**  delivered when the system is in control, e.g., when we call 'SystemTask',
-**  there is no point to test for two interrupts within a second.
+*f  SyIsReadableFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
 */
-#if SYS_MAC_SYC
+#if SYS_BSD || SYS_MACH || SYS_USG
 
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-#endif
-
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
-#endif
-
-#ifndef SYS_LOWMEM_H                    /* variables in low memory:        */
-# include       <LowMem.h>              /* 'LMGetTicks'                    */
-# define SYS_LOWMEM_H
-#endif
-
-#ifndef SYS_OSUTILS_H                   /* system utils:                   */
-# include       <OSUtils.h>             /* 'QHdr'                          */
-# define SYS_OSUTILS_H
-#endif
-
-#ifndef SYS_OSEVENTS_H                  /* system events, low level:       */
-# include       <OSEvents.h>            /* 'EvQEl', 'GetEvQHdr',           */
-                                        /* 'FlushEvents'                   */
-# define SYS_OSEVENTS_H
-#endif
-
-#ifndef SYS_EVENTS_H                    /* system events, high level:      */
-# include       <Events.h>              /* 'EventRecord', 'GetNextEvent'   */
-# define SYS_EVENTS_H
-#endif
-
-#ifndef SYS_LOMEM_H                     /* variables in low memory         */
-# include       <LoMem.h>               /* 'SEvtEnb'                       */
-# define SYS_LOMEM_H
-#endif
-
-#ifndef SYS_DESK_H
-# include       <Desk.h>                /* 'SystemTask'                    */
-# define SYS_DESK_H
-#endif
-
-UInt            syNrIntr;               /* number of interrupts            */
-
-UInt            syIsIntrFreq  =  60;    /* frequency to test interrupts    */
-
-UInt            syIsIntrCount =   0;    /* countdown to test interrupts    */
-
-UInt            syIsBackFreq  = 600;    /* frequence background switching  */
-
-UInt            syIsBackCount =   0;    /* countdown background switching  */
-
-void            syAnswerIntr (
-    int                 signr )
+Int SyIsReadableFile ( Char * name )
 {
-    /* reinstall the signal handler                                        */
-    signal( SIGINT, &syAnswerIntr );
-
-    /* got one more interrupt                                              */
-    syNrIntr = syNrIntr + 1;
+    if ( access( name, R_OK ) == 0 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
-UInt            SyIsIntr ( void )
+#endif
+
+
+/****************************************************************************
+**
+*F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
+**
+**  'SyIsWriteableFile'   returns 1  if  the  file  <name> is  writable and 0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+
+
+/****************************************************************************
+**
+*f  SyIsWritable( <name> )  . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+Int SyIsWritableFile ( Char * name )
 {
-    UInt                syIsIntr;
-    struct QHdr *       queue;
-    struct EvQEl *      qentry;
-    EventRecord         theEvent;
-
-    /* don't check for interrupts every time 'SyIsIntr' is called          */
-    if ( (*(unsigned long*)0x016A) <= syIsIntrCount )
+    if ( access( name, W_OK ) == 0 ) {
+        return 1;
+    }
+    else {
         return 0;
-    syIsIntrCount = (*(unsigned long*)0x016A) + syIsIntrFreq;
+    }
+}
 
-    /* allow for system activities                                         */
-    if ( syIsBackCount < (*(unsigned long*)0x016A) ) {
-        syIsBackCount = (*(unsigned long*)0x016A) + syIsBackFreq;
-        SystemTask();
-        SEvtEnb = false;
-        GetNextEvent( activMask, &theEvent );
+#endif
+
+
+/****************************************************************************
+**
+*F  SyIsExecutableFile( <name> )  . . . . . . . . . is file <name> executable
+**
+**  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+
+
+/****************************************************************************
+**
+*f  SyIsExecutableFile( <name> )  . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+Int SyIsExecutableFile ( Char * name )
+{
+    if ( access( name, X_OK ) == 0 ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
+*/
+Char * SyFindGapRootFile ( Char * filename )
+{
+    static Char	    result [256];
+    Int             k;
+
+    for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
+	if ( SyGapRootPaths[k][0] ) {
+	    result[0] = '\0';
+	    SyStrncat( result, SyGapRootPaths[k], sizeof(result) );
+	    if ( sizeof(result) <= SyStrlen(filename)+SyStrlen(result)-1 )
+		continue;
+	    SyStrncat( result, filename, SyStrlen(filename) );
+	    if ( SyIsReadableFile(result) ) {
+		return result;
+	    }
+	}
+    }
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> ) 	 load or link
+**
+**  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
+**  check  if   there is a corresponding    statically  or dynamically linked
+**  module.  If the CRC matches this module  is loaded otherwise the filename
+**  is returned.
+*/
+
+
+/****************************************************************************
+**
+*f  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> ) 	 BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+#include "compstat.h"
+
+Int SyFindOrLinkGapRootFile (
+    Char * 		filename,
+    UInt4               crc_gap,
+    Char * 		result, 
+    Int 		len )
+{
+    UInt4               crc_dyn;
+    UInt4               crc_sta;
+    Int                 found_gap = 0;
+    Int                 found_dyn = 0;
+    Int                 found_sta = 0;
+    Char *              tmp;
+    Char                module [256];
+    StructCompInitInfo* info_dyn;
+    StructCompInitInfo* info_sta;
+    Int                 k;
+
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY)
+    Char *              p;
+    Char *              dot;
+    Int                 pos;
+    Int                 pot;
+    CompInitFunc        init;
+#endif
+
+    /* find the GAP file                                                   */
+    result[0] = '\0';
+    tmp = SyFindGapRootFile(filename);
+    if ( tmp ) {
+	SyStrncat( result, tmp, len );
+    }
+    if ( result[0] ) {
+	if ( SyIsReadableFile(result) ) {
+	    found_gap = 1;
+	}
+	else {
+	    result[0] = '\0';
+	}
     }
 
-    /* check for caught interrupts                                         */
-    syIsIntr = (syNrIntr != 0);
-
-    /* every caught interrupt leaves a <eof>, which we want to remove      */
-    while ( syNrIntr ) {
-        while ( getchar() != EOF ) ;
-        clearerr( stdin );
-        syNrIntr = syNrIntr - 1;
+    /* try to find any statically link module                              */
+    module[0] = '\0';
+    SyStrncat( module, "GAPROOT/", 8 );
+    SyStrncat( module, filename, SyStrlen(filename) );
+    for ( k = 0;  CompInitFuncs[k];  k++ ) {
+	info_sta = (*(CompInitFuncs[k]))();
+	if ( info_sta == 0 ) {
+	    continue;
+	}
+	if ( ! SyStrcmp( module, info_sta->magic2 ) ) {
+	    crc_sta   = info_sta->magic1;
+	    found_sta = 1;
+	    break;
+	}
     }
+    
 
-    /* look through the event queue for <command>-'.' or <control>-'C'     */
-    queue = GetEvQHdr();
-    qentry = (struct EvQEl *)(queue->qHead);
-    while ( qentry ) {
-        if ( qentry->evtQWhat == keyDown
-            &&   ( ((qentry->evtQModifiers & controlKey) != 0)
-                && ((qentry->evtQMessage & charCodeMask) ==   3))
-              || ( ((qentry->evtQModifiers & cmdKey    ) != 0)
-                && ((qentry->evtQMessage & charCodeMask) == '.')) ) {
-            syNrIntr++;
-        }
-        qentry = (struct EvQEl *)(qentry->qLink);
+    /* try to find any dynamically loadable module for filename            */
+#if defined(SYS_HAS_DL_LIBRARY) || defined(SYS_HAS_RLD_LIBRARY)
+    pos = SyStrlen(filename);
+    p   = filename + pos;
+    dot = 0;
+    while ( filename <= p && *p != '/' ) {
+	if ( *p == '.' ) {
+	    dot = p;
+	    pot = pos;
+	}
+	p--;
+	pos--;
     }
-
-    /* check for interrupts                                                */
-    syIsIntr = syIsIntr || (syNrIntr != 0);
-
-    /* flush away all keyboard events after an interrupt                   */
-    if ( syNrIntr ) {
-        FlushEvents( keyDownMask, 0 );
-        syNrIntr = 0;
+    if ( dot ) {
+	module[0] = '\0';
+	SyStrncat( module, "bin/", 4 );
+	SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
+	SyStrncat( module, "/compiled/", 10 );
+	if ( p < filename ) {
+	    SyStrncat( module, dot+1, SyStrlen(dot+1) );
+	    SyStrncat( module, "/", 1 );
+	    SyStrncat( module, filename, pot );
+	    SyStrncat( module, ".so", 3 );
+	}
+	else {
+	    SyStrncat( module, filename, pos );
+	    SyStrncat( module, "/", 1 );
+	    SyStrncat( module, dot+1, SyStrlen(dot+1) );
+	    SyStrncat( module, filename+pos, pot-pos );
+	    SyStrncat( module, ".so", 3 );
+	}
     }
+    else {
+	module[0] = '\0';
+	SyStrncat( module, "bin/", 4 );
+	SyStrncat( module, SyArchitecture, SyStrlen(SyArchitecture) );
+	SyStrncat( module, "/compiled/", 1 );
+	SyStrncat( module, filename, SyStrlen(filename) );
+	SyStrncat( module, ".so", 3 );
+    }
+    tmp = SyFindGapRootFile(module);
+    if ( tmp ) {
+        init = SyLoadModule(tmp);
+	if ( ( (Int)init & 1 ) == 0 ) {
+	    info_dyn  = (*init)();
+	    crc_dyn   = info_dyn->magic1;
+	    found_dyn = 1;
+	}
+    }
+#endif
 
-    /* return whether an interrupt has happened                            */
-    return syIsIntr;
+    /* now decide what to do                                               */
+    if ( found_gap && found_dyn && crc_gap != crc_dyn ) {
+	found_dyn = 0;
+    }
+    if ( found_gap && found_sta && crc_gap != crc_sta ) {
+	found_sta = 0;
+    }
+    if ( found_gap && found_sta ) {
+	*(StructCompInitInfo**)result = info_sta;
+	return 2;
+    }
+    if ( found_gap && found_dyn ) {
+	*(StructCompInitInfo**)result = info_dyn;
+	return 1;
+    }
+    if ( found_gap ) {
+	return 3;
+    }
+    if ( found_sta ) {
+	*(StructCompInitInfo**)result = info_sta;
+	return 2;
+    }
+    if ( found_dyn ) {
+	*(StructCompInitInfo**)result = info_dyn;
+	return 1;
+    }
+    return 0;
 }
 
 #endif
@@ -3238,6 +4201,7 @@ UInt            SyIsIntr ( void )
 # endif
 # define SYS_STDLIB_H
 #endif
+
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.3   */
 extern  void            exit ( int );
 #endif
@@ -3249,7 +4213,7 @@ extern  void            exit ( int );
 #endif
 #endif
 
-void            SyExit (
+void SyExit (
     UInt                ret )
 {
 #if SYS_MAC_MPW
@@ -3320,162 +4284,6 @@ void            SyExec (
 
 /****************************************************************************
 **
-*F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
-**
-**  'SyTime' returns the number of milliseconds spent by GAP so far.
-**
-**  Should be as accurate as possible,  because it  is  used  for  profiling.
-*/
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For Berkeley UNIX the clock ticks in 1/60.  On some (all?) BSD systems we
-**  can use 'getrusage', which gives us a much better resolution.
-*/
-#if SYS_BSD || SYS_MACH || SYS_MSDOS_DJGPP
-
-#ifndef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_RESOURCE_H                  /* definition of 'struct rusage'   */
-# include       <sys/time.h>            /* definition of 'struct timeval'  */
-# include       <sys/resource.h>
-# define SYS_RESOURCE_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             getrusage ( int, struct rusage * );
-#endif
-
-UInt            SyTime ( void )
-{
-    struct rusage       buf;
-
-    if ( getrusage( RUSAGE_SELF, &buf ) ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -syStartTime;
-}
-
-#endif
-
-#ifdef SYS_HAS_NO_GETRUSAGE
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-
-UInt            SyTime ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (60/10) - syStartTime;
-}
-
-#endif
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For UNIX System V and OS/2 the clock ticks in 1/HZ,  this is usually 1/60
-**  or 1/100.
-*/
-#if SYS_USG || SYS_OS2_EMX
-
-#ifndef SYS_TIMES_H                     /* time functions                  */
-# include       <sys/param.h>           /* definition of 'HZ'              */
-# include       <sys/types.h>
-# include       <sys/times.h>
-# define SYS_TIMES_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* UNIX decl. from 'man'           */
-extern  int             times ( struct tms * );
-#endif
-
-UInt            SyTime ( void )
-{
-    struct tms          tbuf;
-
-    if ( times( &tbuf ) == -1 ) {
-        fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
-        SyExit( 1 );
-    }
-    return 100 * tbuf.tms_utime / (HZ / 10) - syStartTime;
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For TOS and VMS we use the function 'clock' and allow to stop the clock.
-*/
-#if SYS_TOS_GCC2 || SYS_VMS
-
-#ifndef SYS_TIME_H                      /* time functions                  */
-# include       <time.h>
-# define SYS_TIME_H
-#endif
-#ifndef SYS_HAS_TIME_PROTO              /* ANSI/TRAD decl. from H&S 18.2    */
-# if SYS_ANSI
-extern  clock_t         clock ( void );
-# define SYS_CLOCKS     CLOCKS_PER_SEC
-# else
-extern  long            clock ( void );
-#  if SYS_TOS_GCC2
-#   define SYS_CLOCKS   200
-#  else
-#   define SYS_CLOCKS   100
-#  endif
-# endif
-#endif
-
-UInt            SyTime ( void )
-{
-    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - syStartTime;
-}
-
-#endif
-
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-**
-**  For  MAC with MPW we  use the 'TickCount' function  and allow to stop the
-**  clock.
-*/
-#if SYS_MAC_MPW || SYS_MAC_SYC
-
-#ifndef SYS_TYPES_H                     /* various types                   */
-# include       <Types.h>
-# define SYS_TYPES_H
-#endif
-
-#ifndef SYS_EVENTS_H                    /* system events, high level:      */
-# include       <Events.h>              /* 'TickCount'                     */
-# define SYS_EVENTS_H
-#endif
-
-UInt            SyTime ( void )
-{
-    return 100 * (UInt)TickCount() / (60/10) - syStartTime;
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
 **
 **  'SyTmpname' creates and returns a new temporary name.
@@ -3484,18 +4292,241 @@ UInt            SyTime ( void )
 # include       <stdio.h>
 # define SYS_STDIO_H
 #endif
+
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
-extern  char *          tmpnam ( char * );
+extern  char * tmpnam ( char * );
 #endif
 
-Char *          SyTmpname ( void )
+#ifdef SYS_HAS_BROKEN_TMPNAM
+
+Char * SyTmpname ()
+{
+    static Char   * base = 0;
+    static Char     name[1024];
+    static Int      count = 0;
+    Char            cnt[4];
+
+    count++;
+    if ( base == 0 ) {
+        base = tmpnam( (char*)0 );
+    }
+    if ( base == 0 ) {
+        return 0;
+    }
+    name[0] = 0;
+    SyStrncat( name, base, SyStrlen(base) );
+    SyStrncat( name, ".", 1 );
+    cnt[0] = (count/100) % 10 + '0';
+    cnt[1] = (count/ 10) % 10 + '0';
+    cnt[2] = (count/  1) % 10 + '0';
+    cnt[3] = 0;
+    SyStrncat( name, cnt, 4 );
+    return name;
+}
+
+#else
+
+Char * SyTmpname ( void )
 {
     return tmpnam( (char*)0 );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
+**
+**  This function should  be clever and handle  white spaces and comments but
+**  one has to certain that such characters are not ignored in strings.
+*/
+static UInt4 syCcitt32[ 256 ] = 
+{
+0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
+0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L, 0xe0d5e91eL,
+0x97d2d988L, 0x09b64c2bL, 0x7eb17cbdL, 0xe7b82d07L, 0x90bf1d91L, 0x1db71064L,
+0x6ab020f2L, 0xf3b97148L, 0x84be41deL, 0x1adad47dL, 0x6ddde4ebL, 0xf4d4b551L,
+0x83d385c7L, 0x136c9856L, 0x646ba8c0L, 0xfd62f97aL, 0x8a65c9ecL, 0x14015c4fL,
+0x63066cd9L, 0xfa0f3d63L, 0x8d080df5L, 0x3b6e20c8L, 0x4c69105eL, 0xd56041e4L,
+0xa2677172L, 0x3c03e4d1L, 0x4b04d447L, 0xd20d85fdL, 0xa50ab56bL, 0x35b5a8faL,
+0x42b2986cL, 0xdbbbc9d6L, 0xacbcf940L, 0x32d86ce3L, 0x45df5c75L, 0xdcd60dcfL,
+0xabd13d59L, 0x26d930acL, 0x51de003aL, 0xc8d75180L, 0xbfd06116L, 0x21b4f4b5L,
+0x56b3c423L, 0xcfba9599L, 0xb8bda50fL, 0x2802b89eL, 0x5f058808L, 0xc60cd9b2L,
+0xb10be924L, 0x2f6f7c87L, 0x58684c11L, 0xc1611dabL, 0xb6662d3dL, 0x76dc4190L,
+0x01db7106L, 0x98d220bcL, 0xefd5102aL, 0x71b18589L, 0x06b6b51fL, 0x9fbfe4a5L,
+0xe8b8d433L, 0x7807c9a2L, 0x0f00f934L, 0x9609a88eL, 0xe10e9818L, 0x7f6a0dbbL,
+0x086d3d2dL, 0x91646c97L, 0xe6635c01L, 0x6b6b51f4L, 0x1c6c6162L, 0x856530d8L,
+0xf262004eL, 0x6c0695edL, 0x1b01a57bL, 0x8208f4c1L, 0xf50fc457L, 0x65b0d9c6L,
+0x12b7e950L, 0x8bbeb8eaL, 0xfcb9887cL, 0x62dd1ddfL, 0x15da2d49L, 0x8cd37cf3L,
+0xfbd44c65L, 0x4db26158L, 0x3ab551ceL, 0xa3bc0074L, 0xd4bb30e2L, 0x4adfa541L,
+0x3dd895d7L, 0xa4d1c46dL, 0xd3d6f4fbL, 0x4369e96aL, 0x346ed9fcL, 0xad678846L,
+0xda60b8d0L, 0x44042d73L, 0x33031de5L, 0xaa0a4c5fL, 0xdd0d7cc9L, 0x5005713cL,
+0x270241aaL, 0xbe0b1010L, 0xc90c2086L, 0x5768b525L, 0x206f85b3L, 0xb966d409L,
+0xce61e49fL, 0x5edef90eL, 0x29d9c998L, 0xb0d09822L, 0xc7d7a8b4L, 0x59b33d17L,
+0x2eb40d81L, 0xb7bd5c3bL, 0xc0ba6cadL, 0xedb88320L, 0x9abfb3b6L, 0x03b6e20cL,
+0x74b1d29aL, 0xead54739L, 0x9dd277afL, 0x04db2615L, 0x73dc1683L, 0xe3630b12L,
+0x94643b84L, 0x0d6d6a3eL, 0x7a6a5aa8L, 0xe40ecf0bL, 0x9309ff9dL, 0x0a00ae27L,
+0x7d079eb1L, 0xf00f9344L, 0x8708a3d2L, 0x1e01f268L, 0x6906c2feL, 0xf762575dL,
+0x806567cbL, 0x196c3671L, 0x6e6b06e7L, 0xfed41b76L, 0x89d32be0L, 0x10da7a5aL,
+0x67dd4accL, 0xf9b9df6fL, 0x8ebeeff9L, 0x17b7be43L, 0x60b08ed5L, 0xd6d6a3e8L,
+0xa1d1937eL, 0x38d8c2c4L, 0x4fdff252L, 0xd1bb67f1L, 0xa6bc5767L, 0x3fb506ddL,
+0x48b2364bL, 0xd80d2bdaL, 0xaf0a1b4cL, 0x36034af6L, 0x41047a60L, 0xdf60efc3L,
+0xa867df55L, 0x316e8eefL, 0x4669be79L, 0xcb61b38cL, 0xbc66831aL, 0x256fd2a0L,
+0x5268e236L, 0xcc0c7795L, 0xbb0b4703L, 0x220216b9L, 0x5505262fL, 0xc5ba3bbeL,
+0xb2bd0b28L, 0x2bb45a92L, 0x5cb36a04L, 0xc2d7ffa7L, 0xb5d0cf31L, 0x2cd99e8bL,
+0x5bdeae1dL, 0x9b64c2b0L, 0xec63f226L, 0x756aa39cL, 0x026d930aL, 0x9c0906a9L,
+0xeb0e363fL, 0x72076785L, 0x05005713L, 0x95bf4a82L, 0xe2b87a14L, 0x7bb12baeL,
+0x0cb61b38L, 0x92d28e9bL, 0xe5d5be0dL, 0x7cdcefb7L, 0x0bdbdf21L, 0x86d3d2d4L,
+0xf1d4e242L, 0x68ddb3f8L, 0x1fda836eL, 0x81be16cdL, 0xf6b9265bL, 0x6fb077e1L,
+0x18b74777L, 0x88085ae6L, 0xff0f6a70L, 0x66063bcaL, 0x11010b5cL, 0x8f659effL,
+0xf862ae69L, 0x616bffd3L, 0x166ccf45L, 0xa00ae278L, 0xd70dd2eeL, 0x4e048354L,
+0x3903b3c2L, 0xa7672661L, 0xd06016f7L, 0x4969474dL, 0x3e6e77dbL, 0xaed16a4aL,
+0xd9d65adcL, 0x40df0b66L, 0x37d83bf0L, 0xa9bcae53L, 0xdebb9ec5L, 0x47b2cf7fL,
+0x30b5ffe9L, 0xbdbdf21cL, 0xcabac28aL, 0x53b39330L, 0x24b4a3a6L, 0xbad03605L,
+0xcdd70693L, 0x54de5729L, 0x23d967bfL, 0xb3667a2eL, 0xc4614ab8L, 0x5d681b02L,
+0x2a6f2b94L, 0xb40bbe37L, 0xc30c8ea1L, 0x5a05df1bL, 0x2d02ef8dL
+};
+
+UInt4 SyGAPCRC( Char * name )
+{
+    UInt4       crc;
+    UInt4       old;
+    UInt4       new;
+    Int4        ch;
+    Int         fid;
+    Int         seen_nl;
+
+    /* the CRC of a non existing file is 0                                 */
+    fid = SyFopen( name, "r" );
+    if ( fid == -1 ) {
+        return 0;
+    }
+
+    /* read in the file byte by byte and compute the CRC                   */
+    crc = 0x12345678L;
+    while ( ( ch = fgetc(syBuf[fid].fp) ) != EOF ) {
+        if ( ch == '\377' || ch == '\n' || ch == '\r' )
+            ch = '\n';
+        if ( ch == '\n' ) {
+            if ( seen_nl )
+                continue;
+            else
+                seen_nl = 1;
+        }
+        else
+            seen_nl = 0;
+        old = (crc >> 8) & 0x00FFFFFFL;
+        new = syCcitt32[ ( (UInt4)( crc ^ ch ) ) & 0xff ];
+        crc = old ^ new;
+    }
+
+    /* and close it again                                                  */
+    SyFclose( fid );
+    return crc;
 }
 
 
 /****************************************************************************
 **
+*F  SyLoadModule( <name> )  . . . . . . . . . . . . link a module dynamically
+*/
+#ifndef SYS_INIT_DYNAMIC
+#define SYS_INIT_DYNAMIC        "_Init__Dynamic"
+#endif
+
+
+/****************************************************************************
+**
+*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . . .  dlopen
+*/
+#ifdef SYS_HAS_DL_LIBRARY
+
+#include        <dlfcn.h>
+
+#ifndef RTLD_LAZY
+#define RTLD_LAZY               1
+#endif
+
+void * SyLoadModule ( Char * name )
+{
+    void *          init;
+    void *          handle;
+
+    handle = dlopen( name, RTLD_LAZY );
+    if ( handle == 0 )  return (void*) 1;
+
+    init = dlsym( handle, SYS_INIT_DYNAMIC );
+    if ( init == 0 )  return (void*) 3;
+
+    return init;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . . .  rld_load
+*/
+#ifdef SYS_HAS_RLD_LIBRARY
+
+#include        <mach-o/rld.h>
+
+void * SyLoadModule ( Char * name )
+{
+    Char *          names[2];
+    unsigned long   init;
+
+    names[0] = name;
+    names[1] = 0;
+    if ( rld_load( 0, 0,  names, 0 ) == 0 ) {
+        return (void*) 1;
+    }
+    if ( rld_lookup( 0, SYS_INIT_DYNAMIC, &init ) == 0 ) {
+        return (void*) 3;
+    }
+    if ( rld_forget_symbol( 0, SYS_INIT_DYNAMIC ) == 0 ) {
+        return (void*) 5;
+    }
+    return (void*)init;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyLoadModule( <name> )  . . . . . . . . . . . . . . . . . . .  no support
+*/
+#if !defined(SYS_HAS_RLD_LIBRARY) && !defined(SYS_HAS_DL_LIBRARY)
+
+void * SyLoadModule ( Char * name )
+{
+    return (void*) 7;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * help system  * * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  SyHelp( <topic>, <fid> )  . . . . . . . . . . . . . . display online help
 **
 **  This function is of course way to large.  But what the  heck,  it  works.
@@ -3511,7 +4542,8 @@ void            SyHelp (
     Int                 fin )           /* file id of input and output     */
 {
     UInt                raw;            /* is input in raw mode?           */
-    Char                filename [256]; /* filename of various files       */
+    Char *              filename;       /* filename of various files       */
+    Char                filename2[256]; /* filename of various files       */
     Int                 fid;            /* file identifier of various files*/
     Char                line [256];     /* single line from those files    */
     UInt                chapnr;         /* number of the chapter           */
@@ -3535,18 +4567,6 @@ void            SyHelp (
 
     /* inform the window handler                                           */
     syWinPut( fin, "@h", "" );
-
-    /* set 'SyHelpname' to 'SyLibname' with 'lib' replaced by 'doc'        */
-    if ( SyHelpname[0] == '\0' ) {
-        q = SyHelpname;
-        p = SyLibname;
-        while ( *p != '\0' )  *q++ = *p++;
-        *q = '\0';
-        for ( p = SyHelpname; *p != '\0'; p++ ) ;
-        while ( SyHelpname < p && (p[0]!='l' || p[1]!='i' || p[2]!='b') )
-            p--;
-        p[0] = 'd'; p[1] = 'o'; p[2] = 'c';
-    }
 
     /* skip leading blanks in the topic                                    */
     while ( *topic == ' ' )  topic++;
@@ -3653,15 +4673,11 @@ void            SyHelp (
     if ( SyStrcmp(topic,"chapters")==0 || SyStrcmp(topic,"Chapters")==0 ) {
 
         /* open the table of contents file                                 */
-        filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "manual.toc", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
+	filename = SyFindGapRootFile( "doc/manual.toc" );
+        if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
             syEchos( "Help: cannot open the table of contents file '",fin );
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
+            syEchos( "doc/manual.toc'\n", fin );
+            syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
             if ( raw )  syStopraw( fin );
             return;
         }
@@ -3738,15 +4754,11 @@ void            SyHelp (
     if ( SyStrcmp(topic,"sections")==0 || SyStrcmp(topic,"Sections")==0 ) {
 
         /* open the table of contents file                                 */
-        filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "manual.toc", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the table of contents file '",fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
+	filename = SyFindGapRootFile( "doc/manual.toc" );
+        if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
+            syEchos( "Help: cannot open the table of contents file '",fin );
+            syEchos( "doc/manual.toc'\n", fin );
+            syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
             if ( raw )  syStopraw( fin );
             return;
         }
@@ -3821,15 +4833,11 @@ void            SyHelp (
     if ( SyStrcmp(topic,"copyright")==0 || SyStrcmp(topic,"Copyright")==0 ) {
 
         /* open the copyright file                                         */
-        filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-14 );
-        SyStrncat( filename, "copyrigh.tex", 13 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the copyright file '",fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <helpname>'?\n", fin );
+	filename = SyFindGapRootFile( "doc/copyright.toc" );
+        if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
+            syEchos( "Help: cannot open the table of contents file '",fin );
+            syEchos( "doc/copyright.toc'\n", fin );
+            syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
             if ( raw )  syStopraw( fin );
             return;
         }
@@ -3930,15 +4938,11 @@ void            SyHelp (
         while ( *topic == ' ' )  topic++;
 
         /* open the index                                                  */
-        filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "manual.idx", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the index file '", fin);
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
+	filename = SyFindGapRootFile( "doc/manual.idx" );
+        if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
+            syEchos( "Help: cannot open the table of contents file '",fin );
+            syEchos( "doc/manual.idx'\n", fin );
+            syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
             if ( raw )  syStopraw( fin );
             return;
         }
@@ -4038,15 +5042,11 @@ void            SyHelp (
     }
 
     /* open the table of contents                                          */
-    filename[0] = '\0';
-    SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-    SyStrncat( filename, "manual.toc", 11 );
-    fid = SyFopen( filename, "r" );
-    if ( fid == -1 ) {
-        syEchos( "Help: cannot open the table of contents file '", fin );
-        syEchos( filename, fin );
-        syEchos( "'\n", fin );
-        syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
+    filename = SyFindGapRootFile( "doc/manual.toc" );
+    if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
+	syEchos( "Help: cannot open the table of contents file '",fin );
+	syEchos( "doc/manual.toc'\n", fin );
+	syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
         if ( raw )  syStopraw( fin );
         return;
     }
@@ -4230,15 +5230,11 @@ void            SyHelp (
     if ( syChapnames[0][0] == '\0' ) {
 
         /* open the 'manual.tex' file                                      */
-        filename[0] = '\0';
-        SyStrncat( filename, SyHelpname, sizeof(filename)-12 );
-        SyStrncat( filename, "manual.tex", 11 );
-        fid = SyFopen( filename, "r" );
-        if ( fid == -1 ) {
-            syEchos( "Help: cannot open the manual file '", fin );
-            syEchos( filename, fin );
-            syEchos( "'\n", fin );
-            syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
+	filename = SyFindGapRootFile( "doc/manual.tex" );
+        if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
+            syEchos( "Help: cannot open the table of contents file '",fin );
+            syEchos( "doc/manual.tex'\n", fin );
+            syEchos( "maybe use the option '-l <gaproot>'?\n", fin );
             if ( raw )  syStopraw( fin );
             return;
         }
@@ -4263,14 +5259,14 @@ void            SyHelp (
     }
 
     /* try to open the chapter file                                        */
-    filename[0] = '\0';
-    SyStrncat( filename, SyHelpname, sizeof(filename)-13 );
-    SyStrncat( filename, syChapnames[chapnr-1], 9 );
-    SyStrncat( filename, ".tex", 4 );
-    fid = SyFopen( filename, "r" );
-    if ( fid == -1 ) {
+    filename2[0] = '\0';
+    SyStrncat( filename2, "doc/", 4 );
+    SyStrncat( filename2, syChapnames[chapnr-1], 9 );
+    SyStrncat( filename2, ".tex", 4 );
+    filename = SyFindGapRootFile( filename2 );
+    if ( filename == 0 || (fid = SyFopen( filename, "r" )) == -1 ) {
         syEchos( "Help: cannot open the chapter file '", fin );
-        syEchos( filename, fin );
+        syEchos( filename2, fin );
         syEchos( "'\n", fin );
         syEchos( "maybe use the option '-h <hlpname>'?\n", fin );
         if ( raw )  syStopraw( fin );
@@ -4497,12 +5493,20 @@ void            SyHelp (
 
 /****************************************************************************
 **
-*F  SyMsgsBags(<full>,<phase>,<nr>) . . . . . . . . . display Gasman messages
+
+*F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SyMsgsBags( <full>, <phase>, <nr> ) . . . . . . . display Gasman messages
 **
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
 **  during garbage collections.
 */
-void            SyMsgsBags (
+void SyMsgsBags (
     UInt                full,
     UInt                phase,
     Int                 nr )
@@ -4562,7 +5566,7 @@ void            SyMsgsBags (
 
 /****************************************************************************
 **
-*F  SyAllocBags(<size>,<need>)  . . . . allocate memory block of <size> bytes
+*F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> bytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
 **  system.  <size> is the needed amount in bytes (it is always a multiple of
@@ -4589,7 +5593,9 @@ void            SyMsgsBags (
 */
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
+**
+*f  SyAllocBags( <size>, <need> ) . . . . . . . BSD/USG/OS2 EMX/MSDOS/TOS/VMS
 **
 **  For UNIX,  OS/2, MS-DOS, TOS,  and VMS, 'SyAllocBags' calls 'sbrk', which
 **  will work on most systems.
@@ -4604,13 +5610,14 @@ void            SyMsgsBags (
 #if SYS_BSD||SYS_USG||SYS_OS2_EMX||SYS_MSDOS_DJGPP||SYS_TOS_GCC2||SYS_VMS
 
 #ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern  char *          sbrk ( int );
+extern  char * sbrk ( int );
 #endif
 
-UInt * * *      syWorkspace;
-UInt            syWorksize;
+UInt * * * syWorkspace;
+UInt       syWorksize;
 
-UInt * * *      SyAllocBags (
+
+UInt * * * SyAllocBags (
     Int                 size,
     UInt                need )
 {
@@ -4660,7 +5667,9 @@ UInt * * *      SyAllocBags (
 #endif
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
+**
+*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . .  MACH
 **
 **  Under MACH virtual memory managment functions are used instead of 'sbrk'.
 */
@@ -4668,10 +5677,9 @@ UInt * * *      SyAllocBags (
 
 #include <mach/mach.h>
 
-vm_address_t      syBase  = 0;
-Int               sySize  = 0;
+vm_address_t syBase  = 0;
+Int          sySize  = 0;
 
-/* 'SyGetmem' uses virtual memory on a NeXT                                */
 UInt * * * SyAllocBags (
     Int                 size,
     UInt                need )
@@ -4747,7 +5755,9 @@ UInt * * * SyAllocBags (
 #endif
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
+**
+*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC MPW
 **
 **  For the MAC under MPW we currently use 'calloc'.  This  does not allow to
 **  extend the arena, but this is a problem of the memory manager anyhow.
@@ -4758,9 +5768,10 @@ UInt * * * SyAllocBags (
 extern  char *          calloc ( int, int );
 #endif
 
-char *          syWorkspace;
+char * syWorkspace;
 
-char *          SyGetmem ( size )
+
+char * SyGetmem ( size )
     long                size;
 {
     /* get the memory                                                      */
@@ -4778,7 +5789,9 @@ char *          SyGetmem ( size )
 #endif
 
 
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+/****************************************************************************
+**
+*f  SyAllocBags( <size>, <need> ) . . . . . . . . . . . . . . . . . . MAC SYS
 **
 **  For Mac under Think C we use 'NewPtr'.  This does not allow to extend the
 **  area, but this is a problem of the memory manager anyhow.
@@ -4789,12 +5802,13 @@ char *          SyGetmem ( size )
 # include      <string.h>               /* 'memset'                        */
 # define SYS_STRING_H
 #endif
+
 #ifndef SYS_HAS_MEMSET_PROTO            /* ANSI/TRAD decl. from H&S ?.?    */
 extern  void *          memset ( void * mem, int chr, size_t size );
 #endif
 
-UInt * * *      syWorkspace;
-UInt            syWorksize;
+UInt * * * syWorkspace;
+UInt       syWorksize;
 
 UInt * * *      SyAllocBags (
     Int                 size,
@@ -4839,6 +5853,124 @@ void            SyAbortBags (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
+**
+**  'SySetGapRootPath' takes a  string and create  a list of root directories
+**  in 'SyGapRootPaths'.
+*/
+
+
+/****************************************************************************
+**
+*f  SySetGapRootPath( <string> )  . . . . . . . . . . . . . . .  BSG/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+void SySetGapRootPath( Char * string )
+{
+    Char * 	    p;
+    Char * 	    q;
+    Int             n;
+
+    /* set string to a default value if unset                              */
+    if ( string == 0 ) {
+	string = "./";
+    }
+
+    /* store the string in 'SyGapRootPath'                                 */
+    SyGapRootPath[0] = '\0';
+    SyStrncat( SyGapRootPath, string, sizeof(SyGapRootPath)-2 );
+
+    /* unpack the argument                                                 */
+    p = SyGapRootPath;
+    n = 0;
+    while ( *p ) {
+	q = SyGapRootPaths[n];
+	while ( *p && *p != ';' ) {
+	    *q++ = *p++;
+	}
+	if ( q == SyGapRootPaths[n] ) {
+	    SyGapRootPaths[n][0] = '\0';
+	    SyStrncat( SyGapRootPaths[n], "./", 2 );
+	}
+	else if ( q[-1] != '/' ) {
+	    *q++ = '/';
+	    *q   = '\0';
+	}
+	else {
+	    *q   = '\0';
+	}
+	if ( *p ) {
+	    p++;  n++;
+	}
+    }
+}
+
+#endif
+
+/****************************************************************************
+**
+*F  sySetGapRCFile()  . . . . . . . . . . . . .  add .gaprc to the init files
+*/
+void sySetGapRCFile ( void )
+{
+    Int	            i;
+
+    /* find a free slot                                                    */
+    for ( i = 0;  i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]);  i++ ) {
+	if ( SyInitfiles[i][0] == '\0' )
+	    break;
+    }
+    if ( i == sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) )
+	return;
+
+#if SYS_BSD || SYS_MACH || SYS_USG
+    if ( getenv("HOME") != 0 ) {
+	SyInitfiles[i][0] = '\0';
+	SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
+	SyStrncat( SyInitfiles[i], "/.gaprc",
+	    (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+#endif
+
+#if SYS_OS2_EMX || SYS_MSDOS_DJGPP || SYS_TOS_GCC2
+    if ( getenv("HOME") != 0 ) {
+	SyInitfiles[i][0] = '\0';
+	SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
+	SyStrncat( SyInitfiles[i], "/gap.rc",
+	    (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+#endif
+
+#if SYS_VMS
+    if ( getenv("GAP_INI") != 0 ) {
+        SyStrncat(SyInitfiles[i],getenv("GAP_INI"),sizeof(SyInitfiles[0])-1);
+#endif
+
+
+#if SYS_MAC_MPW || SYS_MAC_SYC
+    if ( 1 ) {
+	SyInitfiles[i][0] = '\0';
+	SyStrncat( SyInitfiles[i], "gap.rc",
+            (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
+#endif
+
+	if ( ! SyIsReadableFile(SyInitfiles[i]) ) {
+	    SyInitfiles[i][0] = '\0';
+	}
+    }
+}
+
+
+
+/****************************************************************************
+**
 *F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.
@@ -4855,13 +5987,15 @@ void            SyAbortBags (
 # endif
 # define SYS_STDLIB_H
 #endif
+
 #ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 20, 13 */
-extern  char *          getenv ( SYS_CONST char * );
-extern  int             atoi ( SYS_CONST char * );
+extern char *  getenv ( SYS_CONST char * );
+extern int     atoi ( SYS_CONST char * );
 #endif
+
 #ifndef SYS_HAS_MISC_PROTO              /* UNIX decl. from 'man'           */
-extern  int             isatty ( int );
-extern  char *          ttyname ( int );
+extern int     isatty ( int );
+extern char *  ttyname ( int );
 #endif
 
 #ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
@@ -4870,13 +6004,14 @@ extern  char *          ttyname ( int );
 # endif
 # define SYS_STDLIB_H
 #endif
+
 #ifndef SYS_HAS_MALLOC_PROTO
 # if SYS_ANSI                           /* ANSI decl. from H&S 16.1, 16.2  */
-extern  void *          malloc ( size_t );
-extern  void            free ( void * );
+extern void * malloc ( size_t );
+extern void   free ( void * );
 # else                                  /* TRAD decl. from H&S 16.1, 16.2  */
-extern  char *          malloc ( unsigned );
-extern  void            free ( char * );
+extern char * malloc ( unsigned );
+extern void   free ( char * );
 # endif
 #endif
 
@@ -4905,26 +6040,26 @@ extern  void            free ( char * );
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
 # ifndef SYS_HAS_TOOL
-Char *          syArgv [128];
-Char            syArgl [1024];
+Char * syArgv [128];
+Char   syArgl [1024];
 # endif
 #endif
 
 #if SYS_MAC_SYC
-long *          dedgen;
-long *          dedcos;
-long            dedSize = 40960;
+long * dedgen;
+long * dedcos;
+long   dedSize = 40960;
 #endif
 
 void            InitSystem (
     Int                 argc,
     Char *              argv [] )
 {
-    Int                 fid;            /* file identifier                 */
     Int                 pre = 63*1024;  /* amount to pre'malloc'ate        */
     UInt                gaprc = 1;      /* read the .gaprc file            */
     Char *              ptr;            /* pointer to the pre'malloc'ated  */
-    UInt                i, k;           /* loop variables                  */
+    Char *              gapRoot = 0;    /* gap root directory              */
+    UInt                i;              /* loop variable                   */
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
 # ifndef SYS_HAS_TOOL
@@ -4935,9 +6070,9 @@ void            InitSystem (
     /* 'fix_SIOW.c' is the source for an MPW tool, which does this safely. */
     /* Otherwise bungee-jumping the stack will lead to fatal head injuries.*/
     /*                                              Dave Bayer, 1994/07/14 */
-    SetApplLimit( GetApplLimit() - (SyStackSpace - StackSpace() + 1024) );
+    SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
     MaxApplZone();
-    if ( StackSpace() < SyStackSpace ) {
+    if ( StackSpace() < syStackSpace ) {
         fputs("gap: cannot get enough stack space.\n",stderr);
         SyExit( 1 );
     }
@@ -5059,6 +6194,10 @@ void            InitSystem (
 # endif
 #endif
 
+
+    SySystemInitFile[0] = '\0';
+    SyStrncat( SySystemInitFile, "lib/init.g", 10 );
+
     /* scan the command line for options                                   */
     while ( argc > 1 && argv[1][0] == '-' ) {
 
@@ -5070,54 +6209,67 @@ void            InitSystem (
 
         switch ( argv[1][1] ) {
 
-        case 'b': /* '-b', supress the banner                              */
+
+	/* '-b', supress the banner                                        */
+        case 'b':
             SyBanner = ! SyBanner;
             break;
 
-        case 'g': /* '-g', Gasman should be verbose                        */
+
+	/* '-g', Gasman should be verbose                                  */
+        case 'g':
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
             break;
 
-        case 'l': /* '-l <libname>', change the value of 'LIBNAME'         */
+
+        /* '-i' <initname>, changes the name of the init file              */
+	case 'i':
+            if ( argc < 3 ) {
+                fputs("gap: option '-i' must have an argument.\n",stderr);
+                goto usage;
+            }
+	    SySystemInitFile[0] = '\0';
+	    SyStrncat( SySystemInitFile, argv[2], 255 );
+            ++argv; --argc;
+            break;
+	    
+
+	/* '-l <root1>;<root2>;...', changes the value of 'GAPROOT'        */
+        case 'l':
             if ( argc < 3 ) {
                 fputs("gap: option '-l' must have an argument.\n",stderr);
                 goto usage;
             }
-            SyLibname[0] = '\0';
-            SyStrncat( SyLibname, argv[2], sizeof(SyLibname)-2 );
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-            if ( SyLibname[SyStrlen(SyLibname)-1] != '/'
-              && SyLibname[SyStrlen(SyLibname)-1] != ';' )
-                SyStrncat( SyLibname, "/", 1 );
-#endif
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-            if ( SyLibname[SyStrlen(SyLibname)-1] != '\\'
-              && SyLibname[SyStrlen(SyLibname)-1] != ';' )
-                SyStrncat( SyLibname, "\\", 1 );
-#endif
+	    gapRoot = argv[2];
             ++argv; --argc;
             break;
 
-        case 'h': /* '-h <hlpname>', change the value of 'HLPNAME'         */
+
+        /* '-B', name of the directory containing execs within root/bin    */
+	case 'B':
             if ( argc < 3 ) {
-                fputs("gap: option '-h' must have an argument.\n",stderr);
+                fputs("gap: option '-B' must have an argument.\n",stderr);
                 goto usage;
             }
-            SyHelpname[0] = '\0';
-#if SYS_BSD || SYS_MACH || SYS_USG || SYS_OS2_EMX
-            SyStrncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
-            if ( SyHelpname[SyStrlen(SyHelpname)-1] != '/' )
-                SyStrncat( SyHelpname, "/", 1 );
-#endif
-#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-            SyStrncat( SyHelpname, argv[2], sizeof(SyLibname)-2 );
-            if ( SyHelpname[SyStrlen(SyHelpname)-1] != '\\' )
-                SyStrncat( SyHelpname, "\\", 1 );
-#endif
-            ++argv; --argc;
+	    SyArchitecture = argv[2];
+	    ++argv;  --argc;
+	    break;
+	
+
+	/* '-N', check for completion files in "init.g"                    */
+        case 'N':
+            SyCheckForCompFiles = ! SyCheckForCompFiles;
             break;
 
-        case 'm': /* '-m <memory>', change the value of 'SyStorMin'        */
+
+	/* '-D', debug loading of files                                    */
+        case 'D':
+            SyDebugLoading = ! SyDebugLoading;
+            break;
+
+
+        /* '-m <memory>', change the value of 'SyStorMin'                  */
+        case 'm':
             if ( argc < 3 ) {
                 fputs("gap: option '-m' must have an argument.\n",stderr);
                 goto usage;
@@ -5132,7 +6284,9 @@ void            InitSystem (
             ++argv; --argc;
             break;
 
-        case 'c': /* '-c', change the value of 'SyCacheSize'               */
+
+        /* '-c', change the value of 'SyCacheSize'                         */
+        case 'c':
             if ( argc < 3 ) {
                 fputs("gap: option '-c' must have an argument.\n",stderr);
                 goto usage;
@@ -5147,7 +6301,9 @@ void            InitSystem (
             ++argv; --argc;
             break;
 
-        case 'a': /* '-a <memory>', set amount to pre'm*a*lloc'ate         */
+
+        /* '-a <memory>', set amount to pre'm*a*lloc'ate                   */
+        case 'a':
             if ( argc < 3 ) {
                 fputs("gap: option '-a' must have an argument.\n",stderr);
                 goto usage;
@@ -5162,19 +6318,27 @@ void            InitSystem (
             ++argv; --argc;
             break;
 
-        case 'n': /* '-n', disable command line editing                    */
-            if ( ! syWindow )  syLineEdit = 0;
+
+        /* '-n', disable command line editing                              */
+        case 'n':
+            syLineEdit = 0;
             break;
 
-        case 'f': /* '-f', force line editing                              */
-            if ( ! syWindow )  syLineEdit = 2;
+
+        /* '-f', force line editing                                        */
+        case 'f':
+            syLineEdit = 2;
             break;
 
-        case 'q': /* '-q', GAP should be quiet                             */
+
+        /* '-q', GAP should be quiet                                       */
+        case 'q':
             SyQuiet = ! SyQuiet;
             break;
 
-        case 'x': /* '-x', specify the length of a line                    */
+
+        /* '-x', specify the length of a line                              */
+        case 'x':
             if ( argc < 3 ) {
                 fputs("gap: option '-x' must have an argument.\n",stderr);
                 goto usage;
@@ -5183,7 +6347,9 @@ void            InitSystem (
             ++argv; --argc;
             break;
 
-        case 'y': /* '-y', specify the number of lines                     */
+
+        /* '-y', specify the number of lines                               */
+        case 'y':
             if ( argc < 3 ) {
                 fputs("gap: option '-y' must have an argument.\n",stderr);
                 goto usage;
@@ -5192,23 +6358,24 @@ void            InitSystem (
             ++argv; --argc;
             break;
 
-        case 'e': /* '-e', do not quit GAP on '<ctr>-D'                    */
-            if ( ! syWindow )  syCTRD = ! syCTRD;
+
+        /* '-e', do not quit GAP on '<ctr>-D'                              */
+        case 'e':
+            syCTRD = ! syCTRD;
             break;
 
+
+        /* '-p', start GAP package mode for output                         */
 #if SYS_BSD || SYS_MACH || SYS_USG
-        case 'p': /* '-p', start GAP package mode for output               */
-            syWindow     = 1;
-            syLineEdit   = 1;
-            syCTRD       = 1;
-            syWinPut( 0, "@p", "" );
-            syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
-            syBuf[3].fp = stdout;
+        case 'p':
+            SyWindow = ! SyWindow;
             break;
 #endif
 
+
+        /* '-z', specify interrupt check frequency                         */
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2 || SYS_MAC_MPW || SYS_MAC_SYC
-        case 'z': /* '-z', specify interrupt check frequency               */
+        case 'z':
             if ( argc < 3 ) {
                 fputs("gap: option '-z' must have an argument.\n",stderr);
                 goto usage;
@@ -5218,8 +6385,10 @@ void            InitSystem (
             break;
 #endif
 
+
+        /* '-Z', specify background check frequency                        */
 #if SYS_MAC_SYC
-        case 'Z': /* '-Z', specify background check frequency              */
+        case 'Z':
             if ( argc < 3 ) {
                 fputs("gap: option '-Z' must have an argument.\n",stderr);
                 goto usage;
@@ -5229,19 +6398,43 @@ void            InitSystem (
             break;
 #endif
 
+
+        /* '-E', running under Emacs under OS/2                            */
 #if SYS_OS2_EMX
-        case 'E': /* '-E', running under Emacs under OS/2                  */
+        case 'E':
             syLineEdit = 2;
             syBuf[2].fp = stdin;
             syBuf[2].echo = stderr;
             break;
 #endif
 
-        case 'r': /* don't read the '.gaprc' file                          */
+
+        /* '-r', don't read the '.gaprc' file                              */
+        case 'r':
             gaprc = ! gaprc;
             break;
 
-        default: /* default, no such option                                */
+
+        /* -C <output> <input> <name> <magic1>                             */
+        case 'C':
+            if ( argc < 6 ) {
+                fputs("gap: option '-C' must have 4 arguments.\n",stderr);
+                goto usage;
+            }
+            SyCompilePlease = 1;
+            SyStrncat( SyCompileOutput, argv[2], sizeof(SyCompileOutput)-2 );
+            ++argv; --argc;
+            SyStrncat( SyCompileInput, argv[2], sizeof(SyCompileInput)-2 );
+            ++argv; --argc;
+            SyStrncat( SyCompileName, argv[2], sizeof(SyCompileName)-2 );
+            ++argv; --argc;
+            SyCompileMagic1 = argv[2];
+            ++argv; --argc;
+            break;
+
+
+        /* default, no such option                                         */
+        default:
             fputs("gap: '",stderr);  fputs(argv[1],stderr);
             fputs("' option is unknown.\n",stderr);
             goto usage;
@@ -5252,9 +6445,21 @@ void            InitSystem (
 
     }
 
+    /* set the library path                                                */
+    SySetGapRootPath(gapRoot);
+
+    /* when running in package mode set ctrl-d and line editing            */
+    if ( SyWindow ) {
+	syLineEdit   = 1;
+	syCTRD       = 1;
+	syWinPut( 0, "@p", "" );
+	syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
+	syBuf[3].fp = stdout;
+    }
+   
 #if SYS_MAC_SYC
     /* set up the console window options                                   */
-    console_options.title = "\pGAP 3.4.2";
+    console_options.title = "\pGAP 4.0";
     console_options.nrows = SyNrRows;
     console_options.ncols = SyNrCols;
     console_options.pause_atexit = 0;
@@ -5272,91 +6477,20 @@ void            InitSystem (
     if ( ptr != 0 )  free( ptr );
 
     /* try to find 'LIBNAME/init.g' to read it upon initialization         */
-    i = 0;  fid = -1;
-    while ( fid == -1 && i <= SyStrlen(SyLibname) ) {
-        for ( k = i; SyLibname[k] != '\0' && SyLibname[k] != ';'; k++ )  ;
-        SyInitfiles[0][0] = '\0';
-        if ( sizeof(SyInitfiles[0]) < k-i+6+1 ) {
-            fputs("gap: <libname> is too long\n",stderr);
-            goto usage;
-        }
-        SyStrncat( SyInitfiles[0], SyLibname+i, k-i );
-        SyStrncat( SyInitfiles[0], "init.g", 6 );
-        if ( (fid = SyFopen( SyInitfiles[0], "r" )) != -1 )
-            SyFclose( fid );
-        i = k + 1;
-    }
-    if ( fid != -1 ) {
-        i = 1;
-    }
-    else {
-        i = 0;
-        SyInitfiles[0][0] = '\0';
-        if ( ! SyQuiet ) {
-            fputs("gap: hmm, I cannot find '",stderr);
-            fputs(SyLibname,stderr);
-            fputs("init.g', maybe use option '-l <libname>'?\n",stderr);
-        }
+    if ( SyCompilePlease ) {
+	SySystemInitFile[0] = 0;
     }
 
-    if ( gaprc ) {
-#if SYS_BSD || SYS_MACH || SYS_USG
-      if ( getenv("HOME") != 0 ) {
-          SyInitfiles[i][0] = '\0';
-          SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-          SyStrncat( SyInitfiles[i], "/.gaprc",
-                  (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
-          if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
-              ++i;
-              SyFclose( fid );
-          }
-          else {
-              SyInitfiles[i][0] = '\0';
-          }
-      }
-#endif
-#if SYS_OS2_EMX || SYS_MSDOS_DJGPP || SYS_TOS_GCC2
-      if ( getenv("HOME") != 0 ) {
-          SyInitfiles[i][0] = '\0';
-          SyStrncat(SyInitfiles[i],getenv("HOME"),sizeof(SyInitfiles[0])-1);
-          SyStrncat( SyInitfiles[i], "/gap.rc",
-                  (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
-          if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
-              ++i;
-              SyFclose( fid );
-          }
-          else {
-              SyInitfiles[i][0] = '\0';
-          }
-      }
-#endif
-#if SYS_VMS
-      if ( getenv("GAP_INI") != 0 ) {
-        SyStrncat(SyInitfiles[i],getenv("GAP_INI"),sizeof(SyInitfiles[0])-1);
-        if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
-            ++i;
-            SyFclose( fid );
-        }
-        else {
-            SyInitfiles[i][0] = '\0';
-        }
-      }
-#endif
-#if SYS_MAC_MPW || SYS_MAC_SYC
-      SyInitfiles[i][0] = '\0';
-      SyStrncat( SyInitfiles[i], "gap.rc",
-              (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
-      if ( (fid = SyFopen( SyInitfiles[i], "r" )) != -1 ) {
-          ++i;
-          SyFclose( fid );
-      }
-      else {
-          SyInitfiles[i][0] = '\0';
-      }
-#endif
+    /* the compiler will *not* read in the .gaprc file                     */
+    if ( gaprc && ! SyCompilePlease ) {
+	sySetGapRCFile();
     }
 
     /* use the files from the command line                                 */
+    for ( i = 0;  i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]);  i++ ) {
+	if ( SyInitfiles[i][0] == '\0' )
+	    break;
+    }
     while ( argc > 1 ) {
         if ( i >= sizeof(SyInitfiles)/sizeof(SyInitfiles[0]) ) {
             fputs("gap: sorry, cannot handle so many init files.\n",stderr);
@@ -5365,7 +6499,8 @@ void            InitSystem (
         SyInitfiles[i][0] = '\0';
         SyStrncat( SyInitfiles[i], argv[1], sizeof(SyInitfiles[0])-1 );
         ++i;
-        ++argv;  --argc;
+        ++argv;
+	--argc;
     }
 
 #if SYS_TOS_GCC2
@@ -5419,4 +6554,8 @@ void            InitSystem (
 }
 
 
+/****************************************************************************
+**
 
+*E  system.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -287,7 +287,7 @@ InstallFactorMaintainedMethod := function( opr, numer_req, denom_req,
     InstallIsomorphismMaintainedMethod( opr, numer_req, factor_req );
 
     setter:= Setter( opr );
-    tester:= Setter( opr );
+    tester:= Tester( opr );
     infostring:= "method for operation ";
     APPEND_LIST_INTR( infostring, NAME_FUNCTION( opr ) );
 

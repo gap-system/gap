@@ -30,8 +30,8 @@ char *          Revision_exprs_h =
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
-                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
+                        (*(Obj*)(((char*)PtrLVars)+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)PtrLVars)+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 
@@ -49,7 +49,7 @@ char *          Revision_exprs_h =
 **  (immediate) integer values having the same representation.
 */
 #define OBJ_INTEXPR(expr)       \
-                        ((Obj)(expr))
+                        ((Obj)(Int)(Int4)(expr))
 
 
 /****************************************************************************
@@ -70,7 +70,7 @@ char *          Revision_exprs_h =
 #define EVAL_EXPR(expr) \
                         (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
                          (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TYPE_BAG(expr) ])( expr ) ))
+                          (*EvalExprFuncs[ TYPE_STAT(expr) ])( expr ) ))
 
 
 /****************************************************************************

@@ -1119,6 +1119,7 @@ void            InitPRecord ( void )
         = "record (plain,immutable,copied)";
     InitMarkFuncBags( T_PREC +IMMUTABLE +COPYING , MarkAllSubBags );
 
+
     /* install into record function tables                                 */
     ElmRecFuncs[ T_PREC            ] = ElmPRec;
     ElmRecFuncs[ T_PREC +IMMUTABLE ] = ElmPRec;
@@ -1129,17 +1130,21 @@ void            InitPRecord ( void )
     UnbRecFuncs[ T_PREC            ] = UnbPRec;
     UnbRecFuncs[ T_PREC +IMMUTABLE ] = UnbPRecImm;
 
+
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_PREC_MUTABLE"),   &KIND_PREC_MUTABLE );
-    InitCopyGVar( GVarName("KIND_PREC_IMMUTABLE"), &KIND_PREC_IMMUTABLE  );
+    ImportGVarFromLibrary( "KIND_PREC_MUTABLE",   &KIND_PREC_MUTABLE   );
+    ImportGVarFromLibrary( "KIND_PREC_IMMUTABLE", &KIND_PREC_IMMUTABLE );
+
     KindObjFuncs[ T_PREC            ] = KindPRecMut;
     KindObjFuncs[ T_PREC +IMMUTABLE ] = KindPRecImm;
+
 
     /* install mutability test                                             */
     IsMutableObjFuncs[  T_PREC            ] = IsMutablePRecYes;
     IsMutableObjFuncs[  T_PREC +IMMUTABLE ] = IsMutablePRecNo;
     IsCopyableObjFuncs[ T_PREC            ] = IsCopyablePRecYes;
     IsCopyableObjFuncs[ T_PREC +IMMUTABLE ] = IsCopyablePRecYes;
+
 
     /* install into copy function tables                                  */
     CopyObjFuncs [ T_PREC                     ] = CopyPRec;
@@ -1151,11 +1156,13 @@ void            InitPRecord ( void )
     CleanObjFuncs[ T_PREC            +COPYING ] = CleanPRecCopy;
     CleanObjFuncs[ T_PREC +IMMUTABLE +COPYING ] = CleanPRecCopy;
 
+
     /* install printer                                                     */
     PrintObjFuncs[  T_PREC            ] = PrintPRec;
     PrintObjFuncs[  T_PREC +IMMUTABLE ] = PrintPRec;
     PrintPathFuncs[ T_PREC            ] = PrintPathPRec;
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
+
 
     /* install evaluators                                                  */
     for ( i = FIRST_REAL_TYPE; i <= LAST_VIRTUAL_TYPE; i++ ) {
@@ -1205,6 +1212,7 @@ void            InitPRecord ( void )
         }
     }
 
+
     /* get the appropriate record record name                              */
     OperationsRNam = RNamName( "operations"   );
     PrintRNam      = RNamName( "Print"        );
@@ -1219,6 +1227,7 @@ void            InitPRecord ( void )
     PowRNam        = RNamName( "^"            );
     CommRNam       = RNamName( "Comm"         );
     ModRNam        = RNamName( "mod"          );
+
 
     /* install the internal functions                                      */
     RecNamesFunc = NewFunctionC(

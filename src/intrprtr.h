@@ -393,8 +393,10 @@ extern  void            IntrIn ( void );
 /****************************************************************************
 **
 *F  IntrSum() . . . . . . . . . . . . . . . . . . . .  interpret +-expression
+*F  IntrAInv()  . . . . . . . . . . . . . . . .  interpret unary --expression
 *F  IntrDiff()  . . . . . . . . . . . . . . . . . . .  interpret --expression
 *F  IntrProd()  . . . . . . . . . . . . . . . . . . .  interpret *-expression
+*F  IntrInv() . . . . . . . . . . . . . . . . . . .  interpret ^-1-expression
 *F  IntrQuo() . . . . . . . . . . . . . . . . . . . .  interpret /-expression
 *F  IntrMod()   . . . . . . . . . . . . . . . . . .  interpret mod-expression
 *F  IntrPow() . . . . . . . . . . . . . . . . . . . .  interpret ^-expression
@@ -405,9 +407,13 @@ extern  void            IntrIn ( void );
 */
 extern  void            IntrSum ( void );
 
+extern  void            IntrAInv ( void );
+
 extern  void            IntrDiff ( void );
 
 extern  void            IntrProd ( void );
+
+extern  void            IntrInv ( void );
 
 extern  void            IntrQuo ( void );
 

@@ -56,13 +56,14 @@ char *          Revision_intrprtr_c =
 
 /****************************************************************************
 **
+
 *V  IntrResult  . . . . . . . . . . . . . . . . . result value of interpreter
 **
 **  'IntrResult'  is the result value of  the interpreter, i.e., the value of
 **  the  statement  that  was  last  interpreted (which   might  have been  a
 **  return-value-statement).
 */
-Obj             IntrResult;
+Obj IntrResult;
 
 
 /****************************************************************************
@@ -75,7 +76,7 @@ Obj             IntrResult;
 **  If it interpretes a return-void-statement,  it sets 'IntrReturning' to 2.
 **  If it interpretes a quit-statement, it sets 'IntrReturning' to 8.
 */
-UInt            IntrReturning;
+UInt IntrReturning;
 
 
 /****************************************************************************
@@ -87,9 +88,9 @@ UInt            IntrReturning;
 **  'or' and 'and'  constructs where the  left operand already determines the
 **  outcome.
 **
-**  This mode is also used in Info abd Assert, when arguments are not printed. 
+**  This mode is also used in Info and Assert, when arguments are not printed. 
 */
-UInt            IntrIgnoring;
+UInt IntrIgnoring;
 
 
 /****************************************************************************
@@ -100,7 +101,7 @@ UInt            IntrIgnoring;
 **  The interpreter  switches  to this  mode for  constructs  that it  cannot
 **  directly interpret, such as loops or function bodies.
 */
-UInt            IntrCoding;
+UInt IntrCoding;
 
 
 /****************************************************************************
@@ -650,7 +651,7 @@ void            IntrIfEnd (
 **  Since loops cannot be interpreted immediately,  the interpreter calls the
 **  coder  to create a  procedure (with no arguments) and  calls that.
 */
-void            IntrForBegin ( void )
+void IntrForBegin ( void )
 {
     Obj                 nams;           /* (empty) list of names           */
 
@@ -673,29 +674,31 @@ void            IntrForBegin ( void )
     CodeForBegin();
 }
 
-void            IntrForIn ( void )
+void IntrForIn ( void )
 {
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
+    if ( CompNowFuncs != 0 ) { return; }
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
     CodeForIn();
 }
 
-void            IntrForBeginBody ( void )
+void IntrForBeginBody ( void )
 {
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
+    if ( CompNowFuncs != 0 ) { return; }
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
     CodeForBeginBody();
 }
 
-void            IntrForEndBody (
+void IntrForEndBody (
     UInt                nr )
 {
     /* ignore                                                              */
@@ -703,11 +706,18 @@ void            IntrForEndBody (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeForEndBody( nr );
+    if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
+	while ( 1 < --nr ) {
+	    PopStat();
+	}
+    }
+    else {
+	assert( IntrCoding > 0 );
+	CodeForEndBody( nr );
+    }
 }
 
-void            IntrForEnd ( void )
+void IntrForEnd ( void )
 {
     Obj                 func;           /* the function, result            */
 
@@ -790,6 +800,7 @@ void            IntrWhileBeginBody ( void )
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
+    if ( CompNowFuncs != 0 ) { return; }
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
@@ -804,8 +815,15 @@ void            IntrWhileEndBody (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeWhileEndBody( nr );
+    if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
+	while ( 1 < --nr ) {
+	    PopStat();
+	}
+    }
+    else {
+	assert( IntrCoding > 0 );
+	CodeWhileEndBody( nr );
+    }
 }
 
 void            IntrWhileEnd ( void )
@@ -892,6 +910,7 @@ void            IntrRepeatBeginBody ( void )
     /* ignore                                                              */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
+    if ( CompNowFuncs != 0 ) { return; }
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
@@ -906,8 +925,15 @@ void            IntrRepeatEndBody (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    assert( IntrCoding > 0 );
-    CodeRepeatEndBody( nr );
+    if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
+	while ( 1 < --nr ) {
+	    PopStat();
+	}
+    }
+    else {
+	assert( IntrCoding > 0 );
+	CodeRepeatEndBody( nr );
+    }
 }
 
 void            IntrRepeatEnd ( void )
@@ -1407,8 +1433,10 @@ void            IntrIn ( void )
 /****************************************************************************
 **
 *F  IntrSum() . . . . . . . . . . . . . . . . . . . .  interpret +-expression
+*F  IntrAInv()  . . . . . . . . . . . . . . . .  interpret unary --expression
 *F  IntrDiff()  . . . . . . . . . . . . . . . . . . .  interpret --expression
 *F  IntrProd()  . . . . . . . . . . . . . . . . . . .  interpret *-expression
+*F  IntrInv() . . . . . . . . . . . . . . . . . . .  interpret ^-1-expression
 *F  IntrQuo() . . . . . . . . . . . . . . . . . . . .  interpret /-expression
 *F  IntrMod()   . . . . . . . . . . . . . . . . . .  interpret mod-expression
 *F  IntrPow() . . . . . . . . . . . . . . . . . . . .  interpret ^-expression
@@ -1435,6 +1463,27 @@ void            IntrSum ( void )
 
     /* compute the sum                                                     */
     val = SUM( opL, opR );
+
+    /* push the result                                                     */
+    PushObj( val );
+}
+
+void            IntrAInv ( void )
+{
+    Obj                 val;            /* value, result                   */
+    Obj                 opL;            /* left operand                    */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeAInv(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* get the operand                                                     */
+    opL = PopObj();
+
+    /* compute the additive inverse                                        */
+    val = AINV( opL );
 
     /* push the result                                                     */
     PushObj( val );
@@ -1481,6 +1530,27 @@ void            IntrProd ( void )
 
     /* compute the product                                                 */
     val = PROD( opL, opR );
+
+    /* push the result                                                     */
+    PushObj( val );
+}
+
+void            IntrInv ( void )
+{
+    Obj                 val;            /* value, result                   */
+    Obj                 opL;            /* left operand                    */
+
+    /* ignore or code                                                      */
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { CodeInv(); return; }
+    if ( CompNowFuncs != 0 ) { return; }
+
+    /* get the operand                                                     */
+    opL = PopObj();
+
+    /* compute the multiplicative inverse                                  */
+    val = INV( opL );
 
     /* push the result                                                     */
     PushObj( val );
@@ -3008,10 +3078,10 @@ void            IntrIsbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  IntrAssPosobj() . . . . . . . . . . . . . .  interpret assignment to a list
-*F  IntrAsssPosobj()  . . . . . . . . . interpret multiple assignment to a list
-*F  IntrAssPosobjLevel(<level>) . . . . . interpret assignment to several lists
-*F  IntrAsssPosobjLevel(<level>)  . . intr multiple assignment to several lists
+*F  IntrAssPosobj() . . . . . . . . . . . . .  interpret assignment to a list
+*F  IntrAsssPosobj()  . . . . . . . . interpret multiple assignment to a list
+*F  IntrAssPosobjLevel(<level>) . . . . interpret assignment to several lists
+*F  IntrAsssPosobjLevel(<level>)  . intr multiple assignment to several lists
 */
 void            IntrAssPosobj ( void )
 {
@@ -3222,10 +3292,10 @@ void            IntrUnbPosobj ( void )
 
 /****************************************************************************
 **
-*F  IntrElmPosobj() . . . . . . . . . . . . . . . interpret selection of a list
-*F  IntrElmsPosobj()  . . . . . . . . .  interpret multiple selection of a list
-*F  IntrElmPosobjLevel(<level>) . . . . .  interpret selection of several lists
-*F  IntrElmsPosobjLevel(<level>)  . .  intr multiple selection of several lists
+*F  IntrElmPosobj() . . . . . . . . . . . . . . interpret selection of a list
+*F  IntrElmsPosobj()  . . . . . . . .  interpret multiple selection of a list
+*F  IntrElmPosobjLevel(<level>) . . . .  interpret selection of several lists
+*F  IntrElmsPosobjLevel(<level>)  .  intr multiple selection of several lists
 */
 void            IntrElmPosobj ( void )
 {
@@ -3419,8 +3489,8 @@ void            IntrIsbPosobj ( void )
 
 /****************************************************************************
 **
-*F  IntrAssComobjName(<rnam>) . . . . . . . .  interpret assignment to a record
-*F  IntrAssComobjExpr() . . . . . . . . . . .  interpret assignment to a record
+*F  IntrAssComobjName(<rnam>) . . . . . . .  interpret assignment to a record
+*F  IntrAssComobjExpr() . . . . . . . . . .  interpret assignment to a record
 */
 void            IntrAssComobjName (
     UInt                rnam )
@@ -3543,8 +3613,8 @@ void            IntrUnbComobjExpr ( void )
 
 /****************************************************************************
 **
-*F  IntrElmComobjName(<rnam>) . . . . . . . . . interpret selection of a record
-*F  IntrElmComobjExpr() . . . . . . . . . . . . interpret selection of a record
+*F  IntrElmComobjName(<rnam>) . . . . . . . . interpret selection of a record
+*F  IntrElmComobjExpr() . . . . . . . . . . . interpret selection of a record
 */
 void            IntrElmComobjName (
     UInt                rnam )
@@ -3666,7 +3736,7 @@ void            IntrIsbComobjExpr ( void )
 *F  IntrInfoMiddle()  . . . . . .  shift to interpreting printable statements
 *F  IntrInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
 *V  InfoDecision . . . . . . . . . . .  fopy of the InfoDecision GAP function
-*V  InfoDoPrint  . . . . . . . . . . .  fopy of the InfoDoPrint GAP function
+*V  InfoDoPrint  . . . . . . . . . . . . fopy of the InfoDoPrint GAP function
 **
 **  These are the actions which are used to interpret an Info statement:
 **
@@ -3750,8 +3820,8 @@ void            IntrInfoEnd( UInt narg )
 
 /****************************************************************************
 **
-*F  IntrAssertBegin() . . . . . . .  start interpretation of Assert statement
-*F  IntrAsseerAfterLevel()  . . called after the first argument has been read
+*F  IntrAssertBegin()  . . . . . . . start interpretation of Assert statement
+*F  IntrAsseerAfterLevel() . .  called after the first argument has been read
 **
 **  At this stage, we can decide whether to evaluate the second argument --
 **   the check in question
@@ -3761,10 +3831,10 @@ void            IntrInfoEnd( UInt narg )
 **  At this point we know whether there is an assertion failure. We still need
 **  to read the third argument if any, to decide what to do about it One of:
 **
-*F  IntrAssertEnd2Args() . . . .  called after reading the closing parenthesis
-*F  IntrAssertEnd3Args() . . . .  called after reading the closing parenthesis
+*F  IntrAssertEnd2Args() . . . . called after reading the closing parenthesis
+*F  IntrAssertEnd3Args() . . . . called after reading the closing parenthesis
 **
-*V  CurrentAssertionLevel . . . .  . . . . . . . . . . . . copy of GAP variable
+*V  CurrentAssertionLevel  . .  . . . . . . . . . . . .  copy of GAP variable
 **
 **
 **  IntrIgnoring is increased by (a total of) 2 if an assertion either is not
@@ -3875,11 +3945,11 @@ void            InitIntrprtr ( void )
     InitGlobalBag( &StackObj   );
 
     /* The work of handling Info messages is delegated to the GAP level */
-    InitFopyGVar ( GVarName("InfoDecision"), &InfoDecision );
-    InitFopyGVar ( GVarName("InfoDoPrint"),  &InfoDoPrint  );
+    ImportFuncFromLibrary( "InfoDecision", &InfoDecision );
+    ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
 
     /* The Assertion level is also controlled at GAP level */
-    InitCopyGVar ( GVarName("CurrentAssertionLevel"), &CurrentAssertionLevel );
+    ImportGVarFromLibrary( "CurrentAssertionLevel", &CurrentAssertionLevel );
 }
 
 

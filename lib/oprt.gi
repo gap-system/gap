@@ -507,6 +507,12 @@ InstallMethod( \in, IsElmsColls, [ IsObject, IsExternalOrbit ], 0,
 end );
 
 InstallMethod( \in, IsElmsColls, [ IsObject,
+        IsExternalOrbit and HasEnumerator ], 0,
+    function( pnt, xorb )
+    return pnt in Enumerator( xorb );
+end );
+
+InstallMethod( \in, IsElmsColls, [ IsObject,
         IsExternalOrbit and HasCanonicalRepresentativeOfExternalSet ], 0,
     function( pnt, xorb )
     if CanonicalRepresentativeOfExternalSet( xorb ) = pnt  then
@@ -1334,14 +1340,14 @@ Blocks := function( arg )
     return OrbitishOperation( BlocksOp, IsIdentical, true, arg );
 end;
     
-InstallMethod( BlocksOp,
-        "G, D, [  ], gens, oprs, opr", true,
-        [ IsGroup, IsList, IsList and IsEmpty,
+InstallOtherMethod( BlocksOp,
+        "G, D, gens, oprs, opr", true,
+        [ IsGroup, IsList,
           IsList,
           IsList,
           IsFunction ], 0,
-    function( G, D, noseed, gens, oprs, opr )
-    return BlocksOp( G, D, gens, oprs, opr );
+    function( G, D, gens, oprs, opr )
+    return BlocksOp( G, D, [  ], gens, oprs, opr );
 end );
 
 InstallMethod( BlocksOp,
@@ -1500,6 +1506,12 @@ InstallMethod( CycleLengthOp, true,
         [ IsObject, IsList, IsObject, IsFunction ], 0,
     function( g, D, pnt, opr )
     return Length( CycleOp( g, D, pnt, opr ) );
+end );
+
+InstallOtherMethod( CycleLengthOp, true,
+        [ IsObject, IsObject, IsFunction ], 0,
+    function( g, pnt, opr )
+    return Length( CycleOp( g, pnt, opr ) );
 end );
 
 #############################################################################

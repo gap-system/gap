@@ -125,7 +125,7 @@ InstallMethod( PcgsByPcSequenceCons,
     0,
 
 function( filter, imp, efam, pcs )
-    local   pcgs,  fam,  rws;
+    local   pcgs,  fam;
 
     # if the <efam> has a family pcgs check if the are equal
     if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcs  then

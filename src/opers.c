@@ -1,6 +1,7 @@
 /****************************************************************************
 **
-*W  opers.c                     GAP source                   Martin Schoenert
+*W  opers.c                     GAP source                       Frank Celler
+*W                                                         & Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -4839,12 +4840,15 @@ Obj DoSetterFunction (
     Obj                 obj,
     Obj                 value )
 {
+    Obj                 tmp;
+
     if ( TYPE_OBJ(obj) != T_COMOBJ ) {
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
-    AssPRec( obj, INT_INTOBJ(BODY_FUNC(self)), CopyObj(value,0) );
-    CALL_2ARGS( SET_FILTER_OBJ, obj, ENVI_FUNC(self) );
+    tmp = ENVI_FUNC(self);
+    AssPRec( obj, INT_INTOBJ(ELM_PLIST(tmp,1)), CopyObj(value,0) );
+    CALL_2ARGS( SET_FILTER_OBJ, obj, ELM_PLIST(tmp,2) );
     return 0;
 }
 
@@ -4856,6 +4860,7 @@ Obj FuncSetterFunction (
 {
     Obj                 func;
     Obj                 fname;
+    Obj                 tmp;
 
     fname  = NEW_STRING( GET_LEN_STRING(name) + 12 );
     SyStrncat( CSTR_STRING(fname), "SetterFunc(", 11 );
@@ -4863,8 +4868,11 @@ Obj FuncSetterFunction (
     SyStrncat( CSTR_STRING(fname), ")", 1 );
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 2,
                          "object, value", DoSetterFunction );
-    BODY_FUNC(func) = INTOBJ_INT( RNamObj(name) );
-    ENVI_FUNC(func) = filter;
+    tmp = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( tmp, 2 );
+    SET_ELM_PLIST( tmp, 1, INTOBJ_INT( RNamObj(name) ) );
+    SET_ELM_PLIST( tmp, 2, filter );
+    ENVI_FUNC(func) = tmp;
     return func;
 }
 
@@ -4883,7 +4891,7 @@ Obj DoGetterFunction (
         ErrorQuit( "<obj> must be an component object", 0L, 0L );
         return 0L;
     }
-    return ElmPRec( obj, INT_INTOBJ(BODY_FUNC(self)) );
+    return ElmPRec( obj, INT_INTOBJ(ENVI_FUNC(self)) );
 }
 
 
@@ -4900,7 +4908,7 @@ Obj FuncGetterFunction (
     SyStrncat( CSTR_STRING(fname), ")", 1 );
     func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, CSTR_STRING(fname), 1,
                          "object, value", DoGetterFunction );
-    BODY_FUNC(func) = INTOBJ_INT( RNamObj(name) );
+    ENVI_FUNC(func) = INTOBJ_INT( RNamObj(name) );
     return func;
 }
 
@@ -5143,11 +5151,13 @@ void InitOpers ( void )
          NewFunctionC( "ELM_FLAGS", 2L, "flags, pos",
                     FuncELM_FLAGS ) );
 
+
     /* install the printing function                                       */
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
 
+
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_FLAGS"), &KIND_FLAGS );
+    ImportGVarFromLibrary( "KIND_FLAGS", &KIND_FLAGS );
     KindObjFuncs[ T_FLAGS ] = KindFlags;
 
     /* install the marking function                                        */
@@ -5268,82 +5278,82 @@ void InitOpers ( void )
     SyStrncat( CSTR_STRING(TRY_NEXT_METHOD), "TRY_NEXT_METHOD", 16 );
     AssGVar( GVarName("TRY_NEXT_METHOD"), TRY_NEXT_METHOD );
 
-    InitCopyGVar( GVarName( "TRY_NEXT_METHOD"   ), &TRY_NEXT_METHOD );
+    ImportGVarFromLibrary( "TRY_NEXT_METHOD", &TRY_NEXT_METHOD );
 
-    InitFopyGVar(GVarName("METHOD_0ARGS"         ),&Method0Args            );
-    InitFopyGVar(GVarName("METHOD_1ARGS"         ),&Method1Args            );
-    InitFopyGVar(GVarName("METHOD_2ARGS"         ),&Method2Args            );
-    InitFopyGVar(GVarName("METHOD_3ARGS"         ),&Method3Args            );
-    InitFopyGVar(GVarName("METHOD_4ARGS"         ),&Method4Args            );
-    InitFopyGVar(GVarName("METHOD_5ARGS"         ),&Method5Args            );
-    InitFopyGVar(GVarName("METHOD_6ARGS"         ),&Method6Args            );
-    InitFopyGVar(GVarName("METHOD_XARGS"         ),&MethodXArgs            );
+    ImportFuncFromLibrary( "METHOD_0ARGS", &Method0Args );
+    ImportFuncFromLibrary( "METHOD_1ARGS", &Method1Args );
+    ImportFuncFromLibrary( "METHOD_2ARGS", &Method2Args );
+    ImportFuncFromLibrary( "METHOD_3ARGS", &Method3Args );
+    ImportFuncFromLibrary( "METHOD_4ARGS", &Method4Args );
+    ImportFuncFromLibrary( "METHOD_5ARGS", &Method5Args );
+    ImportFuncFromLibrary( "METHOD_6ARGS", &Method6Args );
+    ImportFuncFromLibrary( "METHOD_XARGS", &MethodXArgs );
 
-    InitFopyGVar(GVarName("NEXT_METHOD_0ARGS"     ),&NextMethod0Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_1ARGS"     ),&NextMethod1Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_2ARGS"     ),&NextMethod2Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_3ARGS"     ),&NextMethod3Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_4ARGS"     ),&NextMethod4Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_5ARGS"     ),&NextMethod5Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_6ARGS"     ),&NextMethod6Args       );
-    InitFopyGVar(GVarName("NEXT_METHOD_XARGS"     ),&NextMethodXArgs       );
+    ImportFuncFromLibrary( "NEXT_METHOD_0ARGS", &NextMethod0Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_1ARGS", &NextMethod1Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_2ARGS", &NextMethod2Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_3ARGS", &NextMethod3Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_4ARGS", &NextMethod4Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_5ARGS", &NextMethod5Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_6ARGS", &NextMethod6Args );
+    ImportFuncFromLibrary( "NEXT_METHOD_XARGS", &NextMethodXArgs );
 
-    InitFopyGVar(GVarName("VMETHOD_0ARGS"          ),&VMethod0Args         );
-    InitFopyGVar(GVarName("VMETHOD_1ARGS"          ),&VMethod1Args         );
-    InitFopyGVar(GVarName("VMETHOD_2ARGS"          ),&VMethod2Args         );
-    InitFopyGVar(GVarName("VMETHOD_3ARGS"          ),&VMethod3Args         );
-    InitFopyGVar(GVarName("VMETHOD_4ARGS"          ),&VMethod4Args         );
-    InitFopyGVar(GVarName("VMETHOD_5ARGS"          ),&VMethod5Args         );
-    InitFopyGVar(GVarName("VMETHOD_6ARGS"          ),&VMethod6Args         );
-    InitFopyGVar(GVarName("VMETHOD_XARGS"          ),&VMethodXArgs         );
+    ImportFuncFromLibrary( "VMETHOD_0ARGS", &VMethod0Args );
+    ImportFuncFromLibrary( "VMETHOD_1ARGS", &VMethod1Args );
+    ImportFuncFromLibrary( "VMETHOD_2ARGS", &VMethod2Args );
+    ImportFuncFromLibrary( "VMETHOD_3ARGS", &VMethod3Args );
+    ImportFuncFromLibrary( "VMETHOD_4ARGS", &VMethod4Args );
+    ImportFuncFromLibrary( "VMETHOD_5ARGS", &VMethod5Args );
+    ImportFuncFromLibrary( "VMETHOD_6ARGS", &VMethod6Args );
+    ImportFuncFromLibrary( "VMETHOD_XARGS", &VMethodXArgs );
 
-    InitFopyGVar(GVarName("NEXT_VMETHOD_0ARGS"     ),&NextVMethod0Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_1ARGS"     ),&NextVMethod1Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_2ARGS"     ),&NextVMethod2Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_3ARGS"     ),&NextVMethod3Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_4ARGS"     ),&NextVMethod4Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_5ARGS"     ),&NextVMethod5Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_6ARGS"     ),&NextVMethod6Args     );
-    InitFopyGVar(GVarName("NEXT_VMETHOD_XARGS"     ),&NextVMethodXArgs     );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_0ARGS", &NextVMethod0Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_1ARGS", &NextVMethod1Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_2ARGS", &NextVMethod2Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_3ARGS", &NextVMethod3Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_4ARGS", &NextVMethod4Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_5ARGS", &NextVMethod5Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_6ARGS", &NextVMethod6Args );
+    ImportFuncFromLibrary( "NEXT_VMETHOD_XARGS", &NextVMethodXArgs );
 
-    InitFopyGVar(GVarName("CONSTRUCTOR_0ARGS"      ),&Constructor0Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_1ARGS"      ),&Constructor1Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_2ARGS"      ),&Constructor2Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_3ARGS"      ),&Constructor3Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_4ARGS"      ),&Constructor4Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_5ARGS"      ),&Constructor5Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_6ARGS"      ),&Constructor6Args     );
-    InitFopyGVar(GVarName("CONSTRUCTOR_XARGS"      ),&ConstructorXArgs     );
+    ImportFuncFromLibrary( "CONSTRUCTOR_0ARGS", &Constructor0Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_1ARGS", &Constructor1Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_2ARGS", &Constructor2Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_3ARGS", &Constructor3Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_4ARGS", &Constructor4Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_5ARGS", &Constructor5Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_6ARGS", &Constructor6Args );
+    ImportFuncFromLibrary( "CONSTRUCTOR_XARGS", &ConstructorXArgs );
 
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_0ARGS" ),&NextConstructor0Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_1ARGS" ),&NextConstructor1Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_2ARGS" ),&NextConstructor2Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_3ARGS" ),&NextConstructor3Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_4ARGS" ),&NextConstructor4Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_5ARGS" ),&NextConstructor5Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_6ARGS" ),&NextConstructor6Args );
-    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_XARGS" ),&NextConstructorXArgs );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_0ARGS", &NextConstructor0Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_1ARGS", &NextConstructor1Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_2ARGS", &NextConstructor2Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_3ARGS", &NextConstructor3Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_4ARGS", &NextConstructor4Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_5ARGS", &NextConstructor5Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_6ARGS", &NextConstructor6Args );
+    ImportFuncFromLibrary( "NEXT_CONSTRUCTOR_XARGS", &NextConstructorXArgs );
 
-    InitFopyGVar(GVarName("VCONSTRUCTOR_0ARGS"     ),&VConstructor0Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_1ARGS"     ),&VConstructor1Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_2ARGS"     ),&VConstructor2Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_3ARGS"     ),&VConstructor3Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_4ARGS"     ),&VConstructor4Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_5ARGS"     ),&VConstructor5Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_6ARGS"     ),&VConstructor6Args    );
-    InitFopyGVar(GVarName("VCONSTRUCTOR_XARGS"     ),&VConstructorXArgs    );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_0ARGS", &VConstructor0Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_1ARGS", &VConstructor1Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_2ARGS", &VConstructor2Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_3ARGS", &VConstructor3Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_4ARGS", &VConstructor4Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_5ARGS", &VConstructor5Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_6ARGS", &VConstructor6Args );
+    ImportFuncFromLibrary( "VCONSTRUCTOR_XARGS", &VConstructorXArgs );
 
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_0ARGS"),&NextVConstructor0Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_1ARGS"),&NextVConstructor1Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_2ARGS"),&NextVConstructor2Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_3ARGS"),&NextVConstructor3Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_4ARGS"),&NextVConstructor4Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_5ARGS"),&NextVConstructor5Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_6ARGS"),&NextVConstructor6Args);
-    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_XARGS"),&NextVConstructorXArgs);
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_0ARGS", &NextVConstructor0Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_1ARGS", &NextVConstructor1Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_2ARGS", &NextVConstructor2Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_3ARGS", &NextVConstructor3Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_4ARGS", &NextVConstructor4Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_5ARGS", &NextVConstructor5Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_6ARGS", &NextVConstructor6Args );
+    ImportFuncFromLibrary( "NEXT_VCONSTRUCTOR_XARGS", &NextVConstructorXArgs );
 
-    InitFopyGVar( GVarName( "SET_FILTER_OBJ"    ), &SET_FILTER_OBJ    );
-    InitFopyGVar( GVarName( "RESET_FILTER_OBJ"  ), &RESET_FILTER_OBJ  );
+    ImportFuncFromLibrary( "SET_FILTER_OBJ",   &SET_FILTER_OBJ );
+    ImportFuncFromLibrary( "RESET_FILTER_OBJ", &RESET_FILTER_OBJ );
 
     /* create the hash tables                                              */
 #ifdef AND_FLAGS_HASH_SIZE

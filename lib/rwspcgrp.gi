@@ -803,7 +803,7 @@ SingleCollector_GroupRelators := function(
     gens, rods, powersp, powersn, commpp, commpn, commnp, commnn, conjpp,
     conjpn, conjnp, conjnn, conflicts )
 
-    local   col,  i,  seen,  j,  rhs;
+    local   col,  i,  j,  rhs;
     
     # be verbose
     # Print( "#I  SingleCollector_GroupRelators: ", Length(Flat(powersp)),

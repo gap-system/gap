@@ -1911,26 +1911,26 @@ void            InitPlist ( void )
 
 
     /* get the kinds (resp. kind functions)                                */
-    InitCopyGVar( GVarName("KIND_LIST_NDENSE_MUTABLE"       ),
-                           &KIND_LIST_NDENSE_MUTABLE        );
+    ImportGVarFromLibrary( "KIND_LIST_NDENSE_MUTABLE", 
+                           &KIND_LIST_NDENSE_MUTABLE );
 
-    InitCopyGVar( GVarName("KIND_LIST_NDENSE_IMMUTABLE"     ),
-                           &KIND_LIST_NDENSE_IMMUTABLE      );
+    ImportGVarFromLibrary( "KIND_LIST_NDENSE_IMMUTABLE", 
+                           &KIND_LIST_NDENSE_IMMUTABLE );
 
-    InitCopyGVar( GVarName("KIND_LIST_DENSE_NHOM_MUTABLE"   ),
-                           &KIND_LIST_DENSE_NHOM_MUTABLE    );
+    ImportGVarFromLibrary( "KIND_LIST_DENSE_NHOM_MUTABLE", 
+                           &KIND_LIST_DENSE_NHOM_MUTABLE );
 
-    InitCopyGVar( GVarName("KIND_LIST_DENSE_NHOM_IMMUTABLE" ),
-                           &KIND_LIST_DENSE_NHOM_IMMUTABLE  );
+    ImportGVarFromLibrary( "KIND_LIST_DENSE_NHOM_IMMUTABLE", 
+                           &KIND_LIST_DENSE_NHOM_IMMUTABLE );
 
-    InitCopyGVar( GVarName("KIND_LIST_EMPTY_MUTABLE"        ),
-                           &KIND_LIST_EMPTY_MUTABLE         );
+    ImportGVarFromLibrary( "KIND_LIST_EMPTY_MUTABLE", 
+                           &KIND_LIST_EMPTY_MUTABLE );
 
-    InitCopyGVar( GVarName("KIND_LIST_EMPTY_IMMUTABLE"      ),
-                           &KIND_LIST_EMPTY_IMMUTABLE       );
+    ImportGVarFromLibrary( "KIND_LIST_EMPTY_IMMUTABLE", 
+                           &KIND_LIST_EMPTY_IMMUTABLE );
 
-    InitFopyGVar( GVarName("KIND_LIST_HOM"                  ),
-                           &KIND_LIST_HOM                   );
+    ImportFuncFromLibrary( "KIND_LIST_HOM",
+			   &KIND_LIST_HOM );
 
 
     /* install the kind methods                                            */

@@ -518,7 +518,7 @@ void MarkAllSubBagsDefault (
 **  it is used by 'CollectBags'.
 */
 #ifndef NR_GLOBAL_BAGS
-#define NR_GLOBAL_BAGS  512L
+#define NR_GLOBAL_BAGS  2048L
 #endif
 
 

@@ -1081,17 +1081,17 @@ void            InitRange ( void )
 
 
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_RANGE_NSORT_MUTABLE"),
-                           &KIND_RANGE_NSORT_MUTABLE );
+    ImportGVarFromLibrary( "KIND_RANGE_NSORT_MUTABLE",
+			   &KIND_RANGE_NSORT_MUTABLE );
 
-    InitCopyGVar( GVarName("KIND_RANGE_SSORT_MUTABLE"),
-                           &KIND_RANGE_SSORT_MUTABLE );
+    ImportGVarFromLibrary( "KIND_RANGE_SSORT_MUTABLE",
+			   &KIND_RANGE_SSORT_MUTABLE );
 
-    InitCopyGVar( GVarName("KIND_RANGE_NSORT_IMMUTABLE"),
-                           &KIND_RANGE_NSORT_IMMUTABLE );
+    ImportGVarFromLibrary( "KIND_RANGE_NSORT_IMMUTABLE",
+			   &KIND_RANGE_NSORT_IMMUTABLE );
 
-    InitCopyGVar( GVarName("KIND_RANGE_SSORT_IMMUTABLE"),
-                           &KIND_RANGE_SSORT_IMMUTABLE );
+    ImportGVarFromLibrary( "KIND_RANGE_SSORT_IMMUTABLE",
+			   &KIND_RANGE_SSORT_IMMUTABLE );
 
     KindObjFuncs[ T_RANGE_NSORT            ] = KindRangeNSortMutable;
     KindObjFuncs[ T_RANGE_NSORT +IMMUTABLE ] = KindRangeNSortImmutable;

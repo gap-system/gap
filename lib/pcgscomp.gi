@@ -29,7 +29,7 @@ InstallMethod( PcgsByPcSequenceNC,
     0,
 
 function( efam, pcs )
-    local   pcgs,  rws;
+    local   pcgs;
 
     # quick check
     if not IsIdentical( efam, ElementsFamily(FamilyObj(pcs)) )  then
@@ -58,7 +58,7 @@ InstallMethod( PcgsByPcSequenceNC,
     0,
 
 function( efam, pcs )
-    local   pcgs,  rws;
+    local   pcgs;
 
     # construct a pcgs
     pcgs := PcgsByPcSequenceNC(

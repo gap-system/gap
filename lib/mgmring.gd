@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares operations for free magma rings.
 ##
@@ -18,33 +18,12 @@
 ##  in the whole family of $R$, and words in the whole family of $M$.
 ##  Also the multiplication with elements in the family of $R$ is allowed.
 ##
-##  The external representation of an element object is a list of length 2,
-##  at first position the zero coefficient, at second position a list with
-##  the coefficients at the even positions, and the magma elements at the
-##  odd positions, with the ordering as defined for the magma elements.
-##
-##  It is assumed that the arithmetic operations of $M$ produce only
-##  normalized elements.
+##  We do not have an external representation of elements.
+##  Note that the group ring of a permutation group is a free magma ring
+##  as well as any (multivariate) polynomial ring.
 ##
 Revision.mgmring_gd :=
     "@(#)$Id$";
-
-
-#############################################################################
-##
-#C  IsFreeMagmaRingObj( <obj> )
-##
-IsFreeMagmaRingObj := NewCategory(
-    "IsFreeMagmaRingObj", 
-    IsRingElementWithOne );
-
-
-#############################################################################
-##
-#C  IsFreeMagmaRingObjFamily( <obj> )
-##
-IsFreeMagmaRingObjFamily := CategoryFamily( "IsFreeMagmaRingObjFamily",
-    IsFreeMagmaRingObj );
 
 
 #############################################################################
@@ -86,9 +65,7 @@ HasUnderlyingMagma := Tester( UnderlyingMagma );
 #O  FreeMagmaRingElement( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
 ##
 FreeMagmaRingElement := NewOperation( "FreeMagmaRingElement",
-    [ IsFreeMagmaRingObjFamily, IsRingElement,
-      IsHomogeneousList, IsHomogeneousList ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
+    [ IsFamily, IsRingElement, IsHomogeneousList, IsHomogeneousList ] );
 
 
 #############################################################################
@@ -98,39 +75,6 @@ FreeMagmaRingElement := NewOperation( "FreeMagmaRingElement",
 ##  is a free magma ring over the ring <R>, free on the magma <M>.
 ##
 FreeMagmaRing := NewOperationArgs( "FreeMagmaRing" );
-
-
-#############################################################################
-##
-#R  IsCanonicalBasisFreeMagmaRing( <B> )
-##
-IsCanonicalBasisFreeMagmaRing := NewRepresentation(
-    "IsCanonicalBasisFreeMagmaRing", IsCanonicalBasis,
-    [ "zerovector" ] );
-
-
-#############################################################################
-##
-#R  IsEmbeddingRingMagmaRing( <R>, <RM> )
-##
-IsEmbeddingRingMagmaRing := NewRepresentation( "IsEmbeddingRingMagmaRing",
-        IsNonSPGeneralMapping
-    and IsMapping
-    and IsInjective
-    and IsAttributeStoringRep,
-    [] );
-
-
-#############################################################################
-##
-#R  IsEmbeddingMagmaMagmaRing( <M>, <RM> )
-##
-IsEmbeddingMagmaMagmaRing := NewRepresentation( "IsEmbeddingMagmaMagmaRing",
-        IsNonSPGeneralMapping
-    and IsMapping
-    and IsInjective
-    and IsAttributeStoringRep,
-    [] );
 
 
 #############################################################################

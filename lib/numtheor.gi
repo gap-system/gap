@@ -161,7 +161,7 @@ end;
 ##  root modulo the positive integer <m> and 'false' otherwise.
 ##
 IsPrimitiveRootMod := function ( r, m )
-    local   p,  d, facs, pows, pow, i;
+    local   p,  facs,  pows,  i,  pow;
 
     # check the arguments and reduce $r$ into the range $0..m-1$
     if m <= 0  then Error("<m> must be positive");  fi;

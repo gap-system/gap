@@ -1,6 +1,12 @@
 /****************************************************************************
 **
-*A  system.h                    GAP source                   Martin Schoenert
+*W  system.c                    GAP source                   Martin Schoenert
+*W                                                         & Dave Bayer (MAC)
+*W                                                  & Harald Boegeholz (OS/2)
+*W                                                      & Frank Celler (MACH)
+*W                                                         & Paul Doyle (VMS)
+*W                                                  & Burkhard Hoefling (MAC)
+*W                                                    & Steve Linton (MS/DOS)
 **
 *H  @(#)$Id$
 **
@@ -8,24 +14,28 @@
 **
 **  The file 'system.c' declares  all  operating system dependent  functions.
 */
+
 #ifdef  INCLUDE_DECLARATION_PART
-char *          Revision_system_h =
+char * Revision_system_h =
    "@(#)$Id$";
 #endif
 
 
 /****************************************************************************
 **
+
 *T  Char, Int1, Int2, Int4, Int, UChar, UInt1, UInt2, UInt4, UInt .  integers
 **
-** Note that to get this to work, all files must be compiled with or without
-** -DSYS_IS_64_BIT, not just system.c
+**  'Char',  'Int1',  'Int2',  'Int4',  'Int',   'UChar',   'UInt1', 'UInt2',
+**  'UInt4', 'UInt' are the integer types.
 **
-** (U)Int<n> should be exactly <n> bytes long
-** (U)Int should be the same length as a bag identifier
+**  Note that to get this to work, all files must be compiled with or without
+**  '-DSYS_IS_64_BIT', not just "system.c".
+**
+**  '(U)Int<n>' should be exactly <n> bytes long
+**  '(U)Int' should be the same length as a bag identifier
 */
-
-#ifdef SYS_IS_64_BIT		          /* 64 bit machines -- well alphas anyway */
+#ifdef SYS_IS_64_BIT            /* 64 bit machines -- well alphas anyway */
 typedef char                    Char;
 typedef char                    Int1;
 typedef short int               Int2;
@@ -36,7 +46,7 @@ typedef unsigned char           UInt1;
 typedef unsigned short int      UInt2;
 typedef unsigned int            UInt4;
 typedef unsigned long int       UInt;
-#else                                     /* 32bit machines */
+#else                           /* 32bit machines */
 typedef char                    Char;
 typedef char                    Int1;
 typedef short int               Int2;
@@ -48,6 +58,7 @@ typedef unsigned short int      UInt2;
 typedef unsigned long int       UInt4;
 typedef unsigned long int       UInt;
 #endif
+
 
 /****************************************************************************
 **
@@ -61,45 +72,55 @@ typedef unsigned long int       UInt;
 **
 **  It is used in 'InitGap' for the 'VERSYS' variable.
 */
-extern  Char            SyFlags [];
+extern Char SyFlags [];
 
 
 /****************************************************************************
 **
-*V  SyLibname . . . . . . . . . . . . . . . . . name of the library directory
-**
-**  'SyLibname' is the name of the directory where the GAP library files  are
-**  located.
-**
-**  This is per default the subdirectory 'lib/'  of  the  current  directory.
-**  It is usually changed with the '-l' option in the script that starts GAP.
-**
-**  Is copied into the GAP variable called 'LIBNAME'  and used by  'Readlib'.
-**  This is also used in 'LIBNAME/init.g' to find the group library directory
-**  by replacing 'lib' with 'grp', etc.
-**
-**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
-**  library file 'strcat( SyLibname, "init.g" );' must be a  valid  filename.
-**  Further neccessary transformation of the filename are done  in  'SyOpen'.
-**
-**  Put in this package because the command line processing takes place here.
+
+*F * * * * * * * * * * * command line settable options  * * * * * * * * * * *
 */
-extern  Char            SyLibname [256];
+
+/****************************************************************************
+**
+
+*V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
+*/
+extern Char * SyArchitecture;
 
 
 /****************************************************************************
 **
-*V  SyHelpname  . . . . . . . . . . . . . . name of the online help directory
+*V  SyGapRootPath . . . . . . . . . . . . . . . . . . . . . . . . . root path
 **
-**  'SyHelpname' is the name of the directory where the GAP online help files
+**  'SyGapRootPath' conatins the names of the directories where the GAP files
 **  are located.
 **
-**  By default it is computed from 'SyLibname' by replacing 'lib' with 'doc'.
-**  It can be changed with the '-h' option.
+**  This is  per default the current  directory.  It  is usually changed with
+**  the '-l' option in the script that starts GAP.
 **
-**  It is used by 'SyHelp' to find the online documentation.
-*/
-extern  Char            SyHelpname [256];
+**  Is copied    into  the  GAP   variable  called    'GAPROOT' and  used  by
+**  'ReadGapRoot'.  This  is also  used in  'GAPROOT/lib/init.g' to find  the
+**  group and table library directories.
+**
+**  It must end with the pathname seperator, eg. if 'init.g' is the name of a
+**  library   file 'strcat( SyGapRootPath,  "lib/init.g" );'  must be a valid
+**  filename.  Further neccessary transformation of  the filename are done in
+**  'SyOpen'.
+**
+**  Put in this package because the command line processing takes place here.  */
+extern Char SyGapRootPath [16*256];
+
+
+/****************************************************************************
+**
+*V  SyGapRootPaths  . . . . . . . . . . . . . . . . . . . array of root paths
+**
+**  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
+**  files are located, it is derived from 'SyGapRootPath'.
+**
+**  Put in this package because the command line processing takes place here.  */
+extern Char SyGapRootPaths [16] [256];
 
 
 /****************************************************************************
@@ -115,7 +136,14 @@ extern  Char            SyHelpname [256];
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  UInt            SyBanner;
+extern UInt SyBanner;
+
+
+/****************************************************************************
+**
+*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
+*/
+extern Int SyDebugLoading;
 
 
 /****************************************************************************
@@ -132,7 +160,7 @@ extern  UInt            SyBanner;
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  UInt            SyQuiet;
+extern UInt SyQuiet;
 
 
 /****************************************************************************
@@ -149,7 +177,7 @@ extern  UInt            SyQuiet;
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  UInt            SyNrCols;
+extern UInt SyNrCols;
 
 
 /****************************************************************************
@@ -163,7 +191,7 @@ extern  UInt            SyNrCols;
 **
 **  'SyHelp' uses this to decide where to stop with '-- <space> for more --'.
 */
-extern  UInt            SyNrRows;
+extern UInt SyNrRows;
 
 
 /****************************************************************************
@@ -180,7 +208,7 @@ extern  UInt            SyNrRows;
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  UInt            SyMsgsFlagBags;
+extern UInt SyMsgsFlagBags;
 
 
 /****************************************************************************
@@ -196,7 +224,7 @@ extern  UInt            SyMsgsFlagBags;
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  Int             SyStorMin;
+extern Int SyStorMin;
 
 
 /****************************************************************************
@@ -205,14 +233,14 @@ extern  Int             SyStorMin;
 **
 **  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
 **
-**  This is per default 16 MByte,  which is often a  reasonable value.  It is
+**  This is per default 64 MByte,  which is often a  reasonable value.  It is
 **  usually changed with the '-t' option in the script that starts GAP.
 **
 **  This is used in the function 'SyAllocBags'below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  Int             SyStorMax;
+extern Int SyStorMax;
 
 
 /****************************************************************************
@@ -228,7 +256,7 @@ extern  Int             SyStorMax;
 **
 **  This value is passed to 'InitBags'.
 */
-extern  UInt            SyStackAlign;
+extern UInt SyStackAlign;
 
 
 /****************************************************************************
@@ -244,7 +272,14 @@ extern  UInt            SyStackAlign;
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern  UInt            SyCacheSize;
+extern UInt SyCacheSize;
+
+
+/****************************************************************************
+**
+*V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
+*/
+extern Char SySystemInitFile [256];
 
 
 /****************************************************************************
@@ -262,22 +297,107 @@ extern  UInt            SyCacheSize;
 **
 **  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
 */
-extern  Char            SyInitfiles [16] [256];
+extern Char SyInitfiles [16] [256];
 
 
 /****************************************************************************
 **
+*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
+*/
+extern Int SyCheckForCompFiles;
+
+
+/****************************************************************************
+**
+*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*/
+extern Int SyCompilePlease;
+
+/****************************************************************************
+**
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
+*/
+extern Char SyCompileOutput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
+*/
+extern Char SyCompileInput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
+*/
+extern Char SyCompileName [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic number
+*/
+extern Char * SyCompileMagic1;
+
+
+/****************************************************************************
+**
+*V  SyWindow  . . . . . . . . . . . . . . . .  running under a window handler
+**
+**  'SyWindow' is 1 if GAP  is running under  a window handler front end such
+**  as 'xgap', and 0 otherwise.
+**
+**  If running under  a window handler front  end, GAP adds various  commands
+**  starting with '@' to the output to let 'xgap' know what is going on.
+*/
+extern UInt SyWindow;
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
+**
+**  'SyTime' returns the number of milliseconds spent by GAP so far.
+**
+**  Should be as accurate as possible,  because it  is  used  for  profiling.
+*/
+extern UInt SyTime ( void );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * string functions * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  IsAlpha( <ch> ) . . . . . . . . . . . . .  is a character a normal letter
-*F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
 **
 **  'IsAlpha' returns 1 if its character argument is a normal character  from
 **  the range 'a..zA..Z' and 0 otherwise.
+*/
+#include        <ctype.h>
+#define IsAlpha(ch)     (isalpha(ch))
+
+
+/****************************************************************************
+**
+*F  IsDigit( <ch> ) . . . . . . . . . . . . . . . . .  is a character a digit
 **
 **  'IsDigit' returns 1 if its character argument is a digit from  the  range
 **  '0..9' and 0 otherwise.
 */
-#include        <ctype.h>
-#define IsAlpha(ch)     (isalpha(ch))
 #define IsDigit(ch)     (isdigit(ch))
 
 
@@ -288,7 +408,7 @@ extern  Char            SyInitfiles [16] [256];
 **  'SyStrlen' returns the length of the string <str>, i.e.,  the  number  of
 **  characters in <str> that precede the terminating null character.
 */
-extern  UInt            SyStrlen (
+extern UInt SyStrlen (
             Char *              str );
 
 
@@ -300,7 +420,7 @@ extern  UInt            SyStrlen (
 **  according to whether <str1> is greater  than,  equal  to,  or  less  than
 **  <str2> lexicographically.
 */
-extern  Int             SyStrcmp (
+extern Int SyStrcmp (
             Char *              str1,
             Char *              str2 );
 
@@ -313,7 +433,7 @@ extern  Int             SyStrcmp (
 **  according  to whether  <str1>  is greater than,  equal  to,  or less than
 **  <str2> lexicographically.  'SyStrncmp' compares at most <len> characters.
 */
-extern  Int             SyStrncmp (
+extern Int SyStrncmp (
             Char *              str1,
             Char *              str2,
             UInt                len );
@@ -328,7 +448,7 @@ extern  Int             SyStrncmp (
 **  <dst> becomes the concatenation of <dst> and <src>.  The resulting string
 **  is always null terminated.  'SyStrncat' returns a pointer to <dst>.
 */
-extern  Char *          SyStrncat (
+extern Char * SyStrncat (
             Char *              dst,
             Char *              src,
             UInt                len );
@@ -336,6 +456,14 @@ extern  Char *          SyStrncat (
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * * * * input/output * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
 **
 **  The function 'SyFopen'  is called to open the file with the name  <name>.
@@ -356,7 +484,7 @@ extern  Char *          SyStrncat (
 **  Right now GAP does not read nonascii files, but if this changes sometimes
 **  'SyFopen' must adjust the mode argument to open the file in binary  mode.
 */
-extern  Int             SyFopen (
+extern Int SyFopen (
             Char *              name,
             Char *              mode );
 
@@ -368,7 +496,7 @@ extern  Int             SyFopen (
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-extern  void            SyFclose (
+extern void SyFclose (
             Int                 fid );
 
 
@@ -429,7 +557,7 @@ extern  void            SyFclose (
 **      <ctr>-_ undo a command.
 **      <esc>-T exchange two words.
 */
-extern  Char *          SyFgets (
+extern Char * SyFgets (
             Char *              line,
             UInt                length,
             Int                 fid );
@@ -441,21 +569,41 @@ extern  Char *          SyFgets (
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
 */
-extern  void            SyFputs (
+extern void SyFputs (
             Char *              line,
             Int                 fid );
 
 
 /****************************************************************************
 **
-*F  syWinPut(<fid>,<cmd>,<str>) . . . . . . send a line to the window handler
+*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
+**
+**  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
+**  wether the user hit '<ctr>-C' to interrupt a computation.
+**
+**  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
+*/
+extern UInt SyIsIntr ( void );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * window handler * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  syWinPut( <fid>, <cmd>, <str> ) . . . . send a line to the window handler
 **
 **  'syWinPut'  send the command   <cmd> and the  string  <str> to the window
 **  handler associated with the  file identifier <fid>.   In the string <str>
 **  '@'  characters are duplicated, and   control characters are converted to
 **  '@<chr>', e.g., <newline> is converted to '@J'.
 */
-extern  void            syWinPut (
+extern void syWinPut (
             Int                 fid,
             Char *              cmd,
             Char *              str );
@@ -471,21 +619,86 @@ extern  void            syWinPut (
 **  '@J'.  Then  'SyWinCmd' waits for  the window handlers answer and returns
 **  that string.
 */
-extern  Char *          SyWinCmd (
+extern Char * SyWinCmd (
             Char *              str,
             UInt                len );
 
 
 /****************************************************************************
 **
-*F  SyIsIntr()  . . . . . . . . . . . . . . . . check wether user hit <ctr>-C
-**
-**  'SyIsIntr' is called from the evaluator at  regular  intervals  to  check
-**  wether the user hit '<ctr>-C' to interrupt a computation.
-**
-**  'SyIsIntr' returns 1 if the user typed '<ctr>-C' and 0 otherwise.
+
+*F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
-extern  UInt            SyIsIntr ( void );
+
+
+/****************************************************************************
+**
+
+*F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
+**
+**  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
+**  It does not check if the file is readable, writable or excuteable. <name>
+**  is a system dependent description of the file.
+*/
+extern Int SyIsExistingFile(
+	    Char * name );
+
+
+/****************************************************************************
+**
+*F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
+**
+**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+extern Int SyIsReadableFile(
+	    Char * name );
+
+
+/****************************************************************************
+**
+*F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
+**
+**  'SyIsWriteableFile'   returns 1  if the  file  <name>  is  writable and 0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+extern Int SyIsWritableFile(
+	    Char * name );
+
+
+/****************************************************************************
+**
+*F  SyIsExecutableFile( <name> )  . . . . . . . . . is file <name> executable
+**
+**  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+extern Int SyIsExecutableFile(
+	    Char * name );
+
+
+/****************************************************************************
+**
+*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
+*/
+extern Char * SyFindGapRootFile (
+	    Char * 	    filename );
+
+
+/****************************************************************************
+**
+*F  SyFindOrLinkGapRootFile( <filename>, <res>, <len> ) . . . .  load or link
+**
+**  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
+**  check  if   there is a corresponding    statically  or dynamically linked
+**  module.  If the CRC matches this module  is loaded otherwise the filename
+**  is returned.
+*/
+extern Int SyFindOrLinkGapRootFile (
+	    Char * 	    filename,
+	    UInt4           crc_gap,
+	    Char * 	    result,
+	    Int             len );
 
 
 /****************************************************************************
@@ -497,7 +710,7 @@ extern  UInt            SyIsIntr ( void );
 **  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
 **  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
 */
-extern  void            SyExit (
+extern void SyExit (
             UInt                ret );
 
 
@@ -513,19 +726,8 @@ extern  void            SyExit (
 **
 **  For UNIX we can use 'system', which does exactly what we want.
 */
-extern  void            SyExec (
+extern void SyExec (
             Char *              cmd );
-
-
-/****************************************************************************
-**
-*F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
-**
-**  'SyTime' returns the number of milliseconds spent by GAP so far.
-**
-**  Should be as accurate as possible,  because it  is  used  for  profiling.
-*/
-extern  UInt            SyTime ( void );
 
 
 /****************************************************************************
@@ -534,28 +736,86 @@ extern  UInt            SyTime ( void );
 **
 **  'SyTmpname' creates and returns a new temporary name.
 */
-extern  Char *          SyTmpname ( void );
+extern Char * SyTmpname ( void );
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
+**
+**  This function should  be clever and handle  white spaces and comments but
+**  one has to certain that such characters are not ignored in strings.
+*/
+extern UInt4 SyGAPCRC(
+	    Char * 	    name );
+
+
+/****************************************************************************
+**
+*T  StructCompInitInfo  . . . . . . . . . . . . . . . .  compiled modulo info
+*/
+typedef struct {
+    UInt4           magic1;
+    Char *          magic2;
+    void            (* link) ( void );
+    Int             (* function1) ( void );
+    Int             (* functions) ( void );
+} StructCompInitInfo;
+
+typedef StructCompInitInfo * (* CompInitFunc) ( void );
+
+
+/****************************************************************************
+**
+*F  SyLoadModule( <name> )  . . . . . . . . . . . . .  load a compiled module
+*/
+extern void * SyLoadModule(
+            Char *	    name );
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * help system  * * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
 *F  SyHelp( <topic>, <fid> )  . . . . . . . . . . . . . . display online help
 **
 **  This function is of course way to large.  But what the  heck,  it  works.
 */
-extern  void            SyHelp (
+extern void SyHelp (
             Char *              topic,
             Int                 fin );
 
 
 /****************************************************************************
 **
-*F  SyMsgsBags(<full>,<phase>,<nr>) . . . . . . . . . display Gasman messages
+
+*F * * * * * * * * * * * * * * gasman interface * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  SyMsgsBags( <full>, <phase>, <nr> ) . . . . . . . display Gasman messages
 **
 **  'SyMsgsBags' is the function that is used by Gasman to  display  messages
 **  during garbage collections.
 */
-extern  void            SyMsgsBags (
+extern void SyMsgsBags (
             UInt                full,
             UInt                phase,
             Int                 nr );
@@ -563,7 +823,7 @@ extern  void            SyMsgsBags (
 
 /****************************************************************************
 **
-*F  SyAllocBags(<size>,<need>)  . . . . allocate memory block of <size> bytes
+*F  SyAllocBags( <size>, <need> ) . . . allocate memory block of <size> bytes
 **
 **  'SyAllocBags' is called from Gasman to get new storage from the operating
 **  system.  <size> is the needed amount in bytes (it is always a multiple of
@@ -588,7 +848,7 @@ extern  void            SyMsgsBags (
 **  If the operating system does not support dynamic memory managment, simply
 **  give 'SyAllocBags' a static buffer, from where it returns the blocks.
 */
-extern  UInt * * *      SyAllocBags (
+extern UInt * * * SyAllocBags (
             Int                 size,
             UInt                need );
 
@@ -599,12 +859,19 @@ extern  UInt * * *      SyAllocBags (
 **
 **  'SyAbortBags' is the function called by Gasman in case of an emergency.
 */
-extern  void            SyAbortBags (
+extern void SyAbortBags (
             Char *              msg );
 
 
 /****************************************************************************
 **
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitSystem( <argc>, <argv> )  . . . . . . . . . initialize system package
 **
 **  'InitSystem' is called very early during the initialization from  'main'.
@@ -615,9 +882,13 @@ extern  void            SyAbortBags (
 **  scans the command line for options, tries to  find  'LIBNAME/init.g'  and
 **  '$HOME/.gaprc' and copies the remaining arguments into 'SyInitfiles'.
 */
-extern  void            InitSystem (
+extern void InitSystem (
             Int                 argc,
             Char *              argv [] );
 
 
+/****************************************************************************
+**
 
+*E  system.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

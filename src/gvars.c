@@ -168,6 +168,7 @@ void            AssGVar (
     Obj                 val )
 {
     Obj                 cops;           /* list of internal copies         */
+    Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
 
     /* make certain that the variable is not read only                     */
@@ -189,7 +190,8 @@ void            AssGVar (
     cops = ELM_PLIST( CopiesGVars, gvar );
     if ( cops != 0 ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            **(Obj**)&ELM_PLIST(cops,i) = val;
+	    copy  = (Obj*) ELM_PLIST(cops,i);
+            *copy = val;
         }
     }
 
@@ -197,21 +199,24 @@ void            AssGVar (
     cops = ELM_PLIST( FopiesGVars, gvar );
     if ( cops != 0 && val != 0 && TYPE_OBJ(val) == T_FUNCTION ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            **(Obj**)&ELM_PLIST(cops,i) = val;
+	    copy  = (Obj*) ELM_PLIST(cops,i);
+            *copy = val;
         }
     }
 
     /* if the values is not a function, assign the error function          */
     else if ( cops != 0 && val != 0 /* && TYPE_OBJ(val) != T_FUNCTION */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            **(Obj**)&ELM_PLIST(cops,i) = ErrorMustEvalToFuncFunc;
+	    copy  = (Obj*) ELM_PLIST(cops,i);
+            *copy = ErrorMustEvalToFuncFunc;
         }
     }
 
     /* if this was an unbind, assign the other error function              */
     else if ( cops != 0 /* && val == 0 */ ) {
         for ( i = 1; i <= LEN_PLIST(cops); i++ ) {
-            **(Obj**)&ELM_PLIST(cops,i) = ErrorMustHaveAssObjFunc;
+	    copy  = (Obj*) ELM_PLIST(cops,i);
+            *copy = ErrorMustHaveAssObjFunc;
         }
     }
 }
@@ -377,6 +382,7 @@ void            InitCopyGVar (
     else {
         cops = NEW_PLIST( T_PLIST, 0 );
         SET_ELM_PLIST( CopiesGVars, gvar, cops );
+	CHANGED_BAG(CopiesGVars)
     }
     ncop = LEN_PLIST(cops);
 
@@ -384,6 +390,7 @@ void            InitCopyGVar (
     GROW_PLIST( cops, ncop+1 );
     SET_LEN_PLIST( cops, ncop+1 );
     SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
+    CHANGED_BAG(cops)
 
     /* now copy the value of <gvar> to <cvar>                              */
     *copy = VAL_GVAR(gvar);
@@ -417,6 +424,7 @@ void            InitFopyGVar (
     else {
         cops = NEW_PLIST( T_PLIST, 0 );
         SET_ELM_PLIST( FopiesGVars, gvar, cops );
+	CHANGED_BAG(FopiesGVars)
     }
     ncop = LEN_PLIST(cops);
 
@@ -424,6 +432,7 @@ void            InitFopyGVar (
     GROW_PLIST( cops, ncop+1 );
     SET_LEN_PLIST( cops, ncop+1 );
     SET_ELM_PLIST( cops, ncop+1, (Obj)copy );
+    CHANGED_BAG(cops)
 
     /* now copy the value of <gvar> to <cvar>                              */
     if ( VAL_GVAR(gvar) != 0 && TYPE_OBJ(VAL_GVAR(gvar)) == T_FUNCTION ) {
@@ -481,6 +490,7 @@ Obj             MakeReadOnlyGVarHandler (
     /* get the variable and make it read only                              */
     gvar = GVarName( CSTR_STRING(name) );
     SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
+    CHANGED_BAG(WriteGVars)
 
     /* return void                                                         */
     return 0;

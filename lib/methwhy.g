@@ -10,6 +10,7 @@
 ##
 Revision.methwhy_g :=
     "@(#)$Id$";
+
 #############################################################################
 ##
 #F  Print_Value(val)   print a number factorized by SUM_FLAGS
@@ -38,8 +39,8 @@ end;
 ##  if skip is negative, all methods will be tried. In this case, a list of
 ##  all possible methods is returned.
 MethodXArgs := function(arg)
-local oper,l,obj,skip,verbos,kind,i,j,methods,flag,flag2,lent,nam,val,erg,
-      has,need;
+local oper,l,obj,skip,verbos,fams,kind,i,j,methods,flag,flag2,lent,nam,val,
+      erg,has,need;
   if Length(arg)<2 or not IS_LIST(arg[2]) or not IS_FUNCTION(arg[1]) then
     Error("usage: MethodXArgs(<operation>,<arglist>[,<verbosity>[,<skip>]])");
   fi;
@@ -62,8 +63,10 @@ local oper,l,obj,skip,verbos,kind,i,j,methods,flag,flag2,lent,nam,val,erg,
 	  " arguments:\n");
   fi;
   kind:=[];
+  fams:=[];
   for i in obj do
     Add(kind,KindObj(i));
+    Add(fams,FamilyObj(i));
   od;
   methods:=METHODS_OPERATION(oper,l);
   lent:=4+l; #length of one entry
@@ -92,7 +95,7 @@ local oper,l,obj,skip,verbos,kind,i,j,methods,flag,flag2,lent,nam,val,erg,
       j:=j+1;
     od;
     if flag then
-      if CallFuncList(methods[lent*(i-1)+1],kind) then
+      if CallFuncList(methods[lent*(i-1)+1],fams) then
 	if verbos=1 then
 	  Print("Method ",i,": ``",nam,"'', value: ");
 	  Print_Value(val);

@@ -4,7 +4,8 @@
 ##
 #H  @(#)$Id$
 ##
-##  This file is a semi-automatic translation from GAP-3.4/lib/permcser.g.
+##  The first part of this file is a semi-automatic translation from
+##  GAP-3.4/lib/permcser.g.
 ##
 Revision.grpprmcs_gi :=
     "@(#)$Id$";
@@ -27,6 +28,10 @@ InstallMethod( \., true, [ IsPermGroup, IsPosRat and IsInt ], 0,
     function( G, rnam )
     local   attr;
     
+    if rnam = CSPG_attrs[ 1 ][ 1 ]  then
+        if HasStabChain( G )  then  return StabChainAttr( G ).generators;
+                              else  return GeneratorsOfGroup( G );        fi;
+    fi;
     for attr  in CSPG_attrs  do
         if rnam = attr[ 1 ]  then
             return attr[ 2 ]( G );
@@ -67,6 +72,23 @@ end );
 
 #############################################################################
 ##
+#F  GInverses( <G> )  . . . . . . . . . . . . . . . . . . . . . . . . . local
+##
+GInverses := function( G )
+    local   S,  inverses,  i;
+    
+    S := StabChainAttr( G );
+    S.generators := S.labels{ S.genlabels };
+    inverses := [  ];
+    for i  in [ 1 .. Length( S.generators ) ]  do
+        inverses[ i ] := S.generators[ i ] ^ -1;
+    od;
+    return inverses;
+end;
+    
+#############################################################################
+##
+
 #F  DisplayCompositionSeries( <S> ) . . . . . . . . . . . .  display function
 ##
 DisplayCompositionSeries := function( S )
@@ -218,14 +240,16 @@ InstallMethod( CompositionSeries, true, [ IsPermGroup ], 0,
         # if the workgroup was trivial
         else
             lenhomlist := Length(homlist);
-            workgroup := Kernel(homlist[lenhomlist]);
+            workgroup := KernelOfMultiplicativeGeneralMapping(
+                             homlist[lenhomlist] );
 
             # if auxiliary[lenhmlist] is bounded, it is faster to augment it
-            # by generators of Kernel(homlist[lenhomlist])
+            # by generators of the kernel of 'homlist[lenhomlist]'
             if IsBound(auxiliary[lenhomlist])  then
                 workgroup := auxiliary[lenhomlist];
-                workgroup := ClosureGroup(workgroup,
-                             Kernel(homlist[lenhomlist]).generators);
+                workgroup := ClosureGroup( workgroup, GeneratorsOfGroup(
+                                KernelOfMultiplicativeGeneralMapping(
+                                    homlist[lenhomlist] ) ) );
             fi;
             Unbind(auxiliary[lenhomlist]);
             Unbind(homlist[lenhomlist]);
@@ -381,7 +405,7 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
             ready;      # boolean variable indicating whether normal subgroup
                         # was found
 
-    while not IsSimple(K)  do
+    while not IsSimpleGroup(K)  do
         whichcase := CasesCSPG(K);
 
         # becomes true if we find proper normal subgroup by first method
@@ -403,32 +427,34 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
 
         # apply regular normal subgroup with nontrivial centralizer method
         if not (ready)  then
-            stab2 := Stabilizer(K,[Base(K)[1],Base(K)[2]],OnTuples);
+            stab2 := Stabilizer(K,[K.orbit[1],K.stabilizer.orbit[1]],
+                             OnTuples);
             if IsTrivial(stab2) then 
                # a perfect Frobenius group must have SL(2,5) as 
                # one-point stabilizer; 1/120 chance to hit socle
                prime := FactorsInt(whichcase[2])[1]; 
-               stab1 := Stabilizer(K, Base(K)[1]);
+               stab1 := Stabilizer(K, K.orbit[1]);
                i := 0;
-               y := Base(K)[2];
+               y := K.stabilizer.orbit[1];
                repeat 
                   i := i+1;
-                  x := Base(K)[1];
+                  x := K.orbit[1];
                   word := CosetRepAsWord(y,stab1.orbit[i],stab1.transversal);
                   Add(word, K.transversal[K.orbit[2]]);
                   for j in [1..prime] do
                       x := ImageInWord(x, word);
                   od;
-               until x = Base(K)[1];
+               until x = K.orbit[1];
                kerelement := Product(word);
                N := NormalClosure(K, Subgroup(K,[kerelement]));
             else
                H := NormalizerStabCSPG(K);
-               stab2 := Stabilizer(K,[Base(K)[1],Base(K)[2]],OnTuples);
+               stab2 := Stabilizer(K,[K.orbit[1],K.stabilizer.orbit[1]],
+                                OnTuples);
                if whichcase[1] = 2 then 
                   H := CentralizerNormalCSPG( H, stab2 );
                else
-                  L := Orbit(H,Base(H)[1]);
+                  L := Orbit(H,H.orbit[1]);
                   tchom := OperationHomomorphism(H,L);
                   op := Image( tchom );
                   H := PreImages(tchom,PCore(op,FactorsInt(whichcase[2])[1])); 
@@ -458,10 +484,11 @@ PerfectCSPG := function( homlist, normals, factors, auxiliary,
 
     # determine output of routine
     if lenhomlist > 0  then
-        kernel := Kernel(homlist[lenhomlist]);
+        kernel := KernelOfMultiplicativeGeneralMapping(homlist[lenhomlist]);
         if IsBound(auxiliary[lenhomlist])  then
             kernel := auxiliary[lenhomlist]; # faster to add this way
-            kernel := ClosureGroup( kernel, Kernel(homlist[lenhomlist]) );
+            kernel := ClosureGroup( kernel,
+                KernelOfMultiplicativeGeneralMapping(homlist[lenhomlist]) );
         fi;
         Unbind(homlist[lenhomlist]);
         Unbind(auxiliary[lenhomlist]);
@@ -615,7 +642,8 @@ FindNormalCSPG := function ( G, whichcase )
         if Length(bl) > 1  then
             bhom := OperationHomomorphism(K,bl,OnSets);
             K := Image(bhom,K);
-            kernel := Kernel(CompositionMapping(bhom,tchom));
+            kernel := KernelOfMultiplicativeGeneralMapping(
+                          CompositionMapping(bhom,tchom));
             N := NormalClosure(G,kernel);
 
             # another check for ambiguous cases
@@ -828,23 +856,13 @@ RegularNinKernelCSPG := function ( G, H, homlist )
         od;
     od;
 
-    Ginverses := [];
-    for i in [1..Length(G.generators)] do
-        Ginverses[i] := G.generators[i]^(-1);
-    od;
-
-    Hinverses := [];
-    for i in [1..Length(H.generators)] do
-        Hinverses[i] := H.generators[i]^(-1);
-    od;
+    Ginverses := GInverses( G );
+    Hinverses := GInverses( H );
     hgens := ShallowCopy(H.generators);
     Add(hgens,());
     Add(Hinverses,());
 
-    stabinverses := [];
-    for i in [1..Length(stabgroup.generators)] do
-        stabinverses[i] := stabgroup.generators[i]^(-1);
-    od;
+    stabinverses := GInverses( stabgroup );
     stabgens := ShallowCopy(stabgroup.generators);
     Add(stabgens,());
     Add(stabinverses,());
@@ -1127,10 +1145,12 @@ PullbackKernelCSPG := function( homlist, normals, factors, auxiliary, index )
     lenhomlist := Length(homlist);
     for i in [1..lenhomlist] do
        if IsBound(auxiliary[i])  then
-           gens := Union(Kernel(homlist[i]).generators,
+           gens := Union( GeneratorsOfGroup(
+                       KernelOfMultiplicativeGeneralMapping(homlist[i]) ),
                          auxiliary[i].generators);
        else
-           gens := Kernel(homlist[i]).generators;
+           gens := GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
+                                          homlist[i] ) );
        fi;
        for g in gens do
            for j in [1..i-1] do
@@ -1336,18 +1356,18 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
     # handle trivial cases
     pri := FactorsInt(p);
     if Length(pri) > 1  then
-        return Subgroup(Parent(workgroup),[()]);
+        return TrivialSubgroup(workgroup);
     fi;
     if IsTrivial(workgroup)  then
-        return Subgroup(Parent(workgroup),[()]);
+        return TrivialSubgroup(workgroup);
     fi;
     if Size(workgroup) mod p <> 0 then
        # p does not divide Size(workgroup) 
-       return Subgroup(Parent(workgroup),[()]);
+       return TrivialSubgroup(workgroup);
     fi;
 
     #handle nilpotent case directly 
-    if IsNilpotent( workgroup ) then 
+    if IsNilpotentGroup( workgroup ) then 
            # compute the p-part of generators of workgroup
            primes := Collected( Factors( Size(workgroup) ) );
            ppart := p^primes[PositionProperty( primes, x->x[1]=p )][2];
@@ -1355,7 +1375,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
            for g in workgroup.generators do
                Add( pgenlist, g^( Size(workgroup)/( ppart ) ) );
            od;
-           return Subgroup( Parent(workgroup), pgenlist );
+           return Subgroup( workgroup, pgenlist );
     fi;
 
     n := LargestMovedPoint(workgroup);
@@ -1409,7 +1429,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
                     index := index-1;
                 else
                     H := NormalClosure(G,C);
-                    series := DerivedSeries(H);
+                    series := DerivedSeriesOfGroup(H);
                     H := series[Length(series)-1];
 
                     # at that moment, H is abelian normal in G
@@ -1427,7 +1447,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
                     hom:=GroupHomomorphismByImages(G,GG,G.generators,image);
                     Add(homlist,hom);
                     #force makemapping
-                    Kernel(hom);
+                    KernelOfMultiplicativeGeneralMapping( hom );
                     # find new action of subgroups in composition series
                     for i in [1..index] do
                         for j in [1..Length(normals[i])] do
@@ -1456,7 +1476,8 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
     else
         pgenlist := [];
         for i in [1..lenhomlist] do
-            for g in Kernel(homlist[i]).generators do
+            for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
+                                            homlist[i] ) ) do
                 for j in [1..i-1] do
                     g := PreImagesRepresentative(homlist[i-j],g);
                 od;
@@ -1464,7 +1485,7 @@ InstallMethod( PCoreOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
             od;
         od;
     fi;
-    return Subgroup(Parent(workgroup),pgenlist);
+    return Subgroup(workgroup,pgenlist);
 end );
 
 
@@ -1505,10 +1526,10 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
             solvable;   # list of generators for the radical
 
     if IsTrivial(workgroup)  then
-        return Subgroup(Parent(workgroup),[()]);
+        return TrivialSubgroup(workgroup);
     fi;
 
-    if IsSolvable(workgroup) then 
+    if IsSolvableGroup(workgroup) then 
         return workgroup;
     fi;
 
@@ -1554,7 +1575,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
                     index := index-1;
                 else
                     H := NormalClosure(G,C);
-                    series := DerivedSeries(H);
+                    series := DerivedSeriesOfGroup(H);
                     H := series[Length(series)-1];
 
                     # at that moment, H is abelian normal in G
@@ -1573,7 +1594,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
                                                      G.generators,image);
                     Add(homlist,hom);
                     #force makemapping
-                    Kernel(hom);
+                    KernelOfMultiplicativeGeneralMapping( hom );
                     # find new action of subgroups in composition series
                     for i in [1..index] do
                         for j in [1..Length(normals[i])] do
@@ -1601,7 +1622,8 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
     else
         solvable := [];
         for i in [1..lenhomlist] do
-            for g in Kernel(homlist[i]).generators do
+            for g in GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
+                                            homlist[i] ) ) do
                 for j in [1..i-1] do
                     g := PreImagesRepresentative(homlist[i-j],g);
                 od;
@@ -1610,7 +1632,7 @@ InstallMethod( RadicalGroup, true, [ IsPermGroup ], 0,
         od;
     fi;
 
-    return Subgroup(Parent(workgroup),solvable);
+    return Subgroup(workgroup,solvable);
 end );
 
 
@@ -1650,7 +1672,7 @@ InstallMethod( Centre, true, [ IsPermGroup ], 0,
             cent;       # center of GG
 
     if IsTrivial(G)  then
-       return TrivialSubgroup(Parent(G));
+       return TrivialSubgroup(G);
     fi;
 
     base := Base(G);
@@ -1972,20 +1994,13 @@ CentralizerNormalTransCSPG := function(G,N)
     # orbits contains the orbits of the centralizer of N in S_n;
     # so C_G(N) must fix setwise the elements of orbits
     bhom := OperationHomomorphism(G,orbits,OnSets);
-    GG := Kernel(bhom);
+    GG := KernelOfMultiplicativeGeneralMapping( bhom );
     if IsTrivial(GG)  then
         return Subgroup(Parent(G),[()]);
     fi;
 
-    Ginverses := [];
-    for i in [1..Length(G.generators)] do
-        Ginverses[i] := G.generators[i]^(-1);
-    od;
-
-    Ninverses := [];
-    for i in [1..Length(N.generators)] do
-        Ninverses[i] := N.generators[i]^(-1);
-    od;
+    Ginverses := GInverses( G );
+    Ninverses := GInverses( N );
 
     # we partition [1..n] into the orbits of N, and compute the
     # identification between equivalent orbits (equivalent in the sense
@@ -2086,7 +2101,7 @@ CentralizerNormalTransCSPG := function(G,N)
 
     K := GroupByGenerators(images,());
     hom := GroupHomomorphismByImages(GG,K,GG.generators,images);
-    return Kernel(hom);
+    return KernelOfMultiplicativeGeneralMapping( hom );
 end;
 
 
@@ -2132,10 +2147,7 @@ CentralizerTransSymmCSPG := function(G)
        L := Difference([1..n],MovedPoints(stabgroup));
     fi;
 
-    Ginverses := [];
-    for i in [1..Length(G.generators)] do
-        Ginverses[i] := G.generators[i]^(-1);
-    od;
+    Ginverses := GInverses( G );
     Ggens := ShallowCopy(G.generators);
     Add(Ggens,());
     Add(Ginverses,());
@@ -2394,6 +2406,137 @@ ImageOnAbelianCSPG := function(g,actionlist)
     return gimage;
 end;
 
+#############################################################################
+##
+#F  ChiefSeriesPermGroup(<G>[,<through>])
+##
+ChiefSeriesPermGroup := function(arg)
+local G,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
+      through;
+  G:=arg[1];
+  if Length(arg)>1 then
+    through:=arg[2];
+  else
+    through:=[];
+  fi;
+  nser:=[G];
+  U:=G;
+  while Size(U)>1 do
+    # get maximal normal subgroup
+    cs:=CompositionSeries(U);
+    cs:=cs[2];
+
+    if Length(through)>0 then
+      if Size(U)=Size(through[1]) then
+        through:=through{[2..Length(through)]};
+      fi;
+      if Length(through)>0 and not IsSubgroup(cs,through[1]) then
+	# enforce way through
+	Info(InfoGroup,1,"force");
+	n:=NaturalHomomorphismByNormalSubgroup(U,through[1]);
+	cs:=CompositionSeries(Image(n));
+	cs:=cs[2];
+	cs:=PreImage(n,cs);
+      fi;
+    fi;
+
+    if IsNormal(G,cs) then
+      # step is normal
+      Add(nser,cs);
+      n:=cs;
+    else
+      o:=GroupOnSubgroupsOrbit(G,cs);
+      Info(InfoGroup,1,"orblen=",Length(o));
+      n:=Intersection(o);
+      #n:=o[1];
+      #for i in o{[2..Length(o)]} do
+        #n:=IntersectionNormalClosurePermGroup(n,i);
+      #od;
+      if HasAbelianFactorGroup(U,cs) then
+        # abelian case, utilize MeatAxe to chop
+
+	p:=Index(U,cs);
+	one:=One(GF(p));
+
+	# first get series
+	v:=n;
+	ser:=[n];
+	gens:=[];
+	while Size(v)<Size(U) do
+	  repeat
+	    r:=Random(U);
+	  until not r in v;
+	  Add(gens,r);
+	  v:=ClosureGroup(v,r);
+	  Add(ser,v);
+	od;
+
+	dim:=Length(gens);
+	ser:=Reversed(ser);
+	gens:=Reversed(gens);
+
+	# now construct matrices for operation
+	mats:=[];
+	for i in GeneratorsOfGroup(G) do
+	  mat:=[];
+	  for j in gens do
+	    im:=j^i;
+	    row:=[];
+	    for k in [1..dim] do
+	      if not im in ser[k+1] then
+	        # test power which does
+		# Ug^l=U im
+	        r:=First([1..p],l->im/gens[k]^l in ser[k+1]);
+		Add(row,r);
+		im:=im/gens[k]^r;
+	      else
+		Add(row,0);
+	      fi;
+	    od;
+	    row:=row*one;
+	    Add(mat,row);
+	  od;
+	  Add(mats,mat);
+	od;
+
+	m:=GModuleByMats(mats,GF(p));
+	r:=MTX.BasesCompositionSeries(m);
+	v:=[];
+	for i in r do
+	  im:=n;
+	  for j in i do
+	    im:=ClosureGroup(im,Product([1..dim],k->gens[k]^IntFFE(j[k])));
+	  od;
+	  # only intermediates
+	  if Size(im)<Size(U) then
+	    Add(v,im);
+	  fi;
+	od;
+	v:=Reversed(v); # MTX sorts already
+	#Sort(v,function(a,b) return Size(a)>Size(b);end);
+        Info(InfoGroup,2,"i:",List(v,Size));
+
+	#note the intermediates
+	nser:=Concatenation(nser,v);
+
+      else
+        # nonabelian, as transitive operation on the components no proper
+	# intermediate normal subgroup possible
+	Add(nser,n);
+      fi;
+    fi;
+    Info(InfoGroup,1,"Step ",Index(U,n));
+    U:=n;
+  od;
+  return nser;
+end;
+
+#############################################################################
+##
+#M  ChiefSeries
+##
+InstallMethod(ChiefSeries,"perm group",true,[IsPermGroup],0,
+  ChiefSeriesPermGroup);
 
 #############################################################################
 ##

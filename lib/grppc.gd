@@ -26,6 +26,8 @@
 Revision.grppc_gd :=
     "@(#)$Id$";
 
+InfoPcGroup:=NewInfoClass("InfoPcGroup");
+
 
 #############################################################################
 ##
@@ -209,6 +211,12 @@ GapInputPcGroup := NewOperationArgs( "GapInputPcGroup" );
 ##
 CanonicalSubgroupRepresentativePcGroup :=
   NewOperationArgs( "CanonicalSubgroupRepresentativePcGroup" );
+
+#############################################################################
+##
+#F  ChiefSeriesPcGroup(G)
+##
+ChiefSeriesPcGroup := NewOperationArgs("ChiefSeriesPcGroup");
 
 #############################################################################
 ##

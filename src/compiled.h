@@ -26,6 +26,9 @@
 #include <gap.h>
 
 
+extern Obj InfoDecision;
+extern Obj InfoDoPrint;
+
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
 
 typedef UInt    GVar;
@@ -311,19 +314,6 @@ extern  Obj             Range3Check (
             Obj                 first,
             Obj                 second,
             Obj                 last );
-
-
-/* hmmm  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-typedef struct {
-    Int             magic1;
-    Int             magic2;
-    void            (* link) ( void );
-    Obj             (* function1) ( void );
-    Obj             (* functions) ( void );
-}               StructCompInitInfo;
-
-typedef StructCompInitInfo *    (* CompInitFunc) ( void );
 
 
 /****************************************************************************

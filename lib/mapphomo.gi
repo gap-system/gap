@@ -814,8 +814,9 @@ InstallMethod( ImagesSet,
 
     return ClosureLeftModule( CoKernelOfAdditiveGeneralMapping( map ),
                    LeftModuleByGenerators( LeftActingDomain( elms ),
-                   List( GeneratorsOfLeftModule( elms ),
-                         gen -> ImagesRepresentative( map, gen ) ) ) );
+                       List( GeneratorsOfLeftModule( elms ),
+                             gen -> ImagesRepresentative( map, gen ) ),
+                       Zero( Range( map ) ) ) );
     end );
 
 
@@ -839,8 +840,9 @@ InstallMethod( PreImagesSet,
 
     return ClosureLeftModule( KernelOfAdditiveGeneralMapping( map ),
                    LeftModuleByGenerators( LeftActingDomain( elms ),
-                   List( GeneratorsOfLeftModule( elms ),
-                         gen -> PreImagesRepresentative( map, gen ) ) ) );
+                       List( GeneratorsOfLeftModule( elms ),
+                             gen -> PreImagesRepresentative( map, gen ) ),
+                       Zero( Source( map ) ) ) );
     end );
 
 

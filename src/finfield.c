@@ -1902,7 +1902,7 @@ void            InitFinfield ( void )
     InitMarkFuncBags(   T_FFE               , MarkNoSubBags );
 
     /* install the kind function                                           */
-    InitFopyGVar( GVarName("KIND_FFE"), &KIND_FFE );
+    ImportFuncFromLibrary( "KIND_FFE", &KIND_FFE );
     KindObjFuncs[ T_FFE ] = KindFFE;
 
     /* install the printing method                                         */
@@ -1950,11 +1950,11 @@ void            InitFinfield ( void )
     InitGlobalBag( &IntFF );
 
     /* install the functions that handle overflow                          */
-    InitFopyGVar( GVarName("SUM_FFE_LARGE"),  &SUM_FFE_LARGE  );
-    InitFopyGVar( GVarName("DIFF_FFE_LARGE"), &DIFF_FFE_LARGE );
-    InitFopyGVar( GVarName("PROD_FFE_LARGE"), &PROD_FFE_LARGE );
-    InitFopyGVar( GVarName("QUO_FFE_LARGE"),  &QUO_FFE_LARGE  );
-    InitFopyGVar( GVarName("LOG_FFE_LARGE"),  &LOG_FFE_LARGE  );
+    ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
+    ImportFuncFromLibrary( "DIFF_FFE_LARGE", &DIFF_FFE_LARGE );
+    ImportFuncFromLibrary( "PROD_FFE_LARGE", &PROD_FFE_LARGE );
+    ImportFuncFromLibrary( "QUO_FFE_LARGE",  &QUO_FFE_LARGE  );
+    ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
     /* install the internal functions                                      */
     IsFFEFilt = NewFilterC(

@@ -292,7 +292,7 @@ end;
 ##  The function returns a record with components 'smatrices', 'qmatrices',
 ##  'nmatrices' and 'nbasis' if applicable.
 ##
-##  See the description for 'SMTX.InducedActionSubModuleFactorModule' for
+##  See the description for 'SMTX.InducedAction' for
 ##  description of the matrices
 ##  
 SMTX.SubQuotActions := function(matrices,sub,dim,subdim,one,typ)
@@ -506,14 +506,14 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.InducedAction( module, sub ) . . .  
+#F  SMTX.InducedAction( module, sub, typ ) . . .  
 ##  generators of sub- and quotient-module and original module wrt new basis
 ##  and new basis
 ## 
 ## module is a module record, and sub is a list of generators of a submodule.
 ## IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
 ## (i.e. each has leading coefficient 1 in a unique place).
-## SMTX.InducedActionSubModuleFactorModule computes the submodule and quotient
+## SMTX.InducedAction computes the submodule and quotient
 ## and the original module with its matrices written wrt to the basis used
 ## to compute smodule and qmodule. 
 ## If  sub is empty or generates the whole space, then the empty sequence
@@ -522,7 +522,7 @@ end;
 ## The matrices of nmodule have the form  A  0  where  A  and  B  are the
 ##                                        C  B
 ## corresponding matrices of smodule and qmodule resepctively.
-## If sub does is not the basis of a submodule then fail is returned.
+## If sub is not the basis of a submodule then fail is returned.
 SMTX.InducedAction := function ( arg )
 local module,sub,typ,ans,dim,subdim,F,one,erg;
 
@@ -1619,7 +1619,7 @@ SMTX.CompositionFactors := function ( module )
   if SMTX.IsIrreducible(module) then
     return [module];
   else
-    module:=SMTX.InducedActionSubModuleFactorModule(module,
+    module:=SMTX.InducedAction(module,
 	          SMTX.Subbasis(module),3);
     return Concatenation(SMTX.CompositionFactors(module[1]),
 			 SMTX.CompositionFactors(module[2]));
@@ -2467,6 +2467,8 @@ local q,b,s,ser,queue;
     m:=queue[1];
     queue:=queue{[2..Length(queue)]};
     if SMTX.IsIrreducible(m) then
+      Info(InfoMeatAxe,3,Length(m.smashMeataxe.csbasis)," ",
+                         Length(m.smashMeataxe.denombasis));
       m:=Concatenation(m.smashMeataxe.denombasis,
                  List(m.smashMeataxe.csbasis,
 		      i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i)));
@@ -2489,7 +2491,7 @@ local q,b,s,ser,queue;
       s.smashMeataxe.fakbasis:=
         List(b,i->LinearCombinationVecs(m.smashMeataxe.fakbasis,i));
       q.smashMeataxe.denombasis:=Concatenation(m.smashMeataxe.denombasis,
-      					       s.smashMeataxe.fakbasis);
+				   s.smashMeataxe.fakbasis{[1..s.dimension]});
       q.smashMeataxe.csbasis:=IdentityMat(SMTX.Dimension(q),
       					  One(SMTX.Field(q)));
       q.smashMeataxe.fakbasis:=List(b{[SMTX.Dimension(s)+1..Length(b)]},
@@ -2516,14 +2518,16 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin;
       sq:=SMTX.InducedAction(m,j,3);
       f:=sq[2];
       sb:=sq[3]{[1..SMTX.Dimension(sq[1])]};
-      fb:=sq[3]{[SMTX.Dimension(sq[1])+1..Length(sq[4])]};
+      fb:=sq[3]{[SMTX.Dimension(sq[1])+1..Length(sq[3])]};
       # actually we might want to count frequencies to speed up the process,
       # so far I'm lazy
       nmin:=Concatenation(List(cf,i->SMTX.MinimalSubGModules(i,f)));
+      Info(InfoMeatAxe,3,Length(nmin),"minimal submodules");
       for k in nmin do 
         sq:=Concatenation(sb,List(k,i->LinearCombinationVecs(fb,i)));
 	TriangulizeMat(sq);
 	if not sq in neu then
+          Info(InfoMeatAxe,2,"submodule dimension ",Length(sq));
 	  Add(neu,sq);
 	fi;
       od;

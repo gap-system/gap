@@ -46,7 +46,7 @@ InstallMethod( Order, true, [ IsCyc ], 0,
     function ( cyc )
     local ord, val;
     if cyc = 0 then
-      Error( "argument must be a nonzero cyclotomic" );
+      Error( "argument must be nonzero" );
     elif cyc * GaloisCyc( cyc, -1 ) <> 1 then   # not a root of unity
       return infinity;
     else
@@ -679,32 +679,14 @@ StarCyc := function( cyc )
     if Length( conj ) = 2 then
       return Difference( conj, [ cyc ] )[1];
     else
-      return false;
-#T fail?
+      return fail;
     fi;
-    end;
+end;
 
 
 #############################################################################
 ##
-#F  Quadratic( <cyc> ) . . . . . informations about quadratic irrationalities
-##
-##  If <cyc> is a quadratic irrationality, Quadratic( <cyc> ) calculates the
-##  representation $<cyc> = \frac{ a + b \sqrt{ 'root' } }{'d'}$ and a
-##  (not necessarily shortest) representation by a combination of the
-##  {\ATLAS} irrationalities $b_{'root'}, i_{'root'}$ and $r_{'root'}$.
-##  In this case, a record with the components 'a', 'b', 'root', 'd', 'ATLAS'
-##  is returned.
-##  Otherwise 'fail' is returned.
-##
-##  1. If the denominator 'd' is 2, necessarily 'root' is congruent 1 mod 4,
-##     and $r_n$, $i_n$ are not possible;
-##     '<cyc> = x + y * EB( root )' with y = b, x = ( a + b ) / 2.
-##  2. If the denominator 'd' is 1, we have the possibilities
-##     $i_n$ for $'root' \< -1$, 'a + b * i' for 'root' = -1, $a + b * r_n$
-##     for $'root' > 0$. Furthermore if 'root' is congruent 1 modulo 4, also
-##     '<cyc> = (a+b) + 2 * b * EB( root )' is possible; the shortest string
-##     of these is taken as value for the component 'ATLAS'.
+#F  Quadratic( <cyc> ) . . . . .  information about quadratic irrationalities
 ##
 Quadratic := function( cyc )
 
@@ -721,7 +703,7 @@ Quadratic := function( cyc )
           display;    # string that shows a way to input 'cyc'
 
     if not IsCycInt( cyc ) then
-      return false;
+      return fail;
     elif IsInt( cyc ) then
       return rec(
                   a       := cyc,
@@ -746,8 +728,8 @@ Quadratic := function( cyc )
         root:= -root;
       fi;
       a:= StarCyc( cyc );
-      if a = false then
-        return false;
+      if a = fail then
+        return fail;
       fi;
 
       # Set 'a' to the trace of 'cyc' over the rationals.
@@ -805,12 +787,12 @@ Quadratic := function( cyc )
       d:= 1;
 
     else
-      return false;
+      return fail;
     fi;
 
     # Check whether the candidates 'a', 'b', 'd', 'root' are correct.
     if d * cyc <> a + b * ER( root ) then
-      return false;
+      return fail;
     fi;
 
     # Compute a string for the irrationality in {\ATLAS} format.
@@ -923,7 +905,7 @@ Quadratic := function( cyc )
                 ATLAS   := ATLAS,
                 display := display
                );
-    end;
+end;
 
 
 #############################################################################

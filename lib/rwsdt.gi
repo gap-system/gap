@@ -14,10 +14,10 @@ Revision.rwsdt_gi :=
 ##
 IsDeepThoughtCollectorRep := NewRepresentation(
          "IsDeepThoughtCollectorRep",
-         IsComponentObjectRep,   
-         ["Power", "Exponent", "Conjugate", "Generators", "DeepThoughtPols",
-          "Orders", "NumberGenerators"],
+         IsPositionalObjectRep,   
+         [1..PC_DEFAULT_KIND],
          IsPowerConjugateCollector);
+
 
 
 #############################################################################
@@ -70,6 +70,7 @@ function( fgrp, i )
 end );
 
 
+
 #############################################################################
 ##
 #M DeepThoughtCollectorByGenerators( <fam>, <gens>, <orders> )
@@ -101,34 +102,31 @@ function( efam, gens, orders )
         fi;
     od;
 
-    # construct a ddeep thoughe collector as record object
-    dt := rec();
+    # construct a deep thought collector as positional object
+    dt := [];
 
-    # and a default kind
-    dt.defaultKind := efam!.kinds[4];
+    # and a default kind 
+    dt[PC_DEFAULT_KIND] := efam!.kinds[4];
 
-    # set the corresponding feature later
-    dt.isDefaultKind := IsInfBitsAssocWord;
-
-    # the generators must have the default kind
+    # the generators must have IsInfBitsAssocWord
     gens := ShallowCopy(gens);
     for i  in [ 1 .. Length(gens) ]  do
         if not IsInfBitsAssocWord(gens[i])  then
-            gens[i] := AssocWord( dt.defaultKind, ExtRepOfObj(gens[i]) );
+            gens[i] := AssocWord( dt[PC_DEFAULT_KIND], ExtRepOfObj(gens[i]) );
         fi;
     od;
     # the rhs of the powers
-    dt.Power := [];
+    dt[PC_POWERS] := [];
 
     # and the rhs of the conjugates
-    dt.Conjugate := [];
+    dt[PC_CONJUGATES] := [];
 
-    # convert into a list object
+    # convert into a positional object
     kind := NewKind( fam, IsDeepThoughtCollectorRep and IsMutable );
     Objectify( kind, dt );
 
-    # we need the the family
-    SetUnderlyingFamily( dt, efam );
+    # underlying family vermutlich nicht n"otig
+
 
     # and the relative orders
     SetRelativeOrders( dt, ShallowCopy(orders) );
@@ -142,9 +140,9 @@ function( efam, gens, orders )
 
     # test whether dtrws is finite and set the corresponding feature
     if  0 in RelativeOrders( dt )  then
-	SetIsFinite( dt, false );
+	SetFeatureObj( dt, IsFinite, false );
     else
-	SetIsFinite( dt, true );
+	SetFeatureObj( dt, IsFinite, true );
     fi;
     # and return
     return dt;
@@ -168,14 +166,14 @@ function( dtrws )
 
     # first the power relators
     rels := [];
-    gens := dtrws!.Generators;
-    ords := dtrws!.Exponent;
-    for i  in [ 1 .. dtrws!.NumberGenerators ]  do
+    gens := dtrws![PC_GENERATORS];
+    ords := dtrws![PC_EXPONENTS];
+    for i  in [ 1 .. dtrws![PC_NUMBER_OF_GENERATORS] ]  do
 	if IsBound( ords[i] )  then
-            if IsBound( dtrws!.Power[i] )  then
+            if IsBound( dtrws![PC_POWERS][i] )  then
                 Add( rels, gens[i]^ords[i] / 
-                           InfBits_AssocWord( dtrws!.defaultKind, 
-                                              dtrws!.Power[i] ) );
+                           InfBits_AssocWord( dtrws![PC_DEFAULT_KIND], 
+                                              dtrws![PC_POWERS][i] ) );
             else
                 Add( rels, gens[i]^ords[i] );
             fi;
@@ -183,12 +181,12 @@ function( dtrws )
     od;
 
     # and now the conjugates
-    for i  in [ 2 .. dtrws!.NumberGenerators ]  do
+    for i  in [ 2 .. dtrws![PC_NUMBER_OF_GENERATORS] ]  do
         for j  in [ 1 .. i-1 ]  do
-            if IsBound( dtrws!.Conjugate[i][j] )  then
+            if IsBound( dtrws![PC_CONJUGATES][i][j] )  then
                 Add( rels, gens[i]^gens[j] / 
-                           InfBits_AssocWord( dtrws!.defaultKind,
-                                              dtrws!.Conjugate[i][j] ) );
+                           InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
+                                              dtrws![PC_CONJUGATES][i][j] ) );
             else
                 Add( rels, gens[i]^gens[j] / gens[i] );
             fi;
@@ -208,7 +206,7 @@ end );
 
 InstallMethod( SetRelativeOrders, 
        true,
-       [ IsDeepThoughtCollectorRep  and  IsPowerConjugateCollector, IsList ],
+       [ IsDeepThoughtCollectorRep and IsPowerConjugateCollector, IsList ],
        0,
 
 function( dtrws, orders )
@@ -228,7 +226,7 @@ function( dtrws, orders )
 	    fi;
 	fi;
     od;
-    dtrws!.Exponent := orders;
+    dtrws![PC_EXPONENTS] := orders;
 end   );
 
 
@@ -245,13 +243,13 @@ InstallMethod( RelativeOrders,
 function( dtrws )
     local  orders, i;
     
-    orders := ShallowCopy( dtrws!.Exponent );
+    orders := ShallowCopy( dtrws![PC_EXPONENTS] );
     for  i in [1..Length(orders)]  do
 	if  not IsBound(orders[i])  then
 	    orders[i] := 0;
 	fi;
     od;
-    for  i in [ Length(orders)+1..dtrws!.NumberGenerators ]  do
+    for  i in [ Length(orders)+1..dtrws![PC_NUMBER_OF_GENERATORS] ]  do
 	orders[i] := 0;
     od;
     return orders;
@@ -270,7 +268,7 @@ InstallMethod( SetNumberGeneratorsOfRws,
       0,
 
 function( dtrws, num )
-    dtrws!.NumberGenerators := num;
+    dtrws![PC_NUMBER_OF_GENERATORS] := num;
 end
 );
 
@@ -286,7 +284,7 @@ InstallMethod( NumberGeneratorsOfRws,
     0,
 
 function( dtrws )
-    return dtrws!.NumberGenerators;
+    return dtrws![PC_NUMBER_OF_GENERATORS];
 end
 );
 
@@ -302,7 +300,7 @@ InstallMethod( SetGeneratorsOfRws,
     0,
 
 function( dtrws, gens )
-    dtrws!.Generators := ShallowCopy(gens);
+    dtrws![PC_GENERATORS] := ShallowCopy(gens);
 end
 );
 
@@ -318,7 +316,7 @@ InstallMethod( GeneratorsOfRws,
     0,
 
 function( dtrws )
-    return ShallowCopy( dtrws!.Generators );
+    return ShallowCopy( dtrws![PC_GENERATORS] );
 end
 );
 
@@ -365,17 +363,17 @@ function( dtrws, i, rhs )
         Error( "<i> must be positive" );
     fi;
     if  NumberGeneratorsOfRws(dtrws) < i  then
-        Error( "<i> must be at most ", dtrws!.NumberGenerators );
+        Error( "<i> must be at most ", dtrws![PC_NUMBER_OF_GENERATORS] );
     fi;
-    if  not IsBound( dtrws!.Exponent[i] )  then
-        Error( "generator ", i, " is torsion free" );
+    if  not IsBound( dtrws![PC_EXPONENTS][i] )  then
+        Error( "no relative order is set for generator ", i );
     fi;
 
     # check that the rhs is a reduced word with respect to the relative orders
     for  m in [1..NumberSyllables(rhs)]  do
-        if  IsBound( dtrws!.Exponent[ GeneratorSyllable(rhs, m) ] )  and  
+        if  IsBound( dtrws![PC_EXPONENTS][ GeneratorSyllable(rhs, m) ] )  and  
             ExponentSyllable(rhs, m) >= 
-                dtrws!.Exponent[ GeneratorSyllable(rhs, m) ]  then
+                dtrws![PC_EXPONENTS][ GeneratorSyllable(rhs, m) ]  then
             Error("<rhs> is not reduced");
         fi;
         if  m < NumberSyllables(rhs)  then
@@ -391,7 +389,7 @@ function( dtrws, i, rhs )
     fi;
     
     # enter the rhs
-    dtrws!.Power[i]  := ExtRepOfObj(rhs);
+    dtrws![PC_POWERS][i]  := ExtRepOfObj(rhs);
 
 end );    
 
@@ -405,11 +403,11 @@ end );
 
 DeepThoughtCollector_SetConjugateNC := function(dtrws, i, j, rhs)
 
-    if IsBound(dtrws!.Conjugate[i])  then
-	dtrws!.Conjugate[i][j] := ExtRepOfObj(rhs);
+    if IsBound(dtrws![PC_CONJUGATES][i])  then
+	dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
     else
-	dtrws!.Conjugate[i] := [];
-	dtrws!.Conjugate[i][j] := ExtRepOfObj(rhs);
+	dtrws![PC_CONJUGATES][i] := [];
+	dtrws![PC_CONJUGATES][i][j] := ExtRepOfObj(rhs);
     fi;
 end;
 
@@ -430,8 +428,8 @@ function( dtrws, i, j, rhs )
     if i <= 1  then
         Error( "<i> must be at least 2" );
     fi;
-    if dtrws!.NumberGenerators < i  then
-        Error( "<i> must be at most ", dtrws!.NumberGenerators );
+    if dtrws![PC_NUMBER_OF_GENERATORS] < i  then
+        Error( "<i> must be at most ", dtrws![PC_NUMBER_OF_GENERATORS] );
     fi;
     if j <= 0  then
         Error( "<j> must be positive" );
@@ -447,9 +445,9 @@ function( dtrws, i, j, rhs )
 
     # check that the rhs is a reduced word with respect to the relative orders
     for  m in [1..NumberSyllables(rhs)]  do
-        if  IsBound( dtrws!.Exponent[ GeneratorSyllable(rhs, m) ] )  and  
+        if  IsBound( dtrws![PC_EXPONENTS][ GeneratorSyllable(rhs, m) ] )  and  
             ExponentSyllable(rhs, m) >= 
-                dtrws!.Exponent[ GeneratorSyllable(rhs, m) ]  then
+                dtrws![PC_EXPONENTS][ GeneratorSyllable(rhs, m) ]  then
             Error("<rhs> is not reduced");
         fi;
         if  m < NumberSyllables(rhs)  then
@@ -467,6 +465,7 @@ function( dtrws, i, j, rhs )
 
     # install the conjugate relator
     DeepThoughtCollector_SetConjugateNC( dtrws, i, j, rhs );
+    OutdatePolycyclicCollector( dtrws );
 
 end );
 
@@ -489,33 +488,33 @@ function( dtrws )
     fi;
 
     # complete dtrws
-    for  i in [2..dtrws!.NumberGenerators]  do
-	if  not IsBound( dtrws!.Conjugate[i] )  then
+    for  i in [2..dtrws![PC_NUMBER_OF_GENERATORS]]  do
+	if  not IsBound( dtrws![PC_CONJUGATES][i] )  then
 	    dtrws!.Conjugate[i] := [];
 	fi;
     od;
 
     # remove trivial rhs's
-    for  i in [2..Length(dtrws!.Conjugate)]  do
+    for  i in [2..Length(dtrws![PC_CONJUGATES])]  do
 	for  j in [1..i-1]  do
-	    if  IsBound(dtrws!.Conjugate[i][j])  then
-	        if  Length(dtrws!.Conjugate[i][j]) = 2  then
-		    Unbind( dtrws!.Conjugate[i][j] );
+	    if  IsBound(dtrws![PC_CONJUGATES][i][j])  then
+	        if  Length(dtrws![PC_CONJUGATES][i][j]) = 2  then
+		    Unbind( dtrws![PC_CONJUGATES][i][j] );
 	        fi;
 	    fi;
 	od;
     od;
-    for  i in [1..Length(dtrws!.Generators)]  do
-	    if  IsBound( dtrws!.Power[i])  then
-	        if  Length(dtrws!.Power[i]) = 0  then
-		    Unbind( dtrws!.Power[i] );
+    for  i in [1..dtrws![PC_NUMBER_OF_GENERATORS]]  do
+	    if  IsBound( dtrws![PC_POWERS][i])  then
+	        if  Length(dtrws![PC_POWERS][i]) = 0  then
+		    Unbind( dtrws![PC_POWERS][i] );
 	        fi;
 	    fi;
     od;	    
 
     # Compute the deep thought polynomials
     Print("computing deep thought polynomials  ...\n");
-    dtrws!.DeepThoughtPols := calcreps2(dtrws!.Conjugate, 8);
+    dtrws![PC_DEEP_THOUGHT_POLS] := calcreps2(dtrws![PC_CONJUGATES], 8);
     Print("done\n");
 
     # Compute the orders of the genrators of dtrws
@@ -546,7 +545,7 @@ InstallMethod(ReducedProduct,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTMultiply( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -568,7 +567,7 @@ InstallMethod(ReducedComm,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTCommutator( ExtRepOfObj(lword), 
                                             ExtRepOfObj(rword),
                                             dtrws )  );
@@ -590,7 +589,7 @@ InstallMethod(ReducedLeftQuotient,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTSolution( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -612,7 +611,7 @@ InstallMethod(ReducedPower,
      0,
 
 function(dtrws, word, int)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTPower( ExtRepOfObj(word), int, dtrws )  );
 end   );
 
@@ -632,7 +631,7 @@ InstallMethod(ReducedQuotient,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTQuotient( ExtRepOfObj(lword), 
                                           ExtRepOfObj(rword),
                                           dtrws )  );
@@ -654,7 +653,7 @@ InstallMethod(ReducedConjugate,
      0,
 
 function(dtrws, lword, rword)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTConjugate( ExtRepOfObj(lword), 
                                            ExtRepOfObj(rword),
                                            dtrws )  );
@@ -675,7 +674,7 @@ InstallMethod(ReducedInverse,
      0,
 
 function(dtrws, word)
-    return InfBits_AssocWord( dtrws!.defaultKind,
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND],
                               DTSolution( ExtRepOfObj(word), [], dtrws )  );
 end   );
 
@@ -772,7 +771,7 @@ function(dtrws, l)
 	    Append( res, [ i, l[i] ] );
 	fi;
     od;
-    return InfBits_AssocWord( dtrws!.defaultKind, res );
+    return InfBits_AssocWord( dtrws![PC_DEFAULT_KIND], res );
 end  );
 
 #############################################################################

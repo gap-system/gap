@@ -15,6 +15,20 @@ Revision.grpfp_gd :=
 
 #############################################################################
 ##
+#V  CosetTableDefaultLimit
+##
+CosetTableDefaultLimit := 1000;
+
+
+#############################################################################
+##
+#V  CosetTableDefaultMaxLimit
+##
+CosetTableDefaultMaxLimit := 64000;
+
+
+#############################################################################
+##
 #V  InfoFpGroup
 ##
 InfoFpGroup := NewInfoClass( "InfoFpGroup" );
@@ -22,9 +36,9 @@ InfoFpGroup := NewInfoClass( "InfoFpGroup" );
 
 #############################################################################
 ##
-#C  IsFpGroup
+#C  IsSubgroupFpGroup
 ##
-IsFpGroup := NewCategory( "IsFpGroup", IsGroup );
+IsSubgroupFpGroup := NewCategory( "IsSubgroupFpGroup", IsGroup );
 
 
 #############################################################################
@@ -33,6 +47,23 @@ IsFpGroup := NewCategory( "IsFpGroup", IsGroup );
 ##
 IsElementOfFpGroup := NewCategory( "IsElementOfFpGroup",
     IsMultiplicativeElementWithInverse and IsAssociativeElement );
+
+
+#############################################################################
+##
+#C  IsElementOfFpGroupCollection
+##
+IsElementOfFpGroupCollection := CategoryCollections(
+    "IsElementOfFpGroupCollection",
+    IsElementOfFpGroup );
+
+
+#############################################################################
+##
+#M  IsSubgroupFpGroup
+##
+InstallTrueMethod( IsSubgroupFpGroup,
+    IsGroup and IsElementOfFpGroupCollection );
 
 
 #############################################################################
@@ -47,8 +78,36 @@ IsFamilyOfFpGroupElements := CategoryFamily( "IsFamilyOfFpGroupElements",
 ##
 #O  ElementOfFpGroup( <Fam>, <word> )
 ##
-ElementOfFpGroup := NewConstructor( "ElementOfFpGroup",
+ElementOfFpGroup := NewOperation( "ElementOfFpGroup",
     [ IsFamilyOfFpGroupElements, IsAssocWordWithInverse ] );
+
+
+############################################################################
+##
+#F  RelatorRepresentatives
+##
+RelatorRepresentatives := NewOperationArgs("RelatorRepresentatives");
+
+
+############################################################################
+##
+#F  RelsSortedByStartGen
+##
+RelsSortedByStartGen := NewOperationArgs("RelsSortedByStartGen");
+
+
+############################################################################
+##
+#F  CosetTableFromGensAndRels
+##
+CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
+
+
+############################################################################
+##
+#F  CosetTableFromGensAndRels
+##
+CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 
 
 #############################################################################

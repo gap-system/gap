@@ -380,7 +380,7 @@ PerfectGroup := function(arg)
 local func,sz,p;
   PerfGrpLoad(0); # force loading
   if not IsFunction(arg[1]) then 
-    func:=IsFpGroup;
+    func:=IsSubgroupFpGroup;
     sz:=arg;
   else
     func:=arg[1];

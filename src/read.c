@@ -171,7 +171,7 @@ void            ReadCallVarAss (
                 else {
                     type = 'h';
 
-		    /* Ultrix 4.2 cc get's confused if the UInt is missing */
+                    /* Ultrix 4.2 cc get's confused if the UInt is missing */
                     var = ((UInt)nest << 16) + indx;
                 }
                 break;
@@ -189,7 +189,7 @@ void            ReadCallVarAss (
             if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 type = 'd';
 
-		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
+                /* Ultrix 4.2 cc get's confused if the UInt is missing     */
                 var = ((UInt)nest << 16) + indx;
                 break;
             }
@@ -215,10 +215,15 @@ void            ReadCallVarAss (
     }
 
     /* check whether this is an unbound global variable                    */
-    if ( type == 'g' && CountNams != 0
-      && var != CurrLHSGVar && var != Tilde
-      && VAL_GVAR(var) == 0 && ELM_PLIST(ExprGVars,var) == 0
-      && CompNowFuncs == 0 ) {
+    if ( type == 'g'
+      && CountNams != 0
+      && var != CurrLHSGVar 
+      && var != Tilde
+      && VAL_GVAR(var) == 0 
+      && ELM_PLIST(ExprGVars,var) == 0
+      && CompNowFuncs == 0
+      && ! SyCompilePlease )
+    {
         SyntaxError("warning: unbound global variable");
         NrError--;
         NrErrLine--;
@@ -689,6 +694,7 @@ void            ReadFuncExpr (
     volatile UInt       narg;           /* number of arguments             */
     volatile UInt       nloc;           /* number of locals                */
     volatile UInt       nr;             /* number of statements            */
+    volatile UInt       i;              /* loop variable                   */
 
     /* begin the function                                                  */
     Match( S_FUNCTION, "function", follow );
@@ -709,6 +715,11 @@ void            ReadFuncExpr (
     }
     while ( Symbol == S_COMMA ) {
         Match( S_COMMA, ",", follow );
+        for ( i = 1; i <= narg; i++ ) {
+            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                SyntaxError("name used for two arguments");
+            }
+        }
         name = NEW_STRING( SyStrlen(Value) );
         SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
         narg += 1;
@@ -718,6 +729,11 @@ void            ReadFuncExpr (
     Match( S_RPAREN, ")", S_LOCAL|STATBEGIN|S_END|follow );
     if ( Symbol == S_LOCAL ) {
         Match( S_LOCAL, "local", follow );
+        for ( i = 1; i <= narg; i++ ) {
+            if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                SyntaxError("name used for argument and local");
+            }
+        }
         name = NEW_STRING( SyStrlen(Value) );
         SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
         nloc += 1;
@@ -725,6 +741,16 @@ void            ReadFuncExpr (
         Match( S_IDENT, "identifier", STATBEGIN|S_END|follow );
         while ( Symbol == S_COMMA ) {
             Match( S_COMMA, ",", follow );
+            for ( i = 1; i <= narg; i++ ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                    SyntaxError("name used for argument and local");
+                }
+            }
+            for ( i = narg+1; i <= narg+nloc; i++ ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                    SyntaxError("name used for two locals");
+                }
+            }
             name = NEW_STRING( SyStrlen(Value) );
             SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
             nloc += 1;
@@ -952,10 +978,6 @@ void            ReadFactor (
         if ( Symbol == S_MINUS ) { sign1 = -sign1; }
         Match( Symbol, "unary + or -", follow );
     }
-    if ( ! READ_ERROR() && sign1 == -1 ) {
-	IntrRefGVar( GVarName( "AdditiveInverse" ) );
-	IntrFuncCallBegin();
-    }
 
     /* <Atom>                                                              */
     ReadAtom( follow, (sign1 == 0 ? mode : 'r') );
@@ -973,18 +995,12 @@ void            ReadFactor (
             if ( Symbol == S_MINUS ) { sign2 = -sign2; }
             Match( Symbol, "unary + or -", follow );
         }
-	if ( ! READ_ERROR() && sign2 == -1 ) {
-	    IntrRefGVar( GVarName( "AdditiveInverse" ) );
-	    IntrFuncCallBegin();
-	}
 
         /* ['^' <Atom>]                                                    */
         ReadAtom( follow, 'r' );
 
         /* interpret the unary minus                                       */
-        if ( sign2 == -1 && ! READ_ERROR() ) {
-	    IntrFuncCallEnd( 1, 1 );
-        }
+        if ( sign2 == -1 && ! READ_ERROR() ) { IntrAInv(); }
 
         /* interpret the power                                             */
         if ( ! READ_ERROR() ) { IntrPow(); }
@@ -995,9 +1011,7 @@ void            ReadFactor (
     }
 
     /* interpret the unary minus                                           */
-    if ( sign1 == -1 && ! READ_ERROR() ) {
-	IntrFuncCallEnd( 1, 1 );
-    }
+    if ( sign1 == -1 && ! READ_ERROR() ) { IntrAInv(); }
 }
 
 
@@ -1662,6 +1676,91 @@ UInt            ReadEvalCommand ( void )
 
 /****************************************************************************
 **
+*F  ReadEvalFile()  . . . . . . . . . . . . . . . . . . . . . . . read a file
+**
+**  'ReadEvalFile' reads an entire file and returns (in 'ReadEvalResult') the
+**  entire file as thunk, i.e., as function of no argument.
+**
+**  It does not expect the  first symbol of its input  already read and  wont
+**  reads to the end of the input (unless an error happens).
+*/
+UInt            ReadEvalFile ( void )
+{
+    UInt                type;
+    Obj                 stackNams;
+    UInt                countNams;
+    UInt                readTop;
+    UInt                readTilde;
+    UInt                currLHSGVar;
+    jmp_buf             readJmpError;
+    UInt                nr;
+
+    /* get the first symbol from the input                                 */
+    Match( Symbol, "", 0UL );
+
+    /* if we have hit <end-of-file>, then give up                          */
+    if ( Symbol == S_EOF )  { return 16; }
+
+    /* print only a partial prompt from now on                             */
+    Prompt = "> ";
+
+    /* remember the old reader context                                     */
+    stackNams   = StackNams;
+    countNams   = CountNams;
+    readTop     = ReadTop;
+    readTilde   = ReadTilde;
+    currLHSGVar = CurrLHSGVar;
+    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+
+    /* intialize everything and begin an interpreter                       */
+    StackNams   = NEW_PLIST( T_PLIST, 16 );
+    CountNams   = 0;
+    ReadTop     = 0;
+    ReadTilde   = 0;
+    CurrLHSGVar = 0;
+    IntrBegin();
+
+    /* fake the 'function ()'                                              */
+    IntrFuncExprBegin( 0L, 0L, (Obj)0 );
+
+    /* read the statements                                                 */
+    nr = ReadStats( S_SEMICOLON | S_EOF );
+
+    /* we now want to be at <end-of-file>                                  */
+    if ( Symbol != S_EOF ) {
+        SyntaxError("<end-of-file> expected");
+    }
+
+    /* fake the 'end;'                                                     */
+    if ( ! READ_ERROR() ) { IntrFuncExprEnd( nr, 0L ); }
+
+    /* end the interpreter                                                 */
+    if ( ! READ_ERROR() ) {
+        type = IntrEnd( 0UL );
+    }
+    else {
+        IntrEnd( 1UL );
+        type = 32;
+    }
+
+    /* switch back to the old reader context                               */
+    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    StackNams   = stackNams;
+    CountNams   = countNams;
+    ReadTop     = readTop;
+    ReadTilde   = readTilde;
+    CurrLHSGVar = currLHSGVar;
+
+    /* copy the result (if any)                                            */
+    ReadEvalResult = IntrResult;
+
+    /* return whether a return-statement or a quit-statement were executed */
+    return type;
+}
+
+
+/****************************************************************************
+**
 *F  ReadEvalError() . . . . . . . . . . . . . . . . . .  return with an error
 */
 void            ReadEvalError ( void )
@@ -1688,3 +1787,6 @@ void            InitRead ( void )
 
 *E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
+
+
+

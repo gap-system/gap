@@ -60,6 +60,33 @@ extern  Obj *           PtrGVars;
 
 /****************************************************************************
 **
+*V  WriteGVars  . . . . . . . . . . . . .  writable flags of global variables
+*/
+extern Obj WriteGVars;
+
+
+/****************************************************************************
+**
+*V  ErrorMustEvalToFuncFunc . . . . . . . . .  function that signals an error
+**
+**  'ErrorMustEvalToFuncFunc' is a (variable number of  args)  function  that
+**  signals the error ``Function: <func> be a function''.
+*/
+extern Obj ErrorMustEvalToFuncFunc;
+
+
+/****************************************************************************
+**
+*V  ErrorMustHaveAssObjFunc . . . . . . . . .  function that signals an error
+**
+**  'ErrorMustHaveAssObjFunc' is a (variable number of  args)  function  that
+**  signals the error ``Variable: <<unknown>> must have an assigned value''.
+*/
+extern Obj ErrorMustHaveAssObjFunc;
+
+
+/****************************************************************************
+**
 *F  AssGVar(<gvar>,<val>) . . . . . . . . . . . . assign to a global variable
 **
 **  'AssGVar' assigns the value <val> to the global variable <gvar>.

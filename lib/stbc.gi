@@ -85,9 +85,8 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
         if     options.tryPcgs
            and ( not HasIsSolvableGroup( G )  or  IsSolvableGroup( G ) )  then
             S := EmptyStabChain( [  ], One( G ) );
-            if IsBound( options.base )  then
-                S.base := options.base;
-            fi;
+            if IsBound( options.base )  then  S.base := options.base;
+                                        else  S.base := [  ];          fi;
             pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
                             false, false, false );
         fi;
@@ -122,13 +121,13 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
                 fi;
                 
             fi; # random / deterministic
-            
-            # Now extend <S>, if desired.
-            if not options.reduced  and  IsBound( options.base )  then
-                ExtendStabChain( S, options.base );
-            fi;
-        
         fi;
+        
+        # Now extend <S>, if desired.
+        if not options.reduced  and  IsBound( options.base )  then
+            ExtendStabChain( S, options.base );
+        fi;
+        
     fi;
    
     # if the parent is random, this group should be also
@@ -385,17 +384,59 @@ end;
 
 #############################################################################
 ##
+#F  ChooseNextBasePoint( <S>, <base>, <newgens> ) . . . . . . . . . . . local
+##
+ChooseNextBasePoint := function( S, base, newgens )
+    local   i,  pnt,  bpt,  pos;
+    
+    i := 1;
+    while     i <= Length( base )
+          and ForAll( newgens, gen -> base[ i ] ^ gen = base[ i ] )  do
+        i := i + 1;
+    od;
+    if i <= Length( base )  then
+        pnt := base[ i ];
+    elif IsPermCollection( newgens )  then
+        pnt := SmallestMovedPointPerms( newgens );
+    else
+        pnt := 1;
+    fi;
+    
+    # If <pnt> is before  the base point <bpt>  of  <S>, insert a  new level.
+    # `Before' means (1) <pnt> before <bpt> in <base> or (2) <pnt> in <base>,
+    # <bpt> not in <base> or (3) <pnt> less than <bpt> both not in <base>.
+    if IsBound( S.orbit )  then
+        bpt := S.orbit[ 1 ];
+        pos := Position( base, bpt );
+    else
+        bpt := infinity;
+        pos := fail;
+    fi;
+    if    pos <> fail  and  i < pos              # (1)
+       or pos =  fail  and  i <= Length( base )  # (2)
+       or pos =  fail  and  pnt < bpt  then      # (3)
+        InsertTrivialStabilizer( S, pnt );
+        if IsBound( S.stabilizer.cycles )  then
+            S.cycles := [ false ];
+        elif IsBound( S.stabilizer.relativeOrders )  then
+            Unbind( S.stabilizer.relativeOrders );
+            Unbind( S.stabilizer.base           );
+        fi;
+    fi; 
+    
+end;
+
+#############################################################################
+##
 #F  StabChainStrong( <S>, <newgens>, <options> )  . . Schreier-Sims algorithm
 ##
 StabChainStrong := function( S, newgens, options )
     local   gen,        # one generator from <newgens>
             pnt,        # next base point to use
-            bpt,        # current base point of <S>
-            pos,        # position of old base point of <S>
             len,        # length of orbit of <S>
             pnts,       # points to use for Schreier generators
             p,          # point in orbit of <S>
-            rep,  r,    # representative of <p>
+            rep, r, rr, # representative of <p>
             gen1, old,  # numbers of labels to be used for Schreier gens
             g,          # one of these labels
             sch,        # Schreier generator for '<S>.stabilizer'
@@ -414,40 +455,7 @@ StabChainStrong := function( S, newgens, options )
             InsertTrivialStabilizer( S, pnt );
         fi;
     else
-        i := 1;
-        while     i <= Length( options.base )
-              and ForAll( newgens, gen -> options.base[ i ] ^ gen
-                                        = options.base[ i ] )  do
-            i := i + 1;
-        od;
-        if i <= Length( options.base )  then
-            pnt := options.base[ i ];
-        elif IsPermCollection( newgens )  then
-            pnt := SmallestMovedPointPerms( newgens );
-        else
-            pnt := 1;
-        fi;
-
-        # If <pnt> is before the base point <bpt> of <S>, insert a new level.
-        # `Before'  means (1) <pnt>  before <bpt> in <base>  or  (2) <pnt> in
-        # <base>, <bpt> not in  <base> or (3) <pnt> less  than <bpt> both not
-        # in <base>.
-        if IsBound( S.orbit )  then
-            bpt := S.orbit[ 1 ];
-            pos := Position( options.base, bpt );
-        else
-            bpt := infinity;
-            pos := fail;
-        fi;
-        if    pos <> fail  and  i < pos                      # (1)
-           or pos =  fail  and  i <= Length( options.base )  # (2)
-           or pos =  fail  and  pnt < bpt  then              # (3)
-            InsertTrivialStabilizer( S, pnt );
-            if IsBound( S.stabilizer.cycles )  then
-                S.cycles := [ false ];
-            fi;
-        fi; 
-    
+        ChooseNextBasePoint( S, options.base, newgens );
     fi;
 
     # Add the new generators to <S>.
@@ -469,7 +477,7 @@ StabChainStrong := function( S, newgens, options )
     else
         pnts := [ 1 .. Length( S.orbit ) ];
     fi;
-    gen1 := 2;
+    gen1 := 1;
     for i  in Reversed( pnts )  do
         p := S.orbit[ i ];
         if IsBound( options.knownBase )  then
@@ -497,8 +505,8 @@ StabChainStrong := function( S, newgens, options )
                     # point, multiply the representative.
                     if IsList( rep )  then
                         r := S.identity;
-                        for j  in rep  do
-                            r := LeftQuotient( j, r );
+                        for rr  in rep  do
+                            r := LeftQuotient( rr, r );
                         od;
                         rep := r;
                     fi;

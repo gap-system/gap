@@ -1095,7 +1095,7 @@ void            InitString ( void )
     }
 
     /* install the kind method                                             */
-    InitCopyGVar( GVarName("KIND_CHAR"), &KIND_CHAR );
+    ImportGVarFromLibrary( "KIND_CHAR", &KIND_CHAR );
     KindObjFuncs[ T_CHAR ] = KindChar;
 
     /* install the character functions                                     */

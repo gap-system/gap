@@ -1511,10 +1511,10 @@ end );
 ##
 #F  AddCosetInfoStabChain( <G>, <U>, <maxmoved> ) . . . . . .  add coset info
 ##
-MAXLEN_TRANSVERSAL := 10000;
+MAX_SIZE_TRANSVERSAL := 100000;
 
 AddCosetInfoStabChain := function( G, U, maxmoved )
-    local   orb,  pimg,  img,  vert,  s,  t,  rat,  index,
+    local   orb,  pimg,  img,  vert,  s,  t,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
             ss,  tt,  explicit,  flock;
     
@@ -1538,8 +1538,8 @@ AddCosetInfoStabChain := function( G, U, maxmoved )
         # For small indices,  permutations   are multiplied,  so  we  need  a
         # multiplied transversal.
         if     IsBound( U.stabilizer.explicit )
-           and U.lenblock <= MAXLEN_TRANSVERSAL
-           and U.index    <= MAXLEN_TRANSVERSAL * lenflock  then
+           and U.lenblock * maxmoved <= MAX_SIZE_TRANSVERSAL
+           and U.index    * maxmoved <= MAX_SIZE_TRANSVERSAL * lenflock  then
             U.explicit := [  ];
             U.flock    := [ G.identity ];
             tt := [  ];  tt[ G.orbit[ 1 ] ] := G.identity;
@@ -1590,19 +1590,6 @@ AddCosetInfoStabChain := function( G, U, maxmoved )
             # transversal, this must contain minimal coset representatives.
             MinimizeExplicitTransversal( U.stabilizer, maxmoved );
             
-            # For each point  in the block,   find the images  of the earlier
-            # points under the representative.
-            vert := [  ];
-            for t  in [ 1 .. U.lenblock ]  do
-                rat := [ 1 .. t - 1 ];
-                vert[ t ] := G.orbit{ rat };
-                img := G.orbit[ t ];
-                while img <> G.orbit[ 1 ]  do
-                    vert[ t ] := OnTuples( vert[ t ], G.transversal[ img ] );
-                    img       := img                ^ G.transversal[ img ];
-                od;
-            od;
-        
             orb := G.orbit{ [ 1 .. U.lenblock ] };
             pimg := [  ];
             while index < U.index  do
@@ -1610,13 +1597,22 @@ AddCosetInfoStabChain := function( G, U, maxmoved )
                                        orb );
                 t := 2;
                 while t <= U.lenblock  and  index < U.index  do
+                    
+                    # For this point  in the  block,  find the images  of the
+                    # earlier points under the representative.
+                    vert := G.orbit{ [ 1 .. t - 1 ] };
+                    img := G.orbit[ t ];
+                    while img <> G.orbit[ 1 ]  do
+                        vert := OnTuples( vert, G.transversal[ img ] );
+                        img  := img           ^ G.transversal[ img ];
+                    od;
             
                     # If $Ust = Us't'$ then $1t'/t/s in 1U$. Also if $1t'/t/s
                     # in 1U$ then $st/t' =  u.g_1$ with $u  in U, g_1 in G_1$
                     # and $g_1  =  u_1.s'$ with $u_1  in U_1,  s' in S_1$, so
                     # $Ust = Us't'$.
                     if ForAll( [ 1 .. t - 1 ], i -> not IsBound
-                       ( U.translabels[ pimg[ vert[ t ][ i ] ] ] ) )  then
+                       ( U.translabels[ pimg[ vert[ i ] ] ] ) )  then
                         U.repsStab[ t ][ s ] := true;
                         index := index + lenflock;
                     fi;
@@ -1659,7 +1655,7 @@ end;
 NumberCoset := function( G, U, r )
     local   num,  b,  t,  u,  g1,  pnt,  bpt;
     
-    if Length( G.genlabels ) = 0  or  U.index = 1  then
+    if IsEmpty( G.genlabels )  or  U.index = 1  then
         return 1;
     fi;
     

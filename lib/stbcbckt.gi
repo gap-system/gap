@@ -9,124 +9,10 @@
 ##  calculation  of   set   stabilizers, normalizers,    centralizers     and
 ##  intersections.
 ##
-##  $Log$
-##  Revision 4.24  1997/02/12 14:58:56  htheisse
-##  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
-##
-##  Revision 4.23  1997/02/06 09:53:00  htheisse
-##  threw away some unused code
-##
-##  Revision 4.22  1997/01/22 16:56:09  htheisse
-##  fixed a grievous typo (`cellno' is now `lengths')
-##  removed a line which pruned too much (a bug)
-##
-##  Revision 4.21  1997/01/20 16:52:17  htheisse
-##  re-introduced `generators'
-##
-##  Revision 4.20  1997/01/15 15:23:24  fceller
-##  added 'SymmetricGroup' to basic group library,
-##  changed 'IsSymmetricGroup' to 'IsNaturalSymmetricGroup'
-##
-##  Revision 4.19  1997/01/15 08:44:52  htheisse
-##  fixed a bug concerning `ListStabChain's in `PBEnumerate'
-##
-##  Revision 4.18  1997/01/13 17:00:04  htheisse
-##  uses a quick check for `IsSymmetricGroup'
-##
-##  Revision 4.17  1997/01/06 16:21:06  htheisse
-##  turned `IsSymmetricGroup' from a representation into a property
-##
-##  Revision 4.16  1996/12/19 09:59:19  htheisse
-##  added revision lines
-##
-##  Revision 4.15  1996/12/11 08:16:14  htheisse
-##  changed the storage of known suborbits (in a list instead of in a record)
-##  removed GAP-3 relict `IsBound( E!.earns )'
-##
-##  Revision 4.14  1996/12/10 13:17:19  htheisse
-##  changed place where a stab chain is converted to a list
-##
-##  Revision 4.13  1996/12/02 15:32:51  htheisse
-##  changed    `StabChainAttr' into a mutable attribute
-##  introduced `StabChainOp'   which returns a mutable result
-##  the library now uses only these two operations
-##  `StabChainImmAttr' and `StabChain' are the ``immutable variants''
-##  (`StabChain' is also used as dispatcher)
-##
-##  Revision 4.12  1996/11/27 15:33:01  htheisse
-##  replaced `Copy' by `DeepCopy'
-##
-##  Revision 4.11  1996/11/20 11:02:47  sam
-##  moved ``polymorphic'' operations and their methods to 'polymorp.g',
-##
-##  Revision 4.10  1996/11/12 15:34:50  htheisse
-##  replaced several `false's by `fail's (sigh\!)
-##
-##  Revision 4.9  1996/11/07 17:14:57  htheisse
-##  replaced several `false's by `fail's (sigh!)
-##  re-entered a line `return fail;' (speeding up `RepOpElmTuplesPermGroup')
-##
-##  Revision 4.8  1996/11/05 07:56:43  htheisse
-##  replaced `false' by `fail'
-##
-##  Revision 4.7  1996/10/29 08:31:26  htheisse
-##  added `Info' lines for backtracking
-##
-##  Revision 4.6  1996/10/14 12:56:55  fceller
-##  'Position', 'PositionBound', and 'PositionProperty' return 'fail'
-##  instead of 'false'
-##
-##  Revision 4.5  1996/10/10 17:15:35  fceller
-##  added check in 'InstallMethod' and changed various 'InstallMethod'
-##  to 'InstallOtherMethod'
-##
-##  Revision 4.4  1996/10/10 12:30:57  htheisse
-##  fixed a problem with operations domain not starting at 1
-##
-##  Revision 4.3  1996/10/10 08:25:16  htheisse
-##  now the stabiliser chain of the returned subgroup has `generators' at *all*
-##  levels
-##
-##  Revision 4.2  1996/10/09 11:25:45  htheisse
-##  fixed use of `RepOpElmTuplesPermGroup'
-##  fixed handling of stabilizer chains during backtrack construction
-##
-##  Revision 4.1  1996/09/23 16:47:48  htheisse
-##  added files for permutation groups (incl. backtracking)
-##                  stabiliser chains
-##                  group homomorphisms (of permutation groups)
-##                  operation homomorphisms
-##                  polycyclic generating systems of soluble permutation groups
-##                     (general concept tentatively)
-##
-##
 Revision.stbcbckt_gi :=
     "@(#)$Id$";
 
 if not IsBound( LARGE_TASK )  then  LARGE_TASK := false;   fi;
-
-#############################################################################
-##
-#F  IsoTypeParam( <string> )  . . . . . . . . . . . . . . . . . . . . . local
-##
-IsoTypeParam := function( string )
-    local   pos,  num,  val;
-    
-    pos := Position( string, ')' );
-    if pos = fail  then
-        return fail;
-    fi;
-    num := 0;
-    val := 1; 
-    pos := pos - 1;
-    while string[ pos ] <> '('  and  string[ pos ] <> ','  do
-        num := num + val * Position( "0123456789", string[ pos ] );
-        val := val * 10;
-        pos := pos - 1;
-    od;
-    return rec( type := string{ [ 1 .. pos - 1 ] },
-                   q := num );
-end;
 
 #############################################################################
 ##
@@ -615,22 +501,6 @@ end;
 
 #############################################################################
 ##
-#F  OnSuborbits( <k>, <g>, <subs> ) . . . . . . . . .  operation on suborbits
-##
-OnSuborbits := function( k, g, subs )
-    local   rep,  img,  s;
-    
-    rep := Position( subs.blists[ k ], true );
-    img := rep ^ g;
-    for s  in InverseRepresentativeWord( subs.stabChain,
-            BasePoint( subs.stabChain ) ^ g )  do
-        img := img ^ s;
-    od;
-    return subs.which[ img ];
-end;
-
-#############################################################################
-##
 #F  OrbitalPartition( <subs>, <k> ) . . . . . . . . . . make a nice partition
 ##
 OrbitalPartition := function( subs, k )
@@ -1048,8 +918,8 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
            image,        # image information running through the tree
            oldcel,       # old value of <image.partition.cellno>
            orb,  org,    # intersected (mapped) basic orbits of <G>
-           del,          # base point images to be considered at each level
-           range,        # range for construction of <del>
+           orB,          # backup of <orb>
+           range,        # range for construction of <orb>
            fix,  fixP,   # fixpoints of partitions at root of search tree
            obj,  prm,    # temporary variables for constructed permutation
            i,  dd,  p;   # loop variables
@@ -1162,25 +1032,30 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
         # Intersect  the current cell of <P>  with  the mapped basic orbit of
         # <G> (and also with the one of <H> in the intersection case).
         if image.perm = true  then
-            orb[ d ] := Cell( oldcel, rbase.where[ d ] );
+            orb[ d ] := BlistList( range, Cell( oldcel, rbase.where[ d ] ) );
             if image.level2 <> false  then
-                orb[ d ] := Filtered( orb[ d ], b -> IsInBasicOrbit
-                  ( rbase.lev2[ d ], b / image.perm2 ) );
+                b := Position( orb[ d ], true );
+                while b <> fail  do
+                    if not IsInBasicOrbit( rbase.lev2[ d ], b / image.perm2 )
+                       then
+                        orb[ d ][ b ] := false;
+                    fi;
+                    b := Position( orb[ d ], true, b );
+                od;
             fi;
-            Sort( orb[ d ] );
         else
-            orb[ d ] := [  ];
+            orb[ d ] := BlistList( range, [  ] );
             for p  in rbase.lev[ d ].orbit  do
                 b := p ^ image.perm;
                 if oldcel[ b ] = rbase.where[ d ]
                and ( image.level2 = false
                   or IsInBasicOrbit( rbase.lev2[d], b/image.perm2 ) )  then
-                    AddSet( orb[ d ], b );
+                    orb[ d ][ b ] := true;
                     org[ d ][ b ] := p;
                 fi;
             od;
         fi;
-        del[ d ] := BlistList( range, orb[ d ] );
+        orB[ d ] := DeepCopy( orb[ d ] );
         
         # Loop  over the candidate images  for the  current base point. First
         # the special case ``image = base'' up to current level.
@@ -1197,31 +1072,32 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
             
             # Extend the  current  level with  the  new  generators from  the
             # stabilizer, which is finished now.
-            AddGeneratorsExtendSchreierTree( L[ d ],
-                    L[ d + 1 ].labels{ L[ d + 1 ].genlabels } );
+            AddGeneratorsExtendSchreierTree( L[ d ], L[ d + 1 ].generators );
             
             # Now we  can  remove  the  entire   <R>-orbit of <a>  from   the
             # candidate list.
-            SubtractBlist( del[ d ], BlistList( range, L[ d ].orbit ) );
+            SubtractBlist( orb[ d ], BlistList( range, L[ d ].orbit ) );
 
         fi;
         
         # Only the early points of the orbit have to be considered.
-        m := Length( orb[ d ] );
+        m := SizeBlist( orB[ d ] );
         if m < Length( L[ d ].orbit )  then
             return fail;
         fi;
-        max := orb[ d ][ m - Length( L[ d ].orbit ) + 1 ];
+        max := PositionNthTrueBlist( orB[ d ],
+                       m - Length( L[ d ].orbit ) + 1 );
         if wasTriv  and  a > max  then
             m := m - 1;
             if m < Length( L[ d ].orbit )  then
                 return fail;
             fi;
-            max := orb[ d ][ m - Length( L[ d ].orbit ) + 1 ];
+            max := PositionNthTrueBlist( orB[ d ],
+                           m - Length( L[ d ].orbit ) + 1 );
         fi;
             
         # Now the other possible images.
-        b := Position( del[ d ], true );
+        b := Position( orb[ d ], true );
         if b <> fail  and  b > max  then
             b := fail;
         fi;
@@ -1232,7 +1108,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                 dd := branch;
                 while dd < d  do
                     if IsInBasicOrbit( L[ dd ], a ) and not
-                       ( del[ dd ][ b ] and PBIsMinimal
+                       ( orb[ dd ][ b ] and PBIsMinimal
                          ( range, R[ dd ].orbit[ 1 ], b, R[ d ] ) )  then
                         Info( InfoBckt, 2, d, ": point ", b,
                                 " pruned by minimality condition" );
@@ -1324,7 +1200,8 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                         if m < Length( L[ d ].orbit )  then
                             return fail;
                         fi;
-                        max := orb[ d ][ m - Length( L[ d ].orbit ) + 1 ];
+                        max := PositionNthTrueBlist( orB[ d ],
+                                       m - Length( L[ d ].orbit ) + 1 );
                         R{ [ d .. Length( rbase.base ) ] } :=
                           DeepCopy( L{ [ d .. Length( rbase.base ) ] } );
                     fi;
@@ -1335,15 +1212,15 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                 # candidate list.
                 if      IsBound( R[ d ].translabels )
                     and IsBound( R[ d ].translabels[ b ] )  then
-                    SubtractBlist( del[ d ],
+                    SubtractBlist( orb[ d ],
                             BlistList( range, R[ d ].orbit ) );
                 else
-                    SubtractBlistOrbitStabChain( del[ d ], R[ d ], b );
+                    SubtractBlistOrbitStabChain( orb[ d ], R[ d ], b );
                 fi;
                 
             fi;
             
-            b := Position( del[ d ], true, b );
+            b := Position( orb[ d ], true, b );
             if b <> fail  and  b > max  then
                 b := fail;
             fi;
@@ -1429,7 +1306,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
 
     fi;
     
-    org := [  ];  del := [  ];  orb := [  ];
+    org := [  ];  orb := [  ];  orB := [  ];
     range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
     rep := PBEnumerate( 1, not repr );
     if not repr  then
@@ -1678,18 +1555,6 @@ Refinements.Suborbits3 := function( rbase, image, tra, f, typ, many, strat )
         Q := OrbitalPartition( subs, k );
         return MeetPartitionStrat( rbase, image, Q, subs.conj, strat );
     fi;
-end;
-
-#############################################################################
-##
-#F  Refinements.TwoClosure( <G>, <Q>, <d>, <strat> )  . . . . . . two-closure
-##
-Refinements.TwoClosure := function( rbase, image, G, f, Q, strat )
-    local   pnt,  t;
-    
-    pnt := FixpointCellNo( image.partition, f );
-    t   := InverseRepresentative( rbase.suborbits.stabChain, pnt );
-    return MeetPartitionStrat( rbase, image, Q, t, strat );
 end;
 
 #############################################################################
@@ -2019,9 +1884,9 @@ RepOpSetsPermGroup := function( arg )
     
     P := Partition( [ Intersection( Omega, Phi ),
                         Difference( Omega, Phi ) ] );
-    if repr  then  Q := P;
-             else  Q := Partition( [ Intersection( Omega, Psi ),
-                                       Difference( Omega, Psi ) ] );  fi;
+    if repr  then  Q := Partition( [ Intersection( Omega, Psi ),
+                                       Difference( Omega, Psi ) ] );
+             else  Q := P;                                            fi;
                                        
     # Special treatment for the symmetric group.
     if IsSymmetricGroupQuick( G )  then
@@ -2275,9 +2140,9 @@ InstallMethod( Normalizer, IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
 #############################################################################
 ##
 
-#F  PermGroupOps_ElementProperty( <G>, <Pr> [, <L> [, <R> ] ] ) . one element
+#F  ElementProperty( <G>, <Pr> [, <L> [, <R> ] ] )  one element with property
 ##
-PermGroupOps_ElementProperty := function( arg )
+ElementProperty := function( arg )
     local  G,  Pr,  L,  R,  Omega,  rbase,  P;
     
     # Get the arguments.
@@ -2305,9 +2170,9 @@ end;
 
 #############################################################################
 ##
-#F  PermGroupOps_SubgroupProperty( <G>, <Pr> [, <L> ] ) . fulfilling subgroup
+#F  SubgroupProperty( <G>, <Pr> [, <L> ] )  . . . . . . . fulfilling subgroup
 ##
-PermGroupOps_SubgroupProperty := function( arg )
+SubgroupProperty := function( arg )
     local  G,  Pr,  L,  Omega,  rbase,  P;
     
     # Get the arguments.
@@ -2332,7 +2197,7 @@ end;
 
 #############################################################################
 ##
-#F  Centralizer( <G>, <e> ) . . . . . . . . . . . . . . in permutation groups
+#M  Centralizer( <G>, <e> ) . . . . . . . . . . . . . . in permutation groups
 ##
 InstallMethod( Centralizer, true, [ IsPermGroup, IsPerm ], 10,
     function( G, e )
@@ -2357,192 +2222,7 @@ end );
 
 #############################################################################
 ##
-#F  PermGroupOps_TwoClosure( <G> [, <merge> ] ) . . . . . . . . . two-closure
-##
-PermGroupOps_TwoClosure := function( arg )
-    local   G,  merge,  n,  ran,  Omega,  Agemo,  opr,  S,
-            adj,  tot,  k,  kk,  pnt,  orb,  o,  new,  gen,  p,  i,
-            tra,  Q,  rbase,  doneroot,  P,  Pr,  type,  param;
-    
-    G := arg[ 1 ];
-    if IsTrivial( G )  then
-        return G;
-    fi;
-    Omega := MovedPoints( G );
-    n := Length( Omega );
-    S := SymmetricGroup( Omega );
-    tra := Transitivity( G, Omega );
-    if tra = 0  then
-        Error( "2-closure: <G> must be transitive" );
-    elif tra >= 2  then
-        return S;
-    fi;
-
-    P := TrivialPartition( Omega );
-    rbase := EmptyRBase( S, Omega, P );
-    if Length( arg ) > 1  then
-        rbase.suborbits := arg[ 2 ];
-        merge := arg[ 3 ];
-        Append( merge, Difference( [ 1 .. Length( rbase.suborbits.blists ) ],
-                Concatenation( merge ) ) );
-    else
-        rbase.suborbits := Suborbits( G, [  ], 0, Omega );
-        if rbase.suborbits <> false  then
-            merge := [ 1 .. Length( rbase.suborbits.blists ) ];
-        fi;
-    fi;
-    Q := OrbitalPartition( rbase.suborbits, rec( several := merge ) );
-        
-    doneroot := [  ];
-    rbase.nextLevel := function( P, rbase )
-        local   f,  fpt,  rep,  strat;
-        
-        NextRBasePoint( P, rbase, Omega );
-        if rbase.suborbits = false  then  f := false;
-                                    else  f := FixcellPoint( P, doneroot );
-        fi;
-        while f <> false  do
-            AddSet( doneroot, f );
-            fpt := FixpointCellNo( P, f );
-            rep := InverseRepresentative( rbase.suborbits.stabChain, fpt );
-            strat := StratMeetPartition( rbase, P, Q, rep );
-            AddRefinement( rbase, "TwoClosure", [ G, f, Q, strat ] );
-            if IsTrivialRBase( rbase )  then  f := false;
-                                        else  f := FixcellPoint( P, doneroot );
-            fi;
-        od;
-    end;
-    
-    # If <G> is primitive and simple, often $G^[2] \le N(G)$.
-    Pr := false;
-    if     IsPrimitive( G, Omega )
-       and IsSimpleGroup( G )  then
-        type := IsomorphismTypeFiniteSimpleGroup( G );
-        param := IsoTypeParam( type );
-        if param = false  and  not [ type, n ]  in
-           [ [ "M(11)",  55 ], [ "M(12)",  66 ], [ "M(23)", 253 ],
-             [ "M(24)", 276 ], [ "A(9)",  120 ] ]
-        or param <> false  and  not
-        (  param.type = "G(2"  and  param.q >= 3  and
-               n = param.q ^ 3 * ( param.q ^ 3 - 1 ) / 2
-        or param.type = "O(7"  and  n = param.q ^ 3 * ( param.q ^ 4 - 1 )
-               / GcdInt( 2, param.q - 1 ) )  then
-            Pr := function( gen )
-                local   k;
-                
-                if not ForAll( GeneratorsOfGroup( G ),
-                           g -> g ^ gen in G )  then
-                    return false;
-                fi;
-                for k  in merge  do
-                    if IsInt( k ) and
-                       OnSuborbits( k, gen, rbase.suborbits ) <> k  then
-                        return false;
-                    elif IsList( k )  and  ForAny( k, i -> not
-                         OnSuborbits( i, gen, rbase.suborbits ) in k )  then
-                        return false;
-                    fi;
-                od;
-                return true;
-            end;
-        fi;
-    fi;
-        
-    if Pr = false  then
-        ran := [ 1 .. n ^ 2 ];
-        
-        if Omega = [ 1 .. n ]  then
-            opr := function( p, g )
-                p := p - 1;
-                return ( p mod n + 1 ) ^ g
-                 + n * ( QuoInt( p, n ) + 1 ) ^ g - n;
-            end;
-        else
-            Agemo := [  ];
-            for i  in [ 1 .. n ]  do
-                Agemo[ Omega[ i ] ] := i - 1;
-            od;
-            opr := function( p, g )
-                p := p - 1;
-                return 1 + Agemo[ Omega[ p mod n + 1 ] ^ g ]
-                     + n * Agemo[ Omega[ QuoInt( p, n ) + 1 ] ^ g ];
-            end;
-        fi;
-        
-        adj := List( [ 0 .. LogInt(Length(rbase.suborbits.blists)-1,2) ],
-                     i -> BlistList( ran, [  ] ) );
-        tot := BlistList( ran, [  ] );
-        k   := 0;
-        pnt := Position( tot, false );
-        while pnt <> fail  do
-            
-            # start with the singleton orbit
-            orb := [ pnt ];
-            p := PositionProperty( merge, m -> IsList( m )
-                           and rbase.suborbits.which[ pnt ] in m );
-            if p <> fail  then
-                for i  in merge[ p ]  do
-                    Add( orb, Position( rbase.suborbits.blists[ i ], true ) );
-                od;
-            fi;
-            orb := BlistList( ran, orb );
-            o   := DeepCopy( orb );
-            new := BlistList( ran, ran );
-            new[ pnt ] := false;
-
-            # loop over all points found
-            p := Position( o, true );
-            while p <> fail  do
-                o[ p ] := false;
-
-                # apply all generators <gen>
-                for gen  in GeneratorsOfGroup( G )  do
-                    i := opr( p, gen );
-
-                    # add the image <img> to the orbit if it is new
-                    if new[ i ]  then
-                        orb[ i ] := true;
-                        o  [ i ] := true;
-                        new[ i ] := false;
-                    fi;
-
-                od;
-                
-                p := Position( o, true );
-            od;
-    
-            kk := k;
-            i  := 0;
-            while kk <> 0  do
-                i := i + 1;
-                if kk mod 2 = 1  then
-                    UniteBlist( adj[ i ], orb );
-                fi;
-                kk := QuoInt( kk, 2 );
-            od;
-            UniteBlist( tot, orb );
-            k := k + 1;
-            pnt := Position( tot, false, pnt );
-        od;
-        Pr := function( gen )
-            local   p,  i;
-            
-            gen := AsPerm( gen );
-            for p  in ran  do
-                i := opr( p, gen );
-                if not ForAll( adj, bit -> bit[ i ] = bit[ p ] )  then
-                    return false;
-                fi;
-            od;
-            return true;
-        end;
-    fi;
-    return PartitionBacktrack( S, Pr, false, rbase, [ true ], G, G );
-end;
-
-#############################################################################
-##
-#F  Intersection( <G>, <H> )  . . . . . . . . . . . . . of permutation groups
+#M  Intersection( <G>, <H> )  . . . . . . . . . . . . . of permutation groups
 ##
 InstallMethod( Intersection2, IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
     function( G, H )
@@ -2567,11 +2247,13 @@ end );
 
 #############################################################################
 ##
-
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
 ##  Local Variables:
 ##  mode:             outline-minor
-##  outline-regexp:   "#[AEFTV]"
+##  outline-regexp:   "#[WCROAPMFVE]"
 ##  fill-column:      77
 ##  End:
+
 #############################################################################
+##
+#E  stbcbckt.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+

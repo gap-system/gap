@@ -107,8 +107,12 @@ InstallTrueMethod( RespectsOne,
 ##
 IsGroupGeneralMapping :=
     IsGeneralMapping and RespectsMultiplication and RespectsInverses;
+SetIsGroupGeneralMapping := Setter( IsGroupGeneralMapping );
+HasIsGroupGeneralMapping := Tester( IsGroupGeneralMapping );
 
 IsGroupHomomorphism := IsGroupGeneralMapping and IsMapping;
+SetIsGroupHomomorphism := Setter( IsGroupHomomorphism );
+HasIsGroupHomomorphism := Tester( IsGroupHomomorphism );
 
 
 #############################################################################
@@ -240,8 +244,12 @@ InstallTrueMethod( RespectsZero,
 ##
 IsAdditiveGroupGeneralMapping :=
     IsGeneralMapping and RespectsAddition and RespectsAdditiveInverses;
+SetIsAdditiveGroupGeneralMapping := Setter( IsAdditiveGroupGeneralMapping );
+HasIsAdditiveGroupGeneralMapping := Tester( IsAdditiveGroupGeneralMapping );
 
 IsAdditiveGroupHomomorphism := IsAdditiveGroupGeneralMapping and IsMapping;
+SetIsAdditiveGroupHomomorphism := Setter( IsAdditiveGroupHomomorphism );
+HasIsAdditiveGroupHomomorphism := Tester( IsAdditiveGroupHomomorphism );
 
 
 #############################################################################
@@ -318,8 +326,12 @@ InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
 ##
 IsLeftModuleGeneralMapping := IsAdditiveGroupGeneralMapping
     and RespectsScalarMultiplication;
+SetIsLeftModuleGeneralMapping := Setter( IsLeftModuleGeneralMapping );
+HasIsLeftModuleGeneralMapping := Tester( IsLeftModuleGeneralMapping );
 
 IsLeftModuleHomomorphism := IsLeftModuleGeneralMapping and IsMapping;
+SetIsLeftModuleHomomorphism := Setter( IsLeftModuleHomomorphism );
+HasIsLeftModuleHomomorphism := Tester( IsLeftModuleHomomorphism );
 
 
 #############################################################################
@@ -346,8 +358,12 @@ IsLinearMapping := NewOperation( "IsLinearMapping",
 ##
 IsRingGeneralMapping := IsGeneralMapping and RespectsMultiplication
     and IsAdditiveGroupGeneralMapping;
+SetIsRingGeneralMapping := Setter( IsRingGeneralMapping );
+HasIsRingGeneralMapping := Tester( IsRingGeneralMapping );
 
 IsRingHomomorphism := IsRingGeneralMapping and IsMapping;
+SetIsRingHomomorphism := Setter( IsRingHomomorphism );
+HasIsRingHomomorphism := Tester( IsRingHomomorphism );
 
 
 #############################################################################
@@ -356,8 +372,12 @@ IsRingHomomorphism := IsRingGeneralMapping and IsMapping;
 #P  IsRingWithOneHomomorphism( <mapp> )
 ##
 IsRingWithOneGeneralMapping := IsRingGeneralMapping and RespectsOne;
+SetIsRingWithOneGeneralMapping := Setter( IsRingWithOneGeneralMapping );
+HasIsRingWithOneGeneralMapping := Tester( IsRingWithOneGeneralMapping );
 
 IsRingWithOneHomomorphism := IsRingWithOneGeneralMapping and IsMapping;
+SetIsRingWithOneHomomorphism := Setter( IsRingWithOneHomomorphism );
+HasIsRingWithOneHomomorphism := Tester( IsRingWithOneHomomorphism );
 
 
 #############################################################################
@@ -367,8 +387,12 @@ IsRingWithOneHomomorphism := IsRingWithOneGeneralMapping and IsMapping;
 ##
 IsAlgebraGeneralMapping := IsRingGeneralMapping
     and IsLeftModuleGeneralMapping;
+SetIsAlgebraGeneralMapping := Setter( IsAlgebraGeneralMapping );
+HasIsAlgebraGeneralMapping := Tester( IsAlgebraGeneralMapping );
 
 IsAlgebraHomomorphism := IsAlgebraGeneralMapping and IsMapping;
+SetIsAlgebraHomomorphism := Setter( IsAlgebraHomomorphism );
+HasIsAlgebraHomomorphism := Tester( IsAlgebraHomomorphism );
 
 
 #############################################################################
@@ -377,8 +401,14 @@ IsAlgebraHomomorphism := IsAlgebraGeneralMapping and IsMapping;
 #P  IsAlgebraWithOneHomomorphism( <mapp> )
 ##
 IsAlgebraWithOneGeneralMapping := IsAlgebraGeneralMapping and RespectsOne;
+SetIsAlgebraWithOneGeneralMapping :=
+    Setter( IsAlgebraWithOneGeneralMapping );
+HasIsAlgebraWithOneGeneralMapping :=
+    Tester( IsAlgebraWithOneGeneralMapping );
 
 IsAlgebraWithOneHomomorphism := IsAlgebraWithOneGeneralMapping and IsMapping;
+SetIsAlgebraWithOneHomomorphism := Setter( IsAlgebraWithOneHomomorphism );
+HasIsAlgebraWithOneHomomorphism := Tester( IsAlgebraWithOneHomomorphism );
 
 
 #############################################################################
@@ -390,6 +420,8 @@ IsAlgebraWithOneHomomorphism := IsAlgebraWithOneGeneralMapping and IsMapping;
 ##
 IsFieldHomomorphism := NewProperty( "IsFieldHomomorphism",
     IsGeneralMapping );
+SetIsFieldHomomorphism := Setter( IsFieldHomomorphism );
+HasIsFieldHomomorphism := Tester( IsFieldHomomorphism );
 
 InstallTrueMethod( IsAlgebraHomomorphism, IsFieldHomomorphism );
 

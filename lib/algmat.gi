@@ -616,7 +616,6 @@ InstallMethod( RadicalOfAlgebra,
           bb,          # a list of basis vectors of the algebra over F_p
           lemat,       # the length of the matrices in bb
           l,           # the intger such that p^l <= lemat < p^{l+1}
-          a,
           B,           # bb together with the identity matrix
           I,           # a list of basis vectors of an ideal of A
           t,           # the length of I
@@ -626,7 +625,6 @@ InstallMethod( RadicalOfAlgebra,
           G,           # the prime field of F
           canbas,      # canonical basis
           bsp,         # a vector space
-          cf,          # a coefficient vector
           d,           # the degree of F
           dim,         # the dimension of the vector space where A acts on
           r;           # a primitive root of F

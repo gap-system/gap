@@ -147,6 +147,11 @@ InstallMethod( GroupGeneralMappingByImages, true,
                   DenominatorOfModuloPcgs( gens ) );
             hom.genimages := Concatenation( imgs, List
                 ( DenominatorOfModuloPcgs( gens ), x -> One( H ) ) );
+        elif IsModuloPcgsPermGroupRep( gens )  then
+            hom.generators := Concatenation( gens,
+                  GeneratorsOfGroup( gens!.denominator ) );
+            hom.genimages := Concatenation( imgs, List
+                ( GeneratorsOfGroup( gens!.denominator ), x -> One( H ) ) );
         fi;
     fi;
     if IsPermGroup( G )  then

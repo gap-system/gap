@@ -47,7 +47,7 @@ InstallMethod(AlgebraicElementsFamilies,true,[IsUnivariatePolynomial],0,
 ##                                       over field
 ##
 StoreAlgExtFam := function(p,f,fam)
-local aef,i;
+local   aef;
   aef:=AlgebraicElementsFamilies(p);
   if not ForAny(aef,i->i[1]=f) then
     Add(aef,[f,fam]);
@@ -683,7 +683,7 @@ end);
 InstallMethod(Trace,"Alg",true,
   [IsAlgebraicExtension,IsScalar],0,
 function(f,e)
-local fam,p;
+local   p;
   p:=CharacteristicPolynomial(f,e);
   p:=CoefficientsOfUnivariatePolynomial(p);
   return -p[Length(p)-1];
@@ -696,7 +696,7 @@ end);
 InstallMethod(Norm,"Alg",true,
   [IsAlgebraicExtension,IsScalar],0,
 function(f,e)
-local fam,p;
+local   p;
   p:=CharacteristicPolynomial(f,e);
   p:=CoefficientsOfUnivariatePolynomial(p);
   return p[1]*(-1)^(Length(p)-1);

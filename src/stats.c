@@ -1256,58 +1256,57 @@ UInt            ExecBreak (
 
 /****************************************************************************
 **
-*F  ExecInfo(<stat>) . . . . . . . . . . . . . . . execute an info-statement
+*F  ExecInfo( <stat> )  . . . . . . . . . . . . . . execute an info-statement
 **
 **  'ExecInfo' executes the info-statement <stat>.
 **
-**  This  is done   by  evaluating the first two arguments, using the
-**  GAP level function InfoDecision to decide whether the message has to be
-**  printed. If it has, the other arguments are evaluated and passed to
-**  InfoDoPrint
+**  This is  done by evaluating the first  two arguments, using the GAP level
+**  function InfoDecision to decide whether the message has to be printed. If
+**  it has, the other arguments are evaluated and passed to InfoDoPrint
 **
-**  An info-statement is  represented  by a bag of   type 'T_INFO' with   
-**  subbags for the arguments
+**  An  info-statement is represented by a  bag of type 'T_INFO' with subbags
+**  for the arguments
 */
-
-
-UInt          ExecInfo (
-    Stat             stat )
+UInt ExecInfo (
+    Stat            stat )
 {
-  Obj selectors;
-  Obj level;
-  Obj selected;
-  UInt narg;
-  UInt i;
-  Obj args;
-  Obj arg;
+    Obj      	    selectors;
+    Obj             level;
+    Obj             selected;
+    UInt            narg;
+    UInt            i;
+    Obj             args;
+    Obj             arg;
 
-  selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ));
-  level = EVAL_EXPR( ARGI_INFO( stat, 2));
-  selected = CALL_2ARGS(InfoDecision, selectors, level);
-  if (selected == True)
-    {
-      /* Get the number of arguments to be printed */
-      narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
+    selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ) );
+    level = EVAL_EXPR( ARGI_INFO( stat, 2) );
+    selected = CALL_2ARGS(InfoDecision, selectors, level);
+    if (selected == True) {
 
-      /* set up a list */
-      args = NEW_PLIST( T_PLIST, narg);
-      SET_LEN_PLIST(args, narg);
+	/* Get the number of arguments to be printed                       */
+	narg = NARG_SIZE_INFO(SIZE_STAT(stat)) - 2;
 
-      /* Evaluate the objects to be printed into the list */
-      for (i = 1; i <= narg; i++)
-	{
-	  /* These two statements must not be combined into one
-	    because of the risk of a garbage collection during the evaluation
-	    of arg, which may happen after the pointer to args has been
-	    extracted */
-	  arg = EVAL_EXPR(ARGI_INFO( stat, i+2));
-	  SET_ELM_PLIST(args, i, arg);
-	  CHANGED_BAG(args);
+	/* set up a list                                                   */
+	args = NEW_PLIST( T_PLIST, narg );
+	SET_LEN_PLIST( args, narg );
+
+        /* evaluate the objects to be printed into the list                */
+	for (i = 1; i <= narg; i++) {
+
+	    /* These two statements must not be combined into one because of
+	       the risk of a garbage collection during the evaluation
+	       of arg, which may happen after the pointer to args has been
+	       extracted
+	    */
+	    arg = EVAL_EXPR(ARGI_INFO(stat, i+2));
+	    SET_ELM_PLIST(args, i, arg);
+	    CHANGED_BAG(args);
 	}
-      /* and print them */
-      CALL_1ARGS(InfoDoPrint, args);
+
+        /* and print them                                                  */
+	CALL_1ARGS(InfoDoPrint, args);
     }
-  return 0;
+    return 0;
 }
 
 /****************************************************************************
@@ -1848,7 +1847,8 @@ void            InitStats ( void )
     /* make the global bags known to Gasman                                */
     /* 'InitGlobalBag( &CurrStat );' is not really needed, since we are in */
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
-    InitGlobalBag( &CurrStat );
+    /* furthermore, statements are no longer bags                          */
+    /* InitGlobalBag( &CurrStat );                                         */
     InitGlobalBag( &ReturnObjStat );
 
     /* install executors for non-statements                                */
@@ -1919,9 +1919,9 @@ void            InitStats ( void )
     PrintStatFuncs[ T_RETURN_VOID    ] = PrintReturnVoid;
 
     /* connect to external functions                                       */
-    InitFopyGVar( GVarName("Iterator"),       &ITERATOR     );
-    InitFopyGVar( GVarName("IsDoneIterator"), &IS_DONE_ITER );
-    InitFopyGVar( GVarName("NextIterator"),   &NEXT_ITER    );
+    ImportFuncFromLibrary( "Iterator",       &ITERATOR );
+    ImportFuncFromLibrary( "IsDoneIterator", &IS_DONE_ITER );
+    ImportFuncFromLibrary( "NextIterator",   &NEXT_ITER );
 }
 
 

@@ -267,7 +267,7 @@ InstallMethod( LeadingExponentOfPcElement,
     100,
 
 function( pcgs, elm )
-    local   exp,  rep,  i;
+    local   rep;
 
     rep := ExtRepOfObj( UnderlyingElement(elm) );
     if 0 = Length(rep)  then

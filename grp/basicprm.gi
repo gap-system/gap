@@ -103,6 +103,8 @@ function( filter, dom )
     fi;
     SetIsAlternatingGroup( alt, true );
     SetIsNaturalAlternatingGroup( alt, true );
+    IsRange( dom );
+    SetName( alt, Concatenation( "Alt", String( dom ) ) );
     return alt;
 end );
 
@@ -233,6 +235,8 @@ function( filters, dom )
     Setter( IsPrimitiveAffineProp )( sym, Length( dom ) < 5 );
     SetIsSymmetricGroup( sym, true );
     SetIsNaturalSymmetricGroup( sym, true );
+    IsRange( dom );
+    SetName( sym, Concatenation( "Sym", String( dom ) ) );
     return sym;
 end );
 
@@ -267,8 +271,12 @@ function( g, S )
 
     m := MovedPoints(S);
     l := NrMovedPoints(S);
-
-    if IsRange(m) and ( l = 1 or m[2] - m[1] = 1 )  then
+    
+    if g = One( g )  then
+        return true;
+    elif l = 0  then
+        return false;
+    elif IsRange(m) and ( l = 1 or m[2] - m[1] = 1 )  then
         return SmallestMovedPointPerm(g) >= m[1]
            and LargestMovedPointPerm(g)  <= m[l];
     else

@@ -798,13 +798,17 @@ void            InitRat ( void )
     InfoBags[           T_RAT           ].name = "rational";
     InitMarkFuncBags(   T_RAT           , MarkTwoSubBags );
 
+
     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_RAT_POS"), &KIND_RAT_POS );
-    InitCopyGVar( GVarName("KIND_RAT_NEG"), &KIND_RAT_NEG );
+    ImportGVarFromLibrary( "KIND_RAT_POS", &KIND_RAT_POS );
+    ImportGVarFromLibrary( "KIND_RAT_NEG", &KIND_RAT_NEG );
+
     KindObjFuncs[       T_RAT           ] = KindRat;
+
 
     /* install the printer                                                 */
     PrintObjFuncs[      T_RAT           ] = PrintRat;
+
 
     /* install the comparisons                                             */
     EqFuncs  [ T_RAT    ][ T_RAT    ] = EqRat;
@@ -816,6 +820,7 @@ void            InitRat ( void )
     LtFuncs  [ T_RAT    ][ T_INT    ] = LtRat;
     LtFuncs  [ T_RAT    ][ T_INTPOS ] = LtRat;
     LtFuncs  [ T_RAT    ][ T_INTNEG ] = LtRat;
+
 
     /* install the arithmetic operations                                   */
     ZeroFuncs[ T_RAT    ] = ZeroRat;
@@ -875,6 +880,7 @@ void            InitRat ( void )
     PowFuncs [ T_RAT    ][ T_INT    ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTPOS ] = PowRat;
     PowFuncs [ T_RAT    ][ T_INTNEG ] = PowRat;
+
 
     /* install the internal functions                                      */
     IsRatFilt = NewFilterC( "IS_RAT", 1L, "obj",

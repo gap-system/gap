@@ -132,7 +132,15 @@ dec-mips-ultrix-cc:
 	    CFLAGS="$(COPTS) -O2 -Olimit 1000" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
-	               -DSYS_HAS_ANSI=1" )
+	               -DSYS_HAS_ANSI=1 \
+	               -DSYS_ARCH='\"dec-mips-ultrix\"'" )
+	@(cd ../bin/dec-mips-ultrix; $(MAKE) -f ../../src/Makefile gac \
+            SRC="../../src" \
+            TARGET="dec-mips-ultrix-cc" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="UNSUPPORTED" \
+            CDYNLINKER="echo" \
+            CDYNLINKING="UNSUPPORTED" )
 
 
 #############################################################################
@@ -160,6 +168,13 @@ hp-hppa1.1-hpux-gcc2:
 	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
 	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO \
 	               -DSYS_HAS_TIME_PROTO  -DSYS_HAS_MISC_PROTO" )
+	@(cd ../bin/hp-hppa1.1-hpux; $(MAKE) -f ../../src/Makefile gac \
+            SRC="../../src" \
+            TARGET="hp-hppa1.1-hpux-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="UNSUPPORTED" \
+            CDYNLINKER="echo" \
+            CDYNLINKING="UNSUPPORTED" )
 
 
 #############################################################################
@@ -186,7 +201,18 @@ ibm-i386-freebsd2.0-gcc2:
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=2 \
 	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO \
+		       -DSYS_HAS_DL_LIBRARY \
+		       -DSYS_ARCH='\"ibm-i386-freebsd2.0\"'" )
+	@(cd ../bin/ibm-i386-freebsd2.0; \
+          $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+            TARGET="ibm-i386-freebsd2.0-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="-fpic -ansi -Wall -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-Bshareable -x" )
+
 
 
 #############################################################################
@@ -197,7 +223,8 @@ ibm-i386-freebsd2.0-gcc2:
 ##
 ##  'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
 ##  'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
-##  'unistd.h' has 'sbrk' with argument 'ptrdiff_t'
+##  'unistd.h' has 'sbrk' with argument 'ptrdiff_t' (but this lost when
+##   using -ansi)
 ##  -D_POSIX_SOURCE is needed to prevent -ansi losing 'popen', 'pclose',
 ##   and 'fileno'
 ##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
@@ -213,13 +240,23 @@ ibm-i386-linux-gcc2:
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="gcc -ansi -Wall -g" \
-	    LFLAGS="$(LOPTS)" \
+	    LFLAGS="$(LOPTS) -export-dynamic -ldl" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_STACK_ALIGN=2 \
 	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-		       -DSYS_HAS_MISC_PROTO  -D_POSIX_SOURCE \
-	               -DSYS_HAS_SIGNAL_PROTO -DSYS_HAS_TIME_PROTO" )
+		       -D_POSIX_SOURCE -DSYS_HAS_SIGNAL_PROTO \
+		       -DSYS_HAS_TIME_PROTO -DSYS_HAS_DL_LIBRARY \
+	               -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
+		       -DSYS_ARCH='\"ibm-i386-linux\"'" \
+        )
+	@(cd ../bin/ibm-i386-linux; $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+            TARGET="ibm-i386-linux-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="-fpic -ansi -Wall -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-Bshareable -x" )
 
 
 #############################################################################
@@ -252,7 +289,17 @@ next-any-nextstep-cc:
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_MACH -DSYS_HAS_STACK_ALIGN=4 \
 	      -DSYS_HAS_ANSI=1 -D_POSIX_SOURCE -DSYS_HAS_READ_PROTO \
+              -DSYS_HAS_BROKEN_TMPNAM \
+              -DSYS_HAS_RLD_LIBRARY \
 	      $(ARCH)" )
+	@(cd ../bin/next-$(ADIR)-nextstep$(EXTDIR); \
+          $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+            TARGET="next-$(ADIR)-nextstep-cc" \
+            COPTIONS="-ansi -Wall -O2 $(ARCH)" \
+            CDYNOPTIONS="-ansi -Wall -O2 $(ARCH)" \
+            CDYNLINKER="cc" \
+            CDYNLINKING="$(ARCH) -Xlinker -r -Xlinker -x -nostdlib" )
 
 next-i386-nextstep-cc:
 	$(MAKE) -f Makefile next-any-nextstep-cc \
@@ -325,8 +372,36 @@ sun-sparc-sunos-gcc2:
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
+		       -DSYS_HAS_DL_LIBRARY \
+                       -DSYS_ARCH='\"sun-sparc-sunos-gcc2\"'" )
+	@(cd ../bin/sun-sparc-sunos-gcc2; \
+          $(MAKE) -f ../../src/Makefile gac \
+            SRC="../../src" \
+	    CC="gcc" \
+            TARGET="sun-sparc-sunos-gcc2" \
+            COPTIONS="-ansi -Wall -O2" \
+            CDYNOPTIONS="-fpic -ansi -Wall -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-assert pure-text -Bdynamic -x" )
 
+
+#############################################################################
+##
+
+#F  Compiler  . . . . . . . . . . . . . . . . . . create the gac shell script
+##
+gac: $(SRC)/gac
+	( sed -e 's:@TARGET@:$(TARGET):g' < $(SRC)/gac | \
+          sed -e 's:@OBJECTS@:$(OBJECTS):g' | \
+          sed -e 's:@CCOMPILER@:$(CC):g' | \
+          sed -e 's:@COPTIONS@:$(COPTIONS):g' | \
+          sed -e 's:@CDYNOPTIONS@:$(CDYNOPTIONS):g' | \
+          sed -e 's:@CLINKER@:$(CC):g' | \
+          sed -e 's:@CDYNLINKER@:$(CDYNLINKER):g' | \
+          sed -e 's:@CDYNLINKING@:$(CDYNLINKING):g' \
+          > gac )
+	chmod 755 gac
 
 #############################################################################
 ##
@@ -354,10 +429,11 @@ OBJECTS =   system.o   scanner.o  gasman.o         \
             objcftl.o                              \
 	    code.o     vars.o                      \
 	    exprs.o    stats.o    funcs.o          \
-	    intrprtr.o read.o     gap.o
+	    intrprtr.o compiler.o compiled.o       \
+	    read.o     gap.o
 
-gap:        $(OBJECTS)
-	$(CC) $(LFLAGS)     -o gap              $(OBJECTS)
+gap: $(OBJECTS) compstat.o
+	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o
 
 
 #############################################################################
@@ -650,7 +726,7 @@ objcftl.o:  $(SRC)/objcftl.c  $(SRC)/objcftl.h  $(SRC)/dt.h             \
             $(SRC)/objects.h  $(SRC)/plist.h    $(SRC)/gvars.h          \
             $(SRC)/calls.h    $(SRC)/records.h  $(SRC)/precord.h        \
             $(SRC)/gap.h      $(SRC)/bool.h
-	$(CC) $(CFLAGS)  -o objcftl.o          -c $(SRC)/objcftl.c
+	$(CC) $(CFLAGS)  -o objcftl.o     -c $(SRC)/objcftl.c
 
 
 dt.o:       $(SRC)/dt.c       $(SRC)/dt.h                               \
@@ -678,6 +754,7 @@ code.o:     $(SRC)/code.c     $(SRC)/code.h                             \
 	    $(SRC)/records.h                                            \
 	    $(SRC)/integer.h                                            \
 	    $(SRC)/plist.h                                              \
+	    $(SRC)/vars.h                                               \
 	    $(SRC)/funcs.h                                              \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o code.o        -c $(SRC)/code.c
@@ -741,6 +818,31 @@ intrprtr.o: $(SRC)/intrprtr.c $(SRC)/intrprtr.h                         \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o intrprtr.o    -c $(SRC)/intrprtr.c
 
+compiler.o: $(SRC)/compiler.c $(SRC)/compiler.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/records.h                                            \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/string.h                                             \
+	    $(SRC)/code.h     $(SRC)/vars.h
+	$(CC) $(CFLAGS)  -o compiler.o    -c $(SRC)/compiler.c
+
+compiled.o: $(SRC)/compiled.c $(SRC)/compiled.h                         \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
+	    $(SRC)/calls.h                                              \
+	    $(SRC)/ariths.h   $(SRC)/records.h  $(SRC)/lists.h          \
+	    $(SRC)/bool.h                                               \
+	    $(SRC)/integer.h                                            \
+	    $(SRC)/precord.h                                            \
+	    $(SRC)/plist.h                                              \
+	    $(SRC)/string.h                                             \
+	    $(SRC)/code.h     $(SRC)/vars.h                             \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o compiled.o    -c $(SRC)/compiled.c
+
 read.o:     $(SRC)/read.c     $(SRC)/read.h                             \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
 	    $(SRC)/objects.h  $(SRC)/gvars.h                            \
@@ -769,6 +871,10 @@ gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
 	    $(SRC)/exprs.h    $(SRC)/stats.h    $(SRC)/funcs.h          \
 	    $(SRC)/intrprtr.h $(SRC)/read.h
 	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
+
+compstat.o: $(SRC)/compstat.c                                           \
+	    $(SRC)/system.h
+	$(CC) $(CFLAGS)  -o compstat.o    -c $(SRC)/compstat.c
 
 
 #############################################################################

@@ -246,6 +246,21 @@ extern  Char *          Prompt;
 
 /****************************************************************************
 **
+*F  GetSymbol() . . . . . . . . . . . . . . . . .  get the next symbol, local
+**
+**  'GetSymbol' reads  the  next symbol from   the  input,  storing it in the
+**  variable 'Symbol'.  If 'Symbol' is  'T_IDENT', 'T_INT' or 'T_STRING'  the
+**  value of the symbol is stored in the variable 'Value'.  'GetSymbol' first
+**  skips all <space>, <tab> and <newline> characters and comments.
+**
+**  After reading  a  symbol the current  character   is the first  character
+**  beyond that symbol.
+*/
+extern void GetSymbol ( void );
+
+
+/****************************************************************************
+**
 *F  SyntaxError( <msg> )  . . . . . . . . . . . . . . .  raise a syntax error
 **
 **  'SyntaxError' prints the current line, followed by the error message:

@@ -37,7 +37,21 @@ char *          Revision_code_c =
 #include        "code.h"                /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "vars.h"                /* SWITCH_TO_NEW_LVARS, ...        */
+
 #include        "gap.h"                 /* CompNowFuncs, CompNowCount      */
+
+
+/****************************************************************************
+**
+*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
+**
+**  'T_BODY' is the type of the function body bags.
+**
+**  'T_BODY' is defined in the declaration part of this package as follows
+**
+#define T_BODY                  175
+*/
 
 
 /****************************************************************************
@@ -51,8 +65,27 @@ char *          Revision_code_c =
 **
 **  'Stat' is defined in the declaration part of this package as follows
 **
-#define Stat            Bag
+#define Stat            UInt4
 */
+
+
+/****************************************************************************
+**
+*V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
+**
+**  'PtrBody' is a pointer to the current body.
+*/
+Stat *          PtrBody;
+
+
+/****************************************************************************
+**
+*V  OffsBody  . . . . . . . . . . . . . . . . . . . .  offset in current body
+**
+**  'OffsBody' is the  offset in the current   body.  It is  only valid while
+**  coding.
+*/
+Stat            OffsBody;
 
 
 /****************************************************************************
@@ -61,10 +94,10 @@ char *          Revision_code_c =
 **
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 **
-**  'FIRST_STAT_CURR_FUNC' is defined in the declaration part of this package
-**  as follows
+** 'FIRST_STAT_CURR_FUNC' is defined in  the declaration part of this package
+** as follows
 **
-#define FIRST_STAT_CURR_FUNC    BODY_FUNC( CURR_FUNC )
+#define FIRST_STAT_CURR_FUNC    sizeof(Stat)
 */
 
 
@@ -82,7 +115,7 @@ char *          Revision_code_c =
 **
 **  The types are defined in the declaration part of this package as follows
 **
-#define FIRST_STAT_TYPE         160
+#define FIRST_STAT_TYPE         0
 
 #define T_PROCCALL_0ARGS        (FIRST_STAT_TYPE+ 0)
 #define T_PROCCALL_1ARGS        (FIRST_STAT_TYPE+ 1)
@@ -151,15 +184,15 @@ char *          Revision_code_c =
 #define T_ASS_REC_EXPR          (FIRST_STAT_TYPE+62)
 #define T_UNB_REC_NAME          (FIRST_STAT_TYPE+63)
 #define T_UNB_REC_EXPR          (FIRST_STAT_TYPE+64)
-#define T_ASS_POSOBJ              (FIRST_STAT_TYPE+65)
-#define T_ASSS_POSOBJ             (FIRST_STAT_TYPE+66)
-#define T_ASS_POSOBJ_LEV          (FIRST_STAT_TYPE+67)
-#define T_ASSS_POSOBJ_LEV         (FIRST_STAT_TYPE+68)
-#define T_UNB_POSOBJ              (FIRST_STAT_TYPE+69)
-#define T_ASS_COMOBJ_NAME         (FIRST_STAT_TYPE+70)
-#define T_ASS_COMOBJ_EXPR         (FIRST_STAT_TYPE+71)
-#define T_UNB_COMOBJ_NAME         (FIRST_STAT_TYPE+72)
-#define T_UNB_COMOBJ_EXPR         (FIRST_STAT_TYPE+73)
+#define T_ASS_POSOBJ            (FIRST_STAT_TYPE+65)
+#define T_ASSS_POSOBJ           (FIRST_STAT_TYPE+66)
+#define T_ASS_POSOBJ_LEV        (FIRST_STAT_TYPE+67)
+#define T_ASSS_POSOBJ_LEV       (FIRST_STAT_TYPE+68)
+#define T_UNB_POSOBJ            (FIRST_STAT_TYPE+69)
+#define T_ASS_COMOBJ_NAME       (FIRST_STAT_TYPE+70)
+#define T_ASS_COMOBJ_EXPR       (FIRST_STAT_TYPE+71)
+#define T_UNB_COMOBJ_NAME       (FIRST_STAT_TYPE+72)
+#define T_UNB_COMOBJ_EXPR       (FIRST_STAT_TYPE+73)
 
 #define T_INFO                  (FIRST_STAT_TYPE+74)
 #define T_ASSERT_2ARGS          (FIRST_STAT_TYPE+75)
@@ -177,7 +210,7 @@ char *          Revision_code_c =
 **
 **  'TYPE_STAT' is defined in the declaration part of this package as follows
 **
-#define TYPE_STAT       TYPE_BAG
+#define TYPE_STAT(stat) (ADDR_STAT(stat)[-1] & 0xFF)
 */
 
 
@@ -189,7 +222,7 @@ char *          Revision_code_c =
 **
 **  'SIZE_STAT' is defined in the declaration part of this package as follows
 **
-#define SIZE_STAT       SIZE_BAG
+#define SIZE_STAT(stat) (ADDR_STAT(stat)[-1] >> 8)
 */
 
 
@@ -202,7 +235,7 @@ char *          Revision_code_c =
 **
 **  'ADDR_STAT' is defined in the declaration part of this package as follows
 **
-#define ADDR_STAT       PTR_BAG
+#define ADDR_STAT(stat) ((Stat*)(((char*)PtrBody)+(stat)))
 */
 
 
@@ -213,7 +246,30 @@ char *          Revision_code_c =
 **  'NewStat'   allocates a new   statement memory block  of  type <type> and
 **  <size> bytes.  'NewStat' returns the identifier of the new statement.
 */
-#define NewStat         NewBag
+Stat            NewStat (
+    UInt                type,
+    UInt                size )
+{
+    Stat                stat;           /* result                          */
+
+    /* this is where the new statement goes                                */
+    stat = OffsBody + FIRST_STAT_CURR_FUNC;
+
+    /* increase the offset                                                 */
+    OffsBody = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
+
+    /* make certain that the current body bag is large enough              */
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody ) {
+        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
+        PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+    }
+
+    /* enter type and size                                                 */
+    ADDR_STAT(stat)[-1] = (size << 8) + type;
+
+    /* return the new statement                                            */
+    return stat;
+}
 
 
 /****************************************************************************
@@ -227,7 +283,7 @@ char *          Revision_code_c =
 **
 **  'Expr' is defined in the declaration part of this package as follows
 **
-#define Expr            Bag
+#define Expr            Stat
 */
 
 
@@ -250,10 +306,10 @@ char *          Revision_code_c =
 **  declaration part of this package as follows
 **
 #define IS_REFLVAR(expr)        \
-                        ((Int)(expr) & 0x02)
+                        (((Int)(expr) & 0x03) == 0x03)
 
 #define REFLVAR_LVAR(lvar)      \
-                        ((Expr)(((lvar) << 2) + 0x02))
+                        ((Expr)(((lvar) << 2) + 0x03))
 
 #define LVAR_REFLVAR(expr)      \
                         ((Int)(expr) >> 2)
@@ -279,13 +335,13 @@ char *          Revision_code_c =
 **  declaration part of this package as follows
 **
 #define IS_INTEXPR(expr)        \
-                        ((Int)(expr) & 0x01)
+                        (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
                         ((Expr)(((indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
-                        ((Int)(expr) >> 2)
+                        (((Int)(Int4)(expr)) / 4)
 */
 
 
@@ -303,7 +359,7 @@ char *          Revision_code_c =
 **
 **  The types are defined in the declaration part of this package as follows
 **
-#define FIRST_EXPR_TYPE         160
+#define FIRST_EXPR_TYPE         128
 
 #define T_FUNCCALL_0ARGS        (FIRST_EXPR_TYPE+ 0)
 #define T_FUNCCALL_1ARGS        (FIRST_EXPR_TYPE+ 1)
@@ -326,67 +382,69 @@ char *          Revision_code_c =
 #define T_LE                    (FIRST_EXPR_TYPE+17)
 #define T_IN                    (FIRST_EXPR_TYPE+18)
 #define T_SUM                   (FIRST_EXPR_TYPE+19)
-#define T_DIFF                  (FIRST_EXPR_TYPE+20)
-#define T_PROD                  (FIRST_EXPR_TYPE+21)
-#define T_QUO                   (FIRST_EXPR_TYPE+22)
-#define T_MOD                   (FIRST_EXPR_TYPE+23)
-#define T_POW                   (FIRST_EXPR_TYPE+24)
+#define T_AINV                  (FIRST_EXPR_TYPE+20)
+#define T_DIFF                  (FIRST_EXPR_TYPE+21)
+#define T_PROD                  (FIRST_EXPR_TYPE+22)
+#define T_INV                   (FIRST_EXPR_TYPE+23)
+#define T_QUO                   (FIRST_EXPR_TYPE+24)
+#define T_MOD                   (FIRST_EXPR_TYPE+25)
+#define T_POW                   (FIRST_EXPR_TYPE+26)
 
-#define T_INTEXPR               (FIRST_EXPR_TYPE+25)
-#define T_INT_EXPR              (FIRST_EXPR_TYPE+26)
-#define T_TRUE_EXPR             (FIRST_EXPR_TYPE+27)
-#define T_FALSE_EXPR            (FIRST_EXPR_TYPE+28)
-#define T_CHAR_EXPR             (FIRST_EXPR_TYPE+29)
-#define T_PERM_EXPR             (FIRST_EXPR_TYPE+30)
-#define T_PERM_CYCLE            (FIRST_EXPR_TYPE+31)
-#define T_LIST_EXPR             (FIRST_EXPR_TYPE+32)
-#define T_LIST_TILD_EXPR        (FIRST_EXPR_TYPE+33)
-#define T_RANGE_EXPR            (FIRST_EXPR_TYPE+34)
-#define T_STRING_EXPR           (FIRST_EXPR_TYPE+35)
-#define T_REC_EXPR              (FIRST_EXPR_TYPE+36)
-#define T_REC_TILD_EXPR         (FIRST_EXPR_TYPE+37)
+#define T_INTEXPR               (FIRST_EXPR_TYPE+27)
+#define T_INT_EXPR              (FIRST_EXPR_TYPE+28)
+#define T_TRUE_EXPR             (FIRST_EXPR_TYPE+29)
+#define T_FALSE_EXPR            (FIRST_EXPR_TYPE+30)
+#define T_CHAR_EXPR             (FIRST_EXPR_TYPE+31)
+#define T_PERM_EXPR             (FIRST_EXPR_TYPE+32)
+#define T_PERM_CYCLE            (FIRST_EXPR_TYPE+33)
+#define T_LIST_EXPR             (FIRST_EXPR_TYPE+34)
+#define T_LIST_TILD_EXPR        (FIRST_EXPR_TYPE+35)
+#define T_RANGE_EXPR            (FIRST_EXPR_TYPE+36)
+#define T_STRING_EXPR           (FIRST_EXPR_TYPE+37)
+#define T_REC_EXPR              (FIRST_EXPR_TYPE+38)
+#define T_REC_TILD_EXPR         (FIRST_EXPR_TYPE+39)
 
-#define T_REFLVAR               (FIRST_EXPR_TYPE+38)
-#define T_REF_LVAR              (FIRST_EXPR_TYPE+39)
-#define T_REF_LVAR_01           (FIRST_EXPR_TYPE+40)
-#define T_REF_LVAR_02           (FIRST_EXPR_TYPE+41)
-#define T_REF_LVAR_03           (FIRST_EXPR_TYPE+42)
-#define T_REF_LVAR_04           (FIRST_EXPR_TYPE+43)
-#define T_REF_LVAR_05           (FIRST_EXPR_TYPE+44)
-#define T_REF_LVAR_06           (FIRST_EXPR_TYPE+45)
-#define T_REF_LVAR_07           (FIRST_EXPR_TYPE+46)
-#define T_REF_LVAR_08           (FIRST_EXPR_TYPE+47)
-#define T_REF_LVAR_09           (FIRST_EXPR_TYPE+48)
-#define T_REF_LVAR_10           (FIRST_EXPR_TYPE+49)
-#define T_REF_LVAR_11           (FIRST_EXPR_TYPE+50)
-#define T_REF_LVAR_12           (FIRST_EXPR_TYPE+51)
-#define T_REF_LVAR_13           (FIRST_EXPR_TYPE+52)
-#define T_REF_LVAR_14           (FIRST_EXPR_TYPE+53)
-#define T_REF_LVAR_15           (FIRST_EXPR_TYPE+54)
-#define T_REF_LVAR_16           (FIRST_EXPR_TYPE+55)
-#define T_ISB_LVAR              (FIRST_EXPR_TYPE+56)
-#define T_REF_HVAR              (FIRST_EXPR_TYPE+57)
-#define T_ISB_HVAR              (FIRST_EXPR_TYPE+58)
-#define T_REF_GVAR              (FIRST_EXPR_TYPE+59)
-#define T_ISB_GVAR              (FIRST_EXPR_TYPE+60)
-#define T_ELM_LIST              (FIRST_EXPR_TYPE+61)
-#define T_ELMS_LIST             (FIRST_EXPR_TYPE+62)
-#define T_ELM_LIST_LEV          (FIRST_EXPR_TYPE+63)
-#define T_ELMS_LIST_LEV         (FIRST_EXPR_TYPE+64)
-#define T_ISB_LIST              (FIRST_EXPR_TYPE+65)
-#define T_ELM_REC_NAME          (FIRST_EXPR_TYPE+66)
-#define T_ELM_REC_EXPR          (FIRST_EXPR_TYPE+67)
-#define T_ISB_REC_NAME          (FIRST_EXPR_TYPE+68)
-#define T_ISB_REC_EXPR          (FIRST_EXPR_TYPE+69)
-#define T_ELM_POSOBJ              (FIRST_EXPR_TYPE+70)
-#define T_ELMS_POSOBJ             (FIRST_EXPR_TYPE+71)
-#define T_ELM_POSOBJ_LEV          (FIRST_EXPR_TYPE+72)
-#define T_ELMS_POSOBJ_LEV         (FIRST_EXPR_TYPE+73)
-#define T_ISB_POSOBJ              (FIRST_EXPR_TYPE+74)
-#define T_ELM_COMOBJ_NAME         (FIRST_EXPR_TYPE+75)
-#define T_ELM_COMOBJ_EXPR         (FIRST_EXPR_TYPE+76)
-#define T_ISB_COMOBJ_NAME         (FIRST_EXPR_TYPE+77)
-#define T_ISB_COMOBJ_EXPR         (FIRST_EXPR_TYPE+78)
+#define T_REFLVAR               (FIRST_EXPR_TYPE+40)
+#define T_REF_LVAR              (FIRST_EXPR_TYPE+41)
+#define T_REF_LVAR_01           (FIRST_EXPR_TYPE+42)
+#define T_REF_LVAR_02           (FIRST_EXPR_TYPE+43)
+#define T_REF_LVAR_03           (FIRST_EXPR_TYPE+44)
+#define T_REF_LVAR_04           (FIRST_EXPR_TYPE+45)
+#define T_REF_LVAR_05           (FIRST_EXPR_TYPE+46)
+#define T_REF_LVAR_06           (FIRST_EXPR_TYPE+47)
+#define T_REF_LVAR_07           (FIRST_EXPR_TYPE+48)
+#define T_REF_LVAR_08           (FIRST_EXPR_TYPE+49)
+#define T_REF_LVAR_09           (FIRST_EXPR_TYPE+50)
+#define T_REF_LVAR_10           (FIRST_EXPR_TYPE+51)
+#define T_REF_LVAR_11           (FIRST_EXPR_TYPE+52)
+#define T_REF_LVAR_12           (FIRST_EXPR_TYPE+53)
+#define T_REF_LVAR_13           (FIRST_EXPR_TYPE+54)
+#define T_REF_LVAR_14           (FIRST_EXPR_TYPE+55)
+#define T_REF_LVAR_15           (FIRST_EXPR_TYPE+56)
+#define T_REF_LVAR_16           (FIRST_EXPR_TYPE+57)
+#define T_ISB_LVAR              (FIRST_EXPR_TYPE+58)
+#define T_REF_HVAR              (FIRST_EXPR_TYPE+59)
+#define T_ISB_HVAR              (FIRST_EXPR_TYPE+60)
+#define T_REF_GVAR              (FIRST_EXPR_TYPE+61)
+#define T_ISB_GVAR              (FIRST_EXPR_TYPE+62)
+#define T_ELM_LIST              (FIRST_EXPR_TYPE+63)
+#define T_ELMS_LIST             (FIRST_EXPR_TYPE+64)
+#define T_ELM_LIST_LEV          (FIRST_EXPR_TYPE+65)
+#define T_ELMS_LIST_LEV         (FIRST_EXPR_TYPE+66)
+#define T_ISB_LIST              (FIRST_EXPR_TYPE+67)
+#define T_ELM_REC_NAME          (FIRST_EXPR_TYPE+68)
+#define T_ELM_REC_EXPR          (FIRST_EXPR_TYPE+69)
+#define T_ISB_REC_NAME          (FIRST_EXPR_TYPE+70)
+#define T_ISB_REC_EXPR          (FIRST_EXPR_TYPE+71)
+#define T_ELM_POSOBJ            (FIRST_EXPR_TYPE+72)
+#define T_ELMS_POSOBJ           (FIRST_EXPR_TYPE+73)
+#define T_ELM_POSOBJ_LEV        (FIRST_EXPR_TYPE+74)
+#define T_ELMS_POSOBJ_LEV       (FIRST_EXPR_TYPE+75)
+#define T_ISB_POSOBJ            (FIRST_EXPR_TYPE+76)
+#define T_ELM_COMOBJ_NAME       (FIRST_EXPR_TYPE+77)
+#define T_ELM_COMOBJ_EXPR       (FIRST_EXPR_TYPE+78)
+#define T_ISB_COMOBJ_NAME       (FIRST_EXPR_TYPE+79)
+#define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TYPE+80)
 
 #define LAST_EXPR_TYPE          T_ISB_COMOBJ_EXPR
 */
@@ -403,7 +461,7 @@ char *          Revision_code_c =
 #define TYPE_EXPR(expr)         \
                         (IS_REFLVAR( (expr) ) ? T_REFLVAR : \
                          (IS_INTEXPR( (expr) ) ? T_INTEXPR : \
-                          TYPE_BAG( (expr) ) ))
+                          TYPE_STAT(expr) ))
 */
 
 
@@ -418,7 +476,7 @@ char *          Revision_code_c =
 **
 **  'SIZE_EXPR' is defined in the declaration part of this package as follows
 **
-#define SIZE_EXPR       SIZE_BAG
+#define SIZE_EXPR(expr) SIZE_STAT(expr)
 */
 
 
@@ -434,7 +492,7 @@ char *          Revision_code_c =
 **
 **  'ADDR_EXPR' is defined in the declaration part of this package as follows
 **
-#define ADDR_EXPR       PTR_BAG
+#define ADDR_EXPR(expr) ADD_STAT(expr)
 */
 
 
@@ -445,7 +503,30 @@ char *          Revision_code_c =
 **  'NewExpr' allocates a new expression memory block of  the type <type> and
 **  <size> bytes.  'NewExpr' returns the identifier of the new expression.
 */
-#define NewExpr         NewBag
+Expr            NewExpr (
+    UInt                type,
+    UInt                size )
+{
+    Expr                expr;           /* result                          */
+
+    /* this is where the new expression goes                               */
+    expr = OffsBody + FIRST_STAT_CURR_FUNC;
+
+    /* increase the offset                                                 */
+    OffsBody = expr + ((size+sizeof(Expr)-1) / sizeof(Expr)) * sizeof(Expr);
+
+    /* make certain that the current body bag is large enough              */
+    while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody ) {
+        ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
+        PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+    }
+
+    /* enter type and size                                                 */
+    ADDR_EXPR(expr)[-1] = (size << 8) + type;
+
+    /* return the new expression                                           */
+    return expr;
+}
 
 
 /****************************************************************************
@@ -530,7 +611,7 @@ Obj             CodeResult;
 **  'PopStat' returns the  top statement from the  statements  stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Obj             StackStat;
+Bag             StackStat;
 
 Int             CountStat;
 
@@ -539,15 +620,16 @@ void            PushStat (
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( StackStat != 0 );
-    assert( 0 <= CountStat && CountStat == LEN_PLIST(StackStat) );
+    assert( 0 <= CountStat );
+    assert( CountStat <= SIZE_BAG(StackStat)/sizeof(Stat) );
     assert( stat != 0 );
 
     /* count up and put the statement onto the stack                       */
+    if ( CountStat == SIZE_BAG(StackStat)/sizeof(Stat) ) {
+        ResizeBag( StackStat, 2*CountStat*sizeof(Stat) );
+    }
+    ((Stat*)PTR_BAG(StackStat))[CountStat] = stat;
     CountStat++;
-    GROW_PLIST(    StackStat, CountStat );
-    SET_LEN_PLIST( StackStat, CountStat );
-    SET_ELM_PLIST( StackStat, CountStat, (Obj)stat );
-    CHANGED_BAG(   StackStat );
 }
 
 Stat            PopStat ( void )
@@ -556,13 +638,12 @@ Stat            PopStat ( void )
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( StackStat != 0 );
-    assert( 1 <= CountStat && CountStat == LEN_PLIST(StackStat) );
+    assert( 1 <= CountStat );
+    assert( CountStat <= SIZE_BAG(StackStat)/sizeof(Stat) );
 
     /* get the top statement from the stack, and count down                */
-    stat = ELM_PLIST( StackStat, CountStat );
-    SET_ELM_PLIST( StackStat, CountStat, 0 );
-    SET_LEN_PLIST( StackStat, CountStat-1  );
     CountStat--;
+    stat = ((Stat*)PTR_BAG(StackStat))[CountStat];
 
     /* return the popped statement                                         */
     return stat;
@@ -621,7 +702,7 @@ Stat            PopSeqStat (
 **  'PopExpr' returns the top expressions from the expressions stack and pops
 **  it.  It is an error if the stack is empty.
 */
-Obj             StackExpr;
+Bag             StackExpr;
 
 Int             CountExpr;
 
@@ -630,15 +711,16 @@ void            PushExpr (
 {
     /* there must be a stack, it must not be underfull or overfull         */
     assert( StackExpr != 0 );
-    assert( 0 <= CountExpr && CountExpr == LEN_PLIST(StackExpr) );
+    assert( 0 <= CountExpr );
+    assert( CountExpr <= SIZE_BAG(StackExpr)/sizeof(Expr) );
     assert( expr != 0 );
 
     /* count up and put the expression onto the stack                      */
+    if ( CountExpr == SIZE_BAG(StackExpr)/sizeof(Expr) ) {
+        ResizeBag( StackExpr, 2*CountExpr*sizeof(Expr) );
+    }
+    ((Expr*)PTR_BAG(StackExpr))[CountExpr] = expr;
     CountExpr++;
-    GROW_PLIST(    StackExpr, CountExpr );
-    SET_LEN_PLIST( StackExpr, CountExpr );
-    SET_ELM_PLIST( StackExpr, CountExpr, (Obj)expr );
-    CHANGED_BAG(   StackExpr );
 }
 
 Expr            PopExpr ( void )
@@ -647,13 +729,12 @@ Expr            PopExpr ( void )
 
     /* there must be a stack, it must not be underfull/empty or overfull   */
     assert( StackExpr != 0 );
-    assert( 1 <= CountExpr && CountExpr == LEN_PLIST(StackExpr) );
+    assert( 1 <= CountExpr );
+    assert( CountExpr <= SIZE_BAG(StackExpr)/sizeof(Expr) );
 
     /* get the top expression from the stack, and count down               */
-    expr = ELM_PLIST( StackExpr, CountExpr );
-    SET_ELM_PLIST( StackExpr, CountExpr, 0 );
-    SET_LEN_PLIST( StackExpr, CountExpr-1  );
     CountExpr--;
+    expr = ((Expr*)PTR_BAG(StackExpr))[CountExpr];
 
     /* return the popped expression                                        */
     return expr;
@@ -731,11 +812,16 @@ void            PushBinaryOp (
 **
 **  ...only function expressions inbetween...
 */
+Bag             CodeLVars;
+
 void            CodeBegin ( void )
 {
     /* the stacks must be empty                                            */
     assert( CountStat == 0 );
     assert( CountExpr == 0 );
+
+    /* remember the current frame                                          */
+    CodeLVars = CurrLVars;
 
     /* clear the code result bag                                           */
     CodeResult = 0;
@@ -751,6 +837,9 @@ UInt            CodeEnd (
         assert( CountStat == 0 );
         assert( CountExpr == 0 );
 
+        /* we must be back to 'CurrLVars'                                  */
+        assert( CurrLVars == CodeLVars );
+
         /* 'CodeFuncExprEnd' left the function already in 'CodeResult'     */
     }
 
@@ -758,11 +847,11 @@ UInt            CodeEnd (
     else {
 
         /* empty the stacks                                                */
-        SET_LEN_PLIST( StackStat, 0 );
         CountStat = 0;
-        SET_LEN_PLIST( StackExpr, 0 );
         CountExpr = 0;
 
+        /* go back to the correct frame                                    */
+        SWITCH_TO_OLD_LVARS( CodeLVars );
     }
 
     /* return value is ignored                                             */
@@ -853,7 +942,13 @@ void            CodeFuncExprBegin (
     Obj                 nams )
 {
     Obj                 fexp;           /* function expression bag         */
-    Obj                 fexs;
+    Obj                 fexs;           /* function expressions list       */
+    Bag                 body;           /* function body                   */
+    Bag                 old;            /* old frame                       */
+    Stat                stat1;          /* first statement in body         */
+
+    /* remember the current offset                                         */
+    SET_BRK_CALL_TO( OffsBody );
 
     /* create a function expression                                        */
     fexp = NewBag( T_FUNCTION, SIZE_FUNC );
@@ -861,15 +956,29 @@ void            CodeFuncExprBegin (
     NLOC_FUNC( fexp ) = nloc;
     NAMS_FUNC( fexp ) = nams;
     CHANGED_BAG( fexp );
+
+    /* give it a functions expressions list                                */
     fexs = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( fexs, 0 );
     FEXS_FUNC( fexp ) = fexs;
     CHANGED_BAG( fexp );
 
-    /* make this the current function expression                           */
-    ENVI_FUNC( fexp ) = CodeResult;
+    /* give it a body                                                      */
+    body = NewBag( T_BODY, 1024*sizeof(Stat) );
+    BODY_FUNC( fexp ) = body;
     CHANGED_BAG( fexp );
-    CodeResult = fexp;
+    OffsBody = 0;
+
+    /* give it an environment                                              */
+    ENVI_FUNC( fexp ) = CurrLVars;
+    CHANGED_BAG( fexp );
+
+    /* switch to this function                                             */
+    SWITCH_TO_NEW_LVARS( fexp, (narg != -1 ? narg : 1), nloc, old );
+
+    /* allocate the top level statement sequence                           */
+    stat1 = NewStat( T_SEQ_STAT, 8*sizeof(Stat) );
+    assert( stat1 == FIRST_STAT_CURR_FUNC );
 }
 
 void            CodeFuncExprEnd (
@@ -877,12 +986,14 @@ void            CodeFuncExprEnd (
     UInt                mapsto )
 {
     Expr                expr;           /* function expression, result     */
-    Stat                body;           /* function body                   */
     Stat                stat1;          /* single statement of body        */
     Obj                 fexp;           /* function expression bag         */
     Obj                 fexs;           /* funct. expr. list of outer func */
     UInt                len;            /* length of func. expr. list      */
     UInt                i;              /* loop variable                   */
+
+    /* get the function expression                                         */
+    fexp = CURR_FUNC;
 
     /* get the body of the function                                        */
     /* push an addition return-void-statement if neccessary                */
@@ -900,19 +1011,35 @@ void            CodeFuncExprEnd (
             nr++;
         }
     }
-    body = PopSeqStat( nr );
-    BODY_FUNC( CodeResult ) = body;
-    CHANGED_BAG( CodeResult );
 
-    /* switch back to the previous function expression                     */
-    fexp = CodeResult;
-    CodeResult = ENVI_FUNC( fexp );
-    ENVI_FUNC( fexp ) = 0;
+    /* if the body is a long sequence, pack the other statements           */
+    if ( 7 < nr ) {
+        stat1 = PopSeqStat( nr-6 );
+        PushStat( stat1 );
+        nr = 7;
+    }
+
+    /* stuff the first statements into the first statement sequence       */
+    ADDR_STAT(FIRST_STAT_CURR_FUNC)[-1]
+        = ((nr*sizeof(Stat)) << 8) + T_SEQ_STAT+nr-1;
+    for ( i = 1; i <= nr; i++ ) {
+        stat1 = PopStat();
+        ADDR_STAT(FIRST_STAT_CURR_FUNC)[nr-i] = stat1;
+    }
+
+    /* make the body smaller                                               */
+    ResizeBag( BODY_FUNC(fexp), OffsBody );
+
+    /* switch back to the previous function                                */
+    SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
+
+    /* restore the remembered offset                                       */
+    OffsBody = BRK_CALL_TO();
 
     /* if this was inside another function definition, make the expression */
     /* and store it in the function expression list of the outer function  */
-    if ( CodeResult != 0 ) {
-        fexs = FEXS_FUNC( CodeResult );
+    if ( CurrLVars != CodeLVars ) {
+        fexs = FEXS_FUNC( CURR_FUNC );
         len = LEN_PLIST( fexs );
         GROW_PLIST(      fexs, len+1 );
         SET_LEN_PLIST(   fexs, len+1 );
@@ -930,9 +1057,14 @@ void            CodeFuncExprEnd (
             CompNowCount++;
             if ( CompNowCount <= LEN_PLIST( CompNowFuncs ) ) {
                 fexp = ELM_PLIST( CompNowFuncs, CompNowCount );
-                for ( i = 1; i <= SIZE_FUNC/sizeof(Obj); i++ ) {
-                    ADDR_OBJ(fexp)[i-1] = ADDR_OBJ(CodeResult)[i-1];
-                }
+		for ( i = 0;  i <= 7;  i++ ) {
+		    HDLR_FUNC( fexp, i ) = HDLR_FUNC( CodeResult, i );
+		}
+		NARG_FUNC( fexp ) = NARG_FUNC( CodeResult );
+		NAMS_FUNC( fexp ) = NAMS_FUNC( CodeResult );
+		NLOC_FUNC( fexp ) = NLOC_FUNC( CodeResult );
+		BODY_FUNC( fexp ) = BODY_FUNC( CodeResult );
+		FEXS_FUNC( fexp ) = FEXS_FUNC( CodeResult );
                 CHANGED_BAG( fexp );
             }
             else {
@@ -941,8 +1073,8 @@ void            CodeFuncExprEnd (
                 SET_ELM_PLIST( CompNowFuncs, CompNowCount, CodeResult );
                 CHANGED_BAG(   CompNowFuncs );
             }
-        }   
-    }                               
+        }
+    }
 
 }
 
@@ -1087,6 +1219,7 @@ void            CodeForEndBody (
     UInt                nr )
 {
     Stat                stat;           /* for-statement, result           */
+    UInt                type;           /* type of for-statement           */
     Expr                var;            /* variable                        */
     Expr                list;           /* list                            */
     Stat                stat1;          /* single statement of body        */
@@ -1098,8 +1231,23 @@ void            CodeForEndBody (
         nr = 1;
     }
 
+    /* get the list expression                                             */
+    list = PopExpr();
+
+    /* get the variable reference                                          */
+    var = PopExpr();
+
+    /* select the type of the for-statement                                */
+    if ( TYPE_EXPR(list) == T_RANGE_EXPR && SIZE_EXPR(list) == 2*sizeof(Expr)
+      && TYPE_EXPR(var)  == T_REFLVAR ) {
+        type = T_FOR_RANGE + (nr-1);
+    }
+    else {
+        type = T_FOR + (nr-1);
+    }
+
     /* allocate the for-statement                                          */
-    stat = NewStat( T_FOR + (nr-1), 2*sizeof(Expr) + nr * sizeof(Stat) );
+    stat = NewStat( type, 2*sizeof(Expr) + nr * sizeof(Stat) );
 
     /* enter the body statements                                           */
     for ( i = nr; 1 <= i; i-- ) {
@@ -1108,19 +1256,10 @@ void            CodeForEndBody (
     }
 
     /* enter the list expression                                           */
-    list = PopExpr();
     ADDR_STAT(stat)[1] = list;
 
     /* enter the variable reference                                        */
-    var = PopExpr();
     ADDR_STAT(stat)[0] = var;
-
-    /* maybe this is a special for-statment                                */
-    if ( TYPE_EXPR(list) == T_RANGE_EXPR
-      && SIZE_EXPR(list) == 2 * sizeof(Expr)
-      && TYPE_EXPR(var)  == T_REFLVAR ) {
-        RetypeBag( stat, T_FOR_RANGE + (nr-1) );
-    }
 
     /* push the for-statement                                              */
     PushStat( stat );
@@ -1352,8 +1491,10 @@ void            CodeReturnVoid ( void )
 *F  CodeLe()  . . . . . . . . . . . . . . . . . . . . . .  code <=-expression
 *F  CodeIn()  . . . . . . . . . . . . . . . . . . . . . .  code in-expression
 *F  CodeSum() . . . . . . . . . . . . . . . . . . . . . . . code +-expression
+*F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
+*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -1426,6 +1567,21 @@ void            CodeSum ( void )
     PushBinaryOp( T_SUM );
 }
 
+void            CodeAInv ( void )
+{
+    Expr                expr;
+    Int                 i;
+    expr = PopExpr();
+    if ( IS_INTEXPR(expr) && INT_INTEXPR(expr) != -(1L<<28) ) {
+        i = INT_INTEXPR(expr);
+        PushExpr( INTEXPR_INT( -i ) );
+    }
+    else {
+        PushExpr( expr );
+        PushUnaryOp( T_AINV );
+    }
+}
+
 void            CodeDiff ( void )
 {
     PushBinaryOp( T_DIFF );
@@ -1434,6 +1590,11 @@ void            CodeDiff ( void )
 void            CodeProd ( void )
 {
     PushBinaryOp( T_PROD );
+}
+
+void            CodeInv ( void )
+{
+    PushUnaryOp( T_INV );
 }
 
 void            CodeQuo ( void )
@@ -1514,10 +1675,10 @@ void            CodeIntExpr (
 
     /* otherwise stuff the value into the values list                      */
     else {
-        expr = NewExpr( T_INT_EXPR, sizeof(Expr) + SIZE_OBJ(val) );
-        ADDR_EXPR(expr)[0] = (Expr)sign;
-        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
-            ADDR_EXPR(expr)[i] = ADDR_EXPR( (Expr)val )[i-1];
+        expr = NewExpr( T_INT_EXPR, sizeof(UInt2) + SIZE_OBJ(val) );
+        ((UInt2*)ADDR_EXPR(expr))[0] = (Expr)sign;
+        for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
+            ((UInt2*)ADDR_EXPR(expr))[i] = ((UInt2*)ADDR_OBJ(val))[i-1];
         }
     }
 
@@ -1817,7 +1978,6 @@ void            CodeAssLVar (
 
     /* enter the local variable                                            */
     ADDR_STAT(ass)[0] = (Stat)lvar;
-    CHANGED_BAG(ass);
 
     /* push the assignment                                                 */
     PushStat( ass );
@@ -2362,7 +2522,7 @@ void            CodeElmRecName (
     Expr                rec;            /* record expresion                */
 
     /* allocate the reference                                              */
-    expr = NewBag( T_ELM_REC_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ELM_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     ADDR_EXPR(expr)[1] = (Expr)rnam;
@@ -2382,7 +2542,7 @@ void            CodeElmRecExpr ( void )
     Expr                rec;            /* record expresion                */
 
     /* allocate the reference                                              */
-    expr = NewBag( T_ELM_REC_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ELM_REC_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2403,7 +2563,7 @@ void            CodeIsbRecName (
     Expr                rec;            /* record expresion                */
 
     /* allocate the isbound                                                */
-    expr = NewBag( T_ISB_REC_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ISB_REC_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     ADDR_EXPR(expr)[1] = (Expr)rnam;
@@ -2423,7 +2583,7 @@ void            CodeIsbRecExpr ( void )
     Expr                rec;            /* record expresion                */
 
     /* allocate the isbound                                                */
-    expr = NewBag( T_ISB_REC_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ISB_REC_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2440,10 +2600,10 @@ void            CodeIsbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeAssPosobj() . . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosobj()  . . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosobjLevel(<level>) . . . . . . .  code assignment to several lists
-*F  CodeAsssPosobjLevel(<level>)  . . code multiple assignment to several lists
+*F  CodeAssPosobj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAsssPosobj()  . . . . . . . . . .  code multiple assignment to a list
+*F  CodeAssPosobjLevel(<level>) . . . . . .  code assignment to several lists
+*F  CodeAsssPosobjLevel(<level>)  . code multiple assignment to several lists
 */
 void            CodeAssPosobjUniv (
     Stat                ass )
@@ -2475,7 +2635,7 @@ void            CodeAssPosobj ( void )
     /* allocate the assignment                                             */
     ass = NewStat( T_ASS_POSOBJ, 3 * sizeof(Stat) );
 
-    /* let 'CodeAssPosobjUniv' do the rest                                   */
+    /* let 'CodeAssPosobjUniv' do the rest                                 */
     CodeAssPosobjUniv( ass );
 }
 
@@ -2486,7 +2646,7 @@ void            CodeAsssPosobj ( void )
     /* allocate the assignment                                             */
     ass = NewStat( T_ASSS_POSOBJ, 3 * sizeof(Stat) );
 
-    /* let 'CodeAssPosobjUniv' do the rest                                   */
+    /* let 'CodeAssPosobjUniv' do the rest                                 */
     CodeAssPosobjUniv( ass );
 }
 
@@ -2499,7 +2659,7 @@ void            CodeAssPosobjLevel (
     ass = NewStat( T_ASS_POSOBJ_LEV, 4 * sizeof(Stat) );
     ADDR_STAT(ass)[3] = (Stat)level;
 
-    /* let 'CodeAssPosobjUniv' do the rest                                   */
+    /* let 'CodeAssPosobjUniv' do the rest                                 */
     CodeAssPosobjUniv( ass );
 }
 
@@ -2512,7 +2672,7 @@ void            CodeAsssPosobjLevel (
     ass = NewStat( T_ASSS_POSOBJ_LEV, 4 * sizeof(Stat) );
     ADDR_STAT(ass)[3] = (Stat)level;
 
-    /* let 'CodeAssPosobjUniv' do the rest                                   */
+    /* let 'CodeAssPosobjUniv' do the rest                                 */
     CodeAssPosobjUniv( ass );
 }
 
@@ -2540,10 +2700,10 @@ void            CodeUnbPosobj ( void )
 
 /****************************************************************************
 **
-*F  CodeElmPosobj() . . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosobj()  . . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosobjLevel(<level>) . . . . . . . . code selection of several lists
-*F  CodeElmsPosobjLevel(<level>)  . .  code multiple selection of several lists
+*F  CodeElmPosobj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmsPosobj()  . . . . . . . . . . . code multiple selection of a list
+*F  CodeElmPosobjLevel(<level>) . . . . . . . code selection of several lists
+*F  CodeElmsPosobjLevel(<level>)  .  code multiple selection of several lists
 */
 void            CodeElmPosobjUniv (
     Expr                ref )
@@ -2594,7 +2754,7 @@ void            CodeElmPosobjLevel (
     ref = NewExpr( T_ELM_POSOBJ_LEV, 3 * sizeof(Expr) );
     ADDR_EXPR(ref)[2] = (Stat)level;
 
-    /* let 'CodeElmPosobjUniv' do the rest                                   */
+    /* let 'CodeElmPosobjUniv' do the rest                                 */
     CodeElmPosobjUniv( ref );
 }
 
@@ -2607,7 +2767,7 @@ void            CodeElmsPosobjLevel (
     ref = NewExpr( T_ELMS_POSOBJ_LEV, 3 * sizeof(Expr) );
     ADDR_EXPR(ref)[2] = (Stat)level;
 
-    /* let 'CodeElmPosobjUniv' do the rest                                   */
+    /* let 'CodeElmPosobjUniv' do the rest                                 */
     CodeElmPosobjUniv( ref );
 }
 
@@ -2635,8 +2795,8 @@ void            CodeIsbPosobj ( void )
 
 /****************************************************************************
 **
-*F  CodeAssComobjName(<rnam>) . . . . . . . . . . . code assignment to a record
-*F  CodeAssComobjExpr() . . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComobjName(<rnam>) . . . . . . . . . . code assignment to a record
+*F  CodeAssComobjExpr() . . . . . . . . . . . . . code assignment to a record
 */
 void            CodeAssComobjName (
     UInt                rnam )
@@ -2733,8 +2893,8 @@ void            CodeUnbComobjExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeElmComobjName(<rnam>) . . . . . . . . . . .  code selection of a record
-*F  CodeElmComobjExpr() . . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComobjName(<rnam>) . . . . . . . . . .  code selection of a record
+*F  CodeElmComobjExpr() . . . . . . . . . . . . .  code selection of a record
 */
 void            CodeElmComobjName (
     UInt                rnam )
@@ -2743,7 +2903,7 @@ void            CodeElmComobjName (
     Expr                rec;            /* record expresion                */
 
     /* allocate the reference                                              */
-    expr = NewBag( T_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ELM_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     ADDR_EXPR(expr)[1] = (Expr)rnam;
@@ -2751,6 +2911,7 @@ void            CodeElmComobjName (
     /* enter the record expression                                         */
     rec = PopExpr();
     ADDR_EXPR(expr)[0] = rec;
+
     /* push the reference                                                  */
     PushExpr( expr );
 }
@@ -2762,7 +2923,7 @@ void            CodeElmComobjExpr ( void )
     Expr                rec;            /* record expresion                */
 
     /* allocate the reference                                              */
-    expr = NewBag( T_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ELM_COMOBJ_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2783,7 +2944,7 @@ void            CodeIsbComobjName (
     Expr                rec;            /* record expresion                */
 
     /* allocate the isbound                                                */
-    expr = NewBag( T_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ISB_COMOBJ_NAME, 2 * sizeof(Expr) );
 
     /* enter the name                                                      */
     ADDR_EXPR(expr)[1] = (Expr)rnam;
@@ -2803,7 +2964,7 @@ void            CodeIsbComobjExpr ( void )
     Expr                rec;            /* record expresion                */
 
     /* allocate the isbound                                                */
-    expr = NewBag( T_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
+    expr = NewExpr( T_ISB_COMOBJ_EXPR, 2 * sizeof(Expr) );
 
     /* enter the expression                                                */
     rnam = PopExpr();
@@ -2817,89 +2978,93 @@ void            CodeIsbComobjExpr ( void )
     PushExpr( expr );
 }
 
+
 /****************************************************************************
 **
-*F  CodeInfoBegin() . . . . . . . . .  start coding of Info statement
-*F  CodeInfoMiddle()  . . . . . .  shift to coding printable arguments
+*F  CodeInfoBegin() . . . . . . . . . . . . .  start coding of Info statement
+*F  CodeInfoMiddle()  . . . . . . . . .   shift to coding printable arguments
 *F  CodeInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
 **
-**  These actions deal with the Info statement, which is coded specially,
+**  These  actions deal  with the  Info  statement, which is coded specially,
 **  because not all of its arguments are always evaluated.
 **
 **  Only CodeInfoEnd actually does anything
 */
-
-void             CodeInfoBegin ( void )
-{}
-
-void             CodeInfoMiddle( void )
-{}
-
-void             CodeInfoEnd   (
-	   UInt                   narg )
+void            CodeInfoBegin ( void )
 {
-  Stat      stat;  /* We build the coded statement here */
-  UInt      i;
-
-  stat = NewBag( T_INFO, SIZE_NARG_INFO(2+narg));
-
-  /* narg only counts the printable arguments */
-  i = narg + 2;
-  while (i > 0)
-    ARGI_INFO(stat, i--) = PopExpr();
-  
-  PushStat(stat);
-  return;
 }
+
+void            CodeInfoMiddle ( void )
+{
+}
+
+void            CodeInfoEnd   (
+    UInt                narg )
+{
+    Stat                stat;           /* we build the statement here     */
+    Expr                expr;           /* expression                      */
+    UInt                i;              /* loop variable                   */
+
+    /* allocate the new statement                                          */
+    stat = NewStat( T_INFO, SIZE_NARG_INFO(2+narg) );
+
+    /* narg only counts the printable arguments                            */
+    for ( i = narg + 2; 0 < i; i-- ) {
+        expr = PopExpr();
+        ARGI_INFO( stat, i ) = expr;
+    }
+
+    /* push the statement                                                  */
+    PushStat( stat );
+}
+
 
 /****************************************************************************
 **
 *F  CodeAssertBegin() . . . . . . .  start interpretation of Assert statement
 *F  CodeAsseerAfterLevel()  . . called after the first argument has been read
 *F  CodeAssertAfterCondition() called after the second argument has been read
-*F  CodeAssertEnd2Args() . . . .  called after reading the closing parenthesis
-*F  CodeAssertEnd3Args() . . . .  called after reading the closing parenthesis
+*F  CodeAssertEnd2Args() . . . . called after reading the closing parenthesis
+*F  CodeAssertEnd3Args() . . . . called after reading the closing parenthesis
 **
 **  Only the End functions actually do anything
-**
 */
-
-void             CodeAssertBegin ( void )
-{}
-
-void             CodeAssertAfterLevel ( void )
-{}
-
-void             CodeAssertAfterCondition ( void )
-{}
-
-void             CodeAssertEnd2Args ( void )
+void            CodeAssertBegin ( void )
 {
-  Stat      stat;  /* We build the coded statement here */
-
-  stat = NewBag( T_ASSERT_2ARGS, 2*sizeof(Expr));
-
-  ADDR_STAT(stat)[1] = PopExpr(); /* condition */
-  ADDR_STAT(stat)[0] = PopExpr(); /* level */
-  
-  PushStat(stat);
-  return;
 }
 
-extern void             CodeAssertEnd3Args ( void )
+void            CodeAssertAfterLevel ( void )
 {
-  Stat      stat;  /* We build the coded statement here */
-
-  stat = NewBag( T_ASSERT_3ARGS, 3*sizeof(Expr));
-
-  ADDR_STAT(stat)[2] = PopExpr(); /* message */
-  ADDR_STAT(stat)[1] = PopExpr(); /* condition */
-  ADDR_STAT(stat)[0] = PopExpr(); /* level */
-  
-  PushStat(stat);
-  return;
 }
 
+void            CodeAssertAfterCondition ( void )
+{
+}
+
+void            CodeAssertEnd2Args ( void )
+{
+    Stat                stat;           /* we build the statement here     */
+
+    stat = NewStat( T_ASSERT_2ARGS, 2*sizeof(Expr) );
+
+    ADDR_STAT(stat)[1] = PopExpr(); /* condition */
+    ADDR_STAT(stat)[0] = PopExpr(); /* level */
+
+    PushStat( stat );
+}
+
+void            CodeAssertEnd3Args ( void )
+{
+    Stat                stat;           /* we build the statement here     */
+
+    stat = NewStat( T_ASSERT_3ARGS, 3*sizeof(Expr) );
+
+    ADDR_STAT(stat)[2] = PopExpr(); /* message */
+    ADDR_STAT(stat)[1] = PopExpr(); /* condition */
+    ADDR_STAT(stat)[0] = PopExpr(); /* level */
+
+    PushStat( stat );
+}
 
 
 /****************************************************************************
@@ -2910,297 +3075,25 @@ extern void             CodeAssertEnd3Args ( void )
 */
 void            InitCode ( void )
 {
-    UInt                i;              /* loop variable                   */
-
     /* make the result variable known to Gasman                            */
     InitGlobalBag( &CodeResult );
 
     /* allocate the statements and expressions stacks                      */
     InitGlobalBag( &StackStat );
-    StackStat = NEW_PLIST( T_PLIST, 64 );
-    SET_LEN_PLIST( StackStat, 0 );
+    StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
     InitGlobalBag( &StackExpr );
-    StackExpr = NEW_PLIST( T_PLIST, 64 );
-    SET_LEN_PLIST( StackExpr, 0 );
+    StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 
-    /* install the marking functions for function calls and expressions    */
-    InfoBags[         T_PROCCALL_0ARGS ].name = "procedure call (no args)";
-    InitMarkFuncBags( T_PROCCALL_0ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_1ARGS ].name = "procedure call (1 arg)";
-    InitMarkFuncBags( T_PROCCALL_1ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_2ARGS ].name = "procedure call (2 args)";
-    InitMarkFuncBags( T_PROCCALL_2ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_3ARGS ].name = "procedure call (3 args)";
-    InitMarkFuncBags( T_PROCCALL_3ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_4ARGS ].name = "procedure call (4 args)";
-    InitMarkFuncBags( T_PROCCALL_4ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_5ARGS ].name = "procedure call (5 args)";
-    InitMarkFuncBags( T_PROCCALL_5ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_6ARGS ].name = "procedure call (6 args)";
-    InitMarkFuncBags( T_PROCCALL_6ARGS , MarkAllSubBags );
-    InfoBags[         T_PROCCALL_XARGS ].name = "procedure call (more args)";
-    InitMarkFuncBags( T_PROCCALL_XARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_0ARGS ].name = "function call (no args)";
-    InitMarkFuncBags( T_FUNCCALL_0ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_1ARGS ].name = "function call (1 arg)";
-    InitMarkFuncBags( T_FUNCCALL_1ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_2ARGS ].name = "function call (2 args)";
-    InitMarkFuncBags( T_FUNCCALL_2ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_3ARGS ].name = "function call (3 args)";
-    InitMarkFuncBags( T_FUNCCALL_3ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_4ARGS ].name = "function call (4 args)";
-    InitMarkFuncBags( T_FUNCCALL_4ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_5ARGS ].name = "function call (5 args)";
-    InitMarkFuncBags( T_FUNCCALL_5ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_6ARGS ].name = "function call (6 args)";
-    InitMarkFuncBags( T_FUNCCALL_6ARGS , MarkAllSubBags );
-    InfoBags[         T_FUNCCALL_XARGS ].name = "function call (more args)";
-    InitMarkFuncBags( T_FUNCCALL_XARGS , MarkAllSubBags );
-    InfoBags[         T_FUNC_EXPR      ].name = "function expression";
-    InitMarkFuncBags( T_FUNC_EXPR      , MarkAllSubBags );
-
-    /* install the marking functions for compound statements               */
-    InfoBags[         T_SEQ_STAT       ].name = "statement sequence";
-    InitMarkFuncBags( T_SEQ_STAT       , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT2      ].name = "statement sequence (2)";
-    InitMarkFuncBags( T_SEQ_STAT2      , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT3      ].name = "statement sequence (3)";
-    InitMarkFuncBags( T_SEQ_STAT3      , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT4      ].name = "statement sequence (4)";
-    InitMarkFuncBags( T_SEQ_STAT4      , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT5      ].name = "statement sequence (5)";
-    InitMarkFuncBags( T_SEQ_STAT5      , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT6      ].name = "statement sequence (6)";
-    InitMarkFuncBags( T_SEQ_STAT6      , MarkAllSubBags );
-    InfoBags[         T_SEQ_STAT7      ].name = "statement sequence (7)";
-    InitMarkFuncBags( T_SEQ_STAT7      , MarkAllSubBags );
-    InfoBags[         T_IF             ].name = "if-statement (if)";
-    InitMarkFuncBags( T_IF             , MarkAllSubBags );
-    InfoBags[         T_IF_ELSE        ].name = "if-statement (else)";
-    InitMarkFuncBags( T_IF_ELSE        , MarkAllSubBags );
-    InfoBags[         T_IF_ELIF        ].name = "if-statement (elif)";
-    InitMarkFuncBags( T_IF_ELIF        , MarkAllSubBags );
-    InfoBags[         T_IF_ELIF_ELSE   ].name = "if-statement";
-    InitMarkFuncBags( T_IF_ELIF_ELSE   , MarkAllSubBags );
-    InfoBags[         T_FOR            ].name = "for-loop";
-    InitMarkFuncBags( T_FOR            , MarkAllSubBags );
-    InfoBags[         T_FOR2           ].name = "for-loop (2)";
-    InitMarkFuncBags( T_FOR2           , MarkAllSubBags );
-    InfoBags[         T_FOR3           ].name = "for-loop (3)";
-    InitMarkFuncBags( T_FOR3           , MarkAllSubBags );
-    InfoBags[         T_FOR_RANGE      ].name = "for-loop (range)";
-    InitMarkFuncBags( T_FOR_RANGE      , MarkAllSubBags );
-    InfoBags[         T_FOR_RANGE2     ].name = "for-loop (range,2)";
-    InitMarkFuncBags( T_FOR_RANGE2     , MarkAllSubBags );
-    InfoBags[         T_FOR_RANGE3     ].name = "for-loop (range,3)";
-    InitMarkFuncBags( T_FOR_RANGE3     , MarkAllSubBags );
-    InfoBags[         T_WHILE          ].name = "while-loop";
-    InitMarkFuncBags( T_WHILE          , MarkAllSubBags );
-    InfoBags[         T_WHILE2         ].name = "while-loop (2)";
-    InitMarkFuncBags( T_WHILE2         , MarkAllSubBags );
-    InfoBags[         T_WHILE3         ].name = "while-loop (3)";
-    InitMarkFuncBags( T_WHILE3         , MarkAllSubBags );
-    InfoBags[         T_REPEAT         ].name = "repeat-loop";
-    InitMarkFuncBags( T_REPEAT         , MarkAllSubBags );
-    InfoBags[         T_REPEAT2        ].name = "repeat-loop (2)";
-    InitMarkFuncBags( T_REPEAT2        , MarkAllSubBags );
-    InfoBags[         T_REPEAT3        ].name = "repeat-loop (3)";
-    InitMarkFuncBags( T_REPEAT3        , MarkAllSubBags );
-    InfoBags[         T_BREAK          ].name = "break-statement";
-    InitMarkFuncBags( T_BREAK          , MarkAllSubBags );
-    InfoBags[         T_RETURN_OBJ     ].name = "return-value-statement";
-    InitMarkFuncBags( T_RETURN_OBJ     , MarkAllSubBags );
-    InfoBags[         T_RETURN_VOID    ].name = "return-void-statement";
-    InitMarkFuncBags( T_RETURN_VOID    , MarkAllSubBags );
-    InfoBags[         T_INFO           ].name = "Info statement";
-    InitMarkFuncBags( T_INFO           , MarkAllSubBags );
-    InfoBags[         T_ASSERT_2ARGS   ].name = "Assert statement (2 arg)";
-    InitMarkFuncBags( T_ASSERT_2ARGS   , MarkAllSubBags );
-    InfoBags[         T_ASSERT_3ARGS   ].name = "Assert statement (3 arg)";
-    InitMarkFuncBags( T_ASSERT_3ARGS   , MarkAllSubBags );
-
-    /* install the marking functions for operations                        */
-    InfoBags[         T_OR             ].name = "or-expression";
-    InitMarkFuncBags( T_OR             , MarkAllSubBags );
-    InfoBags[         T_AND            ].name = "and-expression";
-    InitMarkFuncBags( T_AND            , MarkAllSubBags );
-    InfoBags[         T_NOT            ].name = "not-expression";
-    InitMarkFuncBags( T_NOT            , MarkAllSubBags );
-    InfoBags[         T_EQ             ].name = "=-expression";
-    InitMarkFuncBags( T_EQ             , MarkAllSubBags );
-    InfoBags[         T_NE             ].name = "<>-expresion";
-    InitMarkFuncBags( T_NE             , MarkAllSubBags );
-    InfoBags[         T_LT             ].name = "<-expresion";
-    InitMarkFuncBags( T_LT             , MarkAllSubBags );
-    InfoBags[         T_GE             ].name = ">=-expresion";
-    InitMarkFuncBags( T_GE             , MarkAllSubBags );
-    InfoBags[         T_GT             ].name = ">-expression";
-    InitMarkFuncBags( T_GT             , MarkAllSubBags );
-    InfoBags[         T_LE             ].name = "<=-expression";
-    InitMarkFuncBags( T_LE             , MarkAllSubBags );
-    InfoBags[         T_IN             ].name = "in-expression";
-    InitMarkFuncBags( T_IN             , MarkAllSubBags );
-    InfoBags[         T_SUM            ].name = "+-expression";
-    InitMarkFuncBags( T_SUM            , MarkAllSubBags );
-    InfoBags[         T_DIFF           ].name = "--expression";
-    InitMarkFuncBags( T_DIFF           , MarkAllSubBags );
-    InfoBags[         T_PROD           ].name = "*-expression";
-    InitMarkFuncBags( T_PROD           , MarkAllSubBags );
-    InfoBags[         T_QUO            ].name = "/-expression";
-    InitMarkFuncBags( T_QUO            , MarkAllSubBags );
-    InfoBags[         T_MOD            ].name = "mod-expression";
-    InitMarkFuncBags( T_MOD            , MarkAllSubBags );
-    InfoBags[         T_POW            ].name = "^-expression";
-    InitMarkFuncBags( T_POW            , MarkAllSubBags );
-
-    /* install the marking functions for literal expressions               */
-    InfoBags[         T_INTEXPR        ].name = "integer expression";
-    InitMarkFuncBags( T_INTEXPR        , MarkAllSubBags );
-    InfoBags[         T_INT_EXPR       ].name = "integer expression";
-    InitMarkFuncBags( T_INT_EXPR       , MarkAllSubBags );
-    InfoBags[         T_TRUE_EXPR      ].name = "true expression";
-    InitMarkFuncBags( T_TRUE_EXPR      , MarkAllSubBags  );
-    InfoBags[         T_FALSE_EXPR     ].name = "false expression";
-    InitMarkFuncBags( T_FALSE_EXPR     , MarkAllSubBags  );
-    InfoBags[         T_CHAR_EXPR      ].name = "character expression";
-    InitMarkFuncBags( T_CHAR_EXPR      , MarkAllSubBags  );
-    InfoBags[         T_PERM_EXPR      ].name = "permutation expression";
-    InitMarkFuncBags( T_PERM_EXPR      , MarkAllSubBags );
-    InfoBags[         T_PERM_CYCLE     ].name = "perm cycle expression";
-    InitMarkFuncBags( T_PERM_CYCLE     , MarkAllSubBags );
-
-    /* install the marking functions for list and record expressions       */
-    InfoBags[         T_LIST_EXPR      ].name = "list-expression";
-    InitMarkFuncBags( T_LIST_EXPR      , MarkAllSubBags );
-    InfoBags[         T_LIST_TILD_EXPR ].name = "list-expression (tilde)";
-    InitMarkFuncBags( T_LIST_TILD_EXPR , MarkAllSubBags );
-    InfoBags[         T_RANGE_EXPR     ].name = "range-expression";
-    InitMarkFuncBags( T_RANGE_EXPR     , MarkAllSubBags );
-    InfoBags[         T_STRING_EXPR    ].name = "string-expression";
-    InitMarkFuncBags( T_STRING_EXPR    , MarkAllSubBags );
-    InfoBags[         T_REC_EXPR       ].name = "rec-expression";
-    InitMarkFuncBags( T_REC_EXPR       , MarkAllSubBags );
-    InfoBags[         T_REC_TILD_EXPR  ].name = "rec-expression (tilde)";
-    InitMarkFuncBags( T_REC_TILD_EXPR  , MarkAllSubBags );
-
-    /* install marking functions for local variables                       */
-    InfoBags[         T_ASS_LVAR       ].name = "ass. to local variable";
-    InitMarkFuncBags( T_ASS_LVAR       , MarkAllSubBags  );
-    InfoBags[         T_UNB_LVAR       ].name = "unbind local variable";
-    InitMarkFuncBags( T_UNB_LVAR       , MarkAllSubBags  );
-    for ( i = T_ASS_LVAR_01; i <= T_ASS_LVAR_16; i++ ) {
-        InfoBags[         i            ].name = "ass. to local variable";
-        InitMarkFuncBags( i            , MarkAllSubBags  );
-    }
-    InfoBags[         T_REF_LVAR       ].name = "ref. to local variable";
-    InitMarkFuncBags( T_REF_LVAR       , MarkAllSubBags  );
-    InfoBags[         T_ISB_LVAR       ].name = "isbound local variable";
-    InitMarkFuncBags( T_ISB_LVAR       , MarkAllSubBags  );
-    for ( i = T_REF_LVAR_01; i <= T_REF_LVAR_16; i++ ) {
-        InfoBags[         i            ].name = "ref. to local variable";
-        InitMarkFuncBags( i            , MarkAllSubBags  );
-    }
-
-    /* install marking functions for higher variables                      */
-    InfoBags[         T_ASS_HVAR       ].name = "ass. to higher variable";
-    InitMarkFuncBags( T_ASS_HVAR       , MarkAllSubBags );
-    InfoBags[         T_UNB_HVAR       ].name = "unbind higher variable";
-    InitMarkFuncBags( T_UNB_HVAR       , MarkAllSubBags );
-    InfoBags[         T_REF_HVAR       ].name = "ref. to higher variable";
-    InitMarkFuncBags( T_REF_HVAR       , MarkAllSubBags  );
-    InfoBags[         T_ISB_HVAR       ].name = "isbound higher variable";
-    InitMarkFuncBags( T_ISB_HVAR       , MarkAllSubBags  );
-
-    /* install marking functions for global variables                      */
-    InfoBags[         T_ASS_GVAR       ].name = "ass. to global variable";
-    InitMarkFuncBags( T_ASS_GVAR       , MarkAllSubBags );
-    InfoBags[         T_UNB_GVAR       ].name = "unbind global variable";
-    InitMarkFuncBags( T_UNB_GVAR       , MarkAllSubBags );
-    InfoBags[         T_REF_GVAR       ].name = "ref. to global variable";
-    InitMarkFuncBags( T_REF_GVAR       , MarkAllSubBags  );
-    InfoBags[         T_ISB_GVAR       ].name = "isbound global variable";
-    InitMarkFuncBags( T_ISB_GVAR       , MarkAllSubBags  );
-
-    /* install marking functions for list elements                         */
-    InfoBags[         T_ASS_LIST       ].name = "ass. to list element";
-    InitMarkFuncBags( T_ASS_LIST       , MarkAllSubBags );
-    InfoBags[         T_ASSS_LIST      ].name = "ass. to list elements";
-    InitMarkFuncBags( T_ASSS_LIST      , MarkAllSubBags );
-    InfoBags[         T_ASS_LIST_LEV   ].name = "ass. to list element (l)";
-    InitMarkFuncBags( T_ASS_LIST_LEV   , MarkAllSubBags );
-    InfoBags[         T_ASSS_LIST_LEV  ].name = "ass. to list elements (l)";
-    InitMarkFuncBags( T_ASSS_LIST_LEV  , MarkAllSubBags );
-    InfoBags[         T_UNB_LIST       ].name = "unbind list element";
-    InitMarkFuncBags( T_UNB_LIST       , MarkAllSubBags );
-    InfoBags[         T_ELM_LIST       ].name = "ref. to list element";
-    InitMarkFuncBags( T_ELM_LIST       , MarkAllSubBags );
-    InfoBags[         T_ELMS_LIST      ].name = "ref. to list elements";
-    InitMarkFuncBags( T_ELMS_LIST      , MarkAllSubBags );
-    InfoBags[         T_ELM_LIST_LEV   ].name = "ref. to list element (l)";
-    InitMarkFuncBags( T_ELM_LIST_LEV   , MarkAllSubBags );
-    InfoBags[         T_ELMS_LIST_LEV  ].name = "ref. to list elements (l)";
-    InitMarkFuncBags( T_ELMS_LIST_LEV  , MarkAllSubBags );
-    InfoBags[         T_ISB_LIST       ].name = "isbound list element";
-    InitMarkFuncBags( T_ISB_LIST       , MarkAllSubBags );
-
-    /* install marking functions for record elements                       */
-    InfoBags[         T_ASS_REC_NAME   ].name = "ass. to record element";
-    InitMarkFuncBags( T_ASS_REC_NAME   , MarkAllSubBags );
-    InfoBags[         T_ASS_REC_EXPR   ].name = "ass. to record element (e)";
-    InitMarkFuncBags( T_ASS_REC_EXPR   , MarkAllSubBags );
-    InfoBags[         T_UNB_REC_NAME   ].name = "unbind record element";
-    InitMarkFuncBags( T_UNB_REC_NAME   , MarkAllSubBags );
-    InfoBags[         T_UNB_REC_EXPR   ].name = "unbind record element (e)";
-    InitMarkFuncBags( T_UNB_REC_EXPR   , MarkAllSubBags );
-    InfoBags[         T_ELM_REC_NAME   ].name = "ref. to record element";
-    InitMarkFuncBags( T_ELM_REC_NAME   , MarkAllSubBags );
-    InfoBags[         T_ELM_REC_EXPR   ].name = "ref. to record element (e)";
-    InitMarkFuncBags( T_ELM_REC_EXPR   , MarkAllSubBags );
-    InfoBags[         T_ISB_REC_NAME   ].name = "isbound record element";
-    InitMarkFuncBags( T_ISB_REC_NAME   , MarkAllSubBags );
-    InfoBags[         T_ISB_REC_EXPR   ].name = "isbound record element (e)";
-    InitMarkFuncBags( T_ISB_REC_EXPR   , MarkAllSubBags );
-
-    /* install marking functions for list elements                         */
-    InfoBags[         T_ASS_POSOBJ       ].name = "ass. to list element";
-    InitMarkFuncBags( T_ASS_POSOBJ       , MarkAllSubBags );
-    InfoBags[         T_ASSS_POSOBJ      ].name = "ass. to list elements";
-    InitMarkFuncBags( T_ASSS_POSOBJ      , MarkAllSubBags );
-    InfoBags[         T_ASS_POSOBJ_LEV   ].name = "ass. to list element (l)";
-    InitMarkFuncBags( T_ASS_POSOBJ_LEV   , MarkAllSubBags );
-    InfoBags[         T_ASSS_POSOBJ_LEV  ].name = "ass. to list elements (l)";
-    InitMarkFuncBags( T_ASSS_POSOBJ_LEV  , MarkAllSubBags );
-    InfoBags[         T_UNB_POSOBJ       ].name = "unbind list element";
-    InitMarkFuncBags( T_UNB_POSOBJ       , MarkAllSubBags );
-    InfoBags[         T_ELM_POSOBJ       ].name = "ref. to list element";
-    InitMarkFuncBags( T_ELM_POSOBJ       , MarkAllSubBags );
-    InfoBags[         T_ELMS_POSOBJ      ].name = "ref. to list elements";
-    InitMarkFuncBags( T_ELMS_POSOBJ      , MarkAllSubBags );
-    InfoBags[         T_ELM_POSOBJ_LEV   ].name = "ref. to list element (l)";
-    InitMarkFuncBags( T_ELM_POSOBJ_LEV   , MarkAllSubBags );
-    InfoBags[         T_ELMS_POSOBJ_LEV  ].name = "ref. to list elements (l)";
-    InitMarkFuncBags( T_ELMS_POSOBJ_LEV  , MarkAllSubBags );
-    InfoBags[         T_ISB_POSOBJ       ].name = "isbound list element";
-    InitMarkFuncBags( T_ISB_POSOBJ       , MarkAllSubBags );
-
-    /* install marking functions for record elements                       */
-    InfoBags[         T_ASS_COMOBJ_NAME  ].name = "ass. to record element";
-    InitMarkFuncBags( T_ASS_COMOBJ_NAME  , MarkAllSubBags );
-    InfoBags[         T_ASS_COMOBJ_EXPR  ].name = "ass. to record element (e)";
-    InitMarkFuncBags( T_ASS_COMOBJ_EXPR  , MarkAllSubBags );
-    InfoBags[         T_UNB_COMOBJ_NAME  ].name = "unbind record element";
-    InitMarkFuncBags( T_UNB_COMOBJ_NAME  , MarkAllSubBags );
-    InfoBags[         T_UNB_COMOBJ_EXPR  ].name = "unbind record element (e)";
-    InitMarkFuncBags( T_UNB_COMOBJ_EXPR  , MarkAllSubBags );
-    InfoBags[         T_ELM_COMOBJ_NAME  ].name = "ref. to record element";
-    InitMarkFuncBags( T_ELM_COMOBJ_NAME  , MarkAllSubBags );
-    InfoBags[         T_ELM_COMOBJ_EXPR  ].name = "ref. to record element (e)";
-    InitMarkFuncBags( T_ELM_COMOBJ_EXPR  , MarkAllSubBags );
-    InfoBags[         T_ISB_COMOBJ_NAME  ].name = "isbound record element";
-    InitMarkFuncBags( T_ISB_COMOBJ_NAME  , MarkAllSubBags );
-    InfoBags[         T_ISB_COMOBJ_EXPR  ].name = "isbound record element (e)";
-    InitMarkFuncBags( T_ISB_COMOBJ_EXPR  , MarkAllSubBags );
+    /* install the marking functions for function body bags                */
+    InfoBags[         T_BODY           ].name = "function body bag";
+    InitMarkFuncBags( T_BODY           , MarkNoSubBags );
 }
+
+
+/****************************************************************************
+**
+*E  code.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 

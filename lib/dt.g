@@ -237,34 +237,6 @@ konvert2 := function(evlistvec, pr)
 end;
 
 
-#############################################################################
-##
-#F  komprimiere( <list> )
-##
-##  komprimiere removes all pairs (i,0) from the list <list>.
-##
-
-komprimiere := function( list )
-    local  skip, i;
-    
-    skip := 0;
-    i := 2;
-    while  i <= Length(list)  do
-        while  i <= Length(list)  and  list[i] = 0  do
-            skip := skip + 2;
-            i := i+2;
-        od;
-        if  i <= Length(list)  then
-            list[i-skip] := list[i];
-            list[i-1-skip] := list[i-1];
-        fi;
-        i := i+2;
-    od;
-    for  i in  [Length(list)-skip+1..Length(list)]  do
-        Unbind(list[i]);
-    od;
-end;
-
 
 #############################################################################
 ##
@@ -280,11 +252,11 @@ CalcOrder := function(word, dtrws)
     if  Length(word) = 0  then
         return 1;
     fi;
-    if  not IsBound(dtrws!.Exponent[ word[1] ])  then
+    if  not IsBound(dtrws![PC_EXPONENTS][ word[1] ])  then
         return 0;
     fi;
-    gcd := Gcd(dtrws!.Exponent[ word[1] ], word[2]);
-    m := QuoInt( dtrws!.Exponent[ word[1] ], gcd);
+    gcd := Gcd(dtrws![PC_EXPONENTS][ word[1] ], word[2]);
+    m := QuoInt( dtrws![PC_EXPONENTS][ word[1] ], gcd);
     gcd := DTPower(word, m, dtrws);
     return  m*CalcOrder(gcd, dtrws);
 end;
@@ -301,18 +273,19 @@ end;
 CompleteOrdersOfRws := function(dtrws)
     local  i,j;
     
-    dtrws!.Orders := [];
-    for  i in [Length(dtrws!.Generators),Length(dtrws!.Generators)-1..1]  do
+    dtrws![PC_ORDERS] := [];
+    for  i in [dtrws![PC_NUMBER_OF_GENERATORS],dtrws![PC_NUMBER_OF_GENERATORS]-1..1]
+         do
         # Print("determining order of generator ",i,"\n");
-        if  not IsBound( dtrws!.Exponent[i] )  then
+        if  not IsBound( dtrws![PC_EXPONENTS][i] )  then
             j := 0;
-        elif  not IsBound( dtrws!.Power[i] )  then
-            j := dtrws!.Exponent[i];
+        elif  not IsBound( dtrws![PC_POWERS][i] )  then
+            j := dtrws![PC_EXPONENTS][i];
         else
-            j := dtrws!.Exponent[i]*CalcOrder(dtrws!.Power[i], dtrws);
+            j := dtrws![PC_EXPONENTS][i]*CalcOrder(dtrws![PC_POWERS][i], dtrws);
         fi;
         if  j <> 0  then
-            dtrws!.Orders[i] := j;
+            dtrws![PC_ORDERS][i] := j;
         fi;
     od;
 end;
@@ -344,6 +317,7 @@ redkomprimiere := function( list )
 end;
 
 
+
 #############################################################################
 ##
 #F  ReduceCoefficientsOfRws( <dtrws> )
@@ -355,22 +329,22 @@ end;
 ReduceCoefficientsOfRws := function(dtrws)
     local  i,j,k,l, pseudoreps;
     
-    pseudoreps := dtrws!.DeepThoughtPols;
+    pseudoreps := dtrws![PC_DEEP_THOUGHT_POLS];
     i := 1;
     while  IsRecord(pseudoreps[i])  do
         for  j in [1..Length(pseudoreps[i].evlistvec)]  do
             for  k in [2,4..Length(pseudoreps[i].evlistvec[j])]  do
-                if  IsBound( dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ] )
+                if  IsBound( dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ] )
                     and  (pseudoreps[i].evlistvec[j][k] > 0  or
                           pseudoreps[i].evlistvec[j][k] <
-                          -dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ]/2)
+                          -dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ]/2)
                     then
                     pseudoreps[i].evlistvec[j][k] := 
                       pseudoreps[i].evlistvec[j][k] mod 
-                      dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ];
+                      dtrws![PC_ORDERS][ pseudoreps[i].evlistvec[j][k-1] ];
                 fi;
             od;
-            komprimiere( pseudoreps[i].evlistvec[j] );
+            Compress( pseudoreps[i].evlistvec[j] );
             if  Length( pseudoreps[i].evlistvec[j] ) = 0  then
                 Unbind( pseudoreps[i].evlistvec[j] );
                 Unbind( pseudoreps[i].evlist[j] );

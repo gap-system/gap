@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.18  1997/03/04 16:04:43  htheisse
+#H  checked the `oprt*' functions against the descriptions of the 3.4 manual
+#H
 #H  Revision 4.17  1997/02/12 16:30:18  htheisse
 #H  corrected enumerators for external subsets; cleaned up the code
 #H
@@ -36,9 +39,9 @@ InfoOperation := NewInfoClass( "InfoOperation" );
 IsExternalSet := NewCategory( "IsExternalSet", IsDomain );
 IsExternalSubset := NewRepresentation( "IsExternalSubset",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
-    [ "underlyingSet", "start" ] );                            
+    [ "start" ] );                            
 IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
-    IsExternalSubset, [ "underlyingSet", "start" ] );
+    IsExternalSubset, [ "start" ] );
 IsExternalSetByPcgs := NewCategory( "IsExternalSetByPcgs", IsExternalSet );
 
 XSET_XSSETKIND := 4;
@@ -46,11 +49,11 @@ XSET_XORBKIND  := 5;
 
 IsExternalSetDefaultRep := NewRepresentation( "IsExternalSetDefaultRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
-    [ "underlyingSet" ] );
+    [  ] );
 IsExternalSetByOperatorsRep := NewRepresentation
   ( "IsExternalSetByOperatorsRep",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
-    [ "underlyingSet", "generators", "operators", "funcOperation" ] );
+    [ "generators", "operators", "funcOperation" ] );
 
 IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
     IsGroupHomomorphism and

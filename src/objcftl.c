@@ -23,26 +23,7 @@
 #include "dt.h"
 #include "objcftl.h"
 
-#define PC_NUMBER_OF_GENERATORS      1
-#define PC_GENERATORS                2
-#define PC_INVERSES                  3
-#define PC_COMMUTE                   4
-#define PC_POWERS                    5
-#define PC_INVERSEPOWERS             6
-#define PC_EXPONENTS                 7
-#define PC_CONJUGATES                8
-#define PC_INVERSECONJUGATES         9
-#define PC_CONJUGATESINVERSE        10
-#define PC_INVERSECONJUGATESINVERSE 11
-#define PC_DEEP_THOUGHT_POLS        12
-#define PC_DEEP_THOUGHT_BOUND       13
 
-#define PC_WORD_STACK               14
-#define PC_STACK_SIZE               15
-#define PC_WORD_EXPONENT_STACK      16
-#define PC_SYLLABLE_STACK           17
-#define PC_EXPONENT_STACK           18
-#define PC_STACK_POINTER            19
 
 static UInt DebugPcc;
 static void DbPr( char *str, long arg1, long arg2 ) {
@@ -414,7 +395,7 @@ void InitPcc ( void ) {
             INTOBJ_INT( PC_DEEP_THOUGHT_POLS ) );
     AssGVar( GVarName( "PC_DEEP_THOUGHT_BOUND" ),
             INTOBJ_INT( PC_DEEP_THOUGHT_BOUND ) );
-
+    AssGVar( GVarName( "PC_ORDERS" ), INTOBJ_INT( PC_ORDERS ) );
     AssGVar( GVarName( "PC_WORD_STACK" ),
             INTOBJ_INT( PC_WORD_STACK ) );
     AssGVar( GVarName( "PC_STACK_SIZE" ),
@@ -427,6 +408,7 @@ void InitPcc ( void ) {
             INTOBJ_INT( PC_EXPONENT_STACK ) );
     AssGVar( GVarName( "PC_STACK_POINTER" ),
             INTOBJ_INT( PC_STACK_POINTER ) );
+    AssGVar( GVarName( "PC_DEFAULT_KIND" ), INTOBJ_INT( PC_DEFAULT_KIND ) );
 
     /* Install internal functions. */
     AssGVar( GVarName( "CollectPolycyclic" ), 

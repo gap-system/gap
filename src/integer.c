@@ -2495,20 +2495,24 @@ void            InitInt ( void )
     InfoBags[           T_INTNEG        ].name = "integer (< -2^28)";
     InitMarkFuncBags(   T_INTNEG        , MarkNoSubBags );
 
+
     /* install the kind functions                                          */
-    InitCopyGVar( GVarName("KIND_INT_SMALL_ZERO"), &KIND_INT_SMALL_ZERO );
-    InitCopyGVar( GVarName("KIND_INT_SMALL_POS" ), &KIND_INT_SMALL_POS  );
-    InitCopyGVar( GVarName("KIND_INT_SMALL_NEG" ), &KIND_INT_SMALL_NEG  );
-    InitCopyGVar( GVarName("KIND_INT_LARGE_POS" ), &KIND_INT_LARGE_POS  );
-    InitCopyGVar( GVarName("KIND_INT_LARGE_NEG" ), &KIND_INT_LARGE_NEG  );
+    ImportGVarFromLibrary( "KIND_INT_SMALL_ZERO", &KIND_INT_SMALL_ZERO );
+    ImportGVarFromLibrary( "KIND_INT_SMALL_POS",  &KIND_INT_SMALL_POS );
+    ImportGVarFromLibrary( "KIND_INT_SMALL_NEG",  &KIND_INT_SMALL_NEG );
+    ImportGVarFromLibrary( "KIND_INT_LARGE_POS",  &KIND_INT_LARGE_POS );
+    ImportGVarFromLibrary( "KIND_INT_LARGE_NEG",  &KIND_INT_LARGE_NEG );
+
     KindObjFuncs[ T_INT    ] = KindIntSmall;
     KindObjFuncs[ T_INTPOS ] = KindIntLargePos;
     KindObjFuncs[ T_INTNEG ] = KindIntLargeNeg;
+
 
     /* install the printing function                                       */
     PrintObjFuncs[      T_INT           ] = PrintInt;
     PrintObjFuncs[      T_INTPOS        ] = PrintInt;
     PrintObjFuncs[      T_INTNEG        ] = PrintInt;
+
 
     /* install the comparison methods                                      */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
@@ -2518,12 +2522,14 @@ void            InitInt ( void )
         }
     }
 
+
     /* install the unary arithmetic methods                                */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
         ZeroFuncs[ t1 ] = ZeroInt;
         AInvFuncs[ t1 ] = AInvInt;
         OneFuncs [ t1 ] = OneInt;
     }    
+
 
     /* install the default product and power methods                       */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
@@ -2545,6 +2551,7 @@ void            InitInt ( void )
         }
     }
 
+
     /* install the binary arithmetic methods                               */
     for ( t1 = T_INT; t1 <= T_INTNEG; t1++ ) {
         for ( t2 = T_INT; t2 <= T_INTNEG; t2++ ) {
@@ -2557,6 +2564,7 @@ void            InitInt ( void )
             ModFuncs [ t1 ][ t2 ] = ModInt;
         }
     }
+
 
     /* install the internal function                                       */
     IsIntFilt = NewFilterC(

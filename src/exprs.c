@@ -61,8 +61,8 @@ char *          Revision_exprs_c =
 #endif
 #ifndef NO_LVAR_CHECKS
 #define OBJ_REFLVAR(expr)       \
-                        (OBJ_LVAR( LVAR_REFLVAR( expr ) ) != 0 ? \
-                         OBJ_LVAR( LVAR_REFLVAR( expr ) ) : \
+                        (*(Obj*)(((char*)PtrLVars)+(expr)+5) != 0 ? \
+                         *(Obj*)(((char*)PtrLVars)+(expr)+5) : \
                          ObjLVar( LVAR_REFLVAR( expr ) ) )
 #endif
 */
@@ -84,7 +84,7 @@ char *          Revision_exprs_c =
 **  follow
 **
 #define OBJ_INTEXPR(expr)       \
-                        ((Obj)(expr))
+                        ((Obj)(Int)(Int4)(expr))
 */
 
 
@@ -108,7 +108,7 @@ char *          Revision_exprs_c =
 #define EVAL_EXPR(expr) \
                         (IS_REFLVAR(expr) ? OBJ_REFLVAR(expr) : \
                          (IS_INTEXPR(expr) ? OBJ_INTEXPR(expr) : \
-                          (*EvalExprFuncs[ TYPE_BAG(expr) ])( expr ) ))
+                          (*EvalExprFuncs[ TYPE_STAT(exrp) ])( expr ) ))
 */
 
 
@@ -225,15 +225,18 @@ Obj             EvalOr (
     Expr                expr )
 {
     Obj                 opL;            /* evaluated left operand          */
+    Expr                tmp;            /* temporary expression            */
 
     /* evaluate and test the left operand                                  */
-    opL = EVAL_BOOL_EXPR( ADDR_EXPR(expr)[0] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_BOOL_EXPR( tmp );
     if ( opL != False ) {
         return True;
     }
 
     /* evaluate and test the right operand                                 */
-    return EVAL_BOOL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[1];
+    return EVAL_BOOL_EXPR( tmp );
 }
 
 
@@ -260,21 +263,25 @@ Obj             EvalAnd (
 {
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* if the left operand is 'false', this is the result                  */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
     if      ( opL == False ) {
         return opL;
     }
 
     /* if the left operand is 'true', the result is the right operand      */
     else if ( opL == True  ) {
-        return EVAL_BOOL_EXPR( ADDR_EXPR(expr)[1] );
+        tmp = ADDR_EXPR(expr)[1];
+        return EVAL_BOOL_EXPR( tmp );
     }
 
     /* handle the 'and' of two features                                    */
     else if ( TYPE_OBJ(opL) == T_FUNCTION ) {
-        opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+        tmp = ADDR_EXPR(expr)[1];
+        opR = EVAL_EXPR( tmp );
         if ( TYPE_OBJ(opR) == T_FUNCTION ) {
             return NewAndFilter( opL, opR );
         }
@@ -310,9 +317,11 @@ Obj             EvalNot (
 {
     Obj                 val;            /* value, result                   */
     Obj                 op;             /* evaluated operand               */
+    Expr                tmp;            /* temporary expression            */
 
     /* evaluate the operand to a boolean                                   */
-    op = EVAL_BOOL_EXPR( ADDR_EXPR(expr)[0] );
+    tmp = ADDR_EXPR(expr)[0];
+    op = EVAL_BOOL_EXPR( tmp );
 
     /* compute the negation                                                */
     val = (op == False ? True : False);
@@ -339,10 +348,13 @@ Obj             EvalEq (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (EQ( opL, opR ) ? True : False);
@@ -369,10 +381,13 @@ Obj             EvalNe (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (EQ( opL, opR ) ? False : True);
@@ -399,10 +414,13 @@ Obj             EvalLt (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (LT( opL, opR ) ? True : False);
@@ -429,10 +447,13 @@ Obj             EvalGe (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (LT( opL, opR ) ? False : True);
@@ -459,10 +480,13 @@ Obj             EvalGt (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (LT( opR, opL ) ? True : False);
@@ -489,10 +513,13 @@ Obj             EvalLe (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* compare the operands                                                */
     val = (LT( opR, opL ) ? False : True);
@@ -517,12 +544,15 @@ Obj             EvalIn (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* evaluate <opL>                                                      */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
 
     /* evaluate <opR>                                                      */
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* perform the test                                                    */
     val = (IN( opL, opR ) ? True : False);
@@ -549,10 +579,13 @@ Obj             EvalSum (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
     if ( ! ARE_INTOBJS( opL, opR ) || ! SUM_INTOBJS( val, opL, opR ) ) {
@@ -561,6 +594,35 @@ Obj             EvalSum (
         val = SUM( opL, opR );
 
     }
+
+    /* return the value                                                    */
+    return val;
+}
+
+
+/****************************************************************************
+**
+*F  EvalAInv(<expr>)  . . . . . . . . . . . . . . evaluate a additive inverse
+**
+**  'EvalAInv' evaluates  the additive  inverse-expression  and  returns  its
+**  value, i.e., the  additive inverse of  the operand.  'EvalAInv' is called
+**  from 'EVAL_EXPR' to evaluate expressions of type 'T_AINV'.
+**
+**  'EvalAInv' evaluates the operand and then calls the 'AINV' macro.
+*/
+Obj             EvalAInv (
+    Expr                expr )
+{
+    Obj                 val;            /* value, result                   */
+    Obj                 opL;            /* evaluated left  operand         */
+    Expr                tmp;            /* temporary expression            */
+
+    /* get the operands                                                    */
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+
+    /* compute the additive inverse                                        */
+    val = AINV( opL );
 
     /* return the value                                                    */
     return val;
@@ -584,10 +646,13 @@ Obj             EvalDiff (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
     if ( ! ARE_INTOBJS( opL, opR ) || ! DIFF_INTOBJS( val, opL, opR ) ) {
@@ -619,10 +684,13 @@ Obj             EvalProd (
     Obj                 val;            /* result                          */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* first try to treat the operands as small integers with small result */
     if ( ! ARE_INTOBJS( opL, opR ) || ! PROD_INTOBJS( val, opL, opR ) ) {
@@ -631,6 +699,35 @@ Obj             EvalProd (
         val = PROD( opL, opR );
 
     }
+
+    /* return the value                                                    */
+    return val;
+}
+
+
+/****************************************************************************
+**
+*F  EvalInv(<expr>) . . . . . . . . . . . . evaluate a multiplicative inverse
+**
+**  'EvalInv' evaluates the multiplicative inverse-expression and returns its
+**  value,  i.e., the multiplicative inverse  of  the operand.  'EvalInv' is
+**  called from 'EVAL_EXPR' to evaluate expressions of type 'T_INV'.
+**
+**  'EvalInv' evaluates the operand and then calls the 'INV' macro.
+*/
+Obj             EvalInv (
+    Expr                expr )
+{
+    Obj                 val;            /* value, result                   */
+    Obj                 opL;            /* evaluated left  operand         */
+    Expr                tmp;            /* temporary expression            */
+
+    /* get the operands                                                    */
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+
+    /* compute the multiplicative inverse                                  */
+    val = INV( opL );
 
     /* return the value                                                    */
     return val;
@@ -654,10 +751,13 @@ Obj             EvalQuo (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* dispatch to the division function                                   */
     val = QUO( opL, opR );
@@ -684,10 +784,13 @@ Obj             EvalMod (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* dispatch to the remainder function                                  */
     val = MOD( opL, opR );
@@ -714,10 +817,13 @@ Obj             EvalPow (
     Obj                 val;            /* value, result                   */
     Obj                 opL;            /* evaluated left  operand         */
     Obj                 opR;            /* evaluated right operand         */
+    Expr                tmp;            /* temporary expression            */
 
     /* get the operands                                                    */
-    opL = EVAL_EXPR( ADDR_EXPR(expr)[0] );
-    opR = EVAL_EXPR( ADDR_EXPR(expr)[1] );
+    tmp = ADDR_EXPR(expr)[0];
+    opL = EVAL_EXPR( tmp );
+    tmp = ADDR_EXPR(expr)[1];
+    opR = EVAL_EXPR( tmp );
 
     /* dispatch to the powering function                                   */
     val = POW( opL, opR );
@@ -734,6 +840,8 @@ Obj             EvalPow (
 **  'EvalIntExpr' evaluates the literal integer expression <expr> and returns
 **  its value.
 */
+#define IDDR_EXPR(expr)         ((UInt2*)ADDR_EXPR(expr))
+
 Obj             EvalIntExpr (
     Expr                expr )
 {
@@ -741,16 +849,16 @@ Obj             EvalIntExpr (
     UInt                i;              /* loop variable                   */
 
     /* allocate the integer                                                */
-    if ( ((Int)(ADDR_EXPR(expr)[0])) == 1 ) {
-        val = NewBag( T_INTPOS, SIZE_EXPR(expr) - sizeof(Expr) );
+    if ( ((UInt2*)ADDR_EXPR(expr))[0] == 1 ) {
+        val = NewBag( T_INTPOS, SIZE_EXPR(expr) - sizeof(UInt2) );
     }
     else {
-        val = NewBag( T_INTNEG, SIZE_EXPR(expr) - sizeof(Expr) );
+        val = NewBag( T_INTNEG, SIZE_EXPR(expr) - sizeof(UInt2) );
     }
 
     /* copy over                                                           */
-    for ( i = 1; i < SIZE_EXPR(expr)/sizeof(Expr); i++ ) {
-        ADDR_EXPR( (Expr)val )[i-1] = ADDR_EXPR(expr)[i];
+    for ( i = 1; i < SIZE_EXPR(expr)/sizeof(UInt2); i++ ) {
+        ((UInt2*)ADDR_OBJ(val))[i-1] = ((UInt2*)ADDR_EXPR(expr))[i];
     }
 
     /* return the value                                                    */
@@ -1421,6 +1529,32 @@ void            PrintNot (
 **  'PrintBinop'  prints  the   binary operator    expression <expr>,   using
 **  'PrintPreceedence' for parenthesising.
 */
+void            PrintAInv (
+    Expr                expr )
+{
+    UInt                oldPrec;
+
+    oldPrec = PrintPreceedence;
+    PrintPreceedence = 14;
+    Pr("-%> ",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<",0L,0L);
+    PrintPreceedence = oldPrec;
+}
+
+void            PrintInv (
+    Expr                expr )
+{
+    UInt                oldPrec;
+
+    oldPrec = PrintPreceedence;
+    PrintPreceedence = 14;
+    Pr("%> ",0L,0L);
+    PrintExpr( ADDR_EXPR(expr)[0] );
+    Pr("%<^-1",0L,0L);
+    PrintPreceedence = oldPrec;
+}
+
 void            PrintBinop (
     Expr                expr )
 {
@@ -1446,7 +1580,7 @@ void            PrintBinop (
     case T_PROD:   op = "*";    PrintPreceedence = 12;  break;
     case T_QUO:    op = "/";    PrintPreceedence = 12;  break;
     case T_MOD:    op = "mod";  PrintPreceedence = 12;  break;
-    case T_POW:    op = "^";    PrintPreceedence = 14;  break;
+    case T_POW:    op = "^";    PrintPreceedence = 16;  break;
     default:       op = "<bogus-operator>";   break;
     }
 
@@ -1736,8 +1870,10 @@ void            InitExprs ( void )
 
     /* install the evaluators for binary operations                        */
     EvalExprFuncs [ T_SUM            ] = EvalSum;
+    EvalExprFuncs [ T_AINV           ] = EvalAInv;
     EvalExprFuncs [ T_DIFF           ] = EvalDiff;
     EvalExprFuncs [ T_PROD           ] = EvalProd;
+    EvalExprFuncs [ T_INV            ] = EvalInv;
     EvalExprFuncs [ T_QUO            ] = EvalQuo;
     EvalExprFuncs [ T_MOD            ] = EvalMod;
     EvalExprFuncs [ T_POW            ] = EvalPow;
@@ -1778,8 +1914,10 @@ void            InitExprs ( void )
 
     /* install the printers for binary operations                          */
     PrintExprFuncs[ T_SUM            ] = PrintBinop;
+    PrintExprFuncs[ T_AINV           ] = PrintAInv;
     PrintExprFuncs[ T_DIFF           ] = PrintBinop;
     PrintExprFuncs[ T_PROD           ] = PrintBinop;
+    PrintExprFuncs[ T_INV            ] = PrintInv;
     PrintExprFuncs[ T_QUO            ] = PrintBinop;
     PrintExprFuncs[ T_MOD            ] = PrintBinop;
     PrintExprFuncs[ T_POW            ] = PrintBinop;

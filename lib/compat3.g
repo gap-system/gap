@@ -412,7 +412,7 @@ InstallMethod( Generators, true, [ IsRing ], 0,
 InstallMethod( Generators, true, [ IsAlgebra ], 0,
     GeneratorsOfAlgebra );
 InstallMethod( Generators, true, [ IsAlgebraWithOne ], 0,
-    GeneratorsOfUnitalAlgebra );
+    GeneratorsOfAlgebraWithOne );
 
 
 #############################################################################
@@ -426,7 +426,7 @@ if not IsBound( OLDLCM ) then
 fi;
 
 Lcm := function ( arg )
-    local   R, ns, n, gcd, lcm, i, h;
+    local   ns,  R,  lcm,  i;
 
     # get and check the arguments (what a pain)
     if   Length(arg) = 0  then
@@ -474,8 +474,6 @@ end;
 #F  NumberConjugacyClasses( <U>, <G> )
 ##
 NumberConjugacyClasses := function( arg )
-
-    local nr;
 
     # check that the argument is a group
     if not IsGroup( arg[1] )  then
@@ -544,7 +542,7 @@ ATTR_SETTERS := [];
 ATTR_TESTERS := [];
 
 AssociateNameWithAttribute :=
-    function( name, filter, getter, setter, tester )
+    function( name, filter, getter, setter, tester, mutflag )
     local ALP, alp;
     ALP := "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     alp := "abcdefghijklmnopqrstuvwxyz";
@@ -559,7 +557,7 @@ end;
 
 AssociateNameAttribute := function ( name, getter )
     AssociateNameWithAttribute( name, Ignore,
-        getter, Setter(getter), Tester(getter) );
+        getter, Setter(getter), Tester(getter), true );
 end;
 
 InstallAttributeFunction( AssociateNameWithAttribute );
@@ -739,7 +737,7 @@ STMappingOps := OPS;
 
 OPS.AbelianInvariants := AbelianInvariants;
 # OPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
-OPS.AffineOperation := funcion(G,x,y,z)
+OPS.AffineOperation := function(G,x,y,z)
    return AffineOperation(GeneratorsOfGroup(G),x,y,z);
 end;
 # OPS.AgGroup := AgGroup;
@@ -967,7 +965,7 @@ OPS.MinimalPolynomial := MinimalPolynomial;
 # OPS.MinpolFactors := MinpolFactors;
 # OPS.Module := Module;
 # OPS.ModuleDescrSagGroup := ModuleDescrSagGroup;
-OPS.NaturalHomomorphism := NaturalHomomorphism;
+# OPS.NaturalHomomorphism := NaturalHomomorphism;
 # OPS.NaturalModule := NaturalModule;
 OPS.Norm := Norm;
 OPS.NormalClosure := NormalClosure;

@@ -107,14 +107,18 @@ InstallMethod( IsElementaryAbelian,
 ##
 #M  IsNilpotentGroup( <G> ) . . . . . . . . . .  test if a group is nilpotent
 ##
-InstallImmediateMethod( IsNilpotentGroup, IsGroup and HasSize, 10,
-    function( G )
-    G:= Size( G );
-    if IsInt( G ) and IsPrimePowerInt( G ) then
-      return true;
-    fi;
-    TryNextMethod();
-    end );
+#T InstallImmediateMethod( IsNilpotentGroup, IsGroup and HasSize, 10,
+#T     function( G )
+#T     G:= Size( G );
+#T     if IsInt( G ) and IsPrimePowerInt( G ) then
+#T       return true;
+#T     fi;
+#T     TryNextMethod();
+#T     end );
+#T This method does *not* fulfill the condition to be immediate,
+#T factoring an integer may be expensive.
+#T (Can we install a more restrictive method that *is* immediate,
+#T for example one that checks only small integers?)
 
 InstallMethod( IsNilpotentGroup,
     "generic method for groups",
@@ -323,16 +327,6 @@ InstallMethod( AsGroup,
     # return the group
     return G;
     end );
-
-
-#############################################################################
-##
-#M  CharacterDegrees( <G> ) . . . . . . . . . character degress of Irr( <G> )
-##
-InstallMethod( CharacterDegrees,
-    "generic method for groups",
-    true, [ IsGroup ], 0,
-    G -> CharacterDegrees( Irr( G ) ) );
 
 
 #############################################################################
@@ -601,25 +595,6 @@ InstallMethod( FrattiniSubgroup,
     G -> Intersection( List( ConjugacyClassesMaximalSubgroups( G ),
                              C -> Core( G, Representative(C) ) ) ) );
 
-#############################################################################
-##
-#M  NiceGroup( <G> )  . . . . . . . . . . . . .  nice group isomorphic to <G>
-##
-InstallMethod( NiceGroup, true, [ IsGroup ], 0, IdFunc );
-
-
-#############################################################################
-##
-#M  ComputedIBrs( <G> )
-##
-InstallMethod( ComputedIBrs, true, [ IsGroup ], 0,
-    G -> [] );
-
-
-#############################################################################
-##
-#M  Irr( <G> )
-##
 
 #############################################################################
 ##
@@ -1394,11 +1369,6 @@ InstallMethod( Core,
 #############################################################################
 ##
 #M  FusionConjugacyClasses( <G>, <N> )
-##
-
-#############################################################################
-##
-#M  IBr( <G>, <p> )
 ##
 
 #############################################################################

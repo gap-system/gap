@@ -295,8 +295,8 @@ void            InitBool ( void )
     Fail = NewBag( T_BOOL, 0L );
     AssGVar( GVarName( "FAIL" ), Fail );
 
-     /* install the kind function                                           */
-    InitCopyGVar( GVarName("KIND_BOOL"), &KIND_BOOL );
+    /* install the kind function                                           */
+    ImportGVarFromLibrary( "KIND_BOOL", &KIND_BOOL );
     KindObjFuncs[ T_BOOL ] = KindBool;
 
     /* install the printer for boolean values                              */

@@ -15,8 +15,7 @@ K ist der Koerper, ueber welchen die Matrizen G  zu verstehen sind.  G
 ist eine  Liste von  n x n Matrizen, der  zugrunde liegende Vektorraum
 ist der Vektorraum K^n der Zeilenvektoren ueber K  der Laenge n, B ist
 die Basis eines  d-dimensionalen Teilraums von K^n, welcher  invariant
-unter G ist.  'basis' ist die einzige Komponente, welche optional ist.
-Fehlt sie, so muss d = n und B die Standardbasis von K^n sein.
+unter G ist.
 
 Zusaetzlich  darf  jede   MeatAxe   noch  eine Komponente   mit  Namen
 "name_der_meataxe"  anlegen.      Diese  Information  darf   weder von
@@ -24,38 +23,40 @@ Benutzern des MeatAxe-Interfaces   verwendet werden  noch duerfen  die
 Eintraege "field",  "generators",  "basis",  "dimension" nachtraeglich
 geaendert werden.
 
+Flags heissen genauso wie die Funktion, also 'IsIrreducible' mit grossem
+'I' am Anfang.
+
 Verfuegbare Funktionen
 ======================
 
-MTX.IsIrreducible( M )
-----------------------
-  liefert 'true',  falls  M irreduzibel operiert, bzw.  'false', falls
-  nicht.
-
-MTX.IsAbsolutelyIrreducible( M )
---------------------------------
-  liefert 'true', falls M absolut  irreduzibel operiert, bzw. 'false',
-  falls nicht.
-
-MTX.DegreeSplittingField( M )
------------------------------
-  liefert den Grad des Zerfaellungskoerper (ueber M.field oder ueber
-  dem Grundkoerper ?????)
-
-MTX.ProperSubmodule( M )
+MTX.IsIrreducible( <M> )
 ------------------------
-  liefert 'false', falls M irreduzibel operiert, bzw. einen Untermodul
-  {0} < S < M, falls nicht.
+  returns 'true', if <M> is irreducible and 'false', otherwise.
+
+MTX.IsAbsolutelyIrreducible( <M> )
+----------------------------------
+  returns   'true',  if <M>  is    absolute irreducible and  'false',
+  otherwise.
+
+MTX.DegreeSplittingField( <M> )
+-------------------------------
+  returns the degree of the splitting field of <M> over the *prime*
+  field.
+
+MTX.ProperSubmodule( <M> )
+--------------------------
+  returns  a  proper   submodule  of  <M>  or   'fail'   if <M>  acts
+  irreducibly.
 
 MTX.MaximalSubmodule( M )
 -------------------------
-  liefert  einen maximalen Untermodul S mit  {0} < S  < M bzw 'false',
+  liefert  einen maximalen Untermodul S mit  {0} < S  < M bzw 'fail',
   falls kein solcher existiert.
 
-MTX.MinimalSubmodule( M )
--------------------------
-  liefert einen minimalen Untermodul S  mit {0} < S  < M bzw  'false',
-  falls kein solcher existiert.
+MTX.MinimalSubmodule( <M> )
+---------------------------
+  returns a minimal submodule S of <M> if <M> acts reducibly and 'fail'
+  otherwise.
 
 MTX.CompositionSeries( M )
 --------------------------
@@ -83,12 +84,12 @@ MTX.Lattice( M )
 MTX.IsEquivalent( M_1, M_2 )
 ----------------------------
   liefert 'true', falls M_1 aequivalent zu M_2 ist, bzw 'false', falls
-  nicht.
+  nicht. <M_1> and <M_2> must act irrducibly.
 
 MTX.Isomorphism( M_1, M_2 )
 ---------------------------
   liefert  einen  Isomorphismus von M_1   nach M_2, falls  ein solcher
-  existiert, bzw 'false', falls nicht.  Ein Isomorphismus von M_1 nach
+  existiert, bzw 'fail', falls nicht.  Ein Isomorphismus von M_1 nach
   M_2   wird   als n_1 x   n_2  Matrix  zurueckgegeben, wobei  n_i die
   Dimension des M_i zugrundeliegenden Vektorraums ist.
 
@@ -117,15 +118,16 @@ MTX.InducedActionFactorModule( M, B_1[, B_2] )
   B_2  gegeben ist, so muss B_2   die Basis B_1  zu  einer Basis von M
   ergaenzen.
 
-MTX.InducedActionSubmodule( M[, B] )
-------------------------------------
-  liefert die Operation von M auf B als Modul mit Standardbasis.
+MTX.InducedActionSubmodule( <M>, <B> )
+--------------------------------------
+  returns the action, i.e. a new  module whose generators are matrices
+  of dimension <M>.dimension, on <M> using <B> as basis for <M>
 
 MTX.IdentifierSmallCorank( M, max rank, number of tries )
 ---------------------------------------------------------
   liefert den Identifier einer Matrix vom Korang hoechstens "max rank"
   so wie ihren  Korang.  Wird nach "number  of tries" Versuchen  keine
-  solche Matrix gefunden,  so wird 'false' zurueckgegeben.  Der Korang
+  solche Matrix gefunden,  so wird 'fail' zurueckgegeben.  Der Korang
   ist  hierbei   als Korang  der  auf  M.basis  induzierten  Matrix zu
   verstehen.
 

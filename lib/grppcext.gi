@@ -305,7 +305,7 @@ InstallOtherMethod( SplitExtension,
     0,
 function( G, aut, N )
     local pcgsG, fpg, n, gensG, pcgsN, fpn, d, gensN, F, gensF, relators,
-          rel, new, g, n, e, t, l, i, j, k, H, m, gensH,hom1,hom2;
+          rel, new, g, e, t, l, i, j, k, H, m, gensH,hom1,hom2;
     
     pcgsG := Pcgs( G );
     fpg   := FpGroupPcGroup( G );

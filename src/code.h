@@ -19,6 +19,15 @@ char *          Revision_code_h =
 
 /****************************************************************************
 **
+*S  T_BODY  . . . . . . . . . . . . . . . . . . . . type of function body bag
+**
+**  'T_BODY' is the type of the function body bags.
+*/
+#define T_BODY                  175
+
+
+/****************************************************************************
+**
 *T  Stat  . . . . . . . . . . . . . . . . . . . . . . . .  type of statements
 **
 **  'Stat' is the type of statements.
@@ -26,7 +35,16 @@ char *          Revision_code_h =
 **  If 'Stat' is different  from 'Expr', then  a lot of things will  probably
 **  break.
 */
-#define Stat            Bag
+#define Stat            UInt4
+
+
+/****************************************************************************
+**
+*V  PtrBody . . . . . . . . . . . . . . . . . . . . . pointer to current body
+**
+**  'PtrBody' is a pointer to the current body.
+*/
+extern  Stat *          PtrBody;
 
 
 /****************************************************************************
@@ -35,16 +53,7 @@ char *          Revision_code_h =
 **
 **  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
 */
-#define FIRST_STAT_CURR_FUNC    BODY_FUNC( CURR_FUNC )
-
-
-/****************************************************************************
-**
-*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
-**
-**  'T_LVARS' is the type of bags used to store values of local variables.
-*/
-#define T_LVARS         174
+#define FIRST_STAT_CURR_FUNC    sizeof(Stat)
 
 
 /****************************************************************************
@@ -59,7 +68,7 @@ char *          Revision_code_h =
 **  As long as statements   are represented by  bags,  these types  must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-#define FIRST_STAT_TYPE         175
+#define FIRST_STAT_TYPE         0
 
 #define T_PROCCALL_0ARGS        (FIRST_STAT_TYPE+ 0)
 #define T_PROCCALL_1ARGS        (FIRST_STAT_TYPE+ 1)
@@ -128,15 +137,15 @@ char *          Revision_code_h =
 #define T_ASS_REC_EXPR          (FIRST_STAT_TYPE+62)
 #define T_UNB_REC_NAME          (FIRST_STAT_TYPE+63)
 #define T_UNB_REC_EXPR          (FIRST_STAT_TYPE+64)
-#define T_ASS_POSOBJ              (FIRST_STAT_TYPE+65)
-#define T_ASSS_POSOBJ             (FIRST_STAT_TYPE+66)
-#define T_ASS_POSOBJ_LEV          (FIRST_STAT_TYPE+67)
-#define T_ASSS_POSOBJ_LEV         (FIRST_STAT_TYPE+68)
-#define T_UNB_POSOBJ              (FIRST_STAT_TYPE+69)
-#define T_ASS_COMOBJ_NAME         (FIRST_STAT_TYPE+70)
-#define T_ASS_COMOBJ_EXPR         (FIRST_STAT_TYPE+71)
-#define T_UNB_COMOBJ_NAME         (FIRST_STAT_TYPE+72)
-#define T_UNB_COMOBJ_EXPR         (FIRST_STAT_TYPE+73)
+#define T_ASS_POSOBJ            (FIRST_STAT_TYPE+65)
+#define T_ASSS_POSOBJ           (FIRST_STAT_TYPE+66)
+#define T_ASS_POSOBJ_LEV        (FIRST_STAT_TYPE+67)
+#define T_ASSS_POSOBJ_LEV       (FIRST_STAT_TYPE+68)
+#define T_UNB_POSOBJ            (FIRST_STAT_TYPE+69)
+#define T_ASS_COMOBJ_NAME       (FIRST_STAT_TYPE+70)
+#define T_ASS_COMOBJ_EXPR       (FIRST_STAT_TYPE+71)
+#define T_UNB_COMOBJ_NAME       (FIRST_STAT_TYPE+72)
+#define T_UNB_COMOBJ_EXPR       (FIRST_STAT_TYPE+73)
 
 #define T_INFO                  (FIRST_STAT_TYPE+74)
 #define T_ASSERT_2ARGS          (FIRST_STAT_TYPE+75)
@@ -151,7 +160,7 @@ char *          Revision_code_h =
 **
 **  'TYPE_STAT' returns the type of the statement <stat>.
 */
-#define TYPE_STAT       TYPE_BAG
+#define TYPE_STAT(stat) (ADDR_STAT(stat)[-1] & 0xFF)
 
 
 /****************************************************************************
@@ -160,7 +169,7 @@ char *          Revision_code_h =
 **
 **  'SIZE_STAT' returns the size of the statement <stat>.
 */
-#define SIZE_STAT       SIZE_BAG
+#define SIZE_STAT(stat) (ADDR_STAT(stat)[-1] >> 8)
 
 
 /****************************************************************************
@@ -170,7 +179,7 @@ char *          Revision_code_h =
 **  'ADDR_STAT' returns   the  absolute address of the    memory block of the
 **  statement <stat>.
 */
-#define ADDR_STAT       PTR_BAG
+#define ADDR_STAT(stat) ((Stat*)(((char*)PtrBody)+(stat)))
 
 
 /****************************************************************************
@@ -182,7 +191,7 @@ char *          Revision_code_h =
 **  If 'Expr' is different  from 'Stat', then  a lot of things will  probably
 **  break.
 */
-#define Expr            Bag
+#define Expr            Stat
 
 
 /****************************************************************************
@@ -201,10 +210,10 @@ char *          Revision_code_h =
 **  is a (immediate) reference.
 */
 #define IS_REFLVAR(expr)        \
-                        ((Int)(expr) & 0x02)
+                        (((Int)(expr) & 0x03) == 0x03)
 
 #define REFLVAR_LVAR(lvar)      \
-                        ((Expr)(((lvar) << 2) + 0x02))
+                        ((Expr)(((lvar) << 2) + 0x03))
 
 #define LVAR_REFLVAR(expr)      \
                         ((Int)(expr) >> 2)
@@ -226,13 +235,13 @@ char *          Revision_code_h =
 **  integer.
 */
 #define IS_INTEXPR(expr)        \
-                        ((Int)(expr) & 0x01)
+                        (((Int)(expr) & 0x03) == 0x01)
 
 #define INTEXPR_INT(indx)       \
                         ((Expr)(((indx) << 2) + 0x01))
 
 #define INT_INTEXPR(expr)       \
-                        ((Int)(expr) >> 2)
+                        (((Int)(Int4)(expr)-0x01) / 4)
 
 
 /****************************************************************************
@@ -247,7 +256,7 @@ char *          Revision_code_h =
 **  As long as  expressions  are represented by  bags,  these types must  not
 **  overlap with the object types, lest Gasman becomes confused.
 */
-#define FIRST_EXPR_TYPE         175
+#define FIRST_EXPR_TYPE         128
 
 #define T_FUNCCALL_0ARGS        (FIRST_EXPR_TYPE+ 0)
 #define T_FUNCCALL_1ARGS        (FIRST_EXPR_TYPE+ 1)
@@ -270,67 +279,69 @@ char *          Revision_code_h =
 #define T_LE                    (FIRST_EXPR_TYPE+17)
 #define T_IN                    (FIRST_EXPR_TYPE+18)
 #define T_SUM                   (FIRST_EXPR_TYPE+19)
-#define T_DIFF                  (FIRST_EXPR_TYPE+20)
-#define T_PROD                  (FIRST_EXPR_TYPE+21)
-#define T_QUO                   (FIRST_EXPR_TYPE+22)
-#define T_MOD                   (FIRST_EXPR_TYPE+23)
-#define T_POW                   (FIRST_EXPR_TYPE+24)
+#define T_AINV                  (FIRST_EXPR_TYPE+20)
+#define T_DIFF                  (FIRST_EXPR_TYPE+21)
+#define T_PROD                  (FIRST_EXPR_TYPE+22)
+#define T_INV                   (FIRST_EXPR_TYPE+23)
+#define T_QUO                   (FIRST_EXPR_TYPE+24)
+#define T_MOD                   (FIRST_EXPR_TYPE+25)
+#define T_POW                   (FIRST_EXPR_TYPE+26)
 
-#define T_INTEXPR               (FIRST_EXPR_TYPE+25)
-#define T_INT_EXPR              (FIRST_EXPR_TYPE+26)
-#define T_TRUE_EXPR             (FIRST_EXPR_TYPE+27)
-#define T_FALSE_EXPR            (FIRST_EXPR_TYPE+28)
-#define T_CHAR_EXPR             (FIRST_EXPR_TYPE+29)
-#define T_PERM_EXPR             (FIRST_EXPR_TYPE+30)
-#define T_PERM_CYCLE            (FIRST_EXPR_TYPE+31)
-#define T_LIST_EXPR             (FIRST_EXPR_TYPE+32)
-#define T_LIST_TILD_EXPR        (FIRST_EXPR_TYPE+33)
-#define T_RANGE_EXPR            (FIRST_EXPR_TYPE+34)
-#define T_STRING_EXPR           (FIRST_EXPR_TYPE+35)
-#define T_REC_EXPR              (FIRST_EXPR_TYPE+36)
-#define T_REC_TILD_EXPR         (FIRST_EXPR_TYPE+37)
+#define T_INTEXPR               (FIRST_EXPR_TYPE+27)
+#define T_INT_EXPR              (FIRST_EXPR_TYPE+28)
+#define T_TRUE_EXPR             (FIRST_EXPR_TYPE+29)
+#define T_FALSE_EXPR            (FIRST_EXPR_TYPE+30)
+#define T_CHAR_EXPR             (FIRST_EXPR_TYPE+31)
+#define T_PERM_EXPR             (FIRST_EXPR_TYPE+32)
+#define T_PERM_CYCLE            (FIRST_EXPR_TYPE+33)
+#define T_LIST_EXPR             (FIRST_EXPR_TYPE+34)
+#define T_LIST_TILD_EXPR        (FIRST_EXPR_TYPE+35)
+#define T_RANGE_EXPR            (FIRST_EXPR_TYPE+36)
+#define T_STRING_EXPR           (FIRST_EXPR_TYPE+37)
+#define T_REC_EXPR              (FIRST_EXPR_TYPE+38)
+#define T_REC_TILD_EXPR         (FIRST_EXPR_TYPE+39)
 
-#define T_REFLVAR               (FIRST_EXPR_TYPE+38)
-#define T_REF_LVAR              (FIRST_EXPR_TYPE+39)
-#define T_REF_LVAR_01           (FIRST_EXPR_TYPE+40)
-#define T_REF_LVAR_02           (FIRST_EXPR_TYPE+41)
-#define T_REF_LVAR_03           (FIRST_EXPR_TYPE+42)
-#define T_REF_LVAR_04           (FIRST_EXPR_TYPE+43)
-#define T_REF_LVAR_05           (FIRST_EXPR_TYPE+44)
-#define T_REF_LVAR_06           (FIRST_EXPR_TYPE+45)
-#define T_REF_LVAR_07           (FIRST_EXPR_TYPE+46)
-#define T_REF_LVAR_08           (FIRST_EXPR_TYPE+47)
-#define T_REF_LVAR_09           (FIRST_EXPR_TYPE+48)
-#define T_REF_LVAR_10           (FIRST_EXPR_TYPE+49)
-#define T_REF_LVAR_11           (FIRST_EXPR_TYPE+50)
-#define T_REF_LVAR_12           (FIRST_EXPR_TYPE+51)
-#define T_REF_LVAR_13           (FIRST_EXPR_TYPE+52)
-#define T_REF_LVAR_14           (FIRST_EXPR_TYPE+53)
-#define T_REF_LVAR_15           (FIRST_EXPR_TYPE+54)
-#define T_REF_LVAR_16           (FIRST_EXPR_TYPE+55)
-#define T_ISB_LVAR              (FIRST_EXPR_TYPE+56)
-#define T_REF_HVAR              (FIRST_EXPR_TYPE+57)
-#define T_ISB_HVAR              (FIRST_EXPR_TYPE+58)
-#define T_REF_GVAR              (FIRST_EXPR_TYPE+59)
-#define T_ISB_GVAR              (FIRST_EXPR_TYPE+60)
-#define T_ELM_LIST              (FIRST_EXPR_TYPE+61)
-#define T_ELMS_LIST             (FIRST_EXPR_TYPE+62)
-#define T_ELM_LIST_LEV          (FIRST_EXPR_TYPE+63)
-#define T_ELMS_LIST_LEV         (FIRST_EXPR_TYPE+64)
-#define T_ISB_LIST              (FIRST_EXPR_TYPE+65)
-#define T_ELM_REC_NAME          (FIRST_EXPR_TYPE+66)
-#define T_ELM_REC_EXPR          (FIRST_EXPR_TYPE+67)
-#define T_ISB_REC_NAME          (FIRST_EXPR_TYPE+68)
-#define T_ISB_REC_EXPR          (FIRST_EXPR_TYPE+69)
-#define T_ELM_POSOBJ              (FIRST_EXPR_TYPE+70)
-#define T_ELMS_POSOBJ             (FIRST_EXPR_TYPE+71)
-#define T_ELM_POSOBJ_LEV          (FIRST_EXPR_TYPE+72)
-#define T_ELMS_POSOBJ_LEV         (FIRST_EXPR_TYPE+73)
-#define T_ISB_POSOBJ              (FIRST_EXPR_TYPE+74)
-#define T_ELM_COMOBJ_NAME         (FIRST_EXPR_TYPE+75)
-#define T_ELM_COMOBJ_EXPR         (FIRST_EXPR_TYPE+76)
-#define T_ISB_COMOBJ_NAME         (FIRST_EXPR_TYPE+77)
-#define T_ISB_COMOBJ_EXPR         (FIRST_EXPR_TYPE+78)
+#define T_REFLVAR               (FIRST_EXPR_TYPE+40)
+#define T_REF_LVAR              (FIRST_EXPR_TYPE+41)
+#define T_REF_LVAR_01           (FIRST_EXPR_TYPE+42)
+#define T_REF_LVAR_02           (FIRST_EXPR_TYPE+43)
+#define T_REF_LVAR_03           (FIRST_EXPR_TYPE+44)
+#define T_REF_LVAR_04           (FIRST_EXPR_TYPE+45)
+#define T_REF_LVAR_05           (FIRST_EXPR_TYPE+46)
+#define T_REF_LVAR_06           (FIRST_EXPR_TYPE+47)
+#define T_REF_LVAR_07           (FIRST_EXPR_TYPE+48)
+#define T_REF_LVAR_08           (FIRST_EXPR_TYPE+49)
+#define T_REF_LVAR_09           (FIRST_EXPR_TYPE+50)
+#define T_REF_LVAR_10           (FIRST_EXPR_TYPE+51)
+#define T_REF_LVAR_11           (FIRST_EXPR_TYPE+52)
+#define T_REF_LVAR_12           (FIRST_EXPR_TYPE+53)
+#define T_REF_LVAR_13           (FIRST_EXPR_TYPE+54)
+#define T_REF_LVAR_14           (FIRST_EXPR_TYPE+55)
+#define T_REF_LVAR_15           (FIRST_EXPR_TYPE+56)
+#define T_REF_LVAR_16           (FIRST_EXPR_TYPE+57)
+#define T_ISB_LVAR              (FIRST_EXPR_TYPE+58)
+#define T_REF_HVAR              (FIRST_EXPR_TYPE+59)
+#define T_ISB_HVAR              (FIRST_EXPR_TYPE+60)
+#define T_REF_GVAR              (FIRST_EXPR_TYPE+61)
+#define T_ISB_GVAR              (FIRST_EXPR_TYPE+62)
+#define T_ELM_LIST              (FIRST_EXPR_TYPE+63)
+#define T_ELMS_LIST             (FIRST_EXPR_TYPE+64)
+#define T_ELM_LIST_LEV          (FIRST_EXPR_TYPE+65)
+#define T_ELMS_LIST_LEV         (FIRST_EXPR_TYPE+66)
+#define T_ISB_LIST              (FIRST_EXPR_TYPE+67)
+#define T_ELM_REC_NAME          (FIRST_EXPR_TYPE+68)
+#define T_ELM_REC_EXPR          (FIRST_EXPR_TYPE+69)
+#define T_ISB_REC_NAME          (FIRST_EXPR_TYPE+70)
+#define T_ISB_REC_EXPR          (FIRST_EXPR_TYPE+71)
+#define T_ELM_POSOBJ            (FIRST_EXPR_TYPE+72)
+#define T_ELMS_POSOBJ           (FIRST_EXPR_TYPE+73)
+#define T_ELM_POSOBJ_LEV        (FIRST_EXPR_TYPE+74)
+#define T_ELMS_POSOBJ_LEV       (FIRST_EXPR_TYPE+75)
+#define T_ISB_POSOBJ            (FIRST_EXPR_TYPE+76)
+#define T_ELM_COMOBJ_NAME       (FIRST_EXPR_TYPE+77)
+#define T_ELM_COMOBJ_EXPR       (FIRST_EXPR_TYPE+78)
+#define T_ISB_COMOBJ_NAME       (FIRST_EXPR_TYPE+79)
+#define T_ISB_COMOBJ_EXPR       (FIRST_EXPR_TYPE+80)
 
 #define LAST_EXPR_TYPE          T_ISB_COMOBJ_EXPR
 
@@ -344,7 +355,7 @@ char *          Revision_code_h =
 #define TYPE_EXPR(expr)         \
                         (IS_REFLVAR( (expr) ) ? T_REFLVAR : \
                          (IS_INTEXPR( (expr) ) ? T_INTEXPR : \
-                          TYPE_BAG( (expr) ) ))
+                          TYPE_STAT(expr) ))
 
 
 /****************************************************************************
@@ -356,7 +367,7 @@ char *          Revision_code_h =
 **  Note  that  it is *fatal*  to apply  'SIZE_EXPR'   to expressions of type
 **  'T_REFLVAR' or 'T_INTEXPR'.
 */
-#define SIZE_EXPR       SIZE_BAG
+#define SIZE_EXPR(expr) SIZE_STAT(expr)
 
 
 /****************************************************************************
@@ -369,7 +380,7 @@ char *          Revision_code_h =
 **  Note  that  it is *fatal*  to apply  'ADDR_EXPR'   to expressions of type
 **  'T_REFLVAR' or 'T_INTEXPR'.
 */
-#define ADDR_EXPR       PTR_BAG
+#define ADDR_EXPR(expr) ADDR_STAT(expr)
 
 
 /****************************************************************************
@@ -398,15 +409,16 @@ char *          Revision_code_h =
 #define NARG_SIZE_CALL(size)    (((size) / sizeof(Expr)) - 1)
 #define SIZE_NARG_CALL(narg)    (((narg) + 1) * sizeof(Expr))
 
+
 /****************************************************************************
 **
 *F  ARGI_INFO(<info>,<i>) . . .  <i>-th formal argument for an Info statement
 *F  NARG_SIZE_INFO(<size>)  . . . . number of arguments for an Info statement
 *F  SIZE_NARG_INFO(<narg>)  . . . . . . size of the bag for an Info statement
 **
-**  'ARGI_INFO'  returns  the expression that evaluates  to the <i>-th actual
-**  argument for the Info statement <info>.  This is a legal left
-**  value, so it can be used to set the expression too.
+**  'ARGI_INFO' returns the expression   that evaluates to the <i>-th  actual
+**  argument for the Info  statement <info>.  This is a  legal left value, so
+**  it can be used to set the expression too.
 **
 **  'NARG_SIZE_INFO' returns the number of  arguments in a function call from
 **  the size <size> of the function call bag (as returned by 'SIZE_STAT').
@@ -427,6 +439,28 @@ char *          Revision_code_h =
 **  coded.
 */
 extern  Obj             CodeResult;
+
+
+/****************************************************************************
+**
+*F  PushStat(<stat>)  . . . . . . . . . . . . . push statement onto the stack
+*F  PopStat() . . . . . . . . . . . . . . . . .  pop statement from the stack
+**
+**  'StackStat' is the stack of statements that have been coded.
+**
+**  'CountStat'   is the number   of statements  currently on  the statements
+**  stack.
+**
+**  'PushStat'  pushes the statement  <stat> onto the  statements stack.  The
+**  stack is automatically resized if necessary.
+**
+**  'PopStat' returns the  top statement from the  statements  stack and pops
+**  it.  It is an error if the stack is empty.
+*/
+extern void PushStat (
+            Stat                stat );
+
+extern Stat PopStat ( void );
 
 
 /****************************************************************************
@@ -694,8 +728,10 @@ extern  void            CodeReturnVoid ( void );
 *F  CodeLe()  . . . . . . . . . . . . . . . . . . . . . .  code <=-expression
 *F  CodeIn()  . . . . . . . . . . . . . . . . . . . . . .  code in-expression
 *F  CodeSum() . . . . . . . . . . . . . . . . . . . . . . . code +-expression
+*F  CodeAInv()  . . . . . . . . . . . . . . . . . . . code unary --expression
 *F  CodeDiff()  . . . . . . . . . . . . . . . . . . . . . . code --expression
 *F  CodeProd()  . . . . . . . . . . . . . . . . . . . . . . code *-expression
+*F  CodeInv() . . . . . . . . . . . . . . . . . . . . . . code ^-1-expression
 *F  CodeQuo() . . . . . . . . . . . . . . . . . . . . . . . code /-expression
 *F  CodeMod() . . . . . . . . . . . . . . . . . . . . . . code mod-expression
 *F  CodePow() . . . . . . . . . . . . . . . . . . . . . . . code ^-expression
@@ -731,9 +767,13 @@ extern  void            CodeIn ( void );
 
 extern  void            CodeSum ( void );
 
+extern  void            CodeAInv ( void );
+
 extern  void            CodeDiff ( void );
 
 extern  void            CodeProd ( void );
+
+extern  void            CodeInv ( void );
 
 extern  void            CodeQuo ( void );
 
@@ -1042,10 +1082,10 @@ extern  void            CodeIsbRecExpr ( void );
 
 /****************************************************************************
 **
-*F  CodeAssPosobj() . . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosobj()  . . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosobjLevel(<level>) . . . . . . .  code assignment to several lists
-*F  CodeAsssPosobjLevel(<level>)  . . code multiple assignment to several lists
+*F  CodeAssPosobj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAsssPosobj()  . . . . . . . . . .  code multiple assignment to a list
+*F  CodeAssPosobjLevel(<level>) . . . . . .  code assignment to several lists
+*F  CodeAsssPosobjLevel(<level>)  . code multiple assignment to several lists
 */
 extern  void            CodeAssPosobj ( void );
 
@@ -1062,10 +1102,10 @@ extern  void            CodeUnbPosobj ( void );
 
 /****************************************************************************
 **
-*F  CodeElmPosobj() . . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosobj()  . . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosobjLevel(<level>) . . . . . . . . code selection of several lists
-*F  CodeElmsPosobjLevel(<level>)  . .  code multiple selection of several lists
+*F  CodeElmPosobj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmsPosobj()  . . . . . . . . . . . code multiple selection of a list
+*F  CodeElmPosobjLevel(<level>) . . . . . . . code selection of several lists
+*F  CodeElmsPosobjLevel(<level>)  .  code multiple selection of several lists
 */
 extern  void            CodeElmPosobj ( void );
 
@@ -1082,8 +1122,8 @@ extern  void            CodeIsbPosobj ( void );
 
 /****************************************************************************
 **
-*F  CodeAssComobjName(<rnam>) . . . . . . . . . . . code assignment to a record
-*F  CodeAssComobjExpr() . . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComobjName(<rnam>) . . . . . . . . . . code assignment to a record
+*F  CodeAssComobjExpr() . . . . . . . . . . . . . code assignment to a record
 */
 extern  void            CodeAssComobjName (
             UInt                rnam );
@@ -1098,8 +1138,8 @@ extern  void            CodeUnbComobjExpr ( void );
 
 /****************************************************************************
 **
-*F  CodeElmComobjName(<rnam>) . . . . . . . . . . .  code selection of a record
-*F  CodeElmComobjExpr() . . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComobjName(<rnam>) . . . . . . . . . .  code selection of a record
+*F  CodeElmComobjExpr() . . . . . . . . . . . . .  code selection of a record
 */
 extern  void            CodeElmComobjName (
             UInt                rnam );
@@ -1115,43 +1155,38 @@ extern  void            CodeIsbComobjExpr ( void );
 
 /****************************************************************************
 **
-*F  CodeInfoBegin() . . . . . . . . .  start coding of Info statement
-*F  CodeInfoMiddle()  . . . . . .  shift to coding printable arguments
+*F  CodeInfoBegin() . . . . . . . . . . . . .  start coding of Info statement
+*F  CodeInfoMiddle()  . . . . . . . . .   shift to coding printable arguments
 *F  CodeInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
-*/
-
-extern void             CodeInfoBegin ( void );
-extern void             CodeInfoMiddle( void );
-extern void             CodeInfoEnd   (
-	   UInt                   narg );
-
-/****************************************************************************
 **
-*F  CodeInfoBegin() . . . . . . . . .  start coding of Info statement
-*F  CodeInfoMiddle()  . . . . . .  shift to coding printable arguments
-*F  CodeInfoEnd( <narg> ) . . Info statement complete, <narg> things to print
+**  These  actions deal  with the  Info  statement, which is coded specially,
+**  because not all of its arguments are always evaluated.
 */
+extern  void            CodeInfoBegin ( void );
 
-extern void             CodeInfoBegin ( void );
-extern void             CodeInfoMiddle( void );
-extern void             CodeInfoEnd   (
-	   UInt                   narg );
+extern  void            CodeInfoMiddle ( void );
+
+extern  void            CodeInfoEnd   (
+            UInt                narg );
+
 
 /****************************************************************************
 **
 *F  CodeAssertBegin() . . . . . . .  start interpretation of Assert statement
 *F  CodeAsseerAfterLevel()  . . called after the first argument has been read
 *F  CodeAssertAfterCondition() called after the second argument has been read
-*F  CodeAssertEnd2Args() . . . .  called after reading the closing parenthesis
-*F  CodeAssertEnd3Args() . . . .  called after reading the closing parenthesis
-**
+*F  CodeAssertEnd2Args() . . . . called after reading the closing parenthesis
+*F  CodeAssertEnd3Args() . . . . called after reading the closing parenthesis
 */
+extern  void            CodeAssertBegin ( void );
 
-extern void             CodeAssertBegin ( void );
-extern void             CodeAssertAfterLevel ( void );
-extern void             CodeAssertAfterCondition ( void );
-extern void             CodeAssertEnd2Args ( void );
-extern void             CodeAssertEnd3Args ( void );
+extern  void            CodeAssertAfterLevel ( void );
+
+extern  void            CodeAssertAfterCondition ( void );
+
+extern  void            CodeAssertEnd2Args ( void );
+
+extern  void            CodeAssertEnd3Args ( void );
 
 
 /****************************************************************************
@@ -1161,6 +1196,12 @@ extern void             CodeAssertEnd3Args ( void );
 **  'InitCode' initializes the coder package.
 */
 extern  void            InitCode ( void );
+
+
+/****************************************************************************
+**
+*E  code.h  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 

@@ -199,7 +199,7 @@ typedef UInt            TypSymbolSet;
 **
 *V  Value . . . . . . . . . . . .  value of the identifier, integer or string
 **
-**  If 'Symbol' is 'S_IDENT', 'S_INT' or 'S_TRING' the variable 'Value' holds
+**  If 'Symbol' is 'S_IDENT','S_INT' or 'S_STRING' the variable 'Value' holds
 **  the name of the identifier, the digits of the integer or the value of the
 **  string constant.
 **
@@ -532,8 +532,10 @@ void            GetIdent ( void )
             else if ( *In == 't'  && i < sizeof(Value)-1 )  Value[i] = '\t';
             else if ( *In == 'r'  && i < sizeof(Value)-1 )  Value[i] = '\r';
             else if ( *In == 'b'  && i < sizeof(Value)-1 )  Value[i] = '\b';
-            else if (                i < sizeof(Value)-1 )  Value[i] = *In;
-            isQuoted = 1;
+            else if ( i < sizeof(Value)-1 )  {
+		Value[i] = *In;
+		isQuoted = 1;
+	    }
         }
 
         /* put normal chars into 'Value' but only if there is room         */
@@ -802,6 +804,8 @@ void            GetSymbol ( void )
                 if ( *In == '.' ) { Symbol = S_DOTDOT;  GET_CHAR();  break; }
                 break;
     case '!':   Symbol = S_ILLEGAL;                     GET_CHAR();
+ 	        if ( *In == '\\' ) { GET_CHAR(); 
+                  if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '.' ) { Symbol = S_BDOT;    GET_CHAR();  break; }
                 if ( *In == '[' ) { Symbol = S_BLBRACK; GET_CHAR();  break; }
                 if ( *In == '{' ) { Symbol = S_BLBRACE; GET_CHAR();  break; }
@@ -815,16 +819,23 @@ void            GetSymbol ( void )
     case ',':   Symbol = S_COMMA;                       GET_CHAR();  break;
 
     case ':':   Symbol = S_ILLEGAL;                     GET_CHAR();
-                if ( *In == '=' ) { Symbol = S_ASSIGN;  GET_CHAR();  break; }
+ 	        if ( *In == '\\' ) { GET_CHAR(); 
+                  if ( *In == '\n' ) { GET_CHAR(); } }
+                if ( *In == '=' ) { Symbol = S_ASSIGN;  GET_CHAR(); break; }
                 break;
+
     case ';':   Symbol = S_SEMICOLON;                   GET_CHAR();  break;
 
     case '=':   Symbol = S_EQ;                          GET_CHAR();  break;
     case '<':   Symbol = S_LT;                          GET_CHAR();
+ 	        if ( *In == '\\' ) { GET_CHAR(); 
+                  if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '=' ) { Symbol = S_LE;      GET_CHAR();  break; }
                 if ( *In == '>' ) { Symbol = S_NE;      GET_CHAR();  break; }
                 break;
     case '>':   Symbol = S_GT;                          GET_CHAR();
+ 	        if ( *In == '\\' ) { GET_CHAR(); 
+                  if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '=' ) { Symbol = S_GE;      GET_CHAR();  break; }
                 break;
 
@@ -1303,6 +1314,41 @@ void            Pr (
                     else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
                     else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
                     else if ( *q == '\03' ) { PutChr('\\'); PutChr('c');  }
+                    else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
+                    else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
+                    else                    { PutChr( *q );               }
+                }
+
+                /* on to the next argument                                 */
+                arg1 = arg2;
+            }
+
+            /* '%C' print a string with the necessary C escapes            */
+            else if ( *p == 'C' ) {
+
+                /* compute how many characters this identifier requires    */
+                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+                    if      ( *q == '\n'  ) { prec -= 2; }
+                    else if ( *q == '\t'  ) { prec -= 2; }
+                    else if ( *q == '\r'  ) { prec -= 2; }
+                    else if ( *q == '\b'  ) { prec -= 2; }
+                    else if ( *q == '\03' ) { prec -= 3; }
+                    else if ( *q == '"'   ) { prec -= 2; }
+                    else if ( *q == '\\'  ) { prec -= 2; }
+                    else                    { prec -= 1; }
+                }
+
+                /* if wanted push an appropriate number of <space>-s       */
+                while ( prec-- > 0 )  PutChr(' ');
+
+                /* print the string                                        */
+                for ( q = (Char*)arg1; *q != '\0'; q++ ) {
+                    if      ( *q == '\n'  ) { PutChr('\\'); PutChr('n');  }
+                    else if ( *q == '\t'  ) { PutChr('\\'); PutChr('t');  }
+                    else if ( *q == '\r'  ) { PutChr('\\'); PutChr('r');  }
+                    else if ( *q == '\b'  ) { PutChr('\\'); PutChr('b');  }
+                    else if ( *q == '\03' ) { PutChr('\\'); PutChr('0');
+		                              PutChr('3');                }
                     else if ( *q == '"'   ) { PutChr('\\'); PutChr('"');  }
                     else if ( *q == '\\'  ) { PutChr('\\'); PutChr('\\'); }
                     else                    { PutChr( *q );               }

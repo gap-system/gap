@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.22  1997/03/04 16:04:48  htheisse
+#H  checked the `oprt*' functions against the descriptions of the 3.4 manual
+#H
 #H  Revision 4.21  1997/02/26 13:59:28  htheisse
 #H  reorganised methods for `MaximalBlocks'
 #H
@@ -103,13 +106,13 @@ end );
 ##
 #M  Blocks( <G>, <D>, <gens>, <oprs>, <OnPoints> )  . . . . find block system
 ##
-InstallOtherMethod( BlocksOp,
+InstallMethod( BlocksOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicsCollection, IsList and IsEmpty,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], 0,
-    function( G, D, gens, oprs, opr )
+    function( G, D, noseed, gens, oprs, opr )
     local   blocks,     # block system of <G>, result
             orbit,      # orbit of 1 under <G>
             trans,      # factored inverse transversal for <orbit>

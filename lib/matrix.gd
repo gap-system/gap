@@ -27,6 +27,14 @@ InfoMatrix := NewInfoClass( "InfoMatrix" );
 #############################################################################
 ##
 
+#O  DiagonalOfMat( <mat> )
+##
+DiagonalOfMat := NewOperationArgs( "DiagonalOfMat" );
+
+
+#############################################################################
+##
+
 #A  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
 ##
 AbelianInvariantsOfList := NewAttribute(

@@ -239,7 +239,7 @@ local Tbak,Fbak,flg,sel,i,fname;
     fname:=Concatenation("trans",String(deg));
     if deg>15 and not IsPrime(deg) then
       if not IsBound(TRANSGRP[deg]) then
-	flg:= not ReadPath( TRANSNAME, fname, ".grp","ReadTrans");
+	flg:= not ReadGapRoot( Concatenation( "trans/", fname, ".grp" ) );
 	if flg then
 	    Error( "the transitive group library file '",fname,
 		   "' must exist and be readable");
@@ -266,7 +266,7 @@ local Tbak,Fbak,flg,sel,i,fname;
 
     IsString(fname);
 
-    flg:= not ReadPath( TRANSNAME, fname, ".grp","ReadTrans");
+    flg:= not ReadGapRoot( Concatenation( "trans/", fname, ".grp" ) );
 
     if IsBound(Tbak) then T:=Tbak;fi;
     if IsBound(Fbak) then F:=Fbak;fi;

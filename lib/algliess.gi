@@ -683,7 +683,7 @@ end;
 SimpleLieAlgebraTypeE := function( n, F )
 
     local T,               # The table of the Lie algebra constructed.
-          i,j,k,l,         # Loop variables.
+          i,j,k,           # Loop variables.
           lst,             # A list.
           R,               # The positive roots of E_8 (or E_6 or E_7)
           cc,              # List of coefficients.

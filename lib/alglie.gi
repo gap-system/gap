@@ -145,8 +145,7 @@ InstallMethod( IsAbelianLieAlgebra,
     [ IsAlgebra and IsLieAlgebra ], 0,
     function( L )
 
-    local T,      # structure constants table of a basis of 'L'
-          i,      # loop variable
+    local i,      # loop variable
           j,      # loop variable
           zero,   # zero of 'L'
           gens;   # algebra generators of 'L'
@@ -884,7 +883,6 @@ PowerSi := function( F, i )
           combs, # the list of all i-1 element subsets of {1,2,\ldots, p-2}
                  # it serves to make the list seqs
           v,     # a vector of 1's and 2's
-          arg,   # the argument of the returned function
           seqs;  # the list of all sequences of 1's and 2's of length p-2,
                  # with i-1 1's and p-2 2's serving as input for si
                  # for example, the sequence [1,1,2] means the element
@@ -1737,7 +1735,7 @@ InstallMethod( LeviDecomposition,
       od;
     od;
     if subalg then
-      Info( "InfoAlgebra", 1,
+      Info( InfoAlgebra, 1,
             "LeviDecomposition: subalgebra test successful" );
       return [ SubalgebraNC( L, bb, "basis" ), R ];
     fi;    
@@ -1897,7 +1895,6 @@ InstallMethod( DirectSumDecomposition,
           n,                # The dimension of 'L'.
           m,                # An integer.
           set,              # A list of integers.
-          ready,            # A boolean.
           C,                # The centre of 'L'.
           bvc,              # basis vectors of a basis of 'C'
           D,                # The derived subalgebra of 'L'.
@@ -1917,12 +1914,11 @@ InstallMethod( DirectSumDecomposition,
           sp,               # A vector space.
           x,                # An element of 'sp'.
           b,                # A list of basis vectors.
-          u,i,j,k,          # Loop variables.
+          i,j,k,            # Loop variables.
           centralizer,      # The centralizer of 'adL' in the matrix algebra.
           Bc,               # basis of 'centralizer'
           Rad,              # The radical of 'centralizer'.
           c,                # The dimension of 'centralizer'.
-          r,                # The dimension of 'Rad'.
           M,                # A matrix.
           facs,             # A list of factors of a polynomial.
           hlist,            #
@@ -2909,8 +2905,7 @@ InstallMethod( RootSystem,
           B,          # A list of bases of subspaces of 'L' whose direct sum
                       # is equal to 'L'
           newB,       # A new version of 'B' being constructed
-          i,j,k,l,    # Loop variables
-          p,          # A polynomial
+          i,j,l,      # Loop variables
           facs,       # List of the factors of 'p'
           V,          # A basis of a subspace of 'L'
           M,          # A matrix
@@ -2931,7 +2926,6 @@ InstallMethod( RootSystem,
           sorh,       # The set 'Set( hts )'
           sorR,       # The soreted set of roots
           Rvecs;      # The root vectors.
-
 
     # Let 'a' and 'b' be two roots of the rootsystem 'R'.
     # Let 's' and 't' be the largest integers such that 'a-s*b' and 'a+t*b'

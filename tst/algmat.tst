@@ -16,9 +16,9 @@ gap> Ring( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 <algebra over GF(3), with 2 generators>
 
 gap> Ring( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-<algebra over Rationals, with 1 generators>
+Ring( ... )
 gap> Ring( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
-<algebra over Rationals, with 2 generators>
+Ring( ... )
 
 
 gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
@@ -26,9 +26,9 @@ gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 <algebra-with-one over GF(3), with 2 generators>
 
 gap> RingWithOne( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-<algebra-with-one over Rationals, with 1 generators>
+RingWithOne( ... )
 gap> RingWithOne( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
-<algebra-with-one over Rationals, with 2 generators>
+RingWithOne( ... )
 
 gap> mat:= [ [ 1, E(4) ], [ 1, 1 ] ];
 [ [ 1, E(4) ], [ 1, 1 ] ]

@@ -464,7 +464,7 @@ InstallMethod( SetConjugate,
     0,
 
 function( sc, i, j, rhs )
-    local   fam,  m,  n,  l;
+    local   m,  n,  l;
 
     # check <i> and <j>
     if i <= 1  then

@@ -52,6 +52,103 @@ char * Revision_vars_c =
 /****************************************************************************
 **
 
+*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
+**
+**  'T_LVARS' is the type of bags used to store values of local variables.
+**
+**  'T_LVARS' is defined in the declaration part of this package as follows
+**
+#define T_LVARS                 174
+*/
+
+
+/****************************************************************************
+**
+
+*F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
+**
+**  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
+**  for  the function    <func>,   with <narg> arguments    and  <nloc> local
+**  variables.  The old local variables bag is saved in <old>.
+**
+**  'SWITCH_TO_NEW_LVARS' is defined in the  declaration part of this package
+**  as follows
+**
+#define SWITCH_TO_NEW_LVARS(func,narg,nloc,old)                             \
+                        do {                                                \
+                            (old) = CurrLVars;                              \
+                            CHANGED_BAG( (old) );                           \
+                            CurrLVars = NewBag( T_LVARS,                    \
+                                                sizeof(Obj)*(1+narg+nloc) );\
+                            PtrLVars  = PTR_BAG( CurrLVars );               \
+                            CURR_FUNC = (func);                             \
+                            PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
+                            SET_BRK_CALL_FROM( old );                       \
+                        } while ( 0 )
+*/
+
+
+/****************************************************************************
+**
+*F  SWITCH_TO_OLD_LVARS( <old> )  . . .  switch to an old local variables bag
+**
+**  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
+**
+**  'SWITCH_TO_NEW_LVARS' is defined in the  declaration part of this package
+**  as follows
+**
+#define SWITCH_TO_OLD_LVARS(old)                                            \
+                        do {                                                \
+                            CurrLVars = (old);                              \
+                            PtrLVars  = PTR_BAG( CurrLVars );               \
+                            PtrBody   = PTR_BAG( BODY_FUNC( CURR_FUNC ) );  \
+                        } while ( 0 )
+*/
+
+
+/****************************************************************************
+**
+
+*V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
+**
+**  'CurrLVars'  is the bag containing the  values  of the local variables of
+**  the currently executing interpreted function.
+**
+**  Assignments  to  the local variables change   this bag.  We  do  not call
+**  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
+**  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
+*/
+Bag             CurrLVars;
+
+
+/****************************************************************************
+**
+*V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
+**
+**  'BottomLVars' is the local variables bag at the bottom of the call stack.
+**  Without   such a dummy  frame at  the bottom, 'SWITCH_TO_NEW_LVARS' would
+**  have to check for the bottom, slowing it down.
+**
+*/
+Bag             BottomLVars;
+
+
+/****************************************************************************
+**
+*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
+**
+**  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
+**  access local variables.
+**
+**  Since   a   garbage collection may  move   this  bag  around, the pointer
+**  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
+*/
+Obj *           PtrLVars;
+
+
+/****************************************************************************
+**
+
 *F  CURR_FUNC . . . . . . . . . . . . . . . . . . . . . . .  current function
 **
 **  'CURR_FUNC' is the function that is currently executing.
@@ -67,81 +164,40 @@ char * Revision_vars_c =
 
 /****************************************************************************
 **
-*F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
+*F  BRK_CALL_TO() . . . . . . . . . expr. which was called from current frame
+*F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
 **
-**  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
-**  for  the function    <func>,   with <narg> arguments    and  <nloc> local
-**  variables.  The old local variables bag is saved in <old>.
+**  'BRK_CALL_TO'  and 'SET_BRK_CALL_TO' are defined  in the declaration part
+**  of this package as follows
 **
-**  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
-**
-**  'SWITCH_TO_NEW_LVARS'    and  'SWITCH_TO_OLD_LVARS'  are defined   in the
-**  declaration part of this package as follows.
-**
-#define SWITCH_TO_NEW_LVARS(func,narg,nloc,old)                             \
-                        do {                                                \
-                            (old) = CurrLVars;                              \
-                            CHANGED_BAG( (old) );                           \
-                            CurrLVars = NewBag( T_LVARS,                    \
-                                                sizeof(Obj)*(1+narg+nloc) );\
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
-                            CURR_FUNC = (func);                             \
-                        } while ( 0 )
-
+#ifndef NO_BRK_CALLS
+#define BRK_CALL_TO()                   (PtrLVars[1])
+#define SET_BRK_CALL_TO(expr)           (PtrLVars[1] = (expr))
+#endif
+#ifdef  NO_BRK_CALLS
+#define BRK_CALL_TO()
+#define SET_BRK_CALL_TO(expr)
+#endif
 */
 
 
 /****************************************************************************
 **
-*F  SWITCH_TO_OLD_LVARS( <old> )  . . .  switch to an old local variables bag
+*F  BRK_CALL_FROM() . . . . . . . . .  frame from which this frame was called
+*F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
 **
-**  'SWITCH_TO_NEW_LVARS'    and  'SWITCH_TO_OLD_LVARS'  are defined   in the
-**  declaration part of this package as follows.
+**  'BRK_CALL_FROM' and  'SET_BRK_CALL_FROM' are defined  in the  declaration
+**  part of this package as follows
 **
-#define SWITCH_TO_OLD_LVARS(old)                                            \
-                        do {                                                \
-                            CurrLVars = (old);                              \
-                            PtrLVars  = PTR_BAG( CurrLVars );               \
-                        } while ( 0 )
+#ifndef NO_BRK_CALLS
+#define BRK_CALL_FROM()                 (PtrLVars[2])
+#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
+#endif
+#ifdef  NO_BRK_CALLS
+#define BRK_CALL_FROM()
+#define SET_BRK_CALL_FROM(lvars)
+#endif
 */
-
-
-/****************************************************************************
-**
-
-*V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
-**
-**  'CurrLVars'  is the bag containing the  values  of the local variables of
-**  the currently executing interpreted function.
-**
-**  'BottomLVars' is the local variables bag at the bottom of the call stack.
-**  Without   such a dummy  frame at  the bottom, 'SWITCH_TO_NEW_LVARS' would
-**  have to check for the bottom, slowing it down.
-**
-**  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
-**  access local variables.
-**
-**  Assignments  to  the local variables change   this bag.  We  do  not call
-**  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
-**  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
-**  Since   a   garbage collection may  move   this  bag  around, the pointer
-**  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
-*/
-Bag CurrLVars;
-
-
-/****************************************************************************
-**
-*V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
-*/
-Bag BottomLVars;
-
-
-/****************************************************************************
-**
-*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
-*/
-Obj * PtrLVars;
 
 
 /****************************************************************************
@@ -151,8 +207,7 @@ Obj * PtrLVars;
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 **
-**  'ASS_LVAR', 'VAR_LVAR', 'NAME_LVAR', are defined  in the declaration part
-**  of this package as follows
+**  'ASS_LVAR' is defined in the declaration part of this package as follows
 **
 #define ASS_LVAR(lvar,val) \
     do { PtrLVars[(lvar)+2] = (val); CHANGED_BAG((lvar)); } while (0)
@@ -165,8 +220,7 @@ Obj * PtrLVars;
 **
 **  'OBJ_LVAR' returns the value of the local variable <lvar>.
 **
-**  'ASS_LVAR', 'VAR_LVAR', 'NAME_LVAR', are defined  in the declaration part
-**  of this package as follows
+**  'OBJ_LVAR' is defined in the declaration part of this package as follows
 **
 #define OBJ_LVAR(lvar)          (PtrLVars[(lvar)+2])
 */
@@ -178,8 +232,7 @@ Obj * PtrLVars;
 **
 **  'NAME_LVAR' returns the name of the local variable <lvar> as a C string.
 **
-**  'ASS_LVAR', 'VAR_LVAR', 'NAME_LVAR', are defined  in the declaration part
-**  of this package as follows
+**  'NAME_LVAR' is defined in the declaration part of this package as follows
 **
 #define NAME_LVAR(lvar)         NAMI_FUNC( CURR_FUNC, lvar )
 */
@@ -191,7 +244,7 @@ Obj * PtrLVars;
 **
 **  'ObjLVar' returns the value of the local variable <lvar>.
 */
-Obj ObjLVar (
+Obj             ObjLVar (
     UInt                lvar )
 {
     Obj                 val;            /* value result                    */
@@ -2790,6 +2843,7 @@ void            VarsBeforeCollectBags ( void )
 void            VarsAfterCollectBags ( void )
 {
     PtrLVars = PTR_BAG( CurrLVars );
+    PtrBody  = (Stat*)PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     PtrGVars = PTR_BAG( ValGVars );
 }
 
@@ -2804,6 +2858,7 @@ void            VarsAfterCollectBags ( void )
 void            InitVars ( )
 {
     UInt                i;              /* loop variable                   */
+    Obj                 tmp;
 
     /* install the marking functions for local variables bag               */
     InfoBags[        T_LVARS          ].name = "values bag";
@@ -2952,7 +3007,11 @@ void            InitVars ( )
     /* make 'CurrLVars' known to Gasman                                    */
     InitGlobalBag( &CurrLVars );
     InitGlobalBag( &BottomLVars );
-    BottomLVars = NewBag( T_LVARS, sizeof(Obj) );
+    BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
+    tmp = NewFunctionC( "bottom", 0, "", 0 );
+    PTR_BAG(BottomLVars)[0] = tmp;
+    tmp = NewBag( T_BODY, 0 );
+    BODY_FUNC( PTR_BAG(BottomLVars)[0] ) = tmp;
     SWITCH_TO_OLD_LVARS( BottomLVars );
 }
 

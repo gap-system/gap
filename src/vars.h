@@ -23,39 +23,20 @@ char *          Revision_vars_h =
 
 /****************************************************************************
 **
-*F  CURR_FUNC . . . . . . . . . . . . . . . . . . . . . . .  current function
+*S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
 **
-**  'CURR_FUNC' is the function that is currently executing.
-**
-**  This  is  in this package,  because  it is stored   along  with the local
-**  variables in the local variables bag.
+**  'T_LVARS' is the type of bags used to store values of local variables.
 */
-#define CURR_FUNC       (PtrLVars[0])
-
-#ifndef NO_BRK_CALLS
-#define BRK_CALL_TO()                   (PtrLVars[1])
-#define SET_BRK_CALL_TO(expr)           (PtrLVars[1] = (expr))
-#define BRK_CALL_FROM()                 (PtrLVars[2])
-#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
-#endif
-#ifdef  NO_BRK_CALLS
-#define BRK_CALL_TO()                   /* do nothing */
-#define SET_BRK_CALL_TO(expr)           /* do nothing */
-#define BRK_CALL_FROM()                 /* do nothing */
-#define SET_BRK_CALL_FROM(lvars)        /* do nothing */
-#endif
+#define T_LVARS                 174
 
 
 /****************************************************************************
 **
-*F  SWITCH_TO_NEW_LVARS(<func>,<narg>,<nloc>,<old>) . . switch to a new local
-*F  SWITCH_TO_OLD_LVARS(<old>)  . . . .  switch to an old local variables bag
+*F  SWITCH_TO_NEW_LVARS( <func>, <narg>, <nloc>, <old> )  . . . . . new local
 **
 **  'SWITCH_TO_NEW_LVARS'  creates and switches  to a new local variabes bag,
 **  for  the function    <func>,   with <narg> arguments    and  <nloc> local
 **  variables.  The old local variables bag is saved in <old>.
-**
-**  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
 */
 #define SWITCH_TO_NEW_LVARS(func,narg,nloc,old)                             \
                         do {                                                \
@@ -65,37 +46,104 @@ char *          Revision_vars_h =
                                                 sizeof(Obj)*(3+narg+nloc) );\
                             PtrLVars  = PTR_BAG( CurrLVars );               \
                             CURR_FUNC = (func);                             \
+                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                             SET_BRK_CALL_FROM( old );                       \
                         } while ( 0 )
 
+
+/****************************************************************************
+**
+*F  SWITCH_TO_OLD_LVARS( <old> )  . . .  switch to an old local variables bag
+**
+**  'SWITCH_TO_OLD_LVARS' switches back to the old local variables bag <old>.
+*/
 #define SWITCH_TO_OLD_LVARS(old)                                            \
                         do {                                                \
                             CurrLVars = (old);                              \
                             PtrLVars  = PTR_BAG( CurrLVars );               \
+                            PtrBody = (Stat*)PTR_BAG(BODY_FUNC(CURR_FUNC)); \
                         } while ( 0 )
 
 
 /****************************************************************************
 **
 *V  CurrLVars   . . . . . . . . . . . . . . . . . . . . . local variables bag
-*V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
-*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
 **
 **  'CurrLVars'  is the bag containing the  values  of the local variables of
 **  the currently executing interpreted function.
+**
+**  Assignments  to  the local variables change   this bag.  We  do  not call
+**  'CHANGED_BAG' for  each of such change.  Instead we wait until  a garbage
+**  collection begins  and then  call  'CHANGED_BAG'  in  'BeginCollectBags'.
+*/
+extern  Bag             CurrLVars;
+
+
+/****************************************************************************
+**
+*V  BottomLVars . . . . . . . . . . . . . . . . .  bottom local variables bag
 **
 **  'BottomLVars' is the local variables bag at the bottom of the call stack.
 **  Without   such a dummy  frame at  the bottom, 'SWITCH_TO_NEW_LVARS' would
 **  have to check for the bottom, slowing it down.
 **
-**  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
-**  access local variables.
 */
-extern  Bag             CurrLVars;
-
 extern  Bag             BottomLVars;
 
+
+/****************************************************************************
+**
+*V  PtrLVars  . . . . . . . . . . . . . . . .  pointer to local variables bag
+**
+**  'PtrLVars' is a pointer to the 'CurrLVars' bag.  This  makes it faster to
+**  access local variables.
+**
+**  Since   a   garbage collection may  move   this  bag  around, the pointer
+**  'PtrLVars' must be recalculated afterwards in 'VarsAfterCollectBags'.
+*/
 extern  Obj *           PtrLVars;
+
+
+/****************************************************************************
+**
+*F  CURR_FUNC . . . . . . . . . . . . . . . . . . . . . . .  current function
+**
+**  'CURR_FUNC' is the function that is currently executing.
+**
+**  This  is  in this package,  because  it is stored   along  with the local
+**  variables in the local variables bag.
+*/
+#define CURR_FUNC       (PtrLVars[0])
+
+
+/****************************************************************************
+**
+*F  BRK_CALL_TO() . . . . . . . . . expr. which was called from current frame
+*F  SET_BRK_CALL_TO(expr) . . . set expr. which was called from current frame
+*/
+#ifndef NO_BRK_CALLS
+#define BRK_CALL_TO()                   ((Expr)(Int)(PtrLVars[1]))
+#define SET_BRK_CALL_TO(expr)           (PtrLVars[1] = (Obj)(Int)(expr))
+#endif
+#ifdef  NO_BRK_CALLS
+#define BRK_CALL_TO()                   /* do nothing */
+#define SET_BRK_CALL_TO(expr)           /* do nothing */
+#endif
+
+
+/****************************************************************************
+**
+*F  BRK_CALL_FROM() . . . . . . . . .  frame from which this frame was called
+*F  SET_BRK_CALL_FROM(lvars)  . .  set frame from which this frame was called
+*/
+#ifndef NO_BRK_CALLS
+#define BRK_CALL_FROM()                 (PtrLVars[2])
+#define SET_BRK_CALL_FROM(lvars)        (PtrLVars[2] = (lvars))
+#endif
+#ifdef  NO_BRK_CALLS
+#define BRK_CALL_FROM()                 /* do nothing */
+#define SET_BRK_CALL_FROM(lvars)        /* do nothing */
+#endif
 
 
 /****************************************************************************

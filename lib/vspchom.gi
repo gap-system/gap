@@ -33,6 +33,14 @@
 Revision.vspchom_gi :=
     "@(#)$Id$";
 
+#T TODO:
+#T
+#T specific representation for nat. hom.
+#T     (choice of coefficients instead of silly matrix)
+#T AsLeftModuleGeneralMappingByImages, to allow id + id, c * id, -id,
+#T     Zero( id ), id + zero, - zero, c * zero, ...
+#T \= methods for m.b.m. and g.m.b.i. (if bases coincide, compare data)
+#T parent dependencies for nat. hom.
 
 #############################################################################
 ##
@@ -1116,7 +1124,7 @@ InstallMethod( NaturalHomomorphismBySubspace,
 
     # If 'V' is equal to 'W', return a zero mapping.
     if not IsSubset( V, W ) then
-      Error( "<W> must be c ontained in <V>" );
+      Error( "<W> must be contained in <V>" );
     elif Dimension( V ) = Dimension( W ) then
       return ZeroMapping( V, FullRowModule( LeftActingDomain( V ), 0 ) );
     fi;
@@ -1157,6 +1165,136 @@ InstallMethod( NaturalHomomorphismBySubspace,
 #T relations are not needed if the kernel is known ?
 
     SetKernelOfAdditiveGeneralMapping( nathom, W );
+
+    # Run the implications for the factor.
+    UseFactorRelation( V, W, img );
+
+    return nathom;
+    end );
+
+
+#############################################################################
+##
+#M  NaturalHomomorphismByIdeal( <A>, <triv> ) . . . . . . . . . . for FLMLORs
+##
+##  Return the identity mapping.
+##
+InstallMethod( NaturalHomomorphismByIdeal,
+    "method for FLMLOR and trivial FLMLOR",
+    IsIdentical,
+    [ IsFLMLOR, IsFLMLOR and IsTrivial ], SUM_FLAGS,
+    function( A, I )
+    return IdentityMapping( A );
+    end );
+
+
+#############################################################################
+##
+#M  NaturalHomomorphismByIdeal( <A>, <I> )  . . . . for two fin. dim. FLMLORs
+##
+##  return a left module m.b.m.
+##
+InstallMethod( NaturalHomomorphismByIdeal,
+    "method for two finite dimensional FLMLORs",
+    IsIdentical,
+    [ IsFLMLOR, IsFLMLOR ], 0,
+    function( A, I )
+
+    local F,
+          Ivectors,
+          mb,
+          compl,
+          gen,
+          B,
+          empty,
+          n,
+          k,
+          T,
+          i,
+          j,
+          coeff,
+          pos,
+          img,
+          canbas,
+          zero,
+          Bimgs,
+          nathom;
+
+    # Check that the FLMLORs are finite dimensional.
+    if not IsFiniteDimensional( A ) or not IsFiniteDimensional( I ) then
+      TryNextMethod();
+    fi;
+
+    # If 'A' is equal to 'I', return a zero mapping.
+    if not IsIdeal( A, I ) then
+      Error( "<I> must be an ideal in <A>" );
+    elif Dimension( A ) = Dimension( I ) then
+      return ZeroMapping( A, NullAlgebra( LeftActingDomain( A ) ) );
+    fi;
+
+    # If the left acting domains are different, adjust them.
+    F:= LeftActingDomain( A );
+    if F <> LeftActingDomain( I ) then
+      F:= Intersection2( A, LeftActingDomain( I ) );
+      A:= AsFLMLOR( F, A );
+      I:= AsFLMLOR( F, I );
+    fi;
+
+    # Compute a basis of 'A' through a basis of 'I'.
+    Ivectors:= BasisVectors( BasisOfDomain( I ) );
+    mb:= MutableBasisByGenerators( F, Ivectors );
+    compl:= [];
+    for gen in BasisVectors( BasisOfDomain( A ) ) do
+      if not IsContainedInSpan( mb, gen ) then
+        Add( compl, gen );
+        CloseMutableBasis( mb, gen );
+      fi;
+    od;
+    B:= BasisByGeneratorsNC( A, Concatenation( Ivectors, compl ) );
+
+    # Compute the structure constants of the quotient algebra.
+    zero:= Zero( F );
+    empty:= [ [], [] ];
+    k:= Length( Ivectors );
+    n:= Length( compl );
+    if   HasIsCommutative( A ) and IsCommutative( A ) then
+      T:= EmptySCTable( n, Zero( F ), "symmetric" );
+    elif HasIsAnticommutative( A ) and IsAnticommutative( A ) then
+      T:= EmptySCTable( n, Zero( F ), "antisymmetric" );
+    else
+      T:= EmptySCTable( n, Zero( F ) );
+    fi;
+    for i in [ 1 .. n ] do
+      for j in [ 1 .. n ] do
+        coeff:= Coefficients( B, compl[i] * compl[j] ){ [ k+1 .. k+n ] };
+        pos:= Filtered( [ 1 .. n ], i -> coeff[i] <> zero );
+        if not IsEmpty( pos ) then
+          T[i][j]:= Immutable( [ pos, coeff{ pos } ] );
+        fi;
+      od;
+    od;
+#T use (anti)symm. here!!!
+
+    # Compute the linear mapping by images.
+    img:= AlgebraByStructureConstants( F, T );
+    canbas:= CanonicalBasis( img );
+    zero:= Zero( F ) * [ 1 .. n ];
+    Bimgs:= Concatenation( List( [ 1 .. k ], v -> zero ),
+                           IdentityMat( n, F ) );
+    nathom:= LeftModuleHomomorphismByMatrix( B, Bimgs, canbas );
+#T take a special representation for nat. hom.s,
+#T (just compute coefficients, and then choose a subset ...)
+    SetIsAlgebraHomomorphism( nathom, true );
+
+    # Enter the preimages info.
+    nathom!.basisimage:= canbas;
+    nathom!.preimagesbasisimage:= Immutable( compl );
+#T relations are not needed if the kernel is known ?
+
+    SetKernelOfAdditiveGeneralMapping( nathom, I );
+
+    # Run the implications for the factor.
+    UseFactorRelation( A, I, img );
 
     return nathom;
     end );

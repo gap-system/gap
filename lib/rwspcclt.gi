@@ -54,7 +54,7 @@ end;
 #F  FinitePolycyclicCollector_IsConfluent( <col> )
 ##
 FinitePolycyclicCollector_IsConfluent := function( col, failed )
-    local   gens,  rods,  k,  gk,  j,  gj,  i,  gi,  r1,  r2,  R;
+    local   gens,  rods,  k,  gk,  j,  gj,  i,  gi,  r1,  r2;
 
     gens := GeneratorsOfRws(col);
     rods := RelativeOrders(col);
@@ -180,9 +180,6 @@ end );
 
 
 #############################################################################
-if not IsBound( InfoConsistency ) then
-    InfoConsistency := function( arg ) end;
-fi;
 InstallMethod( IsConfluent,
         "generic method for polycyclic rewriting systems",
         true,
@@ -199,7 +196,7 @@ InstallMethod( IsConfluent,
     for k in [n,n-1..1] do
         for j in [k-1,k-2..1] do
             for i in [j-1,j-2..1] do
-                InfoConsistency( "checking ", k, " ", j, " ", i, "\n" );
+                Info( InfoConfluence, 2, "check ", k, " ", j, " ", i, "\n" );
                 ev1 := ReducedProduct( pcp, g[k],
 	                               ReducedProduct( pcp, g[j], g[i] ) ); 
                 ev2 := ReducedProduct( pcp, ReducedProduct( pcp, g[k], g[j] ),
@@ -216,7 +213,7 @@ InstallMethod( IsConfluent,
     for j in [n,n-1..1] do
         for i in [j-1,j-2..1] do
             if  orders[j] <> 0  then
-                InfoConsistency( "checking ", j, "^m ", i, "\n" );
+                Info( InfoConfluence, 2, "check ", j, "^m ", i, "\n" );
                 ev1 := ReducedProduct( pcp, ReducedPower(pcp, g[j], orders[j]),
                                        g[i]   );
                 ev2 := ReducedProduct( pcp,
@@ -234,7 +231,7 @@ InstallMethod( IsConfluent,
     for j in [n,n-1..1] do
         for i in [j-1,j-2..1] do
 	    if  orders[i] <> 0  then
-                InfoConsistency( "checking ", j, " ", i, "^m\n" );
+                Info( InfoConfluence, 2, "check ", j, " ", i, "^m\n" );
                 ev1 := ReducedProduct( pcp, g[j],
                                        ReducedPower(pcp, g[i], orders[i])  );
                 ev2 := ReducedProduct( pcp,
@@ -267,11 +264,11 @@ InstallMethod( IsConfluent,
     for i in [n,n-1..1] do
         if  orders[i] = 0  then
             for j in [i+1..n] do
-                InfoConsistency( "checking ", j, " ", -i, " ", i, "\n" );
+                Info(InfoConfluence, 2, "check ", j, " ", -i, " ", i, "\n");
                 ev1 := ReducedProduct( pcp,
                                        ReducedProduct( pcp, g[j],
                                                        ReducedInverse( pcp,
-                                                                       g[i] )),
+                                                                     g[i] )),
                                        g[i] );
                 if ev1 <> g[j] then
                     Print( "Inconsistency at ", j, " ", -i, " ", i, "\n" );
@@ -285,7 +282,7 @@ InstallMethod( IsConfluent,
     for j in [n,n-1..1] do
         if  orders[j] = 0  then
             for i in [j-1,j-2..1] do
-                InfoConsistency( "checking ", -j, " ", j, " ", i, "\n" );
+                Info(InfoConfluence, 2, "check ", -j, " ", j, " ", i, "\n");
                 ev1 := ReducedProduct( pcp, ReducedInverse( pcp, g[j] ),
                                        ReducedProduct( pcp, g[j], g[i] )  );
                 if  ev1 <> g[i]  then
@@ -294,7 +291,7 @@ InstallMethod( IsConfluent,
                 fi;
                 
                 if  orders[i] = 0  then
-                    InfoConsistency( "checking ", -j, " ", j, " ", -i, "\n" );
+                    Info(InfoConfluence,2,"check ",-j," ",j," ",-i,"\n");
                     ev1 := ReducedProduct( pcp, ReducedInverse( pcp, g[j] ),
                                   ReducedProduct( pcp, g[j],
                                          ReducedInverse( pcp, g[i] ) ) );
@@ -471,7 +468,7 @@ InstallMethod( ReducedPower,
     0,
 
 function( col, obj, pow )
-    local   res,  tmp,  i,  old;
+    local   res,  tmp;
 
     # if <pow> is negative invert <obj> first
     if pow < 0  then

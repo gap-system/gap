@@ -31,6 +31,8 @@ IntersectionNormalClosurePermGroup := NewOperationArgs( "IntersectionNormalClosu
 ActionAbelianCSPG := NewOperationArgs( "ActionAbelianCSPG" );
 ImageOnAbelianCSPG := NewOperationArgs( "ImageOnAbelianCSPG" );
 
+ChiefSeriesPermGroup := NewOperationArgs( "ChiefSeriesPermGroup" );
+
 #############################################################################
 ##
 #E  grpprmcs.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

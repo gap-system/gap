@@ -80,8 +80,8 @@ end;
 #F  PcgsSystemWithWf( <pcgs> <wf> )
 ##
 PcgsSystemWithWf := function( pcgs, wf )
-    local m, list, weights, work, nilp, h, i, j, g, S, pos, s, wt, wset,
-          layers, first, newpcgs, F, f;
+    local   m,  list,  weights,  work,  nilp,  h,  i,  j,  g,  S,  
+            pos,  s,  wt,  newpcgs,  wset,  layers,  first;
    
     # initialise
     m    := Length( pcgs );

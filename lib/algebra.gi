@@ -2537,7 +2537,6 @@ MutableBasisOfProductSpace := function( U, V )
 
     local inter, # intersection of left acting domains
           u, v,  # loop over the bases
-          prod,  # product function
           MB;    # mutable basis of the commutator subspace, result
 
     if LeftActingDomain( U ) = LeftActingDomain( V ) then

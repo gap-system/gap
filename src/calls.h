@@ -199,6 +199,17 @@ extern  Obj             NewFunctionCT (
 
 /****************************************************************************
 **
+*F  PrintFunction( <func> )   . . . . . . . . . . . . . . .  print a function
+**
+**  'PrintFunction' prints  the   function  <func> in  abbreviated  form   if
+**  'PrintObjFull' is false.
+*/
+extern void PrintFunction (
+    Obj                 func );
+
+
+/****************************************************************************
+**
 *F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
 **
 **  'InitCalls' initializes the call package.

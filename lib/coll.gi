@@ -1425,7 +1425,7 @@ InstallMethod( Union2,
     "method for two collections, the second being a list",
     IsIdentical, [ IsCollection, IsCollection and IsList ], 0,
     function ( C1, C2 )
-    local   I, elm;
+    local   I;
     if IsFinite( C1 ) then
         I := ShallowCopy( AsListSorted( C1 ) );
         UniteSet( I, C2 );
@@ -1439,7 +1439,7 @@ InstallMethod( Union2,
     "method for two collections, the first being a list",
     IsIdentical, [ IsCollection and IsList, IsCollection ], 0,
     function ( C1, C2 )
-    local   I, elm;
+    local   I;
     if IsFinite( C2 ) then
         I := ShallowCopy( AsListSorted( C2 ) );
         UniteSet( I, C1 );
@@ -1453,7 +1453,7 @@ InstallMethod( Union2,
     "method for two collections",
     IsIdentical, [ IsCollection, IsCollection ], 0,
     function ( C1, C2 )
-    local   I, elm;
+    local   I;
     if IsFinite( C1 ) then
         if IsFinite( C2 ) then
             I := ShallowCopy( AsListSorted( C1 ) );
@@ -1516,7 +1516,7 @@ end;
 ##
 InstallOtherMethod( Difference,
     "method for empty list, and collection",
-    true, [ IsList and IsEmpty, IsCollection ], 0,
+    true, [ IsList and IsEmpty, IsListOrCollection ], 0,
     function ( C1, C2 )
     return [];
     end );

@@ -18,6 +18,31 @@ Revision.matrix_gi :=
 
 #############################################################################
 ##
+#M  DiagonalOfMat(<mat>)  . . . . . . . . . . . . . . . .  diagonal of matrix
+##
+##  'DiagonalOfMat' returns  the diagonal of  the matrix <mat>.  The diagonal
+##  has the  same length  as the rows of  <mat>,  it is padded with zeros  if
+##  <mat> has fewer rows than columns.
+
+DiagonalOfMat := function ( mat )
+    local   diag, i;
+
+    diag := [];
+    i := 1;
+    while i <= Length(mat) and i <= Length(mat[1]) do
+        diag[i] := mat[i][i];
+        i := i + 1;
+    od;
+    while 1 <= Length(mat) and i <= Length(mat[1]) do
+        diag[i] := mat[1][1] - mat[1][1];
+        i := i + 1;
+    od;
+    return diag;
+end;
+
+
+#############################################################################
+##
 
 #R  IsNullMapMatrix . . . . . . . . . . . . . . . . . . .  null map as matrix
 ##
