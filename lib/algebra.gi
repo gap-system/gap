@@ -1471,7 +1471,75 @@ InstallMethod( AsFLMLOR,
 
 #############################################################################
 ##
-#M  AsAlgebra( <F>, <A> ) . . .  view a algebra as algebra over the field <F>
+#M  AsAlgebra( <F>, <V> ) .  view a left module as algebra over the field <F>
+##
+##  is an algebra over <F> that is equal (as set) to <V>.
+##  For that, perhaps the field of <A> has to be changed before
+##  getting the correct list of generators.
+##
+InstallMethod( AsFLMLOR,
+    "method for a division ring and a free left module",
+    true, [ IsDivisionRing, IsFreeLeftModule ], 0,
+    function( F, V )
+
+    local L, A;
+
+    if   LeftActingDomain( V ) = F then
+
+      A:= FLMLOR( F, GeneratorsOfLeftModule( V ) );
+      if A <> V then
+        Error( "<V> is not a FLMLOR" );
+      fi;
+      if HasBasisOfDomain( V ) then
+        SetBasisOfDomain( A, BasisOfDomain( V ) );
+      fi;
+
+    elif IsTrivial( V ) then
+
+      # We need the zero.
+      A:= FLMLOR( F, [], Zero( V ) );
+
+    elif IsSubset( LeftActingDomain( V ), F ) then
+
+      # Make sure that the field change does not change the elements.
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( V ) ) ) );
+      L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
+                                             y -> x * y ) ) );
+      A:= FLMLOR( F, L );
+      if A <> V then
+        Error( "<V> is not a FLMLOR" );
+      fi;
+
+    elif IsSubset( F, LeftActingDomain( V ) ) then
+
+      # Make sure that the field change does not change the elements.
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( V ), F ) ) );
+      if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
+                                 y -> not x * y in V ) ) then
+        Error( "field change leads out of <V>" );
+      fi;
+      A:= FLMLOR( F, GeneratorsOfLeftModule( V ) );
+      if A <> V then
+        Error( "<V> is not a FLMLOR" );
+      fi;
+
+    else
+
+      V:= AsFLMLOR( Intersection( F, LeftActingDomain( V ) ), V );
+      return AsFLMLOR( F, V );
+
+    fi;
+
+    RunIsomorphismImplications( V, A );
+    RunSubsetImplications( V, A );
+
+    return A;
+    end );
+
+
+#############################################################################
+##
+#M  AsAlgebra( <F>, <A> ) . . . view an algebra as algebra over the field <F>
 ##
 ##  is an algebra over <F> that is equal (as set) to <D>.
 ##  For that, perhaps the field of <A> has to be changed before
@@ -1507,7 +1575,7 @@ InstallMethod( AsFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( D ), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
-        Error( "field change leads out of the algebra" );
+        Error( "field change leads out of <D>" );
       fi;
       A:= FLMLOR( F, GeneratorsOfAlgebra( D ) );
 
@@ -1530,9 +1598,74 @@ InstallMethod( AsFLMLOR,
 ##
 InstallMethod( AsUnitalFLMLOR,
     "method for a ring and a collection",
-    true, [ IsRing, IsCollection ], 0,
+    true,
+    [ IsRing, IsCollection ], 0,
     function( F, D )
     return AsUnitalFLMLOR( AsFLMLOR( F, D ) );
+    end );
+
+
+#############################################################################
+##
+#M  AsUnitalAlgebra( <F>, <V> ) . . .  view a left module as a unital algebra
+##
+InstallMethod( AsUnitalFLMLOR,
+    "method for a division ring and a free left module",
+    true,
+    [ IsDivisionRing, IsFreeLeftModule ], 0,
+    function( F, V )
+
+    local L, A;
+
+    # Check that 'V' contains the identity.
+    if One( V ) = fail then
+
+      return fail;
+
+    elif LeftActingDomain( V ) = F then
+
+      A:= UnitalFLMLOR( F, GeneratorsOfLeftModule( V ) );
+      if A <> V then
+        Error( "<V> is not a unital FLMLOR" );
+      fi;
+      if HasBasisOfDomain( V ) then
+        SetBasisOfDomain( A, BasisOfDomain( V ) );
+      fi;
+
+    elif IsSubset( LeftActingDomain( V ), F ) then
+
+      # Make sure that the field change does not change the elements.
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( V ) ) ) );
+      L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
+                                             y -> x * y ) ) );
+      A:= UnitalFLMLOR( F, L );
+      if A <> V then
+        Error( "<V> is not a unital FLMLOR" );
+      fi;
+
+    elif IsSubset( F, LeftActingDomain( V ) ) then
+
+      # Make sure that the field change does not change the elements.
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( V ), F ) ) );
+      if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
+                                 y -> not x * y in V ) ) then
+        Error( "field change leads out of <V>" );
+      fi;
+      A:= UnitalFLMLOR( F, GeneratorsOfLeftModule( V ) );
+      if A <> V then
+        Error( "<V> is not a unital FLMLOR" );
+      fi;
+
+    else
+
+      V:= AsUnitalAlgebra( Intersection( F, LeftActingDomain( V ) ), V );
+      return AsUnitalAlgebra( F, V );
+
+    fi;
+
+    RunIsomorphismImplications( V, A );
+    RunSubsetImplications( V, A );
+    return A;
     end );
 
 
@@ -1562,7 +1695,7 @@ InstallMethod( AsUnitalFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
-      A:= UnitalAlgebra( F, L );
+      A:= UnitalFLMLOR( F, L );
 
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
@@ -1570,7 +1703,7 @@ InstallMethod( AsUnitalFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( D ), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
-        Error( "field change leads out of the algebra" );
+        Error( "field change leads out of <D>" );
       fi;
       A:= UnitalFLMLOR( F, GeneratorsOfLeftOperatorRing( D ) );
 

@@ -108,11 +108,12 @@ InstallMethod( AsSubspace, IsIdentical, [ IsVectorSpace, IsVectorSpace ], 0,
 InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsVectorSpace ], 0,
     function( F, V )
 
-    local W,       # the space, result
-          base,    # basis vectors of field extension
-          gen,     # loop over generators of 'V'
-          b,       # loop over 'base'
-          gens;    # generators of 'V'
+    local W,        # the space, result
+          base,     # basis vectors of field extension
+          gen,      # loop over generators of 'V'
+          b,        # loop over 'base'
+          gens,     # generators of 'V'
+          newgens;  # extended list of generators
 
     if Characteristic( F ) <> Characteristic( V ) then
 
@@ -148,12 +149,19 @@ InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsVectorSpace ], 0,
       # View 'V' as a space over a smaller field.
       # For that, the list of generators must be extended.
       gens:= GeneratorsOfLeftModule( V );
-      if 0 < Length( gens ) then
-        base:= BasisVectors( Basis( AsField( F, LeftActingDomain( V ) ) ) );
-        gens:= Concatenation( List( base, x -> x * gens ) );
-        W:= LeftModuleByGenerators( F, gens );
-      else
+      if IsEmpty( gens ) then
         W:= LeftModuleByGenerators( F, [], Zero( V ) );
+      else
+
+        base:= BasisVectors( Basis( AsField( F, LeftActingDomain( V ) ) ) );
+        newgens:= [];
+        for b in base do
+          for gen in gens do
+            Add( newgens, b * gen );
+          od;
+        od;
+        W:= LeftModuleByGenerators( F, newgens );
+
       fi;
 
     else

@@ -388,6 +388,21 @@ IsAssociativeElementCollection :=
     CategoryCollections( "IsAssociativeElementCollection",
         IsAssociativeElement );
 
+IsAssociativeElementCollColl :=
+    CategoryCollections( "IsAssociativeElementCollColl",
+        IsAssociativeElementCollection );
+
+
+#############################################################################
+##
+#M  IsAssociativeElement( <mat> ) . .  for matrices that are internal objects
+##
+##  Matrices in internal representation and with entries in an associative
+##  family are themselves associative elements.
+##
+InstallTrueMethod( IsAssociativeElement,
+    IsMatrix and IsInternalRep and IsAssociativeElementCollColl );
+
 
 #############################################################################
 ##
@@ -545,7 +560,7 @@ HasAdditiveInverse := Tester( AdditiveInverse );
 ##  contains matrices of all dimensions cannot have a one).
 ##
 ##  'One' may call 'Representative', but 'Representative' is allowed to
-##  fetch the one of a domain <D> only if 'HasOne( <D>) ' is 'true'.
+##  fetch the one of a domain <D> only if 'HasOne( <D>)' is 'true'.
 ##
 One :=
     NewAttributeKernel( "One",

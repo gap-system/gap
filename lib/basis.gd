@@ -120,7 +120,16 @@ HasIsCanonicalBasis := Tester( IsCanonicalBasis );
 ##
 IsCanonicalBasisFullRowModule := NewProperty(
     "IsCanonicalBasisFullRowModule",
-    IsCanonicalBasis );
+    IsBasis and IsCanonicalBasis );
+
+
+#############################################################################
+##
+#P  IsCanonicalBasisFullMatrixModule( <B> )
+##
+IsCanonicalBasisFullMatrixModule := NewProperty(
+    "IsCanonicalBasisFullMatrixModule",
+    IsBasis and IsCanonicalBasis );
 
 
 #############################################################################

@@ -172,20 +172,49 @@ InstallMethod( RelativeBasisNC, IsIdentical,
 ##
 #M  PrintObj( <B> ) . . . . . . . . . . . . . . . . . . . . . . print a basis
 ##
-InstallMethod( PrintObj, true, [ IsBasis and HasBasisVectors ], 0,
+##  print whether the basis is known to be semi-echelonized,
+##  print the basis vectors if they are known.
+##
+InstallMethod( PrintObj,
+    "method for a basis with basis vectors",
+    true,
+    [ IsBasis and HasBasisVectors ], 0,
     function( B )
     Print( "Basis( ", UnderlyingLeftModule( B ), ", ",
            BasisVectors( B ), " )" );
     end );
 
-InstallMethod( PrintObj, true, [ IsBasis ], 0,
+InstallMethod( PrintObj,
+    "method for a basis",
+    true,
+    [ IsBasis ], 0,
     function( B )
     Print( "Basis( ", UnderlyingLeftModule( B ), ", ... )" );
     end );
 #T install better method for quotient spaces, in order to print
 #T representatives only ?
 
-InstallMethod( PrintObj, true, [ IsBasis and IsCanonicalBasis ], SUM_FLAGS,
+InstallMethod( PrintObj,
+    "method for a semi-echelonized basis with basis vectors",
+    true,
+    [ IsBasis and HasBasisVectors and IsSemiEchelonized ], 0,
+    function( B )
+    Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ",
+           BasisVectors( B ), " )" );
+    end );
+
+InstallMethod( PrintObj,
+    "method for a semi-echelonized basis",
+    true,
+    [ IsBasis and IsSemiEchelonized ], 0,
+    function( B )
+    Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ... )" );
+    end );
+
+InstallMethod( PrintObj,
+    "method for a canonical basis",
+    true,
+    [ IsBasis and IsCanonicalBasis ], SUM_FLAGS,
     function( B )
     Print( "CanonicalBasis( ", UnderlyingLeftModule( B ), " )" );
     end );
@@ -756,6 +785,37 @@ InstallMethod( \in,
 #T                              SiftedVector( NiceBasisNC( B ),
 #T                                            NiceVector( B, v ) ) );
 #T     end );
+
+
+#############################################################################
+##
+##  Methods for empty bases
+##
+InstallMethod( BasisVectors,
+    "method for empty basis",
+    true,
+    [ IsBasis and IsEmpty ], SUM_FLAGS,
+    B -> [] );
+
+InstallMethod( Coefficients,
+    "method for empty basis and vector",
+    IsCollsElms,
+    [ IsBasis and IsEmpty, IsVector ], SUM_FLAGS,
+    function( B, v )
+    if v = Zero( UnderlyingLeftModule( B ) ) then
+      return [];
+    else
+      return fail;
+    fi;
+    end );
+
+InstallMethod( LinearCombination,
+    "method for empty basis and empty list",
+    true,
+    [ IsBasis and IsEmpty, IsList and IsEmpty ], SUM_FLAGS,
+    function( B, v )
+    return Zero( UnderlyingLeftModule( B ) );
+    end );
 
 
 #############################################################################

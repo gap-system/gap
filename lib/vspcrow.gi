@@ -10,17 +10,19 @@
 ##  A row space is a vector space whose elements are row vectors.
 ##
 ##  The coefficients field need *not* contain all entries of the row vectors.
-##  If it does then the space is a *Gaussian row space*, with better methods
-##  to deal with bases.
+##  If it does then the space is a *Gaussian row space*,
+##  with better methods to deal with bases.
 ##  If it does not then the bases use the mechanism of associated bases.
+##
+##  (See the file 'vspcmat.gi' for methods for matrix spaces.)
 ##
 ##  All row spaces have the component 'vectordim'.
 ##
 ##  1. Domain constructors for row spaces
-##  2. Methods for bases of non-Gaussian row vector spaces
-##  3. Methods for semi-echelonized bases of Gaussian row vector spaces
+##  2. Methods for bases of non-Gaussian row spaces
+##  3. Methods for semi-echelonized bases of Gaussian row spaces
 ##  4. Methods for row spaces
-##  5. Methods for full row vector spaces
+##  5. Methods for full row spaces
 ##  6. Methods for collections of subspaces of full row spaces
 ##  7. Methods for mutable bases of Gaussian row spaces
 ##
@@ -37,9 +39,9 @@ IsRowSpace := IsRowModuleRep and IsVectorSpace;
 
 #############################################################################
 ##
-#R  IsGaussianRowSpaceRep( Rep<V> )
+#R  IsGaussianRowSpaceRep( <V> )
 ##
-##  A row vector space is Gaussian if the left acting domain contains all
+##  A row space is Gaussian if the left acting domain contains all
 ##  scalars that occur in the vectors.
 ##  Thus one can use Gaussian elimination in the calculations.
 ##
@@ -65,11 +67,11 @@ IsGaussianRowSpaceRep :=     IsGaussianSpace
 ##        where $F$ denotes the coefficients field of 'V',
 ##        and $K$ the field spanned by the entries of all vectors in 'V'.
 ##
-##  The associated row vector is defined by replacing
-##  every vector entry by its $C$-coefficients.
+##  The associated row vector is defined by replacing every vector entry
+##  by its $C$-coefficients, and then forming the concatenation.
 ##  So the associated nice space is a Gaussian row space.
 ##
-IsNonGaussianRowSpaceRep := NewRepresentation( "IsNonGaussianRowSpace",
+IsNonGaussianRowSpaceRep := NewRepresentation( "IsNonGaussianRowSpaceRep",
     IsAttributeStoringRep and IsRowModuleRep and IsHandledByNiceBasis,
     [ "basisFieldExtension" ] );
 
@@ -115,7 +117,7 @@ InstallMethod( LeftModuleByGenerators,
 
 #############################################################################
 ##
-#M  LeftModuleByGenerators( <F>, <gens>, <zero> )
+#M  LeftModuleByGenerators( <F>, <mat>, <zerorow> )
 ##
 #T The only reason for this method is that we get a space and not only
 #T a module if <F> is a division ring.
@@ -183,7 +185,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 
 #############################################################################
 ##
-##  2. Methods for bases of non-Gaussian row vector spaces
+##  2. Methods for bases of non-Gaussian row spaces
 ##
 
 #############################################################################
@@ -250,19 +252,21 @@ InstallMethod( UglyVector,
 
 #############################################################################
 ##
-##  3. Methods for semi-echelonized bases of Gaussian row vector spaces
+##  3. Methods for semi-echelonized bases of Gaussian row spaces
 ##
 
 #############################################################################
 ##
-#R  IsSemiEchelonBasisGaussianRowSpaceRep( <B> )
+#R  IsSemiEchelonBasisOfGaussianRowSpaceRep( <B> )
 ##
 ##  A basis of a Gaussian row space is either semi-echelonized or it is a
 ##  relative basis.
 ##  (So there is no need for 'IsBasisGaussianRowSpace').
 ##
-IsSemiEchelonBasisGaussianRowSpaceRep := NewRepresentation(
-    "IsSemiEchelonBasisGaussianRowSpaceRep",
+##  If basis vectors are known then the component 'heads' is bound.
+##
+IsSemiEchelonBasisOfGaussianRowSpaceRep := NewRepresentation(
+    "IsSemiEchelonBasisOfGaussianRowSpaceRep",
     IsAttributeStoringRep,
     [ "heads" ] );
 
@@ -272,28 +276,9 @@ IsSemiEchelonBasisGaussianRowSpaceRep := NewRepresentation(
 #M  LinearCombination( <B>, <coeff> )
 ##
 InstallMethod( LinearCombination, IsCollsElms,
-    [ IsBasis and IsSemiEchelonBasisGaussianRowSpaceRep, IsRowVector ], 0,
+    [ IsBasis and IsSemiEchelonBasisOfGaussianRowSpaceRep, IsRowVector ], 0,
     function( B, coeff )
     return coeff * BasisVectors( B );
-    end );
-
-
-#############################################################################
-##
-#M  Print( <B> )
-##
-InstallMethod( PrintObj, true,
-    [ IsBasis and IsSemiEchelonBasisGaussianRowSpaceRep ], 0,
-    function( B )
-    if HasBasisVectors( B ) then
-      Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ",
-             BasisVectors( B ), " )" );
-#T     elif HasBasisVectorsRepresentatives( B ) then
-#T       Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ",
-#T                         BasisVectorsRepresentatives( B ), " )" );
-    else
-      Print( "SemiEchelonBasis( ", UnderlyingLeftModule( B ), ", ... )" );
-    fi;
     end );
 
 
@@ -302,9 +287,9 @@ InstallMethod( PrintObj, true,
 #M  Coefficients( <B>, <v> )  .  method for semi-ech. basis of Gaussian space
 ##
 InstallMethod( Coefficients,
-    "method for semi-ech. basis of a Gaussian row space, and a vector",
+    "method for semi-ech. basis of a Gaussian row space, and a row vector",
     IsCollsElms,
-    [ IsBasis and IsSemiEchelonBasisGaussianRowSpaceRep, IsRowVector ], 0,
+    [ IsBasis and IsSemiEchelonBasisOfGaussianRowSpaceRep, IsRowVector ], 0,
     function( B, v )
 
     local coeff,     # coefficients list, result
@@ -347,8 +332,10 @@ InstallMethod( Coefficients,
 ##  If '<B>!.heads[<i>]' is nonzero this means that the <i>-th column is
 ##  leading column of the row '<B>!.heads[<i>]'.
 ##
-InstallMethod( SiftedVector, IsCollsElms,
-    [ IsBasis and IsSemiEchelonBasisGaussianRowSpaceRep, IsRowVector ], 0,
+InstallMethod( SiftedVector,
+    "method for semi-ech. basis of Gaussian row space, and row vector",
+    IsCollsElms,
+    [ IsBasis and IsSemiEchelonBasisOfGaussianRowSpaceRep, IsRowVector ], 0,
     function( B, v )
 
     local zero,    # zero of the field
@@ -373,59 +360,40 @@ InstallMethod( SiftedVector, IsCollsElms,
 
 #############################################################################
 ##
-#M  IsSemiEchelonized( <B> )
+#F  HeadsInfoOfSemiEchelonizedMat( <mat>, <dim> )
 ##
-##  A basis of a Gaussian row vector space over a division ring with identity
-##  element $e$ is in semi-echelon form if the leading entry of every row is
-##  equal to $e$, and all entries exactly below that position are zero.
+##  is the 'heads' information of the matrix <mat> with <dim> columns
+##  if <mat> can be viewed as a semi-echelonized basis
+##  of a Gaussian row space, and 'fail' otherwise.
 ##
-##  (This form is obtained on application of 'SemiEchelonMat' to a matrix.)
-##
-InstallMethod( IsSemiEchelonized, true, [ IsBasis ], 0,
-    function( B )
-#T change the basis from relative to seb ?
+HeadsInfoOfSemiEchelonizedMat := function( mat, dim )
 
-    local mat,      # vectors of 'B'
-          V,        # underlying left module
-          zero,     # zero of the field
+    local zero,     # zero of the field
           one,      # one of the field
           nrows,    # number of rows
-          ncols,    # number of columns
           heads,    # list of pivot rows
           i,        # loop over rows
           j,        # pivot column
           k;        # loop over lower rows
 
-    V:= UnderlyingLeftModule( B );
-    if not IsGaussianRowSpaceRep( V ) then
-      TryNextMethod();
-    fi;
-#T introduce 'IsGaussianSpace' ?
+    nrows:= Length( mat );
+    heads:= Zero( [ 1 .. dim ] );
 
-    mat   := BasisVectors( B );
-    nrows := Length( mat );
+    if 0 < nrows then
 
-    if nrows = 0 then
-
-      heads := 0 * [ 1 .. V!.vectordim ];
-
-    else
-
-      zero  := Zero( mat[1][1] );
-      one   := zero ^ 0;
-      ncols := Length( mat[1] );
-      heads := 0 * [ 1 .. ncols ];
+      zero := Zero( mat[1][1] );
+      one  := One( zero );
 
       # Loop over the columns.
       for i in [ 1 .. nrows ] do
 
         j:= PositionNot( mat[i], zero );
-        if j > ncols or mat[i][j] <> one then
-          return false;
+        if dim < j or mat[i][j] <> one then
+          return fail;
         fi;
         for k in [ i+1 .. nrows ] do
           if mat[k][j] <> zero then
-            return false;
+            return fail;
           fi;
         od;
         heads[j]:= i;
@@ -434,11 +402,35 @@ InstallMethod( IsSemiEchelonized, true, [ IsBasis ], 0,
 
     fi;
 
-    # Now we know that the basis is semi-echelonized.
-    # Change the basis object appropriately.
-    B!.heads:= heads;
+    return heads;
+end;
 
-    return true;
+
+#############################################################################
+##
+#M  IsSemiEchelonized( <B> )
+##
+##  A basis of a Gaussian row space over a division ring with identity
+##  element $e$ is in semi-echelon form if the leading entry of every row is
+##  equal to $e$, and all entries exactly below that position are zero.
+##
+##  (This form is obtained on application of 'SemiEchelonMat' to a matrix.)
+##
+InstallMethod( IsSemiEchelonized,
+    "method for basis of a Gaussian row space",
+    true,
+    [ IsBasis ], 0,
+    function( B )
+    local V;
+    V:= UnderlyingLeftModule( B );
+    if not IsGaussianRowSpaceRep( V ) then
+#T The basis does not know whether it is a basis of a row space at all.
+      TryNextMethod();
+    else
+      return HeadsInfoOfSemiEchelonizedMat( BasisVectors( B ),
+                                            V!.vectordim ) <> fail;
+#T change the basis from relative to seb ?
+    fi;
     end );
 
 
@@ -475,9 +467,7 @@ InstallOtherMethod( \^, IsIdentical, [ IsRowSpace, IsMatrix ], 0,
 InstallMethod( \in,
     "method for row vector and Gaussian row space",
     IsElmsColls,
-    [ IsRowVector,
-      IsGaussianSpace and IsGaussianRowSpaceRep ],
-    0,
+    [ IsRowVector, IsGaussianSpace and IsGaussianRowSpaceRep ], 0,
     function( v, V )
     if IsEmpty( v ) then
       return V!.vectordim = 0;
@@ -518,22 +508,28 @@ InstallMethod( BasisByGenerators,
     [ IsGaussianSpace and IsGaussianRowSpaceRep, IsMatrix ], 0,
     function( V, gens )
 
-    local B,
+    local heads,
+          B,
           v;
 
     # Test whether the vectors form a semi-echelonized basis.
-    # If yes then the necessary data will be stored in the basis.
+    # (If not then give up.)
+    heads:= HeadsInfoOfSemiEchelonizedMat( gens, V!.vectordim );
+    if heads = fail then
+      TryNextMethod();
+    fi;
+
+    # Construct the basis.
     B:= Objectify( NewKind( FamilyObj( gens ),
                                 IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep ),
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, gens );
+    SetIsEmpty( B, IsEmpty( gens ) );
 
-    # If the basis is not semi-echelonized, give up.
-    if not IsSemiEchelonized( B ) then
-      TryNextMethod();
-    fi;
+    B!.heads:= heads;
 
     # The basis vectors are linearly independent since they form
     # a semi-echelonized matrix.
@@ -544,6 +540,7 @@ InstallMethod( BasisByGenerators,
       fi;
     od;
 
+    # Return the basis.
     return B;
     end );
 
@@ -551,22 +548,28 @@ InstallMethod( BasisByGeneratorsNC, IsIdentical,
     [ IsGaussianSpace and IsGaussianRowSpaceRep, IsMatrix ], 0,
     function( V, gens )
 
-    local B;
+    local heads, B;
 
     # Test whether the vectors form a semi-echelonized basis.
-    # If yes then the necessary data will be stored in the record.
-    B:= Objectify( NewKind( FamilyObj( gens ),
-                                IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep ),
-                   rec() );
-    SetUnderlyingLeftModule( B, V );
-    SetBasisVectors( B, gens );
-
-    # If the basis is not semi-echelonized, give up.
-    if not IsSemiEchelonized( B ) then
+    # (If not then give up.)
+    heads:= HeadsInfoOfSemiEchelonizedMat( gens, V!.vectordim );
+    if heads = fail then
       TryNextMethod();
     fi;
 
+    # Construct the basis.
+    B:= Objectify( NewKind( FamilyObj( gens ),
+                                IsBasis
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, gens );
+    SetIsEmpty( B, IsEmpty( gens ) );
+
+    B!.heads:= heads;
+
+    # Return the basis.
     return B;
     end );
 
@@ -580,39 +583,19 @@ InstallMethod( BasisByGeneratorsNC, IsIdentical,
 InstallImmediateMethod( SemiEchelonBasisOfDomain,
     IsGaussianSpace and IsGaussianRowSpaceRep and HasCanonicalBasis, 20,
     CanonicalBasis );
-#T another argument to have 'IsGaussianSpace'!
 
 InstallMethod( SemiEchelonBasisOfDomain,
     "method for Gaussian row space",
     true,
     [ IsGaussianSpace and IsGaussianRowSpaceRep ], 0,
     function( V )
-
-    local gens,
-          B;
-
-    # Note that we must not ask for the dimension here \ldots
-    gens:= GeneratorsOfLeftModule( V );
-
+    local B;
     B:= Objectify( NewKind( FamilyObj( V ),
                                 IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep ),
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
-
-    if Length( gens ) = 0 then
-
-      SetBasisVectors( B, [] );
-      B!.heads:= List( Zero( V ), x -> 0 );
-
-    else
-
-      gens:= SemiEchelonMat( gens );
-      SetBasisVectors( B, gens.vectors );
-      B!.heads:= gens.heads;
-
-    fi;
-
     return B;
     end );
 
@@ -622,23 +605,30 @@ InstallMethod( SemiEchelonBasisByGenerators,
     [ IsGaussianSpace and IsGaussianRowSpaceRep, IsMatrix ], 0,
     function( V, gens )
 
-    local B,  # the basis, result
-          v;  # loop over vector space generators
+    local heads,   # heads info for the basis
+          B,       # the basis, result
+          v;       # loop over vector space generators
 
-    B:= Objectify( NewKind( FamilyObj( gens ),
-                                IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep ),
-                   rec() );
-    SetUnderlyingLeftModule( B, V );
-    SetBasisVectors( B, gens );
-
-    # Provide the 'heads' information.
-    if not IsSemiEchelonized( B ) then
+    # Check that the vectors form a semi-echelonized basis.
+    heads:= HeadsInfoOfSemiEchelonizedMat( gens, V!.vectordim );
+    if heads = fail then
       return fail;
     fi;
 
+    # Construct the basis.
+    B:= Objectify( NewKind( FamilyObj( gens ),
+                                IsBasis
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, gens );
+    SetIsEmpty( B, IsEmpty( gens ) );
+
+    B!.heads:= heads;
+
     # The basis vectors are linearly independent since they form
-    # a semi-echelonized matrix.
+    # a semi-echelonized list of matrices.
     # Hence it is sufficient to check whether they generate the space.
     for v in GeneratorsOfLeftModule( V ) do
       if Coefficients( B, v ) = fail then
@@ -660,15 +650,51 @@ InstallMethod( SemiEchelonBasisByGeneratorsNC,
 
     B:= Objectify( NewKind( FamilyObj( gens ),
                                 IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep ),
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, gens );
+    SetIsEmpty( B, IsEmpty( gens ) );
 
     # Provide the 'heads' information.
-    IsSemiEchelonized( B );
+    B!.heads:= HeadsInfoOfSemiEchelonizedMat( gens, V!.vectordim );
 
+    # Return the basis.
     return B;
+    end );
+
+
+#############################################################################
+##
+#M  BasisVectors( <B> ) . . . . . . for semi-ech. basis of Gaussian row space
+##
+InstallMethod( BasisVectors,
+    "method for semi-ech. basis of a Gaussian row space",
+    true,
+    [ IsBasis and IsSemiEchelonBasisOfGaussianRowSpaceRep ], 0,
+    function( B )
+    local V, gens, vectors;
+
+    V:= UnderlyingLeftModule( B );
+
+    # Note that we must not ask for the dimension here \ldots
+    gens:= GeneratorsOfLeftModule( V );
+
+    if IsEmpty( gens ) then
+
+      B!.heads:= List( [ 1 .. V!.vectordim ], x -> 0 );
+      SetIsEmpty( B, true );
+      vectors:= [];
+
+    else
+
+      gens:= SemiEchelonMat( gens );
+      B!.heads:= gens.heads;
+      vectors:= gens.vectors;
+
+    fi;
+    return vectors;
     end );
 
 
@@ -700,27 +726,25 @@ InstallMethod( IsZero,
 
 #############################################################################
 ##
-#M  AsLeftModule( <F>, <vectors> )  . . . .  for division ring and collection
+#M  AsLeftModule( <F>, <rows> ) . . . . . . . .  for division ring and matrix
 ##
-InstallOtherMethod( AsVectorSpace,
-    "method for division ring and homogeneous list",
+InstallOtherMethod( AsLeftModule,
+    "method for division ring and matrix",
     IsElmsColls,
-    [ IsDivisionRing, IsHomogeneousList ], 0,
+    [ IsDivisionRing, IsMatrix ], 0,
     function( F, vectors )
 
     local m;
 
-    vectors:= Set( vectors );
     if not IsPrimePowerInt( Length( vectors ) ) then
       Error( "<vectors> cannot be a vector space" );
-    fi;
-
-    if ForAll( vectors, v -> IsSubset( F, v ) ) then
+    elif ForAll( vectors, v -> IsSubset( F, v ) ) then
 #T other check!
 
       # All vector entries lie in 'F'.
-      m:= SemiEchelonMat( vectors ).vectors;
-      if Length( m ) = 0 then
+      # (We work destructively.)
+      m:= SemiEchelonMat( List( vectors, ShallowCopy ) ).vectors;
+      if IsEmpty( m ) then
         m:= LeftModuleByGenerators( F, [], vectors[1] );
       else
         m:= LeftModuleByGenerators( F, m, "basis" );
@@ -728,7 +752,7 @@ InstallOtherMethod( AsVectorSpace,
 
     else
 
-      # general row space
+      # We have at most a non-Gaussian row space.
       m:= LeftModuleByGenerators( F, vectors );
 
     fi;
@@ -886,9 +910,9 @@ InstallMethod( NormedVectors,
 
 #############################################################################
 ##
-#M  CanonicalBasis( <V> )
+#M  CanonicalBasis( <V> ) . . . . . . . . . . . . . .  for Gaussian row space
 ##
-##  The canonical basis of a Gaussian row vector space is defined by applying
+##  The canonical basis of a Gaussian row space is defined by applying
 ##  a full Gauss algorithm to the generators of the space.
 ##
 InstallMethod( CanonicalBasis,
@@ -919,7 +943,7 @@ InstallMethod( CanonicalBasis,
     # pivot elements are in increasing order, and to zeroize all
     # elements in the pivot columns except the pivot itself.
 
-    ech:= SemiEchelonBasis( V );
+    ech:= SemiEchelonBasisOfDomain( V );
     vectors:= BasisVectors( ech );
     heads := ShallowCopy( ech!.heads );
     n:= Length( heads );
@@ -943,12 +967,13 @@ InstallMethod( CanonicalBasis,
 
     B:= Objectify( NewKind( FamilyObj( V ),
                                 IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasis ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, base );
-    SetIsSemiEchelonized( B, true );
+    SetIsEmpty( B, IsEmpty( base ) );
 
     B!.heads:= heads;
 
@@ -975,12 +1000,10 @@ InstallMethod( CanonicalBasis,
           k;       # loop over columns
 
     base  := [];
-    heads := [];
+    heads := Zero( [ 1 .. V!.vectordim ] );
     zero  := Zero( LeftActingDomain( V ) );
 
-    if 0 < Length( GeneratorsOfLeftModule( V ) ) then
-
-      heads:= 0 * [ 1 .. V!.vectordim ];
+    if not IsEmpty( GeneratorsOfLeftModule( V ) ) then
 
       # Make a copy to avoid changing the original argument.
       B:= List( GeneratorsOfLeftModule( V ), ShallowCopy );
@@ -1005,12 +1028,13 @@ InstallMethod( CanonicalBasis,
 
     B:= Objectify( NewKind( FamilyObj( V ),
                                 IsBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasis ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
     SetBasisVectors( B, base );
-    SetIsSemiEchelonized( B, true );
+    SetIsEmpty( B, IsEmpty( base ) );
 
     B!.heads:= heads;
 
@@ -1021,7 +1045,7 @@ InstallMethod( CanonicalBasis,
 
 #############################################################################
 ##
-##  5. Methods for full row vector spaces
+##  5. Methods for full row spaces
 ##
 
 #############################################################################
@@ -1039,7 +1063,32 @@ InstallMethod( IsFullRowModule,
     true,
     [ IsVectorSpace and IsNonGaussianRowSpaceRep ], 0,
     ReturnFalse );
-     
+
+InstallOtherMethod( IsFullRowModule,
+    "method for arbitrary free left module",
+    true,
+    [ IsLeftModule ], 0,
+    function( V )
+    local gens, R;
+
+    # A full row module is a free left module.
+    if not IsFreeLeftModule( V ) then
+      return false;
+    fi;
+
+    # The elements of a full row module are row vectors over the
+    # left acting domain,
+    # and the dimension equals the length of the row vectors.
+    gens:= GeneratorsOfLeftModule( V );
+    if IsEmpty( gens ) then
+      gens:= [ Zero( V ) ];
+    fi;
+    R:= LeftActingDomain( V );
+    return     ForAll( gens,
+                       row -> IsRowVector( row ) and IsSubset( R, row ) )
+           and Dimension( V ) = Length( gens[1] );
+    end );
+
 
 #############################################################################
 ##
@@ -1052,7 +1101,8 @@ InstallMethod( CanonicalBasis, true,
     B:= Objectify( NewKind( FamilyObj( V ),
                                 IsBasis
                             and IsCanonicalBasis
-                            and IsSemiEchelonBasisGaussianRowSpaceRep
+                            and IsSemiEchelonized
+                            and IsSemiEchelonBasisOfGaussianRowSpaceRep
                             and IsCanonicalBasisFullRowModule ),
                    rec() );
     SetUnderlyingLeftModule( B, V );
@@ -1314,6 +1364,7 @@ InstallMethod( MutableBasisByGenerators,
       TryNextMethod();
     fi;
 
+    # Note that 'vectors' is not empty.
     vectors:= SemiEchelonMat( vectors );
 
     B:= Objectify( NewKind( FamilyObj( vectors ),

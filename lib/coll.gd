@@ -12,6 +12,7 @@
 Revision.coll_gd :=
     "@(#)$Id$";
 
+
 #############################################################################
 ##
 #C  IsListOrCollection( <obj> )
@@ -19,6 +20,7 @@ Revision.coll_gd :=
 ##  New intermediate Category to get Lists and Collections under a common roof
 ##
 IsListOrCollection := NewCategory( "IsListOrCollection", IsObject );
+
 
 #############################################################################
 ##
@@ -154,6 +156,8 @@ NextIterator :=
 IsEmpty :=
     NewProperty( "IsEmpty",
         IsCollection );
+SetIsEmpty := Setter( IsEmpty );
+HasIsEmpty := Tester( IsEmpty );
 
 
 #############################################################################

@@ -61,11 +61,12 @@ InstallOtherMethod( LeftModuleByGenerators,
 InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
     function( R, M )
 
-    local W,       # the space, result
-          base,    # basis vectors of field extension
-          gen,     # loop over generators of 'V'
-          b,       # loop over 'base'
-          gens;    # generators of 'V'
+    local W,        # the space, result
+          base,     # basis vectors of field extension
+          gen,      # loop over generators of 'V'
+          b,        # loop over 'base'
+          gens,     # generators of 'V'
+          newgens;  # extended list of generators
 
     if R = LeftActingDomain( M ) then
 
@@ -89,7 +90,7 @@ InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
         od;
       od;
 
-      # Construct the space.
+      # Construct the left module.
       W:= LeftModuleByGenerators( R, GeneratorsOfLeftModule(M), Zero(M) );
 
     elif IsSubset( LeftActingDomain( M ), R ) then
@@ -97,13 +98,20 @@ InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
       # View 'M' as a module over a smaller ring.
       # For that, the list of generators must be extended.
       gens:= GeneratorsOfLeftModule( M );
-      if 0 < Length( gens ) then
+      if IsEmpty( gens ) then
+        W:= LeftModuleByGenerators( R, [], Zero( M ) );
+      else
+
         base:= BasisVectors( Basis( AsField( R, LeftActingDomain( M ) ) ) );
 #T generalize 'AsField', at least to 'AsAlgebra'!
-        gens:= Concatenation( List( base, x -> x * gens ) );
-        W:= LeftModuleByGenerators( R, gens );
-      else
-        W:= LeftModuleByGenerators( R, [], Zero( M ) );
+        newgens:= [];
+        for b in base do
+          for gen in gens do
+            Add( newgens, b * gen );
+          od;
+        od;
+        W:= LeftModuleByGenerators( R, newgens );
+
       fi;
 
     else
@@ -200,6 +208,33 @@ InstallOtherMethod( ClosureLeftModule, IsIdentical,
     else
       return ClosureLeftModule( V, AsLeftModule( LeftActingDomain(V), W ) );
     fi;
+    end );
+
+
+#############################################################################
+##
+#M  \+( <U1>, <U2> )  . . . . . . . . . . . . . . . . sum of two left modules
+##
+InstallOtherMethod( \+,
+    "method for two left modules",
+    IsIdentical,
+    [ IsLeftModule, IsLeftModule ], 0,
+    function( V, W )
+
+    local S;          # sum of <V> and <W>, result
+
+    if LeftActingDomain( V ) <> LeftActingDomain( W ) then
+      S:= Intersection2( LeftActingDomain( V ), LeftActingDomain( W ) );
+      S:= \+( AsLeftModule( S, V ), AsLeftModule( S, W ) );
+    elif IsEmpty( GeneratorsOfLeftModule( V ) ) then
+      S:= W;
+    else
+      S:= LeftModuleByGenerators( LeftActingDomain( V ),
+                           Concatenation( GeneratorsOfLeftModule( V ),
+                                          GeneratorsOfLeftModule( W ) ) );
+    fi;
+
+    return S;
     end );
 
 

@@ -238,6 +238,7 @@ function( m )
         # print matrix
         for v  in m  do
             for x  in List( v, IntFFE )  do
+#T !
                 Print( t[x+1] );
             od;
             Print( "\n" );
@@ -258,6 +259,7 @@ function( m )
             y := z^x;
             if DegreeFFE(y) = 1  then
                 t[x+2] := FormattedString( IntFFE(y), w );
+#T !
             else
                 t[x+2] := FormattedString(Concatenation("z^",String(x)),w);
             fi;
@@ -457,6 +459,31 @@ end );
 
 #############################################################################
 ##
+#M  IsZero( <mat> )
+##
+InstallMethod( IsZero,
+    "method for a matrix",
+    true,
+    [ IsMatrix ], 0,
+    function( mat )
+
+    local ncols,  # number of columns
+          zero,   # zero coefficient
+          row;    # loop over rows in 'obj'
+
+    ncols:= DimensionsMat( mat )[2];
+    zero:= Zero( mat[1][1] );
+    for row in mat do
+      if PositionNot( row, zero ) <= ncols then
+        return false;
+      fi;
+    od;
+    return true;
+    end );
+
+
+#############################################################################
+##
 
 #M  AbelianInvariantsOfList( <list> ) . . . . .  abelian invariants of a list
 ##
@@ -539,6 +566,7 @@ end );
 #M  DefaultFieldOfMatrix( <ffe-mat> )
 ##
 InstallMethod( DefaultFieldOfMatrix,
+    "method for a matrix over a finite field",
     true,
     [ IsMatrix and IsFFECollColl ],
     0,
@@ -550,25 +578,28 @@ function( mat )
     for j  in mat  do
         deg := LcmInt( deg, DegreeFFE(j) );
     od;
-    return GF( Characteristic(FamilyObj(mat[1][1]))^deg );
+    return GF( Characteristic(FamilyObj(mat[1][1])), deg );
 end );
 
 
 #############################################################################
 ##
-#M  DefaultFieldOfMatrix( <rat-mat> )
+#M  DefaultFieldOfMatrix( <cyc-mat> )
 ##
 InstallMethod( DefaultFieldOfMatrix,
+    "method for a matrix over the cyclotomics",
     true,
-    [ IsMatrix ],
+    [ IsMatrix and IsCyclotomicsCollColl ],
     0,
 
 function( mat )
-    if ForAll( mat, x -> ForAll( x, IsRat ) )  then
-        return Rationals;
-    else
-        TryNextMethod();
-    fi;
+    local   deg,  j;
+
+    deg := 1;
+    for j  in mat  do
+        deg := LcmInt( deg, NofCyc(j) );
+    od;
+    return CF( deg );
 end );
 
 
@@ -927,28 +958,12 @@ end );
 ##
 #M  SemiEchelonMat( <mat> )
 ##
-##  A matrix over a field  $F$ is in  semi-echelon form if the first  nonzero
-##  element in each row is the identity of  $F$, and all values exactly below
-##  these pivots are the zero of $F$.
-##
-##  'SemiEchelonMat'  returns a   record that  contains  information about  a
-##  semi-echelonized form of the matrix <mat>.  The components of this record
-##  are
-##
-##  'vectors': \\
-##        list of vectors, each with pivot element the identity of $F$,
-##
-##  'heads' : \\
-##        list that contains at position <i>, if nonzero, the number of the
-##        row for that the pivot element is in column <i>.
-##
 InstallMethod( SemiEchelonMat,
     "generic method for matrices",
     true,
     [ IsMatrix ],
     0,
-
-function( mat )
+    function( mat )
 
     local zero,      # zero of the field of <mat>
           nrows,     # number of rows in <mat>
@@ -962,9 +977,9 @@ function( mat )
     nrows:= Length( mat );
     ncols:= Length( mat[1] );
 
-    zero:= 0 * mat[1][1];
+    zero:= Zero( mat[1][1] );
 
-    heads:= 0 * [ 1 .. ncols ];
+    heads:= Zero( [ 1 .. ncols ] );
     vectors := [];
 
     for i in [ 1 .. nrows ] do
@@ -989,24 +1004,12 @@ function( mat )
 
     return rec( heads   := heads,
                 vectors := vectors );
-end );
+    end );
 
 
 #############################################################################
 ##
 #M  SemiEchelonMatTransformation( <mat> )
-##
-##  does the same as   'SemiEchelonMat'  but additionally stores the   linear
-##  transformation $T$ performed on the matrix.  The additional components of
-##  the result are
-##
-##  'coeffs' : \\
-##        a list of coefficients vectors of the 'vectors' component,
-##        with respect to the rows of <mat>, that is, 'coeffs \*\ mat'
-##        is the 'vectors' component.
-##
-##  'relations' : \\
-##        a list of basis vectors for the (left) null space of <mat>.
 ##
 InstallMethod( SemiEchelonMatTransformation,
     "generic method for matrices",
@@ -1032,9 +1035,9 @@ function( mat )
     nrows := Length( mat );
     ncols := Length( mat[1] );
 
-    zero  := 0 * mat[1][1];
+    zero  := Zero( mat[1][1] );
 
-    heads   := 0 * [ 1 .. ncols ];
+    heads   := Zero( [ 1 .. ncols ] );
     vectors := [];
 
     T         := IdentityMat( nrows, Field( zero ) );
@@ -1070,6 +1073,77 @@ function( mat )
                 coeffs    := coeffs,
                 relations := relations );
 end );
+
+
+#############################################################################
+##
+#M  SemiEchelonMats( <mats> )
+##
+SemiEchelonMats := function( mats )
+
+    local zero,      # zero coefficient
+          m,         # number of rows
+          n,         # number of columns
+          v,
+          vectors,   # list of matrices in the echelonized basis
+          heads,     # list with info about leading entries
+          mat,       # loop over generators of 'V'
+          i, j,      # loop over rows and columns of the matrix
+          k,
+          scalar;
+
+    zero:= Zero( mats[1][1][1] );
+    m:= Length( mats[1]    );
+    n:= Length( mats[1][1] );
+ 
+    # Compute an echelonized basis.
+    vectors := [];
+    heads   := Zero( [ 1 .. n ] );
+    heads   := List( [ 1 .. m ], x -> ShallowCopy( heads ) );
+
+    for mat in mats do
+
+      # Reduce the matrix modulo 'ech'.
+      mat:= List( mat, ShallowCopy );
+      for i in [ 1 .. m ] do
+        for j in [ 1 .. n ] do
+          if heads[i][j] <> 0 and mat[i][j] <> zero then
+
+            # Compute 'mat:= mat - mat[i][j] * vectors[ heads[i][j] ];'
+            scalar:= - mat[i][j];
+            v:= vectors[ heads[i][j] ];
+            for k in [ 1 .. m ] do
+              AddRowVector( mat[k], v[k], scalar );
+            od;
+
+          fi;
+        od;
+      od;
+
+      # Get the first nonzero column.
+      i:= 1;
+      j:= PositionNot( mat[1], zero );
+      while n < j and i < m do
+        i:= i + 1;
+        j:= PositionNot( mat[i], zero );
+      od;
+
+      if j <= n then
+
+        # We found a new basis vector.
+        Add( vectors, mat / mat[i][j] );
+        heads[i][j]:= Length( vectors );
+
+      fi;
+  
+    od;
+
+    # Return the result.
+    return rec(
+                vectors := vectors,
+                heads   := heads
+               );
+end;
 
 
 #############################################################################
@@ -1330,7 +1404,7 @@ function( M1, M2 )
 
     n:= Length( M1[1] );
     mat:= [];
-    zero:= 0 * M1[1];
+    zero:= Zero( M1[1] );
 
     # Set up the matrix for Zassenhaus' algorithm.
     mat:= [];
@@ -2084,6 +2158,7 @@ NullspaceModQ := function( E, q )
     # set up
     elem := List( AsList( FreeLeftModule(field,null,"basis") ),
             x -> List( x, IntFFE ) );
+#T !
     newelem := [ ];
     o := One( field );
 
@@ -2095,6 +2170,7 @@ NullspaceModQ := function( E, q )
             if sol <> false then
                 for j  in [ 1..Length( elem ) ]  do
                     new := e + ( p^(i-1) * List( o * elem[j] + sol, IntFFE ) );
+#T !
                     AddSet( newelem, new );
                 od;
             fi;

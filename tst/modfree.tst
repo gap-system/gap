@@ -154,13 +154,13 @@ VectorSpace( GF(2), [ [ Z(2)^0, Z(2)^0 ], [ Z(2^2), Z(2^2) ],
 gap> Dimension( c );
 4
 gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] );
-FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] )
+<free left module over Integers, with 2 generators>
 gap> f:= FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ], "basis" );
-FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] )
+<free left module over Integers, with 2 generators>
 gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ], [ 0, 0 ] );
-FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] )
+<free left module over Integers, with 2 generators>
 gap> FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ], [ 0, 0 ], "basis" );
-FreeLeftModule( Integers, [ [ 1, 0 ], [ 1, 1 ] ] )
+<free left module over Integers, with 2 generators>
 gap> IsRowModuleRep( f );
 true
 # gap> IsFullRowModule( f );

@@ -63,6 +63,9 @@ BaseOrthogonalSpaceMat := NewAttribute(
 ##
 #A  DefaultFieldOfMatrix( <mat> )
 ##
+##  is a field (not necessarily the smallest one) containing all entries
+##  of the matrix <mat>.
+##
 DefaultFieldOfMatrix := NewAttribute(
     "DefaultFieldOfMatrix",
     IsMatrix );
@@ -89,6 +92,9 @@ DeterminantMat := NewAttribute(
 #############################################################################
 ##
 #A  DimensionsMat( <mat> )  . . . . . . . . . . . . .  dimensions of a matrix
+##
+##  is a list of length 2, the first being the number of rows, the second
+##  being the number of columns of the matrix <mat>.
 ##
 DimensionsMat := NewAttribute(
     "DimensionsMat",
@@ -136,21 +142,22 @@ RankMat := NewAttribute(
     "RankMat",
     IsMatrix );
 
+
 #############################################################################
 ##
 #A  SemiEchelonMat( <mat> )
 ##
-##  A matrix over  a field $F$  is in semi-echelon  form if the first nonzero
-##  element in each row is the identity of $F$,  and all values exactly below
-##  these pivots are the zero of $F$.
+##  A matrix over a field $F$ is in semi-echelon form if the first nonzero
+##  element in each row is the identity of $F$,
+##  and all values exactly below these pivots are the zero of $F$.
 ##
-##  'SemiEchelonMat' returns a  record  that  contains information  about   a
-##  semi-echelonized form of the matrix <mat>.
+##  'SemiEchelonMat' returns a record that contains information about
+##  a semi-echelonized form of the matrix <mat>.
 ##
 ##  The components of this record are
 ##
 ##  'vectors': \\
-##        list of vectors, each with pivot element the identity of $F$,
+##        list of row vectors, each with pivot element the identity of $F$,
 ##
 ##  'heads' : \\
 ##        list that contains at position <i>, if nonzero, the number of the
@@ -165,9 +172,9 @@ SemiEchelonMat := NewAttribute(
 ##
 #A  SemiEchelonMatTransformation( <mat> )
 ##
-##  does the  same  as 'SemiEchelonMat' but   additionally stores  the linear
-##  transformation $T$ performed on the matrix.  The additional components of
-##  the result are
+##  does the same as 'SemiEchelonMat' but additionally stores the linear
+##  transformation $T$ performed on the matrix.
+##  The additional components of the result are
 ##
 ##  'coeffs' : \\
 ##        a list of coefficients vectors of the 'vectors' component,
@@ -180,6 +187,30 @@ SemiEchelonMat := NewAttribute(
 SemiEchelonMatTransformation := NewAttribute(
     "SemiEchelonMatTransformation",
     IsMatrix );
+
+
+#############################################################################
+##
+#A  SemiEchelonMats( <mats> )
+##
+##  A list of matrices over a field $F$ is in semi-echelon form if the
+##  list of row vectors obtained on concatenating the rows of each matrix
+##  is a semi-echelonized matrix (see "SemiEchelonMat").
+##
+##  'SemiEchelonMats' returns a record that contains information about
+##  a semi-echelonized form of the list <mats> of matrices.
+##
+##  The components of this record are
+##
+##  'vectors': \\
+##        list of matrices, each with pivot element the identity of $F$,
+##
+##  'heads' : \\
+##        matrix that contains at position [<i>,<j>], if nonzero,
+##        the number of the matrix for that the pivot element is in
+##        this position
+##
+SemiEchelonMats := NewOperationArgs( "SemiEchelonMats" );
 
 
 #############################################################################

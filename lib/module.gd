@@ -93,10 +93,28 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsTrivial );
 ##
 ##  A *full row module* is a module $R^n$, for a ring $R$.
 ##
+##  More precisely, a full row module is a free left module over a ring $R$
+##  such that the elements are row vectors with entries in $R$ and such that
+##  the dimension is equal to the length of the row vectors.
+##
 ##  Several functions delegate their tasks to full row modules,
 ##  for example 'Iterator' and 'Enumerator'.
 ##
 IsFullRowModule := NewProperty( "IsFullRowModule", IsFreeLeftModule );
+
+
+#############################################################################
+##
+#P  IsFullMatrixModule( M )
+##
+##  A *full matrix module* is a module $R^[m,n]$, for a ring $R$.
+##
+##  More precisely, a full matrix module is a free left module over a ring
+##  $R$ such that the elements are matrices with entries in $R$
+##  and such that the dimension is equal to the number of entries in each
+##  matrix.
+##
+IsFullMatrixModule := NewProperty( "IsFullMatrixModule", IsFreeLeftModule );
 
 
 #############################################################################
@@ -252,7 +270,20 @@ FreeLeftModule := NewOperationArgs( "FreeLeftModule" );
 ##
 #F  FullRowModule( <R>, <n> )
 ##
+##  is the row module $<R>^<n>$, for a ring <R> and a nonnegative integer
+##  <n>.
+##
 FullRowModule := NewOperationArgs( "FullRowModule" );
+
+
+#############################################################################
+##
+#F  FullMatrixModule( <R>, <m>, <n> )
+##
+##  is the row module $<R>^[<m>,<n>]$, for a ring <R> and nonnegative
+##  integers <m> and <n>.
+##
+FullMatrixModule := NewOperationArgs( "FullMatrixModule" );
 
 
 #############################################################################

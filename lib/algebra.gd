@@ -685,6 +685,20 @@ LieAlgebraByStructureConstants := NewOperationArgs(
 
 #############################################################################
 ##
+#F  FullMatrixFLMLOR( <R>, <n> )
+##
+##  is the matrix FLMLOR $<R>^[<n>,<n>]$, for a ring <R> and a nonnegative
+##  integer <n>.
+##
+FullMatrixFLMLOR := NewOperationArgs( "FullMatrixFLMLOR" );
+
+FullMatrixAlgebra := FullMatrixFLMLOR;
+MatrixAlgebra := FullMatrixFLMLOR;
+MatAlgebra := FullMatrixFLMLOR;
+
+
+#############################################################################
+##
 #P  IsAlgebraHomomorphism( <map> )
 ##
 ##  A mapping $f$ is an algebra homomorphism if source and range are algebras

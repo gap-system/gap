@@ -6,6 +6,8 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
+##  (The test file 'vspcmat.tst' should contain the same tests.)
+##
 
 #############################################################################
 ##
@@ -38,7 +40,7 @@ true
 
 #############################################################################
 ##
-##  2. Methods for bases of non-Gaussian row vector spaces
+##  2. Methods for bases of non-Gaussian row spaces
 ##
 gap> Dimension( w );
 1
@@ -49,15 +51,14 @@ true
 
 #############################################################################
 ##
-##  3. Methods for semi-echelonized bases of Gaussian row vector spaces
+##  3. Methods for semi-echelonized bases of Gaussian row spaces
 ##
 gap> v:= LeftModuleByGenerators( GF(9),
 >     [ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] );
 VectorSpace( GF(3^2), [ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] )
 gap> b:= SemiEchelonBasis( v );
 SemiEchelonBasis( VectorSpace( GF(3^2), 
-[ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] ), 
-[ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] )
+[ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] ), ... )
 gap> lc:= LinearCombination( b, [ Z(3)^0, Z(3) ] );
 [ Z(3)^0, Z(3)^0, 0*Z(3) ]
 gap> Coefficients( b, lc );
@@ -180,7 +181,7 @@ Basis( VectorSpace( GF(3^2), [ [ Z(3^3), Z(3), Z(3) ], [ Z(3^3), Z(3), Z(3) ],
 gap> IsBasisByNiceBasis( b );
 true
 gap> Coefficients( b, [ Z(27), 0*Z(3), 0*Z(3) ] );
-fail
+[ Z(3), Z(3)^0 ]
 
 gap> IsZero( Zero( v ) );
 true
@@ -254,7 +255,7 @@ gap> nv{ [ 1 .. 5 ] };
 
 #############################################################################
 ##
-##  5. Methods for full row vector spaces
+##  5. Methods for full row spaces
 ##
 gap> IsFullRowModule( v );
 false
