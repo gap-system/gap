@@ -239,11 +239,11 @@ OutputTextFile := NewOperation(
 ##  filename than there  is a difference:  'PrintTo'  will clear the    file,
 ##  'AppendTo' will not.
 ##
-AppendTo := function( args )
-    if IsString(args[1])  then
-        CallFuncList( APPEND_TO, args );
-    elif IsOutputStream(args[1])  then
-        CallFuncList( APPEND_TO_STREAM, args );
+AppendTo := function( arg )
+    if IsString(arg[1])  then
+        CallFuncList( APPEND_TO, arg );
+    elif IsOutputStream(arg[1])  then
+        CallFuncList( APPEND_TO_STREAM, arg );
     else
         Error( "first argument must be a filename or output stream" );
     fi;
@@ -256,11 +256,11 @@ end;
 ##
 ##  'PrintTo' appends <arg1>, ... to the output stream.
 ##
-PrintTo := function( args )
-    if IsString(args[1])  then
-        CallFuncList( PRINT_TO, args );
-    elif IsOutputStream(args[1])  then
-        CallFuncList( PRINT_TO_STREAM, args );
+PrintTo := function( arg )
+    if IsString(arg[1])  then
+        CallFuncList( PRINT_TO, arg );
+    elif IsOutputStream(arg[1])  then
+        CallFuncList( PRINT_TO_STREAM, arg );
     else
         Error( "first argument must be a filename or output stream" );
     fi;

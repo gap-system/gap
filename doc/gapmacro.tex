@@ -105,8 +105,8 @@
 \colwidth 19pc
 \newdimen\manindent      \manindent 3pc
 \newdimen\smallmanindent \smallmanindent 1pc
-\parskip 0pt
-\parindent \manindent
+\parskip 1ex plus 0.5ex minus 0.5ex
+\parindent 0pt
 
 % Additional fonts.
 \font\inchhigh=cminch
@@ -146,19 +146,27 @@
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
-  |medskip|noindent|ignorespaces}}
+  |vskip-|parskip|medskip|noindent|ignorespaces}}
 \outer\def\beginexample{\par
   \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef|examplefinish#1^^M#2\endexample{#1|medskip{#2}|endgroup %
-  |medskip|noindent|ignorespaces}}
+  |vskip-|parskip|medskip|noindent|ignorespaces}}
 
 % Input/output streams. Chapter and section counters.
 \newwrite\labelout \newwrite\indexout \newwrite\secindout
 \newwrite\tocout   \newwrite\citeout  \newwrite\ans
 \newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
-\newcount\chapno   \newcount\secno    \newcount\exno
+\countdef\chapno=1 \newcount\secno    \newcount\exno
+\def\chapterno{{\edef\tempa{\thechapter}\tempa}}
+\def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
+  \chapterno\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}
+\def\resetpageno{\ifnum\pageno<0 \pageno=-1 \else \pageno=1 \fi}
+\def\doindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}%
+  {\ifnum\pageno<0 \romannumeral-\pageno \else
+   \thechapter\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}}%
+  \ifvmode\nobreak\fi}
 
 % Additional active characters and their default meanings.
 \mathcode`.="2201 \mathchardef\.="702E
@@ -169,7 +177,8 @@
 \catcode`_=\active \def_{\ifmmode\sb\else\_\fi}         \let\_=\underscore
 \catcode`*=\active \def*{\ifmmode\let\next=\*\else\let\next=\bold\fi\next}
                    \def\bold#1*{{\sl #1\/}}             \chardef\*=`*
-\catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1}}\chardef\<=`<
+\catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1\/}}
+                                                        \chardef\<=`<
 \catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
                                                         \chardef\\=`\\
 
@@ -188,9 +197,7 @@
 \newif\iffirstsec \firstsectrue
 \def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
 \def\chapcontents#1#2#3{\iffirstsec\else \enddoublecolumns\firstsectrue\fi
-  \medskip \line
-  {\bf\hbox to\manindent{\hss #1\kern\smallmanindent}#2\ \dotsfill
-   \hbox to1.5em{\hss #3}}}
+  \medskip \leftline{\bf\hbox to\manindent{\hss #1\kern\smallmanindent}#2}}
 \def\seccontents#1#2#3{\iffirstsec\nobreak\smallskip\firstsecfalse
   \begindoublecolumns\fi
    \line{\kern\manindent\vbox{\advance\hsize by-\manindent
@@ -214,8 +221,6 @@
  \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
   \item{\sigel{#2}}}}
 \def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
-\def\doindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}{\folio}}%
-  \ifvmode\nobreak\fi}
 \def\dosecindex#1#2#3{\immediate\write\secindout
   {#1 \thechapter.\the\secno. #2#3}}
 \def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
@@ -227,12 +232,14 @@
 \def\filename{appendix}
 \def\tocstrut{{\setbox0=\hbox{1}\vrule width 0pt height\ht0}}
 \outer\def\Input#1{\def\filename{#1.tex}\input #1}
+\def\emptychapter{\noexpand\tocstrut}
 \outer\long\def\Chapter#1 \par{\vfill\supereject \headlinefalse
-  \advance\chapno by1 \secno=0 \exno=0 \def\chapname{#1}
+  \ifodd\pageno\else\null\eject\headlinefalse\fi
+  \advance\chapno by1 \secno=0 \exno=0 \resetpageno \def\chapname{#1}
   \label{chapter:#1}
-  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\folio}}
+  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
   \immediate\write\secindout{C \filename\space\thechapter. \chapname}
-  \setbox0=\hbox{\inchhigh\kern-.075em\thechapter}
+  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
   \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
     \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
   \line{\box0\hfil\box1}\nobreak \vskip 40pt \noindent}
@@ -242,19 +249,21 @@
   \dosecindex S{#1}{}
   \ifx#2\null\else \label{#1}\edef\tempa{{#1}}
     \expandafter\doindex\tempa{|indexit}{}\fi
-  {\baselineskip 18pt\let!=\space \noindent\secfont\thechapter.\the\secno
-   \enspace #1\par}\nobreak\medskip\noindent}
-\def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}{\folio}}}
+  {\baselineskip 18pt\let!=\space \noindent\secfont
+   \chapterno.\the\secno \enspace #1\par}\nobreak\medskip\noindent}
+\def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}
+  {\the\pageno}}}
 \def\letter#1{\medskip{\secfont #1}\endgraf\nobreak}
 
 % Macros for generating paragraph headings (e.g., function descriptions).
-\def\danger{\hang\hangafter=-2 \clubpenalty=10000 \noindent \llap
-  {\hbox to\parindent{\hfil\smash{\manual\char127}\hfil}}\ignorespaces}
+\def\danger{\hang\hangafter=-2 \clubpenalty=10000 \noindent
+  \llap{\smash{\manual\char127}\enspace}\ignorespaces}
 \def\fmark{\noindent\llap{\manual\char120\rm\enspace}}
 \def\moveup#1{\leavevmode \raise.16ex\hbox{\rm #1}}
 \def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
 \def\>{\ifx\par\fpar \else
-    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi
+    \ifvmode \vskip -\lastskip \fi \medskip
+    \begingroup\let\par=\fpar \parskip 0pt \fi
   \endgraf\futurelet\next\oporfunc}
 \def\subfunction#1#2{\overlay{#1}{#2}\label{#1!#2}%
   \bothindex F{#1}{@\noexpand`#1'}{!#2}\endgroup}
@@ -269,14 +278,14 @@
 % Macro for item lists.
 {\catcode`&=\active
 \gdef&{\par\nobreak\hangindent\manindent\hangafter 0
-       \noindent\ignorespaces}}
+       {\parskip 0pt\noindent}\ignorespaces}}
 \def\beginitems{\smallskip\begingroup \parindent 0pt \catcode`&=\active}
 \def\enditems{\par\endgroup\smallskip\noindent\ignorespaces}
 
 % Macros for exercises.
 \outer\def\exercise{\advance\exno by1\begingroup
   \def\par{\endgraf\endgroup\medskip\noindent}
-  \medskip\noindent\fmark{\bf Exercise \thechapter.\the\exno.}\quad}
+  \medskip\noindent{\bf Exercise \chapterno.\the\exno.}\quad}
 \outer\def\answer{\immediate\write\ans{}%
   \immediate\write\ans{\noexpand\textindent
     {\noexpand\bf\thechapter.\the\exno.}}%
@@ -293,7 +302,7 @@
 \tracinglostchars=0 \hyphenchar\tentt=128 \lccode`.=`.
 {\catcode`.=\active \gdef.{\char'056 \penalty0}}
 \def\typewriter#1'{\leavevmode{\catcode`.=\active
-  \chardef\{=`{ \chardef\}=`} \chardef*=`* \chardef"=`"
+  \chardef\{=`{ \chardef\}=`} \chardef*=`* \chardef"=`" \chardef~=`~
   \tt #1}}
 \catcode``=\active
 \def\)#1{\ifx\par\fpar \else
@@ -321,6 +330,8 @@
 % Miscellaneous macros.
 \def\GAP{{\sf GAP}}
 \def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
+\def\N{{\bf N}} \def\Z{{\bf Z}} \def\Q{{\bf Q}} \def\R{{\bf R}}
+\def\C{{\bf C}} \def\F{{\bf F}}
 
 % Page numbers and running heads.
 \newif\ifheadline
@@ -337,7 +348,7 @@
   \immediate\closein#1 \input\jobname.#2 \fi}
 
 % Macros for the parts of the manual.
-\outer\def\FrontMatter{\def\thechapter{\noexpand\tocstrut}
+\outer\def\FrontMatter{\let\thechapter=\emptychapter
   \def\lefthead{\it\chapname} \let\righthead=\lefthead
 
   \begingroup
@@ -353,7 +364,7 @@
   \immediate\openout\secindout=\jobname.six
   \immediate\openout\citeout  =\jobname.aux
   \immediate\write\citeout{\bs bibstyle{alpha}}
-  \immediate\write\citeout{\bs bibdata{}}}
+  \immediate\write\citeout{\bs bibdata{mrabbrev,algebra,myalg}}}
   
 \outer\def\Chapters{\vfill\eject
   \chapno=0 \def\thechapter{\the\chapno}
@@ -403,7 +414,7 @@
   \immediate\write16{##}
   \pageno=-1
   \headlinefalse
-  \def\thechapter{\noexpand\tocstrut} \def\label##1{}
+  \let\thechapter=\emptychapter \def\label##1{}
   \def\lefthead{\chapname} \let\righthead=\lefthead}
 
 \outer\def\TableOfContents{\begingroup

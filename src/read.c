@@ -12,8 +12,6 @@ char *          Revision_read_c =
    "@(#)$Id$";
 
 
-#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
-
 #include        "system.h"              /* Ints, UInts                     */
 
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
@@ -47,10 +45,10 @@ char *          Revision_read_c =
 **  'READ_ERROR' returns a non-zero value if the reader found an error, or if
 **  the interpretation of  an expression  or  statement lead to an  error (in
 **  which case 'ReadEvalError' jumps back to 'READ_ERROR' via 'longjmp').
+**
+#define READ_ERROR()    (NrError || (NrError+=setjmp(ReadJmpError)))
 */
 jmp_buf         ReadJmpError;
-
-#define READ_ERROR()    (NrError || (NrError+=setjmp(ReadJmpError)))
 
 
 /****************************************************************************
@@ -121,10 +119,10 @@ void            ReadFuncExpr1 (
 
 /****************************************************************************
 **
-*F  ReadVar(<follow>) . . . . . . . . . . . . . . . . . . . . read a variable
+*F  ReadCallVarAss( <follow>, <mode> )  . . . . . . . . . . . read a variable
 **
-**  'ReadVar' reads a variable.  In case of an error  it skips all symbols up
-**  to one contained in <follow>.
+**  'ReadCallVarAss' reads  a variable.  In  case  of an  error it skips  all
+**  symbols up to one contained in <follow>.
 **
 **      <Ident>         :=  a|b|..|z|A|B|..|Z { a|b|..|z|A|B|..|Z|0|..|9|_ }
 **
@@ -134,13 +132,11 @@ void            ReadFuncExpr1 (
 **                      |   <Var> '.' <Ident>
 **                      |   <Var> '(' [ <Expr> { ',' <Expr> } ] ')'
 */
-extern  Obj             ExprGVars;
+extern Obj ExprGVars;
+extern Obj ErrorLVars;
+extern Obj BottomLVars;
 
-extern  Obj             ErrorLVars;
-
-extern  Obj             BottomLVars;
-
-void            ReadCallVarAss (
+void ReadCallVarAss (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -350,7 +346,7 @@ void            ReadCallVarAss (
     }
 
     /* if we need a reference                                              */
-    if      ( mode == 'r' || (mode == 'x' && Symbol != S_ASSIGN) ) {
+    if ( mode == 'r' || (mode == 'x' && Symbol != S_ASSIGN) ) {
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrRefLVar( var );           }
         else if ( type == 'h' ) { IntrRefHVar( var );           }
@@ -678,7 +674,7 @@ void            ReadRecExpr (
 
 /****************************************************************************
 **
-*F  ReadFuncExpr(<follow>)  . . . . . . . . . . .  read a function definition
+*F  ReadFuncExpr( <follow> )  . . . . . . . . . .  read a function definition
 **
 **  'ReadFuncExpr' reads a function literal expression.  In  case of an error
 **  it skips all symbols up to one contained in <follow>.
@@ -688,7 +684,7 @@ void            ReadRecExpr (
 **                              <Statments>
 **                          'end'
 */
-void            ReadFuncExpr (
+void ReadFuncExpr (
     TypSymbolSet        follow )
 {
     volatile Obj        nams;           /* list of local variables names   */
@@ -773,7 +769,8 @@ void            ReadFuncExpr (
     nr = ReadStats( S_END|follow );
 
     /* and end the function again                                          */
-    if ( ! READ_ERROR() ) { IntrFuncExprEnd( nr, 0UL ); }
+    if ( READ_ERROR() ) {}
+    IntrFuncExprEnd( nr, 0UL );
 
     /* pop the new local variables list                                    */
     CountNams--;
@@ -1081,14 +1078,14 @@ void            ReadAri (
 
 /****************************************************************************
 **
-*F  ReadRel(<follow>) . . . . . . . . . . . . .. read a relational expression
+*F  ReadRel( <follow>, <mode> ) . . . . . . . .  read a relational expression
 **
 **  'ReadRel' reads a relational  expression.  In case  of an error it  skips
 **  all symbols up to one contained in <follow>.
 **
 **      <Rel>           :=  { 'not' } <Arith> { '=|<>|<|>|<=|>=|in' <Arith> }
 */
-void            ReadRel (
+void ReadRel (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1129,14 +1126,14 @@ void            ReadRel (
 
 /****************************************************************************
 **
-*F  ReadAnd(<follow>) . . . . . . . . . . . . . read a logical and expression
+*F  ReadAnd( <follow>, <mode> ) . . . . . . . . read a logical and expression
 **
 **  'ReadAnd' reads an and   expression.  In case of  an  error it  skips all
 **  symbols up to one contained in <follow>.
 **
 **      <And>           :=  <Rel> { 'and' <Rel> }
 */
-void            ReadAnd (
+void ReadAnd (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1155,14 +1152,14 @@ void            ReadAnd (
 
 /****************************************************************************
 **
-*F  ReadExpr(<follow>) . . . . . . . . . . . . . . . . . . read an expression
+*F  ReadExpr( <follow>, <mode> )  . . . . . . . . . . . .  read an expression
 **
 **  'ReadExpr' reads an expression.  In case of an error it skips all symbols
 **  up to one contained in <follow>.
 **
 **      <Expr>          :=  <And> { 'or' <And> }
 */
-void            ReadExpr (
+void ReadExpr (
     TypSymbolSet        follow,
     Char                mode )
 {
@@ -1592,7 +1589,7 @@ Obj             ReadEvalResult;
 **  It does not expect the  first symbol of its input  already read and  wont
 **  read the  first symbol of the  next  input.
 */
-UInt            ReadEvalCommand ( void )
+UInt ReadEvalCommand ( void )
 {
     UInt                type;
     Obj                 stackNams;
@@ -1806,6 +1803,7 @@ void            ReadEvalError ( void )
 
 /****************************************************************************
 **
+
 *F  InitRead()  . . . . . . . . . . . . . . . . . . . . initialize the reader
 **
 **  'InitRead' initializes the reader.

@@ -2973,32 +2973,6 @@ InstallOtherMethod( GroupByGenerators,
 
 #############################################################################
 ##
-#R  IsClassFunctionsSpaceRep( <V> )
-##
-##  Free left modules of class functions are handled by associating to a
-##  class function the row vector given by its values.
-##
-##  If the nice free left module has been computed then
-##  free left modules of class functions contain the components
-##
-##  'elementsunderlying' : \\
-##       the underlying character table of the elements,
-##
-IsClassFunctionsSpaceRep := NewRepresentation( "IsClassFunctionsSpaceRep",
-    IsAttributeStoringRep and IsHandledByNiceBasis,
-    [ "elementsunderlying" ] );
-
-
-#############################################################################
-##
-#M  IsClassFunctionsSpaceRep
-##
-InstallTrueMethod( IsClassFunctionsSpaceRep,
-    IsFreeLeftModule and IsClassFunctionCollection );
-
-
-#############################################################################
-##
 #M  PrepareNiceFreeLeftModule( <V> )
 ##
 InstallMethod( PrepareNiceFreeLeftModule,

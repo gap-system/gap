@@ -585,7 +585,7 @@ QuaternionAlgebra := function( arg )
     # A quaternion algebra with parameters $-1$ over the rationals
     # is a division ring.
     if F = Rationals and a = -1 and b = -1 then
-      SetFilterObj( A, IsMagmaWithInversesAndZero );
+      SetFilterObj( A, IsMagmaWithInversesIfNonzero );
 #T better: use 'DivisionRingByGenerators' !
     fi;
 
@@ -727,39 +727,6 @@ OctaveAlgebra := F -> AlgebraByStructureConstants(
         [[],[]] ],
       0, Zero(F) ],
     "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" );
-
-
-#############################################################################
-##
-#R  IsSCAlgebraObjSpaceRep
-##
-##  We use that the family of an s.c. algebra knows a constitutive basis.
-##  The associated row vectors can be computed for the whole family,
-##  i.e., independent of the substructure (subalgebra, subspace, ideal)
-##  under consideration.
-##
-IsSCAlgebraObjSpaceRep := NewRepresentation( "IsSCAlgebraObjSpaceRep",
-    IsAttributeStoringRep and IsHandledByNiceBasis, [] );
-
-
-#############################################################################
-##
-#M  IsSCAlgebraObjSpaceRep( <V> )
-##
-##  We claim that a free left module of s.c. algebra elements is in
-##  'IsSCAlgebraObjSpaceRep', which means that the free module is handled by
-##  a nice module.
-##
-##  This allows to omit special methods for 'LeftModuleByGenerators' and
-##  'FLMLORByGenerators' (which would differ from the default methods only
-##  by setting this flag).
-##
-##  (So the right way to replace the handling of the module by a better one
-##  is to overlay those methods to compute bases that use the flag
-##  'IsHandledByNiceBasis'.)
-##
-InstallTrueMethod( IsSCAlgebraObjSpaceRep,
-    IsSCAlgebraObjCollection and IsFreeLeftModule );
 
 
 #T #############################################################################

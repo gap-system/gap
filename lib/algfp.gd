@@ -24,7 +24,6 @@ IsElementOfFpAlgebra := NewCategory( "IsElementOfFpAlgebra",
 #C  IsElementOfFpAlgebraCollection
 ##
 IsElementOfFpAlgebraCollection := CategoryCollections(
-    "IsElementOfFpAlgebraCollection",
     IsElementOfFpAlgebra );
 
 
@@ -41,8 +40,7 @@ InstallTrueMethod( IsSubalgebraFpAlgebra,
 ##
 #C  IsFamilyOfFpAlgebraElements
 ##
-IsFamilyOfFpAlgebraElements := CategoryFamily( "IsFamilyOfFpAlgebraElements",
-    IsElementOfFpAlgebra );
+IsFamilyOfFpAlgebraElements := CategoryFamily( IsElementOfFpAlgebra );
 
 
 #############################################################################

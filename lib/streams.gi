@@ -338,7 +338,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "input-stream(", obj![1], ",", Length(obj![2]), ")" );
+    Print( "InputTextString(", obj![1], ",", Length(obj![2]), ")" );
 end );
 
 
@@ -476,6 +476,12 @@ InputTextFileType := NewType(
     StreamsFamily,
     IsInputTextStream and IsInputTextFileRep );
 
+#############################################################################
+##
+#V  InputTextFileStillOpen
+##
+InputTextFileStillOpen := [];
+
 
 #############################################################################
 ##
@@ -494,6 +500,7 @@ function( str )
     if fid = fail  then
         return fail;
     else
+        AddSet( InputTextFileStillOpen, fid );
         return Objectify( InputTextFileType, [fid,Immutable(str)] );
     fi;
 end );
@@ -512,9 +519,20 @@ InstallMethod( CloseStream,
 
 function( stream )
     CLOSE_FILE(stream![1]);
+    RemoveSet( InputTextFileStillOpen, stream![1] );
     SET_TYPE_COMOBJ( stream, ClosedStreamType );
 end );
-        
+
+
+InstallAtExit( function()
+    local   i;
+
+    for i  in InputTextFileStillOpen  do
+        CLOSE_FILE(i);
+    od;
+
+end );
+  
 
 #############################################################################
 ##
@@ -557,7 +575,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "inputstream(", obj![2], ")" );
+    Print( "InputTextFile(", obj![2], ")" );
 end );
 
 
@@ -674,7 +692,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "outputstream(", obj![2], ")" );
+    Print( "OutputTextString(", Length(obj![1]), ")" );
 end );
 
 
@@ -745,6 +763,13 @@ OutputTextFileType := NewType(
 
 #############################################################################
 ##
+#V  OutputTextFileStillOpen
+##
+OutputTextFileStillOpen := [];
+
+
+#############################################################################
+##
 #M  OutputTextFile( <str>, <append> )
 ##
 InstallMethod( OutputTextFile,
@@ -761,6 +786,7 @@ function( str, append )
     if fid = fail  then
         return fail;
     else
+        AddSet( OutputTextFileStillOpen, fid );
         return Objectify( OutputTextFileType, [fid,Immutable(str)] );
     fi;
 end );
@@ -779,9 +805,19 @@ InstallMethod( CloseStream,
 
 function( stream )
     CLOSE_FILE(stream![1]);
+    RemoveSet( OutputTextFileStillOpen, stream![1] );
     SET_TYPE_COMOBJ( stream, ClosedStreamType );
 end );
         
+InstallAtExit( function()
+    local   i;
+
+    for i  in OutputTextFileStillOpen  do
+        CLOSE_FILE(i);
+    od;
+
+end );
+
 
 #############################################################################
 ##
@@ -794,7 +830,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "output-stream(", obj![2], ")" );
+    Print( "OutputTextFile(", obj![2], ")" );
 end );
 
 

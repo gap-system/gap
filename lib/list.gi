@@ -285,7 +285,7 @@ od;
 InstallMethod( ConstantTimeAccessList,
     "method for a constant time access list",
     true,
-    [ IsList and IsConstantTimeAccessListRep ], SUM_FLAGS,
+    [ IsList and IsConstantTimeAccessList ], SUM_FLAGS,
     Immutable );
 
 
@@ -303,7 +303,7 @@ InstallOtherMethod( AsList,
 InstallOtherMethod( AsList,
     "method for a constant time access list",
     true,
-    [ IsList and IsConstantTimeAccessListRep ],
+    [ IsList and IsConstantTimeAccessList ],
     0,
     Immutable );
 
@@ -325,7 +325,7 @@ InstallOtherMethod( AsListSorted,
 InstallOtherMethod( AsListSorted,
     "method for a constant time access list",
     true,
-    [ IsList and IsConstantTimeAccessListRep ],
+    [ IsList and IsConstantTimeAccessList ],
     0,
     AsListSortedList );
 
@@ -1656,6 +1656,20 @@ DifferenceBlist := function(a,b)
   a:=ShallowCopy(a);
   SubtractBlist(a,b);
   return a;
+end;
+
+
+#############################################################################
+##
+#F  ListWithIdenticalEntries( <n>, <obj> )
+##
+ListWithIdenticalEntries := function( n, obj )
+    local list, i;
+    list:= [];
+    for i in [ 1 .. n ] do
+      list[i]:= obj;
+    od;
+    return list;
 end;
 
 

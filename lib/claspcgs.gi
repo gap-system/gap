@@ -36,7 +36,7 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
     cg := rec( matrix         := [  ],
                needed         := [  ],
                baseComplement := ShallowCopy( ran ),
-               projection     := DeepCopy( IdentityMat( r, one ) ),
+               projection     := StructuralCopy( IdentityMat( r, one ) ),
                commutator     := 0,
                centralizer    := 0,
                dimensionN     := r,
@@ -103,7 +103,8 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
             Q[ i ] := cg.matrix[ i ]{ ran };
         od;
         for i  in [ cg.commutator + 1 .. r ]  do
-            Q[ i ] := ShallowCopy( 0 * cg.projection[ 1 ] );
+            Q[ i ] := ListWithIdenticalEntries( Length( cg.baseComplement ),
+                              zero );
             Q[ i ][ cg.baseComplement[ i-r+Length(cg.baseComplement) ] ]
               := one;
         od;
@@ -791,7 +792,7 @@ ClassesSolvableGroup := function( arg )
     if IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
         cls := List( candidates, c -> cl );
         tra := List( candidates, c -> One( U ) );
-        exp := 0 * [ 1 .. Length( candidates ) ] + 1;
+        exp := ListWithIdenticalEntries( Length( candidates ), 1 );
     else
         cls := [ cl ];
     fi;
@@ -967,29 +968,6 @@ end;
 #############################################################################
 ##
 
-#M  CanonicalRepresentativeOfExternalSet( <cl> )  . conj. cl. of solv. groups
-##
-InstallMethod( CanonicalRepresentativeOfExternalSet, true,
-        [ IsConjugacyClassGroupRep ], 0,
-    function( cl )
-    local   G,  rep;
-    
-    G := ActingDomain( cl );
-    if not IsPcgsComputable( G )  then
-        TryNextMethod();
-    fi;
-    rep := ClassesSolvableGroup( G, G, true, 0, [ Representative( cl ) ] )
-           [ 1 ];
-    if not HasStabilizerOfExternalSet( cl )  then
-        SetStabilizerOfExternalSet( cl,
-                ConjugateSubgroup( rep.centralizer, rep.operator ^ -1 ) );
-    fi;
-    SetOperatorOfExternalSet( cl, rep.operator );
-    return rep.representative;
-end );
-        
-#############################################################################
-##
 #M  OperatorOfExternalSet( <cl> ) . . . . . . . . . conj. cl. of solv. groups
 ##
 InstallMethod( OperatorOfExternalSet, true,

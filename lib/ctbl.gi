@@ -370,12 +370,16 @@ end;
 
 #############################################################################
 ##
-#F  IBrForPSolvableTable( <modtbl> )
+#M  Irr( <modtbl> ) . . . . . . . . . . . . . for a <p>-solvable Brauer table
 ##
 ##  Compute the modular irreducibles from the ordinary irreducibles
 ##  using the Fong-Swan theorem.
 ##
-IBrForPSolvableTable := function( modtbl )
+InstallOtherMethod( Irr,
+    "method for a <p>-solvable Brauer table (use the Fong-Swan theorem)",
+    true,
+    [ IsBrauerTable ], 0,
+    function( modtbl )
 
     local p,       # characteristic
           ordtbl,  # ordinary character table
@@ -387,6 +391,10 @@ IBrForPSolvableTable := function( modtbl )
           chars,   # characters of a given degree
           dec;     # decomposition of ordinary characters
                    # into known Brauer characters
+
+    if not IsPSolvable( OrdinaryCharacterTable( modtbl ) ) then
+      TryNextMethod();
+    fi;
 
     p:= UnderlyingCharacteristic( modtbl );
     ordtbl:= OrdinaryCharacterTable( modtbl );
@@ -408,23 +416,6 @@ IBrForPSolvableTable := function( modtbl )
     od;
 
     return irr;
-end;
-
-
-#############################################################################
-##
-#M  Irr( <modtbl> ) . . . . . . . . . . . . . for a <p>-solvable Brauer table
-##
-InstallOtherMethod( Irr,
-    "method for a <p>-solvable Brauer table",
-    true,
-    [ IsBrauerTable ], 0,
-    function( modtbl )
-    if IsPSolvable( OrdinaryCharacterTable( modtbl ) ) then
-      return IBrForPSolvableTable( modtbl );
-    else
-      TryNextMethod();
-    fi;
     end );
 
 

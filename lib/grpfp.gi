@@ -192,56 +192,6 @@ InstallMethod( GeneratorsOfGroup,
 
 #############################################################################
 ##
-#M  FactorFreeGroupByRelators(<F>,<rels>) .  factor of free group by relators
-##
-FactorFreeGroupByRelators := function( F, rels )
-    local G, fam;
-
-    # Create a new family.
-    fam := NewFamily( "FamilyElementsFpGroup", IsElementOfFpGroup );
-
-    # Create the default type for the elements.
-    fam!.defaultType := NewType( fam, IsPackedWordDefaultRep );
-
-    fam!.freeGroup := F;
-    fam!.relators := Immutable( rels );
-
-    # Create the group.
-    G := Objectify(
-        NewType( CollectionsFamily( fam ),
-            IsSubgroupFpGroup and IsWholeFamily and IsAttributeStoringRep ),
-        rec() );
-
-    return G;
-end;
-
-
-#############################################################################
-##
-#M  \/( <F>, <rels> ) . . . . . . . . . . for free group and list of relators
-##
-InstallOtherMethod( \/,
-    "method for free groups and relators",
-    IsIdentical,
-    [ IsFreeGroup, IsCollection ],
-    0,
-    FactorFreeGroupByRelators );
-
-
-#############################################################################
-##
-#M  \/( <F>, <rels> ) . . . . . . . for free group and empty list of relators
-##
-InstallOtherMethod( \/,
-    "method for a free group and an empty list of relators",
-    true,
-    [ IsFreeGroup, IsEmpty ],
-    0,
-    FactorFreeGroupByRelators );
-
-
-#############################################################################
-##
 #M  AbelianInvariants(<G>) . . . .  abelian invariants of an abelian fp group
 ##
 InstallMethod( AbelianInvariants,
@@ -344,18 +294,42 @@ end );
 
 #############################################################################
 ##
-#M  CosetTableFpGroup( <G>, <H> ) . . . . . . . . . .  do a coset enumeration
+#M  CosetTable( <G>, <H> )  . . . . coset table of a finitely presented group
 ##
-##  'CosetTableFpGroup'   applies   a  Felsch  strategy   Todd-Coxeter  coset
-##  enumeration to construct a coset table of H in G.
+InstallMethod( CosetTable,
+    "method for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup and IsWholeFamily, IsSubgroupFpGroup ],
+    0,
+
+function( G, H );
+
+### if FamilyObj( G ) <> FamilyObj( H ) then
+    if G <> FamilyObj( H )!.wholeGroup then
+        Error( "<H> must be a subgroup of <G>" );
+    fi;
+
+    return CosetTableInWholeGroup( H );
+
+end );
+
+
+#############################################################################
 ##
-CosetTableFpGroup := function ( G, H )
-    local   Fam,                    # elements family of <G>
-            fgens,                  # generators of asscociated free group
-            grels,                  # relators of G
-            sgens,                  # subgroup generators of H
-            fsgens,                 # preimages of subgroup generators in F
-            next,  prev,            # next and previous coset on lists
+#M  CosetTableFromGensAndRels( <fgens>, <grels>, <fsgens> ) . . . . . . . . .
+#M                                                     do a coset enumeration
+##
+##  'CosetTableFromGensAndRels'  is the working horse  for computing  a coset
+##  table of H in G where G is a finitley presented group, H is a subgroup of
+##  G,  and  G  is the whole group of  H.  It applies a Felsch strategy Todd-
+##  Coxeter coset enumeration. The expected parameters are
+##
+##    fgens  = generators of the free group F associated to G,
+##    grels  = relators of G,
+##    fsgens = preimages of the subgroup generators of H in F.
+##
+CosetTableFromGensAndRels := function ( fgens, grels, fsgens )
+    local   next,  prev,            # next and previous coset on lists
             firstFree,  lastFree,   # first and last free coset
             firstDef,   lastDef,    # first and last defined coset
             firstCoinc, lastCoinc,  # first and last coincidence coset
@@ -380,24 +354,6 @@ CosetTableFpGroup := function ( G, H )
             nrmax,                  # maximal value of the above
             nrdel,                  # number of deleted cosets
             nrinf;                  # number for next information message
-
-    # check the arguments
-    if not ( IsSubgroupFpGroup( G ) and IsWholeFamily( G ) ) then
-        Error( "<G> must be a finitely presented group" );
-    fi;
-    if not IsSubgroupFpGroup( H ) or FamilyObj( H ) <> FamilyObj( G ) then
-        Error( "<H> must be a subgroup of <G>" );
-    fi;
-
-    # get some local variables
-    Fam := ElementsFamily( FamilyObj( G ) );
-    fgens := GeneratorsOfGroup( Fam!.freeGroup );
-    grels := Fam!.relators;
-    sgens := GeneratorsOfGroup( H );
-    fsgens := List( sgens, gen -> UnderlyingElement( gen ) );
-
-#@@ # check if the coset table is already available
-#@@ if IsBound( H.cosetTable ) then return H.cosetTable; fi;
 
     # give some information
     Info( InfoFpGroup, 1, "CosetTableFromGensAndRels called:" );
@@ -425,10 +381,10 @@ CosetTableFpGroup := function ( G, H )
     # make the columns for the generators
     table := [];
     for gen  in fgens  do
-        g := 0 * [ 1 .. limit ];
+        g := ListWithIdenticalEntries( limit, 0 );
         Add( table, g );
         if not (gen^2 in rels or gen^-2 in rels) then
-            g := 0 * [ 1 .. limit ];
+            g := ListWithIdenticalEntries( limit, 0 );
         fi;
         Add( table, g );
     od;
@@ -441,8 +397,8 @@ CosetTableFpGroup := function ( G, H )
     for rel  in fsgens  do
         length := LengthWord( rel );
         length2 := 2 * length;
-        nums := 0 * [ 1 .. length2 ];
-        cols := 0 * [ 1 .. length2 ];
+        nums := [ ]; nums[length2] := 0;
+        cols := [ ]; cols[length2] := 0;
 
         # compute the lists.
         i := 0;  j := 0;
@@ -565,201 +521,40 @@ end;
 
 #############################################################################
 ##
-#M  CosetTableFromGensAndRels( <gens>, <rels>, <sgens> )  . . . . . . . . . .
-#M                                                     do a coset enumeration
+#M  CosetTableInWholeGroup( <H> )  . . . . . .  coset table of an fp subgroup
+#M                                                         in its whole group
 ##
-##  'CosetTableFromGensAndRels'  applies a Felsch strategy Todd-Coxeter coset
-##  enumeration to construct a coset table of H in G.
-##
-CosetTableFromGensAndRels := function ( fgens, grels, sgens )
-    local   next,  prev,            # next and previous coset on lists
-            firstFree,  lastFree,   # first and last free coset
-            firstDef,   lastDef,    # first and last defined coset
-            firstCoinc, lastCoinc,  # first and last coincidence coset
-            table,                  # columns in the table for gens
-            rels,                   # representatives of the relators
-            relsGen,                # relators sorted by start generator
-            subgroup,               # rows for the subgroup gens
-            deductions,             # deduction queue
-            i, gen, inv,            # loop variables for generator
-            g,                      # loop variable for generator col
-            rel,                    # loop variables for relation
-            p, p1, p2,              # generator position numbers
-            app,                    # arguments list for 'MakeConsequences'
-            limit,                  # limit of the table
-            maxlimit,               # maximal size of the table
-            j,                      # integer variable
-            length, length2,        # length of relator (times 2)
-            cols,
-            nums,
-            l,
-            nrdef,                  # number of defined cosets
-            nrmax,                  # maximal value of the above
-            nrdel,                  # number of deleted cosets
-            nrinf;                  # number for next information message
+InstallMethod( CosetTableInWholeGroup,
+    "method for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup ],
+    0,
 
-    # give some information
-    Info( InfoFpGroup, 1, "CosetTableFromGensAndRels called:" );
-    Info( InfoFpGroup, 2, "    defined deleted alive   maximal");
-    nrdef := 1;
-    nrmax := 1;
-    nrdel := 0;
-    nrinf := 1000;
+function( H )
+    local   G,          # whole group of <H>
+            Fam,        # elements family of <G>
+            fgens,      # generators of the free group F asscociated to G
+            grels,      # relators of G
+            sgens,      # subgroup generators of H
+            fsgens,     # preimages of subgroup generators in F
+            T;          # coset table
 
-    # initialize size of the table
-    limit    := CosetTableDefaultLimit;
-    maxlimit := CosetTableDefaultMaxLimit;
+    # Get whole group <G> of <H>.
+    G := FamilyObj( H )!.wholeGroup;
 
-    # define one coset (1)
-    firstDef  := 1;  lastDef  := 1;
-    firstFree := 2;  lastFree := limit;
+    # get some variables
+    Fam := ElementsFamily( FamilyObj( G ) );
+    fgens := GeneratorsOfGroup( Fam!.freeGroup );
+    grels := Fam!.relators;
+    sgens := GeneratorsOfGroup( H );
+    fsgens := List( sgens, gen -> UnderlyingElement( gen ) );
 
-    # make the lists that link together all the cosets
-    next := [ 2 .. limit + 1 ];  next[1] := 0;  next[limit] := 0;
-    prev := [ 0 .. limit - 1 ];  prev[2] := 0;
+    # Construct the coset table of <G> by <H>.
+    T := CosetTableFromGensAndRels( fgens, grels, fsgens );
 
-    # compute the representatives for the relators
-    rels := RelatorRepresentatives( grels );
+    return T;
 
-    # make the columns for the generators
-    table := [];
-    for gen  in fgens  do
-        g := 0 * [ 1 .. limit ];
-        Add( table, g );
-        if not (gen^2 in rels or gen^-2 in rels) then
-            g := 0 * [ 1 .. limit ];
-        fi;
-        Add( table, g );
-    od;
-
-    # make the rows for the relators and distribute over relsGen
-    relsGen := RelsSortedByStartGen( fgens, rels, table );
-
-    # make the rows for the subgroup generators
-    subgroup := [];
-    for rel  in sgens  do
-        length := LengthWord( rel );
-        length2 := 2 * length;
-        nums := 0 * [ 1 .. length2 ];
-        cols := 0 * [ 1 .. length2 ];
-
-        # compute the lists.
-        i := 0;  j := 0;
-        while i < length do
-            i := i + 1;  j := j + 2;
-            gen := Subword( rel, i, i );
-            p := Position( fgens, gen );
-            if p = fail then
-                p := Position( fgens, gen^-1 );
-                p1 := 2 * p;
-                p2 := 2 * p - 1;
-            else
-                p1 := 2 * p - 1;
-                p2 := 2 * p;
-            fi;
-            nums[j]   := p1;  cols[j]   := table[p1];
-            nums[j-1] := p2;  cols[j-1] := table[p2];
-        od;
-        Add( subgroup, [ nums, cols ] );
-    od;
-
-    # add an empty deduction list
-    deductions := [];
-
-    # make the structure that is passed to 'MakeConsequences'
-    app := [ table, next, prev, relsGen, subgroup ];
-
-    # run over all the cosets
-    while firstDef <> 0  do
-
-        # run through all the rows and look for undefined entries
-        for i  in [ 1 .. Length( table ) ]  do
-            gen := table[i];
-
-            if gen[firstDef] = 0  then
-
-                inv := table[i + 2*(i mod 2) - 1];
-
-                # if necessary expand the table
-                if firstFree = 0  then
-                    if 0 < maxlimit and  maxlimit <= limit  then
-                        maxlimit := Maximum(maxlimit*2,limit*2);
-                        Error( "the coset enumeration has defined more ",
-                               "than ", limit, " cosets:\ntype 'return;' ",
-                               "if you want to continue with a new limit ",
-                               "of ", maxlimit, " cosets,\ntype 'quit;' ",
-                               "if you want to quit the coset ",
-                               "enumeration,\ntype 'maxlimit := 0; return;'",
-                               " in order to continue without a limit,\n" );
-                    fi;
-                    next[2*limit] := 0;
-                    prev[2*limit] := 2*limit-1;
-                    for g  in table  do g[2*limit] := 0;  od;
-                    for l  in [ limit+2 .. 2*limit-1 ]  do
-                        next[l] := l+1;
-                        prev[l] := l-1;
-                        for g  in table  do g[l] := 0;  od;
-                    od;
-                    next[limit+1] := limit+2;
-                    prev[limit+1] := 0;
-                    for g  in table  do g[limit+1] := 0;  od;
-                    firstFree := limit+1;
-                    limit := 2*limit;
-                    lastFree := limit;
-                fi;
-
-                # update the debugging information
-                nrdef := nrdef + 1;
-                if nrmax <= firstFree  then
-                    nrmax := firstFree;
-                fi;
-
-                # define a new coset
-                gen[firstDef]   := firstFree;
-                inv[firstFree]  := firstDef;
-                next[lastDef]   := firstFree;
-                prev[firstFree] := lastDef;
-                lastDef         := firstFree;
-                firstFree       := next[firstFree];
-                next[lastDef]   := 0;
-
-                # set up the deduction queue and run over it until it's empty
-                app[6] := firstFree;
-                app[7] := lastFree;
-                app[8] := firstDef;
-                app[9] := lastDef;
-                app[10] := i;
-                app[11] := firstDef;
-                nrdel := nrdel + MakeConsequences( app );
-                firstFree := app[6];
-                lastFree := app[7];
-                firstDef := app[8];
-                lastDef  := app[9];
-
-                # give some information
-                while nrinf <= nrdef+nrdel  do
-                    Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrinf-nrdef,
-                          "\t", 2*nrdef-nrinf, "\t", nrmax );
-                    nrinf := nrinf + 1000;
-                od;
-
-            fi;
-        od;
-
-        firstDef := next[firstDef];
-    od;
-
-    Info( InfoFpGroup, 1, "\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel, "\t",
-          nrmax );
-
-    # standardize the table
-    StandardizeTable( table );
-
-    # return the table
-#@@ H.cosetTable := table;
-#@@ return H.cosetTable;
-    return table;
-end;
+end );
 
 
 #############################################################################
@@ -851,7 +646,60 @@ end );
 
 #############################################################################
 ##
-#F FreeGeneratorsOfFpGroup( F )
+#M  FactorFreeGroupByRelators(<F>,<rels>) .  factor of free group by relators
+##
+FactorFreeGroupByRelators := function( F, rels )
+    local G, fam;
+
+    # Create a new family.
+    fam := NewFamily( "FamilyElementsFpGroup", IsElementOfFpGroup );
+
+    # Create the default type for the elements.
+    fam!.defaultType := NewType( fam, IsPackedWordDefaultRep );
+
+    fam!.freeGroup := F;
+    fam!.relators := Immutable( rels );
+
+    # Create the group.
+    G := Objectify(
+        NewType( CollectionsFamily( fam ),
+            IsSubgroupFpGroup and IsWholeFamily and IsAttributeStoringRep ),
+        rec() );
+
+    # Mark <G> to be the 'whole group' of its later subgroups.
+    FamilyObj( G )!.wholeGroup := G;
+
+    return G;
+end;
+
+
+#############################################################################
+##
+#M  \/( <F>, <rels> ) . . . . . . . . . . for free group and list of relators
+##
+InstallOtherMethod( \/,
+    "method for free groups and relators",
+    IsIdentical,
+    [ IsFreeGroup, IsCollection ],
+    0,
+    FactorFreeGroupByRelators );
+
+
+#############################################################################
+##
+#M  \/( <F>, <rels> ) . . . . . . . for free group and empty list of relators
+##
+InstallOtherMethod( \/,
+    "method for a free group and an empty list of relators",
+    true,
+    [ IsFreeGroup, IsEmpty ],
+    0,
+    FactorFreeGroupByRelators );
+
+
+#############################################################################
+##
+#M FreeGeneratorsOfFpGroup( F )
 ##
 FreeGeneratorsOfFpGroup := function( F )
   return GeneratorsOfGroup(ElementsFamily( FamilyObj( F ) )!.freeGroup);
@@ -860,11 +708,31 @@ end;
 
 #############################################################################
 ##
-#F FreeGroupOfFpGroup( F )
+#M FreeGroupOfFpGroup( F )
 ##
 FreeGroupOfFpGroup := function( F )
     return ElementsFamily( FamilyObj( F ) )!.freeGroup;
 end;
+
+
+#############################################################################
+##
+#M  IndexInWholeGroup( <H> )  . . . . . .  index of a subgroup in an fp group
+##
+InstallMethod( IndexInWholeGroup,
+    "method for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup ],
+    0,
+
+function( H )
+    local T;
+
+    # Get the coset table of <H> in its whole group.
+    T := CosetTableInWholeGroup( H );
+    return Length( T[1] );
+
+end );
 
 
 #############################################################################
@@ -956,7 +824,7 @@ InstallMethod( IsomorphismFpGroupByCompositionSeries,
 function( G, str )
     local l, H, gensH, iso, F, gensF, imgsF, relatorsF, free, n, k, N, M,
           hom, preiH, c, new, T, gensT, E, gensE, imgsE, relatorsE, rel,
-          w, t, i, j, series; 
+          w, t, i, j, series;
 
     # the solvable case
     if IsSolvableGroup( G ) then
@@ -967,15 +835,16 @@ function( G, str )
     series := CompositionSeries( G );
     l      := Length( series );
 
-    # set up 
+    # set up
     H := series[l-1];
-    if IsPrime( Size( H ) ) then
-        gensH := Filtered( GeneratorsOfGroup( H ), 
-                           x -> Order(x)=Size(H) ){[1]};
-    else
-        gensH := Set( GeneratorsOfGroup( H ) );
-        gensH := Filtered( gensH, x -> x <> One(H) );
-    fi;
+    gensH := SmallGeneratingSet( H );
+    # if IsPrime( Size( H ) ) then
+    #     gensH := Filtered( GeneratorsOfGroup( H ),
+    #                        x -> Order(x)=Size(H) ){[1]};
+    # else
+    #     gensH := Set( GeneratorsOfGroup( H ) );
+    #     gensH := Filtered( gensH, x -> x <> One(H) );
+    # fi;
     iso := IsomorphismFpGroupByGenerators( H, gensH, str );
     F := FreeGroupOfFpGroup( Image( iso ) );
     gensF := GeneratorsOfGroup( F );
@@ -989,21 +858,22 @@ function( G, str )
 
         # get composition factor
         N := series[k];
-        M := series[k+1];  
+        M := series[k+1];
         hom := NaturalHomomorphismByNormalSubgroupInParent( M );
         H := Image( hom );
-        if IsPrime( Size( H ) ) then
-            gensH := Filtered( GeneratorsOfGroup( H ), 
-                               x -> Order(x)=Size(H) ){[1]};
-        else
-            gensH := Set( GeneratorsOfGroup( H ) );
-            gensH := Filtered( gensH, x -> x <> One(H) );
-        fi;
+        gensH := SmallGeneratingSet( H );
+        # if IsPrime( Size( H ) ) then
+        #     gensH := Filtered( GeneratorsOfGroup( H ),
+        #                        x -> Order(x)=Size(H) ){[1]};
+        # else
+        #     gensH := Set( GeneratorsOfGroup( H ) );
+        #     gensH := Filtered( gensH, x -> x <> One(H) );
+        # fi;
         preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
         c     := Length( gensH );
 
         # compute presentation of H
-        new := IsomorphismFpGroupByGenerators( H, "g", gensH );
+        new := IsomorphismFpGroupByGenerators( H, gensH, "g" );
         T   := Image( new );
         gensT := GeneratorsOfGroup( FreeGroupOfFpGroup( T ) );
 
@@ -1015,7 +885,7 @@ function( G, str )
 
         # modify presentation of H
         for rel in RelatorsOfFpGroup( T ) do
-            w := MappedWord( rel, gensT, gensE{[1..c]} );    
+            w := MappedWord( rel, gensT, gensE{[1..c]} );
             t := MappedWord( rel, gensT, imgsE{[1..c]} );
             if not t = One( G ) then
                 t := PreImagesRepresentative( free, t );
@@ -1040,7 +910,7 @@ function( G, str )
                 Add( relatorsE, w/t );
             od;
         od;
- 
+
         # append relators of F
         for rel in relatorsF do
             w := MappedWord( rel, gensF, gensE{[c+1..c+n]} );
@@ -1056,7 +926,7 @@ function( G, str )
         n := n + c;
     od;
 
-    # set up 
+    # set up
     F := F / relatorsF;
     gensF := GeneratorsOfGroup( F );
     iso := GroupHomomorphismByImages( G, F, imgsF, gensF );
@@ -1162,7 +1032,7 @@ function( G, series, str )
         c     := Length( gensH );
 
         # compute presentation of H
-        new := IsomorphismFpGroupByGenerators( H, "g", gensH );
+        new := IsomorphismFpGroupByGenerators( H, gensH, "g" );
         T   := Image( new );
         gensT := GeneratorsOfGroup( FreeGroupOfFpGroup( T ) );
 
@@ -1236,6 +1106,599 @@ end);
 
 #############################################################################
 ##
+#F  LowIndexSubgroupsFpGroup(<G>,<H>,<index>[,<excluded>]) . . find subgroups
+#F                               of small index in a finitely presented group
+##
+LowIndexSubgroupsFpGroup := function ( arg )
+    local   G,          # parent group
+            Fam,        # elements family of <G>
+            ggens,      # generators of G
+            fgens,      # generators of associated free group
+            grels,      # relators of G
+            hgens,      # generators of H
+            fhgens,     # their preimages in the free group of G
+            F,          # associated free group
+            H,          # subgroup to be included in all resulting subgroups
+            index,      # maximal index of subgroups to be determined
+            excludeList, # representatives of element classes to be excluded
+            exclude,    # true, if element classes to be excluded are given
+            excludeGens, # table columns corresponding to gens to be excluded
+            excludeWords, # words to be excluded, sorted by start generator
+            subs,       # subgroups of <G>, result
+            sub,        # one subgroup
+            gens,       # generators of <sub>
+            indexInWholeGroup, # index of <sub> in G
+            tableInWholeGroup, # coset table of <sub> in G
+            table,      # coset table
+            nrgens,     # 2*(number of generators)+1
+            nrcos,      # number of cosets in the coset table
+            definition, # "definition"
+            choice,     # "choice"
+            deduction,  # "deduction"
+            action,     # 'action[<i>]' is definition or choice or deduction
+            actgen,     # 'actgen[<i>]' is the gen where this action was
+            actcos,     # 'actcos[<i>]' is the coset where this action was
+            nract,      # number of actions
+            nrded,      # number of deductions already handled
+            coinc,      # 'true' if a coincidence happened
+            gen,        # current generator
+            cos,        # current coset
+            rels,       # representatives for the relators
+            relsGen,    # relators sorted by start generator
+            subgroup,   # rows for the subgroup gens
+            nrsubgrp,   # number of subgroups
+            app,        # arguments list for 'ApplyRel'
+            later,      # 'later[<i>]' is <> 0 if <i> is smaller than 1
+            nrfix,      # index of a subgroup in its normalizer
+            pair,       # loop variable for subgroup generators as pairs
+            rel,        # loop variable for relators
+            triple,     # loop variable for relators as triples
+            r, s,       # renumbering lists
+            x, y,       # loop variables
+            g, c, d,    # loop variables
+            p, p1, p2,  # generator position numbers
+            length,     # relator length
+            length2,    # twice a relator length
+            cols,
+            nums,
+            ngens,      # number of generators of G
+            word,       # loop variable for words to be excluded
+            numgen,
+            numcos,
+            i, j;       # loop variables
+
+    # give some information
+    Info( InfoFpGroup, 1, "#I  LowIndexSubgroupsFpGroup called" );
+
+    # check the arguments
+    G := arg[1];
+    H := arg[2];
+    if not ( IsSubgroupFpGroup( G ) and IsWholeFamily( G ) ) then
+        Error( "<G> must be a finitely presented group" );
+    fi;
+    if not IsSubgroupFpGroup( H ) or FamilyObj( H ) <> FamilyObj( G ) then
+        Error( "<H> must be a subgroup of <G>" );
+    fi;
+    index := arg[3];
+
+    # get some local variables
+    Fam := ElementsFamily( FamilyObj( G ) );
+    ggens := GeneratorsOfGroup( G );
+    fgens := GeneratorsOfGroup( Fam!.freeGroup );
+    grels := Fam!.relators;
+    hgens := GeneratorsOfGroup( H );
+    fhgens := List( hgens, gen -> UnderlyingElement( gen ) );
+
+    # initialize the exclude lists, if elements to be excluded are given
+    exclude := Length( arg ) > 3;
+    if exclude then
+        excludeList := arg[4];
+    fi;
+
+    # initialize the subgroup list
+    subs := [];
+
+    # handle the special case index = 1.
+    if index = 1 then
+        if not exclude or excludeList = [] then  subs := [ G ];  fi;
+        return subs;
+    fi;
+
+    # initialize table
+    rels := RelatorRepresentatives( grels );
+    nrgens := 2 * Length( fgens ) + 1;
+    nrcos := 1;
+    table := [];
+    for gen  in fgens  do
+        g := ListWithIdenticalEntries( index, 0 );
+        Add( table, g );
+        if not ( gen^2 in rels or gen^-2 in rels ) then
+            g := ListWithIdenticalEntries( index, 0 );
+        fi;
+        Add( table, g );
+    od;
+
+    # prepare the exclude lists
+    if exclude then
+
+        # mark the column numbers of the generators to be excluded
+        ngens := Length( fgens );
+        excludeGens := [ ]; excludeGens[2*ngens] := 0;
+        for i in [ 1 .. ngens ] do
+            gen := fgens[i];
+            if gen in excludeList or gen^-1 in excludeList then
+                excludeGens[2*i-1] := 1;
+                excludeGens[2*i] := 1;
+            fi;
+        od;
+
+        # make the rows for the words of length > 1 to be excluded
+        excludeWords := [];
+        for word in excludeList do
+            if LengthWord( word ) > 1 then
+                Add( excludeWords, word );
+            fi;
+        od;
+        excludeWords := RelsSortedByStartGen(
+            fgens, excludeWords, table, false );
+    fi;
+
+    # make the rows for the relators and distribute over relsGen
+    relsGen := RelsSortedByStartGen( fgens, rels, table );
+
+    # make the rows for the subgroup generators
+    subgroup := [];
+    for rel  in fhgens  do
+        length := LengthWord( rel );
+        length2 := 2 * length;
+        nums := [ ]; nums[length2] := 0;
+        cols := [ ]; cols[length2] := 0;
+
+        # compute the lists.
+        i := 0;  j := 0;
+        while i < length do
+            i := i + 1;  j := j + 2;
+            gen := Subword( rel, i, i );
+            p := Position( fgens, gen );
+            if p = false then
+                p := Position( fgens, gen^-1 );
+                p1 := 2 * p;
+                p2 := 2 * p - 1;
+            else
+                p1 := 2 * p - 1;
+                p2 := 2 * p;
+            fi;
+            nums[j]   := p1;  cols[j]   := table[p1];
+            nums[j-1] := p2;  cols[j-1] := table[p2];
+        od;
+        Add( subgroup, [ nums, cols ] );
+    od;
+    nrsubgrp := Length( subgroup );
+
+    # make an structure that is passed to 'ApplyRel'
+    app := [ 0,0,0,0 ];
+
+    # set up the action stack
+    definition := 1;
+    choice := 2;
+    deduction := 3;
+    nract := 1;
+    action := [ choice ];
+    gen := 1;
+    actgen := [ gen ];
+    cos := 1;
+    actcos := [ cos ];
+
+    # set up the lexicographical information list
+    later := ListWithIdenticalEntries( index, 0 );
+
+    # initialize the renumbering lists
+    r := [ ]; r[index] := 0;
+    s := [ ]; s[index] := 0;
+
+    # do an exhaustive backtrack search
+    while 1 < nract  or table[1][1] < 2  do
+
+        # find the next choice that does not already appear in this col.
+        c := table[ gen ][ cos ];
+        repeat
+            c := c + 1;
+        until index < c  or table[ gen+1 ][ c ] = 0;
+
+        # if there is a further choice try it
+        if action[nract] <> definition  and c <= index  then
+
+            # remove the last choice from the table
+            d := table[ gen ][ cos ];
+            if d <> 0  then
+                table[ gen+1 ][ d ] := 0;
+            fi;
+
+            # enter it in the table
+            table[ gen ][ cos ] := c;
+            table[ gen+1 ][ c ] := cos;
+
+            # and put information on the action stack
+            if c = nrcos + 1  then
+                nrcos := nrcos + 1;
+                action[ nract ] := definition;
+            else
+                action[ nract ] := choice;
+            fi;
+
+            # run through the deduction queue until it is empty
+            nrded := nract;
+            coinc := false;
+            while nrded <= nract and not coinc  do
+
+                # check given exclude elements to be excluded
+                if exclude then
+                    numgen := actgen[nrded];
+                    numcos := actcos[nrded];
+                    if excludeGens[numgen] = 1 and
+                        numcos = table[numgen][numcos] then
+                        coinc := true;
+                    else
+                        length := Length( excludeWords[actgen[nrded]] );
+                        i := 1;
+                        while i <= length and not coinc do
+                            triple := excludeWords[actgen[nrded]][i];
+                            app[1] := triple[3];
+                            app[2] := actcos[ nrded ];
+                            app[3] := -1;
+                            app[4] := app[2];
+                            if not ApplyRel( app, triple[2] ) and
+                                app[1] = app[3] + 1 then
+                                coinc := true;
+                            fi;
+                            i := i + 1;
+                        od;
+                    fi;
+                fi;
+
+                # if there are still subgroup generators apply them
+                i := 1;
+                while i <= nrsubgrp and not coinc do
+                    pair := subgroup[i];
+                    app[1] := 2;
+                    app[2] := 1;
+                    app[3] := Length(pair[2])-1;
+                    app[4] := 1;
+                    if ApplyRel( app, pair[2] )  then
+                        if   pair[2][app[1]][app[2]] <> 0  then
+                            coinc := true;
+                        elif pair[2][app[3]][app[4]] <> 0  then
+                            coinc := true;
+                        else
+                            pair[2][app[1]][app[2]] := app[4];
+                            pair[2][app[3]][app[4]] := app[2];
+                            nract := nract + 1;
+                            action[ nract ] := deduction;
+                            actgen[ nract ] := pair[1][app[1]];
+                            actcos[ nract ] := app[2];
+                        fi;
+                    fi;
+                    i := i + 1;
+                od;
+
+                # apply all relators that start with this generator
+                length := Length( relsGen[actgen[nrded]] );
+                i := 1;
+                while i <= length and not coinc do
+                    triple := relsGen[actgen[nrded]][i];
+                    app[1] := triple[3];
+                    app[2] := actcos[ nrded ];
+                    app[3] := -1;
+                    app[4] := app[2];
+                    if ApplyRel( app, triple[2] )  then
+                        if   triple[2][app[1]][app[2]] <> 0  then
+                            coinc := true;
+                        elif triple[2][app[3]][app[4]] <> 0  then
+                            coinc := true;
+                        else
+                            triple[2][app[1]][app[2]] := app[4];
+                            triple[2][app[3]][app[4]] := app[2];
+                            nract := nract + 1;
+                            action[ nract ] := deduction;
+                            actgen[ nract ] := triple[1][app[1]];
+                            actcos[ nract ] := app[2];
+                        fi;
+                    fi;
+                    i := i + 1;
+                od;
+
+                nrded := nrded + 1;
+            od;
+
+            # unless there was a coincidence check lexicography
+            if not coinc then
+              nrfix := 1;
+              x := 1;
+              while x < nrcos and not coinc do
+                x := x + 1;
+
+                # set up the renumbering
+                for i in [1..nrcos] do
+                    r[i] := 0;
+                    s[i] := 0;
+                od;
+                r[x] := 1;  s[1] := x;
+
+                # run through the old and the new table in parallel
+                c := 1;  y := 1;
+                while c <= nrcos  and not coinc  and later[x] = 0  do
+
+                    # get the corresponding coset for the new table
+                    d := s[c];
+
+                    # loop over the entries in this row
+                    g := 1;
+                    while   g < nrgens
+                        and c <= nrcos  and not coinc  and later[x] = 0  do
+
+                        # if either entry is missing we cannot decide yet
+                        if table[g][c] = 0  or table[g][d] = 0  then
+                            c := nrcos + 1;
+
+                        # if old and new both contain a definition
+                        elif r[ table[g][d] ] = 0 and table[g][c] = y+1  then
+                            y := y + 1;
+                            r[ table[g][d] ] := y;
+                            s[ y ] := table[g][d];
+
+                        # if only new is a definition
+                        elif r[ table[g][d] ] = 0  then
+                            later[x] := nract;
+
+                        # if new is the smaller one we have a coincidence
+                        elif r[ table[g][d] ] < table[g][c]  then
+
+                            # check that <x> fixes <H>
+                            coinc := true;
+                            for pair in subgroup  do
+                                app[1] := 2;
+                                app[2] := x;
+                                app[3] := Length(pair[2])-1;
+                                app[4] := x;
+                                if ApplyRel( app, pair[2] )  then
+
+                                    # coincidence: <x> does not fix <H>
+                                    if   pair[2][app[1]][app[2]] <> 0  then
+                                        later[x] := nract;
+                                        coinc := false;
+                                    elif pair[2][app[3]][app[4]] <> 0  then
+                                        later[x] := nract;
+                                        coinc := false;
+
+                                    # non-closure (ded): <x> may not fix <H>
+                                    else
+                                        coinc := false;
+                                    fi;
+
+                                # non-closure (not ded): <x> may not fix <H>
+                                elif app[1] <= app[3]  then
+                                    coinc := false;
+                                fi;
+
+                            od;
+
+                        # if old is the smaller one very good
+                        elif table[g][c] < r[ table[g][d] ]  then
+                            later[x] := nract;
+
+                        fi;
+
+                        g := g + 2;
+                    od;
+
+                    c := c + 1;
+                od;
+
+                if c = nrcos + 1  then
+                    nrfix := nrfix + 1;
+                fi;
+
+              od;
+            fi;
+
+            # if there was no coincidence
+            if not coinc  then
+
+                # look for another empty place
+                c := cos;
+                g := gen;
+                while c <= nrcos  and table[ g ][ c ] <> 0  do
+                    g := g + 2;
+                    if g = nrgens  then
+                        c := c + 1;
+                        g := 1;
+                    fi;
+                od;
+
+                # if there is an empty place, make this a new choice point
+                if c <= nrcos  then
+
+                    nract := nract + 1;
+                    action[ nract ] := choice; # necessary?
+                    gen := g;
+                    actgen[ nract ] := gen;
+                    cos := c;
+                    actcos[ nract ] := cos;
+                    table[ gen ][ cos ] := 0; # necessary?
+
+                # otherwise we found a subgroup
+                else
+
+                    # give some information
+                    Info( InfoFpGroup, 2,  "#I   class ", Length(subs)+1,
+                                  " of index ", nrcos,
+                                  " and length ", nrcos / nrfix );
+
+                    # find a generating system for the subgroup
+                    gens := ShallowCopy( hgens );
+                    for i  in [ 1 .. nract ]  do
+                        if action[ i ] = choice  then
+                            x := One( ggens[1] );
+                            c := actcos[i];
+                            while c <> 1  do
+                                g := nrgens - 1;
+                                y := nrgens - 1;
+                                while 0 < g  do
+                                    if table[g][c] <= table[y][c]  then
+                                        y := g;
+                                    fi;
+                                    g := g - 2;
+                                od;
+                                x := ggens[ y/2 ] * x;
+                                c := table[y][c];
+                            od;
+                            x := x * ggens[ (actgen[i]+1)/2 ];
+                            c := table[ actgen[i] ][ actcos[i] ];
+                            while c <> 1  do
+                                g := nrgens - 1;
+                                y := nrgens - 1;
+                                while 0 < g  do
+                                    if table[g][c] <= table[y][c]  then
+                                        y := g;
+                                    fi;
+                                    g := g - 2;
+                                od;
+                                x := x * ggens[ y/2 ]^-1;
+                                c := table[y][c];
+                            od;
+                            Add( gens, x );
+                        fi;
+                    od;
+
+                    # add the coset table
+                    sub := Subgroup( G, gens );
+                    tableInWholeGroup := [];
+                    for g  in [ 1 .. Length( fgens ) ]  do
+                        tableInWholeGroup[2*g-1]
+                                := table[2*g-1]{ [1..nrcos] };
+                        if     fgens[g]^2  in grels
+                            or fgens[g]^-2 in grels
+                        then
+                            tableInWholeGroup[2*g]
+                                := tableInWholeGroup[2*g-1];
+                        else
+                            tableInWholeGroup[2*g]
+                                := table[2*g]{ [1..nrcos] };
+                        fi;
+                    od;
+                    SetCosetTableInWholeGroup( sub, tableInWholeGroup );
+indexInWholeGroup := Length( tableInWholeGroup[1] );
+SetIndexInWholeGroup( sub, indexInWholeGroup );
+if HasSize( G ) then SetSize( sub, Size( G ) / indexInWholeGroup ); fi;
+
+                    # add this subgroup to the list of subgroups
+                    #N  05-Feb-92 martin should be 'ConjugacyClassSubgroup'
+                    Add( subs, sub );
+
+                    # undo all deductions since the previous choice point
+                    while action[ nract ] = deduction  do
+                        g := actgen[ nract ];
+                        c := actcos[ nract ];
+                        d := table[ g ][ c ];
+                        if g mod 2 = 1  then
+                            table[ g   ][ c ] := 0;
+                            table[ g+1 ][ d ] := 0;
+                        else
+                            table[ g   ][ c ] := 0;
+                            table[ g-1 ][ d ] := 0;
+                        fi;
+                        nract := nract - 1;
+                    od;
+                    for x  in [2..index]  do
+                        if nract <= later[x]  then
+                            later[x] := 0;
+                        fi;
+                    od;
+
+                fi;
+
+            # if there was a coincendence go back to the current choice point
+            else
+
+                # undo all deductions since the previous choice point
+                while action[ nract ] = deduction  do
+                    g := actgen[ nract ];
+                    c := actcos[ nract ];
+                    d := table[ g ][ c ];
+                    if g mod 2 = 1  then
+                        table[ g   ][ c ] := 0;
+                        table[ g+1 ][ d ] := 0;
+                    else
+                        table[ g   ][ c ] := 0;
+                        table[ g-1 ][ d ] := 0;
+                    fi;
+                    nract := nract - 1;
+                od;
+                for x  in [2..index]  do
+                    if nract <= later[x]  then
+                        later[x] := 0;
+                    fi;
+                od;
+
+            fi;
+
+        # go back to the previous choice point if there are no more choices
+        else
+
+            # undo the choice point
+            if action[ nract ] = definition  then
+                nrcos := nrcos - 1;
+            fi;
+            g := actgen[ nract ];
+            c := actcos[ nract ];
+            d := table[ g ][ c ];
+            if g mod 2 = 1  then
+                table[ g   ][ c ] := 0;
+                table[ g+1 ][ d ] := 0;
+            else
+                table[ g   ][ c ] := 0;
+                table[ g-1 ][ d ] := 0;
+            fi;
+            nract := nract - 1;
+
+            # undo all deductions since the previous choice point
+            while action[ nract ] = deduction  do
+                g := actgen[ nract ];
+                c := actcos[ nract ];
+                d := table[ g ][ c ];
+                if g mod 2 = 1  then
+                    table[ g   ][ c ] := 0;
+                    table[ g+1 ][ d ] := 0;
+                else
+                    table[ g   ][ c ] := 0;
+                    table[ g-1 ][ d ] := 0;
+                fi;
+                nract := nract - 1;
+            od;
+            for x  in [2..index]  do
+                if nract <= later[x]  then
+                    later[x] := 0;
+                fi;
+            od;
+
+            cos := actcos[ nract ];
+            gen := actgen[ nract ];
+
+        fi;
+
+    od;
+
+    # give some final information
+    Info( InfoFpGroup, 1, "#I  LowIndexSubgroupsFpGroup returns ",
+                 Length(subs), " classes" );
+
+    # return the subgroups
+    return subs;
+end;
+
+
+#############################################################################
+##
 #M  MappedWord( <x>, <gens1>, <gens2> )
 ##
 InstallMethod( MappedWord, true,
@@ -1263,7 +1726,7 @@ InstallMethod( MappedWord, true,
 
 #############################################################################
 ##
-#F  MostFrequentGeneratorFpGroup( <G> ) . . . . . . . most frequent generator
+#M  MostFrequentGeneratorFpGroup( <G> ) . . . . . . . most frequent generator
 ##
 ##  'MostFrequentGeneratorFpGroup'  returns the  first of those generators of
 ##  the given finitely  presented group  which occurs most frequently  in the
@@ -1275,7 +1738,7 @@ MostFrequentGeneratorFpGroup := function ( G )
           numrels, occur, power, rel, relj, rels, set;
 
 #@@ # check the first argument to be a finitely presented group.
-#@@ if not ( IsRec( G ) and IsBound( G.isFpGroup ) and G.isFpGroup ) then
+#@@ if not ( IsRecord( G ) and IsBound( G.isFpGroup ) and G.isFpGroup ) then
 #@@     Error( "argument must be a finitely presented group" );
 #@@ fi;
 
@@ -1287,11 +1750,11 @@ MostFrequentGeneratorFpGroup := function ( G )
     numrels := Length( rels );
 
     # Initialize a counter.
-    occur := 0 * [ 1 .. numgens ];
-    power := 0 * [ 1 .. numgens ];
+    occur := ListWithIdenticalEntries( numgens, 0 );
+    power := ListWithIdenticalEntries( numgens, 0 );
 
     # initialize a list of the generators and their inverses
-    gens2 := 0 * [ 1 .. 2 * numgens ];
+    gens2 := [ ]; gens2[numgens] := 0;
     for i in [ 1 .. numgens ] do
         gens2[i] := gens[i];
         gens2[numgens+i] := gens[i]^-1;
@@ -1429,7 +1892,7 @@ end;
 
 #############################################################################
 ##
-#F RelatorsOfFpGroup( F )
+#M RelatorsOfFpGroup( F )
 ##
 RelatorsOfFpGroup := function( F )
     return ElementsFamily( FamilyObj( F ) )!.relators;
@@ -1493,7 +1956,7 @@ RelsSortedByStartGen := function ( arg )
     fi;
 
     # initialize the list to be constructed
-    relsGen := 0 * [ 1 .. 2*Length(gens) ];
+    relsGen := [ ]; relsGen[2*Length(gens)] := 0;
     for i  in [ 1 .. Length(gens) ]  do
         relsGen[ 2*i-1 ] := [];
         if not IsIdentical( table[ 2*i-1 ], table[ 2*i ] )  then
@@ -1522,8 +1985,10 @@ RelsSortedByStartGen := function ( arg )
             # current relator
             base2 := 2 * base;
             extleng := 2 * ( base + length ) - 1;
-            nums := 0 * [1 .. extleng];  invnums := 0 * [1 .. extleng];
-            cols := 0 * [1 .. extleng];  invcols := 0 * [1 .. extleng];
+            nums    := [ ]; nums[extleng]    := 0;
+            cols    := [ ]; cols[extleng]    := 0;
+            invnums := [ ]; invnums[extleng] := 0;
+            invcols := [ ]; invcols[extleng] := 0;
 
             # compute the lists
             i := 0;  j := 1;  k := base2 + 3;
@@ -1601,6 +2066,28 @@ function( G )
                 return T.index * T.exponent;
             fi;
         fi;
+
+end );
+
+
+#############################################################################
+##
+#M  Size( <H> )  . . . . . . size of s subgroup of a finitely presented group
+##
+InstallMethod( Size,
+    "method for finitely presented groups",
+    true,
+    [ IsSubgroupFpGroup ],
+    0,
+
+function( H )
+    local G;
+
+    # Get whole group <G> of <H>.
+    G := FamilyObj( H )!.wholeGroup;
+
+    # Compute the size of <G> and the index of <H> in <G>.
+    return Size( G ) / IndexInWholeGroup( H );
 
 end );
 

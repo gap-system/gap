@@ -120,7 +120,7 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
-#F  ShallowCopy( <obj> )  . . . . . . . . . . . . . . . shallow copy of <obj>
+#M  ShallowCopy( <obj> )  . . . . . . . . . . . . . . . shallow copy of <obj>
 ##
 InstallMethod( ShallowCopy,
     true,
@@ -145,6 +145,127 @@ InstallMethod( IsInternallyConsistent,
     true,
     [ IsObject ], 0,
     ReturnTrue );
+
+
+#############################################################################
+##
+#M  KnownAttributesOfObject( <object> ) . . . . . list of names of attributes
+##
+InstallMethod( KnownAttributesOfObject,
+    true,
+    [ IsObject ],
+    0,
+
+function( obj )
+    local   type,  trues;
+
+    # get the flags list
+    type  := TypeObj(obj);
+    trues := TRUES_FLAGS(type![2]);
+
+    # filter the representations
+    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_ATTS );
+
+    # convert it into names
+    return List( NamesFilter(trues), x -> x{[8..Length(x)-1]} );
+end );
+
+
+#############################################################################
+##
+#M  KnownPropertiesOfObject( <object> ) . . . . . list of names of properties
+##
+InstallMethod( KnownPropertiesOfObject,
+    true,
+    [ IsObject ],
+    0,
+
+function( obj )
+    local   type,  trues;
+
+    # get the flags list
+    type  := TypeObj(obj);
+    trues := TRUES_FLAGS(type![2]);
+
+    # filter the representations
+    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_TPRS );
+
+    # convert it into names
+    return List( NamesFilter(trues), x -> x{[8..Length(x)-1]} );
+end );
+
+
+#############################################################################
+##
+#M  KnownPropertiesOfObject( <object> ) . . . . . list of names of properties
+#M  KnownTruePropertiesOfObject( <object> )  list of names of true properties
+##
+InstallMethod( KnownTruePropertiesOfObject,
+    true,
+    [ IsObject ],
+    0,
+
+function( obj )
+    local   type,  trues;
+
+    # get the flags list
+    type  := TypeObj(obj);
+    trues := TRUES_FLAGS(type![2]);
+
+    # filter the representations
+    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_PROS );
+
+    # convert it into names
+    return NamesFilter(trues);
+end );
+
+
+#############################################################################
+##
+#M  CategoriesOfObject( <object> )  . . . . . . . list of names of categories
+##
+InstallMethod( CategoriesOfObject,
+    true,
+    [ IsObject ],
+    0,
+
+function( obj )
+    local   type,  trues;
+
+    # get the flags list
+    type  := TypeObj(obj);
+    trues := TRUES_FLAGS(type![2]);
+
+    # filter the representations
+    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_CATS );
+
+    # convert it into names
+    return NamesFilter(trues);
+end );
+
+
+#############################################################################
+##
+#M  RepresentationsOfObject( <object> ) . .  list of names of representations
+##
+InstallMethod( RepresentationsOfObject,
+    true,
+    [ IsObject ],
+    0,
+
+function( obj )
+    local   type,  trues;
+
+    # get the flags list
+    type  := TypeObj(obj);
+    trues := TRUES_FLAGS(type![2]);
+
+    # filter the representations
+    trues := Filtered( trues, x -> INFO_FILTERS[x] in FNUM_REPS );
+
+    # convert it into names
+    return NamesFilter(trues);
+end );
 
 
 #############################################################################

@@ -51,7 +51,7 @@ where it can be looked up later.
     gap> ComputedSylowSubgroups( a8 );
     [ , 
       Group( [ (1,3)(5,8), (2,7)(5,8), (4,6)(5,8), (2,4)(6,7), (1,5)(3,8),
-	  (1,2)(3,7)(4,5)(6,8) ], ... ), 
+          (1,2)(3,7)(4,5)(6,8) ], ... ), 
       Group( [ (4,7,8), (3,5,6) ], ... ),, Group( [ (4,7,6,8,5) ], ... ),
       , Group( [ (2,4,5,8,3,6,7) ], ... ) ]
 \endexample
@@ -691,10 +691,10 @@ following command:
 \beginexample
     gap> cok := CoKernelGensPermHom( inv );
     [ f.1*f.2*f.1*f.2*f.1*f.2, f.2^2, f.1^-1*f.2*f.1^2*f.2*f.1*f.2*f.1^
-	2*f.2*f.1^2, f.2^-1*f.1^4*f.2, f.1^-2*f.2*f.1^4*f.2*f.1^2, 
+        2*f.2*f.1^2, f.2^-1*f.1^4*f.2, f.1^-2*f.2*f.1^4*f.2*f.1^2, 
       f.1^2*f.2*f.1^4*f.2*f.1^2, f.2^-1*f.1*f.2*f.1^3*f.2*f.1*f.2*f.1^
-	2*f.2*f.1^2, f.2^-1*f.1^-1*f.2^-1*f.1*f.2*f.1^3*f.2*f.1^2*f.2*f.1^
-	2 ]
+        2*f.2*f.1^2, f.2^-1*f.1^-1*f.2^-1*f.1*f.2*f.1^3*f.2*f.1^2*f.2*f.1^
+        2 ]
 \endexample
 A  group general mapping like  `inv' is a genuine  mapping if and only if
 this  list of Schreier generators contains  at most the identity element,

@@ -4,50 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.27  1997/05/13 10:38:19  htheisse
-#H  used a mutable stab chain instead of an immutable one
-#H
-#H  Revision 4.26  1997/04/15 10:28:06  htheisse
-#H  more detailed checks in `RepresentativeOperation'
-#H
-#H  Revision 4.25  1997/04/14 08:31:35  htheisse
-#H  corrected some requirements
-#H
-#H  Revision 4.24  1997/03/18 09:10:26  htheisse
-#H  corrected `RepresentativeOperation' for perm groups
-#H
-#H  Revision 4.23  1997/03/17 14:20:53  htheisse
-#H  added generic method for `OrbitStabilizer'
-#H
-#H  Revision 4.22  1997/03/04 16:04:48  htheisse
-#H  checked the `oprt*' functions against the descriptions of the 3.4 manual
-#H
-#H  Revision 4.21  1997/02/26 13:59:28  htheisse
-#H  reorganised methods for `MaximalBlocks'
-#H
-#H  Revision 4.20  1997/02/12 14:58:52  htheisse
-#H  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
-#H
-#H  Revision 4.19  1997/02/06 09:53:48  htheisse
-#H  moved a `Transitivity' method here
-#H
-#H  Revision 4.18  1997/01/29 15:54:30  mschoene
-#H  fixed a few more doubly defined locals
-#H
-#H  Revision 4.17  1997/01/27 11:21:08  htheisse
-#H  removed some of Juergen Mnich's code
-#H
-#H  Revision 4.16  1997/01/09 17:56:21  htheisse
-#H  workaround till `false in [1,2]' works
-#H
-#H  Revision 4.15  1997/01/09 16:31:39  ahulpke
-#H  Added StabilizerOfBlockNC
-#H
-#H  Revision 4.14  1996/12/13 12:17:52  htheisse
-#H  patched `Transitivity' into working
-#H
-##
 Revision.oprtperm_gi :=
     "@(#)$Id$";
 
@@ -969,6 +925,19 @@ InstallOtherMethod( StabilizerOp,
     return K;
 end );
 
+InstallOtherMethod( StabilizerOp,
+        "P, pnt, gens, oprs, opr", true,
+        [ IsPermGroup, IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 100,
+    function( G, d, gens, oprs, opr )
+    if IsIdentical( gens, oprs )  then
+        return StabilizerOp( G, d, opr );
+    else
+        TryNextMethod();
+    fi;
+end );
 
 #############################################################################
 ##
@@ -977,7 +946,7 @@ end );
 StabilizerOfBlockNC := function(G,B)
 local S,j;
   S:=StabChainOp(G,rec(base:=[B[1]],reduced:=false));
-  S:=DeepCopy(S);
+  S:=StructuralCopy(S);
 
   # Make <S> the stabilizer of the block <B>.
   InsertTrivialStabilizer(S.stabilizer,B[1]);

@@ -37,23 +37,14 @@ NEW_TYPE_NEXT_ID := -(2^28);
 #############################################################################
 ##
 
-#F  NewCategory( <name>, <super> )
+#F  NewCategoryKernel( <name>, <super>, <filter> )  . . create a new category
 ##
-NewCategory := function ( name, super )
-    local   cat;
-    cat := NEW_FILTER( name );
-    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-    FILTERS[ FLAG1_FILTER( cat ) ]       := cat;
-    RANKS_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
-    InstallTrueMethod( super, cat );
-    return cat;
-end;
-
 NewCategoryKernel := function ( name, super, cat )
     if not IS_IDENTICAL_OBJ( cat, IS_OBJECT ) then
         ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
-        FILTERS[ FLAG1_FILTER( cat ) ]       := cat;
-        RANKS_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+        INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+        RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
         InstallTrueMethod( super, cat );
     fi;
     return cat;
@@ -62,24 +53,24 @@ end;
 
 #############################################################################
 ##
-#F  NewRepresentation( <name>, <super>, <slots> [,<req>] )
+#F  NewCategory( <name>, <super> )  . . . . . . . . . . create a new category
 ##
-NewRepresentation := function ( arg )
-    local   rep;
-    if LEN_LIST(arg) = 3  then
-        rep := NEW_FILTER( arg[1] );
-    elif LEN_LIST(arg) = 4  then
-        rep := NEW_FILTER( arg[1] );
-    else
-        Error("usage: NewRepresentation(<name>,<super>,<slots>[,<req>])");
-    fi;
-    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
-    FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
-    RANKS_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
-    InstallTrueMethod( arg[2], rep );
-    return rep;
+NewCategory := function ( name, super )
+    local   cat;
+    cat := NEW_FILTER( name );
+    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( cat ) );
+    FILTERS[ FLAG1_FILTER( cat ) ] := cat;
+    RANK_FILTERS[ FLAG1_FILTER( cat ) ] := 1;
+    INFO_FILTERS[ FLAG1_FILTER( cat ) ] := 2;
+    InstallTrueMethodNewFilter( super, cat );
+    return cat;
 end;
 
+
+#############################################################################
+##
+#F  NewRepresentationKernel( <name>, <super>, <slots> [,<req>], <filter> )
+##
 NewRepresentationKernel := function ( arg )
     local   rep;
     if LEN_LIST(arg) = 4  then
@@ -91,11 +82,34 @@ NewRepresentationKernel := function ( arg )
     fi;
     ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
     FILTERS[ FLAG1_FILTER( rep ) ]       := rep;
-    RANKS_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 3;
     InstallTrueMethod( arg[2], rep );
     return rep;
 end;
 
+
+#############################################################################
+##
+#F  NewRepresentation( <name>, <super>, <slots> [,<req>] )  .  representation
+##
+NewRepresentation := function ( arg )
+    local   rep;
+
+    if LEN_LIST(arg) = 3  then
+        rep := NEW_FILTER( arg[1] );
+    elif LEN_LIST(arg) = 4  then
+        rep := NEW_FILTER( arg[1] );
+    else
+        Error("usage: NewRepresentation(<name>,<super>,<slots>[,<req>])");
+    fi;
+    ADD_LIST( CATS_AND_REPS, FLAG1_FILTER( rep ) );
+    FILTERS[ FLAG1_FILTER( rep ) ] := rep;
+    RANK_FILTERS[ FLAG1_FILTER( rep ) ] := 1;
+    INFO_FILTERS[ FLAG1_FILTER( rep ) ] := 4;
+    InstallTrueMethodNewFilter( arg[2], rep );
+    return rep;
+end;
 
 #############################################################################
 ##
@@ -265,11 +279,11 @@ SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
 #############################################################################
 ##
 
-#O  CategoryFamily( <name>, <elms_filter> ) . .  category of certain families
+#O  CategoryFamily( <elms_filter> ) . . . . . .  category of certain families
 ##
 CATEGORIES_FAMILY := [];
 
-CategoryFamily  := function ( name, elms_filter )
+CategoryFamily  := function ( elms_filter )
     local    pair, fam_filter, super, flags;
 
     elms_filter:= FLAGS_FILTER( elms_filter );
@@ -291,7 +305,7 @@ CategoryFamily  := function ( name, elms_filter )
     od;
 
     # Construct the family category.
-    fam_filter := NewCategory( name, super );
+    fam_filter := NewCategory( "<family category>", super );
     ADD_LIST( CATEGORIES_FAMILY, [ elms_filter, fam_filter ] );
     return fam_filter;
 end;

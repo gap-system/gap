@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.11  1997/05/29 06:51:19  sam
+#H  moved `InstallTrueMethod' calls to the `gd' files
+#H
 #H  Revision 4.10  1997/03/11 12:44:25  ahulpke
 #H  Moved random class serach into a separate function
 #H
@@ -87,6 +90,16 @@ IsRationalClassGroupRep := NewRepresentation( "IsRationalClassGroupRep",
 IsRationalClassPermGroupRep := NewRepresentation
     ( "IsRationalClassPermGroupRep", IsRationalClassGroupRep,
     [ "galoisGroup", "power" ] );
+
+
+#############################################################################
+##
+#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . .  for a rational class
+##
+InstallTrueMethod( IsFinite, IsRationalClassGroupRep and IsDomain );
+#T The '*' in the 'Size' method (file `clas.gi') indicates that infinite
+#T rational classes are not allowed.
+
 
 #############################################################################
 ##

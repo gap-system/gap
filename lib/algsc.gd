@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the design of elements of algebras given by structure
 ##  constants (s.c.).
@@ -65,11 +65,9 @@ IsFamilyOverFullCoefficientsFamily := NewCategory(
 ##
 IsSCAlgebraObj := NewCategory( "IsSCAlgebraObj", IsScalar );
 
-IsSCAlgebraObjCollection := CategoryCollections( "IsSCAlgebraObjCollection",
-    IsSCAlgebraObj );
+IsSCAlgebraObjCollection := CategoryCollections( IsSCAlgebraObj );
 
-IsSCAlgebraObjFamily := CategoryFamily( "IsSCAlgebraObjFamily",
-    IsSCAlgebraObj );
+IsSCAlgebraObjFamily := CategoryFamily( IsSCAlgebraObj );
 
 
 #############################################################################
@@ -106,10 +104,43 @@ IsCanonicalBasisFullSCAlgebra := NewProperty(
 
 #############################################################################
 ##
+#R  IsSCAlgebraObjSpaceRep
+##
+##  We use that the family of an s.c. algebra knows a constitutive basis.
+##  The associated row vectors can be computed for the whole family,
+##  i.e., independent of the substructure (subalgebra, subspace, ideal)
+##  under consideration.
+##
+IsSCAlgebraObjSpaceRep := NewRepresentation( "IsSCAlgebraObjSpaceRep",
+    IsAttributeStoringRep and IsHandledByNiceBasis, [] );
+
+
+#############################################################################
+##
+#M  IsSCAlgebraObjSpaceRep( <V> )
+##
+##  We claim that a free left module of s.c. algebra elements is in
+##  'IsSCAlgebraObjSpaceRep', which means that the free module is handled by
+##  a nice module.
+##
+##  This allows to omit special methods for 'LeftModuleByGenerators' and
+##  'FLMLORByGenerators' (which would differ from the default methods only
+##  by setting this flag).
+##
+##  (So the right way to replace the handling of the module by a better one
+##  is to overlay those methods to compute bases that use the flag
+##  'IsHandledByNiceBasis'.)
+##
+InstallTrueMethod( IsSCAlgebraObjSpaceRep,
+    IsSCAlgebraObjCollection and IsFreeLeftModule );
+
+
+#############################################################################
+##
 #M  IsFiniteDimensional( <A> )  . . . . .  S.c. algebras are always fin. dim.
 ##
 InstallTrueMethod( IsFiniteDimensional,
-    IsFLMLOR and IsSCAlgebraObjCollection );
+    IsFreeLeftModule and IsSCAlgebraObjCollection );
 
 
 #############################################################################

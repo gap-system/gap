@@ -1124,11 +1124,11 @@ InstallMethod( CanonicalBasis, true,
 
 #############################################################################
 ##
-#R  IsSubspacesFullRowSpaceRep
+#R  IsSubspacesFullRowSpaceDefaultRep
 ##
-IsSubspacesFullRowSpaceRep := NewRepresentation(
-    "IsSubspacesFullRowSpaceRep",
-    IsSubspacesVectorSpace,
+IsSubspacesFullRowSpaceDefaultRep := NewRepresentation(
+    "IsSubspacesFullRowSpaceDefaultRep",
+    IsSubspacesVectorSpaceDefaultRep,
     [] );
 
 
@@ -1159,7 +1159,7 @@ IsAllSubspacesFullRowSpaceIteratorRep := NewRepresentation(
 InstallMethod( Iterator,
     "method for subspaces collection of a (finite) full row module",
     true,
-    [ IsDomain and IsSubspacesFullRowSpaceRep ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesFullRowSpaceDefaultRep ], 0,
     function( D )
 
     local V,      # the vector space
@@ -1313,7 +1313,8 @@ InstallMethod( SubspacesDim,
       IsInt ], 0,
     function( V, dim )
     return Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
-                               IsDomain and IsSubspacesFullRowSpaceRep ),
+                                   IsSubspacesVectorSpace
+                               and IsSubspacesFullRowSpaceDefaultRep ),
                       rec(
                            structure  := V,
                            dimension  := dim
@@ -1325,7 +1326,8 @@ InstallMethod( SubspacesAll, true,
     [ IsGaussianSpace and IsFullRowModule and IsGaussianRowSpaceRep ], 0,
 #T really needed ?
     V -> Objectify( NewType( CollectionsFamily( FamilyObj( V ) ),
-                             IsDomain and IsSubspacesFullRowSpaceRep ),
+                                 IsSubspacesVectorSpace
+                             and IsSubspacesFullRowSpaceDefaultRep ),
                     rec(
                          structure  := V,
                          dimension  := "all"

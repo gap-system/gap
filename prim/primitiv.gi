@@ -103,7 +103,7 @@ MakeCohort := function( gens, out )
     local   S,  i,  N,  G,  Omega;
     
     G := GroupByGenerators( gens{ [ out + 1 .. Length( gens ) ] } );
-    S := DeepCopy( StabChainAttr( G ) );
+    S := StructuralCopy( StabChainAttr( G ) );
     for i  in Reversed( [ 1 .. out ] )  do
         AddNormalizingElementPcgs( S, gens[ i ] );
     od;

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the design of the rings $Z / n Z$ and their elements.
 ##
@@ -26,7 +26,7 @@ Revision.zmodnz_gd :=
 #C  IsZmodpZObjSmall( <obj> )
 #C  IsZmodpZObjLarge( <obj> )
 ##
-##  The elements in the rings $Z / n Z$ are in the category 'IsZmodnZ'.
+##  The elements in the rings $Z / n Z$ are in the category 'IsZmodnZObj'.
 ##  If $n$ is a prime then the elements are of course also in 'IsFFE',
 ##  otherwise they are in 'IsZmodnZObjNonprime'.
 ##  'IsZmodpZObj' is an abbreviation of 'IsZmodnZObj and IsFFE'.
@@ -38,16 +38,16 @@ Revision.zmodnz_gd :=
 ##  - that objects in 'IsZmodnZObjNonprime' have an external representation
 ##    (namely the modulus in the range $[ 0, 1, ... n-1 ]$),
 ##  - that the comparison of elements can be defined as comparison of the
-##    moduli, and
+##    residues, and
 ##  - that the elements lie in a family of type 'IsZmodnZObjNonprimeFamily'
 ##    (note that for prime $n$, the family must be an 'IsFFEFamily').
 ##
 ##  The reasons to distinguish the small and the large case are
 ##  that for small $n$ the elements must be compatible with the internal
-##  representation of finite field elementsi, whereas we are free to define
-##  comparison as comparison of moduli for large $n$.
+##  representation of finite field elements, whereas we are free to define
+##  comparison as comparison of residues for large $n$.
 ##
-##  Note that we cannot claim that every finite field element of degree 1
+##  Note that we *cannot* claim that every finite field element of degree 1
 ##  is in 'IsZmodnZObj', since finite field elements in internal
 ##  representation may not know that they lie in the prime field.
 ##
@@ -62,16 +62,24 @@ IsZmodpZObjLarge := NewCategory( "IsZmodpZObjLarge", IsZmodpZObj );
 ##
 #C  IsZmodnZObjNonprimeFamily( <obj> )
 ##
-IsZmodnZObjNonprimeFamily := CategoryFamily( "IsZmodnZObjNonprimeFamily",
-    IsZmodnZObjNonprime );
+IsZmodnZObjNonprimeFamily := CategoryFamily( IsZmodnZObjNonprime );
 
 
 #############################################################################
 ##
 #C  IsZmodnZObjNonprimeCollection( <obj> )
 ##
-IsZmodnZObjNonprimeCollection := CategoryCollections(
-    "IsZmodnZObjNonprimeCollection", IsZmodnZObjNonprime );
+IsZmodnZObjNonprimeCollection := CategoryCollections( IsZmodnZObjNonprime );
+
+
+#############################################################################
+##
+#M  IsFinite( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
+##
+InstallTrueMethod( IsFinite,
+    IsZmodnZObjNonprimeCollection and IsDomain );
+#T better generalize 'IsDuplicateFreeList' to 'IsDuplicateFree',
+#T and use this here?
 
 
 #############################################################################

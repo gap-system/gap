@@ -318,6 +318,14 @@ ExtendedPcgs := NewOperation(
 
 #############################################################################
 ##
+#P  IsGenericPcgs( <pcgs> )
+##
+IsGenericPcgs := NewProperty( "IsGenericPcgs", IsPcgs );
+SetIsGenericPcgs := Setter( IsGenericPcgs );
+HasIsGenericPcgs := Tester( IsGenericPcgs );
+
+#############################################################################
+##
 
 #E  pcgs.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

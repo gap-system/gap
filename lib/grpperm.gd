@@ -4,32 +4,28 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.14  1997/01/21 15:49:06  htheisse
-#H  added `MinimizeExplicitTransversal'
-#H
-#H  Revision 4.13  1997/01/16 14:14:56  ahulpke
-#H  replaced DegreeOperation by NrMovedPoints
-#H
-#H  Revision 4.12  1997/01/15 15:23:17  fceller
-#H  added 'SymmetricGroup' to basic group library,
-#H  changed 'IsSymmetricGroup' to 'IsNaturalSymmetricGroup'
-#H
-#H  Revision 4.11  1997/01/07 13:35:07  ahulpke
-#H  Added the transitive groups data library
-#H
-#H  Revision 4.10  1997/01/06 16:44:22  ahulpke
-#H  Added 'AlternatingGroup'
-#H
-#H  Revision 4.9  1996/12/19 09:59:04  htheisse
-#H  added revision lines
-#H
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 Revision.grpperm_gd :=
     "@(#)$Id$";
 
+
 IsPermGroup := IsGroup and IsPermCollection;
+
+
+#############################################################################
+##
+#M  IsFinite( <G> ) . . . . . . . . . . . . . . .  for magmas of permutations
+##
+#T  To tell the truth, we should ask whether the magma is finitely generated.
+#T  (What would be a permutation with unbounded largest moved point?
+#T  Perhaps a permutation of possibly infinite order?)
+##
+InstallTrueMethod( IsFinite, IsPermCollection and IsMagma );
+    
+
 IsFactorGroup := ReturnFalse;  # temporarily
+
 
 #############################################################################
 ##
@@ -85,13 +81,6 @@ TransitiveIdentification := NewAttribute( "TransitiveIdentification",
 SetTransitiveIdentification := Setter( TransitiveIdentification );
 HasTransitiveIdentification := Tester( TransitiveIdentification );
 
-#############################################################################
-##
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
 
 #############################################################################
 ##

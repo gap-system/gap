@@ -15,7 +15,7 @@ Revision.kernel_g :=
 #############################################################################
 ##
 
-#F  ADD_LIST_DEFAULT( <list>, <obj> )
+#F  ADD_LIST_DEFAULT( <list>, <obj> ) . . . . . .  add an element to the list
 ##
 ADD_LIST_DEFAULT := function ( list, obj )
     list[ LEN_LIST(list)+1 ] := obj;
@@ -52,7 +52,7 @@ if R_X = []  then RANDOM_SEED( 1 );  fi;
 
 #############################################################################
 ##
-#F  AS_LIST_SORTED_LIST( <list> )
+#F  AS_LIST_SORTED_LIST( <list> ) . . . . . . . . . . . . . . setify the list
 ##
 AS_LIST_SORTED_LIST := function ( list )
     local   new;
@@ -67,13 +67,67 @@ end;
 
 #############################################################################
 ##
-#F  LARGEST_MOVED_POINT_PERM( <perm> )
+#F  LARGEST_MOVED_POINT_PERM( <perm> )  . . . . . . . . . largest moved point
 ##
 LARGEST_MOVED_POINT_PERM := LargestMovedPointPerm;
 
 
 #############################################################################
 ##
+#F  STRING_INT( <int> ) . . . . . . . . . . . . . . . .  string of an integer
+##
+STRING_INT := function ( n )
+    local  str,  num,  digits;
+
+    # construct the string without sign
+    num:= n;
+    if num < 0 then num := - n; fi;
+    digits := [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
+    str := "";
+    repeat
+        ADD_LIST( str, digits[num mod 10 + 1] );
+        num := QUO_INT( num, 10 );
+    until num = 0;
+
+    # add the sign and return
+    if n < 0  then
+        ADD_LIST( str, '-' );
+    fi;
+    return IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
+end;
+
+
+#############################################################################
+##
+#F  Ordinal( <n> )  . . . . . . . . . . . . . ordinal of an integer as string
+##
+Ordinal := function ( n )
+    local   str;
+
+    str := STRING_INT(n);
+    if   n mod 10 = 1  and n mod 100 <> 11  then
+        APPEND_LIST_INTR( str, "st" );
+    elif n mod 10 = 2  and n mod 100 <> 12  then
+        APPEND_LIST_INTR( str, "nd" );
+    elif n mod 10 = 3  and n mod 100 <> 13  then
+        APPEND_LIST_INTR( str, "rd" );
+    else
+        APPEND_LIST_INTR( str, "th" );
+    fi;
+    return str;
+end;
+
+
+############################################################################
+##
+#F  CallFuncList( <func>, <args> )  . . . . . . . . . . . . . call a function
+##
+CallFuncList := CALL_FUNC_LIST;
+
+
+#############################################################################
+##
+
 
 #E  kernel.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -310,14 +310,6 @@ InstallMethod( PrintObj, true, [ IsRationalClassGroupRep ], 0,
            Representative( cl ), " )" );
 end );
 
-#############################################################################
-##
-#M  IsFinite( <cl> )  . . . . . . . . . . . . . . . . .  for a rational class
-##
-InstallTrueMethod( IsFinite, IsRationalClassGroupRep );
-#T The '*' in the 'Size' method below indicates that infinite
-#T rational classes are not allowed.
-
 
 #############################################################################
 ##

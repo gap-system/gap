@@ -16,63 +16,6 @@ InstallMethod( OrbitStabilizerOp,
         [ IsGroup, IsList, IsObject, IsPcgs, IsList, IsFunction ], 0,
     function( G, D, pnt, pcgs, oprs, opr )
     return OrbitStabilizerOp( G, pnt, pcgs, oprs, opr );
-#    local   orb,  bit,  # orbit, as list and bit-list
-#            len,        # lengths of orbit before each extension
-#            stab,  S,   # stabilizer and induced pcgs
-#            img,  pos,  # image of <pnt> and its position in <D> (or <orb>)
-#            stb,        # stabilizing element, a word in <pcgs>
-#            i, ii, j, k;# loop variables
-#
-#    orb := [ pnt ];
-#    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
-#    bit := BlistList( [ 1 .. Length( D ) ], [ PositionCanonical( D, pnt ) ] );
-#    S := [  ];
-#    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
-#        img := opr( pnt, oprs[ i ] );
-#        pos := PositionCanonical( D, img );
-#        if not bit[ pos ]  then
-#            
-#            # The current generator moves the orbit as a block.
-#            Add( orb, img );  bit[ pos ] := true;
-#            for j  in [ 2 .. len[ i + 1 ] ]  do
-#                img := opr( orb[ j ], oprs[ i ] );
-#                pos := PositionCanonical( D, img );
-#                Add( orb, img );  bit[ pos ] := true;
-#            od;
-#            for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
-#                for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
-#                    img := opr( orb[ j ], oprs[ i ] );
-#                    pos := PositionCanonical( D, img );
-#                    Add( orb, img );  bit[ pos ] := true;
-#                od;
-#            od;
-#            
-#        else
-#          
-#            # The current generator leaves the orbit invariant.
-#            pos := Position( orb, img );
-#            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
-#            ii := i + 1;
-#            while pos <> 1  do
-#                while len[ ii ] >= pos  do
-#                    ii := ii + 1;
-#                od;
-#                pos := pos - 1;
-#                stb[ ii - 1 ] := -QuoInt( pos, len[ ii ] );
-#                pos := pos mod len[ ii ] + 1;
-#            od;
-#            Add( S, PcElementByExponents( pcgs, stb ) );
-#            
-#        fi;
-#        len[ i ] := Length( orb );
-#    od;
-#
-#    # <S> is a reversed IGS.
-#    stab := SubgroupNC( G, S );
-#    SetInducedPcgsWrtHomePcgs( stab,
-#            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
-#    
-#    return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
 
 InstallOtherMethod( OrbitStabilizerOp,
@@ -87,7 +30,8 @@ InstallOtherMethod( OrbitStabilizerOp,
             i, ii, j, k;# loop variables
 
     orb := [ pnt ];
-    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
+    len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
+    len[ Length( len ) ] := 1;
     S := [  ];
     for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
         img := opr( pnt, oprs[ i ] );
@@ -110,7 +54,8 @@ InstallOtherMethod( OrbitStabilizerOp,
         else
           
             # The current generator leaves the orbit invariant.
-            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
+            stb := ListWithIdenticalEntries( Length( pcgs ), 0 );
+            stb[ i ] := 1;
             ii := i + 2;
             while pos <> 1  do
                 while len[ ii ] >= pos  do
@@ -162,7 +107,8 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     fi;
     
     orb := [ pnt ];
-    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
+    len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
+    len[ Length( len ) ] := 1;
     min := Position( D, pnt );  mpos := 1;
     bit := BlistList( [ 1 .. Length( D ) ], [ min ] );
     S := [  ];
@@ -199,7 +145,8 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
           
             # The current generator leaves the orbit invariant.
             pos := Position( orb, img );
-            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
+            stb := ListWithIdenticalEntries( Length( pcgs ), 0 );
+            stb[ i ] := 1;
             ii := i + 2;
             while pos <> 1  do
                 while len[ ii ] >= pos  do
@@ -216,7 +163,7 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     SetEnumerator( xset, orb );
 
     # Construct the operator for the minimal point at <mpos>.
-    oper := 0 * [ 1 .. Length( pcgs ) ];
+    oper := ListWithIdenticalEntries( Length( pcgs ), 0 );
     ii := 2;
     while mpos <> 1  do
         while len[ ii ] >= mpos  do
@@ -260,11 +207,18 @@ end );
 ##
 #M  CanonicalRepresentativeOfExternalSet( <xorb> )  . . . . . . . . . . . . .
 ##
-InstallMethod( CanonicalRepresentativeOfExternalSet, true,
+InstallMethod( CanonicalRepresentativeOfExternalSet,
+        "via `OperatorOfExternalSet'", true,
         [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
-    SetCanonicalRepresentativeOfExternalOrbitByPcgs( xorb );
-    return CanonicalRepresentativeOfExternalSet( xorb );
+    local   oper;
+    
+    oper := OperatorOfExternalSet( xorb );
+    if HasCanonicalRepresentativeOfExternalSet( xorb )  then
+        return CanonicalRepresentativeOfExternalSet( xorb );
+    else
+        return FunctionOperation( xorb )( Representative( xorb ), oper );
+    fi;
 end );
 
 #############################################################################
@@ -365,6 +319,13 @@ InstallOtherMethod( StabilizerOp,
           IsFunction ], 0,
     function( G, pt, U, V, op )
     return OrbitStabilizerOp( G, pt, U, V, op ).stabilizer;
+end );
+
+InstallOtherMethod( StabilizerOp,
+        "G (solv.), pnt, opr", true,
+        [ IsGroup and IsPcgsComputable, IsObject, IsFunction ], 0,
+    function( G, pt, op )
+    return OrbitStabilizerOp( G, pt, Pcgs( G ), Pcgs( G ), op ).stabilizer;
 end );
 
 #############################################################################

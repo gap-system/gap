@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the implementation of magmas, monoids, and groups via
 ##  the multiplication table.
@@ -43,7 +43,6 @@ IsMagmaByMultiplicationTableObj := NewRepresentation(
 #C  IsMagmaByMultiplicationTableObjFamily( <F> )
 ##
 IsMagmaByMultiplicationTableObjFamily := CategoryFamily(
-    "IsMagmaByMultiplicationTableObjFamily",
     IsMagmaByMultiplicationTableObj );
 
 

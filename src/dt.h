@@ -1,3 +1,7 @@
+#ifdef  INCLUDE_DECLARATION_PART
+char * Revision_dt_h =
+   "@(#)$Id$";
+#endif
 
 extern void  UnmarkTree(
                   Obj   z );

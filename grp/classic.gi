@@ -1326,22 +1326,29 @@ end;
 #F  WreathProductOfMatrixGroup( <M>, <P> )  . . . . . . . . .  wreath product
 ##
 WreathProductOfMatrixGroup := function( M, P )
-    local   m,  d,  id,  gens,  b,  ran,  mat,  gen,  G;
+    local   m,  d,  id,  gens,  b,  ran,  raN,  mat,  gen,  G;
 
     m := DimensionOfMatrixGroup( M );
     d := LargestMovedPoint( P );
-    id := List( IdentityMat( m * d, FieldOfMatrixGroup( M ) ), ShallowCopy );
+    id := List( IdentityMat( m * d, DefaultFieldOfMatrixGroup( M ) ),
+                ShallowCopy );
     gens := [  ];
     for b  in [ 1 .. d ]  do
         ran := ( b - 1 ) * m + [ 1 .. m ];
         for mat  in GeneratorsOfGroup( M )  do
-            gen := DeepCopy( id );
+            gen := StructuralCopy( id );
             gen{ ran }{ ran } := mat;
             Add( gens, gen );
         od;
     od;
     for gen  in GeneratorsOfGroup( P )  do
-        Add( gens, Permuted( id, gen ) );
+        mat := StructuralCopy( id );
+        for b  in [ 1 .. d ]  do
+            ran := ( b - 1 ) * m + [ 1 .. m ];
+            raN := ( b^gen - 1 ) * m + [ 1 .. m ];
+            mat{ ran } := id{ raN };
+        od;
+        Add( gens, mat );
     od;
     G := GroupByGenerators( gens );
     if HasName( M )  and  HasName( P )  then

@@ -19,20 +19,6 @@ Revision.modulrow_gi :=
 
 #############################################################################
 ##
-#R  IsRowModuleRep( <V> )
-##
-##  A *row module* is a free left module whose elements are lists of scalars.
-##
-IsRowModuleRep := NewRepresentation( "IsRowModuleRep",
-    IsComponentObjectRep,
-    [ "vectordim" ] );
-
-InstallTrueMethod( IsFiniteDimensional,
-    IsRowModuleRep and IsFreeLeftModule );
-
-
-#############################################################################
-##
 #M  LeftModuleByGenerators( <R>, <mat> )  . . . . . .  construct a row module
 ##
 InstallMethod( LeftModuleByGenerators,

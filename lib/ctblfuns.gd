@@ -76,8 +76,7 @@ IsClassFunctionWithGroup := NewCategory( "IsClassFunctionWithGroup",
 ##
 #C  IsClassFunctionCollection( <obj> )
 ##
-IsClassFunctionCollection := CategoryCollections(
-    "IsClassFunctionCollection", IsClassFunction );
+IsClassFunctionCollection := CategoryCollections( IsClassFunction );
 
 
 #############################################################################
@@ -85,15 +84,40 @@ IsClassFunctionCollection := CategoryCollections(
 #C  IsClassFunctionWithGroupCollection( <obj> )
 ##
 IsClassFunctionWithGroupCollection := CategoryCollections(
-    "IsClassFunctionWithGroupCollection", IsClassFunctionWithGroup );
+    IsClassFunctionWithGroup );
 
 
 #############################################################################
 ##
 #C  IsClassFunctionFamily( <obj> )
 ##
-IsClassFunctionsFamily := CategoryFamily( "IsClassFunctionsFamily",
-    IsClassFunction );
+IsClassFunctionsFamily := CategoryFamily( IsClassFunction );
+
+
+#############################################################################
+##
+#R  IsClassFunctionsSpaceRep( <V> )
+##
+##  Free left modules of class functions are handled by associating to a
+##  class function the row vector given by its values.
+##
+##  If the nice free left module has been computed then
+##  free left modules of class functions contain the components
+##
+##  'elementsunderlying' : \\
+##       the underlying character table of the elements,
+##
+IsClassFunctionsSpaceRep := NewRepresentation( "IsClassFunctionsSpaceRep",
+    IsAttributeStoringRep and IsHandledByNiceBasis,
+    [ "elementsunderlying" ] );
+
+
+#############################################################################
+##
+#M  IsClassFunctionsSpaceRep
+##
+InstallTrueMethod( IsClassFunctionsSpaceRep,
+    IsFreeLeftModule and IsClassFunctionCollection );
 
 
 #############################################################################

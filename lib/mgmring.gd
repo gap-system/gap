@@ -64,15 +64,14 @@ IsElementOfFreeMagmaRing := NewCategory( "IsElementOfFreeMagmaRing",
 #C  IsElementOfFreeMagmaRingCollection( <obj> )
 ##
 IsElementOfFreeMagmaRingCollection := CategoryCollections(
-    "IsElementOfFreeMagmaRingCollection", IsElementOfFreeMagmaRing );
+    IsElementOfFreeMagmaRing );
 
 
 #############################################################################
 ##
 #C  IsFamilyElementOfFreeMagmaRing( <Fam> )
 ##
-IsFamilyElementOfFreeMagmaRing := CategoryFamily(
-    "IsFamilyElementOfFreeMagmaRing", IsElementOfFreeMagmaRing );
+IsFamilyElementOfFreeMagmaRing := CategoryFamily( IsElementOfFreeMagmaRing );
 
 
 #############################################################################

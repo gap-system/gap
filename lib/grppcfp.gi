@@ -278,9 +278,9 @@ InitEpimorphismSQ := function( F )
 	local g, gens, r, rels, ng, nr, pf, pn, pp, D, P, M, Q, I, A, G, min,
       	  gensA, relsA, gensG, imgs, prei, i, j, k, l, norm, index, diag, n;
 
-	gens := GeneratorsOfGroup( F.group );
+	gens := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
     ng   := Length( gens );
-	rels := F.relators ;	
+	rels := RelatorsOfFpGroup( F );
     nr   := Length( rels );
 
 	# build the relation matrix for the commutator  quotient  group
@@ -352,7 +352,7 @@ InitEpimorphismSQ := function( F )
 	od;
 
     relsA := Flat( relsA );
-    A     := rec( group := A, relators := relsA );
+    A     := A / relsA;
 
     # compute corresponding pc group
 	G := PcGroupFpGroup( A );
@@ -373,7 +373,7 @@ InitEpimorphismSQ := function( F )
 	prei := [];
 	for i in [ 1..ng ] do
 		if D[i][i] <> 1 then
-		    r := One( F.group );
+		    r := One( FreeGroupOfFpGroup( F ) );
 		    for j in [ 1..ng ] do
 		    	if imgs[j] <> One( G ) then
 		    	    r := r * gens[j] ^ ( I[i][j] mod Order( imgs[j] ) );
@@ -408,7 +408,7 @@ LiftEpimorphismSQ := function( epi, M, c )
           lift, null, vec, new, U, sol, sub, elm, r;
 
     F := epi.source;
-    gensf := GeneratorsOfGroup( F.group ); 
+    gensf := GeneratorsOfGroup( FreeGroupOfFpGroup( F ) );
     r := Length( gensf );
 
     d := M.dimension;
@@ -441,7 +441,7 @@ LiftEpimorphismSQ := function( epi, M, c )
     V := [];
 
     # for each relator of G add 
-    for rel in F.relators do
+    for rel in RelatorsOfFpGroup( F ) do
         l := LengthWord( rel );
 
         # right hand side
@@ -458,7 +458,7 @@ LiftEpimorphismSQ := function( epi, M, c )
                 if i+1 <= l then
                     t := Subword( rel, i+1, l );
                 else
-                    t := One( F.group );
+                    t := One( FreeGroupOfFpGroup( F ) );
                 fi;
                 mat := MappedWord( t, gensf, mtil );
                 mats[j] := mats[j] + mat;

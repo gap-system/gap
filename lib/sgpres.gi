@@ -15,8 +15,8 @@ Revision.sgpres_gi :=
 
 #############################################################################
 ##
-#F  AugmentedCosetTableMtc( <G>, <H>, <type>, <string> )  . . . . . . . . . .
-#F  . . . . . . . . . . . . .  do an MTC and return the augmented coset table
+#M  AugmentedCosetTableMtc( <G>, <H>, <type>, <string> )  . . . . . . . . . .
+#M  . . . . . . . . . . . . .  do an MTC and return the augmented coset table
 ##
 ##  'AugmentedCosetTableMtc' applies a Modified Todd-Coxeter coset represent-
 ##  ative  enumeration  to construct  an augmented coset table  for the given
@@ -138,13 +138,13 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     table := [ ];
     coFacTable := [ ];
     for gen  in fgens  do
-        g := 0 * [ 1 .. limit ];
-        f := 0 * [ 1 .. limit ];
+        g := ListWithIdenticalEntries( limit, 0 );
+        f := ListWithIdenticalEntries( limit, 0 );
         Add( table, g );
         Add( coFacTable, f );
         if not (gen^2 in rels or gen^-2 in rels)  then
-            g := 0 * [ 1 .. limit ];
-            f := 0 * [ 1 .. limit ];
+            g := ListWithIdenticalEntries( limit, 0 );
+            f := ListWithIdenticalEntries( limit, 0 );
         fi;
         Add( table, g );
         Add( coFacTable, f );
@@ -163,8 +163,8 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     for rel  in fsgens  do
         length := LengthWord( rel );
         length2 := 2 * length;
-        nums := 0 * [1 .. length2];
-        cols := 0 * [1 .. length2];
+        nums := [ ]; nums[length2] := 0;
+        cols := [ ]; cols[length2] := 0;
 
         # compute the lists.
         i := 0;  j := 0;
@@ -201,17 +201,17 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     elif type = 0 then
         treelength := numgens;
         length := treelength + 100;
-        tree1 := 0 * [ 1 .. length ];
+        tree1 := ListWithIdenticalEntries( length, 0 );
         for i in [ 1 .. numgens ] do
-            tree1[i] := 0 * [ 1 .. i ];
+            tree1[i] := [ 1 .. i ];
             tree1[i][i] := 1;
         od;
-        tree2 := 0 * [ 1 .. numgens ];
+        tree2 := ListWithIdenticalEntries( numgens, 0 );
     else
         treelength := numgens;
         length := treelength + 100;
-        tree1 := 0 * [ 1 .. length ];
-        tree2 := 0 * [ 1 .. length ];
+        tree1 := ListWithIdenticalEntries( length, 0 );
+        tree2 := ListWithIdenticalEntries( length, 0 );
     fi;
     tree := [ tree1, tree2, treelength, numgens, type ];
 
@@ -230,7 +230,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     fi;
 
     # make the structure that is passed to 'MakeConsequences2'
-    app := 0 * [ 1 .. 16 ];
+    app := [ ]; app[16] := 0;
     app[1] := table;
     app[2] := next;
     app[3] := prev;
@@ -386,7 +386,7 @@ aug.index := index;
         od;
 
         # determine which generators occur in the augmented table.
-        occur := 0 * [ 1 .. treelength ];
+        occur := ListWithIdenticalEntries( treelength, 0 );
         for i in [ 1 .. numgens ] do
             occur[i] := 1;
         od;
@@ -440,7 +440,8 @@ aug.index := index;
         else
             if exponent < 0 then  exponent := - exponent;  fi;
             aug.exponent := exponent;
-            aug.subgroupRelators := [ 0 * [ 1 .. exponent ] + 1 ];
+            aug.subgroupRelators :=
+                [ ListWithIdenticalEntries( exponent, 1 ) ];
         fi;
 
     elif type = 2 then
@@ -450,7 +451,7 @@ aug.index := index;
         # they do not all occur in the subgroup relators.
         numgens := Length( gens );
         if numgens < treelength then
-            convert := 0 * [ 1 .. treelength ];
+            convert := ListWithIdenticalEntries( treelength, 0 );
             for i in [ 1 .. numgens ] do
                 convert[treeNums[i]] := i;
             od;
@@ -467,6 +468,36 @@ aug.index := index;
 
     # return the augmented coset table.
     return aug;
+end;
+
+
+#############################################################################
+##
+#M  ReducedRrsWord( <word> ) . . . . . . . . . . . . . . freely reduce a word
+##
+##  'ReducedRrsWord' freely reduces the given RRS word and returns the result.
+##
+ReducedRrsWord := function ( word )
+
+    local i, j, reduced;
+
+    # initialize the result.
+    reduced := [];
+
+    # run through the factors of the given word and cancel or add them.
+    j := 0;
+    for i in [ 1 .. Length( word ) ] do
+        if word[i] <> 0 then
+            if j > 0 and word[i] = - reduced[j] then  j := j-1;
+            else  j := j+1;  reduced[j] := word[i];  fi;
+        fi;
+    od;
+
+    if j < Length( reduced ) then
+        reduced := reduced{ [1..j] };
+    fi;
+
+    return( reduced );
 end;
 
 

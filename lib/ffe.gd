@@ -25,26 +25,18 @@ IsFFE := NewCategoryKernel(
     IsScalar and IsAssociativeElement and IsCommutativeElement,
     IS_FFE );
 
-IsFFECollection := CategoryCollections(
-    "IsFFECollection",
-    IsFFE );
+IsFFECollection := CategoryCollections( IsFFE );
 
-IsFFECollColl := CategoryCollections(
-    "IsFFECollColl",
-    IsFFECollection );
+IsFFECollColl := CategoryCollections( IsFFECollection );
 
-IsFFECollCollColl := CategoryCollections(
-    "IsFFECollCollColl",
-    IsFFECollColl );
+IsFFECollCollColl := CategoryCollections( IsFFECollColl );
 
 
 #############################################################################
 ##
 #C  IsFFEFamily
 ##
-IsFFEFamily := CategoryFamily(
-    "IsFFEFamily",
-    IsFFE );
+IsFFEFamily := CategoryFamily( IsFFE );
 
 
 #############################################################################

@@ -1860,7 +1860,7 @@ InstallMethod( SylowSubgroupOp,
                 ord:= Order( r );
             until ord mod p = 0;
             r := r ^ ( ord / p );
-        until not r in S and ForAll( GeneratorsOfGroup( G ), g -> g ^ r in S );
+        until not r in S and ForAll( GeneratorsOfGroup( S ), g -> g ^ r in S );
 
         # add it to <S>
         S := ClosureSubgroup( S, r );

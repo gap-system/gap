@@ -201,7 +201,7 @@ Obj             SumIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecS = NEW_PLIST( T_PLIST_CYC, len );
+    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -249,7 +249,7 @@ Obj             SumVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecS = NEW_PLIST( T_PLIST_CYC, len );
+    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -306,7 +306,7 @@ Obj             SumVectorVector (
              "you can return a new vector for <right>" );
         return SUM( vecL, vecR );
     }
-    vecS = NEW_PLIST( T_PLIST_CYC, len );
+    vecS = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecS, len );
 
     /* loop over the elements and add                                      */
@@ -357,7 +357,7 @@ Obj             DiffIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecD = NEW_PLIST( T_PLIST_CYC, len );
+    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -405,7 +405,7 @@ Obj             DiffVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecD = NEW_PLIST( T_PLIST_CYC, len );
+    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -462,7 +462,7 @@ Obj             DiffVectorVector (
              "you can return a new vector for <right>" );
         return DIFF( vecL, vecR );
     }
-    vecD = NEW_PLIST( T_PLIST_CYC, len );
+    vecD = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecD, len );
 
     /* loop over the elements and subtract                                 */
@@ -513,7 +513,7 @@ Obj             ProdIntVector (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecR );
-    vecP = NEW_PLIST( T_PLIST_CYC, len );
+    vecP = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecP, len );
 
     /* loop over the entries and multiply                                  */
@@ -561,7 +561,7 @@ Obj             ProdVectorInt (
 
     /* make the result list                                                */
     len = LEN_PLIST( vecL );
-    vecP = NEW_PLIST( T_PLIST_CYC, len );
+    vecP = NEW_PLIST( T_PLIST_CYC+IMMUTABLE, len );
     SET_LEN_PLIST( vecP, len );
 
     /* loop over the entries and multiply                                  */

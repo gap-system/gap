@@ -16,7 +16,7 @@ RegularModuleByGens := function( G, gens, F )
     d    := Length(elms);
     zero := NullMat( d, d, F );
     for i in [1..Length( gens )] do
-        mat := DeepCopy( zero ); 
+        mat := StructuralCopy( zero ); 
         for j in [1..d] do
             o := Position( elms, elms[j]*gens[i] );
             mat[j][o] := One( F );

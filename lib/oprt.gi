@@ -523,8 +523,8 @@ InstallMethod( \in, IsElmsColls, [ IsObject,
     local   enum;
     
     enum := Enumerator( xorb );
-    if IsConstantTimeAccessListRep( enum )  then  return pnt in enum;
-                                            else  TryNextMethod();     fi;
+    if IsConstantTimeAccessList( enum )  then  return pnt in enum;
+                                         else  TryNextMethod();     fi;
 end );
 
 InstallMethod( \in, IsElmsColls, [ IsObject,
@@ -718,7 +718,7 @@ OperationHomomorphismSubsetAsGroupGeneralMappingByImages := function
     
     list := [ 1 .. Length( D ) ];
     poss := BlistList( list, List( start, b -> PositionCanonical( D, b ) ) );
-    blist := DeepCopy( poss );
+    blist := StructuralCopy( poss );
     list := List( gens, gen -> ShallowCopy( list ) );
     ps := Position( poss, true );
     while ps <> fail  do

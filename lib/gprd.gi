@@ -145,7 +145,7 @@ end );
 ##
 #M  IsSolvableGroup( <D> )
 ##
-InstallMethod( IsSolvableGroup, true, 
+InstallMethod( IsSolvableGroup, "for direct products", true, 
                [IsGroup and HasDirectProductInfo], 0,
 function( D )
     return ForAll( DirectProductInfo( D ).groups, IsSolvableGroup );
@@ -155,8 +155,9 @@ end );
 ##
 #M  IsPcgsComputable( <D> )
 ##
-InstallMethod( IsPcgsComputable, true, 
-               [IsGroup and HasDirectProductInfo], 0,
+InstallMethod( IsPcgsComputable, "for direct products", true, 
+               [IsGroup and HasDirectProductInfo], 
+               SUM_FLAGS,
 function( D )
     return ForAll( DirectProductInfo( D ).groups, IsPcgsComputable );
 end );
@@ -165,24 +166,28 @@ end );
 ##
 #M  Pcgs( <D> )
 ##
-InstallMethod( Pcgs, true, [IsGroup and HasDirectProductInfo], 0,
+InstallMethod( Pcgs, "for direct products", true, 
+               [IsGroup and IsPcgsComputable and HasDirectProductInfo], 
+               SUM_FLAGS,
 function( D )
-    local info, pcs, i, pcgs, emb, rels;
+    local info, pcs, i, pcgs, emb, rels, one, new, g;
     info := DirectProductInfo( D );
-    if not ForAll( info.groups, IsPcgsComputable ) then
-        return fail;
-    fi;
     pcs := [];
     rels := [];
+    one := List( info.groups, x -> One(x) );
     for i in [1..Length(info.groups)] do
         pcgs := Pcgs( info.groups[i] );
-        emb  := Embedding( D, i );
-        Append( pcs, List( pcgs, x -> Image( emb, x ) ) );
+        for g in pcgs do
+            new := ShallowCopy( one );
+            new[i] := g;
+            Add( pcs, Tuple( new ) );
+        od;
         Append( rels, RelativeOrders( pcgs ) );
     od;
     pcs := PcgsByPcSequenceNC( ElementsFamily(FamilyObj( D ) ), pcs );
     SetRelativeOrders( pcs, rels );
     SetOneOfPcgs( pcs, One(D) );
+    SetIsGenericPcgs( pcs, true );
     return pcs;
 end );
 

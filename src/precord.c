@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  precord.c                   GAP source                   Martin Schoenert
+*W  precord.c                   GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -44,7 +44,15 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  NEW_PREC(<len>) . . . . . . . . . . . . . . . . . make a new plain record
+
+*F * * * * * * * * * * standard macros for plain records  * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  NEW_PREC( <len> ) . . . . . . . . . . . . . . . . make a new plain record
 **
 **  'NEW_PREC' returns a new plain record with room for <len> components.
 **
@@ -56,7 +64,7 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  LEN_PREC(<rec>) . . . . . . . . . .  number of components of plain record
+*F  LEN_PREC( <rec> ) . . . . . . . . .  number of components of plain record
 **
 **  'LEN_PREC' returns the number of components of the plain record <rec>.
 **
@@ -68,7 +76,7 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  SET_RNAM_PREC(<rec>,<i>,<rnam>) . . . set name of <i>-th record component
+*F  SET_RNAM_PREC( <rec>, <i>, <rnam> ) . set name of <i>-th record component
 **
 **  'SET_RNAM_PREC' sets   the name of  the  <i>-th  record component  of the
 **  record <rec> to the record name <rnam>.
@@ -83,7 +91,7 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  GET_RNAM_PREC(<rec>,<i>)  . . . . . . . . name of <i>-th record component
+*F  GET_RNAM_PREC( <rec>, <i> ) . . . . . . . name of <i>-th record component
 **
 **  'GET_RNAM_PREC' returns the record name of the <i>-th record component of
 **  the record <rec>.
@@ -98,7 +106,7 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  SET_ELM_PREC(<rec>,<i>,<val>) . . .  set value of <i>-th record component
+*F  SET_ELM_PREC( <rec>, <i>, <val> ) .  set value of <i>-th record component
 **
 **  'SET_ELM_PREC' sets  the value  of  the  <i>-th  record component of  the
 **  record <rec> to the value <val>.
@@ -113,7 +121,7 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  GET_ELM_PREC(<rec>,<i>) . . . . . . . .  value of <i>-th record component
+*F  GET_ELM_PREC( <rec>, <i> ) . . . . . . . value of <i>-th record component
 **
 **  'GET_ELM_PREC' returns the value  of the <i>-th  record component of  the
 **  record <rec>.
@@ -128,23 +136,32 @@ char *          Revision_precord_c =
 
 /****************************************************************************
 **
-*F  TypePRec(<rec>) . . . . . . . . . . . . . . . . .  kind of a plain record
+
+*F * * * * * * * * * standard functions for plain records * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  TypePRec( <rec> ) . . . . . . . . . . . . . . . .  kind of a plain record
 **
 **  'TypePRec' returns the kind of the plain record <rec>.
 **
 **  'TypePRec' is the function in 'TypeObjFuncs' for plain records.
 */
-Obj             TYPE_PREC_MUTABLE;
+Obj TYPE_PREC_MUTABLE;
 
-Obj             TypePRecMut (
+Obj TypePRecMut (
     Obj                 prec )
 {
     return TYPE_PREC_MUTABLE;
 }
 
-Obj             TYPE_PREC_IMMUTABLE;
 
-Obj             TypePRecImm (
+Obj TYPE_PREC_IMMUTABLE;
+
+Obj TypePRecImm (
     Obj                 prec )
 {
     return TYPE_PREC_IMMUTABLE;
@@ -153,8 +170,8 @@ Obj             TypePRecImm (
 
 /****************************************************************************
 **
-*F  IsMutablePRecYes(<rec>) . . . . . . . mutability test for mutable records
-*F  IsMutablePRecNo(<rec>)  . . . . . . mutability test for immutable records
+*F  IsMutablePRecYes( <rec> ) . . . . . . mutability test for mutable records
+*F  IsMutablePRecNo( <rec> )  . . . . . mutability test for immutable records
 **
 **  'IsMutablePRecYes' simply returns 1.  'IsMutablePRecNo' simply returns 0.
 **  Note that we can decide from the type number whether  a record is mutable
@@ -164,13 +181,13 @@ Obj             TypePRecImm (
 **  records.   'IsMutablePRecNo' is  the function  in 'IsMutableObjFuncs' for
 **  immutable records.
 */
-Int             IsMutablePRecYes (
+Int IsMutablePRecYes (
     Obj                 rec )
 {
     return 1;
 }
 
-Int             IsMutablePRecNo (
+Int IsMutablePRecNo (
     Obj                 rec )
 {
     return 0;
@@ -179,13 +196,13 @@ Int             IsMutablePRecNo (
 
 /****************************************************************************
 **
-*F  IsCopyablePRecYes(<rec>)  . . . . . . . . .  copyability test for records
+*F  IsCopyablePRecYes( <rec> )  . . . . . . . .  copyability test for records
 **
 **  'IsCopyablePRec' simply returns 1.  Note that all records are copyable.
 **
 **  'IsCopyablePRec' is the function in 'IsCopyableObjFuncs' for records.
 */
-Int             IsCopyablePRecYes (
+Int IsCopyablePRecYes (
     Obj                 rec )
 {
     return 1;
@@ -194,8 +211,8 @@ Int             IsCopyablePRecYes (
 
 /****************************************************************************
 **
-*F  CopyPRec(<rec>) . . . . . . . . . . . . . . . . . . . copy a plain record
-*F  CleanPRec(<rec>)  . . . . . . . . . . . . . . . . clean up a plain record
+*F  CopyPRec( <rec> ) . . . . . . . . . . . . . . . . . . copy a plain record
+*F  CleanPRec( <rec> )  . . . . . . . . . . . . . . . clean up a plain record
 **
 **  'CopyPRec' returns a structural (deep) copy  of the record <rec>, i.e., a
 **  recursive copy that preserves the structure.
@@ -212,7 +229,7 @@ Int             IsCopyablePRecYes (
 **
 **  'CleanPRec' is the function in 'TabCleanObj' for records.
 */
-Obj             CopyPRec (
+Obj CopyPRec (
     Obj                 rec,
     Int                 mut )
 {
@@ -281,19 +298,19 @@ Obj             CopyPRec (
     return copy;
 }
 
-Obj             CopyPRecCopy (
+Obj CopyPRecCopy (
     Obj                 rec,
     Int                 mut )
 {
     return (Obj)GET_RNAM_PREC( rec, 1 );
 }
 
-void            CleanPRec (
+void CleanPRec (
     Obj                 rec )
 {
 }
 
-void            CleanPRecCopy (
+void CleanPRecCopy (
     Obj                 rec )
 {
     UInt                i;              /* loop variable                   */
@@ -328,12 +345,12 @@ void            CleanPRecCopy (
 
 /****************************************************************************
 **
-*F  IsbPRec(<rec>,<rnam>)  . . . . .  test for an element from a plain record
+*F  IsbPRec( <rec>, <rnam> )  . . . . test for an element from a plain record
 **
 **  'IsbPRec' returns 1 if the record <rec> has a component with  the  record
 **  name <rnam>, and 0 otherwise.
 */
-Int             IsbPRec (
+Int IsbPRec (
     Obj                 rec,
     UInt                rnam )
 {
@@ -356,13 +373,13 @@ Int             IsbPRec (
 
 /****************************************************************************
 **
-*F  ElmPRec(<rec>,<rnam>) . . . . . . . select an element from a plain record
+*F  ElmPRec( <rec>, <rnam> )  . . . . . select an element from a plain record
 **
 **  'ElmPRec' returns the element, i.e., the value of the component, with the
 **  record name <rnam> in  the plain record <rec>.   An error is signalled if
 **  <rec> has no component with record name <rnam>.
 */
-Obj             ElmPRec (
+Obj ElmPRec (
     Obj                 rec,
     UInt                rnam )
 {
@@ -394,12 +411,12 @@ Obj             ElmPRec (
 
 /****************************************************************************
 **
-*F  UnbPRec(<rec>,<rnam>) . . . unbind a record component from a plain record
+*F  UnbPRec( <rec>, <rnam> )  . unbind a record component from a plain record
 **
 **  'UnbPRec'  removes the record component  with the record name <rnam> from
 **  the record <rec>.
 */
-void            UnbPRec (
+void UnbPRec (
     Obj                 rec,
     UInt                rnam )
 {
@@ -443,12 +460,12 @@ void            UnbPRecImm (
 
 /****************************************************************************
 **
-*F  AssPRec(<rec>,<rnam>,<val>)  . . . . . . . . . . assign to a plain record
+*F  AssPRec( <rec>, <rnam>, <val> ) . . . . . . . .  assign to a plain record
 **
 **  'AssPRec' assigns the value <val> to the record component with the record
 **  name <rnam> in the plain record <rec>.
 */
-void            AssPRec (
+void AssPRec (
     Obj                 rec,
     UInt                rnam,
     Obj                 val )
@@ -490,113 +507,27 @@ void            AssPRecImm (
 
 /****************************************************************************
 **
-*F  MethodPRec(<rec>,<rnam>)  . . . . . . . . . . . get a method for a record
-**
-**  'MethodPRec' returns  the function in the  component with the record name
-**  <rnam> in the  record in the component  with the name 'operations' (which
-**  really should be  called 'methods') of  the record <rec>  if this exists.
-**  Otherwise it return 0.
-*/
-UInt            OperationsRNam;         /* 'operations' record name        */
-
-Obj             MethodPRec (
-    Obj                 rec,
-    UInt                rnam )
-{
-    Obj                 method;         /* method, result                  */
-    Obj                 opers;          /* operations record               */
-    UInt                len;            /* length of the record            */
-    UInt                i;              /* loop variable                   */
-
-    /* is <rec> a record?                                                  */
-    if ( TNUM_OBJ(rec) != T_PREC )
-        return 0;
-
-    /* try to get the operations record                                    */
-    len = LEN_PREC( rec );
-    for ( i = 1; i <= len; i++ ) {
-        if ( GET_RNAM_PREC( rec, i ) == OperationsRNam )
-            break;
-    }
-    if ( len < i ) {
-        return 0;
-    }
-    opers = GET_ELM_PREC( rec, i );
-    if ( TNUM_OBJ( opers ) != T_PREC ) {
-        return 0;
-    }
-
-    /* try to get the method                                               */
-    len = LEN_PREC( opers );
-    for ( i = 1; i <= len; i++ ) {
-        if ( GET_RNAM_PREC( opers, i ) == OperationsRNam )
-            break;
-    }
-    if ( len < i ) {
-        return 0;
-    }
-    method = GET_ELM_PREC( opers, i );
-    if ( TNUM_OBJ( method ) != T_PREC ) {
-        return 0;
-    }
-
-    /* return the method                                                   */
-    return method;
-}
-
-
-/****************************************************************************
-**
-*F  PrintPRec(<rec>)  . . . . . . . . . . . . . . . . . . . .  print a record
+*F  PrintPRec( <rec> )  . . . . . . . . . . . . . . . . . . .  print a record
 **
 **  'PrintRec' prints the plain record <rec>.
 */
-UInt            PrintRNam;
+extern Obj PrintObjOper;
 
-void            PrintPRec (
+void PrintPRec (
     Obj                 rec )
 {
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( rec, PrintRNam )) ) {
-
-        /* if no applicable method is found, print the record              */
-        Pr( "%2>rec(\n%2>", 0L, 0L );
-        for ( PrintObjIndex = 1;
-              PrintObjIndex <= LEN_PREC(rec);
-              PrintObjIndex++ ) {
-            Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,PrintObjIndex)), 0L );
-            Pr( "%< := %>", 0L, 0L );
-            PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
-            if ( PrintObjIndex < LEN_PREC(rec) ) {
-                Pr( "%2<,\n%2>", 0L, 0L );
-            }
-        }
-        Pr( " %4<)", 0L, 0L );
-        return;
-
-    }
-
-    /* call that function                                                  */
-    CALL_1ARGS( method, rec );
+    DoOperation1Args( PrintObjOper, rec );
 }
 
-void            PrintPathPRec (
-    Obj                 rec,
-    Int                 indx )
-{
-    Pr( ".%I", (Int)NAME_RNAM( GET_RNAM_PREC(rec,indx) ), 0L );
-}
 
 
 /****************************************************************************
 **
-*F  SortPRec(<rec>) . . . . .  sort a record according to the component names
+*F  SortPRec( <rec> ) . . . .  sort a record according to the component names
 **
 **  'SortPRec' sorts the plain record <rec> according to the component names.
 */
-void            SortPRec (
+void SortPRec (
     Obj                 rec )
 {
     UInt                rnam;           /* name of component               */
@@ -629,437 +560,135 @@ void            SortPRec (
 
 /****************************************************************************
 **
-*F  EqPRec(<left>,<right>)  . . . . . . . . . . . .  comparison of two record
-**
-**  'EqRec' returns '1L'  if the two  operands <left> and <right> are equal
-**  and '0L' otherwise.  At least one operand must be a plain record.
-**
-**  If at  least one of the  operands is a  record and has a '.operations.\='
-**  method,  than this is called  and its result  is returned.  Otherwise the
-**  records are compared componentwise.
-*/
-UInt            EqRNam;                 /* '=' record name                 */
 
-Int             EqPRec (
-    Obj                 left,
-    Obj                 right )
+*F * * * * * * * * * * * default functions for records  * * * * * * * * * * *
+*/
+extern Obj TRY_NEXT_METHOD;
+
+
+/****************************************************************************
+**
+
+*F  MethodPRec( <rec>, <rnam> ) . . . . . . . . . . get a method for a record
+**
+**  'MethodPRec' returns  the function in the  component with the record name
+**  <rnam> in the  record in the component  with the name 'operations' (which
+**  really should be  called 'methods') of  the record <rec>  if this exists.
+**  Otherwise it return 0.
+*/
+UInt OperationsRNam;                    /* 'operations' record name        */
+
+Obj MethodPRec (
+    Obj                 rec,
+    UInt                rnam )
 {
-    Obj                 method;         /* method                          */
+    Obj                 method;         /* method, result                  */
+    Obj                 opers;          /* operations record               */
+    UInt                len;            /* length of the record            */
     UInt                i;              /* loop variable                   */
 
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, EqRNam ))
-      && ! (method = MethodPRec( left,  EqRNam )) ) {
+    /* is <rec> a record?                                                  */
+    if ( TNUM_OBJ(rec) != T_PREC && TNUM_OBJ(rec) != T_PREC+IMMUTABLE )
+        return 0;
 
-        /* quick first checks                                              */
-        if ( TNUM_OBJ(left ) <  TNUM_OBJ(right) )  return 0L;
-        if ( TNUM_OBJ(left ) >  TNUM_OBJ(right) )  return 0L;
-        if ( LEN_PREC(left ) != LEN_PREC(right) )  return 0L;
-
-        /* sort both records                                               */
-        SortPRec( left  );
-        SortPRec( right );
-
-        /* compare componentwise                                           */
-        for ( i = 1; i <= LEN_PREC(right); i++ ) {
-
-            /* compare the names                                           */
-            if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-                return 0L;
-            }
-
-            /* compare the values                                          */
-            if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-                return 0L;
-            }
-        }
-
-        /* the records are equal                                           */
-        return 1L;
-
+    /* try to get the operations record                                    */
+    len = LEN_PREC( rec );
+    for ( i = 1; i <= len; i++ ) {
+        if ( GET_RNAM_PREC( rec, i ) == OperationsRNam )
+            break;
+    }
+    if ( len < i ) {
+        return 0;
+    }
+    opers = GET_ELM_PREC( rec, i );
+    if ( TNUM_OBJ( opers ) != T_PREC ) {
+        return 0;
     }
 
-    /* call that function                                                  */
-    return (CALL_2ARGS( method, left, right ) == True);
+    /* try to get the method                                               */
+    len = LEN_PREC( opers );
+    for ( i = 1; i <= len; i++ ) {
+        if ( GET_RNAM_PREC( opers, i ) == rnam )
+            break;
+    }
+    if ( len < i ) {
+        return 0;
+    }
+    method = GET_ELM_PREC( opers, i );
+
+    /* return the method                                                   */
+    return method;
 }
 
 
 /****************************************************************************
 **
-*F  LtPRec(<left>,<right>)  . . . . . . . . . . . .  comparison of two record
+*F  FuncPRINT_PREC_DEFAULT( <self>, <rec> ) . . . . . . . . .  print a record
 **
-**  'LtRec' returns '1L'  if the operand  <left> is  less than the  operand
-**  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
-**  record.
-**
-**  If at least  one of the operands is  a record and  has a '.operations.\<'
-**  method, than this  is called and its  result is  returned.  Otherwise the
-**  records are compared componentwise.
+**  'FuncPRINT_PREC_DEFAULT' prints the plain record <rec>.
 */
-UInt            LtRNam;                 /* '<' record name                 */
-
-Int             LtPRec (
-    Obj                 left,
-    Obj                 right )
+Obj FuncPRINT_PREC_DEFAULT (
+    Obj                 self,
+    Obj                 rec )
 {
-    Obj                 method;         /* method                          */
-    UInt                i;              /* loop variable                   */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, LtRNam ))
-      && ! (method = MethodPRec( left,  LtRNam )) ) {
-
-        /* quick first checks                                              */
-        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return 1L;
-        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return 0L;
-
-        /* sort both records                                               */
-        SortPRec( left );
-        SortPRec( right );
-
-        /* compare componentwise                                           */
-        for ( i = 1; i <= LEN_PREC(right); i++ ) {
-
-            /* if the left is a proper prefix of the right one             */
-            if ( LEN_PREC(left) < i )  return 1L;
-
-            /* compare the names                                           */
-            if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
-                if ( SyStrcmp( NAME_RNAM( GET_RNAM_PREC(left,i) ),
-                               NAME_RNAM( GET_RNAM_PREC(right,i) ) ) < 0 ) {
-                    return 1L;
-                }
-                else {
-                    return 0L;
-                }
-            }
-
-            /* compare the values                                          */
-            if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
-                return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) );
-            }
-
-        }
-
-        /* the records are equal or the right is a prefix of the left      */
-        return 0L;
-
+    /* print the record                                                    */
+    Pr( "%2>rec(\n%2>", 0L, 0L );
+    for ( PrintObjIndex=1; PrintObjIndex<=LEN_PREC(rec); PrintObjIndex++ ) {
+	Pr( "%I", (Int)NAME_RNAM(GET_RNAM_PREC(rec,PrintObjIndex)), 0L );
+	Pr( "%< := %>", 0L, 0L );
+	PrintObj( GET_ELM_PREC( rec, PrintObjIndex ) );
+	if ( PrintObjIndex < LEN_PREC(rec) ) {
+	    Pr( "%2<,\n%2>", 0L, 0L );
+	}
     }
+    Pr( " %4<)", 0L, 0L );
+    return 0L;
+}
 
-    /* call that function                                                  */
-    return (CALL_2ARGS( method, left, right ) == True);
+void PrintPathPRec (
+    Obj                 rec,
+    Int                 indx )
+{
+    Pr( ".%I", (Int)NAME_RNAM( GET_RNAM_PREC(rec,indx) ), 0L );
 }
 
 
 /****************************************************************************
 **
-*F  InPRec(<left>,<right>)  . . . . . . . . . . . membership test for records
+*F  FuncPRINT_PREC( <self>, <rec> ) . . . . . . . . . . . . .  print a record
 **
-**  'InRec' returns 'True' if the operand <left>  is an element of the record
-**  <right>.  <right> must be a plain record.
-**
-**  If <right> has  a '.operations.\in' method, than this  is called  and its
-**  result is returned.  Otherwise an error is signalled.
+**  'FuncPRINT_PREC' prints the plain record <rec>.
 */
-UInt            InRNam;                 /* 'in' record name                */
+UInt PrintRNam;
 
-Int             InPRec (
-    Obj                 left,
-    Obj                 right )
+Obj FuncPRINT_PREC (
+    Obj                 self,
+    Obj                 rec )
 {
     Obj                 method;         /* method                          */
 
     /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, InRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: right operand must have '~.operations.\\in'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\in'" );
+    if ( ! (method = MethodPRec( rec, PrintRNam )) )
+    {
+	return FuncPRINT_PREC_DEFAULT( self, rec );
     }
 
     /* call that function                                                  */
-    return (CALL_2ARGS( method, left, right ) == True);
+    return CALL_1ARGS( method, rec );
 }
-
 
 /****************************************************************************
 **
-*F  SumPRec(<left>,<right>) . . . . . . . . . . . . . . .  sum of two records
+*F  FuncREC_NAMES( <self>, <rec> )  . . . . . . . .  record names of a record
 **
-**  'SumRec' returns the  sum  of the two   operands <left> and <right>.   At
-**  least one of the operands must be a plain record.
-**
-**  If  at least one of the  operands is a  record and has a '.operations.\+'
-**  method, than this  is called and its  result  is returned.   Otherwise an
-**  error is signalled.
-*/
-UInt            SumRNam;                /* '+' record name                 */
-
-Obj             SumPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, SumRNam ))
-      && ! (method = MethodPRec( left,  SumRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\+'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\+'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  DiffPRec(<left>,<right>)  . . . . . . . . . . . difference of two records
-**
-**  'DiffRec' returns the difference of the two  operands <left> and <right>.
-**  At least one of the operands must be a plain record.
-**
-**  If  at least one  of the operands is  a record and has a '.operations.\-'
-**  method, then this  is called  and  its result is returned.   Otherwise an
-**  error is signalled.
-*/
-UInt            DiffRNam;               /* '-' record name                 */
-
-Obj             DiffPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;           /* operation                       */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, DiffRNam ))
-      && ! (method = MethodPRec( left,  DiffRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\-'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\-'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  ProdPRec(<left>,<right>)  . . . . . . . . . . . .  product of two records
-**
-**  'ProdRec' returns the product of the two operands <left> and <right>.  At
-**  least one of the operands must be a plain record.
-**
-**  If  at least one  of the operands is  a record and has a '.operations.\*'
-**  method, then this  is called  and  its result is returned.   Otherwise an
-**  error is signalled.
-*/
-UInt            ProdRNam;               /* '*' record name                 */
-
-Obj             ProdPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, ProdRNam ))
-      && ! (method = MethodPRec( left,  ProdRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\*'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\*'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  QuoPRec(<left>,<right>) . . . . . . . . . . . . . quotient of two records
-**
-**  'QuoRec' returns the quotient of the two operands <left> and <right>.  At
-**  least one of the operands must be a plain record.
-**
-**  If  at least one  of the operands is  a record and has a '.operations.\/'
-**  method, then this  is called  and  its result is returned.   Otherwise an
-**  error is signalled.
-*/
-UInt            QuoRNam;                /* '/' record name                 */
-
-Obj             QuoPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, QuoRNam ))
-      && ! (method = MethodPRec( left,  QuoRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\/'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\/'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  LQuoPRec(<left>,<right>)  . . . . . . . . .  left quotient of two records
-**
-**  'LQuoPRec' returns the   left quotient  of  the two   operands <left> and
-**  <right>.  At least one of the operands must be a plain record.
-**
-**  If  at   least   one   of  the  operands     is a  record   and    has  a
-**  '.operations.LeftQuotient' method, then this is  called and its result is
-**  returned.  Otherwise an error is signalled.
-*/
-UInt            LQuoRNam;               /* 'LeftQuotient' record name      */
-
-Obj             LQuoPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, LQuoRNam ))
-      && ! (method = MethodPRec( left,  LQuoRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.LeftQuotient'",
-            0L, 0L,
-            "you can return a function for '~.operations.LeftQuotient'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  PowPRec(<left>,<right>) . . . . . . . . . . . . . .  power of two records
-**
-**  'PowPRec' returns the power of  the two operands  <left> and <right>.  At
-**  least one of the operands must be a plain record.
-**
-**  If  at least one  of the operands is  a record and has a '.operations.\^'
-**  method, then this  is called  and  its result is returned.   Otherwise an
-**  error is signalled.
-*/
-UInt            PowRNam;                /* '^' record name                 */
-
-Obj             PowPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, PowRNam ))
-      && ! (method = MethodPRec( left,  PowRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\^'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\^'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  CommPRec(<left>,<right>)  . . . . . . . . . .   commutator of two records
-**
-**  'CommPRec' returns the commutator of the two operands <left> and <right>.
-**  At least one of the operands must be a plain record.
-**
-**  If at least one of the operands is  a record and has a '.operations.Comm'
-**  method, then this  is called and its  result  is returned.  Otherwise  an
-**  error is signalled.
-*/
-UInt            CommRNam;               /* 'Comm' record name              */
-
-Obj             CommPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, CommRNam ))
-      && ! (method = MethodPRec( left,  CommRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.Comm'",
-            0L, 0L,
-            "you can return a function for '~.operations.Comm'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  ModPRec(<left>,<right>) . . . . . . . . . . . .  remainder of two records
-**
-**  'ModPRec' returns the   remainder  the operands  <left>   by  the operand
-**  <right>.  At least one of the operands must be a plain record.
-**
-**  If at least one of the operands is a  record and has a '.operations.\mod'
-**  method, then this  is  called and its  result is  returned.  Otherwise an
-**  error is signalled.
-*/
-UInt            ModRNam;                /* 'mod' record name               */
-
-Obj             ModPRec (
-    Obj                 left,
-    Obj                 right )
-{
-    Obj                 method;         /* method                          */
-
-    /* try to find an applicable method                                    */
-    if ( ! (method = MethodPRec( right, ModRNam ))
-      && ! (method = MethodPRec( left,  ModRNam )) ) {
-        method = ErrorReturnObj(
-            "Record: one operand must have '~.operations.\\mod'",
-            0L, 0L,
-            "you can return a function for '~.operations.\\mod'" );
-    }
-
-    /* call that function                                                  */
-    return CALL_2ARGS( method, left, right );
-}
-
-
-/****************************************************************************
-**
-*F  FuncRecNames(<self>,<rec>)  . . . . . . . . . .  record names of a record
-**
-**  'FuncRecNames' implements the function 'RecNames'.
+**  'FuncREC_NAMES' implements a method for the operations 'RecNames'.
 **
 **  'RecNames( <rec> )'
 **
 **  'RecNames'  returns a list containing the  names of the components of the
 **  record <rec> as strings.
 */
-Obj             RecNamesFunc;
-
-Obj             RecNamesHandler (
+Obj FuncREC_NAMES (
     Obj                 self,
     Obj                 rec )
 {
@@ -1138,14 +767,464 @@ Obj FuncREC_NAMES_ROBJ (
 
 /****************************************************************************
 **
+*F  FuncSUM_PREC( <self>, <left>, <right> ) . . . . . . .  sum of two records
+**
+**  'SumRec' returns the  sum  of the two   operands <left> and <right>.   At
+**  least one of the operands must be a plain record.
+**
+**  If  at least one of the  operands is a  record and has a '.operations.\+'
+**  method, than this  is called and its  result  is returned.
+*/
+UInt SumRNam;                           /* '+' record name                 */
+
+Obj FuncSUM_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, SumRNam ))
+      && ! (method = MethodPRec( left,  SumRNam )) )
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncDIFF_PREC( <self>, <left>, <right> )  . . . difference of two records
+**
+**  'DiffRec' returns the difference of the two  operands <left> and <right>.
+**  At least one of the operands must be a plain record.
+**
+**  If  at least one  of the operands is  a record and has a '.operations.\-'
+**  method, then this  is called  and  its result is returned.
+*/
+UInt DiffRNam;                          /* '-' record name                 */
+
+Obj FuncDIFF_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;           /* operation                       */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, DiffRNam ))
+      && ! (method = MethodPRec( left,  DiffRNam )) )
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncPROD_PREC( <self>, <left>, <right> )  . . . .  product of two records
+**
+**  'ProdRec' returns the product of the two operands <left> and <right>.  At
+**  least one of the operands must be a plain record.
+**
+**  If  at least one  of the operands is  a record and has a '.operations.\*'
+**  method, then this  is called  and  its result is returned.
+*/
+UInt ProdRNam;                          /* '*' record name                 */
+
+Obj FuncPROD_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, ProdRNam ))
+      && ! (method = MethodPRec( left,  ProdRNam )) )
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncQUO_PREC( <self>, <left>, <right> ) . . . . . quotient of two records
+**
+**  'QuoRec' returns the quotient of the two operands <left> and <right>.  At
+**  least one of the operands must be a plain record.
+**
+**  If  at least one  of the operands is  a record and has a '.operations.\/'
+**  method, then this  is called  and  its result is returned.
+*/
+UInt QuoRNam;                           /* '/' record name                 */
+
+Obj FuncQUO_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, QuoRNam ))
+      && ! (method = MethodPRec( left,  QuoRNam )) ) 
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncLQUO_PREC( <self>, <left>, <right> )  .  left quotient of two records
+**
+**  'LQuoPRec' returns the   left quotient  of  the two   operands <left> and
+**  <right>.  At least one of the operands must be a plain record.
+**
+**  If  at   least   one   of  the  operands     is a  record   and    has  a
+**  '.operations.LeftQuotient' method, then this is  called and its result is
+**  returned.
+*/
+UInt LQuoRNam;                          /* 'LeftQuotient' record name      */
+
+Obj FuncLQUO_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, LQuoRNam ))
+      && ! (method = MethodPRec( left,  LQuoRNam )) ) 
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncPOW_PREC( <self>, <left>, <right> ) . . . . . .  power of two records
+**
+**  'PowPRec' returns the power of  the two operands  <left> and <right>.  At
+**  least one of the operands must be a plain record.
+**
+**  If  at least one  of the operands is  a record and has a '.operations.\^'
+**  method, then this  is called  and  its result is returned.
+*/
+UInt PowRNam;                           /* '^' record name                 */
+
+Obj FuncPOW_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, PowRNam ))
+      && ! (method = MethodPRec( left,  PowRNam )) ) 
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncCOMM_PREC( <self>, <left>, <right> )  . .   commutator of two records
+**
+**  'CommPRec' returns the commutator of the two operands <left> and <right>.
+**  At least one of the operands must be a plain record.
+**
+**  If at least one of the operands is  a record and has a '.operations.Comm'
+**  method, then this  is called and its  result  is returned.
+*/
+UInt CommRNam;                          /* 'Comm' record name              */
+
+Obj FuncCOMM_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, CommRNam ))
+      && ! (method = MethodPRec( left,  CommRNam )) )
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncMOD_PREC( <self>, <left>, <right> ) . . . .  remainder of two records
+**
+**  'ModPRec' returns the   remainder  the operands  <left>   by  the operand
+**  <right>.  At least one of the operands must be a plain record.
+**
+**  If at least one of the operands is a  record and has a '.operations.\mod'
+**  method, then this  is  called and its  result is  returned.
+*/
+UInt ModRNam;                /* 'mod' record name               */
+
+Obj FuncMOD_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, ModRNam ))
+      && ! (method = MethodPRec( left,  ModRNam )) )
+    {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncIN_PREC( <self>, <left>, <right> )  . . . membership test for records
+**
+**  'InRec' returns 'True' if the operand <left>  is an element of the record
+**  <right>.  <right> must be a plain record.
+**
+**  If <right> has  a '.operations.\in' method, than this  is called  and its
+**  result is returned.
+*/
+UInt InRNam;                            /* 'in' record name                */
+
+Obj FuncIN_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, InRNam )) ) {
+	return TRY_NEXT_METHOD;
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncEQ_PREC_DEFAULT( <self>, <left>, <right> )  comparison of two records
+**
+**  'EqRec' returns '1L'  if the two  operands <left> and <right> are equal
+**  and '0L' otherwise.  At least one operand must be a plain record.
+*/
+Obj FuncEQ_PREC_DEFAULT (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    UInt                i;              /* loop variable                   */
+
+    /* quick first checks                                                  */
+    if ( TNUM_OBJ(left)!=T_PREC && TNUM_OBJ(left)!=T_PREC+IMMUTABLE )
+	return False;
+    if ( TNUM_OBJ(right)!=T_PREC && TNUM_OBJ(right)!=T_PREC+IMMUTABLE )
+	return False;
+    if ( LEN_PREC(left) != LEN_PREC(right) )
+	return False;
+
+    /* sort both records                                                   */
+    SortPRec(left);
+    SortPRec(right);
+
+    /* compare componentwise                                               */
+    for ( i = 1; i <= LEN_PREC(right); i++ ) {
+
+	/* compare the names                                               */
+	if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+	    return False;
+	}
+
+	/* compare the values                                              */
+	if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+	    return False;
+	}
+    }
+
+    /* the records are equal                                               */
+    return True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncEQ_PREC( <self>, <left>, <right> )  . . . . comparison of two records
+**
+**  'EqRec' returns '1L'  if the two  operands <left> and <right> are equal
+**  and '0L' otherwise.  At least one operand must be a plain record.
+**
+**  If at  least one of the  operands is a  record and has a '.operations.\='
+**  method,  than this is called  and its result  is returned.  Otherwise the
+**  records are compared componentwise.
+*/
+UInt EqRNam;                            /* '=' record name                 */
+
+Obj FuncEQ_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, EqRNam ))
+      && ! (method = MethodPRec( left,  EqRNam )) )
+    {
+	return FuncEQ_PREC_DEFAULT( self, left, right );
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncLT_PREC_DEFAULT( <self>, <left>, <right> )  comparison of two records
+**
+**  'LtRec' returns '1L'  if the operand  <left> is  less than the  operand
+**  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
+**  record.
+*/
+Obj FuncLT_PREC_DEFAULT (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    UInt                i;              /* loop variable                   */
+
+    /* quick first checks                                                  */
+    if ( ( TNUM_OBJ(left)!=T_PREC && TNUM_OBJ(left)!=T_PREC+IMMUTABLE )
+      || ( TNUM_OBJ(right)!=T_PREC && TNUM_OBJ(right)!=T_PREC+IMMUTABLE ) )
+    {
+        if ( TNUM_OBJ(left ) < TNUM_OBJ(right) )  return True;
+        if ( TNUM_OBJ(left ) > TNUM_OBJ(right) )  return False;
+    }
+
+    /* sort both records                                                   */
+    SortPRec(left);
+    SortPRec(right);
+
+    /* compare componentwise                                               */
+    for ( i = 1; i <= LEN_PREC(right); i++ ) {
+
+	/* if the left is a proper prefix of the right one                 */
+	if ( LEN_PREC(left) < i )  return True;
+
+	/* compare the names                                               */
+	if ( GET_RNAM_PREC(left,i) != GET_RNAM_PREC(right,i) ) {
+	    if ( SyStrcmp( NAME_RNAM( GET_RNAM_PREC(left,i) ),
+			   NAME_RNAM( GET_RNAM_PREC(right,i) ) ) < 0 ) {
+		return True;
+	    }
+	    else {
+		return False;
+	    }
+	}
+
+	/* compare the values                                              */
+	if ( ! EQ(GET_ELM_PREC(left,i),GET_ELM_PREC(right,i)) ) {
+	    return LT( GET_ELM_PREC(left,i), GET_ELM_PREC(right,i) ) ?
+                   True : False;
+	}
+
+    }
+
+    /* the records are equal or the right is a prefix of the left          */
+    return False;
+}
+
+
+/****************************************************************************
+**
+*F  FuncLT_PREC( <self>, <left>, <right> )   . . .  comparison of two records
+**
+**  'LtRec' returns '1L'  if the operand  <left> is  less than the  operand
+**  <right>, and '0L'  otherwise.  At least  one operand  must be a  plain
+**  record.
+**
+**  If at least  one of the operands is  a record and  has a '.operations.\<'
+**  method, than this  is called and its  result is  returned.  Otherwise the
+**  records are compared componentwise.
+*/
+UInt LtRNam;                            /* '<' record name                 */
+
+Obj FuncLT_PREC (
+    Obj                 self,
+    Obj                 left,
+    Obj                 right )
+{
+    Obj                 method;         /* method                          */
+
+    /* try to find an applicable method                                    */
+    if ( ! (method = MethodPRec( right, LtRNam ))
+      && ! (method = MethodPRec( left,  LtRNam )) )
+    {
+	return FuncLT_PREC_DEFAULT( self, left, right );
+    }
+
+    /* call that function                                                  */
+    return CALL_2ARGS( method, left, right );
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
 *F  InitPRecord() . . . . . . . . . . . . . . . . . initialize record package
 **
 **  'InitPRecord' initializes the record package.
 */
 void            InitPRecord ( void )
 {
-    UInt                i;              /* loop variable                   */
-
     /* install the marking function                                        */
     InfoBags[         T_PREC                     ].name
         = "record (plain)";
@@ -1205,55 +1284,6 @@ void            InitPRecord ( void )
     PrintPathFuncs[ T_PREC +IMMUTABLE ] = PrintPathPRec;
 
 
-    /* install evaluators                                                  */
-    for ( i = FIRST_REAL_TNUM; i <= LAST_VIRTUAL_TNUM; i++ ) {
-        if ( i < FIRST_EXTERNAL_TNUM || LAST_EXTERNAL_TNUM < i ) {
-            EqFuncs  [ i                 ][ T_PREC            ] = EqPRec;
-            EqFuncs  [ i                 ][ T_PREC +IMMUTABLE ] = EqPRec;
-            EqFuncs  [ T_PREC            ][ i                 ] = EqPRec;
-            EqFuncs  [ T_PREC +IMMUTABLE ][ i                 ] = EqPRec;
-            LtFuncs  [ i                 ][ T_PREC            ] = LtPRec;
-            LtFuncs  [ i                 ][ T_PREC +IMMUTABLE ] = LtPRec;
-            LtFuncs  [ T_PREC            ][ i                 ] = LtPRec;
-            LtFuncs  [ T_PREC +IMMUTABLE ][ i                 ] = LtPRec;
-            InFuncs  [ i                 ][ T_PREC            ] = InPRec;
-            InFuncs  [ i                 ][ T_PREC +IMMUTABLE ] = InPRec;
-            SumFuncs [ i                 ][ T_PREC            ] = SumPRec;
-            SumFuncs [ i                 ][ T_PREC +IMMUTABLE ] = SumPRec;
-            SumFuncs [ T_PREC            ][ i                 ] = SumPRec;
-            SumFuncs [ T_PREC +IMMUTABLE ][ i                 ] = SumPRec;
-            DiffFuncs[ i                 ][ T_PREC            ] = DiffPRec;
-            DiffFuncs[ i                 ][ T_PREC +IMMUTABLE ] = DiffPRec;
-            DiffFuncs[ T_PREC            ][ i                 ] = DiffPRec;
-            DiffFuncs[ T_PREC +IMMUTABLE ][ i                 ] = DiffPRec;
-            ProdFuncs[ i                 ][ T_PREC            ] = ProdPRec;
-            ProdFuncs[ i                 ][ T_PREC +IMMUTABLE ] = ProdPRec;
-            ProdFuncs[ T_PREC            ][ i                 ] = ProdPRec;
-            ProdFuncs[ T_PREC +IMMUTABLE ][ i                 ] = ProdPRec;
-            QuoFuncs [ i                 ][ T_PREC            ] = QuoPRec;
-            QuoFuncs [ i                 ][ T_PREC +IMMUTABLE ] = QuoPRec;
-            QuoFuncs [ T_PREC            ][ i                 ] = QuoPRec;
-            QuoFuncs [ T_PREC +IMMUTABLE ][ i                 ] = QuoPRec;
-            LQuoFuncs[ i                 ][ T_PREC            ] = LQuoPRec;
-            LQuoFuncs[ i                 ][ T_PREC +IMMUTABLE ] = LQuoPRec;
-            LQuoFuncs[ T_PREC            ][ i                 ] = LQuoPRec;
-            LQuoFuncs[ T_PREC +IMMUTABLE ][ i                 ] = LQuoPRec;
-            PowFuncs [ i                 ][ T_PREC            ] = PowPRec;
-            PowFuncs [ i                 ][ T_PREC +IMMUTABLE ] = PowPRec;
-            PowFuncs [ T_PREC            ][ i                 ] = PowPRec;
-            PowFuncs [ T_PREC +IMMUTABLE ][ i                 ] = PowPRec;
-            CommFuncs[ i                 ][ T_PREC            ] = CommPRec;
-            CommFuncs[ i                 ][ T_PREC +IMMUTABLE ] = CommPRec;
-            CommFuncs[ T_PREC            ][ i                 ] = CommPRec;
-            CommFuncs[ T_PREC +IMMUTABLE ][ i                 ] = CommPRec;
-            ModFuncs [ i                 ][ T_PREC            ] = ModPRec;
-            ModFuncs [ i                 ][ T_PREC +IMMUTABLE ] = ModPRec;
-            ModFuncs [ T_PREC            ][ i                 ] = ModPRec;
-            ModFuncs [ T_PREC +IMMUTABLE ][ i                 ] = ModPRec;
-        }
-    }
-
-
     /* get the appropriate record record name                              */
     OperationsRNam = RNamName( "operations"   );
     PrintRNam      = RNamName( "Print"        );
@@ -1271,20 +1301,58 @@ void            InitPRecord ( void )
 
 
     /* install the internal functions                                      */
-    InitHandlerFunc( RecNamesHandler, "REC_NAMES" );
-    RecNamesFunc = NewFunctionC(
-        "REC_NAMES", 1L, "rec", RecNamesHandler );
-    AssGVar( GVarName( "REC_NAMES" ), RecNamesFunc );
+    C_NEW_GVAR_FUNC( "REC_NAMES", 1L, "rec", FuncREC_NAMES,
+       "src/precord.c:REC_NAMES" );
+    C_NEW_GVAR_FUNC( "REC_NAMES_ROBJ", 1L, "rec obj", FuncREC_NAMES_ROBJ,
+       "src/precord.c:REC_NAMES_ROBJ" );
 
-    InitHandlerFunc( FuncREC_NAMES_ROBJ, "REC_NAMES_ROBJ" );
-    AssGVar(  GVarName( "REC_NAMES_ROBJ" ),
-          NewFunctionC( "REC_NAMES_ROBJ", 1L, "rec obj", 
-                     FuncREC_NAMES_ROBJ ) );
+    C_NEW_GVAR_FUNC( "PRINT_PREC", 1L, "rec", FuncPRINT_PREC,
+       "src/precord.c:PRINT_PREC" );
+    C_NEW_GVAR_FUNC( "PRINT_PREC_DEFAULT", 1L, "rec", FuncPRINT_PREC_DEFAULT,
+       "src/precord.c:PRINT_PREC_DEFAULT" );
+
+    C_NEW_GVAR_FUNC( "SUM_PREC", 2L, "left, right", FuncSUM_PREC,
+       "src/precord.c:SUM_PREC" );
+
+    C_NEW_GVAR_FUNC( "DIFF_PREC", 2L, "left, right", FuncDIFF_PREC,
+       "src/precord.c:DIFF_PREC" );
+
+    C_NEW_GVAR_FUNC( "PROD_PREC", 2L, "left, right", FuncPROD_PREC,
+       "src/precord.c:PROD_PREC" );
+
+    C_NEW_GVAR_FUNC( "QUO_PREC", 2L, "left, right", FuncQUO_PREC,
+       "src/precord.c:QUO_PREC" );
+
+    C_NEW_GVAR_FUNC( "LQUO_PREC", 2L, "left, right", FuncLQUO_PREC,
+       "src/precord.c:LQUO_PREC" );
+
+    C_NEW_GVAR_FUNC( "POW_PREC", 2L, "left, right", FuncPOW_PREC,
+       "src/precord.c:POW_PREC" );
+
+    C_NEW_GVAR_FUNC( "MOD_PREC", 2L, "left, right", FuncMOD_PREC,
+       "src/precord.c:MOD_PREC" );
+
+    C_NEW_GVAR_FUNC( "COMM_PREC", 2L, "left, right", FuncCOMM_PREC,
+       "src/precord.c:COMM_PREC" );
+
+    C_NEW_GVAR_FUNC( "IN_PREC", 2L, "left, right", FuncIN_PREC,
+       "src/precord.c:IN_PREC" );
+
+    C_NEW_GVAR_FUNC( "EQ_PREC", 2L, "left, right", FuncEQ_PREC,
+       "src/precord.c:EQ_PREC" );
+    C_NEW_GVAR_FUNC( "EQ_PREC_DEFAULT",2L,"left, right",FuncEQ_PREC_DEFAULT,
+       "src/precord.c:EQ_PREC_DEFAULT" );
+
+    C_NEW_GVAR_FUNC( "LT_PREC", 2L, "left, right", FuncLT_PREC,
+       "src/precord.c:LT_PREC" );
+    C_NEW_GVAR_FUNC( "LT_PREC_DEFAULT",2L,"left, right",FuncLT_PREC_DEFAULT,
+       "src/precord.c:LT_PREC_DEFAULT" );
 }
 
 
 /****************************************************************************
 **
+
 *E  precord.c . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
 

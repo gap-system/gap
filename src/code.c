@@ -259,6 +259,10 @@ Stat            NewStat (
     OffsBody = stat + ((size+sizeof(Stat)-1) / sizeof(Stat)) * sizeof(Stat);
 
     /* make certain that the current body bag is large enough              */
+    if ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) == 0 ) {
+        ResizeBag( BODY_FUNC(CURR_FUNC), OffsBody );
+        PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
+    }
     while ( SIZE_BAG(BODY_FUNC(CURR_FUNC)) < OffsBody ) {
         ResizeBag( BODY_FUNC(CURR_FUNC), 2*SIZE_BAG(BODY_FUNC(CURR_FUNC)) );
         PtrBody = (Stat*)PTR_BAG( BODY_FUNC(CURR_FUNC) );
@@ -1030,8 +1034,9 @@ void            CodeFuncExprEnd (
     /* make the body smaller                                               */
     ResizeBag( BODY_FUNC(fexp), OffsBody );
 
-    /* switch back to the previous function                                */
-    SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
+    /* switch back to the previous function (can be 0 in case of errors)   */
+    if ( ENVI_FUNC(fexp) != 0 )
+	SWITCH_TO_OLD_LVARS( ENVI_FUNC(fexp) );
 
     /* restore the remembered offset                                       */
     OffsBody = BRK_CALL_TO();

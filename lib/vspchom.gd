@@ -44,6 +44,51 @@ LeftModuleHomomorphismByMatrix := NewOperation(
 
 #############################################################################
 ##
+#R  IsLinearMappingsSpaceDefaultRep
+##
+##  is the representation of vector spaces of linear mappings
+##  that are handled via nice bases.
+##  The associated basis is computed using the matrices w.r.t. fixed bases
+##  of preimage and image.
+##
+##  'basissource' : \\
+##     basis of the source of each mapping in the space
+##
+##  'basisrange' : \\
+##     basis of the range of each mapping in the space
+##
+##  We have
+##  'List( <V>!.basissource,
+##         x -> Coefficients( <V>!.basisrange,
+##                            ImagesRepresentative( <v>, x ) ) )'
+##  the nice vector of $<v> \in <V>$,
+##  and
+##  'LeftModuleHomomorphismByMatrix( <V>!.basissource,
+##                                   <M>,
+##                                   <V>!.basisrange )'
+##  the ugly vector of the matrix <M>.
+##
+##  (Note that we cannot expect that the elements of the space are
+##  represented via matrices.
+##  If they are, and if the bases are the right ones, we may use the
+##  stored matrices, of course.)
+##
+IsLinearMappingsSpaceDefaultRep := NewRepresentation(
+    "IsLinearMappingsSpaceDefaultRep",
+    IsComponentObjectRep and IsHandledByNiceBasis,
+    [ "basissource", "basisrange" ] );
+
+
+#############################################################################
+##
+#M  IsFiniteDimensional( <A> )  . . . . .  hom FLMLORs are finite dimensional
+##
+InstallTrueMethod( IsFiniteDimensional,
+    IsFreeLeftModule and IsLinearMappingsSpaceDefaultRep );
+
+
+#############################################################################
+##
 #O  NaturalHomomorphismBySubspace( <V>, <W> ) . . . . . map onto factor space
 ##
 NaturalHomomorphismBySubspace := NewOperation(

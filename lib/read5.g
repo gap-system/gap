@@ -138,6 +138,7 @@ ReadLib( "grpprmcs.gi" );
 
 ReadLib( "onecohom.gi" );
 ReadLib( "grppccom.gi" );
+ReadLib( "grpcompl.gi" );
 
 ReadLib( "twocohom.gi" );
 ReadLib( "grppcext.gi");

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declaration part of the padic numbers.
 ##
@@ -20,11 +20,9 @@ Revision.padics_gd :=
 IsPadicNumber :=  NewCategory( "IsPadicNumber", IsScalar 
     and IsAssociativeElement and IsCommutativeElement );
 
-IsPadicNumberCollection := CategoryCollections(
-    "IsPadicNumberCollection", IsPadicNumber );
+IsPadicNumberCollection := CategoryCollections( IsPadicNumber );
 
-IsPadicNumberCollColl := CategoryCollections(
-    "IsPadicNumberCollColl", IsPadicNumberCollection );
+IsPadicNumberCollColl := CategoryCollections( IsPadicNumberCollection );
 
 IsPadicNumberList  := IsPadicNumberCollection and IsList;
 IsPadicNumberTable := IsPadicNumberCollColl   and IsTable;
@@ -34,8 +32,7 @@ IsPadicNumberTable := IsPadicNumberCollColl   and IsTable;
 ##
 #C  IsPadicNumbersFamily
 ##
-IsPadicNumbersFamily := CategoryFamily( "IsPadicNumbersFamily",
-    IsPadicNumber );
+IsPadicNumbersFamily := CategoryFamily( IsPadicNumber );
 
 
 #############################################################################
@@ -49,8 +46,7 @@ IsPurePadicNumber := NewCategory( "IsPurePadicNumber", IsPadicNumber );
 ##
 #C  IsPurePadicNumbersFamily
 ##
-IsPurePadicNumbersFamily := CategoryFamily( "IsPurePadicNumbersFamily",
-    IsPurePadicNumber );
+IsPurePadicNumbersFamily := CategoryFamily( IsPurePadicNumber );
 
 
 #############################################################################
@@ -65,9 +61,7 @@ IsPadicExtensionNumber := NewCategory( "IsPadicExtensionNumber",
 ##
 #C  IsPadicExtensionNumbersFamily
 ##
-IsPadicExtensionNumbersFamily := CategoryFamily(
-    "IsPadicExtensionNumbersFamily",
-    IsPadicExtensionNumber );
+IsPadicExtensionNumbersFamily := CategoryFamily( IsPadicExtensionNumber );
 
 
 #############################################################################

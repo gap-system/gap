@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for *matrix modules*, that is,
 ##  free left modules consisting of matrices.
@@ -18,20 +18,6 @@
 ##
 Revision.modulmat_gi :=
     "@(#)$Id$";
-
-
-#############################################################################
-##
-#R  IsMatrixModuleRep( <V> )
-##
-##  A *matrix module* is a free left module whose elements are matrices.
-##
-IsMatrixModuleRep := NewRepresentation( "IsMatrixModuleRep",
-    IsComponentObjectRep,
-    [ "vectordim" ] );
-
-InstallTrueMethod( IsFiniteDimensional,
-    IsMatrixModuleRep and IsFreeLeftModule );
 
 
 #############################################################################

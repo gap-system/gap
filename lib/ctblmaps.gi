@@ -106,7 +106,7 @@ ContainedMaps := function( paramap )
       i:= i+1;
     od;
     if i > Length( paramap ) then
-      return [ DeepCopy( paramap ) ];
+      return [ StructuralCopy( paramap ) ];
     else
       containedmaps:= [];
       copy:= ShallowCopy( paramap );
@@ -595,7 +595,7 @@ end;
 ##  'CheckPermChar' returns 'true' if no inconsistency occured, and 'false'
 ##  otherwise.
 ##
-##  ('CheckPermChar' is used as subroutine of 'SubgroupFusions'.)
+##  ('CheckPermChar' is used as subroutine of 'PossibleClassFusions'.)
 ##
 CheckPermChar := function( subtbl, tbl, fusionmap, permchar )
 
@@ -1529,7 +1529,9 @@ ConsiderKernels := function( arg )
     omega:= Set( [ 1 .. nccl ] );
     kernels:= [];
     for chi in chars do AddSet( kernels, KernelChar( chi ) ); od;
-    kernels:= Difference( kernels, Set( [ omega, [ 1 ] ] ) );
+    RemoveSet( kernels, omega );
+    RemoveSet( kernels, [ 1 ] );
+
     if Length( arg ) = 5 and ( arg[5] = "quick" or arg[5] = true ) then
       # "quick": only consider ambiguous classes
       omega:= [];
@@ -1965,7 +1967,7 @@ PowermapsAllowedBySymmetrisations :=
       for j in pow[ class ] do
         newpow:= List( pow, ShallowCopy );
         newpow[ class ]:= j;
-        copy:= DeepCopy( ComputedPowerMaps( tbl ) );
+        copy:= StructuralCopy( ComputedPowerMaps( tbl ) );
 #T really?
         Unbind( copy[ prime ] );
         if TestConsistencyMaps( copy, newpow, copy ) then
@@ -2263,130 +2265,134 @@ InstallMethod( PossiblePowerMaps,
     end );
 
 
-#T #############################################################################
-#T ##
-#T #F  ConsiderTableAutomorphisms( <parafus>, <grp> )
-#T ##
-#T ##  improves the parametrized subgroup fusion map <parafus> so that
-#T ##  afterwards exactly one representative of fusion maps (that is contained
-#T ##  in <parafus>) in every orbit under the action of the permutation group
-#T ##  <grp> is contained in <parafus>.
-#T ##
-#T ##  The list of positions where improvements were found is returned.
-#T ##
-#T ConsiderTableAutomorphisms := function( parafus, grp )
-#T 
-#T     local i, support, images, notstable, orbits, isunion, image, orb,
-#T           im, found, prop;
-#T     
-#T     # step 1: Compute the subgroup of <grp> that acts on all images
-#T     #         under <parafus>; if <parafus> contains all possible subgroup
-#T     #         fusions, this is the whole group of table automorphisms of the
-#T     #         supergroup table.
-#T     
-#T     if IsTrivial( grp ) then
-#T       return [];
-#T     fi;
-#T     images:= Set( parafus );
-#T     notstable:= Filtered( images, x -> IsInt(x) and
-#T                           ForAny( grp.generators, y->x^y<>x ) );
-#T     if notstable = [] then
-#T       MakeStabChain( grp );
-#T ??
-#T     else
-#T       InfoPermGroup2( "#I ConsiderTableAutomorphisms: not all generators fix",
-#T                       " uniquely\n#I    determined images;",
-#T                       " computing admissible subgroup\n" );
-#T       grp:= Stabilizer( grp, notstable, OnTuples );
-#T     fi;
-#T     if grp.generators = [] then return []; fi;
-#T ??
-#T 
-#T     images:= Filtered( images, IsList );
-#T     support:= grp.operations.LargestMovedPoint( grp );
-#T     orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
-#T                               # sets because entries of parafus are sets
-#T 
-#T     isunion:= function( image )
-#T     while image <> [] do
-#T       if image[1] > support then return true; fi;
-#T       orb:= First( orbits, x -> image[1] in x );
-#T       if Difference( orb, image ) <> [] then return false; fi;
-#T       image:= Difference( image, orb );
-#T     od;
-#T     return true;
-#T     end;
-#T 
-#T     notstable:= Filtered( images, x -> not isunion(x) );
-#T     if notstable <> [] then
-#T       InfoPermGroup2( "#I ConsiderTableAutomorphisms:",
-#T                       " not all generators act;\n",
-#T                       "#I    computing admissible subgroup\n" );
-#T       for i in notstable do
-#T         grp:= grp.operations.StabilizerSet( grp, i );
-#T       od;
-#T     
-#T     #   prop:= function( perm )
-#T     #          return ForAll( notstable, x -> Set( x^perm ) = x );
-#T     #          end;
-#T     #   grp:= SubgroupProperty( grp, prop );
-#T     
-#T     fi;
-#T     
-#T     # step 2: If possible, find a class where the image {\em is} a nontrivial
-#T     #         orbit under <grp>, i.e. no other points are
-#T     #         possible. Then replace the image by the first point of the
-#T     #         orbit, and replace <grp> by the stabilizer of
-#T     #         the new image in <grp>.
-#T     
-#T     found:= [];
-#T     i:= 1;
-#T     while i <= Length( parafus ) and grp.generators <> [] do
-#T       if IsList( parafus[i] ) and parafus[i] in orbits then
-#T         Add( found, i );
-#T         parafus[i]:= parafus[i][1];
-#T         grp:= grp.operations.Stabilizer( grp, parafus[i], OnPoints );
-#T         if grp.generators <> [] then
-#T           support:= grp.operations.LargestMovedPoint( grp );
-#T           orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
-#T 
-#T           # Compute orbits of the smaller group; sets because entries
-#T           # of parafus are sets
-#T 
-#T         fi;
-#T       fi;
-#T       i:= i + 1;
-#T     od;
-#T     
-#T     # step 3: If 'grp' is not trivial, find classes where the image
-#T     #         {\em contains} a nontrivial orbit under 'grp'. 
-#T     
-#T     i:= 1;
-#T     while i <= Length( parafus ) and grp.generators <> [] do
-#T       if IsList( parafus[i] ) and ForAny( grp.generators,
-#T                                   x -> ForAny( parafus[i], y->y^x<>y ) ) then
-#T         Add( found, i );
-#T         image:= [];
-#T         while parafus[i] <> [] do
-#T     
-#T           # now it is necessary to consider orbits of the smaller group,
-#T           # since improvements in step 2 and 3 may affect the action
-#T           # on the images.
-#T     
-#T           Add( image, parafus[i][1] );
-#T           parafus[i]:= Difference( parafus[i], Orbit( grp, parafus[i][1] ) );
-#T         od;
-#T         for im in image do
-#T           if grp.generators <> [] then
-#T             grp:= grp.operations.Stabilizer( grp, im, OnPoints );
-#T           fi;
-#T         od;
-#T         parafus[i]:= image;
-#T       fi;
-#T       i:= i+1;
-#T     od;
-#T     return found;
-#T end;
+#############################################################################
+##
+#F  ConsiderTableAutomorphisms( <parafus>, <grp> )
+##
+ConsiderTableAutomorphisms := function( parafus, grp )
+
+    local i,
+          support,
+          images,
+          gens,
+          notstable,
+          orbits,
+          isunion,
+          image,
+          orb,
+          im,
+          found,
+          prop;
+    
+    # step 1: Compute the subgroup of <grp> that acts on all images
+    #         under <parafus>; if <parafus> contains all possible subgroup
+    #         fusions, this is the whole group of table automorphisms of the
+    #         supergroup table.
+    
+    if IsTrivial( grp ) then
+      return [];
+    fi;
+    gens:= GeneratorsOfGroup( grp );
+    notstable:= Filtered( Set( Filtered( parafus, IsInt ) ),
+                          x -> ForAny( gens, y -> x^y <> x ) );
+    if not IsEmpty( notstable ) then
+      Info( InfoCharacterTable, 2,
+            "ConsiderTableAutomorphisms: not all generators fix",
+            " uniquely\n",
+            "#I    determined images; computing admissible subgroup" );
+      grp:= Stabilizer( grp, notstable, OnTuples );
+    fi;
+
+    images:= Set( Filtered( parafus, IsList ) );
+    support:= LargestMovedPoint( grp );
+    orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
+                              # sets because entries of parafus are sets
+
+    isunion:= function( image )
+    while not IsEmpty( image ) do
+      if image[1] > support then
+        return true;
+      fi;
+      orb:= First( orbits, x -> image[1] in x );
+      if IsSubset( image, orb ) then
+        return false;
+      fi;
+      image:= Difference( image, orb );
+    od;
+    return true;
+    end;
+
+    notstable:= Filtered( images, x -> not isunion(x) );
+    if not IsEmpty( notstable ) then
+      Info( InfoCharacterTable, 2,
+            "ConsiderTableAutomorphisms: not all generators act;\n",
+            "#I    computing admissible subgroup" );
+      for i in notstable do
+        grp:= Stabilizer( grp, i, OnSets );
+      od;
+    
+    #   prop:= function( perm )
+    #          return ForAll( notstable, x -> Set( x^perm ) = x );
+    #          end;
+    #   grp:= SubgroupProperty( grp, prop );
+    
+    fi;
+    
+    # step 2: If possible, find a class where the image {\em is} a nontrivial
+    #         orbit under <grp>, i.e. no other points are
+    #         possible. Then replace the image by the first point of the
+    #         orbit, and replace <grp> by the stabilizer of
+    #         the new image in <grp>.
+    
+    found:= [];
+    i:= 1;
+    while i <= Length( parafus ) and not IsTrivial( grp ) do
+      if IsList( parafus[i] ) and parafus[i] in orbits then
+        Add( found, i );
+        parafus[i]:= parafus[i][1];
+        grp:= Stabilizer( grp, parafus[i], OnPoints );
+        if not IsTrivial( grp ) then
+          support:= LargestMovedPoint( grp );
+          orbits:= List( Orbits( grp, [ 1 .. support ] ), Set );
+
+          # Compute orbits of the smaller group; sets because entries
+          # of parafus are sets
+
+        fi;
+      fi;
+      i:= i + 1;
+    od;
+    
+    # step 3: If 'grp' is not trivial, find classes where the image
+    #         {\em contains} a nontrivial orbit under 'grp'. 
+    
+    i:= 1;
+    while i <= Length( parafus ) and not IsTrivial( grp ) do
+      gens:= GeneratorsOfGroup( grp );
+      if IsList( parafus[i] ) and ForAny( gens,
+                                  x -> ForAny( parafus[i], y->y^x<>y ) ) then
+        Add( found, i );
+        image:= [];
+        while not IsEmpty( parafus[i] ) do
+    
+          # now it is necessary to consider orbits of the smaller group,
+          # since improvements in step 2 and 3 may affect the action
+          # on the images.
+    
+          Add( image, parafus[i][1] );
+          parafus[i]:= Difference( parafus[i], Orbit( grp, parafus[i][1] ) );
+        od;
+        for im in image do
+          if not IsTrivial( grp ) then
+            grp:= Stabilizer( grp, im, OnPoints );
+          fi;
+        od;
+        parafus[i]:= image;
+      fi;
+      i:= i+1;
+    od;
+    return found;
+end;
 
 
 #############################################################################
@@ -2441,499 +2447,456 @@ OrbitPowerMaps := function( powermap, matautomorphisms )
 end;
 
 
-#T #############################################################################
-#T ##
-#T #F  RepresentativesFusions( <subtblautomorphisms>, <listoffusionmaps>,
-#T #F                          <tblautomorphisms> )
-#T #F  RepresentativesFusions( <subtbl>, <listoffusionmaps>, <tbl> )
-#T ##
-#T ##  returns a list of representatives of subgroup fusions in the list
-#T ##  <listoffusionmaps> under the action of maximal admissible subgroups
-#T ##  of the table automorphisms <subtblautomorphisms> of the subgroup table
-#T ##  and <tblautomorphisms> of the supergroup table.
-#T ##  The table automorphisms must be both permutation groups.
-#T ##
-#T RepresentativesFusions := function( subtblautomorphisms, listoffusionmaps,
-#T                                     tblautomorphisms )
-#T 
-#T     local stable, prop, orbits, orbit;
-#T     
-#T     if listoffusionmaps = [] then return []; fi;
-#T     listoffusionmaps:= Set( listoffusionmaps );
-#T     
-#T     if IsOrdinaryTable( subtblautomorphisms ) then
-#T 
-#T       if   IsBound( subtblautomorphisms.automorphisms ) then
-#T         subtblautomorphisms:= subtblautomorphisms.automorphisms;
+#############################################################################
+##
+#F  RepresentativesFusions( <subtblautomorphisms>, <listoffusionmaps>,
+#F                          <tblautomorphisms> )
+#F  RepresentativesFusions( <subtbl>, <listoffusionmaps>, <tbl> )
+##
+##  returns a list of representatives of subgroup fusions in the list
+##  <listoffusionmaps> under the action of maximal admissible subgroups
+##  of the table automorphisms <subtblautomorphisms> of the subgroup table
+##  and <tblautomorphisms> of the supergroup table.
+##  The table automorphisms must be both permutation groups.
+##
+RepresentativesFusions := function( subtblautomorphisms, listoffusionmaps,
+                                    tblautomorphisms )
+
+    local stable, gens, orbits, orbit;
+    
+    if IsEmpty( listoffusionmaps ) then
+      return [];
+    fi;
+    listoffusionmaps:= Set( listoffusionmaps );
+    
+    if IsOrdinaryTable( subtblautomorphisms ) then
+
+      if   HasAutomorphismsOfTable( subtblautomorphisms ) then
+        subtblautomorphisms:= AutomorphismsOfTable( subtblautomorphisms );
 #T       elif IsBound( subtblautomorphisms.galomorphisms ) then
 #T         subtblautomorphisms:= subtblautomorphisms.galomorphisms;
-#T       else
-#T         subtblautomorphisms:= Group( () );
-#T         Print( "#I RepresentativesFusions:",
-#T                " no subtable automorphisms stored\n" );
-#T       fi;
-#T     fi;
-#T     if IsOrdinaryTable( tblautomorphisms ) then
-#T       if   IsBound( tblautomorphisms.automorphisms ) then
-#T         tblautomorphisms:= tblautomorphisms.automorphisms;
+      else
+        subtblautomorphisms:= Group( () );
+        Info( InfoCharacterTable, 2,
+              "RepresentativesFusions: no subtable automorphisms stored" );
+      fi;
+
+    fi;
+
+    if IsOrdinaryTable( tblautomorphisms ) then
+
+      if   HasAutomorphismsOfTable( tblautomorphisms ) then
+        tblautomorphisms:= AutomorphismsOfTable( tblautomorphisms );
 #T       elif IsBound( tblautomorphisms.galomorphisms ) then
 #T         tblautomorphisms:= tblautomorphisms.galomorphisms;
-#T       else
-#T         tblautomorphisms:= Group( () );
-#T         Print( "#I RepresentativesFusions: no table automorphisms stored\n" );
-#T       fi;
-#T     fi;
-#T       
-#T     # find the subgroups of the table automorphism groups which act on
-#T     # <listoffusionmaps>\:
-#T     
-#T     stable:= Filtered( subtblautomorphisms.generators,
-#T                     x -> ForAll( listoffusionmaps, 
-#T                               y -> Permuted( y, x ) in listoffusionmaps ) );
-#T     if not stable = subtblautomorphisms.generators then
-#T       Print("#I RepresentativesFusions: Not all table automorphisms of the\n",
-#T             "#I    subgroup table do act;",
-#T             " computing the admissible subgroup.\n" );
-#T       prop:= ( x -> ForAll( listoffusionmaps, 
-#T                             y -> Permuted( y, x ) in listoffusionmaps ) );
-#T       subtblautomorphisms:=
-#T                PermGroupOps.SubgroupProperty( subtblautomorphisms, prop,
-#T                                               Group( stable, () ) );
-#T     fi;
-#T     
-#T     stable:= Filtered( tblautomorphisms.generators,
-#T                     x -> ForAll( listoffusionmaps, 
-#T                               y -> List( y, z->z^x ) in listoffusionmaps ) );
-#T     if not stable = tblautomorphisms.generators then
-#T       Print("#I RepresentativesFusions: Not all table automorphisms of the\n",
-#T             "#I    supergroup table do act;",
-#T             " computing the admissible subgroup.\n" );
-#T       prop:= ( x -> ForAll( listoffusionmaps, 
-#T                             y -> List( y, z -> z^x ) in listoffusionmaps ) );
-#T       tblautomorphisms:= 
-#T             PermGroupOps.SubgroupProperty( tblautomorphisms, prop,
-#T                                            Group( stable, () ) );
-#T     fi;
-#T     
-#T     # distribute the maps to orbits\:
-#T     
-#T     orbits:= [];
-#T     while listoffusionmaps <> []  do
-#T       orbit:= OrbitFusions( subtblautomorphisms, listoffusionmaps[1],
-#T                             tblautomorphisms );
-#T       Add( orbits, orbit );
-#T       SubtractSet( listoffusionmaps, orbit );
-#T     od;
-#T     
-#T     if 2 <= InfoLevel( InfoCharacterTable ) then
-#T       if Length( orbits ) = 1 then
-#T         Print( "#I RepresentativesFusions: There is 1 orbit of length ",
-#T                Length( orbits[1] ), ".\n" );
-#T       else
-#T         Print( "#I RepresentativesFusions: There are ", Length( orbits ),
-#T                " orbits of lengths ", List( orbits, Length ), ".\n" );
-#T       fi;
-#T     fi;
-#T     
-#T     # choose representatives\:
-#T     
-#T     return List( orbits, x -> x[1] );
-#T end;
-#T     
-#T 
-#T #############################################################################
-#T ##
-#T #F  RepresentativesPowerMaps( <listofpowermaps>, <matautomorphisms> )
-#T ##
-#T ##  returns a list of representatives of powermaps in the list
-#T ##  <listofpowermaps> under the action of the maximal admissible subgroup
-#T ##  of the matrix automorphisms <matautomorphisms> of the considered
-#T ##  character matrix.
-#T ##  The matrix automorphisms must be a permutation group.
-#T ##
-#T RepresentativesPowerMaps := function( listofpowermaps, matautomorphisms )
-#T 
-#T     local nccl, stable, prop, orbits, orbit;
-#T     
-#T     if listofpowermaps = [] then return []; fi;
-#T     listofpowermaps:= Set( listofpowermaps );
-#T     
-#T     # find the subgroup of the table automorphism group which acts on
-#T     # <listofpowermaps>\:
-#T     
-#T     nccl:= Length( listofpowermaps[1] );
-#T     stable:= Filtered( matautomorphisms.generators,
-#T               x -> ForAll( listofpowermaps, 
-#T               y -> List( [ 1..nccl ], z -> y[z^x]/x ) in listofpowermaps ) );
-#T     if not stable = matautomorphisms.generators then
-#T       Print( "#I RepresentativesPowermaps: Not all table automorphisms\n",
-#T              "#I    do act; computing the admissible subgroup.\n" );
-#T       prop:= ( x -> ForAll( listofpowermaps, 
-#T                y -> List( [ 1..nccl ], z -> y[z^x]/x ) in listofpowermaps ) );
-#T       if stable = [] then stable:= (); fi;
-#T       matautomorphisms:=
-#T             PermGroupOps.SubgroupProperty( matautomorphisms, prop,
-#T                                            Group( stable, () ) );
-#T     fi;
-#T     
-#T     # distribute the maps to orbits\:
-#T     
-#T     orbits:= [];
-#T     while listofpowermaps <> []  do
-#T       orbit:= OrbitPowermaps( listofpowermaps[1], matautomorphisms );
-#T       Add( orbits, orbit );
-#T       SubtractSet( listofpowermaps, orbit );
-#T     od;
-#T     
-#T     if 2 <= Length( InfoCharacterTable ) then
-#T       if Length( orbits ) = 1 then
-#T         Print( "#I RepresentativesPowermaps: There is 1 orbit of length ",
-#T                Length( orbits[1] ), ".\n" );
-#T       else
-#T         Print( "#I RepresentativesPowermaps: There are ", Length( orbits ),
-#T                " orbits of lengths ", List( orbits, Length ), ".\n" );
-#T       fi;
-#T     fi;
-#T     
-#T     # choose representatives\:
-#T     
-#T     return List( orbits, x -> x[1] );
-#T end;
-#T     
-#T 
-#T #############################################################################
-#T ##
-#T #F  FusionsAllowedByRestrictions( <subtbl>, <tbl>, <subchars>, <chars>,
-#T #F                                <fus>, <parameters> )
-#T ##
-#T ##  <parameters> must be a record with fields <maxlen> (int), <contained>,
-#T ##  <minamb>, <maxamb> and <quick> (boolean).
-#T ##
-#T ##  First, for all $\chi \in <chars>$ let
-#T ##  'restricted:= CompositionMaps( $\chi$, <fus> )'.
-#T ##  If '<minamb> \< Indeterminateness( restricted ) \< <maxamb>', construct
-#T ##  'poss:= contained( <subtbl>, <subchars>, restricted )'.
-#T ##  (<contained> is a function that will be 'ContainedCharacters' or
-#T ##  'ContainedPossibleCharacters'.)
-#T ##  Improve <fus> if possible.
-#T ##
-#T ##  If 'Indeterminateness( restricted ) \< <minamb>', delete this character;
-#T ##  for unique restrictions and '<parameters>.quick = false', the scalar
-#T ##  products with <subchars> are checked.
-#T ##
-#T ##  If the restriction of a character *becomes* unique during the
-#T ##  processing, its scalar products with <subchars> are checked.
-#T ##
-#T ##  If no further improvement is possible, delete all characters with unique
-#T ##  restrictions or, more general, indeterminateness at most <minamb>,
-#T ##  and branch:
-#T ##  If there is a character left with less or equal <maxlen> possible
-#T ##  restrictions, compute the union of fusions allowed by these restrictions;
-#T ##  otherwise choose a class 'c' of <subgroup> which is significant for some
-#T ##  character, and compute the union of all allowed fusions with image 'x' on
-#T ##  'c', where 'x' runs over '<fus>[c]'.
-#T ##
-#T ##  By recursion, one gets the list of fusions which are parametrized on all
-#T ##  classes where no element of <chars> is significant, and which yield
-#T ##  nonnegative integer scalar products for the restrictions of <chars>
-#T ##  with <subchars> (or additionally decomposability).
-#T ##
-#T ##  If '<parameters>.quick = true', unique restrictions are never considered.
-#T ##
-#T FusionsAllowedByRestrictions := function( subtbl, tbl, subchars, chars, fus,
-#T                                           parameters )
-#T 
-#T     local x, i, j, indeterminateness, numbofposs, lastimproved, restricted,
-#T           indet, rat, poss, param, remain, possibilities, improvefusion,
-#T           allowedfusions, maxlen, contained, minamb, maxamb, quick;
-#T 
-#T     if IsEmpty( chars ) then
-#T       return [ fus ];
-#T     fi;
-#T     chars:= Set( chars );
-#T     
-#T     # but maybe there are characters with equal restrictions ...
-#T     
-#T     # record <parameters>\:
-#T     if not IsRecord( parameters ) then
-#T       Error( "<parameters> must be a record with fields 'maxlen',\n",
-#T              "'contained', 'minamb', 'maxamb' and 'quick'" );
-#T     fi;
-#T 
-#T     maxlen:= parameters.maxlen;
-#T     contained:= parameters.contained;
-#T     minamb:= parameters.minamb;
-#T     maxamb:= parameters.maxamb;
-#T     quick:= parameters.quick;
-#T     
-#T     if quick and Indeterminateness( fus ) < minamb then # immediately return
-#T       Info( InfoCharacterTable, 2,
-#T             "FusionsAllowedByRestrictions: indeterminateness of",
-#T             " the map\n#I    is smaller than the parameter value",
-#T             " 'minamb'; returned" );
-#T       return [ fus ];
-#T     fi;
-#T     
-#T     # step 1: check all in <chars>; if one has too big indeterminateness
-#T     #         and contains irrational entries, append its rationalized char
-#T     #         <chars>.
-#T     indeterminateness:= []; # at position i the indeterminateness of char i
-#T     numbofposs:= [];        # at position 'i' the number of allowed
-#T                             # restrictions for '<chars>[i]'
-#T     lastimproved:= 0;       # last char which led to an improvement of 'fus';
-#T                             # every run through the list may stop at this char
-#T     i:= 1;
-#T     while i <= Length( chars ) do
-#T       restricted:= CompositionMaps( chars[i], fus );
-#T       indet:= Indeterminateness( restricted );
-#T       indeterminateness[i]:= indet;
-#T       if indet = 1 then
-#T         if not quick
-#T            and not NonnegIntScalarProducts(subtbl,subchars,restricted) then
-#T           return [];
-#T         fi;
-#T       elif indet < minamb then
-#T         indeterminateness[i]:= 1;
-#T       elif indet <= maxamb then
-#T         poss:= contained( subtbl, subchars, restricted );
-#T         if poss = [] then return []; fi;
-#T         numbofposs[i]:= Length( poss );
-#T         param:= Parametrized( poss );
-#T         if param <> restricted then  # improvement found
-#T           UpdateMap( chars[i], fus, param );
-#T           lastimproved:= i;
-#T       
-#T       # call of TestConsistencyMaps ? ( with respect to improved classes )
-#T     
-#T           indeterminateness[i]:= Indeterminateness(
-#T                                         CompositionMaps( chars[i], fus ) );
-#T         fi;
-#T       else
-#T         numbofposs[i]:= infinity;
-#T         if ForAny( chars[i], x -> IsCyc(x) and not IsRat(x) ) then
-#T     
-#T           # maybe the indeterminateness of the rationalized
-#T           # character is smaller but not 1
-#T           rat:= RationalizedMat( [ chars[i] ] )[1];
-#T           AddSet( chars, rat );
-#T         fi;
-#T       fi;
-#T       i:= i + 1;
-#T     od;
-#T     
-#T     # step 2: (local function 'improvefusion')
-#T     #         loop over chars until no improvement is possible without a
-#T     #         branch; update 'indeterminateness' and 'numbofposs';
-#T     #         first character to test is at position 'first'; at least run
-#T     #         up to character $'lastimproved' - 1$; update 'lastimproved' if
-#T     #         an improvement occurs;
-#T     #         return 'false' in the case of an inconsistency, 'true'
-#T     #         otherwise.
-#T 
-#T     #         Note:
-#T     #         'subtbl', 'subchars' and 'maxlen' are global
-#T     #         variables for this function, also (but not necessary) global are
-#T     #         'restricted', 'indet' and 'param'.
-#T     
-#T     improvefusion:=
-#T          function(chars,fus,first,lastimproved,indeterminateness,numbofposs)
-#T     local i, poss;
-#T     i:= first;
-#T     while i <> lastimproved do
-#T       if indeterminateness[i] <> 1 then
-#T         restricted:= CompositionMaps( chars[i], fus );
-#T         indet:= Indeterminateness( restricted );
-#T         if indet < indeterminateness[i] then
-#T     
-#T           # only test those characters which now have smaller
-#T           # indeterminateness
-#T           indeterminateness[i]:= indet;
-#T           if indet = 1 then
-#T             if not quick and
-#T                not NonnegIntScalarProducts(subtbl,subchars,restricted) then
-#T               return false;
-#T             fi;
-#T           elif indet < minamb then
-#T             indeterminateness[i]:= 1;
-#T           elif indet <= maxamb then
-#T             poss:= contained( subtbl, subchars, restricted );
-#T             if poss = [] then return false; fi;
-#T             numbofposs[i]:= Length( poss );
-#T             param:= Parametrized( poss );
-#T             if param <> restricted then
-#T 
-#T               # improvement found
-#T               UpdateMap( chars[i], fus, param );
-#T               lastimproved:= i;
-#T       
-#T #T call of TestConsistencyMaps ? ( with respect to improved classes )
-#T #T (only for locally valid power maps!!)
-#T     
-#T               indeterminateness[i]:= Indeterminateness(
-#T                                         CompositionMaps( chars[i], fus ) );
-#T             fi;
-#T           fi;
-#T         fi;
-#T       fi;
-#T       if lastimproved = 0 then lastimproved:= i; fi;
-#T       i:= i mod Length( chars ) + 1;
-#T     od;
-#T     return true;
-#T     end;
-#T     
-#T     # step 3: recursion; (local function 'allowedfusions')
-#T     #         a) delete all characters which now have indeterminateness 1;
-#T     #            their restrictions (with respect to every fusion that will be
-#T     #            found ) have nonnegative scalar products with <subchars>.
-#T     #         b) branch according to a significant character or class
-#T     #         c) for each possibility call 'improvefusion' and then the
-#T     #            recursion
-#T     
-#T     allowedfusions:= function( subpowermap, powermap, chars, fus,
-#T                                indeterminateness, numbofposs )
-#T     local i, j, class, possibilities, poss, newfus, newpow, newsubpow,
-#T           newindet, newnumbofposs;
-#T     remain:= Filtered( [ 1..Length( chars ) ], i->indeterminateness[i] > 1 );
-#T     chars:=             chars{ remain };
-#T     indeterminateness:= indeterminateness{ remain };
-#T     numbofposs:=        numbofposs{ remain };
-#T 
-#T     if chars = [] then
-#T       Info( InfoCharacterTable, 2,
-#T             "FusionsAllowedByRestrictions: no character with",
-#T             " indeterminateness\n#I    between ", minamb, " and ",
-#T             maxamb, " significant now" );
-#T       return [ fus ];
-#T     fi;
-#T     possibilities:= [];
-#T     if Minimum( numbofposs ) < maxlen then
-#T     
-#T       # branch according to a significant character
-#T       # with minimal number of possible restrictions
-#T       i:= Position( numbofposs, Minimum( numbofposs ) );
-#T       Info( InfoCharacterTable, 2,
-#T             "FusionsAllowedByRestrictions: branch at character\n",
-#T             "#I     ", CharacterString( chars[i], "" ),
-#T             " (", numbofposs[i], " calls)" );
-#T       poss:= contained( subtbl, subchars,
-#T                         CompositionMaps( chars[i], fus ) );
-#T       for j in poss do
-#T         newfus:= List( fus, ShallowCopy );
-#T         newpow:= DeepCopy( powermap );
-#T #T really?
-#T         newsubpow:= DeepCopy( subpowermap );
-#T #T really?
-#T         UpdateMap( chars[i], newfus, j );
-#T         if TestConsistencyMaps( newsubpow, newfus, newpow ) then
-#T           newindet:= ShallowCopy( indeterminateness );
-#T           newnumbofposs:= ShallowCopy( numbofposs );
-#T           if improvefusion(chars,newfus,i,0,newindet,newnumbofposs) then
-#T             Append( possibilities,
-#T                     allowedfusions( newsubpow, newpow, chars,
-#T                                     newfus, newindet, newnumbofposs ) );
-#T           fi;
-#T         fi;
-#T       od;
-#T     
-#T       Info( InfoCharacterTable, 2,
-#T             "FusionsAllowedByRestrictions: return from branch at",
-#T             " character\n",
-#T             "#I     ", CharacterString( chars[i], "" ),
-#T             " (", numbofposs[i], " calls)" );
-#T     
-#T     else
-#T     
-#T       # branch according to a significant class in a
-#T       # character with minimal nontrivial indet.
-#T       i:= Position( indeterminateness, Minimum( indeterminateness ) );
-#T       restricted:= CompositionMaps( chars[i], fus );
-#T       class:= 1;
-#T       while not IsList( restricted[ class ] ) do class:= class + 1; od;
-#T       Info( InfoCharacterTable, 2,
-#T             "#I FusionsAllowedByRestrictions: branch at class ",
-#T             class, "\n#I     (", Length( fus[ class ] ),
-#T             " calls)" );
-#T       for j in fus[ class ] do
-#T         newfus:= List( fus, ShallowCopy );
-#T         newfus[ class ]:= j;
-#T         newpow:= DeepCopy( powermap );
-#T #T really?
-#T         newsubpow:= DeepCopy( subpowermap );
-#T #T really?
-#T         if TestConsistencyMaps( subpowermap, newfus, tbl.powermap ) then
-#T           newindet:= ShallowCopy( indeterminateness );
-#T           newnumbofposs:= ShallowCopy( numbofposs );
-#T           if improvefusion(chars,newfus,i,0,newindet,newnumbofposs) then
-#T             Append( possibilities,
-#T                     allowedfusions( newsubpow, newpow, chars,
-#T                                     newfus, newindet, newnumbofposs ) );
-#T           fi;
-#T         fi;
-#T       od;
-#T       Info( InfoCharacterTable, 2,
-#T             "FusionsAllowedByRestrictions: return from branch at",
-#T             " class ", class, "\n" );
-#T     fi;
-#T     return possibilities;
-#T     end;
-#T     
-#T     # begin of the recursion:
-#T     if lastimproved <> 0 then
-#T       if not improvefusion( chars, fus, 1, lastimproved, indeterminateness,
-#T                             numbofposs ) then
-#T         return [];
-#T       fi;
-#T     fi;
-#T     return allowedfusions( subtbl.powermap, tbl.powermap, chars, fus,
-#T                            indeterminateness, numbofposs );
-#T end;
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #F  PossibleClassFusions( <subtbl>, <tbl> )
-#T #F  PossibleClassFusions( <subtbl>, <tbl>, <parameters )
-#T ##
-#T ##  returns the list of all subgroup fusion maps from <subtbl> into <tbl>.
-#T ##  
-#T ##  The optional record <parameters> may have the following fields\:
-#T ##  
-#T ##  'chars':\\
-#T ##       a list of characters of <tbl> which will be restricted to <subtbl>,
-#T ##       (see "FusionsAllowedByRestrictions");
-#T ##       the default is '<tbl>.irreducibles'
-#T ##  
-#T ##  'subchars':\\
-#T ##       a list of characters of <subtbl> which are constituents of the
-#T ##       retrictions of 'chars', the default is '<subtbl>.irreducibles'
-#T ##  
-#T ##  'fusionmap':\\
-#T ##       a (parametrized) map which is an approximation of the desired map
-#T ##  
-#T ##  'decompose':\\
-#T ##       a boolean; if 'true', the restrictions of 'chars' must have all
-#T ##       constituents in 'subchars', that will be used in the algorithm;
-#T ##       if 'subchars' is not bound and '<subtbl>.irreducibles' is complete,
-#T ##       the default value of 'decompose' is 'true', otherwise 'false'
-#T ##  
-#T ##  'permchar':\\
-#T ##       a permutaion character; only those fusions are computed which
-#T ##       afford that permutation character
-#T ##  
-#T ##  'quick':\\
-#T ##       a boolean; if 'true', the subroutines are called with the option
-#T ##       '\"quick\"'; especially, a unique map will be returned immediately
-#T ##       without checking all symmetrisations; the default value is 'false'
-#T ##  
-#T ##  'parameters':\\
-#T ##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
-#T ##       the subroutine 'FusionsAllowedByRestrictions'\:
-#T ##       It only uses characters with actual indeterminateness up to
-#T ##       'maxamb', tests decomposability only for characters with actual
-#T ##       indeterminateness at least 'minamb' and admits a branch only
-#T ##       according to a character if there is one with at most 'maxlen'
-#T ##       possible restrictions.
-#T ##
+      else
+        tblautomorphisms:= Group( () );
+        Info( InfoCharacterTable, 2,
+              "RepresentativesFusions: no table automorphisms stored" );
+      fi;
+
+    fi;
+      
+    # Find the subgroups of the table automorphism groups Thich act on
+    # <listoffusionmaps>.
+    
+    gens:= GeneratorsOfGroup( subtblautomorphisms );
+    stable:= Filtered( gens,
+                 x -> ForAll( listoffusionmaps, 
+                              y -> Permuted( y, x ) in listoffusionmaps ) );
+    if stable <> gens then
+      Info( InfoCharacterTable, 2,
+            "RepresentativesFusions: Not all table automorphisms of the\n",
+            "#I    subgroup table act; computing the admiss. subgroup." );
+      subtblautomorphisms:= SubgroupProperty( subtblautomorphisms,
+             ( x -> ForAll( listoffusionmaps, 
+                            y -> Permuted( y, x ) in listoffusionmaps ) ),
+             GroupByGenerators( stable, () ) );
+    fi;
+    
+    gens:= GeneratorsOfGroup( tblautomorphisms );
+    stable:= Filtered( gens,
+                 x -> ForAll( listoffusionmaps, 
+                              y -> List( y, z->z^x ) in listoffusionmaps ) );
+    if stable <> gens then
+      Info( InfoCharacterTable, 2,
+            "RepresentativesFusions: Not all table automorphisms of the\n",
+            "#I    supergroup table act; computing the admiss. subgroup." );
+      tblautomorphisms:= SubgroupProperty( tblautomorphisms,
+             ( x -> ForAll( listoffusionmaps, 
+                            y -> List( y, z -> z^x ) in listoffusionmaps ) ),
+             GroupByGenerators( stable, () ) );
+    fi;
+    
+    # Distribute the maps to orbits.
+    
+    orbits:= [];
+    while not IsEmpty( listoffusionmaps ) do
+      orbit:= OrbitFusions( subtblautomorphisms, listoffusionmaps[1],
+                            tblautomorphisms );
+      Add( orbits, orbit );
+      SubtractSet( listoffusionmaps, orbit );
+    od;
+    
+    Info( InfoCharacterTable, 2,
+          "RepresentativesFusions: ", Length( orbits ),
+          " orbit(s) of length(s) ", List( orbits, Length ) );
+    
+    # Choose representatives, and return them.
+    return List( orbits, x -> x[1] );
+end;
+    
+
+#############################################################################
+##
+#F  RepresentativesPowerMaps( <listofpowermaps>, <matautomorphisms> )
+##
+##  returns a list of representatives of powermaps in the list
+##  <listofpowermaps> under the action of the maximal admissible subgroup
+##  of the matrix automorphisms <matautomorphisms> of the considered
+##  character matrix.
+##  The matrix automorphisms must be a permutation group.
+##
+RepresentativesPowerMaps := function( listofpowermaps, matautomorphisms )
+
+    local nccl, stable, gens, orbits, orbit;
+    
+    if IsEmpty( listofpowermaps ) then
+      return [];
+    fi;
+    listofpowermaps:= Set( listofpowermaps );
+    
+    # Find the subgroup of the table automorphism group that acts on
+    # <listofpowermaps>.
+    
+    nccl:= Length( listofpowermaps[1] );
+    gens:= GeneratorsOfGroup( matautomorphisms );
+    stable:= Filtered( gens,
+              x -> ForAll( listofpowermaps, 
+              y -> List( [ 1..nccl ], z -> y[z^x]/x ) in listofpowermaps ) );
+    if stable <> gens then
+      Info( InfoCharacterTable, 2,
+            "RepresentativesPowerMaps: Not all table automorphisms\n",
+            "#I    do act; computing the admissible subgroup." );
+      matautomorphisms:= SubgroupProperty( matautomorphisms,
+          ( x -> ForAll( listofpowermaps, 
+              y -> List( [ 1..nccl ], z -> y[z^x]/x ) in listofpowermaps ) ),
+              GroupByGenerators( stable, () ) );
+    fi;
+    
+    # Distribute the maps to orbits.
+    
+    orbits:= [];
+    while not IsEmpty( listofpowermaps ) do
+      orbit:= OrbitPowerMaps( listofpowermaps[1], matautomorphisms );
+      Add( orbits, orbit );
+      SubtractSet( listofpowermaps, orbit );
+    od;
+    
+    Info( InfoCharacterTable, 2,
+          "RepresentativesPowerMaps: ", Length( orbits ),
+          " orbit(s) of length(s) ", List( orbits, Length ) );
+    
+    # Choose representatives, and return them.
+    return List( orbits, x -> x[1] );
+end;
+    
+
+#############################################################################
+##
+#F  FusionsAllowedByRestrictions( <subtbl>, <tbl>, <subchars>, <chars>,
+#F                                <fus>, <parameters> )
+##
+##  <parameters> must be a record with fields <maxlen> (int), <contained>,
+##  <minamb>, <maxamb> and <quick> (boolean).
+##
+##  First, for all $\chi \in <chars>$ let
+##  'restricted:= CompositionMaps( $\chi$, <fus> )'.
+##  If '<minamb> \< Indeterminateness( restricted ) \< <maxamb>', construct
+##  'poss:= contained( <subtbl>, <subchars>, restricted )'.
+##  (<contained> is a function that will be 'ContainedCharacters' or
+##  'ContainedPossibleCharacters'.)
+##  Improve <fus> if possible.
+##
+##  If 'Indeterminateness( restricted ) \< <minamb>', delete this character;
+##  for unique restrictions and '<parameters>.quick = false', the scalar
+##  products with <subchars> are checked.
+##
+##  If the restriction of a character *becomes* unique during the
+##  processing, its scalar products with <subchars> are checked.
+##
+##  If no further improvement is possible, delete all characters with unique
+##  restrictions or, more general, indeterminateness at most <minamb>,
+##  and branch:
+##  If there is a character left with less or equal <maxlen> possible
+##  restrictions, compute the union of fusions allowed by these restrictions;
+##  otherwise choose a class 'c' of <subgroup> which is significant for some
+##  character, and compute the union of all allowed fusions with image 'x' on
+##  'c', where 'x' runs over '<fus>[c]'.
+##
+##  By recursion, one gets the list of fusions which are parametrized on all
+##  classes where no element of <chars> is significant, and which yield
+##  nonnegative integer scalar products for the restrictions of <chars>
+##  with <subchars> (or additionally decomposability).
+##
+##  If '<parameters>.quick = true', unique restrictions are never considered.
+##
+FusionsAllowedByRestrictions := function( subtbl, tbl, subchars, chars, fus,
+                                          parameters )
+
+    local x, i, j, indeterminateness, numbofposs, lastimproved, restricted,
+          indet, rat, poss, param, remain, possibilities, improvefusion,
+          allowedfusions, maxlen, contained, minamb, maxamb, quick;
+
+    if IsEmpty( chars ) then
+      return [ fus ];
+    fi;
+    chars:= Set( chars );
+    
+#T but maybe there are characters with equal restrictions ...
+    
+    # record <parameters>\:
+    if not IsRecord( parameters ) then
+      Error( "<parameters> must be a record with components `maxlen',\n",
+             "`contained', `minamb', `maxamb' and `quick'" );
+    fi;
+
+    maxlen:= parameters.maxlen;
+    contained:= parameters.contained;
+    minamb:= parameters.minamb;
+    maxamb:= parameters.maxamb;
+    quick:= parameters.quick;
+    
+    # May we return immediately?
+    if quick and Indeterminateness( fus ) < minamb then
+      Info( InfoCharacterTable, 2,
+            "FusionsAllowedByRestrictions: indeterminateness of the map\n",
+            "#I    is smaller than the parameter value 'minamb'; returned" );
+      return [ fus ];
+    fi;
+    
+    # step 1: check all in <chars>; if one has too big indeterminateness
+    #         and contains irrational entries, append its rationalized char
+    #         <chars>.
+    indeterminateness:= []; # at position i the indeterminateness of char i
+    numbofposs:= [];        # at position 'i' the number of allowed
+                            # restrictions for '<chars>[i]'
+    lastimproved:= 0;       # last char which led to an improvement of 'fus';
+                            # every run through the list may stop at this char
+    i:= 1;
+    while i <= Length( chars ) do
+      restricted:= CompositionMaps( chars[i], fus );
+      indet:= Indeterminateness( restricted );
+      indeterminateness[i]:= indet;
+      if indet = 1 then
+        if not quick
+           and not NonnegIntScalarProducts(subtbl,subchars,restricted) then
+          return [];
+        fi;
+      elif indet < minamb then
+        indeterminateness[i]:= 1;
+      elif indet <= maxamb then
+        poss:= contained( subtbl, subchars, restricted );
+        if IsEmpty( poss ) then
+          return [];
+        fi;
+        numbofposs[i]:= Length( poss );
+        param:= Parametrized( poss );
+        if param <> restricted then  # improvement found
+          UpdateMap( chars[i], fus, param );
+          lastimproved:= i;
+      
+      # call of TestConsistencyMaps ? ( with respect to improved classes )
+    
+          indeterminateness[i]:= Indeterminateness(
+                                        CompositionMaps( chars[i], fus ) );
+        fi;
+      else
+        numbofposs[i]:= infinity;
+        if ForAny( chars[i], x -> IsCyc(x) and not IsRat(x) ) then
+    
+          # maybe the indeterminateness of the rationalized
+          # character is smaller but not 1
+          rat:= RationalizedMat( [ chars[i] ] )[1];
+          AddSet( chars, rat );
+        fi;
+      fi;
+      i:= i + 1;
+    od;
+    
+    # step 2: (local function 'improvefusion')
+    #         loop over chars until no improvement is possible without a
+    #         branch; update 'indeterminateness' and 'numbofposs';
+    #         first character to test is at position 'first'; at least run
+    #         up to character $'lastimproved' - 1$; update 'lastimproved' if
+    #         an improvement occurs;
+    #         return 'false' in the case of an inconsistency, 'true'
+    #         otherwise.
+
+    #         Note:
+    #         'subtbl', 'subchars' and 'maxlen' are global
+    #         variables for this function, also (but not necessary) global are
+    #         'restricted', 'indet' and 'param'.
+    
+    improvefusion:=
+         function(chars,fus,first,lastimproved,indeterminateness,numbofposs)
+    local i, poss;
+    i:= first;
+    while i <> lastimproved do
+      if indeterminateness[i] <> 1 then
+        restricted:= CompositionMaps( chars[i], fus );
+        indet:= Indeterminateness( restricted );
+        if indet < indeterminateness[i] then
+    
+          # only test those characters which now have smaller
+          # indeterminateness
+          indeterminateness[i]:= indet;
+          if indet = 1 then
+            if not quick and
+               not NonnegIntScalarProducts(subtbl,subchars,restricted) then
+              return false;
+            fi;
+          elif indet < minamb then
+            indeterminateness[i]:= 1;
+          elif indet <= maxamb then
+            poss:= contained( subtbl, subchars, restricted );
+            if IsEmpty( poss ) then
+              return false;
+            fi;
+            numbofposs[i]:= Length( poss );
+            param:= Parametrized( poss );
+            if param <> restricted then
+
+              # improvement found
+              UpdateMap( chars[i], fus, param );
+              lastimproved:= i;
+      
+#T call of TestConsistencyMaps ? ( with respect to improved classes )
+#T (only for locally valid power maps!!)
+    
+              indeterminateness[i]:= Indeterminateness(
+                                        CompositionMaps( chars[i], fus ) );
+            fi;
+          fi;
+        fi;
+      fi;
+      if lastimproved = 0 then lastimproved:= i; fi;
+      i:= i mod Length( chars ) + 1;
+    od;
+    return true;
+    end;
+    
+    # step 3: recursion; (local function 'allowedfusions')
+    #         a) delete all characters which now have indeterminateness 1;
+    #            their restrictions (with respect to every fusion that will be
+    #            found ) have nonnegative scalar products with <subchars>.
+    #         b) branch according to a significant character or class
+    #         c) for each possibility call 'improvefusion' and then the
+    #            recursion
+    
+    allowedfusions:= function( subpowermap, powermap, chars, fus,
+                               indeterminateness, numbofposs )
+    local i, j, class, possibilities, poss, newfus, newpow, newsubpow,
+          newindet, newnumbofposs;
+    remain:= Filtered( [ 1..Length( chars ) ], i->indeterminateness[i] > 1 );
+    chars             := chars{ remain };
+    indeterminateness := indeterminateness{ remain };
+    numbofposs        := numbofposs{ remain };
+
+    if IsEmpty( chars ) then
+      Info( InfoCharacterTable, 2,
+            "FusionsAllowedByRestrictions: no character with indet.\n",
+            "#I    between ", minamb, " and ", maxamb, " significant now" );
+      return [ fus ];
+    fi;
+    possibilities:= [];
+    if Minimum( numbofposs ) < maxlen then
+    
+      # branch according to a significant character
+      # with minimal number of possible restrictions
+      i:= Position( numbofposs, Minimum( numbofposs ) );
+      Info( InfoCharacterTable, 2,
+            "FusionsAllowedByRestrictions: branch at character\n",
+            "#I     ", CharacterString( chars[i], "" ),
+            " (", numbofposs[i], " calls)" );
+      poss:= contained( subtbl, subchars,
+                        CompositionMaps( chars[i], fus ) );
+      for j in poss do
+        newfus:= List( fus, ShallowCopy );
+        newpow:= StructuralCopy( powermap );
+        newsubpow:= StructuralCopy( subpowermap );
+        UpdateMap( chars[i], newfus, j );
+        if TestConsistencyMaps( newsubpow, newfus, newpow ) then
+          newindet:= ShallowCopy( indeterminateness );
+          newnumbofposs:= ShallowCopy( numbofposs );
+          if improvefusion(chars,newfus,i,0,newindet,newnumbofposs) then
+            Append( possibilities,
+                    allowedfusions( newsubpow, newpow, chars,
+                                    newfus, newindet, newnumbofposs ) );
+          fi;
+        fi;
+      od;
+    
+      Info( InfoCharacterTable, 2,
+            "FusionsAllowedByRestrictions: return from branch at",
+            " character\n",
+            "#I     ", CharacterString( chars[i], "" ),
+            " (", numbofposs[i], " calls)" );
+    
+    else
+    
+      # branch according to a significant class in a
+      # character with minimal nontrivial indet.
+      i:= Position( indeterminateness, Minimum( indeterminateness ) );
+      restricted:= CompositionMaps( chars[i], fus );
+      class:= 1;
+      while not IsList( restricted[ class ] ) do class:= class + 1; od;
+      Info( InfoCharacterTable, 2,
+            "#I FusionsAllowedByRestrictions: branch at class ",
+            class, "\n#I     (", Length( fus[ class ] ),
+            " calls)" );
+      for j in fus[ class ] do
+        newfus:= List( fus, ShallowCopy );
+        newfus[ class ]:= j;
+        newpow:= StructuralCopy( powermap );
+        newsubpow:= StructuralCopy( subpowermap );
+        if TestConsistencyMaps( subpowermap, newfus, tbl.powermap ) then
+          newindet:= ShallowCopy( indeterminateness );
+          newnumbofposs:= ShallowCopy( numbofposs );
+          if improvefusion(chars,newfus,i,0,newindet,newnumbofposs) then
+            Append( possibilities,
+                    allowedfusions( newsubpow, newpow, chars,
+                                    newfus, newindet, newnumbofposs ) );
+          fi;
+        fi;
+      od;
+      Info( InfoCharacterTable, 2,
+            "FusionsAllowedByRestrictions: return from branch at",
+            " class ", class, "\n" );
+    fi;
+    return possibilities;
+    end;
+    
+    # begin of the recursion:
+    if lastimproved <> 0 then
+      if not improvefusion( chars, fus, 1, lastimproved, indeterminateness,
+                            numbofposs ) then
+        return [];
+      fi;
+    fi;
+    return allowedfusions( ComputedPowerMaps( subtbl ),
+                           ComputedPowerMaps( tbl ),
+                           chars,
+                           fus,
+                           indeterminateness,
+                           numbofposs );
+end;
+
+
+#############################################################################
+##
+#F  PossibleClassFusions( <subtbl>, <tbl> )
+##
 InstallOtherMethod( PossibleClassFusions,
     "method for two ordinary character tables",
     IsIdentical,
@@ -2950,315 +2913,337 @@ InstallOtherMethod( PossibleClassFusions,
                                                         ) ) );
          end );
 
-#T InstallMethod( PossibleClassFusions,
-#T     "method for two ordinary character tables, and a parameters record",
-#T     true,
-#T     [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ], 0,
-#T     function( subtbl, tbl, parameters )
-#T 
-#T ...
-#T SubgroupFusions := function( arg )
-#T 
-#T #T support option 'no branch' ??
-#T 
-#T     local x, i, subtbl, tbl, subchars, chars, fus, maxamb, minamb,
-#T           maxlen, poss, subgroupfusions, imp, subtaut, taut, quick,
-#T           decompose, approxfus, fusval, approxval, permchar, grp, flag;
-#T 
-#T     # available characters of 'subtbl'
-#T     if IsBound( parameters.subchars ) then
-#T       subchars:= parameters.subchars;
-#T       decompose:= false;
-#T     elif HasIrr( subtbl ) then
-#T       subchars:= Irr( subtbl );
-#T       decompose:= true;
-#T #T possibility to have subchars and an incomplete tables ???
-#T     else
-#T       subchars:= [];
-#T       decompose:= false;
-#T     fi;
-#T 
-#T     # available characters of 'tbl'
-#T     if IsBound( parameters.chars ) then
-#T       chars:= parameters.chars;
-#T     elif HasIrr( tbl ) then
-#T       chars:= Irr( tbl );
-#T     else
-#T       chars:= [];
-#T     fi;
-#T 
-#T     # parameter 'quick'
-#T     quick:= IsBound( parameters.quick ) and parameters.quick = true;
-#T 
-#T     # is 'decompose' explicitly allowed or forbidden?
-#T     if IsBound( parameters.decompose ) then
-#T       decompose:= parameters.decompose = true;
-#T     fi;
-#T 
-#T     if IsBound( parameters.parameters ) and IsRecord( parameters.parameters ) then
-#T       maxamb:= parameters.parameters.maxamb;
-#T       minamb:= parameters.parameters.minamb;
-#T       maxlen:= parameters.parameters.maxlen;
-#T     else
-#T       maxamb:= 200000;
-#T       minamb:= 10000;
-#T       maxlen:= 10;
-#T     fi;
-#T 
-#T     if IsBound( parameters.fusionmap ) then
-#T       approxfus:= parameters.fusionmap;
-#T     else
-#T       approxfus:= [];
-#T     fi;
-#T 
-#T     if IsBound( parameters.permchar ) then
-#T       permchar:= parameters.permchar;
-#T       if Length( permchar ) <> NrConjugacyClasses( tbl ) then
-#T         Error( "length of <permchar> must be the no. of classes of <tbl>" );
-#T       fi;
-#T     else
-#T       permchar:= [];
-#T     fi;
-#T     # (end of the inspection of the parameters)
-#T 
-#T     # initialize the fusion
-#T     fus:= InitFusion( subtbl, tbl );
-#T     if fus = fail then 
-#T       Info( InfoCharacterTable, 2,
-#T             "SubgroupFusions: no initialisation possible" );
-#T       return [];
-#T     fi;
-#T     Info( InfoCharacterTable, 2,
-#T           "PossibleClassFusions: fusion initialized" );
-#T     
-#T     # use 'approxfus'\:
-#T     flag:= MeetMaps( fus, approxfus );
-#T     if flag <> true then
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: possible maps not compatible with ",
-#T             "<approxfus> at class ", flag );
-#T       return [];
-#T     fi;
-#T 
-#T     # use the permutation character for the first time
-#T     if not IsEmpty( permchar ) then
-#T       if not CheckPermChar( subtbl, tbl, fus, permchar ) then
-#T         Info( InfoCharacterTable, 2,
-#T               "PossibleClassFusions: inconsistency of fusion and permchar" );
-#T         return [];
-#T       fi;
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: permutation character checked");
-#T     fi;
-#T 
-#T     # check consistency of fusion and powermaps
-#T     if not TestConsistencyMaps( subtbl.powermap, fus, tbl.powermap ) then
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: inconsistency of fusion and power maps" );
-#T       return [];
-#T     fi;
-#T     Info( InfoCharacterTable, 2,
-#T           "PossibleClassFusions: consistency with power maps",
-#T           " checked,\n#I    the actual indeterminateness is ",
-#T           Indeterminateness( fus ) );
-#T 
-#T     # may we return?
-#T     if quick and ForAll( fus, IsInt ) then return [ fus ]; fi;
-#T     
-#T     # consider table automorphisms of the supergroup:
-#T     if   HasAutomorphismsOfTable( tbl ) then
-#T       taut:= AutomorphismsOfTable( tbl );
-#T #T     elif IsBound( tbl.galomorphisms ) then
-#T #T       taut:= tbl.galomorphisms;
-#T     else
-#T       taut:= false;
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: no table automorphisms stored" );
-#T     fi;
-#T 
-#T     if taut <> false then
-#T       imp:= ConsiderTableAutomorphisms( fus, taut );
-#T       if 2 <= InfoLevel( InfoCharacterTable ) then
-#T         Print( "#I PossibleClassFusions: table automorphisms checked, " );
-#T         if imp = [] then
-#T           Print( "no improvements\n" );
-#T         else
-#T           Print( "improvements at classes\n#I   ", imp, "\n" );
-#T           if not TestConsistencyMaps( ComputedPowerMaps( subtbl ),
-#T                                       fus,
-#T                                       ComputedPowerMaps( tbl ),
-#T                                       imp ) then
-#T             Info( InfoCharacterTable, 2,
-#T                   "PossibleClassFusions: inconsistency of",
-#T                   " powermaps and fusion map" );
-#T             return [];
-#T           fi;
-#T           Info( InfoCharacterTable, 2,
-#T                 "PossibleClassFusions: consistency with power maps ",
-#T                 "checked again,\n",
-#T                 "#I    the actual indeterminateness is ",
-#T                 Indeterminateness( fus ) );
-#T         fi;
-#T       fi;
-#T     fi;
-#T 
-#T     # use the permutation character for the second time
-#T     if permchar <> [] then
-#T       if not CheckPermChar( subtbl, tbl, fus, permchar ) then
-#T         Info( InfoCharacterTable, 2,
-#T               "PossibleClassFusions: inconsistency of fusion and permchar" );
-#T         return [];
-#T       fi;
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: permutation character checked again");
-#T     fi;
-#T     
-#T     if quick and ForAll( fus, IsInt ) then return [ fus ]; fi;
-#T     
-#T     # now use restricted characters:
-#T     # If the parameter \"decompose\" was entered, use decompositions of
-#T     # indirections of <chars> into <subchars>;
-#T     # otherwise only check the scalar products with <subchars>.
-#T     
-#T     if decompose then                      # usage of decompositions allowed
-#T       if Indeterminateness( fus ) < minamb then
-#T         Info( InfoCharacterTable, 2,
-#T               "PossibleClassFusions: indeterminateness too small",
-#T               " for test of decomposability" );
-#T         poss:= [ fus ];
-#T       else
-#T         Info( InfoCharacterTable, 2,
-#T               "#I PossibleClassFusions: now test decomposability of",
-#T               " rational restrictions" );
-#T         poss:= FusionsAllowedByRestrictions( subtbl, tbl,
-#T                       RationalizedMat( subchars ),
-#T                       RationalizedMat( chars ), fus,
-#T                       rec( maxlen:= maxlen,
-#T                            contained:= ContainedCharacters,
-#T                            minamb:= minamb,
-#T                            maxamb:= infinity,
-#T                            quick:= quick ) );
-#T 
-#T         poss:= Filtered( poss, x ->
-#T                   TestConsistencyMaps( subtbl.powermap, x, tbl.powermap ) );
-#T 
-#T         # use the permutation character for the third time
-#T         if permchar <> [] then
-#T           poss:= Filtered( poss, x -> CheckPermChar(subtbl,tbl,x,permchar) );
-#T         fi;
-#T     
-#T         if 2 <= InfoLevel( InfoCharacterTable ) then
-#T           Print( "#I PossibleClassFusions: decomposability tested,\n" );
-#T           if Length( poss ) = 1 then
-#T             Print( "#I    1 solution with indeterminateness ",
-#T                    Indeterminateness( poss[1] ), "\n" );
-#T           else
-#T             Print( "#I    ", Length( poss ),
-#T                    " solutions with indeterminateness\n#I    ",
-#T                     List( poss, Indeterminateness ), "\n" );
-#T           fi;
-#T         fi;
-#T       fi;
-#T 
-#T     else
-#T       Info( InfoCharacterTable, 2,
-#T             "PossibleClassFusions: no test of decomposability" );
-#T       poss:= [ fus ];
-#T     fi;
-#T     
-#T     Info( InfoCharacterTable, 2,
-#T           "PossibleClassFusions: test scalar products of restrictions" );
-#T     
-#T     subgroupfusions:= [];
-#T     for fus in poss do
-#T       Append( subgroupfusions,
-#T               FusionsAllowedByRestrictions( subtbl, tbl, subchars, chars,
-#T                         fus, rec( maxlen:= maxlen,
-#T                                   contained:= ContainedPossibleCharacters,
-#T                                   minamb:= 1,
-#T                                   maxamb:= maxamb,
-#T                                   quick:= quick ) ) );
-#T     od;
-#T 
-#T     #  make orbits under the admissible subgroup of 'tbl.automorphisms'
-#T     #  to get the whole set of all subgroup fusions;
-#T     #  admissible means\:\  If there was an approximation 'fusionmap' in
-#T     #  the argument record, this map must be respected; if the permutation
-#T     #  character 'permchar' was entered, it must be respected, too.
-#T 
-#T     if taut <> false then
-#T       if permchar = [] then
-#T         grp:= taut;
-#T       else
-#T 
-#T         # use the permutation character for the fourth time
-#T         grp:= taut.operations.SubgroupProperty(
-#T                    taut, x->ForAll([1..Length(permchar)],
-#T                                           y->permchar[y]=permchar[y^x]) );
-#T       fi;
-#T       subgroupfusions:= Set( Concatenation( List( subgroupfusions,
-#T                                 x->OrbitFusions( Group(()), x, grp ) ) ) );
-#T     fi;
-#T 
-#T     if approxfus <> [] then
-#T       subgroupfusions:= Filtered( subgroupfusions,
-#T           x -> ForAll( [ 1 .. Length( approxfus ) ],
-#T                  y -> not IsBound( approxfus[y] )
-#T                        or ( IsInt(approxfus[y]) and x[y] =  approxfus[y] )
-#T                        or ( IsList(approxfus[y]) and IsInt( x[y] )
-#T                             and x[y] in approxfus[y] )
-#T                        or ( IsList(approxfus[y]) and IsList( x[y] )
-#T                             and Difference( x[y], approxfus[y] ) = [] )));
-#T     fi;
-#T 
-#T     if 2 <= InfoLevel( InfoCharacterTable ) then
-#T 
-#T       # if possible make orbits under the groups of table automorphisms
-#T       if ForAll( subgroupfusions, x -> ForAll( x, IsInt ) ) then
-#T 
-#T         if   IsBound( subtbl.automorphisms ) then
-#T           subtaut:= subtbl.automorphisms;
-#T         elif IsBound( subtbl.galomorphisms ) then
-#T           subtaut:= subtbl.galomorphisms;
-#T         else
-#T           subtaut:= Group( () );
-#T         fi;
-#T         if   IsBound( tbl.automorphisms ) then
-#T           taut:= tbl.automorphisms;
-#T         elif IsBound( tbl.galomorphisms ) then
-#T           taut:= tbl.galomorphisms;
-#T         else
-#T           taut:= Group( () );
-#T         fi;
-#T         RepresentativesFusions( subtaut, subgroupfusions, taut );
-#T 
-#T       fi;
-#T 
-#T       # print the messages
-#T       if ForAny( subgroupfusions, x -> ForAny( x, IsList ) ) then
-#T         Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
-#T                " parametrized solution" );
-#T         if Length( subgroupfusions ) = 1 then
-#T           Print( ",\n" );
-#T         else
-#T           Print( "s,\n" );
-#T         fi;
-#T         Print( "#I    no further improvement was possible with",
-#T                " given characters\n",
-#T                "#I    and maximal checked ambiguity of ", maxamb, "\n" );
-#T       else
-#T         Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
-#T                " solution" );
-#T         if Length( subgroupfusions ) = 1 then
-#T           Print( "\n" );
-#T         else
-#T           Print( "s\n" );
-#T         fi;
-#T       fi;
-#T 
-#T     fi;
-#T     return subgroupfusions;
-#T     end );
+
+#############################################################################
+##
+#F  PossibleClassFusions( <subtbl>, <tbl>, <parameters )
+##
+InstallMethod( PossibleClassFusions,
+    "method for two ordinary character tables, and a parameters record",
+    true,
+    [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ], 0,
+    function( subtbl, tbl, parameters )
+
+#T support option 'no branch' ??
+
+    local subchars,            # known characters of the subgroup
+          chars,               # known characters of the supergroup
+          decompose,           # decomposition into `chars' allowed?
+          quick,               # stop in case of a unique solution
+          maxamb,              # parameter, omit characters of higher indet.
+          minamb,              # parameter, omit characters of lower indet.
+          maxlen,              # parameter, branch only up to this number
+          approxfus,           # known part of the fusion
+          permchar,            # perm. char. of `subtbl' in `tbl'
+          fus,                 # parametrized map repres. the fusions
+          flag,                # result of `MeetMaps'
+          subtbl_powermap,     # known power maps of `subtbl'
+          tbl_powermap,        # known power maps of `tbl'
+          taut,                # table automorphisms of `tbl', or `false'
+          grp,                 # admissible subgroup of automorphisms
+          imp,                 # list of improvements
+          poss,                # list of possible fusions
+          subgroupfusions,
+          subtaut;
+
+    # available characters of 'subtbl'
+    if IsBound( parameters.subchars ) then
+      subchars:= parameters.subchars;
+      decompose:= false;
+    elif HasIrr( subtbl ) then
+      subchars:= Irr( subtbl );
+      decompose:= true;
+#T possibility to have subchars and incomplete tables ???
+    else
+      subchars:= [];
+      decompose:= false;
+    fi;
+
+    # available characters of 'tbl'
+    if IsBound( parameters.chars ) then
+      chars:= parameters.chars;
+    elif HasIrr( tbl ) then
+      chars:= Irr( tbl );
+    else
+      chars:= [];
+    fi;
+
+    # parameter 'quick'
+    quick:= IsBound( parameters.quick ) and parameters.quick = true;
+
+    # Is 'decompose' explicitly allowed or forbidden?
+    if IsBound( parameters.decompose ) then
+      decompose:= parameters.decompose = true;
+    fi;
+
+    if     IsBound( parameters.parameters )
+       and IsRecord( parameters.parameters ) then
+      maxamb:= parameters.parameters.maxamb;
+      minamb:= parameters.parameters.minamb;
+      maxlen:= parameters.parameters.maxlen;
+    else
+      maxamb:= 200000;
+      minamb:= 10000;
+      maxlen:= 10;
+    fi;
+
+    if IsBound( parameters.fusionmap ) then
+      approxfus:= parameters.fusionmap;
+    else
+      approxfus:= [];
+    fi;
+
+    if IsBound( parameters.permchar ) then
+      permchar:= parameters.permchar;
+      if Length( permchar ) <> NrConjugacyClasses( tbl ) then
+        Error( "length of <permchar> must be the no. of classes of <tbl>" );
+      fi;
+    else
+      permchar:= [];
+    fi;
+    # (end of the inspection of the parameters)
+
+    # Initialize the fusion.
+    fus:= InitFusion( subtbl, tbl );
+    if fus = fail then 
+      Info( InfoCharacterTable, 2,
+            "SubgroupFusions: no initialisation possible" );
+      return [];
+    fi;
+    Info( InfoCharacterTable, 2,
+          "PossibleClassFusions: fusion initialized" );
+    
+    # Use 'approxfus'.
+    flag:= MeetMaps( fus, approxfus );
+    if flag <> true then
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: possible maps not compatible with ",
+            "<approxfus> at class ", flag );
+      return [];
+    fi;
+
+    # Use the permutation character for the first time.
+    if not IsEmpty( permchar ) then
+      if not CheckPermChar( subtbl, tbl, fus, permchar ) then
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: fusion inconsistent with perm.char." );
+        return [];
+      fi;
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: permutation character checked");
+    fi;
+
+    # Check consistency of fusion and power maps.
+    subtbl_powermap := ComputedPowerMaps( subtbl );
+    tbl_powermap    := ComputedPowerMaps( tbl );
+    if not TestConsistencyMaps( subtbl_powermap, fus, tbl_powermap ) then
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: inconsistency of fusion and power maps" );
+      return [];
+    fi;
+    Info( InfoCharacterTable, 2,
+          "PossibleClassFusions: consistency with power maps checked,\n",
+          "#I    the actual indeterminateness is ",
+          Indeterminateness( fus ) );
+
+    # May we return?
+    if quick and ForAll( fus, IsInt ) then return [ fus ]; fi;
+    
+    # Consider table automorphisms of the supergroup.
+    if   HasAutomorphismsOfTable( tbl ) then
+      taut:= AutomorphismsOfTable( tbl );
+#T     elif IsBound( tbl.galomorphisms ) then
+#T       taut:= tbl.galomorphisms;
+    else
+      taut:= false;
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: no table automorphisms stored" );
+    fi;
+
+    if taut <> false then
+      imp:= ConsiderTableAutomorphisms( fus, taut );
+      if IsEmpty( imp ) then
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: table automorphisms checked, ",
+              "no improvements" );
+      else
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: table automorphisms checked, ",
+              "improvements at classes\n",
+              "#I   ", imp );
+        if not TestConsistencyMaps( ComputedPowerMaps( subtbl ),
+                                    fus,
+                                    ComputedPowerMaps( tbl ),
+                                    imp ) then
+          Info( InfoCharacterTable, 2,
+                "PossibleClassFusions: inconsistency of",
+                " powermaps and fusion map" );
+          return [];
+        fi;
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: consistency with power maps ",
+              "checked again,\n",
+              "#I    the actual indeterminateness is ",
+              Indeterminateness( fus ) );
+      fi;
+    fi;
+
+    # Use the permutation character for the second time.
+    if IsEmpty( permchar ) then
+      if not CheckPermChar( subtbl, tbl, fus, permchar ) then
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: inconsistency of fusion and permchar" );
+        return [];
+      fi;
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: permutation character checked again");
+    fi;
+    
+    if quick and ForAll( fus, IsInt ) then return [ fus ]; fi;
+    
+    # Now use restricted characters.
+    # If `decompose' is `true', use decompositions of
+    # indirections of <chars> into <subchars>;
+    # otherwise only check the scalar products with <subchars>.
+    
+    if decompose then
+
+      if Indeterminateness( fus ) < minamb then
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: indeterminateness too small for test\n",
+              "#I    of decomposability" );
+        poss:= [ fus ];
+      else
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: now test decomposability of",
+              " rational restrictions" );
+        poss:= FusionsAllowedByRestrictions( subtbl, tbl,
+                      RationalizedMat( subchars ),
+                      RationalizedMat( chars ), fus,
+                      rec( maxlen:= maxlen,
+                           contained:= ContainedCharacters,
+                           minamb:= minamb,
+                           maxamb:= infinity,
+                           quick:= quick ) );
+
+        poss:= Filtered( poss, x ->
+                  TestConsistencyMaps( subtbl_powermap, x, tbl_powermap ) );
+#T dangerous?
+
+        # Use the permutation character for the third time.
+        if not IsEmpty( permchar ) then
+          poss:= Filtered( poss, x -> CheckPermChar(subtbl,tbl,x,permchar) );
+        fi;
+    
+        Info( InfoCharacterTable, 2,
+              "PossibleClassFusions: decomposability tested,\n",
+              "#I    ", Length( poss ),
+              " solution(s) with indeterminateness\n",
+              "#I    ", List( poss, Indeterminateness ) );
+
+      fi;
+
+    else
+
+      Info( InfoCharacterTable, 2,
+            "PossibleClassFusions: no test of decomposability" );
+      poss:= [ fus ];
+
+    fi;
+    
+    Info( InfoCharacterTable, 2,
+          "PossibleClassFusions: test scalar products of restrictions" );
+    
+    subgroupfusions:= [];
+    for fus in poss do
+      Append( subgroupfusions,
+              FusionsAllowedByRestrictions( subtbl, tbl, subchars, chars,
+                        fus, rec( maxlen:= maxlen,
+                                  contained:= ContainedPossibleCharacters,
+                                  minamb:= 1,
+                                  maxamb:= maxamb,
+                                  quick:= quick ) ) );
+    od;
+
+    # Make orbits under the admissible subgroup of `taut'
+    # to get the whole set of all subgroup fusions,
+    # where admissible means that if there was an approximation 'fusionmap'
+    # in the argument record, this map must be respected;
+    # if the permutation character 'permchar' was entered then it must be
+    # respected, too.
+
+    if taut <> false then
+      if IsEmpty( permchar ) then
+        grp:= taut;
+      else
+
+        # Use the permutation character for the fourth time.
+        grp:= SubgroupProperty(
+                   taut, x->ForAll([1..Length(permchar)],
+                                          y->permchar[y]=permchar[y^x]) );
+      fi;
+      subgroupfusions:= Set( Concatenation( List( subgroupfusions,
+                                x->OrbitFusions( Group(()), x, grp ) ) ) );
+    fi;
+
+    if not IsEmpty( approxfus ) then
+      subgroupfusions:= Filtered( subgroupfusions,
+          x -> ForAll( [ 1 .. Length( approxfus ) ],
+                 y -> not IsBound( approxfus[y] )
+                       or ( IsInt(approxfus[y]) and x[y] = approxfus[y] )
+                       or ( IsList(approxfus[y]) and IsInt( x[y] )
+                            and x[y] in approxfus[y] )
+                       or ( IsList(approxfus[y]) and IsList( x[y] )
+                            and IsSubset( approxfus[y], x[y] ) )));
+    fi;
+
+    # Print some messages about the orbit distribution.
+    if 2 <= InfoLevel( InfoCharacterTable ) then
+
+      # If possible make orbits under the groups of table automorphisms.
+      if ForAll( subgroupfusions, x -> ForAll( x, IsInt ) ) then
+
+        if   HasAutomorphismsOfTable( subtbl ) then
+          subtaut:= AutomorphismsOfTable( subtbl );
+#T      elif IsBound( subtbl.galomorphisms ) then
+#T        subtaut:= subtbl.galomorphisms;
+        else
+          subtaut:= Group( () );
+        fi;
+        if taut = false then
+          taut:= Group( () );
+        fi;
+        RepresentativesFusions( subtaut, subgroupfusions, taut );
+
+      fi;
+
+      # Print the messages.
+      if ForAny( subgroupfusions, x -> ForAny( x, IsList ) ) then
+        Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
+               " parametrized solution" );
+        if Length( subgroupfusions ) = 1 then
+          Print( ",\n" );
+        else
+          Print( "s,\n" );
+        fi;
+        Print( "#I    no further improvement was possible with",
+               " given characters\n",
+               "#I    and maximal checked ambiguity of ", maxamb, "\n" );
+      else
+        Print( "#I PossibleClassFusions: ", Length( subgroupfusions ),
+               " solution" );
+        if Length( subgroupfusions ) = 1 then
+          Print( "\n" );
+        else
+          Print( "s\n" );
+        fi;
+      fi;
+
+    fi;
+
+    # Return the list of possibilities.
+    return subgroupfusions;
+    end );
 
 
 #############################################################################

@@ -148,17 +148,6 @@ InstallMethod( HomePcgs, true, [ IsGroup ], 0, Pcgs );
 
 #############################################################################
 ##
-#M  Subgroup Methods
-##
-InstallTrueMethod( IsPcgsComputable, IsGroup and HasHomePcgs );
-InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
-
-InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
-InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
-
-
-#############################################################################
-##
 #M  GroupByRws Methods
 ##
 InstallGroupByRwsMethod(
@@ -386,7 +375,7 @@ end;
 ##
 #M  AffineOperation( <gens>, <V>, <linear>, <transl> )
 ##
-InstallMethod( AffineOperation,
+InstallMethod( AffineOperation,"generators",
     true, 
     [ IsList,
       IsMatrix,
@@ -415,7 +404,7 @@ local mats, gens, zero,one, g, mat, i, vec;
 
 end );
 
-InstallOtherMethod( AffineOperation,
+InstallOtherMethod( AffineOperation,"group",
     true, 
     [ IsGroup, 
       IsMatrix,
@@ -426,7 +415,7 @@ function( G, V, linear, transl )
     return AffineOperation( GeneratorsOfGroup(G), V, linear, transl );
 end );
 
-InstallOtherMethod( AffineOperation,
+InstallOtherMethod( AffineOperation,"group2",
     true, 
     [ IsGroup, 
       IsList,
@@ -438,7 +427,7 @@ function( G, gens, V, linear, transl )
     return AffineOperation( gens, V, linear, transl );
 end );
 
-InstallOtherMethod( AffineOperation,
+InstallOtherMethod( AffineOperation,"pcgs",
     true, 
     [ IsPcgs, 
       IsMatrix,
@@ -446,7 +435,7 @@ InstallOtherMethod( AffineOperation,
       IsFunction ],
     0,
 function( pcgsG, V, linear, transl )
-    return AffineOperation( pcgsG, V, linear, transl );
+    return AffineOperation( AsList( pcgsG ), V, linear, transl );
 end );
 
 #############################################################################

@@ -31,11 +31,38 @@ TZ_NUMREDUNDS   := 11;
 TZ_STATUS       := 15;
 TZ_LENGTHTIETZE := 20;
 
+TZ_FREEGENS     :=  9;
+# TZ_ITERATOR     := 12;
+
 TR_TREELENGTH   :=  3;
 TR_PRIMARY      :=  4;
 TR_TREENUMS     :=  5;
 TR_TREEPOINTERS :=  6;
 TR_TREELAST     :=  7;
+
+
+#############################################################################
+##
+##  Some global variables.
+##
+
+PresentationOps := rec();
+TzRecordOps     := rec();
+
+PrintRecIndent  := "  ";
+
+TzOptionNames := [ "eliminationsLimit", "expandLimit", "generatorsLimit",
+    "lengthLimit", "loopLimit", "printLevel", "saveLimit",
+    "searchSimultaneous" ];
+
+
+#############################################################################
+##
+#A  TietzeOrigin( <G> )
+##
+TietzeOrigin := NewAttribute( "TietzeOrigin", IsSubgroupFpGroup );
+SetTietzeOrigin := Setter( TietzeOrigin );
+HasTietzeOrigin := Tester( TietzeOrigin );
 
 
 ############################################################################
@@ -286,6 +313,13 @@ TzRecoverFromFile := NewOperationArgs("TzRecoverFromFile");
 
 ############################################################################
 ##
+#F  TzRelator
+##
+TzRelator := NewOperationArgs("TzRelator");
+
+
+############################################################################
+##
 #F  TzRemoveGenerators
 ##
 TzRemoveGenerators := NewOperationArgs("TzRemoveGenerators");
@@ -340,11 +374,67 @@ TzSubstituteWord := NewOperationArgs("TzSubstituteWord");
 TzUpdateGeneratorImages := NewOperationArgs("TzUpdateGeneratorImages");
 
 
+#############################################################################
+#############################################################################
+##
+##  added temporarily to avoid error messages 
+##
+
+
 ############################################################################
 ##
-#F  TzWordRelator
+#F  TzWord
 ##
-TzWordRelator := NewOperationArgs("TzWordRelator");
+TzWord := NewOperationArgs("TzWord");
+
+
+############################################################################
+##
+#F  TzSortC
+##
+TzSortC := NewOperationArgs("TzSortC");
+
+
+############################################################################
+##
+#F  TzRenumberGens
+##
+TzRenumberGens := NewOperationArgs("TzRenumberGens");
+
+
+############################################################################
+##
+#F  TzReplaceGens
+##
+TzReplaceGens := NewOperationArgs("TzReplaceGens");
+
+
+############################################################################
+##
+#F  TzSubstituteGen
+##
+TzSubstituteGen := NewOperationArgs("TzSubstituteGen");
+
+
+############################################################################
+##
+#F  TzOccurrences
+##
+TzOccurrences := NewOperationArgs("TzOccurrences");
+
+
+############################################################################
+##
+#F  TzOccurrencesPairs
+##
+TzOccurrencesPairs := NewOperationArgs("TzOccurrencesPairs");
+
+
+############################################################################
+##
+#F  TzSearchC
+##
+TzSearchC := NewOperationArgs("TzSearchC");
 
 
 #############################################################################

@@ -20,6 +20,12 @@
 ##  This file also contains the general partition backtracking function.
 ##
 #H  $Log$
+#H  Revision 4.7  1997/06/06 12:16:40  htheisse
+#H  used `ListWithIdenticalEntries'
+#H
+#H  Revision 4.6  1997/05/28 13:19:40  fceller
+#H  changed 'DeepCopy' to 'StructuralCopy'
+#H
 #H  Revision 4.5  1997/01/20 17:00:26  htheisse
 #H  re-introduced `generators'
 #H
@@ -27,7 +33,7 @@
 #H  added revision lines
 #H
 #H  Revision 4.3  1996/11/27 15:32:56  htheisse
-#H  replaced `Copy' by `DeepCopy'
+#H  replaced `Copy' by `StructuralCopy'
 #H
 #H  Revision 4.2  1996/11/21 16:50:50  htheisse
 #H  allowed stabilizer chains as arguments for `OrbitsPartition'
@@ -54,7 +60,7 @@ Partition := function( list )
     P := rec( points := Concatenation( list ),
               firsts := [  ],
              lengths := [  ] );
-    P.cellno := 0 * [ 1 .. Maximum( P.points ) ];
+    P.cellno := ListWithIdenticalEntries( Maximum( P.points ), 0 );
     i := 1;
     for c  in [ 1 .. Length( list ) ]  do
         if Length( list[ c ] ) = 0  then
@@ -83,7 +89,7 @@ end;
 OnPartitions := function( P, g )
     local   Q,  i;
     
-    Q := DeepCopy( P );
+    Q := StructuralCopy( P );
     Q.points := OnTuples( P.points, g );
     Q.cellno := [  ];
     for i  in [ 1 .. Length( P.cellno ) ]  do

@@ -5,8 +5,11 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.25  1997/05/28 13:19:56  fceller
+#H  changed 'DeepCopy' to 'StructuralCopy'
+#H
 #H  Revision 4.24  1997/03/12 13:19:34  htheisse
-#H  replaced `DeepCopy' by `CopyStabChain' to save labels
+#H  replaced `StructuralCopy' by `CopyStabChain' to save labels
 #H
 #H  Revision 4.23  1997/03/04 12:29:16  htheisse
 #H  introduced `ChooseNextBasePoint', debugged soluble stab chains

@@ -745,8 +745,14 @@ end );
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . of perm group
 ##
 InstallMethod( ConjugacyClasses, "perm group", true, [ IsPermGroup ], 0,
-    G -> Concatenation( List( RationalClasses( G ),
-            DecomposedRationalClass ) ) );
+    function( G )
+    if Size( G ) <= 1000  or  IsSimpleGroup( G )  then
+        return ConjugacyClassesByRandomSearch( G );
+    else
+        return Concatenation( List( RationalClasses( G ),
+	                      DecomposedRationalClass ) );
+    fi;
+end );
 
 #############################################################################
 ##

@@ -156,16 +156,14 @@ InstallTrueMethod( IsGeneralMapping, IsNonSPGeneralMapping );
 ##
 #C  IsGeneralMappingCollection( <obj> )
 ##
-IsGeneralMappingCollection := CategoryCollections(
-    "IsGeneralMappingCollection", IsGeneralMapping );
+IsGeneralMappingCollection := CategoryCollections( IsGeneralMapping );
 
 
 #############################################################################
 ##
 #C  IsGeneralMappingsFamily( <obj> )
 ##
-IsGeneralMappingsFamily := CategoryFamily(
-    "IsGeneralMappingsFamily", IsGeneralMapping );
+IsGeneralMappingsFamily := CategoryFamily( IsGeneralMapping );
 
 
 #############################################################################

@@ -5,7 +5,7 @@ These new ideas were
 motivated by the developent of computational group theory during the last
 years:
 On the one hand, algorithms become more and more complex. Functions like
-'SylowSubgroup' that were originally called just by the user now become
+`SylowSubgroup' that were originally called just by the user now become
 a small part of an intricate algorithm. Therefore {\GAP} may not assume any
 longer that the user himself will take an intelligent choice from the
 available methods to solve his task. Thus {\GAP} itself has to take decisions
@@ -20,7 +20,7 @@ to allow the introduction of such new structures.
 
 So the new concepts try to fulfill two aims:
 
-{\GAP} should be less ''stupid''. It should not ignore knowledge it has about
+{\GAP} should be less ``stupid''. It should not ignore knowledge it has about
 objects but use this knowledge for further computations. For example if a
 group is known to be nilpotent the $p$-Sylow subgroup can be obtained simply
 from the $p$-parts of the groups generators.
@@ -37,7 +37,7 @@ necessary concepts that made it possible to reach these goals.
 The problem had been to make the concepts powerful enough to represent the
 complex and intricate relations that may exist between mathematical objects
 while keeping them simple enough to implement and apply them. In the words
-of Albert Einstein: ''Make everything as simple as possible, but not more
+of Albert Einstein: ``Make everything as simple as possible, but not more
 simple''.
 
 The wish to keep {\GAP} 4 compatible to {\GAP} 3 as far as possible did not make
@@ -59,7 +59,7 @@ We have implemented these concepts in {\GAP} 4. In this implementation, each
 operation recalls
 the argument types that occur most frequently and the method used for
 them. (STIMMT DAS NOCH?)  If the operation is called again with arguments of
-the same types, the needed method can be found quickly in the ''cache''.
+the same types, the needed method can be found quickly in the ``cache''.
 In effect, the method selection in {\GAP} 4 is faster than in {\GAP} 3.
 
 In the sequel we shall first state the aims more explicit (see "Aims").
@@ -73,21 +73,16 @@ will be introduced here already:
 The objects that {\GAP} deals with (like the number 13, the list $[1,2]$ or a
 matrix) are called {\bf objects}. Two objects that are the same (in the
 sense of {\GAP} s = operation) represent the same {\bf element}. In other
-words, elements are equivalence classes with respect to '='. Those objects
+words, elements are equivalence classes with respect to `='. Those objects
 that represent structured sets are called {\bf domains} (for example the
 group $S_{12}$ or a conjugacy class therein).
 
 An *operation* behaves like a function, that is it gets called with
-arguments and returns a result (like 'Intersection(<arg1>,<arg2>)'
-or '<op1>\*<op2>'). In
+arguments and returns a result (like `Intersection(<arg1>,<arg2>)'
+or `<op1>\*<op2>'). In
 fact, however it consists of a multitude of functions which are called its
 *methods*. Depending on the arguments a method is selected and gets
 called.
-
-An unary operation is also called *attribute* (like 'Size(<arg>)'). Objects
-may store values of their attributes once thay are computed to use them
-later again. A boolean attribute is called a *property*. (like
-'IsNilpotent').
 
 The {\bf type} of an object represents the aspects which are important for
 the method selection. It consists of several parts which could be imagined
@@ -96,7 +91,7 @@ determines in which relation an object is to other objects (for example all
 sets whose elements are permutations are a family). The {\bf categories} of
 an object describe what can be done with an object (for example all monoids
 are a category). The {\bf representation} of an object determines how the
-object is stored in memory (for example all ''dense'' univariate polynomials
+object is stored in memory (for example all ``dense'' univariate polynomials
 are of the same representation). Finally the type contains which attributes
 or properties are known for the object and which values the properties have.
 
@@ -122,8 +117,8 @@ objective is to utilize all knowledge currently available about the relevant
 objects and not only the knowledge that was known when the objects were
 created.
 
-Usually this means to consider properties (like 'IsSolvable'). The
-knowledge of attributes (like 'Size') itself however is also a property
+Usually this means to consider properties (like `IsSolvable'). The
+knowledge of attributes (like `Size') itself however is also a property
 that can be useful for certain methods.
 
 Finally, of course, the representation of an object may be utilized. (But 
@@ -138,7 +133,7 @@ group and have confirmed that it is nilpotent. Then the group is solvable as
 well and so for computing the conjugacy classes a special method for
 solvable groups is used.
 
-It has not been our aim, however, to make {\GAP} ''intelligent''. That is, when
+It has not been our aim, however, to make {\GAP} ``intelligent''. That is, when
 being asked for the character table of a group, {\GAP} will not try to check
 first, whether it is supersoluble. The reason for this is that we have no
 idea how to make the system decide which tests are worthwile and which are
@@ -167,7 +162,7 @@ sparse matrices only the new representation and methods to acess the
 matrix components need to be implemented.
 
 &Additionally one can add special operations for sparse matrices (like
-''Unsparsify'') or add new methods (like a sparse Gaussian elimination).
+`'Unsparsify'') or add new methods (like a sparse Gaussian elimination).
 These can be added afterwards and don't need to be considered when
 creating the new representation.
 
@@ -325,175 +320,23 @@ changes in its components (see "Mutability"). Lists of immutable objects
 then may store a flag that they are sorted -- and thus a set -- as no
 side-effects may take place.
 
-\Chapter{The Method selection mechanism}
-
-\Section{Objects and Elements}
-
-Before describing the concepts of types we shortly have to explain which
-things can have a type.
-
-These ''things'' are called *objects* in {\GAP}. In short, everything that
-can be assigned to a variable is an object. Examples are numbers, lists,
-matrices, permutations, groups cosets or conjugacy classes. That is,
-basically everything in {\GAP} is an object except things like comments (being
-just lexical expressions) or {\tt while} loops (which are syntactic units).
-
-Every object can be assigned to a variable and be used as an argument for a
-function.
-
-\){\fmark Elements}
-
-While objects are the ''things'' {\GAP} works with, a user typically wants to
-deal with mathematical ''things'' we call elements. In short, elements are
-equivalence classes of objects under the relation '='.
-
-There are three main reasons for different objects being equal:
-\beginitems
--&It can be the same information, just stored in different places
-in the memory.
-
--&It can be the same type of information, but stored in a different way.
-For example a polynomial may be stored as ''sparse'' or ''dense''.
-
--&A special equivalence relation may be in effect. For example in a
-finitely presented group with the relation $a^2=1$, the words $a$ and
-$a^3$ represent the same element.
-
-\enditems
-
-The user usually will deal with objects but think of elements, as he is not
-interested in the place in memory where the information is stored or in the
-internal representation.
-
-\danger
-There is rarely the case that one actually wants to compare objects
-instead of elements. The command 'IsIdentical' will do this.
-
-\){\fmark Domains}
-
-A special case of objects are *Domains*. These are the objects that
-represent structured sets.
-Examples are a group, a coset or a conjugacy class.
 
 \danger
 User of other systems should note that domains
 are simply objects and not a part of the typing system as for example in
 Axiom.
 
-\Section{The Type Concept}
-
-Like other programming languages, {\GAP} uses types to decide what can be done
-with certain objects and how this should be done. That is, a type reflects
-those aspects of an object that have to be considered when deciding which
-methods to use. (For example the place in memory is not part of the type.)
-
-The {\GAP} lingo of a type is a {\tt kind} (in the sense of ''class of'' rather
-than ''gently'').
-
-For example types decide whether two objects can be multiplied, and which
-function will do this. Or the type decides whether once can determine the
-size of an object (and how this is done).
-
-It is important to remember, however, that while *objects* have types,
-variables still are untyped, they are just a ''handle'' for the object.
-
-The type of an object is comprised of different parts. One may cosider these
-parts just as sets of objects, the type -- considered as a set -- is just
-the intersection of all comprising sets:
-
-\beginitems
-The *family*&determines the relations of an object to other objects.
-
-The *category*&determines what can be done with an object.
-
-The *representation*&determines how an object is stored in memory.
-
-*Attributes*&describe knowledge about objects. If they can be only 'true'
-or 'false' they are called *Properties*.
-\enditems
-
-The kinds of the arguments determine which *method* is used for an
-*operation*.
-
-We shall now describe these aspects in greater detail.
-
-As these aspects are interlinked it is unavoidable to use forward references.
-It is recommended that you read these sections twice, the first time
-skipping the dangerous sections.
-
-\Section{Filter}
-
-*Filter* are used by {\GAP} to indicate features an object may have or not.
-
-To the user, a filter is just a function that returns 'true' or 'false'.
-They are used for example to determine whether an object is in a given
-category or representation.
-
-The only difference to ''real'' functions is that filter can be combined
-using 'and', creating a new filter that is 'true' if and only if all
-constituent filters return 'true'. 
 
 \danger
-Internally, {\GAP} carries internal bit lists (different to 'Blist's) to
+Internally, {\GAP} carries internal bit lists (different to `Blist's) to
 indicate categories, representations and so on. A filter is an interface to
 these bit lists.
 
-\Section{Families}
-
-The family of an object determines its relations to other objects. More
-formally: The families form a partitioning of the set of all objects, subject
-to the following conditions:
-
-Two objects that represent the same element are in the same family. This
-permits to regard families also as sets of elements (instead of sets of
-objects), in contrast to categories and representations that may be
-different for two objects that represent the same element.
-
-Second, the family of the result of an operation (like '\*' or 'Intersection'
-is only dependent on the familes of the operations arguments.
-
-Examples of families are the complex numbers (currently represented in
-{\GAP}
-only by its subset of cyclotomic numbers) or the family of permutations.
-
-Ot is important to distinguish a family of objects from the family of sets
-of objects. For example the family of permutations is different from the
-family of sets whose elements are permutations. The permutation $(1,2)$ is
-in the first family, the group $S_3$ or a coset in the second.
-
-\danger
-GAP also contains parametrized families, that is families which are
-depending on parameters. For example every finitely presented structure
-defines a new family (which as a set is equal with the domain itself).
-This implies that every presentation defines a new family and that elements
-of these different families are in no relation whatsoever. Especially,
-they cannot be combined.
-
-\danger
-The parameters of course can be families themselves. For example the family
-of all rational functions whose coefficients are complex numbers. 
-
-As mentioned above an object belongs to exactly one family. This family must
-be stated when the object is created. An object may never change its family.
-
-The comparison operators '=' and $\<$ just apply to objects within the same
-family.
 
 \danger
 But you main install special methods for these operations that cross
 families.
 
-\danger
-Families are created by demand. Some families are created during
-initialization (for example the family of permutations). Some other families
-may be created just later at runtime (for example the family for a finitely
-presented group can only be created once the presentation is given).
-Families form the dynamic part of the type system, that is those components
-that not necessarily are known during initialization.
-
-Finally it should be mentioned that domains are always subsets of families.
-It is not permitted to create domains whose elements lie in different
-families.
 
 New families are created by 
 
@@ -513,7 +356,7 @@ lie in these categories leads to an error.
 Each object in the
 family is automatically made an object of these categories, regardless of
 whether they were given when generating the object. An example is the
-category 'IsPermutationSet' which is given to all sets of permutations
+category `IsPermutationSet' which is given to all sets of permutations
 automatically.
 If no categories are given, no are implied.
 \enditems
@@ -527,7 +370,7 @@ permutations.
 \>ElementsFamily(<family>)
 
 returns the family of elements for a collections family. It is the reverse
-operation for 'CollectionsFamily'.
+operation for `CollectionsFamily'.
 
 \danger
 \label{storeinfamily}
@@ -539,7 +382,7 @@ family to permit access for the equality test.
 
 \danger
 As families are objects themselves, they also have a kind and a family.
-These are the 'FamilyOfFamilies' and the 'KindOfFamilies'.
+These are the `FamilyOfFamilies' and the `KindOfFamilies'.
 
 \Section{Categories}
 
@@ -550,84 +393,16 @@ operations may demand that the families of its arguments are in certain
 relations, for example equal.)
 
 An object may belong to more than one category. A ring, for example, belongs
-to the categories 'IsDomain', 'IsAdditiveMagma' (domains that are closed under
-addition) and 'IsMagma' (domains closed under multiplication).
+to the categories `IsDomain', `IsAdditiveMagma' (domains that are closed under
+addition) and `IsMagma' (domains closed under multiplication).
 
 \danger
 Whenever an object is created, the categories to which the object belongs
 have to be declared. However the family might imply further categories (and
 these do not need to be declared explicitely when creating the object).
 For example any
-group of permutations belongs implicitely to the category 'PermutationSets'.
+group of permutations belongs implicitely to the category `PermutationSets'.
 
-An object cannot change or enter new categories after it has been created.
-That is, all categories to which an object belongs are known ab initio and
-will never change.
-
-\danger
-Categories are created while the library code is read in. During runtime, no
-further categories will be created.
-
-To give you some flavour of what categories are, we list some important
-categories. Indented categories are subcategories of the less indented
-category above.
-Additionally, we list some properties (marked with P) that may be held
-by elements form this category but need not.
-
-
-\begintt
-IsObject
-
-  IsMutable
-
-    IsMutableList
-
-  IsElement
-
-    IsAdditiveElement                    ($a + b$)
-    IsAdditiveElementWithZero            ($0 \* a$)
-    IsAdditiveElementWithInverse         ($-1 \* a$)
-    IsMultiplicativeElement              ($a \* b$)
-    IsMultiplicativeElementWithOne       ($a^0$)
-    IsMultiplicativeElementWithInverse   ($a^{-1}$)
-
-  IsDomain (strukturierte Menge)
-
-    IsAdditiveMagma (closed under $a + b$ for all $a, b \in$ Domain)
-      IsAdditiveMagmaWithZero (also closed under $0\*a$)
-        IsAdditiveMagmaWithInverses (also closed under $-1\*a$)
-
-    IsMagma (closed under $a \* b$ for all $a, b \in$ Domain)
-      IsMagmaWithOne (also closed under $a^0$)
-        IsMagmaWithInverses (also closed under $a^{-1}$)
-        IsMagmaWithInversesAndZero (closed under $a^{-1}$ for $a\not=0$)
-
-    P IsAssociative     ($(a\*b)\*c = a\*(b\*c)\quad\forall a,b,c$)
-    P IsCommutative     ($a\*b = b\*a\quad\forall a,b$)
-    P IsAntiCommutative ($a\*b + b\*a = 0\quad\forall a,b$)
-    P IsLDistributive   ($a\*(b + c) = a\*b + a\*c\quad\forall a,b,c$)
-    P IsRDistributive   ($(a + b)\*c = a\*c + b\*c\quad\forall a,b,c$)
-    P IsDistributive    (= IsLDistributive \& IsRDistributive)
-
-    IsExtLSet (closed under $x \* a$ for $a, b \in$ Domain, $x \in$ External)
-
-    P IsAssociativeLOpEProd   ($(x\*y)\*a = x\*(y\*a)\quad\forall x,y,a$)
-    P IsAssociativeLOpDProd   ($x\*(a\*b) = (x\*a)\*b\quad\forall x,a,b$)
-    P IsDistributiveLOpESum   ($(x + y)\*a = (x\*a) + (y\*a)\quad\forall x,y,a$)
-    P IsDistributiveLOpDSum   ($x\*(a + b) = (x\*a) + (x\*b)\quad\forall x,a,b$)
-    P IsDistributiveLOpEProd  ($(x\*y)\*a = (x\*a)\*(y\*a)\quad\forall x,y,a$)
-    P IsDistributiveLOpDProd  ($x\*(a\*b) = (x\*a)\*(x\*b)\quad\forall x,a,b$)
-    P IsTrivialLOpEZero       ($0\*a       = 0\quad\forall a$)
-    P IsTrivialLOpEOne        ($1\*a       = a\quad\forall a$)
-
-    IsExtRSet (closed under $a \* x$ for $a, b \in$ Domain, $x \in$ External)
-
-      <as ExtLSet>
-
-    IsExtUSet (closed under $a^x$ for $a, b \in$ Domain, $x \in$ External)
-
-      <as ExtLSet>
-\endtt
 
 With these categories and properties, we can declare vector spaces as
 follows:
@@ -647,8 +422,8 @@ New categories are created by the function
 
 This function returns an filter that represents the category. As it is a filter
 it can also be used as an function, to test whether an object belongs to this
-category and returns 'true' or 'false'. Therefore categories ususally are
-called like 'IsPiffle'.
+category and returns `true' or `false'. Therefore categories ususally are
+called like `IsPiffle'.
 
 \beginitems
 <name>&is a string, giving a name to the category. It is mainly used for
@@ -656,7 +431,7 @@ debugging purposes.
 
 <super-cat>&is a filter representing the intersection of all categories this
 category is to be a subcategory of. All categories are implicitely
-subcategories of 'IsObject'.
+subcategories of `IsObject'.
 \enditems
 
 
@@ -667,14 +442,14 @@ A representation determines how objects are stored in memory.
 There are three classes of objects: Internal objects (like rational numbers,
 permutations or words in abstract generators), *positional objects* and
 *component objects*. Positional objects behave basically like a list with
-the exception that components are accessed by '<lobj>\/![<pos>]'
-(with an additional '!'). Component objects behave
-like records, except that components get accessed by '<robj>\/!.<component>'.
+the exception that components are accessed by `<lobj>\/![<pos>]'
+(with an additional `!'). Component objects behave
+like records, except that components get accessed by `<robj>\/!.<component>'.
 
 \danger
-The function 'Length' will not work for positional objects. The function
-'RecNames' will not work for component objects. There is, however, a
-function 'REC_NAMES_ROBJ' that will provide the components of an component
+The function `Length' will not work for positional objects. The function
+`RecNames' will not work for component objects. There is, however, a
+function `REC_NAMES_ROBJ' that will provide the components of an component
 objects for debugging purposes.
 
 The representation of an object determines whether it is an component
@@ -698,7 +473,7 @@ New representations are created by
 
 This function returns a filter that represents the representation and can be
 used to test membership in this representation.
-Therefore representations ususally are called like 'IsWoffle'.
+Therefore representations ususally are called like `IsWoffle'.
 
 \beginitems
 <name>&is a string, giving a name to the representation. It is mainly used for
@@ -706,23 +481,23 @@ debugging purposes.
 
 <super-fil>&is a filter, used to determine all super-representations and all 
 categories implied by this representation. The super-representations
-'IsPositionalObjectRep' or 'IsComponentObjectRep' determine, whether it will
+`IsPositionalObjectRep' or `IsComponentObjectRep' determine, whether it will
 be a representation of positional or components objects, so one of them
 should be given always (might be implicitely).
 
 <components>&is a list of strings, giving the names of the components an
 component objects may have. This field is ignored for positional objects.
-If a field ends in '?' this component is facultative for component objects.
-If a component name ends in '\*', all components starting this way are
+If a field ends in `?' this component is facultative for component objects.
+If a component name ends in `\*', all components starting this way are
 permitted.
 
 <required-cat>&VERLANGTE KATEGORIEN
 \enditems
 
 \danger
-An interesting representation is the representation 'WhatsItsName' used for
+An interesting representation is the representation `WhatsItsName' used for
 representing most domains. It is a subrepresentation of
-'IsComponentObjectRep', having no compulsory components but permitting any.
+`IsComponentObjectRep', having no compulsory components but permitting any.
 
 \danger
 If several representations are used to represent objects in one family, it
@@ -751,19 +526,6 @@ better didactically, however, to explain first how the method selection
 works (you will need this more often anyhow.) If you are curious, have a
 glance at section "Kinds and Objects".
 
-\Section{Operations}
-
-Operations are {\GAP}s way to decide which algorithm will be called for a
-given object to acchieve a certain task. 
-
-For the user, an operation behaves like a function. One can apply it to
-arguments and -- depending on the operation -- obtains back a result.
-
-Actually, an operation is a collection of functions. These functions are
-called the *methods* of the operation. Depending on the arguments given,
-{\GAP} decides which method will be selected to execute the task.
-We will explain how methods can be installed and how the method selection
-works later ("Methods").
 
 \danger
 In {\GAP} 3 something slightly similar was accomplished using dispatcher
@@ -791,18 +553,8 @@ is installed, an error is raised.
 \danger
 It is not possible to declare an operation several times for a varying
 number of arguments or different argument filters. You must use
-'InstallOtherMethod' in such cases.
+`InstallOtherMethod' in such cases.
 
-There are some special operations provided by the kernel. These are
-$\backslash$'+', $\backslash$'-', $\backslash$'\*', $\backslash$'/',
-$\backslash$'^', $\backslash$'mod,
-$\backslash$'in', $\backslash$'=', $\backslash\<$ for the usual infix
-operations, 'ShallowCopy' for copying and 'PrintObj' for printing one object.
-You may install your own methods for these operations to acchieve special
-effects.
-
-There are also the operations $\backslash[\backslash]$ and $\backslash\.$ that
-may be used to simulate lists or records (see "Simulating Lists and Records")
 
 Usually all operation declarations will be read first and all methods
 installed afterwards. This permits an method to call other operations, as
@@ -816,11 +568,6 @@ reference for a function that will be declared elsewhere.
 
 \Section{Attributes and Properties}
 
-Attributes are unary operations that allow to describe knowledge of one
-object.
-
-The main difference towards plain operations is that an object may store
-attributes computed once and may tell whether it knows an attribute.
 
 \danger
 An object may also claim that it knows an attribute if computation of this
@@ -846,14 +593,14 @@ namely the operation that just fetches the already known value.
 
 \danger
 This is done by implicitely installing a method, called the *system getter*
-for the operation with value 'SUM_FLAGS'. This number is some kind on
-''infinity'' for method valuations. Thus, once the attribute is known, this
+for the operation with value `SUM_FLAGS'. This number is some kind on
+`'infinity'' for method valuations. Thus, once the attribute is known, this
 method will be called. If you design situations, however, in
 which objects will claim to posess an attribute while actually still having
 to compute it (like in the vector space example above), this would lead to
 *your* method (which does the computation) not being called and the system
 getter complaining about not finding the attributes value. The solution is 
-to install your method with the value 'SUM_FLAGS+1' to give it priority
+to install your method with the value `SUM_FLAGS+1' to give it priority
 over the system getter.
 
 <name> is again a string, used to identify the attribute.
@@ -862,7 +609,7 @@ over the system getter.
 \){\fmark Tester(<attribute>)}
 \){\fmark Setter(<attribute>)}
 
-Additionally, 'NewAttribute' installs a filter (the *tester*) and another
+Additionally, `NewAttribute' installs a filter (the *tester*) and another
 operation (the *setter*) for this attribute. The
 filter determines whether the attribute is known while the operation can be
 used to set the attribute to a given value (if its value is obtained
@@ -873,12 +620,12 @@ HasBiffle:=Tester(Biffle);
 SetBiffle:=Setter(Biffle);
 \endexample
 
-Then 'HasBiffle' will test, whether the biffle of an object is known,
+Then `HasBiffle' will test, whether the biffle of an object is known,
 SetBiffle(<obj>,<value>) will set an objects biffle.
 
 \danger
 The setter in fact is again an operation which has a standard method
-installed at value 'SUM_FLAGS' which just stores the attribute. You can
+installed at value `SUM_FLAGS' which just stores the attribute. You can
 install another method that may, for example, immediately store
 dependent information. WIE BEKOMMT MAN DAS ATTRIBUT DANN GESPEICHERT?
 
@@ -892,7 +639,7 @@ Storing all computed attributes for an object may take substantial space. On
 the other hand there might be objects that are that unimportant that you
 do not want to store attributes for them. Therefore attributes will be
 stored only, if the representation of the object is a subrepresentation of
-'IsAttributeStoringRep'. KANN DAS POSITIONAL SEIN ?
+`IsAttributeStoringRep'. KANN DAS POSITIONAL SEIN ?
 
 \danger
 Attributes are by standard immutable. In some situations an attribute will
@@ -900,17 +647,17 @@ be used, however, to store partial information about an object that may be
 completed later. A special case of this are parametrized attributes, where
 we don't want to create a new attribute for each value of the parameter.
 Sylow subgroups are a good example: We cannot create an atttribute for each
-prime number. Instead there is an attribute 'ComputedSylowSubgroups' that is
+prime number. Instead there is an attribute `ComputedSylowSubgroups' that is
 a list, containing in its $i$-th component the $i$-Sylow subgroup (provided
-$i$ is a prime). The function 'SylowSubgroup' then will access this list and
+$i$ is a prime). The function `SylowSubgroup' then will access this list and
 compute further sylow subgroups if neccessary using the operation
-'SylowSubgroupOp'. storing the result again in the list
-'ComputedSylowSubgroups'.
+`SylowSubgroupOp'. storing the result again in the list
+`ComputedSylowSubgroups'.
 
 \danger
 To obtain a mutable attribute for such purposes, simply add the string 
-'' 'mutable' '' to the parameter list when defining the attribute with
-'NewAttribute'
+`' `mutable' `` to the parameter list when defining the attribute with
+`NewAttribute'
 
 \danger
 Another aspect of the immutability of attributes is that you usually cannot
@@ -919,48 +666,6 @@ will be ignored.
 
 \>NewProperty(<name>[,<filter>])
 
-Properties are attributes whose value may only be 'true' or 'false'.
-What makes properties special is that the operation defined by the property
-is implicitely a filter. This allows to install methods based on the *value*
-of a property.
-
-Thus it is possible to install a method for solvable groups that will be
-called whenever a group is known to be solvable, even if this information
-was not known when the group was created.
-
-\Section{Methods}
-
-A method is an ordinary function that is used to implement an operation for
-particular types of arguments. The connection with the operation is obtained
-by *installing* the function for the operation and a particular set of
-types. This installation works by 
-
-\>InstallMethod(<opr>[,<ident>],<fampred>,<argflags>,<value>,<method>)
-
-This installs the function <method> for the operation <opr>. If given,
-<ident> is a string to identify the specific method (like ''cyclic extension
-algorithm for subgroup lattice'') installed. It can be used for debugging.
-
-<fampred> is a function that will be applied to the families of the
-arguments given to test whether they fit together. (For example two
-polynomials should be defined in the same characteristic.)
-With these families as arguments, <fampred> must return
-true for this method to be applicable. A typical usage is for example
-'IsIdentical' to ensure that the families of two factors to be multiplied
-are the same. If no family relation is to be tested, simply 'true' may be
-given here. Section "Family Predicates" below lists some common predefined
-family predicates.
-
-<argflags> is a list of filters, corresponding to the arguments.
-Each filter
-must be true for the corresponding argument for this method to be
-applicable. The number of filters must correspond to the number of arguments
-in the declaration of the operation <opr> and each filter must be a refinement
-of the corresponding filter given in the declaration of <opr>, otherwise an
-error is raised.
-
-Remember that the filters may determine categories, representations,
-knowledge of attributes and values of properties.
 
 \danger
 It must be pointed out, however, that for the purposes of method selection
@@ -975,33 +680,33 @@ intelligence which is beyond the scope of a computer program.
 If you have cases where a certain property is that beneficial that
 it is actually worth to force determination of this property, you will have
 to install the method without requiring this property, first test in your
-function for the value of the property and if this is 'false' call
-'TryNextMethod()' to retreat gently.
+function for the value of the property and if this is `false' call
+`TryNextMethod()' to retreat gently.
 
 \danger
 A variation of this theme is if you have classes of objects for which
 a certain attribute can be computed very cheaply. In this case you would not
-require 'HasPiffle' when installing the method, but add a new property
-'IsPiffleObtainable'. All objects in the special class should get this
-property implicitly when creating them (either directly in the 'Objectify'
+require `HasPiffle' when installing the method, but add a new property
+`IsPiffleObtainable'. All objects in the special class should get this
+property implicitly when creating them (either directly in the `Objectify'
 command or by a true or immediate method), while an implication would imply
-that each object for which 'HasPiffle' returns 'true' actually would be
-'IsPiffleObtainable' as well.
+that each object for which `HasPiffle' returns `true' actually would be
+`IsPiffleObtainable' as well.
 
 <value> is an integer value given to this function. This value determines
-''how well'' the method performs. Unless you want to acchieve a special
+`'how well'' the method performs. Unless you want to acchieve a special
 effect this will be 0.
 
 How do all these arguments interlink with each other:
 
 If an operation gets called, {\GAP} first selects all methods that are
 *applicable*. That are those methods, for which the family predicate
-returns 'true' when applied to the families of the arguments and for which
-all filters for all arguments return 'true'. These methods then are sorted
-according to an ''implicit value'': For each filter involved in one of the
-<argflags> one point is given. That is, if we define 'IsC' as 'IsA and
-IsB', then 'IsC and IsD' gets 3 points (or even more if 'IsA', 'IsB' or
-'IsD' are composite themselves).
+returns `true' when applied to the families of the arguments and for which
+all filters for all arguments return `true'. These methods then are sorted
+according to an ``implicit value'': For each filter involved in one of the
+<argflags> one point is given. That is, if we define `IsC' as `IsA and
+IsB', then `IsC and IsD' gets 3 points (or even more if `IsA', `IsB' or
+`IsD' are composite themselves).
 To this number the installed <value> is
 added.
 (Actually this sorting can take place already when installing the method, so
@@ -1009,14 +714,14 @@ there is no time loss for this during execution.)
 Then the method with the highest value is executed and any result it returns
 returned as the result of the operation.
 
-This ''value business' allows for three aims: First, usually (nobody should
+This ``value business' allows for three aims: First, usually (nobody should
 install such a method otherwise) a special method will be better than a
 general one. This special method then however would have more filters in its 
 <argflags>, thus get a higher implicit value and is favoured if applicable.
 
 Second, there may be the case of concurrent methods whose specifications are
 not subsets of each other. Suppose, for example we have two (simple) filters,
-'IsBourbakian' and 'IsLowerRegularQ' which have no relation whatsoever.
+`IsBourbakian' and `IsLowerRegularQ' which have no relation whatsoever.
 Suppose for an operation we have one method each installed for both filters.
 If we now call this operation with an argument that is bourbakian and
 fulfills the lower regular Q property, the method whose <value> is larger
@@ -1039,93 +744,8 @@ The list of (applicable) methods for an operation is always sorted in a way
 to have newer methods coming first. Thus a method installed with the same
 parameters as an existing method will supersede this. This allows to
 re-install a corrected method (beware of problems here if the corrected
-method calls 'TryNextMethod'!).
+method calls `TryNextMethod'!).
 
-\>TryNextMethod()
-
-There are situations where a method may be a bit pert in that it claims to be
-applicable but actually is not. A typical situation for this is if the
-method actually has to do tests which cannot be dealt with by putting
-suitable filters in the method installation or if the author deems it worth
-to test for a property even if it is not yet known.
-
-In these cases a method can call 'TryNextMethod()'. This will return to the
-method selection mechanism, which will then proceed and call the next
-applicable method to compute the result.
-
-\>InstallOtherMethod(<opr>[,<ident>],<fampred>,<argflags>,<value>,<method>)
-
-There are situations, when methods also should be installed for cases that
-do not confirm for the operations declaration. (This also covers different
-methods to allow for a variable number of arguments.) This is done by
-'InstallOtherMethod'
-which does the same as 'InstallMethod', except that it does not demand for the
-<argflags> to comply with the operations declaration.
-
-\Section{Implications}
-
-Usually a method is only executed if the corresponding operation is called.
-For attributes, however it is also possible to install methods that will be
-called immedicately, if their prerequesits are fulfilled.
-
-Such methods can be used to install implications and to ensure that certain
-deduced information will always be present. This is important to make
-good use of the method selection. For example, we want a method that
-requires the size of a group to be applicable if the stabilizer chain for a
-permutation group is known (as the groups size can be deduced from it very
-easily). However we don't want to install all these methods twice, once for
-'HasSize', a second time for permutation groups whose stabilizer chain is
-known.
-
-Needless to say, such methods must take only $\varepsilon$ time, as they
-might be called automatically over and over. 
-
-{\GAP} provides essentially two ways for such implications. The first is
-
-\>InstallImplication(<property>,<argflags>)
-
-WAS IST MIT INSTALLTRUEMETHOD?
-If an implication is installed, the <property> will be set to true for an
-object, whenever the filter <argflags> is fulfilled for this object.
-For example
-
-\beginexample
-gap> InstallImplication(IsSolvable,IsNilpotent);
-gap> InstallImplication(IsPcgsComputable,IsSolvable);
-gap> InstallImplication(IsPcgsComputable,HasPcgs);
-\endexample
-
-For more difficult implications, there is
-
-\>InstallImmediateMethod(<opr>,<argflags>,<value>,<method>)
-
-This installs the function <method> to be called to compute the attribute
-<opr> for an object as soon as the filter <argflags> is fulfilled for this
-object. <value> permits to determine a sequence, in which the applicable
-immediate methods are called for an object.
-
-A immediate method will only be called if the attribute <opr> is not yet
-known. Its return value will be assigned to the attribute. It may return via
-'TryNextMethod()', in this situation the attribute (obviously) will not be
-set. This permits, for example, an immediate method to apply further tests,
-whether an attribute can be computed cheaply.
-
-An example would be the following immediate method for the implication that
-groups of size $p^aq^b$ are solvable:
-
-\beginexample
-InstallImmediateMethod(IsSolvable,IsGroup and HasSize,0,
-function(G)
-  if Length(Set(Factors(Size(G))))>2 then
-    TryNextMethod();
-  fi;
-  return true;
-end);
-\endexample
-
-In the light of the fact, that the complexity of factorizing integers is
-still unknown, however, it is debatable whether such a method is really of
-$\varepsilon$ runtime.
 
 Immediate methods can lead to substantial losses in runtime if a
 method gets called too often or if the function installed actually *takes*
@@ -1144,7 +764,7 @@ attributes yourself. This can be acchieved using the variable
 
 \){\fmark IGNORE_IMMEDIATE_METHODS}
 
-While this variable is set to 'true' (it is set to 'false' by default) no
+While this variable is set to `true' (it is set to `false' by default) no
 immediate methods will be called.
 
 \Section{Tracing and profiling methods}
@@ -1161,7 +781,7 @@ induced {\GAP} to print information whenever one of the operations given to
 trace is called. This information consists of the name of the operation
 (given as the string <name>) and -- if present -- the name of the method
 (given as the string <ident>)
-Tracing is turned off again by 'UntraceMethods'.
+Tracing is turned off again by `UntraceMethods'.
 
 \beginexample
 gap> TraceMethods(Size);
@@ -1198,7 +818,7 @@ applicable
 \enditems
 
 If <skip> is given as a positive integer, that many applicable  methods will
-be skipped. This can be used to examine cases that call 'TryNextMethod'.
+be skipped. This can be used to examine cases that call `TryNextMethod'.
 
 If <skip> is a negative integer, a list of all applicable methods (sorted by
 value) is returned instead.
@@ -1244,7 +864,7 @@ arguments and fetches the necessary informations from them.
 
 \danger
 As kind are objects themselves, they also have a kind and a family.
-These are the 'FamilyOfKinds' and the 'KindOfKinds'.
+These are the `FamilyOfKinds' and the `KindOfKinds'.
 
 Usually, kinds are created just as intermediate steps to construct *objects*:
 
@@ -1253,7 +873,7 @@ Usually, kinds are created just as intermediate steps to construct *objects*:
 makes a new object. This object will have family, categories and
 representations as prescribed by <kind>.
 <rlobj> is either a record or a list (depending whether the representation
-is a subclass of 'IsComponentObjectRep' or 'IsPositionalObjectRep') that
+is a subclass of `IsComponentObjectRep' or `IsPositionalObjectRep') that
 will be converted to a positional object or a list object to actually form
 the object.
 
@@ -1262,69 +882,8 @@ Despite the caching of kinds, if you expect to create a lot of
 new objects (as, for example, when implementing new arithmetical objects,
 where each infix opertion will create a new object), it can be helpful to
 store the *default kinds* (the kinds with which objects will be
-created) in the family to avoid calls to 'NewKind' (see "storeinfamily").
+created) in the family to avoid calls to `NewKind' (see "storeinfamily").
 
-\Section{Mutability}
-
-Changing list entries may affect other lists, something similar holds for
-records:
-
-\beginexample
-gap> l:=[[1,2]];;
-gap> m:=[l[1]];
-[ 1, 2 ]
-gap> m[1][1]:=2;;
-gap> l;
-[ 2, 2 ];
-\endexample
-
-But information stored in objects may be implicitely used in some other place.
-Therefore it is not a good idea to change this information. If an algorithm
-returns an object, it is not known, however, whether some other object
-stores this object as information somewhere. The only remedy would
-be to actually *copy* the stored information before returning it to a user
-or another routine. Needless to say, this would be a bad idea both on
-runtime and memory usage.
-
-The remedy for this used in {\GAP} is that you can make objects
-*immutable*
-(Some, like integers or permutations always were):
-
-\>Immutable(<obj>)
-
-returns a copy of <obj> that is immutable. That is, you cannot assign
-anything to parts of <obj>. (If you try to, {\GAP} complains with an error.)
-
-This allows objects to return its *master* copy of a related object without
-the fear of having this object inadvertedly destroyed.
-
-\danger
-A side effect is that immutable objects allow to make ''real'' sets from 
-objects that otherwise would be lists. The section "Sets that may be none"
-tells more about this problem.
-
-Some objects are made immutable by creation. These are
-
-\beginitems
-Kernel Objects&like integers, permutations, words in free generators. 
-
-Objects obtained by 'Objectify'&These are basically any ''mathematical
-objects'' you will encounter in {\GAP}, but implicitely storing attributes in
-them is still permitted.
-
-Attributes&unless they are explicitely declared to be ''mutable''.
-
-Vectors&and Matrices (when obtained as a result of a binary operation). The
-reason for this has been the desire to increase the speed of orbit
-operations (which now can use binary search).
-\enditems
-
-\>IsMutable(<obj>)
-
-is a filter that tests whether an object is mutable.
-
-If you got an immutable object which you want to modify, you can get an
-mutable copy by using 'ShallowCopy' ("ShallowCopy").
 
 \Section{Simulating Lists and Records}
 
@@ -1336,15 +895,14 @@ elements even for infinite objects like the integers.
 
 This simulation for lists works via four special operations:
 
-\){\fmark $\backslash[\backslash]$(<obj>,<pos>)}
+\){\fmark \\[\\](<obj>,<pos>)}
 \index{$\backslash[\backslash]$}
-\){\fmark
-$\backslash[\backslash]\backslash:\backslash=$(<obj>,<pos>,<arg>)}
-\){\fmark 'IsBound'$\backslash[\backslash]$(<obj>,<pos>)}
-\){\fmark 'Unbind'$\backslash[\backslash]$(<obj>,<pos>)}
+\){\fmark \\[\\]\\:\\=(<obj>,<pos>,<arg>)}
+\){\fmark IsBound\\[\\](<obj>,<pos>)}
+\){\fmark Unbind\\[\\](<obj>,<pos>)}
 
 These operations are defined for the category tuple
-('IsList', 'IsInt and IsPosRat') (respectively <IsObject> added for
+('IsList', `IsInt and IsPosRat') (respectively <IsObject> added for
 $\backslash[\backslash]\backslash:\backslash=$).
 <obj> is the object simulating a list, <pos> is a positive integer, giving
 the list position.
@@ -1357,14 +915,14 @@ boundness.
 
 The simulation for records works via the following four special operations:
 
-\){\fmark $\backslash\.$(<obj>,<rnam>)}
+\){\fmark \\.(<obj>,<rnam>)}
 \index{$\backslash\.$}
-\){\fmark $\backslash\.\backslash:\backslash=$(<obj>,<rnam>,<arg>)}
-\){\fmark 'IsBound'$\backslash\.$(<obj>,<rnam>)}
-\){\fmark 'Unbind'$\backslash\.$(<obj>,<rnam>)}
+\){\fmark \\.\\:\\=(<obj>,<rnam>,<arg>)}
+\){\fmark IsBound\\.(<obj>,<rnam>)}
+\){\fmark Unbind\\.(<obj>,<rnam>)}
 
 These operations are defined for the category tuple
-('IsObject', 'IsInt and IsPosRat') (espectively <IsObject> added for
+('IsObject', `IsInt and IsPosRat') (espectively <IsObject> added for
 $\backslash\.\backslash:\backslash=$).
 <obj> is the object simulating a list, <rnam> is a component
 identifier (see below).
@@ -1386,13 +944,13 @@ memory. Thus, for example, it is unimportant whether a long components name
 occurs frequently. 
 
 The functions to simulate record access use this <rnam>. The function
-'RNamObj' returns the <rnam> of a <string>, the function 'NamRNam' returns
+`RNamObj' returns the <rnam> of a <string>, the function `NamRNam' returns
 the string for a <rnam> number.
 
 As the <rnam> identifiers are allocated while reading in the library,
 reference should never be to absolute numbers, but using these tranlation
 function. For example, the following method could be used to allow access to
-a groups generators via the '<G>.generators' as has been possible in {\GAP}
+a groups generators via the `<G>.generators' as has been possible in {\GAP}
 3:
 
 \beginexample
@@ -1414,75 +972,75 @@ In this section we list some common family predicates used throughout the
 library.
 
 \beginitems
-'IsElmsColls(<A>,<B>)'&
+`IsElmsColls(<A>,<B>)'&
 
-'IsNotElmsColls(<A>,<B>)'&
+`IsNotElmsColls(<A>,<B>)'&
 
-'IsElmsCollColls(<A>,<B>,<C>)'&
+`IsElmsCollColls(<A>,<B>,<C>)'&
 
-'IsCollsElms(<A>,<B>)'&
+`IsCollsElms(<A>,<B>)'&
 
-'IsCollCollsElms(<A>,<B>,<C>)'&
+`IsCollCollsElms(<A>,<B>,<C>)'&
 
-'IsCollsElmsElms(<A>,<B>,<C>)'&
+`IsCollsElmsElms(<A>,<B>,<C>)'&
 
-'IsCollsElmsElmsElms(<A>,<B>,<C>,<D>)'&
+`IsCollsElmsElmsElms(<A>,<B>,<C>,<D>)'&
 
-'IsCollsElmsElmsX(<A>,<B>,<C>,<D>)'&
+`IsCollsElmsElmsX(<A>,<B>,<C>,<D>)'&
 
-'IsCollCollsElmsElms(<A>,<B>,<C>,<D>)'&
+`IsCollCollsElmsElms(<A>,<B>,<C>,<D>)'&
 
-'IsCollsCollsElms(<A>,<B>,<C>)'&
+`IsCollsCollsElms(<A>,<B>,<C>)'&
 
-'IsCollsXElms(<A>,<B>,<C>)'&
+`IsCollsXElms(<A>,<B>,<C>)'&
 
-'IsFamFamXY(<A>,<B>,<C>,<D>)'&
+`IsFamFamXY(<A>,<B>,<C>,<D>)'&
 
-'IsLieFamFam(<A>,<B>,<C>)'&
+`IsLieFamFam(<A>,<B>,<C>)'&
 
-'IsFamLieFam(<A>,<B>,<C>)'&
+`IsFamLieFam(<A>,<B>,<C>)'&
 
-'IsElmsLieColls(<A>,<B>,<C>)'&
+`IsElmsLieColls(<A>,<B>,<C>)'&
 
-'IsElmsCollLieColls(<A>,<B>,<C>,<D>)'&
+`IsElmsCollLieColls(<A>,<B>,<C>,<D>)'&
 
-'IsCollLieCollsElms(<A>,<B>,<C>,<D>)'&
+`IsCollLieCollsElms(<A>,<B>,<C>,<D>)'&
 
-'IsCoeffsElms(<A>,<B>)'&
+`IsCoeffsElms(<A>,<B>)'&
 
-'IsElmsCoeffs(<A>,<B>)'&
+`IsElmsCoeffs(<A>,<B>)'&
 
-'FamRangeEqFamElm(<A>,<B>)'&
+`FamRangeEqFamElm(<A>,<B>)'&
 
-'FamSourceEqFamElm(<A>,<B>)'&
+`FamSourceEqFamElm(<A>,<B>)'&
 
-'CollFamRangeEqFamElms(<A>,<B>)'&
+`CollFamRangeEqFamElms(<A>,<B>)'&
 
-'CollFamSourceEqFamElms(<A>,<B>)'&
+`CollFamSourceEqFamElms(<A>,<B>)'&
 
-'FamElmEqFamRange(<A>,<B>)'&
+`FamElmEqFamRange(<A>,<B>)'&
 
-'FamElmEqFamSource(<A>,<B>)'&
+`FamElmEqFamSource(<A>,<B>)'&
 
-'FamSource2EqFamRange1(<A>,<B>)'&
+`FamSource2EqFamRange1(<A>,<B>)'&
 
-'FamSource1EqFamRange2(<A>,<B>)'&
+`FamSource1EqFamRange2(<A>,<B>)'&
 
-'FamRange1EqFamRange2(<A>,<B>)'&
+`FamRange1EqFamRange2(<A>,<B>)'&
 
-'FamMapFamSourceFamRange(<A>,<B>)'&
+`FamMapFamSourceFamRange(<A>,<B>)'&
 
-'FamSourceRgtEqFamsLft(<A>,<B>)'&
+`FamSourceRgtEqFamsLft(<A>,<B>)'&
 
-'FamSourceNotEqFamElm(<A>,<B>)'&
+`FamSourceNotEqFamElm(<A>,<B>)'&
 
-'FamRangeNotEqFamElm(<A>,<B>)'&
+`FamRangeNotEqFamElm(<A>,<B>)'&
 
-'IsMagmaRingsRings(<A>,<B>)'&
+`IsMagmaRingsRings(<A>,<B>)'&
 
-'IsRingsMagmaRings(<A>,<B>)'&
+`IsRingsMagmaRings(<A>,<B>)'&
 
-'IsMagmasMagmaRings(<A>,<B>)'&
+`IsMagmasMagmaRings(<A>,<B>)'&
 
 \enditems
 

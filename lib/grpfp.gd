@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations for finitely presented groups
 ##  (fp groups).
@@ -53,9 +53,7 @@ IsElementOfFpGroup := NewCategory( "IsElementOfFpGroup",
 ##
 #C  IsElementOfFpGroupCollection
 ##
-IsElementOfFpGroupCollection := CategoryCollections(
-    "IsElementOfFpGroupCollection",
-    IsElementOfFpGroup );
+IsElementOfFpGroupCollection := CategoryCollections( IsElementOfFpGroup );
 
 
 #############################################################################
@@ -70,8 +68,7 @@ InstallTrueMethod( IsSubgroupFpGroup,
 ##
 #C  IsFamilyOfFpGroupElements
 ##
-IsFamilyOfFpGroupElements := CategoryFamily( "IsFamilyOfFpGroupElements",
-    IsElementOfFpGroup );
+IsFamilyOfFpGroupElements := CategoryFamily( IsElementOfFpGroup );
 
 
 #############################################################################
@@ -84,16 +81,9 @@ ElementOfFpGroup := NewOperation( "ElementOfFpGroup",
 
 ############################################################################
 ##
-#F  RelatorRepresentatives
+#F  CosetTableFpGroup
 ##
-RelatorRepresentatives := NewOperationArgs("RelatorRepresentatives");
-
-
-############################################################################
-##
-#F  RelsSortedByStartGen
-##
-RelsSortedByStartGen := NewOperationArgs("RelsSortedByStartGen");
+CosetTableFpGroup := NewOperationArgs("CosetTableFpGroup");
 
 
 ############################################################################
@@ -104,13 +94,6 @@ CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 
 
 ############################################################################
-##
-#F  CosetTableFromGensAndRels
-##
-CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
-
-
-#############################################################################
 ##
 #F  FreeGeneratorsOfFpGroup( F )
 ##
@@ -138,6 +121,13 @@ IsToFpGroupHomomorphismByImages := IsToFpGroupGeneralMappingByImages
 
 ############################################################################
 ##
+#F  LowIndexSubgroupsFpGroup
+##
+LowIndexSubgroupsFpGroup := NewOperationArgs("LowIndexSubgroupsFpGroup");
+
+
+############################################################################
+##
 #F  MostFrequentGeneratorFpGroup
 ##
 MostFrequentGeneratorFpGroup :=
@@ -149,6 +139,20 @@ MostFrequentGeneratorFpGroup :=
 #F  RelatorsOfFpGroup 
 ##
 RelatorsOfFpGroup := NewOperationArgs( "RelatorsOfFpGroup" );
+
+
+############################################################################
+##
+#F  RelatorRepresentatives
+##
+RelatorRepresentatives := NewOperationArgs("RelatorRepresentatives");
+
+
+############################################################################
+##
+#F  RelsSortedByStartGen
+##
+RelsSortedByStartGen := NewOperationArgs("RelsSortedByStartGen");
 
 
 #############################################################################

@@ -97,9 +97,7 @@ IsRationalFunction := NewCategory(
     "IsRationalFunction",
     IsRingElementWithInverse );
 
-IsRationalFunctionCollection := CategoryCollections(
-    "IsRationalFunctionCollection",
-    IsRationalFunction );
+IsRationalFunctionCollection := CategoryCollections( IsRationalFunction );
 
 
 #############################################################################

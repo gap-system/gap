@@ -206,7 +206,7 @@ MeetPartitionStrat := function( arg )
     if IsPartition( S )  then
         cellno := S.cellno;
     else
-        cellno := 0 * P.cellno;
+        cellno := ListWithIdenticalEntries( Length( P.cellno ), 0 );
         cellno{ S } := 1 + 0 * S;
     fi;
     for p  in strat  do
@@ -260,7 +260,7 @@ StratMeetPartition := function( arg )
     if g = ()  then
         cellsP := P.cellno;
     else
-        cellsP := 0 * P.cellno;
+        cellsP := ListWithIdenticalEntries( Length( P.cellno ), 0 );
         for i  in [ 1 .. NumberCells( P ) ]  do
             cell := Cell( P, i );
             cellsP{ OnTuples( cell, g ) } := i + 0 * cell;
@@ -273,7 +273,7 @@ StratMeetPartition := function( arg )
         cellno := S.cellno;
     else
         nrcells := 1;
-        cellno := 0 * P.cellno;
+        cellno := ListWithIdenticalEntries( Length( P.cellno ), 0 );
         cellno{ S } := 1 + 0 * S;
         blist := BlistList( [ 1 .. NumberCells( P ) ], cellsP{ S } );
         p := Position( blist, true );
@@ -426,7 +426,7 @@ Suborbits := function( arg )
         ChangeStabChain( G, [ a ], false );
         subs := rec( stabChain := G,
                         domain := Omega,
-                         which := 0 * ran,
+                         which := ListWithIdenticalEntries( Length(ran), 0 ),
                         blists := [ BlistList( ran, [ a ] ) ],
                           reps := [ G.identity ],
                        lengths := [ 1 ],
@@ -533,7 +533,7 @@ OrbitalPartition := function( subs, k )
         if IsList( k )  and  Length( k ) = 1  then
             k := k[ 1 ];
         fi;
-        key := 0 * [ 1 .. d ];
+        key := ListWithIdenticalEntries( d, 0 );
         
         # Initialize the flooding algorithm for the <k>th suborbit.
         if IsInt( k )  then
@@ -631,7 +631,7 @@ EmptyRBase := function( G, Omega, P )
                     base := [  ],
                    where := [  ],
                      rfm := [  ],
-               partition := DeepCopy( P ),
+               partition := StructuralCopy( P ),
                      lev := [  ] );
     if IsList( G )  then
         if IsIdentical( G[ 1 ], G[ 2 ] )  then
@@ -666,7 +666,8 @@ end;
 #F  IsTrivialRBase( <rbase> ) . . . . . . . . . . . . . .  is R-base trivial?
 ##
 IsTrivialRBase := function( rbase )
-    return    rbase.level <= 1
+    return        IsInt( rbase.level )
+              and rbase.level <= 1
            or     IsRecord( rbase.level )
               and Length( rbase.level.genlabels ) = 0;
 end;
@@ -1011,13 +1012,13 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
             # <image.partition> for the case ``image = base point''.
             else
                 if not repr  then
-                    oldcel := DeepCopy( oldcel );
+                    oldcel := StructuralCopy( oldcel );
                 fi;
                 rbase.nextLevel( rbase.partition, rbase );
                 if image.perm = true  then
                     Add( rbase.fix, Fixcells( rbase.partition ) );
                 fi;
-                Add( org, 0 * range );
+                Add( org, ListWithIdenticalEntries( Length( range ), 0 ) );
                 if repr  then
                     
                     # In  the representative  case,  change  the   stabilizer
@@ -1059,7 +1060,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                 fi;
             od;
         fi;
-        orB[ d ] := DeepCopy( orb[ d ] );
+        orB[ d ] := StructuralCopy( orb[ d ] );
         
         # Loop  over the candidate images  for the  current base point. First
         # the special case ``image = base'' up to current level.
@@ -1073,10 +1074,6 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
             # Recursion.
             PBEnumerate( d + 1, true );
             image.depth := d;
-            
-            # Extend the  current  level with  the  new  generators from  the
-            # stabilizer, which is finished now.
-            AddGeneratorsExtendSchreierTree( L[ d ], L[ d + 1 ].generators );
             
             # Now we  can  remove  the  entire   <R>-orbit of <a>  from   the
             # candidate list.
@@ -1207,7 +1204,9 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                     #   <L>    with  <t>. Decrease <max>     according to the
                     #   enlarged <L>. Reset <R> to the enlarged <L>.
                     else
-                        AddGeneratorsExtendSchreierTree( L[ d ], [ t ] );
+                        for dd  in [ 1 .. d ]  do
+                            AddGeneratorsExtendSchreierTree( L[ dd ], [ t ] );
+                        od;
                         Info( InfoBckt, 1, "Level ", d,
                                 ": ", IndicesStabChain( L[ 1 ] ) );
                         if m < Length( L[ d ].orbit )  then
@@ -1430,7 +1429,7 @@ Refinements._RegularOrbit1 := function( rbase, image, d, len )
         trees[ d ] := EmptyStabChain( [  ], One( F ),
                               image.regorb.orbit[ 1 ] );
     else
-        trees[ d ] := DeepCopy( trees[ d - 1 ] );
+        trees[ d ] := StructuralCopy( trees[ d - 1 ] );
         AddGeneratorsExtendSchreierTree( trees[ d ],
           [ QuickInverseRepresentative
             ( image.regorb, image.bimg[ d ] ) ^ -1 ] );
@@ -1598,7 +1597,7 @@ NextLevelRegularGroups := function( P, rbase )
                 b := rbase.regorb.orbit[ p ];
                 RegisterRBasePoint( P, rbase, b );
                 gen := QuickInverseRepresentative( rbase.regorb, b ) ^ -1;
-                tree := DeepCopy( tree );
+                tree := StructuralCopy( tree );
                 AddGeneratorsExtendSchreierTree( tree, [ gen ] );
                 AddRefinement( rbase, "_RegularOrbit1",
                         [ d, Length( tree.orbit ) ] );
@@ -1786,7 +1785,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                         AddSet( types[ k ], i );
                     od;
                 od;
-                coll := Collected( DeepCopy( types ) );
+                coll := Collected( StructuralCopy( types ) );
                 start := NumberCells( P ) + 1;
                 for typ  in coll  do
                   k := Filtered( [ 1 .. Length( subs.blists ) ],

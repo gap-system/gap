@@ -1,32 +1,57 @@
 /****************************************************************************
 **
-** Deep Thought deals with trees.  A tree < tree > is a concatenation of 
-** several nodes where each node is a 5-tuple of immediate integers.  If
-** < tree > is an atom it contains only one node,  thus it is itself a
-** 5-tuple. If < tree > is not an atom we obtain its list representation by
+*W  dt.c                        GAP source                  Wolfgang Merkwitz
+**
+*H  @(#)$Id$
+**
+*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+**
+**  This file implements the part of the deep thought package which deals
+**  with computing the deep thought polynomials.
+**
+**  Deep Thought deals with trees.  A tree < tree > is a concatenation of 
+**  several nodes where each node is a 5-tuple of immediate integers.  If
+**  < tree > is an atom it contains only one node,  thus it is itself a
+**  5-tuple. If < tree > is not an atom we obtain its list representation by
 **
 **  < tree >  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
 **
-** Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted by
-** (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
-** The first entry of (<tree>, i) is pos(a),
-** and the second entry is num(a). The third entry of (<tree>, i) gives a mark.
-** (<tree>, i)[3] = 1  means that (<tree>, i) is marked,  (<tree>, i)[3] = 0
-** means that (<tree>, i) is not marked.  The fourth entry of the node tells,
-** if the corresponding polynomial to <a> has to be calculated later.
-** (<tree>, i)[4] = 1  means that the polynamial has to be calculated,
-** (<tree>, i)[4] = 0  means that the polynomial has not to be calculated.
-** If <a> is not an Atom then the fifth entry of (<tree>, i) tells us which
-** node of <tree> is rooting right(<a>). In this case (<tree>, i>) = j
-** means that the (i+j)-th node of <tree> is rooting right(<a>).  If <a> is
-** an atom then (<tree>, i)[5] is either 0 or -1. (<tree>, i)[5] = 0 then
-** means that <a> is an atom from the Right-hand word,  and (<tree, i) = -1
-** means that <a> is an atom from the Left-hand word.  The sixth entry of
-** (<tree>, i) gives the number of nodes of <a>.  The seventh entry of the
-** node finally gives us a boundary for pos(<a>).  (<tree>, i)[7] <= 0
-** means that pos(<a>) is unbound.
+**  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted 
+**  at (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
+**  The first entry of (<tree>, i) is pos(a),
+**  and the second entry is num(a). The third entry of (<tree>, i) gives a 
+**  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,  
+**  (<tree>, i)[3] = 0 means that (<tree>, i) is not marked. The fourth entry
+**  of (<tree>, i) contains the number of knodes of tree(<tree>, i).  The
+**  fifth entry of (<tree>, i) finally contains a boundary for 
+**  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that 
+**  pos( tree(<tree>, i) ) is unbounded.  If tree(<tree>, i) is an atom we
+**  already know that pos( tree(<tree>, i) ) is unbound.  Thus we then can
+**  use the fifth component of (<tree>, i) to store the side.  In this case
+**  (<tree>, i)[5] = -1 means  that tree(<tree>, i) is an atom from the
+**  right hand word, and (<tree>, i)[5] = -2 means that tree(<tree>, i) is
+**  an atom from the left hand word.
+**
+**  A second important data structure deep thought deals with is a deep
+**  thought monomial. A deep thought monomial g_<tree> is a product of
+**  binomial coefficients with a coefficient c. Deep thought monomials
+**  are represented in this implementation by formula
+**  vectors,  which are lists of integers.  The first entry of a formula
+**  vector is 0,  to distinguish formula vectors from trees.  The second
+**  entry is the coefficient c,  and the third and fourth entries are
+**  num( left(tree) ) and num( right(tree) ).  The remaining part of the
+**  formula vector is a concatenation of pairs of integers.  A pair (i, j)
+**  with i > 0 represents binomial(x_i, j).  A pair (0, j) represents
+**  binomial(y_gen, j) when word*gen^power is calculated.
+**
+**  Finally deep thought has to deal with pseudorepresentatives. A
+**  pseudorepresentative <a> is stored in list of length 4. The first entry
+**  stores left( <a> ),  the second entry contains right( <a> ),  the third
+**  entry contains num( <a> ) and the last entry finally gives a boundary
+**  for pos( <b> ) for all trees <b> which are represented by <a>.
 */
-
+char * Revision_dt_c =
+   "@(#)$Id$";
 
 
 
@@ -46,14 +71,17 @@
 #include       "precord.h"
 #include       "records.h"
 #include       "integer.h"
+
+#define INCLUDE_DECLARATION_PART
 #include       "dt.h"
+#undef  INCLUDE_DECLARATION_PART
 
 
-/***************************************************************************
+/****************************************************************************
 **
-*F  DT_POS(tree, index) . . . . . . . . . . . . . . position of (<tree>, index)
+*F  DT_POS(tree, index) . . . . . . . . . . . . . position of (<tree>, index)
 **
-**  'DT_POS' returns pos(<a>) where <a> is the subtree of <tree> rooted by
+**  'DT_POS' returns pos(<a>) where <a> is the subtree of <tree> rooted at
 **  (<tree>, index).  <index> has to be a positive integer less or equal than
 **  the number of nodes of <tree>.
 */
@@ -61,12 +89,12 @@
               (ELM_PLIST(tree, (index-1)*5 + 1 ) ) 
 
 
-/**************************************************************************
+/***************************************************************************
 **
-*F  SET_DT_POS(tree, index, obj) . . . . assign the position of(<tree>, index)
+*F  SET_DT_POS(tree, index, obj) . . . assign the position of(<tree>, index)
 **
 **  'SET_DT_POS sets pos(<a>) to the object <obj>, where <a> is the subtree
-**  of <tree>,  rooted by (<tree>, index).  <index> has to be an positive
+**  of <tree>,  rooted at (<tree>, index).  <index> has to be an positive
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_POS(tree, index, obj) \
@@ -77,7 +105,7 @@
 **
 *F  DT_GEN(tree, index) . . . . . . . . . . . . . generator of (<tree>, index)
 **
-**  'DT_GEN' returns num(<a>) where <a> is the subtree of <tree> rooted by
+**  'DT_GEN' returns num(<a>) where <a> is the subtree of <tree> rooted at
 **  (<tree>, index).  <index> has to be a positive integer less or equal than
 **  the number of nodes of <tree>.
 */
@@ -90,7 +118,7 @@
 *F  SET_DT_GEN(tree, index, obj) . . . assign the generator of(<tree>, index)
 **
 **  'SET_DT_GEN sets num(<a>) to the object <obj>, where <a> is the subtree
-**  of <tree>,  rooted by (<tree>, index).  <index> has to be an positive
+**  of <tree>,  rooted at (<tree>, index).  <index> has to be an positive
 **  integer less or equal to the number of nodes of <tree>
 */
 #define  SET_DT_GEN(tree, index, obj) \
@@ -208,16 +236,13 @@
 #define  CELM(list, pos)         ( INT_INTOBJ(ELM_PLIST(list, pos) ) )
 
 
-
-/***************************************************************************
+/****************************************************************************
 **
-*V  bas
-*V  exp
+*V  Dt_add
 **
-**  'bas' and 'exp' are the record component names for the relations of the
-**  pc-presentations.
+**  Dt_add is used to store the library function dt_add.
 */
-static int    bas, exp;
+
 Obj                    Dt_add;
 extern Obj             ShallowCopyPlist( Obj  list );
 
@@ -264,7 +289,7 @@ Obj  FuncUnmarkTree(
 **                                                   to (<reftree>, index)
 **
 **  'Mark' determines all nodes of the tree <tree>, rooting subtrees almost
-**  equal to the tree rooted by (<reftree>, index).  'Mark' marks these nodes
+**  equal to the tree rooted at (<reftree>, index).  'Mark' marks these nodes
 **  and returns the number of different nodes among these nodes.  Since it
 **  is assumed that the set {pos(a) | a almost equal to (<reftree>, index) }
 **  is equal to {1,...,n} for a positive integer n,  'Mark' actually returns
@@ -290,27 +315,27 @@ UInt   Mark(
         **  num(<tree>, i) > num(<reftree>, index)     */
         while( i < len && 
                DT_GEN(tree, i)  >  refgen )
-            i++;
-        if ( AlmostEqual(tree, i, reftree, index) )
-        {
-            DT_MARK(tree, i);
-            if ( m < INT_INTOBJ( DT_POS(tree, i) )  )
-                m = INT_INTOBJ( DT_POS(tree, i) );
-        }
-        /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
-        **  tree <b> we can now skip the whole tree rooted by (<tree>, i).
+	    i++;
+	if ( AlmostEqual(tree, i, reftree, index) )
+	{
+	    DT_MARK(tree, i);
+	    if ( m < INT_INTOBJ( DT_POS(tree, i) )  )
+	        m = INT_INTOBJ( DT_POS(tree, i) );
+	}
+	/*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
+	**  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
-        **  skip the tree rooted by that node,  because of 
+        **  skip the tree rooted at that node,  because of 
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
         **  Note that (<tree>, i) is the left subnode of another node,  if and
         **  only if the previous node (<tree>, i-1) is not an atom. in this
         **  case (<tree>, i) is the left subnode of (<tree>, i-1).          */
-        if ( DT_LENGTH(tree, i-1) == 1 )
-            /*   skip the tree rooted by (<tree>, i).                    */
-            i = i + DT_LENGTH(tree, i);
-        else
-            /*   skip the tree rooted by (<tree>, i-1)                   */
-            i = i - 1 + DT_LENGTH(tree, i-1);
+	if ( DT_LENGTH(tree, i-1) == 1 )
+	    /*   skip the tree rooted at (<tree>, i).                    */
+	    i = i + DT_LENGTH(tree, i);
+	else
+	    /*   skip the tree rooted at (<tree>, i-1)                   */
+	    i = i - 1 + DT_LENGTH(tree, i-1);
     }
     return m;
 }
@@ -474,19 +499,19 @@ Obj    Mark2(
             }
             /*  add i to <list>[ pos(tree(<tree>, i)) ]                    */ 
             else
-            {
-                new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
-                GROW_PLIST(new, LEN_PLIST(new) + 1);
-                SET_LEN_PLIST(new, LEN_PLIST(new) + 1);
-                SET_ELM_PLIST(new, LEN_PLIST(new), INTOBJ_INT(i) );
-                /*  tell gasman that new has changed                         */
-                CHANGED_BAG(new);
-            }
-        }
-        /*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
-        **  tree <b> we can now skip the whole tree rooted by (<tree>, i).
+	    {
+	        new = ELM_PLIST(list, INT_INTOBJ( DT_POS(tree, i) )  );
+		GROW_PLIST(new, LEN_PLIST(new) + 1);
+		SET_LEN_PLIST(new, LEN_PLIST(new) + 1);
+		SET_ELM_PLIST(new, LEN_PLIST(new), INTOBJ_INT(i) );
+		/*  tell gasman that new has changed                         */
+		CHANGED_BAG(new);
+	    }
+	}
+	/*  Since num(a) < num(b) holds for all subtrees <a> of an arbitrary
+	**  tree <b> we can now skip the whole tree rooted at (<tree>, i).
         **  If (<tree>, i) is the left subnode of another node we can even
-        **  skip the tree rooted by that node,  because of 
+        **  skip the tree rooted at that node,  because of 
         **  num( right(a) )  <  num( left(a) ) for all trees <a>.
         **  Note that (<tree>, i) is the left subnode of another node,  if and
         **  only if the previous node (<tree>, i-1) is not an atom. In this
@@ -560,17 +585,8 @@ UInt    FindTree(
 **
 **  'MakeFormulaVector' returns the polynomial g_<tree> for a tree <tree>
 **  and a pc-presentation <pr> of a nilpotent group.  This polynomial g_<tree>
-**  is a product of binomial coefficients with a coefficient c.  A detailed
-**  description of g_<tree> can be found in the diploma thesis of Wolfgang
-**  Merkwitz or in the paper of C. Leedham-Green and L. H. Soicher.  The
-**  polynomial g_<tree> is represented in this implementation a formula
-**  vector,  which is a list of integers.  The first entry of the formula
-**  vector is 0,  to distinguish formula vectors from trees.  The second
-**  entry is the coefficient c,  and the third and fourth entries are
-**  num( left(tree) ) and num( right(tree) ).  The remaining part of the
-**  formula vector is a concatenation of pairs of integers.  A pair (i, j)
-**  with i > 0 represents binomial(x_i, j).  A pair (0, j) represents
-**  binomial(y_gen, j) when word*gen^power is calculated.
+**  is a product of binomial coefficients with a coefficient c ( see the
+**  header of this file ).
 **
 **  For the calculation of the coefficient c the top node of <tree> is ignored
 **  because it can happen that trees are equal exept for the top node.
@@ -665,7 +681,7 @@ Obj    MakeFormulaVector(
 *F  FuncMakeFormulaVector(<self>,<tree>,<pr>) . . . . . compute the formula 
 **                                                      vector for <tree>
 **
-**  'FuncMakeFormulaVector' implements the iternal function
+**  'FuncMakeFormulaVector' implements the internal function
 **  'MakeFormulaVector(<tree>, <pr>)'.
 **
 **  'MakeFormulaVector(<tree>, <pr>)'
@@ -690,7 +706,6 @@ Obj    FuncMakeFormulaVector(
 *F  binomial(<n>, <k>) . . . . . . . . . binomial coefficient of <n> and <k>
 **
 **  'binomial' returns the binomial coefficient of the integers <n> and <k>.
-**  This function is identical to the gap library function 'Binomial'.
 */
 Obj  binomial( Obj   n,
                Obj   k  )
@@ -722,9 +737,7 @@ Obj  binomial( Obj   n,
 **  'Leftof' returns 1 if tree(<tree1>, index1) is left of tree(<tree2>,index2)
 **  in the word being collected at the first instance,  that 
 **  tree(<tree1>, index1) and tree(<tree2>, index2) both occur. It is assumed
-**  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2).  'Leftof'
-**  is described in the paper of C. R. Leedham-Green and L. H. Soicher and in 
-**  the diploma thesis of Wolfgang Merkwitz.
+**  that tree(<tree1>, index1) is not equal to tree(<tree2>, index2). 
 */
 int     Leftof(
                 Obj     tree1,
@@ -770,9 +783,7 @@ int     Leftof(
 **  assumed that tree(<tree2>, index2) occurs earlier than 
 **  tree(<tree1>,index1).  Furthemore it is assumed that if both
 **  tree(<tree1>, index1) and tree(<tree2>, index2) are non-atoms,  then their
-**  right trees and their left trees are not equal.  'Leftof2' is the second
-**  part of the function leftof described in the works mentioned in the
-**  comment to 'Leftof'.
+**  right trees and their left trees are not equal. 
 */
 int    Leftof2(
                 Obj    tree1,
@@ -803,8 +814,7 @@ int    Leftof2(
 **  is a non-atom. Furthermore it is assumed that if both of these trees are
 **  non-atoms,  right(tree(<tree1>, index1) ) does not equal
 **  right(tree(<tree2>, index2) ) or left(tree(<tree1>, index1) ) does not
-**  equal left(tree(<tree2>, index2) ). 'Earlier is described in the paper
-**  of  C. R. Leedham-Green and L. H. Soicher.
+**  equal left(tree(<tree2>, index2) ). 
 */
 int    Earlier(
                 Obj    tree1,
@@ -829,6 +839,15 @@ int    Earlier(
 }
 
 
+/****************************************************************************
+**
+**  GetPols( <list>, <pr>, <pols> )
+**
+**  GetPols computes all representatives which are represented by thr
+**  pseudorepresentative <list>,  converts them all into the corresponding
+**  deep thought monomial and stores all these monomials in the list <pols>.
+*/
+
 void    GetPols( 
                 Obj    list,
                 Obj    pr,
@@ -846,36 +865,49 @@ void    GetPols(
     rreps = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(lreps, 0);
     SET_LEN_PLIST(rreps, 0);
-    GetReps( ELM_PLIST(list, 1), pr, lreps );
-    GetReps( ELM_PLIST(list, 2), pr, rreps );
+    /*  get the representatives that are represented by <list>[1] and those
+    **  which are represented by <list>[2].                                 */
+    GetReps( ELM_PLIST(list, 1), lreps );
+    GetReps( ELM_PLIST(list, 2), rreps );
     lenr = LEN_PLIST(rreps);
     lenl = LEN_PLIST(lreps);
     for  (i=1; i<=lenl; i++)
         for  (j=1; j<=lenr; j++)
-            {
-                k = LEN_PLIST( ELM_PLIST(lreps, i) )
-                  + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
-                tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
-                SET_LEN_PLIST(tree, k);        /*"Anderung der Datenstruktur */
-                SET_ELM_PLIST(tree, 1, INTOBJ_INT(1) );
-                SET_ELM_PLIST(tree, 2, ELM_PLIST( list, 3) );
-                SET_ELM_PLIST(tree, 3, INTOBJ_INT(0) );
-                SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
-                SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
-                tree1 = ELM_PLIST(lreps, i);
-                len = LEN_PLIST( tree1 );
-                for  (l=1; l<=len; l++)
-                    SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
-                k = LEN_PLIST(tree1) + 5;
-                tree1 = ELM_PLIST(rreps, j);
-                len = LEN_PLIST( tree1 );
-                for  (l=1; l<=len; l++)
-                    SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
-                UnmarkTree(tree);
-                FindNewReps2(tree, pols, pr);
-            }
+	    {
+	        /* now get all representatives, which can be constructed from
+	        ** <lreps>[<i>] and <rreps>[<j>] and add the corresponding
+	        ** deep thought monomials to <pols>                         */
+	        k = LEN_PLIST( ELM_PLIST(lreps, i) )
+		  + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
+		tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
+		SET_LEN_PLIST(tree, k);        /*"Anderung der Datenstruktur */
+		SET_ELM_PLIST(tree, 1, INTOBJ_INT(1) );
+		SET_ELM_PLIST(tree, 2, ELM_PLIST( list, 3) );
+		SET_ELM_PLIST(tree, 3, INTOBJ_INT(0) );
+		SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
+		SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
+		tree1 = ELM_PLIST(lreps, i);
+		len = LEN_PLIST( tree1 );
+		for  (l=1; l<=len; l++)
+		    SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
+		k = LEN_PLIST(tree1) + 5;
+		tree1 = ELM_PLIST(rreps, j);
+		len = LEN_PLIST( tree1 );
+		for  (l=1; l<=len; l++)
+		    SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
+		UnmarkTree(tree);
+		FindNewReps2(tree, pols, pr);
+	    }
 }
 
+
+
+/****************************************************************************
+**
+*F  FuncGetPols( <self>, <list>, <pr>, <pols> )
+**
+**  FuncGetPols implements the internal function GetPols.
+*/
 
 Obj      FuncGetPols(
                      Obj      self,
@@ -889,14 +921,22 @@ Obj      FuncGetPols(
         ErrorReturnVoid("<list> must be a generalised representativ not a tree"
                         ,0L, 0L, "you can return");
     GetPols(list, pr, pols);
-    return  0;
+    return (Obj) 0;
 }
 
 
+
+/****************************************************************************
+**
+*F  GetReps( <list>, <reps> )
+**
+**  GetReps computes all representatives which are represented by the
+**  pseudorepresentative <list> and adds them to the list <reps>.
+*/
+
 void    GetReps( 
-                Obj    list,
-                Obj    pr,
-                Obj    reps     )
+		Obj    list,
+		Obj    reps     )
 {
     Obj    lreps,
            rreps,
@@ -915,13 +955,17 @@ void    GetReps(
     rreps = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(lreps, 0);
     SET_LEN_PLIST(rreps, 0);
-    GetReps( ELM_PLIST(list, 1), pr, lreps );
-    GetReps( ELM_PLIST(list, 2), pr, rreps );
+    /* now get all representatives which are represented by <list>[1] and
+    ** all representatives which are represented by <list>[2].           */
+    GetReps( ELM_PLIST(list, 1), lreps );
+    GetReps( ELM_PLIST(list, 2), rreps );
     lenl = LEN_PLIST( lreps );
     lenr = LEN_PLIST( rreps );
     for  (i=1; i<=lenl; i++)
         for  (j=1; j<=lenr; j++)
-        {
+	{
+	    /* compute all representatives which can be constructed from
+	    ** <lreps>[<i>] and <rreps>[<j>] and add them to <reps>.   */
             k = LEN_PLIST( ELM_PLIST(lreps, i) )
                 + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
             tree = NEW_PLIST(T_PLIST, k);            /* patibilit"at nach*/
@@ -958,16 +1002,24 @@ void    GetReps(
 **  'FindNewReps' constructs all trees <tree'> with the following properties.
 **  1) left(<tree'>) is equivalent to left(<tree>).
 **     right(<tree'>) is equivalent to right(<tree>).
+**     num(<tree'>) = num(<tree>)
 **  2) <tree'> is the least tree in its equivalence class.
 **  3) for each marked node of (<tree>, i) of <tree> tree(<tree>, i) is equal
 **     to tree(<tree'>, i).
-**  'FindNewReps' adds these trees to the list of representatives <reps>.
+**  There are three versions of FindNewReps. FindNewReps1 adds all found
+**  trees to the list <reps>.  This version is called by GetReps.
+**  FindNewReps2 computes for each found tree the corresponding deep thought
+**  monomial adds these deep thought monomials to <reps>.  This version
+**  is called from GetPols.
+**  The third version FindNewReps finally assumes that <reps> is the list of 
+**  pseudorepresentatives. This Version adds all found trees to <reps> and
+**  additionally all trees, that fulfill 1), 2) and 3) except for
+**  num(<tree'>) = num(<tree>).  This version is called from the library
+**  function calrepsn.
 **  It is assumed that both left(<tree>) and right(<tree>) are the least
 **  elements in their equivalence class.
-**  'FindNewReps' works in double recursion with 'Findsubs'.  A detailed
-**  description of the whole process can be found in the diploma thesis
-**  of Wolfgang Merkwitz.
 */
+
 void   FindNewReps1(
                     Obj     tree,
                     Obj     reps
@@ -995,15 +1047,8 @@ void   FindNewReps1(
     **  subtrees are all marked                                          */
     a = FindTree(tree, DT_RIGHT(tree, 1) );
     /*  If we do not find such a tree we at the bottom of the recursion.
-    **  If leftof(left(<tree>),  right(<tree>) ) holds we add all trees
-    **  <tree'> with left(<tree'>) = left(<tree>), 
-    **  right(<tree'>) = right(<tree>) to <reps>,  and <tree'> is the
-    **  least element in its equivalence calss.  Note that for such a 
-    **  tree we have pos(<tree'>) = 1 and num(<tree'>) = j where j is a
-    **  positive integer for which
-    **  c_( num(left(<tree>),  num(right(<tree>)), j ) does not equal
-    **  0.  These integers are contained in the list
-    **  pr[ num(left(<tree>)) ][ num(right(<tree>)) ].bas .             */
+    **  If leftof(left(<tree>),  right(<tree>) ) holds we add all <tree>
+    **  to <reps>.                                                       */
     if  ( a == 0 )
     {
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
@@ -1095,21 +1140,15 @@ void   FindNewReps2(
     **  subtrees are all marked                                          */
     a = FindTree(tree, DT_RIGHT(tree, 1) );
     /*  If we do not find such a tree we at the bottom of the recursion.
-    **  If leftof(left(<tree>),  right(<tree>) ) holds we add all trees
-    **  <tree'> with left(<tree'>) = left(<tree>), 
-    **  right(<tree'>) = right(<tree>) to <reps>,  and <tree'> is the
-    **  least element in its equivalence calss.  Note that for such a 
-    **  tree we have pos(<tree'>) = 1 and num(<tree'>) = j where j is a
-    **  positive integer for which
-    **  c_( num(left(<tree>),  num(right(<tree>)), j ) does not equal
-    **  0.  These integers are contained in the list
-    **  pr[ num(left(<tree>)) ][ num(right(<tree>)) ].bas .             */
+    **  If leftof(left(<tree>),  right(<tree>) ) holds we convert <tree>
+    **  into the corresponding deep thought monomial and add that to
+    **  <reps>.                                                          */
     if  ( a == 0 )
     {
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
         {
                 /*  get the formula vector of tree and add it to
-                **  reps[ rel.bas[1] ].                                */  
+                **  reps[ rel[1] ].                                */  
             UnmarkTree(tree);
             tree = MakeFormulaVector( tree, pr);
             CALL_3ARGS(Dt_add, tree, reps, pr);
@@ -1166,18 +1205,6 @@ void   FindNewReps2(
 }
 
 
-Obj    Funcposition(Obj      self,
-                    Obj      vector)
-{
-    UInt   res,i;
-
-    res = CELM(vector, 6)*CELM(vector, 6);
-    for  (i=7; i < LEN_PLIST(vector); i+=2)
-        res += CELM(vector, i)*CELM(vector, i+1)*CELM(vector, i+1);
-    return INTOBJ_INT(res);
-}
-
-
 void   FindNewReps(
                     Obj     tree,
                     Obj     reps,
@@ -1219,7 +1246,7 @@ void   FindNewReps(
     **  positive integer for which
     **  c_( num(left(<tree>),  num(right(<tree>)), j ) does not equal
     **  0.  These integers are contained in the list
-    **  pr[ num(left(<tree>)) ][ num(right(<tree>)) ].bas .             */
+    **  pr[ num(left(<tree>)) ][ num(right(<tree>)) ].             */
     if  ( a == 0 )
     {
         if ( Leftof(tree, DT_LEFT(tree, 1), tree, DT_RIGHT(tree, 1) )  )
@@ -1313,22 +1340,8 @@ void   FindNewReps(
 *F  FuncFindNewReps(<self>,<args>) . . . . . . construct new representatives
 **
 **  'FuncFindNewReps' implements the internal function 'FindNewReps'.
-**
-**  'FindNewReps(<tree>, <reps>, <pr>, <max>)'
-**
-**  'FindNewReps' constructs all trees <tree'> with the following properties.
-**  1) left(<tree'>) is equivalent to left(<tree>).
-**     right(<tree'>) is equivalent to right(<tree>).
-**  2) <tree'> is the least tree in its equivalence class.
-**  3) for each marked node of (<tree>, i) of <tree> tree(<tree>, i) is equal
-**     to tree(<tree'>, i).
-**  'FindNewReps' adds these trees to the list of representatives <reps>.
-**  It is assumed that both left(<tree>) and right(<tree>) are the least
-**  elements in their equivalence class.
-**
-**  'FindNewReps only returns correct results if all nodes of <tree> are
-**  unmarked.
 */
+
 Obj    FuncFindNewReps(
                         Obj     self,
                         Obj     tree,
@@ -1433,9 +1446,14 @@ Obj    Part(
 v**  argument.
 **
 **  It is assumed that the conditions 1) and 2) hold for a{ [1..al-1] } and
-**  b{ [1..bl-1] }.  A detailed description of 'FindSubs' can be found in
-**  the diploma thesis of Wolfgang Merkwitz.
+**  b{ [1..bl-1] }.  
+**
+**  There are three versions of FindSubs according to the three versions of
+**  FindNewReps.  FindSubs1 is called from FindNewReps1 and calls
+**  FindNewReps1.  FindSubs2 is called from FindNewReps2 and calls 
+**  FindNewReps2.  FindSubs is called from FindNewReps and calls FindNewReps.
 */
+
 void  FindSubs1(
                 Obj        tree,
                 int        x,     /*  subtree of <tree>                     */
@@ -1705,6 +1723,7 @@ void    SetSubs(
 **  contained in <list> to the original state.  Furthermore it unmarks the
 **  top node of each of those trees.
 */
+
 void    UnmarkAEClass(
                        Obj      tree,
                        Obj      list  )
@@ -1724,6 +1743,30 @@ void    UnmarkAEClass(
 }
 
 
+/****************************************************************************
+**
+*F  Funcposition( <self>, <vector> )
+**
+**  Funcposition implements the internal function
+**
+**  DT_evaluation( <vector> ).
+**
+**  DT_evaluation returns a positive integer which is used to sort the deep
+**  monomials.  DT_evaluation is called from the library function dt_add.
+*/
+
+Obj    Funcposition(Obj      self,
+                    Obj      vector)
+{
+    UInt   res,i;
+
+    res = CELM(vector, 6)*CELM(vector, 6);
+    for  (i=7; i < LEN_PLIST(vector); i+=2)
+        res += CELM(vector, i)*CELM(vector, i+1)*CELM(vector, i+1);
+    return INTOBJ_INT(res);
+}
+
+
 
 /****************************************************************************
 **
@@ -1734,9 +1777,6 @@ void    UnmarkAEClass(
 void    InitDeepThought( void )
 {
 
-    /*  get the record component names 'bas' and 'exp'                      */
-    exp = RNamName("exp");
-    bas = RNamName("bas");
     /*  install the internal functions                                      */
     InitHandlerFunc( FuncMakeFormulaVector, "dt: make formula vector");
     AssGVar( GVarName( "MakeFormulaVector" ), NewFunctionC("MakeFormulaVector",
@@ -1760,3 +1800,10 @@ void    InitDeepThought( void )
              1L, "vector", Funcposition)         );
     InitFopyGVar( GVarName( "dt_add" ), &Dt_add );
 }
+
+
+/****************************************************************************
+**
+*E  dt.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+**
+*/

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for vector spaces.
 ##
@@ -77,7 +77,7 @@ IsGaussianSpace := NewCategory( "IsGaussianSpace", IsVectorSpace );
 IsDivisionRing :=     IsLeftVectorSpace
                   and IsLeftOperatorRing
                   and IsAssociative
-                  and IsMagmaWithInversesAndZero;
+                  and IsMagmaWithInversesIfNonzero;
 SetIsDivisionRing := Setter( IsDivisionRing );
 HasIsDivisionRing := Tester( IsDivisionRing );
 
@@ -201,6 +201,24 @@ Intersection2Spaces := NewOperationArgs( "Intersection2Spaces" );
 #F  FullRowSpace( <F>, <n> )
 ##
 FullRowSpace := FullRowModule;
+
+
+#############################################################################
+##
+#C  IsSubspacesVectorSpace( <D> )
+##
+IsSubspacesVectorSpace := NewCategory( "IsSubspacesVectorSpace",
+    IsDomain );
+
+
+#############################################################################
+##
+#M  IsFinite( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
+##
+##  We allow subspaces domains in 'IsSubspacesVectorSpace' only for finite
+##  vector spaces.
+##
+InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 
 
 #############################################################################

@@ -65,11 +65,8 @@ Is32BitsSingleCollectorRep := NewRepresentation(
 ##  will reduce all right hand sides and convert  them into an object of type
 ##  'defaultType'.
 ##
-IsDefaultRhsTypeSingleCollector := NEW_FILTER(
+IsDefaultRhsTypeSingleCollector := NewFilter(
     "IsDefaultRhsTypeSingleCollector" );
-FILTERS[FLAG1_FILTER(IsDefaultRhsTypeSingleCollector)] :=
-    IsDefaultRhsTypeSingleCollector;
-RANKS_FILTERS[FLAG1_FILTER(IsDefaultRhsTypeSingleCollector)] := 1;
 
 
 #############################################################################

@@ -15,7 +15,7 @@ Revision.files_gi :=
 #############################################################################
 ##
 
-#R  IsDirectoryRep
+#R  IsDirectoryRep  . . . . . . . . . . default representation of a directory
 ##
 IsDirectoryRep := NewRepresentation(
     "IsDirectoryRep",
@@ -25,7 +25,7 @@ IsDirectoryRep := NewRepresentation(
 
 #############################################################################
 ##
-#V  DirectoryType
+#V  DirectoryType . . . . . . . . . . . . . . . . default type of a directory
 ##
 DirectoryType := NewType(
     DirectoriesFamily,
@@ -35,7 +35,7 @@ DirectoryType := NewType(
 #############################################################################
 ##
 
-#M  Directory( <str> )
+#M  Directory( <str> )  . . . . . . . . . . . . create a new directpory object
 ##
 InstallMethod( Directory,
     "string",
@@ -87,8 +87,8 @@ InstallOtherMethod( Filename,
     0,
 
 function( dir, name )
-    if '/' in name or '\\' in name or ':' in name  then
-        Error( "<name> must not contain '/', '\\' or ':'" );
+    if '\\' in name or ':' in name  then
+        Error( "<name> must not contain '\\' or ':'" );
     fi;
     return Immutable( Concatenation( dir![1], name ) );
 end );

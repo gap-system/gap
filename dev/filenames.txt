@@ -289,21 +289,28 @@ send to the process (which may continue to run).
 Stream Operations
 =================
 
-'ReadChar( <stream-in> )'
+'ReadByte( <stream-in> )'
 'ReadLine( <stream-in> )'
 'ReadAll( <stream-in> )'
 
-'ReadChar', 'ReadLine', and 'ReadAll' return one character, one line, or
-all characters from the input stream <stream-in>.  If <stream-in> is the
-input stream of a input/output process, they may return 'fail', only a
-part of a line, or only a part of input if the process is also trying to
-read.
+'ReadByte', 'ReadLine',  and 'ReadAll' return  one character (returned
+as integer), one line (returned as string without the newline), or all
+characters (returned as string) from the input stream <stream-in>.
+
+'ReadByte' waits until  a character is  available, 'ReadLine' reads in
+the input until a newline is read, 'ReadAll'  reads in the input until
+the stream is at end-of-stream.
+
+If <stream-in> is the input stream of a input/output process, they may
+also return 'fail' if the process is also trying to read.
+
 
 'ReadBytes( <stream-in>, <length> )'
 
 returns a byte-stream of length <length> or less.
 
-'WriteChar( <stream-out>, <char> )'
+
+'WriteByte( <stream-out>, <char> )'
 'WriteLine( <stream-out>, <line> )'
 'WriteAll( <stream-out>, <string> )'
 
@@ -320,13 +327,14 @@ as input.
 'IsEndOfStream( <stream-in> )'
 
 'IsEndOfStream' returns 'true' if the input stream is at <end-of-stream>,
-and 'false' otherwise.
+and 'false' otherwise.  'IsEndOfStream' might return 'false' even if
+the next 'ReadByte' fails.
 
 'ErrorStream( <stream-in> )'
 
 'ErrorStream' returns a string describing the error condition (if any)
 for the input stream <stream-in>.  If no error happened for <stream-in>
-it returns 'false'.
+it returns 'fail'.
 
 
 Example

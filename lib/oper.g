@@ -17,75 +17,6 @@ Revision.oper_g :=
 #############################################################################
 ##
 
-#F  STRING_INT( <int> ) . . . . . . . . . . . . . . . .  string of an integer
-##
-STRING_INT := function ( n )
-    local  str,  num,  digits;
-
-    # construct the string without sign
-    num:= n;
-    if num < 0 then num := - n; fi;
-    digits := [ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ];
-    str := "";
-    repeat
-        ADD_LIST( str, digits[num mod 10 + 1] );
-        num := QUO_INT( num, 10 );
-    until num = 0;
-
-    # add the sign and return
-    if n < 0  then
-        ADD_LIST( str, '-' );
-    fi;
-    return IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
-end;
-
-
-#############################################################################
-##
-#F  Ordinal( <n> )  . . . . . . . . . . . . . ordinal of an integer as string
-##
-Ordinal := function ( n )
-    local   str;
-
-    str := STRING_INT(n);
-    if   n mod 10 = 1  and n mod 100 <> 11  then
-        APPEND_LIST_INTR( str, "st" );
-    elif n mod 10 = 2  and n mod 100 <> 12  then
-        APPEND_LIST_INTR( str, "nd" );
-    elif n mod 10 = 3  and n mod 100 <> 13  then
-        APPEND_LIST_INTR( str, "rd" );
-    else
-        APPEND_LIST_INTR( str, "th" );
-    fi;
-    return str;
-end;
-
-
-############################################################################
-##
-
-#F  CallFuncList( <func>, <args> )
-##
-CallFuncList := CALL_FUNC_LIST;
-
-
-#############################################################################
-##
-#F  Setter( <filter> )
-##
-Setter := SETTER_FILTER;
-
-
-#############################################################################
-##
-#F  Tester( <filter> )
-##
-Tester := TESTER_FILTER;
-
-
-#############################################################################
-##
-
 #V  CATS_AND_REPS
 ##
 ##  a list of filter numbers of categories and representations
@@ -98,19 +29,6 @@ CATS_AND_REPS := [];
 #V  CONSTRUCTORS
 ##
 CONSTRUCTORS := [];
-
-
-#############################################################################
-##
-#V  FILTERS
-#V  RANKS_FILTERS
-##
-##  are lists containing at position <i> the filter with number <i> resp.
-##  its rank.
-##
-FILTERS := [];
-
-RANKS_FILTERS := [];
 
 
 #############################################################################
@@ -183,30 +101,7 @@ IGNORE_IMMEDIATE_METHODS := false;
 #############################################################################
 ##
 
-#F  NamesFilter( <flags> )
-##
-NamesFilter := function( flags )
-    local  bn,  i;
-
-    if IS_FUNCTION(flags)  then
-        flags := FLAGS_FILTER(flags);
-    fi;
-    bn := SHALLOW_COPY_OBJ(TRUES_FLAGS(flags));
-    for i  in  [ 1 .. LEN_LIST(bn) ]  do
-        if not IsBound(FILTERS[ bn[i] ])  then
-            bn[i] := STRING_INT( bn[i] );
-        else
-            bn[i] := NAME_FUNCTION(FILTERS[ bn[i] ]);
-        fi;
-    od;
-    return bn;
-
-end;
-
-
-#############################################################################
-##
-#F  InstallHiddenTrueMethod( <filter>, <filters> )
+#F  WITH_HIDDEN_IMPS_FLAGS( <flags> )
 ##
 HIDDEN_IMPS := [];
 WITH_HIDDEN_IMPS_FLAGS_CACHE      := [];
@@ -214,45 +109,31 @@ WITH_HIDDEN_IMPS_FLAGS_COUNT      := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
 WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
 
-CLEAR_HIDDEN_IMP_CACHE := function()
-    WITH_HIDDEN_IMPS_FLAGS_CACHE      := [];
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT  := 0;
-    WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
-end;
+CLEAR_HIDDEN_IMP_CACHE := function( filter )
+    local   i, flags;
 
-
-InstallHiddenTrueMethod := function ( filter, filters )
-    local   imp;
-
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( HIDDEN_IMPS, imp );
-    CLEAR_HIDDEN_IMP_CACHE();
+    flags := FLAGS_FILTER(filter);
+    for i  in [ 1, 3 .. LEN_LIST(WITH_HIDDEN_IMPS_FLAGS_CACHE)-1 ]  do
+        if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[i])  then
+          if IS_SUBSET_FLAGS(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1],flags)  then
+            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i]);
+            Unbind(WITH_HIDDEN_IMPS_FLAGS_CACHE[i+1]);
+          fi;
+      fi;
+    od;
 end;
 
 
 WITH_HIDDEN_IMPS_FLAGS := function ( flags )
-    local   with,  changed,  imp,  hash,  hash2,  i;
+    local   with,  changed,  imp,  hash;
 
-    hash := HASH_FLAGS(flags) mod 11001;
-    for i  in [ 0 .. 3 ]  do
-      hash2 := 2 * ((hash+31*i) mod 11001) + 1;
-      if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash2])  then
-        if IS_IDENTICAL_OBJ(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash2],flags) then
-          WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT :=
-            WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
-          return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash2+1];
+    hash := 2 * ( HASH_FLAGS(flags) mod 1009 ) + 1;
+    if IsBound(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash])  then
+        if IS_IDENTICAL_OBJ(WITH_HIDDEN_IMPS_FLAGS_CACHE[hash],flags)  then
+            WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT :=
+              WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT + 1;
+            return WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1];
         fi;
-      else
-        break;
-      fi;
-    od;
-    if i = 3  then
-      WITH_HIDDEN_IMPS_FLAGS_COUNT :=
-        ( WITH_HIDDEN_IMPS_FLAGS_COUNT + 1 ) mod 4;
-      i := WITH_HIDDEN_IMPS_FLAGS_COUNT;
-      hash2 := 2*((hash+31*i) mod 11001) + 1;
     fi;
 
     WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS+1;
@@ -270,15 +151,29 @@ WITH_HIDDEN_IMPS_FLAGS := function ( flags )
         od;
     od;
 
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash2  ] := flags;
-    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash2+1] := with;
+    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash  ] := flags;
+    WITH_HIDDEN_IMPS_FLAGS_CACHE[hash+1] := with;
     return with;
 end;
 
 
 #############################################################################
 ##
-#F  InstallTrueMethod( <to>, <from> )
+#F  InstallHiddenTrueMethod( <filter>, <filters> )
+##
+InstallHiddenTrueMethod := function ( filter, filters )
+    local   imp;
+
+    imp := [];
+    imp[1] := FLAGS_FILTER( filter );
+    imp[2] := FLAGS_FILTER( filters );
+    ADD_LIST( HIDDEN_IMPS, imp );
+end;
+
+
+#############################################################################
+##
+#F  WITH_IMPS_FLAGS( <flags> )
 ##
 IMPLICATIONS := [];
 WITH_IMPS_FLAGS_CACHE      := [];
@@ -287,22 +182,8 @@ WITH_IMPS_FLAGS_CACHE_HIT  := 0;
 WITH_IMPS_FLAGS_CACHE_MISS := 0;
 
 CLEAR_IMP_CACHE := function()
-    WITH_IMPS_FLAGS_CACHE      := [];
-    WITH_IMPS_FLAGS_CACHE_HIT  := 0;
-    WITH_IMPS_FLAGS_CACHE_MISS := 0;
+    WITH_IMPS_FLAGS_CACHE := [];
 end;
-
-
-InstallTrueMethod := function ( filter, filters )
-    local   imp;
-    imp := [];
-    imp[1] := FLAGS_FILTER( filter );
-    imp[2] := FLAGS_FILTER( filters );
-    ADD_LIST( IMPLICATIONS, imp );
-    InstallHiddenTrueMethod( filter, filters );
-end;
-
-InstallImplication := InstallTrueMethod;
 
 
 WITH_IMPS_FLAGS := function ( flags )
@@ -344,6 +225,43 @@ WITH_IMPS_FLAGS := function ( flags )
     WITH_IMPS_FLAGS_CACHE[hash2  ] := flags;
     WITH_IMPS_FLAGS_CACHE[hash2+1] := with;
     return with;
+end;
+
+
+#############################################################################
+##
+#F  InstallTrueMethod( <to>, <from> )
+##
+InstallTrueMethod := function ( filter, filters )
+    local   imp;
+
+    imp := [];
+    imp[1] := FLAGS_FILTER( filter );
+    imp[2] := FLAGS_FILTER( filters );
+    ADD_LIST( IMPLICATIONS, imp );
+    InstallHiddenTrueMethod( filter, filters );
+
+    # clear the caches because we do not if <filters> is new
+    CLEAR_HIDDEN_IMP_CACHE( filters );
+    CLEAR_IMP_CACHE();
+end;
+
+
+#############################################################################
+##
+#F  InstallTrueMethodNewFilter( <to>, <from> )
+##
+##  If <from> is a new filter than  it cannot occur in  the cache.  Therefore
+##  we do not flush the cache.  <from> should a basic  filter not an 'and' of
+##  filters. This should only be used in the "type.g".
+##
+InstallTrueMethodNewFilter := function ( filter, filters )
+    local   imp;
+    imp := [];
+    imp[1] := FLAGS_FILTER( filter );
+    imp[2] := FLAGS_FILTER( filters );
+    ADD_LIST( IMPLICATIONS, imp );
+    InstallHiddenTrueMethod( filter, filters );
 end;
 
 
@@ -603,7 +521,7 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     fi;
 
     # test if <check> is true
-    if check  then
+    if CHECK_INSTALL_METHOD and check  then
 
         # find the operation
         req := false;
@@ -641,13 +559,11 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     # add the number of filters required for each argument
     if opr in CONSTRUCTORS  then
         if 0 < LEN_LIST(filters)  then
-            rank := rank - 
-              SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(filters[1])));
+            rank := rank - RankFilter(filters[1]);
         fi;
     else
         for i  in filters  do
-            rank := rank
-                    + SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(i)));
+            rank := rank + RankFilter(i);
         od;
     fi;
 
@@ -863,61 +779,8 @@ end;
 
 #############################################################################
 ##
-#F  NewAttribute( <name>, <filter> )
-#F  NewAttribute( <name>, <filter>, <rank> )
-#F  NewAttribute( <name>, <filter>, "mutable" )
+#F  NewAttributeKernel( <name>, <filter>, <getter> )  . . . . . new attribute
 ##
-##  is a new attribute getter with name <name> that is applicable to objects
-##  with the property <filter>.
-##  If the optional third argument is given then there are two possibilities.
-##  Either it is an integer <rank>, then the attribute tester has this rank.
-##  Or it is the string "mutable", then the value of the attribute shall be
-##  mutable.
-##
-##  If no third argument is given then the rank of the tester is 1.
-##
-NewAttribute := function ( arg )
-    local   name, filter, mutflag, getter, setter, tester;
-
-    # construct getter, setter and tester
-    name   := arg[1];
-    filter := arg[2];
-
-    mutflag := LEN_LIST( arg ) = 3 and arg[3] = "mutable";
-
-    if mutflag then
-      getter := NEW_MUTABLE_ATTRIBUTE( name );
-    else
-      getter := NEW_ATTRIBUTE( name );
-    fi;
-
-    setter := SETTER_FILTER( getter );
-    tester := TESTER_FILTER( getter );
-
-    # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter),FLAGS_FILTER(IS_OBJECT) ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
-
-    # install the default functions
-    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
-    InstallHiddenTrueMethod( filter, tester );
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, mutflag );
-
-    # store the rank
-    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-      RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
-    else
-      RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
-    fi;
-
-    # and return the getter
-    return getter;
-end;
-
 NewAttributeKernel := function ( name, filter, getter )
     local   setter,  tester;
 
@@ -933,13 +796,85 @@ NewAttributeKernel := function ( name, filter, getter )
     ADD_LIST( OPERATIONS, tester );
     ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
 
-    # install the default functions
-    FILTERS[ FLAG2_FILTER( tester ) ]:= tester;
+    # store the information about the filter
+    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+    INFO_FILTERS[ FLAG2_FILTER( tester ) ] := 5;
+
+    # clear the cache because <filter> is something old
     InstallHiddenTrueMethod( filter, tester );
+    CLEAR_HIDDEN_IMP_CACHE( tester );
+
+    # run the attribute functions
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
 
     # store the ranks
-    RANKS_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+
+    # and return the getter
+    return getter;
+end;
+
+
+#############################################################################
+##
+#F  NewAttribute( <name>, <filter> [,"mutable"] [,<rank>] ) . . new attribute
+##
+##  is a new attribute getter with name  <name> that is applicable to objects
+##  with the property <filter>.  If the optional third argument is given then
+##  there are  two possibilities.  Either it is  an integer <rank>,  then the
+##  attribute tester has this rank.  Or it  is the string "mutable", then the
+##  value of the attribute shall be mutable.
+##
+##  If no third argument is given then the rank of the tester is 1.
+##
+NewAttribute := function ( arg )
+    local   name, filter, mutflag, getter, setter, tester;
+
+    # construct getter, setter and tester
+    name   := arg[1];
+    filter := arg[2];
+
+    # the mutability flags is the third one (which can also be the rank)
+    mutflag := LEN_LIST(arg) = 3 and arg[3] = "mutable";
+
+    # construct a new attribute
+    if mutflag then
+        getter := NEW_MUTABLE_ATTRIBUTE( name );
+    else
+        getter := NEW_ATTRIBUTE( name );
+    fi;
+
+    # store the information about the filter
+    INFO_FILTERS[ FLAG2_FILTER(getter) ] := 6;
+
+    # add getter, setter and tester to the list of operations
+    setter := SETTER_FILTER( getter );
+    tester := TESTER_FILTER( getter );
+
+    ADD_LIST( OPERATIONS, getter );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, setter );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter),FLAGS_FILTER(IS_OBJECT) ] );
+    ADD_LIST( OPERATIONS, tester );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+
+    # install the default functions
+    FILTERS[ FLAG2_FILTER( tester ) ] := tester;
+
+    # the <tester> is newly made, therefore  the cache cannot contain a  flag
+    # list involving <tester>
+    InstallHiddenTrueMethod( filter, tester );
+    #CLEAR_HIDDEN_IMP_CACHE();
+
+    # run the attribute functions
+    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, mutflag );
+
+    # store the rank
+    if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
+        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := arg[3];
+    else
+        RANK_FILTERS[ FLAG2_FILTER( tester ) ] := 1;
+    fi;
 
     # and return the getter
     return getter;
@@ -950,23 +885,21 @@ end;
 ##
 #M  default attribute getter and setter methods
 ##
-##  There are the following three default getter methods.
-##  The first requires only 'IsObject', and signals what categories the
-##  attribute requires.
-##  The second requires the category part of the attribute's requirements,
-##  tests the property getters of the requirements,
-##  and -if they are 'true' and afterwards stored in the object- calls the 
-##  attribute operation again.
-##  The third requires the attribute's requirements, and signals that no
+##  There are the following three default getter methods.  The first requires
+##  only 'IsObject', and signals what categories the attribute requires.  The
+##  second requires the category part  of the attribute's requirements, tests
+##  the property  getters of the  requirements, and -if  they  are 'true' and
+##  afterwards  stored in  the object-  calls the  attribute operation again.
+##  The third requires  the  attribute's requirements,  and  signals that  no
 ##  method was found.
 ##
 ##  The default setter method does nothing.
 ##
-##  Note that we do *not* install any default getter method for an attribute
-##  that requires only 'IsObject'.
-##  (The error message is printed by the method selection in this case.)
-##  Also the second and third default method are installed only if the
-##  property getter part of the attribute's requirements is nontrivial.
+##  Note that we do *not* install any  default getter method for an attribute
+##  that requires only   'IsObject'.  (The error  message  is printed by  the
+##  method selection in this case.)  Also the second and third default method
+##  are  installed   only if the   property  getter  part of  the attribute's
+##  requirements is nontrivial.
 ##  
 InstallAttributeFunction(
     function ( name, filter, getter, setter, tester, mutflag )
@@ -1044,13 +977,57 @@ InstallAttributeFunction(
 
 #############################################################################
 ##
-#F  NewProperty( <name>, <filter> )
-#F  NewProperty( <name>, <filter>, <rank> )
+#F  NewPropertyKernel( <name>, <filter>, <getter> ) . . . . . .  new property
 ##
-##  is a new property getter with name <name> that is applicable to objects
-##  with property <filter>.
-##  If the optional argument <rank> is given then the property getter has
-##  this rank, otherwise its rank is 1.
+NewPropertyKernel := function ( name, filter, getter )
+    local   setter,  tester;
+
+    # construct setter and tester
+    setter := SETTER_FILTER( getter );
+    tester := TESTER_FILTER( getter );
+
+    # store the property getters
+    ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
+
+    # add getter, setter and tester to the list of operations
+    ADD_LIST( OPERATIONS, getter );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+    ADD_LIST( OPERATIONS, setter );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ] );
+    ADD_LIST( OPERATIONS, tester );
+    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
+
+    # install the default functions
+    FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
+    FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
+    INFO_FILTERS[ FLAG1_FILTER( getter ) ]:= 7;
+    INFO_FILTERS[ FLAG2_FILTER( getter ) ]:= 8;
+
+    # clear the cache because <filter> is something old
+    InstallHiddenTrueMethod( tester, getter );
+    CLEAR_HIDDEN_IMP_CACHE( getter );
+    InstallHiddenTrueMethod( filter, tester );
+    CLEAR_HIDDEN_IMP_CACHE( tester );
+
+    # run the attribute functions
+    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
+
+    # store the ranks
+    RANK_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+
+    # and return the getter
+    return getter;
+end;
+
+
+#############################################################################
+##
+#F  NewProperty( <name>, <filter> [,<rank>] ) . . . . . . . . .  new property
+##
+##  is a new property  getter with name <name>  that is applicable to objects
+##  with property <filter>.  If  the optional argument  <rank> is  given then
+##  the property getter has this rank, otherwise its rank is 1.
 ##
 NewProperty := function ( arg )
     local   name, filter, getter, setter, tester;
@@ -1077,50 +1054,25 @@ NewProperty := function ( arg )
     # install the default functions
     FILTERS[ FLAG1_FILTER( getter ) ] := getter;
     FILTERS[ FLAG2_FILTER( getter ) ] := tester;
+    INFO_FILTERS[ FLAG1_FILTER( getter ) ] := 9;
+    INFO_FILTERS[ FLAG2_FILTER( getter ) ] := 10;
+
+    # the <tester> and  <getter> are newly  made, therefore the cache  cannot
+    # contain a flag list involving <tester> or <getter>
     InstallHiddenTrueMethod( tester, getter );
     InstallHiddenTrueMethod( filter, tester );
+    #CLEAR_HIDDEN_IMP_CACHE();
+
+    # run the attribute functions
     RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
 
     # store the rank
     if LEN_LIST( arg ) = 3 and IS_INT( arg[3] ) then
-      RANKS_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= arg[3];
     else
-      RANKS_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
+        RANK_FILTERS[ FLAG1_FILTER( getter ) ]:= 1;
     fi;
-    RANKS_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
-
-    # and return the getter
-    return getter;
-end;
-
-NewPropertyKernel := function ( name, filter, getter )
-    local   setter,  tester;
-
-    # construct setter and tester
-    setter := SETTER_FILTER( getter );
-    tester := TESTER_FILTER( getter );
-
-    # store the property getters
-    ADD_LIST( NUMBERS_PROPERTY_GETTERS, FLAG1_FILTER( getter ) );
-
-    # add getter, setter and tester to the list of operations
-    ADD_LIST( OPERATIONS, getter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
-    ADD_LIST( OPERATIONS, setter );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter), FLAGS_FILTER(IS_BOOL) ] );
-    ADD_LIST( OPERATIONS, tester );
-    ADD_LIST( OPERATIONS, [ FLAGS_FILTER(filter) ] );
-
-    # install the default functions
-    FILTERS[ FLAG1_FILTER( getter ) ]:= getter;
-    FILTERS[ FLAG2_FILTER( getter ) ]:= tester;
-    InstallHiddenTrueMethod( tester, getter );
-    InstallHiddenTrueMethod( filter, tester );
-    RUN_ATTR_FUNCS( name, filter, getter, setter, tester, false );
-
-    # store the ranks
-    RANKS_FILTERS[ FLAG1_FILTER( getter ) ] := 1;
-    RANKS_FILTERS[ FLAG2_FILTER( getter ) ] := 1;
+    RANK_FILTERS[ FLAG2_FILTER( tester ) ]:= 1;
 
     # and return the getter
     return getter;
@@ -1129,10 +1081,19 @@ end;
 
 #############################################################################
 ##
-#F  RankFilter( <filter> )
+
+#F  InstallAtExit( <func> )
 ##
-RankFilter := function( filter )
-    return SIZE_FLAGS( FLAGS_FILTER(filter) );
+InstallAtExit := function( func )
+
+    if not IS_FUNCTION(func)  then
+        Error( "<func> must be a function" );
+    fi;
+    if not NARG_FUNCTION(func) in [ -1, 0 ]  then
+        Error( "<func> must accept zero arguments" );
+    fi;
+    ADD_LIST( AT_EXIT_FUNCS, func );
+
 end;
 
 

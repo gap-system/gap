@@ -28,7 +28,7 @@ IsTuple := NewCategory( "IsTuple",
 #C  IsTuplesFamily( <family> )  . . . . . . . . . category of tuples families
 ##
 
-IsTuplesFamily := CategoryFamily( "IsTuplesFamily", IsTuple  );
+IsTuplesFamily := CategoryFamily( IsTuple );
 
 
 #############################################################################
@@ -36,7 +36,7 @@ IsTuplesFamily := CategoryFamily( "IsTuplesFamily", IsTuple  );
 #C  IsTuplesCollection( <coll> )  . . . . . .  category of tuples collections
 ##
 
-IsTuplesCollection := CategoryCollections( "IsTuplesCollection", IsTuple  );
+IsTuplesCollection := CategoryCollections( IsTuple );
 
 
 #############################################################################

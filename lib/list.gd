@@ -25,6 +25,23 @@ IsList := NewCategoryKernel( "IsList",
 
 #############################################################################
 ##
+#C  IsConstantTimeAccessList( <list> )
+##
+##  This is implied by 'IsList and InternalRep',
+##  so all strings, Boolean lists, ranges, and internal plain lists are
+##  in this category.
+##
+##  But also enumerators can have this representation if they know about
+##  constant time access to their elements.
+##
+IsConstantTimeAccessList := NewCategory( "IsConstantTimeAccessList",
+    IsList );
+
+InstallTrueMethod( IsConstantTimeAccessList, IsList and IsInternalRep );
+
+
+#############################################################################
+##
 #R  IsEnumerator  . . . . . . . . . . . . . .  representation for enumerators
 ##
 IsEnumerator := NewRepresentation( "IsEnumerator",
@@ -479,6 +496,16 @@ Iterated :=
 #F DifferenceBlist
 ##
 DifferenceBlist := NewOperationArgs("DifferenceBlist");
+
+
+#############################################################################
+##
+#F  ListWithIdenticalEntries( <n>, <obj> )
+##
+##  is a list of length <n> that has the object <obj> stored at each of the
+##  positions from 1 to <n>.
+##
+ListWithIdenticalEntries := NewOperationArgs( "ListWithIdenticalEntries" );
 
 
 #############################################################################

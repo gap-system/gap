@@ -1,0 +1,45 @@
+\Chapter{Group Libraries}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Primitive permutation groups}
+
+\>PrimitiveGroup( <deg>, <nr> )
+
+{\GAP} contains a library of primitive permutation groups which includes,
+up to  isomorphism of permutation groups   (i.e., up to conjugacy  in the
+corresponding symmetric group)
+{\parindent\manindent
+\item{$\bullet$} all   primitive permutation  groups  of  degree $\<256$,
+  namely
+\itemitem{$\circ$}  the  primitive permutation  groups   up to degree~50,
+  calculated by C.~Sims,
+\itemitem{$\circ$}  the  solvable (hence  affine)   primitive permutation
+  groups of degree $\<256$, calculated by M.~Short \cite{Short92},
+\itemitem{$\circ$} the insolvable affine  primitive permutation groups of
+  degree $\<256$, calculated in \cite{Theissen97},
+\item{$\bullet$} the non-affine primitive   permutation groups of  degree
+  $\<1000$,  described   in   \cite{DixonMortimer88},  with    generators
+  calculated in \cite{Theissen97}.\par}
+Note that the affine primitive permutation groups of degrees 256--999 are
+not included.
+
+\>PrimitiveGroupsSims( <deg>, <nr> )
+\>AllPrimitiveGroups( $<attr>_1$, $<val>_1$, \dots\ )
+\>OnePrimitiveGroup( $<attr>_1$, $<val>_1$, \dots\ )
+
+For compatibility  with earlier versions  of {\GAP}, the original list of
+Sims,  with  the same numbers  and  the  names  given by  Buekenhout  and
+Leemans,  is     also  included.   It is    accessed     by  the function
+`PrimitiveGroupSims'.   You   can   also use  the    well-known functions
+`AllPrimitiveGroups' and `OnePrimitiveGroup' with this old list.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This  file   declares   the categories   of  magmas,   their  properties,
 ##  attributes, and operations.  Note that the  meaning of generators for the
@@ -41,6 +41,20 @@ IsMagmaWithOne :=
 
 #############################################################################
 ##
+#C  IsMagmaWithInversesIfNonzero(<obj>)
+##
+##  A magma with inverses and zero in  {\GAP} is a magma with  one $S$ with a
+##  zero element $z$ and with an operation
+##  $'\^-1' \: S\setminus \{ z \} \rightarrow S \setminus \{ z \}$ that  maps
+##  each nonzero element of the magma to its inverse.
+##
+IsMagmaWithInversesIfNonzero :=
+    NewCategory( "IsMagmaWithInversesIfNonzero",
+        IsMagmaWithOne and IsMultiplicativeElementWithOneCollection );
+
+
+#############################################################################
+##
 #C  IsMagmaWithInverses(<obj>)test whether an object is a magma-with-inverses
 ##
 ##  A magma-with-inverses in {\GAP} is a magma-with-one $S$ with an operation
@@ -49,26 +63,13 @@ IsMagmaWithOne :=
 ##
 IsMagmaWithInverses :=
     NewCategory( "IsMagmaWithInverses",
-        IsMagmaWithOne and IsMultiplicativeElementWithInverseCollection );
+            IsMagmaWithInversesIfNonzero
+        and IsMultiplicativeElementWithInverseCollection );
 
-InstallCollectionsTrueMethod( IsMagmaWithInverses,
-    IsFiniteOrderElement, IsMagma );
+InstallTrueMethod( IsMagmaWithInverses,
+    IsFiniteOrderElementCollection and IsMagma );
 
 InstallTrueMethod( IsMagmaWithInverses, IsMagmaWithOne and IsTrivial );
-
-
-#############################################################################
-##
-#C  IsMagmaWithInversesAndZero(<obj>)
-##
-##  A magma with inverses and zero in  {\GAP} is a magma with  one $S$ with a
-##  zero element $z$ and with an operation
-##  $'\^-1' \: S\setminus \{ z \} \rightarrow S \setminus \{ z \}$ that  maps
-##  each nonzero element of the magma to its inverse.
-##
-IsMagmaWithInversesAndZero :=
-    NewCategory( "IsMagmaWithInversesAndZero",
-        IsMagmaWithOne and IsMultiplicativeElementWithOneCollection );
 
 
 #############################################################################
@@ -223,8 +224,8 @@ IsAssociative :=
 SetIsAssociative := Setter( IsAssociative );
 HasIsAssociative := Tester( IsAssociative );
 
-InstallCollectionsTrueMethod( IsAssociative,
-    IsAssociativeElement, IsMagma );
+InstallTrueMethod( IsAssociative,
+    IsAssociativeElementCollection and IsMagma );
 
 InstallSubsetMaintainedMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma );
@@ -252,8 +253,8 @@ IsAbelian    := IsCommutative;
 SetIsAbelian := SetIsCommutative;
 HasIsAbelian := HasIsCommutative;
 
-InstallCollectionsTrueMethod( IsCommutative,
-    IsCommutativeElement, IsMagma );
+InstallTrueMethod( IsCommutative,
+    IsCommutativeElementCollection and IsMagma );
 
 InstallSubsetMaintainedMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma );

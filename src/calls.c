@@ -615,7 +615,7 @@ UInt            StorDone;
 **  suspended.  'STOR_WOUT_PROF(<prof>)' is  the amount  of storage allocated
 **  while the  function <func> was   active.  'LEN_PROF' is   the length of a
 **  profiling information bag.
-*/
+**
 #define COUNT_PROF(prof)            (INT_INTOBJ(ELM_PLIST(prof,1)))
 #define TIME_WITH_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,2)))
 #define TIME_WOUT_PROF(prof)        (INT_INTOBJ(ELM_PLIST(prof,3)))
@@ -629,6 +629,7 @@ UInt            StorDone;
 #define SET_STOR_WOUT_PROF(prof,n)  (SET_ELM_PLIST(prof,5,INTOBJ_INT(n)))
 
 #define LEN_PROF                    5
+*/
 
 
 /****************************************************************************
@@ -1315,6 +1316,11 @@ void PrintFunction (
     Obj                 oldLVars;       /* terrible hack                   */
     UInt                i;              /* loop variable                   */
 
+    /* complete the function if necessary                                  */
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+	COMPLETE_FUNC(func);
+    }
+
     /* print 'function ('                                                  */
     Pr("%5>function%< ( %>",0L,0L);
 
@@ -1350,10 +1356,13 @@ void PrintFunction (
                 if ( i != nloc )  Pr("%<, %>",0L,0L);
             }
             Pr("%<;\n",0L,0L);
-        }
+	}
 
         /* print the body                                                  */
-        if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
+ 	if ( IS_UNCOMPLETED_FUNC(func) )  {
+	    Pr( "<<uncompletable function>>", 0L, 0L );
+	}
+        else if ( BODY_FUNC(func) == 0 || SIZE_OBJ(BODY_FUNC(func)) == 0 ) {
             Pr("<<compiled code>>",0L,0L);
         }
         else {
@@ -1609,7 +1618,7 @@ Obj NARG_FUNC_Handler (
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
+        if ( IS_UNCOMPLETED_FUNC(func) )  {
             return INTOBJ_INT(-1);
         }
         return INTOBJ_INT( NARG_FUNC(func) );
@@ -1631,8 +1640,8 @@ Obj NAMS_FUNC_Handler (
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
-        if ( HDLR_FUNC( func, 0 ) == DoComplete0args ) {
-            Complete( BODY_FUNC(func) );
+        if ( IS_UNCOMPLETED_FUNC(func) )  {
+            COMPLETE_FUNC(func);
         }
         return NAMS_FUNC(func);
     }
@@ -1684,6 +1693,13 @@ Obj FuncCLEAR_PROFILE_FUNCTION(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+	COMPLETE_FUNC(func);
+	if ( IS_UNCOMPLETED_FUNC(func) ) {
+	    ErrorQuit( "<func> did not complete", 0L, 0L );
+	    return 0;
+	}
+    }
 
     /* clear profile info                                                  */
     prof = PROF_FUNC(func);
@@ -1723,6 +1739,13 @@ Obj FuncPROFILE_FUNCTION(
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
+    }
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+	COMPLETE_FUNC(func);
+	if ( IS_UNCOMPLETED_FUNC(func) ) {
+	    ErrorQuit( "<func> did not complete", 0L, 0L );
+	    return 0;
+	}
     }
 
     /* uninstall trace handler                                             */
@@ -1775,6 +1798,13 @@ Obj FuncIS_PROFILED_FUNCTION(
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
     }
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+	COMPLETE_FUNC(func);
+	if ( IS_UNCOMPLETED_FUNC(func) ) {
+	    ErrorQuit( "<func> did not complete", 0L, 0L );
+	    return 0;
+	}
+    }
     return ( TNUM_OBJ(PROF_FUNC(func)) != T_FUNCTION ) ? False : True;
 }
 
@@ -1793,6 +1823,13 @@ Obj FuncUNPROFILE_FUNCTION(
     if ( TNUM_OBJ(func) != T_FUNCTION ) {
         ErrorQuit( "<func> must be a function", 0L, 0L );
         return 0;
+    }
+    if ( IS_UNCOMPLETED_FUNC(func) ) {
+	COMPLETE_FUNC(func);
+	if ( IS_UNCOMPLETED_FUNC(func) ) {
+	    ErrorQuit( "<func> did not complete", 0L, 0L );
+	    return 0;
+	}
     }
 
     /* uninstall trace handler                                             */
@@ -1925,15 +1962,6 @@ void            InitCalls ()
     InitHandlerFunc( DoProf5args, "5 arg profile");
     InitHandlerFunc( DoProf6args, "6 arg profile");
     InitHandlerFunc( DoProfXargs, "X arg profile");
-
-    InitHandlerFunc( DoComplete0args, "0 arg complete");
-    InitHandlerFunc( DoComplete1args, "1 arg complete");
-    InitHandlerFunc( DoComplete2args, "2 arg complete");
-    InitHandlerFunc( DoComplete3args, "3 arg complete");
-    InitHandlerFunc( DoComplete4args, "4 arg complete");
-    InitHandlerFunc( DoComplete5args, "5 arg complete");
-    InitHandlerFunc( DoComplete6args, "6 arg complete");
-    InitHandlerFunc( DoCompleteXargs, "X arg complete");
 }
 
 

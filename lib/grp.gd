@@ -756,6 +756,22 @@ HasCoreInParent := Tester( CoreInParent );
 
 #############################################################################
 ##
+#O  CosetTable( <G>, <H> )
+##
+CosetTable := NewOperation( "CosetTable", [ IsGroup, IsGroup ] );
+
+
+#############################################################################
+##
+#A  CosetTableInWholeGroup( <G> )
+##
+CosetTableInWholeGroup := NewAttribute( "CosetTableInWholeGroup", IsGroup );
+SetCosetTableInWholeGroup := Setter( CosetTableInWholeGroup );
+HasCosetTableInWholeGroup := Tester( CosetTableInWholeGroup );
+
+
+#############################################################################
+##
 #O  FactorGroup( <G>, <N> )
 ##
 FactorGroup := NewOperation( "FactorGroup", [ IsGroup, IsGroup ] );
@@ -775,6 +791,15 @@ Index := NewOperation( "Index", [ IsGroup, IsGroup ] );
 IndexInParent := NewAttribute( "IndexInParent", IsGroup );
 SetIndexInParent := Setter( IndexInParent );
 HasIndexInParent := Tester( IndexInParent );
+
+
+#############################################################################
+##
+#A  IndexInWholeGroup( <G> )
+##
+IndexInWholeGroup := NewAttribute( "IndexInWholeGroup", IsGroup );
+SetIndexInWholeGroup := Setter( IndexInWholeGroup );
+HasIndexInWholeGroup := Tester( IndexInWholeGroup );
 
 
 #############################################################################

@@ -1708,6 +1708,14 @@ local z,d,l,b,i,j,k,stop,v,dim,h,zv;
     until stop;
     i:=i+1;
   od;
+  # add subspace indices
+  while i<=Length(mat) do 
+    if mat[i][j]<>z then
+      h[j]:=-i;
+      i:=i+1;
+    fi;
+    j:=j+1;
+  od;
   return rec(factorspace:=b,
              factorzero:=zv,
 	     subspace:=mat,

@@ -28,12 +28,10 @@ TYPE_FUNCTION           := NewType(     FunctionsFamily,
 IsCyclotomic            := NewCategory( "IsCyclotomic",
     IsScalar and IsAssociativeElement and IsCommutativeElement );
 
-IsCyclotomicsCollection := CategoryCollections(
-    "IsCyclotomicsCollection", IsCyclotomic );
-IsCyclotomicsCollColl   := CategoryCollections(
-    "IsCyclotomicsCollColl", IsCyclotomicsCollection );
+IsCyclotomicsCollection := CategoryCollections( IsCyclotomic );
+IsCyclotomicsCollColl   := CategoryCollections( IsCyclotomicsCollection );
 IsCyclotomicsCollCollColl   := CategoryCollections(
-    "IsCyclotomicsCollCollColl", IsCyclotomicsCollColl );
+    IsCyclotomicsCollColl );
 
 IsCyc                   := NewCategoryKernel( "IsCyc", IsCyclotomic,
                             IS_CYC );
@@ -68,8 +66,7 @@ IsPerm                  := NewCategoryKernel( "IsPerm",
                             IsFiniteOrderElement,
                             IS_PERM );
 
-IsPermCollection        := CategoryCollections(
-    "IsPermCollection", IsPerm );
+IsPermCollection        := CategoryCollections( IsPerm );
 
 SmallestMovedPointPerm := NewAttribute( "SmallestMovedPointPerm", IsPerm );
 LargestMovedPointPerm := NewAttribute( "LargestMovedPointPerm", IsPerm );

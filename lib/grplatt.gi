@@ -63,6 +63,22 @@ end);
 
 #############################################################################
 ##
+#M  <clasa> = <clasb> . . . . . . . . . . . . . . . . . . by conjugacy test
+##
+InstallMethod( \=, IsIdentical, [ IsConjugacyClassSubgroupsRep,
+  IsConjugacyClassSubgroupsRep ], 0,
+function( clasa, clasb )
+  if not IsIdentical(ActingDomain(clasa),ActingDomain(clasb))
+    then TryNextMethod();
+  fi;
+  return RepresentativeOperation(ActingDomain(clasa),Representative(clasa),
+		 Representative(clasb))<>fail;
+end);
+
+
+
+#############################################################################
+##
 #M  PrintObj(<cl>)  . . . . . . . . . . . . . . . . . . . .  print function
 ##
 InstallMethod(PrintObj,true,[IsConjugacyClassSubgroupsRep],0,

@@ -1,3 +1,30 @@
+/****************************************************************************
+**
+*W  dteval.c                    GAP source                  Wolfgang Merkwitz
+**
+*H  @(#)$Id$
+**
+*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+**
+**  This file contains the part of the deep thought package which uses the
+**  deep thought polynomials to multiply in nilpotent groups.
+**
+**  The deep thought polynomials are stored in the list <dtpols> where
+**  <dtpols>[i] contains the polynomials f_{i1},...,f_{in}.
+**  <dtpols>[i] is a record consisting of the components <evlist> and
+**  <evlistvec>. <evlist> is a list of all deep thought monomials occuring
+**  in the polynomials f_{i1},...,f_{in}. <evlistvec>is a list of vectors
+**  describing the coefficients of the corresponding deep thought monomials
+**  in the polynomials f_{i1},..,f_{in}. For example when a pair [j,k]
+**  occurs in <dtpols>[i].<evlistvec>[l]  then the deep thought monomial
+**  <dtpols>[i].<evlist>[l] occurs in f_{ij} with the coefficient k.
+**  If the polynomials f_{i1},..,f_{in} are trivial i.e. f_{ii} = x_i + y_i
+**  and f_{ij} = x_j (j<>i),  then <dtpols>[i] is either 1 or 0. <dtpols>[i]
+**  is 0 if also the polynomials f_{m1},...,f_{mn} for (m > i) are trivial .
+*/
+char * Revision_dteval_c =
+   "@(#)$Id$";
+
 #include       "system.h"
 #include       "gasman.h"
 #include       "objects.h"
@@ -15,21 +42,31 @@
 #include       "dt.h"
 #include       "objcftl.h"
 
+#define INCLUDE_DECLARATION_PART
+#include       "dteval.h"
+#undef  INCLUDE_DECLARATION_PART
+
 #define   CELM(list, pos)      (  INT_INTOBJ( ELM_PLIST(list, pos) ) )
 
 static int             evlist, evlistvec;
 
 extern Obj             ShallowCopyPlist( Obj  list );
-extern Obj             CollectPolycyc (
-                                        Obj pcp,
-                                        Obj list,
-                                        Obj word );
+
+
+/****************************************************************************
+**
+*F  MultGen( <xk>, <gen>, <power>, <dtpols> )
+**
+**  MultGen multiplies the word given by the exponent vector <xk> with
+**  g_<gen>^<power> by evaluating the deep thought polynomials. The result
+**  is an ordered word and stored in <xk>.
+*/
 
 void       MultGen(
                     Obj     xk,
                     UInt    gen,
                     Obj     power,
-                    Obj     pseudoreps    )
+                    Obj     dtpols    )
 {
     UInt  i, j, len, len2;
     Obj   copy, sum, sum1, sum2, prod, ord, Evaluation(), help;
@@ -37,33 +74,39 @@ void       MultGen(
     if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) == 0 )
         return;
     sum = SumInt(ELM_PLIST(xk, gen),  power);
-    if ( IS_INTOBJ( ELM_PLIST(pseudoreps, gen) ) )
+    if ( IS_INTOBJ( ELM_PLIST(dtpols, gen) ) )
     {
+        /* if f_{<gen>1},...,f_{<gen>n} are trivial we only have to add
+        ** <power> to <xk>[ <gen> ].                                     */
         SET_ELM_PLIST(xk, gen, sum);
         CHANGED_BAG(xk);
         return;
     }
     copy = ShallowCopyPlist(xk);
+    /* first add <power> to <xk>[ gen> ].                                */
     SET_ELM_PLIST(xk, gen, sum);
     CHANGED_BAG(xk);     
-    sum = ElmPRec( ELM_PLIST(pseudoreps, gen), evlist );
-    sum1 = ElmPRec( ELM_PLIST(pseudoreps, gen), evlistvec);
+    sum = ElmPRec( ELM_PLIST(dtpols, gen), evlist );
+    sum1 = ElmPRec( ELM_PLIST(dtpols, gen), evlistvec);
     len = LEN_PLIST(sum);
     for ( i=1;
           i <= len;
           i++ )
     {
-        ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
+        /* evaluate the deep thought monomial <sum>[<i>],        */
+	ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
         if ( !IS_INTOBJ(ord)  ||  INT_INTOBJ(ord) != 0 )
         {
             help = ELM_PLIST(sum1, i);
             len2 = LEN_PLIST(help);
             for ( j=1; 
                   j < len2;
-                  j+=2    )
-            {
-                prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
-                sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
+	          j+=2    )
+	    {
+	        /* and add the result multiplicated with the right coefficient
+	        ** to <xk>[ <help>[j] ].                                    */
+	        prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
+		sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
                               prod);
                 SET_ELM_PLIST(xk, CELM( help, j ),  
                               sum2 );
@@ -74,6 +117,14 @@ void       MultGen(
 }
 
 
+
+/****************************************************************************
+**
+*F  Evaluation( <vec>, <xk>, <power>)
+**
+**  Evaluation evaluates the deep thought monomial <vec> at the entries in
+**  <xk> and at <power>.
+*/
 
 Obj     Evaluation(
                     Obj     vec,
@@ -101,28 +152,47 @@ Obj     Evaluation(
 }
 
 
+
+/****************************************************************************
+**
+*F  Multbound( <xk>, <y>, <anf>, <end>, <dtpols> )
+**
+**  Multbound multiplies the word given by the exponent vector <xk> with
+**  <y>{ [<anf>..<end>] } by evaluating the deep thought polynomials <dtpols>
+**  The result is an ordered word and is stored in <xk>.
+*/
+
 void        Multbound(
                   Obj    xk,
                   Obj    y,
                   Int    anf,
                   Int    end,
-                  Obj    pseudoreps  )
+                  Obj    dtpols  )
 {
     int     i;
     void    MultGen();
 
     for (i=anf; i < end; i+=2)
-        MultGen(xk, CELM( y, i), ELM_PLIST( y, i+1) , pseudoreps);
+        MultGen(xk, CELM( y, i), ELM_PLIST( y, i+1) , dtpols);
 }
 
 
+
+/****************************************************************************
+**
+*F  Multiplybound( <x>, <y>, <anf>, <end>, <dtpols> )
+**
+**  Multiplybound returns the product of the word <x> with the word
+**  <y>{ [<anf>..<end>] } by evaluating the deep thought polynomials <dtpols>.
+**  The result is an ordered word.
+*/
 
 Obj       Multiplybound(
                      Obj      x,
                      Obj      y,       
                      Int      anf,
                      Int      end,
-                     Obj      pseudoreps  )
+                     Obj      dtpols  )
 {
     UInt   i, j, k, len, help;
     Obj    xk, res, sum;
@@ -132,63 +202,66 @@ Obj       Multiplybound(
         return y;
     if ( anf > end )
         return x;
-    if ( IS_INTOBJ( ELM_PLIST(pseudoreps, CELM(y, anf) ) )   &&
-         CELM(pseudoreps, CELM(y, anf) ) == 0                          )
+    /* first deal with the case that <y>{ [<anf>..<end>] } lies in the center
+    ** of the group defined by <dtpols>                                    */
+    if ( IS_INTOBJ( ELM_PLIST(dtpols, CELM(y, anf) ) )   &&
+         CELM(dtpols, CELM(y, anf) ) == 0                          )
     {
-        res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( pseudoreps ) );
-        len = LEN_PLIST(x);
-        j = 1;
-        k = anf;
-        i = 1;
-        while ( j<len && k<end )
-        {
-            if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
-            {
-                sum = SumInt( ELM_PLIST(x, j+1), ELM_PLIST(y, k+1) );
-                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-                SET_ELM_PLIST(res, i+1, sum );
-                j+=2;
-                k+=2;
-            }
-            else if ( ELM_PLIST(x, j) < ELM_PLIST(y, k) )
-            {
-                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-                SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
-                j+=2;
-            }
-            else
-            {
-                SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
-                SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1) );
-                k+=2;
-            }
-            CHANGED_BAG(res);
-            i+=2;
-        }
-        if ( j>=len )
-            while ( k<end )
-            {
-                SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
-                SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1 ) );
-                CHANGED_BAG(res);
-                k+=2;
-                i+=2;
-            }
-        else
-            while ( j<len )
-            {
-                SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
-                SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
-                CHANGED_BAG(res);
-                j+=2;
-                i+=2;
-            }
-        SET_LEN_PLIST(res, i-1);
-        SHRINK_PLIST(res, i-1);
-        return res;
+        res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( dtpols ) );
+	len = LEN_PLIST(x);
+	j = 1;
+	k = anf;
+	i = 1;
+	while ( j<len && k<end )
+	{
+	    if ( ELM_PLIST(x, j) == ELM_PLIST(y, k) )
+	    {
+	        sum = SumInt( ELM_PLIST(x, j+1), ELM_PLIST(y, k+1) );
+		SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+		SET_ELM_PLIST(res, i+1, sum );
+		j+=2;
+		k+=2;
+	    }
+	    else if ( ELM_PLIST(x, j) < ELM_PLIST(y, k) )
+	    {
+	        SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+		SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
+		j+=2;
+	    }
+	    else
+	    {
+	        SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
+		SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1) );
+		k+=2;
+	    }
+	    CHANGED_BAG(res);
+	    i+=2;
+	}
+	if ( j>=len )
+	    while ( k<end )
+	    {
+	        SET_ELM_PLIST(res, i, ELM_PLIST(y, k) );
+		SET_ELM_PLIST(res, i+1, ELM_PLIST(y, k+1 ) );
+		CHANGED_BAG(res);
+		k+=2;
+		i+=2;
+	    }
+	else
+	    while ( j<len )
+	    {
+	        SET_ELM_PLIST(res, i, ELM_PLIST(x, j) );
+		SET_ELM_PLIST(res, i+1, ELM_PLIST(x, j+1) );
+		CHANGED_BAG(res);
+		j+=2;
+		i+=2;
+	    }
+	SET_LEN_PLIST(res, i-1);
+	SHRINK_PLIST(res, i-1);
+	return res;
     }
-    len = LEN_PLIST(pseudoreps);
+    len = LEN_PLIST(dtpols);
     help = LEN_PLIST(x);
+    /* convert <x> into a exponent vector                             */
     xk = NEW_PLIST( T_PLIST, len );
     SET_LEN_PLIST(xk, len );
     j = 1;
@@ -202,7 +275,9 @@ Obj       Multiplybound(
             j+=2;
         }
     }
-    Multbound(xk, y, anf, end, pseudoreps);
+    /* let Multbound do the work                                       */
+    Multbound(xk, y, anf, end, dtpols);
+    /* finally convert the result back into a word                     */
     res = NEW_PLIST(T_PLIST, 2*len);
     j = 0;
     for (i=1; i <= len; i++)
@@ -221,30 +296,53 @@ Obj       Multiplybound(
 
 
 
+/****************************************************************************
+**
+*F  FuncMultiply( <self>, <x>, <y>, <dtpols> )
+**
+**  FuncMultiply implements the internal function
+**
+*F  Multiply( <x>, <y>, <dtpols> ).
+**
+**  Multiply returns the product of the words <x> and <y> as ordered word
+**  by evaluating the deep thought polynomials <dtpols>.
+*/
+
 Obj      FuncMultiply(
-                       Obj      self,
-                       Obj      x,
-                       Obj      y,
-                       Obj      pseudoreps      )
+		       Obj      self,
+		       Obj      x,
+		       Obj      y,
+		       Obj      dtpols      )
 {
     Obj    Multiplybound();
 
-    return Multiplybound(x, y, 1, LEN_PLIST(y), pseudoreps);
+    return Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
 }
 
 
 
+/****************************************************************************
+**
+*F  Power( <x>, <n>, <dtpols> )
+**
+**  Power returns the <n>-th power of the word <x> as ordered word by
+**  evaluating the deep thought polynomials <dtpols>.
+*/
+
 Obj      Power(
                 Obj         x,
-                Obj         n,
-                Obj         pseudoreps     )
+	        Obj         n,
+	        Obj         dtpols     )
 {
     Obj     res, Solution(), Multiplybound(), m, y;
     UInt    i,len;
 
-
-    if ( IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(x, 1) ) )   &&
-         CELM( pseudoreps, CELM(x, 1) ) == 0                     )
+    if ( LEN_PLIST(x) == 0 )
+        return x;
+    /* first deal with the case that <x> lies in the centre of the group
+    ** defined by <dtpols>                                              */
+    if ( IS_INTOBJ( ELM_PLIST( dtpols, CELM(x, 1) ) )   &&
+         CELM( dtpols, CELM(x, 1) ) == 0                     )
     {
         len = LEN_PLIST(x);
         res = NEW_PLIST( T_PLIST, len );
@@ -258,48 +356,69 @@ Obj      Power(
         }
         return res;
     }
+    /* if <n> is a negative integer compute ( <x>^-1 )^(-<n>)           */
     if (  TNUM_OBJ(n) == T_INTNEG  ||  INT_INTOBJ(n) < 0  ) 
     {
         y = NEW_PLIST( T_PLIST, 0);
-        SET_LEN_PLIST(y, 0);
-        return  Power( Solution(x, y, pseudoreps), 
-                       ProdInt(INTOBJ_INT(-1), n),   pseudoreps  );    
+	SET_LEN_PLIST(y, 0);
+	return  Power( Solution(x, y, dtpols), 
+                       ProdInt(INTOBJ_INT(-1), n),   dtpols  );    
     }
     res = NEW_PLIST(T_PLIST, 2);
     SET_LEN_PLIST(res, 0);
     if ( IS_INTOBJ(n)  &&  INT_INTOBJ(n) == 0  )
         return res;
+    /* now use the russian peasant rule to get the result               */
     while( LtInt(INTOBJ_INT(0), n) )
     {
         len = LEN_PLIST(x);
         if ( ModInt(n, INTOBJ_INT(2) ) == INTOBJ_INT(1)  )
-            res = Multiplybound(res, x, 1, len, pseudoreps);
-        if ( LtInt(INTOBJ_INT(1), n) )
-            x = Multiplybound(x, x, 1, len, pseudoreps);
-        n = QuoInt(n, INTOBJ_INT(2) );
+	    res = Multiplybound(res, x, 1, len, dtpols);
+	if ( LtInt(INTOBJ_INT(1), n) )
+	    x = Multiplybound(x, x, 1, len, dtpols);
+	n = QuoInt(n, INTOBJ_INT(2) );
     }
     return res;
 }
 
 
 
+/****************************************************************************
+**
+*F  FuncPower( <self>, <x>, <n>, <dtpols> )
+**
+**  FuncPower implements the internal function
+**
+*F  Pover( <x>, <n>, <dtpols> )
+**
+**  Pover returns the <n>-th power of the word <x> by evaluating the deep
+**  thought pols <dtpols>. The result is an oredered word.
+*/
+
 Obj        FuncPower(
-                      Obj     self,
-                      Obj     x,
-                      Obj     n,
-                      Obj     pseudoreps     )
+		      Obj     self,
+		      Obj     x,
+		      Obj     n,
+		      Obj     dtpols     )
 {
     Obj      Power();
 
-    return Power(x, n, pseudoreps);
+    return Power(x, n, dtpols);
 }
 
 
-   
+
+/****************************************************************************
+**
+*F  Solution( <x>, <y>, <dtpols> )
+**
+**  Solution returns a solution for the equation <x>*a = <y> by evaluating
+**  the deep thought polynomials <dtpols>. The result is an ordered word.
+*/ 
 
 Obj      Solution( Obj       x,
-                   Obj       y,
-                   Obj       pseudoreps  )
+		   Obj       y,
+                   Obj       dtpols  )
 
 {
     Obj    xk, res, m;
@@ -308,15 +427,18 @@ Obj      Solution( Obj       x,
 
     if ( LEN_PLIST(x) == 0)
         return y;
-    if ( IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(x, 1) )  )  &&
-         CELM( pseudoreps, CELM(x, 1) ) == 0                &&
-         IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(y, 1) )  )  &&
-         CELM( pseudoreps, CELM(y, 1) ) == 0                     )
+    /* first deal with the case that <x> and <y> ly in the centre of the
+    ** group defined by <dtpols>.                                       */
+    if ( IS_INTOBJ( ELM_PLIST( dtpols, CELM(x, 1) )  )  &&
+         CELM( dtpols, CELM(x, 1) ) == 0                &&
+         (  LEN_PLIST(y) == 0                              ||
+            (  IS_INTOBJ( ELM_PLIST( dtpols, CELM(y, 1) )  )  &&
+               CELM( dtpols, CELM(y, 1) ) == 0                    )  )   )
     {
-        res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( pseudoreps ) );
-        i = 1;
-        j = 1;
-        k = 1;
+        res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( dtpols ) );
+	i = 1;
+	j = 1;
+	k = 1;
         len1 = LEN_PLIST(x);
         len2 = LEN_PLIST(y);
         while ( j < len1 && k < len2 )
@@ -366,10 +488,11 @@ Obj      Solution( Obj       x,
         SHRINK_PLIST( res, i-1);
         return res;
     }
-    xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
+    /* convert <x> into an exponent vector                           */
+    xk = NEW_PLIST( T_PLIST, LEN_PLIST(dtpols) );
+    SET_LEN_PLIST(xk, LEN_PLIST(dtpols) );
     j = 1;
-    for (i=1; i <= LEN_PLIST(pseudoreps); i++)
+    for (i=1; i <= LEN_PLIST(dtpols); i++)
     {
         if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
             SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
@@ -387,27 +510,27 @@ Obj      Solution( Obj       x,
     for (i=1; i <= len1; i++)
     {
         if ( k < len2   &&   i == CELM(y, k)  )
-        {
-            if  ( !EqInt( ELM_PLIST(xk, i), ELM_PLIST(y, k+1) )  )
-            {
-                m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(xk, i) );
-                SET_ELM_PLIST(res, j, INTOBJ_INT(i) );
-                SET_ELM_PLIST(res, j+1, m);
-                CHANGED_BAG(res);
-                MultGen(xk, i, m, pseudoreps);
-                j+=2;
-            }
-            k+=2;
-        }
+	{
+	    if  ( !EqInt( ELM_PLIST(xk, i), ELM_PLIST(y, k+1) )  )
+	    {
+	        m = DiffInt( ELM_PLIST(y, k+1), ELM_PLIST(xk, i) );
+		SET_ELM_PLIST(res, j, INTOBJ_INT(i) );
+		SET_ELM_PLIST(res, j+1, m);
+		CHANGED_BAG(res);
+		MultGen(xk, i, m, dtpols);
+		j+=2;
+	    }
+	    k+=2;
+	}
         else if ( !IS_INTOBJ( ELM_PLIST(xk, i) )  ||  CELM( xk, i ) != 0 )
-        {
-            m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(xk, i) );
-            SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
-            SET_ELM_PLIST( res, j+1, m );
-            CHANGED_BAG(res);
-            MultGen(xk, i, m, pseudoreps);
-            j+=2;
-        }
+	{
+	    m = ProdInt( INTOBJ_INT(-1), ELM_PLIST(xk, i) );
+	    SET_ELM_PLIST( res, j, INTOBJ_INT(i) );
+	    SET_ELM_PLIST( res, j+1, m );
+	    CHANGED_BAG(res);
+	    MultGen(xk, i, m, dtpols);
+	    j+=2;
+	}
     }
     SET_LEN_PLIST(res, j-1);
     SHRINK_PLIST(res, j-1);
@@ -416,137 +539,62 @@ Obj      Solution( Obj       x,
 
 
 
+/****************************************************************************
+**
+*F  Commutator( <x>, <y>, <dtpols> )
+**
+**  Commutator returns the commutator of the word <x> and <y> by evaluating
+**  the deep thought polynomials <dtpols>.
+*/
+
 Obj       Commutator( Obj     x,
-                      Obj     y,
-                      Obj     pseudoreps  )
+		      Obj     y,
+		      Obj     dtpols  )
 {
     Obj    res, Solution(), Multiplybound(), help;
 
-    res = Multiplybound(x, y, 1, LEN_PLIST(y), pseudoreps);
-    help = Multiplybound(y, x, 1, LEN_PLIST(x), pseudoreps);
-    res = Solution(help, res, pseudoreps);
+    res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
+    help = Multiplybound(y, x, 1, LEN_PLIST(x), dtpols);
+    res = Solution(help, res, dtpols);
     return res;
 }
 
 
 
+/****************************************************************************
+**
+*F  Conjugate( <x>, <y>, <dtpols> )
+**
+**  Conjugate returns <x>^<y> for the words <x> and <y> by evaluating the 
+**  deep thought polynomials <dtpols>. The result is an ordered word.
+*/
+
 Obj       Conjugate( Obj     x,
-                     Obj     y,
-                     Obj     pseudoreps  )
+		     Obj     y,
+		     Obj     dtpols  )
 {
     Obj    res, Solution(), Multiplybound();
 
-    res = Multiplybound(x, y, 1, LEN_PLIST(y), pseudoreps);
-    res = Solution(y, res, pseudoreps);
+    res = Multiplybound(x, y, 1, LEN_PLIST(y), dtpols);
+    res = Solution(y, res, dtpols);
     return res;
 }
 
 
 
-Obj      CommutatorredL( Obj    x,
-                         Obj    y,
-                         Obj    pcp  )
-{
-    Obj    orders, Commutator(), mod, c, res;
-    UInt   i, len, len2, help;
+/****************************************************************************
+**
+*F  Multiplyboundred( <x>, <y>, <anf>, <end>, <pcp> )
+**
+**  Multiplyboundred returns the product of the words <x> and <y>. The result
+**  is an ordered word with the additional property that all word exponents
+**  are reduced modulo the the corresponding generator orders given by the
+**  deep thought rewriting system <pcp>..
+*/
 
-    orders = ELM_PLIST(pcp, PC_ORDERS);
-    res = Commutator(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
-    len = LEN_PLIST(res);
-    len2 = LEN_PLIST(orders);
-    for (i=2; i<=len; i+=2)
-        if ( (help=CELM(res, i-1)) <= len2         &&
-             ( c=ELM_PLIST( orders, help )) != 0 )
-        {
-            mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
-        }
-    return res;
-}
-
-
-
-Obj       ConjugateredL( Obj    x,
-                         Obj    y,
-                         Obj    pcp  )
-{
-    Obj    orders, Conjugate(), mod, c, res;
-    UInt   i, len, len2, help;
-
-    orders = ELM_PLIST(pcp, PC_ORDERS);
-    res = Conjugate(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
-    len = LEN_PLIST(res);
-    len2 = LEN_PLIST(orders);
-    for (i=2; i<=len; i+=2)
-        if ( (help=CELM(res, i-1)) <= len2         &&
-             ( c=ELM_PLIST( orders, help )) != 0 )
-        {
-            mod = ModInt( ELM_PLIST(res, i), c );
-            SET_ELM_PLIST( res, i, mod);
-            CHANGED_BAG(res);
-        }
-    return res;
-}
-
-
-
-
-Obj       FuncDTCommutatorL( Obj      self,
-                             Obj      x,
-                             Obj      y,
-                             Obj      pcp  )
-{
-    Obj   res, CommutatorredL();
-    void  ReduceWordL();
-
-    res = CommutatorredL(x, y, pcp);
-    ReduceWordL(res, pcp);
-    return res;
-}
-
-
-
-Obj       FuncDTConjugateL( Obj      self,
-                            Obj      x,
-                            Obj      y,
-                            Obj      pcp  )
-{
-    Obj   res, ConjugateredL();
-    void  ReduceWordL();
-
-    if  ( LEN_PLIST(y) == 0 )
-        return x;
-    res = ConjugateredL(x, y, pcp);
-    ReduceWordL(res, pcp);
-    return res;
-}
-
-
-
-Obj       FuncDTQuotientL( Obj      self,
-                           Obj      x,
-                           Obj      y,
-                           Obj      pcp )
-{
-    Obj     SolutionredL(), MultiplyboundredL(), help, res;
-    void    ReduceWordL();
-
-    if  ( LEN_PLIST(y) == 0 )
-        return x;
-    help = NEW_PLIST( T_PLIST, 0 );
-    SET_LEN_PLIST(help, 0);
-    res = SolutionredL(y, help, pcp);
-    res = MultiplyboundredL(x, res, 1, LEN_PLIST(res), pcp);
-    ReduceWordL(res, pcp);
-    return(res);
-}
-
-
-
-Obj      MultiplyboundredL( Obj     x,
+Obj       Multiplyboundred( Obj     x,
                             Obj     y,
-                            UInt    anf,
+			    UInt    anf,
                             UInt    end,
                             Obj     pcp )
 {
@@ -570,7 +618,17 @@ Obj      MultiplyboundredL( Obj     x,
 
 
 
-Obj      PowerredL( Obj       x,
+/****************************************************************************
+**
+*F  Powerred( <x>, <n>, <pcp>
+**
+**  Powerred returns the <n>-th power of the word <x>. The result is an
+**  ordered word with the additional property that all word exponents are
+**  reduced modulo the generator orders given by the deep thought rewriting
+**  system <pcp>.
+*/
+
+Obj       Powerred( Obj       x,
                     Obj       n,
                     Obj       pcp  )
 {
@@ -594,7 +652,17 @@ Obj      PowerredL( Obj       x,
 
 
 
-Obj      SolutionredL( Obj       x,
+/****************************************************************************
+**
+*F  Solutionred( <x>, <y>, <pcp> )
+**
+**  Solutionred returns the solution af the equation <x>*a = <y>.  The result
+**  is an ordered word with the additional property that all word exponents
+**  are reduced modulo the generator orders given by the deep thought
+**  rewriting system <pcp>.
+*/
+
+Obj       Solutionred( Obj       x,
                        Obj       y,
                        Obj       pcp  )
 {
@@ -618,10 +686,139 @@ Obj      SolutionredL( Obj       x,
 
 
 
-void     ReduceWordL( Obj      x,
+/****************************************************************************
+**
+**  Commutatorred( <x>, <y>, <pcp> )
+**
+**  Commutatorred returns the commutator of the words <x> and <y>. The result
+**  is an ordered word with the additional property that all word exponents
+**  are reduced modulo the corresponding generator orders given by the deep
+**  thought rewriting system <pcp>.
+*/
+
+Obj       Commutatorred( Obj    x,
+			 Obj    y,
+			 Obj    pcp  )
+{
+    Obj    orders, Commutator(), mod, c, res;
+    UInt   i, len, len2, help;
+
+    orders = ELM_PLIST(pcp, PC_ORDERS);
+    res = Commutator(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
+    len = LEN_PLIST(res);
+    len2 = LEN_PLIST(orders);
+    for (i=2; i<=len; i+=2)
+        if ( (help=CELM(res, i-1)) <= len2         &&
+             ( c=ELM_PLIST( orders, help )) != 0 )
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
+    return res;
+}
+
+
+
+/****************************************************************************
+**
+*F  Conjugate( <x>, <y>, <pcp> )
+**
+**  Conjugate returns <x>^<y> for the words <x> and <y>. The result is an
+**  ordered word with the additional property that all word exponents are
+**  reduced modulo the corresponding generator orders given by the deep
+**  thought rewriting system <pcp>.
+*/
+
+Obj       Conjugatered( Obj    x,
+			 Obj    y,
+			 Obj    pcp  )
+{
+    Obj    orders, Conjugate(), mod, c, res;
+    UInt   i, len, len2, help;
+
+    orders = ELM_PLIST(pcp, PC_ORDERS);
+    res = Conjugate(x, y, ELM_PLIST( pcp, PC_DEEP_THOUGHT_POLS) );
+    len = LEN_PLIST(res);
+    len2 = LEN_PLIST(orders);
+    for (i=2; i<=len; i+=2)
+        if ( (help=CELM(res, i-1)) <= len2         &&
+             ( c=ELM_PLIST( orders, help )) != 0 )
+        {
+            mod = ModInt( ELM_PLIST(res, i), c );
+            SET_ELM_PLIST( res, i, mod);
+            CHANGED_BAG(res);
+        }
+    return res;
+}
+
+
+
+/****************************************************************************
+**
+**  compress( <list> )
+**
+**  compress removes pairs (n,0) from the list of GAP integers <list>.
+*/
+
+void     compress( Obj        list )
+{    
+    UInt    i, skip, len;
+    
+    skip = 0;
+    i = 2;
+    len = LEN_PLIST( list );
+    while  ( i <= len )
+    {
+        while ( i<=len  &&  CELM(list, i) == 0)
+	{
+	    skip+=2;
+	    i+=2;
+	}
+	if ( i <= len )
+	{
+	    SET_ELM_PLIST(list, i-skip, ELM_PLIST(list, i) );
+	    SET_ELM_PLIST(list, i-1-skip, ELM_PLIST( list, i-1 ) );
+	}
+        i+=2;
+    }
+    SET_LEN_PLIST( list, len-skip );
+    CHANGED_BAG( list );
+    SHRINK_PLIST( list, len-skip );
+}
+
+
+
+/****************************************************************************
+**
+*F  Funccompress( <self>, <list> )
+**
+**  Funccompress implements the internal function Compress.
+*/
+
+Obj      Funccompress( Obj         self, 
+                       Obj         list  )
+{
+    compress(list);
+    return  (Obj)0;
+}
+
+
+
+/****************************************************************************
+**
+*F  ReduceWord( <x>, <pcp> )
+**
+**  ReduceWord reduces the ordered word <x> with respect to the deep thought
+**  rewriting system <pcp> i.e after applying ReduceWord <x> is an ordered
+**  word with exponents less than the corresponding relative orders given
+**  by <pcp>.
+*/
+
+void     ReduceWord( Obj      x,
                       Obj      pcp )   
 {
-    Obj       PowerredL(), MultiplyboundredL(), powers, exponent;
+    Obj       Powerred(), Multiplyboundred(), powers, exponent;
     Obj       deepthoughtpols, help, potenz, quo, mod, prel;
     UInt      i,j,flag, len, gen, lenexp, lenpow;
     void      compress();
@@ -642,180 +839,236 @@ void     ReduceWordL( Obj      x,
             quo = ELM_PLIST(x, i+1);
             if  ( !IS_INTOBJ(quo) || INT_INTOBJ(quo) >= INT_INTOBJ(potenz) || 
                   INT_INTOBJ(quo)<0 )
-            {
-                mod = ModInt( quo, potenz );
-                SET_ELM_PLIST(x, i+1, mod);
-                CHANGED_BAG(x);
-                if ( gen <= lenpow            &&
+	    {
+	        /* reduce the exponent of the generator <gen>            */
+	        mod = ModInt( quo, potenz );
+	        SET_ELM_PLIST(x, i+1, mod);
+	        CHANGED_BAG(x);
+		if ( gen <= lenpow            &&
                      (prel = ELM_PLIST( powers, gen) )  != 0  )
-                {
-                    if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
-                         TNUM_OBJ(quo) == T_INTPOS    )
-                    {
-                        help = PowerredL( prel,
-                                          QuoInt(quo, potenz),
-                                          pcp    );
-                        help = MultiplyboundredL( help, x, i+2, flag, pcp);
-                    }
-                    else
-                    {
-                        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
-                        help = PowerredL( prel, 
+		{
+		    if ( ( IS_INTOBJ(quo) && INT_INTOBJ(quo) >= INT_INTOBJ(potenz) )   ||
+		         TNUM_OBJ(quo) == T_INTPOS    )
+		    {
+		        help = Powerred(  prel,
+			   	          QuoInt(quo, potenz),
+				          pcp    );
+		        help = Multiplyboundred( help, x, i+2, flag, pcp);
+		    }
+		    else
+		    {
+		        quo = INT_INTOBJ(mod) == 0? QuoInt(quo,potenz):SumInt(QuoInt(quo, potenz),INTOBJ_INT(-1));
+		        help = Powerred(  prel, 
                                           quo, 
                                           pcp );
-                        help = MultiplyboundredL( help, x, i+2, flag, pcp);
-                    }
-                    len = LEN_PLIST(help);
-                    for (j=1; j<=len; j++)
-                        SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
-                    CHANGED_BAG(x);
-                    flag = i+len+1;
-                    /*SET_LEN_PLIST(x, flag);*/
-                }
-            }
-        }
+		        help = Multiplyboundred( help, x, i+2, flag, pcp);
+		    }
+		    len = LEN_PLIST(help);
+		    for (j=1; j<=len; j++)
+		        SET_ELM_PLIST(x, j+i+1, ELM_PLIST(help, j) );
+		    CHANGED_BAG(x);
+		    flag = i+len+1;
+		    /*SET_LEN_PLIST(x, flag);*/
+		}
+	    }
+	}
     }
     SET_LEN_PLIST(x, flag);
     SHRINK_PLIST(x, flag);
+    /* remove all syllables with exponent 0 from <x>.                  */
     compress(x);
 }
 
 
 
-Obj      FuncDTmultiplyL( Obj      self,
-                          Obj      x,
-                          Obj      y,
-                          Obj      pcp    )
+/****************************************************************************
+**
+*F  FuncDTMultiply( <self>, <x>, <y>, <pcp> )
+**
+**  FuncDTMultiply implements the internal function
+**
+*F  DTMultiply( <x>, <y>, <pcp> ).
+**
+**  DTMultiply returns the product of <x> and <y>. The result is reduced
+**  with respect to the deep thought rewriting system <pcp>.
+*/
+
+Obj       FuncDTMultiply( Obj      self,
+			  Obj      x,
+			  Obj      y,
+			  Obj      pcp    )
 {
-    Obj    MultiplyboundredL(), res;
-    void   ReduceWordL();
+    Obj    Multiplyboundred(), res;
+    void   ReduceWord();
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
     if  ( LEN_PLIST(y) == 0 )
         return x;
-    res = MultiplyboundredL(x, y, 1, LEN_PLIST(y), pcp);
-    ReduceWordL(res, pcp);
+    res = Multiplyboundred(x, y, 1, LEN_PLIST(y), pcp);
+    ReduceWord(res, pcp);
     return res;
 }
 
 
 
-Obj      FuncDTPowerL( Obj       self,
-                       Obj       x,
-                       Obj       n,
-                       Obj       pcp  )
-{
-    Obj    PowerredL(), res;
-    void   ReduceWordL();
+/****************************************************************************
+**
+*F  FuncDTPower( <self>, <x>, <n>, <pcp> )
+**
+**  FuncDTPower implements the internal function
+**
+*F  DTPower( <x>, <n>, <pcp> ).
+**
+**  DTPower returns the <n>-th power of the word <x>. The result is reduced
+**  with respect to the deep thought rewriting system <pcp>.
+*/
 
-    res = PowerredL(x, n, pcp);
-    ReduceWordL(res, pcp);
+Obj       FuncDTPower( Obj       self,
+		       Obj       x,
+		       Obj       n,
+		       Obj       pcp  )
+{
+    Obj    Powerred(), res;
+    void   ReduceWord();
+
+    res = Powerred(x, n, pcp);
+    ReduceWord(res, pcp);
     return res;
 }
 
 
 
-Obj     FuncDTSolutionL( Obj     self,
-                         Obj     x,
-                         Obj     y,
-                         Obj     pcp )
+/****************************************************************************
+**
+*F  FuncDTSolution( <self>, <x>, <y>, <pcp> )
+**
+**  FuncDTSolution implements the internal function
+**
+*F  DTSolution( <x>, <y>, <pcp> ).
+**
+**  DTSolution returns the solution of the equation <x>*a = <y>. The result
+**  is reduced with respect to the deep thought rewriting system <pcp>.
+*/
+
+Obj      FuncDTSolution( Obj     self,
+		         Obj     x,
+			 Obj     y,
+		         Obj     pcp )
 {
-    Obj     SolutionredL(), res;
-    void    ReduceWordL();
+    Obj     Solutionred(), res;
+    void    ReduceWord();
 
     if  ( LEN_PLIST(x) == 0 )
         return y;
-    res = SolutionredL(x, y, pcp);
-    ReduceWordL(res, pcp);
+    res = Solutionred(x, y, pcp);
+    ReduceWord(res, pcp);
     return res;
 }
 
 
 
+/****************************************************************************
+**
+*F  FuncDTCommutator( <self>, <x>, <y>. <pcp> )
+**
+**  FuncDTCommutator implements the internal function
+**
+*F  DTCommutator( <x>, <y>, <pcp> )
+**
+**  DTCommutator returns the commutator of the words <x> and <y>.  The result
+**  is reduced with respect to the deep thought rewriting sytem <pcp>.
+*/
 
-Obj     FuncWernerProduct( Obj      self,
-                           Obj      lword,
-                           Obj      rword,
-                           Obj      pcp  )
+Obj        FuncDTCommutator( Obj      self,
+                             Obj      x,
+		   	     Obj      y,
+			     Obj      pcp  )
 {
-    Obj   res, xk;
-    UInt  help, len, i, j;
+    Obj   res, Commutatorred();
+    void  ReduceWord();
 
-    help = CELM(pcp, 1);
-    xk = NEW_PLIST( T_PLIST, help );
-    SET_LEN_PLIST(xk, help );
-    len = LEN_PLIST(lword);
-    j = 1;
-    for (i=1; i <= help; i++)
-    {
-        if ( j >= len  ||  i < CELM(lword, j) )
-            SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-        else
-        {
-            SET_ELM_PLIST(xk, i, ELM_PLIST(lword, j+1) );
-            j+=2;
-        }
-    }
-    CollectPolycyc(pcp, xk, rword);
-    res = NEW_PLIST(T_PLIST, 2*help);
-    j = 0;
-    for (i=1; i <= help; i++)
-    {
-        if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-        {
-            j+=2;
-            SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-            SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-        }
-    }
-    SET_LEN_PLIST(res, j);
-    SHRINK_PLIST(res, j);
+    res = Commutatorred(x, y, pcp);
+    ReduceWord(res, pcp);
     return res;
 }
 
 
-void     compress( Obj        list )
-{    
-    UInt    i, skip, len;
-    
-    skip = 0;
-    i = 2;
-    len = LEN_PLIST( list );
-    while  ( i <= len )
-    {
-        while ( i<=len  &&  CELM(list, i) == 0)
-        {
-            skip+=2;
-            i+=2;
-        }
-        if ( i <= len )
-        {
-            SET_ELM_PLIST(list, i-skip, ELM_PLIST(list, i) );
-            SET_ELM_PLIST(list, i-1-skip, ELM_PLIST( list, i-1 ) );
-        }
-        i+=2;
-    }
-    SET_LEN_PLIST( list, len-skip );
-    CHANGED_BAG( list );
-    SHRINK_PLIST( list, len-skip );
-}
 
+/****************************************************************************
+**
+*F  FuncConjugate( <self>, <x>, <y>, <pcp> )
+**
+**  FuncConjugate implements the internal function
+**
+*F  Conjugate( <x>, <y>, <pcp> ).
+**
+**  Conjugate returns <x>^<y> for the words <x> and <y>.  The result is
+**  ewduced with respect to the deep thought rewriting system <pcp>.
+*/
 
-Obj      Funccompress( Obj         self, 
-                       Obj         list  )
+Obj        FuncDTConjugate( Obj      self,
+                            Obj      x,
+		   	    Obj      y,
+			    Obj      pcp  )
 {
-    compress(list);
-    return  (Obj)0;
+    Obj   res, Conjugatered();
+    void  ReduceWord();
+
+    if  ( LEN_PLIST(y) == 0 )
+        return x;
+    res = Conjugatered(x, y, pcp);
+    ReduceWord(res, pcp);
+    return res;
 }
 
+
+
+/****************************************************************************
+**
+*F  FuncDTQuotient( <self>, <x>, <y>, <pcp> )
+**
+**  FuncDTQuotient implements the internal function
+**
+*F  DTQuotient( <x>, <y>, <pcp> ).
+**
+*F  DTQuotient returns the <x>/<y> for the words <x> and <y>. The result is
+**  reduced with respect to the deep thought rewriting system <pcp>.
+*/
+
+Obj       FuncDTQuotient( Obj      self,
+			   Obj      x,
+		           Obj      y,
+		           Obj      pcp )
+{
+    Obj     Solutionred(), Multiplyboundred(), help, res;
+    void    ReduceWord();
+
+    if  ( LEN_PLIST(y) == 0 )
+        return x;
+    help = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST(help, 0);
+    res = Solutionred(y, help, pcp);
+    res = Multiplyboundred(x, res, 1, LEN_PLIST(res), pcp);
+    ReduceWord(res, pcp);
+    return(res);
+}
+
+
+
+/****************************************************************************
+**
+*F  InitDTEvaluation()
+**
+**  InitDTEvaluation initializes the deep thought multiplication package.
+*/
 
 void     InitDTEvaluation(void)
 {
 
     evlist = RNamName("evlist");
     evlistvec = RNamName("evlistvec");
-    
+
     InitHandlerFunc( Funccompress, "dteval: compress");
     AssGVar( GVarName("Compress"), NewFunctionC("Compress", 1L,
              "list", Funccompress)  );
@@ -825,35 +1078,38 @@ void     InitDTEvaluation(void)
              "lword, rword, representatives", FuncMultiply)      );
 
     InitHandlerFunc( FuncPower, "dteval: power");
-    AssGVar( GVarName("Power"), NewFunctionC("Power", 3L,
+    AssGVar( GVarName("Pover"), NewFunctionC("Pover", 3L,
              "word, exponent, representatives", FuncPower)         );
 
-    InitHandlerFunc( FuncDTmultiplyL, "dteval: DTMultiply");
+    InitHandlerFunc( FuncDTMultiply, "dteval: DTMultiply");
     AssGVar( GVarName("DTMultiply"), NewFunctionC("DTMultiply", 3L,
-             "lword, rword, rewritingsystem", FuncDTmultiplyL)    );
+             "lword, rword, rewritingsystem", FuncDTMultiply)    );
 
-    InitHandlerFunc( FuncDTPowerL, "dteval: DTPowerL");
+    InitHandlerFunc( FuncDTPower, "dteval: DTPower");
     AssGVar( GVarName("DTPower"), NewFunctionC("DTPower", 3L,
-             "word, exponent, rewritingsytem", FuncDTPowerL)  );
+             "word, exponent, rewritingsytem", FuncDTPower)  );
 
-    InitHandlerFunc( FuncDTSolutionL, "dteval: DTSolutionL");
+    InitHandlerFunc( FuncDTSolution, "dteval: DTSolution");
     AssGVar( GVarName("DTSolution"), NewFunctionC("DTSolution", 3L,
-             "lword, rword, rewritingsystem", FuncDTSolutionL)   );
+             "lword, rword, rewritingsystem", FuncDTSolution)   );
 
-    InitHandlerFunc( FuncDTCommutatorL, "dteval: DTCommutatorL");
+    InitHandlerFunc( FuncDTCommutator, "dteval: DTCommutator");
     AssGVar( GVarName("DTCommutator"), NewFunctionC("DTCommutator", 3L,
-             "lword, rword, rewritingsystem", FuncDTCommutatorL)    );
+             "lword, rword, rewritingsystem", FuncDTCommutator)    );
 
-    InitHandlerFunc( FuncDTQuotientL, "dteval: DTQuotientL");
+    InitHandlerFunc( FuncDTQuotient, "dteval: DTQuotient");
     AssGVar( GVarName("DTQuotient"), NewFunctionC("DTQuotient", 3L,
-             "lword, rword, rewritingsystem", FuncDTQuotientL)   );
+             "lword, rword, rewritingsystem", FuncDTQuotient)   );
 
-    InitHandlerFunc( FuncDTConjugateL, "dteval: DTConjugateL");
+    InitHandlerFunc( FuncDTConjugate, "dteval: DTConjugate");
     AssGVar( GVarName("DTConjugate"), NewFunctionC("DTConjugate", 3L,
-             "lword, rword, rewritingsystem", FuncDTConjugateL)   );
-
-    InitHandlerFunc( FuncWernerProduct, "dteval: Werner Product");
-    AssGVar( GVarName("WernerProduct"), NewFunctionC("WernerProduct", 3L,
-             "lword, rword, rewritingsystem", FuncWernerProduct)   );
+             "lword, rword, rewritingsystem", FuncDTConjugate)   );
 }
 
+
+
+/****************************************************************************
+**
+*E  dteval.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+**
+*/

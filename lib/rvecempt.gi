@@ -15,7 +15,7 @@ Revision.rvecempt_gi :=
 #R  IsEmptyRowVectorRep( <obj> )
 ##
 IsEmptyRowVectorRep := NewRepresentation( "IsEmptyRowVectorRep",
-    IsPositionalObjectRep and IsConstantTimeAccessListRep,
+    IsPositionalObjectRep and IsConstantTimeAccessList,
     [] );
 
 

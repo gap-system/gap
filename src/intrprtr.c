@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  intrprtr.c                  GAP source                   Martin Schoenert
+*W  intrprtr.c                  GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -24,6 +24,7 @@ char *          Revision_intrprtr_c =
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TNUM_OBJ, types            */
 #include        "scanner.h"             /* Pr                              */
+#include        "read.h"                /* reader                          */
 
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
 
@@ -211,7 +212,7 @@ Obj             PopVoidObj ( void )
 /****************************************************************************
 **
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
-*F  IntrEnd(<error>)  . . . . . . . . . . . . . . . . . . stop an interpreter
+*F  IntrEnd( <error> )  . . . . . . . . . . . . . . . . . stop an interpreter
 **
 **  'IntrBegin' starts a new interpreter.
 **
@@ -226,7 +227,7 @@ Obj             PopVoidObj ( void )
 **  If  'IntrEnd' returns 2, then a  return-void-statement  was  interpreted.
 **  If 'IntrEnd' returns 8, then a quit-statement was interpreted.
 */
-void            IntrBegin ( void )
+void IntrBegin ( void )
 {
     Obj                 intrState;      /* old interpreter state           */
 
@@ -254,7 +255,7 @@ void            IntrBegin ( void )
     ExecBegin();
 }
 
-Int             IntrEnd (
+Int IntrEnd (
     UInt                error )
 {
     UInt                intrReturning;  /* interpreted return-statement?   */
@@ -471,14 +472,22 @@ void            IntrFuncExprEnd (
         return;
     }
 
+    /* catch read errors                                                   */
+    if ( READ_ERROR() ) {
+	CodeFuncExprEnd( 0, mapsto );
+	CodeEnd( 1 );
+    }
+
     /* must be coding                                                      */
-    assert( IntrCoding > 0 );
+    else {
+	assert( IntrCoding > 0 );
 
-    /* code a function expression                                          */
-    CodeFuncExprEnd( nr, mapsto );
+	/* code a function expression                                      */
+	CodeFuncExprEnd( nr, mapsto );
 
-    /* switch back to immediate mode, get the function                     */
-    CodeEnd( 0 );
+	/* switch back to immediate mode, get the function                 */
+	CodeEnd( 0 );
+    }
     IntrCoding = 0;
     func = CodeResult;
 
@@ -707,12 +716,7 @@ void IntrForEndBody (
     if ( IntrIgnoring  > 0 ) { return; }
 
     /* otherwise must be coding                                            */
-    if ( IntrCoding == 0 && CompNowFuncs != 0 ) {
-        while ( 1 < --nr ) {
-            PopStat();
-        }
-    }
-    else {
+    if ( IntrCoding != 0 || CompNowFuncs == 0 ) {
         assert( IntrCoding > 0 );
         CodeForEndBody( nr );
     }
@@ -3935,6 +3939,7 @@ void             IntrAssertEnd3Args ( void )
 
 /****************************************************************************
 **
+
 *F  InitIntrprtr()  . . . . . . . . . . . . . . .  initialize the interpreter
 **
 **  'InitIntrprtr' initializes the interpreter.
@@ -3958,4 +3963,8 @@ void InitIntrprtr ( void )
 }
 
 
+/****************************************************************************
+**
 
+*E  intrprtr.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

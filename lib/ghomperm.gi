@@ -356,7 +356,7 @@ InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
     function( hom1, hom2 )
     local   prd,  stb,  levs,  S;
 
-    stb := DeepCopy( StabChainAttr( hom2 ) );
+    stb := StructuralCopy( StabChainAttr( hom2 ) );
     levs := [  ];
     S := stb;
     while IsBound( S.stabilizer )  do

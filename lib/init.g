@@ -78,6 +78,21 @@ if not IsBound(InfoRead2)  then InfoRead2 := Ignore;  fi;
 
 #############################################################################
 ##
+#V  CHECK_INSTALL_METHOD  . . . . . .  check requirements in `INSTALL_METHOD'
+##
+CHECK_INSTALL_METHOD := true;
+
+
+#############################################################################
+##
+#V  NAME_FILTER_LIST  . . . . . . . . . . . . . . . . . . . .  for completion
+##
+NAME_FILTER_LIST := [];
+
+
+#############################################################################
+##
+
 #F  ReadGapRoot( <name> ) . . . . . . . . . .  read file from GAP's root area
 ##
 ReadGapRoot := function( name )
@@ -101,10 +116,10 @@ ReadAndCheckFunc := function( path )
         libname := SHALLOW_COPY_OBJ(path);
         APPEND_LIST_INTR( libname, "/" );
         APPEND_LIST_INTR( libname, name );
+        ADD_LIST( READED_FILES, libname );
         if not READ_GAP_ROOT(libname)  then
             Error("the library file '",name,"' must exist and be readable");
         fi;
-        ADD_LIST( READED_FILES, libname );
         ext := ReplacedString( name, ".", "_" );
         if not IsBound(Revision.(ext))  then
             Print( "#W  revision entry missing in \"", name, "\"\n" );
@@ -141,9 +156,14 @@ ReadTbl := ReadAndCheckFunc("tbl");
 #############################################################################
 ##
 #F  ReadSmall( <name> )
-#F  ReadIdLib( <name> )
 ##
 ReadSmall := ReadAndCheckFunc("small");
+
+
+#############################################################################
+##
+#F  ReadIdLib( <name> )
+##
 ReadIdLib := ReadAndCheckFunc("small/idlib");
 
 
@@ -167,50 +187,67 @@ ReadTrans := ReadAndCheckFunc("trans");
 ##
 COMPLETABLE_FILES := [];
 
+RANK_FILTER_LIST       := [];
+RANK_FILTER_COUNT      := 0;
+RANK_FILTER_COMPLETION := Error;	# defined in "oper.g"
+RANK_FILTER_STORE      := Error;	# defined in "oper.g"
+RANK_FILTER            := Error;	# defined in "oper.g"
+RankFilter             := Error;
+
+
 ReadOrComplete := function( name )
-    local   comp;
+    local   comp,  check;
 
     READED_FILES := [];
+
+    # use completion files
     if CHECK_FOR_COMP_FILES  then
         comp := ReplacedString( name, "read", "comp" );
+
+        # do not check installation and use cached ranks
+        check := CHECK_INSTALL_METHOD;
+        CHECK_INSTALL_METHOD := false;
+        RankFilter := RANK_FILTER_COMPLETION;
+        RANK_FILTER_COUNT := 1;
+
+        # check for the completion file
         if not READ_GAP_ROOT(comp)  then
+
+            # read the original file
+            CHECK_INSTALL_METHOD := check;
+            RankFilter := RANK_FILTER_STORE;
+            RANK_FILTER_LIST := [];
             InfoRead1( "#I  reading ", name, "\n" );
             if not READ_GAP_ROOT(name)  then
                 Error( "cannot read or complete file ", name );
             fi;
-            ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES ] );
+            ADD_LIST( COMPLETABLE_FILES, 
+                      [ name, READED_FILES, RANK_FILTER_LIST ] );
+
+            # reset rank
+            RANK_FILTER_LIST := [];
+            RANK_FILTER_COUNT := 0;
+            RankFilter := RANK_FILTER;
+
+        # file completed
         else
+            CHECK_INSTALL_METHOD := check;
+            RankFilter := RANK_FILTER;
             InfoRead1( "#I  completed ", name, "\n" );
         fi;
     else
+
+        # hash the ranks
+        RankFilter := RANK_FILTER_STORE;
+        RANK_FILTER_LIST := [];
+        RANK_FILTER_COUNT := 0;
         if not READ_GAP_ROOT(name)  then
             Error( "cannot read file ", name );
         fi;
-        ADD_LIST( COMPLETABLE_FILES, [ name, READED_FILES ] );    
+        ADD_LIST( COMPLETABLE_FILES,
+                  [ name, READED_FILES, RANK_FILTER_LIST ] );    
+        RANK_FILTER_LIST := [];
     fi;
-end;
-
-
-#############################################################################
-##
-#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compx.g" files
-##
-CreateCompletionFiles := function( path )
-    local   i,  com,  j,  tmp;
-
-    for i  in COMPLETABLE_FILES  do
-        com := SHALLOW_COPY_OBJ(path);
-        APPEND_LIST_INTR( com, ReplacedString( i[1], "read", "comp" ) );
-        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
-        for j  in i[2]  do
-            Print( "#I    parsing \"", j, "\"\n" );
-        od;
-        tmp := [ com ];
-        APPEND_LIST_INTR( tmp, i[2] );
-
-        # the names should be relative to 'GapRootDirectory'
-        CALL_FUNC_LIST( MAKE_INIT, tmp );
-    od;
 end;
 
 
@@ -255,7 +292,7 @@ fi;
 ##
 #X  read in the files
 ##
-ReadOrComplete( "lib/read1.g" );
+READ_GAP_ROOT( "lib/read1.g" );
 ExportToKernelFinished();
 
 ReadOrComplete( "lib/read2.g" );

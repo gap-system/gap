@@ -1843,7 +1843,7 @@ ConstructClifford := function( tbl )
     tbl.cliffordTable:= rec( Ti:= rec( fusions:= tbl.cliffordTable[1],
                                         tables := tbl.cliffordTable[2] ),
                              cliffordrecords:= tbl.cliffordTable[3] );
-    tbl.cliffordTable.Ti.ident:= DeepCopy( tbl.cliffordTable.Ti.tables );
+    tbl.cliffordTable.Ti.ident:= StructuralCopy( tbl.cliffordTable.Ti.tables );
 #T really ?
 
     # Get the character tables of the inertia groups,
@@ -2628,7 +2628,7 @@ end;
 #T     if IsBound( tbl!.cliffordTable ) then
 #T       if HasIrr( tbl ) then
 #T Error( "handling of Clifford tables not yet installed!" );
-#T         tbl.cliffordTable:= DeepCopy( tbl.cliffordTable );
+#T         tbl.cliffordTable:= StructuralCopy( tbl.cliffordTable );
 #T #T semi-shallow ?
 #T         ShrinkClifford( tbl );
 #T       fi;

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic methods for vector spaces.
 ##
@@ -345,9 +345,10 @@ InstallMethod( ClosureLeftModule,
 ##  Methods for collections of subspaces of a vector space
 ##
 
+
 #############################################################################
 ##
-#R  IsSubspacesVectorSpace( <D> )
+#R  IsSubspacesVectorSpaceDefaultRep( <D> )
 ##
 ##  is the representation of domains of subspaces of a vector space <V>,
 ##  with the components 'structure' (with value <V>) and 'dimension'
@@ -355,19 +356,21 @@ InstallMethod( ClosureLeftModule,
 ##  or the string '\"all\"', which means that the domain contains all
 ##  subspaces of <V>).
 ##
-IsSubspacesVectorSpace := NewRepresentation( "IsSubspacesVectorSpace",
-    IsDomain,
+IsSubspacesVectorSpaceDefaultRep := NewRepresentation(
+    "IsSubspacesVectorSpaceDefaultRep",
+    IsComponentObjectRep,
     [ "dimension", "structure" ] );
+#T not IsAttributeStoringRep?
 
 
 #############################################################################
 ##
-#M  PrintObj( <D> )  . . . . . . . . . . . . . . . . . .  for a subspaces domain
+#M  PrintObj( <D> )  . . . . . . . . . . . . . . . . . for a subspaces domain
 ##
 InstallMethod( PrintObj,
     "method for a subspaces domain",
     true,
-    [ IsSubspacesVectorSpace ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
     function( D )
     if IsInt( D!.dimension ) then
       Print( "Subspaces( ", D!.structure, ", ", D!.dimension, " )" );
@@ -375,16 +378,6 @@ InstallMethod( PrintObj,
       Print( "Subspaces( ", D!.structure, ", \"all\" )" );
     fi;
     end );
-
-
-#############################################################################
-##
-#M  IsFinite( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
-##
-##  We allow subspaces domains in 'IsSubspacesVectorSpace' only for finite
-##  vector spaces.
-##
-InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 
 
 #############################################################################
@@ -403,7 +396,7 @@ InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
 InstallMethod( Size,
     "method for a subspaces domain",
     true,
-    [ IsSubspacesVectorSpace ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
     function( D )
 
     local k,
@@ -488,7 +481,7 @@ InstallMethod( Size,
 InstallMethod( Enumerator,
     "method for a subspaces domain",
     true,
-    [ IsSubspacesVectorSpace ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
     function( D )
     local iter,    # iterator for 'D'
           elms;    # elements list, result
@@ -540,7 +533,7 @@ InstallMethod( NextIterator,
 InstallMethod( Iterator,
     "method for a subspaces domain",
     true,
-    [ IsSubspacesVectorSpace ], 0,
+    [ IsSubspacesVectorSpace and IsSubspacesVectorSpaceDefaultRep ], 0,
     function( D )
     local V;      # the vector space
 
@@ -570,7 +563,8 @@ InstallMethod( SubspacesDim,
     function( V, dim )
     if IsFinite( V ) then
       return Objectify( NewType( CollectionsFamily( V ),
-                                 IsSubspacesVectorSpace ),
+                                     IsSubspacesVectorSpace
+                                 and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
                              structure  := V,
                              dimension  := dim
@@ -588,7 +582,8 @@ InstallMethod( SubspacesAll,
     function( V )
     if IsFinite( V ) then
       return Objectify( NewType( CollectionsFamily( V ),
-                               IsSubspacesVectorSpace ),
+                                     IsSubspacesVectorSpace
+                                 and IsSubspacesVectorSpaceDefaultRep ),
                         rec(
                              structure  := V,
                              dimension  := "all"

@@ -325,7 +325,7 @@ EmptySCTable := NewOperationArgs( "EmptySCTable" );
 ##  value given by the list <list>.
 ##
 ##  If <T> is known to be antisymmetric or symmetric then also the value
-##  '<T>[<i>][<j>]' is set.
+##  '<T>[<j>][<i>]' is set.
 ##
 ##  <list> must be of the form
 ##  $[ c_{ij}^{k_1}, k_1, c_{ij}^{k_2}, k_2, ... ]$.
@@ -706,11 +706,9 @@ LieAlgebraByStructureConstants := NewOperationArgs(
 ##
 IsQuaternion := NewCategory( "IsQuaternion", IsScalar and IsAssociative );
 
-IsQuaternionCollection := CategoryCollections( "IsQuaternionCollection",
-    IsQuaternion );
+IsQuaternionCollection := CategoryCollections( IsQuaternion );
 
-IsQuaternionCollColl := CategoryCollections( "IsQuaternionCollColl",
-    IsQuaternionCollection );
+IsQuaternionCollColl := CategoryCollections( IsQuaternionCollection );
 
 
 #############################################################################
@@ -791,6 +789,21 @@ MatAlgebra := FullMatrixFLMLOR;
 ##
 NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",
     [ IsFLMLOR, IsFLMLOR ] );
+
+
+#############################################################################
+##
+#C  IsMatrixFLMLOR( <obj> ) . . . . . .  test if an object is a matrix FLMLOR
+##
+IsMatrixFLMLOR :=
+    IsFLMLOR and IsRingElementCollCollColl;
+
+
+#############################################################################
+##
+#M  IsFiniteDimensional( <A> )  . . . . matrix FLMLORs are finite dimensional
+##
+InstallTrueMethod( IsFiniteDimensional, IsMatrixFLMLOR );
 
 
 #############################################################################

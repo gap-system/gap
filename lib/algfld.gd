@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the categories,  attributes, properties and operations
 ##  for algebraic extensions of fields and their elements
@@ -21,8 +21,7 @@ IsAlgebraicElement := NewCategory( "IsAlgebraicElement", IsScalar);
 ##
 #C  IsAlgebraicElementsFamily    Category for Families of Algebraic Elements
 ##
-IsAlgebraicElementsFamily := CategoryFamily( "IsAlgebraicElementsFamily",
-				IsAlgebraicElement );
+IsAlgebraicElementsFamily := CategoryFamily( IsAlgebraicElement );
 
 #############################################################################
 ##

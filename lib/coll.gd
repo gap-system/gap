@@ -41,9 +41,7 @@ IsCollection := NewCategory(
 ##
 #C  IsFamilyCollections(<Fam>)  . . test if an object is a collections family
 ##
-IsFamilyCollections :=
-    CategoryFamily( "IsFamilyCollections",
-        IsCollection );
+IsFamilyCollections := CategoryFamily( IsCollection );
 
 
 #############################################################################
@@ -75,11 +73,11 @@ HasElementsFamily := Tester( ElementsFamily );
 ##
 #V  CATEGORIES_COLLECTIONS  . . . . . . global list of collections categories
 ##
-#O  CategoryCollections(<name>,<elms_filter>) . . . . .  collections category
+#O  CategoryCollections( <elms_filter> )  . . . . . . .  collections category
 ##
 CATEGORIES_COLLECTIONS  := [];
 
-CategoryCollections  := function ( name, elms_filter )
+CategoryCollections  := function ( elms_filter )
     local    pair, super, flags, coll_filter;
 
     # Check whether the collections category is already defined.
@@ -99,20 +97,9 @@ CategoryCollections  := function ( name, elms_filter )
     od;
 
     # Construct the collections category.
-    coll_filter := NewCategory( name, super );
+    coll_filter := NewCategory( "<collections category>", super );
     ADD_LIST( CATEGORIES_COLLECTIONS, [ elms_filter, coll_filter ] );
     return coll_filter;
-end;
-
-
-#############################################################################
-##
-#F  InstallCollectionsTrueMethod(<filter>,<elms-req>,<coll-req>)
-##
-InstallCollectionsTrueMethod := function ( filter, elms_req, coll_req )
-    local    coll_cat;
-    coll_cat := CategoryCollections( "<<collections-cat>>", elms_req );
-    InstallTrueMethod( filter, coll_cat and coll_req );
 end;
 
 

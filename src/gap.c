@@ -14,6 +14,7 @@ char * Revision_gap_c =
 
 
 #include        <stdio.h>
+#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
 #include        "system.h"              /* Ints, UInts                     */
 
@@ -122,9 +123,18 @@ UInt Time;
 
 /****************************************************************************
 **
+*V  BreakOnError  . . . . . . . . . . . . . . . . . . . . . . enter breakloop
+*/
+UInt BreakOnError = 1;
+
+
+/****************************************************************************
+**
 
 *F  main( <argc>, <argv> )  . . . . . . .  main program, read-eval-print loop
 */
+Obj AtExitFunctions;
+
 int main (
     int                 argc,
     char *              argv [] )
@@ -133,6 +143,7 @@ int main (
     UInt                time;                   /* start time              */
     Obj                 func;                   /* function (compiler)     */
     UInt4               crc;                    /* crc of file to compile  */
+    volatile UInt       i;                      /* loop variable           */
 
     /* initialize everything                                               */
     InitGap( &argc, argv );
@@ -180,8 +191,10 @@ int main (
             /* print the result                                            */
             if ( ! DualSemicolon ) {
                 IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
-                Pr( "\n", 0L, 0L );
+		if ( ! READ_ERROR() ) {
+		    PrintObj( ReadEvalResult );
+		    Pr( "\n", 0L, 0L );
+		}
             }
         }
 
@@ -198,8 +211,17 @@ int main (
 
     }
 
+    /* call the exit functions                                             */
+    BreakOnError = 0;
+    for ( i = 1;  i <= LEN_PLIST(AtExitFunctions);  i++ ) {
+	if ( setjmp(ReadJmpError) == 0 ) {
+	    func = ELM_PLIST( AtExitFunctions, i );
+	    CALL_0ARGS(func);
+	}
+    }
+
     /* exit to the operating system, the return is there to please lint    */
-    SyExit( 0 );
+    SyExit(0);
     return 0;
 }
 
@@ -237,9 +259,9 @@ Obj FuncRuntime (
 
 /****************************************************************************
 **
-*F  SizeScreenHandler(<self>,<args>)  . . . .  internal function 'SizeScreen'
+*F  FuncSizeScreen( <self>, <args> )  . . . .  internal function 'SizeScreen'
 **
-**  'SizeScreenHandler' implements  the internal function 'SizeScreen' to get
+**  'FuncSizeScreen'  implements  the  internal  function 'SizeScreen' to get
 **  or set the actual screen size.
 **
 **  'SizeScreen()'
@@ -255,7 +277,7 @@ Obj FuncRuntime (
 **  to leave this value unaffected.  Note that those parameters can  also  be
 **  set with the command line options '-x <x>' and '-y <y>'.
 */
-Obj SizeScreenHandler (
+Obj FuncSizeScreen (
     Obj                 self,
     Obj                 args )
 {
@@ -487,8 +509,8 @@ Obj ErrorMode (
     UInt                type;
     char                prompt [16];
 
-    /* ignore all errors when testing                                      */
-    if ( TestInput != 0 && TestOutput == Output ) {
+    /* ignore all errors when testing or quitting                          */
+    if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
         if ( msg != (Char*)0 ) {
             Pr( msg, arg1, arg2 );
         }
@@ -776,7 +798,7 @@ void Complete (
 Obj DoComplete0args (
     Obj                 self )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 0 ) == DoComplete0args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -790,7 +812,7 @@ Obj DoComplete1args (
     Obj                 self,
     Obj                 arg1 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 1 ) == DoComplete1args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -805,7 +827,7 @@ Obj DoComplete2args (
     Obj                 arg1,
     Obj                 arg2 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 2 ) == DoComplete2args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -821,7 +843,7 @@ Obj DoComplete3args (
     Obj                 arg2,
     Obj                 arg3 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 3 ) == DoComplete3args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -838,7 +860,7 @@ Obj DoComplete4args (
     Obj                 arg3,
     Obj                 arg4 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 4 ) == DoComplete4args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -856,7 +878,7 @@ Obj DoComplete5args (
     Obj                 arg4,
     Obj                 arg5 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 5 ) == DoComplete5args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -875,7 +897,7 @@ Obj DoComplete6args (
     Obj                 arg5,
     Obj                 arg6 )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 6 ) == DoComplete6args ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -889,7 +911,7 @@ Obj DoCompleteXargs (
     Obj                 self,
     Obj                 args )
 {
-    Complete( BODY_FUNC( self ) );
+    COMPLETE_FUNC( self );
     if ( HDLR_FUNC( self, 7 ) == DoCompleteXargs ) {
         ErrorQuit(
             "panic: completion did not define function",
@@ -1014,10 +1036,11 @@ Obj FuncCOM_FUN (
 
     /* if the file is not yet completed then make a new function           */
     n = INT_INTOBJ(num) + 1;
-    if ( LEN_PLIST( CompThenFuncs ) <= n ) {
+    if ( LEN_PLIST( CompThenFuncs ) < n ) {
        
         /* make the function                                               */
-        func = NewBag( T_FUNCTION, SIZE_FUNC );
+	func = NewFunctionCT( T_FUNCTION, SIZE_FUNC, "", -1, "uncompleted",
+			      0L );
         HDLR_FUNC( func, 0 ) = DoComplete0args;
         HDLR_FUNC( func, 1 ) = DoComplete1args;
         HDLR_FUNC( func, 2 ) = DoComplete2args;
@@ -1102,7 +1125,7 @@ Obj FuncMAKE_INIT (
     }
 
     /* try to open the output                                              */
-    if ( ! OpenOutput( CSTR_STRING( ELM_PLIST( args, 1 ) ) ) ) {
+    if ( ! OpenAppend( CSTR_STRING( ELM_PLIST( args, 1 ) ) ) ) {
         ErrorQuit( "cannot open '%s' for output",
                    (Int)CSTR_STRING(ELM_PLIST(args,1)), 0L );
     }
@@ -1126,9 +1149,10 @@ Obj FuncMAKE_INIT (
         crc1 = SUM( crc1, INTOBJ_INT( crc & 0xFFFFL ) );
 
         /* where is this stuff                                             */
-        Pr( "if COM_FILE( \"%S\", ", (Int)CSTR_STRING(filename), 0L );
+        Pr( "COM_RESULT := COM_FILE( \"%S\", ", 
+            (Int)CSTR_STRING(filename), 0L );
         PrintInt( crc1 );
-        Pr( " ) = 3  then\n", 0L, 0L );
+        Pr( " );\nif COM_RESULT = 3  then\n", 0L, 0L );
         funcNum = 1;
 
         /* read the file                                                   */
@@ -1970,6 +1994,7 @@ void InitGap (
     Obj                 record;
     UInt                rnam;
     UInt                i;
+    UInt                var;
 
 
     /* initialize the basic system and gasman                              */
@@ -1984,15 +2009,15 @@ void InitGap (
     SET_REVISION( "system_h",   Revision_system_h );
     SET_REVISION( "gasman_c",   Revision_gasman_c );
     SET_REVISION( "gasman_h",   Revision_gasman_h );
-
-
-    /* initialise the global variables                                     */
     SET_REVISION( "gap_c",      Revision_gap_c );
     SET_REVISION( "gap_h",      Revision_gap_h );
 
+
+    /* initialise the global variables                                     */
     InitGVars();
     SET_REVISION( "gvars_c",    Revision_gvars_c );
     SET_REVISION( "gvars_h",    Revision_gvars_h );
+
 
     /* now initialise the important filter/properties                      */
 #if 0
@@ -2003,6 +2028,7 @@ void InitGap (
     RESERVE_PROPERTY( IsHomogProp,      F_HOMOG,  F_NOT_HOMOG );
     RESERVE_PROPERTY( IsTableProp,      F_TABLE,  F_NOT_TABLE );
 #endif
+
 
     /* read all the other packages                                         */
     InitStreams();
@@ -2125,6 +2151,7 @@ void InitGap (
     SET_REVISION( "stats_c",    Revision_stats_c );
     SET_REVISION( "stats_h",    Revision_stats_h );
 
+
     /* must come after InitExpr and InitStats                              */
     InitVars();
     SET_REVISION( "vars_c",     Revision_vars_c );
@@ -2137,7 +2164,12 @@ void InitGap (
     InitPcc();
 
     InitDeepThought();
+    SET_REVISION( "dt_c",       Revision_dt_c );
+    SET_REVISION( "dt_h",       Revision_dt_h );
+
     InitDTEvaluation();
+    SET_REVISION( "dteval.c",   Revision_dteval_c );
+    SET_REVISION( "dteval.h",   Revision_dteval_h );
 
     InitIntrprtr();
     SET_REVISION( "intrprtr_c", Revision_intrprtr_c );
@@ -2167,9 +2199,9 @@ void InitGap (
 
 
     /* init the completion function                                        */
-    InitGlobalBag( &CompNowFuncs, "gap: compnowfuncs"  );
-    InitGlobalBag( &CompThenFuncs,"gap: compthenfuncs" );
-    InitGlobalBag( &CompLists,    "gap: complists"  );
+    InitGlobalBag( &CompNowFuncs, "src/gap.c:CompNowFuncs"  );
+    InitGlobalBag( &CompThenFuncs,"src/gap.c:CompThenFuncs" );
+    InitGlobalBag( &CompLists,    "src/gap.c:CompLists"     );
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
 
@@ -2185,11 +2217,15 @@ void InitGap (
     version = "v4r0p0 1996/06/06";
     string = NEW_STRING( SyStrlen(version) );
     SyStrncat( CSTR_STRING(string), version, SyStrlen(version) );
-    AssGVar( GVarName( "VERSRC" ), string );
+    var = GVarName( "VERSRC" );
+    AssGVar( var, string );
+    MakeReadOnlyGVar(var);
 
     string = NEW_STRING( SyStrlen(SyFlags) );
     SyStrncat( CSTR_STRING(string), SyFlags, SyStrlen(SyFlags) );
-    AssGVar( GVarName( "VERSYS" ), string );
+    var = GVarName( "VERSYS" );
+    AssGVar( var, string );
+    MakeReadOnlyGVar(var);
 
     record = NEW_PREC(0);
     for ( i = 0;  i < RevisionsSize;  i += 2 ) {
@@ -2200,151 +2236,148 @@ void InitGap (
         AssPRec( record, rnam, string );
         CHANGED_BAG(record);
     }
-    AssGVar( GVarName( "Revision" ), record );
+    var = GVarName( "Revision" );
+    AssGVar( var, record );
+    MakeReadOnlyGVar(var);
 
 
     /* library name and other stuff                                        */
-    AssGVar( GVarName( "QUIET" ),
-             (SyQuiet  ? True : False) );
+    var = GVarName( "QUIET" );
+    AssGVar( var, (SyQuiet  ? True : False) );
+    MakeReadOnlyGVar(var);
 
-    AssGVar( GVarName( "BANNER" ),
-             (SyBanner ? True : False) );
+    var = GVarName( "BANNER" );
+    AssGVar( var, (SyBanner ? True : False) );
+    MakeReadOnlyGVar(var);
 
-    AssGVar( GVarName( "DEBUG_LOADING" ),
-             (SyDebugLoading ? True : False) );
+    var = GVarName( "DEBUG_LOADING" );
+    AssGVar( var, (SyDebugLoading ? True : False) );
+    MakeReadOnlyGVar(var);
 
-    AssGVar( GVarName( "CHECK_FOR_COMP_FILES" ),
-             (SyCheckForCompletion ? True : False) );
+    var = GVarName( "CHECK_FOR_COMP_FILES" );
+    AssGVar( var, (SyCheckForCompletion ? True : False) );
+    MakeReadOnlyGVar(var);
+
+
+    /* list of exit functions                                              */
+    AtExitFunctions = NEW_PLIST( T_PLIST, 0 );
+    SET_LEN_PLIST( AtExitFunctions, 0 );
+    var = GVarName( "AT_EXIT_FUNCS" );
+    AssGVar( var, AtExitFunctions );
+    MakeReadOnlyGVar(var);
+
+
+    /* init handlers                                                       */
+    InitHandlerFunc( DoComplete0args, "src/gap.c:DoComplete0args");
+    InitHandlerFunc( DoComplete1args, "src/gap.c:DoComplete1args");
+    InitHandlerFunc( DoComplete2args, "src/gap.c:DoComplete2args");
+    InitHandlerFunc( DoComplete3args, "src/gap.c:DoComplete3args");
+    InitHandlerFunc( DoComplete4args, "src/gap.c:DoComplete4args");
+    InitHandlerFunc( DoComplete5args, "src/gap.c:DoComplete5args");
+    InitHandlerFunc( DoComplete6args, "src/gap.c:DoComplete6args");
+    InitHandlerFunc( DoCompleteXargs, "src/gap.c:DoCompleteXargs");
 
 
     /* install the internal functions                                      */
-    InitHandlerFunc( FuncRuntime, "Runtime");
-    AssGVar( GVarName( "Runtime" ),
-         NewFunctionC( "Runtime", 0L, "",
-                    FuncRuntime ) );
+    C_NEW_GVAR_FUNC( "Runtime", 0L, "",
+		  FuncRuntime,
+           "src/gap.c:Runtime" );
 
-    InitHandlerFunc( SizeScreenHandler, "Size Screen");
-    AssGVar( GVarName( "SizeScreen" ),
-         NewFunctionC( "SizeScreen", -1L, "args",
-                        SizeScreenHandler ) );
+    C_NEW_GVAR_FUNC( "SizeScreen", -1L, "args",
+		  FuncSizeScreen,
+           "src/gap.c:SizeScreen" );
 
-    InitHandlerFunc( FuncID_FUNC, "ID_FUNC");
-    AssGVar( GVarName( "ID_FUNC" ),
-         NewFunctionC( "ID_FUNC", 1L, "object",
-                    FuncID_FUNC ) );
+    C_NEW_GVAR_FUNC( "ID_FUNC", 1L, "object",
+		  FuncID_FUNC,
+           "src/gap.c:ID_FUNC" );
 
-    AssGVar( GVarName( "ExportToKernelFinished" ),
-         NewFunctionC( "ExportToKernelFinished", 0L, "",
-                    FuncExportToKernelFinished ) );
+    C_NEW_GVAR_FUNC( "ExportToKernelFinished", 0L, "",
+		  FuncExportToKernelFinished,
+           "src/gap.c:ExportToKernelFinished" );
 
 
     /* install the error functions                                         */
-    InitHandlerFunc( FuncDownEnv, "DownEnv");
-    AssGVar( GVarName( "DownEnv" ),
-         NewFunctionC( "DownEnv", -1L, "",
-                    FuncDownEnv ) );
+    C_NEW_GVAR_FUNC( "DownEnv", -1L, "args",
+		  FuncDownEnv,
+           "src/gap.c:DownEnv" );
 
-    InitHandlerFunc( FuncWhere, "Where");
-    AssGVar( GVarName( "Where" ),
-         NewFunctionC( "Where", -1L, "",
-                    FuncWhere ) );
+    C_NEW_GVAR_FUNC( "Where", -1L, "args",
+		  FuncWhere,
+           "src/gap.c:Where" );
 
-    InitHandlerFunc( FuncError, "Error");
-    AssGVar( GVarName( "Error" ),
-         NewFunctionC( "Error", -1L, "args",
-                    FuncError ) );
+    C_NEW_GVAR_FUNC( "Error", -1L, "args",
+		  FuncError,
+           "src/gap.c:Error" );
 
 
     /* install the functions for creating the init file                    */
-    InitHandlerFunc( FuncCOM_FILE, "COM_FILE");
-    AssGVar( GVarName( "COM_FILE" ),
-         NewFunctionC( "COM_FILE", 2L, "filename, crc",
-                    FuncCOM_FILE ) );
+    C_NEW_GVAR_FUNC( "COM_FILE", 2L, "filename, crc",
+		  FuncCOM_FILE,
+           "src/gap.c:COM_FILE" );
 
-    InitHandlerFunc( FuncCOM_FUN, "COM_FUN");
-    AssGVar( GVarName( "COM_FUN" ),
-         NewFunctionC( "COM_FUN", 1L, "number",
-                    FuncCOM_FUN ) );
+    C_NEW_GVAR_FUNC( "COM_FUN", 1L, "number",
+                    FuncCOM_FUN,
+           "src/gap.c:COM_FUN" );
 
-    InitHandlerFunc( FuncMAKE_INIT, "MAKE_INIT");
-    AssGVar( GVarName( "MAKE_INIT" ),
-         NewFunctionC( "MAKE_INIT", -1L, "output, input1, ...",
-                   FuncMAKE_INIT ) );
+    C_NEW_GVAR_FUNC( "MAKE_INIT", -1L, "output, input1, ...",
+                  FuncMAKE_INIT,
+           "src/gap.c:MAKE_INIT" );
 
 
     /* install functions for dynamically/statically loadable modules       */
-    InitHandlerFunc( FuncGAP_CRC, "GAP_CRC");
-    AssGVar( GVarName( "GAP_CRC" ),
-         NewFunctionC( "GAP_CRC", 1L, "filename",
-                    FuncGAP_CRC ) );
+    C_NEW_GVAR_FUNC( "GAP_CRC", 1L, "filename",
+                  FuncGAP_CRC,
+           "src/gap.c:GAP_CRC" );
 
-    InitHandlerFunc( FuncLOAD_DYN, "LOAD_DYN");
-    AssGVar( GVarName( "LOAD_DYN" ),
-         NewFunctionC( "LOAD_DYN", 2L, "filename, crc",
-                    FuncLOAD_DYN ) );
+    C_NEW_GVAR_FUNC( "LOAD_DYN", 2L, "filename, crc",
+                  FuncLOAD_DYN,
+           "src/gap.c:LOAD_DYN" );
 
-    InitHandlerFunc( FuncLOAD_STAT, "LOAD_STAT");
-    AssGVar( GVarName( "LOAD_STAT" ),
-         NewFunctionC( "LOAD_STAT", 2L, "filename, crc",
-                    FuncLOAD_STAT ) );
+    C_NEW_GVAR_FUNC( "LOAD_STAT", 2L, "filename, crc",
+                  FuncLOAD_STAT,
+           "src/gap.c:LOAD_STAT" );
 
-    InitHandlerFunc( FuncSHOW_STAT, "SHOW_STAT");
-    AssGVar( GVarName( "SHOW_STAT" ),
-         NewFunctionC( "SHOW_STAT", 0L, "",
-                    FuncSHOW_STAT ) );
-
-
-    InitHandlerFunc( FuncExportToKernelFinished, "ExportToKernelFinished");
-    AssGVar( GVarName( "ExportToKernelFinished" ),
-         NewFunctionC( "ExportToKernelFinished", 0L, "",
-                    FuncExportToKernelFinished ) );
+    C_NEW_GVAR_FUNC( "SHOW_STAT", 0L, "",
+                  FuncSHOW_STAT,
+           "src/gap.c:SHOW_STAT" );
 
 
     /* debugging functions                                                 */
-    InitHandlerFunc( FuncGASMAN, "GASMAN");
-    AssGVar( GVarName(  "GASMAN" ),
-         NewFunctionC(  "GASMAN", -1L, "args",
-                     FuncGASMAN ) );
+    C_NEW_GVAR_FUNC( "GASMAN", -1L, "args",
+                  FuncGASMAN,
+           "src/gap.c:GASMAN" );
 
-    InitHandlerFunc( FuncSHALLOW_SIZE, "SHALLOW_SIZE");
-    AssGVar( GVarName(  "SHALLOW_SIZE" ),
-         NewFunctionC(  "SHALLOW_SIZE", 1L, "object",
-                     FuncSHALLOW_SIZE ) );
+    C_NEW_GVAR_FUNC( "SHALLOW_SIZE", 1L, "object",
+                  FuncSHALLOW_SIZE,
+           "src/gap.c:SHALLOW_SIZE" );
 
-    InitHandlerFunc( FuncTNUM_OBJ, "TNUM_OBJ");
-    AssGVar( GVarName(  "TNUM_OBJ" ),
-         NewFunctionC(  "TNUM_OBJ", 1L, "object",
-                     FuncTNUM_OBJ ) );
+    C_NEW_GVAR_FUNC( "TNUM_OBJ", 1L, "object",
+                  FuncTNUM_OBJ,
+           "src/gap.c:TNUM_OBJ" );
 
-    InitHandlerFunc( FuncXTNUM_OBJ, "XTNUM_OBJ");
-    AssGVar( GVarName(  "XTNUM_OBJ" ),
-         NewFunctionC(  "XTNUM_OBJ", 1L, "object",
-                     FuncXTNUM_OBJ ) );
+    C_NEW_GVAR_FUNC( "XTNUM_OBJ", 1L, "object",
+                  FuncXTNUM_OBJ,
+           "src/gap.c:XTNUM_OBJ" );
 
-    InitHandlerFunc( FuncOBJ_HANDLE, "OBJ_HANDLE");
-    AssGVar( GVarName(  "OBJ_HANDLE" ),
-         NewFunctionC(  "OBJ_HANDLE", 1L, "object",
-                     FuncOBJ_HANDLE ) );
+    C_NEW_GVAR_FUNC( "OBJ_HANDLE", 1L, "object",
+                  FuncOBJ_HANDLE,
+           "src/gap.c:OBJ_HANDLE" );
 
-    InitHandlerFunc( FuncHANDLE_OBJ, "HANDLE_OBJ");
-    AssGVar( GVarName(  "HANDLE_OBJ" ),
-         NewFunctionC(  "HANDLE_OBJ", 1L, "object",
-                     FuncHANDLE_OBJ ) );
+    C_NEW_GVAR_FUNC( "HANDLE_OBJ", 1L, "object",
+                  FuncHANDLE_OBJ,
+           "src/gap.c:HANDLE_OBJ" );
 
-    InitHandlerFunc( FuncSWAP_MPTR, "SWAP_MPTR");
-    AssGVar( GVarName(  "SWAP_MPTR" ),
-         NewFunctionC(  "SWAP_MPTR", 2L, "obj1, obj2",
-                     FuncSWAP_MPTR ) );
+    C_NEW_GVAR_FUNC( "SWAP_MPTR", 2L, "obj1, obj2",
+                  FuncSWAP_MPTR,
+           "src/gap.c:SWAP_MPTR" );
 
-    InitHandlerFunc( FuncIDENTS_GVAR, "IDENTS_GVAR");
-    AssGVar( GVarName(  "IDENTS_GVAR" ),
-         NewFunctionC(  "IDENTS_GVAR", 0L, "",
-                     FuncIDENTS_GVAR ) );
+    C_NEW_GVAR_FUNC( "IDENTS_GVAR", 0L, "",
+                  FuncIDENTS_GVAR,
+           "src/gap.c:IDENTS_GVAR" );
 
-    InitHandlerFunc( FuncASS_GVAR, "ASS_GVAR");
-    AssGVar( GVarName(  "ASS_GVAR" ),
-         NewFunctionC(  "ASS_GVAR", 2L, "gvar, value",
-                     FuncASS_GVAR ) );
+    C_NEW_GVAR_FUNC( "ASS_GVAR", 2L, "gvar, value",
+                  FuncASS_GVAR,
+           "src/gap.c:ASS_GVAR" );
 
 #ifdef DEBUG_HANDLER_REGISTRATION
     CheckAllHandlers();

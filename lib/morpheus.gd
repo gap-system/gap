@@ -95,5 +95,11 @@ IsomorphismGroups := NewOperationArgs("IsomorphismGroups");
 
 #############################################################################
 ##
+#F  GQuotients
+##
+GQuotients := NewOperationArgs("GQuotients");
+
+#############################################################################
+##
 #E  morpheus.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

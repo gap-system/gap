@@ -165,7 +165,7 @@ InstallSubsetMaintainedMethod( IsIntegralRing,
 
 #T method that fetches this from the family if possible?
 
-InstallTrueMethod( IsIntegralRing, IsRing and IsMagmaWithInversesAndZero );
+InstallTrueMethod( IsIntegralRing, IsRing and IsMagmaWithInversesIfNonzero );
 InstallTrueMethod( IsIntegralRing, IsUniqueFactorizationRing );
 
 
@@ -181,8 +181,8 @@ IsJacobianRing := NewProperty( "IsJacobianRing", IsRing );
 SetIsJacobianRing := Setter( IsJacobianRing );
 HasIsJacobianRing := Tester( IsJacobianRing );
 
-InstallCollectionsTrueMethod( IsJacobianRing,
-    IsJacobianElement, IsRing );
+InstallTrueMethod( IsJacobianRing,
+    IsJacobianElementCollection and IsRing );
 
 InstallSubsetMaintainedMethod( IsJacobianRing,
     IsRing and IsJacobianRing, IsRing );
@@ -204,8 +204,8 @@ HasIsZeroSquaredRing := Tester( IsZeroSquaredRing );
 
 InstallTrueMethod( IsAnticommutative, IsRing and IsZeroSquaredRing );
 
-InstallCollectionsTrueMethod( IsZeroSquaredRing,
-    IsZeroSquaredElement, IsRing );
+InstallTrueMethod( IsZeroSquaredRing,
+    IsZeroSquaredElementCollection and IsRing );
 
 InstallSubsetMaintainedMethod( IsZeroSquaredRing,
     IsRing and IsZeroSquaredRing, IsRing );

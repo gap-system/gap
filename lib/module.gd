@@ -313,6 +313,44 @@ SubmoduleNC := NewOperationArgs( "SubmoduleNC" );
 
 #############################################################################
 ##
+#R  IsRowModuleRep( <M> )
+##
+##  A *row module* is a free left module whose elements are lists of scalars.
+##
+IsRowModuleRep := NewRepresentation( "IsRowModuleRep",
+    IsComponentObjectRep,
+    [ "vectordim" ] );
+
+
+#############################################################################
+##
+#M  IsFiniteDimensional( <M> )  . . . . . .  row modules are always fin. dim.
+##
+InstallTrueMethod( IsFiniteDimensional,
+    IsRowModuleRep and IsFreeLeftModule );
+
+
+#############################################################################
+##
+#R  IsMatrixModuleRep( <V> )
+##
+##  A *matrix module* is a free left module whose elements are matrices.
+##
+IsMatrixModuleRep := NewRepresentation( "IsMatrixModuleRep",
+    IsComponentObjectRep,
+    [ "vectordim" ] );
+
+
+#############################################################################
+##
+#M  IsFiniteDimensional( <M> )  . . . . . matrix modules are always fin. dim.
+##
+InstallTrueMethod( IsFiniteDimensional,
+    IsMatrixModuleRep and IsFreeLeftModule );
+
+
+#############################################################################
+##
 #E  module.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

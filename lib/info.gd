@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This package sets up the new Info messages system
 ##  
@@ -56,8 +56,7 @@ InfoClassFamily := NewFamily("InfoClassFamily", IsInfoClass, IsInfoClass);
 ##  Such sets are what we actually use in message selection
 ##
 
-IsInfoClassCollection := 
-    CategoryCollections( "IsInfoClassCollection", IsInfoClass );
+IsInfoClassCollection := CategoryCollections( IsInfoClass );
 
 IsInfoSelector := IsInfoClassCollection and IsSSortedList;
 

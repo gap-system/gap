@@ -30,6 +30,9 @@ char * Revision_system_h =
 # define SYS_UNISTD_H
 #endif
 
+#include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
+
+
 #define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
 #define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
 #define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */

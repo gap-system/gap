@@ -117,7 +117,7 @@ AddNormalizingElementPcgs := function( G, z )
                 fi;
                 pos := pos + 1;
                 InsertElmList( S.labels, pos, z );
-                edg := 0 * [ 1 .. l ] - pos;
+                edg := ListWithIdenticalEntries( l, -pos );
                 for i  in f * [ 1 .. m / f - 1 ]  do
                     S.translabels{ orb{ i * l + [ 1 .. l ] } } := edg;
                 od;
@@ -197,7 +197,7 @@ ExtendSeriesPermGroup := function(
         
         # If necessary, add a new (trivial) subgroup to the series.
         if lev + 2 > Length( series )  then
-            series[ lev + 2 ] := DeepCopy( series[ lev + 1 ] );
+            series[ lev + 2 ] := StructuralCopy( series[ lev + 1 ] );
         fi;
     
         M0 := series[ lev + 1 ];
@@ -210,7 +210,7 @@ ExtendSeriesPermGroup := function(
     # group to the list.
     else
         M1 := series[ 1 ];
-        M0 := DeepCopy( M1 );
+        M0 := StructuralCopy( M1 );
         X := [  ];
         r := 1;
     fi;
@@ -267,7 +267,7 @@ ExtendSeriesPermGroup := function(
                     M1 := series[ r ];
                     
                     # The enlarged <M1> also pushes up <M0>.
-                    M0 := DeepCopy( M1 );
+                    M0 := StructuralCopy( M1 );
                     oldX := X;
                     X := [  ];
                     for u  in oldX  do
@@ -459,7 +459,7 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         series[ i ]!.noInSeries := i;
     od;
     SetEAFirst( pcgs, first[ 1 ] - first + 1 );
-    pcgs!.series := series;
+    SetElementaryAbelianSeries( pcgs, series );
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
     fi;
@@ -482,11 +482,12 @@ TailOfPcgsPermGroup := function( pcgs, from )
                     IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
                     FamilyObj( OneOfPcgs( pcgs ) ),
                     pcgs{ [ EAFirst( pcgs )[ i ] .. Length( pcgs ) ] } );
-    tail!.stabChain := StabChainAttr( pcgs!.series[ i ] );
+    tail!.stabChain := StabChainAttr( ElementaryAbelianSeries( pcgs )[ i ] );
     SetRelativeOrders( tail, RelativeOrders( pcgs )
             { [ from .. Length( pcgs ) ] } );
     SetEAFirst( tail, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
-    tail!.series := pcgs!.series{ [ i .. Length( EAFirst( pcgs ) ) ] };
+    SetElementaryAbelianSeries( tail, ElementaryAbelianSeries( pcgs )
+            { [ i .. Length( EAFirst( pcgs ) ) ] } );
     if from < EAFirst( pcgs )[ i ]  then
         tail := ExtendedPcgs( tail,
                         pcgs{ [ from .. EAFirst( pcgs )[ i ] - 1 ] } );
@@ -515,7 +516,7 @@ ExponentsOfPcElementPermGroup := function( pcgs, g, mindepth, maxdepth, mode )
     local   exp,  base,  bimg,  r,  depth,  img,  H,  bpt,  gen,  e,  i;
     
     if mode = 'e'  then
-        exp := 0 * [ mindepth .. maxdepth ];
+        exp := ListWithIdenticalEntries( maxdepth - mindepth + 1, 0 );
     fi;
     base  := BaseStabChain( pcgs!.stabChain );
     bimg  := OnTuples( base, g );
@@ -710,8 +711,9 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         od;
         SetEAFirst( pcgs, Concatenation( EAFirst( G ){ [ 1 .. i - 1 ] },
                 [ Length( pcgs ) + 1 ] ) );
-        pcgs!.series := Concatenation
-            ( G!.series{ [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] );
+        SetElementaryAbelianSeries( pcgs, Concatenation
+                ( ElementaryAbelianSeries( G ){ [ 1 .. i - 1 ] },
+                  [ GroupOfPcgs( N ) ] ) );
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
@@ -722,7 +724,7 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         pcgs!.stabChain := N!.stabChain;
         SetRelativeOrders( pcgs, [  ] );
         SetEAFirst( pcgs, [ 1 ] );
-        pcgs!.series := [ GroupOfPcgs( N ) ];
+        SetElementaryAbelianSeries( pcgs, [ GroupOfPcgs( N ) ] );
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
@@ -833,7 +835,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     function( pcgs, pcs )
     local   igs,  i;
 
-    i := Position( Length( pcgs ) - EAFirst( pcgs ) + 1, Length( pcs ) );
+    i := Position( EAFirst( pcgs ), Length( pcgs ) - Length( pcs ) + 1 );
     if i = fail  or
        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
        pcs  then
@@ -845,11 +847,12 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
                    IsTailInducedPcgsRep and IsPcgsPermGroupRep,
         FamilyObj( OneOfPcgs( pcgs ) ),
         pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.stabChain := StabChainAttr( pcgs!.series[ i ] );
+    igs!.stabChain := StabChainAttr( ElementaryAbelianSeries( pcgs )[ i ] );
     SetRelativeOrders( igs, RelativeOrders( pcgs )
             { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
     SetEAFirst( igs, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
-    igs!.series := pcgs!.series{ [ i .. Length( EAFirst( pcgs ) ) ] };
+    SetElementaryAbelianSeries( igs, ElementaryAbelianSeries( pcgs )
+            { [ i .. Length( EAFirst( pcgs ) ) ] } );
     SetParentPcgs( igs, pcgs );
     igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
     return igs;
@@ -898,7 +901,9 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
     SetEAFirst( pcgs, Concatenation( [ 1 ], EAFirst( N ) ) );
-    pcgs!.series := Concatenation( [ GroupStabChain( S ) ], N!.series );
+    SetElementaryAbelianSeries( pcgs,
+            Concatenation( [ GroupStabChain( S ) ],
+                    ElementaryAbelianSeries( N ) ) );
     return pcgs;
 end );
 

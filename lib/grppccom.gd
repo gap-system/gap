@@ -59,8 +59,14 @@ COComplements := NewOperationArgs("COComplements");
 ##
 #O  COComplementsMain( <G>, <N>, <all>, <fun> )  . . . . . . . . . . . . . local
 ##
-COComplementsMain :=
-  NewOperation("COComplementsMain",[IsGroup,IsGroup,IsBool,IsObject]);
+COComplementsMain := NewOperationArgs("COComplementsMain");
+
+#############################################################################
+##
+#O  ComplementclassesSolvableNC( <G>, <N> )
+##
+ComplementclassesSolvableNC := NewOperation("ComplementclassesSolvableNC",
+  [IsGroup,IsGroup]);
 
 #############################################################################
 ##

@@ -9,7 +9,6 @@
 Revision.stbc_gi :=
     "@(#)$Id$";
 
-
 #############################################################################
 ##
 #F  StabChain( <G>, <options> ) . . . . . . . . . . . . make stabilizer chain
@@ -63,7 +62,7 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
     
     # If a stabilizer chain <S> is already known, modify it.
     if HasStabChain( G )  then
-        S := DeepCopy( StabChainAttr( G ) );
+        S := StructuralCopy( StabChainAttr( G ) );
         if IsBound( options.base )  then
             if not IsBound( options.reduced )  then
                 options.reduced := DefaultStabChainOptions.reduced;
@@ -106,6 +105,7 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
             
                 # ordinary Schreier Sims
                 S := EmptyStabChain( [  ], One( G ) );
+                Unbind( S.generators );
                 if not IsTrivial( G )  then
                     if not IsBound( options.base )  then
                         options.base := [  ];
@@ -114,9 +114,11 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
                     StabChainStrong( S, GeneratorsOfGroup( G ), options );
                     T := S;
                     while IsBound( T.stabilizer )  do
+                        T.generators := T.labels{ T.genlabels };
                         Unbind( T.cycles );
                         T := T.stabilizer;
                     od;
+                    T.generators := T.labels{ T.genlabels };
                     Unbind( T.cycles );
                 fi;
                 
@@ -140,9 +142,7 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
         StabChainOptions( G ).random := options.random;
     fi;
     
-    if not HasStabChain( G )  then
-        SetStabChain( G, S );
-    fi;
+    SetStabChain( G, S );
     return S;
 end );
 
@@ -163,7 +163,7 @@ CopyStabChain := function( C )
     local   Xlabels,  S,  len,  xlab,  need,  poss,  i;
     
     # To begin with, make a deep copy.
-    C := DeepCopy( C );
+    C := StructuralCopy( C );
     
     # First pass: Collect the necessary genlabels.
     Xlabels := [  ];
@@ -219,7 +219,7 @@ CopyStabChain := function( C )
             od;
         fi;
     od;
-    
+
     return C;
 end;
 
@@ -334,7 +334,7 @@ GroupStabChain := function( arg )
     
     if Length( arg ) = 1  then
         S := arg[ 1 ];
-        G := GroupByGenerators( S.generators );
+        G := GroupByGenerators( S.generators, S.identity );
     else
         P := arg[ 1 ];
         S := arg[ 2 ];
@@ -360,11 +360,9 @@ DepthSchreierTrees := function( S )
     gens := [  ];
     while IsBound( S.stabilizer )  do
         UniteSet( gens, S.labels{ S.genlabels } );
-        dep := [  ];  dep[ S.orbit[ 1 ] ] := 0;
+        dep := [  ];  dep[ S.orbit[ 1 ] ] := -1;
         for pnt  in S.orbit  do
-            if S.translabels[ pnt ] <> 0  then
-                dep[ pnt ] := dep[ pnt ^ S.transversal[ pnt ] ] + 1;
-            fi;
+            dep[ pnt ] := dep[ pnt ^ S.transversal[ pnt ] ] + 1;
         od;
         sum := 0;
         for i  in dep  do
@@ -399,7 +397,7 @@ AddGeneratorsExtendSchreierTree := function( S, new )
     # Put in the new labels.
     old := BlistList( [ 1 .. Length( S.labels ) ], S.genlabels );
     old[ 1 ] := true;
-    ald := DeepCopy( old );
+    ald := StructuralCopy( old );
     for gen  in new  do
         pos := Position( S.labels, gen );
         if pos = fail  then
@@ -410,8 +408,8 @@ AddGeneratorsExtendSchreierTree := function( S, new )
         elif not ald[ pos ]  then
             Add( S.genlabels, pos );
         fi;
-        if     pos <> 1
-           and not gen in S.generators  then
+        if     IsBound( S.generators )
+           and pos <> 1 and not gen in S.generators  then
             Add( S.generators, gen );
         fi;
     od;
@@ -660,10 +658,12 @@ StabChainSwap := function( S )
 
     # set $T = S$ and compute $b^T$ and a transversal $T/T_b$
     T := EmptyStabChain( S.labels, S.identity, b );
+    Unbind( T.generators );
     AddGeneratorsExtendSchreierTree( T, S.labels{ S.genlabels } );
 
     # initialize $Tstab$, which will become $T_b$
     Tstab := EmptyStabChain( [  ], S.identity, a );
+    Unbind( Tstab.generators );
     AddGeneratorsExtendSchreierTree( Tstab,
             S.stabilizer.stabilizer.generators );
 
@@ -716,7 +716,7 @@ StabChainSwap := function( S )
     # copy everything back into the stabchain
     S.labels      := T.labels;
     S.genlabels   := T.genlabels;
-    S.generators  := T.generators;
+    S.generators  := S.labels{ S.genlabels };
     S.orbit       := T.orbit;
     S.translabels := T.translabels;
     S.transversal := T.transversal;
@@ -725,7 +725,7 @@ StabChainSwap := function( S )
     else
         S.stabilizer.labels      := Tstab.labels;
         S.stabilizer.genlabels   := Tstab.genlabels;
-        S.stabilizer.generators  := Tstab.generators;
+        S.stabilizer.generators  := Tstab.labels{ Tstab.genlabels };
         S.stabilizer.orbit       := Tstab.orbit;
         S.stabilizer.translabels := Tstab.translabels;
         S.stabilizer.transversal := Tstab.transversal;
@@ -810,15 +810,15 @@ ConjugateStabChain := function( arg )
         
         # If this is a  new  labels component, map  the  labels and mark  the
         # component so that it can be recognized at deeper levels.
-        if len = 0  or
-           IsPerm( S.labels[ len ] )  then
+        if len = 0  or  IsPerm( S.labels[ len ] )  then
             if IsPerm( hom )  then
                 labels := OnTuples( S.labels, hom );
                 labpos := [ 1 .. len ];
             else
                 if IsIdentical( S, T )  then  labels := [ T.identity ];
                                         else  labels := T.labels;        fi;
-                labpos := 0 * [ 1 .. len ];  labpos[ 1 ] := 1;
+                labpos := ListWithIdenticalEntries( len, 0 );
+                labpos[ 1 ] := 1;
             fi;
             Add( S.labels, rec( labels := labels,
                                 labpos := labpos,
@@ -1097,9 +1097,11 @@ end;
 InsertTrivialStabilizer := function( S, pnt )
     S.stabilizer := ShallowCopy( S );
     S.genlabels  := ShallowCopy( S.stabilizer.genlabels );
-    S.generators := ShallowCopy( S.stabilizer.generators );
-    if IsBound( S.idimage )  then
-        S.genimages := ShallowCopy( S.stabilizer.genimages );
+    if IsBound( S.generators )  then
+        S.generators := ShallowCopy( S.stabilizer.generators );
+        if IsBound( S.idimage )  then
+            S.genimages := ShallowCopy( S.stabilizer.genimages );
+        fi;
     fi;
     InitializeSchreierTree( S, pnt );
 end;
@@ -1209,9 +1211,8 @@ end;
 SiftedPermutation := function( S, g )
     local   bpt,  img;
 
-    while     S <> false
-          and g <> S.identity
-          and not IsEmpty( S.generators )  do
+    while     not IsEmpty( S.genlabels )
+          and g <> S.identity  do
         bpt := S.orbit[ 1 ];
         img := bpt ^ g;
         if IsBound( S.transversal[ img ] )  then
@@ -1221,7 +1222,7 @@ SiftedPermutation := function( S, g )
             od;
             S := S.stabilizer;
         else
-            S := false;
+            return g;
         fi;
     od;
     return g;
@@ -1265,7 +1266,7 @@ InstallMethod( MembershipTestKnownBase, true, [ IsRecord,
             od;
         fi;
     od;
-    while     IsBound( S.stabilizer )
+    while     not IsEmpty( S.genlabels )
           and IsBound( S.translabels[ base[ 1 ] ] )  do
         bpt := S.orbit[ 1 ];
         while base[ 1 ] <> bpt  do
@@ -1313,7 +1314,7 @@ SizeStabChain := function( S )
     local   size;
     
     size := 1;
-    while not IsEmpty( S.generators )  do
+    while not IsEmpty( S.genlabels )  do
         size := size * Length( S.orbit );
         S := S.stabilizer;
     od;
@@ -1328,7 +1329,7 @@ StrongGeneratorsStabChain := function( S )
     local   sgs;
     
     sgs := [  ];
-    while not IsEmpty( S.generators )  do
+    while not IsEmpty( S.genlabels )  do
         UniteSet( sgs, S.generators );
         S := S.stabilizer;
     od;

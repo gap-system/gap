@@ -45,7 +45,7 @@ ZNZ_PURE_TYPE := POS_FIRST_FREE_TYPE;
 ##  Objects in this representation are defined by a single data entry, an
 ##  integer at first position.
 ##
-IsModulusRep := NewRepresentation( "IsModulusRep", IsComponentObjectRep,
+IsModulusRep := NewRepresentation( "IsModulusRep", IsPositionalObjectRep,
     [ 1 ] );
 
 
@@ -109,7 +109,7 @@ InstallMethod( ExtRepOfObj,
 ##
 InstallMethod( PrintObj,
     "method for element in Z/nZ (ModulusRep)",
-    true,
+    IsZmodnZObjNonprimeFamily,
     [ IsZmodnZObj and IsModulusRep ], 0,
     function( x )
     Print( "ZmodnZObj( ", x![1], ", ", DataType( TypeObj( x ) ), " )" );
@@ -234,7 +234,7 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
-    "method for integer and element in Z/pZ (ModulusRep)",
+    "method for integer and element in Z/nZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -273,7 +273,7 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \-,
-    "method for integer and element in Z/pZ (ModulusRep)",
+    "method for integer and element in Z/nZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -312,7 +312,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
-    "method for integer and element in Z/pZ (ModulusRep)",
+    "method for integer and element in Z/nZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -353,7 +353,7 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
-    "method for integer and element in Z/pZ (ModulusRep)",
+    "method for integer and element in Z/nZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -514,16 +514,6 @@ InstallMethod( Random,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
     R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
                     Random( [ 0 .. Size( R ) - 1 ] ) ) );
-
-
-#############################################################################
-##
-#M  IsFinite( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
-##
-InstallTrueMethod( IsFinite,
-    IsZmodnZObjNonprimeCollection and IsDomain );
-#T better generalize 'IsDuplicateFreeList' to 'IsDuplicateFree',
-#T and use this here?
 
 
 #############################################################################

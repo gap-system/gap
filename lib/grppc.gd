@@ -65,6 +65,8 @@ FamilyPcgs := NewAttribute(
 SetFamilyPcgs := Setter(FamilyPcgs);
 HasFamilyPcgs := Tester(FamilyPcgs);
 
+InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
+
 
 #############################################################################
 ##
@@ -76,6 +78,8 @@ HomePcgs := NewAttribute(
 
 SetHomePcgs := Setter(HomePcgs);
 HasHomePcgs := Tester(HomePcgs);
+
+InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
 
 
 #############################################################################
@@ -138,6 +142,15 @@ InstallTrueMethod(
 InstallTrueMethod(
     IsPcgsComputable,
     HasPcgs );
+
+
+#############################################################################
+##
+#M  IsPcgsComputable( <grp> )
+##
+InstallTrueMethod( IsPcgsComputable, IsGroup and HasHomePcgs );
+InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
+
 
 #############################################################################
 ##

@@ -158,12 +158,12 @@ whose position is the <i>th entry of the argument in the curly braces.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Identical lists}
 
-This  second section about lists  is  dedicated to  the subtle difference
-between  equality and identity  of   lists. It  is  really important   to
-understand this  difference in   order  to understand how  complex   data
-structures   are realized in {\GAP}.  This  section applies to all {\GAP}
-objects that have    subobjects, i.~e., to lists  and   to records. After
-reading the section  about records you should  return to this section and
+This second  section  about lists is dedicated  to  the subtle difference
+between  equality  and identity  of   lists. It  is  really  important to
+understand   this  difference in  order   to  understand how complex data
+structures are  realized in {\GAP}.   This section applies  to all {\GAP}
+objects  that have  subobjects,  e.g.,  to lists   and to  records. After
+reading the section  about records you  should return to this section and
 translate it into the record context.
 
 Two  lists are equal if all their entries are equal.  This means that the
@@ -514,14 +514,14 @@ elements from the original list corresponding to these positions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Immutability}
 
-{\GAP} has a mechanism that protects lists against  changes like the ones
-that have bothered     us in section   "Identical  lists".  The  function
+{\GAP} has a mechanism that protects lists  against changes like the ones
+that   have   bothered us in  section    "Identical lists".  The function
 `Immutable' takes as argument a list and returns an immutable copy of it,
-i.e.,  a list which  looks  exactly like the  old one,  but has two extra
-properties: (1)~It has no non-constant subobjects in  common with the old
-list, i.e., every part of the list  that can be  changed has been copied,
-so that changes to the old list will not affect  the new one. (2)~The new
-list is made a constant, i.e., no part of it can be changed any more.
+i.e.,  a list which looks   exactly like the old   one, but has two extra
+properties: (1)~It has no mutable subobjects in common with the old list,
+i.e., every part of the list that can be changed has been copied, so that
+changes to the old list will not affect the new  one. (2)~The new list is
+made a constant, i.e., no part of it can be changed any more.
 \beginexample
     gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
     gap> list[3][5] := 'w';; list; copy;
@@ -554,19 +554,22 @@ themselves, the result of `ShallowCopy' is mutable only at the top.
 \exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
 list?
 
-\answer `DeepCopy(  list   )' will  copy `list'  only  as deep  as  it is
+\answer `StructuralCopy( list )' will copy `list' only as deep  as  it is
 mutable, hence it will not copy an immutable list at all.  So you have to
 iterate the effect  of `ShallowCopy', e.g.,  with the following recursive
 function:
 \begintt
-    DeepCopyList := function( old )
+    DeepCopy := function( old )
     local   new,  entry;
         new := [  ];  for entry  in old  do
-        if IsList( entry )  then  Add( new, DeepCopyList( entry ) );
+        if IsList( entry )  then  Add( new, DeepCopy( entry ) );
                             else  Add( new, entry );  fi;  od;
         return new;
     end;
 \endtt
+This works only if the original list  does not contain the same subobject
+(up to `IsIdentical') twice. For example, the list which {\GAP} prints as
+`[ ~ ]' will cause this function to recurse infinitely.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:

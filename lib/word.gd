@@ -55,27 +55,20 @@ IsAssocWordWithInverse := IsAssocWord and IsWordWithInverse;
 #C  IsAssocWordWithOneCollection( <obj> )
 #C  IsAssocWordWithInverseCollection( <obj> )
 ##
-IsAssocWordCollection            := CategoryCollections(
-    "IsAssocWordCollection", IsAssocWord );
+IsAssocWordCollection            := CategoryCollections( IsAssocWord );
 
 IsAssocWordWithOneCollection     := CategoryCollections(
-    "IsAssocWordWithOneCollection", IsAssocWordWithOne );
+    IsAssocWordWithOne );
 
 IsAssocWordWithInverseCollection := CategoryCollections(
-    "IsAssocWordWithInverseCollection", IsAssocWordWithInverse );
+    IsAssocWordWithInverse );
 
 
-IsAssocWordFamily :=
-    CategoryFamily( "IsAssocWordFamily",
-                    IsAssocWord );
+IsAssocWordFamily := CategoryFamily( IsAssocWord );
 
-IsAssocWordWithOneFamily :=
-    CategoryFamily( "IsAssocWordWithOneFamily",
-                    IsAssocWordWithOne );
+IsAssocWordWithOneFamily := CategoryFamily( IsAssocWordWithOne );
 
-IsAssocWordWithInverseFamily :=
-    CategoryFamily( "IsAssocWordWithInverseFamily",
-                    IsAssocWordWithInverse );
+IsAssocWordWithInverseFamily := CategoryFamily( IsAssocWordWithInverse );
 
 
 #############################################################################

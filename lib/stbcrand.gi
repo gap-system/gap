@@ -10,6 +10,9 @@
 ##  with verification.
 ##
 #H  $Log$
+#H  Revision 4.11  1997/05/28 13:20:07  fceller
+#H  changed 'DeepCopy' to 'StructuralCopy'
+#H
 #H  Revision 4.10  1997/05/23 08:14:38  htheisse
 #H  replaced `RemoveSet' by `Difference'
 #H
@@ -26,7 +29,7 @@
 #H  contributed Akos' changes
 #H
 #H  Revision 4.5  1996/11/27 15:33:04  htheisse
-#H  replaced `Copy' by `DeepCopy'
+#H  replaced `Copy' by `StructuralCopy'
 #H
 #H  Revision 4.4  1996/11/05 07:59:09  htheisse
 #H  added `Closure', `NormalClosure' and `DerivedSubgroup' for perm groups
@@ -1336,7 +1339,7 @@ VerifyStabilizer := function(S,z,missing,correct)
     od; 
 
    # check that conjugates of point stabilizers of stab are subgroups of stab
-   chain:=DeepCopy(stab); 
+   chain:=StructuralCopy(stab); 
    for j in [1..Length(leaders)] do
        if result = () then 
            i := leaders[Length(leaders)+1-j]; 

@@ -2,6 +2,10 @@
 ##
 #W  rwsdt.gi                   GAP Library                  Wolfgang Merkwitz
 ##
+#H  &(#)$Id$
+##
+#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
 ##  This file implements a deep thought collector as representation of a 
 ##  polycyclic collector with power/conjugate presentation.
 Revision.rwsdt_gi :=
@@ -556,7 +560,7 @@ function( dtrws )
 
     # Compute the deep thought polynomials
     Print("computing deep thought polynomials  ...\n");
-    dtrws![PC_DEEP_THOUGHT_POLS] := calcreps2(dtrws![PC_CONJUGATES], 8);
+    dtrws![PC_DEEP_THOUGHT_POLS] := calcreps2(dtrws![PC_CONJUGATES], 8, 1);
     Print("done\n");
 
     # Compute the orders of the genrators of dtrws

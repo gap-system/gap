@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains  the generic  methods  for elements in families  that
 ##  allow certain arithmetical operations.
@@ -18,6 +18,7 @@ Revision.arith_gi :=
 #M  Zero(<elm>)
 ##
 InstallMethod( Zero,
+    "method for an additive-element-with-zero",
     true, [ IsAdditiveElementWithZero ], 0,
     function ( elm )
     local   F;
@@ -34,6 +35,7 @@ InstallMethod( Zero,
 #M  IsZero(<elm>)
 ##
 InstallMethod( IsZero,
+    "method for an additive-element-with-zero",
     true, [ IsAdditiveElementWithZero ], 0,
     function ( elm )
     return (elm = 0*elm);
@@ -45,15 +47,19 @@ InstallMethod( IsZero,
 #M  <elm1>-<elm2>
 ##
 InstallMethod( \-,
+    "method for external add. element, and additive-element-with-zero",
     true, [ IsExtAElement, IsAdditiveElementWithInverse ], 0,
     DIFF_DEFAULT );
+
 
 #############################################################################
 ##
 #M  One(<elm>)
 ##
 InstallMethod( One,
-    true, [ IsMultiplicativeElementWithOne ], 0,
+    "method for a multiplicative-element-with-one",
+    true,
+    [ IsMultiplicativeElementWithOne ], 0,
     function ( elm )
     local   F;
     F := FamilyObj( elm );
@@ -69,7 +75,9 @@ InstallMethod( One,
 #M  IsOne(<elm>)
 ##
 InstallMethod( IsOne,
-    true, [ IsMultiplicativeElementWithOne ], 0,
+    "method for a multiplicative-element-with-one",
+    true,
+    [ IsMultiplicativeElementWithOne ], 0,
     function ( elm )
     return (elm = elm^0);
     end );
@@ -80,7 +88,9 @@ InstallMethod( IsOne,
 #M  '<elm1>/<elm2>'
 ##
 InstallMethod( \/,
-    true, [ IsExtRElement, IsMultiplicativeElementWithInverse ], 0,
+    "method for ext. r elm., and multiplicative-element-with-inverse",
+    true,
+    [ IsExtRElement, IsMultiplicativeElementWithInverse ], 0,
     QUO_DEFAULT );
 
 
@@ -89,7 +99,9 @@ InstallMethod( \/,
 #M  LeftQuotient(<elm1>,<elm2>)
 ##
 InstallMethod( LeftQuotient,
-    true, [ IsMultiplicativeElementWithInverse, IsExtLElement ], 0,
+    "method for multiplicative-element-with-inverse, and ext. l elm.",
+    true,
+    [ IsMultiplicativeElementWithInverse, IsExtLElement ], 0,
     LQUO_DEFAULT );
 
 
@@ -98,6 +110,7 @@ InstallMethod( LeftQuotient,
 #M  '<elm1>^<elm2>'
 ##
 InstallMethod( \^,
+    "method for two mult.-elm.-with-inverse",
     IsIdentical,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -110,6 +123,7 @@ InstallMethod( \^,
 #M  'Comm(<elm1>,<elm2>)'
 ##
 InstallMethod( Comm,
+    "method for two mult.-elm.-with-inverse",
     IsIdentical,
     [ IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse ],
@@ -122,7 +136,9 @@ InstallMethod( Comm,
 #M  LieBracket(<elm1>,<elm2>)
 ##
 InstallMethod( LieBracket,
-    IsIdentical, [ IsRingElement, IsRingElement ], 0,
+    "method for two ring elements",
+    IsIdentical,
+    [ IsRingElement, IsRingElement ], 0,
     function ( elm1, elm2 )
     return ( elm1 * elm2 ) - ( elm2 * elm1 );
     end );
@@ -139,12 +155,14 @@ InstallOtherMethod( \*,
 
 InstallOtherMethod( \*,
     "zero integer * additive element with zero",
-    true, [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], 0,
+    true,
+    [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], 0,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
     "negative integer * additive element with inverse",
-    true, [ IsInt and IsNegRat, IsAdditiveElementWithInverse ], 0,
+    true,
+    [ IsInt and IsNegRat, IsAdditiveElementWithInverse ], 0,
     PROD_INT_OBJ );
 
 
@@ -153,15 +171,21 @@ InstallOtherMethod( \*,
 #M  '<elm>^<int>'
 ##
 InstallMethod( \^,
-    true, [ IsMultiplicativeElement, IsInt and IsPosRat ], 0,
+    "method for mult. element, and positive integer",
+    true,
+    [ IsMultiplicativeElement, IsInt and IsPosRat ], 0,
     POW_OBJ_INT );
 
 InstallMethod( \^,
-    true, [ IsMultiplicativeElementWithOne, IsZeroCyc ], 0,
+    "method for mult. element-with-one, and zero",
+    true,
+    [ IsMultiplicativeElementWithOne, IsZeroCyc ], 0,
     POW_OBJ_INT );
 
 InstallMethod( \^,
-    true, [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ], 0,
+    "method for mult. element-with-inverse, and negative integer",
+    true,
+    [ IsMultiplicativeElementWithInverse, IsInt and IsNegRat ], 0,
     POW_OBJ_INT );
 
 
@@ -186,7 +210,9 @@ InstallMethod( SetElementsFamily,
 #M  Characteristic(<obj>)
 ##
 InstallMethod( Characteristic,
-    true, [ IsObject ], 0,
+    "method that asks the family",
+    true,
+    [ IsObject ], 0,
     function ( obj )
     local   F;
     F := FamilyObj( obj );
@@ -201,19 +227,36 @@ end );
 ##
 #M  Order( <obj> )
 ##
-InstallMethod( Order, true, [ IsMultiplicativeElementWithOne ], 0,
+InstallMethod( Order,
+    "method for a mult. element-with-one",
+    true,
+    [ IsMultiplicativeElementWithOne ], 0,
     function( obj )
     local one, pow, ord;
+
+    # Try to get the identity of the object.
     one:= One( obj );
+    if one = fail then
+      Error( "<obj> has not an identity" );
+    fi;
+
+    # Check that the object is invertible.
+    if Inverse( obj ) = fail then
+      Error( "<obj> is not invertible" );
+    fi;
+
+    # Compute the order.
+#T warnings about possibly infinite order ??
     pow:= obj;
     ord:= 1;
     while pow <> one do
     ord:= ord + 1;
       pow:= pow * obj;
     od;
+
+    # Return the order.
     return ord;
     end );
-#T warnings ??
 
 
 #############################################################################
@@ -221,6 +264,7 @@ InstallMethod( Order, true, [ IsMultiplicativeElementWithOne ], 0,
 #M  NormedRowVector( <v> )
 ##
 InstallMethod( NormedRowVector,
+    "method for a row vector of scalars",
     true,
     [ IsRowVector and IsScalarCollection ],
     0,

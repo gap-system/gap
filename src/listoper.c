@@ -213,7 +213,7 @@ Obj             SumSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listS = NEW_PLIST( T_PLIST, len );
+    listS = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
@@ -240,7 +240,7 @@ Obj             SumListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listS = NEW_PLIST( T_PLIST, len );
+    listS = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
@@ -275,7 +275,7 @@ Obj             SumListList (
             "you can return a new list for <right>" );
         return SUM( listL, listR );
     }
-    listS = NEW_PLIST( T_PLIST, len );
+    listS = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listS, len );
 
     /* loop over the entries and add                                       */
@@ -351,7 +351,7 @@ Obj             ZeroListDefault (
 
     /* make the result list                                                */
     len = LEN_LIST( list );
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( res, len );
 
     /* enter zeroes everywhere                                             */
@@ -406,7 +406,7 @@ Obj             AInvListDefault (
 
     /* make the result list                                                */
     len = LEN_LIST( list );
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( res, len );
 
     /* enter the additive inverses everywhere                              */
@@ -473,7 +473,7 @@ Obj             DiffSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listD = NEW_PLIST( T_PLIST, len );
+    listD = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -500,7 +500,7 @@ Obj             DiffListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listD = NEW_PLIST( T_PLIST, len );
+    listD = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -535,7 +535,7 @@ Obj             DiffListList (
             "you can return a new list for <right>" );
         return DIFF( listL, listR );
     }
-    listD = NEW_PLIST( T_PLIST, len );
+    listD = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listD, len );
 
     /* loop over the entries and subtract                                  */
@@ -629,7 +629,7 @@ Obj             ProdSclList (
 
     /* make the result list                                                */
     len = LEN_LIST( listR );
-    listP = NEW_PLIST( T_PLIST, len );
+    listP = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -656,7 +656,7 @@ Obj             ProdListScl (
 
     /* make the result list                                                */
     len = LEN_LIST( listL );
-    listP = NEW_PLIST( T_PLIST, len );
+    listP = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( listP, len );
 
     /* loop over the entries and multiply                                  */
@@ -781,10 +781,10 @@ Obj             OneMatrix (
     one  = ONE( zero );
 
     /* make the identity matrix                                            */
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
-        row = NEW_PLIST( T_PLIST, len );
+        row = NEW_PLIST( T_PLIST+IMMUTABLE, len );
         SET_LEN_PLIST( row, len );
         for ( k = 1; k <= len; k++ )
             SET_ELM_PLIST( row, k, zero );
@@ -853,7 +853,7 @@ Obj             InvMatrix (
     one  = ONE( zero );
 
     /* make a matrix of the form $ ( Id_<len> | <mat> ) $                  */
-    res = NEW_PLIST( T_PLIST, len );
+    res = NEW_PLIST( T_PLIST+IMMUTABLE, len );
     SET_LEN_PLIST( res, len );
     for ( i = 1; i <= len; i++ ) {
         row = NEW_PLIST( T_PLIST, 2 * len );

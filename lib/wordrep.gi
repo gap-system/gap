@@ -765,7 +765,7 @@ end;
 ##  <string> is stored at position 1 in the list object.
 ##
 IsInfiniteListOfNamesRep := NewRepresentation( "IsInfiniteListOfNamesRep",
-    IsPositionalObjectRep and IsConstantTimeAccessListRep,
+    IsPositionalObjectRep and IsConstantTimeAccessList,
     [ 1 ] );
 
 InstallMethod( PrintObj,
@@ -840,7 +840,7 @@ end;
 ##
 IsInfiniteListOfGeneratorsRep := NewRepresentation(
     "IsInfiniteListOfGeneratorsRep",
-    IsPositionalObjectRep and IsConstantTimeAccessListRep,
+    IsPositionalObjectRep and IsConstantTimeAccessList,
     [ 1 ] );
 
 InstallMethod( PrintObj,

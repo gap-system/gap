@@ -526,7 +526,9 @@ local   L,  p,  C,  ocr;
 
     # If <K> and <M> are coprime, <K> splits.
     Info(InfoComplement,2,"CONextComplements: coprime case, <K> splits" );
-    ocr := rec( group := K, module := M );
+    ocr := rec( group := K, module:=M, modulePcgs := Pcgs(M),
+                inPcComplement := true);
+
     if IsBound( cor.generators )  then
       ocr.generators := cor.generators;
     fi;
@@ -563,7 +565,9 @@ local   L,  p,  C,  ocr;
   else
 
     # In the non-coprime case, we must construct cocycles.
-    ocr := rec( group := K, module := M );
+    ocr := rec( group := K, module:=M, modulePcgs := Pcgs(M),
+                inPcComplement := true);
+
     if IsBound( cor.generators )  then
       ocr.generators := cor.generators;
     fi;
@@ -657,9 +661,8 @@ local r,a,a0,FG,nextStep,C,found,i,time;
   else
     cor.generators := CanonicalPcgs( InducedPcgsWrtHomePcgs(FG[1] ));
   fi;
-if not cor.generators[1] in FG[1] then
-  Error("huh!");
-fi;
+  Assert(1,cor.generators[1] in FG[1]);
+
   #if not IsBound( cor.normalSubgroup )  then
   cor.group  := FG[1];
   cor.module := TrivialSubgroup( FG[1] );
@@ -667,7 +670,7 @@ fi;
   cor.modulePcgs:=InducedPcgsWrtHomePcgs(E[1]);
   # avoid clashes of generators
   cor.gens:=cor.generators;cor.generators:=cor.pcgs mod cor.modulePcgs;
-  OCAddRelations(cor,FG[1]);
+  OCAddRelations(cor,cor.generators);
   cor.generators:=cor.gens;
   #fi;
 
@@ -743,9 +746,7 @@ end;
 ##
 ##  Prepare arguments for 'ComplementCO'.
 ##
-InstallMethod(COComplementsMain,"pc groups",IsFamFamXY,
-  [IsPcGroup,IsPcGroup,IsBool,IsObject],0,
-function( G, N, all, fun )
+COComplementsMain:= function( G, N, all, fun )
 local   H, E,  cor,  a,  i,  fun2,pcgs;
 
   pcgs:=HomePcgs(G);
@@ -801,6 +802,13 @@ local   H, E,  cor,  a,  i,  fun2,pcgs;
   # 'COComplements' will do most of the work
   return COComplements( cor, G, E, all );
 
+end;
+
+
+InstallMethod(ComplementclassesSolvableNC,"pc groups",IsIdentical,
+  [IsPcGroup,IsPcGroup],0,
+function(G,N)
+  return List( COComplementsMain(G, N, true, false), G -> G.complement );
 end);
 
 
@@ -818,14 +826,14 @@ function( G, N )
       C := [TrivialSubgroup(G)];
 
   # if <N> is trivial the only complement is <G>
-  elif IsTrivial(N) = []  then
+  elif Size(N) = 1 then
       C := [G];
 
   elif not IsSolvableGroup(N) then
     TryNextMethod();
   else
     # otherwise we have to work
-    C := List( COComplementsMain(G, N, true, false), G -> G.complement );
+    C:=ComplementclassesSolvableNC(G,N);
   fi;
 
   # return what we have found

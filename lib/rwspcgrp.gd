@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file   contains the operations  for groups   defined by a polycyclic
 ##  collector.
@@ -24,7 +24,6 @@ IsMultiplicativeElementWithInverseByPolycyclicCollector := NewCategory(
 
 IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection :=
   CategoryCollections(
-    "IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection",
     IsMultiplicativeElementWithInverseByPolycyclicCollector );
 
 

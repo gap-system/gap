@@ -12,19 +12,20 @@
 ##
 ##      make
 ##
-##  for a list of targets  of the form  '<vendor>-<cpu>-<system>-<compiler>',
-##  such as 'sun-sparc-sunos-gcc2',  which is the target for a Sun 4  machine
+##  for a list of targets  of the form
+##               '<cpu>-<vendor>-<system>-<compiler+some flags>',
+##  such as 'sparc-sun-sunos-gcc2',  which is the target for a Sun 4  machine
 ##  running the SunOS operating system with the GNU C compiler version 2.
 ##
 ##  Choose the best matching target and enter
 ##
 ##      make  <target>
 ##
-##  e.g., enter 'make sun-sparc-sunos-gcc2',  to compile all the source files
+##  e.g., enter 'make sparc-sun-sunos-gcc2',  to compile all the source files
 ##  and produce an executable file 'gap'.
 ##
 ##  Note  that  the  targets  are  listed  according  to   preference,  e.g.,
-##  'sun-sparc-sunos-gcc2' is listed before 'sun-sparc-sunos-cc' because  the
+##  'sparc-sun-sunos-gcc2' is listed before 'sparc-sun-sunos-cc' because  the
 ##  GNU  C compiler produces faster code on Sun 4 machines than native 'cc'.
 ##
 ##  If no target matches precisely, use 'bsd' (if  your UNIX is more Berkely)
@@ -36,7 +37,7 @@
 ##
 ##      make  <target>  COPTS=<compiler-options>  LOPTS=<linker-options>
 ##
-##  e.g., enter 'make sun-sparc-sunos-gcc2 COPTS=-g LOPTS=-g' to compile  GAP
+##  e.g., enter 'make sparc-sun-sunos-gcc2 COPTS=-g LOPTS=-g' to compile  GAP
 ##  with debugging information.
 ##
 ##  To compile  GAP on a  DOS machine you need DJGPP version 1.11m5 or higher
@@ -54,175 +55,211 @@ SHELL = /bin/sh
 #############################################################################
 ##
 
-#F  Targets . . . . .  targets of the form <vendor>-<cpu>-<system>-<compiler>
+#F  Targets . . . . .  targets of the form <cpu>-<vendor>-<system>-<compiler>
 ##
 ##  Following are the targets that the user can specify.
 ##
 ##  Each target first changes to the appropriate  object  files  subdirectory
-##  '../bin/<vendor>-<cpu>-<system>/' (and creates this directory if needed).
-##  Then it calls 'make' recursively, passing the system dependent  flags  in
-##  'LFLAGS' (for the linker),  'CFLAGS' (for the compiler for all packages),
-##  'CFLAGS_SIG' (for 'system' and 'stats'), and 'CFLAGS_SYS' (for 'system').
+##
+##           '../bin/<cpu>-<vendor>-<cpu>-<system>-<compiler+some flags>/'
+##
+##  (and   creates  this  directory   if   needed).   Then  it  calls  'make'
+##  recursively,  passing the  system  dependent flags  in 'LFLAGS'  (for the
+##  linker), 'CFLAGS' (for the compiler  for all packages), 'CFLAGS_SIG' (for
+##  'system' and 'stats'), and 'CFLAGS_SYS' (for 'system').
 ##
 unknown:
 	@echo "usage: 'make <target>' where target is one of"
-	@echo "'dec-alpha-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2"
-	@echo "'dec-mips-ultrix-cc'        for DECstation under Ultrix with cc"
-	@echo "'hp-hppa1.1-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2"
-	@echo "'ibm-i386-freebsd2.0-gcc2'  for IBM PC under FreeBSD 2.x with GNU cc 2"
+	@echo "'alpha-dec-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2"
+	@echo "'mips-dec-ultrix-cc'        for DECstation under Ultrix with cc"
+	@echo "'hppa1.1-hp-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2"
+	@echo "'i386-ibm-freebsd-gcc2'     for IBM PC under FreeBSD 2.x with GNU cc 2"
 	@echo "                            (GNU cc 2.6 comes with FreeBSD 2.0)"
-	@echo "'ibm-i386-linux-gcc2'       for IBM PC under Linux with GNU cc 2"
-	@echo "'ibm-i386-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2"
+	@echo "'i386-ibm-linux-gcc2'       for IBM PC under Linux with GNU cc 2"
+	@echo "'i386-ibm-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2"
 	@echo "                            (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
-	@echo "'sgi-mips-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2"
-	@echo "'sgi-mips-irix-cc'          for SGI Mips under IRIX 5/6 with cc"
-	@echo "'sun-sparc-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
-	@echo "'sun-sparc-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
+	@echo "'mips-sgi-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2"
+	@echo "'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc"
+	@echo "'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
+	@echo "'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
 	@echo ""
 	@echo "  targets are listed according to preference, i.e.,"
-	@echo "    'sun-sparc-sunos-gcc2' is better than 'sun-sparc-sunos-cc'."
+	@echo "    'mips-sgi-irix-gcc2' is better than 'mips-sgi-irix-cc'."
 	@echo ""
 	@echo "  additional C compiler and linker flags can be passed with"
 	@echo "    'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',"
-	@echo "    i.e., 'make sun-sparc-sunos-gcc2 COPTS=-g LOPTS=-g.'"
+	@echo "    i.e., 'make sparc-sun-sunos-gcc2 COPTS=-g LOPTS=-g.'"
 
 
 #############################################################################
 ##
 
-#F  dec-alpha-OSF32-gcc2
+#F  alpha-dec-OSF32-gcc2
 ##
 ##
 ##  For the DEC alpha  we have to pass  the SYS_IS_64BIT define to all files,
 ##  not just system.c,  as it  effects  the types in  system.h otherwise it's
 ##  pretty standard
 ##
-dec-alpha-OSF32-gcc2:
+alpha-dec-OSF32-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d dec-alpha-OSF32; then \
-		mkdir dec-alpha-OSF32; \
+	  if test ! -d alpha-dec-OSF32-gcc2; then \
+		mkdir alpha-dec-OSF32-gcc2; \
           fi; \
-	  cd dec-alpha-OSF32; \
+	  cd ../bin/alpha-dec-OSF32-gcc2; \
+	)
+	@(cd ../bin/alpha-dec-OSF32-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="cc" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2 -DSYS_IS_64BIT" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
-	               -DSYS_HAS_ANSI=1" )
+	    CFLAGS_SYS="$(COPTS) \
+			-DSYS_IS_BSD \
+			-DSYS_HAS_STACK_ALIGN=4 \
+			-DSYS_HAS_ANSI=1 \
+			-DSYS_ARCH='\"alpha-dec-OSF32-gcc2\"'" \
+	)
 
 
 #############################################################################
 ##
-#F  dec-mips-ultrix-cc
+#F  mips-dec-ultrix-cc
 ##
 ##  Ultrix 4.2 is a almost ANSI (but does not support 'const')
 ##
-dec-mips-ultrix-cc:
+mips-dec-ultrix-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d dec-mips-ultrix; then \
-	      mkdir dec-mips-ultrix; \
+	  if test ! -d mips-dec-ultrix-cc; then \
+	      mkdir mips-dec-ultrix-cc; \
 	  fi; \
-	  cd dec-mips-ultrix; \
+	  cd ../bin/mips-dec-ultrix-cc; \
+	)
+	@(cd ../bin/mips-dec-ultrix-cc; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="cc" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2 -Olimit 1000" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
-	               -DSYS_HAS_ANSI=1 \
-	               -DSYS_ARCH='\"dec-mips-ultrix\"'" )
-	@(cd ../bin/dec-mips-ultrix; $(MAKE) -f ../../src/Makefile gac \
+	    CFLAGS_SYS="$(COPTS) \
+			-DSYS_IS_BSD \
+			-DSYS_HAS_STACK_ALIGN=4 \
+			-DSYS_HAS_ANSI=1 \
+			-DSYS_ARCH='\"mips-dec-ultrix-cc\"'" \
+	)
+	@(cd ../bin/mips-dec-ultrix-cc; \
+	  $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
 	    CC="cc" \
-            TARGET="dec-mips-ultrix-cc" \
+            TARGET="mips-dec-ultrix-cc" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="UNSUPPORTED" \
             CDYNLINKER="echo" \
-            CDYNLINKING="UNSUPPORTED" )
+            CDYNLINKING="UNSUPPORTED" \
+	)
 
 
 #############################################################################
 ##
-#F  hp-hppa1.1-hpux-gcc2
+#F  hppa1.1-hp-hpux-gcc2
 ##
 ##  HP-UX is almost ANSI
 ## 'sys/times.h' claims 'times' returns 'clock_t' (how shall it return -1?)
 ##
-hp-hppa1.1-hpux-gcc2:
+hppa1.1-hp-hpux-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d hp-hppa1.1-hpux; then \
-		mkdir hp-hppa1.1-hpux; \
+	  if test ! -d hppa1.1-hp-hpux-gcc2; then \
+		mkdir hppa1.1-hp-hpux-gcc2; \
           fi; \
-	  cd hp-hppa1.1-hpux; \
+	)
+	@(cd ../bin/hppa1.1-hp-hpux-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="gcc" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_STACK_ALIGN=4 \
-	               -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
-	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO \
-	               -DSYS_HAS_TIME_PROTO  -DSYS_HAS_MISC_PROTO" )
-	@(cd ../bin/hp-hppa1.1-hpux; $(MAKE) -f ../../src/Makefile gac \
+	    CFLAGS_SYS="$(COPTS) \
+			-DSYS_IS_USG \
+			-DSYS_HAS_STACK_ALIGN=4 \
+			-DSYS_HAS_ANSI=1 \
+			-DSYS_HAS_CONST=const \
+			-DSYS_HAS_STDIO_PROTO \
+			-DSYS_HAS_READ_PROTO \
+			-DSYS_HAS_IOCTL_PROTO \
+			-DSYS_HAS_SIGNAL_PROTO \
+			-DSYS_HAS_TIME_PROTO \
+			-DSYS_HAS_MISC_PROTO \
+			-DSYS_ARCH='\"hppa1.1-hp-hpux-gcc2\"'" \
+	)
+	@(cd ../bin/hppa1.1-hp-hpux-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
 	    CC="gcc" \
-            TARGET="hp-hppa1.1-hpux-gcc2" \
+            TARGET="hppa1.1-hp-hpux-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic" \
             CDYNLINKER="ld" \
-            CDYNLINKING="-b +e Init__Dynamic" )
+            CDYNLINKING="-b +e Init__Dynamic" \
+	)
 
 
 #############################################################################
 ##
-#F  ibm-i386-freebsd2.0-gcc2
+#F  i386-ibm-freebsd-gcc2
 ##
 ##  'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
 ##  'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
 ##  'sys/ioctl.h' claims 'ioctl' has third argument '...' (UNIX says 'char*')
 ##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
 ##
-ibm-i386-freebsd2.0-gcc2:
+i386-ibm-freebsd-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d ibm-i386-freebsd2.0; then \
-	      mkdir ibm-i386-freebsd2.0; \
+	  if test ! -d i386-ibm-freebsd-gcc2; then \
+	      mkdir i386-ibm-freebsd-gcc2; \
 	  fi; \
-	  cd ibm-i386-freebsd2.0; \
+	  cd ../bin/i386-ibm-freebsd-gcc2; \
+	)
+	@(cd ../bin/i386-ibm-freebsd-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="gcc -ansi -Wall -g" \
 	    LFLAGS="$(LOPTS)" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=2 \
-	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_HAS_DL_LIBRARY \
-		       -DSYS_ARCH='\"ibm-i386-freebsd2.0\"'" )
-	@(cd ../bin/ibm-i386-freebsd2.0; \
+	    CFLAGS_SYS="$(COPTS) \
+			-DSYS_IS_BSD \
+			-DSYS_HAS_STACK_ALIGN=2 \
+			-DSYS_HAS_STDIO_PROTO \
+			-DSYS_HAS_READ_PROTO \
+			-DSYS_HAS_IOCTL_PROTO \
+			-DSYS_HAS_SIGNAL_PROTO \
+			-DSYS_HAS_DL_LIBRARY \
+			-DSYS_ARCH='\"i386-ibm-freebsd-gcc2\"'" \
+	)
+	@(cd ../bin/i386-ibm-freebsd-gcc2; \
           $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
 	    CC="gcc" \
-            TARGET="ibm-i386-freebsd2.0-gcc2" \
+            TARGET="i386-ibm-freebsd-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
             CDYNLINKER="ld" \
-            CDYNLINKING="-Bshareable -x" )
+            CDYNLINKING="-Bshareable -x" \
+	)
 
+i386-ibm-freebsd2.0-gcc2: i386-ibm-freebsd-gcc2
 
 
 #############################################################################
 ##
-#F  ibm-i386-linux-gcc2
+#F  i386-ibm-linux-gcc2
 ##
 ##  Linux with GNU CC version 2.x.y
 ##
@@ -235,13 +272,15 @@ ibm-i386-freebsd2.0-gcc2:
 ##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
 ##  'sys/times.h' claims 'times' has return value 'clock_t'
 ##
-ibm-i386-linux-gcc2:
+i386-ibm-linux-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d ibm-i386-linux; then \
-		mkdir ibm-i386-linux; \
+	  if test ! -d i386-ibm-linux-gcc2; then \
+		mkdir i386-ibm-linux-gcc2; \
 	  fi; \
-	  cd ibm-i386-linux; \
+	  cd ../bin/i386-ibm-linux-gcc2; \
+	)
+	@(cd ../bin/i386-ibm-linux-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="gcc -ansi -Wall -g" \
@@ -253,40 +292,44 @@ ibm-i386-linux-gcc2:
 		       -D_POSIX_SOURCE -DSYS_HAS_SIGNAL_PROTO \
 		       -DSYS_HAS_TIME_PROTO -DSYS_HAS_DL_LIBRARY \
 	               -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
-		       -DSYS_ARCH='\"ibm-i386-linux\"'" \
+		       -DSYS_ARCH='\"i386-ibm-linux-gcc2\"'" \
         )
-	@(cd ../bin/ibm-i386-linux; $(MAKE) -f ../../src/Makefile gac \
+	@(cd ../bin/i386-ibm-linux-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
 	    CC="gcc" \
-            TARGET="ibm-i386-linux-gcc2" \
+            TARGET="i386-ibm-linux-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
             CDYNLINKER="ld" \
-            CDYNLINKING="-Bshareable -x" )
+            CDYNLINKING="-Bshareable -x" \
+	)
 
 
 #############################################################################
 ##
-#F  ibm-i386-nextstep-cc
+#F  i386-ibm-nextstep-cc
 ##
-ibm-i386-nextstep-cc: next-i386-nextstep-cc
+i386-ibm-nextstep-cc: i386-next-nextstep-cc
 
 
 
 #############################################################################
 ##
-#F  next-any-nextstep-cc
+#F  any-next-nextstep-cc
 ##
 ##  NeXTSTEP 3.3 with compiler
 ##  "NeXT Computer, Inc. version cc-437.2.6, gcc version 2.5.8"
 ##
-next-any-nextstep-cc:
+any-next-nextstep-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d next-$(ADIR)-nextstep$(EXTDIR);  then \
-	      mkdir next-$(ADIR)-nextstep$(EXTDIR); \
+	  if test ! -d $(ADIR)-next-nextstep$(EXTDIR)-cc;  then \
+	      mkdir $(ADIR)-next-nextstep$(EXTDIR)-cc; \
 	  fi; \
-	  cd next-$(ADIR)-nextstep$(EXTDIR); \
+	  cd ../bin/$(ADIR)-next-nextstep$(EXTDIR)-cc; \
+	)
+	@(cd $(ADIR)-next-nextstep$(EXTDIR)-cc; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="cc -g" \
@@ -297,8 +340,10 @@ next-any-nextstep-cc:
 	      -DSYS_HAS_ANSI=1 -D_POSIX_SOURCE -DSYS_HAS_READ_PROTO \
               -DSYS_HAS_BROKEN_TMPNAM \
               -DSYS_HAS_RLD_LIBRARY \
-	      $(ARCH)" )
-	@(cd ../bin/next-$(ADIR)-nextstep$(EXTDIR); \
+	      $(ARCH) \
+	      -DSYS_ARCH='\"$(ADIR)-next-nextstep$(EXTDIR)-cc\"'" \
+	)
+	@(cd ../bin/$(ADIR)-next-nextstep$(EXTDIR)-cc; \
           $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
 	    CC="cc" \
@@ -306,28 +351,29 @@ next-any-nextstep-cc:
             COPTIONS="-ansi -Wall -O2 $(ARCH) $(COPTIONS)" \
             CDYNOPTIONS="-ansi -Wall -O2 $(ARCH) $(CDYNOPTIONS)" \
             CDYNLINKER="cc" \
-            CDYNLINKING="$(ARCH) -Xlinker -r -Xlinker -x -nostdlib" )
+            CDYNLINKING="$(ARCH) -Xlinker -r -Xlinker -x -nostdlib" \
+	)
 
-next-i386-nextstep-cc:
-	$(MAKE) -f Makefile next-any-nextstep-cc \
+i386-next-nextstep-cc:
+	$(MAKE) -f Makefile any-next-nextstep-cc \
 		COPTS="$(COPTS)" LOPTS="$(LOPTS)" \
 		ARCH="-arch i386"  \
 		ADIR="i386"
 
-next-m68k-nextstep-cc:
-	$(MAKE) -f Makefile next-any-nextstep-cc \
+m68k-next-nextstep-cc:
+	$(MAKE) -f Makefile any-next-nextstep-cc \
 		COPTS="$(COPTS)" LOPTS="$(LOPTS)" \
 		ARCH="-arch m68k"  \
 		ADIR="m68k"
 
-next-i386m68k-nextstep-cc:
-	$(MAKE) -f Makefile next-any-nextstep-cc \
+i386m68k-next-nextstep-cc:
+	$(MAKE) -f Makefile any-next-nextstep-cc \
 		COPTS="$(COPTS)" LOPTS="$(LOPTS)" \
 		ARCH="-arch i386 -arch m68k"  \
 		ADIR="i386m68k"
 
-next-i386-nextstep-cc-prof:
-	$(MAKE) -f Makefile next-any-nextstep-cc \
+i386-next-nextstep-cc-prof:
+	$(MAKE) -f Makefile any-next-nextstep-cc \
 		COPTS="$(COPTS) -pg" LOPTS="$(LOPTS) -pg" \
 		ARCH="-arch i386"  \
 		ADIR="i386" EXTDIR="-prof" \
@@ -336,18 +382,20 @@ next-i386-nextstep-cc-prof:
 
 #############################################################################
 ##
-#F  sgi-mips-irix-gcc2
+#F  mips-sgi-irix-gcc2
 ##
 ##  From: Olaf.Weber@cwi.nl (Olaf Weber)
 ##
-sgi-mips-irix-gcc2:
+mips-sgi-irix-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
           cd ../bin; \
-          if test ! -d sgi-mips-irix-gcc2; then \
-                mkdir sgi-mips-irix-gcc2; \
+          if test ! -d mips-sgi-irix-gcc2; then \
+                mkdir mips-sgi-irix-gcc2; \
           fi; \
-          cd sgi-mips-irix-gcc2; \
-	$(MAKE) -f ../../src/Makefile gap \
+	  cd ../bin/mips-sgi-irix-gcc2; \
+	)
+	@(cd ../bin/mips-sgi-irix-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
             CC="gcc" \
             LFLAGS="$(LOPTS)" \
@@ -357,23 +405,27 @@ sgi-mips-irix-gcc2:
                        -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
                        -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
                        -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
+		       -DSYS_ARCH='\"mips-sgi-irix-gcc2\"'" \
+	)
 
 
 #############################################################################
 ##
-#F  sgi-mips-irix-cc
+#F  mips-sgi-irix-cc
 ##
 ##  From: Olaf.Weber@cwi.nl (Olaf Weber)
 ##
-sgi-mips-irix-cc:
+mips-sgi-irix-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d sgi-mips-irix-cc; then \
-		mkdir sgi-mips-irix-cc; \
+	  if test ! -d mips-sgi-irix-cc; then \
+		mkdir mips-sgi-irix-cc; \
 	  fi; \
-	  cd sgi-mips-irix-cc; \
-	$(MAKE) -f ../../src/Makefile gap \
+	  cd ../bin/mips-sgi-irix-cc; \
+	)
+	@(cd ../bin/mips-sgi-irix-cc; \
+	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
 	    CC="cc" \
 	    LFLAGS="$(LOPTS)" \
@@ -383,23 +435,27 @@ sgi-mips-irix-cc:
                        -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
                        -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
                        -DSYS_HAS_MISC_PROTO -DSYS_HAS_MALLOC_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
+		       -DSYS_ARCH='\"mips-sgi-irix-cc\"'" \
+	)
 
 
 #############################################################################
 ##
-#F  sun-sparc-solaris-gcc2
+#F  sparc-sun-solaris-gcc2
 ##
 ##  From: Burkhard.Hofling@maths.anu.edu.au (Burkhard Hofling)
 ##  From: Franz Gaehler <gaehler@pth.polytechnique.fr>
 ##
-sun-sparc-solaris-gcc2:
+sparc-sun-solaris-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d sun-sparc-solaris-gcc2; then \
-		mkdir sun-sparc-solaris-gcc2; \
+	  if test ! -d sparc-sun-solaris-gcc2; then \
+		mkdir sparc-sun-solaris-gcc2; \
 	  fi; \
-	  cd sun-sparc-solaris-gcc2; \
+	  cd ../bin/sparc-sun-solaris-gcc2; \
+	)
+	@(cd ../bin/sparc-sun-solaris-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
 	    CC="gcc" \
@@ -413,31 +469,35 @@ sun-sparc-solaris-gcc2:
                        -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
                        -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
 		       -DSYS_HAS_DL_LIBRARY \
-                       -DSYS_ARCH='\"sun-sparc-solaris\"'" )
-	@(cd ../bin/sun-sparc-solaris-gcc2; \
+                       -DSYS_ARCH='\"sparc-sun-solaris-gcc2\"'" \
+	)
+	@(cd ../bin/sparc-sun-solaris-gcc2; \
           $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
 	    CC="gcc" \
-            TARGET="sun-sparc-solaris-gcc2" \
+            TARGET="sparc-sun-solaris-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
             CDYNLINKER="ld" \
-            CDYNLINKING="-G -Bdynamic" )
+            CDYNLINKING="-G -Bdynamic" \
+	)
 
 
 #############################################################################
 ##
-#F  sun-sparc-sunos-gcc2
+#F  sparc-sun-sunos-gcc2
 ##
 ##  From: Burkhard.Hofling@maths.anu.edu.au (Burkhard Hofling)
 ##
-sun-sparc-sunos-gcc2:
+sparc-sun-sunos-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d sun-sparc-sunos-gcc2; then \
-		mkdir sun-sparc-sunos-gcc2; \
+	  if test ! -d sparc-sun-sunos-gcc2; then \
+		mkdir sparc-sun-sunos-gcc2; \
           fi; \
-	  cd sun-sparc-sunos-gcc2; \
+	  cd ../bin/sparc-sun-sunos-gcc2; \
+	)
+	@(cd ../bin/sparc-sun-sunos-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
             SRC="../../src" \
 	    CC="gcc" \
@@ -447,16 +507,18 @@ sun-sparc-sunos-gcc2:
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
                        -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO \
 		       -DSYS_HAS_DL_LIBRARY \
-                       -DSYS_ARCH='\"sun-sparc-sunos-gcc2\"'" )
-	@(cd ../bin/sun-sparc-sunos-gcc2; \
+                       -DSYS_ARCH='\"sparc-sun-sunos-gcc2\"'" \
+	)
+	@(cd ../bin/sparc-sun-sunos-gcc2; \
           $(MAKE) -f ../../src/Makefile gac \
             SRC="../../src" \
 	    CC="gcc" \
-            TARGET="sun-sparc-sunos-gcc2" \
+            TARGET="sparc-sun-sunos-gcc2" \
             COPTIONS="-ansi -Wall -O2" \
             CDYNOPTIONS="-fpic -ansi -Wall -O2" \
             CDYNLINKER="ld" \
-            CDYNLINKING="-assert pure-text -Bdynamic -x" )
+            CDYNLINKING="-assert pure-text -Bdynamic -x" \
+	)
 
 
 #############################################################################
@@ -476,6 +538,7 @@ gac: $(SRC)/gac
           > gac )
 	chmod 755 gac
 
+
 #############################################################################
 ##
 
@@ -485,26 +548,52 @@ gac: $(SRC)/gac
 ##  used directly, they should only be addressed by the  recursive  calls  of
 ##  'make' from above.
 ##
-OBJECTS =   system.o   sysfiles.o                  \
-	    scanner.o  gasman.o                    \
-	    objects.o  gvars.o                     \
-	    calls.o    opers.o                     \
-	    ariths.o   records.o  lists.o          \
-	    bool.o                                 \
-	    integer.o  rational.o cyclotom.o       \
-	    finfield.o permutat.o                  \
-	    precord.o                              \
-	    listfunc.o listoper.o                  \
-	    plist.o    set.o      vector.o         \
-	    blister.o  range.o    string.o         \
-            objfgelm.o objscoll.o objpcgel.o       \
-            sctable.o  costab.o                    \
-	    dt.o       dteval.o                    \
-            objcftl.o                              \
-	    code.o     vars.o                      \
-	    exprs.o    stats.o    funcs.o          \
-	    intrprtr.o compiler.o compiled.o       \
-	    read.o     gap.o      streams.o
+OBJECTS =   \
+ ariths.o   \
+ blister.o  \
+ bool.o     \
+ calls.o    \
+ code.o     \
+ compiled.o \
+ compiler.o \
+ costab.o   \
+ cyclotom.o \
+ dt.o       \
+ dteval.o   \
+ exprs.o    \
+ finfield.o \
+ funcs.o    \
+ gap.o      \
+ gasman.o   \
+ gvars.o    \
+ integer.o  \
+ intrprtr.o \
+ listfunc.o \
+ listoper.o \
+ lists.o    \
+ objcftl.o  \
+ objects.o  \
+ objfgelm.o \
+ objpcgel.o \
+ objscoll.o \
+ opers.o    \
+ permutat.o \
+ plist.o    \
+ precord.o  \
+ range.o    \
+ rational.o \
+ read.o     \
+ records.o  \
+ scanner.o  \
+ sctable.o  \
+ set.o      \
+ stats.o    \
+ streams.o  \
+ string.o   \
+ sysfiles.o \
+ system.o   \
+ vars.o     \
+ vector.o
 
 gap: $(OBJECTS) compstat.o
 	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o
@@ -964,6 +1053,3 @@ compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \
 
 #E  Makefile  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
-
-
-

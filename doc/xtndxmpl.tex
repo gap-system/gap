@@ -1,0 +1,894 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  xtndxmpl.tex              GAP manual                    Thomas Breuer
+%%
+%H  @(#)$Id$
+%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{An Example: Residue Class Rings}
+
+In this chapter, we give a little example how {\GAP} can be extended
+by new data structures and new functionality.
+
+Suppose we want to do computations with elements of a ring $\Z/n\Z$,
+where $n$ is a positive integer,
+for example because we are interested in matrix groups over $\Z/4\Z$.
+Furthermore suppose that these rings are not yet available in {\GAP};
+in fact they are available, and their implementation is very close to
+what is described in the following sections.
+
+The first attempt is straightforward,
+see "A First Attempt to Implement Residue Class Rings".
+It gives an example how to add a data structure representing elements
+that had not been available in {\GAP} before.
+
+In the following section,
+see "Compatibility of Residue Class Rings with Prime Fields",
+the question of compatibility of the new objects with known objects is
+discussed.
+
+The final section
+"Further Improvements in Implementing Residue Class Rings"
+gives some hints how to improve the implementation presented before.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{A First Attempt to Implement Residue Class Rings}
+
+Faced with the problem to implement elements of the rings $\Z/n\Z$,
+we must determine the *types* of these elements as far as is necessary to
+distinguish the elements from other ones.
+
+First of all, we must decide about the *family* of each element.
+A natural way to do this is to put the elements of each ring $\Z/n\Z$
+into a family of their own.
+This means that for example elements of $\Z/3\Z$ and $\Z/9\Z$ lie
+in different families,
+and that the ring $\Z/n\Z$ contains all elements of its elements family.
+
+Second, we want to describe methods to add or multiply two elements in
+$\Z/n\Z$,
+and these methods shall be not applicable to other {\GAP} objects.
+For that, we must define a new *category* in that all elements of rings
+$\Z/n\Z$ lie.
+
+Third, we must decide about a possible *representation* of our objects.
+We encode the element $i + n\Z$ by the unique residue in the range
+$[ 0 .. n-1 ]$ that is congruent to $i$ modulo $n$,
+and the object itself is chosen to be a positional object with this
+residue at the first and only position.
+
+After this, we need two functions,
+one to create an element when family and residue are given,
+and one to create the ring $\Z/n\Z$ itself.
+
+\beginexample
+    IsZmodnZObj := NewCategory( "IsZmodnZObj", IsScalar );
+
+    IsModulusRep := NewRepresentation( "IsModulusRep",
+        IsPositionalObjectRep,
+        [ 1 ] );
+
+    ZmodnZObj := NewOperationArgs( "ZmodnZObj" );
+
+    ZmodnZ := NewOperationArgs( "ZmodnZ" );
+\endexample
+
+So the elements in the rings $\Z/n\Z$ will all lie in the category
+`IsZmodnZObj',
+which is a subcategory of `IsScalar'.
+The latter means that one can add, subtract, multiply and divide
+two such elements that lie in the same family,
+with the obvious restriction that the second operand of a division
+must be invertible.
+
+Now we have declared what we need,
+and we can start to implement the missing methods resp. functions.
+The function `ZmodnZ' that returns the ring $\Z/n\Z$ for given $n$
+may look as follows.
+
+\beginexample
+    ZmodnZ := function( n )
+
+        local F, R;
+
+        if not ( IsInt( n ) and IsPosRat( n ) ) then
+          Error( "<n> must be a positive integer" );
+        fi;
+
+        # Construct the family of element objects of our ring.
+        F:= NewFamily( Concatenation( "Zmod", String( n ), "Z" ),
+                       IsZmodnZObj );
+
+        # Install the data.
+        F!.modulus:= n;
+
+        # Make the domain.
+        R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
+        SetIsWholeFamily( R, true );
+        SetName( R, Concatenation( "(Integers mod ", String(n), ")" ) );
+
+        # Return the ring.
+        return R;
+    end;
+\endexample
+
+We see that we can use `RingWithOneByGenerators' to construct a ring
+with one if we have ring generators.
+So the main problem is to create the identity element of the ring,
+which in our case suffices to generate the ring,
+and in order to create this via `ZmodnZObj',
+we have to construct the family first.
+
+Note that the modulus `n' is stored in the family,
+thus it is not necessary to store it in each element.
+Also note that we may enter known information about the ring.
+Here we stored that it contains the whole family of elements;
+this is useful for example when we want to check the membership of an
+element in the ring, which can be decided from the type of the element
+if the ring contains its whole elements family.
+Giving a name to the ring causes that it will be printed
+via printing the name.
+
+In `ZmodnZ', the function `ZmodnZObj' is called.
+Now we define it.
+
+\beginexample
+    ZmodnZObj := function( Fam, residue )
+        return Objectify( NewType( Fam, IsZmodnZObj and IsModulusRep ),
+                          [ residue mod Fam!.modulus ] );
+    end;
+\endexample
+
+If `Fam' is a family as constructed in `ZmodnZ'
+and `residue' is an integer,
+`ZmodnZObj' returns the corresponding object in the family `Fam',
+which lies in the category `IsZmodnZObj' and in the representation
+`IsModulusRep'.
+Note that we normalize `residue' explicitly.
+
+Now we can read the above code into {\GAP},
+and the following works already.
+
+\beginexample
+    gap> R:= ZmodnZ( 4 );
+    (Integers mod 4)
+    gap> IsRing( R );
+    true
+    gap> GeneratorsOfRingWithOne( R );
+    [ <object> ]
+\endexample
+
+Of course we must install some methods for arithmetic and other
+operations if the elements shall behave as we want.
+We start with a method that allows to print elements nicely.
+
+\beginexample
+    InstallMethod( PrintObj,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj and IsModulusRep ], 0,
+        function( x )
+        Print( "ZmodnZObj( ", x![1], ", ", FamilyObj(x)!.modulus, " )" );
+        end );
+\endexample
+
+The above method is applicable only for objects in the category
+`IsZmodnZObj' and in the representation `IsModulusRep'.
+The latter allows to access the residue as `x![1]'.
+Since the family of the object `x' has the component `modulus' bound
+if it is constructed by `ZmodnZ', we may access this component.
+We check whether the method installation has some effect.
+
+\beginexample
+    gap> GeneratorsOfRingWithOne( R );
+    [ ZmodnZObj( 1, 4 ) ]
+\endexample
+
+Next we install methods for the comparison operations.
+Note that we can assume that the residues are normalized.
+
+\beginexample
+    InstallMethod( \=,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
+        0,
+        function( x, y ) return x![1] = y![1]; end );
+
+    InstallMethod( \<,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ],
+        0,
+        function( x, y ) return x![1] < y![1]; end );
+\endexample
+
+Next we install methods for the arithmetic operations,
+first for the additive structure.
+
+\beginexample
+    InstallMethod( \+,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+        function( x, y )
+        return ZmodnZObj( FamilyObj( x ), x![1] + y![1] );
+        end );
+
+    InstallMethod( Zero,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj ], 0,
+        x -> ZmodnZObj( FamilyObj( x ), 0 ) );
+
+    InstallMethod( AdditiveInverse,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj and IsModulusRep ], 0,
+        x -> ZmodnZObj( FamilyObj( x ), AdditiveInverse( x![1] ) ) );
+\endexample
+
+It is not necessary to install methods for subtraction,
+since this is handled via addition of the additive inverse of
+the second argument if no other method is installed.
+But of course we can install methods for `\-'  as well,
+for example because this avoids the unnecessary construction of the
+additive inverse.
+
+\beginexample
+    InstallMethod( \-,
+        "method for two elements in Z/nZ (ModulusRep)",
+        ... );
+\endexample
+
+We might want to allow the addition of integers and elements in
+rings $\Z/n\Z$, where an integer is interpreted with its residue modulo
+$n$.
+To achieve this, we install methods to add an integer to an object in
+`IsZmodnZObj' from the left and from the right.
+
+\beginexample
+    InstallMethod( \+,
+        "method for element in Z/nZ (ModulusRep) and integer",
+        true,
+        [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+        function( x, y )
+        return ZmodnZObj( FamilyObj( x ), x![1] + y );
+        end );
+
+    InstallMethod( \+,
+        "method for integer and element in Z/nZ (ModulusRep)",
+        ... );
+\endexample
+
+As above, if we like then we may install also methods to compute the
+difference of an object in `IsZmodnZObj' and an integer and vice versa.
+
+\beginexample
+    InstallMethod( \-,
+        "method for element in Z/nZ (ModulusRep) and integer",
+        ... );
+
+    InstallMethod( \-,
+        "method for integer and element in Z/nZ (ModulusRep)",
+        ... );
+\endexample
+
+Similarly we install the methods dealing with the multiplicative
+structure.
+We need methods to multiply two of our objects,
+and to compute identity and inverse.
+Note that the method for `Inverse' returns `fail' if the argument
+is not invertible.
+
+\beginexample
+    InstallMethod( \*,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+        function( x, y )
+        return ZmodnZObj( FamilyObj( x ), x![1] * y![1] );
+        end );
+
+    InstallMethod( One,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj ], 0,
+        elm -> ZmodnZObj( FamilyObj( elm ), 1 ) );
+
+    InstallMethod( Inverse,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj and IsModulusRep ], 0,
+        function( elm )
+        local residue;
+        residue:= QuotientMod( 1, elm![1], FamilyObj( elm )!.modulus );
+        if residue <> fail then
+          residue:= ZmodnZObj( FamilyObj( elm ), residue );
+        fi;
+        return residue;
+        end );
+\endexample
+
+For reasons of efficiency, we may install also methods for division
+and powering.
+To be able to multiply our objects with integers,
+we need not install special methods,
+since this multiplication is carried out by successive additions.
+So it is again a question of efficiency whether we want to install
+such methods here.
+
+\beginexample
+    InstallMethod( \/,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
+        function( x, y )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, QuotientMod( x![1], y![1], F!.modulus );
+        end );
+
+    InstallMethod( \*,
+        "method for element in Z/nZ (ModulusRep) and integer",
+        ... );
+
+    InstallMethod( \*,
+        "method for integer and element in Z/nZ (ModulusRep)",
+        ... );
+
+    InstallMethod( \/,
+        "method for element in Z/nZ (ModulusRep) and integer",
+        ... );
+
+    InstallMethod( \/,
+        "method for integer and element in Z/nZ (ModulusRep)",
+        ... );
+
+    InstallMethod( \^,
+        "method for element in Z/nZ (ModulusRep), and integer",
+        true,
+        [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
+        function( x, n )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, PowerModInt( x![1], n, F!.modulus );
+        end );
+\endexample
+
+Now we have implemented methods for the arithmetic operations for our
+elements.
+There are some other operations in {\GAP} that we may want to accept
+our elements as arguments.
+An example is the operation `Int' that returns, e.g.,
+the integral part of a rational number or the integer corresponding to
+an element in a finite prime field.
+For our objects, we may define that `Int' returns the normalized residue.
+Note that we *define* this behaviour for elements
+but we *implement* it for objects.
+This means that if someone implements another representation of our
+objects then this person must be careful to implement `Int' methods for
+this new representation such that the result is independent of the
+representation.
+
+\beginexample
+    InstallMethod( Int,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObj and IsModulusRep ], 0,
+        z -> z![1] );
+\endexample
+
+Another example of an operation for that we might want to install
+a method is `\\mod'.
+Since the ring prints itself as `Integers' mod the modulus
+it is reasonable to allow a construction this way.
+
+\beginexample
+    InstallMethod( \mod,
+        "method for `Integers', and a positive integer",
+        true,
+        [ IsIntegers, IsPosRat and IsInt ], 0,
+        function( Integers, n ) return ZmodnZ( n ); end );
+\endexample
+
+Having done enough for the elements,
+we must install some methods for the rings.
+Many generic methods will work if they are able to compute the
+elements of the ring,
+so we install a method for this.
+
+\beginexample
+    InstallMethod( AsListSorted,
+        "method for full collection Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObj ) and IsWholeFamily ], 0,
+        function( R )
+        local F;
+        F:= ElementsFamily( FamilyObj(R) );
+        return List( [ 0 .. Size( R ) - 1 ], x -> ZmodnZObj( F, x ) );
+        end );
+\endexample
+
+Note that this method is applicable only to full rings $\Z/n\Z$,
+for proper subrings it would return a wrong result.
+Furthermore, it is not required that the argument is a ring;
+in fact htis method is applicable also to the additive group
+formed by all elements in the family,
+provided that is knows to contain the whole family.
+
+Analogously, we install methods to compute the size,
+a random element, and the units of full rings $\Z/n\Z$.
+
+\beginexample
+    InstallMethod( Random,
+        "method for full collection Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObj ) and IsWholeFamily ], 0,
+        R -> ZmodnZObj( ElementsFamily( FamilyObj(R) ),
+                        Random( [ 0 .. Size( R ) - 1 ] ) ) );
+
+    InstallMethod( Size,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObj ) and IsWholeFamily ], 0,
+        R -> ElementsFamily( FamilyObj(R) )!.modulus );
+
+    InstallMethod( Units,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObj ) and IsWholeFamily
+                                             and IsRing ], 0,
+        function( R )
+        local F;
+        F:= ElementsFamily( FamilyObj( R ) );
+        return List( PrimeResidues( Size(R) ), x -> ZmodnZObj( F, x ) );
+        end );
+\endexample
+
+Each ring $\Z/n\Z$ is finite,
+and we could install a method that returns true for it.
+But we can do this more elegant via installing a *logical implication*.
+
+\beginexample
+    InstallTrueMethod( IsFinite,
+        CategoryCollections( IsZmodnZObj ) and IsDomain );
+\endexample
+
+In effect, every domain that consists of elements in `IsZmodnZObj'
+will automatically store that it is finite,
+also if `IsFinite' is not called for it.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Compatibility of Residue Class Rings with Prime Fields}
+
+The above implementation of residue class rings has at least two
+disadvantages.
+First, if $p$ is a prime then the ring $\Z/p\Z$ is in fact a field,
+and the return values of `ZmodnZ' are never regarded as fields because
+they are not in the category `IsMagmaWithInversesIfNonzero'.
+Second, and this makes the example really interesting,
+there are already elements of finite prime fields implemented in {\GAP},
+and we may want to identify them with elements in $\Z/p\Z$.
+To be more precise,
+elements of finite fields in {\GAP} lie in the category `IsFFE',
+and there is a representation, `IsInternalRep', of these elements via
+discrete logarithms.
+
+The aim of this section is to use `IsModulusRep' as alternative
+representation of elements in finite prime fields.
+For that, we first adjust the setup of the previous section,
+and then repeat the installations with suitable modufications.
+
+\beginexample
+    IsZmodnZObj := NewCategory( "IsZmodnZObj", IsScalar );
+
+    IsZmodnZObjNonprime := NewCategory( "IsZmodnZObjNonprime",
+        IsZmodnZObj );
+
+    IsZmodpZObj := IsZmodnZObj and IsFFE;
+
+    IsModulusRep := NewRepresentation( "IsModulusRep",
+        IsPositionalObjectRep,
+        [ 1 ] );
+
+    ZmodnZObj := NewOperationArgs( "ZmodnZObj" );
+
+    ZmodnZ := NewOperationArgs( "ZmodnZ" );
+\endexample
+
+As in the previous section,
+all elements of rings $\Z/n\Z$ lie in the category `IsZmodnZObj'.
+But now we introduce two subcategories, namely `IsZmodnZObjNonprime'
+for all elements in rings $\Z/n\Z$ where $n$ is not a prime,
+and `IsZmodpZObj' for elements in finite prime fields.
+
+Again let us start with the definitions of `ZmodnZ' and `ZmodnZObj'.
+
+\beginexample
+    ZmodnZ := function( n )
+
+        local F, R;
+
+        if not ( IsInt( n ) and IsPosRat( n ) ) then
+          Error( "<n> must be a positive integer" );
+
+        elif IsPrimeInt( p ) then
+
+          # Construct the family of element objects of our field.
+          F:= FFEFamily( p );
+
+          # Make the domain.
+          R:= FieldOverItselfByGenerators( [ ZmodnZObj( F, 1 ) ] );
+          SetIsPrimeField( R, true );
+
+        else
+
+          # Construct the family of element objects of our ring.
+          F:= NewFamily( Concatenation( "Zmod", String( n ), "Z" ),
+                         IsZmodnZObjNonprime );
+  
+          # Install the data.
+          F!.modulus:= n;
+  
+          # Make the domain.
+          R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
+          SetIsWholeFamily( R, true );
+
+        fi;
+
+        SetName( R, Concatenation( "(Integers mod ", String(n), ")" ) );
+
+        # Return the ring resp. field.
+        return R;
+    end;
+
+
+    ZmodnZObj := function( Fam, residue )
+    if IsFFEFamily( Fam ) then
+      return Objectify( NewType( Fam,     IsZmodpZObj
+                                      and IsModulusRep ),
+                        [ residue mod Characteristic( Fam ) ] );
+    else
+      return Objectify( NewType( Fam,     IsZmodnZObjNonprime
+                                      and IsModulusRep ),
+                        [ residue mod Fam!.modulus ] );
+    fi;
+    end;
+\endexample
+
+Note that the result of `ZmodnZ' is a field that does in general not
+contain the whole family of its elements, since all finite field
+elements of a fixed characteristic lie in the same family.
+Further note that we cannot expect a family of finite field elements
+to have a component `modulus',
+so we use `Characteristic' to get the modulus.
+Requiring that `Fam!.modulus' works also if `Fam' is a family of
+finite field elements would violate the rule
+that an extension of {\GAP} should not force changes in existing code,
+in this case code dealing with families of finite field elements.
+
+\beginexample
+    InstallMethod( PrintObj,
+        "method for element in Z/nZ (ModulusRep)",
+        true,
+        [ IsZmodnZObjNonprime and IsModulusRep ], 0,
+        function( x )
+        Print( "ZmodnZObj( ", x![1], ", ", FamilyObj(x)!.modulus, " )" );
+        end );
+
+    InstallMethod( PrintObj,
+        "method for element in Z/pZ (ModulusRep)",
+        true,
+        [ IsZmodpZObj and IsModulusRep ], 0,
+        function( x )
+        Print( "ZmodpZObj( ", x![1], ", ", Characteristic(x), " )" );
+        end );
+
+    InstallMethod( \=,
+        "method for two elements in Z/nZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodnZObj and IsModulusRep,
+          IsZmodnZObj and IsModulusRep ], 0,
+        function( x, y ) return x![1] = y![1]; end );
+\endexample
+
+The above method to check equality is independent of whether the
+arguments have a prime or nonprime modulus,
+so we installed it for arguments in `IsZmodnZObj'.
+Now we install also methods to compare objects in `IsZmodpZObj'
+with the ``old'' finite field elements.
+
+\beginexample
+    InstallMethod( \=,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+        function( x, y )
+        return DegreeFFE( y ) = 1 and x![1] = IntFFE( y );
+        end );
+
+    InstallMethod( \=,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        ... );
+\endexample
+
+The situation with the operation ```\<''' is more difficult.
+Of course we are free to define the comparison of objects in
+`IsZmodnZObjNonprime',
+but for the finite field elements, the comparison must be compatible
+with the predefined comparison of the ``old'' finite field elements.
+
+\beginexample
+    InstallMethod( \<,
+        "method for two elements in Z/nZ (ModulusRep, nonprime)",
+        IsIdentical,
+        [ IsZmodnZObjNonprime and IsModulusRep,
+          IsZmodnZObjNonprime and IsModulusRep ], 0,
+        function( x, y ) return x![1] < y![1]; end );
+
+    InstallMethod( \<,
+        "method for two elements in Z/pZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep,
+          IsZmodpZObj and IsModulusRep ], 0,
+        function( x, y )
+        local p, r;      # characteristic and primitive root
+        if x![1] = 0 then
+          return y![1] <> 0;
+        elif y![1] = 0 then
+          return false;
+        else
+          p:= Characteristic( x );
+          r:= PrimitiveRootMod( p );
+          return LogMod( x![1], r, p ) < LogMod( y![1], r, p );
+        fi;
+        end );
+
+    InstallMethod( \<,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+        function( x, y )
+        return x![1] * One( Z( Characteristic( x ) ) ) < y;
+        end );
+
+    InstallMethod( \<,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        ... );
+\endexample
+
+Now we install the same methods for the arithmetic operations
+`\\+', `Zero', `AdditiveInverse', `\\-', `\\\*', and `One'
+as in the previous section, without listing them below.
+Also the same `Int' method is installed for objects in `IsZmodnZObj'.
+Note that it is compatible with the definition of `Int' for finite
+field elements.
+And of course the same method for `\\mod' is installed.
+
+We have to be careful, however, with the methods for `Inverse', `\\\/',
+and `\\^'.
+These methods and the missing methods for arithmetic operations with
+one argument in `IsModulusRep' and the other in `IsInternalRep'
+are given below.
+
+\beginexample
+    InstallMethod( \+,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+        function( x, y ) return x![1] + y; end );
+
+    InstallMethod( \+,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        IsIdentical,
+        [ IsFFE and IsInternalRep, IsZmodpZObj and IsModulusRep ], 0,
+        ... );
+
+    InstallMethod( \-,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        ... );
+
+    InstallMethod( \-,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        ... );
+
+    InstallMethod( \*,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+        function( x, y ) return x![1] * y; end );
+
+    InstallMethod( \*,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        ... );
+
+    InstallMethod( Inverse,
+        "method for element in Z/nZ (ModulusRep, nonprime)",
+        true,
+        [ IsZmodnZObjNonprime and IsModulusRep ], 0,
+        function( x )
+        local residue;
+        residue:= QuotientMod( 1, x![1], FamilyObj(x)!.modulus );
+        if residue <> fail then
+          residue:= ZmodnZObj( FamilyObj(x), residue );
+        fi;
+        return residue;
+        end );
+
+    InstallMethod( Inverse,
+        "method for element in Z/pZ (ModulusRep)",
+        true,
+        [ IsZmodpZObj and IsModulusRep ], 0,
+        function( x )
+        local residue;
+        residue:= QuotientMod( 1, x![1], Characteristic( FamilyObj(x) ) );
+        if residue <> fail then
+          residue:= ZmodnZObj( FamilyObj(x), residue );
+        fi;
+        return residue;
+        end );
+
+    InstallMethod( \/,
+        "method for two elements in Z/nZ (ModulusRep, nonprime)",
+        IsIdentical,
+        [ IsZmodnZObjNonprime and IsModulusRep,
+          IsZmodnZObjNonprime and IsModulusRep ], 0,
+        function( x, y )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, QuotientMod( x![1], y![1], F!.modulus );
+        end );
+
+    InstallMethod( \/,
+        "method for two elements in Z/pZ (ModulusRep)",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep,
+          IsZmodpZObj and IsModulusRep ], 0,
+        function( x, y )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, QuotientMod( x![1], y![1],
+                                          Characteristic( F ) ) );
+        end );
+
+    InstallMethod( \/,
+        "method for element in Z/pZ (ModulusRep) and internal FFE",
+        IsIdentical,
+        [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
+        function( x, y ) return x![1] / y; end );
+
+    InstallMethod( \/,
+        "method for internal FFE and element in Z/pZ (ModulusRep)",
+        ... );
+
+    InstallMethod( \^,
+        "method for element in Z/nZ (ModulusRep, nonprime), and integer",
+        true,
+        [ IsZmodnZObjNonprime and IsModulusRep, IsInt ], 0,
+        function( x, n )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, PowerModInt( x![1], n, F!.modulus ) );
+        end );
+
+    InstallMethod( \^,
+        "method for element in Z/pZ (ModulusRep), and integer",
+        true,
+        [ IsZmodpZObj and IsModulusRep, IsInt ], 0,
+        function( x, n )
+        local F;
+        F:= FamilyObj( x );
+        return ZmodnZObj( F, PowerModInt( x![1], n,
+                                          Characteristic( F ) ) );
+        end );
+\endexample
+
+The operation `DegreeFFE' is defined for finite field elements,
+we need a method for objects in `IsZmodpZObj'.
+
+\beginexample
+    InstallMethod( DegreeFFE,
+        "method for element in Z/pZ (ModulusRep)",
+        true,
+        [ IsZmodpZObj and IsModulusRep ], 0,
+        z -> 1 );
+\endexample
+
+The methods for `AsListSorted', `Random', `Size', and `Units',
+that we had installed in the previous section had all assumed that
+their argument contains the whole family of its elements.
+So these methods make sense only for the nonprime case.
+For the prime case, there are already methods for these operations
+with argument a field.
+
+\beginexample
+    InstallMethod( AsListSorted,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObjNonprime ) and IsWholeFamily ],
+        0,
+        function( R )
+        local F;
+        F:= ElementsFamily( FamilyObj( R ) );
+        return List( [ 0 .. Size( R ) - 1 ], x -> ZmodnZObj( F, x ) );
+        end );
+
+    InstallMethod( Random,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObjNonprime ) and IsWholeFamily ],
+        0,
+        R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
+                        Random( [ 0 .. Size( R ) - 1 ] ) ) );
+
+    InstallMethod( Size,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObjNonprime ) and IsWholeFamily ],
+        0,
+        R -> ElementsFamily( FamilyObj( R ) )!.modulus );
+
+    InstallMethod( Units,
+        "method for full ring Z/nZ",
+        true,
+        [ CategoryCollections( IsZmodnZObjNonprime ) and IsWholeFamily ],
+        0,
+        function( R )
+        local F;
+        F:= ElementsFamily( FamilyObj( R ) );
+        return List( PrimeResidues( Size(R) ), x -> ZmodnZObj( F, x ) );
+        end );
+
+    InstallTrueMethod( IsFinite,
+        CategoryCollections( IsZmodnZObjNonprime ) and IsDomain );
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Further Improvements in Implementing Residue Class Rings}
+
+There are of course still possibilities to improve the implementation.
+
+With the setup as described above,
+subsequent calls `ZmodnZ( <n> )' with the same <n> yield incompatible
+rings in the sense that elements of one ring cannot be added to elements
+of another.
+The solution for this problem is to keep a global list of all results of
+`ZmodnZ' in the current {\GAP} session, and to return the stored values
+whenever possible.
+
+To make computations more efficient,
+one can install methods for ```\-''' etc. as discussed already.
+
+Also the call to `NewType' in `ZmodnZObj' can be avoided by storing
+the required type, e.g., in the family.
+But note that it is *not* admissible to take the type of an object
+as first argument of `Objectify'.
+For example, suppose two objects in `IsZmodnZObj' shall be added.
+Then we must not use the type of one of the arguments in a call of
+`Objectify', because the argument may have knowledge that is not
+correct for the result of the addition.
+One may think of the property `IsOne' that may hold for both
+arguments but certainly not for their sum.
+
+For comparing two objects in `IsZmodpZObj' via ```\<''',
+we had to install a quite expensive method because of the compatibility
+with the comparison of finite field elements that did already exist.
+In fact {\GAP} supports finite fields with elements represented via
+discrete logarithms only up to a given size.
+So in principle we have the freedom to define a cheaper comparison
+via ```\<''' for objects in `IsZmodpZObj' if the modulus is large
+enough.
+This is possible by introducing two categories `IsZmodpZObjSmall'
+and `IsZmodpZObjLarge', which are subcategories of `IsZmodpZObj',
+and to install different ```\<''' methods for pairs of objects
+in these categories.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E
+

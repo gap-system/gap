@@ -15,7 +15,7 @@ Revision.pcgsperm_gd :=
 ##  cannot be calculcated via `PcSeries' and `Size'.
 ##
 IsPcgsPermGroupRep := NewRepresentation( "IsPcgsPermGroupRep",
-    IsPcgsDefaultRep, [ "group", "stabChain", "series" ] );
+    IsPcgsDefaultRep, [ "group", "stabChain" ] );
 
 #############################################################################
 ##

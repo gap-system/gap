@@ -35,28 +35,31 @@ TriangulizedGeneratorsByMatrix :=
 
 #############################################################################
 ##
-#O  OCAddGenerators( <ocr>, <G> ) . . . . . . . . . . add generators, local
+#O  OCAddGenerators( <ocr>, <G> ) . . . . . . . . . . . add generators, local
 ##
-OCAddGenerators := NewOperation( "OCAddGenerators", [IsRecord, IsGroup] );
+OCAddGenerators := NewOperationArgs( "OCAddGenerators" );
 
 #############################################################################
 ##
-#O  OCAddMatrices( <ocr>, <G> )  . . . . . . . add operation matrices, local
+#O  OCAddMatrices( <ocr>, <gens> )  . . . . . . add operation matrices, local
 ##
-OCAddMatrices := NewOperation( "OCAddMatrices", [IsRecord, IsGroup] );
+OCAddMatrices := NewOperationArgs( "OCAddMatrices" );
 
 #############################################################################
 ##
-#O  OCAddToFunctions( <ocr>, <G> )  . . . . . . add operation matrices, local
+#O  OCAddToFunctions( <ocr> )  . . . . add operation matrices, local
 ##
-OCAddToFunctions := NewOperation( "OCAddToFunctions", [IsRecord, IsGroup] );
+OCAddToFunctions := NewOperationArgs( "OCAddToFunctions" );
+OCAddToFunctions2 := NewOperation( "OCAddToFunctions2",
+  [IsRecord, IsListOrCollection] );
 
 
 #############################################################################
 ##
-#O  OCAddRelations( <ocr>,<G> ) . . . . . . . . . . . .  add relations, local
+#O  OCAddRelations( <ocr>,<gens> ) . . . . . . . . . .  add relations, local
 ##
-OCAddRelations := NewOperation( "OCAddRelations", [IsRecord, IsGroup] );
+OCAddRelations := NewOperation( "OCAddRelations",
+  [IsRecord, IsListOrCollection] );
 
 #############################################################################
 ##
@@ -68,24 +71,26 @@ OCNormalRelations := NewOperation( "OCNormalRelations",
 
 #############################################################################
 ##
-#O  OCAddSumMatrices( <ocr>, <group> )  . . . . . . . . . . . add sums, local
+#O  OCAddSumMatrices( <ocr>, <gens> )  . . . . . . . . . . . add sums, local
 ##
-OCAddSumMatrices := NewOperation("OCAddSumMatrices",[IsRecord,IsGroup]);
+OCAddSumMatrices := NewOperation("OCAddSumMatrices",
+  [IsRecord,IsListOrCollection]);
 
 
 #############################################################################
 ##
-#O  OCAddBigMatrices( <ocr>, <group> )  . . . . . . . . . . . . . . . . local
+#O  OCAddBigMatrices( <ocr>, <gens> )  . . . . . . . . . . . . . . . . local
 ##
-OCAddBigMatrices := NewOperation( "OCAddBigMatrices", [IsRecord,IsGroup] );
+OCAddBigMatrices := NewOperation( "OCAddBigMatrices",
+  [IsRecord,IsListOrCollection] );
 
 
 #############################################################################
 ##
-#O  OCCoprimeComplement( <ocr>, <group> ) . . . . . . . .  coprime complement
+#O  OCCoprimeComplement( <ocr>, <gens> ) . . . . . . . .  coprime complement
 ##
 OCCoprimeComplement := NewOperation( "OCCoprimeComplement",
-  [IsRecord,IsGroup] );
+  [IsRecord,IsListOrCollection] );
 
 
 #############################################################################

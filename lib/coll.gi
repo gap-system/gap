@@ -238,23 +238,6 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#R  IsConstantTimeAccessListRep( <list> )
-##
-##  This is implied by 'IsList and InternalRep',
-##  so all strings, Boolean lists, ranges, and internal plain lists are
-##  in this representation.
-##
-##  But also enumerators can have this representation if they know about
-##  constant time access to their elements.
-##
-IsConstantTimeAccessListRep := NewRepresentation(
-    "IsConstantTimeAccessListRep", IsObject, [] );
-
-InstallTrueMethod( IsConstantTimeAccessListRep, IsList and IsInternalRep );
-
-
-#############################################################################
-##
 #M  AsList( <coll> )
 ##
 InstallMethod( AsList,
@@ -267,7 +250,7 @@ InstallMethod( AsList,
 InstallMethod( AsList,
     "method for collections that are constant time access lists",
     true,
-    [ IsCollection and IsConstantTimeAccessListRep ],
+    [ IsCollection and IsConstantTimeAccessList ],
     0,
     Immutable );
 
@@ -286,7 +269,7 @@ InstallMethod( AsListSorted,
 InstallOtherMethod( AsListSorted,
     "method for a collection that is a constant time access list",
     true,
-    [ IsCollection and IsConstantTimeAccessListRep ],
+    [ IsCollection and IsConstantTimeAccessList ],
     0,
     AsListSortedList );
 

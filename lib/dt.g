@@ -8,11 +8,51 @@
 ##
 ##  This file initializes Deep Thought.
 ##
+##  Deep Thought deals with trees.  A tree < tree > is a concatenation of 
+##  several nodes where each node is a 5-tuple of immediate integers.  If
+##  < tree > is an atom it contains only one node,  thus it is itself a
+##  5-tuple. If < tree > is not an atom we obtain its list representation by
+##
+##  < tree >  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
+##
+##  Let us denote the i-th node of <tree> by (<tree>, i)  and the tree rooted 
+##  at (<tree>, i) by tree(<tree>, i).  Let <a> be tree(<tree>, i)
+##  The first entry of (<tree>, i) is pos(a),
+##  and the second entry is num(a). The third entry of (<tree>, i) gives a 
+##  mark.(<tree>, i)[3] = 1  means that (<tree>, i) is marked,  
+##  (<tree>, i)[3] = 0 means that (<tree>, i) is not marked. The fourth entry
+##  of (<tree>, i) contains the number of knodes of tree(<tree>, i).  The
+##  fifth entry of (<tree>, i) finally contains a boundary for 
+##  pos( tree(<tree>, i) ).  (<tree>, i)[5] <= 0 means that 
+##  pos( tree(<tree>, i) ) is unbounded.  If tree(<tree>, i) is an atom we
+##  already know that pos( tree(<tree>, i) ) is unbound.  Thus we then can
+##  use the fifth component of (<tree>, i) to store the side.  In this case
+##  (<tree>, i)[5] = -1 means  that tree(<tree>, i) is an atom from the
+##  right hand word, and (<tree>, i)[5] = -2 means that tree(<tree>, i) is
+##  an atom from the left hand word.
+##
+##  A second important data structure deep thought deals with is a deep
+##  thought monomial. A deep thought monomial g_<tree> is a product of
+##  binomial coefficients with a coefficient c. Deep thought monomials
+##  are represented in this implementation by formula
+##  vectors,  which are lists of integers.  The first entry of a formula
+##  vector is 0,  to distinguish formula vectors from trees.  The second
+##  entry is the coefficient c,  and the third and fourth entries are
+##  num( left(tree) ) and num( right(tree) ).  The remaining part of the
+##  formula vector is a concatenation of pairs of integers.  A pair (i, j)
+##  with i > 0 represents binomial(x_i, j).  A pair (0, j) represents
+##  binomial(y_gen, j) when word*gen^power is calculated.
+##
+##  Finally deep thought has to deal with pseudorepresentatives. A
+##  pseudorepresentative <a> is stored in list of length 4. The first entry
+##  stores left( <a> ),  the second entry contains right( <a> ),  the third
+##  entry contains num( <a> ) and the last entry finally gives a boundary
+##  for pos( <b> ) for all trees <b> which are represented by <a>.
+##
 Revision.dt_g :=
   "@(#)$Id$";
 
 
-dtbound := 1;
 
 
 #############################################################################
@@ -53,25 +93,6 @@ mkavec := function(pr)
     return vec;
 end;
 
-
-
-#############################################################################
-##
-#F  evaluation(<vector>) . . . . . . . make an evaluation of a formula vector
-##
-##  'evaluation' returns an integer value for the formula vector <x> which
-##  is used for the presort of the formula vectors done by the function
-##  'sortiere'.
-##
-evaluation := function(vector)
-    local  i,k;
-
-    k := 0;
-    for  i in [5,7..Length(vector)-1]  do
-	k := k + vector[i]*vector[i+1]^2;
-    od;
-    return k;
-end;
 
 
 #############################################################################
@@ -155,24 +176,31 @@ end;
 
 #############################################################################
 ##
-#F  dt_add( <mon>, <pols>, <rel> )
+#F  dt_add( <pol>, <pols>, <pr> )
 ##
-##  dt_add adds the deep thought monomial <mon> to the list of polynomials
+##  dt_add adds the deep thought monomial <pol> to the list of polynomials
 ##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
 ##
 
 dt_add := function(pol, pols, pr)
     local  i,j,k,rel, pos, flag;
     
+    # first sort the deep thought monomial <pol> to compare it with the
+    # monomials contained in <pols>.
     ordne2(pol);
+    # then look which component of <pols> contains <pol> in case that
+    # <pol> is contained in <pols>.
     pos := DT_evaluation(pol);
     if  not IsBound( pols[pos] )  then
+        # create the component <pols>[<pos>] and add <pol> to it
         pols[pos] := rec( evlist := [], evlistvec := [] );
         fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
         return;
     fi;
     flag := 0;
     for  k in [1..Length( pols[pos].evlist ) ]  do
+        # look for <pol> in <pols>[<pos>] and if <pol> is contained in
+        # <pols>[<pos>] then adjust the corresponding coefficient vector.
         if  equal( pol, pols[pos].evlist[k] )  then
             rel := pr[ pol[3] ][ pol[4] ];
             for  j in [3,5..Length(rel)-1]  do
@@ -184,6 +212,7 @@ dt_add := function(pol, pols, pr)
         fi;
     od;
     if  flag = 0  then
+        # <pol> is not contained in <pols>[<pos>] so add it to <pols>[<pos>]
         fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
     fi;
 end;
@@ -191,12 +220,17 @@ end;
 
 #############################################################################
 ##
-#F  konvertiere(<reps>, <pr>) . . . . . . . . convert list of formula vectors
+#F  konvertiere(<sortedpols>)
 ##
-##  'konvertiere' converts the list of formula vectors into the record
-##  described at the top of the function 'mkevlist'.
+##  'konvertiere' converts the list of formula vectors <sortedpols>. Before
+##  applying <konvertiere> <sortedpols> is a list of records with the
+##  components <evlist> and <evlistvec> where <evlist> contains deep thought
+##  monomials and <evlistvec> contains the corresponding coefficient vectors.
+##  <konvertiere> merges the <evlist>-compondents of the records contained
+##  in <sortedpols> into one component <evlist> and the <evlistvec>-coponents
+##  into one component <evlistvec>.
 ##
-konvertiere := function(sortedpols, n, pr)
+konvertiere := function(sortedpols)
     local  k,res;
     
     if  Length(sortedpols) = 0  then
@@ -216,11 +250,11 @@ end;
 ##
 #F  konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
 ##
-##  'konvert2' takes the list of coefficient vectors <evlistvec> and returns
-##  a record with the components 'bas' and 'exp'. The component 'bas' 
-##  contains for each element of <evlistvec> the list of positions with
-##  non-zero entries.  The component 'exp' contains for each element of 'bas' 
-##  a list of the corresponding non-zero coefficients.
+##  'konvert2' converts the coefficient vectors in the list <evlistvec>.
+##  Before applying <konvert2> an entry <evlistvec>[i][j] = k means that
+##  the deep thought monomial <evlist>[i] occurs in the polynomial f_j with
+##  coefficient k. After applying <konvert2> a pair [j, k] occuring in
+##  <eclistvec>[i] means that <evlist>[i] occurs in f_j with coefficient k.
 ##
 konvert2 := function(evlistvec, pr)
     local i,j,res;
@@ -419,22 +453,14 @@ end;
 
 ###########################################################################
 ##
-#F  calcrepsn(<n>, <avec>, <pr>) . . compute the polynomials for word*g_n^(y_n)
+#F  calcrepsn(<n>, <avec>, <pr>, <max>
 ##
-##  'calcrepsn' returns the polynomials f_1,..,f_m which have to be evaluated
-##  when computing word*g_n^(y_n).  Here m denotes the composition length
-##  of the nilpotent group G given by the presentation <pr>.  This is done 
-##  by first calculating  representatives for all trees that might occur
-##  in the collection of word*g_n^(y^n).  Then for each of these 
-##  representatives the corresponding monomials (momomials with respect to
-##  the base of binomial coefficients) are calculated.  Finally these
-##  monomials are stored in a record with the components 'evlist' and
-##  'evlistvec'.  The component 'evlist' contains all monomials which occur
-##  in one of the polynomials f_k for 1<=k<=m.  The other component contains
-##  for each monomial M a record with the components 'bas' and 'exp'.  The
-##  component 'bas' is a list of all generator numbers l for which the
-##  polynomial M occurs in f_l,  and 'exp' ist the corresponding list of
-##  the coefficients of M in the polynomials f_l.
+##  'calcrepsn' returns the polynomials f_{n1}1,..,f_{nm} which have to be
+##  evaluated when computing word*g_n^(y_n).  Here m denotes the composition 
+##  length of the nilpotent group G given by the presentation <pr>.  This is 
+##  done  by first calculating a complete sytem of <n>-pseudorepresentatives
+##  for the presentation <pr> with bondary <max>. Then this sytem is used
+##  to get the required polynomials
 ##
 ##  If g_n is in the center of the group determined by the presentation <pr>
 ##  then there don't exist any representatives exept for the atoms and 
@@ -444,8 +470,8 @@ calcrepsn:=function(n, avec, pr, max)
     
     local i,j,k,l,       #  loop variables
           x,y,z,a,b,c,   #  trees
-          reps,          #  list of representatives, later record to return
-          pols,
+          reps,          #  list of pseudorepresentatives
+          pols,          #  stores the dt polynomials
           boundary,      #  boundary for loop
           hilf,
           pos,
@@ -453,9 +479,7 @@ calcrepsn:=function(n, avec, pr, max)
           max1, max2;    #  maximal values for pos(x) and pos(y)   
     reps:=[];
     pols := [];
-    #  now for all n <= i <= m compute the representatives for all trees x 
-    #  with num(x) = i and store them into the list <reps[i]>.  We may assume 
-    #  that the lists <reps[l]> ( n <= l < i ) are complete.
+
     for i  in [n..Length(pr)]  do
         #  initialize reps[i] to contain representatives for the atoms
         if  i <> n  then
@@ -464,7 +488,7 @@ calcrepsn:=function(n, avec, pr, max)
             reps[i] := [ [1,i,0,1,-1] ];
         fi;
     od;
-    # now compute the representatives for the non-atoms
+    #  first compute the pseudorepresentatives which are also represenatives
     for  i in [n..max]  do
         if  i < avec[n]  then
             boundary := i-1;
@@ -507,9 +531,7 @@ calcrepsn:=function(n, avec, pr, max)
                                 #  left(<z'>) = left(<z>)  ( = <x> ) and
                                 #  right(<z'>)=right(<z>) ( = <y> ) and
                                 #  num(<z'>) = o where o is an integer
-                                #  contained in pr[j][k].  A description
-                                #  of the internal function FindNewReps
-                                #  can be found in the file "DT.c".
+                                #  contained in pr[j][k].
                                 FindNewReps(z, reps, pr, avec[n]-1);
                             fi;
                         od;
@@ -519,6 +541,7 @@ calcrepsn:=function(n, avec, pr, max)
             od;
         od;
     od;
+    #  now get the "real" pseudorepresentatives
     for  i in [max+1..Length(pr)]  do
         if  i < avec[n]  then
             boundary := i-1;
@@ -537,11 +560,20 @@ calcrepsn:=function(n, avec, pr, max)
                     for x in [start..Length(reps[j])]  do
                         for y in reps[k]  do
                             if Length(reps[j][x]) = 5  
-                                      or  k >= GetNumRight(reps[j][x])  then
+                               or  k >= GetNumRight(reps[j][x])  then
+                                # since reps[j] and reps[k] may contain
+                                # pseudorepresentatives which are trees
+                                # as well as "real" pseudorepresentatives
+                                # it is necessary to take several cases into
+                                # consideration.
                                 max1 := GetMax(reps[j][x], j, pr);
                                 max2 := GetMax(y, k, pr);
                                 if  Length(reps[j][x]) <> 4  then
                                     if  reps[j][x][2] <> j  then
+                                        # we have to ensure that 
+                                        # num( <reps>[j][x] ) = j when we
+                                        # construct a new pseudorepresentative
+                                        # out of it.
                                         a := ShallowCopy(reps[j][x]);
                                         a[2] := j;
                                     else
@@ -550,6 +582,10 @@ calcrepsn:=function(n, avec, pr, max)
                                     a[5] := max1;
                                 else
                                     if  reps[j][x][3] <> j  then
+                                        # we have to ensure that 
+                                        # num( <reps>[j][x] ) = j when we
+                                        # construct a new pseudorepresentative
+                                        # out of it.
                                         a := ShallowCopy(reps[j][x]);
                                         a[3] := j;
                                     else
@@ -559,6 +595,9 @@ calcrepsn:=function(n, avec, pr, max)
                                 fi;
                                 if  Length(y) <> 4  then
                                     if  y[2] <> k  then
+                                        # we have to ensure that num(<y>) = k
+                                        # when we construct a new
+                                        # pseudorepresentative out of it.
                                         b := ShallowCopy(y);
                                         b[2] := k;
                                     else
@@ -567,6 +606,9 @@ calcrepsn:=function(n, avec, pr, max)
                                     b[5] := max2;
                                 else
                                     if  y[3] <> k  then
+                                        # we have to ensure that num(<y>) = k
+                                        # when we construct a new
+                                        # pseudorepresentative out of it.
                                         b := ShallowCopy(y);
                                         b[3] := k;
                                     else
@@ -574,6 +616,9 @@ calcrepsn:=function(n, avec, pr, max)
                                     fi;
                                     b[4] := max2;
                                 fi;
+                                # now finally construct the 
+                                # pseudorepresentative and add it to
+                                # reps
                                 z := [a, b, i, 0];
                                 if  i >= avec[n]  then
                                     Add(reps[i], z);
@@ -593,36 +638,30 @@ calcrepsn:=function(n, avec, pr, max)
             od;
         od;
     od;
+    # now use the pseudorepresentatives to get the desired polynomials
     for  i in [n..Length(pr)]  do
-#        Print(i,"\n");
-       for  j in [2..Length(reps[i])]  do
-           if  Length(reps[i][j]) = 4  then
-               if  reps[i][j][3] = i  then
-                   GetPols(reps[i][j], pr, pols);
- #                  if  i = 7  or  i = 8  then
- #                      if  j > 2  then
- #                          if  Length(reps[i][j][1]) = 4   and
- #                              Length(reps[i][j-1][1]) <> 4  then
- #                              Print("    ",reps[i][j][1][3],"    ",
- #                                    reps[i][j][2][2],"\n");
- #                          fi;
- #                      fi;
- #                  fi;
-               fi;
-           elif  reps[i][j][1] <> 0  then
-               if  reps[i][j][2] = i  then
-                   UnmarkTree(reps[i][j]);
-                   hilf := MakeFormulaVector(reps[i][j], pr);
-                   dt_add(hilf, pols, pr);
-               fi;
-           else
-               dt_add(reps[i][j], pols, pr);
-           fi;
+        for  j in [2..Length(reps[i])]  do
+            # the first case: reps[i][j] is a "real" pseudorepresentative
+            if  Length(reps[i][j]) = 4  then
+                if  reps[i][j][3] = i  then
+                    GetPols(reps[i][j], pr, pols);
+                fi;
+            # the second case: reps[i][j] is a tree    
+            elif  reps[i][j][1] <> 0  then
+                if  reps[i][j][2] = i  then
+                    UnmarkTree(reps[i][j]);
+                    hilf := MakeFormulaVector(reps[i][j], pr);
+                    dt_add(hilf, pols, pr);
+                fi;
+            # the third case: reps[i][j] is a deep thought monomial    
+            else
+                dt_add(reps[i][j], pols, pr);
+            fi;
        od;
        Unbind(reps[i]);
    od;
-#   Error();
-   pols := konvertiere(pols,n, pr);
+   # finally convert the polynomials to the final state
+   pols := konvertiere(pols);
    if  pols <> 0  then
       konvert2(pols.evlistvec, pr);
    fi;
@@ -635,10 +674,10 @@ end;
 #F  calcreps2( <pr> ) . . . . . . . . . . compute the Deep-Thought-polynomials
 ##
 ##  'calcreps2' returns the polynomials which have to be evaluated when
-##  computing word*g_n^(y_n) for all 1 <= n <= m where m is the number of
-##  generators in the given presentation <pr>.
+##  computing word*g_n^(y_n) for all <dtbound> <= n <= m where m is the 
+##  number of generators in the given presentation <pr>.
 ##
-calcreps2 := function(pr, max)
+calcreps2 := function(pr, max, dtbound)
     local  i,reps,avec,max2, max1;
     
     reps := [];

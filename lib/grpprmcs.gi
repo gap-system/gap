@@ -78,11 +78,14 @@ GInverses := function( G )
     local   S,  inverses,  i;
     
     S := StabChainAttr( G );
-    S.generators := S.labels{ S.genlabels };
+    S.generators := Compacted( S.transversal );
     inverses := [  ];
     for i  in [ 1 .. Length( S.generators ) ]  do
         inverses[ i ] := S.generators[ i ] ^ -1;
     od;
+    if IsBound( S.stabilizer )  then
+        Append( S.generators, S.stabilizer.generators );
+    fi;
     return inverses;
 end;
     
@@ -858,14 +861,10 @@ RegularNinKernelCSPG := function ( G, H, homlist )
 
     Ginverses := GInverses( G );
     Hinverses := GInverses( H );
-    hgens := ShallowCopy(H.generators);
-    Add(hgens,());
-    Add(Hinverses,());
+    hgens := H.generators;
 
     stabinverses := GInverses( stabgroup );
-    stabgens := ShallowCopy(stabgroup.generators);
-    Add(stabgens,());
-    Add(stabinverses,());
+    stabgens := stabgroup.generators;
 
     reps := []; inversereps := [];
     for i in [1..a] do
@@ -2148,9 +2147,7 @@ CentralizerTransSymmCSPG := function(G)
     fi;
 
     Ginverses := GInverses( G );
-    Ggens := ShallowCopy(G.generators);
-    Add(Ggens,());
-    Add(Ginverses,());
+    Ggens := G.generators;
 
     # the centralizer of G is semiregular, acting transitively on L
     orbitx := [x];

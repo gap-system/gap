@@ -164,6 +164,7 @@ end;
 ##  params is a record containing optional components:
 ##  gens  generators that are to be mapped
 ##  from  preimage group (that contains gens)
+##  to    image group (as it might be smaller than 'range')
 ##  free  free generators
 ##  rels  some relations that hold in from, given as list [word,order]
 ##  dom   a set of elements on which automorphisms act faithful
@@ -268,7 +269,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
         ok:=Size(Group(imgs,id))=size;
       fi;
 
-      if thom then
+      if ok and thom then
         imgs:=GroupGeneralMappingByImages(params.from,range,gens,imgs);
 	SetIsTotal(imgs,true);
 	Info(InfoMorph,3,"testing");
@@ -282,10 +283,6 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
 	Info(InfoMorph,2,"found");
 	# do we want one or all?
 	if tall then
-	  if tinj and tsur then
-	    #AH: Geht das gut ?
-	    SetFilterObj(imgs,IsMultiplicativeElementWithInverse);
-	  fi;
 	  if rig then
 	    if not imgs in result then
 	      result:=Group(Concatenation(GeneratorsOfGroup(result),[imgs]),
@@ -692,6 +689,127 @@ local m,n;
     return m;
   fi;
 
+end;
+
+
+#############################################################################
+##
+#F  GQuotients(<F>,<G>)  . . . . . epimorphisms from F onto G up to conjugacy
+##
+GQuotients := function (F,G)
+local Fgens,	# generators of F
+      cl,	# classes of G
+      u,	# trial generating set's group
+      pimgs,	# possible images
+      val,	# its value
+      best,	# best generating set
+      bestval,	# its value
+      sz,	# |class|
+      i,	# loop
+      h,	# epis
+      len,	# nr. gens tried
+      fak,	# multiplication factor
+      cnt;	# countdown for finish
+
+  Fgens:=GeneratorsOfGroup(F);
+  if IsAbelian(G) and not IsAbelian(F) then
+    Info(InfoMorph,1,"abelian quotients vi F/F'");
+    # for abelian factors go via the commutator factor group
+    fak:=CommutatorFactorGroup(F);
+    h:=NaturalHomomorphismByNormalSubgroup(F,DerivedSubgroup(F));
+    fak:=Image(h,F);
+    u:=GQuotients(fak,G);
+    cl:=[];
+    for i in u do
+      i:=GroupHomomorphismByImages(F,G,Fgens,
+	     List(Fgens,j->Image(i,Image(h,j))));
+      Add(cl,i);
+    od;
+    return cl;
+  fi;
+
+  if Size(G)=1 then
+    return [GroupHomomorphismByImages(F,G,Fgens,
+			  List(Fgens,i->One(G)))];
+  elif IsCyclic(F) then
+    Info(InfoMorph,1,"Cyclic grouyp: only one quotient possible");
+    # a cyclic group has at most one quotient
+    if not IsCyclic(G) or not IsInt(Size(F)/Size(G)) then
+      return [];
+    else
+      # get the cyclic gens
+      u:=First(AsList(F),i->Order(i)=Size(F));
+      h:=First(AsList(G),i->Order(i)=Size(G));
+      # just map them
+      return [GroupHomomorphismByImages(F,G,[u],[h])];
+    fi;
+  fi;
+
+  if IsAbelian(G) then
+    fak:=5;
+  else
+    fak:=50;
+  fi;
+
+  cl:=ConjugacyClasses(G);
+
+  # first try to find a short generating system
+  best:=false;
+  bestval:=infinity;
+  if Size(F)<10000000 and Length(Fgens)>2 then
+    len:=Maximum(2,Length(SmallGeneratingSet(
+                 Image(NaturalHomomorphismByNormalSubgroup(F,
+		   DerivedSubgroup(F))))));
+  else
+    len:=2;
+  fi;
+  cnt:=0;
+  repeat
+    u:=List([1..len],i->Random(F));
+    if Index(F,Subgroup(F,u))=1 then
+
+      # find potential images
+      pimgs:=[];
+      for i in u do
+        sz:=Index(F,Centralizer(F,i));
+	Add(pimgs,Filtered(cl,j->IsInt(Order(i)/Order(Representative(j)))
+			     and IsInt(sz/Size(j))));
+      od;
+
+      # sort u in descending order -> large reductions when centralizing
+      SortParallel(pimgs,u,function(a,b)
+			     return Sum(a,Size)>Sum(b,Size);
+                           end);
+
+      val:=Product(pimgs,i->Sum(i,Size));
+      if val<bestval then
+	Info(InfoMorph,2,"better value: ",List(u,i->Order(i)),
+	      "->",val);
+	best:=[u,pimgs];
+	bestval:=val;
+      fi;
+
+    fi;
+    cnt:=cnt+1;
+    if cnt=len*fak and best=false then
+      cnt:=0;
+      Info(InfoMorph,1,"trying one generator more");
+      len:=len+1;
+    fi;
+  until best<>false and (cnt>len*fak or bestval<3*cnt);
+
+  h:=MorClassLoop(G,best[2],rec(gens:=best[1],to:=G,from:=F),13);
+  cl:=[];
+  u:=[];
+  for i in h do
+    if not KernelOfMultiplicativeGeneralMapping(i) in u then
+      Add(u,KernelOfMultiplicativeGeneralMapping(i));
+      Add(cl,i);
+    fi;
+  od;
+
+  Info(InfoMorph,1,Length(h)," found -> ",Length(cl)," homs");
+  return cl;
 end;
 
 #############################################################################

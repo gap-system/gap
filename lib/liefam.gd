@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the definition of the family of Lie elements of a
 ##  family of ring elements.
@@ -64,8 +64,7 @@ IsLieObject := NewCategory( "IsLieObject",
     and IsZeroSquaredElement
     and IsJacobianElement );
 
-IsLieObjectCollection := CategoryCollections( "IsLieObjectCollection",
-    IsLieObject );
+IsLieObjectCollection := CategoryCollections( IsLieObject );
 
 
 #############################################################################

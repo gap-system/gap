@@ -175,6 +175,21 @@ extern Obj DoCompleteXargs (
             Obj                 args );
 
 
+/****************************************************************************
+**
+*F  IS_UNCOMPLETED_FUNC( <func> ) . . . . . . . . . . . is <func> uncompleted
+*/
+#define IS_UNCOMPLETED_FUNC(func) \
+    (TNUM_OBJ(func)==T_FUNCTION && HDLR_FUNC(func,0)==DoComplete0args)
+
+
+/****************************************************************************
+**
+*F  COMPLETE_FUNC( <func> ) . . . . . . . . . . . . . . . . . complete <func>
+*/
+#define COMPLETE_FUNC( func ) \
+    (Complete( BODY_FUNC(func) ))
+
 
 /****************************************************************************
 **

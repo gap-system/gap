@@ -2371,6 +2371,7 @@ Int SyFindOrLinkGapRootFile (
     Int                 found_sta = 0;
     Char *              tmp;
     Char                module [256];
+    Char                name [256];
     StructCompInitInfo* info_dyn;
     StructCompInitInfo* info_sta;
     Int                 k;
@@ -2388,6 +2389,8 @@ Int SyFindOrLinkGapRootFile (
     tmp = SyFindGapRootFile(filename);
     if ( tmp ) {
         SyStrncat( result, tmp, len );
+	name[0] = '\0';
+	SyStrncat( name, tmp, 255 );
     }
     if ( result[0] ) {
         if ( SyIsReadableFile(result) ) {
@@ -2468,6 +2471,11 @@ Int SyFindOrLinkGapRootFile (
         }
     }
 #endif
+
+    /* check if we have to compute the crc                                 */
+    if ( crc_gap == 0 && found_gap && ( found_dyn || found_sta ) ) {
+	crc_gap = SyGAPCRC(name);
+    }
 
     /* now decide what to do                                               */
     if ( found_gap && found_dyn && crc_gap != crc_dyn ) {

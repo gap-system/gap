@@ -12,17 +12,6 @@ Revision.grpperm_gi :=
 
 #############################################################################
 ##
-#M  IsFinite( <G> ) . . . . . . . . . . . . . . .  for magmas of permutations
-##
-#T  To tell the truth, we should ask whether the magma is finitely generated.
-#T  (What would be a permutation with unbounded largest moved point?
-#T  Perhaps a permutation of possibly infinite order?)
-##
-InstallTrueMethod( IsFinite, IsPermCollection and IsMagma );
-    
-
-#############################################################################
-##
 #F  CycleStructurePerm( <perm> )  . . . . . . . . .  length of cycles of perm
 ##
 CycleStructurePerm := function ( perm )
@@ -610,7 +599,7 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
     fi;
     
     # make the base of G compatible with options.base
-    chain := DeepCopy( StabChainAttr( G ) );
+    chain := StructuralCopy( StabChainAttr( G ) );
     if IsBound( options.base )  then
         ChangeStabChain( chain, options.base,
                 IsBound( options.reduced ) and options.reduced );
@@ -620,7 +609,11 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
                gens ) ) <= 100  then
         options := ShallowCopy( options );
         options.base := BaseStabChain( chain );
-        StabChainStrong( chain, gens, options );
+        for g  in gens  do
+            if SiftedPermutation( chain, g ) <> chain.identity  then
+                StabChainStrong( chain, [ g ], options );
+            fi;
+        od;
     else
         chain := ClosureRandomPermGroup( chain, gens, options );
     fi;
@@ -1842,14 +1835,14 @@ local dom,DoBlocks,pool;
     bl:=[];
     if not IsPrime(Length(dom)/Length(b)) then
       for i in bld do
-	t:=Union(b,[i]);
-	n:=Blocks(g,dom,t);
-	if Length(n)>1 and #ok durch pool:ForAll(Difference(n[1],t),j->j>i) and
-	   not n[1] in pool then
-	  t:=n[1];
-	  Add(pool,t);
-	  bl:=Concatenation(bl,[t],DoBlocks(t));
-	fi;
+        t:=Union(b,[i]);
+        n:=Blocks(g,dom,t);
+        if Length(n)>1 and #ok durch pool:ForAll(Difference(n[1],t),j->j>i) and
+           not n[1] in pool then
+          t:=n[1];
+          Add(pool,t);
+          bl:=Concatenation(bl,[t],DoBlocks(t));
+        fi;
       od;
     fi;
     return bl;
@@ -1931,11 +1924,11 @@ local  i, j, U, gens;
       # try to find a small generating system by random search
       j:=1;
       while j<=5 and i<Length(gens) do
-	U:=Subgroup(G,List([1..i],j->Random(G)));
-	StabChain(U,rec(random:=1));
-	if Size(U)=Size(G) then
-	  gens:=Set(GeneratorsOfGroup(U));
-	fi;
+        U:=Subgroup(G,List([1..i],j->Random(G)));
+        StabChain(U,rec(random:=1));
+        if Size(U)=Size(G) then
+          gens:=Set(GeneratorsOfGroup(U));
+        fi;
         j:=j+1;
       od;
       i:=i+1;

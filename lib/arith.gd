@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declarations of the arithmetic operations, and the
 ##  declarations of the categories for elements that allow those operations.
@@ -31,11 +31,9 @@ IsExtAElement :=
     NewCategory( "IsExtAElement",
         IsObject );
 IsExtAElementCollection :=
-    CategoryCollections( "IsExtAElementCollection",
-        IsExtAElement );
+    CategoryCollections( IsExtAElement );
 IsExtAElementCollColl :=
-    CategoryCollections( "IsExtAElementCollColl",
-        IsExtAElementCollection );
+    CategoryCollections( IsExtAElementCollection );
 IsExtAElementList :=
     IsExtAElementCollection and IsList;
 IsExtAElementTable :=
@@ -53,14 +51,11 @@ IsAdditiveElement :=
     NewCategory( "IsAdditiveElement",
         IsExtAElement );
 IsAdditiveElementCollection :=
-    CategoryCollections( "IsAdditiveElementCollection",
-        IsAdditiveElement );
+    CategoryCollections( IsAdditiveElement );
 IsAdditiveElementCollColl :=
-    CategoryCollections( "IsAdditiveElementCollColl",
-        IsAdditiveElementCollection );
+    CategoryCollections( IsAdditiveElementCollection );
 IsAdditiveElementCollCollColl :=
-    CategoryCollections( "IsAdditiveElementCollCollColl",
-        IsAdditiveElementCollColl );
+    CategoryCollections( IsAdditiveElementCollColl );
 IsAdditiveElementList :=
     IsAdditiveElementCollection and IsList;
 IsAdditiveElementTable :=
@@ -81,14 +76,11 @@ IsAdditiveElementWithZero :=
     NewCategory( "IsAdditiveElementWithZero",
         IsAdditiveElement );
 IsAdditiveElementWithZeroCollection :=
-    CategoryCollections( "IsAdditiveElementWithZeroCollection",
-        IsAdditiveElementWithZero );
+    CategoryCollections( IsAdditiveElementWithZero );
 IsAdditiveElementWithZeroCollColl :=
-    CategoryCollections( "IsAdditiveElementWithZeroCollColl",
-        IsAdditiveElementWithZeroCollection );
+    CategoryCollections( IsAdditiveElementWithZeroCollection );
 IsAdditiveElementWithZeroCollCollColl :=
-    CategoryCollections( "IsAdditiveElementWithZeroCollCollColl",
-        IsAdditiveElementWithZeroCollColl );
+    CategoryCollections( IsAdditiveElementWithZeroCollColl );
 IsAdditiveElementWithZeroList :=
     IsAdditiveElementWithZeroCollection and IsList;
 IsAdditiveElementWithZeroTable :=
@@ -109,14 +101,11 @@ IsAdditiveElementWithInverse :=
     NewCategory( "IsAdditiveElementWithInverse",
         IsAdditiveElementWithZero );
 IsAdditiveElementWithInverseCollection :=
-    CategoryCollections( "IsAdditiveElementWithInverseCollection",
-        IsAdditiveElementWithInverse );
+    CategoryCollections( IsAdditiveElementWithInverse );
 IsAdditiveElementWithInverseCollColl :=
-    CategoryCollections( "IsAdditiveElementWithInverseCollColl",
-        IsAdditiveElementWithInverseCollection );
+    CategoryCollections( IsAdditiveElementWithInverseCollection );
 IsAdditiveElementWithInverseCollCollColl :=
-    CategoryCollections( "IsAdditiveElementWithInverseCollCollColl",
-        IsAdditiveElementWithInverseCollColl );
+    CategoryCollections( IsAdditiveElementWithInverseCollColl );
 IsAdditiveElementWithInverseList :=
     IsAdditiveElementWithInverseCollection and IsList;
 IsAdditiveElementWithInverseTable :=
@@ -137,11 +126,9 @@ IsExtLElement :=
     NewCategory( "IsExtLElement",
         IsObject );
 IsExtLElementCollection :=
-    CategoryCollections( "IsExtLElementCollection",
-        IsExtLElement );
+    CategoryCollections( IsExtLElement );
 IsExtLElementCollColl :=
-    CategoryCollections( "IsExtLElementCollColl",
-        IsExtLElementCollection );
+    CategoryCollections( IsExtLElementCollection );
 IsExtLElementList :=
     IsExtLElementCollection and IsList;
 IsExtLElementTable :=
@@ -159,11 +146,9 @@ IsExtRElement :=
     NewCategory( "IsExtRElement",
         IsObject );
 IsExtRElementCollection :=
-    CategoryCollections( "IsExtRElementCollection",
-        IsExtRElement );
+    CategoryCollections( IsExtRElement );
 IsExtRElementCollColl :=
-    CategoryCollections( "IsExtRElementCollColl",
-        IsExtRElementCollection );
+    CategoryCollections( IsExtRElementCollection );
 IsExtRElementList :=
     IsExtRElementCollection and IsList;
 IsExtRElementTable :=
@@ -181,14 +166,11 @@ IsMultiplicativeElement :=
     NewCategory( "IsMultiplicativeElement",
         IsExtLElement and IsExtRElement );
 IsMultiplicativeElementCollection :=
-    CategoryCollections( "IsMultiplicativeElementCollection",
-        IsMultiplicativeElement );
+    CategoryCollections( IsMultiplicativeElement );
 IsMultiplicativeElementCollColl :=
-    CategoryCollections( "IsMultiplicativeElementCollColl",
-        IsMultiplicativeElementCollection );
+    CategoryCollections( IsMultiplicativeElementCollection );
 IsMultiplicativeElementCollCollColl :=
-    CategoryCollections( "IsMultiplicativeElementCollCollColl",
-        IsMultiplicativeElementCollColl );
+    CategoryCollections( IsMultiplicativeElementCollColl );
 IsMultiplicativeElementList :=
     IsMultiplicativeElementCollection and IsList;
 IsMultiplicativeElementTable :=
@@ -203,14 +185,11 @@ IsMultiplicativeElementWithOne :=
     NewCategory( "IsMultiplicativeElementWithOne",
         IsMultiplicativeElement );
 IsMultiplicativeElementWithOneCollection :=
-    CategoryCollections( "IsMultiplicativeElementWithOneCollection",
-        IsMultiplicativeElementWithOne );
+    CategoryCollections( IsMultiplicativeElementWithOne );
 IsMultiplicativeElementWithOneCollColl :=
-    CategoryCollections( "IsMultiplicativeElementWithOneCollColl",
-        IsMultiplicativeElementWithOneCollection );
+    CategoryCollections( IsMultiplicativeElementWithOneCollection );
 IsMultiplicativeElementWithOneCollCollColl :=
-    CategoryCollections( "IsMultiplicativeElementWithOneCollCollColl",
-        IsMultiplicativeElementWithOneCollColl );
+    CategoryCollections( IsMultiplicativeElementWithOneCollColl );
 IsMultiplicativeElementWithOneList :=
     IsMultiplicativeElementWithOneCollection and IsList;
 IsMultiplicativeElementWithOneTable :=
@@ -225,14 +204,11 @@ IsMultiplicativeElementWithInverse :=
     NewCategory( "IsMultiplicativeElementWithInverse",
         IsMultiplicativeElementWithOne );
 IsMultiplicativeElementWithInverseCollection :=
-    CategoryCollections( "IsMultiplicativeElementWithInverseCollection",
-        IsMultiplicativeElementWithInverse );
+    CategoryCollections( IsMultiplicativeElementWithInverse );
 IsMultiplicativeElementWithInverseCollColl :=
-    CategoryCollections( "IsMultiplicativeElementWithInverseCollColl",
-        IsMultiplicativeElementWithInverseCollection );
+    CategoryCollections( IsMultiplicativeElementWithInverseCollection );
 IsMultiplicativeElementWithInverseCollCollColl :=
-    CategoryCollections( "IsMultiplicativeElementWithInverseCollCollColl",
-        IsMultiplicativeElementWithInverseCollColl );
+    CategoryCollections( IsMultiplicativeElementWithInverseCollColl );
 IsMultiplicativeElementWithInverseList :=
     IsMultiplicativeElementWithInverseCollection and IsList;
 IsMultiplicativeElementWithInverseTable :=
@@ -292,8 +268,7 @@ InstallTrueMethod(
     IsRingElementTable );
 
 IsFamilyRingElements :=
-    CategoryFamily( "IsFamilyRingElements",
-        IsRingElement );
+    CategoryFamily( IsRingElement );
 
 
 #############################################################################
@@ -373,7 +348,7 @@ IsRowVector := IsVector and IsHomogeneousList;
 #C  IsMatrix(<obj>)
 ##
 IsMatrix           := IsRingElementTable;
-IsMatrixCollection := CategoryCollections( "IsMatrixCollection", IsMatrix );
+IsMatrixCollection := CategoryCollections( IsMatrix );
 
 
 #############################################################################
@@ -386,12 +361,10 @@ IsAssociativeElement :=
         IsMultiplicativeElement );
 
 IsAssociativeElementCollection :=
-    CategoryCollections( "IsAssociativeElementCollection",
-        IsAssociativeElement );
+    CategoryCollections( IsAssociativeElement );
 
 IsAssociativeElementCollColl :=
-    CategoryCollections( "IsAssociativeElementCollColl",
-        IsAssociativeElementCollection );
+    CategoryCollections( IsAssociativeElementCollection );
 
 
 #############################################################################
@@ -415,8 +388,7 @@ IsCommutativeElement :=
         IsMultiplicativeElement );
 
 IsCommutativeElementCollection :=
-    CategoryCollections( "IsCommutativeElementCollection",
-        IsCommutativeElement );
+    CategoryCollections( IsCommutativeElement );
 
 
 #############################################################################
@@ -429,8 +401,7 @@ IsFiniteOrderElement :=
         IsMultiplicativeElementWithInverse );
 
 IsFiniteOrderElementCollection :=
-    CategoryCollections( "IsFiniteOrderElementCollection",
-        IsFiniteOrderElement );
+    CategoryCollections( IsFiniteOrderElement );
 
 
 #############################################################################
@@ -443,8 +414,7 @@ IsJacobianElement :=
         IsRingElement );
 
 IsJacobianElementCollection :=
-    CategoryCollections( "IsJacobianElementCollection",
-        IsJacobianElement );
+    CategoryCollections( IsJacobianElement );
 
 
 #############################################################################
@@ -457,8 +427,7 @@ IsZeroSquaredElement :=
         IsRingElement );
 
 IsZeroSquaredElementCollection :=
-    CategoryCollections( "IsZeroSquaredElementCollection",
-        IsZeroSquaredElement );
+    CategoryCollections( IsZeroSquaredElement );
 
 
 #############################################################################

@@ -102,10 +102,10 @@ Int READ ( void )
 {
     UInt                type;
 
-    NrError = 0;
 
     /* now do the reading                                                  */
     while ( 1 ) {
+	NrError = 0;
         type = ReadEvalCommand();
 
         /* handle return-value or return-void command                      */
@@ -145,9 +145,8 @@ Obj READ_AS_FUNC ( void )
     Obj                 func;
     UInt                type;
 
-    NrError = 0;
-
     /* now do the reading                                                  */
+    NrError = 0;
     type = ReadEvalFile();
 
     /* get the function                                                    */
@@ -181,8 +180,6 @@ Int READ_TEST ( void )
 {
     UInt                type;
     UInt                time;
-
-    NrError = 0;
 
     /* get the starting time                                               */
     time = SyTime();
@@ -254,18 +251,9 @@ Int READ_GAP_ROOT ( Char * filename )
     UInt                type;
     StructCompInitInfo* info;
     Obj                 func;
-    UInt4               crc;
-    Char *              file;
 
     /* try to find the file                                                */
-    file = SyFindGapRootFile(filename);
-    if ( file ) {
-        crc = SyGAPCRC(file);
-    }
-    else {
-        crc = 0;
-    }
-    res = SyFindOrLinkGapRootFile( filename, crc, result, 256 );
+    res = SyFindOrLinkGapRootFile( filename, 0L, result, 256 );
 
     /* not found                                                           */
     if ( res == 0 ) {
@@ -305,8 +293,8 @@ Int READ_GAP_ROOT ( Char * filename )
                 (Int)filename, 0L );
         }
         if ( OpenInput(result) ) {
-            NrError = 0;
             while ( 1 ) {
+		NrError = 0;
                 type = ReadEvalCommand();
                 if ( type == 1 || type == 2 ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -480,7 +468,7 @@ Obj FuncINPUT_LOG_TO_STREAM (
 
 /****************************************************************************
 **
-*F  FuncCLOSE_OUTPUT_LOG_TO()  . . . . . . . . . . . . . . . . .  stop logging
+*F  FuncCLOSE_OUTPUT_LOG_TO()  . . . . . . . . . . . . . . . . . stop logging
 **
 **  'FuncCLOSE_OUTPUT_LOG_TO' implements a method for 'OutputLogTo'.
 **
@@ -503,7 +491,7 @@ Obj FuncCLOSE_OUTPUT_LOG_TO (
 
 /****************************************************************************
 **
-*F  FuncOUTPUT_LOG_TO( <filename> )  . . . . . . . . . start logging to a file
+*F  FuncOUTPUT_LOG_TO( <filename> )  . . . . . . . .  start logging to a file
 **
 **  'FuncOUTPUT_LOG_TO' implements a method for 'OutputLogTo'
 **
@@ -535,7 +523,7 @@ Obj FuncOUTPUT_LOG_TO (
 
 /****************************************************************************
 **
-*F  FuncOUTPUT_LOG_TO_STREAM( <stream> ) . . . . . . start logging to a stream
+*F  FuncOUTPUT_LOG_TO_STREAM( <stream> ) . . . . .  start logging to a stream
 */
 Obj FuncOUTPUT_LOG_TO_STREAM (
     Obj                 self,

@@ -14,15 +14,6 @@ Revision.cyclotom_gi :=
 
 #############################################################################
 ##
-#M  IsIntegralRing( <R> )
-##
-##  Every ring of cyclotomics is integral.
-##
-InstallCollectionsTrueMethod( IsIntegralRing, IsCyclotomic, IsRing );
-
-
-#############################################################################
-##
 #M  Int( <cyc> )  . . . . . . . . . . . . .  cyclotomic integer near to <cyc>
 ##
 InstallMethod( Int, true, [ IsCyc ], 0,

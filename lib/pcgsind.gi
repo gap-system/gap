@@ -77,14 +77,21 @@ function( pcgs, pcs )
     # store the parent
     SetParentPcgs( igs, pcgs );
     SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
-    igs!.depthMapFromParent := [];
-    igs!.depthMapFromParent[Length(pcgs)+1] := 1;
-    igs!.depthsInParent := [];
 
     # check for special pcgs
     if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
         SetIsInducedPcgsWrtSpecialPcgs( igs, true );
     fi;
+
+    if HasIsGenericPcgs( pcgs ) and IsGenericPcgs( pcgs ) then 
+        SetIsGenericPcgs( igs, true );
+        return igs; 
+    fi;
+
+    # store depthMap
+    igs!.depthMapFromParent := [];
+    igs!.depthMapFromParent[Length(pcgs)+1] := 1;
+    igs!.depthsInParent := [];
 
     # and return
     return igs;
@@ -153,6 +160,17 @@ function( pcgs, pcs )
     SetParentPcgs( igs, pcgs );
     SetOneOfPcgs( igs, OneOfPcgs( pcgs ) );
 
+    # check for special pcgs
+    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
+        SetIsInducedPcgsWrtSpecialPcgs( igs, true );
+    fi;
+
+    # now return if we have a generic pcgs
+    if HasIsGenericPcgs( pcgs ) and IsGenericPcgs( pcgs ) then
+        SetIsGenericPcgs( igs, true );
+        return igs;
+    fi;
+
     # store other useful information
     igs!.depthMapFromParent := [];
     igs!.depthsInParent := [];
@@ -195,11 +213,6 @@ function( pcgs, pcs )
         tmp := RelativeOrders(pcgs);
         tmp := tmp{igs!.depthsInParent};
         SetRelativeOrders( igs, tmp );
-    fi;
-
-    # check for special pcgs
-    if HasIsSpecialPcgs( pcgs ) and IsSpecialPcgs( pcgs ) then
-        SetIsInducedPcgsWrtSpecialPcgs( igs, true );
     fi;
 
     # and return

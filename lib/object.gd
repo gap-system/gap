@@ -112,9 +112,9 @@ ShallowCopy := NewOperationKernel(
 
 #############################################################################
 ##
-#O  DeepCopy( <obj> ) . . . . . . . . . . . . . . . .  deep copy of an object
+#O  StructuralCopy( <obj> ) . . . . . . . . . .  structural copy of an object
 ##
-DeepCopy := DEEP_COPY_OBJ;
+StructuralCopy := DEEP_COPY_OBJ;
 
 
 #############################################################################
@@ -194,6 +194,51 @@ ExtRepOfObj := NewOperation( "ExtRepOfObj",
 ##
 ObjByExtRep := NewOperation( "ObjByExtRep",
     [ IsFamily, IsObject ] );
+
+
+#############################################################################
+##
+#O  KnownAttributesOfObject( <object> ) . . . . . list of names of attributes
+##
+KnownAttributesOfObject := NewOperation(
+    "KnownAttributesOfObject",
+    [ IsObject ] );
+
+
+#############################################################################
+##
+#O  KnownPropertiesOfObject( <object> ) . . . . . list of names of properties
+##
+KnownPropertiesOfObject := NewOperation(
+    "KnownPropertiesOfObject",
+    [ IsObject ] );
+
+
+#############################################################################
+##
+#O  KnownTruePropertiesOfObject( <object> )  list of names of true properties
+##
+KnownTruePropertiesOfObject := NewOperation(
+    "KnownTruePropertiesOfObject",
+    [ IsObject ]  );
+
+
+#############################################################################
+##
+#O  CategoriesOfObject( <object> )  . . . . . . . list of names of categories
+##
+CategoriesOfObject := NewOperation(
+    "CategoriesOfObject",
+    [ IsObject ] );
+
+
+#############################################################################
+##
+#O  RepresentationsOfObject( <object> ) . .  list of names of representations
+##
+RepresentationsOfObject := NewOperation(
+    "RepresentationsOfObject",
+    [ IsObject ] );
 
 
 #############################################################################

@@ -15,7 +15,7 @@ Revision.files_gd :=
 #############################################################################
 ##
 
-#C  IsDirectory
+#C  IsDirectory	. . . . . . . . . . . . . . . . . . . category of directories
 ##
 IsDirectory := NewCategory(
     "IsDirectory",
@@ -24,8 +24,7 @@ IsDirectory := NewCategory(
 
 #############################################################################
 ##
-
-#V  DirectoriesFamily
+#V  DirectoriesFamily . . . . . . . . . . . . . . . . . family of directories
 ##
 DirectoriesFamily := NewFamily( "DirectoriesFamily" );
 
@@ -33,7 +32,7 @@ DirectoriesFamily := NewFamily( "DirectoriesFamily" );
 #############################################################################
 ##
 
-#O  Directory( <string> )
+#O  Directory( <string> ) . . . . . . . . . . . . . . .  new directory object
 ##
 Directory := NewOperation(
     "Directory",
@@ -42,7 +41,7 @@ Directory := NewOperation(
 
 #############################################################################
 ##
-#O  Filename( <list>, <string> )
+#O  Filename( <list>, <string> )  . . . . . . . . . . . . . . . . find a file
 ##
 Filename := NewOperation(
     "Filename",
@@ -51,7 +50,7 @@ Filename := NewOperation(
 
 #############################################################################
 ##
-#O  Read( <string> )
+#O  Read( <string> )  . . . . . . . . . . . . . . . . . . . . . . read a file
 ##
 Read := NewOperation(
     "Read",
@@ -60,7 +59,7 @@ Read := NewOperation(
 
 #############################################################################
 ##
-#O  ReadTest( <string> )
+#O  ReadTest( <string> )  . . . . . . . . . . . . . . . . .  read a test file
 ##
 ReadTest := NewOperation(
     "ReadTest",
@@ -70,7 +69,7 @@ ReadTest := NewOperation(
 #############################################################################
 ##
 
-#F  DirectoriesLibrary( <name> )
+#F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
 ##
 DIRECTORIES_LIBRARY := rec();
 
@@ -103,7 +102,7 @@ end;
 
 #############################################################################
 ##
-#F  DirectoriesPackagePrograms( <name> )
+#F  DirectoriesPackagePrograms( <name> )  . . . . directories of the packages
 ##
 DirectoriesPackagePrograms := function( name )
     local   arch,  dirs,  dir,  path;
@@ -115,6 +114,77 @@ DirectoriesPackagePrograms := function( name )
         Add( dirs, Directory(path) );
     od;
     return dirs;
+end;
+
+
+#############################################################################
+##
+#F  DirectoriesPackageLibrary( <name>, <path> ) . directories of the packages
+##
+DirectoriesPackageLibrary := function( arg )
+    local   name,  path,  dirs,  dir;
+
+    name := arg[1];
+    if 1 = Length(arg)  then
+        path := "lib";
+    elif 2 = Length(arg)  then
+        path := arg[2];
+    else
+        Error( "DirectoriesPackageLibrary( <name> [,<path>] )" );
+    fi;
+
+    if '\\' in name or ':' in name  then
+        Error( "<name> must not contain '\\' or ':'" );
+    fi;
+    dirs := [];
+    for dir  in GAP_ROOT_PATHS  do
+        path := Concatenation( dir, "pkg/", name, "/", path );
+        Add( dirs, Directory(path) );
+    od;
+    return dirs;
+end;
+
+
+#############################################################################
+##
+
+#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compx.g" files
+##
+CreateCompletionFiles := function( arg )
+    local   path,  input,  i,  com,  read,  j;
+
+    # get the path to the output
+    if 0 = Length(arg)  then
+        path := DirectoriesLibrary("")[1];
+    elif 1 = Length(arg)  then
+        path := Directory(arg[1]);
+    fi;
+    input := DirectoriesLibrary("");
+
+    # loop over the list of completable files
+    for i  in COMPLETABLE_FILES  do
+
+        # convert "read" into "comp"
+        com := Filename( path, ReplacedString( i[1], "read", "comp" ) );
+        if com = fail  then
+            Error( "cannot create output file" );
+        fi;
+        Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
+
+        # now find the input file
+        read := List( i[2], x -> Filename( input, x ) );
+        if fail in read  then
+            Error( "cannot locate input files" );
+        fi;
+
+        # create the completion files
+        PRINT_TO( com, "# completion of \"", i[1], "\"\n" );
+        APPEND_TO( com, "RANK_FILTER_LIST := ", i[3], ";\n" );
+        for j  in read  do
+            Print( "#I    parsing \"", j, "\"\n" );
+            MAKE_INIT( com, j );
+        od;
+    od;
 end;
 
 
