@@ -89,7 +89,7 @@ gap> Print(first50,"\n");
 gap> List( first50, x -> Position( enum, x ) ) = [ 1 .. 50 ];
 true
 
-gap> STOP_TEST( "grpfree.tst", 2630000 );
+gap> STOP_TEST( "grpfree.tst", 630000 );
 
 #############################################################################
 ##

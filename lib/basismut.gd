@@ -15,22 +15,9 @@
 ##  
 ##  Note that the situation here is different from the situation with
 ##  stabilizer chains, which are (mutable or immutable) records that do not
-##  need to know about the groups they describe.
-##  There are several reasons to store the underlying module
-##  in an immutable basis.
-##
-##  \beginlist
-##  \item{-}
-##      One cannot have bases without vectors if the module is not stored.
-##      (The call `Basis( <V> )' may return such a basis.)
-##
-##  \item{-}
-##      In some cases it is cheaper to compute coefficients only after a
-##      (positive) membership test, which is a question to the module.
-##      This occurs for example for finite fields and cyclotomic fields,
-##      of course it is not allowed where `Coefficients' is used to
-##      implement the membership test.
-##  \endlist
+##  need to know about the groups they describe,
+##  whereas each (immutable) basis stores the underlying left module
+##  (see~"UnderlyingLeftModule").
 ## 
 ##  So immutable bases and mutable bases are different categories of objects.
 ##  The only thing they have in common is that one can ask both for
@@ -40,71 +27,47 @@
 ##  it would in principle be possible to construct a mutable basis that
 ##  is in fact immutable.
 ##  In the sequel, we will deal only with mutable bases that are in fact
-##  mutable {\GAP} objects.
+##  *mutable* {\GAP} objects,
+##  hence these objects are unable to store attribute values.
 ##
-##  A mutable basis of a free left module is
-##  \beginlist
-##  \item{-}
-##      an object in `IsMutable'
-##      (hence unable to store attributes and properties)
+##  Basic operations for immutable bases are `NrBasisVectors'
+##  (see~"NrBasisVectors"), `IsContainedInSpan' (see~"IsContainedInSpan"),
+##  `CloseMutableBasis' (see~"CloseMutableBasis"),
+##  `ImmutableBasis' (see~"ImmutableBasis"), `Coefficients'
+##  (see~"Coefficients"), and `BasisVectors' (see~"BasisVectors").
+##  `ShallowCopy' (see~"ShallowCopy") for a mutable basis returns a mutable
+##  plain list containing the current basis vectors.
+#T Also `LeftActingDomain' (or the analogy for it) should be a basic
+#T operation; up to now, apparantly one can avoid it,
+#T but conceptually it should be available!
 ##
-##  \item{-}
-##      that is constructed by `MutableBasis',
-##
-##  \item{-}
-##      that can be asked for the number of basis vectors by
-##      `NrBasisVectors',
-##
-##  \item{-}
-##      that can be asked for membership of an element by
-##      `IsContainedInSpan',
-##
-##  \item{-}
-##      that can be first argument of `Coefficients' and `BasisVectors',
-##
-##  \item{-}
-##      that can be modified by `CloseMutableBasis' 
-##      (whose methods have to guarantee consistency),
-##
-##  \item{-}
-##      for which one can eventually get an immutable basis with same
-##      basis vectors by `ImmutableBasis',
-##
-##  \item{-}
-##      and for which `ShallowCopy' returns a mutable plain list
-##      containing the current basis vectors.
-##  \endlist
-##  
 ##  Since mutable bases do not admit arbitrary changes of their lists of
 ##  basis vectors, a mutable basis is *not* a list.
-##  It is, however, a collection, more precisely its family is the family
-##  of its collection of basis vectors.
+##  It is, however, a collection, more precisely its family (see~"Families")
+##  equals the family of its collection of basis vectors.
 ##
-##  Similar to the situation with bases,
-##  {\GAP} supports three types of mutable bases, namely
+##  Mutable bases can be constructed with `MutableBasis'.
 ##
-##  \beginlist
-##  \item{1.}
-##      mutable bases that store an immutable basis;
-##      this is the default of `MutableBasis',
+##  Similar to the situation with bases (cf.~"Bases of Vector Spaces"),
+##  {\GAP} supports the following three kinds of mutable bases.
 ##
-##  \item{2.}
-##      mutable bases that store a mutable basis for a nicer module;
-##      this works if we have access to the mechanism of computing
-##      nice vectors, and requires the construction with
-##      `MutableBasisViaNiceMutableBasisMethod2' or
-##      `MutableBasisViaNiceMutableBasisMethod3';
-##      note that this is meaningful only if the mechanism of taking
-##      nice/ugly vectors is invariant under closures of the basis,
-##      which is the case for example if the vectors are elements of
-##      structure constants algebras, matrices, or Lie objects,
+##  The *generic method* of `MutableBasis' returns a mutable basis that
+##  simply stores an immutable basis;
+##  clearly one wants to avoid this whenever possible with reasonable effort.
 ##
-##  \item{3.}
-##      mutable bases that use special information to perform their tasks;
-##      examples are mutable bases of Gaussian row and matrix spaces.
-##  \endlist
+##  There are mutable bases that store a mutable basis for a nicer module.
+#T  This works if we have access to the mechanism of computing nice vectors,
+#T  and requires the construction with
+#T  `MutableBasisViaNiceMutableBasisMethod2' or
+#T  `MutableBasisViaNiceMutableBasisMethod3'!
+##  Note that this is meaningful only if the mechanism of computing nice and
+##  ugly vectors (see~"Vector Spaces Handled By Nice Bases") is invariant
+##  under closures of the basis;
+##  this is the case for example if the vectors are matrices, Lie objects,
+##  or elements of structure constants algebras. 
 ##
-##  The *constructor* for mutable bases is `MutableBasis'.
+##  There are mutable bases that use special information to perform their
+##  tasks; examples are mutable bases of Gaussian row and matrix spaces.
 ##
 Revision.basismut_gd :=
     "@(#)$Id$";
@@ -112,21 +75,21 @@ Revision.basismut_gd :=
 
 #############################################################################
 ##
-#C  IsMutableBasis( <obj> )
+#C  IsMutableBasis( <MB> )
 ##
-##  is `true' if <obj> is a mutable basis.
+##  Every mutable basis lies in the category `IsMutableBasis'.
 ##
 DeclareCategory( "IsMutableBasis", IsObject );
 
 
 #############################################################################
 ##
-#O  MutableBasis( <R>, <vectors> )
-#O  MutableBasis( <R>, <vectors>, <zero> )
+#O  MutableBasis( <R>, <vectors>[, <zero>] )
 ##
-##  is a mutable basis for the <R>-free module generated by the vectors
-##  in the list <vectors>.
-##  The optional argument <zero> is the zero vector of the module.
+##  `MutableBasis' returns a mutable basis for the <R>-free module generated
+##  by the vectors in the list <vectors>.
+##  The optional argument <zero> is the zero vector of the module;
+##  it must be given if <vectors> is empty.
 ##
 ##  *Note* that <vectors> will in general *not* be the basis vectors of the
 ##  mutable basis!
@@ -161,27 +124,31 @@ DeclareGlobalFunction( "MutableBasisViaNiceMutableBasisMethod3" );
 ##
 #O  NrBasisVectors( <MB> )
 ##
-##  Is the number of basis vectors of <MB>.
+##  For a mutable basis <MB>, `NrBasisVectors' returns the current number of
+##  basis vectors of <MB>.
+##  Note that this operation is *not* an attribute, as it makes no sense to
+##  store the value.
+##  `NrBasisVectors' is used mainly as an equivalent of `Dimension' for the
+##  underlying left module in the case of immutable bases.
 ##
 DeclareOperation( "NrBasisVectors", [ IsMutableBasis ] );
 
 
 #############################################################################
 ##
-#O  ImmutableBasis( <MB> )
-#O  ImmutableBasis( <MB>, <V> )
+#O  ImmutableBasis( <MB>[, <V>] )
 ##
-##  `ImmutableBasis' returns the immutable basis $B$ with the same basis
-##  vectors as in the mutable basis <MB>.
+##  `ImmutableBasis' returns the immutable basis $B$, say,
+##  with the same basis vectors as in the mutable basis <MB>.
 ##
-##  If the second argument <V> is present then <V> is the underlying module
-##  of $B$.
-##  (This variant is used mainly for the case that one knows the module for
-##  the desired basis in advance, and if it has a nicer structure than the
-##  module known to <MB>;
-##  this happens for example if one constructs a basis of an ideal using
-##  iterated closures of a mutable basis, and the final basis $B$ shall
-##  have the initial ideal as underlying module.)
+##  If the second argument <V> is present then <V> is the value of
+##  `UnderlyingLeftModule' (see~"UnderlyingLeftModule") for $B$.
+##  The second variant is used mainly for the case that one knows the module
+##  for the desired basis in advance, and if it has a nicer structure than
+##  the module known to <MB>, for example if it is an algebra.
+#T  This happens for example if one constructs a basis of an ideal using
+#T  iterated closures of a mutable basis, and the final basis $B$ shall
+#T  have the initial ideal as underlying module.
 ##
 DeclareOperation( "ImmutableBasis", [ IsMutableBasis ] );
 
@@ -192,12 +159,15 @@ DeclareOperation( "ImmutableBasis", [ IsMutableBasis, IsFreeLeftModule ] );
 ##
 #O  CloseMutableBasis( <MB>, <v> )
 ##
-##  changes the mutable basis <MB> such that afterwards it describes the
-##  span of the old basis vectors together with <v>.
+##  For a mutable basis <MB> over the coefficient ring $R$, say,
+##  and a vector <v>, `CloseMutableBasis' changes <MB> such that afterwards
+##  it describes the $R$-span of the former basis vectors together with <v>.
 ##
-##  *Note* that this does in general *not* mean that <v> is added to the
-##  basis vectors of <MB> if <v> enlarges the dimension. Usually some
-##  transformations are applied to keep the basis echelonized.
+##  *Note* that if <v> enlarges the dimension then this does in general *not*
+##  mean that <v> is simply added to the basis vectors of <MB>.
+##  Usually a linear combination of <v> and the other basis vectors is added,
+##  and also the old basis vectors may be modified, for example in order to
+##  keep the list of basis vectors echelonized (see~"IsSemiEchelonized").
 ##
 DeclareOperation( "CloseMutableBasis",
     [ IsMutableBasis and IsMutable, IsVector ] );
@@ -207,8 +177,10 @@ DeclareOperation( "CloseMutableBasis",
 ##
 #O  IsContainedInSpan( <MB>, <v> )
 ##
-##  is `true' if the element <v> is contained in the module described by the
-##  mutable basis <MB>, and `false' otherwise.
+##  For a mutable basis <MB> over the coefficient ring $R$, say,
+##  and a vector <v>, `IsContainedInSpan' returns `true' is <v> lies in the
+##  $R$-span of the current basis vectors of <MB>,
+##  and `false' otherwise.
 ##
 DeclareOperation( "IsContainedInSpan", [ IsMutableBasis, IsVector ] );
 

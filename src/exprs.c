@@ -1616,9 +1616,10 @@ void            PrintBinop (
 
     /* print the left operand                                              */
     if ( TNUM_EXPR(expr) == T_POW
-      && (  (IS_INTEXPR(ADDR_EXPR(expr)[0])
-          && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
-        || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG) ) {
+	 && ((  (IS_INTEXPR(ADDR_EXPR(expr)[0])
+		 && INT_INTEXPR(ADDR_EXPR(expr)[0]) < 0)
+		|| TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_INTNEG)
+	     || TNUM_EXPR(ADDR_EXPR(expr)[0]) == T_POW) ) {
         Pr( "(", 0L, 0L );
         PrintExpr( ADDR_EXPR(expr)[0] );
         Pr( ")", 0L, 0L );

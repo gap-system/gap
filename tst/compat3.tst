@@ -55,7 +55,7 @@ gap> # operations record.
 gap> # The objects used here implement complex numbers with rational real
 gap> # and imaginary part, stored in the components `re' and `im'.
 gap> CompOps := OperationsRecord( "CompOps" );;
-HasCompOps := NewProperty( "HasCompOps", IsObject );
+HasCompOps := NewFilter( "HasCompOps" );
 gap> CompOps;
 CompOps
 gap> CompOps.Print := function( c )
@@ -66,7 +66,12 @@ gap> CompOps.Print := function( c )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( PRINT_OBJ,
     "for object with `CompOps' as first argument",
-    true,
+    [ HasCompOps ], SUM_FLAGS,
+    CompOps.Print );
+
+# For printing objects, also a `ViewObj' method is installed.
+InstallOtherMethod( ViewObj,
+    "for object with `CompOps' as first argument",
     [ HasCompOps ], SUM_FLAGS,
     CompOps.Print );
 
@@ -78,7 +83,6 @@ gap> CompOps.\= := function( l, r )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( EQ,
     "for object with `CompOps' as first argument",
-    true,
     [ HasCompOps, IsObject ], SUM_FLAGS,
     CompOps.\= );
 
@@ -86,9 +90,8 @@ InstallOtherMethod( EQ,
 # for the case that the object with `CompOps' is the right operand;
 # since this case has priority on GAP 3, the method is
 # installed with higher rank `SUM_FLAGS + 1'.
-InstallOtherMethod( EQ
+InstallOtherMethod( EQ,
     "for object with `CompOps' as second argument",
-    true,
     [ IsObject, HasCompOps ], SUM_FLAGS + 1,
     CompOps.\= );
 
@@ -103,7 +106,6 @@ gap> CompOps.\+ := function( l, r )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( SUM,
     "for object with `CompOps' as first argument",
-    true,
     [ HasCompOps, IsObject ], SUM_FLAGS,
     CompOps.\+ );
 
@@ -111,9 +113,8 @@ InstallOtherMethod( SUM,
 # for the case that the object with `CompOps' is the right operand;
 # since this case has priority on GAP 3, the method is
 # installed with higher rank `SUM_FLAGS + 1'.
-InstallOtherMethod( SUM
+InstallOtherMethod( SUM,
     "for object with `CompOps' as second argument",
-    true,
     [ IsObject, HasCompOps ], SUM_FLAGS + 1,
     CompOps.\+ );
 
@@ -125,7 +126,6 @@ gap> CompOps.\- := function( l, r )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( DIFF,
     "for object with `CompOps' as first argument",
-    true,
     [ HasCompOps, IsObject ], SUM_FLAGS,
     CompOps.\- );
 
@@ -133,9 +133,8 @@ InstallOtherMethod( DIFF,
 # for the case that the object with `CompOps' is the right operand;
 # since this case has priority on GAP 3, the method is
 # installed with higher rank `SUM_FLAGS + 1'.
-InstallOtherMethod( DIFF
+InstallOtherMethod( DIFF,
     "for object with `CompOps' as second argument",
-    true,
     [ IsObject, HasCompOps ], SUM_FLAGS + 1,
     CompOps.\- );
 
@@ -163,7 +162,6 @@ gap> CompOps.\* := function( l, r )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( PROD,
     "for object with `CompOps' as first argument",
-    true,
     [ HasCompOps, IsObject ], SUM_FLAGS,
     CompOps.\* );
 
@@ -171,9 +169,8 @@ InstallOtherMethod( PROD,
 # for the case that the object with `CompOps' is the right operand;
 # since this case has priority on GAP 3, the method is
 # installed with higher rank `SUM_FLAGS + 1'.
-InstallOtherMethod( PROD
+InstallOtherMethod( PROD,
     "for object with `CompOps' as second argument",
-    true,
     [ IsObject, HasCompOps ], SUM_FLAGS + 1,
     CompOps.\* );
 
@@ -218,7 +215,7 @@ gap> ( m1 + m2 )^2;
 
 # Check the behaviour of domains with new operations records.
 gap> MyOps:= OperationsRecord( "MyOps", PermGroupOps );
-HasMyOps := NewProperty( "HasMyOps", IsObject );
+HasMyOps := NewFilter( "HasMyOps" );
 MyOps
 gap> MyOps.IsFinite:= function( G )
 >     Print( "always finite!\n" );
@@ -229,7 +226,6 @@ gap> MyOps.IsFinite:= function( G )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( IsFinite,
     "for object with `MyOps' as first argument",
-    true,
     [ HasMyOps ], SUM_FLAGS,
     MyOps.IsFinite );
 
@@ -242,7 +238,6 @@ gap> MyOps.Size:= function( G )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( Size,
     "for object with `MyOps' as first argument",
-    true,
     [ HasMyOps ], SUM_FLAGS,
     MyOps.Size );
 
@@ -262,15 +257,20 @@ gap> MyOps.IsSubset:= function( G, H )
 # It might be useful to replace the rank `SUM_FLAGS' by `0'.
 InstallOtherMethod( IsSubset,
     "for object with `MyOps' as first argument",
-    true,
     [ HasMyOps, IsObject ], SUM_FLAGS,
     MyOps.IsSubset );
 
 gap> MyOps.SylowSubgroup:= function( G, p )
 >     Print( "my method for `SylowSubgroup':\n" );
 >     return SylowSubgroup( Group( G.generators, G.identity ), p );
-> end;
-function( G, p ) ... end
+> end;;
+# If the following method installation matches the requirements
+# of the operation `SylowSubgroup' then `InstallMethod' should be used.
+# It might be useful to replace the rank `SUM_FLAGS' by `0'.
+InstallOtherMethod( SylowSubgroup,
+    "for object with `MyOps' as first argument",
+    [ HasMyOps, IsObject ], SUM_FLAGS,
+    MyOps.SylowSubgroup );
 
 gap> g:= Group( (1,2,3,4), (1,2) );
 Group([ (1,2,3,4), (1,2) ])
@@ -307,15 +307,16 @@ gap> h.operations.IsSubset( g, h );
 true
 
 gap> SylowSubgroup( g, 2 );
-Group([ (3,4), (1,2), (1,3)(2,4) ])
+my method for `SylowSubgroup':
+Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ])
 gap> g.operations.SylowSubgroup( g, 2 );
 my method for `SylowSubgroup':
-Group([ (2,3), (1,4), (1,2)(3,4) ])
+Group([ (3,4), (1,4)(2,3), (1,3)(2,4) ])
 
 gap> STOP_TEST( "compat3.tst", 10000 );
 
 
 #############################################################################
 ##
-#E  compat3.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E
 

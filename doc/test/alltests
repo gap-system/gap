@@ -18,4 +18,5 @@ for i in ../ref/*.tex; do testit $i; done
 for i in ../tut/*.tex; do testit $i; done
 for i in ../prg/*.tex; do testit $i; done
 for i in ../ext/*.tex; do testit $i; done
+for i in ../new/*.tex; do testit $i; done
 

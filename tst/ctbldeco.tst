@@ -493,7 +493,7 @@ gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1, options ) );
 #\bibliographystyle{amsalpha}
 #\bibliography{../doc/mrabbrev,../doc/manual}
 
-gap> STOP_TEST( "ctbldeco.tst", 75612500 );
+gap> STOP_TEST( "ctbldeco.tst", 70612500 );
 
 ##   \end{document}
 

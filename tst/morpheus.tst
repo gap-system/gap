@@ -66,7 +66,7 @@ S (1 gens, size 3)
 1 (size 1)
 
 # that's all, folks
-gap> STOP_TEST( "morpheus.tst", 656842500 );
+gap> STOP_TEST( "morpheus.tst", 546842500 );
 
 #############################################################################
 ##

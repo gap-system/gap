@@ -477,10 +477,11 @@ gap> DepthOfUpperTriangularMatrix([[0,0,2],[0,0,0],[0,0,0]]);
 \beginexample
 gap> CharacteristicPolynomial( [ [ 1, 1 ], [ 0, 1 ] ] );
 1-2*x_1+x_1^2
+gap> mat := [[0,1],[E(4)-1,E(4)]];;
 gap> CharacteristicPolynomial( mat );
--E(4)+1-E(4)*x_1+x_1^2
+1-E(4)+-E(4)*x_1+x_1^2
 gap> CharacteristicPolynomial( Rationals, mat );
-1+2*x_1+2*x_1^2+2*x_1^3+x_1^4
+2+2*x_1+3*x_1^2+x_1^4
 gap> mat:= [ [ E(4), 1 ], [ 0, -E(4) ] ];;
 gap> CharacteristicPolynomial( mat );
 1+x_1^2
@@ -534,22 +535,22 @@ gap> ConvertToVectorRep(v,2);
 gap> v;
 <a GF2 vector of length 5>
 gap> MakeImmutable(v);
-gap> m := [v];
+gap> m := [v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 1x5 matrix over GF2>
-gap> m := [v,v];
+gap> m := [v,v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 2x5 matrix over GF2>
-gap> m := [v,v,v];
+gap> m := [v,v,v];; ConvertToMatrixRep(m,GF(2));; m;
 <a 3x5 matrix over GF2>
 gap> v := Z(3)*[1..8];       
 [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ]
 gap> ConvertToVectorRep(v);
 3
 gap> MakeImmutable(v);          
-gap> m := [v];
+gap> m := [v];; ConvertToMatrixRep(m,GF(3));; m;
 [ [ Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3)^0 ] ]
 gap> RepresentationsOfObject(m);
 [ "IsPositionalObjectRep", "Is8BitMatrixRep" ]
-gap> m := [v,v,v,v];            
+gap> m := [v,v,v,v];; ConvertToMatrixRep(m,GF(3));; m;
 < mutable compressed matrix 4x8 over GF(3) >
 \endexample
 
@@ -578,15 +579,16 @@ becomes part of a compressed matrix, the filter
 with this filter.
 
 \beginexample
-gap> v := [Z(2),Z(2)];
+gap> v := [Z(2),Z(2)];; ConvertToVectorRep(v,GF(2));; v;
 <a GF2 vector of length 2>
 gap> m := [v,v]; # v is mutable, so m cannot be compressed
 [ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
-gap> ConvertToMatrixRep(m); # even if we ask for it
+gap> ConvertToMatrixRep(m,GF(2)); # even if we ask for it
 fail
 gap> m;
 [ <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
-gap> mi := List(m, Immutable); # but if we make the rows immutable
+gap> mi := List(m, Immutable);; # but if we make the rows immutable
+gap> ConvertToMatrixRep(mi,GF(2));; mi;
 <a 2x2 matrix over GF2>
 gap> m2 := [mi[1], [Z(4),Z(4)]]; # now try and mix in some GF(4)
 [ <an immutable GF2 vector of length 2>, [ Z(2^2), Z(2^2) ] ]

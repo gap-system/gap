@@ -190,7 +190,7 @@ gap> Coefficients( c, [ 1, 2, 3, 4 ] );
 gap> Basis( Integers^2 );
 CanonicalBasis( ( Integers^2 ) )
 
-gap> STOP_TEST( "modfree.tst", 38792500 );
+gap> STOP_TEST( "modfree.tst", 30792500 );
 
 #############################################################################
 ##

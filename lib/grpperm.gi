@@ -625,7 +625,7 @@ end );
 ##
 #M  ClosureGroup( <G>, <gens>, <options> )  . . . . . .  closure with options
 ##
-InstallOtherMethod( ClosureGroup,
+InstallOtherMethod( ClosureGroup,"permgroup, elements, options",
     true,
     [ IsPermGroup, IsList and IsPermCollection, IsRecord ], 0,
     function( G, gens, options )
@@ -705,25 +705,28 @@ InstallOtherMethod( ClosureGroup,
     return C;
 end );
 
-InstallOtherMethod( ClosureGroup, true,
+InstallOtherMethod( ClosureGroup, "empty list and options",true,
         [ IsPermGroup, IsList and IsEmpty, IsRecord ], 0,
     function( G, nogens, options )
     return G;
 end );
 
-InstallMethod( ClosureGroup, true,
+InstallMethod( ClosureGroup, "supply empty options",true,
         [ IsPermGroup and HasStabChainMutable, IsObject ], 20,
-    function( G, gens )
-    return ClosureGroup( G, gens, rec() );
+function( G, gens )
+  return ClosureGroup( G, gens, rec() );
 end );
-InstallOtherMethod( ClosureGroup, true, [ IsPermGroup, IsPerm, IsRecord ], 0,
-    function( G, g, options )
-    return ClosureGroup( G, [ g ], options );
+
+InstallOtherMethod( ClosureGroup, "permgroup, element, options",true,
+  [ IsPermGroup, IsPerm, IsRecord ], 0,
+function( G, g, options )
+  return ClosureGroup( G, [ g ], options );
 end );
-InstallOtherMethod( ClosureGroup, true, [ IsPermGroup, IsPermGroup,
-        IsRecord ], 0,
-    function( G, H, options )
-    return ClosureGroup( G, GeneratorsOfGroup( H ), options );
+
+InstallOtherMethod( ClosureGroup, "permgroup, permgroup, options", true,
+  [ IsPermGroup, IsPermGroup, IsRecord ], 0,
+function( G, H, options )
+  return ClosureGroup( G, GeneratorsOfGroup( H ), options );
 end );
 
 #############################################################################

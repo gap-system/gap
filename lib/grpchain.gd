@@ -213,11 +213,13 @@ DeclareGlobalFunction( "ChainHomomorphicImage" );
 
 #############################################################################
 ##
-#A  Base( <G> )
+#A  BaseOfGroup( <G> )
 ##
-##  base of a stabiliser chain.
+##  If the group <G> has a chain consisting entirely of stabiliser subgroups,
+##  then this command returns the base as a list.  This command does not 
+##  compute a base, however.
 ##
-DeclareAttribute( "Base", IsGroup );
+DeclareAttribute( "BaseOfGroup", IsGroup and IsInChain );
 
 
 #############################################################################

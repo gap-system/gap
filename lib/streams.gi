@@ -89,17 +89,26 @@ InstallMethod( ReadAll,
     0,
         
 function( stream )
-    local   str,  new;
+    local   str,  str1,  new;
     
     str := "";
-    new := "";
-    while new <> fail and not IsEndOfStream(stream)  do
+    str1 := [];
+    while not IsEndOfStream(stream)  do
         new := ReadLine(stream);
         if new <> fail  then
-            Append( str, new );
+            Append( str1, new );
+            if Length(str1)>500000 then
+              ConvertToStringRep(str1);
+              Append(str, str1);
+              str1 := [];
+            fi;
         fi;
     od;
+#T this is just a hack for the moment (24.02.2000)
+    ConvertToStringRep(str1);
+    Append(str, str1);
     return Immutable(str);
+#T why immutable???
     
 end );
 
@@ -123,6 +132,7 @@ InstallMethod( ReadLine, "generic, call ReadByte", [ IsInputStream ],
         c := CHAR_INT(x);
         Add(line,c);
     until c = '\n';
+    ConvertToStringRep(line);
     return line;
 end);
         

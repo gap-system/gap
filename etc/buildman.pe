@@ -858,8 +858,11 @@ sub make_tex
                   }
 #  print TEX "\\>$fd$sube $code[$k]$st$ts$mut\n";}
 		} else {
+		    if ( $code[$k] =~ /V/ ){
+			print TEX "\\>$fd$sube $code[$k]$st$ts$mut\n"; }
+                    else {
 		  print TEX "\\>`$fd'{$fd@`$fd'}$sube $code[$k]$st$ts$mut\n";}
-
+		}
 	      }
 
 	   print TEX "\n$info{expl}\n";

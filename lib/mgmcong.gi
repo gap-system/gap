@@ -281,8 +281,17 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     IsElmsColls,
     [ IsMagma, IsList ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+				local c;
+				
+
+        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
                    IsMagmaCongruence);
+
+				if HasIsSemigroup(M) and IsSemigroup(M) then
+					SetIsSemigroupCongruence(c,true);
+				fi;
+
+				return c;
     end );
 
 
@@ -291,8 +300,16 @@ InstallMethod( MagmaCongruenceByGeneratingPairs,
     true,
     [ IsMagma, IsList and IsEmpty ], 0,
     function( M, gens )
-        return LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
+				local c;
+
+        c :=  LR2MagmaCongruenceByGeneratingPairsCAT(M, gens, 
                    IsMagmaCongruence);
+
+				if HasIsSemigroup(M) and IsSemigroup(M) then
+					SetIsSemigroupCongruence(c,true);
+				fi;
+
+				return c;
     end );
 
 #############################################################################
@@ -501,12 +518,13 @@ BindGlobal("MagmaCongruencePartition",
                  HasIsAssociative(Source(cong)) and 
                      IsAssociative(Source(cong)) then
             gens := GeneratorsOfMagma(Source(cong));
-        elif HasGeneratorsOfMagma(Source(cong)) then
-            gens := Iterator(Source(cong));
+        elif HasGeneratorsOfMagma(Source(cong)) and 
+                 HasIsFinite(Source(cong)) and
+                     IsFinite(Source(cong)) then
+            gens := AsSSortedList(Source(cong));
         else
             gens := AsSSortedList(Source(cong));
         fi;
-
 
         ##
         ## Work through the branches in the forest above

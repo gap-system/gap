@@ -1866,6 +1866,8 @@ void GetSymbol ( void )
     switch ( *In ) {
 
     case '.':   Symbol = S_DOT;                         GET_CHAR();
+                if ( *In == '\\' ) { GET_CHAR(); 
+                   if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '.' ) { Symbol = S_DOTDOT;  GET_CHAR();  break; }
                 break;
     case '!':   Symbol = S_ILLEGAL;                     GET_CHAR();
@@ -1909,6 +1911,8 @@ void GetSymbol ( void )
 
     case '+':   Symbol = S_PLUS;                        GET_CHAR();  break;
     case '-':   Symbol = S_MINUS;                       GET_CHAR();
+                if ( *In == '\\' ) { GET_CHAR(); 
+                  if ( *In == '\n' ) { GET_CHAR(); } }
                 if ( *In == '>' ) { Symbol=S_MAPTO;     GET_CHAR();  break; }
                 break;
     case '*':   Symbol = S_MULT;                        GET_CHAR();  break;

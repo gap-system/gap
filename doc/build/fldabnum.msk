@@ -34,6 +34,80 @@ see Chapter~"Cyclotomic Numbers".
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Galois Groups of Abelian Number Fields}
+
+\index{abelian number fields!Galois group}%
+\index{number fields!Galois group}%
+\index{automorphism group!of number fields}
+
+The *Galois automorphisms* of the cyclotomic field $\Q(e_{<n>})$
+(see Chapter~"Cyclotomic Numbers") are given by
+linear extension of the maps $\ast k :  e_{<n>} \mapsto e_{<n>}^k$ where
+$1 \leq k \< <n>$ and `Gcd( <n>, <k> ) = 1' hold (see~"GaloisCyc").
+Note that this action is *not* equal to exponentiation of cyclotomics,
+i.e., for general cyclotomics $z$, $z^{\ast k}$ is different from $z^k$:
+
+\beginexample
+gap> ( E(5) + E(5)^4 )^2; GaloisCyc( E(5) + E(5)^4, 2 );
+-2*E(5)-E(5)^2-E(5)^3-2*E(5)^4
+E(5)^2+E(5)^3
+\endexample
+
+For $`Gcd'( <n>, k ) \not= 1$, the map $e_n \mapsto e_{<n>}^k$ is *not* a
+field automorphism but only a linear map.
+
+\beginexample
+gap> GaloisCyc( E(5)+E(5)^4, 5 ); GaloisCyc( ( E(5)+E(5)^4 )^2, 5 );
+2
+-6
+\endexample
+
+\Declaration{ANFAutomorphism}
+\beginexample
+gap> f:= CF(25);
+CF(25)
+gap> alpha:= ANFAutomorphism( f, 2 );
+ANFAutomorphism( CF(25), 2 )
+gap> alpha^2;
+ANFAutomorphism( CF(25), 4 )
+gap> Order( alpha );
+20
+gap> E(5)^alpha;
+E(5)^2
+\endexample
+
+The *Galois group* $Gal( \Q(e_{<n>}), \Q )$ of the field extension
+$\Q(e_{<n>}) / \Q$ is isomorphic to the group $(\Z / <n> \Z)^{\ast}$
+of prime residues modulo <n>, via the isomorphism from
+$(\Z / <n> \Z)^{\ast}$ to $Gal( \Q(e_{<n>}), \Q )$ defined by
+$k + <n> \Z \mapsto ( z \mapsto z^{\ast k} )$.
+
+The Galois group of the field extension $\Q(e_{<n>}) / L$ with
+any abelian number field $L \subseteq \Q(e_{<n>})$ is simply the
+factor group of $Gal( \Q_{<n>}, \Q )$ modulo the stabilizer of $L$,
+and the Galois group of $L / L^{\prime}$, with $L^{\prime}$ an abelian
+number field contained in $L$ is the subgroup in this group that stabilizes
+$L^{\prime}$.
+These groups are easily described in terms of $(\Z / <n> \Z)^{\ast}$.
+Generators of $(\Z / <n> \Z)^{\ast}$ can be computed using
+`GeneratorsPrimeResidues' (see~"GeneratorsPrimeResidues").
+
+\beginexample
+gap> f:= CF(15);
+CF(15)
+gap> g:= GaloisGroup( f );
+<group with 2 generators>
+gap> Size( g ); IsCyclic( g ); IsAbelian( g );
+8
+false
+true
+gap> Action( g, NormalBase( f ), OnPoints );
+Group([ (1,6)(2,4)(3,8)(5,7), (1,4,3,7)(2,8,5,6) ])
+gap> GeneratorsOfGroup( g );
+[ ANFAutomorphism( CF(15), 11 ), ANFAutomorphism( CF(15), 7 ) ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Gaussians}
 
 \Declaration{GaussianIntegers}

@@ -92,7 +92,7 @@ gap> p2:=Position(t,(5,7)(6,8));
 fail
 
 # that's all, folks
-gap> STOP_TEST( "listgen.tst", 5917500 );
+gap> STOP_TEST( "listgen.tst", 1517500 );
 
 #############################################################################
 ##

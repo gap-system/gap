@@ -174,6 +174,7 @@ ReadGrp( "basic.gd"    );
 ReadGrp( "classic.gd"  );
 ReadGrp( "perf.gd"     );
 ReadGrp( "suzuki.gd"   );
+ReadGrp( "imf.gd"      );
 
 # files dealing with semigroups - second layer
 ReadLib( "inflist.gd"  );

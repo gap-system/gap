@@ -1,5 +1,6 @@
 @msfiles = ("vspc","vector","matrix","matint");
 @gdfiles = ("vspc","listcoef","list","arith","matrix","matint","matblock",
-            "zlattice","basis","basismut","vspchom","module","vecmat","upoly");
+            "zlattice","basis","basismut","vspchom","module","vecmat",
+            "upoly","extlset");
 $DIR = "../ref";
 $LIB = "../../lib"; 

@@ -425,12 +425,16 @@ end );
 ##
 ##  If the optional third argument is `true', brackets are put around the
 ##  expression if any summands occur.
+##  If the optional fourth argument is `true' then brackets are put around
+##  the expression if at least one `\*' sign occurs in the string.
+##
 ExtRepOfPolynomial_String := function(arg)
-local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c;
+local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c, mbra;
 
   fam:=arg[1];
   ext:=arg[2];
   bra:=false;
+  mbra:= false;
   str:="";
   zero := fam!.zeroCoefficient;
   one := fam!.oneCoefficient;
@@ -489,10 +493,12 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c;
     else
       if c then
 	Add(str,'*');
+        mbra:= true;
       fi;
       for j  in [ 1, 3 .. Length(ext[i])-1 ]  do
 	if 1 < j  then
 	  Add(str,'*');
+          mbra:= true;
 	fi;
 	ind:=ext[i][j];
 	if HasIndeterminateName(fam,ind) then
@@ -509,12 +515,12 @@ local fam,ext,zero,one,mone,i,j,ind,bra,str,s,b,c;
     fi;
   od;
 
-  if bra and Length(arg)>2 and arg[3]=true then
+  if    ( bra and Length( arg ) >= 3 and arg[3] = true )
+     or ( mbra and Length( arg ) = 4 and arg[4] = true ) then
     str:=Concatenation("(",str,")");
   fi;
   return str;
 end;
-
 
 
 #############################################################################
@@ -523,18 +529,19 @@ end;
 ##
 ##  This method is installed for all  rational function.
 ##
-InstallMethod( String,"rational function", true, [ IsRationalFunction ], 0,
+InstallMethod( String,"rational function", [ IsRationalFunction ],
 function( obj )
 local fam,s;
   fam := FamilyObj(obj);
-  s:=ExtRepOfPolynomial_String(fam, ExtRepNumeratorRatFun(obj),true);
+  s:= ExtRepOfPolynomial_String( fam,
+          ExtRepNumeratorRatFun( obj ), true, false );
   Add(s,'/');
-  Append(s,
-    ExtRepOfPolynomial_String(fam, ExtRepDenominatorRatFun(obj),true));
+  Append( s, ExtRepOfPolynomial_String( fam,
+                 ExtRepDenominatorRatFun( obj ), true, true ) );
   return s;
 end );
 
-InstallMethod( String,"polynomial", true, [ IsPolynomial ], 0,
+InstallMethod( String,"polynomial", [ IsPolynomial ],
 function( obj )
   return ExtRepOfPolynomial_String(FamilyObj(obj),ExtRepPolynomialRatFun(obj));
 end );
@@ -542,17 +549,20 @@ end );
 # the print methods don't use `String' because we don't want to collect
 # `String' attributes in memory.
 
-InstallMethod( PrintObj,"rational function", true, [ IsRationalFunction ], 0,
+InstallMethod( PrintObj,"rational function", [ IsRationalFunction ],
 function( obj ) local   fam;
-  fam := FamilyObj(obj);
-  Print(ExtRepOfPolynomial_String(fam, ExtRepNumeratorRatFun(obj),true));
-  Print( "/" );
-  Print(ExtRepOfPolynomial_String(fam, ExtRepDenominatorRatFun(obj),true));
+    fam:= FamilyObj(obj);
+    Print( ExtRepOfPolynomial_String( fam,
+               ExtRepNumeratorRatFun( obj ), true, false ),
+           "/",
+           ExtRepOfPolynomial_String( fam,
+               ExtRepDenominatorRatFun( obj ), true, true ) );
 end );
 
-InstallMethod( PrintObj,"polynomial", true, [ IsPolynomial ], 0,
+InstallMethod( PrintObj,"polynomial", [ IsPolynomial ],
 function( obj )
-  Print(ExtRepOfPolynomial_String(FamilyObj(obj),ExtRepPolynomialRatFun(obj)));
+    Print( ExtRepOfPolynomial_String( FamilyObj( obj ),
+                                      ExtRepPolynomialRatFun( obj ) ) );
 end );
 
 

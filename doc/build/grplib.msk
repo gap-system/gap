@@ -725,6 +725,552 @@ database without having to compute them anew:
 `Size', `IsLinearlyPrimitive' and `MinimalBlockDimension'.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Irreducible Maximal Finite Integral Matrix Groups}
+
+A   library of irreducible   maximal finite   integral  matrix groups  is
+provided with {\GAP}. It  contains $\Q$-class representatives for  all of
+these groups of dimension at  most 24, and $\Z$-class representatives for
+those of dimension at most 11 or of dimension 13, 17, 19, or 23.
+
+The  groups  provided  in this  library  have been  determined by Wilhelm
+Plesken, partially as joint work with Michael Pohst, or by members of his
+institute (Lehrstuhl B f{\accent127u}r    Mathematik, RWTH  Aachen).   In
+particular, the data for the groups of dimensions  2 to 9 have been taken
+from the output  of computer  calculations which  they performed in  1979
+(see   \cite{PP77}, \cite{PP80}). The  $\Z$-class  representatives of the
+groups  of  dimension  10 have  been  determined and    computed by Bernd
+Souvignier (\cite{Sou94}),  and those of  dimensions 11, 13,  and 17 have
+been  recomputed for this library from  the circulant Gram matrices given
+in  \cite{Ple85}, using the  stand-alone  programs for the computation of
+short vectors and Bravais groups which have  been developed in  Plesken's
+institute. The $\Z$-class representatives of  the groups of dimensions 19
+and  23 had already been  determined in  \cite{Ple85}.  Gabriele Nebe has
+recomputed them  for us. Her  main contribution to this library, however,
+is that she has determined and computed the $\Q$-class representatives of
+the groups  of non-prime dimensions  between 12 and  24 (see \cite{PN95},
+\cite{NP95}, \cite{Neb95}).
+
+The library has been brought into {\GAP} format by Volkmar Felsch. He has
+applied several {\GAP} routines  to check certain consistency of the data.
+However, the  credit  and responsibility for  the lists   remain with the
+authors. We are   grateful to Wilhelm Plesken,  Gabriele  Nebe, and Bernd
+Souvignier for supplying their results to {\GAP}.
+
+In the preceding  acknowledgement, we used  some notations that will also
+be needed in the sequel. We first define these.
+
+Any  integral matrix   group  $G$  of  dimension   $n$ is a  subgroup  of
+$GL_n(\Z)$ as  well  as of  $GL_n(\Q)$  and hence lies in  some conjugacy
+class of integral  matrix groups   under  $GL_n(\Z)$  and also in    some
+conjugacy class of rational matrix  groups under $GL_n(\Q)$. As usual, we
+call  these  classes    the  $\Z$-class   and the   $\Q$-class   of  $G$,
+respectively.  Note that any conjugacy  class of subgroups of  $GL_n(\Q)$
+contains at least one $\Z$-class of subgroups of $GL_n(\Z)$ and hence can
+be considered as the $\Q$-class of some integral matrix group.
+
+In  the context of  this library we are  only concerned with $\Z$-classes
+and $\Q$-classes of subgroups   of $GL_n(\Z)$ which are irreducible   and
+maximal   finite in $GL_n(\Z)$ (we   will call them *i.m.f.*~subgroups of
+$GL_n(\Z)$).  We can distinguish two types of these groups:
+
+First, there are  those  i.m.f.~subgroups  of $GL_n(\Z)$ which   are also
+maximal  finite subgroups of $GL_n(\Q)$.  Let  us denote the set of their
+$\Q$-classes by $Q_1(n)$. It is clear from the above remark that $Q_1(n)$
+just consists of the $\Q$-classes of i.m.f.~subgroups of $GL_n(\Q)$.
+
+Secondly, there is the set $Q_2(n)$ of the  $\Q$-classes of the remaining
+i.m.f.~subgroups of $GL_n(\Z)$, i.e.,  of   those which are  not  maximal
+finite subgroups of $GL_n(\Q)$. For any such group  $G$, say, there is at
+least one class $C \in Q_1(n)$ such that $G$ is conjugate under $\Q$ to a
+proper subgroup of some   group $H \in C$.   In  fact, the class $C$   is
+uniquely determined for any group   $G$ occurring in the library  (though
+there seems to be no  reason to assume that  this property should hold in
+general).  Hence   we may   call   $C$  the *rational   i.m.f.~class*  of
+$G$. Finally, we  will  denote the   number of  classes  in  $Q_1(n)$ and
+$Q_2(n)$ by $q_1(n)$ and $q_2(n)$, respectively.
+
+As an example, let us consider the case $n = 4$. There are 6 $\Z$-classes
+of i.m.f.~subgroups  of $GL_4(\Z)$   with representative subgroups  $G_1,
+\ldots,  G_6$ of isomorphsim types  $G_1 \cong W(F_4)$, $G_2 \cong D_{12}
+\wr C_2$, $G_3 \cong  G_4 \cong C_2 \times  S_5$, $G_5 \cong W(B_4)$, and
+$G_6  \cong (D_{12}  ` Y   '  D_{12})   \!:\! C_2$.  The    corresponding
+$\Q$-classes, $R_1, \ldots, R_6$, say, are pairwise different except that
+$R_3$ coincides  with $R_4$.   The  groups $G_1$,  $G_2$, and  $G_3$  are
+i.m.f.~subgroups of $GL_4(\Q)$, but $G_5$  and $G_6$ are not because they
+are  conjugate under $GL_4(\Q)$ to proper  subgroups  of $G_1$ and $G_2$,
+respectively.  So we  have $Q_1(4) = \{ R_1,  R_2, R_3 \}$,  $Q_2(4) = \{
+R_5, R_6 \}$, $q_1(4) = 3$, and $q_2(4) = 2$.
+
+The $q_1(n)$ $\Q$-classes   of i.m.f.~subgroups of  $GL_n(\Q)$  have been
+determined  for each dimension  $n \leq 24$.   The current {\GAP} library
+provides integral representative groups for all these classes.  Moreover,
+all $\Z$-classes of i.m.f.~subgroups of $GL_n(\Z)$  are known for $n \leq
+11$ and  for $n \in \{13,17,19,23\}$. For   these dimensions, the library
+offers integral  representative  groups for all $\Q$-classes  in $Q_1(n)$
+and $Q_2(n)$ as  well as  for   all $\Z$-classes  of i.m.f.~subgroups  of
+$GL_n(\Z)$.
+
+Any group $G$ of dimension $n$ given in the library is represented as the
+automorphism group $G = {\rm Aut}(F,L) = \{ g \in GL_n(\Z) \mid Lg = L \;
+{\rm and} \; g F g^{\rm  tr} = F \}$ of  a positive definite symmetric $n
+\times n$ matrix $F \in \Z^{n \times n}$ on an $n$-dimensional lattice $L
+\cong  \Z^{1 \times n}$    (for details see  e.g.   \cite{PN95}).  {\GAP}
+provides for $G$ a list of matrix generators and the *Gram matrix* $F$.
+
+The positive definite quadratic form defined by $F$ defines a *norm* $v F
+v^{\rm tr}$ for each vector $v \in L$, and there is only  a finite set of
+vectors of  minimal   norm.  These vectors are  often   simply called the
+*short  vectors*.  Their set splits into  orbits under $G$, and $G$ being
+irreducible  acts faithfully on  each  of these orbits by  multiplication
+from the right.  {\GAP} provides for each  of these orbits the orbit size
+and a representative vector.
+
+Like most of the  other {\GAP} libraries,  the library of i.m.f.~integral
+matrix   groups   supplies an   extraction   function,  `ImfMatrixGroup'.
+However, as the  library involves only 423  different groups, there is no
+need for a   selection or an  example function.  Instead,   there are two
+functions, `ImfInvariants' and `DisplayImfInvariants', which provide some
+$\Z$-class invariants   that can be extracted  from   the library without
+actually constructing   the   representative    groups   themselves.  The
+difference between these two functions  is  that the latter one  displays
+the resulting data in some easily  readable format, whereas the first one
+returns them as record components so that you can properly access them.
+
+We shall give an individual description of each of the library functions,
+but first we would like to insert a short remark  concerning their names:
+Any  self-explaining name of  a  function  handling  *irreducible maximal
+finite integral  matrix groups* would  have to include  this term in full
+length and hence would grow extremely long.  Therefore we have decided to
+use the abbreviation `Imf' instead in order to restrict the names to some
+reasonable length.
+
+The  first  three  functions can   be  used to formulate  loops  over the
+classes.
+
+\>ImfNumberQQClasses( <dim> ) F
+\>ImfNumberQClasses( <dim> ) F
+\>ImfNumberZClasses( <dim>, <q> ) F
+
+`ImfNumberQQClasses' returns the number $q_1($<dim>$)$ of $\Q$-classes of
+i.m.f.~rational matrix groups of dimension  <dim>. Valid values of  <dim>
+are all positive integers up to 24.
+
+Note: In order  to enable you to loop  just over the classes belonging to
+$Q_1($<dim>$)$, we have  arranged  the list of $\Q$-classes  of dimension
+<dim>  for any dimension  <dim>  in the  library such that,  whenever the
+classes of $Q_2($<dim>$)$  are known, too, i.e.,  in the cases  $dim \leq
+11$ or  $dim \in \{13,17,19,23\}$, the  classes of $Q_1($<dim>$)$ precede
+those of $Q_2($<dim>$)$ and hence are numbered from 1 to $q_1($<dim>$)$.
+
+`ImfNumberQClasses'  returns  the  number of $\Q$-classes    of groups of
+dimension <dim>  which are available in the  library. If $dim \leq 11$ or
+$dim      \in \{13,17,19,23\}$,  this  is     the  number $q_1($<dim>$) +
+q_2($<dim>$)$ of  $\Q$-classes  of  i.m.f.~subgroups of   $GL_{dim}(\Z)$.
+Otherwise, it is   just  the number  $q_1($<dim>$)$ of   $\Q$-classes  of
+i.m.f.~subgroups of $GL_{dim}(\Q)$.    Valid  values of <dim>     are all
+positive integers up to 24.
+
+`ImfNumberZClasses' returns the  number of $\Z$-classes in  the <q>$^{\rm
+th}$   $\Q$-class   of  i.m.f.~integral    matrix   groups  of  dimension
+<dim>. Valid values of <dim> are all  positive integers up  to 11 and all
+primes up to 23.
+
+\>DisplayImfInvariants( <dim>, <q> ) F
+\>DisplayImfInvariants( <dim>, <q>, <z> ) F
+
+`DisplayImfInvariants'  displays the  following $\Z$-class invariants  of
+the   groups in the  <z>$^{\rm   th}$  $\Z$-class  in the  <q>$^{\rm th}$
+$\Q$-class of i.m.f.~integral matrix groups of dimension <dim>:
+
+\beginlist
+\item{-}
+      its  $\Z$-class number  in the form  <dim>.<q>.<z>,  if <dim> is at
+      most 11 or a prime, or its $\Q$-class number in the form <dim>.<q>,
+      else,
+\item{-}
+      a message if the group is solvable,
+\item{-}
+      the size of the group,
+\item{-}
+      the isomorphism type of the group,
+\item{-}
+      the   elementary  divisors   of  the   associated  quadratic  form,
+\item{-}
+      the sizes  of the  orbits  of short vectors  (these  sizes  are the
+      degrees of the  faithful permutation representations  which you may
+      construct    using    the   functions   `IsomorphismPermGroup'   or
+      `IsomorphismPermGroupImfGroup' below),
+\item{-}
+      the norm of the associated short vectors,
+\item{-}
+      only  in  case  that  the  group  is  not  an  i.m.f.~group  in
+      $GL_n(\Q)$:  an  appropriate  message,  including the  $\Q$-class
+      number    of   the    corresponding   rational    i.m.f.~class.
+\endlist
+
+If you specify the value 0 for any of the parameters  <dim>, <q>, or <z>,
+the   command will loop over all   available  dimensions, $\Q$-classes of
+given  dimension,     or  $\Z$-classes  within    the   given $\Q$-class,
+respectively. Otherwise, the values of the arguments must be in range.  A
+value <z>$ \neq  1$ must  not be specified  if  the $\Z$-classes are  not
+known  for the given  dimension,  i.e., if $dim  >  11$ and $dim \not \in
+\{13,17,19,23\}$. The  default value of <z> is~1.  This value of <z> will
+be accepted even if the $\Z$-classes are not known. Then it specifies the
+only  representative group  which  is  available for  the <q>$^{\rm  th}$
+$\Q$-class. The greatest legal value of <dim> is 24.
+
+\beginexample
+gap> DisplayImfInvariants( 3, 1, 0 );
+#I Z-class 3.1.1:  Solvable, size = 2^4*3
+#I   isomorphism type = C2 wr S3 = C2 x S4 = W(B3)
+#I   elementary divisors = 1^3
+#I   orbit size = 6, minimal norm = 1
+#I Z-class 3.1.2:  Solvable, size = 2^4*3
+#I   isomorphism type = C2 wr S3 = C2 x S4 = C2 x W(A3)
+#I   elementary divisors = 1*4^2
+#I   orbit size = 8, minimal norm = 3
+#I Z-class 3.1.3:  Solvable, size = 2^4*3
+#I   isomorphism type = C2 wr S3 = C2 x S4 = C2 x W(A3)
+#I   elementary divisors = 1^2*4
+#I   orbit size = 12, minimal norm = 2
+gap> DisplayImfInvariants( 8, 15, 1 );
+#I Z-class 8.15.1:  Solvable, size = 2^5*3^4
+#I   isomorphism type = C2 x (S3 wr S3)
+#I   elementary divisors = 1*3^3*9^3*27
+#I   orbit size = 54, minimal norm = 8
+#I   not maximal finite in GL(8,Q), rational imf class is 8.5
+gap> DisplayImfInvariants( 20, 23 );
+#I Q-class 20.23:  Size = 2^5*3^2*5*11
+#I   isomorphism type = (PSL(2,11) x D12).C2
+#I   elementary divisors = 1^18*11^2
+#I   orbit size = 3*660 + 2*1980 + 2640 + 3960, minimal norm = 4
+\endexample
+
+Note that the function `DisplayImfInvariants' uses a kind of shorthand to
+display the elementary divisors.  E.~g., the expression `1*3^3*9^3*27' in
+the   preceding     example   stands   for   the   elementary    divisors
+$1,3,3,3,9,9,9,27$.  (See also  the next  example  which  shows  that the
+function  `ImfInvariants' provides the elementary  divisors in form of an
+ordinary {\GAP} list.)
+
+In  the description of the isomorphism  types the following notations are
+used:
+\beginitems
+$A` x 'B$ &
+      denotes a direct product of a group $A$ by a group $B$,
+
+$A` subd 'B$ &
+      denotes a subdirect product of $A$ by $B$,
+
+$A` Y 'B$ &
+      denotes a central product of $A$ by $B$,
+
+$A` wr 'B$ &
+      denotes a wreath product of $A$ by $B$,
+
+$A`:'B$ &
+      denotes a split extension of $A$ by $B$,
+
+$A`.'B$ &
+      denotes just an extension of $A$ by $B$ (split or nonsplit).
+\enditems
+
+The groups involved are
+\beginlist
+\item{-} the cyclic groups $C_n$, dihedral groups $D_n$,  and generalized
+      quaternion groups  $Q_n$ of order $n$,  denoted by `C'<n>,  `D'<n>,
+      and `Q'<n>, respectively,
+\item{-} the  alternating groups  $A_n$  and  symmetric groups  $S_n$  of
+      degree $n$, denoted by `A'<n> and `S'<n>, respectively,
+\item{-}  the  linear  groups  $GL_n(q)$,   $PGL_n(q)$,   $SL_n(q)$,  and
+      $PSL_n(q)$,     denoted    by     `GL'(<n>,<q>),    `PGL'(<n>,<q>),
+      `SL'(<n>,<q>), and `PSL'(<n>,<q>), respectively,
+\item{-}  the  unitary  groups  $SU_n(q)$  and  $PSU_n(q)$,   denoted  by
+      `SU'(<n>,<q>) and `PSU'(<n>,<q>), respectively,
+\item{-} the symplectic groups $Sp(n,q)$, denoted by `Sp'(<n>,<q>),
+\item{-} the orthogonal group $O_8^{\,+}(2)$, denoted by `O+'(8,2),
+\item{-} the   extraspecial    groups    $2_+^{\,1+8}$,    $3_+^{\,1+2}$,
+      $3_+^{\,1+4}$,  and   $5_+^{\,1+2}$,   denoted   by  `2+\^{}(1+8)',
+      `3+\^{}(1+2)', `3+\^{}(1+4)', and `5+\^{}(1+2)', respectively,
+\item{-} the Chevalley group $G_2(3)$, denoted by `G(2,3)',
+\item{-} the Weyl groups   $W(A_n)$,  $W(B_n)$,  $W(D_n)$,  $W(E_n)$, and
+      $W(F_4)$,  denoted by  `W(A<n>)',  `W(B<n>)', `W(D<n>)', `W(E<n>)',
+      and `W(F4)', respectively,
+\item{-} the sporadic simple groups  $Co_1$, $Co_2$, $Co_3$, $HS$, $J_2$,
+      $M_{12}$, $M_{22}$, $M_{23}$, $M_{24}$, and $Mc$, denoted by `Co1',
+      `Co2', `Co3',  `HS', `J2',  `M12', `M22', `M23', `M24',  and  `Mc',
+      respectively,
+\item{-} a point stabilizer of index 11 in $M_{11}$, denoted by `M10'.
+\endlist
+
+As   mentioned      above,  the   data    assembled   by    the  function
+`DisplayImfInvariants'  are ``cheap data'' in  the sense that they can be
+provided by the library without loading any of its  large matrix files or
+performing any matrix calculations. The following  function allows you to
+get proper access to these cheap data instead of just displaying them.
+
+\>ImfInvariants( <dim>, <q> ) F
+\>ImfInvariants( <dim>, <q>, <z> ) F
+
+`ImfInvariants'   returns   a  record  which  provides   some  $\Z$-class
+invariants of the groups   in   the <z>$^{\rm   th}$ $\Z$-class  in   the
+<q>$^{\rm th}$ $\Q$-class  of i.m.f.~integral matrix groups  of dimension
+<dim>.  A value  <z>$ \neq 1$ must not  be specified if  the $\Z$-classes
+are not known for the given dimension, i.e., if  $dim > 11$ and $dim \not
+\in \{13,17,19,23\}$. The  default value of <z> is~1.   This value of <z>
+will   be  accepted even if  the  $\Z$-classes   are  not known.  Then it
+specifies the   only  representative group   which  is available  for the
+<q>$^{\rm th}$ $\Q$-class.  The greatest legal value of <dim> is 24.
+
+The resulting record contains six or seven components:
+
+\beginitems
+`size' &
+      the size of any representative group <G>,
+
+`isSolvable' &
+      is `true' if <G> is solvable,
+
+`isomorphismType' &
+      a text string describing the isomorphism type of  <G>  (in the same
+      notation as used by the function `DisplayImfInvariants' above),
+
+`elementaryDivisors' &
+      the elementary divisors of the associated Gram matrix  <F>  (in the
+      same format as the result of the  function `ElementaryDivisorsMat',
+      see~"ElementaryDivisorsMat"),
+
+`minimalNorm' &
+      the norm of the associated short vectors,
+
+`sizesOrbitsShortVectors' &
+      the sizes of the orbits of short vectors under <F>,
+
+`maximalQClass' &
+      the  $\Q$-class  number  of  an  i.m.f.~group  in  $GL_n(\Q)$  that
+      contains <G> as a subgroup  (only in case that not <G> itself is an
+      i.m.f.~subgroup of $GL_n(\Q)$).
+\enditems
+
+Note that four of these data, namely the group size, the solvability, the
+isomorphism  type, and the   corresponding rational i.m.f.~class, are not
+only $\Z$-class invariants, but also $\Q$-class invariants.
+
+Note further that, though the isomorphism type is a $\Q$-class invariant,
+you will sometimes  get different descriptions for different $\Z$-classes
+of the same $\Q$-class (as, e.g., for the  classes 3.1.1 and 3.1.2 in the
+last example above). The purpose  of  this behaviour  is to provide  some
+more information about the underlying lattices.
+
+\beginexample
+gap> ImfInvariants( 8, 15, 1 );
+rec( size := 2592, isSolvable := true,
+  isomorphismType := "C2 x (S3 wr S3)",
+  elementaryDivisors := [ 1, 3, 3, 3, 9, 9, 9, 27 ], minimalNorm := 8,
+  sizesOrbitsShortVectors := [ 54 ], maximalQClass := 5 )
+gap> ImfInvariants( 24, 1 ).size;
+10409396852733332453861621760000
+gap> ImfInvariants( 23, 5, 2 ).sizesOrbitsShortVectors;
+[ 552, 53130 ]
+gap> for i in [ 1 .. ImfNumberQClasses( 22 ) ] do
+>    Print( ImfInvariants( 22, i ).isomorphismType, "\n" ); od;
+C2 wr S22 = W(B22)
+(C2 x PSU(6,2)).S3
+(C2 x S3) wr S11 = (C2 x W(A2)) wr S11
+(C2 x S12) wr C2 = (C2 x W(A11)) wr C2
+C2 x S3 x S12 = C2 x W(A2) x W(A11)
+(C2 x HS).C2
+(C2 x Mc).C2
+C2 x S23 = C2 x W(A22)
+C2 x PSL(2,23)
+C2 x PSL(2,23)
+C2 x PGL(2,23)
+C2 x PGL(2,23)
+\endexample
+
+\>ImfMatrixGroup( <dim>, <q> ) F
+\>ImfMatrixGroup( <dim>, <q>, <z> ) F
+
+`ImfMatrixGroup'  is the essential   extraction function of  this library
+(note  that its name has  been changed from  `ImfMatGroup' in {\GAP}~3 to
+`ImfMatrixGroup' in {\GAP}~4).   It returns  a representative group,  <G>
+say, of the <z>$^{\rm th}$ $\Z$-class in the <q>$^{\rm th}$ $\Q$-class of
+i.m.f.~integral  matrix groups of dimension <dim>.  A  value <z>$ \neq 1$
+must  not be specified  if the $\Z$-classes are not   known for the given
+dimension,  i.e., if $dim >  11$ and $dim  \not \in \{13,17,19,23\}$. The
+default value  of <z> is~1.   This value of  <z> will be accepted even if
+the $\Z$-classes are not known. Then it specifies the only representative
+group which is available for the <q>$^{\rm  th}$ $\Q$-class. The greatest
+legal value of <dim> is 24.
+
+\beginexample
+gap> G := ImfMatrixGroup( 5, 1, 3 );
+ImfMatrixGroup(5,1,3)
+gap> for m in GeneratorsOfGroup( G ) do PrintArray( m ); od;
+[ [  -1,   0,   0,   0,   0 ],
+  [   0,   1,   0,   0,   0 ],
+  [   0,   0,   0,   1,   0 ],
+  [  -1,  -1,  -1,  -1,   2 ],
+  [  -1,   0,   0,   0,   1 ] ]
+[ [  0,  1,  0,  0,  0 ],
+  [  0,  0,  1,  0,  0 ],
+  [  0,  0,  0,  1,  0 ],
+  [  1,  0,  0,  0,  0 ],
+  [  0,  0,  0,  0,  1 ] ]
+\endexample
+
+The   attributes `Size' and   `IsSolvable' will be   properly  set in the
+resulting     matrix group <G>.  In    addition,   it has two  attributes
+`IsImfMatrixGroup' and `ImfRecord'  where the first one is just a logical
+flag set to  true and the  latter one is a  record.  Except for the group
+size and the  solvability flag, this  record contains the same components
+as the resulting record  of the function `ImfInvariants' described  above
+(see~"ImfInvariants"),   namely the    components      `isomorphismType',
+`elementaryDivisors', `minimalNorm', and `sizesOrbitsShortVectors'   and,
+if <G> is not a rational i.m.f.~group, `maximalQClass'.  Moreover, it has
+the two components
+
+\beginitems
+`form' &
+      the associated Gram matrix <F>, and
+
+`repsOrbitsShortVectors' &
+      representatives of the orbits of short vectors under <F>.
+\enditems
+
+The  last one  of  these  components  will be  required  by the  function
+`IsomorphismPermGroup' below.
+
+Example:
+
+\beginexample
+gap> Size( G );
+3840
+gap> imf := ImfRecord( G );;
+gap> imf.isomorphismType;
+"C2 wr S5 = C2 x W(D5)"
+gap> PrintArray( imf.form );
+[ [  4,  0,  0,  0,  2 ],
+  [  0,  4,  0,  0,  2 ],
+  [  0,  0,  4,  0,  2 ],
+  [  0,  0,  0,  4,  2 ],
+  [  2,  2,  2,  2,  5 ] ]
+gap> imf.elementaryDivisors;
+[ 1, 4, 4, 4, 4 ]
+gap> imf.minimalNorm;
+4
+\endexample
+
+If you want to perform calculations in such a matrix group <G> you should
+be aware of the  fact that the permutation  group routines of {\GAP}  are
+much more efficient than the  matrix group routines.  Hence we  recommend
+that  you  do your  computations, whenever  possible,   in the isomorphic
+permutation  group which is  induced by the action of  <G>  on one of the
+orbits of the associated short vectors. You may call one of the following
+functions `IsomorphismPermGroup' or `IsomorphismPermGroupImfGroup' to get
+an  isomorphism  to such a  permutation group  (note  that these {\GAP}~4
+functions   have   replaced   the   {\GAP}~3  functions  `PermGroup'  and
+`PermGroupImfGroup').
+
+\)IsomorphismPermGroup( <G> ) M
+
+\index{IsomorphismPermGroup!for Imf matrix groups}
+`IsomorphismPermGroup' returns an   isomorphism, $\varphi$ say, from  the
+given i.m.f.~integral matrix  group <G>  to  a permutation group <P>  $:=
+\varphi($<G>$)$ acting on a minimal  orbit, $S$ say,  of short vectors of
+<G>  such  that each matrix $<m>  \in  <G>$ is mapped  to the permutation
+induced by its action on $S$.
+
+Note that in case of  a large orbit the  construction of $\varphi$ may be
+space and  time consuming. Fortunately,  there are only five $\Q$-classes
+in the library for which the  smallest orbit of  short vectors is of size
+greater than 20000, the worst case being the orbit of size 196560 for the
+Leech lattice ($dim = 24$, $q = 3$).
+
+The inverse isomorphism $\varphi^{-1}$ from <P> to  <G> is constructed by
+determining a $\Q$-base $B \subset S$ of  $\Q^{1 \times dim}$ in $S$ and,
+in addition,  the associated base change matrix  $M$ which transforms $B$
+into  the standard base  of  $\Z^{1 \times dim}$.    This allows a simple
+computation of  the preimage $\varphi^{-1}(p)$  of any permutation $p \in
+P$ as follows.  If, for $1 \leq i \leq dim$, $b_i$ is the position number
+in $S$ of the $i^{\rm th}$ base vector in $B$, it suffices to look up the
+vector whose position number in  $S$ is the image of  $b_i$ under $p$ and
+to   multiply this vector  by    $M$ to get   the  $i^{\rm  th}$ row   of
+$\varphi^{-1}(p)$.
+
+You may use     the functions `Image'  and   `PreImage'  (see~"Image" and
+"PreImage") to switch from <G> to <P> and back from <P> to <G>.
+
+As an  example, let  us continue  the preceding example  and  compute the
+solvable residuum of the group <G>.
+
+\beginexample
+gap> # Perform the computations in an isomorphic permutation group.
+gap> phi := IsomorphismPermGroup( G );;
+gap> P := Image( phi );
+Group([ ( 1, 7, 6)( 2, 9)( 4, 5,10), ( 2, 3, 4, 5)( 6, 9, 8, 7) ])
+gap> D := DerivedSubgroup( P );
+Group([ ( 1, 2,10, 9)( 3, 8)( 4, 5)( 6, 7),
+  ( 1, 6)( 2, 7, 9, 4)( 3, 8)( 5,10), ( 1, 5,10, 6)( 2, 8, 9, 3) ])
+gap> Size( D );
+960
+gap> IsPerfectGroup( D );
+true
+gap> # We have found the solvable residuum of P,
+gap> # now move the results back to the matrix group G.
+gap> R := PreImage( phi, D );
+<matrix group of size 960 with 3 generators>
+gap> for m in GeneratorsOfGroup( R ) do PrintArray( m ); od;
+[ [  -1,  -1,  -1,  -1,   2 ],
+  [   0,  -1,   0,   0,   0 ],
+  [   0,   0,   0,   1,   0 ],
+  [   0,   0,   1,   0,   0 ],
+  [  -1,  -1,   0,   0,   1 ] ]
+[ [   0,   0,  -1,   0,   0 ],
+  [   0,  -1,   0,   0,   0 ],
+  [   1,   0,   0,   0,   0 ],
+  [  -1,  -1,  -1,  -1,   2 ],
+  [   0,  -1,  -1,   0,   1 ] ]
+[ [   0,  -1,   0,   0,   0 ],
+  [   1,   0,   0,   0,   0 ],
+  [   0,   0,   1,   0,   0 ],
+  [  -1,  -1,  -1,  -1,   2 ],
+  [   0,  -1,   0,  -1,   1 ] ]
+\endexample
+
+\>IsomorphismPermGroupImfGroup( <G>, <n> ) F
+
+`IsomorphismPermGroupImfGroup'    returns an  isomorphism, $\varphi$ say,
+from  the given i.m.f.~integral  matrix group <G>  to a permutation group
+<P> acting on the $<n>^{\rm th}$ orbit, $S$ say,  of short vectors of <G>
+such that each matrix <m> $\in$ <G> is  mapped to the permutation induced
+by its action on $S$.
+
+The only difference to the  above function `IsomorphismPermGroup' is that
+you  can specify the orbit to  be used.  In fact, as  the orbits of short
+vectors    are   sorted   by     increasing     sizes, the       function
+`IsomorphismPermGroup( <G> )'  has  been  implemented  such  that  it  is
+equivalent to `IsomorphismPermGroupImfGroup( <G>, 1 )'.
+
+\beginexample
+gap> ImfInvariants( 12, 9 ).sizesOrbitsShortVectors;
+[ 120, 300 ]
+gap> G := ImfMatrixGroup( 12, 9 );
+ImfMatrixGroup(12,9)
+gap> phi1 := IsomorphismPermGroupImfGroup( G, 1 );;
+gap> P1 := Image( phi1 );
+<permutation group of size 2400 with 2 generators>
+gap> LargestMovedPoint( P1 );
+120
+gap> phi2 := IsomorphismPermGroupImfGroup( G, 2 );;
+gap> P2 := Image( phi2 );
+<permutation group of size 2400 with 2 generators>
+gap> LargestMovedPoint( P2 );
+300
+\endexample
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %E

@@ -107,21 +107,25 @@ InstallMethod( RecNames,
     [ IsRecord and IsInternalRep ], 0,
     REC_NAMES );
 
-InstallOtherMethod( RecNames,
-    "for a component object",
-    true,
-    [ IsComponentObjectRep ], 0,
-    REC_NAMES_COMOBJ );
-
 
 #############################################################################
 ##
-#A  NamesOfComponents( <comobj> )
+#F  NamesOfComponents( <obj> )
 ##
-##  For a component object <comobj>, `NamesOfComponents' returns a list of
+##  For a component object <obj>, `NamesOfComponents' returns a list of
 ##  strings, which are the names of components currently bound in <comobj>.
 ##
-DeclareSynonymAttr( "NamesOfComponents", RecNames );
+##  For a record <obj>, `NamesOfComponents' returns the result of `RecNames'.
+##
+BIND_GLOBAL( "NamesOfComponents", function( obj )
+    if IsComponentObjectRep( obj ) then
+      return REC_NAMES_COMOBJ( obj );
+    elif IsRecord( obj ) then
+      return RecNames( obj );
+    else
+      Error( "<obj> must be a component object or a record" );
+    fi;
+    end );
 
 
 #############################################################################

@@ -294,7 +294,7 @@ gap> j:=GroupGeneralMappingByImages(g,g,AsSSortedList(g),AsSSortedList(g));;
 gap> i2 = j;
 true
 
-gap> STOP_TEST( "mapping.tst", 19067500 );
+gap> STOP_TEST( "mapping.tst", 23067500 );
 
 
 #############################################################################

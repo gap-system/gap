@@ -249,6 +249,12 @@ DeclareGlobalVariable( "Cyclotomics", "field of all cyclotomics" );
 ##
 #F  ANFAutomorphism( <F>, <k> )  . .  automorphism of an abelian number field
 ##
+##  Let <F> be an abelian number field <F> and <k> an integer.
+##  If <k> is coprime to the conductor (see~"Conductor") of <F> then
+##  `ANFAutomorphism' returns the automorphism of <F> defined as the linear
+##  extension of the map that raises each root of unity in <F> to its <k>-th
+##  power, otherwise an error is signalled.
+##
 DeclareGlobalFunction( "ANFAutomorphism" );
 
 

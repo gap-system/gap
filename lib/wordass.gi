@@ -795,62 +795,91 @@ function( w, renumber )
     return AssocWord( t, w );
 end );
 
+
 #############################################################################
 ##
 #M  MappedWord( <x>, <gens1>, <gens2> )
+##
+##  This method performs the obvious multiplications of image powers
+##  except if <gens1> and <gens2> are lists of associative words in the
+##  same family
+##  such that additionally no cancellation happens when replacing a
+##  generator power by the corresponding power of the image;
+##  this special treatment is restricted to the case that the words in
+##  the list <gens2> are powers of pairwise different generators in <gens1>.
+##  (Note that if a generator appears in <gens2> that has been left out
+##  from <gens1>, we may have cancellation.)
+##
+##  In the case of the above special treatment, the external representation
+##  of the image word is constructed without multiplications.
 ##
 BindGlobal( "MappedWordForAssocWord", function( x, gens1, gens2 )
 
 local i, mapped, exp,ex2,p;
 
-    gens1:= List( gens1, x -> ExtRepOfObj( x ));
-    if not ForAll(gens1,i->Length(i)=2 and i[2]=1) then
-      Error("<gens1> must be proper generators");
+    x:= ExtRepOfObj( x );
+
+    # First handle the case of an identity element.
+    # This happens for monoid element objects.
+    if IsEmpty( x ) then
+      return gens2[1] ^ 0;
     fi;
 
-    gens1:= List( gens1, x -> x[1] );
-    if ForAll(gens2,IsAssocWordWithInverse) then
-      ex2:=List(gens2,x->ExtRepOfObj(x));
+    if     FamilyObj( gens1 ) = FamilyObj( gens2 )
+       and IsAssocWordWithInverseCollection( gens2 ) then
+      ex2:= List( gens2, ExtRepOfObj );
     else
       # not words, forget special treatment
       ex2:=fail;
     fi;
 
-    x:= ExtRepOfObj( x );
-    if IsEmpty( x ) then
+    gens1:= List( gens1, ExtRepOfObj );
+    if not ForAll( gens1, i -> Length( i ) = 2 and i[2] = 1 ) then
+      Error( "<gens1> must be proper generators" );
+    fi;
+    gens1:= List( gens1, x -> x[1] );
 
-      # This happens for monoid element objects.
-      mapped:= gens2[1] ^ 0;
+    if     ex2 <> fail
+       and ForAll( ex2, i -> Length( i ) = 2 and AbsInt( i[2] ) = 1 )
+       and Set( List( ex2, i -> i[1] ) ) = Set( gens1 ) then
+
+      # special treatment
+      exp:= List( ex2, i -> i[2] );
+      ex2:= List( ex2, i -> i[1] );
+      mapped:= [];
+      for i in [ 2, 4 .. Length( x ) ] do
+        p:= Position( gens1, x[ i-1 ] );
+        if p = fail then
+          Add( mapped, x[ i-1 ] );
+          Add( mapped, x[  i  ] );
+        else
+          Add( mapped, ex2[p] );
+          Add( mapped, exp[p] * x[i] );
+        fi;
+      od;
+      mapped:= ObjByExtRep( FamilyObj( gens2[1] ), mapped );
 
     else
-      if ex2<>fail and ForAll(ex2,i->Length(i)=2 and AbsInt(i[2])=1) and 
-	 # ensure that all images are different (otherwise we would have to
-	 # deal with cancellation.
-   	 Length(Set(List(ex2,i->i[1])))=Length(ex2) then
-        # special case: all the genimages are generators or their inverses.
-	# We can deal with this by immediately creating a new ExtRep.
-	exp:=List(ex2,i->i[2]<0);
-	ex2:=List(ex2,i->i[1]);
-	mapped:=[];
-	for i in [2,4..Length(x)] do
-	  p:=Position(gens1,x[i-1]);
-	  Add(mapped,ex2[p]);
-	  if exp[p] then
-	    Add(mapped,-x[i]);
-	  else
-	    Add(mapped,x[i]);
-	  fi;
-	od;
-        mapped:=ObjByExtRep(FamilyObj(gens2[1]),mapped);
+
+      p:= Position( gens1, x[1] );
+      if p = fail then
+        mapped:= ObjByExtRep( FamilyObj( gens2[1] ), [ x[1], x[2] ] );
       else
-	mapped:= gens2[ Position( gens1, x[1] ) ] ^ x[2];
-	for i in [ 4,6 .. Length( x ) ] do
-	  exp:= x[ i ];
-	  if exp <> 0 then
-	    mapped:= mapped * gens2[ Position( gens1, x[ i-1 ] ) ] ^ exp;
-	  fi;
-	od;
+        mapped:= gens2[p] ^ x[2];
       fi;
+      for i in [ 4,6 .. Length( x ) ] do
+        exp:= x[ i ];
+        if exp <> 0 then
+          p:= Position( gens1, x[ i-1 ] );
+          if p = fail then
+            mapped:= mapped * ObjByExtRep( FamilyObj( gens2[1] ),
+                                           [ x[ i-1 ], x[i] ] );
+          else
+            mapped:= mapped * gens2[p] ^ exp;
+          fi;
+        fi;
+      od;
+
     fi;
 
     return mapped;
@@ -859,7 +888,7 @@ end );
 InstallMethod( MappedWord,
     "for an assoc. word, a homogeneous list, and a list",
     IsElmsCollsX,
-    [ IsAssocWord, IsAssocWordCollection, IsList ], 0,
+    [ IsAssocWord, IsAssocWordCollection, IsList ],
     MappedWordForAssocWord );
 
 
@@ -1029,8 +1058,8 @@ function( u, v )
 			
 		# at this stage none of the words is a proper prefix of the other one
 		# so remove the common prefix from both words
-		u := Subword( u, l, Length(u) );
-		v := Subword( v, l, Length(v) );
+		u := Subword( u, l+1, Length(u) );
+		v := Subword( v, l+1, Length(v) );
 	fi;
 
 	m := Length( u );
@@ -1078,5 +1107,4 @@ end);
 ##
 
 #E
-##
 

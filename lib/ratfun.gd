@@ -234,12 +234,13 @@ DeclareRepresentation(
 
 
 #1 
+##  \index{External representation of polynomials}
 ##  The representation of a polynomials is a list of the form
 ##  `[<mon>,<coeff>,<mon>,<coeff>,...]' where <mon> is a monomial in
 ##  expanded form (that is given as list) and <coeff> its coefficent. The
 ##  monomials must be sorted according to the total degree/lexicographic
 ##  order (implemented by the function `MonomialTotalDegreeLess'). We call
-##  this the ``external representation'' of a polynomial. (The
+##  this the *external representation* of a polynomial. (The
 ##  reason for ordering is that addition of polynomials becomes linear in
 ##  the number of monomials instead of quadratic; the reason for the
 ##  particular ordering chose is that it is compatible with multiplication
@@ -510,6 +511,7 @@ DeclareGlobalFunction("OnIndeterminates");
 
 
 #4
+##  \index{Expanded form of monomials}
 ##  A monomial is a product of powers of indeterminates. A monomial is
 ##  stored as a list (we call this the *expanded form* of the monomial)
 ##  of the form `[<inum>,<exp>,<inum>,<exp>,...]' where each <inum>
@@ -528,6 +530,9 @@ DeclareGlobalFunction("OnIndeterminates");
 ##  smaller than the second. (This ordering is also used by {\GAP}
 ##  internally for representing polynomials as a linear combination of
 ##  monomials.)
+##
+##  See section~"The Defining Attributes of Rational Functions" for details
+##  on the expanded form of monomials.
 DeclareGlobalFunction("MonomialTotalDegreeLess");
 
 #############################################################################
@@ -539,6 +544,9 @@ DeclareGlobalFunction("MonomialTotalDegreeLess");
 ##  The function takes two
 ##  monomials <a> and <b> in expanded form and returns whether the first is
 ##  smaller than the second.
+##
+##  See section~"The Defining Attributes of Rational Functions" for details
+##  on the expanded form of monomials.
 DeclareGlobalFunction("MonomialRevLexicoLess");
 
 #############################################################################
@@ -567,6 +575,9 @@ DeclareOperation("LeadingCoefficient", [IsRationalFunction]);
 ##  This function takes an external representation <ext> of a polynomial in
 ##  family <fam> and returns the position of the leading monomial in <ext>
 ##  with respect to the monomial order implemented by the function <order>.
+##
+##  See section~"The Defining Attributes of Rational Functions" for details
+##  on the external representation.
 DeclareGlobalFunction("LeadingMonomialPosExtRep");
 
 #5

@@ -169,7 +169,7 @@ gap> GetFusionMap( tbls4, tbls5 );
 \Declaration{NamesOfFusionSources}
 \beginexample
 gap> NamesOfFusionSources( tbls5 );
-[ "2.A5.2", "A5", "3^1+4:2^1+4.s5", "CT1" ]
+[ "2.A5.2", "A5", "S3x2","3^1+4:2^1+4.s5", "s4","5:4","CT1" ]
 \endexample
 
 \Declaration{PossibleClassFusions}

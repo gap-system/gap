@@ -11,8 +11,8 @@
 1111111111
 ##########
 
-Subject: Primitive Groups Library again
 Date: Fri, 22 Oct 1999 10:51:03 +0100
+Subject: Primitive Groups Library again
 From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 There seems to be another bug in the primitive groups library.
@@ -37,8 +37,8 @@ ImmutableMatrix (fix in a minute) and then the same result.
 2222222222
 ##########
 
-Subject: trivial PC group detected!
 Date: Sun, 24 Oct 1999 15:04:35 +0100
+Subject: trivial PC group detected!
 From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 I got the below in the development version. I don't have 4.1 to
@@ -75,10 +75,9 @@ brk>
 3333333333
 ##########
 
-From: Willem de Graaf <wdg@dcs.st-and.ac.uk>
-In-Reply-To: <199910280405.MAA22091@anigosanthos.maths.uwa.edu.au> (message
-	from Alice Niemeyer on Thu, 28 Oct 1999 12:05:53 +0800 (WST))
+Date: Thu, 28 Oct 1999 12:05:53 +0800 (WST))
 Subject: Re: Polynomials
+From: Willem de Graaf <wdg@dcs.st-and.ac.uk> (Really from Alice Niemeyer.)
 
 I could not reproduce Alice's error with polynomials. Is there anybody
 who can?
@@ -120,10 +119,8 @@ gap> Factors(f);
 ##########
 
 Date: Thu, 28 Oct 1999 17:42:25 +0200
-To: gap-trouble@dcs.st-and.ac.uk
-From: Burkhard =?iso-8859-1?Q?H=F6fling?=
-<Burkhard.Hoefling@minet.uni-jena.de> 
 Subject: some minor bugs
+From: Burkhard =?iso-8859-1?Q?H=F6fling?=<Burkhard.Hoefling@minet.uni-jena.de> 
 
 recemtly I discovered a number of minor bugs and some inconsistencies which
 I think could easily be avoided. All problems occur both with GAP 4r1n5 and
@@ -232,8 +229,8 @@ gap> VectorSpace (GF(2), []);
 ##########
 
 Date: Fri, 05 Nov 1999 11:14:14 -0500
-From: David Joyner <wdj@usna.edu>
 Subject: guava test questions
+From: David Joyner <wdj@usna.edu>
 
 I have tested a few commands using the coding theory package
 guava both in Gap3 and in Gap 4 in a win98 pentium 300mhz machine.
@@ -356,11 +353,6 @@ gap> for n in [2..1000] do
   3^4:GL(2,9):2 < GL(4,3)_5, 3^4:GL(2,9):2 < GL(4,3)_6, 3^4:GL(2,9):2 < GL(4,3)_7, 3^4:GL(2,9):2 < GL(4,3)_8, 
   3^4:GL(2,9):2 < GL(4,3)_9, 3^4:GL(2,9):2 < GL(4,3)_10 ]
 
-...
-
-Best wishes,
-             Peter M"uller (Heidelberg)
-
 
 
 ##########
@@ -368,12 +360,8 @@ Best wishes,
 ##########
 
 Date: Thu, 11 Nov 1999 19:43:50 +0100
-From: Burkhard =?iso-8859-1?Q?H=F6fling?=  
-<Burkhard.Hoefling@minet.uni-jena.de>
 Subject: Re: bug in FuncNUMBER_VEC8BIT?
-
-
-Dear Steve,
+From: Burkhard =?iso-8859-1?Q?H=F6fling?=<Burkhard.Hoefling@minet.uni-jena.de>
 
 sorry for the late answer - this time I wanted to run a number of tests
 before replying again.
@@ -467,11 +455,9 @@ gap> for p in smallprimes do
 8888888888
 ##########
 
-From: Max Neunhoeffer <max.neunhoeffer@Math.RWTH-Aachen.De>
 Date: Fri, 12 Nov 1999 01:31:19 +0100
 Subject: Index(g,g) for g a subgroup of an fp group
-
-Dear All!
+From: Max Neunhoeffer <max.neunhoeffer@Math.RWTH-Aachen.De>
 
 Yesterday I noticed the following with GAP4r1f6:
 
@@ -489,8 +475,6 @@ type 'maxlimit := 0; return;' in order to continue without a limit,
 ...
 
 This is also a problem in the current development version.
-##
-Best regards, Max.
 
 
 
@@ -498,11 +482,9 @@ Best regards, Max.
 9999999999
 ##########
 
-From: Hans-Ulrich.Besche@Math.RWTH-Aachen.De
-Subject: strange losses of storage
 Date: Fri, 12 Nov 1999 20:57:48 +0100 (CET)
-
-Dear All,
+Subject: strange losses of storage
+From: Hans-Ulrich.Besche@Math.RWTH-Aachen.De
 
 I observed strange losses of storage in current GAP4, some times even
 giving some kb back. The problem in serious to long time runing
@@ -554,12 +536,8 @@ for i in [ 1 .. 100 ] do
 ##########
 
 Date: Thu, 18 Nov 1999 14:37:53 GMT
-From: Willem de Graaf <wdg@cochran.dcs.st-and.ac.uk>
-##
-Actually from Franz Gaehler, via AH
-
-To: jjm@cochran.dcs.st-and.ac.uk
-
+Subject: SparseActionHomomorphism
+From: Willem de Graaf <wdg@cochran.dcs.st-and.ac.uk> ## Actually FG, via AH.
 
 ahulpke
 Mon Nov 15 21:39:49 GMT 1999
@@ -592,20 +570,12 @@ Error, no method found! For debugging hints type ?Recovery from NoMethodFou
 ##########
 
 Date: Fri, 19 Nov 1999 10:43:04 -0600 (CST)
-From: "Robert F. Morse" <rm43@evansville.edu>
 Subject: Fix to semicong.gi Gap4r1 (fwd)
-
-Dear John,
-  Here is the final message about this bug fix to Willem and Andrew.
-  For completeness, I am sending it to you for your bug database.
-
-Regards,
-    Robert F. Morse
+From: "Robert F. Morse" <rm43@evansville.edu>
 
 ---------- Forwarded message ----------
 Date: Fri, 19 Nov 1999 06:16:35 -0600 (CST)
 
-Dear Andrew and Willem,
   Priority is low.
 
   Description. The internal routine SemigroupCongruenceIteratorData
@@ -627,8 +597,8 @@ gap> EquivalenceRelationPartition(c);;
 ##########
 
 Date: Tue, 23 Nov 1999 16:09:48 +0000
-From: Steve Linton <sal@dcs.st-and.ac.uk>
 Subject: Elements
+From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 > However the enumeration of conjugates here is quite slow. (`Elements'
 > translates to `AsSSortedList' and the
@@ -676,9 +646,9 @@ or you can return to continue
  13 13 13 
 ##########
 
-From: Franz Gaehler <gaehler@ITAP.Physik.Uni-Stuttgart.De>
-Subject: mutability problem
 Date: Wed, 24 Nov 1999 16:30:33 +0100 (CET)
+Subject: mutability problem
+From: Franz Gaehler <gaehler@ITAP.Physik.Uni-Stuttgart.De>
 
 In the current development version, the following mutability problem
 occurs. Suppose G is a group, r a record, and f a function defining
@@ -697,45 +667,14 @@ Orbit( G, r, ImageAffineSubspaceLattice );;
 IsMutable(r);
 Print(ImageAffineSubspaceLattice);
 
-Regards, Franz
-
 
 
 ##########
  14 14 14 
 ##########
 
-From: alexander Hulpke <ahulpke@math.ohio-state.edu>
-Subject: Re: mutability problem
-Date: Wed, 24 Nov 1999 10:42:08 -0500 (EST)
-
-> In the current development version, the following mutability problem
-> occurs. Suppose G is a group, r a record, and f a function defining
-> an action of G on r. Then, the call Orbit( G, r, f );  makes the
-> mutable record r immutable, even though f does not change its
-> arguments. This is a rather undesirable side effect. GAP 4.1 fix 7,
-> on the other hand, works as it should.
-
-I'm a bit suspicious towards orbits on mutable objects -- after all we
-introduced immuatbility exactly to avoid serious shortcomings in these
-algorithms performance which were due to the fact that in GAP3 objects were
-mutable:
-Inside an orbit algorithm all orbit elements therefore are immutable. What
-one could do is to `ShallowCopy' the orbit seed, in case it is mutable (then
-the orbit does not contain the seed any longer, but only an equal object),
-though I would rather favour the policy that objects which are acted on must
-be immutable.
-
-  Alexander
-
-
-
-##########
- 15 15 15 
-##########
-
-Subject: Re: Bug in ConvertToMatrixRep 
 Date: Thu, 09 Dec 1999 13:19:07 +0000
+Subject: Re: Bug in ConvertToMatrixRep 
 From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 > the following happens in the development version of GAP 4:
@@ -762,12 +701,12 @@ The last command gives false when the bug is present.
 
 
 ##########
- 16 16 16 
+ 15 15 15 
 ##########
 
 Date: Thu, 9 Dec 1999 12:14:56 GMT
-From: chron entry for GAP <gapchron@dcs.st-and.ac.uk>
 Subject: committed 'GAP/4.0/lib ratfun.gi'
+From: chron entry for GAP <gapchron@dcs.st-and.ac.uk>
 
 gapchron
 Thu Dec  9 12:14:56 GMT 1999
@@ -782,8 +721,6 @@ fixed problem with the addition of proper rational functions
 with different denominators
 
 (The bug had been observed by J"urgen M"uller.)
-
-Thomas
 
 before the fix:
 --------------
@@ -802,12 +739,12 @@ gap> x/y + y/x;
 
 
 ##########
- 17 17 17 
+ 16 16 16 
 ##########
 
 Date: Tue, 14 Dec 1999 13:22:07 +0100 (CET)
-From: Thomas.Breuer@math.rwth-aachen.de
 Subject: Re: ConjugatorAutomorphism
+From: Thomas.Breuer@math.rwth-aachen.de
 
 Mathias Kratzer wrote to the GAP Forum
 
@@ -869,17 +806,15 @@ If there is no objection then I make the relevant changes,
 and write an answer to the Forum.
 (The bug will be fixed with the next bugfix.)
 
-Thomas
-
 
 
 ##########
- 18 18 18 
+ 17 17 17 
 ##########
 
-From: alexander Hulpke <ahulpke@math.ohio-state.edu>
-Subject: Re: Subgroup Lattice question
 Date: Thu, 16 Dec 1999 08:03:16 -0500 (EST)
+Subject: Re: Subgroup Lattice question
+From: alexander Hulpke <ahulpke@math.ohio-state.edu>
 
 Suggested response to Xiao Gang:
 
@@ -905,12 +840,12 @@ I suppose the first `6' in the line above you mean to be #9?
 
 
 ##########
- 19 19 19 
+ 18 18 18 
 ##########
 
 Date: Wed, 22 Dec 1999 14:42:47 +0100 (CET)
-From: Thomas.Breuer@math.rwth-aachen.de
 Subject: Re: whitespace in Help
+From: Thomas.Breuer@math.rwth-aachen.de
 
 Steve wrote
 
@@ -925,17 +860,15 @@ whitespace immediately after the `?' was silently removed.
 So only the case that the `?' is not in the first column
 after the `gap> ' prompt is left.
 
-Thomas
-
 
 
 ##########
- 20 20 20 
+ 19 19 19 
 ##########
 
 Date: Thu, 6 Jan 2000 09:04:19 GMT
-From: chron entry for GAP <gapchron@dcs.st-and.ac.uk>
 Subject: committed 'GAP/4.0/lib morpheus.gi'
+From: chron entry for GAP <gapchron@dcs.st-and.ac.uk>
 
 gapchron
 Thu Jan  6 09:04:13 GMT 2000
@@ -965,20 +898,18 @@ gap> InnerAutomorphismsAutomorphismGroup( AutomorphismGroup(
 
 
 ##########
- 21 21 21 
+ 20 20 20 
 ##########
 
 Date: Fri, 10 Dec 1999 14:35:41 -0500
 Subject: AutomorphismGroup fails in particular instances
 From: John Johnson <smiley@metalab.unc.edu>
-To: GAP Trouble <gap-trouble@dcs.st-and.ac.uk>
 
 Has anyone encountered a situation where JS Leon's backtracking programs
 fail? I get the following:
 
 gap> AutomorphismGroup(SimplexCode(4));
 Bus Error
-
 
  Error: Library block code not found in specified library.
  Program was executing function read01Matrix (line 234 in file
@@ -1005,15 +936,12 @@ an eye out.
 
 
 ##########
- 22 22 22 
+ 21 21 21 
 ##########
 
 Date: Wed, 19 Jan 2000 23:43:01 -0800 (PST)
-From: Jacob Hirbawi <jhirbawi@yahoo.com>
 Subject: Trouble with "Order" function
-To: gap-trouble@dcs.st-and.ac.uk
-
-Dear Forum,
+From: Jacob Hirbawi <jhirbawi@yahoo.com>
 
 I ran into this problem with "Order" for this 4x4
 matrix :
@@ -1057,10 +985,8 @@ problems.
 #####FURTHER ON SAME BUG (BY THOMAS) #######
 
 Date: Thu, 20 Jan 2000 14:42:17 +0100 (CET)
-From: Thomas.Breuer@Math.RWTH-Aachen.De
-To: gap-dev@dcs.st-and.ac.uk
 Subject: strange bug
-
+From: Thomas.Breuer@Math.RWTH-Aachen.De
 
 Today I had sent an answer to Jacob Hirbawi who had reported
 an inefficiency in the `Order' method for characteristic zero matrices.
@@ -1115,7 +1041,19 @@ the problem does not occur, so it must have been introduced within
 the last week.
 Has anybody an idea what may have been broken?
 
-Thomas
+
+
+##########
+ 22 22 22 
+##########
+
+Date: Fri, 21 Jan 2000 18:10:07 +0100 (CET)
+Subject: Re: trivial-problems
+From: Werner Nickel <nickel@mathematik.tu-darmstadt.de>
+
+>     IsPcGroup( AbelianGroup( IsPcGroup, [1] ) );
+>     DerivedSeries( AbelianGroup( [1] ) );
+>     ElementaryAbelianGroup( 1 );
 
 
 
@@ -1123,47 +1061,13 @@ Thomas
  23 23 23 
 ##########
 
-From: Werner Nickel <nickel@mathematik.tu-darmstadt.de>
-To: Thomas.Breuer@math.rwth-aachen.de
-Date: Fri, 21 Jan 2000 18:10:07 +0100 (CET)
-Subject: Re: trivial-problems
-
->     IsPcGroup( AbelianGroup( IsPcGroup, [1] ) );
->     DerivedSeries( AbelianGroup( [1] ) );
->     ElementaryAbelianGroup( 1 );
-
-I think I should look into this.  I'll have a look at it on Sunday.
-
-Werner.
-
-
-
-##########
- 24 24 24 
-##########
-
-To: gap-trouble@dcs.st-and.ac.uk
+Date: 24 Jan 2000 12:58:48 +0100
 Subject: Possible bugs
 From: Michael Leithold <leithold@extended.de>
-Date: 24 Jan 2000 12:58:48 +0100
 
 Gap 4.1 bugfix 7 on linux and aix:
 
-gap> F:=SymmetricGroup(4);
-Sym( [ 1 .. 4 ] )
-gap> M:=NormalSubgroups(F)[2];                     ## ALREADY
-Group([ (1,4)(2,3), (1,2)(3,4) ])                       REPORTED
-gap> G:=FactorGroup(F,M);                                 AND
-<pc group of size 6 with 2 generators>                      DEALT
-gap> AutG:=AutomorphismGroup(G);                              WITH ##
-<group of size 6 with 2 generators>
-gap> InnG:=InnerAutomorphismsAutomorphismGroup(AutG);
-[ ^f1, ^f2 ]
-
-InnerAutomorphismsAutomorphismGroup is supposed to return a group not
-a list.
-
-Another problem:
+[... cut some of report here ...]
 
 gap> F:=SL(2,13);
 SL(2,13)
@@ -1179,13 +1083,11 @@ LargestMovedPoint( G ) called from
 
 
 ##########
- 25 25 25 
+ 24 24 24 
 ##########
 
-To: Thomas.Breuer@math.rwth-aachen.de
-cc: gap-dev@dcs.st-and.ac.uk
-Subject: Re: SmithNormalForm 
 Date: Fri, 21 Jan 2000 12:44:55 +0000
+Subject: Re: SmithNormalForm 
 From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 > Volkmar Felsch observed
@@ -1202,13 +1104,12 @@ Fixed now (it already worked for matrices that had more rows than columns).
 
 
 ##########
- 26 26 26 
+ 25 25 25 
 ##########
 
 Date: Tue, 25 Jan 2000 15:40:24 +0100 (CET)
-From: Thomas.Breuer@Math.RWTH-Aachen.De
-To: gap-dev@dcs.st-and.ac.uk
 Subject: About "IrreducibleRepresentations"
+From: Thomas.Breuer@Math.RWTH-Aachen.De
 
 > I used the function "IrreducibleRepresentations" with GAP4.
 > It works for the group A(4) but not for the group A(5), why?
@@ -1239,15 +1140,14 @@ So the question is why a pcgs is required.
 case via a pcgs are correct, since the modules are computed independent
 of the pcgs.)
 
-Thomas
-
 
 
 ##########
- 27 27 27 
+ 26 26 26 
 ##########
 
 Date: Fri, 28 Jan 2000 13:40:20 +0000
+Subject: KM Briggs' question.
 From: Steve Linton <sal@dcs.st-and.ac.uk>
 
 A user ("Dr K.M. Briggs" <kmb28@cus.cam.ac.uk>) reported a problem, which 
@@ -1273,12 +1173,12 @@ RelatorRepresentatives is modifying it.
 
 
 ##########
- 28 28 28 
+ 27 27 27 
 ##########
 
 Date: Fri, 21 Jan 2000 14:02:23 -0600 (CST)
-From: Scott Murray <murray@math.uchicago.edu>
 Subject: Bug in DefaultFieldOfMatrix
+From: Scott Murray <murray@math.uchicago.edu>
 
 Has anyone other than myself experienced the
 following bugs:
@@ -1314,14 +1214,12 @@ cause, but occurs in both versions of gap.
 
 
 ##########
- 29 29 29 
+ 28 28 28 
 ##########
 
-From: alexander Hulpke <ahulpke@math.ohio-state.edu>
-Subject: Re: bug in MinimalPolynomial
-To: murray@math.uchicago.edu (Scott Murray)
 Date: Fri, 28 Jan 2000 18:18:59 -0500 (EST)
-Cc: gap-dev@dcs.st-and.ac.uk (gap-dev)
+Subject: Re: bug in MinimalPolynomial
+From: alexander Hulpke <ahulpke@math.ohio-state.edu>
 
 > There appears to be a bug in MinimalPolynomial:
 > 
@@ -1339,13 +1237,12 @@ change and things are back to normal.
 
 
 ##########
- 30 30 30  
+ 29 29 29 
 ##########
 
 Date:           Fri, 28 Jan 2000 22:02:00 +0200
-From: "Alexander B. Konovalov" <algebra@hotmail.zp.ua>
-To: Multiple recipients of list <GAP-Forum@dcs.st-and.ac.uk>
 Subject:        Lie nilpotent group rings
+From: "Alexander B. Konovalov" <algebra@hotmail.zp.ua>
 
 it is evident that the associated Lie algebra of a modular group algebra of,
 for example , a dihedral group of order 128 over GF(2) is Lie nilpotent. As
@@ -1378,13 +1275,12 @@ true
 
 
 ##########
- 31 31 31 
+ 30 30 30 
 ##########
 
 Date: Sat, 29 Jan 2000 11:52:55 -0500 (EST)
-From: Gene Cooperman <gene@ccs.neu.edu>
-To: gap-dev@dcs.st-and.ac.uk
 Subject: bug in GAP 8-bit matrix/vector representation
+From: Gene Cooperman <gene@ccs.neu.edu>
 
 I think I found a bug in GAP's strategy for converting to 8 bit
 matrix representation.  Read the details of the bug below,
@@ -1465,13 +1361,12 @@ or you can return to continue
 
 
 ##########
- 32 32 32 
+ 31 31 31 
 ##########
 
-From: Werner Nickel <nickel@mathematik.tu-darmstadt.de>
-Subject: Re: [Fwd: committed 'GAP/4.0/lib pquot.gi']
-To: jjm@dcs.st-and.ac.uk
 Date: Mon, 31 Jan 2000 14:46:13 +0100 (CET)
+Subject: Re: [Fwd: committed 'GAP/4.0/lib pquot.gi']
+From: Werner Nickel <nickel@mathematik.tu-darmstadt.de>
 
 gap> C := CyclicGroup( 2 );;
 gap> G := WreathProduct( C, C );;
@@ -1484,8 +1379,718 @@ true
 
 
 ##########
+ 32 32 32 
+##########
+
+Date: Tue, 1 Feb 2000 14:41:57 +0100 (CET)
+Subject: Re: algebra
+From: Thomas.Breuer@Math.RWTH-Aachen.De (reply to Sean Hallgren)
+
+you wrote to gap-trouble.
+
+> It seems to me that the following show return zero for both calls
+> to dimension.  I construct an algebra that only contains zero, and
+> then I mulitply it by something.
+> 
+> G:=SymmetricGroup(2);
+> A:=GroupRing(GaussianRationals,G);
+> emb:=Embedding(G,A);
+> z:=Zero(A)*A;
+> a:=z*()^emb;
+> #Dimension(z)=0
+> #Dimension(a)=1
+
+Thank you very much for this report.
+This bug will be fixed in the next version of GAP 4.
+
+
+
+##########
  33 33 33 
 ##########
 
+Date: Wed, 19 Jan 2000 11:14:36 GMT
+Subject: Re: Bug report on Guava 1.4 for GAP4
+From: Willem de Graaf <wdg@dcs.st-and.ac.uk> (reply to Emanuel Viterbo)
+
+> I have some trouble with Goppa Codes
+> Here is the problem
+> 
+> gap> x := Indeterminate( GF(2), "x" );;  
+> gap> L := Elements( GF(8) );;   
+> gap> G := x^2+x+1;; 
+> gap> C := GoppaCode( G, L );
+> Error, no method found! For debugging hints type ?Recovery from
+> NoMethodFound
+> Error no 1st choice method found for `CoefficientsRing' on 1 arguments
+> at
+> Error( no_method_found );
+> CoefficientsRing( DefaultRing( p ) ) called from
+
+In my version of Guava I cannot reproduce this error. 
+Could you maybe at the brk> prompt type `p;' to see what
+the value of `p' is at that stage (and send me the result)?
+
+
+
+##########
+ 34 34 34 
+##########
+
+Date: Mon, 7 Feb 2000 16:28:38 GMT
+Subject: lag and intersection
+From: Willem de Graaf <wdg@dcs.st-and.ac.uk>
+
+gap> G:= Group( (1,2));
+Group([ (1,2) ])
+gap> FG:= GroupRing( GF(2), G );;
+gap> L1:= LieAlgebra( FG );;
+gap> B1:= Basis( L1 );;
+gap> IsLieObjectsModuleRep:= IsLieObjectsModule;
+<Operation "IsLieObjectsModule">
+gap> RequirePackage("lag");
+true
+gap> FH:= GroupRing( GF(2), G );;
+gap> L2:= LieAlgebra( FG );;
+gap> B2:= Basis( L2 );;
+gap> Intersection( B1, B2 ); 
+[ v.2, v.1 ]
+gap> L2:= LieAlgebra( FH );;
+gap> B2:= Basis( L2 );;
+gap> Intersection( B1, B2 );
+[ v.1 ]
+
+
+
+##########
+ 35 35 35 
+##########
+
+Date: Wed, 22 Dec 1999 15:03:00 +0100 (CET)
+Subject: Re: ElementaryAbelianGroup( 1 )
+From: Werner Nickel <nickel@mathematik.tu-darmstadt.de>
+
+I am following up Hans-Ulrich's mail about the trivial elementary
+abelian group. Personally, I think that the trivial group is not
+elementary abelian but the problem he raises is really with trivial
+pc-groups and needs to be fixed.  This has been on the list for a
+while and it's time to get it out of the way.
+
+Playing with ElementaryAbelianGroup() I observed the following:
+
+gap> G := ElementaryAbelianGroup( IsPermGroup, 6 );
+Group([ (1,2), (3,4,5) ])
+gap> IsElementaryAbelian( G );
+false
+gap> ElementaryAbelianGroup( IsPcGroup, 6 );
+Error <n> must be a prime power at
+[...]
+
+There are some inconsistencies here.  I would define an elementary
+abelian group as a group which is isomorphic to a direct product of
+cyclic groups or order p, p a prime.  Sometimes people define
+elementary abelian in a somewhat more general way.  The (only) method
+for IsElementaryAbelian checks if the generators of the group have
+order dividing p for a prime p.  If no one objects, I add an error
+message to ElementaryAbelianGroup() for PermGroups.
+ 
+Unrelated, but found along the lines is this:
+
+gap> ApplicableMethod( ElementaryAbelianGroupCons, [IsPermGroup,6] );   
+fail
+
+##  ##  ## Below is what we want for the first example 
+        ## (rather than the creation of Group([ (1,2), (3,4,5) ])
+
+gap> G := ElementaryAbelianGroup( IsPermGroup, 6 );
+Error <n> must be a prime power at
+Error( "<n> must be a prime power" );
+ElementaryAbelianGroupCons( arg[1], arg[2] ) called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk>
+
+
+
+##########
+ 36 36 36 
+##########
+
+Date: Thu, 3 Feb 2000 13:49:21 -0500 (EST)
+Subject: Re: FactorGroup
+From: alexander Hulpke <ahulpke@math.ohio-state.edu>
+
+John wrote:
+> Using the released version, I create
+> gap> f:= FreeGroup(1);
+> gap> x:=GeneratorsOfGroup(f)[1];
+> gap> g:=Group(x^2);
+> gap> IsNormal(f,g);
+> gap> quo:=FactorGroup(f,g);     
+> Record: '<rec>.freeGroup' must have an assigned value at
+> return GeneratorsOfGroup( ElementsFamily( FamilyObj( G ) )!.freeGroup );
+> FreeGeneratorsOfWholeGroup( N ) called from
+> func( elm ) called from
+> List( Ggens, function ( elm )
+>       return MappedWord( elm, FreeGeneratorsOfWholeGroup( N ), 
+>          GeneratorsOfGroup( Q ) );
+>   end ) called from
+> oper( super, sub ) called from
+> NaturalHomomorphismByNormalSubgroupNC( G,
+
+So how would one go to debug this:
+Lets first see where we are: `NaturalHomomorphismByNormalSubgroupNC' gets
+called, this calls `NaturalHomomorphismByNormalSubgroupOp' (because the way
+the function/attribute pairs are created, this operation is displayed as
+`oper' in the backtrace. Usually if you encounter `oper' the operation is
+just the same name as the previous function just with an added `Op')
+
+The error we get is that a method is (via `FreeGeneratorsOfWholeGroup')
+looking for a !.freeGroup component in
+the elements family. This is missing. So we could have two errors: Either
+the component is indeed missing or we fell into a wrong method.
+
+If we now look at the calling method (in grpfp.gi) 
+for `NaturalHomomorphismByNormalSubgroupNCOrig', we see that this is a
+method for subgroups of fp groups (there is no special method for free
+groups) which is applicable because every free group is also an fp group.
+So the method seems alright, the `freeGroup' component is missing.
+
+If we now search how this component is created, we find it is specially set
+to the elements family when fp groups are created. Its not set for free
+groups.
+
+So we have to add one line in `grpfree.gi' which creates free groups. The
+elements family gets assigned the component !.freeGroup. (in line 512)
+
+With this change (I have commited) the example runs through. Voil'a.
+
+
+
+##########
+ 37 37 37 
+##########
+
+Date: Mon, 07 Feb 2000 14:46:43 +0000
+Subject: IsIntegerMatrixGroup
+From: Steve Linton <sal@dcs.st-and.ac.uk>
+
+In a private email, a GAP user reported to me:
+
+gap> f;
+Group([ [ [ 0, 1 ], [ 1, 0 ] ], [ [ 11, 2 ], [ 8, 12 ] ], [ [ 11, 4 ], [ 7, 5 
+] ] ])
+gap> Order(f);                                                                 
+  FFE operations: divisor must not be zero at
+  rat := NumeratorRat( rat ) * One( ffe ) / DenominatorRat( rat );
+  GeneratorsOfGroup( grp ) called from
+  IsFinite( G ); called from
+  <function>( <arguments> ) called from read-eval-loop
+  Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+  or you can return a new divisor to continue
+
+The problem comes from the method:
+
+InstallMethod( IsIntegerMatrixGroup, true, [ IsCyclotomicMatrixGroup ], 0,
+    G -> ForAll( Flat( GeneratorsOfGroup( G ) ), IsInt ) );
+
+in grpramat.gi
+
+A quick fix is to also check for Determinant +-1 of all generators, but this 
+is relatively expensive. Is there a cheaper way?
+
+
+
+##########
+ 38 38 38 
+##########
+
+Date: Sun, 30 Jan 2000 15:34:52 +0100 (CET)
+Subject: Re: minor bug in GAP startup
+From: Werner Nickel <nickel@mathematik.tu-darmstadt.de> (reply to gene)
+
+> Sorry.  I can't reproduce it in a simple version.  The bug seems to
+> be more subtle than I reported.  Since it is unusual, you may
+> simply ignore the bug.  But if you're interested, here's what I do:
+> ===
+> 
+> 
+> 1)  I'm on RedHat 4.1  (I still haven't upgraded.)
+> 2)  I set up my .gaprc with an error.  In my latest test, a .gaprc
+>     file with a single line was enough:
+>                             Read := 3;
+> 3)  I cd to the bin directory, and I type:  ./gap.sh
+> 4)  GAP reports:
+
+> Variable: 'Read' is read only
+> not in any function
+> Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+> or you can return after making it writable to continue
+> brk> 
+> 
+> 5) I type ^D
+> 6) GAP prints the  gap>  prompt.
+> 7) I type:
+> Read("../../solmxgrp-new.gi");
+> 8) GAP prints another gap> prompt on the next line, without executing.
+> 9) I use the up-arrow to bring back the input line:
+> Read("../../solmxgrp-new.gi");
+> 10) This time, GAP prints:
+> 
+> operation already installed at
+> INSTALL_METHOD_ARGS( oper, func );
+> operation already installed at
+> INSTALL_METHOD_ARGS( oper, func );
+> operation already installed at
+> INSTALL_METHOD_ARGS( oper, func );
+> operation already installed at
+> INSTALL_METHOD_ARGS( oper, func );
+> HELLO.  THIS IS solmxgrp-new.gi
+> 
+> 11) It's possible the bug is related to my use of Read().  I haven't
+> seen the bug when I tried something simple like typing the number:  3
+
+I managed to reproduce the bug. The file tttt contains: 
+
+Print( "1\n"); Print( "1a\n");
+Print( "2\n");
+Print( "3\n");
+Print( "4\n");
+Print( "5\n");
+
+This is what happens:
+
+brk> 
+gap> Read("tttt");
+1
+gap> 
+
+Obviously, GAP executes only the first command in the file.
+The bug is not specific to the .gaprc file.  If an error occurs in
+any of the files on the gap command line, the same behaviour happens.
+However, if you don't quit from the break loop, but type return, the
+bug does not happen.  
+
+
+
+##########
+ 39 39 39 
+##########
+
+Date: Wed, 26 Jan 2000 15:01:36 -0500 (EST)
+Subject: Re: p groups
+From: Gene Cooperman <gene@ccs.neu.edu>
+
+Scott,
+    I've tested a bug that you sent me on the original GAP release
+and on gapdev at St. Andrews.  I don't see any bug.  You reported:
+
+===
+
+gap> G := Group([ [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ],
+>   [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]);            
+Group([ [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ], 
+  [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ])
+gap> IsNilpotent(G);
+true
+gap> Size(G);
+[ I SEE THE CORRECT ANSWER, 8, BUT YOU WROTE YOU SEE THE STUFF BELOW. ]
+Error, no method found! For debugging hints type ?Recovery from NoMethodFound
+Error no 2nd choice method found for `MakeHomChain' on 1 arguments at
+Error( no_method_found );
+MakeHomChain( G ) called from
+ChainSubgroup( G ); called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+
+
+
+##########
+ 40 40 40 
+##########
+
+Date: Mon, 07 Feb 2000 09:49:42 +0000
+Subject: One last bug in alltest
+From: Steve Linton <sal@dcs.st-and.ac.uk>
+
+Running alltest (in a system checked out last Friday), has just one unresolved 
+bug, which shows up in grpconst.tst, but might come from somewhere else.
+
+To reproduce
+
+RequirePackage("grpconst");
+gap> ConstructAndTestAllGroups := function( size )
+> local grps;
+>     grps := ConstructAllGroups( size );
+>    if Length( grps ) <> NumberSmallGroups( size ) then
+>        Print( "wrong number of groups of size ", size, "\n" );
+>    fi;
+>    if Set( List( grps, IdGroup ) ) <>
+>       List( [ 1 .. NumberSmallGroups( size ) ], x -> [ size, x ] ) then
+>        Print( "wrong ids for the groups of size ", size, "\n" );
+>    fi;
+> end;
+gap> ConstructAndTestAllGroups( 840 );;
+
+The problem seems to arise with a group automorphism (gens[1] at the point of 
+the break loop) which has somehow got unequal source and range and so is not 
+in IsEndoGeneralMapping and lacks a One.
+
+In fact, something very odd is happening around this object:
+
+brk> Source(gens[1]) = H;
+true
+brk> Range(gens[1]) = H; 
+true
+brk> Source(gens[1]) = Range(gens[1]);
+true
+brk> IsEndoGeneralMapping(gens[1]);
+false
+brk> Source(gens[1]);
+<pc group of size 14 with 2 generators>
+brk> Range(gens[1]);
+<pc group of size 14 with 2 generators>
+brk> last = last2;
+false
+brk> 
+
+The behaviour is the same whether the autpgrp package is there or not.
+
+
+
+##########
+ 41 41 41 
+##########
+
+Date: Mon, 7 Feb 2000 17:14:52 +0100 (CET)
+Subject: Re: One last bug in alltest
+From: Thomas.Breuer@Math.RWTH-Aachen.De
+
+Alexander observed
+
+> > The actual object for the first mapping is broken. It doesn't have 
+> > IsEndoGeneralMapping
+> 
+> This is due to `SetIsConjugatorAutomorphism' to false.
+> `IsConjugatorAutomorphism' is now declared to be a synonym for
+> `IsEndoGeneralMapping and IsConjugatorIsomorphism'.
+> 
+> I suppose setting it to false sets both constituents to `false', which is
+> not the logical negation (but lacking `or' the only thing one can do).
+> 
+> What might help is to change this declaration. I don't have time at the
+> moment to look into this (probably I can do it this or tomorrow afternoon).
+> 
+> This might mean also other `and' declarations of properties could be
+> affected by a similar problem.
+
+Indeed there is a problem:
+
+    gap> g:= Group(());;
+    gap> f1:= NewFilter("f1");;  f2:= NewFilter("f2");;  f3:= f1 and f2;;
+    gap> SetFilterObj( g, f3 );
+    gap> f1(g);  f2(g);
+    true
+    true
+    gap> ResetFilterObj( g, f3 );
+    gap> f1(g);  f2(g);
+    false
+    false
+
+Apparently we have never thought about what it means to set an
+``and-filter'' to `false'!
+I have no idea how to deal with this situation in general.
+
+In the example, the correct filter one wants to set to `false'
+is `IsConjugatorIsomorphism', in order to express that an *outer*
+automorphism of the group in question is given --this group is
+known to be abelian.
+(However, if the automorphism is in fact the identity
+--there was a discussion about this-- then it *is* of course a
+conjugator isomorphism!)
+
+
+
+##########
+ 42 42 42 
+##########
+
+Date: Thu, 27 Jan 2000 14:38:54 +0100 (CET)
+Subject: Re: p groups
+From: Thomas.Breuer@Math.RWTH-Aachen.De
+
+- `IsPGroup' is declared as a property for any group, so the
+  finiteness requirement will cause the method to be not applicable
+  to groups that know to be abelian but do not know whether they are
+  finite.
+  (This case is probably unusual.)
+  Until yesterday, the generic method for `IsPGroup' also required
+  `IsFinite',
+  so calling `IsPGroup' for a group that does not know whether it is
+  finite (e.g., a newly created f.p. group) gave a ``no method found''
+  error.
+  I have now changed the generic method not to require `IsFinite',
+  so in principle the more specific method may require `IsFinite'.
+
+
+
+##########
+ 43 43 43 
+##########
+
+Date: Tue, 1 Feb 2000 14:27:58 -0500 (EST)
+Subject: bug in group homomorphism?
+From: Gene Cooperman <gene@ccs.neu.edu>
+
+I seem to have an example of a homomorphism from one group to another
+group, such that the kernel of the homomorphism is a monoid.
+The generators of the "monoid" kernel are all members of the
+source group.  Yet GAP does not realize that the monoid is a group.
+The example follows below.  I would guess this should be easy to fix.
+
+# ===============================
+
+src := Group(
+[ [ [ Z(3)^0, Z(3), Z(3)^0, Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0 ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0 ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3), Z(3)^0 ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, Z(3), Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, Z(3), 0*Z(3), Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
+);
+
+img := Group(
+[ [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3), Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0 ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+  [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+      [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
+);
+
+elt := [ [ Z(3)^0, Z(3), Z(3)^0, Z(3), 0*Z(3) ],
+  [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+  [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+  [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+  [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ];
+
+fun := h->Comm( h, elt );
+
+hom := GroupHomomorphismByFunction( src, img, fun );
+
+ker := Kernel(hom);
+
+# ker is:  <monoid with 81 generators>
+#  even though it should be a subgroup of src, which is a group.
+#  I confirmed that List(ker,INV); works, producing inverses.
+
+ForAny( GeneratorsOfMagmaWithOne(ker), g->g in src); # => true
+
+
+
+##########
+ 44 44 44 
+##########
+
+Date:           Fri, 04 Feb 2000 12:29:23 -0800
+From: Bill Thurston <wpt@math.ucdavis.edu>
+Subject:        Problem with GQuotients
+
+	Nathan Dunfield and I have been using GAP to try to search
+through subgroups of finite index in fundamental groups of three-manifolds,
+to test the conjecture that there are always subgroups of finite index
+with epimorphisms to Z; we've been checking the Census of 10,000
+3-manifolds.  GQuotients is usually effective for finding the
+desired subgroups, but sporadically, it bombs, as illustrated in the
+following session, (quoted from email from Nathan):
+|
+|I've looked into it and it's really bizarre.  Its
+|definately a bug of some sort.  The problem is that it somehow manages
+|to create an immutable list where it usually creates a mutable one.
+|So if "re-enter" the list in break mode and continue, the function
+|finishes fine.  Further calls to GQuotients produce correct answers.
+|Look at this:
+|
+|gap>  F := FreeGroup(["a","b"]);;  a := F.1;; b := F.2;;
+|gap>  G := F/[ a^3*b^3*a^3*b^-1*a^-1*b^-1*a^-1*b^-1, a*b^4*a^4*b^4*a*b*a*b ];;
+|gap>  GQuotients(G, AlternatingGroup(5));
+|Lists Assignment: <list> must be a mutable list at
+|list[i] := - list[i];
+|RelatorRepresentatives( grels ) called from
+|AugmentedCosetTableMtc( G, H, -1, "_x" ) called from
+|Size( FpGroupPresentation( p ) ) called from
+|ExcludedOrders( F, List( Fgens, function ( i )
+|        return e;
+|    end ) ) called from
+|<function>( <arguments> ) called from read-eval-loop
+|...
+|brk> list;
+|[1, 40]
+|
+|# Let's confirm "list" is immutable;
+|
+|brk> list[1] := 2;
+|Lists Assignment: <list> must be a mutable list
+|...
+|brk_02> quit;
+|
+|# Now "fix" the problem, and the function finishes fine.
+|
+|brk> list := [1,40];
+|[ 1, 40 ]
+|brk> return;
+|[  ]
+|
+|# and now it works again.
+|
+|gap> GQuotients(G, CyclicGroup(20));
+|[ [ a, b ] -> [ f2*f3^2, f1 ] ]
+|
+|There's nothing special about the choice of alternating group in the
+|first call to GQuotients, everything else I tried produced the same
+|result.
+
+
+
+##########
+ 45 45 45 
+##########
+
+Date: Thu, 03 Feb 2000 14:13:23 +0000
+Subject: Testing
+From: Steve Linton <sal@dcs.st-and.ac.uk>
+
+testall currently gives 4 problems. 
+This looks like two real problems: SetModuleOfExtension and something with 
+Subspaces.
+I am inclined to move grpconst.tst out of testall, because users might not 
+have the package, or might not have TeXed the documentation. Maybe we should 
+have
+extratst.g  or something that gathers everything that is not in testall.
+
+        >>>>>>>>>>>>>>>>>>1<<<<<<<<<<<<<<<
+
+testing: /scratch/4.0/tst/grpmat.tst
++ Variable: 'SetModuleOfExtension' must have an assigned value
+- 24
+grpmat.tst             87666           1170    (next ~ 3 sec)
+
+         >>>>>>>>>>>>>>>>>2<<<<<<<<<<<<<<<
+
+### for this, see next bug....
+
+        >>>>>>>>>>>>>>>>>>>>>3<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+testing: /scratch/4.0/tst/morpheus.tst
++ Variable: 'SetModuleOfExtension' must have an assigned value
++ Variable: 'autd8' must have a value
+- 8
+
+        >>>>>>>>>>>>>>>>>>>>>4<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+testing: /scratch/4.0/tst/grpconst.tst
++ #I  Package `grpconst': cannot load documentation, no manual index file 
+`doc/m\
++ anual.six'
++ #I -------- The AutPGroup share package ----------
++ #I -- Computing automorphism groups of p-groups --
++     -----------------------------------------------
++     ---- Algorithms to construct finite groups ----
++     ----- Hans Ulrich Besche and Bettina Eick -----
++     -----------------------------------------------
++     --------------- See ?GrpConst -----------------
++     -----------------------------------------------
+-     ----------------------------------------------- 
+-     ---- Algorithms to construct finite groups ---- 
+-     ----- Hans Ulrich Besche and Bettina Eick ----- 
+-     ----------------------------------------------- 
+-     --------------- See ?GrpConst ----------------- 
+-     ----------------------------------------------- 
++ Variable: 'SetModuleOfExtension' must have an assigned value
++ Variable: 'SetModuleOfExtension' must have an assigned value
++ Variable: 'SetModuleOfExtension' must have an assigned value
++ Variable: 'SetModuleOfExtension' must have an assigned value
++ Variable: 'SetModuleOfExtension' must have an assigned value
+grpconst.tst        16097410           9280
+
+
+
+##########
+ 46 46 46 
+##########
+
+Date: Thu, 03 Feb 2000 14:13:23 +0000
+Subject: Testing
+From: Steve Linton <sal@dcs.st-and.ac.uk>
+
+### see also the previous bug, since these reported together.
+
+testing: /scratch/4.0/tst/vspcrow.tst
++ Variable: 'SubspacesDim' must have a value
+- Subspaces( ( GF(3^2)^3 ), 2 )
++ Variable: 'subsp' must have a value
+- 91
++ Variable: 'subsp' must have a value
++ [ -5, 5, 1 ]
+- VectorSpace( GF(3^2),
+- [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3^2)^5 ] ] )
++ Variable: 'SubspacesAll' must have a value
+- Subspaces( ( GF(3^2)^3 ), "all" )
++ Variable: 'subsp' must have a value
+- 184
++ Variable: 'subsp' must have a value
++ [ -5, -3, -1 ]
+- VectorSpace( GF(3^2), [ [ Z(3)^0, 0*Z(3), Z(3^2)^3 ] ] )
+vspcrow.tst            75660           2720    (next ~ 6 sec)
 
 

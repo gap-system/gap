@@ -2970,6 +2970,14 @@ InstallOtherMethod( \*,
 ##  Special methods are installed for the case of certain family relations
 ##  between <list1> and <list2>.
 ##
+##  Note that the above definition does *not* automatically imply the
+##  mutability rule that the product of two lists is mutable (if applicable)
+##  except if the two operands are immutable.
+##  Namely, if <list1> is a list of immutable objects and <list2> is a
+##  mutable matrix whose rows are immutable then the sum
+##  $\sum_{i=1}^n <list1>[i] * <list2>[i]$ is immutable but the result vector
+##  is expected to be mutable.
+##
 InstallOtherMethod( \*,
     "for dense list of non-lists and dense list",
     true,

@@ -23,6 +23,7 @@ cp ../mkdistrib/psfonts.map tut
 cp ../mkdistrib/psfonts.map ref
 cp ../mkdistrib/psfonts.map prg
 cp ../mkdistrib/psfonts.map ext
+cp ../mkdistrib/psfonts.map new
 
 # build the documentation
 ./make_doc
@@ -48,7 +49,7 @@ cd htm_small
 cp ../htm/Makefile .
 cp ../htm/onehtmlindex .
 cp ../htm/allhtmlindex .
-mkdir ref tut ext prg
+mkdir ref tut ext prg new
 make webdoc
 
 exit 0

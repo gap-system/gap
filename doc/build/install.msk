@@ -105,8 +105,8 @@ should be no problem to get {\GAP}, even if you have a rather uncommon
 system. Of course, ports to non UNIX systems may require some work.  Note
 that about 16 MByte of main memory (though at least 32MByte is desirable)
 and about 30MB of disk space are required to run {\GAP}. A full {\GAP}
-installation, including all share packages and data libraries can use 100MB
-and more of disk space. {\GAP} will compile on 486 processors, though a
+installation, including all share packages and data libraries can use 200MB
+and more of disk space. {\GAP} will compile on pentium (586) processors, though a
 faster machine is recommended.
 
 (If you already downloaded an installation archive, you may ignore the rest of

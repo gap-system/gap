@@ -46,9 +46,7 @@ represent the rational number <rat>.
 $p$-adic numbers allow the usual operations for fields.
 
 \beginexample
-gap> fam:=PurePadicNumberFamily(2,3);
-NewFamily( "PurePadicNumberFamily(2,3)", [ 682 ], 
-[ 82, 85, 89, 93, 97, 100, 103, 107, 111, 120, 123, 678, 682 ] )
+gap> fam:=PurePadicNumberFamily(2,3);;
 gap> a:=PadicNumber(fam,4/5);
 0.0101(2)
 gap> 3*a;
@@ -90,9 +88,7 @@ subfield.
 \Declaration{PadicNumber}
 
 \beginexample
-gap> efam:=PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]);
-NewFamily( "PadicExtensionNumberFamily(3,5,...)", [ 684 ], 
-[ 82, 85, 89, 93, 97, 100, 103, 107, 111, 120, 123, 678, 684 ] )
+gap> efam:=PadicExtensionNumberFamily(3, 5, [1,1,1], [1,1]);;
 gap> PadicNumber(efam,7/9);
 padic(120(3),0(3))
 \endexample

@@ -149,15 +149,6 @@ DeclareGlobalFunction( "AllPrimitiveGroups" );
 ##
 DeclareGlobalFunction( "OnePrimitiveGroup" );
 
-#############################################################################
-##
-#F  PrimitiveGroupSims(<deg>,<nr>)
-##
-##  For  compatibility with earlier versions  of {\GAP}, the original list of
-##  function  `PrimitiveGroupSims'.
-##
-DeclareGlobalFunction( "PrimitiveGroupSims" );
-
 
 #############################################################################
 ##

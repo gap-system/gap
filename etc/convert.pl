@@ -201,7 +201,7 @@ sub name2fn {
     my $bdir = "";
 
     # : indicates a cross-volume reference
-    if (($name =~ /^(ref):(.+)$/) || ($name =~ /^(tut):(.+)$/) ||
+    if (($name =~ /^(ref):(.+)$/) || ($name =~ /^(tut):(.+)$/) ||($name =~ /^(new):(.+)$/) ||
 	($name =~ /^(ext):(.+)$/) || ($name =~ /^(prg):(.+)$/)) {
       if ($mainman==1) {
 	$bdir = "../$1/";
@@ -238,6 +238,14 @@ sub name2fn {
     }
 }
 
+
+# strip out the tag from cross book references for the body of links
+sub name2linktext {
+   my $name;
+  ($name) = @_;
+  $name =~ s/^(ref|tut|ext|prg|new)://;
+  return $name;
+}
 
 # Add an index entry.
 sub inxentry {
@@ -515,7 +523,8 @@ sub convert_text {
       	      $rest = $';
       	      chop($ref .= $&);
       	      $ref1 = name2fn($ref,0);
-      	      $outline .= "<a href=\"$ref1\">$ref</a>";
+	      $ref2 = name2linktext($ref);
+      	      $outline .= "<a href=\"$ref1\">$ref2</a>";
       	      $inref = "0";
           } elsif ($rest =~ /^$refchars*$/o) {
       	      $ref .= "$rest ";
@@ -868,7 +877,8 @@ sub convert_text {
                 $rest = $';
                 chop($ref = $&);
                 $ref1 = name2fn($ref,0);
-                $outline .= "<a href=\"$ref1\">$ref</a>";
+                $ref2 = name2linktext($ref,0);
+                $outline .= "<a href=\"$ref1\">$ref2</a>";
                 next SPECIAL;
             }
             if ($rest =~ /^$refchars*$/o) {
@@ -1090,7 +1100,12 @@ END
 sub caseless { lc($a) cmp lc ($b) or $a cmp $b }
 
 sub index_page {
-    my ($ent, $ref, $letter, $bstb, $nextletter);
+    my ($ent, $ref, $letter, $bstb, $nextletter, @entries, %letters);
+    foreach $ent (keys %index) {
+      $bstb = uc(substr($ent,0,1));
+      if ($bstb le "A" or $bstb ge "Z") {$betb = "_";}
+      $letters{$bstb} = "";
+    }
     $letter = "_";
     $nextletter = "A";
 
@@ -1102,7 +1117,7 @@ sub index_page {
 <p>
 END
     ;
-    foreach $bstb  ("A".."Z") {
+    foreach $bstb  (sort keys %letters) {
       if ($opt_i) {
         print  "<a href=\"\#idx${bstb}\">$bstb</A> ";
       }
@@ -1113,7 +1128,7 @@ END
     print  "\n<dl>\n";
 
         
-  ENTRY: for $ent (sort caseless keys %index) {
+  ENTRY: foreach $ent (sort caseless keys %index) {
       $letter = uc(substr($ent,0,1));
       if ($letter ge "A" and $letter le "Z" and $nextletter le "Z") {
            until ($letter lt $nextletter) {
@@ -1144,7 +1159,7 @@ END
 <p>
 END
 	      ;
-	      foreach $bstb  ("A".."Z") {
+	      foreach $bstb  (sort keys %letters) {
 		  print  "<a href=\"indx${bstb}.htm\">$bstb</A> ";
 	      }
 	      print  "\n<dl>\n";
@@ -1283,7 +1298,8 @@ else {
   elsif ($book eq "ref") { $booktitle = "The GAP 4 Reference Manual"; }
   elsif ($book eq "prg") { $booktitle = "The GAP 4 Programming Tutorial"; }
   elsif ($book eq "ext") { $booktitle = "The GAP 4 Programming Reference Manual"; }
-  else  { die "Invalid book, must be tut, ref, prg or ext"; }
+  elsif ($book eq "new") { $booktitle = "GAP 4: New Features for Developers"; }
+  else  { die "Invalid book, must be tut, ref, prg, new or ext"; }
   $mainman=1;
 }
 
@@ -1320,12 +1336,14 @@ if ($mainman ==1 ) {
   getlabs "tut";
   getlabs "ref";
   getlabs "prg";
+  getlabs "new";
   getlabs "ext"; }
 else {
   getlabs "../../doc/tut";
   getlabs "../../doc/ref";
   getlabs "../../doc/prg";
   getlabs "../../doc/ext"; 
+  getlabs "../../doc/new"; 
   getlabs "doc"; # our documentation
 }
 

@@ -23,7 +23,7 @@ Revision.vspchom_gd :=
 ##  coefficients, or as a natural epimorphism.
 ##
 ##  $F$-linear mappings with same source and same range can be added,
-##  so one can form vector spaces of linear mappings
+##  so one can form vector spaces of linear mappings.
 ##
 
 

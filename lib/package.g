@@ -17,35 +17,59 @@ Revision.package_g :=
 ##
 #F  CompareVersionNumbers(<supplied>,<required>)
 ##
-##  compares two version numbers, given as strings. They are split at `.'
-##  and `-' characters, the resulting integer lists are compared
+##  compares two version numbers, given as strings. They are split at
+##  non-number
+##  characters, the resulting integer lists are compared
 ##  lexicographically. The routine tests, whether <supplied> is at least as
-##  large as <required> and returns `true' or `false' accordingly.
+##  large as <required> and returns `true' or `false' accordingly. A version
+##  number ending in `dev' is considered to be infinite.
 ##  See Section~"ext:Version Numbers" of ``Extending GAP'' for details
 ##  about version numbers.
 BindGlobal("CompareVersionNumbers",function(s,r)
-local i,a,b;
-  s:=SplitString(s,".-");
-  r:=SplitString(r,".-");
+local i,j,a,b;
+  # special tratment of a ".dev" version
+  if Length(s)>4 and s{[Length(s)-2..Length(s)]}="dev" then
+    return true;
+  elif Length(r)>4 and r{[Length(r)-2..Length(r)]}="dev" then
+    return false;
+  fi;
+
   i:=1;
-  while i<=Length(s) and i<=Length(r) do
-    a:=Int(s[i]);
-    b:=Int(r[i]);
-    if a=fail or b=fail # cannot compare
-     or a<b then
-      return false; 
+  j:=1;
+  while Length(s)>=i or Length(r)>=j do
+    if Length(s)=0 then
+      return false;
+    elif Length(r)=0 then
+      return true;
+    fi;
+
+    # read the next numbers
+    while i<=Length(s) and IsDigitChar(s[i]) do
+      i:=i+1;
+    od;
+    while j<=Length(r) and IsDigitChar(r[j]) do
+      j:=j+1;
+    od;
+    a:=Int(s{[1..i-1]});
+    b:=Int(r{[1..j-1]});
+    if a<b then
+      return false;
     elif a>b then
       return true;
     fi;
-    i:=i+1;
+    # read the next nonnumbers
+    while i<=Length(s) and not IsDigitChar(s[i]) do
+      i:=i+1;
+    od;
+    s:=s{[i..Length(s)]};
+    i:=1;
+    while j<=Length(r) and not IsDigitChar(r[j]) do
+      j:=j+1;
+    od;
+    r:=r{[j..Length(r)]};
+    j:=1;
   od;
-  if i<=Length(r) then
-    return false; # they start equal, but the requirements demand a
-                  # further subversion
-  else
-    return true;
-  fi;
-
+  return true;
 end);
 
 BindGlobal( "LOADED_PACKAGES", rec() );

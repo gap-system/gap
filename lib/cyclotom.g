@@ -51,7 +51,7 @@ DeclareCategoryCollections( "IsCyclotomicCollColl" );
 #C  IsRat( <obj> )
 ##
 ##  Every rational number lies in the category `IsRat',
-##  which is a subcategory of `IsCyc' (see~"Cyclotomics").
+##  which is a subcategory of `IsCyc' (see~"Cyclotomic Numbers").
 ##
 DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 
@@ -61,7 +61,7 @@ DeclareCategoryKernel( "IsRat", IsCyc, IS_RAT );
 #C  IsInt( <obj> )
 ##
 ##  Every rational integer lies in the category `IsInt',
-##  which is a subcategory of `IsRat' (see~"Rationals").
+##  which is a subcategory of `IsRat' (see~"Rational Numbers").
 ##
 DeclareCategoryKernel( "IsInt", IsRat, IS_INT );
 
@@ -338,7 +338,7 @@ DeclareAttribute( "Conductor", IsCyclotomicCollection );
 ##  in the Zumbroich basis representation of <cyc> to the <k>-th power.
 ##  If <k> is coprime to the integer $n$,
 ##  `GaloisCyc( ., <k> )' acts as a Galois automorphism of the $n$-th
-##  cyclotomic field (see~"GaloisGroup for Number Fields");
+##  cyclotomic field (see~"Galois Groups of Abelian Number Fields");
 ##  to get the Galois automorphisms themselves,
 ##  use `GaloisGroup' (see~"GaloisGroup.field").
 ##

@@ -2788,16 +2788,18 @@ TriangulizeWeightRepElementList:= function( ww )
 
     local   basechange,  heads,  k,  head,  i,  cf,  b,  b1,  pos;
 
+    ww:= Filtered( ww, x -> not IsZero(x) );
     basechange:= List( [1..Length(ww)], x -> [ [ x, 1 ] ] );
     SortParallel( ww, basechange,
             function( u, v ) return u![1][1][1] < v![1][1][1]; end );
     heads:= [ ];
-    for k in [1..Length( ww )] do
+    k:= 1;        
+    while k <= Length( ww ) do
         if IsZero( ww[k] ) then
             Unbind( ww[k] );
             Unbind( basechange[k] );
             ww:= Filtered( ww, x -> IsBound( x ) );
-            basechange:= List( basechange, x -> IsBound( x ) );
+            basechange:= Filtered( basechange, x -> IsBound( x ) );
         else
             cf:= ww[k]![1][2];
             ww[k]:= ww[k]/cf;
@@ -2816,7 +2818,8 @@ TriangulizeWeightRepElementList:= function( ww )
                         pos:= PositionSorted( basechange[i], b1,
                                       function( x, y ) return x[1] < y[1];
                                   end );
-                        if basechange[i][pos][1] <> b1[1] then
+                        if Length( basechange[i] ) < pos or 
+                                     basechange[i][pos][1] <> b1[1] then
                             InsertElmList( basechange[i], pos, b1 );
                         else
                             basechange[i][pos][2]:= basechange[i][pos][2]+
@@ -2825,10 +2828,24 @@ TriangulizeWeightRepElementList:= function( ww )
                     od;
                 fi;
             od;
+            k:= k+1;
         fi;
         # sort the lists again...
+        # get rid of the zeros first (if any)...
+        
+        for i in [1..Length(ww)] do
+            if IsZero( ww[i] ) then
+                Unbind( ww[i] );
+                Unbind( basechange[i] );
+            fi;
+        od;
+        ww:= Filtered( ww, x -> IsBound( x ) );
+        basechange:= Filtered( basechange, x -> IsBound( x ) ); 
+                
         SortParallel( ww, basechange,
-                function( u, v ) return u![1][1][1] < v![1][1][1]; end );
+                function( u, v )
+                        return u![1][1][1] < v![1][1][1]; end );
+                  
     od;
     return rec( echelonbas:= ww, heads:= heads, basechange:= basechange );
 end;

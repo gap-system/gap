@@ -419,8 +419,10 @@ gap> MinimalSupergroupsTom( s4, 5 );
 \Declaration{StandardGeneratorsInfo}[stdgen]
 \beginexample
 gap> StandardGeneratorsInfo( TableOfMarks( "L3(3)" ) );
-[ rec( generators := "a, b", 
-      description := "||a||=2, ||b||=3, ||C(b)||=9, ||ab||=13, ||ababb||=4", 
+[ rec( generators := "a, b",
+      description := "||a||=2, ||b||=3, ||C(b)||=9, ||ab||=13, ||ababb||=4",
+      script := [ [ 1, 2 ], [ 2, 3 ], [ [ 2, 1 ], [ "||C(",, ")||" ], 9 ],
+          [ 1, 1, 2, 1, 13 ], [ 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 4 ] ],
       ATLAS := true ) ]
 \endexample
 %T  replace by an example for isom. type as soon as this is implemented!
@@ -507,9 +509,9 @@ r[4]
 gap> x:= [ [ Z(2)^0, 0*Z(2) ], [ Z(2^2), Z(2)^0 ] ];;
 gap> y:= [ [ Z(2^2), Z(2)^0 ], [ 0*Z(2), Z(2^2)^2 ] ];;
 gap> res1:= ResultOfStraightLineProgram( progs[4][1], [ x, y ] );
-[ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ]
+[ [ Z(2)^0, 0*Z(2) ], [ Z(2^2)^2, Z(2)^0 ] ]
 gap> res2:= ResultOfStraightLineProgram( progs[4][2], [ x, y ] );
-[ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ]
+[ [ Z(2)^0, 0*Z(2) ], [ Z(2^2), Z(2)^0 ] ]
 gap> w:= y*x;;
 gap> res1 = w*y^-1*x*w*y^-1*x*y;
 true
@@ -527,20 +529,20 @@ Group([ (2,3)(4,5), (2,4)(3,5) ])
 \Declaration{StandardGeneratorsInfo}[tom]{for tables of marks}
 \beginexample
 gap> std:= StandardGeneratorsInfo( a5 );
-rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5", 
-  ATLAS := true )
+[ rec( generators := "a, b", description := "||a||=2, ||b||=3, ||ab||=5",
+      script := [ [ 1, 2 ], [ 2, 3 ], [ 1, 1, 2, 1, 5 ] ], ATLAS := true ) ]
 gap> # Now find standard generators of an isomorphic group.
 gap> g:= SL(2,4);;
 gap> repeat
->   x:= Random( g );
+>   x:= PseudoRandom( g );
 > until Order( x ) = 2;
 gap> repeat
->   y:= Random( g );
+>   y:= PseudoRandom( g );
 > until Order( y ) = 3 and Order( x*y ) = 5;
 gap> # Compute a representative w.r.t. these generators.
 gap> RepresentativeTomByGenerators( a5, 4, [ x, y ] );
-Group([ [ [ Z(2)^0, Z(2^2) ], [ 0*Z(2), Z(2)^0 ] ], 
-  [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] ])
+Group([ [ [ Z(2^2), Z(2^2)^2 ], [ Z(2^2)^2, Z(2^2) ] ],
+  [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ])
 gap> # Show that the new generators are really good.
 gap> grp:= UnderlyingGroup( a5 );;
 gap> iso:= GroupGeneralMappingByImages( grp, g,

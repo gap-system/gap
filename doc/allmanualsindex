@@ -26,6 +26,12 @@ awk '{i=0;a=$0;\
       while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
       print substr($0,1,i) "P\\idxkern" substr($0,i+1);}'\
   fullindex.idl.pre >>fullindex.idl
+awk '$0 !~ /@/ {$0=tolower($0)} {print}' new/manual.idx >fullindex.idl.pre
+awk '{i=0;a=$0;\
+      match(a,/\{/);\
+      while (RSTART>0) {i=i+RSTART;a=substr(a,RSTART+1);match(a,/\{/);}\
+      print substr($0,1,i) "N\\idxkern" substr($0,i+1);}'\
+  fullindex.idl.pre >>fullindex.idl
 makeindex -l fullindex.idl
 
 # put hyphenation help into long commands

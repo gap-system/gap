@@ -102,6 +102,9 @@ local l,g;
   fi;
   SetPrimitiveIdentification(g,l[1]);
   SetONanScottType(g,l[4]);
+  SetSocleTypePrimitiveGroup(g,rec(series:=l[8][1],
+                                   parameter:=l[8][2],
+				   width:=l[8][3]));
   if deg<=50 then
     SetSimsNo(g,l[10]);
   fi;
@@ -439,6 +442,29 @@ local l,g,it;
   else
     return NextIterator(it);
   fi;
+end);
+
+# some trivial or useless functions for nitpicking compatibility
+
+BindGlobal("NrAffinePrimitiveGroups",
+function(x)
+  if x<=2 then 
+    return 1;
+  elif x=3 or x=4 then
+    return 2;
+  else
+   return Length(AllPrimitiveGroups(NrMovedPoints,x,ONanScottType,"1"));
+  fi;
+end);
+
+BindGlobal("NrSolvableAffinePrimitiveGroups",
+  x->Length(AllPrimitiveGroups(NrMovedPoints,x,IsSolvableGroup,true)));
+
+DeclareSynonym("SimsName",Name);
+
+BindGlobal("PrimitiveGroupSims",
+function(d,n)
+  return OnePrimitiveGroup(NrMovedPoints,d,SimsNo,n);
 end);
 
 #############################################################################

@@ -2,6 +2,10 @@
 #W  make_doc						     Alexander Hulpke
 ##  this shell script TeXs the documentation 
 ##
+echo "Cleaning auxilliary files"
+
+rm -f {ref,tut,prg,ext,new}/manual.{toc,lab,ind,dvi,log,ps,pdf}
+
 echo "TeXing documentation"
 # build the ref. manual
 (cd build;make -k)
@@ -11,18 +15,21 @@ echo "TeXing documentation"
 (cd prg; tex manual;bibtex manual;tex manual;../manualindex manual)
 (cd ref; tex manual;bibtex manual;tex manual;../manualindex manual)
 (cd tut; tex manual;bibtex manual;tex manual;../manualindex manual)
+(cd new; tex manual;bibtex manual;tex manual;../manualindex manual)
 # pdftex the manuals to create pdf versions (need to run twice to set
 # crossrefs properly)
 (cd ref; pdftex manual; pdftex manual)
 (cd tut; pdftex manual; pdftex manual)
 (cd ext; pdftex manual; pdftex manual)
 (cd prg; pdftex manual; pdftex manual)
+(cd new; pdftex manual; pdftex manual)
 
 # finally tex all manuals again for postscript versions
 (cd ref; tex manual; dvips manual -o manual.ps)
 (cd tut; tex manual; dvips manual -o manual.ps)
 (cd ext; tex manual; dvips manual -o manual.ps)
 (cd prg; tex manual; dvips manual -o manual.ps)
+(cd new; tex manual; dvips manual -o manual.ps)
 
 # make the comprehensive index
 ./allmanualsindex

@@ -1,5 +1,5 @@
 # usage: onehtmlindex <letter> <file>
-# produces a file <file> composed from {ref,tut,ext,prg}/<file>.
+# produces a file <file> composed from {ref,tut,ext,prg,new}/<file>.
 echo "<html><head><title>The GAP 4 Manual - Full Index $1</title></head>\
 <body bgcolor="ffffff"><h1>The GAP 4 Manual - Full Index $1</h1>\
 <p>\
@@ -48,6 +48,18 @@ awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
 	a=substr(str,rs+6);\
 	match(a,/>/);\
 	out=out substr(str,1,rs+5) "prg/" substr(a,1,RSTART) "P ";\
+	str=substr(a,RSTART+1);\
+        match(str,/href="/);rs=RSTART;\
+      }\
+      print out str;}'\
+  tempfile >>tempfile2
+
+fgrep "<dt>" new/$2 > tempfile
+awk '{i=0;out="";str=$0;match(str,/href="/);rs=RSTART;\
+      while (rs!=0) {\
+	a=substr(str,rs+6);\
+	match(a,/>/);\
+	out=out substr(str,1,rs+5) "new/" substr(a,1,RSTART) "N ";\
 	str=substr(a,RSTART+1);\
         match(str,/href="/);rs=RSTART;\
       }\

@@ -78,7 +78,7 @@ false
 gap> Length(Q.1);
 2
 
-gap> STOP_TEST( "quogphom.tst", 2760000 );
+gap> STOP_TEST( "quogphom.tst", 17600000 );
 
 
 #############################################################################

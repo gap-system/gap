@@ -228,6 +228,17 @@ DeclareAttribute( "InvariantQuadraticForm", IsMatrixGroup );
 DeclareProperty( "IsFullSubgroupGLorSLRespectingQuadraticForm",
     IsMatrixGroup );
 
+#############################################################################
+##
+#F  AffineActionByMatrixGroup( <M> )
+##
+##  takes a group <M> of $n \times n$ matrices over the finite field $F$
+##  and returns an affine permutation group $F^n {:} <M>$
+##  for the natural action of <M> on the vector space $F^n$.
+##  The labelling of the points of the resulting group is not guaranteed.
+##
+DeclareGlobalFunction( "AffineActionByMatrixGroup" );
+
 
 #############################################################################
 ##

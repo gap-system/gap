@@ -1636,6 +1636,9 @@ void InitSystem (
 #if !GENERATINGPOWERPC 
 	SyMinStack = GetApplLimit() - (syStackSpace - StackSpace()) + 1024;
     SetApplLimit( GetApplLimit() - (syStackSpace - StackSpace() + 1024) );
+    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 8192;
+#else /* we need more reserve stack for the PPC, apparently */
+    SyMinStack = (&last < &first ? &last : &first) - StackSpace () + 65536;
 #endif
     MaxApplZone();
     /* compute the least possible value for the stack pointer */

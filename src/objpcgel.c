@@ -259,6 +259,10 @@ Obj Func8Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     len=LEN_LIST(pcgs);
     el=NEW_PLIST(T_PLIST_CYC,len);
     SET_LEN_PLIST(el,len);
+
+    /* Check if the exponent vector is the empty list. */
+    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
+
     indx=1; /* current index in el we assign to */
     num = NPAIRS_WORD(w);
 
@@ -409,6 +413,10 @@ Obj Func16Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     len=LEN_LIST(pcgs);
     el=NEW_PLIST(T_PLIST_CYC,len);
     SET_LEN_PLIST(el,len);
+
+    /* Check if the exponent vector is the empty list. */
+    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
+
     indx=1; /* current index in el we assign to */
     num = NPAIRS_WORD(w);
 
@@ -558,6 +566,10 @@ Obj Func32Bits_ExponentsOfPcElement ( Obj self, Obj pcgs, Obj w)
     len=LEN_LIST(pcgs);
     el=NEW_PLIST(T_PLIST_CYC,len);
     SET_LEN_PLIST(el,len);
+
+    /* Check if the exponent vector is the empty list. */
+    if( len == 0 ) { RetypeBag( el, T_PLIST_EMPTY ); return el; }
+
     indx=1; /* current index in el we assign to */
     num = NPAIRS_WORD(w);
 

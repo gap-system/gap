@@ -261,10 +261,10 @@ true
 gap> id = aut^0;
 true
 
-gap> aut^0 < ANFAutomorphism( f, 3 );
-true
-gap> ANFAutomorphism( f, 3 ) < aut^0;
-false
+#gap> aut^0 < ANFAutomorphism( f, 3 );
+#true
+#gap> ANFAutomorphism( f, 3 ) < aut^0;
+#false
 gap> aut^0 < id;
 false
 gap> id < aut^0;
@@ -318,7 +318,7 @@ gap> Size( g );
 gap> IsAbelian( g );
 true
 
-gap> STOP_TEST( "fldabnum.tst", 71667500 );
+gap> STOP_TEST( "fldabnum.tst", 87667500 );
 
 
 #############################################################################

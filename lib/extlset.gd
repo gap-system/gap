@@ -142,6 +142,10 @@ DeclareAttribute( "GeneratorsOfExtLSet", IsExtLSet );
 ##
 #A  LeftActingDomain( <D> )
 ##
+##  Let <D> be an external left set, that is, <D> is closed under the action
+##  of a domain $L$ by multiplication from the left.
+##  Then $L$ can be accessed as value of `LeftActingDomain' for <D>.
+##
 DeclareAttribute( "LeftActingDomain", IsExtLSet );
 
 

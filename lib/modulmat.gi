@@ -73,8 +73,7 @@ end );
 ##
 InstallOtherMethod( \^,
     "for ring and list of integers (delegate to `FullMatrixModule')",
-    true,
-    [ IsRing, IsCyclotomicCollection and IsList ], 0,
+    [ IsRing, IsCyclotomicCollection and IsList ],
     function( R, n )
     if     Length( n ) = 2
        and IsInt( n[1] ) and 0 <= n[1]
@@ -91,8 +90,7 @@ InstallOtherMethod( \^,
 ##
 InstallMethod( IsMatrixModule,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( M )
     local gens;
     gens:= GeneratorsOfLeftModule( M );
@@ -107,8 +105,7 @@ InstallMethod( IsMatrixModule,
 ##
 InstallMethod( IsFullMatrixModule,
     "for matrix module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     M ->     IsMatrixModule( M )
          and Dimension( M ) = Product( DimensionOfVectors( M ) )
          and ForAll( GeneratorsOfLeftModule( M ),
@@ -121,8 +118,7 @@ InstallMethod( IsFullMatrixModule,
 ##
 InstallMethod( Dimension,
     "for full matrix module",
-    true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     M -> Product( DimensionOfVectors( M ) ) );
 
 
@@ -132,8 +128,7 @@ InstallMethod( Dimension,
 ##
 InstallMethod( Random,
     "for full matrix module",
-    true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     function( M )
     local random;
     random:= DimensionOfVectors( M );
@@ -143,6 +138,20 @@ InstallMethod( Random,
       random:= LieObject( random );
     fi;
     return random;
+    end );
+
+
+#############################################################################
+##
+#M  Representative( <M> )
+##
+InstallMethod( Representative,
+    "for full matrix module",
+    [ IsFreeLeftModule and IsFullMatrixModule ],
+    function( M )
+    local random;
+    random:= DimensionOfVectors( M );
+    return NullMat( random[1], random[2], LeftActingDomain( M ) );
     end );
 
 
@@ -181,8 +190,7 @@ end );
 ##
 InstallMethod( GeneratorsOfLeftModule,
     "for full matrix module",
-    true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     StandardGeneratorsOfFullMatrixModule );
 
 
@@ -192,8 +200,7 @@ InstallMethod( GeneratorsOfLeftModule,
 ##
 InstallMethod( ViewObj,
     "for full matrix module",
-    true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     function( M )
     if IsLieObjectCollection( M ) then
       TryNextMethod();
@@ -210,8 +217,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for full matrix module",
-    true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     function( M )
     if IsLieObjectCollection( M ) then
       TryNextMethod();
@@ -228,7 +234,7 @@ InstallMethod( \in,
     "for full matrix module",
     IsElmsColls,
     [ IsObject,
-      IsFreeLeftModule and IsFullMatrixModule ], 0,
+      IsFreeLeftModule and IsFullMatrixModule ],
     function( mat, M )
     return     IsMatrix( mat )
            and DimensionsMat( mat ) = DimensionOfVectors( M )
@@ -242,8 +248,7 @@ InstallMethod( \in,
 ##
 InstallMethod( BasisVectors,
     "for canonical basis of a full matrix module",
-    true,
-    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullMatrixModule ], 0,
+    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullMatrixModule ],
     B -> StandardGeneratorsOfFullMatrixModule( UnderlyingLeftModule( B ) ) );
 
 
@@ -251,8 +256,8 @@ InstallMethod( BasisVectors,
 ##
 #M  CanonicalBasis( <V> )
 ##
-InstallMethod( CanonicalBasis, true,
-    [ IsFreeLeftModule and IsFullMatrixModule ], 0,
+InstallMethod( CanonicalBasis,
+    [ IsFreeLeftModule and IsFullMatrixModule ],
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
@@ -273,7 +278,7 @@ InstallMethod( CanonicalBasis, true,
 InstallMethod( Coefficients,
     "for canonical basis of a full matrix module",
     IsCollsElms,
-    [ IsBasis and IsCanonicalBasisFullMatrixModule, IsMatrix ], 0,
+    [ IsBasis and IsCanonicalBasisFullMatrixModule, IsMatrix ],
     function( B, mat )
     local V, R;
     V:= UnderlyingLeftModule( B );
@@ -293,7 +298,6 @@ InstallMethod( Coefficients,
 ##
 InstallMethod( Basis,
     "for full matrix module",
-    true,
     [ IsFreeLeftModule and IsFullMatrixModule ],
     SUM_FLAGS,
     CanonicalBasis );
@@ -305,8 +309,7 @@ InstallMethod( Basis,
 ##
 InstallMethod( IsCanonicalBasisFullMatrixModule,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     B ->     IsFullMatrixModule( UnderlyingLeftModule( B ) )
          and IsCanonicalBasis( B ) );
 

@@ -10,7 +10,7 @@ BUILD = ../../etc/convert.pl -t
 
 default: all
 
-all: ref/chapters.htm ext/chapters.htm tut/chapters.htm prg/chapters.htm \
+all: ref/chapters.htm ext/chapters.htm tut/chapters.htm prg/chapters.htm new/chapters.htm\
 	theindex.htm
 
 ref/chapters.htm: ../ref/manual.dvi ../../etc/convert.pl
@@ -25,8 +25,11 @@ tut/chapters.htm: ../tut/manual.dvi ../../etc/convert.pl
 prg/chapters.htm: ../prg/manual.dvi ../../etc/convert.pl
 	$(BUILD) -c ../prg prg
 
+new/chapters.htm: ../new/manual.dvi ../../etc/convert.pl
+	$(BUILD) -c ../new new
+
 theindex.htm: ref/chapters.htm tut/chapters.htm ext/chapters.htm \
-	prg/chapters.htm ../../etc/convert.pl
+	prg/chapters.htm new/chapters.htm ../../etc/convert.pl
 	chmod 755 allhtmlindex
 	chmod 755 onehtmlindex
 	./allhtmlindex
@@ -43,11 +46,15 @@ theindex.htm: ref/chapters.htm tut/chapters.htm ext/chapters.htm \
 ../prg/manual.dvi:
 	(cd ../prg;tex manual)
 
-webdoc: ../tut/manual.dvi ../ref/manual.dvi ../ext/manual.dvi ../prg/manual.dvi 
+../new/manual.dvi:
+	(cd ../new;tex manual)
+
+webdoc: ../tut/manual.dvi ../ref/manual.dvi ../ext/manual.dvi ../prg/manual.dvi ../new/manual.dvi
 	$(BUILD) -s ../tut tut
 	$(BUILD) -s ../ref ref
 	$(BUILD) -s ../ext ext
 	$(BUILD) -s ../prg prg
+	$(BUILD) -s ../new new
 	./allhtmlindex
 
 

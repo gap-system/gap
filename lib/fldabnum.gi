@@ -1770,6 +1770,15 @@ InstallGlobalFunction( ANFAutomorphism, function ( F, k )
     # check the arguments
     if not ( IsAbelianNumberField(F) and IsCyclotomicCollection(F) ) then
       Error("<F> must be an abelian number field consisting of cyclotomics");
+    elif not IsRat( k ) then
+      Error( "<k> must be an integer" );
+    fi;
+    if not IsInt( k ) then
+#T this is a hack ...
+      k:= k mod Conductor( F );
+    fi;
+    if Gcd( Conductor( F ), k ) <> 1 then
+      Error( "<k> must be coprime to the conductor of <F>" );
     fi;
 
     # Let $F / K$ be a field extension where $Q_n$ is the conductor of $F$;

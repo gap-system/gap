@@ -132,25 +132,6 @@ DeclareCategory( "IsOutputTextStream", IsOutputStream );
 
 DeclareCategory( "IsOutputTextNone", IsOutputTextStream );
 
-#############################################################################
-##
-#C  IsInputOutputStream . . . . . . . . . . . . . category of two-way streams 
-##
-##  Streams which lie in `IsInputOutputStream' capture bidirectional 
-##  communications between {\GAP} and another process, either locally
-##  or (@as yet unimplemented@) remotely accessed through a socket
-##
-##  Such streams support the basic operations of both input and output 
-##  streams. They should provide some buffering, allowing output date to be 
-##  written to the stream, even when input data is waiting to be read, 
-##  but the amount of this buffering is operating system dependent,
-##  and the user shoould take care not to get too far ahead in writing, or 
-##  behind in reading, or deadlock may occur.
-##
-
-DeclareCategory( "IsInputOutputStream", IsInputStream and
-        IsOutputStream );
-
 
 #############################################################################
 ##
@@ -437,10 +418,63 @@ DeclareGlobalFunction( "OutputTextNone" );
 
 DeclareGlobalFunction( "OutputTextUser" );
 
+#2
+##  Input-output streams capture bidirectional 
+##  communications between {\GAP} and another process, either locally
+##  or (@as yet unimplemented@) remotely
+##
+##  Such streams support the basic operations of both input and output 
+##  streams. They should provide some buffering, allowing output date to be 
+##  written to the stream, even when input data is waiting to be read, 
+##  but the amount of this buffering is operating system dependent,
+##  and the user should take care not to get too far ahead in writing, or 
+##  behind in reading, or deadlock may occur.
+##
+
+
+
+#############################################################################
+##
+#C  IsInputOutputStream . . . . . . . . . . . . . category of two-way streams 
+##
+##  `IsInputOutputStream' is the Category of Input-Output Streams,
+##
+
+DeclareCategory( "IsInputOutputStream", IsInputStream and
+        IsOutputStream );
+
+
+#3  
+##  At present the only type of Input-Output streams that are
+##  implemented provide communication with a local child process,
+##  using a pseudo-tty. They are only available on UNIX systems.
+##
+##  At present, all operations on these streams are *non-blocking*, 
+##  and will read or write as much of the requested data as possible
+##  immediately, but will *not* wait, for instance, for the child
+##  process to clear its input buffers. This may be reviewed. The
+##  {\GAP} kernel functions used to implement these streams do support
+##  blocking operation, and this may be made available later.
+##  In non-blocking operation, `ReadByte' will return `fail' if no
+##  byte is available, and `ReadLine' and `ReadAll' may return only
+##  the bytes that were available. `WriteByte', `WriteLine' and
+## `WriteAll' will return `fail' if they did not succeed in writing all
+##  that they were asked to.
+##
+##  As far as possible, no translation is done on characters written
+##  to, or read from the stream, and no control characters have special
+##  effects, but the details of particular pseudo-tty implementations 
+##  may effect this. The stream may try to read more characters from
+##  the child than the user requests in a `ReadByte' or `ReadLine' call, and
+##  store them up to handle subsequent reads more quickly, but will not
+##  block waiting for such characters. All characters written are
+##  delivered immediately to the pseudo-tty.
+##
+
 #############################################################################
 ##
 #F  InputOutputLocalProcess(<current-dir>, <executable>, <args>)
-#F   . . .input/output stream to a process run as a "slave" on the local host
+##   . . .input/output stream to a process run as a "slave" on the local host
 ##
 ##
 ##  Calling `InputOutputLocalProcess( <current-dir>, <executable>, <args> )
@@ -451,7 +485,10 @@ DeclareGlobalFunction( "OutputTextUser" );
 ##  at a terminal on standard input. Bytes written to standard output
 ##  by the slave process can be read from the stream (some buffering
 ##  of reads, but not writes may be done by the stream).
-## 
+##
+##  When the stream if closed, the signal SIGTERM is delivered to the child
+##  process, which is expected to exit.
+##
 DeclareGlobalFunction( "InputOutputLocalProcess" );
 
 #############################################################################

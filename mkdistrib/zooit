@@ -64,6 +64,10 @@ for i in ${DISTNAME}/doc/htm_small/prg/*; do
   zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
   zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
+for i in ${DISTNAME}/doc/htm_small/new/*; do
+  zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
+  zoo c split/html_sect$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
 
 for i in ${DISTNAME}/doc/htm_small/*.htm; do
   zoo ah split/html_sect$RBVERSION.zoo $i >/dev/null
@@ -129,6 +133,12 @@ for i in ${DISTNAME}/doc/prg/*.tex; do
   zoo ah basic$RBVERSION.zoo $i >/dev/null
   zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
+for i in ${DISTNAME}/doc/new/*.tex; do
+  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah basic$RBVERSION.zoo $i >/dev/null
+  zoo c basic$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
 
 zoo ah basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex > /dev/null
 zoo c basic$RBVERSION.zoo ${DISTNAME}/doc/gapmacro.tex <TEXTCOM >&/dev/null
@@ -144,7 +154,7 @@ zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manual.bib <TEXTCOM >&/dev/null
 zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex > /dev/null
 zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/manualindex <TEXTCOM >&/dev/null
 
-for i in ${DISTNAME}/doc/{ref,tut,ext,prg}/manual.six; do
+for i in ${DISTNAME}/doc/{ref,tut,ext,prg,new}/manual.six; do
   zoo ah split/doc$RBVERSION.zoo $i >/dev/null
   zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah basic$RBVERSION.zoo $i >/dev/null
@@ -192,8 +202,8 @@ cp basic$RBVERSION.zoo gap$RBVERSION.zoo
 
 echo "TeXed Documentation"
 for i in ${DISTNAME}/doc/*/manual.dvi; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah docdvi$RBVERSION.zoo $i >/dev/null
   zoo c docdvi$RBVERSION.zoo $i <BINCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -201,14 +211,18 @@ for i in ${DISTNAME}/doc/*/manual.dvi; do
   zoo ah gap$RBVERSION.zoo $i >/dev/null
   zoo c gap$RBVERSION.zoo $i <BINCOM >&/dev/null;
 done
-zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
-zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+
+#zoo ah split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
+#zoo c split/doc$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
 zoo ah docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
 zoo c docdvi$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
 zoo ah macpc.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
 zoo c macpc.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
 zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi > /dev/null
 zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.dvi <BINCOM >&/dev/null
+
+ln -s docdvi$RBVERSION.zoo split
+
 
 for i in ${DISTNAME}/doc/*/manual.pdf; do
   zoo ah docpdf$RBVERSION.zoo $i >/dev/null
@@ -217,10 +231,14 @@ for i in ${DISTNAME}/doc/*/manual.pdf; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 
+
 zoo ah docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
 zoo c docpdf$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
 zoo ah gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf > /dev/null
 zoo c gap$RBVERSION.zoo ${DISTNAME}/doc/fullindex.pdf <TEXTCOM >&/dev/null
+
+ln -s docpdf$RBVERSION.zoo split
+
 
 # postscript files (do we really still want them?)
 for i in ${DISTNAME}/doc/*/manual.ps; do
@@ -230,10 +248,13 @@ done
 zoo ah docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps > /dev/null
 zoo c docps$RBVERSION.zoo ${DISTNAME}/doc/fullindex.ps <TEXTCOM >&/dev/null
 
+ln -s docps$RBVERSION.zoo split
+
+
 echo "HTML Documentation"
 for i in ${DISTNAME}/doc/htm/ref/*; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah html$RBVERSION.zoo $i >/dev/null
   zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -242,8 +263,8 @@ for i in ${DISTNAME}/doc/htm/ref/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/doc/htm/tut/*; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah html$RBVERSION.zoo $i >/dev/null
   zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -252,8 +273,8 @@ for i in ${DISTNAME}/doc/htm/tut/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/doc/htm/ext/*; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah html$RBVERSION.zoo $i >/dev/null
   zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -262,8 +283,18 @@ for i in ${DISTNAME}/doc/htm/ext/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/doc/htm/prg/*; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah html$RBVERSION.zoo $i >/dev/null
+  zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/doc/htm/new/*; do
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah html$RBVERSION.zoo $i >/dev/null
   zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -272,8 +303,8 @@ for i in ${DISTNAME}/doc/htm/prg/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/doc/htm/*.htm; do
-  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
-  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+#  zoo ah split/doc$RBVERSION.zoo $i >/dev/null
+#  zoo c split/doc$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah html$RBVERSION.zoo $i >/dev/null
   zoo c html$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -281,6 +312,8 @@ for i in ${DISTNAME}/doc/htm/*.htm; do
   zoo ah gap$RBVERSION.zoo $i >/dev/null
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
+
+ln -s html$RBVERSION.zoo split
 
 echo "Trans"
 for i in ${DISTNAME}/trans/*; do
@@ -305,8 +338,8 @@ for i in ${DISTNAME}/small/*.*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/small/id2/*; do
-  zoo ah split/small$RBVERSION.zoo $i >/dev/null
-  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah split/id2$RBVERSION.zoo $i >/dev/null
+  zoo c split/id2$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah gdat$RBVERSION.zoo $i >/dev/null
   zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -315,8 +348,38 @@ for i in ${DISTNAME}/small/id2/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/small/id3/*; do
-  zoo ah split/small$RBVERSION.zoo $i >/dev/null
-  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah split/id3$RBVERSION.zoo $i >/dev/null
+  zoo c split/id3$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/id4/*; do
+  zoo ah split/id4$RBVERSION.zoo $i >/dev/null
+  zoo c split/id4$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/id5/*; do
+  zoo ah split/id5$RBVERSION.zoo $i >/dev/null
+  zoo c split/id5$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/id6/*; do
+  zoo ah split/id6$RBVERSION.zoo $i >/dev/null
+  zoo c split/id6$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah gdat$RBVERSION.zoo $i >/dev/null
   zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -325,8 +388,8 @@ for i in ${DISTNAME}/small/id3/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/small/small2/*; do
-  zoo ah split/small$RBVERSION.zoo $i >/dev/null
-  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah split/small2$RBVERSION.zoo $i >/dev/null
+  zoo c split/small2$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah gdat$RBVERSION.zoo $i >/dev/null
   zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -335,8 +398,8 @@ for i in ${DISTNAME}/small/small2/*; do
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
 for i in ${DISTNAME}/small/small3/*; do
-  zoo ah split/small$RBVERSION.zoo $i >/dev/null
-  zoo c split/small$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah split/small3$RBVERSION.zoo $i >/dev/null
+  zoo c split/small3$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah gdat$RBVERSION.zoo $i >/dev/null
   zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah macpc.zoo $i >/dev/null
@@ -344,6 +407,57 @@ for i in ${DISTNAME}/small/small3/*; do
   zoo ah gap$RBVERSION.zoo $i >/dev/null
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
+for i in ${DISTNAME}/small/small4/*; do
+  zoo ah split/small4$RBVERSION.zoo $i >/dev/null
+  zoo c split/small4$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small5/*; do
+  zoo ah split/small5$RBVERSION.zoo $i >/dev/null
+  zoo c split/small51$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small6/*; do
+  zoo ah split/small6$RBVERSION.zoo $i >/dev/null
+  zoo c split/small6$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small7/*; do
+  zoo ah split/small7$RBVERSION.zoo $i >/dev/null
+  zoo c split/small7$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+for i in ${DISTNAME}/small/small8/*; do
+  zoo ah split/small8$RBVERSION.zoo $i >/dev/null
+  zoo c split/small8$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gdat$RBVERSION.zoo $i >/dev/null
+  zoo c gdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
+  zoo ah gap$RBVERSION.zoo $i >/dev/null
+  zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
+done
+
 
 echo "Prim"
 for i in ${DISTNAME}/prim/*.*; do
@@ -386,6 +500,8 @@ for i in ${DISTNAME}/tom/*; do
   zoo c split/tom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah tdat$RBVERSION.zoo $i >/dev/null
   zoo c tdat$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah macpc.zoo $i >/dev/null
+  zoo c macpc.zoo $i <TEXTCOM >&/dev/null
   zoo ah gap$RBVERSION.zoo $i >/dev/null
   zoo c gap$RBVERSION.zoo $i <TEXTCOM >&/dev/null;
 done
@@ -395,8 +511,8 @@ mv ${DISTNAME}/tom ${DISTNAME}/tomy
 mv ${DISTNAME}/tomx ${DISTNAME}/tom
 
 for i in ${DISTNAME}/tom/*; do
-  zoo ah split/tom$RBVERSION.zoo $i >/dev/null
-  zoo c split/tom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
+  zoo ah split/xtom$RBVERSION.zoo $i >/dev/null
+  zoo c split/xtom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
   zoo ah xtom$RBVERSION.zoo $i >/dev/null
   zoo c xtom$RBVERSION.zoo $i <TEXTCOM >&/dev/null
 done

@@ -219,20 +219,6 @@ IsPositionLookupDictionary:=NewRepresentation("IsPositionDictionary",
   ["domain","blist","vals"] );
 
 #############################################################################
-##
-#R  IsNaiveHashDictionary(<obj>)
-#R  IsNaiveHashLookupDictionary(<obj>)
-##
-##  The old version which supports a very naive hashing by the hashfunctio
-##  key+i.
-IsNaiveHashDictionary:=NewRepresentation("IsNaiveHashDictionary",
-  IsDictionaryDefaultRep, ["len","full","nr","els","hashfun"] );
-IsNaiveHashLookupDictionary:=NewRepresentation("IsNaiveHashLookupDictionary",
-  IsDictionaryDefaultRep and IsPositionDictionary,
-  ["len","full","nr","els","hashfun"] );
-
-
-#############################################################################
 #############################################################################
 ##
 ##  General hash table definitions and operations

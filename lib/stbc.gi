@@ -323,9 +323,16 @@ end);
 ##
 #F  StabChainBaseStrongGenerators( <base>, <sgs>,<one> )
 ##
-InstallGlobalFunction(StabChainBaseStrongGenerators,function( base, sgs, one )
-    local   S,  T,  pnt;
+InstallGlobalFunction(StabChainBaseStrongGenerators,function(arg)
+local   base,sgs,one,S,  T,  pnt;
 
+    base:=arg[1];
+    sgs:=arg[2];
+    if Length(arg)=3 then
+      one:=arg[3];
+    else
+      one:=();
+    fi;
     S := EmptyStabChain( [  ], one );
     T := S;
     for pnt  in base  do

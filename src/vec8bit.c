@@ -855,6 +855,14 @@ void ConvVec8Bit (
 	}
     }
 
+    /* it can happen that the few bytes after the end of the data are
+       not zero, because they had data in them in the old version of the list
+       In most cases this doesn't matter, but in characteristic 2, we must
+       clear up to the end of the word, so that AddCoeffs behaves correctly */
+    if (p == 2)
+      while ((ptr - BYTES_VEC8BIT(list)) % sizeof(UInt))
+	*ptr++ = 0;
+
     /* retype and resize bag */
     if (nsize != SIZE_OBJ(list))
       ResizeBag( list, nsize );

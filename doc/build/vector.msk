@@ -13,7 +13,8 @@ Just as in mathematics, a vector in {\GAP} is any object which
 supports appropriate addition and scalar multiplication operations
 (see "Vector Spaces"). As in mathematics, an especially important
 class of vectors are those represented by a list of coefficients with
-respect to some basis. These are called *row vectors*.
+respect to some basis. These correspond roughly to the {\GAP} concept
+of *row vectors*.
 
 \Declaration{IsRowVector}
 \beginexample
@@ -42,9 +43,10 @@ Copyability" for more details.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operators for Row Vectors}
 
-Since row vectors are lists, the arithmetic operations have the same
-definitions as for lists, which we nevertheless recall here, in the
-language of vectors.
+The rules for arithmetic operations between row vectors, are in fact
+the same as those for the arithmetic of lists, given in part in
+section "Arithmetic for Lists", here we reiterate and complete that definition,
+ in the language of vectors.
 
 \>`<vec1> + <vec2>'{vector!addition} O
 
@@ -87,12 +89,14 @@ gap> [ 1/2, 3/2, 1/2 ] - 1/2;
 
 \>`<vec1> * <vec2>'{scalar product} O
 
-returns the standard scalar product of <vec1> and <vec2>, which must have
-the same length and be defined over the same field.
-The product is the sum of the products of the
-corresponding entries of the vectors. As an exception it is also
-possible to multiply an integer vector to a finite field vector, in which
-case the integers are interpreted as `<scalar> * One(<GF>)'.
+returns the standard scalar product of <vec1> and <vec2>, which must
+both have the same length and take their entries from the same
+field. As remarked above, the system only provides a general method
+for the case where the vectors lie in `IsRingElementList'.  The
+product is the sum of the products of the corresponding entries of the
+vectors. As an exception it is also possible to multiply an integer
+vector to a finite field vector, in which case the integers are
+interpreted as `<scalar> * One(<GF>)'.
 
 \>`<scalar> * <vec>'{scalar!multiplication} O
 \>`<vec> * <scalar>'{scalar!multiplication} O
@@ -128,57 +132,28 @@ gap> NormedRowVector([5,2,3]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Row Vectors over Finite Fields}
 
-{\GAP} uses a compact formats to store row vectors over fields of
+{\GAP} can use compact formats to store row vectors over fields of
 order at most 256, based on those used by the Meat-Axe
 \cite{Rin93}. This format also permits extremely efficient vector
 arithmetic. On the other hand element access and assignment is
 significantly slower than for plain lists.
 
-Under some circumstances, for example if a list is entered on the
-command line, or made from the empty list by asssigning the positions
-in increasing order, then {\GAP} will automatically realise that it is 
-vector over a small finite field, and represent it accordingly.
-
-\beginexample
-gap> [Z(2)]; 
-<a GF2 vector of length 1>
-gap> [Z(3),Z(9),Z(3)^2,Z(9)^4,Z(9)^3,Z(9)^7,Z(9)^2,Z(9)^5,Z(9),Z(3),Z(3)];
-< mutable compressed vector length 11 over GF(9) >
-gap> 
-gap> l := [];
-[  ]
-gap> l[1] := Z(2);
-Z(2)^0
-gap> l;        
-<a GF2 vector of length 1>
-gap> l[2] := Z(4);
-Z(2^2)
-gap> l;
-[ Z(2)^0, Z(2^2) ]
-gap> RepresentationsOfObject(l);
-[ "IsDataObjectRep", "Is8BitVectorRep" ]
-\endexample
-
-A vector in the special representation over $GF(2)$ is always viewed
-as `\<a GF2 vector of length ...>'. Over fields of orders 3 to 256, a
-vector of length 10 or less is viewed as the list of its coefficients, 
-but a longer one is abbreviated.
-
-There are some situations where {\GAP} cannot efficiently detect that
-a list has become a row vector over a finite field. The function
-`ConvertToVectorRep' will handle these situations.
+The function `ConvertToVectorRep' is used to convert a list into a
+compressed vector, or to rewrite a compressed vector ove another
+field. Note that this function is *much* faster when it is given a
+field (or field size) as an argument, rather than having to scan the
+vector and try to decide the field. Supplying the field can also
+avoid errors and/or loss of performance, when one vector from some
+collection happens to have all of its entries over a smaller field
+than the \"natural\" field of the problem.
 
 \Declaration{ConvertToVectorRep}
 
-In this example, we first creat a row vector ``by stealth'' and then
-force {\GAP} to rewrite it, first over GF(2) and then over GF(4).
+In this example, we first creat a row vector and then ask {\GAP} to
+rewrite it, first over GF(2) and then over GF(4).
 
 \beginexample
-gap> v := [1,Z(2),Z(2),0*Z(2)];
-[ 1, Z(2)^0, Z(2)^0, 0*Z(2) ]
-gap> v[1] := Z(2);
-Z(2)^0
-gap> v;           
+gap> v := [Z(2)^0,Z(2),Z(2),0*Z(2)];
 [ Z(2)^0, Z(2)^0, Z(2)^0, 0*Z(2) ]
 gap> RepresentationsOfObject(v);
 [ "IS_PLIST_REP", "IsInternalRep" ]
@@ -195,6 +170,10 @@ gap> RepresentationsOfObject(v);
 \endexample
 
 
+A vector in the special representation over $GF(2)$ is always viewed
+as `\<a GF2 vector of length ...>'. Over fields of orders 3 to 256, a
+vector of length 10 or less is viewed as the list of its coefficients, 
+but a longer one is abbreviated.
 
 
 \Declaration{NumberFFVector}

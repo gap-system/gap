@@ -43,9 +43,9 @@ Revision.lierep_gd :=
 ## [ [ ], [ ], ...., [ ] ]. Furthermore, if $V$ is, e.g., $4$-dimensional,
 ## then the $2$-cochain represented by
 ##
-##     \beginexample
+##     \begintt
 ##        [  [ [ [1,2], 2] ], [ ], [ [ [1,2], 1/2 ] ], [ ] ]
-##     \endexample
+##     \endtt
 ##
 ## maps the pair $(x_1,x_2)$ to $2v_1+1/2 v_3$ (where $v_1$ is the first basis
 ## element of $V$, and $v_3$ the third), and all

@@ -467,6 +467,42 @@ end);
 
 #############################################################################
 ##
+#M  ViewObj( <matgrp> )
+##
+InstallMethod( ViewObj,"for a matrix group",
+    [ IsMatrixGroup ],
+function(G)
+local d;
+  d:=DimensionOfMatrixGroup(G);
+  Print("<group of ",d,"x",d," matrices");
+  if HasSize(G) then
+    Print(" of size ",Size(G));
+  fi;
+  if HasFieldOfMatrixGroup(G) then
+    Print(" over ",FieldOfMatrixGroup(G),">");
+  else
+    Print(" in characteristic ",Characteristic(One(G)),">");
+  fi;
+end);
+
+#############################################################################
+##
+#M  PrintObj( <matgrp> )
+##
+InstallMethod( PrintObj,"for a matrix group",
+    [ IsMatrixGroup ],
+function(G)
+local l;
+  l:=GeneratorsOfGroup(G);
+  if Length(l)=0 then
+    Print("Group([],",One(G),")");
+  else
+    Print("Group(",l,")");
+  fi;
+end);
+
+#############################################################################
+##
 #M  IsGeneralLinearGroup(<G>)
 ##
 InstallMethod(IsGeneralLinearGroup,"try natural",true,[IsMatrixGroup],0,
@@ -653,6 +689,37 @@ InstallMethod( IsConjugatorIsomorphism,
       return false;
     fi;
     end );
+
+#############################################################################
+##
+#F  AffineActionByMatrixGroup( <M> )
+##
+InstallGlobalFunction( AffineActionByMatrixGroup, function(M)
+local   gens,V,  G, A;
+  
+  # build the vector space
+  V := FieldOfMatrixGroup( M ) ^ DimensionOfMatrixGroup( M );
+  
+  # the linear part
+  G := Action( M, V );
+  
+  # the translation part
+  gens:=List( Basis( V ), b -> Permutation( b, V, \+ ) );
+
+  # construct the affine group
+  A := GroupByGenerators(Concatenation(gens,GeneratorsOfGroup( G )));
+  SetSize( A, Size( M ) * Size( V ) );
+
+  if HasName( M )  then
+      SetName( A, Concatenation( String( Size( FieldOfMatrixGroup( M ) ) ),
+	      "^", String( DimensionOfMatrixGroup( M ) ), ":",
+	      Name( M ) ) );
+  fi;
+  # the !.matrixGroup component is not documented!
+  A!.matrixGroup := M; 
+  return A;
+
+end );
 
 
 #############################################################################

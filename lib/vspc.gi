@@ -51,27 +51,26 @@ InstallMethod( IsLeftActedOnByDivisionRing,
 
 #############################################################################
 ##
-#M  AsSubspace( <V>, <W> )  . . . . . . . . . . . . . . for two vector spaces
+#M  AsSubspace( <V>, <C> )  . . . . . . . for a vector space and a collection
 ##
 InstallMethod( AsSubspace,
-    "method for two vector spaces",
-    IsIdenticalObj,
-    [ IsVectorSpace, IsVectorSpace ],
-    function( V, W )
-    local newW, feature;
+    "for a vector space and a collection",
+    [ IsVectorSpace, IsCollection ],
+    function( V, C )
+    local newC;
 
-    if not IsSubset( V, W ) then
+    if not IsSubset( V, C ) then
       return fail;
     fi;
+    newC:= AsVectorSpace( LeftActingDomain( V ), C );
+    if newC = fail then
+      return fail;
+    fi;
+    SetParent( newC, V );
+    UseIsomorphismRelation( C, newC );
+    UseSubsetRelation( C, newC );
 
-    newW:= LeftModuleByGenerators( LeftActingDomain( W ),
-                            GeneratorsOfLeftModule( W ),
-                            Zero( W ) );
-    SetParent( newW, V );
-    UseIsomorphismRelation( W, newW );
-    UseSubsetRelation( W, newW );
-
-    return newW;
+    return newC;
     end );
 
 

@@ -18,7 +18,7 @@
 ##  The {\GAP} library predefines some domains.
 ##  For example the ring of Gaussian integers is predefined as
 ##  `GaussianIntegers' (see~"Gaussians") and the field of rationals
-##  is predefined as `Rationals' (see~"Rationals").
+##  is predefined as `Rationals' (see~"Rational Numbers").
 ##  Most domains are constructed by functions,
 ##  which are called *domain constructors* (see~"Constructing Domains").
 ##  For example the group $D_{12}$ is constructed by the construction

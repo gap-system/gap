@@ -115,25 +115,15 @@ Group( [ f1, f2 ] )*f1*f2^-1*f2^-1^-1
 
 \FileHeader{wordass}[3]
 
-\beginexample
-gap> f:= FreeGroup( "a", "b" );;
-gap> a:= GeneratorsOfGroup(f)[1];;  b:= GeneratorsOfGroup(f)[2];;
-gap> w:= a^5*b*a^2/b^4*a;
-a^5*b*a^2*b^-4*a
-gap> MappedWord( w, [ a, b ], [ (1,2), (1,2,3,4) ] );
-(1,3,4,2)
-gap> (1,2)^5*(1,2,3,4)*(1,2)^2/(1,2,3,4)^4*(1,2);
-(1,3,4,2)
-gap> MappedWord( w, [ a ], [ a^2 ] );
-a^10*b*a^4*b^-4*a^2
-\endexample
 
 \Declaration{Length}[wordass]
 
 \index{length!of a word}
 
 \beginexample
-gap> w;  Length( w );  Length( a^17 );  Length( w^0 );
+gap> f := FreeGroup("a","b");; gens := GeneratorsOfGroup(f);;
+gap> a := gens[1];; b := gens[2];;w := a^5*b*a^2*b^-4*a;; 
+gap>  w; Length( w );  Length( a^17 );  Length( w^0 );
 a^5*b*a^2*b^-4*a
 13
 17

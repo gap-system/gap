@@ -849,7 +849,7 @@ InstallMethod( \.\:\=,
     # Force setting the operations record,
     # and mark `obj' to make the methods of the operations record applicable.
     SetOperations( obj, oprec );
-    Setter( oprec!.FILTER )( obj, true );
+    SetFilterObj( obj, oprec!.FILTER );
     end );
 
 
@@ -939,7 +939,7 @@ InstallMethod( \.\:\=,
       # In general we expect the object with operations record `oprec'
       # to be the first operand.
       # For the other operands, we do not require anything.
-      flags:=[ oprec!.FILTER ];
+      flags:= [ oprec!.FILTER ];
       flagsnames:= Concatenation( "[ ", NameFunction( oprec!.FILTER ) );
       for i in [ 2 .. nargs ] do
         Add( flags, IsObject );
@@ -960,7 +960,6 @@ InstallMethod( \.\:\=,
       InstallOtherMethod( op,
           Concatenation( "for object with `", Name( oprec ),
                          "' as first argument" ),
-          true,
           flags, SUM_FLAGS,
           method );
 
@@ -973,7 +972,6 @@ InstallMethod( \.\:\=,
              "InstallOtherMethod( ", NameFunction( op ), ",\n",
              "    \"for object with `", Name( oprec ),
              "' as first argument\",\n",
-             "    true,\n",
              "    ", flagsnames, ", SUM_FLAGS,\n",
              "    ", oprec, ".", n , " );\n\n" );
 
@@ -987,7 +985,6 @@ InstallMethod( \.\:\=,
         InstallOtherMethod( op,
             Concatenation( "for object with `", Name( oprec ),
                 "' as second argument" ),
-            true,
             [ IsObject, oprec!.FILTER ], SUM_FLAGS + 1,
             method );
 
@@ -1000,10 +997,28 @@ InstallMethod( \.\:\=,
                "InstallOtherMethod( ", NameFunction( op ), ",\n",
                "    \"for object with `", Name( oprec ),
                "' as second argument\",\n",
-               "    true,\n",
                "    [ IsObject, ", NameFunction( oprec!.FILTER ),
                " ], SUM_FLAGS + 1,\n",
                "    ", oprec, ".", n, " );\n\n" );
+
+      elif op = PrintObj then
+
+        # Install a method for `ViewObj'.
+        InstallOtherMethod( ViewObj,
+            Concatenation( "for object with `", Name( oprec ),
+                "' as first argument" ),
+            flags, SUM_FLAGS,
+            method );
+
+        # Print the method installation.
+        Print( "# For printing objects, ",
+               "also a `ViewObj' method is installed.\n",
+               "InstallOtherMethod( ViewObj,\n",
+               "    \"for object with `", Name( oprec ),
+               "' as first argument\",\n",
+               "    ", flagsnames, ", SUM_FLAGS,\n",
+               "    ", oprec, ".", n, " );\n\n" );
+
       fi;
 
     fi;

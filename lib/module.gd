@@ -117,7 +117,7 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 
 #############################################################################
 ##
-#P  IsFullRowModule( M )
+#P  IsFullRowModule( <M> )
 ##
 ##  A *full row module* is a module $R^n$,
 ##  for a ring $R$ and a nonnegative integer $n$.
@@ -134,7 +134,7 @@ DeclareProperty( "IsFullRowModule", IsFreeLeftModule, 20 );
 
 #############################################################################
 ##
-#P  IsFullMatrixModule( M )
+#P  IsFullMatrixModule( <M> )
 ##
 ##  A *full matrix module* is a module $R^{[m,n]}$,
 ##  for a ring $R$ and two nonnegative integers $m$, $n$.
@@ -151,11 +151,9 @@ DeclareProperty( "IsFullMatrixModule", IsFreeLeftModule, 20 );
 ##
 #C  IsHandledByNiceBasis( <M> )
 ##
-##  For a free left module in this category, essentially all operations are
-##  performed using a left row module, corresponding to a `NiceBasis' (see
-##  "NiceBasis") of <M>.
-##  A free left module that supports the mechanism of associated bases
-##  must know this.
+##  For a free left module <M> in this category, essentially all operations
+##  are performed using a ``nicer'' free left module,
+##  which is usually a row module.
 ##
 DeclareCategory( "IsHandledByNiceBasis",
     IsFreeLeftModule and IsAttributeStoringRep );

@@ -443,8 +443,9 @@ and `DerivedSubgroup' is an attribute for groups.
 \beginexample
 gap> g:=Group((1,2),(1,2,3));;Size(g);;
 gap> KnownAttributesOfObject(g);
-[ "Size", "One", "GeneratorsOfMagmaWithInverses", "Pcgs", "NrMovedPoints", 
-  "MovedPoints", "StabChainMutable", "StabChainOptions" ]
+[ "Size", "One", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", "Pcgs", 
+  "StabChainMutable", "StabChainOptions" ]
 \endexample
 
 Several attributes have methods for more than one argument.  For example
@@ -545,10 +546,7 @@ are needed only once and shall not be stored in the object.
 gap> HasAsSSortedList(g);
 false
 gap> AttributeValueNotSet(AsSSortedList,g);
-[ (), (3,4), (2,3), (2,3,4), (2,4,3), (2,4), (1,2), (1,2)(3,4), (1,2,3),
-  (1,2,3,4), (1,2,4,3), (1,2,4), (1,3,2), (1,3,4,2), (1,3), (1,3,4),
-  (1,3)(2,4), (1,3,2,4), (1,4,3,2), (1,4,2), (1,4,3), (1,4), (1,4,2,3),
-  (1,4)(2,3) ]
+[ (), (4,5), (1,2,3), (1,2,3)(4,5), (1,3,2), (1,3,2)(4,5) ]
 gap> HasAsSSortedList(g);
 false
 \endexample
@@ -565,17 +563,17 @@ false
 gap> g := Group((1,2,3,4,5),(1,2,3));
 Group([ (1,2,3,4,5), (1,2,3) ])
 gap> KnownAttributesOfObject(g);
-[ "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-  "LargestMovedPoint" ]
+[ "LargestMovedPoint", "GeneratorsOfMagmaWithInverses", 
+  "MultiplicativeNeutralElement" ]
 gap> SetInfoLevel(InfoAttributes,3);
 gap> DisableAttributeValueStoring(Size);
 #I  Disabling value storing for Size
 gap> Size(g);
 60
 gap> KnownAttributesOfObject(g);
-[ "One", "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
-  "MovedPoints", "LargestMovedPoint", "NrMovedPoints", "StabChainMutable", 
-  "StabChainOptions" ]
+[ "One", "LargestMovedPoint", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+  "StabChainMutable", "StabChainOptions" ]
 gap> Size(g);
 60
 gap> EnableAttributeValueStoring(Size);
@@ -583,9 +581,9 @@ gap> EnableAttributeValueStoring(Size);
 gap> Size(g);
 60
 gap> KnownAttributesOfObject(g);
-[ "Size", "One", "GeneratorsOfMagmaWithInverses", 
-  "MultiplicativeNeutralElement", "MovedPoints", "LargestMovedPoint", 
-  "NrMovedPoints", "StabChainMutable", "StabChainOptions" ]
+[ "Size", "One", "LargestMovedPoint", "NrMovedPoints", "MovedPoints", 
+  "GeneratorsOfMagmaWithInverses", "MultiplicativeNeutralElement", 
+  "StabChainMutable", "StabChainOptions" ]
 \endexample
 
 
@@ -630,18 +628,25 @@ for all $a$, $b$, $c$ in the domain.
 \beginexample
 gap> g:=Group((1,2),(1,2,3));;
 gap> KnownPropertiesOfObject(g);
-[ "IsFinite", "IsAssociative", "IsFinitelyGeneratedGroup", 
-  "IsSubsetLocallyFiniteGroup", "KnowsHowToDecompose" ]
+[ "IsFinite", "CanEasilyCompareElements", "CanEasilySortElements", 
+  "IsDuplicateFree", "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+  "KnowsHowToDecompose", "IsChainTypeGroup", "IsStabChainViaChainSubgroup" ]
 gap> Size(g);
 6
 gap> KnownPropertiesOfObject(g);
-[ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", "IsAssociative", 
-  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", "IsPerfectGroup", 
-  "IsSolvableGroup", "IsPolycyclicGroup", "KnowsHowToDecompose" ]
+[ "IsEmpty", "IsTrivial", "IsNonTrivial", "IsFinite", 
+  "CanEasilyCompareElements", "CanEasilySortElements", "IsDuplicateFree", 
+  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+  "KnowsHowToDecompose", "IsPerfectGroup", "IsSolvableGroup", 
+  "IsPolycyclicGroup", "IsChainTypeGroup", "IsStabChainViaChainSubgroup" ]
 gap> KnownTruePropertiesOfObject(g);
-[ "IsNonTrivial", "IsFinite", "IsAssociative", "IsFinitelyGeneratedGroup", 
-  "IsSubsetLocallyFiniteGroup", "IsSolvableGroup", "IsPolycyclicGroup", 
-  "KnowsHowToDecompose" ]
+[ "IsNonTrivial", "IsFinite", "CanEasilyCompareElements", 
+  "CanEasilySortElements", "IsDuplicateFree", 
+  "IsGeneratorsOfMagmaWithInverses", "IsAssociative", 
+  "IsFinitelyGeneratedGroup", "IsSubsetLocallyFiniteGroup", 
+  "KnowsHowToDecompose", "IsSolvableGroup", "IsPolycyclicGroup" ]
 \endexample
 
 

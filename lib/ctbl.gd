@@ -1384,6 +1384,10 @@ DeclareAttributeSuppCT( "ComputedPrimeBlockss", IsOrdinaryTable, "mutable",
 ##  in the components `relevantclasses' and `exponents' of a record
 ##  returned by `PrimeBlocks' (see~"PrimeBlocks").
 ##
+##  `SameBlock' returns `true' if <omega1> and <omega2> are equal modulo any
+##  maximal ideal in the ring of complex algebraic integers containing the
+##  ideal spanned by <p>, and `false' otherwise.
+##
 DeclareGlobalFunction( "SameBlock" );
 
 

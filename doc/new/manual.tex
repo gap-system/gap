@@ -1,0 +1,97 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  manual.tex                GAP documentation             Thomas Breuer
+%W                                                         & Frank Celler
+%W                                                     & Martin Schoenert
+%W                                                       & Heiko Theissen
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,   Germany
+%%
+%
+%
+\input ../gapmacro.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook{new}
+\UseReferences{../ref}
+\UseReferences{../tut}
+\UseReferences{../prg}
+\UseReferences{../ext}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+\input newcover.tex
+}
+%
+%
+\Colophon{
+\input ../tut/authors
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%%
+\FrontMatter
+\immediate\write\citeout{\bs bibdata{mrabbrev,../manual}}
+\input ../ref/copyrigh
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . .  GAP 4 Reference Manual
+%%
+\Chapters
+\Input{about}
+
+%
+\Input{hash2}
+\Input{quogphom}
+\Input{gptransv}
+\Input{grpchain}
+%
+\Input{iostream}
+
+% create chapter index entry for copyright
+\PseudoInput{copyrigh}{Copyright}
+
+% fill doublepage before appendix
+\ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
+\Appendices
+\Bibliography
+\Index
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  EndOfBook . . . . . . . . . . . . . . . . . . . . . . . . . that's it
+%%
+\EndOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  manual.tex  . . . . . . . . . . . . . . . . . . . . . . . . ends here

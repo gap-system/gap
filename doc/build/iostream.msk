@@ -1,0 +1,57 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  iostream.msk               GAP documentation             Steve Linton
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright 2000,  St Andrews
+%%
+%%  This file contains the description of input-output streams.
+%%  Once this functionality is stable, it will probably be merged into
+%%  the main Streams chapter in the reference manual
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Input-Output Streams}
+
+\FileHeader{streams}[2]
+
+
+\Declaration{IsInputOutputStream}
+
+\FileHeader{streams}[3]
+
+\Declaration{InputOutputLocalProcess}
+
+\begintt
+gap> d := DirectoryCurrent();
+dir("./")
+gap> f := Filename(DirectoriesSystemPrograms(), "rev");
+"/usr/bin/rev"
+gap> s := InputOutputLocalProcess(d,f,[]);
+< input/output stream to rev >
+gap> WriteLine(s,"The cat sat on the mat");
+true
+gap> Print(ReadLine(s));
+tam eht no tas tac ehT
+gap> ReadLine(s);
+failgap> x := ListWithIdenticalEntries(10000,'x');;
+gap> ConvertToStringRep(x);
+gap> WriteLine(s,x);
+fail
+gap> WriteByte(s,INT_CHAR('\n'));
+true
+gap> y := ReadAll(s);;
+gap> Length(y);      
+4096
+gap> CloseStream(s);
+gap> s;
+< closed input/output stream to rev >
+\endtt
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  iostreams.msk . . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -91,7 +91,7 @@ InstallGlobalFunction( BasicImageGroup,
 	local base, orbitGens, freeGroup, homFromFree, siftGroup, tmp, gens, 
 	     sbG, chainG, transv, newTransv, key, backPntr;
 
-	base := Base( G );
+	base := BaseOfGroup( G );
 	orbitGens := OrbitGeneratorsOfGroup( G );
 	freeGroup := FreeGroup( Length( orbitGens ) );
 	homFromFree := GroupHomomorphismByImagesNC( freeGroup, G,
@@ -186,7 +186,7 @@ InstallMethod( BasicImageGroupElement, "for basic image group elt", true,
         hcoset := Sift( siftGroup, hcoset );
 	
 	word := SourceElt( hcoset )^(-1);
-	base := Base( siftGroup );
+	base := BaseOfGroup( siftGroup );
 	baseImage := List( base, b -> b^g );
 
 	Type := NewType( BasicImageEltRepFamily, IsBasicImageEltRep );

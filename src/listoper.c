@@ -703,6 +703,12 @@ Obj             ProdListList (
         listP = SUM( listP, elmP );
     }
 
+    /* adjust mutability */
+
+    if ((IS_MUTABLE_OBJ(listL) || IS_MUTABLE_OBJ(listR))
+	&& !IS_MUTABLE_OBJ(listP))
+      listP = SHALLOW_COPY_OBJ(listP);
+
     /* return the result                                                   */
     return listP;
 }

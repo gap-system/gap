@@ -155,6 +155,7 @@ HELP_MAIN_BOOKS := Immutable( [
     "reference",    "doc/ref",  "GAP 4 Reference Manual",
     "extending",    "doc/ext",  "Extending GAP 4 Reference Manual",
     "prg tutorial", "doc/prg",  "Programmers Tutorial",
+    "new features", "doc/new",  "New Features for Developers",
 ] );
 
 

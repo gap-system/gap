@@ -48,7 +48,7 @@ gap> IsBijective( f );
 true
 
 
-gap> STOP_TEST( "alghom.tst", 57860000 );
+gap> STOP_TEST( "alghom.tst", 58060000 );
 
 
 #############################################################################

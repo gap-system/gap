@@ -46,6 +46,8 @@ const char * Revision_listfunc_c =
 #include        "set.h"                 /* plain sets                      */
 #include        "range.h"               /* ranges                          */
 
+#include		<string.h>
+
 
 /****************************************************************************
 **
@@ -160,6 +162,18 @@ Obj             FuncAPPEND_LIST_INTR (
 		0L, 0L,
 		"you can return a mutable list for <list1>");
     
+
+    /* handle the case of strings now */
+    if ( IS_STRING_REP(list1) && IS_STRING_REP(list2))
+      {
+	UInt len1, len2, len, min;
+	len1 = GET_LEN_STRING(list1);
+	len2 = GET_LEN_STRING(list2);
+	ResizeBag(list1, len1 + len2 +1);
+	memcpy( ((char *)ADDR_OBJ(list1)) + len1, 
+		(char *)(ADDR_OBJ(list2)), len2 + 1);
+	return (Obj) 0;
+      }
     
     /* check the type of the first argument                                */
     if ( TNUM_OBJ( list1 ) != T_PLIST ) {

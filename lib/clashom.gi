@@ -34,6 +34,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
            rep,# set of classes with canonical representatives
            c,  i, # loop variables
 	   stabsub,
+	   stabsubgens,
 	   comm,s,stab;# for class correction
 	  
   C := cl[2];
@@ -52,7 +53,11 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
   
   # Construct matrices for the affine operation on $N/[h,N]$.
   aff := ExtendedVectors( field ^ r );
-  gens:=GeneratorsOfGroup(C);
+  if IsSolvableGroup(C) then
+    gens:=Pcgs(C);
+  else
+    gens:=GeneratorsOfGroup(C);
+  fi;
   imgs := [  ];
   for c  in gens  do
     M := [  ];
@@ -73,12 +78,16 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
   classes := [  ];
 
   stabsub:=AsSubgroup(H,ClosureGroup(NT,cNh));
+  stabsubgens:=Set(GeneratorsOfGroup(stabsub));
+  SetActionKernelExternalSet(xset,stabsub);
 
   for orb  in ExternalOrbitsStabilizers( xset )  do
     rep := PcElementByExponentsNC( N, N{ N!.subspace.baseComplement },
 		    Representative( orb ){ ran } );
 
-    stab:=ShallowCopy(GeneratorsOfGroup(StabilizerOfExternalSet(orb)));
+    # filter those we don't get anyhow.
+    stab:=Filtered(GeneratorsOfGroup(StabilizerOfExternalSet(orb)),
+                   i->not i in stabsubgens);
 
     comm := [  ];
     for s  in [ 1 .. Length( stab ) ]  do
@@ -91,7 +100,7 @@ BindGlobal("GeneralStepClEANSNonsolv",function( H, N,NT, cl )
 	stab[ s ] := stab[ s ] / PcElementByExponentsNC
 	  ( N!.capH, N!.capH{ N!.subspace.needed }, comm[ s ] );
     od;
-    stab := Concatenation( cNh, stab );
+    #stab := Concatenation( cNh, stab );
 
     c := [h * rep,ClosureSubgroupNC(stabsub,stab)];
 
@@ -1572,6 +1581,7 @@ local r,	#radical
       ncl:=Concatenation(ncl,new);
     od;
     cl:=ncl;
+    Info(InfoHomClass,1,"Now: ",Length(cl)," classes");
   od;
 
   if Order(cl[1][1])>1 then

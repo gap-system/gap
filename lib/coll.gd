@@ -1262,7 +1262,6 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 #A  AsSSortedList( <C> )  . . . . . . . . . . set of elements of a collection
 #A  AsSSortedList( <list> ) . . . . . . . . . . . . set of elements of a list
 #A  AsSet( <C> )
-#A  Elements( <C> )
 ##
 ##  `AsSSortedList' (``as strictly sorted list'') returns a dense, immutable,
 ##  and duplicate free list <imm>.
@@ -1283,9 +1282,7 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 ##  The only difference to the operation `SSortedList' (see~"SSortedList")
 ##  is that `AsSSortedList' returns an *immutable* list.
 ##
-##  `AsSet' and `Elements' are simply synonyms for `AsSSortedList',
-##  `Elements' is only supported for backwards compatibility and should not
-##  be used any longer.
+##  `AsSet' is simply a synonym for `AsSSortedList'.
 ##
 ##  In general a function that returns a set of elements is free, in fact
 ##  encouraged, to return a domain instead of the proper set of its elements.
@@ -1299,7 +1296,25 @@ DeclareAttribute( "AsSortedList", IsListOrCollection );
 ##
 DeclareAttribute( "AsSSortedList", IsListOrCollection );
 DeclareSynonym( "AsSet", AsSSortedList );
-DeclareGlobalFunction("Elements");
+
+
+#############################################################################
+##
+#F  Elements( <C> )
+##
+##  `Elements' does the same as `AsSSortedList' (see~"AsSSortedList"),
+##  that is, the return value is a strictly sorted list of the elements in
+##  the list or collection <C>.
+##
+##  `Elements' is only supported for backwards compatibility.
+##  In many situations, the sortedness of the ``element list'' for a
+##  collection is in fact not needed, and one can save a lot of time by
+##  asking for a list that is *not* necessarily sorted, using `AsList'
+##  (see~"AsList").
+##  If one is really interested in the strictly sorted list of elements in
+##  <C> then one should use `AsSet' or `AsSSortedList' instead.
+##
+DeclareGlobalFunction( "Elements" );
 
 
 #############################################################################

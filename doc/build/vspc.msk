@@ -9,70 +9,51 @@
 %%
 \Chapter{Vector Spaces}
 
-\FileHeader[1]{vspc}
+\Declaration{IsLeftVectorSpace}
 
-%  IsLeftOperatorRing ... left out
-
-% IsLeftOperatorRingWithOne ... left out
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constructing Vector Spaces}
 
 \Declaration{VectorSpace}
-
 \beginexample
-gap> vecs:= [ [ 1, 2, 3 ], [ 1, 1, 1 ] ];;
-gap> V:= VectorSpace( Rationals, vecs );
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );
 <vector space over Rationals, with 2 generators>
 \endexample
 
 \Declaration{Subspace}
-
 \beginexample
-gap> vecs:= [ [ 1, 2, 3 ], [ 1, 1, 1 ] ];;
-gap> V:= VectorSpace( Rationals, vecs );;
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );;
 gap> W:= Subspace( V, [ [ 0, 1, 2 ] ] );
 <vector space over Rationals, with 1 generators>
 \endexample
 
-\Declaration{SubspaceNC}
-
+\Declaration{AsVectorSpace}
 \beginexample
-gap> vecs:= [ [ 1, 2, 3 ], [ 1, 1, 1 ] ];;
-gap> V:= VectorSpace( Rationals, vecs );;
-VectorSpace( Rationals, [ [ 0, 1, 2 ] ] )
+gap> V:= GF( 27 )^3;
+( GF(3^3)^3 )
+gap> Dimension( V );  LeftActingDomain( V );
+3
+GF(3^3)
+gap> W:= AsVectorSpace( GF( 3 ), V );
+<vector space over GF(3), with 9 generators>
+gap> Dimension( W );  LeftActingDomain( W );
+9
+GF(3)
+gap> AsVectorSpace( GF( 9 ), V );
+fail
 \endexample
 
-\Declaration{FullRowSpace}
-
+\Declaration{AsSubspace}
 \beginexample
-gap> FullRowSpace( GF( 9 ), 3 );  
-( GF(3^2)^3 )
-\endexample
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Categories and Properties for Vector Spaces}
-
-\Declaration{IsLeftVectorSpace}
-
-\Declaration{IsGaussianSpace}
-
-\beginexample
-gap> mats:= [ [[1,1],[2,2]], [[3,4],[0,1]] ];;
-gap> V:= VectorSpace( Rationals, mats );;
-gap> IsGaussianSpace( V );
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 3 ], [ 1, 1, 1 ] ] );;
+gap> W:= VectorSpace( Rationals, [ [ 1/2, 1/2, 1/2 ] ] );;
+gap> U:= AsSubspace( V, W );
+<vector space over Rationals, with 1 generators>
+gap> Parent( U ) = V;
 true
-\endexample
-
-\Declaration{IsSubspacesVectorSpace}
-
-\beginexample
-gap> V:= VectorSpace( GF(2^2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] );;
-gap> D:= SubspacesDim( V, 1 );
-Subspaces( VectorSpace( GF(2^2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] 
- ] ), 1 )
-gap> IsSubspacesVectorSpace( D );
-true
+gap> AsSubspace( V, [ [ 1, 1, 1 ] ] );
+fail
 \endexample
 
 
@@ -80,97 +61,84 @@ true
 \Section{Operations and Attributes for Vector Spaces}
 
 \Declaration{GeneratorsOfLeftVectorSpace}
-
 \beginexample
-gap> vecs:= [ [ 1, 2, 3 ], [ 1, 1, 1 ], [ 1, 1, 1 ] ];;
-gap> V:= VectorSpace( Rationals, vecs );;
-gap> GeneratorsOfVectorSpace( V );
-[ [ 1, 2, 3 ], [ 1, 1, 1 ], [ 1, 1, 1 ] ]
-\endexample
-
-\Declaration{NormedRowVectors}
-\beginexample
-gap> V:= GF(3)^2;;
-gap> NormedRowVectors( V );
-[ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
-  [ Z(3)^0, Z(3) ] ]
+gap> GeneratorsOfVectorSpace( FullRowSpace( Rationals, 3 ) );
+[ [ 1, 0, 0 ], [ 0, 1, 0 ], [ 0, 0, 1 ] ]
 \endexample
 
 \Declaration{TrivialSubspace}
 \beginexample
-gap> V:= GF(3)^3;;                    
-gap> TrivialSubspace( V );
+gap> V:= GF(3)^3;;
+gap> triv:= TrivialSubspace( V );
 <vector space over GF(3), with 0 generators>
+gap> AsSet( triv );
+[ [ 0*Z(3), 0*Z(3), 0*Z(3) ] ]
 \endexample
 
-\Declaration{AsSubspace}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Domains of Subspaces of Vector Spaces}
+
+\Declaration{Subspaces}
 \beginexample
-gap> V:= VectorSpace( Rationals, [ [1,2,3], [1,1,1] ] );;
-gap> W:= VectorSpace( Rationals, [ [1/2,1/2,1/2] ] );;   
-gap> U:= AsSubspace( V, W );
-<vector space over Rationals, with 1 generators>
-gap> Parent( U ) = V;
+gap> D:= Subspaces( GF(3)^3 );
+Subspaces( ( GF(3)^3 ) )
+gap> Size( D );
+28
+gap> iter:= Iterator( D );;
+gap> NextIterator( iter );
+<vector space over GF(3), with 0 generators>
+gap> NextIterator( iter );
+<vector space of dimension 1 over GF(3)>
+\endexample
+
+\Declaration{IsSubspacesVectorSpace}
+\beginexample
+gap> V:= VectorSpace( GF(2^2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] );;
+gap> D:= Subspaces( V, 1 );
+Subspaces( VectorSpace( GF(2^2), [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] 
+ ] ), 1 )
+gap> IsSubspacesVectorSpace( D );
 true
 \endexample
 
-\Declaration{AsVectorSpace}
-
-\beginexample
-gap> V:= GF( 27 )^3;
-( GF(3^3)^3 )
-gap> W:= AsVectorSpace( GF( 3 ), V );
-<vector space over GF(3), with 9 generators>
-gap> Dimension( W );
-9
-\endexample
-
-\Declaration{SubspacesDim}
-
-\Declaration{Subspaces}
-
-\beginexample
-gap> W:= FullRowSpace( GF( 3 ), 3 );;
-gap> Subspaces( W );
-Subspaces( ( GF(3)^3 ), "all" )
-\endexample
+%T The domains of subspaces are useful for example because groups and algebras
+%T act on their sets of elements.
+%T (show an example)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Bases of Vector Spaces}
 
-\FileHeader{basis}
+\FileHeader[1]{basis}
+
+\Declaration{IsBasis}
+\beginexample
+gap> V:= GF(2)^2;;
+gap> B:= Basis( V );;
+gap> IsBasis( B );
+true
+gap> IsBasis( [ [ 1, 0 ], [ 0, 1 ] ] );
+false
+\endexample
 
 \Declaration{Basis}
-
 \beginexample
 gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> Basis( V );
+gap> B:= Basis( V );
 SemiEchelonBasis( <vector space over Rationals, with 2 generators>,... )
+gap> BasisVectors( B );
+[ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ]
 gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 3, 2, 30 ] ] );
 Basis( <vector space over Rationals, with 2 generators>,
 [ [ 1, 2, 7 ], [ 3, 2, 30 ] ] )
-gap> BasisVectors( B );
-[ [ 1, 2, 7 ], [ 3, 2, 30 ] ]
+gap> Basis( V, [ [ 1, 2, 3 ] ] );
+fail
 \endexample
 
-%T show the basis vectors in the unary case,
-%T show examples where the vectors do not form a basis,
 %T show the use of the ``no check'' version
 
-\Declaration{SemiEchelonBasis}
-
-\beginexample
-gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> SemiEchelonBasis( V );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>,...)
-gap> B:= SemiEchelonBasis( V, [ [1,2,7],[0,1,-9/4] ] );
-SemiEchelonBasis( <vector space over Rationals, with 2 generators>,
-  [ [1,2,7],[0,1,-9/4] ] )
-\endexample
-
 \Declaration{CanonicalBasis}
-
 \beginexample
 gap> vecs:= [ [ 1, 2, 3 ], [ 1, 1, 1 ], [ 1, 1, 1 ] ];;
 gap> V:= VectorSpace( Rationals, vecs );;
@@ -181,58 +149,93 @@ gap> BasisVectors( B );
 \endexample
 
 
-
-
-% NewBasis............maybe better in the programmers manual
-
-% RelativeBasis ....... programmers manual ?
-
-\Declaration{IsBasis}
-
-\beginexample
-gap> V:= FullRowSpace( GF(2), 6 );;
-gap> B:= Basis( V );;
-gap> IsBasis( B );
-true
-\endexample
-
-\Declaration{IsCanonicalBasis}
-
-\Declaration{IsCanonicalBasisFullRowModule}
-
-\Declaration{IsCanonicalBasisFullMatrixModule}
-
-\Declaration{IsIntegralBasis}
-
-\beginexample
-gap> F:= GaussianRationals;;
-gap> B:= Basis( F );;                                             
-gap> IsIntegralBasis(B);
-true
-\endexample
-
-\Declaration{IsNormalBasis}
-
-\Declaration{IsSemiEchelonized}
-
-\beginexample
-gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> B:= Basis( V, [ [1,2,7],[0,1,-9/4] ] );;           
-gap> IsSemiEchelonized(B);
-true
-\endexample
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Vector Space Bases}
 
 \Declaration{BasisVectors}
-
 \beginexample
 gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
 gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ] );;
-gap> BasisVectors( B ); 
+gap> BasisVectors( B );
 [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ]
 \endexample
 
-\Declaration{StructureConstantsTable}
+\Declaration{UnderlyingLeftModule}
+\beginexample
+gap> B:= Basis( GF(2)^6 );;  UnderlyingLeftModule( B );
+( GF(2)^6 )
+\endexample
 
+\Declaration{Coefficients}
+\beginexample
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
+gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ] );;
+gap> Coefficients( B, [ 1/2, 1/3, 5 ] );
+[ 1/2, -2/3 ]
+gap> Coefficients( B, [ 1, 0, 0 ] );
+fail
+\endexample
+
+\Declaration{LinearCombination}
+\beginexample
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
+gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ] );;
+gap> LinearCombination( B, [ 1/2, -2/3 ] );
+[ 1/2, 1/3, 5 ]
+\endexample
+
+\Declaration{EnumeratorByBasis}
+\beginexample
+gap> V:= GF(2)^3;;
+gap> enum:= EnumeratorByBasis( CanonicalBasis( V ) );;
+gap> Print( enum{ [ 1 .. 4 ] }, "\n" );
+[ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ 0*Z(2), 0*Z(2), Z(2)^0 ], 
+  [ 0*Z(2), Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0, Z(2)^0 ] ]
+gap> B:= Basis( V, [ [ 1, 1, 1 ], [ 1, 1, 0 ], [ 1, 0, 0 ] ] * Z(2) );;
+gap> enum:= EnumeratorByBasis( B );;
+gap> Print( enum{ [ 1 .. 4 ] }, "\n" );
+[ [ 0*Z(2), 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2), 0*Z(2) ], 
+  [ Z(2)^0, Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0, 0*Z(2) ] ]
+\endexample
+
+\Declaration{IteratorByBasis}
+\beginexample
+gap> V:= GF(2)^3;;
+gap> iter:= IteratorByBasis( CanonicalBasis( V ) );;
+gap> for i in [ 1 .. 4 ] do Print( NextIterator( iter ), "\n" ); od;
+[ 0*Z(2), 0*Z(2), 0*Z(2) ]
+[ 0*Z(2), 0*Z(2), Z(2)^0 ]
+[ 0*Z(2), Z(2)^0, 0*Z(2) ]
+[ 0*Z(2), Z(2)^0, Z(2)^0 ]
+gap> B:= Basis( V, [ [ 1, 1, 1 ], [ 1, 1, 0 ], [ 1, 0, 0 ] ] * Z(2) );;
+gap> iter:= IteratorByBasis( B );;
+gap> for i in [ 1 .. 4 ] do Print( NextIterator( iter ), "\n" ); od;
+[ 0*Z(2), 0*Z(2), 0*Z(2) ]
+[ Z(2)^0, 0*Z(2), 0*Z(2) ]
+[ Z(2)^0, Z(2)^0, 0*Z(2) ]
+[ 0*Z(2), Z(2)^0, 0*Z(2) ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations for Special Kinds of Bases}
+
+\Declaration{IsCanonicalBasis}
+
+\Declaration{IsIntegralBasis}
+\Declaration{IsNormalBasis}
+\beginexample
+gap> B:= CanonicalBasis( GaussianRationals );
+gap> IsIntegralBasis( B );  IsNormalBasis( B );
+true
+false
+\endexample
+
+% add an example of a non-integral basis;
+% for that, add a method that takes an integral basis,
+% and inspects the basechange matrix
+
+\Declaration{StructureConstantsTable}
 \beginexample
 gap> A:= QuaternionAlgebra( Rationals );;
 gap> StructureConstantsTable( Basis( A ) );
@@ -244,71 +247,6 @@ gap> StructureConstantsTable( Basis( A ) );
 \endexample
 
 
-\Declaration{UnderlyingLeftModule}
-
-\beginexample
-gap> V:= FullRowSpace( GF(2), 6 );;                                  
-gap> B:= Basis( V );;                                            
-gap> UnderlyingLeftModule( B );
-( GF(2)^6 )
-\endexample
-
-\Declaration{Coefficients}
-
-\beginexample
-gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ] );;
-gap> Coefficients( B, [ 1/2, 1/3, 5 ] );
-[ 1/2, -2/3 ]
-\endexample
-
-\Declaration{LinearCombination}
-
-\beginexample
-gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> B:= Basis( V, [ [ 1, 2, 7 ], [ 0, 1, -9/4 ] ] );;
-gap> LinearCombination( B, [ 1/2, -2/3 ] );
-[ 1/2, 1/3, 5 ]
-\endexample
-
-\Declaration{SiftedVector}
-
-\beginexample
-gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
-gap> B:= Basis( V );;
-gap> SiftedVector( B, [ 1, 2, 8 ] );                    
-[ 0, 0, 1 ]
-\endexample
-
-\Declaration{EnumeratorByBasis}
-
-\beginexample
-gap> V:= Rationals^3;;
-gap> EnumeratorByBasis( Basis( V ) );
-<enumerator of ( Rationals^3 )>
-\endexample
-
-\Declaration{IteratorByBasis}
-
-\beginexample
-gap> V:= Rationals^3;;
-gap> IteratorByBasis( Basis( V ) );       
-<iterator>
-\endexample
-
-% IsBasisByNiceBasis ...........prog-man?
-
-% NiceBasis...............prog-man?
-
-% NiceBasisNC...............prog-man?
-
-% NiceFreeLeftModule............prog-man?
-
-% PrepareNiceFreeLeftModule .............. prog-man?
-
-% NiceVector ..................... prog-man?
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Mutable Bases}
 
@@ -317,27 +255,21 @@ gap> IteratorByBasis( Basis( V ) );
 \Declaration{IsMutableBasis}
 
 \Declaration{MutableBasis}
-
 \beginexample
 gap> MB:= MutableBasis( Rationals, [ [ 1, 2, 3 ], [ 0, 1, 0 ] ] );
 <mutable basis over Rationals, 2 vectors>
 \endexample
 
-% MutableBasisViaNiceMutableBasisMethod2( <R>, <vectors> ) .........left out
-% MutableBasisViaNiceMutableBasisMethod3( <R>, <vectors>, <zero> )
-
 \Declaration{NrBasisVectors}
-
 \beginexample
-gap> MB:= MutableBasis( Rationals, [ [ 1, 1], [ 2, 2 ] ] );;       
+gap> MB:= MutableBasis( Rationals, [ [ 1, 1], [ 2, 2 ] ] );;
 gap> NrBasisVectors( MB );
 1
 \endexample
 
 \Declaration{ImmutableBasis}
-
 \beginexample
-gap> MB:= MutableBasis( Rationals, [ [ 1, 1], [ 2, 2 ] ] );;
+gap> MB:= MutableBasis( Rationals, [ [ 1, 1 ], [ 2, 2 ] ] );;
 gap> B:= ImmutableBasis( MB );
 SemiEchelonBasis( <vector space of dimension 1 over Rationals>, [ [ 1, 1 ] ] )
 gap> UnderlyingLeftModule( B );
@@ -345,37 +277,139 @@ gap> UnderlyingLeftModule( B );
 \endexample
 
 \Declaration{IsContainedInSpan}
-
-\beginexample
-gap> MB:= MutableBasis( Rationals, [ [ 1, 1, 3 ], [ 2, 2, 1 ] ] );;
-gap> IsContainedInSpan( MB, [ 1, 1, 1 ] );
-true
-gap> IsContainedInSpan( MB, [ 1, 0, 0 ] );
-false
-\endexample
-
 \Declaration{CloseMutableBasis}
-
 \beginexample
-gap> MB:= MutableBasis( Rationals, [ [ 1, 1, 3 ], [ 2, 2, 1 ] ] ); 
+gap> MB:= MutableBasis( Rationals, [ [ 1, 1, 3 ], [ 2, 2, 1 ] ] );
 <mutable basis over Rationals, 2 vectors>
 gap> IsContainedInSpan( MB, [ 1, 0, 0 ] );
 false
 gap> CloseMutableBasis( MB, [ 1, 0, 0 ] );
 gap> MB;
 <mutable basis over Rationals, 3 vectors>
+gap> IsContainedInSpan( MB, [ 1, 0, 0 ] );
+true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Row and Matrix Spaces}
+
+\index{row spaces}
+\index{matrix spaces}
+
+\Declaration{IsRowSpace}
+\Declaration{IsMatrixSpace}
+
+\Declaration{IsGaussianSpace}
+\beginexample
+gap> mats:= [ [[1,1],[2,2]], [[3,4],[0,1]] ];;
+gap> V:= VectorSpace( Rationals, mats );;
+gap> IsGaussianSpace( V );
+true
+gap> V:= VectorSpace( Rationals, mats * E(4) );;
+gap> IsGaussianSpace( V );
+false
+\endexample
+
+\Declaration{FullRowSpace}
+\beginexample
+gap> FullRowSpace( GF( 9 ), 3 );
+( GF(3^2)^3 )
+gap> GF(9)^3;           # the same as above
+( GF(3^2)^3 )
+\endexample
+
+\Declaration{FullMatrixSpace}
+\beginexample
+gap> FullMatrixSpace( GF(2), 4, 5 );
+( GF(2)^[ 4, 5 ] )
+gap> GF(2)^[ 4, 5 ];    # the same as above
+( GF(2)^[ 4, 5 ] )
+\endexample
+
+\Declaration{DimensionOfVectors}
+\beginexample
+gap> DimensionOfVectors( GF(2)^5 );
+5
+gap> DimensionOfVectors( GF(2)^[2,3] );
+[ 2, 3 ]
+\endexample
+
+\Declaration{IsSemiEchelonized}
+\beginexample
+gap> V:= GF(2)^2;;
+gap> B1:= Basis( V, [ [ 0, 1 ], [ 1, 0 ] ] * Z(2) );;
+gap> IsSemiEchelonized( B1 );
+true
+gap> B2:= Basis( V, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );;
+gap> IsSemiEchelonized( B2 );
+false
+\endexample
+
+\Declaration{SemiEchelonBasis}
+\beginexample
+gap> V:= GF(2)^2;;
+gap> B:= SemiEchelonBasis( V );
+SemiEchelonBasis( ( GF(2)^2 ), ... )
+gap> Print( BasisVectors( B ), "\n" );
+[ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ]
+gap> B:= SemiEchelonBasis( V, [ [ 1, 1 ], [ 0, 1 ] ] * Z(2) );
+SemiEchelonBasis( ( GF(2)^2 ), [ [ Z(2)^0, Z(2)^0 ], [ 0*Z(2), Z(2)^0 ] ] )
+gap> Coefficients( B, [ 0, 1 ] * Z(2) );
+[ 0*Z(2), Z(2)^0 ]
+gap> Coefficients( B, [ 1, 0 ] * Z(2) );
+[ Z(2)^0, Z(2)^0 ]
+gap> SemiEchelonBasis( V, [ [ 0, 1 ], [ 1, 1 ] ] * Z(2) );    
+fail
+\endexample
+
+\index{CanonicalBasis!for row spaces}
+
+\Declaration{IsCanonicalBasisFullRowModule}
+
+The *canonical basis* of a Gaussian row space is defined as the unique
+semi-echelonized (see~"IsSemiEchelonized") basis with the additional
+property that for $j > i$ the position of the pivot of row $j$ is bigger
+than the position of the pivot of row $i$,
+and that each pivot column contains exactly one nonzero entry.
+
+\index{CanonicalBasis!for matrix spaces}
+
+\Declaration{IsCanonicalBasisFullMatrixModule}
+
+The *canonical basis* of a Gaussian matrix space is defined as the unique
+semi-echelonized (see~"IsSemiEchelonized") basis for which the list of
+concatenations of the basis vectors forms the canonical basis of the
+corresponding Gaussian row space.
+
+\Declaration{NormedRowVectors}
+\beginexample
+gap> vecs:= NormedRowVectors( GF(3)^2 );
+[ [ 0*Z(3), Z(3)^0 ], [ Z(3)^0, 0*Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+  [ Z(3)^0, Z(3) ] ]
+gap> Action( GL(2,3), vecs, OnLines );
+Group([ (3,4), (1,2,4) ])
+\endexample
+
+\Declaration{SiftedVector}
+\beginexample
+gap> V:= VectorSpace( Rationals, [ [ 1, 2, 7 ], [ 1/2, 1/3, 5 ] ] );;
+gap> B:= Basis( V );;
+gap> SiftedVector( B, [ 1, 2, 8 ] );
+[ 0, 0, 1 ]
 \endexample
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Vector Space Homomorphisms}
 
-\Declaration{LeftModuleGeneralMappingByImages}
+\FileHeader{vspchom}[1]
 
+\Declaration{LeftModuleGeneralMappingByImages}
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
+gap> V:= Rationals^2;;
 gap> W:= VectorSpace( Rationals, [ [1,2,3], [1,0,1] ] );;
-gap> f:= LeftModuleGeneralMappingByImages( V, W, 
+gap> f:= LeftModuleGeneralMappingByImages( V, W,
 >                                [[1,0],[2,0]], [[1,0,1],[1,0,1] ] );
 [ [ 1, 0 ], [ 2, 0 ] ] -> [ [ 1, 0, 1 ], [ 1, 0, 1 ] ]
 gap> IsMapping( f );
@@ -383,51 +417,43 @@ false
 \endexample
 
 \Declaration{LeftModuleHomomorphismByImages}
-
 \beginexample
-gap> V:=FullRowSpace( Rationals, 2 );;
+gap> V:=Rationals^2;;
 gap> W:=VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
-gap> f:=LeftModuleHomomorphismByImages( V, W,                                 
+gap> f:=LeftModuleHomomorphismByImages( V, W,
 > [ [ 1, 0 ], [ 0, 1 ] ], [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );
 [ [ 1, 0 ], [ 0, 1 ] ] -> [ [ 1, 0, 1 ], [ 1, 2, 3 ] ]
 gap> Image( f, [1,1] );
 [ 2, 2, 4 ]
 \endexample
 
-\Declaration{LeftModuleHomomorphismByImagesNC}
-
-\beginexample
-gap> V:=FullRowSpace( Rationals, 2 );;
-gap> W:=VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
-gap> f:= LeftModuleHomomorphismByImagesNC( V, W,
-> [ [ 1, 0 ], [ 0, 1 ] ], [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );
-[ [ 1, 0 ], [ 0, 1 ] ] -> [ [ 1, 0, 1 ], [ 1, 2, 3 ] ]
-\endexample
+% add an example for fin. fields!
 
 \Declaration{LeftModuleHomomorphismByMatrix}
-
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
+gap> V:= Rationals^2;;
 gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
-gap> f:= LeftModuleHomomorphismByMatrix( Basis( V ), 
+gap> f:= LeftModuleHomomorphismByMatrix( Basis( V ),
 > [ [ 1, 2 ], [ 3, 1 ] ], Basis( W ) );
 <linear mapping by matrix, ( Rationals^2 ) -> VectorSpace( Rationals, 
 [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] )>
 \endexample
 
-\Declaration{NaturalHomomorphismBySubspace}
+% show images!
 
+\Declaration{NaturalHomomorphismBySubspace}
 \beginexample
-gap> V:= FullRowSpace( Rationals, 3 );;
-gap> W:= VectorSpace( Rationals, [ [ 1, 1, 1 ] ] );;                   
+gap> V:= Rationals^3;;
+gap> W:= VectorSpace( Rationals, [ [ 1, 1, 1 ] ] );;
 gap> f:= NaturalHomomorphismBySubspace( V, W );
 <linear mapping by matrix, ( Rationals^3 ) -> ( Rationals^2 )>
 \endexample
 
-\Declaration{Hom}
+% show the computation of images etc.!
 
+\Declaration{Hom}
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
+gap> V:= Rationals^2;;
 gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
 gap> H:= Hom( Rationals, V, W );
 Hom( Rationals, ( Rationals^2 ), VectorSpace( Rationals, 
@@ -437,19 +463,16 @@ gap> Dimension( H );
 \endexample
 
 \Declaration{End}
-
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
-gap> A:= End( Rationals, V );
+gap> A:= End( Rationals, Rationals^2 );
 End( Rationals, ( Rationals^2 ) )
 gap> Dimension( A );
 4
 \endexample
 
 \Declaration{IsFullHomModule}
-
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
+gap> V:= Rationals^2;;
 gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
 gap> H:= Hom( Rationals, V, W );;
 gap> IsFullHomModule( H );
@@ -457,14 +480,38 @@ true
 \endexample
 
 \Declaration{IsPseudoCanonicalBasisFullHomModule}
-
 \beginexample
-gap> V:= FullRowSpace( Rationals, 2 );;
-gap> W:= VectorSpace( Rationals, [ [ 1, 0, 1 ], [ 1, 2, 3 ] ] );;
-gap> H:= Hom( Rationals, V, W );; B:= Basis( H );;
-gap> IsPseudoCanonicalBasisFullHomModule( B );
+gap> IsPseudoCanonicalBasisFullHomModule( Basis( H ) );
 true
 \endexample
+
+\Declaration{IsLinearMappingsModule}
+
+% example: Create a space, show some computations!
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vector Spaces Handled By Nice Bases}
+
+\FileHeader[2]{basis}
+
+\Declaration{NiceFreeLeftModule}
+\Declaration{NiceVector}
+\Declaration{NiceFreeLeftModuleInfo}
+\Declaration{NiceBasis}
+\Declaration{IsBasisByNiceBasis}
+
+\Declaration{IsHandledByNiceBasis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{How to Implement New Kinds of Vector Spaces}
+
+% put this into the `prg' or `ext' manual?
+
+\Declaration{DeclareHandlingByNiceBasis}
+\Declaration{NiceBasisFiltersInfo}
+\Declaration{CheckForHandlingByNiceBasis}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

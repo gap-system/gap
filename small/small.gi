@@ -119,8 +119,8 @@ end );
 InstallGlobalFunction( NumberSmallGroups, function( size )
     local inforec;
 
-    if size = 512 then 
-        return 10494213;
+    if size = 1024 then 
+        return 49487365422;
     fi;
 
     inforec := SMALL_AVAILABLE( size );

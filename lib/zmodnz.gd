@@ -155,5 +155,18 @@ DeclareAttribute( "ModulusOfZmodnZObj", IsZmodnZObj );
 
 #############################################################################
 ##
+#M  IsFinite( <zmodnz-mat-grp> )
+##
+##  *NOTE*:  The following implication only  holds if there are no infinite
+##  dimensional matrices.
+##
+InstallTrueMethod( IsFinite,
+    IsZmodnZObjNonprimeCollCollColl and IsRingElementCollCollColl
+                                    and IsGroup
+                                    and IsFinitelyGeneratedGroup );
+
+
+#############################################################################
+##
 #E
 

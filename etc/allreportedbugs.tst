@@ -60,7 +60,7 @@ gap> Factors(f);
 
 
 ## ##########
-## 4444444444
+## 4444444444                             ## CHECK MANUALLY ##
 ## ##########
 ## Date: Thu, 28 Oct 1999 17:42:25 +0200
 ## Subject: some minor bugs
@@ -79,7 +79,7 @@ gap> v{[]}+v{[]};;
 
 
 ## ##########
-## 5555555555
+## 5555555555                             ## CHECK MANUALLY ##
 ## ##########
 ## Date: Fri, 05 Nov 1999 11:14:14 -0500
 ## Subject: guava test questions
@@ -133,8 +133,8 @@ true
 
 
 
-## ##########
-## 7777777777            ## ONLY CERTAIN ARCHITECTURES/OS's ?? ##
+## ##########                             ## CHECK MANUALLY ##
+## 7777777777                   ## (ONLY CERTAIN ARCHITECTURES/OS's ??) ##
 ## ##########
 ## Date: Thu, 11 Nov 1999 19:43:50 +0100
 ## Subject: Re: bug in FuncNUMBER_VEC8BIT?
@@ -197,8 +197,8 @@ gap> Index(g,g);
 
 
 
-## ##########
-## 9999999999
+## ##########                             ## CHECK MANUALLY ##
+## 9999999999                    ## GASMAN OUTPUT APPEARS DURING TEST ##
 ## ##########
 ## Date: Fri, 12 Nov 1999 20:57:48 +0100 (CET)
 ## Subject: strange losses of storage
@@ -277,19 +277,17 @@ true
 ## ##########
 ##  14 14 14 
 ## ##########
-## Subject: Re: mutability problem
-## Date: Wed, 24 Nov 1999 10:42:08 -0500 (EST)
+## Date: Thu, 9 Dec 1999 12:14:56 GMT
+## Subject: committed 'GAP/4.0/lib ratfun.gi'
 
-## > In the current development version, the following mutability problem
-## > occurs. Suppose G is a group, r a record, and f a function defining
-## > an action of G on r. Then, the call Orbit( G, r, f );  makes the
-## > mutable record r immutable, even though f does not change its
-## > arguments. This is a rather undesirable side effect. GAP 4.1 fix 7,
-## > on the other hand, works as it should.
+gap> x:= Indeterminate( Rationals, "x" );;
+gap> y:= Indeterminate( Rationals, "y" );;
+gap> x/y + y/x;
+(x^2+y^2)/x*y
 
 
 
-## ##########
+## ########## 
 ##  15 15 15 
 ## ##########
 ## Date: Thu, 09 Dec 1999 13:19:07 +0000
@@ -304,21 +302,8 @@ true
 
 
 
-## ########## 
+## ##########
 ##  16 16 16 
-## ##########
-## Date: Thu, 9 Dec 1999 12:14:56 GMT
-## Subject: committed 'GAP/4.0/lib ratfun.gi'
-
-gap> x:= Indeterminate( Rationals, "x" );;
-gap> y:= Indeterminate( Rationals, "y" );;
-gap> x/y + y/x;
-(x^2+y^2)/x*y
-
-
-
-## ##########
-##  17 17 17 
 ## ##########
 ## Date: Tue, 14 Dec 1999 13:22:07 +0100 (CET)
 ## Subject: Re: ConjugatorAutomorphism
@@ -331,7 +316,7 @@ fail
 
 
 ## ##########
-##  18 18 18 
+##  17 17 17 
 ## ##########
 ## Date: Thu, 16 Dec 1999 08:03:16 -0500 (EST)
 ## Subject: Re: Subgroup Lattice question
@@ -347,7 +332,7 @@ gap> MaximalSubgroupsLattice(l);
 
 
 ## ##########
-##  19 19 19 
+##  18 18 18                              ## CHECK MANUALLY ##
 ## ##########
 ## Date: Wed, 22 Dec 1999 14:42:47 +0100 (CET)
 ## Subject: Re: whitespace in Help
@@ -360,7 +345,7 @@ gap> MaximalSubgroupsLattice(l);
 
 
 ## ##########
-##  20 20 20 
+##  19 19 19 
 ## ##########
 ## Date: Thu, 6 Jan 2000 09:04:19 GMT
 ## Subject: committed 'GAP/4.0/lib morpheus.gi'
@@ -372,7 +357,7 @@ gap> InnerAutomorphismsAutomorphismGroup( AutomorphismGroup(
 
 
 ## ##########
-##  21 21 21 
+##  20 20 20 
 ## ##########
 ## Date: Fri, 10 Dec 1999 14:35:41 -0500
 ## Subject: AutomorphismGroup fails in particular instances
@@ -382,7 +367,7 @@ gap> AutomorphismGroup(SimplexCode(4));
 
 
 ## ##########
-##  22 22 22 
+##  21 21 21 
 ## ##########
 ## Date: Wed, 19 Jan 2000 23:43:01 -0800 (PST)
 ## Subject: Trouble with "Order" function      = "STRANGE BUG"    !!!!!!
@@ -395,7 +380,7 @@ gap> MinimalPolynomial( Rationals, mat, 1 );
 
 
 ## ##########
-##  23 23 23 
+##  22 22 22 
 ## ##########
 ## Date: Fri, 21 Jan 2000 18:10:07 +0100 (CET)
 ## Subject: Re: trivial-problems
@@ -408,7 +393,7 @@ gap> ElementaryAbelianGroup( 1 );;
 
 
 ## ##########
-##  24 24 24 
+##  23 23 23 
 ## ##########
 ## Date: 24 Jan 2000 12:58:48 +0100
 ## Subject: Possible bugs
@@ -419,7 +404,7 @@ gap> AutomorphismGroup(F);;
 
 
 ## ##########
-##  25 25 25 
+##  24 24 24 
 ## ##########
 ## Date: Fri, 21 Jan 2000 12:44:55 +0000
 ## Subject: Re: SmithNormalForm 
@@ -431,7 +416,7 @@ gap> SmithNormalFormIntegerMat( a );
 
 
 ## ##########
-##  26 26 26 
+##  25 25 25 
 ## ##########
 ## Date: Tue, 25 Jan 2000 15:40:24 +0100 (CET)
 ## Subject: About "IrreducibleRepresentations"
@@ -440,10 +425,10 @@ gap> IrreducibleRepresentations( AlternatingGroup( 5 ), GF(2) );;
 
 
 ## ##########
-##  27 27 27 
+##  26 26 26 
 ## ##########
 ## Date: Fri, 28 Jan 2000 13:40:20 +0000
-## Subject: KM Briggs question about GRAPE -- actually Library problem...
+## Subject: KM Briggs' question about GRAPE -- actually Library problem...
 
 gap> g := SimplifiedFpGroup(Image(IsomorphismFpGroup(SmallGroup(29,1))));
 <fp group on the generators [ F1 ]>
@@ -454,13 +439,13 @@ gap> AugmentedCosetTableMtc(g,h,1,"x");;
 
 
 ## ##########
-##  28 28 28 
+##  27 27 27                              ## CHECK MANUALLY ##
 ## ##########
 ## Date: Fri, 21 Jan 2000 14:02:23 -0600 (CST)
 ## Subject: Bug in DefaultFieldOfMatrix
 
-gap> ReadTest("tst/algsc.tst");
-true
+## gap> ReadTest("tst/algsc.tst");         ## readtest within readtest ## ????
+## true
 
 gap> q:= QuaternionAlgebra( FieldByGenerators( Rationals, [ ER(3) ] ) );
 <algebra-with-one of dimension 4 over NF(12,[ 1, 11 ])>
@@ -472,7 +457,7 @@ gap> DefaultFieldOfMatrix( [[e]] );;
 
 
 ## ##########
-##  29 29 29 
+##  28 28 28 
 ## ##########
 ## Subject: Re: bug in MinimalPolynomial
 ## Date: Fri, 28 Jan 2000 18:18:59 -0500 (EST)
@@ -484,7 +469,7 @@ gap> MinimalPolynomial(GF(2),A);;
 
 
 ## ##########
-##  30 30 30 
+##  29 29 29 
 ## ##########
 ## Date:           Fri, 28 Jan 2000 22:02:00 +0200
 ## Subject:        Lie nilpotent group rings
@@ -499,7 +484,7 @@ true
 
 
 ## ##########
-##  31 31 31                                      ## DEV ONLY ??
+##  30 30 30 
 ## ##########
 ## Date: Sat, 29 Jan 2000 11:52:55 -0500 (EST)
 ## Subject: bug in GAP 8-bit matrix/vector representation
@@ -513,7 +498,7 @@ gap> Order(m3);;
 
 
 ## ##########
-##  32 32 32 
+##  31 31 31 
 ## ##########
 ## Subject: Re: [Fwd: committed 'GAP/4.0/lib pquot.gi']
 ## Date: Mon, 31 Jan 2000 14:46:13 +0100 (CET)
@@ -528,6 +513,323 @@ true
 
 
 
+## ##########
+##  32 32 32 
+## ##########
+## Date: Tue, 1 Feb 2000 14:41:57 +0100 (CET)
+## Subject: Re: algebra
+
+gap> G:=SymmetricGroup(2);;
+gap> A:=GroupRing(GaussianRationals,G);;
+gap> emb:=Embedding(G,A);;
+gap> z:=Zero(A)*A;;
+gap> a:=z*()^emb;;
+gap> Dimension(z)=0;
+true
+gap> Dimension(a)=1;
+true
+
+
+
+## ##########
+##  33 33 33 
+## ##########
+## Date: Wed, 19 Jan 2000 11:14:36 GMT
+## Subject: Re: Bug report on Guava 1.4 for GAP4
+
+gap> x := Indeterminate( GF(2), "x" );;  
+gap> L := Elements( GF(8) );;   
+gap> G := x^2+x+1;; 
+gap> C := GoppaCode( G, L );;
+
+
+
+## ##########
+##  34 34 34 
+## ##########
+## Date: Mon, 7 Feb 2000 16:28:38 GMT
+## Subject: lag and intersection
+
+gap> G:= Group( (1,2));;
+gap> FG:= GroupRing( GF(2), G );;
+gap> L1:= LieAlgebra( FG );;
+gap> B1:= Basis( L1 );;
+gap> IsLieObjectsModuleRep:= IsLieObjectsModule;
+<Operation "IsLieObjectsModule">
+gap> RequirePackage("lag");
+true
+gap> FH:= GroupRing( GF(2), G );;
+gap> L2:= LieAlgebra( FH );;
+gap> B2:= Basis( L2 );;
+gap> Intersection( B1, B2 );
+[  ]
+
+
+
+## ##########
+##  35 35 35 
+## ##########
+## Date: Wed, 22 Dec 1999 15:03:00 +0100 (CET)
+## Subject: Re: ElementaryAbelianGroup( 1 )
+
+gap> G := ElementaryAbelianGroup( IsPermGroup, 6 );
+Error <n> must be a prime power at
+Error( "<n> must be a prime power" );
+ElementaryAbelianGroupCons( arg[1], arg[2] ) called from
+<function>( <arguments> ) called from read-eval-loop
+Entering break read-eval-print loop, you can 'quit;' to quit to outer loop,
+or you can return to continue
+brk>
+
+
+
+## ##########
+##  36 36 36 
+## ##########
+## Date: Thu, 3 Feb 2000 13:49:21 -0500 (EST)
+## Subject: Re: FactorGroup
+
+gap> f:= FreeGroup(1);;
+gap> x:=GeneratorsOfGroup(f)[1];;
+gap> g:=Group(x^2);;
+gap> IsNormal(f,g);;
+gap> quo:=FactorGroup(f,g);;
+
+
+
+## ##########
+##  37 37 37 
+## ##########
+## Date: Mon, 07 Feb 2000 14:46:43 +0000
+## Subject: IsIntegerMatrixGroup
+
+gap> f := Group([ [ [ 0, 1 ], [ 1, 0 ] ], [ [ 11, 2 ], [ 8, 12 ] ],
+> [ [ 11, 4 ], [ 7, 5 ] ] ]);;
+gap> Order(f);;
+
+
+
+## ##########
+##  38 38 38                           ## CHECK MANUALLY ##
+## ##########
+## Date: Sun, 30 Jan 2000 15:34:52 +0100 (CET)
+## Subject: Re: minor bug in GAP startup
+
+## If .gaprc contains the error "Read:=3;", say, and the file tttt contains
+## the following:
+
+## Print( "1\n"); Print( "1a\n");
+## Print( "2\n");
+## Print( "3\n");
+## Print( "4\n");
+## Print( "5\n");
+
+## This is what happens at startup:
+
+## GAP banner, etc, displayed...
+## brk>                  ## type CTRL-D here.
+## gap> Read("tttt");
+## 1                     ## and it executes only the first command from tttt.
+## gap> 
+
+
+
+## ##########
+##  39 39 39 
+## ##########
+## Date: Wed, 26 Jan 2000 15:01:36 -0500 (EST)
+## Subject: Re: p groups
+
+gap> G := Group([ [ [ 0*Z(3), Z(3)^0 ], [ Z(3), 0*Z(3) ] ],
+>   [ [ Z(3)^0, Z(3) ], [ Z(3), Z(3) ] ] ]);;
+gap> IsNilpotent(G);;
+gap> Size(G);;
+
+
+
+## ##########
+##  40 40 40 
+## ##########
+## Date: Mon, 07 Feb 2000 09:49:42 +0000
+## Subject: One last bug in alltest
+
+gap> RequirePackage("grpconst");
+gap> ConstructAndTestAllGroups := function( size )
+> local grps;
+>     grps := ConstructAllGroups( size );
+>    if Length( grps ) <> NumberSmallGroups( size ) then
+>        Print( "wrong number of groups of size ", size, "\n" );
+>    fi;
+>    if Set( List( grps, IdGroup ) ) <>
+>       List( [ 1 .. NumberSmallGroups( size ) ], x -> [ size, x ] ) then
+>        Print( "wrong ids for the groups of size ", size, "\n" );
+>    fi;
+> end;
+gap> ConstructAndTestAllGroups( 840 );;
+
+
+
+## ##########
+##  41 41 41 
+## ##########
+## Date: Mon, 7 Feb 2000 17:14:52 +0100 (CET)
+## Subject: Re: One last bug in alltest
+
+gap> g:= Group(());;
+gap> f1:= NewFilter("f1");;  f2:= NewFilter("f2");;  f3:= f1 and f2;;
+gap> SetFilterObj( g, f3 );
+gap> f1(g);  f2(g);
+true
+true
+gap> ResetFilterObj( g, f3 );
+gap> f1(g);  f2(g);
+false
+false
+
+
+
+## ##########
+##  42 42 42 
+## ##########
+## Date: Thu, 27 Jan 2000 14:38:54 +0100 (CET)
+## Subject: Re: p groups
+
+gap> g:=FreeGroup(2);;
+gap> f1:=GeneratorsOfGroup(g)[1];;
+gap> f2:=GeneratorsOfGroup(g)[2];;
+gap> r:=[ f1^-1*f2^-1*f1*f2, f1^2, f2^10 ];;
+gap> g:=g/r;;
+gap> HasIsFinite(g);
+false
+gap> IsFpGroup(g);
+true
+gap> IsPGroup(g);
+false
+
+
+
+## ##########
+##  43 43 43 
+## ##########
+## Date: Tue, 1 Feb 2000 14:27:58 -0500 (EST)
+## Subject: bug in group homomorphism?
+
+gap> src := Group(
+> [ [ [ Z(3)^0, Z(3), Z(3)^0, Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>      [ 0*Z(3), Z(3)^0, 0*Z(3), Z(3), Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0 ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), Z(3)^0, Z(3)^0 ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3), Z(3)^0 ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, Z(3), Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, Z(3), 0*Z(3), Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, Z(3)^0, Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
+> );;
+gap> img := Group(
+> [ [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3), Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0 ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ], 
+>   [ [ Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>       [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ] ]
+> );;
+gap> elt := [ [ Z(3)^0, Z(3), Z(3)^0, Z(3), 0*Z(3) ],
+>   [ 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3), 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), Z(3)^0, Z(3)^0, 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0, 0*Z(3) ], 
+>   [ 0*Z(3), 0*Z(3), 0*Z(3), 0*Z(3), Z(3)^0 ] ];;
+gap> fun := h->Comm( h, elt );;
+gap> hom := GroupHomomorphismByFunction( src, img, fun );;
+gap> ker := Kernel(hom);;
+gap> HasIsGroup(ker);
+true
+
+
+
+## ##########
+##  44 44 44 
+## ##########
+## Date:           Fri, 04 Feb 2000 12:29:23 -0800
+## Subject:        Problem with GQuotients
+
+gap>  F := FreeGroup(["a","b"]);;  a := F.1;; b := F.2;;
+gap>  G := F/[ a^3*b^3*a^3*b^-1*a^-1*b^-1*a^-1*b^-1, a*b^4*a^4*b^4*a*b*a*b ];;
+gap>  GQuotients(G, AlternatingGroup(5));;
+
+
+
+## ##########
+##  45 45 45 
+## ##########
+## Date: Thu, 03 Feb 2000 14:13:23 +0000
+## Subject: Testing
+
+gap> SetModuleOfExtension;
+<Operation "Setter(ModuleOfExtension)">
+
+
+
+## ##########
+##  46 46 46 
+## ##########
+## Date: Thu, 03 Feb 2000 14:13:23 +0000
+## Subject: Testing
+
+gap> v:= LeftModuleByGenerators( GF(9), [ [ Z(3), Z(3), Z(3) ] ] );;
+gap> c:= VectorSpace( GF(9), [ [ Z(3)^0, 0*Z(3), 0*Z(3) ] ] );;
+gap> f:= v + c;;
+gap> subsp:= SubspacesDim( f, 2 );
+Subspaces( ( GF(3^2)^3 ), 2 )
+gap> subsp:= SubspacesAll( f );
+Subspaces( ( GF(3^2)^3 ), "all" )
+
+
+
 ######### ######### ######### ######### ######### ######### ######### #########
 
 gap> STOP_TEST( "bugfixes test", 31560000 );
@@ -538,8 +840,10 @@ gap> Print("\nTHE FOLLOWING BUGS MUST BE CHECKED MANUALLY:\n\n");
 gap> Print("                                                4\n");
 gap> Print("                                                5\n");
 gap> Print("                                                7\n");
-gap> Print("                                               14\n");
-gap> Print("                                               19\n\n");
+gap> Print("                                                9\n");
+gap> Print("                                               18\n");
+gap> Print("                                               27\n");
+gap> Print("                                               38\n\n");
 
 ######### ######### ######### ######### ######### ######### ######### #########
 

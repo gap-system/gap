@@ -335,8 +335,6 @@ OneGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
 IdsOfAllGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded      
 Gap3CatalogueIdGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded
 PrimitiveGroup:=NONAVAILABLE_FUNC; # will be overwritten if loaded           
-NrAffinePrimitiveGroups:=NONAVAILABLE_FUNC; # will be overwritten if loaded
-NrSolvableAffinePrimitiveGroups:=NONAVAILABLE_FUNC;
 
 #############################################################################
 ##  

@@ -165,7 +165,10 @@ true
 gap> ONanScottType(ac);
 "3a"
 gap> SocleTypePrimitiveGroup(ac);
-rec( series := "A", width := 2, parameter := 5 )
+rec( series := "A", width := 2, 
+  name := "A(5) ~ A(1,4) = L(2,4) ~ B(1,4) = O(3,4) ~ C(1,4) = S(2,4) ~ 2A(1,4\
+) = U(2,4) ~ A(1,5) = L(2,5) ~ B(1,5) = O(3,5) ~ C(1,5) = S(2,5) ~ 2A(1,5) = U\
+(2,5)", parameter := 5 )
 \endexample
 
 

@@ -598,9 +598,10 @@ tests in section~"Properties and Attributes of Rational Functions" will find
 this out.
 
 Each representation is associated one or several ``defining attributes''
-that give an ``external'' representation of the representation in the form
-of lists and are the defining information that tells a rational function
-what it is.
+that give an ``external'' representation
+(see~"The Defining Attributes of Rational Functions")
+of the representation in the form of lists and are the defining information
+that tells a rational function what it is.
 
 {\GAP} also implements methods to compute these attributes for rational
 functions in *other* representations, provided it would be possible to
@@ -684,7 +685,9 @@ gap> ExtRepDenominatorRatFun(q);
 \Section{Arithmetic for External Representations of Polynomials}
 
 The following operations are used internally to perform the arithmetic for
-polynomials in their ``external'' representation as lists.
+polynomials in their ``external'' representation 
+(see~"The Defining Attributes of Rational Functions")
+as lists.
 \Declaration{ZippedSum}
 \Declaration{ZippedProduct}
 \Declaration{QuotientPolynomialsExtRep}

@@ -208,7 +208,7 @@ DeclareCategoryFamily( "IsNonassocWordWithOne" );
 ##  (see Chapter~"Associative Words")
 ##  in the same family as the elements in <gens>,
 ##  and some of them are equal to the corresponding generators in <gens>,
-##  then those may be omitted from <imgs>.
+##  then those may be omitted from <gens> and <imgs>.
 ##  In this situation, the special case that the lists <gens>
 ##  and <imgs> have only length $1$ is handled more efficiently by
 ##  `EliminatedWord' (see~"EliminatedWord").

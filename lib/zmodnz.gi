@@ -837,5 +837,34 @@ InstallOtherMethod( ModulusOfZmodnZObj,
 
 #############################################################################
 ##
+#M  DefaultRingByGenerators( <zmodnzcoll> )
+##
+InstallMethod( DefaultRingByGenerators,
+    "for a collection over a ring Z/nZ",
+    [ IsZmodnZObjNonprimeCollection ],
+    C -> ZmodnZ( ModulusOfZmodnZObj( Representative( C ) ) ) );
+
+
+#############################################################################
+##
+#M  FieldOfMatrixGroup( <zmodnz-mat-grp> )
+##
+##  Is it possible to avoid this very special method?
+##  In fact the whole stuff in the library is not very clean,
+##  as the ``generic'' method for matrix groups claims to be allowed to
+##  call `Field'.
+##  The bad name of the function (`FieldOfMatrixGroup') may be the reason
+##  for this bad behaviour.
+##  Do we need to distinguish matrix groups over fields and rings that aren't
+##  fields, and change the generic `FieldOfMatrixGroup' method accordingly?
+##
+InstallMethod( FieldOfMatrixGroup,
+    "for a matrix group over a ring Z/nZ",
+    [ IsMatrixGroup and IsZmodnZObjNonprimeCollCollColl ],
+    G -> ZmodnZ( ModulusOfZmodnZObj( Representative( G )[1][1] ) ) );
+
+
+#############################################################################
+##
 #E
 

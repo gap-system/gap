@@ -160,6 +160,10 @@ InstallMethod( Process,
 ##
 #M  Process( <dir>, <prg>, <input>, <output>, <args> )  . . . . stream/stream
 ##
+
+PROCESS_INPUT_TEMPORARY := fail;
+PROCESS_OUTPUT_TEMPORARY := fail;
+
 InstallMethod( Process,
     true,
     [ IsDirectory and IsDirectoryRep,
@@ -174,7 +178,11 @@ function( dir, prg, input, output, args )
 
     # convert input into a file
     if not IsInputTextFileRep(input)  then
-        name_input := TmpName();
+        while PROCESS_INPUT_TEMPORARY = fail or
+          IsExistingFile(PROCESS_INPUT_TEMPORARY) do
+            PROCESS_INPUT_TEMPORARY := TmpName();
+        od;
+        name_input := PROCESS_INPUT_TEMPORARY;
         new := OutputTextFile( name_input, true );
         WriteAll( new, ReadAll(input) );
         CloseStream(new);
@@ -183,7 +191,11 @@ function( dir, prg, input, output, args )
 
     # convert output into a file
     if not IsOutputTextFileRep(output)  then
-        name_output := TmpName();
+        while PROCESS_OUTPUT_TEMPORARY = fail or
+          IsExistingFile(PROCESS_OUTPUT_TEMPORARY) do
+            PROCESS_OUTPUT_TEMPORARY := TmpName();
+        od;
+        name_output := PROCESS_OUTPUT_TEMPORARY;
         new_output  := OutputTextFile( name_output, true );
     else
         new_output  := output;

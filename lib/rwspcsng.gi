@@ -19,7 +19,6 @@ Revision.rwspcsng_gi :=
 
 #############################################################################
 ##
-
 #R  IsSingleCollectorRep( <obj> )
 ##
 DeclareRepresentation(

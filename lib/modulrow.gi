@@ -57,8 +57,7 @@ end );
 ##
 InstallOtherMethod( \^,
     "for ring and integer (delegate to `FullRowModule')",
-    true,
-    [ IsRing, IsInt ], 0,
+    [ IsRing, IsInt ],
     FullRowModule );
 
 
@@ -68,8 +67,7 @@ InstallOtherMethod( \^,
 ##
 InstallMethod( IsRowModule,
     "for a free left module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     function( M )
     local gens;
     gens:= GeneratorsOfLeftModule( M );
@@ -84,8 +82,7 @@ InstallMethod( IsRowModule,
 ##
 InstallMethod( IsFullRowModule,
     "for free left (row) module",
-    true,
-    [ IsFreeLeftModule ], 0,
+    [ IsFreeLeftModule ],
     M ->     IsRowModule( M )
          and Dimension( M ) = DimensionOfVectors( M )
          and ForAll( GeneratorsOfLeftModule( M ),
@@ -98,8 +95,7 @@ InstallMethod( IsFullRowModule,
 ##
 InstallMethod( Dimension,
     "for full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     DimensionOfVectors );
 
 
@@ -109,8 +105,7 @@ InstallMethod( Dimension,
 ##
 InstallMethod( Random,
     "for full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     function( M )
     local R;
     R:= LeftActingDomain( M );
@@ -120,12 +115,22 @@ InstallMethod( Random,
 
 #############################################################################
 ##
+#M  Representative( <M> )
+##
+InstallMethod( Representative,
+    "for full row module",
+    [ IsFreeLeftModule and IsFullRowModule ],
+    M -> ListWithIdenticalEntries( DimensionOfVectors( M ),
+                                   Zero( LeftActingDomain( M ) ) ) );
+
+
+#############################################################################
+##
 #M  GeneratorsOfLeftModule( <V> )
 ##
 InstallMethod( GeneratorsOfLeftModule,
     "for full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     M -> IdentityMat( DimensionOfVectors( M ), LeftActingDomain( M ) ) );
 
 
@@ -135,8 +140,7 @@ InstallMethod( GeneratorsOfLeftModule,
 ##
 InstallMethod( ViewObj,
     "for full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     function( M )
     Print( "( " );
     View( LeftActingDomain( M ) );
@@ -150,8 +154,7 @@ InstallMethod( ViewObj,
 ##
 InstallMethod( PrintObj,
     "for full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     function( M )
     Print( "( ", LeftActingDomain( M ), "^", DimensionOfVectors( M ), " )" );
     end );
@@ -165,7 +168,6 @@ InstallMethod( \in,
     "for full row module",
     IsElmsColls,
     [ IsRowVector, IsFreeLeftModule and IsFullRowModule ],
-    0,
     function( v, M )
     return     Length( v ) = DimensionOfVectors( M )
            and IsSubset( LeftActingDomain( M ), v );
@@ -178,8 +180,7 @@ InstallMethod( \in,
 ##
 InstallMethod( BasisVectors,
     "for canonical basis of a full row module",
-    true,
-    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ], 0,
+    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ],
     function( B )
     B:= UnderlyingLeftModule( B );
     return IdentityMat( DimensionOfVectors( B ), LeftActingDomain( B ) );
@@ -192,8 +193,7 @@ InstallMethod( BasisVectors,
 ##
 InstallMethod( CanonicalBasis,
     "for a full row module",
-    true,
-    [ IsFreeLeftModule and IsFullRowModule ], 0,
+    [ IsFreeLeftModule and IsFullRowModule ],
     function( V )
     local B;
     B:= Objectify( NewType( FamilyObj( V ),
@@ -214,7 +214,7 @@ InstallMethod( CanonicalBasis,
 InstallMethod( Coefficients,
     "for canonical basis of a full row module",
     IsCollsElms,
-    [ IsBasis and IsCanonicalBasisFullRowModule, IsRowVector ], 0,
+    [ IsBasis and IsCanonicalBasisFullRowModule, IsRowVector ],
     function( B, v )
     local V, R;
     V:= UnderlyingLeftModule( B );
@@ -233,8 +233,7 @@ InstallMethod( Coefficients,
 ##
 InstallMethod( IsCanonicalBasisFullRowModule,
     "for a basis",
-    true,
-    [ IsBasis ], 0,
+    [ IsBasis ],
     B ->     IsFullRowModule( UnderlyingLeftModule( B ) )
          and IsCanonicalBasis( B ) );
 
@@ -287,14 +286,12 @@ end );
 
 InstallMethod( Position,
     "for enumerator via canonical basis of a finite full row module",
-    true,
     [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsList,
       IsZeroCyc ], 0,PosVecEnum);
 
 InstallMethod( PositionCanonical,
     "for enumerator via canonical basis of a finite full row module",
-    true,
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsList ], 0,
+    [ IsList and IsEnumeratorOfFiniteFullRowModuleRep, IsList ],
     PosVecEnum);
 
 BindGlobal("PosVecEnumFF",function(arg)
@@ -332,14 +329,13 @@ end);
 
 InstallMethod( Position,
     "for enumerator via canonical basis, over built-in finite field",
-    true,
     [ IsList and IsEnumeratorOfFiniteFullRowModuleFFRep, IsRowVector,
-      IsZeroCyc ], 0,PosVecEnumFF);
+      IsZeroCyc ],
+    PosVecEnumFF);
 
 InstallMethod( PositionCanonical,
     "for enumerator via canonical basis, over built-in finite field",
-    true,
-    [ IsList and IsEnumeratorOfFiniteFullRowModuleFFRep, IsRowVector ], 0,
+    [ IsList and IsEnumeratorOfFiniteFullRowModuleFFRep, IsRowVector ],
     PosVecEnumFF);
 
 #############################################################################
@@ -348,9 +344,8 @@ InstallMethod( PositionCanonical,
 ##
 InstallMethod( \[\],
     "for enumerator via canonical basis of a finite full row module",
-    true,
     [ IsList and IsEnumeratorOfFiniteFullRowModuleRep,
-      IsPosInt ], 0,
+      IsPosInt ],
     function( e, n )
     local v, i;
     v:= ShallowCopy( e!.zerovector );
@@ -381,9 +376,8 @@ DeclareRepresentation( "IsEnumeratorOfInfiniteFullRowModuleRep",
 ##
 InstallOtherMethod( Position,
     "for enumerator via canonical basis of an inf. full row module",
-    true,
     [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep, IsRowVector,
-      IsZeroCyc ], 0,
+      IsZeroCyc ],
     function( enum, vector, zero )
     local n,
           i,
@@ -454,9 +448,8 @@ InstallOtherMethod( Position,
 ##
 InstallMethod( \[\],
     "for enumerator via canonical basis of a inf. full row module",
-    true,
     [ IsList and IsEnumeratorOfInfiniteFullRowModuleRep,
-      IsPosInt ], 0,
+      IsPosInt ],
     function( enum, N )
 
     local n,
@@ -526,8 +519,7 @@ InstallMethod( \[\],
 ##
 InstallMethod( EnumeratorByBasis,
     "for enumerator via canonical basis of a full row module",
-    true,
-    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ], 0,
+    [ IsBasis and IsCanonicalBasis and IsCanonicalBasisFullRowModule ],
     function( B )
 
     local V, F,filter;
@@ -591,8 +583,7 @@ DeclareRepresentation( "IsIteratorOfFiniteFullRowModuleRep",
 ##
 InstallMethod( NextIterator,
     "for mutable iterator w.r.t. canonical basis of finite full row module",
-    true,
-    [ IsIterator and IsMutable and IsIteratorOfFiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsMutable and IsIteratorOfFiniteFullRowModuleRep ],
     function( iter )
     local pos;
 
@@ -615,8 +606,7 @@ InstallMethod( NextIterator,
 ##
 InstallMethod( IsDoneIterator,
     "for iterator w.r.t. canonical basis of finite full row module",
-    true,
-    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ],
     iter -> iter!.counter = iter!.limit );
 
 
@@ -626,8 +616,7 @@ InstallMethod( IsDoneIterator,
 ##
 InstallMethod( ShallowCopy,
     "for iterator w.r.t. canonical basis of finite full row module",
-    true,
-    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsIteratorOfFiniteFullRowModuleRep ],
     iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
                        rec( dimension    := iter!.dim,
                             counter      := ShallowCopy( iter!.counter ),
@@ -653,8 +642,7 @@ DeclareRepresentation( "IsIteratorOfInfiniteFullRowModuleRep",
 ##
 InstallMethod( NextIterator,
     "for mutable iterator w.r.t. canon. basis of infinite full row module",
-    true,
-    [ IsIterator and IsMutable and IsIteratorOfInfiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsMutable and IsIteratorOfInfiniteFullRowModuleRep ],
     function( iter )
     local dim,        # dimension of the free module
           vector,     # positions of the coefficients in `iter!.coeffsenum'
@@ -726,8 +714,7 @@ InstallMethod( NextIterator,
 ##
 InstallMethod( IsDoneIterator,
     "for iterator w.r.t. canonical basis of finite full row module",
-    true,
-    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ],
     ReturnFalse );
 
 
@@ -737,8 +724,7 @@ InstallMethod( IsDoneIterator,
 ##
 InstallMethod( ShallowCopy,
     "for iterator w.r.t. canonical basis of finite full row module",
-    true,
-    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ], 0,
+    [ IsIterator and IsIteratorOfInfiniteFullRowModuleRep ],
     iter -> Objectify( Subtype( TypeObj( iter ), IsMutable ),
                        rec(
                              dim        := iter!.dim,
@@ -757,9 +743,7 @@ InstallMethod( ShallowCopy,
 ##
 InstallMethod( IteratorByBasis,
     "for canonical basis of a full row module",
-    true,
     [ IsBasis and IsCanonicalBasisFullRowModule ],
-    0,
     function( B )
 
     local V,
@@ -831,7 +815,6 @@ InstallMethod( IteratorByBasis,
 ##
 InstallMethod( Basis,
     "for full row module",
-    true,
     [ IsFreeLeftModule and IsFullRowModule ], SUM_FLAGS,
     CanonicalBasis );
 

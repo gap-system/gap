@@ -354,8 +354,6 @@ DeclareGlobalFunction( "LcmInt" );
 ##  largest positive integer <exp> such  that $base^{exp} \leq  n$.  `LogInt'
 ##  will signal an error if either <n> or <base> is not positive.
 ##
-##  `LogInt' is a method for the general operation `Log' (see~"Log").
-##
 DeclareGlobalFunction( "LogInt" );
 
 

@@ -387,14 +387,14 @@ returns a number (the RNam) corresponding to the string <str>. It is also
 possible to pass a positive integer <int> in which case the decimal expansion of
 <int> is used as a string.
 
-\beginexample
+\begintt
 gap> NameRNam(798); 
 "BravaisSupergroups"
 gap> RNamObj("blubberflutsch");
 2075
 gap> NameRNam(last);
 "blubberflutsch"
-\endexample
+\endtt
 
 The correspondence between Strings and RNams is not predetermined ab initio,
 but RNams are assigned to component names dynamically on a

@@ -470,17 +470,17 @@ ChainSubgroupByStabilizer := ChainSubgroupByStabiliser;
 
 #############################################################################
 ##
-#M  Base( <G> )
+#M  BaseOfGroup( <G> )
 ##
-InstallMethod( Base, "for group with chain", true,
-    [ IsGroup and HasChainSubgroup ], 0,
+InstallMethod( BaseOfGroup, "for group with chain", true,
+    [ IsGroup and HasChainSubgroup ], 40,
     function( G )
 	return Concatenation( 
 	[ BasePointOfSchreierTransversal( TransversalOfChainSubgroup( G ) ) ],
-		Base( ChainSubgroup( G ) ) );
+		BaseOfGroup( ChainSubgroup( G ) ) );
     end );
-InstallMethod( Base, "for trivial group", true,
-    [ IsTrivial and IsGroup  ], 0,
+InstallMethod( BaseOfGroup, "for trivial group", true,
+    [ IsTrivial and IsGroup and IsInChain ], 40,
     function( G ) #base case of recursion
 	return [ ];
     end );

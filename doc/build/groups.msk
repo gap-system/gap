@@ -255,7 +255,7 @@ gap> Representative(c);
 gap> Size(c);
 6
 gap> AsList(c);
-[ (2,3,4), (2,4), (1,3,4,2), (1,3)(2,4), (1,4,2), (1,4,2,3) ]
+[ (2,3,4), (1,4,2), (1,3,4,2), (1,3)(2,4), (2,4), (1,4,2,3) ]
 \endexample
 
 \Declaration{RightCosets}
@@ -444,7 +444,7 @@ Group([ (1,2)(3,4), (1,3)(2,4) ])
 \Declaration{NormalClosure}
 \beginexample
 gap> NormalClosure(g,Subgroup(g,[(1,2,3)]));
-Group( [ (1,2,3), (2,3,4) ] )
+Group( [ (1,2,3), (1,3,4) ] )
 \endexample
 
 \Declaration{NormalIntersection}
@@ -526,13 +526,13 @@ Group([])
 \Declaration{PerfectResiduum}
 \beginexample
 gap> PerfectResiduum(Group((1,2,3,4,5),(1,2)));
-Group([ (1,3,2), (2,4,3), (3,5,4) ])
+Group([ (1,3,2), (2,4,3), (2,3)(4,5) ])
 \endexample
 
 \Declaration{RadicalGroup}
 \beginexample
 gap> RadicalGroup(SL(2,5));
-Group([ [ [ Z(5)^2, 0*Z(5) ], [ 0*Z(5), Z(5)^2 ] ] ])
+<group of 2x2 matrices of size 2 in characteristic 5>
 gap> Size(last);
 2
 \endexample
@@ -848,7 +848,8 @@ gap> DimensionsLoewyFactors(G);
 \beginexample
 gap> g:=Group((1,2,3,4),(1,2));;n:=Subgroup(g,[(1,2)(3,4),(1,3)(2,4)]);;
 gap> hom:=NaturalHomomorphismByNormalSubgroup(g,n);
-Pcgs([(3,4),(2,4,3)])->[f1,f2]
+[ (3,4), (2,4,3), (1,2)(3,4), (1,3)(2,4) ] -> 
+[ f1, f2, <identity> of ..., <identity> of ... ]
 gap> Size(ImagesSource(hom));
 6
 gap> FactorGroup(g,n);
@@ -949,7 +950,7 @@ subgroups in a nice way.
 \beginexample
 gap> g:=SymmetricGroup(4);;
 gap> l:=LatticeSubgroups(g);
-LatticeSubgroups(SymmetricGroup( [ 1 .. 4 ] ),# 11 classes, 30 subgroups)
+<subgroup lattice of Sym( [ 1 .. 4 ] ), 11 classes, 30 subgroups>
 \endexample
 
 \Declaration{MaximalSubgroupsLattice}
@@ -1034,18 +1035,16 @@ gap> ConjugacyClassesPerfectSubgroups(m11);
 gap> g:=WreathProduct(Group((1,2,3),(1,2)),Group((1,2,3,4)));;
 gap> l:=LatticeByCyclicExtension(g,function(G)
 > return Size(G) in [1,2,3,6];end);
-LatticeSubgroups(Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
-  (10,11,12), (10,11), ( 1, 4, 7,10)( 2, 5, 8,11)( 3, 6, 9,12) ] ),# 
-47 classes, 2628 subgroups under further condition l!.func)
+<subgroup lattice of <permutation group of size 5184 with 9 generators>, 
+47 classes, 2628 subgroups, restricted under further condition l!.func>
 \endexample
 
 The total number of classes in this example is much bigger, as the
 following example shows: 
 \beginexample
 gap> LatticeSubgroups(g);
-LatticeSubgroups(Group( [ (1,2,3), (1,2), (4,5,6), (4,5), (7,8,9), (7,8), 
-  (10,11,12), (10,11), ( 1, 4, 7,10)( 2, 5, 8,11)( 3, 6, 9,12) ] ),# 
-566 classes, 27134 subgroups)
+<subgroup lattice of <permutation group of size 5184 with 9 generators>, 
+566 classes, 27134 subgroups>
 \endexample
 
 \Declaration{InvariantSubgroupsElementaryAbelianGroup}

@@ -1129,6 +1129,7 @@ InstallMethod( OrbitStabilizerAlgorithm,"use stabilizer size",true,
    IsList,IsList,IsRecord],0,
 function( G,D,blist,gens,acts, dopr )
 local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
+	stabsub,# stabilizer seed
 	doml,	# maximal orbit length
 	dict,	# dictionary
 	blico,	# copy of initial blist (to find out the true domain)
@@ -1144,6 +1145,12 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     act:=dopr.act;
   else
     act:=dopr.opr;
+  fi;
+
+  if IsBound(dopr.stabsub) then
+    stabsub:=dopr.stabsub;
+  else
+    stabsub:=TrivialSubgroup(G);
   fi;
 
   if D=false then
@@ -1181,7 +1188,7 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
   dict:=NewDictionary(d,true,D);
   AddDictionary(dict,d,1);
 
-  stb := TrivialSubgroup(G);
+  stb := stabsub; # stabilizer seed
   ind:=Size(G);
   indh:=QuoInt(Size(G),2);
   if not IsEmpty( acts )  then
@@ -1280,6 +1287,7 @@ InstallMethod( OrbitStabilizerAlgorithm,"collect stabilizer generators",true,
   [IsGroup,IsObject,IsObject, IsList,IsList,IsRecord],0,
 function( G,D,blist,gens, acts, dopr )
 local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
+	stabsub,	# stabilizer seed
 	dict,  		# dictionary
 	crossind;	# index D (via blist) -> orbit position
 
@@ -1290,13 +1298,19 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
     act:=dopr.opr;
   fi;
 
+  if IsBound(dopr.stabsub) then
+    stabsub:=dopr.stabsub;
+  else
+    stabsub:=TrivialSubgroup(G);
+  fi;
+
   dict:=NewDictionary(d,true,D);
 
   # `false' the index `ind' must be equal to the orbit size.
   orb := [ d ];
   AddDictionary(dict,d,1);
 
-  stb := TrivialSubgroup(G);
+  stb := stabsub; # stabilizer seed
   if not IsEmpty( acts )  then
     rep := [ One( gens[ 1 ] ) ];
     p := 1;
@@ -1342,52 +1356,6 @@ local   orb,  stb,  rep,  p,  q,  img,  sch,  i,d,act,
 
   return rec( orbit := orb, stabilizer := stb );
 end );
-
-# AH, 5-feb-99 This function is neither documented not used.
-#InstallGlobalFunction( OrbitStabilizerListByGenerators,
-#    function( gens, acts, d, eq, act )
-#    local   iden,  orb,  stb,  s,  rep,  r,  p,  q,  img,  sch,  i,  j;
-#    
-#    iden := Length( gens ) = 1  and  IsIdenticalObj( gens[ 1 ], acts );
-#    if iden  then
-#        gens := [  ];
-#    fi;
-#    orb := [ d ];
-#    stb := List( gens, x -> [  ] );  Add( stb, [  ] );
-#    s := stb[ Length( stb ) ];
-#    if not IsEmpty( acts )  then
-#        rep := List( gens, x -> [One(x[1])] );  Add( rep, [One(acts[1])] );
-#        r := rep[ Length( rep ) ];
-#        p := 1;
-#        while p <= Length( orb )  do
-#            for i  in [ 1 .. Length( acts ) ]  do
-#                img := act( orb[ p ], acts[ i ] );
-#                q := PositionProperty( orb, o -> eq( o, img ) );
-#                if q = fail  then
-#                    Add( orb, img );
-#                    for j  in [ 1 .. Length( gens ) ]  do
-#                        Add( rep[ j ], rep[ j ][ p ] * gens[ j ][ i ] );
-#                    od;
-#                    Add( r, r[ p ] * acts[ i ] );
-#                else
-#                    sch := r[ p ] * acts[ i ] / r[ q ];
-#                    if not sch in s  then
-#                        Add( s, sch );
-#                        for j  in [ 1 .. Length( gens ) ]  do
-#                            Add( stb[ j ], rep[ j ][ p ] * gens[ j ][ i ] /
-#                                 rep[ j ][ q ] );
-#                        od;
-#                    fi;
-#                fi;
-#            od;
-#            p := p + 1;
-#        od;
-#    fi;
-#    if iden  then
-#        Add( stb, stb[ 1 ] );
-#    fi;
-#    return rec( orbit := orb, stabilizers := stb );
-#end );
 
 #############################################################################
 ##
@@ -1654,7 +1622,7 @@ end );
 #F  ExternalOrbitsStabilizers( <arg> )  . . . . . .  list of transitive xsets
 ##
 BindGlobal("ExtOrbStabDom",function( G, xsetD,D, gens, acts, act )
-local   blist,  orbs,  next,  pnt,  orb,  orbstab;
+local   blist,  orbs,  next,  pnt,  orb,  orbstab,actrec;
 
     orbs := [  ];
     if IsEmpty( D ) then
@@ -1667,8 +1635,12 @@ local   blist,  orbs,  next,  pnt,  orb,  orbstab;
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, xsetD, pnt, gens, acts, act );
         # was orbstab := OrbitStabilizer( G, D, pnt, gens, acts, act );
-	orbstab := OrbitStabilizerAlgorithm( G, D, blist,
-	              gens, acts, rec(pnt:=pnt, act:=act ));
+	actrec:=rec(pnt:=pnt, act:=act );
+	# Does the external set give a kernel? Use it!
+	if IsExternalSet(xsetD) and HasActionKernelExternalSet(xsetD) then
+	  actrec.stabsub:=ActionKernelExternalSet(xsetD);
+	fi;
+	orbstab := OrbitStabilizerAlgorithm( G, D, blist, gens, acts, actrec);
         #SetCanonicalRepresentativeOfExternalSet( orb, pnt );
         SetEnumerator( orb, orbstab.orbit );
         SetStabilizerOfExternalSet( orb, orbstab.stabilizer );

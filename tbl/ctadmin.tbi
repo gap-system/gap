@@ -1759,7 +1759,7 @@ InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
     fi;
 
     names:= [];
-    for i in [ 1 .. Length( nsg ) ] do
+    for i in [ 1 .. Length( nsg )-1 ] do
       fusrec:= First( fusions,
                       r -> ClassPositionsOfKernel( r.map ) = nsg[i] );
       if fusrec = fail then
@@ -1767,7 +1767,7 @@ InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
       fi;
       names[i]:= fusrec.name;
     od;
-    names[ Length( names ) ]:= Identifier( tbl );
+    names[ Length( nsg ) ]:= Identifier( tbl );
 
     # Distribute the irreducibles according to their kernels.
     # Take only those irreducibles
@@ -1779,7 +1779,7 @@ InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
     for chi in Irr( tbl ) do
       ker:= ClassPositionsOfKernel( chi );
       for i in [ 1 .. Length( nsg ) ] do
-        if IsSubset( kernel, nsg[i] ) then
+        if IsSubset( ker, nsg[i] ) then
 
           if      faith[i] <= 2
              or ( faith[i] =  3 and chi[ faithpos ] = E(3) * chi[1] )
@@ -1787,6 +1787,7 @@ InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
              or ( faith[i] =  6 and chi[ faithpos ] = E(6) * chi[1] )
              or ( faith[i] = 12 and chi[ faithpos ] = E(12)^7 * chi[1] ) then
             Add( faithchars[i], chi );
+            break;
           fi;
 
         fi;
@@ -1812,11 +1813,14 @@ InstallGlobalFunction( ConstructProjInfo, function( tbl, kernel )
         if ForAll( linear, lambda -> not List( [ 1 .. nccl ],
                j -> lambda[j] * rest[j] ) in new ) then
           Add( new, rest );
-          partners:= GaloisPartnersOfIrreducibles( tbl, [ chi ], faith[i] );
-          if faith[i] <> 12 then
-            partners:= partners[1];
+          if 2 < faith[i] then
+            partners:= GaloisPartnersOfIrreducibles( tbl, [ chi ], faith[i] );
+            if faith[i] <> 12 then
+              partners:= partners[1];
+            fi;
+            Append( gal, partners );
+#T works for 12 ??
           fi;
-          Append( gal, partners );
         fi;
       od;
       info[ faith[i] ]:= [ names[i], gal ];
@@ -2704,54 +2708,6 @@ end );
 
 #############################################################################
 ##
-#F  BlanklessPrintTo( <stream>, <obj> )
-##
-InstallGlobalFunction( BlanklessPrintTo, function( stream, obj )
-    local i, names;
-    if   IsEmptyString( obj ) then
-      PrintTo( stream, "\"\"" );
-    elif IsList( obj ) and IsEmpty( obj ) then
-      PrintTo( stream, "[]" );
-    elif IsString( obj ) then
-      if '\n' in obj then
-        PrintTo( stream, TextString( obj ) );
-      else
-        PrintTo( stream, "\"", obj, "\"" );
-      fi;
-    elif IsList( obj ) then
-      PrintTo( stream, "[" );
-      for i in [ 1 .. Length( obj ) - 1 ] do
-        if IsBound( obj[i] ) then
-          BlanklessPrintTo( stream, obj[i] );
-        fi;
-        PrintTo( stream, "," );
-      od;
-      if not IsEmpty( obj ) then
-        BlanklessPrintTo( stream, obj[ Length( obj ) ] );
-      fi;
-      PrintTo( stream, "]" );
-    elif IsRecord( obj ) then
-      PrintTo( stream, "rec(" );
-      names:= RecNames( obj );
-      for i in [ 1 .. Length( names ) - 1 ] do
-        PrintTo( stream, names[i], ":=" );
-        BlanklessPrintTo( stream, obj.( names[i] ) );
-        PrintTo( stream, ",\n" );
-      od;
-      if not IsEmpty( names  ) then
-        i:= Length( names );
-        PrintTo( stream, names[i], ":=" );
-        BlanklessPrintTo( stream, obj.( names[i] ) );
-      fi;
-      PrintTo( stream, ")" );
-    else
-      PrintTo( stream, obj );
-    fi;
-end );
-
-
-#############################################################################
-##
 #F  ShrinkChars( <chars> )
 ##
 InstallGlobalFunction( ShrinkChars, function( chars )
@@ -3133,6 +3089,96 @@ end );
 
 #############################################################################
 ##
+#F  BlanklessPrintTo( <stream>, <obj>, <ncols>, <used>, <quote> )
+##
+InstallGlobalFunction( BlanklessPrintTo,
+    function( stream, obj, ncols, used, quote )
+
+    local PrintToEx, i, names, newstring, newstream, len;
+
+    PrintToEx := function( arg )
+      local len, entry;
+      len:= Sum( arg, Length );
+      if ncols < used + len then
+        PrintTo( stream, "\n" );
+        used:= 0;
+      fi;
+      for entry in arg do
+        PrintTo( stream, entry );
+      od;
+      used:= used + len;
+    end;
+
+    if not IsEmptyString( obj ) and IsList( obj ) and IsEmpty( obj ) then
+      if used + 2 > ncols then
+        PrintTo( stream, "\n" );
+        used:= 0;
+      fi;
+      PrintTo( stream, "[]" );
+    elif IsString( obj ) then
+      if quote then
+        if '\n' in obj then
+          PrintTo( stream, TextString( obj ) );
+          used:= 1;
+        else
+          PrintToEx( "\"", obj, "\"" );
+        fi;
+      else
+        PrintToEx( obj );
+      fi;
+    elif IsList( obj ) then
+      PrintToEx( "[" );
+      for i in [ 1 .. Length( obj ) - 1 ] do
+        if IsBound( obj[i] ) then
+          used:= BlanklessPrintTo( stream, obj[i], ncols, used, true );
+        fi;
+        PrintToEx( "," );
+      od;
+      if not IsEmpty( obj ) then
+        used:= BlanklessPrintTo( stream, obj[ Length( obj ) ], ncols, used,
+                                 true );
+      fi;
+      PrintToEx( "]" );
+    elif IsRecord( obj ) then
+      PrintToEx( "rec(" );
+      names:= RecNames( obj );
+      for i in [ 1 .. Length( names ) - 1 ] do
+        PrintToEx( names[i], ":=" );
+        used:= BlanklessPrintTo( stream, obj.( names[i] ), ncols, used,
+                                 true );
+        PrintToEx( ",\n" );
+        used:= 0;
+      od;
+      if not IsEmpty( names  ) then
+        i:= Length( names );
+        PrintToEx( names[i], ":=" );
+        used:= BlanklessPrintTo( stream, obj.( names[i] ), ncols, used,
+                                 true );
+      fi;
+      PrintToEx( ")" );
+    elif IsChar( obj ) then
+      PrintToEx( [ '\'', obj, '\'' ] );
+    else
+
+      newstring:= "";
+      newstream:= OutputTextString( newstring, true );
+      PrintTo( newstream, obj );
+      CloseStream( newstream );
+      len:= Length( newstring );
+      if ncols < used + len then
+        PrintTo( stream, "\n" );
+        used:= 0;
+      fi;
+      PrintTo( stream, newstring );
+      used:= used + len;
+
+    fi;
+    return used;
+end );
+
+
+#############################################################################
+##
 #F  PrintToLibOrdinary( <file>, <tbl> )
 #F  PrintToLibBrauer( <file>, <tbl> )
 #F  PrintToLib( <file>, <tbl> )
@@ -3140,7 +3186,10 @@ end );
 BindGlobal( "PrintToLibOrdinary", function( file, tbl )
 
     local special,
-          out,
+          ncols,
+          used,
+          string,
+          stream,
           flds,
           i, j,
           name,
@@ -3162,42 +3211,39 @@ BindGlobal( "PrintToLibOrdinary", function( file, tbl )
     # Special cases are `Irr( tbl )' and `tbl!.projectives' since
     # after the call of `ShrinkChars' they may
     # contain strings, which shall be printed without `"'
-
-    special:= function( chars )
+    special:= function( chars, used )
         local j;
-        PrintTo( out, "[" );
+        used:= BlanklessPrintTo( stream, "[", ncols, used, false );
         for j in [ 1 .. Length( chars ) - 1 ] do
           if IsBound( chars[j] ) then
             if IsString( chars[j] ) then
-              PrintTo( out, chars[j] );            # strip the `"'
+              PrintTo( stream, chars[j] );            # strip the `"'
+              used:= Length( chars[j] );
             else
-              BlanklessPrintTo( out, chars[j] );
+              used:= BlanklessPrintTo( stream, chars[j], ncols, used, false );
             fi;
           fi;
-          PrintTo( out, "," );
+          used:= BlanklessPrintTo( stream, ",", ncols, used, false );
         od;
         if not IsEmpty( chars ) then
           j:= Length( chars );
           if IsString( chars[j] ) then
-            PrintTo( out, chars[j] );                # strip the `"'
+            PrintTo( stream, chars[j] );              # strip the `"'
+            used:= Length( chars[j] );
           else
-            BlanklessPrintTo( out, chars[j] );
+            used:= BlanklessPrintTo( stream, chars[j], ncols, used, false );
           fi;
         fi;
-        PrintTo( out, "]" );
+        return BlanklessPrintTo( stream, "]", ncols, used, false );
     end;
 
-    # Create the output stream.
-    if     3 < Length( file )
-       and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
-      out:= OutputTextFile( file, true );
-      file:= file{ [ 1 .. Length( file ) - 4 ] };
-    else
-      out:= OutputTextFile( Concatenation( file, ".tbl" ), true );
-    fi;
+    ncols:= 78;
+    string:= "";
+    stream:= OutputTextString( string, true );
+    SetPrintFormattingStatus( stream, true );
 
     # Print the definition of the filename (= component in `LIBTABLE')
-    PrintTo( out, "SET_TABLEFILENAME(\"", file, "\");\n" );
+    PrintTo( stream, "SET_TABLEFILENAME(\"", file, "\");\n" );
 
     name:= Identifier( tbl );
 
@@ -3218,17 +3264,21 @@ Error( "handling of Clifford tables not yet installed!" );
     fi;
 
     # Step 2:  Print the compulsory components.
-    PrintTo( out, "MOT(\"", Identifier( tbl ), "\",\n" );
+    PrintTo( stream, Concatenation( "MOT(\"", Identifier( tbl ), "\",\n" ) );
+
     if HasInfoText( tbl ) then
-      PrintTo( out, TextString( InfoText( tbl ) ), ",\n" );
+      PrintTo( stream, TextString( InfoText( tbl ) ), ",\n" );
     else
-      PrintTo( out, "0,\n" );
+      PrintTo( stream, "0,\n" );
     fi;
+
     if HasSizesCentralizers( tbl ) then
-      BlanklessPrintTo( out, SizesCentralizers( tbl ) );
-      PrintTo( out, ",\n" );
+      used:= BlanklessPrintTo( stream, SizesCentralizers( tbl ), ncols, 0,
+                               false );
+      BlanklessPrintTo( stream, ",", ncols, used, false );
+      PrintTo( stream, "\n" );
     else
-      PrintTo( out, "0,\n" );
+      PrintTo( stream, "0,\n" );
     fi;
 
     if     HasComputedPowerMaps( tbl )
@@ -3245,35 +3295,43 @@ Error( "handling of Clifford tables not yet installed!" );
           fi;
         od;
       fi;
-      BlanklessPrintTo( out, powermap );
-      PrintTo( out, ",\n" );
+      used:= BlanklessPrintTo( stream, powermap, ncols, 0, false );
+      BlanklessPrintTo( stream, ",", ncols, used, false );
+      PrintTo( stream, "\n" );
     else
-      PrintTo( out, "0,\n" );
+      PrintTo( stream, "0,\n" );
     fi;
 
     if HasIrr( tbl ) then
-      special( ShrinkChars( Irr( tbl ) ) );
-      PrintTo( out, ",\n" );
+      used:= special( ShrinkChars( Irr( tbl ) ), 0 );
+      BlanklessPrintTo( stream, ",", ncols, used, false );
+      PrintTo( stream, "\n" );
     else
-      PrintTo( out, "0,\n" );
+      PrintTo( stream, "0,\n" );
     fi;
 
     if HasAutomorphismsOfTable( tbl ) then
-      BlanklessPrintTo( out, GeneratorsOfGroup( AutomorphismsOfTable(tbl) ) );
+      used:= BlanklessPrintTo( stream,
+                  GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ),
+                  ncols, 0, false );
     else
-      PrintTo( out, "0" );
+      PrintTo( stream, "0" );
+      used:= 1;
     fi;
 
     if IsLibraryCharacterTableRep( tbl ) and IsBound( tbl!.construction ) then
       pos:= Position( TABLE_CONSTRUCTORS[1], tbl!.construction );
+      BlanklessPrintTo( stream, ",", ncols, used, false );
+      PrintTo( stream, "\n" );
       if pos = fail then
-        PrintTo( out, ",\n", tbl!.construction, ");\n" );
+        used:= BlanklessPrintTo( stream, tbl!.construction, ncols, 0, false );
       else
-        PrintTo( out, ",\n", TABLE_CONSTRUCTORS[2][ pos ], ");\n" );
+        PrintTo( stream, TABLE_CONSTRUCTORS[2][ pos ] );
+        used:= Length( TABLE_CONSTRUCTORS[2][ pos ] );
       fi;
-    else
-      PrintTo( out, ");\n" );
     fi;
+    BlanklessPrintTo( stream, ");", ncols, used, false );
+    PrintTo( stream, "\n" );
 
     # Step 3:  Print the optional components.
 
@@ -3283,23 +3341,32 @@ Error( "handling of Clifford tables not yet installed!" );
          or OrdersClassRepresentatives( tbl )
            <> ElementOrdersPowerMap( ComputedPowerMaps( tbl ) ) ) then
 
-      PrintTo( out, "ARC(\"", name, "\",\"OrdersClassRepresentatives\"," );
-      BlanklessPrintTo( out, OrdersClassRepresentatives( tbl ) );
-      PrintTo( out, ");\n" );
+      used:= BlanklessPrintTo( stream,
+                 Concatenation( "ARC(\"", name,
+                                "\",\"OrdersClassRepresentatives\"," ),
+                ncols, 0, false );
+      used:= BlanklessPrintTo( stream,
+                 OrdersClassRepresentatives( tbl ), ncols, used, false );
+      BlanklessPrintTo( stream, ");\n", ncols, used, false );
 
     fi;
 
     # Shrink and print the projectives.
     if IsLibraryCharacterTableRep( tbl ) and IsBound( tbl!.projectives ) then
 
-      PrintTo( out, "ARC(\"", name, "\",\"projectives\",[" );
+      used:= BlanklessPrintTo( stream,
+                 Concatenation( "ARC(\"", name,
+                                "\",\"projectives\",[" ),
+                 ncols, 0, false );
       for j in tbl!.projectives do
-        PrintTo( out, "\"", j.name, "\"," );
+        used:= BlanklessPrintTo( stream,
+                   Concatenation( "\"", j.name, "\"," ), ncols, used, false );
         EvalChars( j.chars );
-        special( ShrinkChars( j.chars ) );
-        PrintTo( out, "," );
+        used:= special( ShrinkChars( j.chars ), used );
+        used:= BlanklessPrintTo( stream, ",", ncols, used, false );
       od;
-      PrintTo( out, "]);\n" );
+      BlanklessPrintTo( stream, "]);", ncols, used, false );
+      PrintTo( stream, "\n" );
 
     fi;
 
@@ -3313,9 +3380,12 @@ Error( "handling of Clifford tables not yet installed!" );
 
     for fld in flds do
       if IsBound( tbl!.( fld ) ) then
-        PrintTo( out, "ARC(\"", name, "\",\"", fld, "\"," );
-        BlanklessPrintTo( out, tbl!.( fld ) );
-        PrintTo( out, ");\n" );
+        used:= BlanklessPrintTo( stream,
+                   Concatenation( "ARC(\"", name, "\",\"", fld, "\"," ),
+                   ncols, 0, false );
+        used:= BlanklessPrintTo( stream, tbl!.( fld ), ncols, used, true );
+        BlanklessPrintTo( stream, ");" , ncols, used, false );
+        PrintTo( stream, "\n" );
       fi;
     od;
 
@@ -3348,15 +3418,20 @@ Error( "handling of Clifford tables not yet installed!" );
       fld:= SupportedCharacterTableInfo[ i-1 ];
       if     not fld in done
          and Tester( SupportedCharacterTableInfo[ i-2 ] )( tbl ) then
-        PrintTo( out, "ARC(\"", name, "\",\"", fld, "\"," );
-        BlanklessPrintTo( out, SupportedCharacterTableInfo[ i-2 ]( tbl ) );
-        PrintTo( out, ");\n" );
+        used:= BlanklessPrintTo( stream,
+                   Concatenation( "ARC(\"", name, "\",\"", fld, "\"," ),
+                   ncols, 0, false );
+        used:= BlanklessPrintTo( stream,
+                   SupportedCharacterTableInfo[ i-2 ]( tbl ),
+                   ncols, used, true );
+        BlanklessPrintTo( stream, ");" , ncols, used, false );
+        PrintTo( stream, "\n" );
       fi;
     od;
 
-    # Write the fusion assignments to the file.
+    # Add the fusion assignments.
     for fus in ComputedClassFusions( tbl ) do
-      PrintTo( out, LibraryFusion( name, fus ) );
+      PrintTo( stream, LibraryFusion( name, fus ) );
     od;
 
     # Write the names information to the file.
@@ -3371,27 +3446,27 @@ Error( "handling of Clifford tables not yet installed!" );
 #T       fi;
 #T get the other names from somewhere ...
       if not IsEmpty( names ) then
-        linelen:= Length( name ) + 8;
-        PrintTo( out, "ALN(\"", name, "\",[" );
+        used:= BlanklessPrintTo( stream,
+                   Concatenation( "ALN(\"", name, "\",[" ), ncols, 0, false );
         for i in [ 1 .. Length( names )-1 ] do
-          if linelen + Length( names[i] ) + 3 < 77 then
-            linelen:= linelen + Length( names[i] ) + 3;
-          else
-            PrintTo( out, "\n" );
-            linelen:= Length( names[i] ) + 3;
-          fi;
-          PrintTo( out, "\"", names[i], "\"," );
+          used:= BlanklessPrintTo( stream,
+                     Concatenation( "\"", names[i], "\"," ), ncols, used, false );
         od;
-        if linelen + Length( names[ Length( names ) ] ) + 5 >= 77 then
-          PrintTo( out, "\n" );
-        fi;
-        PrintTo( out, "\"", names[ Length( names ) ], "\"]);\n" );
+        BlanklessPrintTo( stream,
+            Concatenation( "\"", names[ Length( names ) ], "\"]);" ),
+            ncols, used, false );
+        PrintTo( stream, "\n" );
       fi;
     fi;
-    PrintTo( out, "\n" );
+    PrintTo( stream, "\n" );
 
-    # Close the stream.
-    CloseStream( out );
+    # Print to the file.
+    CloseStream( stream );
+    if    Length( file ) <= 3
+       or file{ [ Length( file ) - 3 .. Length( file ) ] } <> ".tbl" then
+      file:= Concatenation( file, ".tbl" );
+    fi;
+    AppendTo( file, string );
 end );
 
 BindGlobal( "PrintToLibBrauer", function( file, tbl )
@@ -3413,7 +3488,10 @@ BindGlobal( "PrintToLibBrauer", function( file, tbl )
           pos,
           automorphisms,
           indicator,
-          out;
+          ncols,
+          string,
+          stream,
+          used;
 
     ordtbl:= OrdinaryCharacterTable( tbl );
     ordname:= Identifier( ordtbl );
@@ -3494,44 +3572,48 @@ BindGlobal( "PrintToLibBrauer", function( file, tbl )
     fi;
 
     # Create the output stream.
-    if     3 < Length( file )
-       and file{ [ Length( file ) - 3 .. Length( file ) ] } = ".tbl" then
-      out:= OutputTextFile( file, true );
-      file:= file{ [ 1 .. Length( file ) - 4 ] };
-    else
-      out:= OutputTextFile( Concatenation( file, ".tbl" ), true );
-    fi;
+    ncols:= 78;
+    string:= "";
+    stream:= OutputTextString( string, true );
+    SetPrintFormattingStatus( stream, true );
 
     # Print the definition of the filename (= component in `LIBTABLE')
-    PrintTo( out, "SET_TABLEFILENAME(\"", file, "\");\n" );
+    PrintTo( stream, "SET_TABLEFILENAME(\"", file, "\");\n" );
 
     # Print the header (positions 1, 2).
-    PrintTo( out, "MBT(\"", ordname, "\",", prime, ",\n" );
+    PrintTo( stream, "MBT(\"", ordname, "\",", prime, ",\n" );
 
     # `InfoText' (pos. 3)
     if not HasInfoText( tbl ) then
-      BlanklessPrintTo( out, "(no info text)" );
+      PrintTo( stream, "(no info text)" );
     elif InfoText( tbl ) =
          "origin: modular ATLAS of finite groups, tests: DEC, TENS" then
-      BlanklessPrintTo( out, "TEXT1" );
+      PrintTo( stream, "TEXT1" );
     else
-      BlanklessPrintTo( out, InfoText( tbl ) );
+      PrintTo( stream, InfoText( tbl ) );
     fi;
-    PrintTo( out, ",\n" );
+    PrintTo( stream, ",\n" );
 
     # Print the other components.
     for i in [ block, defect, basicset, brauertree, decinv,
                factorblocks, automorphisms ] do
-      BlanklessPrintTo( out, i );
-      PrintTo( out, ",\n" );
+      used:= BlanklessPrintTo( stream, i, ncols, 0, false );
+      BlanklessPrintTo( stream, ",", ncols, used, false );
+      PrintTo( stream, "\n" );
     od;
-    BlanklessPrintTo( out, indicator );
+    used:= BlanklessPrintTo( stream, indicator, ncols, 0, false );
 
     # Complete the function call.
-    PrintTo( out, ");\n\n" );
+    BlanklessPrintTo( stream, ");", ncols, used, false );
+    PrintTo( stream, "\n\n" );
 
     # Close the stream.
-    CloseStream( out );
+    CloseStream( stream );
+    if    Length( file ) <= 3
+       or file{ [ Length( file ) - 3 .. Length( file ) ] } <> ".tbl" then
+      file:= Concatenation( file, ".tbl" );
+    fi;
+    AppendTo( file, string );
 end );
 
 InstallGlobalFunction( PrintToLib, function( file, tbl )

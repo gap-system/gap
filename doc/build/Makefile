@@ -18,15 +18,21 @@ all:
 test: 
 	$(BUILD) -f config.testall
 
-._all: ../ref/manual.dvi
+._all: ../ref/manual.dvi ../new/manual.dvi ../prog/manual.dvi 
 	touch ._all
 
 ../ref/manual.dvi: ._coll ._basic ._groups ._grppc ._rings ._number \
 	._mapping ._oper ._ratfun ._grplib ._alg ._linalg ._fp \
 	._install ._environ ._options ._system ._relation ._rws ._trans \
-	._fpsemi ._tom ._ctbl ._grpchain ._prog
+	._fpsemi ._tom ._ctbl 
 	(cd ../ref;tex manual)
 	fgrep "undefined" ../ref/manual.log
+
+../new/manual.dvi: ._new ._grpchain
+	(cd ../new; tex manual)
+
+../prog/manual.dvi: ._prog
+	(cd ../prg; tex manual)
 
 ._system: config.system streams.msk
 	$(BUILD) -f config.system
@@ -91,7 +97,7 @@ test:
 	$(BUILD) -f config.alg
 	touch ._alg
 
-._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk
+._environ: config.environ language.msk debug.msk objects.msk types.msk mloop.msk function.msk process.msk
 	$(BUILD) -f config.environ
 	touch ._environ
 
@@ -131,6 +137,9 @@ test:
 
 ._prog: config.prog intrfc.msk
 	$(BUILD) -f config.prog
-	(cd ../prg;tex manual)
 	touch ._prog
+
+._new: config.new newcover.msk iostream.msk
+	$(BUILD) -f config.new
+	touch ._new
 

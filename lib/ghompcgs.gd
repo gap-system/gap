@@ -51,5 +51,15 @@ DeclareOperation( "NaturalIsomorphismByPcgs", [ IsGroup, IsPcgs ] );
 
 #############################################################################
 ##
+#R  IsNaturalHomomorphismPcGroupRep . . . . . . . . natural hom in a pc group
+##
+DeclareRepresentation( "IsNaturalHomomorphismPcGroupRep",
+      IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
+      IsAttributeStoringRep,
+      [ "pcgsSource", "pcgsRange" ] );
+
+
+#############################################################################
+##
 #E  ghompcgs.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

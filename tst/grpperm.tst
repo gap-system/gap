@@ -72,7 +72,7 @@ gap> List(perf,Size);
 [ 60, 960, 30720, 1 ]
 
 # that's all, folks
-gap> STOP_TEST( "grpperm.tst", 3718162500 );
+gap> STOP_TEST( "grpperm.tst", 3218162500 );
 
 #############################################################################
 ##

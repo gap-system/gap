@@ -1293,9 +1293,6 @@ Int SyFclose (
         	SyFputs("gap: 'SyFclose' cannot close file, ",3); 
 	        SyFputs("maybe your file system is full?\n",3); 
     	}
-		if (syBuf[fid].permission != fsRdPerm) {
-			syMacErr = FlushVol(0, syBuf[fid].fsspec.vRefNum);
-		}
 #if DYNAMIC_BUFFER
 		DisposeHandle (syBuf[fid].bufH);
 		syBuf[fid].bufH = 0;
@@ -5236,6 +5233,15 @@ Int SyIsReadableFile ( Char * name )
     SyClearErrorNo();
     res = access( name, R_OK );
     if ( res == -1 ) {
+      /* if there is popen then we might be able to read the file via gunzip */
+#ifdef HAVE_POPEN 
+      Char xname[1024];
+      xname[0] = '\0';
+      SyStrncat(xname,name,SyStrlen(name));
+      SyStrncat(xname,".gz",3);
+      res = access(xname, R_OK);
+      if (res == -1)
+#endif
         SySetErrorNo();
     }
     return res;
@@ -5535,8 +5541,9 @@ Char * SyTmpname ( void )
 {
     static Char   * base = 0;
     static Char     name[1024];
-    static Int      count = 0;
-    Char            cnt[5];
+    static UInt      count = 0;
+    Char          * s;
+    UInt            c;
 
     SyClearErrorNo();
     count++;
@@ -5547,15 +5554,22 @@ Char * SyTmpname ( void )
         SySetErrorNo();
         return 0;
     }
+    if (count == 0)		/* one time in 2^32 */
+      {
+	SyStrncat( base, "x", 1);
+	count ++;
+      }
     name[0] = 0;
     SyStrncat( name, base, SyStrlen(base) );
     SyStrncat( name, ".", 1 );
-    cnt[0] = (count/1000) % 10 + '0';
-    cnt[1] = (count/ 100) % 10 + '0';
-    cnt[2] = (count/  10) % 10 + '0';
-    cnt[3] = (count/   1) % 10 + '0';
-    cnt[4] = 0;
-    SyStrncat( name, cnt, 5 );
+    s = name + SyStrlen(name);
+    c = count;
+    while (c !=  0)
+      {
+	*s++ = '0' + c % 10;
+	c /= 10;
+      }
+    *s = (Char)0;
     return name;
 }
 #endif

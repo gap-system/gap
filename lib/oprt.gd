@@ -119,6 +119,16 @@ DeclareSynonym( "IsOperationHomomorphismSubset",
 
 #############################################################################
 ##
+#A  ActionKernelExternalSet( <xset> )
+##
+##  This attribute gives the kernel of the `ActionHomomorphism' for <xset>.
+##
+#T  At the moment no methods exist, the attribute is solely used to transfer
+#T  information.
+DeclareAttribute( "ActionKernelExternalSet", IsExternalSet );
+
+#############################################################################
+##
 #R  IsActionHomomorphismByBase(<obj>)
 ##
 ##  This is chosen if `HasBaseOfGroup( <xset> )'.
@@ -1091,6 +1101,10 @@ DeclareGlobalFunction( "StabilizerPcgs" );
 ##  <gens> and the group action <act> on the element <pnt>. (For
 ##  technical reasons <pnt> and <act> are put in one record with components
 ##  `pnt' and `act' respectively.)
+##
+##  The <pntact> record may carry a component <stabsub>. If given, this must
+##  be a subgroup stabilizing *all* points in the domain and can be used to
+##  abbreviate stabilizer calculations.
 ##
 ##  The argument <Omega> (which may be replaced by `false' to be ignored) is
 ##  the set within which the orbit is computed (once the orbit is the full

@@ -34,8 +34,8 @@ gap> GeneratorsOfLeftModule( V );
 
 \beginexample
 gap> coll:= [ [0*Z(2),0*Z(2)], [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];
-[ <a GF2 vector of length 2>, <a GF2 vector of length 2>, 
-  <a GF2 vector of length 2>, <a GF2 vector of length 2> ]
+[ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ], 
+  [ Z(2)^0, Z(2)^0 ] ]
 gap> AsLeftModule( GF(2), coll );
 <vector space of dimension 2 over GF(2)>
 \endexample
@@ -52,6 +52,8 @@ gap> coll:= [ [Z(2),0*Z(2)], [0*Z(2),Z(2)], [Z(2),Z(2)] ];;
 gap> V:= LeftModuleByGenerators( GF(16), coll );
 <vector space over GF(2^4), with 3 generators>
 \endexample
+
+\Declaration{LeftActingDomain}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

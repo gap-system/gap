@@ -27,12 +27,19 @@ fi;
 #############################################################################
 ##
 #M  PrintObj( <record> )
+#M  ViewObj( <record> )
 ##
 ##  The record <record> is printed either by printing all its components or,
 ##  if the component `operations' of <record> is bound and has a component
 ##  `Print', this function is called with argument <record>.
 ##
 InstallMethod( PrintObj,
+    "for a record, look for entry in `operations'",
+    true,
+    [ IsRecord ], SUM_FLAGS,
+    PRINT_PREC );
+
+InstallMethod( ViewObj,
     "for a record, look for entry in `operations'",
     true,
     [ IsRecord ], SUM_FLAGS,

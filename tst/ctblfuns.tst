@@ -27,7 +27,7 @@ gap> List( irr, x -> InertiaSubgroup( S4, x ) );
 gap> List( last, Size );
 [ 24, 8, 8, 8 ]
 
-gap> STOP_TEST( "ctblfuns.tst", 612923095 );
+gap> STOP_TEST( "ctblfuns.tst", 28292309 );
 
 #############################################################################
 ##

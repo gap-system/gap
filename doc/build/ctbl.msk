@@ -49,7 +49,7 @@ see Chapter~"The Character Table Library".
 \beginexample
 gap> g:= SymmetricGroup( 4 );
 Sym( [ 1 .. 4 ] )
-gap> tbl:= CharacterTable( g );;  HasIrr( tbl );     
+gap> tbl:= CharacterTable( g );;  HasIrr( tbl );
 false
 gap> tblmod2:= CharacterTable( tbl, 2 );
 BrauerTable( Sym( [ 1 .. 4 ] ), 2 )
@@ -83,13 +83,13 @@ BrauerTable( Sym( [ 1 .. 4 ] ), 2 )
 gap> IsCharacterTable( tbl );  IsCharacterTable( modtbl );
 true
 true
-gap> IsBrauerTable( modtbl );  IsBrauerTable( tbl );   
+gap> IsBrauerTable( modtbl );  IsBrauerTable( tbl );
 true
 false
 gap> IsOrdinaryTable( tbl );  IsOrdinaryTable( modtbl );
 true
 false
-gap> IsCharacterTable( g );  IsCharacterTable( Irr( g ) ); 
+gap> IsCharacterTable( g );  IsCharacterTable( Irr( g ) );
 false
 false
 \endexample
@@ -137,9 +137,9 @@ The following few conventions should be noted.
 \Declaration{IdentificationOfConjugacyClasses}
 \beginexample
 gap> g:= SymmetricGroup( 4 );;
-gap> repres:= [ (1,2), (1,2,3), (1,2,3,4), (1,2)(3,4), () ];;   
+gap> repres:= [ (1,2), (1,2,3), (1,2,3,4), (1,2)(3,4), () ];;
 gap> ccl:= List( repres, x -> ConjugacyClass( g, x ) );;
-gap> SetConjugacyClasses( g, ccl ); 
+gap> SetConjugacyClasses( g, ccl );
 gap> tbl:= CharacterTable( g );;   # the table stores already the values
 gap> HasConjugacyClasses( tbl );  HasUnderlyingGroup( tbl );
 true
@@ -211,7 +211,7 @@ gap> Irr( SymmetricGroup( 4 ) );
 gap> Irr( SymmetricGroup( 4 ), 2 );
 [ Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 1, 1 ] ), 
   Character( BrauerTable( Sym( [ 1 .. 4 ] ), 2 ), [ 2, -1 ] ) ]
-gap> Irr( CharacterTable( "A5" ) ); 
+gap> Irr( CharacterTable( "A5" ) );
 [ Character( CharacterTable( "A5" ), [ 1, 1, 1, 1, 1 ] ), 
   Character( CharacterTable( "A5" ), [ 3, -1, 0, -E(5)-E(5)^4, -E(5)^2-E(5)^3 
      ] ), Character( CharacterTable( "A5" ), 
@@ -238,7 +238,7 @@ gap> OrdinaryCharacterTable( SymmetricGroup( 4 ) );
 CharacterTable( Sym( [ 1 .. 4 ] ) )
 gap> tbl:= CharacterTable( "A5" );;  modtbl:= tbl mod 2;
 BrauerTable( "A5", 2 )
-gap> OrdinaryCharacterTable( modtbl ) = tbl; 
+gap> OrdinaryCharacterTable( modtbl ) = tbl;
 true
 \endexample
 
@@ -251,11 +251,11 @@ gap> List( tables, AbelianInvariants );
 [ [ 3 ], [ 2 ], [  ] ]
 gap> List( tables, CommutatorLength );
 [ 1, 1, 1 ]
-gap> List( tables, Exponent );         
+gap> List( tables, Exponent );
 [ 3, 12, 30 ]
 gap> List( tables, IsAbelian );
 [ true, false, false ]
-gap> List( tables, IsCyclic ); 
+gap> List( tables, IsCyclic );
 [ true, false, false ]
 gap> List( tables, IsFinite );
 [ true, true, true ]
@@ -263,9 +263,9 @@ gap> List( tables, IsMonomial );
 [ true, true, false ]
 gap> List( tables, IsNilpotent );
 [ true, false, false ]
-gap> List( tables, IsPerfect );  
+gap> List( tables, IsPerfect );
 [ false, false, true ]
-gap> List( tables, IsSimple ); 
+gap> List( tables, IsSimple );
 [ true, false, true ]
 gap> List( tables, IsSolvable );
 [ true, true, false ]
@@ -273,7 +273,7 @@ gap> List( tables, IsSupersolvable );
 [ true, false, false ]
 gap> List( tables, NrConjugacyClasses );
 [ 3, 5, 5 ]
-gap> List( tables, Size );              
+gap> List( tables, Size );
 [ 3, 24, 60 ]
 \endexample
 
@@ -297,7 +297,7 @@ gap> SizesConjugacyClasses( tbl );
 \Declaration{AutomorphismsOfTable}
 \beginexample
 gap> tbl:= CharacterTable( "Dihedral", 8 );;
-gap> AutomorphismsOfTable( tbl );           
+gap> AutomorphismsOfTable( tbl );
 Group([ (4,5) ])
 gap> OrdersClassRepresentatives( tbl );
 [ 1, 4, 2, 2, 2 ]
@@ -316,7 +316,7 @@ gap> UnderlyingCharacteristic( tbl mod 17 );
 
 \Declaration{ClassNames}
 \beginexample
-gap> tbl:= CharacterTable( "A5" );;             
+gap> tbl:= CharacterTable( "A5" );;
 gap> ClassNames( tbl );
 [ "1a", "2a", "3a", "5a", "5b" ]
 gap> tbl.2a;
@@ -330,7 +330,7 @@ gap> Identifier( CharacterTable( "A5" ) );
 gap> g:= Group( () );;  HasName( g );
 false
 gap> SetName( g, "g" );
-gap> Identifier( CharacterTable( g ) );     
+gap> Identifier( CharacterTable( g ) );
 "g"
 gap> tbl:= CharacterTable( Group( () ) );;
 gap> Identifier( tbl );  Identifier( tbl mod 2 );
@@ -351,7 +351,7 @@ gap> InverseClasses( CharacterTable( "A5" ) );
 [ 1, 2, 3, 4, 5 ]
 gap> InverseClasses( CharacterTable( "Cyclic", 3 ) );
 [ 1, 3, 2 ]
-gap> RealClasses( CharacterTable( "A5" ) );       
+gap> RealClasses( CharacterTable( "A5" ) );
 [ 1, 2, 3, 4, 5 ]
 gap> RealClasses( CharacterTable( "Cyclic", 3 ) );
 [ 1 ]
@@ -362,7 +362,7 @@ gap> RealClasses( CharacterTable( "Cyclic", 3 ) );
 \beginexample
 gap> ClassOrbit( CharacterTable( "A5" ), 4 );
 [ 4, 5 ]
-gap> ClassRoots( CharacterTable( "A5" ) );   
+gap> ClassRoots( CharacterTable( "A5" ) );
 [ [ 2, 3, 4, 5 ], [  ], [  ], [  ], [  ] ]
 gap> ClassRoots( CharacterTable( "Cyclic", 6 ) );
 [ [ 3, 4, 5 ], [  ], [ 2 ], [ 2, 6 ], [ 6 ], [  ] ]
@@ -397,7 +397,7 @@ gap> ClassPositionsOfElementaryAbelianSeries( tbls4 );
 [ [ 1 .. 5 ], [ 1, 3, 4 ], [ 1, 3 ], [ 1 ] ]
 gap> ClassPositionsOfElementaryAbelianSeries( tbla5 );
 fail
-gap> ClassPositionsOfFittingSubgroup( tbls4 );        
+gap> ClassPositionsOfFittingSubgroup( tbls4 );
 [ 1, 3 ]
 gap> ClassPositionsOfLowerCentralSeries( tbls4 );
 [ [ 1 .. 5 ], [ 1, 3, 4 ] ]
@@ -419,11 +419,21 @@ gap> ClassPositionsOfNormalClosure( tbls4, [ 1, 4 ] );
 
 \Declaration{PrimeBlocks}
 \beginexample
-gap> PrimeBlocks( CharacterTable( "L3(2)" ), 2 );
+gap> tbl:= CharacterTable( "L3(2)" );;
+gap> pbl:= PrimeBlocks( tbl, 2 );
 rec( block := [ 1, 1, 1, 1, 1, 2 ], defect := [ 3, 0 ], 
   height := [ 0, 0, 0, 1, 0, 0 ], relevant := [ 3, 5 ], 
   exponents := [ ,, 2,, 6 ], 
   centralcharacter := [ [ ,, 56,, 24 ], [ ,, -7,, 3 ] ] )
+\endexample
+
+\Declaration{SameBlock}
+\beginexample
+gap> omega:= List( Irr( tbl ), CentralCharacter );;
+gap> SameBlock( tbl, 2, omega[1], omega[2], pbl.relevant, pbl.exponents );
+true
+gap> SameBlock( tbl, 2, omega[1], omega[6], pbl.relevant, pbl.exponents );
+false
 \endexample
 
 \Declaration{BlocksInfo}
@@ -452,7 +462,7 @@ gap> DecompositionMatrix( modtbl, 2 );
 \Declaration{LaTeXStringDecompositionMatrix}
 \begintt
 gap> modtbl:= CharacterTable( "L3(2)" ) mod 2;;
-gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1 ) );      
+gap> Print( LaTeXStringDecompositionMatrix( modtbl, 1 ) );
 \[
 \begin{array}{r||rrr} \hline
  & {\tt Y}_{1}
@@ -503,11 +513,11 @@ true
 \Declaration{IsClassFusionOfNormalSubgroup}
 \beginexample
 gap> tblc2:= CharacterTable( "Cyclic", 2 );;
-gap> tbld8:= CharacterTable( "Dihedral", 8 );;                              
+gap> tbld8:= CharacterTable( "Dihedral", 8 );;
 gap> fus:= PossibleClassFusions( tblc2, tbld8 );
-[ [ 1, 4 ], [ 1, 5 ], [ 1, 3 ] ]
+[ [ 1, 3 ], [ 1, 4 ], [ 1, 5 ] ]
 gap> List( fus, map -> IsClassFusionOfNormalSubgroup( tblc2, map, tbld8 ) );
-[ false, false, true ]
+[ true, false, false ]
 \endexample
 
 \Declaration{Indicator}
@@ -527,10 +537,10 @@ rec( number := 21, type := "D8" )
 \Declaration{ClassStructureCharTable}
 \Declaration{MatClassMultCoeffsCharTable}
 \beginexample
-gap> tbl:= CharacterTable( "L3(2)" );; 
+gap> tbl:= CharacterTable( "L3(2)" );;
 gap> ClassMultiplicationCoefficient( tbl, 2, 2, 4 );
 4
-gap> ClassStructureCharTable( tbl, [ 2, 2, 4 ] ); 
+gap> ClassStructureCharTable( tbl, [ 2, 2, 4 ] );
 168
 gap> ClassStructureCharTable( tbl, [ 2, 2, 2, 4 ] );
 1848
@@ -548,7 +558,7 @@ gap> MatClassMultCoeffsCharTable( tbl, 2 );
 \Declaration{DisplayOptions}
 \beginexample
 gap> tbl:= CharacterTable( "A5" );;
-gap> Display( tbl );                                             
+gap> Display( tbl );
 A5
 
      2  2  2  .  .  .
@@ -644,7 +654,7 @@ but explicitly calling one of them will *not* set the `Irr' value of $G$.
 \Declaration{IrrBaumClausen}
 \beginexample
 gap> g:= SL(2,3);;
-gap> irr1:= IrrDixonSchneider( g ); 
+gap> irr1:= IrrDixonSchneider( g );
 [ Character(CharacterTable(SL(2,3)),[ 1, 1, 1, 1, 1, 1, 1 ]), 
   Character(CharacterTable(SL(2,3)),[ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ]),
   Character(CharacterTable(SL(2,3)),[ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ]), 
@@ -652,7 +662,7 @@ gap> irr1:= IrrDixonSchneider( g );
   Character(CharacterTable(SL(2,3)),[ 2, 0, E(3), -E(3)^2,E(3)^2, -E(3), -2 ]),
   Character(CharacterTable(SL(2,3)),[ 2, 0, E(3)^2, -E(3),E(3), -E(3)^2, -2 ]), 
   Character(CharacterTable(SL(2,3)),[ 3, -1, 0, 0, 0, 0, 3 ]) ]
-gap> irr2:= IrrConlon( g );           
+gap> irr2:= IrrConlon( g );
 [ Character(CharacterTable(SL(2,3)),[ 1, 1, 1, 1, 1, 1, 1 ] ), 
   Character(CharacterTable(SL(2,3)),[ 1, 1, E(3)^2, E(3), E(3), E(3)^2, 1 ] ), 
   Character(CharacterTable(SL(2,3)),[ 1, 1, E(3), E(3)^2, E(3)^2, E(3), 1 ] ), 
@@ -669,7 +679,7 @@ true
 \Declaration{IrreducibleRepresentations}
 \beginexample
 gap> g:= AlternatingGroup( 4 );;
-gap> repr:= IrreducibleRepresentations( g );            
+gap> repr:= IrreducibleRepresentations( g );
 [ Pcgs([ (2,4,3), (1,3)(2,4), (1,2)(3,4) ]) -> 
     [ [ [ 1 ] ], [ [ 1 ] ], [ [ 1 ] ] ], 
   Pcgs([ (2,4,3), (1,3)(2,4), (1,2)(3,4) ]) -> 
@@ -825,7 +835,7 @@ gap> List( ro.remainders, i -> ScalarProduct( c, i, i) );
   38942, 44950, 78778 ]
 gap> t:= SplitCharacters( d, ro.remainders );;
 gap> List( t, i -> ScalarProduct( c, i, i ) );
-[ 2, 2, 4, 2, 2, 4, 4, 6, 3, 5, 5, 9, 9, 4, 12, 13, 18, 18, 18, 26, 32, 32, 
+[ 2, 2, 4, 2, 2, 4, 4, 3, 6, 5, 5, 9, 9, 4, 12, 13, 18, 18, 18, 26, 32, 32, 
   16, 42, 36, 84, 84, 88, 90, 159, 169, 169, 172, 172, 266, 271, 271, 268, 
   274, 274, 280, 328, 373, 373, 456, 532, 576, 679, 683, 683, 754, 768, 768, 
   890, 912, 962, 1453, 1453, 1601, 1601, 1728, 1739, 1739, 1802, 2058, 2379, 
@@ -851,9 +861,9 @@ So we convert them to a list of values
 before feeding them in the machinery of the Dixon-algorithm.
 \beginexample
 gap> l.irreducibles[1];
-Character(CharacterTable(PSL(4,3)), [ 640,0,-8,0,0,0,0,-8,0,
-  E(13)^7+E(13)^8+E(13)^11,E(13)+E(13)^3+E(13)^9,E(13)^2+E(13)^5+E(13)^6,
-  E(13)^4+E(13)^10+E(13)^12,0,0,0,0,0,1,0,-8,0,1,0,1,0,0,0,0 ])
+Character(CharacterTable(PSL(4,3)), [ 640,E(13)^7+E(13)^8+E(13)^11,
+E(13)+E(13)^3+E(13)^9,E(13)^2+E(13)^5+E(13)^6,E(13)^4+E(13)^10+E(13)^12,
+0,-8,0,0,-8,1,0,0,-8,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1 ])
 gap> l:=List(l.irreducibles,ValuesOfClassFunction);;
 gap> DxIncludeIrreducibles( d, l );
 gap> Length( d.irreducibles );
@@ -927,7 +937,7 @@ X.3     1  1  1
 \Declaration{CharacterTableIsoclinic}
 \beginexample
 gap> d8:= CharacterTable( "Dihedral", 8 );;
-gap> nsg:= ClassPositionsOfNormalSubgroups( d8 ); 
+gap> nsg:= ClassPositionsOfNormalSubgroups( d8 );
 [ [ 1 ], [ 1, 3 ], [ 1, 2, 3 ], [ 1, 3, 4 ], [ 1, 3, 5 ], [ 1, 2, 3, 4, 5 ] ]
 gap> Display( CharacterTableIsoclinic( d8, nsg[3] ) );
 Isoclinic(D8)
@@ -974,7 +984,7 @@ A = -E(3)^2
   = (1+ER(-3))/2 = 1+b3
 B = 2*E(3)
   = -1+ER(-3) = 2b3
-gap> CharacterParameters( wr )[1]; 
+gap> CharacterParameters( wr )[1];
 [ [ 1, 1 ], [  ], [  ] ]
 \endexample
 
@@ -988,7 +998,7 @@ gap> CharacterParameters( wr )[1];
 \Declaration{SortedCharacterTable}
 \Declaration{ClassPermutation}
 \beginexample
-gap> tbl:= CharacterTable( "Symmetric", 4 );      
+gap> tbl:= CharacterTable( "Symmetric", 4 );
 CharacterTable( "Sym(4)" )
 gap> Display( tbl );
 Sym(4)
@@ -1219,18 +1229,18 @@ gap> irr:= Irr( g );
   Character( CharacterTable( S4 ), [ 3, -1, -1, 0, 1 ] ), 
   Character( CharacterTable( S4 ), [ 3, 1, -1, 0, -1 ] ) ]
 gap> kernel:= KernelOfCharacter( irr[3] );
-Group([ (1,2)(3,4), (1,4)(2,3) ])
+Group([ (1,2)(3,4), (1,3)(2,4) ])
 gap> HasNormalSubgroupClassesInfo( tbl );
 true
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
+rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
   nsgfactors := [  ] )
 gap> ClassPositionsOfNormalSubgroup( tbl, kernel );
 [ 1, 3 ]
 gap> FactorGroupNormalSubgroupClasses( tbl, [ 1, 3 ] );
 <pc group of size 6 with 2 generators>
 gap> NormalSubgroupClassesInfo( tbl );
-rec( nsg := [ Group([ (1,2)(3,4), (1,4)(2,3) ]) ], nsgclasses := [ [ 1, 3 ] ],
+rec( nsg := [ Group([ (1,2)(3,4), (1,3)(2,4) ]) ], nsgclasses := [ [ 1, 3 ] ],
   nsgfactors := [ <pc group of size 6 with 2 generators> ] )
 \endexample
 
