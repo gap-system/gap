@@ -322,10 +322,17 @@ InstallOtherMethod( StabilizerOp,
 end );
 
 InstallOtherMethod( StabilizerOp,
-        "G (solv.), pnt, opr", true,
-        [ IsGroup and IsPcgsComputable, IsObject, IsFunction ], 0,
-    function( G, pt, op )
-    return OrbitStabilizerOp( G, pt, Pcgs( G ), Pcgs( G ), op ).stabilizer;
+        "G (solv.), pnt, gens, gens, opr", true,
+        [ IsGroup and IsPcgsComputable, IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, pt, gens, oprs, op )
+    if gens = oprs  then
+        return OrbitStabilizerOp( G, pt, Pcgs(G), Pcgs(G), op ).stabilizer;
+    else
+        TryNextMethod();
+    fi;
 end );
 
 #############################################################################

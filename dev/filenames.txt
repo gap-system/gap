@@ -10,10 +10,12 @@ using the following functions.  This is done by first getting a directory
 object for the directory the file resides in, and then constructing the
 filename.
 
+
 'DirectoryCurrent()'
 
 'DirectoryCurrent' returns the directory object for the current
 directory.  Under UNIX this would simply represent the empty string.
+
 
 'DirectoryTemporary( <hint> )'
 
@@ -28,10 +30,14 @@ use only a part of <hint>), and must be a string of at most 8
 alphanumerical characters.  Under UNIX this would usually represent
 '/usr/tmp/<hint>_<proc_id>_<cnt>/', e.g., '/usr/tmp/guava_17188_1/'.
 
-'DirectoryName( <name> )'
 
-'DirectoryName' returns the directory object for the directory with the
-(system dependent) name <name>, which must be a string.
+-- 'DirectoryName( <name> )'
+-- 
+-- 'DirectoryName' returns the directory object for the directory with the
+-- (system dependent) name <name>, which must be a string.
+--
+-- MAYBE NOT USEABLE AFTER ALL, NOT IMPLEMENTED
+
 
 'DirectoriesLibrary( [<lib>] )'
 
@@ -41,6 +47,7 @@ library <lib>, which must be one of '"lib"' (the default), '"grp"',
 '<gap-dir>/<lib>/', e.g., '/usd/gap/4.0/lib/', or the list of library
 directories specified using {\GAP}'s '-l' command option.
 
+
 'DirectoriesPackagePrograms( <name-pkg> )'
 
 'DirectoriesPackagePrograms' returns the directories object for the
@@ -49,6 +56,7 @@ directories where the executable programs for the contributed package
 '<gap-dir>/bin/<hostname>/<name-pkg>/', e.g.,
 '/usd/gap/4.0/bin/beaker/guava/'.
 
+
 'DirectoriesPackageLibrary( <name-pkg> [, <lib>] )'
 
 'DirectoriesPackageLibrary' returns the directories object for the
@@ -56,11 +64,13 @@ library <lib>, which must be one of '"lib"', '"grp"', and so on, for the
 contributed package <name-pkg>.  Under UNIX this would usually represent
 '<gap-dir>/pkg/<name-pkg>/<lib>/', e.g., '/usd/gap/4.0/pkg/guava/lib/'.
 
+
 'DirectoriesSystemPrograms()'
 
 'DirectoriesSystemPrograms' returns the directories object for the list
 of directories where the system programs reside.  Under UNIX this would
 usually rerpresent |${PATH}|, e.g., '/bin/;/usr/bin/;/usr/local/bin/'.
+
 
 'Filename( <dir>, <name> )'
 
@@ -84,33 +94,38 @@ There are certain operations that can be performed on the file.
 
 'IsExistingFile( <name-file> )'
 
-'CouldFindFile' returns 'true' if a file with the filename <name-file>
+'IsExistingFile' returns 'true' if a file with the filename <name-file>
 exists, and 'false' otherwise.
+
 
 'IsReadableFile( <name-file> )'
 
-'CouldReadFile' returns 'true' if a file with the filename <name-file>
+'IsReadableFile' returns 'true' if a file with the filename <name-file>
 exists and the {\GAP} process has read permissions for the file, and
 'false' otherwise.
 
+
 'IsWriteableFile( <name-file> )'
 
-'CouldWriteFile' returns 'true' if a file with the filename <name-file>
+'IsWriteableFile' returns 'true' if a file with the filename <name-file>
 exists and the {\GAP} process has write permissions for the file, and
 'false' otherwise.
 
+
 'IsExecuteableFile( <name-file> )'
 
-'CouldExecFile' returns 'true' if a file with the filename <name-file>
+'IsExecuteableFile' returns 'true' if a file with the filename <name-file>
 exists and the {\GAP} process has execute permissions for the file, and
 'false' otherwise.  Note that execute permissions do not imply that it is
 possible to execute the file, e.g., it could be an executable for a
 different machine.
 
+
 'RemoveFile( <name-file> )'
 
 'RemoveFile' removes the file with the name <name-file>, and returns
 'true' if that was sucessful and 'false' if it failed.
+
 
 'RemoveDirectory( <dir> )'
 
@@ -133,11 +148,13 @@ behaviour for nonprintable characters are undefined.  *Binary streams* do
 not translate the <end-of-line> character and allow nonprintable
 characters.
 
+
 'InputTextNone'
 
 'InputTextNone' is a dummy input stream, which delivers no characters,
 i.e., it is always at end of stream.  Its main use is for calls to
 'Process' when the started program does not read anything.
+
 
 'OutputTextNone'
 
@@ -145,11 +162,13 @@ i.e., it is always at end of stream.  Its main use is for calls to
 characters.  Its main use is for calls to 'Process' when the started
 program does not write anything.
 
+
 'InputTextUser'
 
 'InputTextUser' is the input stream that delivers the characters that the
 user types.  If {\GAP}'s input comes from a file (input redirection),
 then 'InputTextUser' will deliver the characters from that file.
+
 
 'OutputTextUser'
 
@@ -157,10 +176,12 @@ then 'InputTextUser' will deliver the characters from that file.
 received characters.  If {\GAP}'s output goes to a file (output
 redirection), then 'OutputTextUser' will receive characters to that file.
 
+
 'InputTextString( <string> )'
 
 'InputTextString' returns an input stream that delivers the characters
 from the string <string>.
+
 
 'OutputTextString( <list>, <append> )'
 
@@ -169,10 +190,12 @@ characters into the list <list>.  If <append> is 'false', then the list
 is emptied first, otherwise received characters are added at the end of
 the list.
 
+
 'InputTextFile( <name-file> )'
 
 'InputTextFile' returns an input stream that delivers the characters
 from the file <name-file>.
+
 
 'OutputTextFile( <name-file>, <append> )'
 
@@ -181,10 +204,12 @@ to the file <file-name>.  If <append> is 'false', then the file is
 emptied first, otherwise received characters are added at the end of the
 list.
 
+
 'InputBinaryFile( <name-file> )'
 
 'InputBinaryFile' returns a binary input stream that delivers the
 characters from the file <name-file>.
+
 
 'OutputBinaryFile( <name-file>, <append> )'
 
@@ -192,6 +217,7 @@ characters from the file <name-file>.
 characters to the file <file-name>.  If <append> is 'false', then the
 file is emptied first, otherwise received characters are added at the end
 of the list.
+
 
 'CloseInput( <stream-in>  )'
 
@@ -202,6 +228,7 @@ longer needed.  This may be necessary because the {\GAP} kernel and/or
 the operating system may impose a limit on how may streams may be open at
 once.  An open stream is closed when the garbage collection collects the
 stream object.
+
 
 'CloseOutput( <stream-out> )'
 
@@ -260,6 +287,7 @@ terminated and all characters have been read, the input stream is at
 <dir-exec>, <name-prg>, <stream-in>, and <options-arguments> are the same
 as for 'Process'.
 
+
 'OutputTextProcess(<dir-exec>,<name-prg>,<stream-out>,<options-arguments>)'
 
 'OutputTextProcess' runs a new process.  'OutputTextProcess' returns
@@ -270,6 +298,7 @@ may continue to run).
 
 <dir-exec>, <name-prg>, <stream-out>, and <options-arguments> are the same
 as for 'Process'.
+
 
 'InputTextOutputTextProcess(<dir-exec>,<name-prg>,<options-arguments>)'
 

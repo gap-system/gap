@@ -919,7 +919,7 @@ Obj FuncREAD_AS_FUNC_STREAM (
 
 /****************************************************************************
 **
-*F  FuncREAD_GAP_ROOT( <filename> ) . . . . . . . . . . . . . . . read a file
+*F  FuncREAD_GAP_ROOT( <self>, <filename> ) . . . . . . . . . . . read a file
 */
 Obj FuncREAD_GAP_ROOT (
     Obj                 self,
@@ -935,6 +935,64 @@ Obj FuncREAD_GAP_ROOT (
 
     /* try to open the file                                                */
     return READ_GAP_ROOT(CSTR_STRING(filename)) ? True : False;
+}
+
+
+/****************************************************************************
+**
+
+*F  FuncTmpName( <self> ) . . . . . . . . . . . . . . return a temporary name
+*/
+Obj FuncTmpName (
+    Obj                 self )
+{
+    Char *              tmp;
+    Obj                 name;
+
+    tmp = SyTmpname();
+    if ( tmp == 0 )
+	return Fail;
+    C_NEW_STRING( name, SyStrlen(tmp), tmp );
+    return name;
+}
+
+
+/****************************************************************************
+**
+*F  FuncTmpDirectory( <self> )  . . . . . . . .  return a temporary directory
+*/
+Obj FuncTmpDirectory (
+    Obj                 self )
+{
+    Char *              tmp;
+    Obj                 name;
+
+    tmp = SyTmpdir();
+    if ( tmp == 0 )
+	return Fail;
+    C_NEW_STRING( name, SyStrlen(tmp), tmp );
+    return name;
+}
+
+
+/****************************************************************************
+**
+*F  FuncRemoveFile( <self>, <name> )  . . . . . . . . . .  remove file <name>
+*/
+Obj FuncRemoveFile (
+    Obj             self,
+    Obj             filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+    
+    /* call the system dependent function                                  */
+    return SyRemoveFile( CSTR_STRING(filename) ) == -1 ? Fail : True;
 }
 
 
@@ -1027,6 +1085,27 @@ Obj FuncIsExecutableFile (
     
     /* call the system dependent function                                  */
     return SyIsExecutableFile( CSTR_STRING(filename) ) ? True : False;
+}
+
+
+/****************************************************************************
+**
+*F  FuncIsDirectoryPath( <self>, <name> ) . . . .  is file <name> a directory
+*/
+Obj FuncIsDirectoryPath (
+    Obj             self,
+    Obj             filename )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+    
+    /* call the system dependent function                                  */
+    return SyIsDirectoryPath( CSTR_STRING(filename) ) ? True : False;
 }
 
 
@@ -1299,6 +1378,96 @@ Obj FuncWRITE_BYTE_FILE (
 /****************************************************************************
 **
 
+*F * * * * * * * * * * * * * execution functions  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  FuncExecuteProcess( <self>, <dir>, <prg>, <in>, <out>, <args> )   process
+*/
+static Obj  * ExecArgs  [ 1024 ];
+static Char * ExecCArgs [ 1024 ];
+
+Obj FuncExecuteProcess (
+    Obj		    	self,
+    Obj             	dir,
+    Obj		    	prg,
+    Obj             	in,
+    Obj             	out,
+    Obj             	args )
+{
+    Obj                 tmp;
+    Int             	res;
+    Int                 i;
+
+    /* check the argument                                                  */
+    while ( ! IsStringConv(dir) ) {
+        dir = ErrorReturnObj(
+            "<dir> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(dir)].name), 0L,
+            "you can return a string for <dir>" );
+    }
+    while ( ! IsStringConv(prg) ) {
+        prg = ErrorReturnObj(
+            "<prg> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(prg)].name), 0L,
+            "you can return a string for <prg>" );
+    }
+    while ( ! IS_INTOBJ(in) ) {
+        in = ErrorReturnObj(
+            "<in> must be an integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(in)].name), 0L,
+            "you can return an integer for <in>" );
+    }
+    while ( ! IS_INTOBJ(out) ) {
+        out = ErrorReturnObj(
+            "<out> must be an integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(out)].name), 0L,
+            "you can return an integer for <out>" );
+    }
+    while ( ! IS_LIST(args) ) {
+        args = ErrorReturnObj(
+            "<args> must be an integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(args)].name), 0L,
+            "you can return an integer for <args>" );
+    }
+
+    /* create an argument array                                            */
+    for ( i = 1;  i <= LEN_LIST(args);  i++ ) {
+	if ( i == 1023 )
+	    break;
+	tmp = ELM_LIST( args, i );
+	while ( ! IsStringConv(tmp) ) {
+	    tmp = ErrorReturnObj(
+		"<tmp> must be a string (not a %s)",
+		(Int)(InfoBags[TNUM_OBJ(tmp)].name), 0L,
+		"you can return a string for <tmp>" );
+	}
+	ExecArgs[i] = tmp;
+    }
+    ExecCArgs[0]   = CSTR_STRING(prg);
+    ExecCArgs[i+1] = 0;
+    for ( i--;  0 < i;  i-- ) {
+	ExecCArgs[i] = CSTR_STRING(ExecArgs[i]);
+    }
+
+    /* execute the process                                                 */
+    res = SyExecuteProcess( CSTR_STRING(dir),
+			    CSTR_STRING(prg),
+			    INT_INTOBJ(in),
+			    INT_INTOBJ(out),
+			    ExecCArgs );
+
+    return res == 255 ? Fail : INTOBJ_INT(res);
+}
+
+
+/****************************************************************************
+**
+
+
 *F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
 */
 
@@ -1394,6 +1563,18 @@ void InitStreams ()
                   FuncAPPEND_TO_STREAM,
        "src/streams.c:APPEND_TO_STREAM" );
 
+    C_NEW_GVAR_FUNC( "TmpName", 0L, "",
+                  FuncTmpName,
+       "src/streams.c:TmpName" );
+
+    C_NEW_GVAR_FUNC( "TmpDirectory", 0L, "",
+                  FuncTmpDirectory,
+       "src/streams.c:TmpDirectory" );
+
+    C_NEW_GVAR_FUNC( "RemoveFile", 1L, "file",
+                  FuncRemoveFile,
+       "src/streams.c:RemoveFile" );
+
 
     /* file access test functions                                          */
     C_NEW_GVAR_FUNC( "IsExistingFile", 1L, "filename", 
@@ -1411,6 +1592,10 @@ void InitStreams ()
     C_NEW_GVAR_FUNC( "IsExecutableFile", 1L, "filename",
                   FuncIsExecutableFile,
         "src/sreams.c:IsExecutableFile" );
+
+    C_NEW_GVAR_FUNC( "IsDirectoryPath", 1L, "filename",
+                  FuncIsDirectoryPath,
+        "src/sreams.c:IsDirectoryPath" );
 
 
     /* text stream functions                                               */
@@ -1449,6 +1634,11 @@ void InitStreams ()
     C_NEW_GVAR_FUNC( "WRITE_BYTE_FILE", 2L, "fid, byte",
                   FuncWRITE_BYTE_FILE,
         "src/sreams.c:WRITE_BYTE_FILE" );
+
+    /* execution functions                                                 */
+    C_NEW_GVAR_FUNC( "ExecuteProcess", 5L, "dir, prg, in, out, args",
+                  FuncExecuteProcess,
+        "src/sreams.c:ExecuteProcess" );
 }
 
 

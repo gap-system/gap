@@ -39,7 +39,8 @@ AbstractGeneratorIterator := 0;
 
 AbstractGenerator := function( name )
     if AbstractGeneratorIterator = 0 then
-      AbstractGeneratorIterator:= GeneratorsOfGroup( FreeGroup( infinity ) );
+      AbstractGeneratorIterator:= Iterator( GeneratorsOfGroup(
+                                                FreeGroup( infinity ) ) );
     fi;
     return NextIterator( AbstractGeneratorIterator );
 end;

@@ -339,7 +339,6 @@ any-next-nextstep-cc:
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_MACH -DSYS_HAS_STACK_ALIGN=4 \
 	      -DSYS_HAS_ANSI=1 -D_POSIX_SOURCE -DSYS_HAS_READ_PROTO \
-              -DSYS_HAS_BROKEN_TMPNAM \
               -DSYS_HAS_RLD_LIBRARY \
 	      $(ARCH) \
 	      -DSYS_ARCH='\"$(ADIR)-next-nextstep-cc\"'" \

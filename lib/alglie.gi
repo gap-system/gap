@@ -1535,7 +1535,8 @@ InstallMethod( NilRadical,
         # Solve the equations.
 
         bb:= NullspaceMat( TransposedMat(eqs) );
-        I:= List( bb, x -> x*I );
+
+        I:= List( bb, x -> LinearCombination( I, x ) );
 
         # Update the list 'elts' of highest degree elements
         # and the corresponding list 'hdeg'.
@@ -1543,7 +1544,8 @@ InstallMethod( NilRadical,
         elts:= ShallowCopy( newelts );
         hdeg:= ShallowCopy( newhdeg );
         cfs:=List( I, x -> Coefficients( BasisOfDomain(S), x ) );
-        adI:=List( cfs, x -> x*adS );
+
+        adI:=List( cfs, x -> LinearCombination( adS, x ) );
 
         # Nilpotency test.
 

@@ -37,6 +37,13 @@ extern UInt   syNrchar;               /* nr of chars already on the line */
 
 /****************************************************************************
 **
+*F  SyFileno( <fid> ) . . . . . . . . . . . . . . get operating system fileno
+*/
+#define SyFileno(fid)	(fid==-1?-1:fileno(syBuf[fid].fp))
+
+
+/****************************************************************************
+**
 
 *E  sysfiles.h  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */

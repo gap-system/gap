@@ -182,6 +182,36 @@ end;
 
 #############################################################################
 ##
+#F  POSITION_NOT( <list>, <val> [,<from-minus-one>] ) . . . .  find not <val>
+##
+POSITION_NOT := function( arg )
+    local i;
+
+    if LENGTH(arg) = 2  then
+        for i  in [ 1 .. LENGTH(arg[1]) ]  do
+            if arg[1][i] <> arg[2] then
+                return i;
+            fi;
+        od;
+        return LENGTH(arg[1]) + 1;
+
+    elif LENGTH(arg) = 3 then
+        for i  in [ arg[3]+1 .. LENGTH(arg[1]) ]  do
+            if arg[1][i] <> arg[2] then
+                return i;
+            fi;
+        od;
+        return LENGTH(arg[1]) + 1;
+
+    else
+      Error( "usage: PositionNot( <list>, <val>[, <from>] )" );
+    fi;
+
+end;
+
+
+#############################################################################
+##
 
 #E  kernel.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

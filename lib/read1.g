@@ -27,6 +27,7 @@ ReadLib( "flag.g"      );
 ReadLib( "boolean.g"   );
 ReadLib( "record.g"    );
 ReadLib( "ffe.g"       );
+ReadLib( "arith.gi"    );
 ReadLib( "list.g"      );
 ReadLib( "permutat.g"  );
 
@@ -37,7 +38,6 @@ ReadLib( "assert.gd"   );
 ReadLib( "files.gd"    );
 ReadLib( "streams.gd"  );
 
-ReadLib( "arith.gi"    );
 ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
 

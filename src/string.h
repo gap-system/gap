@@ -148,6 +148,17 @@ extern  Int             IsStringConv (
 
 /****************************************************************************
 **
+*F  C_NEW_STRING( <string>, <len>, <cstring> )  . . . . . . create GAP string
+*/
+#define C_NEW_STRING(string,len,cstr) \
+  do { \
+    string = NEW_STRING( len ); \
+    SyStrncat( CSTR_STRING(string), cstr, len ); \
+  } while ( 0 );
+
+
+/****************************************************************************
+**
 *F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
 **
 **  'InitString' initializes the string package.

@@ -308,30 +308,7 @@ ConvertToVectorRep := Ignore;
 ##
 #F  PositionNot( <list>, <val> [,<from-minus-one>] )  . . . .  find not <val>
 ##
-PositionNot := function( arg )
-    local i;
-
-    if Length(arg) = 2  then
-        for i  in [ 1 .. Length(arg[1]) ]  do
-            if arg[1][i] <> arg[2] then
-                return i;
-            fi;
-        od;
-        return Length(arg[1]) + 1;
-
-    elif Length(arg) = 3 then
-        for i  in [ arg[3]+1 .. Length(arg[1]) ]  do
-            if arg[1][i] <> arg[2] then
-                return i;
-            fi;
-        od;
-        return Length(arg[1]) + 1;
-
-    else
-      Error( "usage: PositionNot( <list>, <val>[, <from>] )" );
-    fi;
-
-end;
+PositionNot := POSITION_NOT;
 
 
 #############################################################################

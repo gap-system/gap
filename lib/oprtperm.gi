@@ -642,7 +642,7 @@ InstallMethod( TransitivityOp,
     elif not IsTransitiveOp( G, D, gens, oprs, opr )  then
         return 0;
     else
-        G := StabilizerOp( G, D[ 1 ], opr );
+        G := Stabilizer( G, D[ 1 ], opr );
         gens := GeneratorsOfGroup( G );
         return TransitivityOp( G, D{ [ 2 .. Length( D ) ] },
                        gens, gens, opr ) + 1;
@@ -852,7 +852,7 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
                                 OnPoints );
                 if rep2 <> fail  then
                     rep := rep2 * rep;
-                    S   := StabilizerOp( S, d[i], OnPoints );
+                    S   := Stabilizer( S, d[i], OnPoints );
                 else
                     rep := fail;
                 fi;
@@ -875,15 +875,22 @@ end );
 
 #############################################################################
 ##
-#M  Stabilizer( <G>, <d>, <opr> ) . . . . . . . . . . . . . . for perm groups
+#M  Stabilizer( <G>, <d>, <gens>, <gens>, <opr> ) . . . . . . for perm groups
 ##
 InstallOtherMethod( StabilizerOp,
-        "P, pnt, opr", true,
-        [ IsPermGroup, IsObject, IsFunction ], 0,
-    function( G, d, opr )
+        "P, pnt, gens, gens, opr", true,
+        [ IsPermGroup, IsObject,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, d, gens, oprs, opr )
     local   K,          # stabilizer <K>, result
             S,  base;
 
+    if gens <> oprs  then
+        TryNextMethod();
+    fi;
+    
     # standard operation on points, make a stabchain beginning with <d>
     if opr = OnPoints and IsInt( d )  then
         base := [ d ];
@@ -923,20 +930,6 @@ InstallOtherMethod( StabilizerOp,
 
     # return the stabilizer
     return K;
-end );
-
-InstallOtherMethod( StabilizerOp,
-        "P, pnt, gens, oprs, opr", true,
-        [ IsPermGroup, IsObject,
-          IsList,
-          IsList,
-          IsFunction ], 100,
-    function( G, d, gens, oprs, opr )
-    if IsIdentical( gens, oprs )  then
-        return StabilizerOp( G, d, opr );
-    else
-        TryNextMethod();
-    fi;
 end );
 
 #############################################################################

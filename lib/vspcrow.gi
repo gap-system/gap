@@ -833,7 +833,7 @@ InstallMethod( Intersection2,
       S:= W;
     elif LeftActingDomain( V ) <> LeftActingDomain( W ) then
       S:= Intersection2( LeftActingDomain( V ), LeftActingDomain( W ) );
-      S:= \+( AsVectorSpace( S, V ), AsVectorSpace( S, W ) );
+      S:= Intersection2( AsVectorSpace( S, V ), AsVectorSpace( S, W ) );
     else
 
       # Compute the intersection of two spaces over the same field.

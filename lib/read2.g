@@ -2,9 +2,12 @@
 ##
 #X  now read the basic methods
 ##
+ReadLib( "process.gd"  );
+
 ReadLib( "listcoef.gi" );
 ReadLib( "files.gi"    );
 ReadLib( "streams.gi"  );
+ReadLib( "process.gi"  );
 
 
 #############################################################################

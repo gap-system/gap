@@ -70,7 +70,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "dir(", obj![1] ,")" );
+    Print( "dir(\"", obj![1] ,"\")" );
 end );
 
 
@@ -163,5 +163,5 @@ InstallMethod( ReadTest,
 #############################################################################
 ##
 
-#E  files.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  files.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . .  ends here
 ##

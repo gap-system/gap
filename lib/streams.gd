@@ -15,7 +15,7 @@ Revision.streams_gd :=
 #############################################################################
 ##
 
-#C  IsClosedStream
+#C  IsClosedStream  . . . . . . . . . . . . . . .  category of closed streams
 ##
 IsClosedStream := NewCategory(
     "IsClosedStream",
@@ -24,7 +24,7 @@ IsClosedStream := NewCategory(
 
 #############################################################################
 ##
-#C  IsStream
+#C  IsStream  . . . . . . . . . . . . . . . . . . . . . . category of streams
 ##
 IsStream := NewCategory(
     "IsStream",
@@ -33,7 +33,7 @@ IsStream := NewCategory(
 
 #############################################################################
 ##
-#C  IsInputStream
+#C  IsInputStream . . . . . . . . . . . . . . . . . category of input streams
 ##
 IsInputStream := NewCategory(
     "IsInputStream",
@@ -42,7 +42,7 @@ IsInputStream := NewCategory(
 
 #############################################################################
 ##
-#C  IsInputTextStream
+#C  IsInputTextStream . . . . . . . . . . . .  category of input text streams
 ##
 IsInputTextStream := NewCategory(
     "IsInputTextStream",
@@ -51,7 +51,16 @@ IsInputTextStream := NewCategory(
 
 #############################################################################
 ##
-#C  IsOutputStream
+#C  IsInputTextNone . . . . . . . . . . . category of input text none streams
+##
+IsInputTextNone := NewCategory(
+    "IsInputStream",
+    IsInputTextStream );
+
+
+#############################################################################
+##
+#C  IsOutputStream  . . . . . . . . . . . . . . .  category of output streams
 ##
 IsOutputStream := NewCategory(
     "IsOutputStream",
@@ -60,7 +69,7 @@ IsOutputStream := NewCategory(
 
 #############################################################################
 ##
-#C  IsOutputTextStream
+#C  IsOutputTextStream	. . . . . . . . . . . category of output text streams
 ##
 IsOutputTextStream := NewCategory(
     "IsOutputTextStream",
@@ -69,8 +78,17 @@ IsOutputTextStream := NewCategory(
 
 #############################################################################
 ##
+#C  IsOutputTextNone  . . . . . . . . .  category of output text none streams
+##
+IsOutputTextNone := NewCategory(
+    "IsOutputStream",
+    IsOutputTextStream );
 
-#V  StreamsFamily
+
+#############################################################################
+##
+
+#V  StreamsFamily . . . . . . . . . . . . . . . . . . . family of all streams
 ##
 StreamsFamily := NewFamily( "StreamsFamily" );
 
@@ -78,7 +96,7 @@ StreamsFamily := NewFamily( "StreamsFamily" );
 #############################################################################
 ##
 
-#O  IsEndOfStream( <input-text-stream> )
+#O  IsEndOfStream( <input-stream> ) . . . . . . . . . check for end-of-stream
 ##
 ##  'IsEndOfStream' returns 'true' if the input stream is at <end-of-stream>,
 ##  and 'false' otherwise.  Note   that 'IsEndOfStream' might  return 'false'
@@ -91,7 +109,7 @@ IsEndOfStream := NewOperation(
 
 #############################################################################
 ##
-#O  PositionStream( <input-text-stream> )
+#O  PositionStream( <input-stream> )  . . . . . . . . . . .  current position
 ##
 PositionStream := NewOperation(
     "PositionStream",
@@ -100,7 +118,7 @@ PositionStream := NewOperation(
 
 #############################################################################
 ##
-#O  ReadAll( <input-text-stream> )
+#O  ReadAll( <input-text-stream> )  . . . . . . .  read whole input as string
 ##
 ##  'ReadAll' returns all  characters  as   string  from the input     stream
 ##  <stream-in>.  It reads in the input until the stream is at end-of-stream,
@@ -117,7 +135,7 @@ ReadAll := NewOperation(
 
 #############################################################################
 ##
-#O  ReadByte( <input-stream> )
+#O  ReadByte( <input-stream> )	. . . . . . . . . . . . . .  read single byte
 ##
 ##  'ReadByte' returns  one character (returned  as  integer) from  the input
 ##  stream <stream-in>.  'ReadByte' waits until a  character is available, it
@@ -133,7 +151,7 @@ ReadByte := NewOperation(
 
 #############################################################################
 ##
-#O  ReadLine( <input-text-stream> )
+#O  ReadLine( <input-text-stream> ) . . . . . . . . read whole line as string
 ##
 ##  'ReadLine' one   line (returned as  string  *with* the newline)  from the
 ##  input stream <stream-in>.  'ReadLine' reads  in the input until a newline
@@ -149,7 +167,7 @@ ReadLine := NewOperation(
 
 #############################################################################
 ##
-#O  RewindStream( <input-text-stream> )
+#O  RewindStream( <input-stream> )  . . . . . . . . . return to the beginning
 ##
 RewindStream := NewOperation(
     "RewindStream",
@@ -158,7 +176,7 @@ RewindStream := NewOperation(
 
 #############################################################################
 ##
-#O  SeekPositionStream( <input-text-stream> )
+#O  SeekPositionStream( <input-stream>, <pos> )	. . . .  return to a position
 ##
 SeekPositionStream := NewOperation(
     "SeekPositionStream",
@@ -167,16 +185,16 @@ SeekPositionStream := NewOperation(
 
 #############################################################################
 ##
-#O  WriteAll( <output-stream>, <string> )
+#O  WriteAll( <output-text-stream>, <string> )  .  write whole string to file
 ##
 WriteAll := NewOperation(
     "WriteAll",
-    [ IsOutputStream, IsList ] );
+    [ IsOutputTextStream, IsList ] );
                     
 
 #############################################################################
 ##
-#O  WriteByte( <output-stream>, <byte> )
+#O  WriteByte( <output-stream>, <byte> )  . . . . . . . . . write single byte
 ##
 WriteByte := NewOperation(
     "WriteByte",
@@ -186,7 +204,7 @@ WriteByte := NewOperation(
 #############################################################################
 ##
 
-#O  CloseStream( <stream> )
+#O  CloseStream( <stream> ) . . . . . . . . . . . . . . . . .  close a stream
 ##
 CloseStream := NewOperation(
     "CloseStream",
@@ -196,7 +214,7 @@ CloseStream := NewOperation(
 #############################################################################
 ##
 
-#O  InputTextString( <string> )
+#O  InputTextString( <string> )	. . . .  create input text stream from string
 ##
 InputTextString := NewOperation(
     "InputTextString",
@@ -205,7 +223,7 @@ InputTextString := NewOperation(
 
 #############################################################################
 ##
-#O  InputTextFile( <string> )
+#O  InputTextFile( <string> ) . . . . . .  create input text stream from file
 ##
 InputTextFile := NewOperation(
     "InputTextFile",
@@ -214,7 +232,15 @@ InputTextFile := NewOperation(
 
 #############################################################################
 ##
-#O  OutputTextString( <string>, <append> )
+#O  InputTextNone() . . . . . . . . . . . . . . . . . dummy input text stream
+##
+InputTextNone := NewOperationArgs(
+    "InputTextNone" );
+
+
+#############################################################################
+##
+#O  OutputTextString( <string>, <append> )  . . . . create output text stream
 ##
 OutputTextString := NewOperation(
     "OutputTextString",
@@ -223,7 +249,7 @@ OutputTextString := NewOperation(
 
 #############################################################################
 ##
-#O  OutputTextFile( <string>, <append> )
+#O  OutputTextFile( <string>, <append> )  . . . . . create output text stream
 ##
 OutputTextFile := NewOperation(
     "OutputTextFile",
@@ -232,8 +258,16 @@ OutputTextFile := NewOperation(
 
 #############################################################################
 ##
+#O  OutputTextNone()  . . . . . . . . . . . . . . .  dummy output text stream
+##
+OutputTextNone := NewOperationArgs(
+    "OutputTextNone" );
 
-#F  AppendTo( <stream>, <arg1>, ... )
+
+#############################################################################
+##
+
+#F  AppendTo( <stream>, <arg1>, ... ) . . . . . . . . . .  append to a stream
 ##
 ##  This is   the same as   'PrintTo'  for streams.   If   <stream> is just a
 ##  filename than there  is a difference:  'PrintTo'  will clear the    file,
@@ -252,7 +286,7 @@ end;
 
 #############################################################################
 ##
-#F  PrintTo( <stream>, <arg1>, ... )
+#F  PrintTo( <stream>, <arg1>, ... )  . . . . . . . . . .  append to a stream
 ##
 ##  'PrintTo' appends <arg1>, ... to the output stream.
 ##
@@ -269,7 +303,7 @@ end;
 
 #############################################################################
 ##
-#O  LogTo( <stream> )
+#O  LogTo( <stream> ) . . . . . . . . . . . . . . . . . . . . log to a stream
 ##
 LogTo := NewOperation(
     "LogTo",
@@ -278,7 +312,7 @@ LogTo := NewOperation(
 
 #############################################################################
 ##
-#O  InputLogTo( <stream> )
+#O  InputLogTo( <stream> )  . . . . . . . . . . . . . . log input to a stream
 ##
 InputLogTo := NewOperation(
     "InputLogTo",
@@ -287,7 +321,7 @@ InputLogTo := NewOperation(
 
 #############################################################################
 ##
-#O  OutputLogTo( <stream> )
+#O  OutputLogTo( <stream> ) . . . . . . . . . . . . .  log output to a stream
 ##
 OutputLogTo := NewOperation(
     "OutputLogTo",

@@ -14,6 +14,7 @@
 ##     components in domains, i.e.,
 ##     `IsBound( <D>.<name> )' and access to `<D>.<name>' are interpreted as
 ##     calls to tester resp. getter of the attribute associated to <name>.
+##  3) Simulate the old conversion functions like 'PermGroup'
 ##  
 ##  This file is read only if the user explicitly reads it.
 ##
@@ -130,6 +131,37 @@ AssociateNameAttribute( "powermap", ComputedPowerMaps );
 AssociateNameAttribute( "prime", UnderlyingCharacteristic );
 AssociateNameAttribute( "text", InfoText );
 
+#############################################################################
+##
+#A  Comp3BijectionToOldGroup( <D> )
+##
+##  Attribute to store the old '.bijection' component.
+##
+Comp3BijectionToOldGroup := NewAttribute("Comp3BijectionToOldGroup",IsDomain);
+SetComp3BijectionToOldGroup := Setter(Comp3BijectionToOldGroup);
+
+AssociateNameAttribute( "bijection", Comp3BijectionToOldGroup );
+
+#############################################################################
+##
+#F  PermGroup       functions to convert the representation
+#F  AgGroup
+#F  FpGroup
+##
+ConversionFunctionFromIsomorphism := function(isomop)
+  return 
+    function(G)
+    local isom,img;
+      isom:=isomop(G);
+      img:=Image(isom);
+      SetComp3BijectionToOldGroup(img,InverseGeneralMapping(isom));
+      return img;
+    end;
+end;
+
+PermGroup := ConversionFunctionFromIsomorphism(IsomorphismPermGroup);
+AgGroup := ConversionFunctionFromIsomorphism(IsomorphismPcGroup);
+FpGroup := ConversionFunctionFromIsomorphism(IsomorphismFpGroup);
 
 #############################################################################
 ##

@@ -344,13 +344,6 @@ extern  void            AsssListLevelCheck (
 
 /* strings, should go into 'string.c'  * * * * * * * * * * * * * * * * * * */
 
-#define C_NEW_STRING(string,len,cstr) \
-  do { \
-    string = NEW_STRING( len ); \
-    SyStrncat( CSTR_STRING(string), cstr, len ); \
-  } while ( 0 );
-
-
 /* ranges, should go into 'range.c'  * * * * * * * * * * * * * * * * * * * */
 
 extern  Obj             Range2Check (

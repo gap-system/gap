@@ -56,7 +56,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "closed stream" );
+    Print( "closed-stream" );
 end );
 
 
@@ -476,6 +476,7 @@ InputTextFileType := NewType(
     StreamsFamily,
     IsInputTextStream and IsInputTextFileRep );
 
+
 #############################################################################
 ##
 #V  InputTextFileStillOpen
@@ -625,6 +626,150 @@ function( stream, pos )
         Error( "illegal position <pos>" );
     fi;
 end );
+
+
+#############################################################################
+##
+
+#F  # # # # # # # # # # # # # # input text none # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
+#R  IsInputTextNoneRep	. . . . . . representation of dummy input text stream
+##
+IsInputTextNoneRep := NewRepresentation(
+    "IsInputTextNoneRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#V  InputTextNoneType	. . . . . . . . . . . type of dummy input text stream
+##
+InputTextNoneType := NewType(
+    StreamsFamily,
+    IsInputTextNone and IsInputTextNoneRep );
+
+
+#############################################################################
+##
+#M  InputTextNone() . . . . . . . . . .  create a new dummy input text stream
+##
+InputTextNone := function()
+    return Objectify( InputTextNoneType, [] );
+end;
+
+
+
+#############################################################################
+##
+
+#M  IsEndOfStream( <input-text-none> )	. . . . . . . always at end-of-stream
+##
+InstallMethod( IsEndOfStream,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+        
+function( stream )
+    return true;
+end );
+
+
+#############################################################################
+##
+#M  PositionStream( <input-text-none> )	. . . . . . . always at end-of-stream
+##
+InstallMethod( PositionStream,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+
+function( stream )
+    return 0;
+end );
+
+
+#############################################################################
+##
+#M  PrintObj( <input-text-none> ) . . . . . . . . . . . . . . . .  nice print
+##
+InstallMethod( PrintObj,
+    "input text none",
+    true,
+    [ IsInputTextNoneRep ],
+    0,
+        
+function( obj )
+    Print( "InputTextNone()" );
+end );
+
+
+#############################################################################
+##
+#M  ReadAll( <input-text-none> )  . . . . . . . . . . always at end-of-stream
+##
+InstallMethod( ReadAll,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+    ReturnFail );
+
+
+#############################################################################
+##
+#M  ReadByte( <input-text-none> ) . . . . . . . . . . always at end-of-stream
+##
+InstallMethod( ReadByte,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+    ReturnFail );
+
+
+#############################################################################
+##
+#M  ReadLine( <input-text-none> ) . . . . . . . . . . always at end-of-stream
+##
+InstallMethod( ReadLine,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+    ReturnFail );
+
+
+#############################################################################
+##
+#M  RewindStream( <input-text-none> ) . . . . . . . . always at end-of-stream
+##
+InstallMethod( RewindStream,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep ],
+    0,
+    Ignore );
+
+
+#############################################################################
+##
+#M  SeekPositionStream( <input-text-none> ) . . . . . always at end-of-stream
+##
+InstallMethod( SeekPositionStream,
+    "input text none",
+    true,
+    [ IsInputTextNone and IsInputTextNoneRep,
+      IsInt ],
+    0,
+    Ignore );
 
 
 #############################################################################
@@ -869,6 +1014,95 @@ function( stream, byte )
         Error( "<byte> must an integer between 1 and 255" );
     fi;
     WRITE_BYTE_FILE( stream![1], byte );
+end );
+
+
+#############################################################################
+##
+
+#F  # # # # # # # # # # # # # output text none  # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
+#R  IsOutputTextNoneRep	. . . . .  representation of dummy output text stream
+##
+IsOutputTextNoneRep := NewRepresentation(
+    "IsOutputTextNoneRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#V  OutputTextNoneType  . . . . . . . . . .  type of dummy output text stream
+##
+OutputTextNoneType := NewType(
+    StreamsFamily,
+    IsOutputTextNone and IsOutputTextNoneRep );
+
+
+#############################################################################
+##
+#M  OutputTextNone()  . . . . . . . . . create a new dummy output text stream
+##
+OutputTextNone := function()
+    return Objectify( OutputTextNoneType, [] );
+end;
+
+
+#############################################################################
+##
+
+#M  PrintObj( <output-text-none> )  . . . . . . . . . . . . . . .  nice print
+##
+InstallMethod( PrintObj,
+    "output text none",
+    true,
+    [ IsOutputTextNoneRep ],
+    0,
+        
+function( obj )
+    Print( "OutputTextNone()" );
+end );
+
+
+#############################################################################
+##
+#M  WriteAll( <output-text-none>, <string> )  . . . . . . . . . .  ingore all
+##
+InstallMethod( WriteAll,
+    "output text none",
+    true,
+    [ IsOutputTextNone and IsOutputTextNoneRep,
+      IsList ],
+    0,
+                    
+function( stream, string )
+    if not IsString(string)  then
+        Error( "<string> must be a string" );
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  WriteByte( <output-text-none>, <byte> ) . . . . . . . . . . .  ignore all
+##
+InstallMethod( WriteByte,
+    "output text none",
+    true,
+    [ IsOutputTextNone and IsOutputTextNoneRep,
+      IsInt ],
+    0,
+                    
+function( stream, byte )
+    if byte < 1 or 255 < byte  then
+        Error( "<byte> must an integer between 1 and 255" );
+    fi;
+    Add( stream![1], CHAR_INT(byte) );
 end );
 
 

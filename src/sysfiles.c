@@ -41,6 +41,23 @@ extern char * fgets ( char *, int, FILE * );
 extern int    fputs ( SYS_CONST char *, FILE * );
 #endif
 
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
 
 /****************************************************************************
 **
@@ -140,13 +157,15 @@ Int SyFopen (
     /* try to open the file                                                */
     if ( (syBuf[fid].fp = fopen(name,mode)) ) {
         syBuf[fid].pipe = 0;
-	syBuf[fid].echo = syBuf[fid].fp;
+        syBuf[fid].echo = syBuf[fid].fp;
     }
+#if SYS_BSD || SYS_MACH || SYS_USG
     else if ( SyStrcmp(mode,"r") == 0
            && SyIsReadableFile(namegz)
            && (syBuf[fid].fp = popen(cmd,mode)) ) {
         syBuf[fid].pipe = 1;
     }
+#endif
     else {
         return (Int)-1;
     }
@@ -1754,12 +1773,7 @@ Char * SyFgets (
 
 Int SyIsExistingFile ( Char * name )
 {
-    if ( access( name, F_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return ( access( name, F_OK ) == 0 ) ? 1 : 0;
 }
 
 #endif
@@ -1782,12 +1796,7 @@ Int SyIsExistingFile ( Char * name )
 
 Int SyIsReadableFile ( Char * name )
 {
-    if ( access( name, R_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return ( access( name, R_OK ) == 0 ) ? 1 : 0;
 }
 
 #endif
@@ -1810,12 +1819,7 @@ Int SyIsReadableFile ( Char * name )
 
 Int SyIsWritableFile ( Char * name )
 {
-    if ( access( name, W_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return ( access( name, W_OK ) == 0 ) ? 1 : 0;
 }
 
 #endif
@@ -1838,12 +1842,7 @@ Int SyIsWritableFile ( Char * name )
 
 Int SyIsExecutableFile ( Char * name )
 {
-    if ( access( name, X_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return ( access( name, X_OK ) == 0 ) ? 1 : 0;
 }
 
 #endif
@@ -1851,6 +1850,57 @@ Int SyIsExecutableFile ( Char * name )
 
 /****************************************************************************
 **
+*F  SyIsDirectoryPath( <name> ) . . . . . . . . .  is file <name> a directory
+**
+**  'SyIsDirectoryPath' returns 1 if the  file <name>  is a directory  and  0
+**  otherwise. <name> is a system dependent description of the file.
+*/
+
+
+/****************************************************************************
+**
+*f  SyIsDirectoryPath( <name> ) . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+#include        <sys/stat.h>
+
+Int SyIsDirectoryPath ( Char * name )
+{
+    struct stat     buf;                /* buffer for `stat'               */
+    int             res;                /* result of `stat'                */
+
+    if ( stat( name, &buf ) == -1 )
+        return 0;
+    return S_ISDIR(buf.st_mode) ? 1 : 0;
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  SyRemoveFile( <name> )  . . . . . . . . . . . . . . .  remove file <name>
+*/
+
+
+/****************************************************************************
+**
+*f  SyRemoveFile( <name> )  . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+Int SyRemoveFile ( Char * name )
+{
+    return unlink(name);
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
 *F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
 */
 Char * SyFindGapRootFile ( Char * filename )
@@ -1898,7 +1948,7 @@ extern  int             system ( SYS_CONST char * );
 
 #if ! (SYS_MAC_MPW || SYS_MAC_SYC)
 
-void            SyExec (
+void SyExec (
     Char *              cmd )
 {
     Int                 ignore;
@@ -1912,11 +1962,153 @@ void            SyExec (
 
 #if SYS_MAC_MPW || SYS_MAC_SYC
 
-void            SyExec (
+void SyExec (
     Char *              cmd;
 {
 }
 
+#endif
+
+
+/****************************************************************************
+**
+*F  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . . . new process
+**
+**  Start  <prg> in  directory <dir>  with  standard input connected to <in>,
+**  standard  output  connected to <out>   and arguments.  No  path search is
+**  performed, the return  value of the process  is returned if the operation
+**  system supports such a concept.
+*/
+
+
+/****************************************************************************
+**
+*f  SyExecuteProcess( <dir>, <prg>, <in>, <out>, <args> ) . . .  BSD/Mach/USG
+*/
+#if SYS_BSD || SYS_MACH || SYS_USG
+
+#ifndef SYS_PID_T
+#define SYS_PID_T       pid_t
+#endif
+
+#include        <sys/wait.h>
+#include        <fcntl.h>
+
+extern char ** environ;
+
+
+UInt SyExecuteProcess (
+    Char *                  dir,
+    Char *                  prg,
+    Int                     in,
+    Int                     out,
+    Char *                  args[] )
+{
+    SYS_PID_T               pid;
+    Int                     status;
+    SYS_SIG_T               (*func)(int);
+
+#ifdef SYS_HAS_WAIT4
+    struct rusage           usage;
+#endif
+
+
+    /* clone the process                                                   */
+    pid = vfork();
+    if ( pid == -1 ) {
+        return -1;
+    }
+
+    /* we are the parent                                                   */
+    if ( pid != 0 ) {
+
+	/* ignore a CTRL-C                                                 */
+	func = signal( SIGINT, SIG_IGN );
+
+	/* wait for some action                                            */
+#ifdef SYS_HAS_WAIT4
+
+        if ( wait4( pid, &status, 0, &usage ) == -1 ) {
+	    signal( SIGINT, func );
+            return -1;
+        }
+	if ( WIFSIGNALED(status) ) {
+	    signal( SIGINT, func );
+	    return -1;
+	}
+	signal( SIGINT, func );
+        return WEXITSTATUS(status);
+
+#else
+
+        if ( waitpid( pid, &status, 0 ) == -1 ) {
+	    signal( SIGINT, func );
+            return -1;
+        }
+	if ( WIFSIGNALED(status) ) {
+	    signal( SIGINT, func );
+	    return -1;
+	}
+	signal( SIGINT, func );
+        return WEXITSTATUS(status);
+
+#endif
+    }
+
+    /* we are the child                                                    */
+    else {
+
+        /* change the working directory                                    */
+        if ( chdir(dir) == -1 ) {
+            _exit(-1);
+        }
+
+        /* if <in> is -1 open "/dev/null"                                  */
+        if ( in == -1 ) {
+            in = open( "/dev/null", O_RDONLY );
+            if ( in == -1 ) {
+                _exit(-1);
+            }
+        }
+	else {
+	    in = SyFileno(in);
+	}
+
+        /* if <out> is -1 open "/dev/null"                                 */
+        if ( out == -1 ) {
+            out = open( "/dev/null", O_WRONLY );
+            if ( out == -1 ) {
+                _exit(-1);
+            }
+        }
+	else {
+	    out = SyFileno(out);
+	}
+
+        /* set standard input to <in>, standard output to <out>            */
+        if ( in != 0 ) {
+            if ( dup2( in, 0 ) == -1 ) {
+                _exit(-1);
+            }
+        }
+        fcntl( 0, F_SETFD, 0 );
+
+        if ( out != 1 ) {
+            if ( dup2( out, 1 ) == -1 ) {
+                _exit(-1);
+            }
+        }
+        fcntl( 1, F_SETFD, 0 );
+
+        /* now try to execute the program                                  */
+        execve( prg, args, environ );
+        _exit(-1);
+    }
+
+    /* this should not happen                                              */
+    return -1;
+}
+    
 #endif
 
 
@@ -1930,7 +2122,51 @@ void            SyExec (
 /****************************************************************************
 **
 
-*F  SyTmpdir( <hint> )	. . . . . . . . . . . .  return a temporary directory
+*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
+**
+**  'SyTmpname' creates and returns  a new temporary name.  Subsequent  calls
+**  to 'SyTmpname'  should  produce different  file names  *even* if no files
+**  were created.
+*/
+#ifndef SYS_STDIO_H                     /* standard input/output functions */
+# include       <stdio.h>
+# define SYS_STDIO_H
+#endif
+
+#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
+extern  char * tmpnam ( char * );
+#endif
+
+Char * SyTmpname ( void )
+{
+    static Char   * base = 0;
+    static Char     name[1024];
+    static Int      count = 0;
+    Char            cnt[5];
+
+    count++;
+    if ( base == 0 ) {
+        base = tmpnam( (char*)0 );
+    }
+    if ( base == 0 ) {
+        return 0;
+    }
+    name[0] = 0;
+    SyStrncat( name, base, SyStrlen(base) );
+    SyStrncat( name, ".", 1 );
+    cnt[0] = (count/1000) % 10 + '0';
+    cnt[1] = (count/ 100) % 10 + '0';
+    cnt[2] = (count/  10) % 10 + '0';
+    cnt[3] = (count/   1) % 10 + '0';
+    cnt[4] = 0;
+    SyStrncat( name, cnt, 5 );
+    return name;
+}
+
+
+/****************************************************************************
+**
+*F  SyTmpdir( <hint> )  . . . . . . . . . . . .  return a temporary directory
 **
 **  'SyTmpdir'  returns the directory   for  a temporary directory.  This  is
 **  guaranteed  to be newly  created and empty  immediately after the call to
@@ -1950,61 +2186,20 @@ void            SyExec (
 
 Char * SyTmpdir ( Char * hint )
 {
-    Char	dir [ 1024 ];
+    Char *      tmp;
+    int         res;                    /* result of `mkdir'               */
 
-    
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
-extern  char * tmpnam ( char * );
-#endif
-
-#ifdef SYS_HAS_BROKEN_TMPNAM
-
-Char * SyTmpname ( void )
-{
-    static Char   * base = 0;
-    static Char     name[1024];
-    static Int      count = 0;
-    Char            cnt[4];
-
-    count++;
-    if ( base == 0 ) {
-        base = tmpnam( (char*)0 );
-    }
-    if ( base == 0 ) {
+    /* for the moment ignore <hint>                                        */
+    tmp = SyTmpname();
+    if ( tmp == 0 )
         return 0;
-    }
-    name[0] = 0;
-    SyStrncat( name, base, SyStrlen(base) );
-    SyStrncat( name, ".", 1 );
-    cnt[0] = (count/100) % 10 + '0';
-    cnt[1] = (count/ 10) % 10 + '0';
-    cnt[2] = (count/  1) % 10 + '0';
-    cnt[3] = 0;
-    SyStrncat( name, cnt, 4 );
-    return name;
-}
 
-#else
+    /* create a new directory                                              */
+    res = mkdir( tmp, 0777 );
+    if ( res == -1 )
+        return 0;
 
-Char * SyTmpname ( void )
-{
-    return tmpnam( (char*)0 );
+    return tmp;
 }
 
 #endif
@@ -2047,7 +2242,7 @@ void InitSysFiles( void )
         if ( SyGapRootPaths[i][0] ) {
             len = SyStrlen(SyGapRootPaths[i]);
             tmp = NEW_STRING(len);
-	    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+            RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
             SyStrncat( CSTR_STRING(tmp), SyGapRootPaths[i], len );
             SET_ELM_PLIST( list, j, tmp );
             j++;
@@ -2063,31 +2258,31 @@ void InitSysFiles( void )
     list = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( list, 0 );
     for ( p = getenv("PATH"), i = 0, q = p;  ;  p++, i++ ) {
-	if ( *p == ':' || *p == '\0' ) {
-	    if ( i == 0 ) {
-		tmp = NEW_STRING(2);
-		RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-		SyStrncat( CSTR_STRING(tmp), "./", 2 );
-	    }
-	    else {
-		if ( q[-1] == '/' ) {
-		    tmp = NEW_STRING(i);
-		    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-		    SyStrncat( CSTR_STRING(tmp), q, i );
-		}
-		else {
-		    tmp = NEW_STRING(i+1);
-		    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
-		    SyStrncat( CSTR_STRING(tmp), q, i );
-		    SyStrncat( CSTR_STRING(tmp), "/", 1 );
-		}
-	    }
-	    AddPlist( list, tmp );
-	    i = -1;
-	    q = p+1;
-	}
-	if ( *p == '\0' )
-	    break;
+        if ( *p == ':' || *p == '\0' ) {
+            if ( i == 0 ) {
+                tmp = NEW_STRING(2);
+                RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+                SyStrncat( CSTR_STRING(tmp), "./", 2 );
+            }
+            else {
+                if ( q[-1] == '/' ) {
+                    tmp = NEW_STRING(i);
+                    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+                    SyStrncat( CSTR_STRING(tmp), q, i );
+                }
+                else {
+                    tmp = NEW_STRING(i+1);
+                    RetypeBag( tmp, IMMUTABLE_TNUM(TNUM_OBJ(tmp)) );
+                    SyStrncat( CSTR_STRING(tmp), q, i );
+                    SyStrncat( CSTR_STRING(tmp), "/", 1 );
+                }
+            }
+            AddPlist( list, tmp );
+            i = -1;
+            q = p+1;
+        }
+        if ( *p == '\0' )
+            break;
     }
 #endif
     RetypeBag( list, IMMUTABLE_TNUM(TNUM_OBJ(list)) );

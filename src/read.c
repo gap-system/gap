@@ -135,7 +135,7 @@ void            ReadFuncExpr1 (
 **  following:
 **
 **  'i':        check if variable, record component, list entry is bound
-**  'r':	reference to a variable
+**  'r':        reference to a variable
 **  's':        assignment via ':='
 **  'u':        unbind a variable
 **  'x':        either 'r' or 'x' depending on <Symbol>
@@ -393,9 +393,9 @@ void ReadCallVarAss (
     /* if we need a statement                                              */
     else if ( mode == 's' || (mode == 'x' && Symbol == S_ASSIGN) ) {
         if ( type != 'c' ) {
-            Match( S_ASSIGN, ":=", follow );
-            if ( CountNams == 0 ) { CurrLHSGVar = var; }
-            ReadExpr( follow, 'r' );
+	    Match( S_ASSIGN, ":=", follow );
+	    if ( CountNams == 0 ) { CurrLHSGVar = var; }
+	    ReadExpr( follow, 'r' );
         }
         if ( READ_ERROR() ) {}
         else if ( type == 'l' ) { IntrAssLVar( var );           }
@@ -489,8 +489,8 @@ void            ReadIsBound (
 void ReadPerm (
     TypSymbolSet        follow )
 {
-    UInt                nrc;            /* number of cycles                */
-    UInt                nrx;            /* number of expressions in cycle  */
+    volatile UInt       nrc;            /* number of cycles                */
+    volatile UInt       nrx;            /* number of expressions in cycle  */
 
     /* read the first cycle (first expression has already been read)       */
     nrx = 1;
@@ -536,9 +536,9 @@ void ReadPerm (
 void ReadListExpr (
     TypSymbolSet        follow )
 {
-    UInt                pos;            /* actual position of element      */
-    UInt                nr;             /* number of elements              */
-    UInt                range;          /* is the list expression a range  */
+    volatile UInt       pos;            /* actual position of element      */
+    volatile UInt       nr;             /* number of elements              */
+    volatile UInt       range;          /* is the list expression a range  */
 
     /* '['                                                                 */
     Match( S_LBRACK, "[", follow );
@@ -608,11 +608,11 @@ void ReadListExpr (
 **
 **  <Record> := 'rec( [ <Ident>:=<Expr> {, <Ident>:=<Expr> } ] )'
 */
-void            ReadRecExpr (
+void ReadRecExpr (
     TypSymbolSet        follow )
 {
-    UInt                rnam;           /* record component name           */
-    UInt                nr;             /* number of components            */
+    volatile UInt       rnam;           /* record component name           */
+    volatile UInt       nr;             /* number of components            */
 
     /* 'rec('                                                              */
     Match( S_REC, "rec", follow );
@@ -703,14 +703,14 @@ void            ReadRecExpr (
 void ReadFuncExpr (
     TypSymbolSet        follow )
 {
-    Obj                 nams;           /* list of local variables names   */
-    Obj                 name;           /* one local variable name         */
-    UInt                narg;           /* number of arguments             */
-    UInt                nloc;           /* number of locals                */
-    UInt                nr;             /* number of statements            */
-    UInt                i;              /* loop variable                   */
-    UInt                nrError;        /* copy of <NrError>               */
-    Bag                 currLVars;      /* copy of <CurrLVars>             */
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile Obj        name;           /* one local variable name         */
+    volatile UInt       narg;           /* number of arguments             */
+    volatile UInt       nloc;           /* number of locals                */
+    volatile UInt       nr;             /* number of statements            */
+    volatile UInt       i;              /* loop variable                   */
+    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* begin the function                                                  */
     Match( S_FUNCTION, "function", follow );
@@ -792,18 +792,18 @@ void ReadFuncExpr (
 
     /* and end the function again                                          */
     if ( ! READ_ERROR() ) {
-	IntrFuncExprEnd( nr, 0UL );
+        IntrFuncExprEnd( nr, 0UL );
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( ! READ_ERROR() ) {
-	extern UInt IntrCoding;
+    else {
+        extern UInt IntrCoding;
 
-	CodeEnd(1);
-	IntrCoding--;
-	CurrLVars = currLVars;
-	PtrLVars  = PTR_BAG( CurrLVars );
-	PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        CodeEnd(1);
+        IntrCoding--;
+        CurrLVars = currLVars;
+        PtrLVars  = PTR_BAG( CurrLVars );
+        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
@@ -823,13 +823,13 @@ void ReadFuncExpr (
 **
 **      <Function>      := <Var> '->' <Expr>
 */
-void            ReadFuncExpr1 (
+void ReadFuncExpr1 (
     TypSymbolSet        follow )
 {
-    Obj                 nams;           /* list of local variables names   */
-    Obj                 name;           /* one local variable name         */
-    UInt                nrError;        /* copy of <NrError>               */
-    Bag                 currLVars;      /* copy of <CurrLVars>             */
+    volatile Obj        nams;           /* list of local variables names   */
+    volatile Obj        name;           /* one local variable name         */
+    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* make and push the new local variables list                          */
     nams = NEW_PLIST( T_PLIST, 1 );
@@ -856,18 +856,18 @@ void            ReadFuncExpr1 (
 
     /* end interpreting the function expression (with 1 statement)         */
     if ( ! READ_ERROR() ) {
-	IntrFuncExprEnd( 1UL, 1UL );
+        IntrFuncExprEnd( 1UL, 1UL );
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( ! READ_ERROR() ) {
-	extern UInt IntrCoding;
+    else {
+        extern UInt IntrCoding;
 
-	CodeEnd(1);
-	IntrCoding--;
-	CurrLVars = currLVars;
-	PtrLVars  = PTR_BAG( CurrLVars );
-	PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        CodeEnd(1);
+        IntrCoding--;
+        CurrLVars = currLVars;
+        PtrLVars  = PTR_BAG( CurrLVars );
+        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 
     /* pop the new local variables list                                    */
@@ -1022,8 +1022,8 @@ void ReadFactor (
     TypSymbolSet        follow,
     Char                mode )
 {
-    Int                 sign1;
-    Int                 sign2;
+    volatile Int        sign1;
+    volatile Int        sign2;
 
     /* { '+'|'-' }  leading sign                                           */
     sign1 = 0;
@@ -1082,7 +1082,7 @@ void ReadTerm (
     TypSymbolSet        follow,
     Char                mode )
 {
-    UInt                symbol;
+    volatile UInt       symbol;
 
     /* <Factor>                                                            */
     ReadFactor( follow, mode );
@@ -1094,10 +1094,10 @@ void ReadTerm (
         Match( Symbol, "*, /, or mod", follow );
         ReadFactor( follow, 'r' );
         if ( ! READ_ERROR() ) {
-	    if      ( symbol == S_MULT ) { IntrProd(); }
-	    else if ( symbol == S_DIV  ) { IntrQuo();  }
-	    else if ( symbol == S_MOD  ) { IntrMod();  }
-	}
+            if      ( symbol == S_MULT ) { IntrProd(); }
+            else if ( symbol == S_DIV  ) { IntrQuo();  }
+            else if ( symbol == S_MOD  ) { IntrMod();  }
+        }
     }
 }
 
@@ -1126,9 +1126,9 @@ void ReadAri (
         Match( Symbol, "+ or -", follow );
         ReadTerm( follow, 'r' );
         if ( ! READ_ERROR() ) {
-	    if      ( symbol == S_PLUS  ) { IntrSum();  }
-	    else if ( symbol == S_MINUS ) { IntrDiff(); }
-	}
+            if      ( symbol == S_PLUS  ) { IntrSum();  }
+            else if ( symbol == S_MINUS ) { IntrDiff(); }
+        }
     }
 }
 
@@ -1146,8 +1146,8 @@ void ReadRel (
     TypSymbolSet        follow,
     Char                mode )
 {
-    UInt                symbol;
-    UInt                isNot;
+    volatile UInt       symbol;
+    volatile UInt       isNot;
 
     /* { 'not' }                                                           */
     isNot = 0;
@@ -1165,14 +1165,14 @@ void ReadRel (
         Match( Symbol, "comparison operator", follow );
         ReadAri( follow, 'r' );
         if ( ! READ_ERROR() ) {
-	    if      ( symbol == S_EQ ) { IntrEq(); }
-	    else if ( symbol == S_NE ) { IntrNe(); }
-	    else if ( symbol == S_LT ) { IntrLt(); }
-	    else if ( symbol == S_GE ) { IntrGe(); }
-	    else if ( symbol == S_GT ) { IntrGt(); }
-	    else if ( symbol == S_LE ) { IntrLe(); }
-	    else if ( symbol == S_IN ) { IntrIn(); }
-	}
+            if      ( symbol == S_EQ ) { IntrEq(); }
+            else if ( symbol == S_NE ) { IntrNe(); }
+            else if ( symbol == S_LT ) { IntrLt(); }
+            else if ( symbol == S_GE ) { IntrGe(); }
+            else if ( symbol == S_GT ) { IntrGt(); }
+            else if ( symbol == S_LE ) { IntrLe(); }
+            else if ( symbol == S_IN ) { IntrIn(); }
+        }
     }
 
     /* interpret the not                                                   */
@@ -1265,7 +1265,7 @@ void ReadUnbind (
 void ReadInfo (
     TypSymbolSet        follow )
 {
-    UInt                narg;     /* numer of arguments to print (or not)  */
+    volatile UInt       narg;     /* numer of arguments to print (or not)  */
 
     if ( ! READ_ERROR() ) { IntrInfoBegin(); }
     Match( S_INFO, "Info", follow );
@@ -1335,8 +1335,8 @@ void ReadAssert (
 void ReadIf (
     TypSymbolSet        follow )
 {
-    UInt                nrb;            /* number of branches              */
-    UInt                nrs;            /* number of statements in a body  */
+    volatile UInt       nrb;            /* number of branches              */
+    volatile UInt       nrs;            /* number of statements in a body  */
 
     /* 'if' <Expr>  'then' <Statments>                                     */
     nrb = 0;
@@ -1391,9 +1391,9 @@ void ReadIf (
 void ReadFor (
     TypSymbolSet        follow )
 {
-    UInt                nrs;            /* number of statements in body    */
-    UInt                nrError;        /* copy of <NrError>               */
-    Bag                 currLVars;      /* copy of <CurrLVars>             */
+    volatile UInt       nrs;            /* number of statements in body    */
+    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
@@ -1420,18 +1420,18 @@ void ReadFor (
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
     if ( ! READ_ERROR() ) {
-	IntrForEnd();
+        IntrForEnd();
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
     else if ( ! READ_ERROR() ) {
-	extern UInt IntrCoding;
+        extern UInt IntrCoding;
 
-	CodeEnd(1);
-	IntrCoding--;
-	CurrLVars = currLVars;
-	PtrLVars  = PTR_BAG( CurrLVars );
-	PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        CodeEnd(1);
+        IntrCoding--;
+        CurrLVars = currLVars;
+        PtrLVars  = PTR_BAG( CurrLVars );
+        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
 
@@ -1450,9 +1450,9 @@ void ReadFor (
 void ReadWhile (
     TypSymbolSet        follow )
 {
-    UInt                nrs;            /* number of statements in body    */
-    UInt                nrError;        /* copy of <NrError>               */
-    Bag                 currLVars;      /* copy of <CurrLVars>             */
+    volatile UInt       nrs;            /* number of statements in body    */
+    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
@@ -1472,18 +1472,18 @@ void ReadWhile (
     /* 'od'                                                                */
     Match( S_OD, "od", follow );
     if ( ! READ_ERROR() ) {
-	IntrWhileEnd();
+        IntrWhileEnd();
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
     else if ( ! READ_ERROR() ) {
-	extern UInt IntrCoding;
+        extern UInt IntrCoding;
 
-	CodeEnd(1);
-	IntrCoding--;
-	CurrLVars = currLVars;
-	PtrLVars  = PTR_BAG( CurrLVars );
-	PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        CodeEnd(1);
+        IntrCoding--;
+        CurrLVars = currLVars;
+        PtrLVars  = PTR_BAG( CurrLVars );
+        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
 
@@ -1502,9 +1502,9 @@ void ReadWhile (
 void ReadRepeat (
     TypSymbolSet        follow )
 {
-    UInt                nrs;            /* number of statements in body    */
-    UInt                nrError;        /* copy of <NrError>               */
-    Bag                 currLVars;      /* copy of <CurrLVars>             */
+    volatile UInt       nrs;            /* number of statements in body    */
+    volatile UInt       nrError;        /* copy of <NrError>               */
+    volatile Bag        currLVars;      /* copy of <CurrLVars>             */
 
     /* remember the current variables in case of an error                  */
     currLVars = CurrLVars;
@@ -1523,18 +1523,18 @@ void ReadRepeat (
     Match( S_UNTIL, "until", EXPRBEGIN|follow );
     ReadExpr( follow, 'r' );
     if ( ! READ_ERROR() ) {
-	IntrRepeatEnd();
+        IntrRepeatEnd();
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
     else if ( ! READ_ERROR() ) {
-	extern UInt IntrCoding;
+        extern UInt IntrCoding;
 
-	CodeEnd(1);
-	IntrCoding--;
-	CurrLVars = currLVars;
-	PtrLVars  = PTR_BAG( CurrLVars );
-	PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
+        CodeEnd(1);
+        IntrCoding--;
+        CurrLVars = currLVars;
+        PtrLVars  = PTR_BAG( CurrLVars );
+        PtrBody   = (Stat*) PTR_BAG( BODY_FUNC( CURR_FUNC ) );
     }
 }
 
@@ -1716,12 +1716,12 @@ Obj ReadEvalResult;
 */
 UInt ReadEvalCommand ( void )
 {
-    UInt                type;
-    Obj                 stackNams;
-    UInt                countNams;
-    UInt                readTop;
-    UInt                readTilde;
-    UInt                currLHSGVar;
+    volatile UInt       type;
+    volatile Obj        stackNams;
+    volatile UInt       countNams;
+    volatile UInt       readTop;
+    volatile UInt       readTilde;
+    volatile UInt       currLHSGVar;
     jmp_buf             readJmpError;
 
     /* get the first symbol from the input                                 */
@@ -1748,31 +1748,31 @@ UInt ReadEvalCommand ( void )
     ReadTilde   = 0;
     CurrLHSGVar = 0;
     if ( ! READ_ERROR() ) {
-	IntrBegin();
+        IntrBegin();
 
-	/* read an expression or an assignment or a procedure call         */
-	if      (Symbol==S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
+        /* read an expression or an assignment or a procedure call         */
+        if      (Symbol==S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
 
-	/* otherwise read a statement                                      */
-	else if (Symbol==S_UNBIND ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_INFO   ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_ASSERT ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_IF     ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_FOR    ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_WHILE  ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_REPEAT ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_BREAK  ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_RETURN ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_TRYNEXT) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
-	else if (Symbol==S_QUIT   ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
+        /* otherwise read a statement                                      */
+        else if (Symbol==S_UNBIND ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_INFO   ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_ASSERT ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_IF     ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_FOR    ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_WHILE  ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_REPEAT ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_BREAK  ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_RETURN ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_TRYNEXT) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
+        else if (Symbol==S_QUIT   ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
 
-	/* otherwise try to read an expression                             */
-	else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+        /* otherwise try to read an expression                             */
+        else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
-	/* every statement must be terminated by a semicolon               */
-	if ( Symbol != S_SEMICOLON ) {
-	    SyntaxError( "; expected");
-	}
+        /* every statement must be terminated by a semicolon               */
+        if ( Symbol != S_SEMICOLON ) {
+            SyntaxError( "; expected");
+        }
     }
 
     /* end the interpreter                                                 */
@@ -1812,18 +1812,18 @@ UInt ReadEvalCommand ( void )
 */
 UInt ReadEvalFile ( void )
 {
-    UInt                type;
-    Obj                 stackNams;
-    UInt                countNams;
-    UInt                readTop;
-    UInt                readTilde;
-    UInt                currLHSGVar;
+    volatile UInt       type;
+    volatile Obj        stackNams;
+    volatile UInt       countNams;
+    volatile UInt       readTop;
+    volatile UInt       readTilde;
+    volatile UInt       currLHSGVar;
     jmp_buf             readJmpError;
-    UInt                nr;
-    Obj                 name;
-    Obj                 nams;
-    Int                 nloc;
-    Int                 i;
+    volatile UInt       nr;
+    volatile Obj        name;
+    volatile Obj        nams;
+    volatile Int        nloc;
+    volatile Int        i;
 
     /* get the first symbol from the input                                 */
     Match( Symbol, "", 0UL );
@@ -1892,15 +1892,15 @@ UInt ReadEvalFile ( void )
 
     /* fake the 'end;'                                                     */
     if ( ! READ_ERROR() ) {
-	IntrFuncExprEnd( nr, 0UL );
+        IntrFuncExprEnd( nr, 0UL );
     }
     else {
-	extern UInt IntrCoding;
-	Obj fexp;
-	CodeEnd(1);
-	IntrCoding--;
-	fexp = CURR_FUNC;
-	if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
+        extern UInt IntrCoding;
+        Obj fexp;
+        CodeEnd(1);
+        IntrCoding--;
+        fexp = CURR_FUNC;
+        if (fexp && ENVI_FUNC(fexp))  SWITCH_TO_OLD_LVARS(ENVI_FUNC(fexp));
     }
 
     /* end the interpreter                                                 */

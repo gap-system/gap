@@ -163,7 +163,7 @@ end;
 #############################################################################
 ##
 
-#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compX.g" files
+#F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##
 CreateCompletionFiles := function( arg )
     local   path,  input,  i,  com,  read,  j,  crc;

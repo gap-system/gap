@@ -1029,7 +1029,7 @@ SimpleLieAlgebraTypeW := function( n, F )
         x2:= eltlist[j];
 
         if x2[1][x1[2]] > 0 then
-          ex:=x1[1]+x2[1];
+          ex:= ShallowCopy( x1[1]+x2[1] );
           ex[x1[2]]:=ex[x1[2]]-1;
           cf:=One(F);
           for k in [1..Length( n )] do
@@ -1041,7 +1041,7 @@ SimpleLieAlgebraTypeW := function( n, F )
           fi;
         fi;
         if x1[1][x2[2]] > 0 then
-          ex:=x1[1]+x2[1];
+          ex:= ShallowCopy( x1[1]+x2[1] );
           ex[x2[2]]:=ex[x2[2]]-1;
           cf:=One(F);
           for k in [1..Length( n )] do
@@ -1489,7 +1489,8 @@ end;
 SimpleLieAlgebra := function( type, n, F )
 
     # Check the arguments.
-    if not ( IsString( type ) and IsInt( n ) and IsRing( F ) ) then
+    if not ( IsString( type ) and ( IsInt( n ) or IsList( n ) ) and 
+      IsRing( F ) ) then
       Error( "<type> must be a string, <n> an integer, <F> a ring" );
     fi;
 

@@ -273,7 +273,7 @@ function( v )
     local   depth;
 
     if 0 < Length(v)  then
-        depth := PositionNot( v, Zero(v[1]) );
+        depth := POSITION_NOT( v, Zero(v[1]) );
         if depth <= Length(v) then
             return Inverse(v[depth]) * v;
         else

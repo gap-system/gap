@@ -65,8 +65,8 @@ InstallMethod( Embedding,
 
     # compute embedding
     G   := info.groups[i];
-    gens := GeneratorsOfGroup( G );
-    imgs := GeneratorsOfGroup(D){[info.first[i] .. info.first[i+1]-1]};
+    gens := Pcgs( G );
+    imgs := Pcgs(D){[info.first[i] .. info.first[i+1]-1]};
     hom := GroupHomomorphismByImages( G, D, gens, imgs );
     SetIsInjective( hom, true );
 
@@ -95,9 +95,9 @@ InstallMethod( Projection,
 
     # compute projection
     G    := info.groups[i];
-    gens := GeneratorsOfGroup( D );
+    gens := Pcgs( D );
     imgs := Concatenation( List( [1..info.first[i]-1], x -> One( G ) ),
-                           GeneratorsOfGroup( G ),
+                           Pcgs( G ),
                            List( [info.first[i+1]..Length(gens)], x -> One(G)));
     hom := GroupHomomorphismByImages( D, G, gens, imgs );
     N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
@@ -166,7 +166,7 @@ end );
 #A Embedding
 ##
 InstallMethod( Embedding,
-        "of pc group and integer",
+        "of semidirect pc group and integer",
          true, 
          [ IsPcGroup and HasSemidirectProductInfo, IsInt and IsPosRat ], 
          0,
@@ -195,7 +195,7 @@ end );
 #A Projection
 ##
 InstallOtherMethod( Projection,
-        "of pc group and integer",
+        "of semidirect pc group and integer",
          true, 
          [ IsPcGroup and HasSemidirectProductInfo ],
          0,

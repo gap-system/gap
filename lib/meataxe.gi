@@ -2555,8 +2555,10 @@ local cf,u,i,j,f,cl,min,neu,sq,sb,fb,k,nmin;
   cl:=Sum(cf,i->i[2]); # composition length
   cf:=List(cf,i->i[1]);
   u:=[[]];
-  min:=Concatenation(List(cf,i->SMTX.MinimalSubGModules(i,m)));
-  u:=Concatenation(u,min);
+  if cl>1 then
+    min:=Concatenation(List(cf,i->SMTX.MinimalSubGModules(i,m)));
+    u:=Concatenation(u,min);
+  fi;
   for i in [2..cl-1] do 
     neu:=[];
     for j in min do

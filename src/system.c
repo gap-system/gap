@@ -150,6 +150,23 @@ extern char * fgets ( char *, int, FILE * );
 extern int    fputs ( SYS_CONST char *, FILE * );
 #endif
 
+#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
+# include       <signal.h>
+# ifdef SYS_HAS_SIG_T
+#  define SYS_SIG_T     SYS_HAS_SIG_T
+# else
+#  define SYS_SIG_T     void
+# endif
+# define SYS_SIGNAL_H
+typedef SYS_SIG_T       sig_handler_t ( int );
+#endif
+
+#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
+extern  sig_handler_t * signal ( int, sig_handler_t * );
+extern  int             getpid ( void );
+extern  int             kill ( int, int );
+#endif
+
 #ifdef __MWERKS__
 # define SYS_IS_MAC_MPW             1
 # define SYS_HAS_CALLOC_PROTO       1
@@ -1012,23 +1029,6 @@ extern  int             ioctl ( int, unsigned long, char * );
 
 struct sgttyb   syOld, syNew;           /* old and new terminal state      */
 struct tchars   syOldT, syNewT;         /* old and new special characters  */
-
-#ifndef SYS_SIGNAL_H                    /* signal handling functions       */
-# include       <signal.h>
-# ifdef SYS_HAS_SIG_T
-#  define SYS_SIG_T     SYS_HAS_SIG_T
-# else
-#  define SYS_SIG_T     void
-# endif
-# define SYS_SIGNAL_H
-typedef SYS_SIG_T       sig_handler_t ( int );
-#endif
-
-#ifndef SYS_HAS_SIGNAL_PROTO            /* ANSI/TRAD decl. from H&S 19.6   */
-extern  sig_handler_t * signal ( int, sig_handler_t * );
-extern  int             getpid ( void );
-extern  int             kill ( int, int );
-#endif
 
 #ifndef SYS_HAS_READ_PROTO              /* UNIX decl. from 'man'           */
 extern  int             read ( int, char *, int );

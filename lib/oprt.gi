@@ -903,7 +903,7 @@ OrbitStabilizerByGenerators := function( gens, oprs, d, opr )
 
     orb := [ d ];
     stb := [  ];
-    if not IsEmpty( gens )  then
+    if not IsEmpty( oprs )  then
         rep := [ One( gens[ 1 ] ) ];
         p := 1;
         while p <= Length( orb )  do
@@ -926,20 +926,24 @@ OrbitStabilizerByGenerators := function( gens, oprs, d, opr )
     return rec( orbit := orb, stabilizer := stb );
 end;
 
-OrbitStabilizerListByGenerators := function( gens, oprs, d, opr )
-    local   orb,  stb,  s,  rep,  r,  p,  q,  img,  sch,  i,  j;
-
+OrbitStabilizerListByGenerators := function( gens, oprs, d, eq, opr )
+    local   iden,  orb,  stb,  s,  rep,  r,  p,  q,  img,  sch,  i,  j;
+    
+    iden := Length( gens ) = 1  and  IsIdentical( gens[ 1 ], oprs );
+    if iden  then
+        gens := [  ];
+    fi;
     orb := [ d ];
     stb := List( gens, x -> [  ] );  Add( stb, [  ] );
     s := stb[ Length( stb ) ];
-    if not IsEmpty( gens[ 1 ] )  then
+    if not IsEmpty( oprs )  then
         rep := List( gens, x -> [One(x[1])] );  Add( rep, [One(oprs[1])] );
         r := rep[ Length( rep ) ];
         p := 1;
         while p <= Length( orb )  do
             for i  in [ 1 .. Length( oprs ) ]  do
                 img := opr( orb[ p ], oprs[ i ] );
-                q := Position( orb, img );
+                q := PositionProperty( orb, o -> eq( o, img ) );
                 if q = fail  then
                     Add( orb, img );
                     for j  in [ 1 .. Length( gens ) ]  do
@@ -959,6 +963,9 @@ OrbitStabilizerListByGenerators := function( gens, oprs, d, opr )
             od;
             p := p + 1;
         od;
+    fi;
+    if iden  then
+        Add( stb, stb[ 1 ] );
     fi;
     return rec( orbit := orb, stabilizers := stb );
 end;
@@ -2092,7 +2099,7 @@ InstallMethod( StabilizerOp,
         return PreImages( hom, StabilizerOp
                        ( ImagesSource( hom ), d, OnPoints ) );
     else
-        return StabilizerOp( G, d, opr );
+        return StabilizerOp( G, d, gens, oprs, opr );
     fi;
 end );
 
@@ -2109,10 +2116,11 @@ InstallOtherMethod( StabilizerOp,
         if opr = OnTuples  or  opr = OnPairs  then
             stb := G;
             for p  in d  do
-                stb := StabilizerOp( stb, p, OnPoints );
+                stb := StabilizerOp( stb, p, GeneratorsOfGroup( stb ),
+                               GeneratorsOfGroup( stb ), OnPoints );
             od;
         else
-            stb := StabilizerOp( G, d, opr );
+            stb := StabilizerOp( G, d, gens, oprs, opr );
         fi;
     else
         orbstab := OrbitStabilizerByGenerators( gens, oprs, d, opr );
@@ -2120,21 +2128,6 @@ InstallOtherMethod( StabilizerOp,
         if HasSize( G )  then
             SetSize( stb, Size( G ) / Length( orbstab.orbit ) );
         fi;
-    fi;
-    return stb;
-end );
-
-InstallOtherMethod( StabilizerOp,
-        "G, pnt, opr", true,
-        [ IsGroup, IsObject, IsFunction ], 0,
-    function( G, d, opr )
-    local   orbstab,  stb;
-    
-    orbstab := OrbitStabilizerByGenerators( GeneratorsOfGroup( G ),
-                       GeneratorsOfGroup( G ), d, opr );
-    stb := SubgroupNC( G, orbstab.stabilizer );
-    if HasSize( G )  then
-        SetSize( stb, Size( G ) / Length( orbstab.orbit ) );
     fi;
     return stb;
 end );
