@@ -102,7 +102,7 @@ awk -v "PRJ=$PRJFILE" \
          i = 1
          jj = 0
          file = ""
-         while ( getline < OUTNAM && $1 !~ /^LIBLIST/ ) {
+         while ( getline < OUTNAM && $1 !~ /^LIBLIST.firstnames/ ) {
              print $0;
          }
          system( "rm -f " NAMES )
@@ -414,8 +414,7 @@ awk -v "PRJ=$PRJFILE" \
 
          # They shall be sorted according to the ordering of {\GAP},
          # so we leave the sorting to {\GAP}.
-         print( "SortParallel( LIBLIST.allnames, LIBLIST.position );" )
-         print( "MakeImmutable( LIBLIST );\n" )
+         print( "SortParallel( LIBLIST.allnames, LIBLIST.position );\n" )
 
      }' $INFILES > $TMPFILE
 

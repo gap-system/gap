@@ -1712,9 +1712,9 @@ InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
     return v;
 end );
         
-InstallMethod( Position, true,
-        [ IsProjectiveSpaceEnumerator, IsObject, IsZeroCyc ], 0,
-    function( pspace, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsProjectiveSpaceEnumerator, IsObject ], 0,
+    function( pspace, elm )
     local   F,  sp,  f,  zero,  q,  n,  l,  num,  val,  i;
     
     f := pspace!.enumeratorField;

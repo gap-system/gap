@@ -1281,7 +1281,7 @@ void PrintFunction (
         else {
             SWITCH_TO_NEW_LVARS( func, NARG_FUNC(func), NLOC_FUNC(func),
                                  oldLVars );
-            PrintStat( BODY_FUNC(func) );
+            PrintStat( FIRST_STAT_CURR_FUNC );
             SWITCH_TO_OLD_LVARS( oldLVars );
         }
         Pr("%4<\n",0L,0L);
@@ -1743,15 +1743,15 @@ Obj FuncUNPROFILE_FUNCTION(
 void            InitCalls ()
 {
     /* install the marking functions                                       */
-    InfoBags[           T_FUNCTION      ].name = "function";
-    InitMarkFuncBags(   T_FUNCTION      , MarkAllSubBags );
+    InfoBags[         T_FUNCTION ].name = "function";
+    InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
     /* install the kind function                                           */
     InitCopyGVar( GVarName("KIND_FUNCTION"), &KIND_FUNCTION );
-    KindObjFuncs[       T_FUNCTION      ] = KindFunction;
+    KindObjFuncs[     T_FUNCTION ] = KindFunction;
 
     /* install the printer                                                 */
-    PrintObjFuncs[      T_FUNCTION      ] = PrintFunction;
+    PrintObjFuncs[    T_FUNCTION ] = PrintFunction;
 
     /* make and install the 'IS_FUNCTION' filter                           */
     IsFunctionFilt = NewFilterC( "IS_FUNCTION", 1L, "obj",
@@ -1767,6 +1767,7 @@ void            InitCalls ()
     CallFuncListOper = NewOperationC( "CALL_FUNC_LIST", 2L, "func, list",
                                        CallFuncListHandler );
     AssGVar( GVarName( "CALL_FUNC_LIST" ), CallFuncListOper );
+
 
     /* make and install the 'NAME_FUNC' etc. operations                    */
     NAME_FUNC_Oper = NewOperationC( "NAME_FUNCTION", 1L, "func",
@@ -1785,22 +1786,23 @@ void            InitCalls ()
                                      PROF_FUNC_Handler );
     AssGVar( GVarName( "PROF_FUNCTION" ), PROF_FUNC_Oper );
 
+
     /* make and install the profile functions                              */
     AssGVar( GVarName( "CLEAR_PROFILE_FUNCTION" ),
-             NewFunctionC( "CLEAR_PROFILE_FUNCTION", 1L, "function",
-             FuncCLEAR_PROFILE_FUNCTION ) );
+         NewFunctionC( "CLEAR_PROFILE_FUNCTION", 1L, "function",
+                    FuncCLEAR_PROFILE_FUNCTION ) );
 
     AssGVar( GVarName( "IS_PROFILED_FUNCTION" ),
-             NewFunctionC( "IS_PROFILED_FUNCTION", 1L, "function",
-             FuncIS_PROFILED_FUNCTION ) );
+         NewFunctionC( "IS_PROFILED_FUNCTION", 1L, "function",
+                    FuncIS_PROFILED_FUNCTION ) );
 
     AssGVar( GVarName( "PROFILE_FUNCTION" ),
-             NewFunctionC( "PROFILE_FUNCTION", 1L, "function",
-             FuncPROFILE_FUNCTION ) );
+         NewFunctionC( "PROFILE_FUNCTION", 1L, "function",
+                    FuncPROFILE_FUNCTION ) );
 
     AssGVar( GVarName( "UNPROFILE_FUNCTION" ),
-             NewFunctionC( "UNPROFILE_FUNCTION", 1L, "function",
-             FuncUNPROFILE_FUNCTION ) );
+         NewFunctionC( "UNPROFILE_FUNCTION", 1L, "function",
+                    FuncUNPROFILE_FUNCTION ) );
 }
 
 

@@ -43,7 +43,7 @@ function( G, H, gens, imgs )
 
     SetRange           ( hom, H );
     SetImagesSource    ( hom, U );
-    SetCoKernel        ( hom, TrivialSubgroup( H ) );
+    SetCoKernelOfMonoidGeneralMapping ( hom, TrivialSubgroup( H ) );
 
     return hom;
 end );
@@ -91,7 +91,7 @@ function( hom1, hom2 )
 
     SetRange           ( hom, H );
     SetImagesSource    ( hom, U );
-    SetCoKernel        ( hom, TrivialSubgroup( H ) );
+    SetCoKernelOfMonoidGeneralMapping( hom, TrivialSubgroup( H ) );
 
     return hom;
 end );
@@ -196,7 +196,8 @@ InversePcgs := function( hom )
         hom!.rangePcgsPreimages := imgsInv;
         
         # we have the kernel also
-        SetKernel( hom, Subgroup( Source(hom), gensKer ) );
+        SetKernelOfMonoidGeneralMapping( hom, SubgroupNC( Source(hom),
+                                                          gensKer ) );
   
         # and return
         return;
@@ -212,9 +213,9 @@ end;
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . . .  via images
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  via images
 ##
-InstallMethod( Kernel, 
+InstallMethod( KernelOfMonoidGeneralMapping, 
                "method for homs into pc group",
                true,
                [ IsToPcGroupHomomorphismByImages ],
@@ -251,8 +252,8 @@ function( hom )
     od;
 
     # add the kernel
-    kernel := Subgroup( Source( hom ), gensKer );
-    SetKernel( hom, kernel );
+    kernel := SubgroupNC( Source( hom ), gensKer );
+    SetKernelOfMonoidGeneralMapping( hom, kernel );
 
     # Return.
     return kernel;
@@ -304,7 +305,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
                         pcgsRange  := Pcgs( F ) ) );
     SetSource( hom, G );
     SetRange ( hom, F );
-    SetKernel( hom, N );
+    SetKernelOfMonoidGeneralMapping( hom, N );
     return hom;
 end );
 

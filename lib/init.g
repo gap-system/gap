@@ -319,6 +319,7 @@ ReadLib( "extrset.gd"  );
 ReadLib( "extuset.gd"  );
 
 ReadLib( "mapping.gd"  );
+ReadLib( "mapphomo.gd" );
 
 ReadLib( "magma.gd"    );
 ReadLib( "semigrp.gd"  );
@@ -387,6 +388,8 @@ ReadLib( "csetgrp.gd"  );
 ReadLib( "factgrp.gd"  );
 ReadLib( "grppcrep.gd" );
 
+ReadLib( "onecohom.gd" );
+
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gd"  );
 
@@ -397,14 +400,18 @@ ReadLib( "grplatt.gd"  );
 ReadLib( "grpmat.gd"   );
 ReadLib( "grpffmat.gd" );
 
+# files dealing with fp groups
+ReadLib( "grpfp.gd"    );
+
 # files dealing with trees and hash tables
 ReadLib( "hash.gd"     );
 
-# group library
-ReadGrp( "basic.gd"    );
-
 # files needed for Deep Thought
 ReadLib( "dt.g" );
+
+# group library
+ReadGrp( "basic.gd"    );
+ReadGrp( "perf.gd"     );
 
 #############################################################################
 ##
@@ -497,6 +504,7 @@ ReadLib( "grpfree.gi"  );
 ReadLib( "rws.gi"      );
 ReadLib( "rwspcclt.gi" );
 ReadLib( "rwspcsng.gi" );
+ReadLib( "rwspcftl.gi" );
 ReadLib( "rwsgrp.gi"   );
 ReadLib( "rwspcgrp.gi" );
 
@@ -540,6 +548,8 @@ ReadLib( "csetpc.gi"   );
 ReadLib( "factgrp.gi"  );
 ReadLib( "grppcrep.gi" );
 
+ReadLib( "onecohom.gi" );
+
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );
 
@@ -549,6 +559,10 @@ ReadLib( "grplatt.gi"  );
 # files dealing with matrix groups
 ReadLib( "grpmat.gi"   );
 ReadLib( "grpffmat.gi" );
+
+# files dealing with fp groups
+ReadLib( "grpfp.gi"    );
+#ReadLib( "grpfpelm.gi" );
 
 # files dealing with trees and hash tables
 ReadLib( "hash.gi"     );
@@ -564,6 +578,7 @@ ReadLib( "overload.g"  );
 ReadGrp( "basicpcg.gi" );
 ReadGrp( "basicprm.gi" );
 ReadGrp( "basicmat.gi" );
+ReadGrp( "perf.grp"    );
 
 
 #############################################################################
@@ -572,6 +587,16 @@ ReadGrp( "basicmat.gi" );
 ##
 ReadSmall( "smallgrp.g" );
 
+
+#############################################################################
+##
+#X  Read transitive groups library
+##
+if not ReadPath( TRANSNAME, "trans", ".grp","ReadTrans") then
+  Error(
+    "the transitive group library file trans.grp must exist and be readable"
+    );
+fi;
 
 #############################################################################
 ##

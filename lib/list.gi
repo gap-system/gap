@@ -698,6 +698,16 @@ InstallMethod( Position, true,
 
 #############################################################################
 ##
+#M  PositionCanonical( <list>, <obj> )  . . . . . . . . . . .  default method
+##
+InstallMethod( PositionCanonical, "fall back on `Position'", IsCollsElms,
+    [ IsList, IsObject ], 0,
+    function( list, obj )
+    return Position( list, obj, 0 );
+end );
+
+#############################################################################
+##
 #M  PositionNthOccurence( <list>, <obj>, <n> )  . . call `Position' <n> times
 ##
 InstallMethod( PositionNthOccurence,

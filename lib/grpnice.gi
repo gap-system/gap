@@ -144,7 +144,7 @@ GroupMethodByNiceMonomorphismCollElm( ClosureGroup,
 ##
 #M  CommutatorFactorGroup( <G> )  . . . .  commutator factor group of a group
 ##
-GroupMethodByNiceMonomorphism( CommutatorFactorGroup,
+SubgroupMethodByNiceMonomorphism( CommutatorFactorGroup,
     [ IsGroup ] );
 
 
@@ -176,7 +176,7 @@ GroupMethodByNiceMonomorphismCollColl( Core,
 ##
 #M  CoreInParent( <G> ) . . . . . . . . . . . . . . . . core of <G> in parent
 ##
-GroupMethodByNiceMonomorphism( CoreInParent,
+SubgroupMethodByNiceMonomorphism( CoreInParent,
     [ IsGroup and HasParent ] );
 
 
@@ -200,7 +200,7 @@ GroupSeriesMethodByNiceMonomorphism( DerivedSeriesOfGroup,
 ##
 #M  DerivedSubgroup( <G> )  . . . . . . . . . . . derived subgroup of a group
 ##
-GroupMethodByNiceMonomorphism( DerivedSubgroup,
+SubgroupMethodByNiceMonomorphism( DerivedSubgroup,
     [ IsGroup ] );
 
 
@@ -224,7 +224,7 @@ AttributeMethodByNiceMonomorphism( Exponent,
 ##
 #M  FittingSubgroup( <G> )  . . . . . . . . . . . Fitting subgroup of a group
 ##
-GroupMethodByNiceMonomorphism( FittingSubgroup,
+SubgroupMethodByNiceMonomorphism( FittingSubgroup,
     [ IsGroup ] );
 
 
@@ -232,7 +232,7 @@ GroupMethodByNiceMonomorphism( FittingSubgroup,
 ##
 #M  FrattiniSubgroup( <G> ) . . . . . . . . . .  Frattini subgroup of a group
 ##
-GroupMethodByNiceMonomorphism( FrattiniSubgroup,
+SubgroupMethodByNiceMonomorphism( FrattiniSubgroup,
     [ IsGroup ] );
 
 
@@ -408,7 +408,7 @@ GroupMethodByNiceMonomorphismCollColl( Normalizer,
 ##
 #M  NormalizerInParent( <G> ) . . . . . . . . . . normalizer of <G> in parent
 ##
-GroupMethodByNiceMonomorphism( NormalizerInParent, 
+SubgroupMethodByNiceMonomorphism( NormalizerInParent, 
     [ IsGroup and HasParent ] );
 
 
@@ -456,7 +456,7 @@ GroupMethodByNiceMonomorphismCollOther( PCoreOp,
 ##
 #M  RadicalGroup( <G> ) . . . . . . . . . . . . . . . . .  radical of a group
 ##
-GroupMethodByNiceMonomorphism( RadicalGroup,
+SubgroupMethodByNiceMonomorphism( RadicalGroup,
     [ IsGroup ] );
 
 
@@ -504,7 +504,7 @@ GroupMethodByNiceMonomorphismCollOther( SylowSubgroupOp,
 ##
 #M  TrivialSubgroup( <G> ) . . . . . . . . . . .  trivial subgroup of a group
 ##
-GroupMethodByNiceMonomorphism( TrivialSubgroup,
+SubgroupMethodByNiceMonomorphism( TrivialSubgroup,
     [ IsGroup ] );
 
 

@@ -20,6 +20,9 @@
 ##  This file also contains the general partition backtracking function.
 ##
 #H  $Log$
+#H  Revision 4.5  1997/01/20 17:00:26  htheisse
+#H  re-introduced `generators'
+#H
 #H  Revision 4.4  1996/12/19 09:59:10  htheisse
 #H  added revision lines
 #H
@@ -334,10 +337,8 @@ end;
 OrbitsPartition := function( G, Omega )
     if IsGroup( G )  then
         return Partition( Orbits( G, Omega ) );
-    elif IsBound( G.generators )  then
-        return Partition( OrbitsPerms( G.generators, Omega ) );
     else
-        return Partition( OrbitsPerms( G.labels{ G.genlabels }, Omega ) );
+        return Partition( OrbitsPerms( G.generators, Omega ) );
     fi;
 end;
 

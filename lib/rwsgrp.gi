@@ -83,9 +83,30 @@ end );
 #############################################################################
 ##
 
+#M  Comm( <elm-by-rws>, <elm-by-rws> )
+##
+InstallMethod( Comm,
+    "rws-element, rws-element",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByRws,
+      IsMultiplicativeElementWithInverseByRws ],
+    0,
+
+function( left, right )
+    local   fam;
+
+    fam := FamilyObj(left);
+    return ElementByRws( fam, ReducedComm( fam!.rewritingSystem,
+        UnderlyingElement(left), UnderlyingElement(right) ) );
+end );
+
+
+#############################################################################
+##
 #M  Inverse( <elm-by-rws> )
 ##
 InstallMethod( Inverse,
+    "rws-element",
     true,
     [ IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -101,9 +122,30 @@ end );
 
 #############################################################################
 ##
+#M  LeftQuotient( <elm-by-rws>, <elm-by-rws> )
+##
+InstallMethod( LeftQuotient,
+    "rws-element, rws-element",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByRws,
+      IsMultiplicativeElementWithInverseByRws ],
+    0,
+
+function( left, right )
+    local   fam;
+
+    fam := FamilyObj(left);
+    return ElementByRws( fam, ReducedLeftQuotient( fam!.rewritingSystem,
+        UnderlyingElement(left), UnderlyingElement(right) ) );
+end );
+
+
+#############################################################################
+##
 #M  One( <elm-by-rws> )
 ##
 InstallMethod( One,
+    "rws-element",
     true,
     [ IsMultiplicativeElementWithInverseByRws ],
     0,
@@ -118,9 +160,30 @@ end );
 
 #############################################################################
 ##
+#M  Quotient( <elm-by-rws>, <elm-by-rws> )
+##
+InstallMethod( \/,
+    "rws-element, rws-element",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByRws,
+      IsMultiplicativeElementWithInverseByRws ],
+    0,
+
+function( left, right )
+    local   fam;
+
+    fam := FamilyObj(left);
+    return ElementByRws( fam, ReducedQuotient( fam!.rewritingSystem,
+        UnderlyingElement(left), UnderlyingElement(right) ) );
+end );
+
+
+#############################################################################
+##
 #M  <elm-by-rws> * <elm-by-rws>
 ##
 InstallMethod( \*,
+    "rws-element * rws-element",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByRws,
       IsMultiplicativeElementWithInverseByRws ],
@@ -132,6 +195,46 @@ function( left, right )
     fam := FamilyObj(left);
     return ElementByRws( fam, ReducedProduct( fam!.rewritingSystem,
         UnderlyingElement(left), UnderlyingElement(right) ) );
+end );
+
+
+#############################################################################
+##
+#M  <elm-by-rws> ^ <elm-by-rws>
+##
+InstallMethod( \^,
+    "rws-element ^ rws-element",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByRws,
+      IsMultiplicativeElementWithInverseByRws ],
+    0,
+
+function( left, right )
+    local   fam;
+
+    fam := FamilyObj(left);
+    return ElementByRws( fam, ReducedConjugate( fam!.rewritingSystem,
+        UnderlyingElement(left), UnderlyingElement(right) ) );
+end );
+
+
+#############################################################################
+##
+#M  <elm-by-rws> ^ <int>
+##
+InstallMethod( \^,
+    "rws-element ^ int",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByRws,
+      IsInt ],
+    0,
+
+function( left, right )
+    local   fam;
+
+    fam := FamilyObj(left);
+    return ElementByRws( fam, ReducedPower( fam!.rewritingSystem,
+        UnderlyingElement(left), right ) );
 end );
 
 

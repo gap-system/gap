@@ -19,6 +19,7 @@ Revision.rwspcgrp_gi :=
 #M  IsConfluent( <pc-group> )
 ##
 InstallOtherMethod( IsConfluent,
+    "for pc group",
     true,
     [ IsPcGroup ],
     0,
@@ -132,14 +133,14 @@ function( rws )
       IsObject,
       IsElementsFamilyByRws );
 
-    # store the rewriting system
-    fam!.rewritingSystem := Immutable(rws);
-
     # create the default kind for the elements
     fam!.defaultKind := NewKind( fam, IsElementByRwsDefaultRep );
 
     # store the identity
-    SetOne( fam, ElementByRws( fam, ReducedOne(fam!.rewritingSystem) ) );
+    SetOne( fam, ElementByRws( fam, ReducedOne(rws) ) );
+
+    # store the rewriting system
+    fam!.rewritingSystem := Immutable(rws);
 
     # this family has a defining pcgs
     pcs := List( GeneratorsOfRws(rws), x -> ElementByRws(fam,x) );
@@ -202,6 +203,7 @@ end );
 #M  Inverse( <IsNBitsPcWordRep> )
 ##
 InstallMethod( Inverse,
+    "generic method for n bits pc word rep",
     true,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep ],
@@ -218,6 +220,7 @@ end );
 #M  Comm( <IsNBitsPcWordRep>, <IsNBitsPcWordRep> )
 ##
 InstallMethod( Comm,
+    "generic method for n bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
@@ -232,6 +235,7 @@ InstallMethod( Comm,
 #M  LeftQuotient( <IsNBitsPcWordRep>, <IsNBitsPcWordRep> )
 ##
 InstallMethod( LeftQuotient,
+    "generic method for n bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
@@ -246,6 +250,7 @@ InstallMethod( LeftQuotient,
 #M  <IsNBitsPcWordRep> / <IsNBitsPcWordRep>
 ##
 InstallMethod( \/,
+    "generic method for n bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
@@ -260,6 +265,7 @@ InstallMethod( \/,
 #M  <IsNBitsPcWordRep> * <IsNBitsPcWordRep>
 ##
 InstallMethod( \*,
+    "generic method for n bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 
@@ -345,6 +351,7 @@ end );
 #M  ElementByRws( <fam>, <elm> )
 ##
 InstallMethod( ElementByRws,
+    "using 8Bits_AssocWord",
     true,
     [ IsElementsFamilyBy8BitsSingleCollector,
       Is8BitsAssocWord ],
@@ -360,6 +367,7 @@ end );
 #M  UnderlyingElement( <Is8BitsPcWordRep> )
 ##
 InstallMethod( UnderlyingElement,
+    "using 8Bits_ExtRepOfObj",
     true,
     [ Is8BitsPcWordRep ],
     0,
@@ -377,6 +385,7 @@ end );
 #M  ExtRepOfObj( <Is8BitsPcWordRep> )
 ##
 InstallMethod( ExtRepOfObj,
+    "using 8Bits_ExtRepOfObj",
     true,
     [ Is8BitsPcWordRep ],
     0,
@@ -388,6 +397,7 @@ InstallMethod( ExtRepOfObj,
 #M  ObjByExtRep( <fam>, <elm> )
 ##
 InstallMethod( ObjByExtRep,
+    "using 8Bits_AssocWord",
     true,
     [ IsElementsFamilyBy8BitsSingleCollector,
       IsList ],
@@ -403,6 +413,7 @@ end );
 #M  <Is8BitsPcWordRep> = <Is8BitsPcWordRep>
 ##
 InstallMethod( \=,
+    "for 8 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep, 
@@ -417,6 +428,7 @@ InstallMethod( \=,
 #M  <Is8BitsPcWordRep> < <Is8BitsPcWordRep>
 ##
 InstallMethod( \<,
+    "method for 8 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is8BitsPcWordRep, 
@@ -502,6 +514,7 @@ end );
 #M  ElementByRws( <fam>, <elm> )
 ##
 InstallMethod( ElementByRws,
+    "using 16Bits_AssocWord",
     true,
     [ IsElementsFamilyBy16BitsSingleCollector,
       Is16BitsAssocWord ],
@@ -517,6 +530,7 @@ end );
 #M  UnderlyingElement( <Is16BitsPcWordRep> )
 ##
 InstallMethod( UnderlyingElement,
+    "using 16Bits_ExtRepOfObj",
     true,
     [ Is16BitsPcWordRep ],
     0,
@@ -534,6 +548,7 @@ end );
 #M  ExtRepOfObj( <Is16BitsPcWordRep> )
 ##
 InstallMethod( ExtRepOfObj,
+    "using 16Bits_ExtRepOfObj",
     true,
     [ Is16BitsPcWordRep ],
     0,
@@ -545,6 +560,7 @@ InstallMethod( ExtRepOfObj,
 #M  ObjByExtRep( <fam>, <elm> )
 ##
 InstallMethod( ObjByExtRep,
+    "using 16Bits_AssocWord",
     true,
     [ IsElementsFamilyBy16BitsSingleCollector,
       IsList ],
@@ -560,6 +576,7 @@ end );
 #M  <Is16BitsPcWordRep> = <Is16BitsPcWordRep>
 ##
 InstallMethod( \=,
+    "for 16 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep, 
@@ -574,6 +591,7 @@ InstallMethod( \=,
 #M  <Is16BitsPcWordRep> < <Is16BitsPcWordRep>
 ##
 InstallMethod( \<,
+    "for 8 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is16BitsPcWordRep, 
@@ -659,6 +677,7 @@ end );
 #M  ElementByRws( <fam>, <elm> )
 ##
 InstallMethod( ElementByRws,
+    "using 32Bits_AssocWord",
     true,
     [ IsElementsFamilyBy32BitsSingleCollector,
       Is32BitsAssocWord ],
@@ -674,6 +693,7 @@ end );
 #M  UnderlyingElement( <Is32BitsPcWordRep> )
 ##
 InstallMethod( UnderlyingElement,
+    "using 16Bits_ExtRepOfObj",
     true,
     [ Is32BitsPcWordRep ],
     0,
@@ -691,6 +711,7 @@ end );
 #M  ExtRepOfObj( <Is32BitsPcWordRep> )
 ##
 InstallMethod( ExtRepOfObj,
+    "using 32Bits_ExtRepOfObj",
     true,
     [ Is32BitsPcWordRep ],
     0,
@@ -702,6 +723,7 @@ InstallMethod( ExtRepOfObj,
 #M  ObjByExtRep( <fam>, <elm> )
 ##
 InstallMethod( ObjByExtRep,
+    "using 32Bits_AssocWord",
     true,
     [ IsElementsFamilyBy32BitsSingleCollector,
       IsList ],
@@ -717,6 +739,7 @@ end );
 #M  <Is32BitsPcWordRep> = <Is32BitsPcWordRep>
 ##
 InstallMethod( \=,
+    "for 32 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep, 
@@ -731,6 +754,7 @@ InstallMethod( \=,
 #M  <Is32BitsPcWordRep> < <Is32BitsPcWordRep>
 ##
 InstallMethod( \<,
+    "for 32 bits pc word rep",
     IsIdentical,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and Is32BitsPcWordRep, 
@@ -804,6 +828,7 @@ end;
 #M  PolycyclicFactorGroupByRelators( <efam>, <gens>, <rels> )
 ##
 InstallMethod( PolycyclicFactorGroupByRelators,
+    "generic method for family, generators, relators",
     true,
     [ IsFamily,
       IsList,
@@ -1038,6 +1063,7 @@ end );
 
 #############################################################################
 InstallMethod( PolycyclicFactorGroup,
+    "for free group, list using ' PolycyclicFactorGroupByRelators'",
     IsIdentical,
     [ IsFreeGroup,
       IsHomogeneousList ],
@@ -1053,6 +1079,7 @@ end );
 
 #############################################################################
 InstallMethod( PolycyclicFactorGroup,
+    "for free group, empty list using ' PolycyclicFactorGroupByRelators'",
     true,
     [ IsFreeGroup,
       IsList and IsEmpty ],

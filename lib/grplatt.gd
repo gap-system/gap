@@ -24,8 +24,6 @@ ConjugacyClassSubgroups := NewOperation("ConjugacyClassSubgroups",
 #T 1997/01/16 fceller was old 'NewConstructor'
 
 
-ConjugacyClassesSubgroups := NewAttribute("ConjugacyClassesSubgroups",IsGroup);
-
 IsLatticeSubgroupsRep := NewRepresentation("IsLatticeSubgroupsRep",
   IsComponentObjectRep and IsAttributeStoringRep,
   ["group","conjugacyClassesSubgroups"]);
@@ -35,14 +33,9 @@ IsLatticeSubgroupsRep := NewRepresentation("IsLatticeSubgroupsRep",
 #A  Zuppos(<G>) .  set of generators for cyclic subgroups of prime power size
 ##
 Zuppos := NewAttribute("Zuppos",IsGroup);
+SetZuppos := Setter(Zuppos);
+HasZuppos := Tester(Zuppos);
 
-
-#############################################################################
-##
-#A  RepresentativesPerfectSubgroups 
-##
-RepresentativesPerfectSubgroups :=
-  NewAttribute("RepresentativesPerfectSubgroups",IsGroup);
 
 #############################################################################
 ##

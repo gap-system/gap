@@ -68,6 +68,34 @@ Obj TRY_NEXT_METHOD;
 #define IS_OPERATION(func) \
     (TYPE_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
 
+Obj             CacheOper (
+    Obj                 oper,
+    UInt                i )
+{
+    Obj                 cache;
+    cache = CACHE_OPER( oper, i );
+    if ( cache == 0 ) {
+        cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
+        CACHE_OPER( oper, i ) = cache;
+        CHANGED_BAG( oper );
+    }
+    return cache;
+}
+
+Obj             MethsOper (
+    Obj                 oper,
+    UInt                i )
+{
+    Obj                 methods;
+    methods = METHS_OPER( oper, i );
+    if ( methods == 0 ) {
+        methods = NEW_PLIST( T_PLIST, 0 );
+        METHS_OPER( oper, i ) = methods;
+        CHANGED_BAG( oper );
+    }
+    return methods;
+}
+
 
 /****************************************************************************
 **
@@ -83,61 +111,61 @@ Obj TRY_NEXT_METHOD;
 **
 *F  DATA_FLAGS( <flags> ) . . . . . . . . . . . . . data area of a flags list
 */
-#define DATA_FLAGS(flags)       ((UInt*)(ADDR_OBJ(flags)+3))
+#define DATA_FLAGS(flags)               ((UInt*)(ADDR_OBJ(flags)+3))
 
 
 /****************************************************************************
 **
 *F  TRUES_FLAGS( <flags> )  . . . . . . . . . . . . . . trues of <flags> or 0
 */
-#define TRUES_FLAGS(flags)	    	(ADDR_OBJ(flags)[0])
+#define TRUES_FLAGS(flags)              (ADDR_OBJ(flags)[0])
 
 
 /****************************************************************************
 **
 *F  SET_TRUES_FLAGS( <flags>, <trues> ) . . . . . . . . . . . . . . set trues
 */
-#define SET_TRUES_FLAGS(flags,trues)	(ADDR_OBJ(flags)[0] = trues)
+#define SET_TRUES_FLAGS(flags,trues)    (ADDR_OBJ(flags)[0] = trues)
 
 
 /****************************************************************************
 **
 *F  HASH_FLAGS( <flags> ) . . . . . . . . . . . .  hash value of <flags> or 0
 */
-#define HASH_FLAGS(flags)	    	(ADDR_OBJ(flags)[1])
+#define HASH_FLAGS(flags)               (ADDR_OBJ(flags)[1])
 
 
 /****************************************************************************
 **
 *F  SET_HASH_FLAGS( <flags>, <hash> ) . . . . . . . . . . . . . . .  set hash
 */
-#define SET_HASH_FLAGS(flags,hash)  	(ADDR_OBJ(flags)[1] = hash)
+#define SET_HASH_FLAGS(flags,hash)      (ADDR_OBJ(flags)[1] = hash)
 
 
 /****************************************************************************
 **
 *F  LEN_FLAGS( <flags> )  . . . . . . . . . . . . . .  length of a flags list
 */
-#define LEN_FLAGS(list)		    	(INT_INTOBJ(ADDR_OBJ(list)[2]))
+#define LEN_FLAGS(list)                 (INT_INTOBJ(ADDR_OBJ(list)[2]))
 
 
 /****************************************************************************
 **
 *F  SET_LEN_FLAGS( <flags>, <len> ) . . . . .  set the length of a flags list
 */
-#define SET_LEN_FLAGS(flags,len)    	(ADDR_OBJ(flags)[2]=INTOBJ_INT(len))
+#define SET_LEN_FLAGS(flags,len)        (ADDR_OBJ(flags)[2]=INTOBJ_INT(len))
 
 
 /****************************************************************************
 **
 *F  NRB_FLAGS( <flags> )  . . . . . . . numberof basic blocks of a flags lits
 */
-#define NRB_FLAGS(flags)	((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
+#define NRB_FLAGS(flags)                ((LEN_FLAGS(flags)+BIPEB-1)/BIPEB)
 
 
 /****************************************************************************
 **
-*F  ELM_FLAGS( <flags>, <pos> )	. . . . . . . . . . . element of a flags list
+*F  ELM_FLAGS( <flags>, <pos> ) . . . . . . . . . . . element of a flags list
 */
 #define ELM_FLAGS(flags,pos) \
   (((UInt4*)DATA_FLAGS(flags))[((pos)-1)/BIPEB]&(1UL<<((pos)-1)%BIPEB) ? \
@@ -159,8 +187,8 @@ Obj TRY_NEXT_METHOD;
 
 *F  PrintFlags( <flags> )
 */
-void PrintFlags (
-    Obj			flags )
+void            PrintFlags (
+    Obj                 flags )
 {
     Pr( "<flag list>", 0L, 0L );
 }
@@ -191,10 +219,10 @@ Obj FuncLEN_FLAGS (
 {
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags) != T_FLAGS ) {
-	flags = ErrorReturnObj(
+        flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
-	    "you can return a list for <flags>" );
+            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            "you can return a list for <flags>" );
     }
 
     return INTOBJ_INT( LEN_FLAGS(flags) );
@@ -212,10 +240,10 @@ Obj FuncELM_FLAGS (
 {
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags) != T_FLAGS ) {
-	flags = ErrorReturnObj(
+        flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
-	    "you can return a list for <flags>" );
+            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            "you can return a list for <flags>" );
     }
 
     /* select and return the element                                       */
@@ -241,13 +269,13 @@ Obj FuncHASH_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags) != T_FLAGS ) {
-	flags = ErrorReturnObj(
+            flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
-	    "you can return a list for <flags>" );
+            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            "you can return a list for <flags>" );
     }
     if ( HASH_FLAGS(flags) != 0 ) {
-	return HASH_FLAGS(flags);
+        return HASH_FLAGS(flags);
     }
 
     /* do the real work                                                    */
@@ -283,19 +311,19 @@ Obj FuncIS_EQUAL_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags1) != T_FLAGS ) {
-	flags1 = ErrorReturnObj(
+        flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
-	    "you can return a list for <flags1>" );
+            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            "you can return a list for <flags1>" );
     }
     while ( TYPE_OBJ(flags2) != T_FLAGS ) {
-	flags2 = ErrorReturnObj(
+        flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
-	    "you can return a list for <flags2>" );
+            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
-	return True;
+        return True;
     }
 
     /* do the real work                                                    */
@@ -335,7 +363,7 @@ Obj FuncIS_EQUAL_FLAGS (
 **
 *F  FuncAND_FLAGS( <self>, <flags1>, <flags2> )
 */
-#define AND_FLAGS_HASH_SIZE	39733UL
+#define AND_FLAGS_HASH_SIZE             39733UL
 
 #ifdef AND_FLAGS_HASH_SIZE
 static Obj AndFlagsCache;
@@ -369,43 +397,43 @@ Obj FuncAND_FLAGS (
 #ifdef AND_FLAGS_HASH_SIZE
     hash = (31*INT_INTOBJ(flags1)+INT_INTOBJ(flags2)) % AND_FLAGS_HASH_SIZE;
     for ( i = 0;  i < 6;  i++ ) {
-	hash2 = 3 * ( (hash+31*i) % AND_FLAGS_HASH_SIZE ) + 1;
-	if ( ELM_PLIST(AndFlagsCache,hash2)   == flags1
+        hash2 = 3 * ( (hash+31*i) % AND_FLAGS_HASH_SIZE ) + 1;
+        if ( ELM_PLIST(AndFlagsCache,hash2)   == flags1
           && ELM_PLIST(AndFlagsCache,hash2+1) == flags2 )
-	{
+        {
 #ifdef COUNT_OPERS
-	    AndFlagsCacheHit++;
+            AndFlagsCacheHit++;
 #endif
-	    return ELM_PLIST(AndFlagsCache,hash2+2);
-	}
-	if ( ELM_PLIST(AndFlagsCache,hash2) == INTOBJ_INT(0) ) {
-	    break;
-	}
+            return ELM_PLIST(AndFlagsCache,hash2+2);
+        }
+        if ( ELM_PLIST(AndFlagsCache,hash2) == INTOBJ_INT(0) ) {
+            break;
+        }
     }
 #ifdef COUNT_OPERS
     AndFlagsCacheMiss++;
 #endif
     if ( i == 6 ) {
-	count = (count+1) % 6;
-	hash2 = 3 * ( (hash+31*count) % AND_FLAGS_HASH_SIZE ) + 1;
+        count = (count+1) % 6;
+        hash2 = 3 * ( (hash+31*count) % AND_FLAGS_HASH_SIZE ) + 1;
 #ifdef COUNT_OPERS
-	AndFlagsCacheLost++;
+        AndFlagsCacheLost++;
 #endif
     }
 #endif
 
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags1) != T_FLAGS ) {
-	flags1 = ErrorReturnObj(
+        flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
-	    "you can return a list for <flags1>" );
+            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            "you can return a list for <flags1>" );
     }
     while ( TYPE_OBJ(flags2) != T_FLAGS ) {
-	flags2 = ErrorReturnObj(
+        flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
-	    "you can return a list for <flags2>" );
+            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            "you can return a list for <flags2>" );
     }
 
     /* do the real work                                                    */
@@ -414,7 +442,7 @@ Obj FuncAND_FLAGS (
     len2   = LEN_FLAGS(flags2);
     size2  = NRB_FLAGS(flags2);
     if ( len2 == 0 ) {
-	return flags1;
+        return flags1;
     }
     if ( len1 < len2 ) {
         flags = NewBag( T_FLAGS, SIZE_OBJ(flags2) );
@@ -470,16 +498,16 @@ Obj FuncSUB_FLAGS (
 
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags1) != T_FLAGS ) {
-	flags1 = ErrorReturnObj(
+        flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
-	    "you can return a list for <flags1>" );
+            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            "you can return a list for <flags1>" );
     }
     while ( TYPE_OBJ(flags2) != T_FLAGS ) {
-	flags2 = ErrorReturnObj(
+        flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
-	    "you can return a list for <flags2>" );
+            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            "you can return a list for <flags2>" );
     }
 
     /* do the real work                                                    */
@@ -533,13 +561,13 @@ Obj FuncTRUES_FLAGS (
 
     /* get and check the first argument                                    */
     while ( TYPE_OBJ(flags) != T_FLAGS ) {
-	flags = ErrorReturnObj(
+        flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
-	    "you can return a list for <flags>" );
+            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            "you can return a list for <flags>" );
     }
     if ( TRUES_FLAGS(flags) != 0 ) {
-	return TRUES_FLAGS(flags);
+        return TRUES_FLAGS(flags);
     }
 
     /* compute the number of 'true'-s just as in 'FuncSizeBlist'            */
@@ -564,10 +592,10 @@ Obj FuncTRUES_FLAGS (
     len = LEN_FLAGS( flags );
     nn  = 1;
     for ( i = 1; nn <= n && i <= len;  i++ ) {
-	if ( ELM_FLAGS( flags, i ) == True ) {
-	    SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
-	    nn++;
-	}
+        if ( ELM_FLAGS( flags, i ) == True ) {
+            SET_ELM_PLIST( sub, nn, INTOBJ_INT(i) );
+            nn++;
+        }
     }
     CHANGED_BAG(sub);
 
@@ -596,23 +624,23 @@ Obj FuncIS_SUBSET_FLAGS (
     UInt *              ptr1;
     UInt *              ptr2;
     Int                 i;
-    Obj			trues;
+    Obj                 trues;
 
     /* do some trivial checks                                              */
     while ( TYPE_OBJ(flags1) != T_FLAGS ) {
-	flags1 = ErrorReturnObj(
+        flags1 = ErrorReturnObj(
             "<flags1> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
-	    "you can return a list for <flags1>" );
+            (Int)(InfoBags[TYPE_OBJ(flags1)].name), 0L,
+            "you can return a list for <flags1>" );
     }
     while ( TYPE_OBJ(flags2) != T_FLAGS ) {
-	flags2 = ErrorReturnObj(
+        flags2 = ErrorReturnObj(
             "<flags2> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
-	    "you can return a list for <flags2>" );
+            (Int)(InfoBags[TYPE_OBJ(flags2)].name), 0L,
+            "you can return a list for <flags2>" );
     }
     if ( flags1 == flags2 ) {
-	return True;
+        return True;
     }
 
     /* do the real work                                                    */
@@ -623,29 +651,29 @@ Obj FuncIS_SUBSET_FLAGS (
     /* first check the trues                                               */
     trues = TRUES_FLAGS(flags2);
     if ( trues != 0 ) {
-	len2 = LEN_PLIST(trues);
-	if ( TRUES_FLAGS(flags1) != 0 ) {
-	    if ( LEN_PLIST(TRUES_FLAGS(flags1)) < len2 ) {
+        len2 = LEN_PLIST(trues);
+        if ( TRUES_FLAGS(flags1) != 0 ) {
+            if ( LEN_PLIST(TRUES_FLAGS(flags1)) < len2 ) {
 #ifdef COUNT_OPERS
-		IsSubsetFlagsCalls1++;
+                IsSubsetFlagsCalls1++;
 #endif
-		return False;
-	    }
-	}
-	if ( len2 < 3 ) {
+                return False;
+            }
+        }
+        if ( len2 < 3 ) {
 #ifdef COUNT_OPERS
-	    IsSubsetFlagsCalls2++;
+            IsSubsetFlagsCalls2++;
 #endif
-	    if ( LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues,len2)) ) {
-		return False;
-	    }
-	    for ( i = len2;  0 < i;  i-- ) {
-	       if (ELM_FLAGS(flags1,INT_INTOBJ(ELM_PLIST(trues,i)))==False) {
-		   return False;
-	       }
-	    }
-	    return True;
-	}
+            if ( LEN_FLAGS(flags1) < INT_INTOBJ(ELM_PLIST(trues,len2)) ) {
+                return False;
+            }
+            for ( i = len2;  0 < i;  i-- ) {
+               if (ELM_FLAGS(flags1,INT_INTOBJ(ELM_PLIST(trues,i)))==False) {
+                   return False;
+               }
+            }
+            return True;
+        }
     }
 
     /* compare the bit lists                                               */
@@ -657,13 +685,13 @@ Obj FuncIS_SUBSET_FLAGS (
         for ( i = 1; i <= len1; i++ ) {
             if ( (*ptr1 & *ptr2) != *ptr2 ) {
                 return False;
-	    }
+            }
             ptr1++;  ptr2++;
         }
         for ( ; i <= len2; i++ ) {
             if ( 0 != *ptr2 ) {
                 return False;
-	    }
+            }
             ptr2++;
         }
     }
@@ -671,7 +699,7 @@ Obj FuncIS_SUBSET_FLAGS (
         for ( i = 1; i <= len2; i++ ) {
             if ( (*ptr1 & *ptr2) != *ptr2 ) {
                 return False;
-	    }
+            }
             ptr1++;  ptr2++;
         }
     }
@@ -697,10 +725,10 @@ Obj FuncSIZE_FLAGS (
 
     /* get and check the first argument                                    */
     while ( TYPE_OBJ(flags) != T_FLAGS ) {
-	flags = ErrorReturnObj(
+        flags = ErrorReturnObj(
             "<flags> must be a flags list (not a %s)",
-	    (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
-	    "you can return a list for <flags>" );
+            (Int)(InfoBags[TYPE_OBJ(flags)].name), 0L,
+            "you can return a list for <flags>" );
     }
 
     /* get the number of blocks and a pointer                              */
@@ -1410,7 +1438,7 @@ Obj FuncMethodsOperation (
         return 0;
     }
     n = INT_INTOBJ( narg );
-    meth = METHS_OPER( oper, n );
+    meth = MethsOper( oper, n );
     return meth == 0 ? Fail : meth;
 }
 
@@ -1437,7 +1465,7 @@ Obj FuncChangedMethodsOperation (
         return 0;
     }
     n = INT_INTOBJ( narg );
-    cache = ADDR_OBJ( CACHE_OPER( oper, n ) );
+    cache = ADDR_OBJ( CacheOper( oper, n ) );
     for ( i = 0;  i < SIZE_OBJ(CACHE_OPER(oper,n)) / sizeof(Obj);  i++ ) {
         cache[i] = 0;
     }
@@ -1530,11 +1558,11 @@ Obj DoOperation0Args (
     Int                 i;
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 0 ) );
     if ( cache[0] != 0 ) {
         method = cache[0];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -1543,13 +1571,13 @@ Obj DoOperation0Args (
         method = CALL_1ARGS( Method0Args, oper );
         cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
         cache[0] = method;
-	CHANGED_BAG(CACHE_OPER(oper,0));
+        CHANGED_BAG(CACHE_OPER(oper,0));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -1560,7 +1588,7 @@ Obj DoOperation0Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_2ARGS( NextMethod0Args, oper, INTOBJ_INT(i) );
             i++;
@@ -1591,29 +1619,29 @@ Obj DoOperation1Args (
     kind1 = KIND_OBJ( arg1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 1 ) );
     if      ( cache[2*0+1] == kind1 ) {
         method = cache[2*0+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*1+1] == kind1 ) {
         method = cache[2*1+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*2+1] == kind1 ) {
         method = cache[2*2+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*3+1] == kind1 ) {
         method = cache[2*3+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -1624,13 +1652,13 @@ Obj DoOperation1Args (
         cache[ 2*CacheIndex+1 ] = kind1;
         cache[ 2*CacheIndex+2 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,1));
+        CHANGED_BAG(CACHE_OPER(oper,1));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -1641,7 +1669,7 @@ Obj DoOperation1Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_3ARGS( NextMethod1Args, oper, INTOBJ_INT(i),
                                  kind1 );
@@ -1676,33 +1704,33 @@ Obj DoOperation2Args (
     kind2 = KIND_OBJ( arg2 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 2 ) );
     if      ( cache[3*0+1] == kind1
            && cache[3*0+2] == kind2 ) {
         method = cache[3*0+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*1+1] == kind1
            && cache[3*1+2] == kind2 ) {
         method = cache[3*1+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*2+1] == kind1
            && cache[3*2+2] == kind2 ) {
         method = cache[3*2+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*3+1] == kind1
            && cache[3*3+2] == kind2 ) {
         method = cache[3*3+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -1715,13 +1743,13 @@ Obj DoOperation2Args (
         cache[ 3*CacheIndex+2 ] = kind2;
         cache[ 3*CacheIndex+3 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,2));
+        CHANGED_BAG(CACHE_OPER(oper,2));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -1732,7 +1760,7 @@ Obj DoOperation2Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_4ARGS( NextMethod2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
@@ -1769,13 +1797,13 @@ Obj DoOperation3Args (
     kind3 = KIND_OBJ( arg3 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 3 ) );
     if      ( cache[4*0+1] == kind1
            && cache[4*0+2] == kind2
            && cache[4*0+3] == kind3 ) {
         method = cache[4*0+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*1+1] == kind1
@@ -1783,7 +1811,7 @@ Obj DoOperation3Args (
            && cache[4*1+3] == kind3 ) {
         method = cache[4*1+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*2+1] == kind1
@@ -1791,7 +1819,7 @@ Obj DoOperation3Args (
            && cache[4*2+3] == kind3 ) {
         method = cache[4*2+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*3+1] == kind1
@@ -1799,7 +1827,7 @@ Obj DoOperation3Args (
            && cache[4*3+3] == kind3 ) {
         method = cache[4*3+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -1813,13 +1841,13 @@ Obj DoOperation3Args (
         cache[ 4*CacheIndex+3 ] = kind3;
         cache[ 4*CacheIndex+4 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,3));
+        CHANGED_BAG(CACHE_OPER(oper,3));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -1830,7 +1858,7 @@ Obj DoOperation3Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_5ARGS( NextMethod3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
@@ -1870,14 +1898,14 @@ Obj DoOperation4Args (
     kind4 = KIND_OBJ( arg4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 4 ) );
     if      ( cache[5*0+1] == kind1
            && cache[5*0+2] == kind2
            && cache[5*0+3] == kind3
            && cache[5*0+4] == kind4 ) {
         method = cache[5*0+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*1+1] == kind1
@@ -1886,7 +1914,7 @@ Obj DoOperation4Args (
            && cache[5*1+4] == kind4 ) {
         method = cache[5*1+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*2+1] == kind1
@@ -1895,7 +1923,7 @@ Obj DoOperation4Args (
            && cache[5*2+4] == kind4 ) {
         method = cache[5*2+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*3+1] == kind1
@@ -1904,7 +1932,7 @@ Obj DoOperation4Args (
            && cache[5*3+4] == kind4 ) {
         method = cache[5*3+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -1919,13 +1947,13 @@ Obj DoOperation4Args (
         cache[ 5*CacheIndex+4 ] = kind4;
         cache[ 5*CacheIndex+5 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,4));
+        CHANGED_BAG(CACHE_OPER(oper,4));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -1936,7 +1964,7 @@ Obj DoOperation4Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_6ARGS( NextMethod4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
@@ -1981,7 +2009,7 @@ Obj DoOperation5Args (
     kind5 = KIND_OBJ( arg5 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 5 ) );
     if      ( cache[6*0+1] == kind1
            && cache[6*0+2] == kind2
            && cache[6*0+3] == kind3
@@ -1989,7 +2017,7 @@ Obj DoOperation5Args (
            && cache[6*0+5] == kind5 ) {
         method = cache[6*0+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*1+1] == kind1
@@ -1999,7 +2027,7 @@ Obj DoOperation5Args (
            && cache[6*1+5] == kind5 ) {
         method = cache[6*1+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*2+1] == kind1
@@ -2009,7 +2037,7 @@ Obj DoOperation5Args (
            && cache[6*2+5] == kind5 ) {
         method = cache[6*2+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*3+1] == kind1
@@ -2019,7 +2047,7 @@ Obj DoOperation5Args (
            && cache[6*3+5] == kind5 ) {
         method = cache[6*3+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -2035,13 +2063,13 @@ Obj DoOperation5Args (
         cache[ 6*CacheIndex+5 ] = kind5;
         cache[ 6*CacheIndex+6 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,5));
+        CHANGED_BAG(CACHE_OPER(oper,5));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2052,7 +2080,7 @@ Obj DoOperation5Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
@@ -2107,7 +2135,7 @@ Obj DoOperation6Args (
     kind6 = KIND_OBJ( arg6 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 6 ) );
     if      ( cache[7*0+1] == kind1
            && cache[7*0+2] == kind2
            && cache[7*0+3] == kind3
@@ -2116,7 +2144,7 @@ Obj DoOperation6Args (
            && cache[7*0+6] == kind6 ) {
         method = cache[7*0+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*1+1] == kind1
@@ -2127,7 +2155,7 @@ Obj DoOperation6Args (
            && cache[7*1+6] == kind6 ) {
         method = cache[7*1+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*2+1] == kind1
@@ -2138,7 +2166,7 @@ Obj DoOperation6Args (
            && cache[7*2+6] == kind6 ) {
         method = cache[7*2+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*3+1] == kind1
@@ -2149,7 +2177,7 @@ Obj DoOperation6Args (
            && cache[7*3+6] == kind6 ) {
         method = cache[7*3+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -2174,13 +2202,13 @@ Obj DoOperation6Args (
         cache[ 7*CacheIndex+6 ] = kind6;
         cache[ 7*CacheIndex+7 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,6));
+        CHANGED_BAG(CACHE_OPER(oper,6));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2191,7 +2219,7 @@ Obj DoOperation6Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
@@ -2240,7 +2268,7 @@ Obj DoVerboseOperation0Args (
     /* try to find one in the list of methods                              */
     method = CALL_1ARGS( VMethod0Args, oper );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2251,7 +2279,7 @@ Obj DoVerboseOperation0Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_2ARGS( NextVMethod0Args, oper, INTOBJ_INT(i) );
             i++;
@@ -2283,7 +2311,7 @@ Obj DoVerboseOperation1Args (
     /* try to find one in the list of methods                              */
     method = CALL_2ARGS( VMethod1Args, oper, kind1 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2294,7 +2322,7 @@ Obj DoVerboseOperation1Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_3ARGS( NextVMethod1Args, oper, INTOBJ_INT(i),
                                  kind1 );
@@ -2330,7 +2358,7 @@ Obj DoVerboseOperation2Args (
     /* try to find one in the list of methods                              */
     method = CALL_3ARGS( VMethod2Args, oper, kind1, kind2 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2341,7 +2369,7 @@ Obj DoVerboseOperation2Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_4ARGS( NextVMethod2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
@@ -2380,7 +2408,7 @@ Obj DoVerboseOperation3Args (
     /* try to find one in the list of methods                              */
     method = CALL_4ARGS( VMethod3Args, oper, kind1, kind2, kind3 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2391,7 +2419,7 @@ Obj DoVerboseOperation3Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_5ARGS( NextVMethod3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
@@ -2433,7 +2461,7 @@ Obj DoVerboseOperation4Args (
     /* try to find one in the list of methods                              */
     method = CALL_5ARGS( VMethod4Args, oper, kind1, kind2, kind3, kind4 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2444,7 +2472,7 @@ Obj DoVerboseOperation4Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_6ARGS( NextVMethod4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
@@ -2491,7 +2519,7 @@ Obj DoVerboseOperation5Args (
     method = CALL_6ARGS( VMethod5Args, oper, kind1, kind2, kind3, kind4,
                          kind5 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2502,7 +2530,7 @@ Obj DoVerboseOperation5Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
@@ -2568,7 +2596,7 @@ Obj DoVerboseOperation6Args (
     SET_ELM_PLIST( margs, 7, kind6 );
     method = CALL_XARGS( VMethod6Args, margs );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2579,7 +2607,7 @@ Obj DoVerboseOperation6Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
@@ -2626,9 +2654,11 @@ Obj NewOperation (
     ObjFunc             hdlr )
 {
     Obj                 oper;
+#ifdef  PREALLOCATE_TABLES
     Obj                 cache;
     Obj                 methods;
     UInt                i;
+#endif
 
     /* create the function                                                 */
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -2653,13 +2683,15 @@ Obj NewOperation (
     TESTR_FILT(oper) = False;
     
     /* create caches and methods lists                                     */
+#ifdef  PREALLOCATE_TABLES
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
         cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
-	CHANGED_BAG(oper);
+        CHANGED_BAG(oper);
     }
+#endif
 
     /* return operation                                                    */
     return oper;
@@ -2677,9 +2709,11 @@ Obj NewOperationC (
     ObjFunc             hdlr )
 {
     Obj                 oper;
+#ifdef  PREALLOCATE_TABLES
     Obj                 cache;
     Obj                 methods;
     UInt                i;
+#endif
 
     /* create the function                                                 */
     oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -2704,13 +2738,15 @@ Obj NewOperationC (
     TESTR_FILT(oper) = False;
     
     /* create caches and methods lists                                     */
+#ifdef  PREALLOCATE_TABLES
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
         cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
-	CHANGED_BAG(oper);
+        CHANGED_BAG(oper);
     }
+#endif
 
     /* return operation                                                    */
     return oper;
@@ -2793,11 +2829,11 @@ Obj DoConstructor0Args (
     Int                 i;
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 0 ) );
     if ( cache[0] != 0 ) {
         method = cache[0];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -2806,13 +2842,13 @@ Obj DoConstructor0Args (
         method = CALL_1ARGS( Constructor0Args, oper );
         cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
         cache[0] = method;
-	CHANGED_BAG(CACHE_OPER(oper,0));
+        CHANGED_BAG(CACHE_OPER(oper,0));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2823,7 +2859,7 @@ Obj DoConstructor0Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_2ARGS( NextConstructor0Args, oper, INTOBJ_INT(i) );
             i++;
@@ -2858,29 +2894,29 @@ Obj DoConstructor1Args (
     kind1 = FLAGS_FILT( arg1 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 1 ) );
     if      ( cache[2*0+1] == kind1 ) {
         method = cache[2*0+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*1+1] == kind1 ) {
         method = cache[2*1+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*2+1] == kind1 ) {
         method = cache[2*2+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[2*3+1] == kind1 ) {
         method = cache[2*3+2];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -2891,13 +2927,13 @@ Obj DoConstructor1Args (
         cache[ 2*CacheIndex+1 ] = kind1;
         cache[ 2*CacheIndex+2 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,1));
+        CHANGED_BAG(CACHE_OPER(oper,1));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -2908,7 +2944,7 @@ Obj DoConstructor1Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_3ARGS( NextConstructor1Args, oper, INTOBJ_INT(i),
                                  kind1 );
@@ -2947,33 +2983,33 @@ Obj DoConstructor2Args (
     kind2 = KIND_OBJ(   arg2 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 2 ) );
     if      ( cache[3*0+1] == kind1
            && cache[3*0+2] == kind2 ) {
         method = cache[3*0+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*1+1] == kind1
            && cache[3*1+2] == kind2 ) {
         method = cache[3*1+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*2+1] == kind1
            && cache[3*2+2] == kind2 ) {
         method = cache[3*2+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[3*3+1] == kind1
            && cache[3*3+2] == kind2 ) {
         method = cache[3*3+3];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -2986,13 +3022,13 @@ Obj DoConstructor2Args (
         cache[ 3*CacheIndex+2 ] = kind2;
         cache[ 3*CacheIndex+3 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,2));
+        CHANGED_BAG(CACHE_OPER(oper,2));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+    OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3003,7 +3039,7 @@ Obj DoConstructor2Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_4ARGS( NextConstructor2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
@@ -3044,13 +3080,13 @@ Obj DoConstructor3Args (
     kind3 = KIND_OBJ(   arg3 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 3 ) );
     if      ( cache[4*0+1] == kind1
            && cache[4*0+2] == kind2
            && cache[4*0+3] == kind3 ) {
         method = cache[4*0+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*1+1] == kind1
@@ -3058,7 +3094,7 @@ Obj DoConstructor3Args (
            && cache[4*1+3] == kind3 ) {
         method = cache[4*1+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*2+1] == kind1
@@ -3066,7 +3102,7 @@ Obj DoConstructor3Args (
            && cache[4*2+3] == kind3 ) {
         method = cache[4*2+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[4*3+1] == kind1
@@ -3074,7 +3110,7 @@ Obj DoConstructor3Args (
            && cache[4*3+3] == kind3 ) {
         method = cache[4*3+4];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -3088,13 +3124,13 @@ Obj DoConstructor3Args (
         cache[ 4*CacheIndex+3 ] = kind3;
         cache[ 4*CacheIndex+4 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,3));
+        CHANGED_BAG(CACHE_OPER(oper,3));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3105,7 +3141,7 @@ Obj DoConstructor3Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_5ARGS( NextConstructor3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
@@ -3149,14 +3185,14 @@ Obj DoConstructor4Args (
     kind4 = KIND_OBJ(   arg4 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 4 ) );
     if      ( cache[5*0+1] == kind1
            && cache[5*0+2] == kind2
            && cache[5*0+3] == kind3
            && cache[5*0+4] == kind4 ) {
         method = cache[5*0+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*1+1] == kind1
@@ -3165,7 +3201,7 @@ Obj DoConstructor4Args (
            && cache[5*1+4] == kind4 ) {
         method = cache[5*1+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*2+1] == kind1
@@ -3174,7 +3210,7 @@ Obj DoConstructor4Args (
            && cache[5*2+4] == kind4 ) {
         method = cache[5*2+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[5*3+1] == kind1
@@ -3183,7 +3219,7 @@ Obj DoConstructor4Args (
            && cache[5*3+4] == kind4 ) {
         method = cache[5*3+5];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -3198,13 +3234,13 @@ Obj DoConstructor4Args (
         cache[ 5*CacheIndex+4 ] = kind4;
         cache[ 5*CacheIndex+5 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,4));
+        CHANGED_BAG(CACHE_OPER(oper,4));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3215,7 +3251,7 @@ Obj DoConstructor4Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_6ARGS( NextConstructor4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
@@ -3264,7 +3300,7 @@ Obj DoConstructor5Args (
     kind5 = KIND_OBJ(   arg5 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 5 ) );
     if      ( cache[6*0+1] == kind1
            && cache[6*0+2] == kind2
            && cache[6*0+3] == kind3
@@ -3272,7 +3308,7 @@ Obj DoConstructor5Args (
            && cache[6*0+5] == kind5 ) {
         method = cache[6*0+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*1+1] == kind1
@@ -3282,7 +3318,7 @@ Obj DoConstructor5Args (
            && cache[6*1+5] == kind5 ) {
         method = cache[6*1+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*2+1] == kind1
@@ -3292,7 +3328,7 @@ Obj DoConstructor5Args (
            && cache[6*2+5] == kind5 ) {
         method = cache[6*2+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[6*3+1] == kind1
@@ -3302,7 +3338,7 @@ Obj DoConstructor5Args (
            && cache[6*3+5] == kind5 ) {
         method = cache[6*3+6];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -3318,13 +3354,13 @@ Obj DoConstructor5Args (
         cache[ 6*CacheIndex+5 ] = kind5;
         cache[ 6*CacheIndex+6 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,5));
+        CHANGED_BAG(CACHE_OPER(oper,5));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3335,7 +3371,7 @@ Obj DoConstructor5Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
@@ -3394,7 +3430,7 @@ Obj DoConstructor6Args (
     kind6 = KIND_OBJ(   arg6 );
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
+    cache = ADDR_OBJ( CacheOper( oper, 6 ) );
     if      ( cache[7*0+1] == kind1
            && cache[7*0+2] == kind2
            && cache[7*0+3] == kind3
@@ -3403,7 +3439,7 @@ Obj DoConstructor6Args (
            && cache[7*0+6] == kind6 ) {
         method = cache[7*0+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*1+1] == kind1
@@ -3414,7 +3450,7 @@ Obj DoConstructor6Args (
            && cache[7*1+6] == kind6 ) {
         method = cache[7*1+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*2+1] == kind1
@@ -3425,7 +3461,7 @@ Obj DoConstructor6Args (
            && cache[7*2+6] == kind6 ) {
         method = cache[7*2+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
     else if ( cache[7*3+1] == kind1
@@ -3436,7 +3472,7 @@ Obj DoConstructor6Args (
            && cache[7*3+6] == kind6 ) {
         method = cache[7*3+7];
 #ifdef COUNT_OPERS
-	OperationHit++;
+        OperationHit++;
 #endif
     }
 
@@ -3461,13 +3497,13 @@ Obj DoConstructor6Args (
         cache[ 7*CacheIndex+6 ] = kind6;
         cache[ 7*CacheIndex+7 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,6));
+        CHANGED_BAG(CACHE_OPER(oper,6));
 #ifdef COUNT_OPERS
-	OperationMiss++;
+        OperationMiss++;
 #endif
     }
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3478,7 +3514,7 @@ Obj DoConstructor6Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
@@ -3527,7 +3563,7 @@ Obj DoVerboseConstructor0Args (
     /* try to find one in the list of methods                              */
     method = CALL_1ARGS( VConstructor0Args, oper );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3538,7 +3574,7 @@ Obj DoVerboseConstructor0Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_2ARGS( NextVConstructor0Args, oper, INTOBJ_INT(i) );
             i++;
@@ -3574,7 +3610,7 @@ Obj DoVerboseConstructor1Args (
     /* try to find one in the list of methods                              */
     method = CALL_2ARGS( VConstructor1Args, oper, kind1 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3585,7 +3621,7 @@ Obj DoVerboseConstructor1Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_3ARGS( NextVConstructor1Args, oper, INTOBJ_INT(i),
                                  kind1 );
@@ -3625,7 +3661,7 @@ Obj DoVerboseConstructor2Args (
     /* try to find one in the list of methods                              */
     method = CALL_3ARGS( VConstructor2Args, oper, kind1, kind2 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3636,7 +3672,7 @@ Obj DoVerboseConstructor2Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_4ARGS( NextVConstructor2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
@@ -3679,7 +3715,7 @@ Obj DoVerboseConstructor3Args (
     /* try to find one in the list of methods                              */
     method = CALL_4ARGS( VConstructor3Args, oper, kind1, kind2, kind3 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3690,7 +3726,7 @@ Obj DoVerboseConstructor3Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_5ARGS( NextVConstructor3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
@@ -3736,7 +3772,7 @@ Obj DoVerboseConstructor4Args (
     /* try to find one in the list of methods                              */
     method = CALL_5ARGS( VConstructor4Args, oper, kind1, kind2, kind3, kind4 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3747,7 +3783,7 @@ Obj DoVerboseConstructor4Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             method = CALL_6ARGS( NextVConstructor4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
@@ -3798,7 +3834,7 @@ Obj DoVerboseConstructor5Args (
     method = CALL_6ARGS( VConstructor5Args, oper, kind1, kind2, kind3, kind4,
                          kind5 );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3809,7 +3845,7 @@ Obj DoVerboseConstructor5Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
@@ -3879,7 +3915,7 @@ Obj DoVerboseConstructor6Args (
     SET_ELM_PLIST( margs, 7, kind6 );
     method = CALL_XARGS( VConstructor6Args, margs );
     if ( method == 0 )  {
-    	ErrorQuit( "no method returned", 0L, 0L );
+        ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
@@ -3890,7 +3926,7 @@ Obj DoVerboseConstructor6Args (
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
 #ifdef COUNT_OPERS
-	    OperationNext++;
+            OperationNext++;
 #endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
@@ -3937,9 +3973,11 @@ Obj NewConstructor (
     ObjFunc             hdlr )
 {
     Obj                 oper;
+#ifdef  PREALLOCATE_TABLES
     Obj                 cache;
     Obj                 methods;
     UInt                i;
+#endif
 
     /* create the function                                                 */
     oper = NewFunctionT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -3963,14 +4001,16 @@ Obj NewConstructor (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
+#ifdef  PREALLOCATE_TABLES
     /* create caches and methods lists                                     */
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
         cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
-	CHANGED_BAG(oper);
+        CHANGED_BAG(oper);
     }
+#endif
 
     /* return constructor                                                  */
     return oper;
@@ -3988,9 +4028,11 @@ Obj NewConstructorC (
     ObjFunc             hdlr )
 {
     Obj                 oper;
+#ifdef  PREALLOCATE_TABLES
     Obj                 cache;
     Obj                 methods;
     UInt                i;
+#endif
 
     /* create the function                                                 */
     oper = NewFunctionCT( T_FUNCTION, SIZE_OPER, name, narg, nams, hdlr );
@@ -4014,14 +4056,16 @@ Obj NewConstructorC (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
+#ifdef  PREALLOCATE_TABLES
     /* create caches and methods lists                                     */
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
         cache = NEW_PLIST( T_PLIST, (i < 7 ? 4 * (i+1) : 4 * (1+1)) );
         CACHE_OPER( oper, i ) = cache;
-	CHANGED_BAG(oper);
+        CHANGED_BAG(oper);
     }
+#endif
 
     /* return constructor                                                  */
     return oper;
@@ -4503,22 +4547,22 @@ Obj DoSetProperty (
     /*N 1996/06/28 mschoene <self> is the <setter> here, not the <getter>! */
     /*N 1996/06/28 mschoene see hack below                                 */
     if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
-	flags = (val == True ? self : TESTR_FILT(self));
-	CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        flags = (val == True ? self : TESTR_FILT(self));
+        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
     else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
-	flags = (val == True ? self : TESTR_FILT(self));
-	CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        flags = (val == True ? self : TESTR_FILT(self));
+        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
     else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
-	flags = (val == True ? self : TESTR_FILT(self));
-	CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        flags = (val == True ? self : TESTR_FILT(self));
+        CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
     }
     else {
-	ErrorReturnVoid(
-	    "value cannot be set for internal objects",
-	    0L, 0L,
-	    "you can return without setting it" );
+        ErrorReturnVoid(
+            "value cannot be set for internal objects",
+            0L, 0L,
+            "you can return without setting it" );
     }
 
     /* return the value                                                    */
@@ -4558,18 +4602,18 @@ Obj DoProperty (
     
     /* set the value (but not for internal objects)                        */
     if ( ! IS_MUTABLE_OBJ(obj) ) {
-	if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
-	    flags = (val == True ? self : TESTR_FILT(self));
-	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-	}
-	else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
-	    flags = (val == True ? self : TESTR_FILT(self));
-	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-	}
-	else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
-	    flags = (val == True ? self : TESTR_FILT(self));
-	    CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
-	}
+        if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
+            flags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        }
+        else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
+            flags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        }
+        else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
+            flags = (val == True ? self : TESTR_FILT(self));
+            CALL_2ARGS( SET_FILTER_OBJ, obj, flags );
+        }
     }
 
     /* return the value                                                    */
@@ -4796,8 +4840,8 @@ Obj DoSetterFunction (
     Obj                 value )
 {
     if ( TYPE_OBJ(obj) != T_COMOBJ ) {
-	ErrorQuit( "<obj> must be an component object", 0L, 0L );
-	return 0L;
+        ErrorQuit( "<obj> must be an component object", 0L, 0L );
+        return 0L;
     }
     AssPRec( obj, INT_INTOBJ(BODY_FUNC(self)), CopyObj(value,0) );
     CALL_2ARGS( SET_FILTER_OBJ, obj, ENVI_FUNC(self) );
@@ -4836,8 +4880,8 @@ Obj DoGetterFunction (
     Obj                 obj )
 {
     if ( TYPE_OBJ(obj) != T_COMOBJ ) {
-	ErrorQuit( "<obj> must be an component object", 0L, 0L );
-	return 0L;
+        ErrorQuit( "<obj> must be an component object", 0L, 0L );
+        return 0L;
     }
     return ElmPRec( obj, INT_INTOBJ(BODY_FUNC(self)) );
 }
@@ -4868,25 +4912,25 @@ Obj FuncGetterFunction (
 */
 static void * TabSilentVerboseOperations[] =
 {
-    (void*) DoOperation0Args,	(void*) DoVerboseOperation0Args,
-    (void*) DoOperation1Args,	(void*) DoVerboseOperation1Args,
-    (void*) DoOperation2Args,	(void*) DoVerboseOperation2Args,
-    (void*) DoOperation3Args,	(void*) DoVerboseOperation3Args,
-    (void*) DoOperation4Args,	(void*) DoVerboseOperation4Args,
-    (void*) DoOperation5Args,	(void*) DoVerboseOperation5Args,
-    (void*) DoOperation6Args,	(void*) DoVerboseOperation6Args,
-    (void*) DoOperationXArgs,	(void*) DoVerboseOperationXArgs,
-    (void*) DoConstructor0Args,	(void*) DoVerboseConstructor0Args,
-    (void*) DoConstructor1Args,	(void*) DoVerboseConstructor1Args,
-    (void*) DoConstructor2Args,	(void*) DoVerboseConstructor2Args,
-    (void*) DoConstructor3Args,	(void*) DoVerboseConstructor3Args,
-    (void*) DoConstructor4Args,	(void*) DoVerboseConstructor4Args,
-    (void*) DoConstructor5Args,	(void*) DoVerboseConstructor5Args,
-    (void*) DoConstructor6Args,	(void*) DoVerboseConstructor6Args,
-    (void*) DoConstructorXArgs,	(void*) DoVerboseConstructorXArgs,
-    (void*) DoAttribute,	(void*) DoVerboseAttribute,
+    (void*) DoOperation0Args,   (void*) DoVerboseOperation0Args,
+    (void*) DoOperation1Args,   (void*) DoVerboseOperation1Args,
+    (void*) DoOperation2Args,   (void*) DoVerboseOperation2Args,
+    (void*) DoOperation3Args,   (void*) DoVerboseOperation3Args,
+    (void*) DoOperation4Args,   (void*) DoVerboseOperation4Args,
+    (void*) DoOperation5Args,   (void*) DoVerboseOperation5Args,
+    (void*) DoOperation6Args,   (void*) DoVerboseOperation6Args,
+    (void*) DoOperationXArgs,   (void*) DoVerboseOperationXArgs,
+    (void*) DoConstructor0Args, (void*) DoVerboseConstructor0Args,
+    (void*) DoConstructor1Args, (void*) DoVerboseConstructor1Args,
+    (void*) DoConstructor2Args, (void*) DoVerboseConstructor2Args,
+    (void*) DoConstructor3Args, (void*) DoVerboseConstructor3Args,
+    (void*) DoConstructor4Args, (void*) DoVerboseConstructor4Args,
+    (void*) DoConstructor5Args, (void*) DoVerboseConstructor5Args,
+    (void*) DoConstructor6Args, (void*) DoVerboseConstructor6Args,
+    (void*) DoConstructorXArgs, (void*) DoVerboseConstructorXArgs,
+    (void*) DoAttribute,        (void*) DoVerboseAttribute,
     (void*) DoMutableAttribute, (void*) DoVerboseMutableAttribute,
-    (void*) DoProperty,		(void*) DoVerboseProperty,
+    (void*) DoProperty,         (void*) DoVerboseProperty,
     0,                          0
 };
 
@@ -4901,61 +4945,61 @@ void ChangeDoOperations (
     /* be verbose                                                          */
     if ( verb ) {
 
-	/* catch infix operations                                          */
-	if ( oper == EqOper   )  { InstallEqObject(1);   }
-	if ( oper == LtOper   )  { InstallLtObject(1);   }
-	if ( oper == InOper   )  { InstallInObject(1);   }
-	if ( oper == SumOper  )  { InstallSumObject(1);  }
-	if ( oper == DiffOper )  { InstallDiffObject(1); }
-	if ( oper == ProdOper )  { InstallProdObject(1); }
-	if ( oper == QuoOper  )  { InstallQuoObject(1);  }
-	if ( oper == LQuoOper )  { InstallLQuoObject(1); }
-	if ( oper == PowOper  )  { InstallPowObject(1);  }
-	if ( oper == CommOper )  { InstallCommObject(1); }
-	if ( oper == ModOper  )  { InstallModObject(1);  }
-	if ( oper == InvAttr  )  { InstallInvObject(1);  }
-	if ( oper == OneAttr  )  { InstallOneObject(1);  }
-	if ( oper == AInvAttr )  { InstallAinvObject(1); }
-	if ( oper == ZeroAttr )  { InstallZeroObject(1); }
+        /* catch infix operations                                          */
+        if ( oper == EqOper   )  { InstallEqObject(1);   }
+        if ( oper == LtOper   )  { InstallLtObject(1);   }
+        if ( oper == InOper   )  { InstallInObject(1);   }
+        if ( oper == SumOper  )  { InstallSumObject(1);  }
+        if ( oper == DiffOper )  { InstallDiffObject(1); }
+        if ( oper == ProdOper )  { InstallProdObject(1); }
+        if ( oper == QuoOper  )  { InstallQuoObject(1);  }
+        if ( oper == LQuoOper )  { InstallLQuoObject(1); }
+        if ( oper == PowOper  )  { InstallPowObject(1);  }
+        if ( oper == CommOper )  { InstallCommObject(1); }
+        if ( oper == ModOper  )  { InstallModObject(1);  }
+        if ( oper == InvAttr  )  { InstallInvObject(1);  }
+        if ( oper == OneAttr  )  { InstallOneObject(1);  }
+        if ( oper == AInvAttr )  { InstallAinvObject(1); }
+        if ( oper == ZeroAttr )  { InstallZeroObject(1); }
 
-	/* switch do with do verbose                                       */
-	for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
-	    for ( i = 0;  i <= 7;  i++ ) {
-		if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-		    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j+1];
-		}
-	    }
-	}
+        /* switch do with do verbose                                       */
+        for ( j = 0;  TabSilentVerboseOperations[j];  j += 2 ) {
+            for ( i = 0;  i <= 7;  i++ ) {
+                if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
+                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j+1];
+                }
+            }
+        }
     }
 
     /* be silent                                                           */
     else {
 
-	/* catch infix operations                                          */
-	if ( oper == EqOper   )  { InstallEqObject(0);   }
-	if ( oper == LtOper   )  { InstallLtObject(0);   }
-	if ( oper == InOper   )  { InstallInObject(0);   }
-	if ( oper == SumOper  )  { InstallSumObject(0);  }
-	if ( oper == DiffOper )  { InstallDiffObject(0); }
-	if ( oper == ProdOper )  { InstallProdObject(0); }
-	if ( oper == QuoOper  )  { InstallQuoObject(0);  }
-	if ( oper == LQuoOper )  { InstallLQuoObject(0); }
-	if ( oper == PowOper  )  { InstallPowObject(0);  }
-	if ( oper == CommOper )  { InstallCommObject(0); }
-	if ( oper == ModOper  )  { InstallModObject(0); }
-	if ( oper == InvAttr  )  { InstallInvObject(0);  }
-	if ( oper == OneAttr  )  { InstallOneObject(0);  }
-	if ( oper == AInvAttr )  { InstallAinvObject(0); }
-	if ( oper == ZeroAttr )  { InstallZeroObject(0); }
+        /* catch infix operations                                          */
+        if ( oper == EqOper   )  { InstallEqObject(0);   }
+        if ( oper == LtOper   )  { InstallLtObject(0);   }
+        if ( oper == InOper   )  { InstallInObject(0);   }
+        if ( oper == SumOper  )  { InstallSumObject(0);  }
+        if ( oper == DiffOper )  { InstallDiffObject(0); }
+        if ( oper == ProdOper )  { InstallProdObject(0); }
+        if ( oper == QuoOper  )  { InstallQuoObject(0);  }
+        if ( oper == LQuoOper )  { InstallLQuoObject(0); }
+        if ( oper == PowOper  )  { InstallPowObject(0);  }
+        if ( oper == CommOper )  { InstallCommObject(0); }
+        if ( oper == ModOper  )  { InstallModObject(0); }
+        if ( oper == InvAttr  )  { InstallInvObject(0);  }
+        if ( oper == OneAttr  )  { InstallOneObject(0);  }
+        if ( oper == AInvAttr )  { InstallAinvObject(0); }
+        if ( oper == ZeroAttr )  { InstallZeroObject(0); }
 
-	/* switch do verbose with do                                       */
-	for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
-	    for ( i = 0;  i <= 7;  i++ ) {
-		if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
-		    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j-1];
-		}
-	    }
-	}
+        /* switch do verbose with do                                       */
+        for ( j = 1;  TabSilentVerboseOperations[j-1];  j += 2 ) {
+            for ( i = 0;  i <= 7;  i++ ) {
+                if ( HDLR_FUNC(oper,i) == TabSilentVerboseOperations[j] ) {
+                    HDLR_FUNC(oper,i) = TabSilentVerboseOperations[j-1];
+                }
+            }
+        }
     }
 }
 
@@ -5010,12 +5054,12 @@ Obj FuncUntraceMethods (
 *F  FuncOpersCache( <self> )
 */
 Obj FuncOpersCache (
-    Obj			self )
+    Obj                        self )
 {
     Obj                 list;
 
-    list = NEW_PLIST( IMMUTABLE_TYPE(T_PLIST), 8 );
-    SET_LEN_PLIST( list, 8 );
+    list = NEW_PLIST( IMMUTABLE_TYPE(T_PLIST), 9 );
+    SET_LEN_PLIST( list, 9 );
     SET_ELM_PLIST( list, 1, INTOBJ_INT(AndFlagsCacheHit)    );
     SET_ELM_PLIST( list, 2, INTOBJ_INT(AndFlagsCacheMiss)   );
     SET_ELM_PLIST( list, 3, INTOBJ_INT(AndFlagsCacheLost)   );
@@ -5024,6 +5068,7 @@ Obj FuncOpersCache (
     SET_ELM_PLIST( list, 6, INTOBJ_INT(IsSubsetFlagsCalls)  );
     SET_ELM_PLIST( list, 7, INTOBJ_INT(IsSubsetFlagsCalls1) );
     SET_ELM_PLIST( list, 8, INTOBJ_INT(IsSubsetFlagsCalls2) );
+    SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
 
     return list;
 }
@@ -5037,7 +5082,7 @@ Obj FuncOpersCache (
 */
 void InitOpers ( void )
 {
-    Int			i;
+    Int                        i;
 
     /* make the property blist functions                                   */
     AssGVar( GVarName( "AND_FLAGS" ),
@@ -5168,7 +5213,7 @@ void InitOpers ( void )
     AssGVar( GVarName( "NEW_MUTABLE_ATTRIBUTE" ), NewMutableAttributeFunc );
 
     NewPropertyFunc = NewFunctionC(
-	"NewProperty", 1L, "name", NewPropertyHandler );
+        "NewProperty", 1L, "name", NewPropertyHandler );
     AssGVar( GVarName( "NEW_PROPERTY" ), NewPropertyFunc );
 
     SetterFunctionFunc = NewFunctionC(
@@ -5285,7 +5330,7 @@ void InitOpers ( void )
     AssGVar( GVarName( "AND_FLAGS_CACHE" ), AndFlagsCache );
 
     for ( i = 1;  i <= 3*AND_FLAGS_HASH_SIZE;  i++ ) {
-	SET_ELM_PLIST( AndFlagsCache, i, INTOBJ_INT(0) );
+         SET_ELM_PLIST( AndFlagsCache, i, INTOBJ_INT(0) );
     }
 #endif
 

@@ -52,6 +52,19 @@ Revision.overload_g :=
 
 #############################################################################
 ##
+#O  CoKernel( <obj> )
+##
+##  is the cokernel of a monoid general mapping, an additive-magma-with-zero
+##  general mapping ...
+##
+CoKernel := NewOperation( "CoKernel", [ IsObject ] );
+
+InstallMethod( CoKernel, true, [ IsMonoidGeneralMapping ], 0,
+    CoKernelOfMonoidGeneralMapping );
+
+
+#############################################################################
+##
 #O  Degree( <obj> )
 ##
 ##  is the degree of a polynomial, a character ...
@@ -152,6 +165,19 @@ InstallMethod( IsSupersolvable, true, [ IsGroup ], 0, IsSupersolvableGroup );
 IsPerfect := NewOperation( "IsPerfect", [ IsObject ] );
 
 InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
+
+
+#############################################################################
+##
+#O  Kernel( <obj> )
+##
+##  is the kernel of a monoid general mapping, an additive-magma-with-zero
+##  general mapping, a character ...
+##
+Kernel := NewOperation( "Kernel", [ IsObject ] );
+
+InstallMethod( Kernel, true, [ IsMonoidGeneralMapping ], 0,
+    KernelOfMonoidGeneralMapping );
 
 
 #############################################################################

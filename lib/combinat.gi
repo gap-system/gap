@@ -814,7 +814,7 @@ end;
 PartitionsSetA := function ( set, n, m, o, part, i, j )
     local   parts, npart, l;
     l := Position(m,true);
-    if l = false  then
+    if l = fail  then
         part := List(part,ShallowCopy);
         parts := [ part ];
     else
@@ -849,7 +849,7 @@ PartitionsSetK := function ( set, n, m, o, k, part, i, j )
             fi;
         od;
         parts := [ part ];
-    elif l <> false  then
+    elif l <> fail  then
         npart := ShallowCopy(part);
         m[l] := false;
         npart[i+1] := [ set[l] ];
@@ -1603,3 +1603,6 @@ end;
 ##
 #E  combinat.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+
+
+

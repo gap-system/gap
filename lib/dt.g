@@ -317,7 +317,17 @@ calcreps2 := function(pr, max)
             max1 := Length(pr);
         fi;
         reps[i] := calcrepsn(i, avec, pr, max1);
-#        Print("Die Berechnung der Repraesentanten zu ",i," ist fertig","\n");
+    od;
+    max2 := 1;
+    for  i in [1..Length(reps)]  do
+        if  IsRecord(reps[i])  then
+            max2 := i;
+        fi;
+    od;
+    for  i in [1..max2]  do
+        if  not IsRecord(reps[i])  then
+            reps[i] := 1;
+        fi;
     od;
     return reps;
 end;

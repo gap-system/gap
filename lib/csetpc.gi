@@ -264,9 +264,9 @@ function(t,num)
   return t!.transversal[num];
 end );
 
-InstallMethod(Position,"RT",true,[IsRightTransversalPcGroup,IsObject,
-        IsZeroCyc],0,
-function(t,elm,zero)
+InstallMethod(PositionCanonical,"RT",true,
+  [IsRightTransversalPcGroup,IsObject],0,
+function(t,elm)
 local i;
   elm:=CanonicalRightCosetElement(t!.subgroup,elm);
   i:=1;

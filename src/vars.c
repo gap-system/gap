@@ -2953,7 +2953,7 @@ void            InitVars ( )
     InitGlobalBag( &CurrLVars );
     InitGlobalBag( &BottomLVars );
     BottomLVars = NewBag( T_LVARS, sizeof(Obj) );
-    CurrLVars = BottomLVars;
+    SWITCH_TO_OLD_LVARS( BottomLVars );
 }
 
 

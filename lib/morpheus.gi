@@ -277,9 +277,11 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
       if ok then
 	Info(InfoMorph,2,"found");
 	# do we want one or all?
-	if tall and tinj and tsur then
-	  #AH: Geht das gut ?
-	  SetFilterObj(imgs,IsMultiplicativeElementWithInverse);
+	if tall then
+	  if tinj and tsur then
+	    #AH: Geht das gut ?
+	    SetFilterObj(imgs,IsMultiplicativeElementWithInverse);
+	  fi;
 	  if rig then
 	    if not imgs in result then
 	      result:=Group(Concatenation(GeneratorsOfGroup(result),[imgs]),

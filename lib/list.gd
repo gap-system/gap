@@ -246,6 +246,14 @@ Position :=
 
 #############################################################################
 ##
+#O  PositionCanonical( <list>, <obj> )  . . . position of canonical associate
+##
+PositionCanonical :=
+    NewOperation( "PositionCanonical",
+        [ IsList, IsObject ] );
+
+#############################################################################
+##
 #O  PositionNthOccurence(<list>,<obj>,<n>)   pos. of <n>th occurence of <obj>
 ##
 PositionNthOccurence :=

@@ -10,6 +10,13 @@
 ##  intersections.
 ##
 ##  $Log$
+##  Revision 4.22  1997/01/22 16:56:09  htheisse
+##  fixed a grievous typo (`cellno' is now `lengths')
+##  removed a line which pruned too much (a bug)
+##
+##  Revision 4.21  1997/01/20 16:52:17  htheisse
+##  re-introduced `generators'
+##
 ##  Revision 4.20  1997/01/15 15:23:24  fceller
 ##  added 'SymmetricGroup' to basic group library,
 ##  changed 'IsSymmetricGroup' to 'IsNaturalSymmetricGroup'
@@ -1085,15 +1092,11 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                 # construction.
                 if wasTriv  then
 
-                    # In the subgroup case,  assign to <L> and <R> stabilizer
-                    # chains   without   `generators'   when the   R-base  is
-                    # complete.
+                    # In the subgroup case, assign to  <L> and <R> stabilizer
+                    # chains when the R-base is complete.
                     L := ListStabChain( DeepCopy( StabChainOp( L,
                                  rec( base := rbase.base,
                                    reduced := false ) ) ) );
-                    for dd  in L  do
-                        Unbind( dd.generators );
-                    od;
                     R := ShallowCopy( L );
                     
                     if image.perm <> true  then
@@ -1228,7 +1231,6 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
         max := orb[ d ][ m - Length( L[ d ].orbit ) + 1 ];
         if wasTriv  and  a > max  then
             m := m - 1;
-            del[ d ][ max ] := false;
             if m < Length( L[ d ].orbit )  then
                 return fail;
             fi;
@@ -1437,17 +1439,11 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
             od;
         fi;
         
-        # In the representative case, assign to <L> and <R> stabilizer chains
-        # without `generators'.
+        # In   the representative case,   assign  to <L>  and <R>  stabilizer
+        # chains.
         L := ListStabChain( DeepCopy( StabChainAttr( L ) ) );
-        for dd  in L  do
-            Unbind( dd.generators );
-        od;
         R := ListStabChain( DeepCopy( StabChainAttr( R ) ) );
-        for dd  in R  do
-            Unbind( dd.generators );
-        od;
-                    
+
     fi;
     
     org := [  ];  del := [  ];  orb := [  ];
@@ -1455,12 +1451,6 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     rep := PBEnumerate( 1, not repr );
     if not repr  then
         ReduceStabChain( L[ 1 ] );
-        R := L[ 1 ];
-        while IsBound( R.stabilizer )  do
-            R.generators := R.labels{ R.genlabels };
-            R := R.stabilizer;
-        od;
-        R.generators := R.labels{ R.genlabels };
         return GroupStabChain( G, L[ 1 ], true );
     else
         return rep;
@@ -1840,7 +1830,7 @@ NextLevelRegularGroups := function( P, rbase )
                 bh := PreImageWord( rbase.regorb.orbit[ 1 ], h );
                 i := P.cellno[ bh ];
                 Add( strat, [ yh, i, j ] );
-                if P.cellno[ j ] = 1  then
+                if P.lengths[ j ] = 1  then
                     p := FixpointCellNo( P, j );
                     ProcessFixpoint( rbase, p );
                     Add( strat, [ -p, j ] );

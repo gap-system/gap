@@ -4,40 +4,41 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.15  1996/12/19 09:58:54  htheisse
-#H  added revision lines
-#H
-##
 Revision.ghom_gd :=
     "@(#)$Id$";
 
-RespectsMultiplication := NewProperty( "RespectsMultiplication",
-                                  IsGeneralMapping );
-SetRespectsMultiplication := Setter( RespectsMultiplication );
-HasRespectsMultiplication := Tester( RespectsMultiplication );
 
-RespectsOne := NewProperty( "RespectsOne", IsGeneralMapping );
-SetRespectsOne := Setter( RespectsOne );
-HasRespectsOne := Tester( RespectsOne );
+#############################################################################
+##
+#O  GroupGeneralMappingByImages( <G>, <H>, <gensG>, <gensH> )
+##
+GroupGeneralMappingByImages := NewOperation( "GroupGeneralMappingByImages",
+    [ IsGroup, IsGroup, IsList, IsList ] );
 
-RespectsInverses := NewProperty( "RespectsInverses", IsGeneralMapping );
-SetRespectsInverses := Setter( RespectsInverses );
-HasRespectsInverses := Tester( RespectsInverses );
 
-IsMonoidGeneralMapping := IsGeneralMapping
-                          and RespectsMultiplication and RespectsOne;
-IsGroupGeneralMapping := IsMonoidGeneralMapping and RespectsInverses;
-IsMonoidHomomorphism := IsMapping and RespectsMultiplication and RespectsOne;
-IsGroupHomomorphism := IsMonoidHomomorphism and RespectsInverses;
+#############################################################################
+##
+#O  GroupHomomorphismByImages( <G>, <H>, <gensG>, <gensH> )
+##
+GroupHomomorphismByImages := NewOperation( "GroupHomomorphismByImages",
+    [ IsGroup, IsGroup, IsList, IsList ] );
 
-Kernel := NewAttribute( "Kernel", IsMonoidGeneralMapping );
-SetKernel := Setter( Kernel );
-HasKernel := Tester( Kernel );
 
-CoKernel := NewAttribute( "CoKernel", IsMonoidGeneralMapping );
-SetCoKernel := Setter( CoKernel );
-HasCoKernel := Tester( CoKernel );
+#############################################################################
+##
+#O  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . map onto factor group
+##
+NaturalHomomorphismByNormalSubgroup := NewOperation(
+    "NaturalHomomorphismByNormalSubgroup", [ IsGroup, IsGroup ] );
+
+
+#############################################################################
+##
+#A  NaturalHomomorphismByNormalSubgroupInParent( <N> )  .  if G is the parent
+##
+NaturalHomomorphismByNormalSubgroupInParent := NewAttribute(
+    "NaturalHomomorphismByNormalSubgroupInParent", IsGroup );
+
 
 IsGroupGeneralMappingByImages := NewRepresentation
     ( "IsGroupGeneralMappingByImages",
@@ -57,31 +58,12 @@ AsGroupGeneralMappingByImages := NewAttribute( "AsGroupGeneralMappingByImages",
 SetAsGroupGeneralMappingByImages := Setter( AsGroupGeneralMappingByImages );
 HasAsGroupGeneralMappingByImages := Tester( AsGroupGeneralMappingByImages );
 
-GroupGeneralMappingByImages := NewOperation( "GroupGeneralMappingByImages",
-    [ IsGroup, IsGroup, IsList, IsList ] );
-GroupHomomorphismByImages := NewOperation( "GroupHomomorphismByImages",
-    [ IsGroup, IsGroup, IsList, IsList ] );
-
 InnerAutomorphism := NewOperation( "InnerAutomorphism",
     [ IsGroup, IsMultiplicativeElementWithInverse ] );
 
 IsInnerAutomorphismRep := NewRepresentation( "IsInnerAutomorphismRep",
     IsGroupHomomorphism and IsBijective and IsAttributeStoringRep
     and IsMultiplicativeElementWithInverse, [ "conjugator" ] );
-
-#############################################################################
-##
-#O  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . map onto factor group
-##
-NaturalHomomorphismByNormalSubgroup := NewOperation
-    ( "NaturalHomomorphismByNormalSubgroup", [ IsGroup, IsGroup ] );
-
-#############################################################################
-##
-#A  NaturalHomomorphismByNormalSubgroupInParent( <N> )  .  if G is the parent
-##
-NaturalHomomorphismByNormalSubgroupInParent := NewAttribute
-    ( "NaturalHomomorphismByNormalSubgroupInParent", IsGroup );
 
 #############################################################################
 ##
@@ -133,4 +115,5 @@ GroupIsomorphismByFunctions := NewOperationArgs( "GroupIsomorphismByFunctions" )
 
 #############################################################################
 ##
-#E  12345678.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  ghom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+

@@ -34,6 +34,15 @@ IsSubsetInducedPcgsRep := NewRepresentation(
 
 #############################################################################
 ##
+#R  IsTailInducedPcgsRep
+##
+IsTailInducedPcgsRep := NewRepresentation(
+    "IsTailInducedPcgsRep",
+    IsSubsetInducedPcgsRep, [] );
+
+
+#############################################################################
+##
 
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
@@ -48,15 +57,19 @@ InstallMethod( InducedPcgsByPcSequenceNC,
 
 function( pcgs, pcs )
     local  efam, filter,  igs;
-
+    
     # check which filter to use
-    filter := IsInducedPcgs and IsInducedPcgsRep and IsTrivial;
+    filter := IsTrivial;
 
     # get family
     efam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
+    igs := PcgsByPcSequenceCons(
+               IsPcgsDefaultRep,
+               IsPcgs and IsInducedPcgs and IsInducedPcgsRep,
+               efam,
+               pcs );
 
     # we know the relative orders
     SetIsPrimeOrdersPcgs( igs, true );
@@ -85,15 +98,28 @@ function( pcgs, pcs )
     local efam,  filter,  igs,  tmp,  i;
 
     # check which filter to use
-    filter := IsInducedPcgsRep;
+    filter := IsPcgs and IsInducedPcgsRep;
     efam   := FamilyObj( OneOfPcgs( pcgs ) );
-    if IsSubset( List(pcgs,x->x), pcs )  then
-        filter := IsSubsetInducedPcgsRep;
+    if ForAll( pcs, x -> x in pcgs )  then
+        if 0 < Length(pcgs) and pcgs[Length(pcgs)-Length(pcs)+1]=pcs[1]  then
+            filter := IsTailInducedPcgsRep;
+        else
+            filter := IsSubsetInducedPcgsRep;
+        fi;
     fi;
     filter := filter and IsInducedPcgs;
 
     # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
+    igs := PcgsByPcSequenceCons(
+               IsPcgsDefaultRep,
+               filter,
+               efam,
+               pcs );
+
+    # store tail start
+    if IsTailInducedPcgsRep(igs)  then
+        igs!.tailStart := DepthOfPcElement( pcgs, pcs[1] );
+    fi;
 
     # store the parent
     SetParentPcgs( igs, pcgs );
@@ -546,9 +572,128 @@ end );
 #############################################################################
 ##
 
+#F  HOMOMORPHIC_IGS( <pcgs>, <list> )
+##
+HOMOMORPHIC_IGS := function( arg )
+    local   pcgs,  list,  id,  pag,  g,  dg,  obj;
+
+    pcgs := arg[1];
+    list := arg[2];
+    id   := OneOfPcgs(pcgs);
+    pag  := [];
+    if Length(arg) = 2  then
+        for g  in Reversed(list)  do
+            dg := DepthOfPcElement( pcgs, g );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    elif IsFunction(arg[3])  then
+        obj := arg[3];
+        for g  in Reversed(list)  do
+            dg := DepthOfPcElement( pcgs, obj(g) );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    else
+        obj := arg[3];
+        for g  in Reversed(list)  do
+            dg := DepthOfPcElement( pcgs, g^obj );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    fi;
+    return Compacted(pag);
+
+end;
+
+
+#############################################################################
+##
+#F  HOMOMORPHIC_IGS_MOD( <pcgs>, <list>, <mod> )
+##
+HOMOMORPHIC_IGS_MOD := function( arg )
+    local   pcgs,  list,  modulo,  id,  pag,  g,  dg,  obj;
+
+    pcgs := arg[1];
+    list := arg[2];
+    if Length(arg) = 3  then
+        modulo := arg[3];
+        id  := OneOfPcgs(pcgs);
+        pag := [];
+        for g  in Reversed(list)  do
+            g  := CanonicalPcElement( modulo, g );
+            dg := DepthOfPcElement( pcgs, g );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                g  := CanonicalPcElement( modulo, g );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    elif IsFunction(arg[3])  then
+        modulo := arg[4];
+        obj := arg[3];
+        id  := OneOfPcgs(pcgs);
+        pag := [];
+        for g  in Reversed(list)  do
+            g  := CanonicalPcElement( modulo, obj(g) );
+            dg := DepthOfPcElement( pcgs, g );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                g  := CanonicalPcElement( modulo, g );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    else
+        modulo := arg[4];
+        obj := arg[3];
+        id  := OneOfPcgs(pcgs);
+        pag := [];
+        for g  in Reversed(list)  do
+            g  := CanonicalPcElement( modulo, g^obj );
+            dg := DepthOfPcElement( pcgs, g );
+            while g <> id  and IsBound(pag[dg])  do
+                g  := ReducedPcElement( pcgs, g, pag[dg] );
+                g  := CanonicalPcElement( modulo, g );
+                dg := DepthOfPcElement( pcgs, g );
+            od;
+            if g <> id  then
+                pag[dg] := g;
+            fi;
+        od;
+    fi;
+    return Compacted(pag);
+
+end;
+
+
+#############################################################################
+##
+
 #M  CanonicalPcgs( <igs> )
 ##
 InstallMethod( CanonicalPcgs,
+    "induced prime orders pcgs",
     true,
     [ IsInducedPcgs and IsPrimeOrdersPcgs ],
     0,
@@ -588,9 +733,22 @@ end );
 
 #############################################################################
 ##
+#M  CanonicalPcgs( <cgs> )
+##
+InstallMethod( CanonicalPcgs,
+    "canonical pcgs",
+    true,
+    [ IsInducedPcgs and IsCanonicalPcgs ],
+    SUM_FLAGS,
+    x -> x );
+
+
+#############################################################################
+##
 #M  HomomorphicCanonicalPcgs( <pcgs>, <imgs> )
 ##
 InstallMethod( HomomorphicCanonicalPcgs,
+    "pcgs, list",
     true,
     [ IsPcgs,
       IsList ],
@@ -606,6 +764,7 @@ end );
 #M  HomomorphicCanonicalPcgs( <pcgs>, <imgs>, <obj> )
 ##
 InstallOtherMethod( HomomorphicCanonicalPcgs,
+    "pcgs, list, object",
     true,
     [ IsPcgs,
       IsList,
@@ -644,21 +803,9 @@ InstallMethod( HomomorphicInducedPcgs,
     0,
 
 function( pcgs, imgs )
-    local   id,  pag,  g,  dg;
-
-    id  := OneOfPcgs(pcgs);
-    pag := [];
-    for g  in Reversed(imgs)  do
-        dg := DepthOfPcElement( pcgs, g );
-        while g <> id  and IsBound(pag[dg])  do
-            g  := ReducedPcElement( pcgs, g, pag[dg] );
-            dg := DepthOfPcElement( pcgs, g );
-        od;
-        if g <> id  then
-            pag[dg] := g;
-        fi;
-    od;
-    return InducedPcgsByPcSequenceNC( pcgs, Compacted(pag) );
+    return InducedPcgsByPcSequenceNC(
+        pcgs, 
+        HOMOMORPHIC_IGS( pcgs, imgs ) );
 end );
 
 
@@ -686,22 +833,9 @@ InstallOtherMethod( HomomorphicInducedPcgs,
     0,
 
 function( pcgs, imgs, func )
-    local   id,  pag,  g,  dg;
-
-    id  := OneOfPcgs(pcgs);
-    pag := [];
-    for g  in Reversed(imgs)  do
-        g  := func(g);
-        dg := DepthOfPcElement( pcgs, g );
-        while g <> id  and IsBound(pag[dg])  do
-            g  := ReducedPcElement( pcgs, g, pag[dg] );
-            dg := DepthOfPcElement( pcgs, g );
-        od;
-        if g <> id  then
-            pag[dg] := g;
-        fi;
-    od;
-    return InducedPcgsByPcSequenceNC( pcgs, Compacted(pag) );
+    return InducedPcgsByPcSequenceNC(
+        pcgs, 
+        HOMOMORPHIC_IGS( pcgs, imgs, func ) );
 end );
 
 
@@ -729,22 +863,135 @@ InstallOtherMethod( HomomorphicInducedPcgs,
     0,
 
 function( pcgs, imgs, obj )
-    local   id,  pag,  g,  dg;
+    return InducedPcgsByPcSequenceNC(
+        pcgs, 
+        HOMOMORPHIC_IGS( pcgs, imgs, obj ) );
+end );
 
-    id  := OneOfPcgs(pcgs);
-    pag := [];
-    for g  in Reversed(imgs)  do
-        g  := g^obj;
-        dg := DepthOfPcElement( pcgs, g );
-        while g <> id  and IsBound(pag[dg])  do
-            g  := ReducedPcElement( pcgs, g, pag[dg] );
-            dg := DepthOfPcElement( pcgs, g );
+
+#############################################################################
+##
+
+#M  ElementaryAbelianSubseries( <pcgs> )
+##
+InstallMethod( ElementaryAbelianSubseries,
+    "generic method",
+    true,
+    [ IsPcgs ],
+    0,
+
+function( pcgs )
+    local   id,  coms,  lStp,  eStp,  minSublist,  ros,  k,  l,  i,  
+            z,  j;
+
+    # try to construct an elementary abelian series through the agseries
+    id := OneOfPcgs(pcgs);
+    coms := List( [ 1 .. Length(pcgs) ],
+              x -> List( [ 1 .. x-1 ],
+                y -> DepthOfPcElement( pcgs, Comm(pcgs[x],pcgs[y])) ) );
+
+    # make a list with step of the composition we can take
+    lStp := Length(pcgs) + 1;
+    eStp := [ lStp ];
+
+    # as we do not want to generate a mess of sublist:
+    minSublist := function( list, upto )
+        local min, i;
+        if upto = 0  then return 1;  fi;
+        min := list[ 1 ];
+        for i  in [ 2 .. upto ]  do
+            if min > list[ i ]  then min := list[ i ];  fi;
         od;
-        if g <> id  then
-            pag[dg] := g;
-        fi;
+        return min;
+    end;
+
+    # if <lStp> reaches 1, we are can stop
+    ros := RelativeOrders(pcgs);
+    repeat
+
+        # look for a normal composition subgroup
+        k := lStp;
+        l := k - 1;
+        repeat
+            k := k - 1;
+            l := Minimum( l, minSublist( coms[k], k-1 ) );
+        until l = k;
+
+        # we have found a normal composition subgroup
+        for i  in [ k .. lStp-1 ]  do
+            z := pcgs[i] ^ ros[i];
+            if z <> id and DepthOfPcElement(pcgs,z) < lStp  then
+                return fail;
+            fi;
+        od;
+        for i  in [ k .. lStp-2 ]  do
+            for j  in [ i+1 .. lStp-1 ]  do
+                if coms[j][i] < lStp  then
+                    return fail;
+                fi;
+            od;
+        od;
+
+        # ok, we have an elementary normal step
+        Add( eStp, k );
+        lStp := k;
+    until k = 1;
+
+    # return the list found
+    eStp := List( Reversed(eStp), x -> pcgs{[x..Length(pcgs)]} );
+    l := [];
+    for i  in eStp  do
+        k := InducedPcgsByPcSequenceNC( pcgs, i );
+        SetIsCanonicalPcgs( k, true );
+        Add( l, k );
     od;
-    return InducedPcgsByPcSequenceNC( pcgs, Compacted(pag) );
+    return l;
+
+end );
+
+
+#############################################################################
+##
+#M  IntersectionSumPcgs( <parent-pcgs>, <tail-pcgs>, <u> )
+##
+InstallMethod( IntersectionSumPcgs,
+    "prime orders pcgs, tail-pcgs, list",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsInducedPcgs and IsTailInducedPcgsRep,
+      IsList ],
+    0,
+
+function( pcgs, n, u )
+    local   first,  sum,  int,  pos,  len;
+
+    # the parent must match
+    if pcgs <> ParentPcgs(n)  then
+        TryNextMethod();
+    fi;
+
+    # get first depth of <n>
+    first := DepthOfPcElement( pcgs, n[1] );
+
+    # smaller depth elems of <u> yield the sum, the other the intersection
+    sum := [];
+    int := [];
+    pos := 1;
+    len := Length(u);
+    while pos <= len and DepthOfPcElement(pcgs,u[pos]) < first  do
+        Add( sum, u[pos] );
+        pos := pos+1;
+    od;
+    while pos <= len  do
+        Add( int, u[pos] );
+        pos := pos+1;
+    od;
+    Append( sum, n );
+   
+    sum := InducedPcgsByPcSequence( pcgs, sum );
+    int := InducedPcgsByPcSequence( pcgs, int );
+    return rec( sum := sum, intersection := int );
+
 end );
 
 
@@ -754,6 +1001,7 @@ end );
 #M  CanonicalPcElement( <igs>, <elm> )
 ##
 InstallMethod( CanonicalPcElement,
+    "generic method",
     IsCollsElms,
     [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
@@ -828,6 +1076,44 @@ function( pcgs, elm )
         return pcgs!.depthMapFromParent[
             DepthOfPcElement( ParentPcgs(pcgs), elm ) ];
     fi;
+end );
+
+
+#############################################################################
+##
+#M  ExponentOfPcElement( <igs>, <elm>, <pos> )
+##
+InstallMethod( ExponentOfPcElement,
+    "induced pcgs",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
+      IsObject,
+      IsInt and IsPosRat ],
+    0,
+
+function( pcgs, elm, pos )
+    local   pa,  map,  id,  exp,  ros,  d,  ll,  lr;
+
+    pa  := ParentPcgs(pcgs);
+    map := pcgs!.depthMapFromParent;
+    id  := OneOfPcgs(pcgs);
+    exp := List( pcgs, x -> 0 );
+    ros := RelativeOrders(pa);
+    while elm <> id  do
+        d := DepthOfPcElement( pa, elm );
+        if not IsBound(map[d])  then
+            Error( "<elm> lies not in group defined by <pcgs>" );
+        fi;
+        ll := LeadingExponentOfPcElement( pa, elm );
+        lr := LeadingExponentOfPcElement( pa, pcgs[map[d]] );
+        exp := ll / lr mod ros[d];
+        if map[d] = pos  then
+            return exp;
+        else
+            elm := LeftQuotient( pcgs[map[d]]^exp, elm );
+        fi;
+    od;
+    return 0;
 end );
 
 
@@ -922,6 +1208,24 @@ InstallMethod( LeadingExponentOfPcElement,
 
 function( pcgs, elm )
     return LeadingExponentOfPcElement( ParentPcgs(pcgs), elm );
+end );
+
+
+#############################################################################
+##
+
+#M  ExtendedPcgs( <pcgs>, <img> )
+##
+InstallMethod( ExtendedPcgs,
+    "induced pcgs",
+    IsIdentical,
+    [ IsInducedPcgs,
+      IsList and IsMultiplicativeElementWithInverseCollection ],
+    0,
+
+function( kern, img )
+    return InducedPcgsByPcSequenceAndGenerators(
+        ParentPcgs(kern), kern, img );
 end );
 
 

@@ -5,6 +5,15 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.7  1997/01/20 13:55:29  sam
+#H  moved the definition of structure preserving properties of general mappings
+#H      to new file 'mapphomo.gd',
+#H  renamed 'Kernel' and 'CoKernel' to 'KernelOfMonoidGeneralMapping' and
+#H      'CoKernelOfMonoidGeneralMapping', respectively,
+#H  added 'Kernel' and 'CoKernel' to 'overload.g'
+#H
+#H  (addition preserving mappings will follow soon)
+#H
 #H  Revision 4.6  1997/01/13 16:46:40  htheisse
 #H  `IsDirectProductPermGroups' implies `IsPermGroup'
 #H
@@ -255,9 +264,10 @@ end );
 
 #############################################################################
 ##
-#M  Kernel( <prj> ) . . . . . . . . . . . . . . . . . . . . . . of projection
+#M  KernelOfMonoidGeneralMapping( <prj> ) . . . . . . . . . . . of projection
 ##
-InstallMethod( Kernel, true, [ IsProjectionDirectProductPermGroup ], 0,
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsProjectionDirectProductPermGroup ], 0,
     function( prj )
     local   D,  gens,  i,  K;
     
@@ -304,7 +314,7 @@ InstallMethod( SubdirectProduct, true,
             gens,       # generators of <S>
             D,          # direct product of <G1> and <G2>
             emb1, emb2, # embeddings of <G1> and <G2> into <D>
-            gen;        # one generator of <G1> or Kernel( <phi2> )
+            gen;        # one generator of <G1> or kernel of <phi2>
 
     # make the direct product and the embeddings
     D := DirectProduct2( G1, G2 );
@@ -319,7 +329,7 @@ InstallMethod( SubdirectProduct, true,
     for gen  in GeneratorsOfGroup( G1 )  do
         Add( gens, gen^emb1 * PreImagesRepresentative(phi2,gen^phi1)^emb2 );
     od;
-    for gen in GeneratorsOfGroup( Kernel( phi2 ) )  do
+    for gen in GeneratorsOfGroup( KernelOfMonoidGeneralMapping( phi2 ) )  do
         Add( gens, gen ^ emb2 );
     od;
 
@@ -429,16 +439,17 @@ end );
 
 #############################################################################
 ##
-#M  Kernel( <prj> ) . . . . . . . . . . . . . . . . . . . . . . of projection
+#M  KernelOfMonoidGeneralMapping( <prj> ) . . . . . . . . . . . of projection
 ##
-InstallMethod( Kernel, true, [ IsProjectionSubdirectProductPermGroup ], 0,
+InstallMethod( KernelOfMonoidGeneralMapping, true, [ IsProjectionSubdirectProductPermGroup ], 0,
     function( prj )
     local   D,  i;
     
     D := Source( prj );
     i := 3 - prj!.component;
     return SubgroupNC( D, OnTuples
-           ( GeneratorsOfGroup( Kernel( D!.homomorphisms[ i ] ) ),
+           ( GeneratorsOfGroup( KernelOfMonoidGeneralMapping(
+                                    D!.homomorphisms[ i ] ) ),
              D!.perms[ i ] ) );
 end );
 

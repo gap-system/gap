@@ -218,7 +218,8 @@
 **  pc-presentations.
 */
 static int    bas, exp;
-Obj           Dt_add;
+Obj                    Dt_add;
+extern Obj             ShallowCopyPlist( Obj  list );
 
 /****************************************************************************
 **

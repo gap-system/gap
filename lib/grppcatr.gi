@@ -244,7 +244,7 @@ InstallMethod( Size,
     "pcgs computable groups",
     true,
     [ IsGroup and IsPcgsComputable ],
-    0,
+    10,
 
 function( grp )
     local   ords;

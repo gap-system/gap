@@ -118,3 +118,17 @@ extern Obj      Part(
 
 
 extern void     InitDeepThought( void );
+
+/*
+**  Functions from dteval.c.
+*/
+extern void MultGen(
+                    Obj     xk,
+                    UInt    gen,
+                    Obj     power,
+                    Obj     pseudoreps    );
+
+extern Obj Power(
+                Obj         x,
+	        Obj         n,
+	        Obj         pseudoreps     );

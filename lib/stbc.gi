@@ -115,7 +115,6 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
             
                 # ordinary Schreier Sims
                 S := EmptyStabChain( [  ], One( G ) );
-                Unbind( S.generators );
                 if not IsTrivial( G )  then
                     if not IsBound( options.base )  then
                         options.base := [  ];
@@ -125,10 +124,8 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
                     T := S;
                     while IsBound( T.stabilizer )  do
                         Unbind( T.cycles );
-                        T.generators := T.labels{ T.genlabels };
                         T := T.stabilizer;
                     od;
-                    T.generators := T.labels{ T.genlabels };
                     Unbind( T.cycles );
                 fi;
                 
@@ -265,24 +262,18 @@ end;
 #F  GroupStabChain( <arg> ) . . . . . . make (sub)group from stabilizer chain
 ##
 GroupStabChain := function( arg )
-    local   gens,  S,  G,  P;
+    local   S,  G,  P;
     
     if Length( arg ) = 1  then
         S := arg[ 1 ];
-        if IsBound( S.generators )  then  gens := S.generators;
-                                    else  gens := S.labels{ S.genlabels };
-        fi;
-        G := GroupByGenerators( gens );
+        G := GroupByGenerators( S.generators );
     else
         P := arg[ 1 ];
         S := arg[ 2 ];
-        if IsBound( S.generators )  then  gens := S.generators;
-                                    else  gens := S.labels{ S.genlabels };
-        fi;
         if Length( arg ) = 3  and  arg[ 3 ] = true  then
-            G := SubgroupNC( P, gens );
+            G := SubgroupNC( P, S.generators );
         else
-            G := Subgroup( P, gens );
+            G := Subgroup( P, S.generators );
         fi;
     fi;
     SetStabChain( G, S );
@@ -350,7 +341,6 @@ AddGeneratorsExtendSchreierTree := function( S, new )
             Add( S.genlabels, pos );
         fi;
         if     pos <> 1
-           and IsBound( S.generators )
            and not gen in S.generators  then
             Add( S.generators, gen );
         fi;
@@ -585,14 +575,12 @@ StabChainSwap := function( S )
 
     # set $T = S$ and compute $b^T$ and a transversal $T/T_b$
     T := EmptyStabChain( S.labels, S.identity, b );
-    Unbind( T.generators );
-    AddGeneratorsExtendSchreierTree( T, S.labels{ S.genlabels } );
+    AddGeneratorsExtendSchreierTree( T, S.generators );
 
     # initialize $Tstab$, which will become $T_b$
     Tstab := EmptyStabChain( S.labels, S.identity, a );
-    Unbind( Tstab.generators );
     AddGeneratorsExtendSchreierTree( Tstab,
-      S.stabilizer.stabilizer.labels{ S.stabilizer.stabilizer.genlabels } );
+      S.stabilizer.stabilizer.generators );
 
     # in the end $|b^T||a^{T_b}| = [T:T_{ab}] = [S:S_{ab}] = |a^S||b^{S_a}|$
     ind := 1;
@@ -643,9 +631,7 @@ StabChainSwap := function( S )
     # copy everything back into the stabchain
     S.labels      := T.labels;
     S.genlabels   := T.genlabels;
-    if IsBound( S.generators )  then
-        S.generators := S.labels{ S.genlabels };
-    fi;
+    S.generators  := T.generators;
     S.orbit       := T.orbit;
     S.translabels := T.translabels;
     S.transversal := T.transversal;
@@ -654,10 +640,7 @@ StabChainSwap := function( S )
     else
         S.stabilizer.labels      := Tstab.labels;
         S.stabilizer.genlabels   := Tstab.genlabels;
-        if IsBound( S.generators )  then
-            S.stabilizer.generators := S.stabilizer.labels
-                                       { S.stabilizer.genlabels };
-        fi;
+        S.stabilizer.generators  := Tstab.generators;
         S.stabilizer.orbit       := Tstab.orbit;
         S.stabilizer.translabels := Tstab.translabels;
         S.stabilizer.transversal := Tstab.transversal;
@@ -851,13 +834,11 @@ ConjugateStabChain := function( arg )
             L := L.stabilizer;
         od;
     fi;
-    if IsBound( arg[ 1 ].generators )  then
-        L := arg[ 2 ];
-        while IsBound( L.stabilizer )  do
-            L.generators := L.labels{ L.genlabels };
-            L := L.stabilizer;
-        od;
-    fi;
+    L := arg[ 2 ];
+    while IsBound( L.stabilizer )  do
+        L.generators := L.labels{ L.genlabels };
+        L := L.stabilizer;
+    od;
     
     # Return the mapped stabilizer from the first level  where <cond> was not
     # satisfied (i.e., the ``end'' of the original chain).
@@ -932,13 +913,9 @@ ChangeStabChain := function( arg )
         # base).
         elif    old in newBase
              or reduced = true  and  Length( S.orbit ) = 1  then
-            S.labels    := S.stabilizer.labels;
-            S.genlabels := S.stabilizer.genlabels;
-            if IsBound( S.stabilizer.generators )  then
-                S.generators := S.stabilizer.generators;
-            else
-                Unbind( S.generators );
-            fi;
+            S.labels     := S.stabilizer.labels;
+            S.genlabels  := S.stabilizer.genlabels;
+            S.generators := S.stabilizer.generators;
             if IsBound( S.stabilizer.orbit )  then
                 S.orbit       := S.stabilizer.orbit;
                 S.translabels := S.stabilizer.translabels;
@@ -1036,9 +1013,7 @@ end;
 InsertTrivialStabilizer := function( S, pnt )
     S.stabilizer := ShallowCopy( S );
     S.genlabels  := ShallowCopy( S.stabilizer.genlabels );
-    if IsBound( S.generators )  then
-        S.generators := ShallowCopy( S.stabilizer.generators );
-    fi;
+    S.generators := ShallowCopy( S.stabilizer.generators );
     if IsBound( S.idimage )  then
         S.genimages := ShallowCopy( S.stabilizer.genimages );
     fi;
@@ -1150,39 +1125,21 @@ end;
 SiftedPermutation := function( S, g )
     local   bpt,  img;
 
-    if IsBound( S.generators )  then
-        while     S <> false
-              and g <> S.identity
-              and not IsEmpty( S.generators )  do
-            bpt := S.orbit[ 1 ];
-            img := bpt ^ g;
-            if IsBound( S.transversal[ img ] )  then
-                while img <> bpt  do
-                    g := g * S.transversal[ img ];
-                    img := bpt ^ g;
-                od;
-                S := S.stabilizer;
-            else
-                S := false;
-            fi;
-        od;
-    else
-        while     S <> false
-              and g <> S.identity
-              and not IsEmpty( S.genlabels )  do
-            bpt := S.orbit[ 1 ];
-            img := bpt ^ g;
-            if IsBound( S.translabels[ img ] )  then
-                while img <> bpt  do
-                    g := g * S.transversal[ img ];
-                    img := bpt ^ g;
-                od;
-                S := S.stabilizer;
-            else
-                S := false;
-            fi;
-        od;
-    fi;
+    while     S <> false
+          and g <> S.identity
+          and not IsEmpty( S.generators )  do
+        bpt := S.orbit[ 1 ];
+        img := bpt ^ g;
+        if IsBound( S.transversal[ img ] )  then
+            while img <> bpt  do
+                g := g * S.transversal[ img ];
+                img := bpt ^ g;
+            od;
+            S := S.stabilizer;
+        else
+            S := false;
+        fi;
+    od;
     return g;
 end;
 
@@ -1273,17 +1230,10 @@ SizeStabChain := function( S )
     local   size;
     
     size := 1;
-    if IsBound( S.generators )  then
-        while not IsEmpty( S.generators )  do
-            size := size * Length( S.orbit );
-            S := S.stabilizer;
-        od;
-    else
-        while not IsEmpty( S.genlabels )  do
-            size := size * Length( S.orbit );
-            S := S.stabilizer;
-        od;
-    fi;
+    while not IsEmpty( S.generators )  do
+        size := size * Length( S.orbit );
+        S := S.stabilizer;
+    od;
     return size;
 end;
 
@@ -1295,17 +1245,10 @@ StrongGeneratorsStabChain := function( S )
     local   sgs;
     
     sgs := [  ];
-    if IsBound( S.generators )  then
-        while not IsEmpty( S.generators )  do
-            UniteSet( sgs, S.generators );
-            S := S.stabilizer;
-        od;
-    else
-        while not IsEmpty( S.genlabels )  do
-            UniteSet( sgs, S.labels{ S.genlabels } );
-            S := S.stabilizer;
-        od;
-    fi;
+    while not IsEmpty( S.generators )  do
+        UniteSet( sgs, S.generators );
+        S := S.stabilizer;
+    od;
     return sgs;
 end;
 

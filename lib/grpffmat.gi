@@ -98,7 +98,7 @@ end;
 #F  GL( <n>, <q> )  . . . . . . . . . . . . . . . . . .  general linear group
 ##
 GL := function( n, q )
-     local g, z, f, i, o, mat1, mat2, size, qi;
+     local g, z, f, i, o, mat1, mat2;
 
      if q = 2 and 1 < n  then
        return SL( n, 2 );
@@ -122,18 +122,25 @@ GL := function( n, q )
      SetFieldOfMatrixGroup( g, f );
      SetIsGeneralLinearGroup( g, true );
 
-     # Add the size.
-     size := q-1;
-     qi   := q;
-     for i in [ 2 .. n ] do
-       qi   := qi * q;
-       size := size * (qi-1);
-     od;
-     SetSize( g, q^(n*(n-1)/2) * size );
-
      # Return the group.
      return g;
 end;
+
+InstallMethod( Size, "GL( n, q )", true,
+        [ IsFFEMatrixGroup and IsGeneralLinearGroup ], 0,
+    function( G )
+    local   n,  q,  size,  qi,  i;
+    
+    n := DimensionOfMatrixGroup( G );
+    q := Size( FieldOfMatrixGroup( G ) );
+    size := q-1;
+    qi   := q;
+    for i  in [ 2 .. n ]  do
+        qi   := qi * q;
+        size := size * (qi-1);
+    od;
+    return q^(n*(n-1)/2) * size;
+end );
 
 #############################################################################
 ##
@@ -154,13 +161,7 @@ end );
 ##
 #M  NiceMonomorphism( <ffe-mat-grp> )
 ##
-InstallMethod( NiceMonomorphism,
-    "orbit on vectors",
-    true,
-    [ IsFFEMatrixGroup and IsGeneralLinearGroup ],
-    0,
-
-function( grp )
+NicomorphismOfFFEMatrixGroup := function( grp )
     local   field,  dim,  xset,  nice;
 
     # construct
@@ -173,7 +174,7 @@ function( grp )
     SetIsInjective( nice, true );
     return nice;
 
-end );
+end;
 
 InstallMethod( NiceMonomorphism,
     "falling back on GL",
@@ -182,8 +183,24 @@ InstallMethod( NiceMonomorphism,
     0,
 
 function( grp )
-    return NiceMonomorphism( GL( DimensionOfMatrixGroup( grp ),
-                   Size( FieldOfMatrixGroup( grp ) ) ) );
+    return NicomorphismOfFFEMatrixGroup( GL( DimensionOfMatrixGroup( grp ),
+                   Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
+end );
+
+#############################################################################
+##
+#M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . .  via nicomorphism
+##
+InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
+        [ IsFFEMatrixGroup, IsFFEMatrixGroup ], 0,
+    function( G, N )
+    local   nice;
+    
+    nice := NicomorphismOfFFEMatrixGroup( G );
+    G := ImagesSource( nice );
+    N := ImagesSet   ( nice, N );
+    return CompositionMapping( NaturalHomomorphismByNormalSubgroup( G, N ),
+                   nice );
 end );
 
 #############################################################################

@@ -448,8 +448,10 @@ end;
 PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     local   pcgs,  i;
     
-    pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( G ) ),
-                    filter and IsPcgs and IsPrimeOrdersPcgs,
+    pcgs := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs and filter and IsPrimeOrdersPcgs,
+                    ElementsFamily( FamilyObj( G ) ),
                     series[ 1 ].labels
                     { 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] } );
     pcgs!.stabChain := series[ 1 ];
@@ -473,6 +475,49 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
     fi;
+    return pcgs;
+end;
+
+#############################################################################
+##
+#F  TailOfPcgsPermGroup( <pcgs>, <from> ) . . . . . . . . construct tail pcgs
+##
+TailOfPcgsPermGroup := function( pcgs, from )
+    local   tail,  i,  ffrom;
+    
+    i := 1;
+    ffrom := Length( pcgs ) - pcgs!.nrGensSeries[ i ] + 1;
+    while ffrom < from  do
+        i := i + 1;
+        ffrom := Length( pcgs ) - pcgs!.nrGensSeries[ i ] + 1;
+    od;
+    tail := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+                    FamilyObj( OneOfPcgs( pcgs ) ),
+                    pcgs{ [ ffrom .. Length( pcgs ) ] } );
+    tail!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+    SetRelativeOrders( tail, RelativeOrders( pcgs )
+            { [ from .. Length( pcgs ) ] } );
+    SetPcSeries( tail, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+    tail!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
+    if from < ffrom  then
+        tail := ExtendedPcgs( tail, pcgs{ [ from .. ffrom - 1 ] } );
+    fi;
+    return tail;
+end;
+
+#############################################################################
+##
+#F  PcgsMemberPcSeriesPermGroup( <U> )  . . . . . . . . . . . . . .  the same
+##
+PcgsMemberPcSeriesPermGroup := function( U )
+    local   home,  pcgs;
+
+    home := HomePcgs( U );
+    pcgs := TailOfPcgsPermGroup( home,
+                Length( home ) - home!.nrGensSeries[ U!.noInSeries ] + 1 );
+    SetGroupOfPcgs( pcgs, U );
     return pcgs;
 end;
 
@@ -541,13 +586,11 @@ ExponentsOfPcElementPermGroup := function( pcgs, g, mindepth, maxdepth, mode )
             g := LeftQuotient( gen ^ e, g );
             bimg := OnTuples( base, g );
             
-        # <g> is the identity.
-        elif mode = 'd'  then  return maxdepth + 1;
-        elif mode = 'l'  then  return 1;
-        
         fi;
     od;
-    return exp;
+    if   mode = 'd'  then  return maxdepth + 1;
+    elif mode = 'l'  then  return fail;
+    else                   return exp;  fi;
 end;
 
 #############################################################################
@@ -658,6 +701,53 @@ end;
 
 #############################################################################
 ##
+#M  <pcgsG> mod <pcgsN> . . . . . . . . . . . . . . . . .  of perm group pcgs
+##
+InstallMethod( \mod, "perm group pcgs", IsIdentical,
+        [ IsPcgs and IsPcgsPermGroupRep,
+          IsPcgs and IsPcgsPermGroupRep ], 20,
+    function( G, N )
+    local   pcgs,  i;
+
+    if G{ [ Length( G ) - Length( N ) + 1 .. Length( G ) ] } = N  then
+        pcgs := PcgsByPcSequenceCons(
+                IsPcgsDefaultRep,
+                IsPcgs and IsModuloPcgs and IsPcgsFactorGroupPermGroupRep
+                                        and IsPrimeOrdersPcgs,
+                FamilyObj( OneOfPcgs( G ) ),
+                G{ [ 1 .. Length( G ) - Length( N ) ] } );
+        pcgs!.stabChain := G!.stabChain;
+        SetRelativeOrders( pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] } );
+        i := 1;
+        while G!.nrGensSeries[ i ] > Length( N )  do
+            i := i + 1;
+        od;
+        pcgs!.nrGensSeries := Concatenation
+            ( G!.nrGensSeries{ [ 1 .. i - 1 ] }, [ Length( N ) ] );
+        SetPcSeries( pcgs, Concatenation
+            ( PcSeries( G ){ [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] ) );
+    else
+        pcgs := PcgsByPcSequenceCons(
+                IsPcgsDefaultRep,
+                IsPcgs and IsModuloPcgs and IsPcgsFactorGroupPermGroupRep
+                                        and IsPrimeOrdersPcgs,
+                FamilyObj( OneOfPcgs( G ) ),
+                [  ] );
+        pcgs!.stabChain := N!.stabChain;
+        pcgs!.nrGensSeries := [ Length( N ) ];
+        SetPcSeries( pcgs, [ GroupOfPcgs( N ) ] );
+        pcgs := ExtendedPcgs( pcgs, Reversed( G ) );
+    fi;
+    SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
+    SetNumeratorOfModuloPcgs  ( pcgs, G );
+    SetDenominatorOfModuloPcgs( pcgs, N );
+    pcgs!.denominator := GroupOfPcgs( N );
+    pcgs!.nrGensSeries := pcgs!.nrGensSeries - Length( N );
+    return pcgs;
+end );
+
+#############################################################################
+##
 
 #M  IsPcgsComputable( <G> ) . . . . . . . . . . . . . . . . . .  return false
 ##
@@ -667,7 +757,18 @@ InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
-InstallMethod( Pcgs, true, [ IsPermGroup ], 0,
+InstallMethod( Pcgs, "fail if insolvable", true,
+        [ HasIsSolvableGroup ], SUM_FLAGS,
+    function( G )
+    if not IsSolvableGroup( G )  then  return fail;
+                                 else  TryNextMethod();  fi;
+end );
+
+InstallMethod( Pcgs, "take induced pcgs", true,
+        [ IsPermGroup and HasInducedPcgsWrtHomePcgs ], 0,
+    InducedPcgsWrtHomePcgs );
+
+InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ], 0,
     function( G )
     local   pcgs;
     
@@ -676,35 +777,9 @@ InstallMethod( Pcgs, true, [ IsPermGroup ], 0,
                            else  return pcgs;  fi;
 end );
 
-InstallMethod( Pcgs, true, [ HasIsSolvableGroup ], SUM_FLAGS,
-    function( G )
-    if not IsSolvableGroup( G )  then  return fail;
-                                 else  TryNextMethod();  fi;
-end );
-
-#############################################################################
-##
-#M  Pcgs( <U> ) . . . . . . . . . . . . . . . . . . . . . . . . via home pcgs
-##
-InstallMethod( Pcgs, true, [ IsMemberPcSeriesPermGroup ], 0,
-    function( U )
-    local   pcgs,  home;
-    
-    home := HomePcgs( U );
-    pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( U ) ),
-        IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-        home{ [ Length( home ) - home!.nrGensSeries[ U!.noInSeries ] + 1 ..
-                Length( home ) ] } );
-    pcgs!.stabChain := StabChainImmAttr( PcSeries( home )[ U!.noInSeries ] );
-    SetGroupOfPcgs( pcgs, U );
-    SetRelativeOrders( pcgs, pcgs!.stabChain.relativeOrders );
-    if not HasStabChain( U )  then
-        SetStabChain( U, pcgs!.stabChain );
-    fi;
-    pcgs!.nrGensSeries := home!.nrGensSeries
-        { [ U!.noInSeries .. Length( home!.nrGensSeries ) ] };
-    return pcgs;
-end );
+InstallMethod( Pcgs, "tail of perm pcgs", true,
+        [ IsMemberPcSeriesPermGroup ], 0,
+        PcgsMemberPcSeriesPermGroup );
 
 #############################################################################
 ##
@@ -721,98 +796,16 @@ end );
 
 #############################################################################
 ##
-#M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )  . . . . . . . .  as perm pcgs
-##
-InstallMethod( InducedPcgsByPcSequenceNC, "perm group",
-    true,
-    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-      IsList and IsPermCollection ], 0,
-    function( pcgs, pcs )
-    local   depths,  efam,  filter,  igs,  i;
-
-    depths := [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ];
-    if pcs <> pcgs{ depths }  then
-        TryNextMethod();
-    fi;
-    
-    # check which filter to use
-    filter := IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsInducedPcgs;
-    efam := FamilyObj( OneOfPcgs( pcgs ) );
-
-    # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
-    i := 1;
-    while pcgs!.nrGensSeries[ i ] > Length( pcs )  do
-        i := i + 1;
-    od;
-    igs!.stabChain := DeepCopy( StabChainAttr( PcSeries( pcgs )[ i ] ) );
-    for i  in Reversed( [ depths[ 1 ] ..
-            Length( pcgs ) - pcgs!.nrGensSeries[ i ] ] )  do
-        AddNormalizingElementPcgs( igs!.stabChain, pcgs[ i ] );
-    od;
-    
-    # store the parent
-    SetParentPcgs( igs, pcgs );
-
-    # store other useful information
-    igs!.depthsFromParent   := depths;
-    igs!.depthMapFromParent := [  ];
-    igs!.depthMapFromParent{ depths } := [ 1 .. Length( pcs ) ];
-
-    # we know the relative orders
-    if HasIsPrimeOrdersPcgs(pcs) and IsPrimeOrdersPcgs(pcs)  then
-        SetIsPrimeOrdersPcgs( pcgs, true );
-    fi;
-    if HasIsFiniteOrdersPcgs(pcs) and IsFiniteOrdersPcgs(pcs)  
-      and not HasIsFiniteOrdersPcgs(pcgs) then
-        SetIsFiniteOrdersPcgs( pcgs, true );
-    fi;
-    if HasRelativeOrders(pcgs)  then
-        SetRelativeOrders( igs, RelativeOrders( pcgs ){ depths } );
-    fi;
-
-    # and return
-    return igs;
-    
-end );
-
-InstallMethod( InducedPcgsByPcSequence,
-    true,
-    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-      IsList and IsPermCollection ], 0,
-    InducedPcgsByPcSequenceNC );
-
-#############################################################################
-##
-#M  InducedPcgsWrtHomePcgs( <U> ) . . . . . . . . . . . . . . . via home pcgs
-##
-InstallMethod( InducedPcgsWrtHomePcgs, "perm group", true,
-    [ IsMemberPcSeriesPermGroup and HasHomePcgs ], 0,
-    function( U )
-    local   pcgs,  igs;
-    
-    pcgs := HomePcgs( U );
-    igs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( U ) ),
-        IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsInducedPcgs,
-        pcgs{ [ Length( pcgs ) - pcgs!.nrGensSeries[ U!.noInSeries ] + 1 ..
-                Length( pcgs ) ] } );
-    igs!.stabChain := StabChainImmAttr( PcSeries( pcgs )[ U!.noInSeries ] );
-    SetParentPcgs( igs, pcgs );
-    return igs;
-end );
-
-InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
-        [ IsPermGroup ], 0,
-    function( G )
-    return InducedPcgsByGenerators( HomePcgs( G ), GeneratorsOfGroup( G ) );
-end );
-
-#############################################################################
-##
 #M  GroupOfPcgs( <pcgs> ) . . . . . . . . . . . . . . . . . . for perm groups
 ##
 InstallMethod( GroupOfPcgs, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
-    GroupByGenerators );
+    function( pcgs )
+    local   G;
+    
+    G := GroupStabChain( pcgs!.stabChain );
+    SetPcgs( G, pcgs );
+    return G;
+end );
 
 #############################################################################
 ##
@@ -849,6 +842,121 @@ InstallOtherMethod( LowerCentralSeriesOfGroup, true, [ IsPcgs ], 0,
 
 #############################################################################
 ##
+#M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )  . . . . . . . .  as perm pcgs
+##
+InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
+    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+      IsList and IsPermCollection ], 0,
+    function( pcgs, pcs )
+    local   igs,  i;
+
+    i := Position( pcgs!.nrGensSeries, Length( pcs ) );
+    if i = fail  or
+       pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
+       pcs  then
+        TryNextMethod();
+    fi;
+    igs := PcgsByPcSequenceCons(
+        IsPcgsDefaultRep,
+        IsPcgs and IsInducedPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+        FamilyObj( OneOfPcgs( pcgs ) ),
+        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
+    igs!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+    SetRelativeOrders( igs, RelativeOrders( pcgs )
+            { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
+    SetPcSeries( igs, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+    igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
+    SetParentPcgs( igs, pcgs );
+    return igs;
+end );
+
+#InstallMethod( InducedPcgsByPcSequenceNC, "perm group", true,
+#    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+#      IsList and IsPermCollection ], 0,
+#    function( pcgs, pcs )
+#    local   igs,  i,  l;
+#
+#    i := 1;  l := pcgs!.nrGensSeries[ i ];
+#    while pcs { [ Length( pcs  ) - l + 1 .. Length( pcs  ) ] } <>
+#          pcgs{ [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] }  do
+#        i := i + 1;  l := pcgs!.nrGensSeries[ i ];
+#    od;
+#    igs := PcgsByPcSequenceNC( FamilyObj( OneOfPcgs( pcgs ) ),
+#                    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+#                    pcgs{ [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
+#    igs!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
+#    SetRelativeOrders( igs, RelativeOrders( pcgs )
+#            { [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
+#    SetPcSeries( igs, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
+#    igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
+#    igs := ExtendedPcgs( igs, pcs{ [ 1 .. Length( pcs ) - l ] } );
+#    SetFilterObj( igs, IsInducedPcgs );
+#    SetParentPcgs( igs, pcgs );
+#    return igs;
+#end );
+    
+#############################################################################
+##
+#M  InducedPcgsWrtHomePcgs( <U> ) . . . . . . . . . . . . . . . via home pcgs
+##
+InstallMethod( InducedPcgsWrtHomePcgs, "tail of perm pcgs", true,
+        [ IsMemberPcSeriesPermGroup and HasHomePcgs ], 0,
+    function( U )
+    local   pcgs;
+    
+    pcgs := PcgsMemberPcSeriesPermGroup( U );
+    SetFilterObj( pcgs, IsInducedPcgs );
+    SetParentPcgs( pcgs, HomePcgs( U ) );
+    return pcgs;
+end );
+
+InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
+        [ IsPermGroup ], 0,
+    function( G )
+    local   home;
+    
+    home := HomePcgs( G );
+    if IsIdentical( home, Pcgs( G ) )  then
+        return InducedPcgsByPcSequenceNC( home, home );
+    else
+        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+    fi;
+end );
+
+#############################################################################
+##
+#M  ExtendedPcgs( <N>, <gens> ) . . . . . . . . . . . . . . .  in perm groups
+##
+InstallMethod( ExtendedPcgs, "perm group", true,
+        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+          IsList and IsPermCollection ], 10,
+    function( N, gens )
+    local   pcgs,  S,  gen;
+
+    S := DeepCopy( N!.stabChain );
+    S.relativeOrders := ShallowCopy( RelativeOrders( N ) );
+    for gen  in Reversed( gens )  do
+        AddNormalizingElementPcgs( S, gen );
+    od;
+    pcgs := PcgsByPcSequenceCons( 
+         IsPcgsDefaultRep,
+         IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+         FamilyObj( OneOfPcgs( N ) ),
+         S.labels{ [ 2 .. Length( S.labels ) -
+                    Length( N!.stabChain.labels ) + Length( N ) + 1 ] } );
+    pcgs!.stabChain := S;
+    SetRelativeOrders( pcgs, S.relativeOrders );
+    Unbind( S.relativeOrders );
+    SetGroupOfPcgs( pcgs, GroupStabChain( S ) );
+    SetPcSeries( pcgs, Concatenation( [ GroupOfPcgs( pcgs ) ],
+            PcSeries( N ) ) );
+    pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
+            N!.nrGensSeries );
+    return pcgs;
+end );
+
+#############################################################################
+##
 #M  DepthOfPcElement( <pcgs>, <g> [ , <from> ] )  . . . . . . for perm groups
 ##
 InstallMethod( DepthOfPcElement, true,
@@ -861,7 +969,8 @@ InstallOtherMethod( DepthOfPcElement, true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
           IsInt ], 0,
     function( pcgs, g, depth )
-    return ExponentsOfPcElementPermGroup( pcgs, g, depth, Length( pcgs ), 'd' );
+    return ExponentsOfPcElementPermGroup( pcgs, g, depth, Length( pcgs ),
+                   'd' );
 end );
     
 #############################################################################
@@ -992,7 +1101,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     A := PcGroupPcgs( pcgs, index, false );
     map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );
-    SetKernel( map, N );
+    SetKernelOfMonoidGeneralMapping( map, N );
     
     return map;
 end );

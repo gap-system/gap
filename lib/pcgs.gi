@@ -14,6 +14,14 @@ Revision.pcgs_gi :=
 
 #############################################################################
 ##
+
+#M  IsPcgsComputable( <G> ) . . . . . . . . . . . . . . . . . .  normally not
+##
+InstallMethod( IsPcgsComputable, true, [ IsGroup ], 0, ReturnFalse );
+
+
+#############################################################################
+##
 #M  SetPcgs( <G>, fail )  . . . . . . . . . . . . . . . . .  never set `fail'
 ##
 ##  `HasPcgs' implies  `IsPcgsComputable',  which implies `IsSolvable',  so a
@@ -28,6 +36,7 @@ InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], SUM_FLAGS, Ignore );
 #M  IsBound[ <pos> ]
 ##
 InstallMethod( IsBound\[\],
+    "pcgs",
     true,
     [ IsPcgs,
       IsInt and IsPosRat ],
@@ -43,6 +52,7 @@ end );
 #M  Length( <pcgs> )
 ##
 InstallMethod( Length,
+    "pcgs",
     true,
     [ IsPcgs and IsPcgsDefaultRep ],
     0,
@@ -54,6 +64,7 @@ InstallMethod( Length,
 #M  Position( <pcgs>, <elm>, <from> )
 ##
 InstallMethod( Position,
+    "pcgs, object, int",
     true,
     [ IsPcgs and IsPcgsDefaultRep,
       IsObject,
@@ -70,6 +81,7 @@ end );
 #M  PrintObj( <pcgs> )
 ##
 InstallMethod( PrintObj,
+    "pcgs",
     true,
     [ IsPcgs and IsPcgsDefaultRep ],
     0,
@@ -84,6 +96,7 @@ end );
 #M  <pcgs> [ <pos> ]
 ##
 InstallMethod( \[\],
+    "pcgs, pos int",
     true,
     [ IsPcgs and IsPcgsDefaultRep,
       IsInt and IsPosRat ],
@@ -97,17 +110,18 @@ end );
 #############################################################################
 ##
 
-#M  PcgsByPcSequenceNC( <fam>, <filter>, <pcs> )
+#M  PcgsByPcSequenceCons( <req-filter>, <imp-filter>, <fam>, <pcs> )
 ##
-InstallOtherMethod( PcgsByPcSequenceNC,
+InstallMethod( PcgsByPcSequenceCons,
     "generic constructor",
     true,
-    [ IsFamily,
+    [ IsPcgsDefaultRep,
       IsObject,
+      IsFamily,
       IsList ],
     0,
 
-function( efam, filter, pcs )
+function( filter, imp, efam, pcs )
     local   pcgs,  fam,  rws;
 
     # construct a pcgs object
@@ -116,14 +130,14 @@ function( efam, filter, pcs )
 
     # if the <efam> has a family pcgs check if the are equal
     if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcgs!.pcSequence  then
-        filter := filter and IsFamilyPcgs;
+        imp := imp and IsFamilyPcgs;
     fi;
 
     # get the pcgs family
     fam := CollectionsFamily(efam);
 
     # convert record into component object
-    Objectify( NewKind( fam, filter ), pcgs );
+    Objectify( NewKind( fam, filter and imp ), pcgs );
 
     # set a one
     if HasOne(efam)  then
@@ -135,6 +149,22 @@ function( efam, filter, pcs )
     # and return
     return pcgs;
 
+end );
+
+
+#############################################################################
+##
+
+#M  ExtendedPcgs( <pcgs>, <empty-list> )
+##
+InstallOtherMethod( ExtendedPcgs,
+    "induced pcgs, empty list", true,
+    [ IsInducedPcgs,
+      IsList and IsEmpty ],
+    0,
+
+function( N, gens )
+    return N;
 end );
 
 
@@ -529,6 +559,226 @@ end );
 #############################################################################
 ##
 
+#M  ExtendedIntersectionSumPcgs( <parent-pcgs>, <n>, <u> )
+##
+InstallMethod( ExtendedIntersectionSumPcgs,
+    "generic method",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList,
+      IsList ],
+    0,
+
+function( pcgs, n, u )
+    local   id,  G,  ls,  rs,  is,  g,  z,  I,  ros,  al,  ar,  tmp,  
+            sum,  int;
+
+    # set up
+    id := OneOfPcgs( pcgs );
+    G  := GroupOfPcgs( pcgs );
+
+    # What  follows  is a Zassenhausalgorithm: <ls> and <rs> are the left and
+    # rights  sides. They are initialized with [ n, n ] and [ u, 1 ]. <is> is
+    # the  intersection.  <I>  contains  the  words  [ u, 1 ]  which  must be
+    # Sifted through [ <ls>, <rs> ].
+
+    ls := List( pcgs, x -> id );
+    rs := List( pcgs, x -> id );
+    is := List( pcgs, x -> id );
+
+    for g in u do
+        z := DepthOfPcElement( pcgs, g );
+        ls[z] := g;
+        rs[z] := g;
+    od;
+
+    I := [];
+    for g in n do
+        z := DepthOfPcElement( pcgs, g );
+        if ls[z] = id  then
+            ls[z] := g;
+        else
+            Add( I, g );
+        fi;
+    od;
+
+    # enter the pairs [ u, 1 ] of <I> into [ <ls>, <rs> ]
+    ros := RelativeOrders(pcgs);
+    for al  in I  do
+        ar := id;
+        z  := DepthOfPcElement( pcgs, al );
+
+        # shift through and reduced from the left
+        while al <> id and ls[z] <> id  do
+            tmp := LeadingExponentOfPcElement( pcgs, al )
+                   / LeadingExponentOfPcElement( pcgs, ls[z] )
+                   mod ros[z];
+            al := LeftQuotient( ls[z]^tmp, al );
+            ar := LeftQuotient( rs[z]^tmp, ar );
+            z  := DepthOfPcElement( pcgs, al );
+        od;
+
+        # have we a new sum or intersection generator
+        if al <> id  then
+            ls[z] := al;
+            rs[z] := ar;
+        else
+            z := DepthOfPcElement( pcgs, ar );
+            while ar <> id and is[z] <> id  do
+                ar := ReducedPcElement( pcgs, ar, is[z] );
+                z  := DepthOfPcElement( pcgs, ar );
+            od;
+            if ar <> id  then
+                is[z] := ar;
+            fi;
+        fi;
+    od;
+
+    # Construct  the sum and intersection aggroups. Return left and right
+    # sides, so one can decompose words of <N> * <U>.
+
+    sum := InducedPcgsByPcSequence( pcgs, Filtered( ls, x -> x <> id ) );
+    int := InducedPcgsByPcSequence( pcgs,
+                        Filtered( is, x -> x <> id ) );
+   
+    return rec(
+        leftSide     := ls,
+        rightSide    := rs,
+        sum          := sum,
+        intersection := int );
+end );
+
+
+#############################################################################
+##
+#M  IntersectionSumPcgs( <parent-pcgs>, <n>, <u> )
+##
+InstallMethod( IntersectionSumPcgs,
+    "using 'ExtendedIntersectionSumPcgs'",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList,
+      IsList ],
+    0,
+    ExtendedIntersectionSumPcgs );
+
+
+#############################################################################
+##
+#M  SumPcgs( <parent-pcgs>, <n>, <u> )
+##
+InstallMethod( SumPcgs,
+    "generic method",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList,
+      IsList ],
+    0,
+
+function( pcgs, n, u )
+    local   id,  G,  ls,  g,  z,  I,  ros,  al,  tmp;
+
+    # set up
+    id := OneOfPcgs( pcgs );
+    G  := GroupOfPcgs( pcgs );
+
+    # what follows is a Zassenhausalgorithm
+    ls := List( pcgs, x -> id );
+
+    for g in u do
+        z := DepthOfPcElement( pcgs, g );
+        ls[z] := g;
+    od;
+
+    I := [];
+    for g in n do
+        z := DepthOfPcElement( pcgs, g );
+        if ls[z] = id  then
+            ls[z] := g;
+        else
+            Add( I, g );
+        fi;
+    od;
+
+    # enter the elements of <I> into <ls>
+    ros := RelativeOrders(pcgs);
+    for al  in I  do
+        z  := DepthOfPcElement( pcgs, al );
+
+        # shift through and reduced from the left
+        while al <> id and ls[z] <> id  do
+            tmp := LeadingExponentOfPcElement( pcgs, al )
+                   / LeadingExponentOfPcElement( pcgs, ls[z] )
+                   mod ros[z];
+            al := LeftQuotient( ls[z]^tmp, al );
+            z  := DepthOfPcElement( pcgs, al );
+        od;
+
+        # have we a new sum or intersection generator
+        if al <> id  then
+            ls[z] := al;
+        fi;
+    od;
+
+    return InducedPcgsByPcSequence( pcgs, Filtered( ls, x -> x <> id ) );
+
+end );
+
+
+#############################################################################
+##
+#M  SumFactorizationFunctionPcgs( <parent-pcgs>, <u>, <n> )
+##
+InstallMethod( SumFactorizationFunctionPcgs,
+    "generic method",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList,
+      IsList ],
+    0,
+
+function( pcgs, u, n )
+    local   id,  S,  f;
+
+    id := OneOfPcgs( pcgs );
+    S  := ExtendedIntersectionSumPcgs( pcgs, n, u );
+
+    # decomposition function
+    f := function( un )
+        local a, u, w, z;
+
+        # Catch trivial case.
+        if un = id  then
+            return rec( u := id, n := id );
+        fi;
+
+        # Shift  through  'leftSide'  and  do  the  inverse  operations  with
+        # 'rightSide'. This will give the <N> part.
+        u := id;
+        a := un;
+        w := DepthOfPcElement( pcgs, a );
+        while a <> id and S.leftSide[ w ] <> id  do
+            z := LeadingExponentOfPcElement( pcgs, a )
+                   / LeadingExponentOfPcElement( pcgs, S.leftSide[ w ] )
+                 mod RelativeOrderOfPcElement( pcgs, a );
+            a := LeftQuotient( S.leftSide[ w ] ^ z, a );
+            u := u * S.rightSide[ w ] ^ z;
+            w := DepthOfPcElement( pcgs, a );
+        od;
+        return rec( u := u, n := u^-1 * un );
+    end;
+
+    # Return the sum, intersection and the function.
+    return rec( sum           := S.sum,
+                intersection  := S.intersection,
+                factorization := f );
+
+end );
+
+
+#############################################################################
+##
+
 #M  GroupByPcgs( <pcgs> )
 ##
 GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
@@ -612,7 +862,141 @@ function( pcgs )
 
     tmp := Group( List( pcgs, x -> x ), OneOfPcgs(pcgs) );
     SetIsFinite( tmp, IsFiniteOrdersPcgs(pcgs) );
+    SetPcgs(     tmp, pcgs                     );
     return tmp;
+end );
+
+
+#############################################################################
+##
+
+#R  IsEnumeratorByPcgsRep
+##
+IsEnumeratorByPcgsRep := NewRepresentation( "IsEnumeratorByPcgsRep",
+    IsEnumerator and IsAttributeStoringRep,
+    [ "pcgs", "sublist" ] );
+
+
+#############################################################################
+##
+#M  EnumeratorByPcgs( <pcgs> )
+##
+InstallMethod( EnumeratorByPcgs,
+    true,
+    [ IsPcgs ],
+    0,
+
+function( pcgs )
+    return Objectify(
+        NewKind( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
+        rec( pcgs := pcgs, sublist := [ 1 .. Length(pcgs) ],
+             relativeOrders := RelativeOrders(pcgs),
+             complementList := [] ) );
+end );
+
+
+#############################################################################
+##
+#M  EnumeratorByPcgs( <pcgs>, <sublist> )
+##
+InstallOtherMethod( EnumeratorByPcgs,
+    true,
+    [ IsPcgs,
+      IsList ],
+    0,
+
+function( pcgs, sublist )
+    return Objectify(
+        NewKind( FamilyObj(pcgs), IsEnumerator and IsEnumeratorByPcgsRep ),
+        rec( pcgs := pcgs, sublist := sublist,
+             relativeOrders := RelativeOrders(pcgs),
+             complementList := Difference([1..Length(pcgs)],sublist) ) );
+end );
+
+
+#############################################################################
+##
+#M  Length( <enum-by-pcgs> )
+##
+InstallMethod( Length,
+    true,
+    [ IsEnumerator and IsEnumeratorByPcgsRep ],
+    0,
+    enum -> Product(enum!.relativeOrders{enum!.sublist}) );
+
+
+#############################################################################
+##
+#M  <enum-by-pcgs> [ <pos> ]
+##
+InstallMethod( \[\],
+    true,
+    [ IsEnumerator and IsEnumeratorByPcgsRep,
+      IsPosRat and IsInt ],
+    0,
+
+function( enum, pos )
+    local   pcgs,  elm,  i,  p;
+    
+    pcgs := enum!.pcgs;
+    elm  := OneOfPcgs( pcgs );
+    pos  := pos - 1;
+    for i  in Reversed( enum!.sublist )  do
+        p   := enum!.relativeOrders[i];
+        elm := pcgs[ i ] ^ ( pos mod p ) * elm;
+        pos := QuoInt( pos, p );
+    od;
+    return elm;
+end );
+
+
+#############################################################################
+##
+#M  Position( <enum-by-pcgs>, <elm>, <zero> )
+##
+InstallMethod( Position,
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsEnumerator and IsEnumeratorByPcgsRep,
+      IsMultiplicativeElementWithInverse,
+      IsZeroCyc ],
+    0,
+
+function( enum, elm, zero )
+    local   pcgs,  exp,  pos,  i;
+
+    pcgs := enum!.pcgs;
+    exp  := ExponentsOfPcElement( pcgs, elm );
+    pos  := 0;
+    if ForAny( enum!.complementList, x -> 0 <> exp[x] )  then
+        return fail;
+    fi;
+    for i  in enum!.sublist  do
+        pos := pos * enum!.relativeOrders[i] + exp[i];
+    od;
+    return pos + 1;
+end );
+
+
+#############################################################################
+##
+#M  PositionCanonical( <enum-by-pcgs>, <elm> )
+##
+InstallMethod( PositionCanonical,
+    IsCollsElms,
+    [ IsEnumerator and IsEnumeratorByPcgsRep,
+      IsMultiplicativeElementWithInverse ],
+    0,
+
+function( enum, elm )
+    local   pcgs,  exp,  pos,  i;
+
+    pcgs := enum!.pcgs;
+    exp  := ExponentsOfPcElement( pcgs, elm );
+    pos  := 0;
+    for i  in enum!.sublist  do
+        pos := pos * enum!.relativeOrders[i] + exp[i];
+    od;
+    return pos + 1;
 end );
 
 

@@ -78,7 +78,7 @@ end );
 ##
 #M  InducedPcgsWrtHomePcgs( <grp> )
 ##
-InstallMethod( InducedPcgsWrtHomePcgs,
+InstallMethod( InducedPcgsWrtHomePcgs, "default method",
     true,
     [ IsGroup and HasHomePcgs ],
     0,
@@ -999,12 +999,16 @@ GapInputPcGroup:=function(U,name)
 
 end;
 
-
+#############################################################################
+##
+#M  Enumerator( <G> ) . . . . . . . . . . . . . . . . . .  enumerator by pcgs
+##
+InstallMethod( Enumerator, true,
+        [ IsGroup and IsPcgsComputable and IsFinite ], 0,
+    G -> EnumeratorByPcgs( Pcgs( G ), [ 1 .. Length( Pcgs( G ) ) ] ) );
 
 #############################################################################
 ##
-
-
 
 #E  grppc.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

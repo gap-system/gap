@@ -583,6 +583,13 @@ Tau := NewOperationArgs( "Tau" );
 
 #############################################################################
 ##
+#F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
+##
+PrintFactorsInt := NewOperationArgs( "PrintFactorsInt" );
+
+
+#############################################################################
+##
 
 #E  integer.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

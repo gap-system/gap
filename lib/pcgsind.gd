@@ -127,6 +127,16 @@ HasIsCanonicalPcgs := Tester(IsCanonicalPcgs);
 #############################################################################
 ##
 
+#A  ElementaryAbelianSubseries( <pcgs> )
+##
+ElementaryAbelianSubseries := NewAttribute(
+    "ElementaryAbelianSubseries",
+    IsPcgs );
+
+
+#############################################################################
+##
+
 #O  CanonicalPcElement( <pcgs>, <elm> )
 ##
 CanonicalPcElement := NewOperation(

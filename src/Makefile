@@ -99,7 +99,7 @@ dec-alpha-OSF32-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
 	  if test ! -d dec-alpha-OSF32; then \
-     		mkdir dec-alpha-OSF32; \
+		mkdir dec-alpha-OSF32; \
           fi; \
 	  cd dec-alpha-OSF32; \
 	  $(MAKE) -f ../../src/Makefile gap \
@@ -146,7 +146,7 @@ hp-hppa1.1-hpux-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
 	  if test ! -d hp-hppa1.1-hpux; then \
-     		mkdir hp-hppa1.1-hpux; \
+		mkdir hp-hppa1.1-hpux; \
           fi; \
 	  cd hp-hppa1.1-hpux; \
 	  $(MAKE) -f ../../src/Makefile gap \
@@ -208,7 +208,7 @@ ibm-i386-linux-gcc2:
 	  cd ../bin; \
 	  if test ! -d ibm-i386-linux; then \
 		mkdir ibm-i386-linux; \
-    	  fi; \
+	  fi; \
 	  cd ibm-i386-linux; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
@@ -289,7 +289,7 @@ sun-sparc-solaris-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
 	  if test ! -d sun-sparc-solaris-gcc2; then \
-     		mkdir sun-sparc-solaris-gcc2; \
+		mkdir sun-sparc-solaris-gcc2; \
 	  fi; \
 	  cd sun-sparc-solaris-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
@@ -315,7 +315,7 @@ sun-sparc-sunos-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
 	  if test ! -d sun-sparc-sunos-gcc2; then \
-     		mkdir sun-sparc-sunos-gcc2; \
+		mkdir sun-sparc-sunos-gcc2; \
           fi; \
 	  cd sun-sparc-sunos-gcc2; \
 	  $(MAKE) -f ../../src/Makefile gap \
@@ -351,6 +351,7 @@ OBJECTS =   system.o   scanner.o  gasman.o         \
             objfgelm.o objscoll.o objpcgel.o       \
             sctable.o  costab.o                    \
 	    dt.o       dteval.o                    \
+            objcftl.o                              \
 	    code.o     vars.o                      \
 	    exprs.o    stats.o    funcs.o          \
 	    intrprtr.o read.o     gap.o
@@ -643,6 +644,14 @@ costab.o:   $(SRC)/costab.c   $(SRC)/costab.h                           \
 	    $(SRC)/lists.h    $(SRC)/plist.h                            \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o costab.o      -c $(SRC)/costab.c
+
+objcftl.o:  $(SRC)/objcftl.c  $(SRC)/objcftl.h  $(SRC)/dt.h             \
+            $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+            $(SRC)/objects.h  $(SRC)/plist.h    $(SRC)/gvars.h          \
+            $(SRC)/calls.h    $(SRC)/records.h  $(SRC)/precord.h        \
+            $(SRC)/gap.h      $(SRC)/bool.h
+	$(CC) $(CFLAGS)  -o objcftl.o          -c $(SRC)/objcftl.c
+
 
 dt.o:       $(SRC)/dt.c       $(SRC)/dt.h                               \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \

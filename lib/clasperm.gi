@@ -8,6 +8,9 @@
 ##  classes for permutation groups.
 ##
 #H  $Log$
+#H  Revision 4.4  1997/01/21 15:07:13  htheisse
+#H  introduced `PositionCanonical'
+#H
 #H  Revision 4.3  1997/01/13 17:04:06  htheisse
 #H  added class/centralizer functions for soluble groups
 #H
@@ -47,11 +50,11 @@ end );
 
 #############################################################################
 ##
-#M  Position( <enum>, <elm>, <zero> ) . . . . . . . . .  for such enumerators
+#M  PositionCanonical( <enum>, <elm> )  . . . . . . . .  for such enumerators
 ##
-InstallMethod( Position, true, [ IsConjugacyClassPermGroupEnumerator,
-        IsObject, IsZeroCyc ], 0,
-    function( enum, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsConjugacyClassPermGroupEnumerator, IsObject ], 0,
+    function( enum, elm )
     local   xorb,  G,  rep;
     
     xorb := UnderlyingCollection( enum );
@@ -59,8 +62,10 @@ InstallMethod( Position, true, [ IsConjugacyClassPermGroupEnumerator,
     rep := RepOpElmTuplesPermGroup( true, G, [ elm ],
                    [ Representative( xorb ) ],
                    TrivialSubgroup( G ), StabilizerOfExternalSet( xorb ) );
-    if rep = fail  then  return fail;
-                   else  return Position( enum!.rightTransversal, rep ^ -1 );
+    if rep = fail  then
+        return fail;
+    else
+        return PositionCanonical( enum!.rightTransversal, rep ^ -1 );
     fi;
 end );
 
@@ -131,9 +136,9 @@ InstallMethod( Enumerator, true, [ IsRationalClassPermGroupRep ], 0,
     return enum;
 end );
 
-InstallMethod( Position, true, [ IsRationalClassGroupEnumerator, IsObject,
-        IsZeroCyc ], 0,
-    function( enum, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsRationalClassGroupEnumerator, IsObject ], 0,
+    function( enum, elm )
     local   rcl,  G,  rep,  gal,  T,  pow,  t;
     
     rcl := UnderlyingCollection( enum );
@@ -153,7 +158,7 @@ InstallMethod( Position, true, [ IsRationalClassGroupEnumerator, IsObject,
     if t = fail  then
         return fail;
     else
-        return ( pow - 1 ) * Length( T ) + Position( T, t ^ -1 );
+        return ( pow - 1 ) * Length( T ) + PositionCanonical( T, t ^ -1 );
     fi;
 end );
 

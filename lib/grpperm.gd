@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.14  1997/01/21 15:49:06  htheisse
+#H  added `MinimizeExplicitTransversal'
+#H
 #H  Revision 4.13  1997/01/16 14:14:56  ahulpke
 #H  replaced DegreeOperation by NrMovedPoints
 #H
@@ -43,6 +46,8 @@ IsRightTransversalPermGroup := NewRepresentation
     ( "IsRightTransversalPermGroup", IsRightTransversal,
       [ "group", "subgroup", "stabChainGroup", "stabChainSubgroup" ] );
 
+MinimizeExplicitTransversal := NewOperationArgs
+                               ( "MinimizeExplicitTransversal" );
 AddCosetInfoStabChain := NewOperationArgs( "AddCosetInfoStabChain" );
 NumberCoset := NewOperationArgs( "NumberCoset" );
 CosetNumber := NewOperationArgs( "CosetNumber" );

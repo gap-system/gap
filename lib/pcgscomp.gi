@@ -37,7 +37,11 @@ function( efam, pcs )
     fi;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceCons(
+                IsPcgsDefaultRep,
+                IsPcgs,
+                efam,
+                pcs );
 
     # that it
     return pcgs;
@@ -57,7 +61,8 @@ function( efam, pcs )
     local   pcgs,  rws;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceNC(
+                IsPcgs and IsPcgsDefaultRep, IsObject, efam, pcs );
 
     # that it
     return pcgs;

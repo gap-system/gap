@@ -31,43 +31,29 @@ InstallMethod( \=, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
 ##
 #M  \<( <w1>, <w2> )
 ##
-##  Words are  ordered as follows.   One word <w1> is considered smaller than
-##  another word <w2> it it is shorter, or, if they have the same  length, if
-##  it is first in  the lexicographical ordering  implied by  the ordering of
-##  the  abstract  generators.  The ordering  of abstract  generators  is  as
-##  follows.  The abstract generators are ordered with respect to the strings
-##  that  were  passed to  'AbstractGenerator'  when  creating these abstract
-##  generators.   Each abstract  generator  <g>  is  also  smaller  than  its
-##  inverse, but this inverse is smaller than any abstract  generator that is
-##  larger than <g>.
+##  Words  are ordered as  follows: a lexicographical   order in the external
+##  representation is chosen.
 ##
-InstallMethod( \<, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
-    function( x, y )
-    local m, n;
-    m:= LengthWord( x );
-    n:= LengthWord( y );
-    if m < n then
-      return true;
-    elif n < m then
-      return false;
-    fi;
-    x:= ExtRepOfObj( x );
-    y:= ExtRepOfObj( y );
-    n:= 1;
-    for n in [ 1, 3 .. m-1 ] do
-      if x[n] < y[n] then
-        return true;
-      elif y[n] < x[n] then
-        return false;
-      fi;
-      if x[n+1] < y[n+1] then
-        return not ( ( x[n+1] < 0 and 0 < y[n+1] ) or y[n] < x[n+2] );
-      else
-        return ( y[n+1] < 0 and 0 < x[n+1] ) or x[n] < y[n+2];
-      fi;
+InstallMethod( \<,
+    IsIdentical,
+    [ IsAssocWord,
+      IsAssocWord ],
+    0,
+
+function( x, y )
+    local    n;
+
+    x := ExtRepOfObj( x );
+    y := ExtRepOfObj( y );
+    for n  in [ 1 .. Minimum(Length(x),Length(y)) ]  do
+        if x[n] < y[n]  then
+            return true;
+        elif y[n] < x[n]  then
+            return false;
+        fi;
     od;
-    return false;
-    end );
+    return Length(x) < Length(y);
+end );
 
 
 #############################################################################
@@ -610,7 +596,7 @@ InstallMethod( MappedWord, IsElmsCollsX,
 
     else
       mapped:= gens2[ Position( gens1, x[1] ) ] ^ x[2];
-      for i in [ 2 .. Length( x )/2 - 1 ] do
+      for i in [ 2 .. Length( x )/2 ] do
         exp:= x[ 2*i ];
         if exp <> 0 then
           mapped:= mapped * gens2[ Position( gens1, x[ 2*i-1 ] ) ] ^ exp;

@@ -57,6 +57,19 @@ char *          Revision_code_c =
 
 /****************************************************************************
 **
+*V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
+**
+**  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
+**
+**  'FIRST_STAT_CURR_FUNC' is defined in the declaration part of this package
+**  as follows
+**
+#define FIRST_STAT_CURR_FUNC    BODY_FUNC( CURR_FUNC )
+*/
+
+
+/****************************************************************************
+**
 *S  T_<name>  . . . . . . . . . . . . . .  symbolic names for statement types
 *S  FIRST_STAT_TYPE . . . . . . . . . . . . . . . . . .  first statement type
 *S  LAST_STAT_TYPE  . . . . . . . . . . . . . . . . . . . last statement type

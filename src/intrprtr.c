@@ -820,6 +820,7 @@ void            IntrWhileEnd ( void )
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
+    CodeWhileEnd();
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
@@ -921,6 +922,7 @@ void            IntrRepeatEnd ( void )
 
     /* otherwise must be coding                                            */
     assert( IntrCoding > 0 );
+    CodeRepeatEnd();
 
     /* code a function expression (with one statement in the body)         */
     CodeFuncExprEnd( 1UL, 0UL );
@@ -2274,11 +2276,9 @@ void            IntrAssDVar (
 
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
-    CurrLVars = ErrorLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
     ASS_HVAR( dvar, rhs );
-    CurrLVars = currLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the right hand side again                                      */
     PushObj( rhs );
@@ -2297,11 +2297,9 @@ void            IntrUnbDVar (
 
     /* assign the right hand side                                          */
     currLVars = CurrLVars;
-    CurrLVars = ErrorLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
     ASS_HVAR( dvar, (Obj)0 );
-    CurrLVars = currLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push void                                                           */
     PushVoidObj();
@@ -2326,11 +2324,9 @@ void            IntrRefDVar (
 
     /* get and check the value                                             */
     currLVars = CurrLVars;
-    CurrLVars = ErrorLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
     val = OBJ_HVAR( dvar );
-    CurrLVars = currLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
         ErrorQuit(
             "Variable: <debug-variable-%d-%d> must have a value",
@@ -2355,11 +2351,9 @@ void            IntrIsbDVar (
 
     /* get the value                                                       */
     currLVars = CurrLVars;
-    CurrLVars = ErrorLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( ErrorLVars );
     val = OBJ_HVAR( dvar );
-    CurrLVars = currLVars;
-    PtrLVars = PTR_BAG( CurrLVars );
+    SWITCH_TO_OLD_LVARS( currLVars  );
 
     /* push the value                                                      */
     PushObj( (val != 0 ? True : False) );

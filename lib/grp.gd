@@ -1194,6 +1194,15 @@ PrimePowerComponent := NewOperation(
     "PrimePowerComponent",
     [ IsMultiplicativeElement, IsInt and IsPosRat ] );
 
+#############################################################################
+##
+#A  GeneratorsAndRelators( <g> ) . . a list [free group, free gens, relators]
+##                               defining the group (to store a presentation)
+##
+GeneratorsAndRelators := NewAttribute("GeneratorsAndRelators",IsGroup);
+SetGeneratorsAndRelators := Setter(GeneratorsAndRelators);
+HasGeneratorsAndRelators := Tester(GeneratorsAndRelators);
+
 
 #############################################################################
 ##

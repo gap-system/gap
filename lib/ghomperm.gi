@@ -5,6 +5,15 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.18  1997/01/20 13:55:28  sam
+#H  moved the definition of structure preserving properties of general mappings
+#H      to new file 'mapphomo.gd',
+#H  renamed 'Kernel' and 'CoKernel' to 'KernelOfMonoidGeneralMapping' and
+#H      'CoKernelOfMonoidGeneralMapping', respectively,
+#H  added 'Kernel' and 'CoKernel' to 'overload.g'
+#H
+#H  (addition preserving mappings will follow soon)
+#H
 #H  Revision 4.17  1997/01/10 14:09:39  htheisse
 #H  corrected family relation for `CompositionMapping2'
 #H
@@ -356,9 +365,10 @@ end );
 
 #############################################################################
 ##
-#M  CoKernel( <hom> ) . . . . . . . . . . . . . . . . . . for perm group homs
+#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . . . . . for perm group homs
 ##
-InstallMethod( CoKernel, true, [ IsPermGroupGeneralMappingByImages ], 0,
+InstallMethod( CoKernelOfMonoidGeneralMapping,
+    true, [ IsPermGroupGeneralMappingByImages ], 0,
     function( hom )
     return NormalClosure( Image( hom ), SubgroupNC
                    ( Range( hom ), CoKernelGensPermHom( hom ) ) );
@@ -583,14 +593,15 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
     od;
     longgroup :=  Group(longgens,());
     MakeStabChainLong( hom, StabChainOp( longgroup, options ),
-            [ 1 .. n ], (), conperminv, hom, CoKernel );
+           [ 1 .. n ], (), conperminv, hom, CoKernelOfMonoidGeneralMapping );
     
     if    not HasInverse( hom )
        or not HasStabChain( Inverse( hom ) )
-       or not HasKernel( hom )  then
+       or not HasKernelOfMonoidGeneralMapping( hom )  then
         MakeStabChainLong( Inverse( hom ),
                 StabChainOp( longgroup, [ n + 1 .. n + k ] ),
-                [ n + 1 .. n + k ], conperminv, (), hom, Kernel );
+                [ n + 1 .. n + k ], conperminv, (), hom,
+                KernelOfMonoidGeneralMapping );
     fi;
     
     return StabChainAttr( hom );
@@ -675,26 +686,26 @@ InstallMethod( StabChainAttr, true,
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . for perm to perm group homs
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . for perm to perm group homs
 ##
-InstallMethod( Kernel, true,
+InstallMethod( KernelOfMonoidGeneralMapping, true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
     function( hom )
     StabChainPermGroupToPermGroupGeneralMappingByImages( hom );
-    return Kernel( hom );
+    return KernelOfMonoidGeneralMapping( hom );
 end );
 
 #############################################################################
 ##
-#M  CoKernel( <hom> ) . . . . . . . . . . . . . . for perm to perm group homs
+#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . for perm to perm group homs
 ##
-InstallMethod( CoKernel, true,
+InstallMethod( CoKernelOfMonoidGeneralMapping, true,
         [ IsPermGroupGeneralMappingByImages and
           IsToPermGroupGeneralMappingByImages ], 0,
     function( hom )
     StabChainPermGroupToPermGroupGeneralMappingByImages( hom );
-    return CoKernel( hom );
+    return CoKernelOfMonoidGeneralMapping( hom );
 end );
 
 #############################################################################
@@ -749,7 +760,7 @@ InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
             S,  T,  name;
 
     # compute the kernel of <hom>
-    K := Kernel( hom );
+    K := KernelOfMonoidGeneralMapping( hom );
 
     # create the preimage group
     H := EmptyStabChain( [  ], One( Source( hom ) ) );
@@ -772,9 +783,10 @@ end );
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . . for const hom
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . for const hom
 ##
-InstallMethod( Kernel, true, [ IsConstituentHomomorphism ], 0,
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsConstituentHomomorphism ], 0,
     function( hom )
     return Stabilizer( Source( hom ), Enumerator( hom!.externalSet ),
                    OnTuples );
@@ -869,8 +881,9 @@ ImageKernelBlocksHomomorphism := function( hom, H )
     od;
 
     # if <H> is the full group this also gives us the kernel
-    if full  and  not HasKernel( hom )  then
-        SetKernel( hom, GroupStabChain( Source( hom ), S, true ) );
+    if full  and  not HasKernelOfMonoidGeneralMapping( hom )  then
+        SetKernelOfMonoidGeneralMapping( hom,
+            GroupStabChain( Source( hom ), S, true ) );
     fi;
     
     return GroupStabChain( Range( hom ), I, true );
@@ -957,7 +970,8 @@ PreImageSetStabBlocksHomomorphism := function( hom, I )
 
     # if <I> is trivial then preimage is the kernel of <hom>
     if Length( I.genlabels ) = 0  then
-        H := DeepCopy( StabChainAttr( Kernel( hom ) ) );
+        H := DeepCopy( StabChainAttr(
+                 KernelOfMonoidGeneralMapping( hom ) ) );
 
     # else begin with the preimage $H_{block[i]}$ of the stabilizer  $I_{i}$,
     # adding preimages of the generators of  $I$  to those of  $H_{block[i]}$
@@ -982,9 +996,9 @@ end;
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . .  for blocks hom
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . .  for blocks hom
 ##
-InstallMethod( Kernel, true, [ IsBlocksHomomorphism ], 0,
+InstallMethod( KernelOfMonoidGeneralMapping, true, [ IsBlocksHomomorphism ], 0,
     function( hom )
     local   img;
     
@@ -992,7 +1006,7 @@ InstallMethod( Kernel, true, [ IsBlocksHomomorphism ], 0,
     if not HasImagesSource( hom )  then
         SetImagesSource( hom, img );
     fi;
-    return Kernel( hom );
+    return KernelOfMonoidGeneralMapping( hom );
 end );
 
 #############################################################################

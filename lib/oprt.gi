@@ -5,6 +5,18 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.30  1997/01/21 15:07:30  htheisse
+#H  introduced `PositionCanonical'
+#H
+#H  Revision 4.29  1997/01/20 13:55:36  sam
+#H  moved the definition of structure preserving properties of general mappings
+#H      to new file 'mapphomo.gd',
+#H  renamed 'Kernel' and 'CoKernel' to 'KernelOfMonoidGeneralMapping' and
+#H      'CoKernelOfMonoidGeneralMapping', respectively,
+#H  added 'Kernel' and 'CoKernel' to 'overload.g'
+#H
+#H  (addition preserving mappings will follow soon)
+#H
 #H  Revision 4.28  1997/01/13 17:03:15  htheisse
 #H  made use of `IsPcgsComputable'
 #H
@@ -337,7 +349,8 @@ InstallMethod( FunctionOperation, true, [ IsExternalSetByOperatorsRep ], 0,
     xset -> function( p, g )
     local   D;
         D := Enumerator( xset );
-        return D[ Position( D, p ) ^ ( g ^ OperationHomomorphism( xset ) ) ];
+        return D[ PositionCanonical( D, p ) ^
+                  ( g ^ OperationHomomorphism( xset ) ) ];
     end );
     
 #############################################################################
@@ -713,7 +726,7 @@ OperationHomomorphismSubsetAsGroupGeneralMappingByImages := function
     local   list,  ps,  poss,  blist,  p,  i,  gen,  img,  pos,  imgs,  hom;
     
     list := [ 1 .. Length( D ) ];
-    poss := BlistList( list, List( start, b -> Position( D, b ) ) );
+    poss := BlistList( list, List( start, b -> PositionCanonical( D, b ) ) );
     blist := DeepCopy( poss );
     list := List( gens, gen -> ShallowCopy( list ) );
     ps := Position( poss, true );
@@ -723,7 +736,7 @@ OperationHomomorphismSubsetAsGroupGeneralMappingByImages := function
         for i  in [ 1 .. Length( gens ) ]  do
             gen := oprs[ i ];
             img := opr( p, gen );
-            pos := Position( D, img );
+            pos := PositionCanonical( D, img );
             list[ i ][ ps ] := pos;
             if not blist[ pos ]  then
                 poss[ pos ] := true;
@@ -803,7 +816,7 @@ InstallMethod( OrbitOp,
         OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
     return OrbitByPosOp( G, D, BlistList( [ 1 .. Length( D ) ], [  ] ),
-                   Position( D, pnt ), pnt, gens, oprs, opr );
+                   PositionCanonical( D, pnt ), pnt, gens, oprs, opr );
 end );
 
 OrbitByPosOp := function( G, D, blist, pos, pnt, gens, oprs, opr )
@@ -814,7 +827,7 @@ OrbitByPosOp := function( G, D, blist, pos, pnt, gens, oprs, opr )
     for p  in orb  do
         for gen  in oprs  do
             img := opr( p, gen );
-            pos := Position( D, img );
+            pos := PositionCanonical( D, img );
             if not blist[ pos ]  then
                 blist[ pos ] := true;
                 Add( orb, img );
@@ -905,7 +918,7 @@ InstallMethod( OrbitsOp,
         orb := OrbitOp( G, D[ next ], gens, oprs, opr );
         Add( orbs, orb );
         for pnt  in orb  do
-            pos := Position( D, pnt );
+            pos := PositionCanonical( D, pnt );
             if pos <> fail  then
                 blist[ pos ] := true;
             fi;
@@ -1000,7 +1013,7 @@ InstallMethod( ExternalOrbitsOp,
         orb := ExternalOrbitOp( G, D, pnt, gens, oprs, opr );
         Add( orbs, orb );
         for p  in orb  do
-            blist[ Position( D, p ) ] := true;
+            blist[ PositionCanonical( D, p ) ] := true;
         od;
         next := Position( blist, false, next );
     od;
@@ -1025,7 +1038,7 @@ InstallOtherMethod( ExternalOrbitsOp,
         orb := ExternalOrbitOp( G, xset, pnt, gens, oprs, opr );
         Add( orbs, orb );
         for p  in orb  do
-            blist[ Position( D, p ) ] := true;
+            blist[ PositionCanonical( D, p ) ] := true;
         od;
         next := Position( blist, false, next );
     od;
@@ -1081,7 +1094,7 @@ InstallMethod( PermutationOp, true, [ IsObject, IsList, IsFunction ], 0,
         repeat
             old := new;
             pnt := opr( pnt, g );
-            new := Position( D, pnt );
+            new := PositionCanonical( D, pnt );
             blist[ new ] := true;
             list[ old ] := new;
         until new = fst;
@@ -1128,8 +1141,8 @@ PermutationCycle := function( arg )
     
     if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
         g := g ^ hom;
-        return PermutationOp( g, CycleOp( g, Position( D, pnt ), OnPoints ),
-                       OnPoints );
+        return PermutationOp( g, CycleOp( g, PositionCanonical( D, pnt ),
+                       OnPoints ), OnPoints );
     else
         return PermutationCycleOp( g, D, pnt, opr );
     fi;
@@ -1141,12 +1154,12 @@ InstallMethod( PermutationCycleOp, true,
     local   list,  old,  new,  fst;
     
     list := [  ];
-    fst := Position( D, pnt );
+    fst := PositionCanonical( D, pnt );
     new := fst;
     repeat
         old := new;
         pnt := opr( pnt, g );
-        new := Position( D, pnt );
+        new := PositionCanonical( D, pnt );
         list[ old ] := new;
     until new = fst;
     return PermList( list );
@@ -1198,7 +1211,7 @@ Cycle := function( arg )
     fi;
     
     if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return D{ CycleOp( g ^ hom, Position( D, pnt ), OnPoints ) };
+        return D{ CycleOp( g ^ hom, PositionCanonical( D, pnt ), OnPoints ) };
     elif IsBound( D )  then
         return CycleOp( g, D, pnt, opr );
     else
@@ -1220,7 +1233,7 @@ CycleByPosOp := function( g, D, blist, fst, pnt, opr )
     repeat
         Add( cyc, pnt );
         pnt := opr( pnt, g );
-        new := Position( D, pnt );
+        new := PositionCanonical( D, pnt );
         blist[ new ] := true;
     until new = fst;
     return Immutable( cyc );
@@ -1294,7 +1307,7 @@ InstallMethod( CyclesOp, true, [ IsObject, IsList, IsFunction ], 1,
         orb := CycleOp( g, D[ next ], opr );
         Add( orbs, orb );
         for pnt  in orb  do
-            pos := Position( D, pnt );
+            pos := PositionCanonical( D, pnt );
             if pos <> fail  then
                 blist[ pos ] := true;
             fi;
@@ -1548,7 +1561,7 @@ CycleLength := function( arg )
     fi;
     
     if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return CycleLengthOp( g ^ hom, Position( D, pnt ), OnPoints );
+        return CycleLengthOp( g ^ hom, PositionCanonical( D, pnt ), OnPoints );
     elif IsBound( D )  then
         return CycleLengthOp( g, D, pnt, opr );
     else
@@ -1759,7 +1772,7 @@ RepresentativeOperation := function( arg )
     if IsBound( gens )  and  IsPcgs( gens )  then
         return RepresentativeOperation( G, D, d, e, gens, oprs, opr );
     elif IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        d := Position( D, d );  e := Position( D, e );
+        d := PositionCanonical( D, d );  e := PositionCanonical( D, e );
         rep := RepresentativeOperationOp( ImagesSource( hom ), d, e,
                        OnPoints );
         if rep <> fail  then
@@ -1897,7 +1910,7 @@ InstallOtherMethod( StabilizerOp,
     if not IsIdentical( gens, oprs )  then
         hom := OperationHomomorphism( ExternalOrbitOp
                        ( G, D, d, gens, oprs, opr ) );
-        d := Position( D[ d ] );
+        d := PositionCanonical( D[ d ] );
         return PreImage( hom, StabilizerOp
                        ( ImagesSource( hom ), d, OnPoints ) );
     else
@@ -2062,8 +2075,8 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     xset := hom!.externalSet;
     D := HomeEnumerator( xset );
     opr := FunctionOperation( xset );
-    base := List( Base( xset ), b -> Position( D, b ) );
-    imgs := List( Base( xset ), b -> Position( D, opr( b, elm ) ) );
+    base := List( Base( xset ), b -> PositionCanonical( D, b ) );
+    imgs := List( Base( xset ), b -> PositionCanonical( D, opr( b, elm ) ) );
     return RepresentativeOperationOp( ImagesSource( hom ),
                    base, imgs, OnTuples );
 end );
@@ -2082,10 +2095,12 @@ end );
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . for operation hom
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . for operation hom
 ##
-InstallMethod( Kernel, true, [ IsOperationHomomorphismDefaultRep ], 0,
-    hom -> Kernel( AsGroupGeneralMappingByImages( hom ) ) );
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsOperationHomomorphismDefaultRep ], 0,
+    hom -> KernelOfMonoidGeneralMapping(
+               AsGroupGeneralMappingByImages( hom ) ) );
 
 #############################################################################
 ##

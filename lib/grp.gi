@@ -420,16 +420,6 @@ end );
 #M  ConjugacyClassesMaximalSubgroups( <G> )
 ##
 
-#############################################################################
-##
-#M  ConjugacyClassesPerfectSubgroups( <G> )
-##
-
-#############################################################################
-##
-#M  ConjugacyClassesSubgroups( <G> )
-##
-
 
 ##############################################################################
 ##
@@ -774,11 +764,6 @@ InstallMethod( ComputedPCores, true, [ IsGroup ], 0,
 #############################################################################
 ##
 #M  RationalClasses( <G> )
-##
-
-#############################################################################
-##
-#M  RepresentativesPerfectSubgroups( <G> )
 ##
 
 #############################################################################
@@ -1211,7 +1196,29 @@ InstallMethod( ClosureGroup,
     function( G, H )
     return G;
     end );
+    
+InstallMethod( ClosureGroup,
+    "method for group and element list",
+    IsIdentical,
+    [ IsGroup,
+      IsList and IsMultiplicativeElementWithInverseCollection ], 0,
+    function( G, gens )
+    local   gen;
+    
+    for gen  in gens  do
+        G := ClosureGroup( G, gen );
+    od;
+    return G;
+end );
 
+InstallMethod( ClosureGroup,
+    "method for group and empty element list",
+    true,
+    [ IsGroup,
+      IsList and IsEmpty ], 0,
+    function( G, nogens )
+    return G;
+end );
 
 #############################################################################
 ##

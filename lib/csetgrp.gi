@@ -52,23 +52,24 @@ end;
 ##  IntermediateGroup(<G>,<U>)  . . . . . . . . . subgroup of G containing U
 ##
 ##  This routine tries to find a subgroup E of G, such that G>E>U. If U is
-##  maximal, it returns false. This is done by finding minimal blocks for
+##  maximal, it returns fail. This is done by finding minimal blocks for
 ##  the operation of G on the Right Cosets of U.
 ##
 IntermediateGroup := function(G,U)
-local o,b;
+local o,b,img;
 
   if U=G then
-    return false;
+    return fail;
   fi;
   o:=OperationHomomorphism(G,RightTransversal(G,U),OnRight);
-  b:=Blocks(o,MovedPoints(o));
+  img:=ImagesSource(o);
+  b:=Blocks(img,MovedPoints(img));
   if Length(b)=1 then
-    return false;
+    return fail;
   else
-    b:=First(b,i->1 in i);
-    b:=Stabilizer(ImagesSource(o),b[1],OnSets);
+    b:=StabilizerOfBlockNC(img,First(b,i->1 in i));
     b:=PreImage(o,b);
+    return b;
   fi;
 end;
 
@@ -111,7 +112,7 @@ local bound,a,b,c,cnt,r,i,j,bb,normalStep,gens;
 	  repeat
 	    if Index(bb,a)<3000 then
 	      b:=IntermediateGroup(bb,a);
-	      if b=false then
+	      if b=fail then
 		b:=bb;
 	      fi;
 	      cnt:=0;

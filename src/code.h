@@ -31,6 +31,15 @@ char *          Revision_code_h =
 
 /****************************************************************************
 **
+*V  FIRST_STAT_CURR_FUNC  . . . . . . . .  index of first statement in a body
+**
+**  'FIRST_STAT_CURR_FUNC' is the index of the first statement in a body.
+*/
+#define FIRST_STAT_CURR_FUNC    BODY_FUNC( CURR_FUNC )
+
+
+/****************************************************************************
+**
 *S  T_LVARS . . . . . . . . . . . . . . . .  symbolic name for lvars bag type
 **
 **  'T_LVARS' is the type of bags used to store values of local variables.

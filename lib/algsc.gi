@@ -131,8 +131,8 @@ InstallMethod( PrintObj,
     local F,      # family of 'elm'
           names,  # generators names
           len,    # dimension of the algebra
-          depth,  # first nonzero position in coefficients list
           zero,   # zero element of the ring
+          depth,  # first nonzero position in coefficients list
           one,    # identity element of the ring
           i;      # loop over the coefficients list
    
@@ -140,7 +140,8 @@ InstallMethod( PrintObj,
     names := F!.names;
     elm   := ExtRepOfObj( elm );
     len   := Length( elm );
-    depth := DepthVector( elm );
+    zero  := Zero( elm[1] );
+    depth := PositionNot( elm, zero );
   
     if len < depth then
  
@@ -150,8 +151,7 @@ InstallMethod( PrintObj,
 
     else
 
-      zero := Zero( elm[1] );
-      one  := One(  elm[1] );
+      one:= One(  elm[1] );
 
       if elm[ depth ] <> one then
         Print( "(", elm[ depth ], ")*" );
@@ -490,8 +490,7 @@ AlgebraByStructureConstantsArg := function( arglist )
     # then all coefficients in this family are admissible.
     # Otherwise only coefficients from 'R' itself are allowed.
     Fam:= NewFamily( "SCAlgebraObjFamily", IsSCAlgebraObj );
-    if HasZero( ElementsFamily( FamilyObj( R ) ) ) then
-#T or call 'Zero'?
+    if Zero( ElementsFamily( FamilyObj( R ) ) ) <> fail then
       SetFilterObj( Fam, IsFamilyOverFullCoefficientsFamily );
     else
       Fam!.coefficientsDomain:= R;
@@ -511,8 +510,8 @@ AlgebraByStructureConstantsArg := function( arglist )
 
     # Make the generators and the algebra.
     if 0 < n then
-      gens:= List( IdentityMat( n, R ),
-                   x -> ObjByExtRep( Fam, x ) );
+      gens:= Immutable( List( IdentityMat( n, R ),
+                              x -> ObjByExtRep( Fam, x ) ) );
       A:= FLMLORByGenerators( R, gens );
       UseBasis( A, gens );
     else

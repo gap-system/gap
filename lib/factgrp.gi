@@ -45,7 +45,7 @@ local G,N,op,i,c,p,pool,mustsort,perm;
     p:=[];
     for i in op do
       if IsMapping(i) then
-        c:=Intersection(G,Kernel(i));
+        c:=Intersection(G,KernelOfMonoidGeneralMapping(i));
       else
         c:=Core(G,i);
       fi;
@@ -100,8 +100,8 @@ local G,N,op,i,c,p,pool,mustsort,perm;
   fi;
 
   Info(InfoFactor,3,"Added price ",c," for size ",Index(G,N));
-  if IsMapping(op) and not HasKernel(op) then
-    SetKernel(op,N);
+  if IsMapping(op) and not HasKernelOfMonoidGeneralMapping(op) then
+    SetKernelOfMonoidGeneralMapping(op,N);
   fi;
   pool.ops[p]:=op;
   pool.cost[p]:=c;
@@ -220,7 +220,7 @@ local pool,p,h,ise,emb,i,j;
       ise:=Subgroup(h,emb);
 
       h:=GroupHomomorphismByImages(G,ise,GeneratorsOfGroup(G),emb);
-      SetKernel(h,N);
+      SetKernelOfMonoidGeneralMapping(h,N);
       pool.ops[p]:=h;
     elif IsGroup(h) then
       h:=FactorCosetOperation(G,h,N); # will implicitely store
@@ -265,9 +265,6 @@ local G,pool,p,comb,i,c,perm,l,isi;
     l:=Length(pool.ker);
     Info(InfoFactor,2,"CloseNaturalHomomorphismsPool");
     for i in comb do
-if ForAny(comb,j->not IsSSortedList(j)) then
-  Error("huh?");
-fi;
       c:=Intersection(pool.ker[i[1]],pool.ker[i[2]]);
       isi:=ShallowCopy(i);
 
@@ -308,7 +305,7 @@ end;
 #############################################################################
 ##
 #F  FactorCosetOperation( <G>, <U>, [<N>] )  operation on the right cosets Ug
-##                                        with possibility to indicate Kernel
+##                                        with possibility to indicate kernel
 ##
 FactorCosetOperation:=function(arg)
 local G,u,op,h,p,N;
@@ -331,7 +328,7 @@ local G,u,op,h,p,N;
   SetSize(op,Index(G,N));
 
   # and note our knowledge
-  SetKernel(h,N);
+  SetKernelOfMonoidGeneralMapping(h,N);
   AddNaturalHomomorphismsPool(G,N,h);
   return h;
 end;
@@ -382,7 +379,7 @@ local dom,o,bl,i,j,b,op,pool;
 
     for i in bl do
       op:=OperationHomomorphism(G,i,OnSets);
-      b:=Kernel(op);
+      b:=KernelOfMonoidGeneralMapping(op);
 
       #AH kernel is blockstab intersect.
       #b:=g;
@@ -467,11 +464,12 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	      AddSet(bp,bb[1]);
 	      # store action
 	      op:=OperationHomomorphism(img,bb,OnSets);
-	      k:=Kernel(op);
+	      k:=KernelOfMonoidGeneralMapping(op);
 	      op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 		 List(gens,i->Image(op,i)));
-	      SetKernel(op,PreImage(oh,k));
-	      AddNaturalHomomorphismsPool(G,Kernel(op),op,Length(bb));
+	      SetKernelOfMonoidGeneralMapping(op,PreImage(oh,k));
+	      AddNaturalHomomorphismsPool(G,KernelOfMonoidGeneralMapping(op),
+                                          op,Length(bb));
 	      # and note whether we got better
 	      improve:=improve or (Size(k)=1);
 	      if Size(k)=1 and Length(bb)<bestdeg then
@@ -488,12 +486,13 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	else
 	  Info(InfoFactor,2,"try only one system");
 	  op:=OperationHomomorphism(img,b,OnSets);
-	  k:=Kernel(op);
+	  k:=KernelOfMonoidGeneralMapping(op);
 	  # keep action knowledge
 	  op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 	     List(gens,i->Image(op,i)));
-	  SetKernel(op,PreImage(oh,k));
-	  AddNaturalHomomorphismsPool(G,Kernel(op),op,Length(b));
+	  SetKernelOfMonoidGeneralMapping(op,PreImage(oh,k));
+	  AddNaturalHomomorphismsPool(G,KernelOfMonoidGeneralMapping(op),
+                                      op,Length(b));
 	  improve:=improve or (Size(k)=1);
 	fi;
 	if improve then

@@ -80,8 +80,9 @@ end );
 #M  IsSingleValued( <hom> ) . . . . . . . . . . . for group ``homomorphisms''
 ##
 InstallMethod( IsSingleValued, true, [ IsMonoidGeneralMapping ], 0,
-    hom -> IsTrivial( CoKernel( hom ) ) );
-InstallMethod( CoKernel, true, [ IsGroupHomomorphism and IsSingleValued ],
+    hom -> IsTrivial( CoKernelOfMonoidGeneralMapping( hom ) ) );
+InstallMethod( CoKernelOfMonoidGeneralMapping,
+    true, [ IsGroupHomomorphism and IsSingleValued ],
         SUM_FLAGS, hom -> TrivialSubgroup( Range( hom ) ) );
 
 #############################################################################
@@ -89,8 +90,9 @@ InstallMethod( CoKernel, true, [ IsGroupHomomorphism and IsSingleValued ],
 #M  IsInjective( <hom> )  . . . . . . . . . . . . for group ``homomorphisms''
 ##
 InstallMethod( IsInjective, true, [ IsMonoidGeneralMapping ], 0,
-    hom -> IsTrivial( Kernel( hom ) ) );
-InstallMethod( Kernel, true, [ IsMonoidGeneralMapping and IsInjective ],
+    hom -> IsTrivial( KernelOfMonoidGeneralMapping( hom ) ) );
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsMonoidGeneralMapping and IsInjective ],
         SUM_FLAGS, hom -> TrivialSubgroup( Source( hom ) ) );
 
 #############################################################################
@@ -130,7 +132,8 @@ InstallMethod( ImagesElm, FamSourceEqFamElm,
     
     img := ImagesRepresentative( hom, elm );
     if img = fail  then  return [  ];
-                   else  return CoKernel( hom ) * img;  fi;
+                   else  return CoKernelOfMonoidGeneralMapping( hom ) * img;
+    fi;
 end );
 
 #############################################################################
@@ -143,7 +146,8 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
     if not IsTotal( hom )  then
         elms := Intersection( elms, PreImagesRange( hom ) );
     fi;
-    return ClosureGroup( CoKernel( hom ), SubgroupNC( Range( hom ),
+    return ClosureGroup( CoKernelOfMonoidGeneralMapping( hom ),
+                   SubgroupNC( Range( hom ),
                    List( GeneratorsOfGroup( elms ),
                          gen -> ImagesRepresentative( hom, gen ) ) ) );
 end );
@@ -171,7 +175,8 @@ InstallMethod( PreImagesElm, FamRangeEqFamElm,
     
     pre := ImagesRepresentative( hom, elm );
     if pre = fail  then  return [  ];
-                   else  return Kernel( hom ) * pre;  fi;
+                   else  return KernelOfMonoidGeneralMapping( hom ) * pre;
+    fi;
 end );
 
 #############################################################################
@@ -184,7 +189,8 @@ InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
     if not IsSurjective( hom )  then
         elms := Intersection( elms, ImagesSource( hom ) );
     fi;
-    return ClosureGroup( Kernel( hom ), SubgroupNC( Source( hom ),
+    return ClosureGroup( KernelOfMonoidGeneralMapping( hom ),
+                   SubgroupNC( Source( hom ),
                    List( GeneratorsOfGroup( elms ),
                          gen -> PreImagesRepresentative( hom, gen ) ) ) );
 end );
@@ -250,33 +256,37 @@ end );
 
 #############################################################################
 ##
-#M  CoKernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . .  via images
+#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . .  via images
 ##
-InstallMethod( CoKernel, true,
+InstallMethod( CoKernelOfMonoidGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernel( AsGroupGeneralMappingByImages( hom ) ) );
+    hom -> CoKernelOfMonoidGeneralMapping(
+               AsGroupGeneralMappingByImages( hom ) ) );
 
-InstallMethod( SetCoKernel, true,
+InstallMethod( SetCoKernelOfMonoidGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
-    SetCoKernel( AsGroupGeneralMappingByImages( hom ), K );
+    SetCoKernelOfMonoidGeneralMapping( AsGroupGeneralMappingByImages( hom ),
+                                       K );
     TryNextMethod();
 end );
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . . .  via images
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  via images
 ##
-InstallMethod( Kernel, true,
+InstallMethod( KernelOfMonoidGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> Kernel( AsGroupGeneralMappingByImages( hom ) ) );
+    hom -> KernelOfMonoidGeneralMapping(
+               AsGroupGeneralMappingByImages( hom ) ) );
 
-InstallMethod( SetKernel, true,
+InstallMethod( SetKernelOfMonoidGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
-    SetKernel( AsGroupGeneralMappingByImages( hom ), K );
+    SetKernelOfMonoidGeneralMapping( AsGroupGeneralMappingByImages( hom ),
+                                     K );
     TryNextMethod();
 end );
 
@@ -450,9 +460,10 @@ end;
 
 #############################################################################
 ##
-#M  CoKernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
+#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( CoKernel, true, [ IsGroupGeneralMappingByImages ], 0,
+InstallMethod( CoKernelOfMonoidGeneralMapping,
+    true, [ IsGroupGeneralMappingByImages ], 0,
     function( hom )
     local   C,          # co kernel of <hom>, result
             gen,        # one generator of <C>
@@ -485,10 +496,11 @@ end );
 
 #############################################################################
 ##
-#M  Kernel( <hom> ) . . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
+#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . . .  for GHBI
 ##
-InstallMethod( Kernel, true, [ IsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernel( Inverse( hom ) ) );
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsGroupGeneralMappingByImages ], 0,
+    hom -> CoKernelOfMonoidGeneralMapping( Inverse( hom ) ) );
 
 #############################################################################
 ##
@@ -690,8 +702,10 @@ InstallMethod( Source, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
 InstallMethod( Range, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
     quo -> Range( quo!.modM ) );
 
-InstallMethod( Kernel, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
-    quo -> ImagesSet( quo!.modN, Kernel( quo!.modM ) ) );
+InstallMethod( KernelOfMonoidGeneralMapping,
+    true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
+    quo -> ImagesSet( quo!.modN,
+                      KernelOfMonoidGeneralMapping( quo!.modM ) ) );
 
 InstallMethod( PrintObj, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
     function( hom )

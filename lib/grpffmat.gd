@@ -39,6 +39,8 @@ InstallTrueMethod( IsFinite,
 InstallTrueMethod( IsHandledByNiceMonomorphism,
     IsFFEMatrixGroup and IsFinite );
 
+NicomorphismOfFFEMatrixGroup := NewOperationArgs
+                                ( "NicomorphismOfFFEMatrixGroup" );
 
 #############################################################################
 ##

@@ -52,6 +52,7 @@ extern char *           In;
 #include        "objfgelm.h"            /* InitFreeGroupElements           */
 #include        "objscoll.h"            /* InitSingleCollector             */
 #include        "objpcgel.h"            /* InitPcElements                  */
+#include        "objcftl.h"              /* Init polycyclic collector       */
 
 #include        "sctable.h"             /* InitSCTable                     */
 #include        "costab.h"              /* InitCosetTable                  */
@@ -713,15 +714,13 @@ Obj             FuncWhere (
     currLVars = CurrLVars;
 
     if ( ErrorLVars != BottomLVars ) {
-        CurrLVars = ErrorLVars;
-        PtrLVars = PTR_BAG(CurrLVars);
-        CurrLVars = BRK_CALL_FROM();
-        PtrLVars  = PTR_BAG(CurrLVars);
+        SWITCH_TO_OLD_LVARS( ErrorLVars );
+        SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
         while ( CurrLVars != BottomLVars && 0 < depth ) {
             call = BRK_CALL_TO();
-	    if ( call == 0 ) {
-		Pr( "<corrupted call value> ", 0L, 0L );
-	    }
+            if ( call == 0 ) {
+                Pr( "<corrupted call value> ", 0L, 0L );
+            }
             else if ( T_PROCCALL_0ARGS <= TYPE_STAT(call)
                    && TYPE_STAT(call)  <= T_PROCCALL_XARGS ) {
                 PrintStat( call );
@@ -731,8 +730,7 @@ Obj             FuncWhere (
                 PrintExpr( call );
             }
             Pr( " called from\n", 0L, 0L );
-            CurrLVars = BRK_CALL_FROM();
-            PtrLVars = PTR_BAG(CurrLVars);
+            SWITCH_TO_OLD_LVARS( BRK_CALL_FROM() );
             depth--;
         }
         if ( 0 < depth ) {
@@ -747,7 +745,7 @@ Obj             FuncWhere (
         Pr( "not in any function\n", 0L, 0L );
     }
 
-    CurrLVars = currLVars;
+    SWITCH_TO_OLD_LVARS( currLVars );
 
 #endif
 
@@ -1003,8 +1001,8 @@ Obj             FuncRuntime (
 **
 *F  FuncID_FUNC( <self>, <val1> ) . . . . . . . . . . . . . . . return <val1>
 */
-Obj FuncID_FUNC (
-    Obj			self,
+Obj             FuncID_FUNC (
+    Obj                 self,
     Obj                 val1 )
 {
     return val1;
@@ -1144,7 +1142,7 @@ Obj FuncSWAP_MPTR (
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
 */
-Obj FuncGASMAN (
+Obj             FuncGASMAN (
     Obj                 self,
     Obj                 args )
 {
@@ -1231,7 +1229,7 @@ Obj FuncGASMAN (
 **
 *F  FuncSHALLOW_SIZE( <self>, <obj> ) . . . .  expert function 'SHALLOW_SIZE'
 */
-Obj FuncSHALLOW_SIZE (
+Obj             FuncSHALLOW_SIZE (
     Obj                 self,
     Obj                 obj )
 {
@@ -1310,9 +1308,9 @@ Obj FuncXTYPE_OBJ (
 **
 *F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
 */
-Obj FuncOBJ_HANLDE (
-    Obj			self,
-    Obj			obj )
+Obj         FuncOBJ_HANLDE (
+    Obj                 self,
+    Obj                 obj )
 {
     return (Obj)INT_INTOBJ(obj);
 }
@@ -1322,9 +1320,9 @@ Obj FuncOBJ_HANLDE (
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
 */
-Obj FuncHANLDE_OBJ (
-    Obj			self,
-    Obj			obj )
+Obj             FuncHANLDE_OBJ (
+    Obj                 self,
+    Obj                 obj )
 {
     return (Obj)INTOBJ_INT((Int)obj);
 }
@@ -1664,6 +1662,8 @@ void            InitGap (
     InitFuncs();
     SET_REVISION( "funcs_c", Revision_funcs_c );
     SET_REVISION( "funcs_h", Revision_funcs_h );
+
+    InitPcc();
 
     InitDeepThought();
     InitDTEvaluation();

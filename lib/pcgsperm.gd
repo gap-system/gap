@@ -5,6 +5,10 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.7  1997/01/20 16:19:59  htheisse
+#H  added methods for induced and modulo perm pcgs
+#H  used them in conjugacy class routines for soluble groups
+#H
 #H  Revision 4.6  1996/12/19 09:59:13  htheisse
 #H  added revision lines
 #H
@@ -53,6 +57,8 @@ PcgsStabChainSeries := NewOperationArgs( "PcgsStabChainSeries" );
 ExponentsOfPcElementPermGroup := NewOperationArgs( "ExponentsOfPcElementPermGroup" );
 PcGroupPcgs := NewOperationArgs( "PcGroupPcgs" );
 SolvableNormalClosurePermGroup := NewOperationArgs( "SolvableNormalClosurePermGroup" );
+TailOfPcgsPermGroup := NewOperationArgs( "TailOfPcgsPermGroup" );
+PcgsMemberPcSeriesPermGroup := NewOperationArgs( "PcgsMemberPcSeriesPermGroup" );
 
 #############################################################################
 ##

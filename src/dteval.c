@@ -20,14 +20,16 @@ static int             evlist, evlistvec, Orders, DeepThoughtPols, Powers;
 static int             Exponent;
 Obj                    komprimiere;
 
+extern Obj             ShallowCopyPlist( Obj  list );
+
 void       MultGen(
                     Obj     xk,
-                    int     gen,
+                    UInt    gen,
                     Obj     power,
                     Obj     pseudoreps    )
 {
-    int  i, j;
-    Obj  copy, sum, sum1, sum2, prod, ord, Evaluation(), help;
+    UInt  i, j;
+    Obj   copy, sum, sum1, sum2, prod, ord, Evaluation(), help;
 
     if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) == 0 )
         return;
@@ -312,7 +314,8 @@ Obj       Multiplybound(
         return y;
     if ( anf > end )
         return x;
-    if ( IS_INTOBJ( ELM_PLIST(pseudoreps, CELM(y, anf) ) ) )
+    if ( IS_INTOBJ( ELM_PLIST(pseudoreps, CELM(y, anf) ) )   &&
+         CELM(pseudoreps, CELM(y, anf) ) == 0                          )
     {
         res = NEW_PLIST( T_PLIST, 2*LEN_PLIST( pseudoreps ) );
 	len = LEN_PLIST(x);
@@ -446,7 +449,8 @@ Obj      Power(
     Obj     res, Solution(), m, y;
     UInt    i,len;
 
-    if ( IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(x, 1) ) )  )
+    if ( IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(x, 1) ) )   &&
+         CELM( pseudoreps, CELM(x, 1) ) == 0                     )
     {
         len = LEN_PLIST(x);
         res = NEW_PLIST( T_PLIST, len );
@@ -611,6 +615,19 @@ Obj       Commutator( Obj     x,
 }
 
 
+Obj       Conjugate( Obj     x,
+		     Obj     y,
+		     Obj     pseudoreps  )
+{
+    Obj    res, Solution(), Multiply();
+
+    res = Multiply(x, y, pseudoreps);
+    res = Solution(y, res, pseudoreps);
+    return res;
+}
+
+
+
 Obj      Commutatorred( Obj    x,
 			Obj    y,
 			Obj    pcp  )
@@ -633,6 +650,29 @@ Obj      Commutatorred( Obj    x,
 }
 
 
+Obj      Conjugatered( Obj    x,
+			Obj    y,
+			Obj    pcp  )
+{
+    Obj    orders, Conjugate(), mod, c, res;
+    UInt   i, len;
+
+    orders = ElmPRec(pcp, Orders);
+    res = Conjugate(x, y, ElmPRec( pcp, DeepThoughtPols) );
+    len = LEN_PLIST(res);
+    for (i=2; i<=len; i+=2)
+        if ( CELM(res, i-1) <= LEN_PLIST(orders)         &&
+             ( c=ELM_PLIST( orders, CELM( res, i-1 ) )) != 0 )
+	{
+	    mod = ModInt( ELM_PLIST(res, i), c );
+	    SET_ELM_PLIST( res, i, mod);
+	    CHANGED_BAG(res);
+	}
+    return res;
+}
+
+
+
 Obj       FuncDTCommutator( Obj      self,
                             Obj      x,
 		   	    Obj      y,
@@ -645,6 +685,23 @@ Obj       FuncDTCommutator( Obj      self,
     ReduceWord(res, pcp);
     return res;
 }
+
+
+Obj       FuncDTConjugate( Obj      self,
+                           Obj      x,
+		   	   Obj      y,
+			   Obj      pcp  )
+{
+    Obj   res, Conjugatered();
+    void  ReduceWord();
+
+    if  ( LEN_PLIST(y) == 0 )
+        return x;
+    res = Conjugatered(x, y, pcp);
+    ReduceWord(res, pcp);
+    return res;
+}
+
 
 
 Obj       Commutator1( Obj      x,
@@ -704,6 +761,8 @@ Obj       FuncDTQuotient( Obj      self,
     Obj     Solutionred(), Multiplyboundred(), help, res;
     void    ReduceWord();
 
+    if  ( LEN_PLIST(y) == 0 )
+        return x;
     help = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST(help, 0);
     res = Solutionred(y, help, pcp);
@@ -987,6 +1046,10 @@ Obj      FuncDTmultiply( Obj      self,
     Obj    Multiplyboundred(), res;
     void   ReduceWord();
 
+    if  ( LEN_PLIST(x) == 0 )
+        return y;
+    if  ( LEN_PLIST(y) == 0 )
+        return x;
     res = Multiplyboundred(x, y, 1, LEN_PLIST(y), pcp);
     ReduceWord(res, pcp);
     return res;
@@ -1015,6 +1078,8 @@ Obj      FuncDTSolution( Obj     self,
     Obj     Solutionred(), res;
     void    ReduceWord();
 
+    if  ( LEN_PLIST(x) == 0 )
+        return y;
     res = Solutionred(x, y, pcp);
     ReduceWord(res, pcp);
     return res;
@@ -1057,5 +1122,7 @@ void     InitDTEvaluation(void)
              "lword, rword, rewritingsystem", FuncDTCommutator1)    );
     AssGVar( GVarName("DTQuotient"), NewFunctionC("DTQuotient", 3L,
              "lword, rword, rewritingsystem", FuncDTQuotient)   );
+    AssGVar( GVarName("DTConjugate"), NewFunctionC("DTConjugate", 3L,
+             "lword, rword, rewritingsystem", FuncDTConjugate)   );
     InitFopyGVar(GVarName("komprimiere"), &komprimiere);
 }

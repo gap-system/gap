@@ -76,7 +76,15 @@ DisplayProfile := function( arg )
 	if tmp[1] > 0  then
             if all[i] in funcs  then
                 n := [];
-                Add( n, nam[i] );
+                if IsString(nam[i])  then
+                    str := nam[i];
+                else
+                    str := ShallowCopy(nam[i][1]);
+                    for  k  in [ 2 .. Length(nam[i]) ]  do
+                        Append( str, nam[i][k] );
+                    od;
+                fi;
+                Add( n, str );
                 Add( n, tmp[1] );
                 if 0 < tmp[2]  then Add(n,tmp[2]);  else Add(n,0);  fi;
                 if 0 < tmp[3]  then Add(n,tmp[3]);  else Add(n,0);  fi;
@@ -99,6 +107,7 @@ DisplayProfile := function( arg )
     Sort( prof, function(a,b)
         return ( a[4] = b[4] and a[2] > b[2] ) or a[4] > b[4];
     end );
+    prof := Reversed(prof);
 
     # set width and names
     if ForAll( prof, i -> i[5] = 0 )  then
@@ -281,7 +290,7 @@ ProfileMethods := function( arg )
                 for j  in [ 0, (4+i) .. Length(meth)-(4+i) ]  do
                     Add( funcs, meth[j+(2+i)] );
                     if name = meth[j+(4+i)]  then
-                        Add( names, Concatenation("Method(",name,")") );
+                        Add( names, [ "Method(", name, ")" ] );
                     else
                         Add( names, meth[j+(4+i)] );
                     fi;

@@ -64,6 +64,15 @@ PcgsByPcSequenceNC := NewOperation(
 
 #############################################################################
 ##
+#O  PcgsByPcSequenceCons( <req-filters>, <imp-filters>, <fam>, <pcs> )
+##
+PcgsByPcSequenceCons := NewConstructor(
+    "PcgsByPcSequenceCons",
+    [ IsObject, IsObject, IsFamily, IsList ] );
+
+
+#############################################################################
+##
 
 #A  GroupByPcgs( <pcgs> )
 ##
@@ -223,6 +232,62 @@ RelativeOrderOfPcElement := NewOperation(
 SumOfPcElement := NewOperation(
     "SumOfPcElement",
     [ IsPcgs, IsObject, IsObject ] );
+
+
+#############################################################################
+##
+
+#O  ExtendedIntersectionSumPcgs( <parent-pcgs>, <n>, <u> )
+##
+ExtendedIntersectionSumPcgs := NewOperation(
+    "ExtendedIntersectionSumPcgs",
+    [ IsPcgs, IsList, IsList ] );
+
+
+#############################################################################
+##
+#O  IntersectionSumPcgs( <parent-pcgs>, <n>, <u> )
+##
+IntersectionSumPcgs := NewOperation(
+    "IntersectionSumPcgs",
+    [ IsPcgs, IsList, IsList ] );
+
+
+#############################################################################
+##
+#O  SumPcgs( <parent-pcgs>, <n>, <u> )
+##
+SumPcgs := NewOperation(
+    "SumPcgs",
+    [ IsPcgs, IsList, IsList ] );
+
+
+#############################################################################
+##
+#O  SumFactorizationFunctionPcgs( <parent-pcgs>, <n>, <u> )
+##
+SumFactorizationFunctionPcgs := NewOperation(
+    "SumFactorizationFunctionPcgs",
+    [ IsPcgs, IsList, IsList ] );
+
+
+#############################################################################
+##
+
+#F  EnumeratorByPcgs( <pcgs>, <poss> )
+##
+EnumeratorByPcgs := NewOperation(
+    "EnumeratorByPcgs",
+    [ IsPcgs ] );
+
+
+#############################################################################
+##
+#O  ExtendedPcgs( <N>, <gens> )
+##
+ExtendedPcgs := NewOperation(
+    "ExtendedPcgs",
+    [ IsPcgs, IsList and IsMultiplicativeElementWithInverseCollection ] );
 
 
 #############################################################################

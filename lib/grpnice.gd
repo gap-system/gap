@@ -206,6 +206,36 @@ end;
 
 #############################################################################
 ##
+#F  SubgroupMethodByNiceMonomorphism( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphism := function( oper, par )
+
+    # check the argument length
+    if 1 <> Length(par)  then
+        Error( "need only one argument for ", NAME_FUNCTION(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        true,
+        par,
+        0,
+        function( obj )
+            local   nice,  img,  sub;
+            nice := NiceMonomorphism(obj);
+            img  := oper( NiceObject(obj) );
+            sub  := GroupByNiceMonomorphism( nice, img );
+            SetParent( sub, obj );
+            return sub;
+        end );
+end;
+
+
+#############################################################################
+##
 #F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
 GroupMethodByNiceMonomorphismCollOther := function( oper, par )

@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  grpperm.gi                  GAP library                  UPol, MSch, HThe
+#W  grpperm.gi                  GAP library                    Heiko Thei"sen
 ##
 #H  @(#)$Id$
 ##
@@ -614,7 +614,7 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
 end );
 
 InstallMethod( ClosureGroup, true,
-        [ IsPermGroup and HasStabChain, IsObject ], 0,
+        [ IsPermGroup and HasStabChain, IsObject ], 20,
     function( G, gens )
     return ClosureGroup( G, gens, rec() );
 end );
@@ -1367,10 +1367,37 @@ end );
 #############################################################################
 ##
 
+#F  MinimizeExplicitTransversal( <U>, <maxmoved> )  . . . . . . . . . . local
+##
+MinimizeExplicitTransversal := function( U, maxmoved )
+    local   explicit,  lenflock,  flock,  lenblock,  index,  s;
+    
+    if     IsBound( U.explicit )
+       and IsBound( U.stabilizer )  then
+        explicit := U.explicit;
+        lenflock := U.stabilizer.index * U.lenblock / Length( U.orbit );
+        flock    := U.flock;
+        lenblock := U.lenblock;
+        index    := U.index;
+        ChangeStabChain( U, [ 1 .. maxmoved ] );
+        for s  in [ 1 .. Length( explicit ) ]  do
+            explicit[ s ] := MinimalElementCosetStabChain( U, explicit[ s ] );
+        od;
+        Sort( explicit );
+        U.explicit := explicit;
+        U.lenflock := lenflock;
+        U.flock    := flock;
+        U.lenblock := lenblock;
+        U.index    := index;
+    fi;
+end;
+
+#############################################################################
+##
 #F  RightTransversalPermGroupConstructor( <filter>, <G>, <U> )  . constructor
 ##
 RightTransversalPermGroupConstructor := function( filter, G, U )
-    local   enum,  orbs,  domain,  bpt,  s,  explicit,  lenflock,  flock;
+    local   enum,  orbs,  domain,  bpt;
     
     enum := Objectify( NewKind( FamilyObj( G ), filter ),
           rec( group := G,
@@ -1391,28 +1418,10 @@ RightTransversalPermGroupConstructor := function( filter, G, U )
             ChangeStabChain( U, [ bpt ], false );  U := U.stabilizer;
         od;
     fi;
-    AddCosetInfoStabChain( enum!.stabChainGroup, enum!.stabChainSubgroup );
-    
-    # The topmost (remaining) explicit transversal must contain minimal coset
-    # representatives.
-    U := enum!.stabChainSubgroup;
-    while not IsBound( U.explicit )  and  IsBound( U.stabilizer )  do
-        U := U.stabilizer;
-    od;
-    if IsBound( U.explicit )  and  IsBound( U.stabilizer )  then
-        explicit := U.explicit;
-        lenflock := U.stabilizer.index * U.lenblock / Length( U.orbit );
-        flock    := U.flock;
-        ChangeStabChain( U, [ 1 .. LargestMovedPoint( enum!.group ) ] );
-        for s  in [ 1 .. Length( explicit ) ]  do
-            explicit[ s ] := MinimalElementCosetStabChain( U, explicit[ s ] );
-        od;
-        Sort( explicit );
-        U.explicit := explicit;
-        U.lenflock := lenflock;
-        U.flock    := flock;
-    fi;
-
+    AddCosetInfoStabChain( enum!.stabChainGroup, enum!.stabChainSubgroup,
+            LargestMovedPoint( enum!.group ) );
+    MinimizeExplicitTransversal( enum!.stabChainSubgroup,
+            LargestMovedPoint( enum!.group ) );
     return enum;
 end;
 
@@ -1435,9 +1444,9 @@ InstallMethod( \[\], true, [ IsRightTransversalByBaseImages,
                    BaseStabChain( cs!.stabChainGroup ) );
 end );
 
-InstallMethod( Position, true, [ IsRightTransversalByBaseImages, IsObject,
-        IsZeroCyc ], 0,
-    function( cs, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsRightTransversalByBaseImages, IsObject ], 0,
+    function( cs, elm )
     local   S,  rep,  i;
     
     S := cs!.stabChainGroup;
@@ -1466,10 +1475,9 @@ InstallMethod( \[\], true, [ IsRightTransversalPermGroup,
     return CosetNumber( cs!.stabChainGroup, cs!.stabChainSubgroup, num );
 end );
 
-InstallMethod( Position, true, [ IsRightTransversalPermGroup, IsPerm,
-        IsZeroCyc ],
-        0,
-    function( cs, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsRightTransversalPermGroup, IsPerm ], 0,
+    function( cs, elm )
     return NumberCoset( cs!.stabChainGroup,
                         cs!.stabChainSubgroup,
                         elm );
@@ -1477,21 +1485,22 @@ end );
 
 #############################################################################
 ##
-#F  AddCosetInfoStabChain( <G>, <U> ) . . . . . . . . . . . .  add coset info
+#F  AddCosetInfoStabChain( <G>, <U>, <maxmoved> ) . . . . . .  add coset info
 ##
 MAXLEN_TRANSVERSAL := 10000;
 
-AddCosetInfoStabChain := function( G, U )
+AddCosetInfoStabChain := function( G, U, maxmoved )
     local   orb,  pimg,  img,  vert,  s,  t,  rat,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt;
+            ss,  tt,  explicit,  lenflock,  flock;
     
-    if Length( G.genlabels ) = 0  then
+    if IsEmpty( G.genlabels )  then
         U.index    := 1;
         U.explicit := [ U.identity ];
+        U.lenflock := 1;
         U.flock    := U.explicit;
     else
-        AddCosetInfoStabChain( G.stabilizer, U.stabilizer );
+        AddCosetInfoStabChain( G.stabilizer, U.stabilizer, maxmoved );
         
         # U.index := [G_1:U_1];
         U.index := U.stabilizer.index * Length( G.orbit ) / Length( U.orbit );
@@ -1552,6 +1561,10 @@ AddCosetInfoStabChain := function( G, U )
         # For  large  indices, store only   the  numbers of  the  transversal
         # elements needed.
         if not IsBound( U.explicit )  then
+
+            # If  the   stabilizer   is the   topmost  level   with  explicit
+            # transversal, this must contain minimal coset representatives.
+            MinimizeExplicitTransversal( U.stabilizer, maxmoved );
             
             # For each point  in the block,   find the images  of the earlier
             # points under the representative.
@@ -1941,15 +1954,15 @@ local gens;
   return GeneratorsSmallestStab(MinimalStabChain(G));
 end);
 
-
 #############################################################################
 ##
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
 ##  Local Variables:
 ##  mode:             outline-minor
 ##  outline-regexp:   "#[WCROAPMFVE]"
 ##  fill-column:      77
 ##  End:
-#############################################################################
 
+#############################################################################
+##
+#E  grpperm.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 

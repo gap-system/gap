@@ -50,7 +50,11 @@ function( efam, pcs )
     rws := efam!.rewritingSystem;
     pfa := DefiningPcgs(efam);
     if List( pcs, UnderlyingElement ) = GeneratorsOfRws(rws)  then
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs,
+                    efam,
+                    pcs );
         SetIsFamilyPcgs( pcgs, true );
         SetRelativeOrders( pcgs, RelativeOrders(rws) );
 
@@ -60,7 +64,11 @@ function( efam, pcs )
 
     # make an unsorted pcgs
     else
-        pcgs := PcgsByPcSequenceNC(efam, IsPcgs and IsUnsortedPcgsRep, pcs);
+        pcgs := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs and IsUnsortedPcgsRep,
+                    efam,
+                    pcs );
 
         # sort the elements according to the depth wrt pfa
         pag := [];
@@ -112,13 +120,21 @@ function( efam, pcs )
     # check if it is the defining sequence
     rws := efam!.rewritingSystem;
     if List( pcs, UnderlyingElement ) = GeneratorsOfRws(rws)  then
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs,
+                    efam,
+                    pcs );
         SetIsFamilyPcgs( pcgs, true );
         SetRelativeOrders( pcgs, RelativeOrders(rws) );
 
     # make an ordinary pcgs
     else
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceCons(
+                    IsPcgsDefaultRep,
+                    IsPcgs,
+                    efam,
+                    pcs );
     fi;
 
     # that it
@@ -139,7 +155,11 @@ function( efam, pcs )
     local   pcgs,  rws;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceCons(
+                IsPcgsDefaultRep,
+                IsPcgs,
+                efam,
+                pcs );
 
     # check if it is the defining sequence
     rws := efam!.rewritingSystem;
@@ -196,7 +216,7 @@ InstallMethod( DepthOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws ],
-    0,
+    100,
 
 function( pcgs, elm )
     local   rep;
@@ -220,7 +240,7 @@ InstallMethod( ExponentsOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws ],
-    0,
+    100,
 
 function( pcgs, elm )
     local   exp,  rep,  i;
@@ -244,7 +264,7 @@ InstallMethod( LeadingExponentOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws ],
-    0,
+    100,
 
 function( pcgs, elm )
     local   exp,  rep,  i;
@@ -269,8 +289,22 @@ InstallMethod( DepthOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep ],
-    0,
+    100,
     8Bits_DepthOfPcElement );
+
+
+#############################################################################
+##
+#M  ExponentOfPcElement( <8bits-pcgs>, <elm> )
+##
+InstallMethod( ExponentOfPcElement,
+    "family pcgs (8bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep,
+      IsInt and IsPosRat ],
+    100,
+    8Bits_ExponentOfPcElement );
 
 
 #############################################################################
@@ -282,7 +316,7 @@ InstallMethod( LeadingExponentOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep ],
-    0,
+    100,
     8Bits_LeadingExponentOfPcElement );
 
 
@@ -296,8 +330,22 @@ InstallMethod( DepthOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep ],
-    0,
+    100,
     16Bits_DepthOfPcElement );
+
+
+#############################################################################
+##
+#M  ExponentOfPcElement( <16bits-pcgs>, <elm> )
+##
+InstallMethod( ExponentOfPcElement,
+    "family pcgs (16bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep,
+      IsInt and IsPosRat ],
+    100,
+    16Bits_ExponentOfPcElement );
 
 
 #############################################################################
@@ -309,7 +357,7 @@ InstallMethod( LeadingExponentOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep ],
-    0,
+    100,
     16Bits_LeadingExponentOfPcElement );
 
 
@@ -323,8 +371,22 @@ InstallMethod( DepthOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep ],
-    0,
+    100,
     32Bits_DepthOfPcElement );
+
+
+#############################################################################
+##
+#M  ExponentOfPcElement( <32bits-pcgs>, <elm> )
+##
+InstallMethod( ExponentOfPcElement,
+    "family pcgs (32bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep,
+      IsInt and IsPosRat ],
+    100,
+    32Bits_ExponentOfPcElement );
 
 
 #############################################################################
@@ -336,7 +398,7 @@ InstallMethod( LeadingExponentOfPcElement,
     IsCollsElms,
     [ IsPcgs and IsFamilyPcgs,
       IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep ],
-    0,
+    100,
     32Bits_LeadingExponentOfPcElement );
 
 
@@ -384,47 +446,55 @@ end );
 
 #############################################################################
 ##
-#M  LeadingExponentOfPcElement( <unsorted-pcgs>, <elm> )
+#M  ExponentOfPcElement( <unsorted-pcgs>, <elm>, <pos> )
 ##
-InstallMethod( LeadingExponentOfPcElement,
+InstallMethod( ExponentOfPcElement,
     "unsorted pcgs",
-    IsCollsElms,
+    function(a,b,c) return IsCollsElms(a,b); end,
     [ IsPcgs and IsUnsortedPcgsRep,
-      IsObject ],
+      IsObject,
+      IsInt and IsPosRat ],
     0,
 
-function( pcgs, elm )
-    local   pfa,  pcs,  new,  dep,  id,  dg,  ll,  lr,  ord,  led;
+function( pcgs, elm, pos )
+    local   pfa,  pcs,  new,  dep,  id,  g,  dg,  ll,  lr,  ord, led;
 
     pfa := pcgs!.sortingPcgs;
     pcs := pcgs!.sortedPcSequence;
     new := pcgs!.newDepths;
-    dep := Length(pcgs)+1;
     id  := OneOfPcgs(pcgs);
 
-    # if <elm> is the identity return fail
+    # if <elm> is the identity return the null
     if elm = id  then
-        return fail;
+        return 0;
     fi;
         
     # sift element through the sorted system
     while elm <> id  do
-        dg := DepthOfPcElement( pfa, elm );
-        if IsBound(pcs[dg])  then
-            ll  := LeadingExponentOfPcElement( pfa, elm );
-            lr  := LeadingExponentOfPcElement( pfa, pcs[dg] );
-            ord := RelativeOrderOfPcElement( pfa, elm );
-            ll  := (ll/lr mod ord);
-            elm := LeftQuotient( pcs[dg]^ll, elm );
-            if new[dg] < dep  then
-                dep := new[dg];
-                led := ll;
+        g   := elm;
+        dep := Length(pcgs)+1;
+        while g <> id  do
+            dg := DepthOfPcElement( pfa, g );
+            if IsBound(pcs[dg])  then
+                ll  := LeadingExponentOfPcElement( pfa, g );
+                lr  := LeadingExponentOfPcElement( pfa, pcs[dg] );
+                ord := RelativeOrderOfPcElement( pfa, g );
+                ll  := (ll/lr mod ord);
+                g   := LeftQuotient( pcs[dg]^ll, g );
+                if new[dg] < dep  then
+                    dep := new[dg];
+                    led := ll;
+                fi;
+            else
+                Error( "<elm> must lie in group defined by <pcgs>" );
             fi;
-        else
-            Error( "<elm> must lie in group defined by <pcgs>" );
+        od;
+        if dep = pos  then
+            return led;
         fi;
+        elm := LeftQuotient( pcgs[dep]^led, elm );
     od;
-    return led;
+    return 0;
 end );
 
 
@@ -478,6 +548,52 @@ function( pcgs, elm )
         elm := LeftQuotient( pcgs[dep]^led, elm );
     od;
     return exp;
+end );
+
+
+#############################################################################
+##
+#M  LeadingExponentOfPcElement( <unsorted-pcgs>, <elm> )
+##
+InstallMethod( LeadingExponentOfPcElement,
+    "unsorted pcgs",
+    IsCollsElms,
+    [ IsPcgs and IsUnsortedPcgsRep,
+      IsObject ],
+    0,
+
+function( pcgs, elm )
+    local   pfa,  pcs,  new,  dep,  id,  dg,  ll,  lr,  ord,  led;
+
+    pfa := pcgs!.sortingPcgs;
+    pcs := pcgs!.sortedPcSequence;
+    new := pcgs!.newDepths;
+    dep := Length(pcgs)+1;
+    id  := OneOfPcgs(pcgs);
+
+    # if <elm> is the identity return fail
+    if elm = id  then
+        return fail;
+    fi;
+        
+    # sift element through the sorted system
+    while elm <> id  do
+        dg := DepthOfPcElement( pfa, elm );
+        if IsBound(pcs[dg])  then
+            ll  := LeadingExponentOfPcElement( pfa, elm );
+            lr  := LeadingExponentOfPcElement( pfa, pcs[dg] );
+            ord := RelativeOrderOfPcElement( pfa, elm );
+            ll  := (ll/lr mod ord);
+            elm := LeftQuotient( pcs[dg]^ll, elm );
+            if new[dg] < dep  then
+                dep := new[dg];
+                led := ll;
+            fi;
+        else
+            Error( "<elm> must lie in group defined by <pcgs>" );
+        fi;
+    od;
+    return led;
 end );
 
 

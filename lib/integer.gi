@@ -1263,7 +1263,37 @@ InstallMethod( \in, IsElmsColls, [ IsInt, IsIntegers ], 0, ReturnTrue );
 
 #############################################################################
 ##
+#F  PrintFactorsInt( <n> )  . . . . . . . . print factorization of an integer
+##
+##  'PrintFactorsInt'  prints the prime decomposition of the given integer n.
+##
+PrintFactorsInt := function ( n )
+    local decomp, i;
 
+    if -4 < n and n < 4 then
+        Print( n );
+    else
+        decomp := Collected( Factors( AbsInt( n ) ) );
+        if n > 0 then
+            Print( decomp[1][1] );
+        else
+            Print( -decomp[1][1] );
+        fi;
+        if decomp[1][2] > 1 then
+            Print( "^", decomp[1][2] );
+        fi;
+        for i in [ 2 .. Length( decomp ) ] do
+            Print( "*", decomp[i][1] );
+            if decomp[i][2] > 1 then
+                Print( "^", decomp[i][2] );
+            fi;
+        od;
+    fi;
+end;
+
+
+#############################################################################
+##
 #E  integer.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

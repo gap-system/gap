@@ -39,17 +39,20 @@ end );
 
 #############################################################################
 ##
-#M  Position( <enum>, <elm>, <zero> ) . . . . . . . . .  for such enumerators
+#M  PositionCanonical( <enum>, <elm> )  . . . . . . . .  for such enumerators
 ##
-InstallMethod( Position, true, [ IsExternalOrbitByStabilizerEnumerator,
-        IsObject, IsZeroCyc ], 0,
-    function( enum, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsExternalOrbitByStabilizerEnumerator, IsObject ], 0,
+    function( enum, elm )
     local   xorb,  rep;
     
     xorb := UnderlyingCollection( enum );
     rep := RepresentativeOperation( xorb, Representative( xorb ), elm );
-    if rep = fail  then  return fail;
-                   else  return Position( enum!.rightTransversal, rep );  fi;
+    if rep = fail  then
+        return fail;
+    else
+        return PositionCanonical( enum!.rightTransversal, rep );
+    fi;
 end );
 
 #############################################################################
@@ -193,7 +196,7 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
 
 end;
 
-InstallMethod( ConjugacyClasses, true, [ IsSolvableGroup ], 0,
+InstallMethod( ConjugacyClasses, true, [ IsSolvableGroup ], 20,
     G -> ClassesSolvableGroup( G, G, true, 0 ) );
 
 #############################################################################
@@ -331,9 +334,9 @@ InstallMethod( \[\], true, [ IsRationalClassGroupEnumerator,
     return ( rep ^ T[ pos ] ) ^ ( 1 ^ gal[ pow ] );
 end );
 
-InstallMethod( Position, true, [ IsRationalClassGroupEnumerator, IsObject,
-        IsZeroCyc ], 0,
-    function( enum, elm, zero )
+InstallMethod( PositionCanonical, true,
+        [ IsRationalClassGroupEnumerator, IsObject ], 0,
+    function( enum, elm )
     local   rcl,  G,  rep,  gal,  T,  pow,  t;
     
     rcl := UnderlyingCollection( enum );
@@ -347,8 +350,10 @@ InstallMethod( Position, true, [ IsRationalClassGroupEnumerator, IsObject,
             break;
         fi;
     od;
-    if t = fail  then  return fail;
-                 else  return ( pow - 1 ) * Length( T ) + Position( T, t );
+    if t = fail  then
+        return fail;
+    else
+        return ( pow - 1 ) * Length( T ) + PositionCanonical( T, t );
     fi;
 end );
 
@@ -488,7 +493,7 @@ RationalClassesTry := function(  G, classes, elm  )
 
 end;
 
-InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 0,
+InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
     function( G )
     if not IsPrimePowerInt( Size( G ) )  then
         TryNextMethod();

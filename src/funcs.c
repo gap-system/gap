@@ -645,7 +645,7 @@ Obj             DoExecFunc0args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -670,7 +670,7 @@ Obj             DoExecFunc1args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -697,7 +697,7 @@ Obj             DoExecFunc2args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -726,7 +726,7 @@ Obj             DoExecFunc3args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -757,7 +757,7 @@ Obj             DoExecFunc4args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -790,7 +790,7 @@ Obj             DoExecFunc5args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -825,7 +825,7 @@ Obj             DoExecFunc6args (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -864,7 +864,7 @@ Obj             DoExecFuncXargs (
 
     /* execute the statement sequence                                      */
     REM_BRK_CURR_STAT();
-    EXEC_STAT( BODY_FUNC( func ) );
+    EXEC_STAT( FIRST_STAT_CURR_FUNC );
     RES_BRK_CURR_STAT();
 
     /* switch back to the old values bag                                   */
@@ -908,6 +908,8 @@ Obj             MakeFunction (
     NLOC_FUNC( func ) = NLOC_FUNC( fexp );
     BODY_FUNC( func ) = BODY_FUNC( fexp );
     ENVI_FUNC( func ) = CurrLVars;
+    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
+    CHANGED_BAG( CurrLVars );
     FEXS_FUNC( func ) = FEXS_FUNC( fexp );
 
     /* return the function                                                 */
@@ -1013,12 +1015,13 @@ void            ExecBegin ( void )
     ADDR_OBJ(execState)[0] = (Obj)3;
     ADDR_OBJ(execState)[1] = ExecState;
     ADDR_OBJ(execState)[2] = CurrLVars;
+    /* the 'CHANGED_BAG(CurrLVars)' is needed because it is delayed        */
+    CHANGED_BAG( CurrLVars );
     ADDR_OBJ(execState)[3] = CurrStat;
     ExecState = execState;
 
     /* set up new state                                                    */
-    CurrLVars = BottomLVars;
-    PtrLVars  = PTR_BAG(CurrLVars);
+    SWITCH_TO_OLD_LVARS( BottomLVars );
     SET_BRK_CURR_STAT( 0 );
 }
 
@@ -1034,8 +1037,7 @@ void            ExecEnd (
 
         /* switch back to the old state                                    */
         SET_BRK_CURR_STAT( ADDR_OBJ(ExecState)[3] );
-        CurrLVars = ADDR_OBJ(ExecState)[2];
-        PtrLVars  = PTR_BAG(CurrLVars);
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
     }
@@ -1045,8 +1047,7 @@ void            ExecEnd (
 
         /* switch back to the old state                                    */
         SET_BRK_CURR_STAT( ADDR_OBJ(ExecState)[3] );
-        CurrLVars = ADDR_OBJ(ExecState)[2];
-        PtrLVars  = PTR_BAG(CurrLVars);
+        SWITCH_TO_OLD_LVARS( ADDR_OBJ(ExecState)[2] );
         ExecState = ADDR_OBJ(ExecState)[1];
 
     }
@@ -1107,6 +1108,12 @@ void            InitFuncs ( void )
     PrintExprFuncs[ T_FUNCCALL_XARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNC_EXPR      ] = PrintFuncExpr;
 }
+
+
+/****************************************************************************
+**
+*E  funcs.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
 
 
 
