@@ -17,6 +17,11 @@ Revision.algebra_gd :=
 #C  IsFLMLOR( <obj> )
 ##
 ##  A FLMLOR in {\GAP} is a ring that is also a free left module.
+##
+##  Note that this means that being a FLMLOR is not a property a
+##  ring can get,
+##  since a ring is usually not represented as an external left set.
+##
 ##  Examples are magma rings (e.g. over the integers) or algebras.
 ##
 IsFLMLOR := IsFreeLeftModule and IsLeftOperatorRing;
@@ -28,6 +33,11 @@ IsFLMLOR := IsFreeLeftModule and IsLeftOperatorRing;
 ##
 ##  A FLMLOR-with-one in {\GAP} is a ring-with-one that is also a free left
 ##  module.
+##
+##  Note that this means that being a FLMLOR-with-one is not a property a
+##  ring-with-one can get,
+##  since a ring-with-one is usually not represented as an external left set.
+##
 ##  Examples are magma rings-with-one or algebras-with-one (but also over the
 ##  integers).
 ##
@@ -287,16 +297,6 @@ AsSubFLMLORWithOne := NewOperation( "AsSubFLMLORWithOne",
     [ IsFLMLOR, IsDomain ] );
 
 AsSubalgebraWithOne := AsSubFLMLORWithOne;
-
-
-#############################################################################
-##
-#O  FpAlgebra( <F>, <A> )
-##
-##  Construct an isomorphic finitely presented <F>-algebra
-##  of the algebra <A>.
-##
-FpAlgebra := NewOperation( "FpAlgebra", [ IsDivisionRing, IsAlgebra ] );
 
 
 #############################################################################
@@ -644,9 +644,22 @@ AsLieAlgebra := NewOperation( "AsLieAlgebra",
 
 #############################################################################
 ##
+#F  FreeAlgebra( <R>, <rank> )
+#F  FreeAlgebra( <R>, <rank>, <name> )
+#F  FreeAlgebra( <R>, <name1>, <name2>, ... )
+##
+##  is a free (nonassociative) algebra of rank <rank> over the ring <R>.
+##
+FreeAlgebra := NewOperationArgs( "FreeAlgebra" );
+
+
+#############################################################################
+##
 #F  FreeAssociativeAlgebra( <R>, <rank> )
 #F  FreeAssociativeAlgebra( <R>, <rank>, <name> )
 #F  FreeAssociativeAlgebra( <R>, <name1>, <name2>, ... )
+##
+##  is a free associative algebra of rank <rank> over the ring <R>.
 ##
 FreeAssociativeAlgebra := NewOperationArgs( "FreeAssociativeAlgebra" );
 

@@ -199,7 +199,7 @@ Obj FuncINT_CHAR (
     Obj             val )
 {
     /* get and check the character                                         */
-    while ( ! IS_INTOBJ(val) ) {
+    while ( TNUM_OBJ(val) != T_CHAR ) {
         val = ErrorReturnObj(
             "<val> must be a character (not a %s)",
             (Int)(InfoBags[TNUM_OBJ(val)].name), 0L,

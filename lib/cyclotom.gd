@@ -16,7 +16,8 @@ Revision.cyclotom_gd :=
 ##
 #M  IsIntegralRing( <R> ) . . . . . .  Every ring of cyclotomics is integral.
 ##
-InstallTrueMethod( IsIntegralRing, IsCyclotomicsCollection and IsRing );
+InstallTrueMethod( IsIntegralRing,
+    IsCyclotomicsCollection and IsRing and IsNonTrivial );
 
 
 #############################################################################

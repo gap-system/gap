@@ -203,6 +203,15 @@ WriteByte := NewOperation(
 
 #############################################################################
 ##
+#O  WriteLine( <output-text-stream>, <string> ) .   write string plus newline
+##
+WriteLine := NewOperation(
+    "WriteLine",
+    [ IsOutputTextStream, IsList ] );
+                    
+
+#############################################################################
+##
 
 #O  CloseStream( <stream> ) . . . . . . . . . . . . . . . . .  close a stream
 ##

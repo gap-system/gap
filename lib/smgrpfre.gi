@@ -292,7 +292,7 @@ InstallMethod( \[\],
 
 InstallMethod( Position,
     "method for enumerator of a free semigroup",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsFreeSemigroupEnumerator, IsAssocWord, IsZeroCyc ], 0,
     function( enum, elm, zero )
     return FreeMonoid_NumberElement( enum, elm, zero ) - 1;

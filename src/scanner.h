@@ -49,6 +49,8 @@ char *          Revision_scanner_h =
 #define S_TRYNEXT       ((1UL<< 3)+3)
 #define S_INFO          ((1UL<< 3)+4)
 #define S_ASSERT        ((1UL<< 3)+5)
+#define S_SAVEWS        ((1UL<< 3)+6)
+#define S_LOADWS        ((1UL<< 3)+7)
 
 #define S_LBRACK        ((1UL<< 4)+0)
 #define S_LBRACE        ((1UL<< 4)+1)

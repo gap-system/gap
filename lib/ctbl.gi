@@ -3442,7 +3442,7 @@ ConvertToBrauerTableNC := function( record )
     # Enter the properties and attributes.
     for i in [ 1, 3 .. Length( SupportedBrauerTableInfo ) - 1 ] do
       if     SupportedBrauerTableInfo[ i+1 ] in names
-         and SupportedOrdinaryTableInfo[ i+1 ] <> "Irr" then
+         and SupportedBrauerTableInfo[ i+1 ] <> "Irr" then
         Setter( SupportedBrauerTableInfo[i] )( record,
             record!.( SupportedBrauerTableInfo[ i+1 ] ) );
       fi;
@@ -3550,60 +3550,62 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T #M  IsSimple( <tbl> )
 #T ##
 #T InstallOtherMethod( IsSimple, true, [ IsOrdinaryTable ], 0,
-#T     tbl -> Length( NormalSubgroups( tbl ) ) = 2 );
+#T     tbl -> Length( ClassPositionsOfNormalSubgroups( tbl ) ) = 2 );
 #T 
 #T 
-#T #############################################################################
-#T ##
-#T #M  IsPSolvable( <tbl>, <p> )
-#T ##
-#T InstallOtherMethod( IsPSolvable, true, [ IsOrdinaryTable, IsInt ], 0,
-#T     function( tbl, p )
-#T 
-#T     local nsg,       # list of all normal subgroups
-#T           i,         # loop variable, position in 'nsg'
-#T           n,         # one normal subgroup
-#T           posn,      # position of 'n' in 'nsg'
-#T           size,      # size of 'n'
-#T           nextsize,  # size of smallest normal subgroup containing 'n'
-#T           classes,   # class lengths
-#T           facts;     # set of prime factors of a chief factor
-#T 
-#T     nsg:= NormalSubgroups( tbl );
-#T     Sort( nsg, function( x, y ) return Length(x) < Length(y); end );
-#T 
-#T     # Go up a chief series, starting with the trivial subgroup
-#T     i:= 1;
-#T     nextsize:= 1;
-#T     classes:= SizesConjugacyClasses( tbl );
-#T 
-#T     while i < Length( nsg ) do
-#T 
-#T       posn:= i;
-#T       n:= nsg[ posn ];
-#T       size:= nextsize;
-#T 
-#T       # Get the smallest normal subgroup containing 'n' \ldots
-#T       i:= posn + 1;
-#T       while not IsSubsetSet( nsg[ i ], n ) do i:= i+1; od;
-#T 
-#T       # \ldots and its size.
-#T       nextsize:= Sum( classes{ nsg[i] }, 0 );
-#T 
-#T       facts:= Set( FactorsInt( nextsize / size ) );
-#T       if 1 < Length( facts ) and ( p = 0 or p in facts ) then
-#T 
-#T         # The chief factor 'nsg[i] / n' is not a prime power,
-#T         # and our 'p' divides its order.
-#T         return false;
-#T 
-#T       fi;
-#T 
-#T     od;
-#T     return true;
-#T     end );
-#T 
-#T 
+#############################################################################
+##
+#M  IsPSolvable( <tbl>, <p> )
+##
+InstallOtherMethod( IsPSolvable,
+    "method for an ordinary character table, an a positive integer",
+    true,
+    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    function( tbl, p )
+
+    local nsg,       # list of all normal subgroups
+          i,         # loop variable, position in 'nsg'
+          n,         # one normal subgroup
+          posn,      # position of 'n' in 'nsg'
+          size,      # size of 'n'
+          nextsize,  # size of smallest normal subgroup containing 'n'
+          classes,   # class lengths
+          facts;     # set of prime factors of a chief factor
+
+    nsg:= ClassPositionsOfNormalSubgroups( tbl );
+
+    # Go up a chief series, starting with the trivial subgroup
+    i:= 1;
+    nextsize:= 1;
+    classes:= SizesConjugacyClasses( tbl );
+
+    while i < Length( nsg ) do
+
+      posn:= i;
+      n:= nsg[ posn ];
+      size:= nextsize;
+
+      # Get the smallest normal subgroup containing 'n' \ldots
+      i:= posn + 1;
+      while not IsSubsetSet( nsg[ i ], n ) do i:= i+1; od;
+
+      # \ldots and its size.
+      nextsize:= Sum( classes{ nsg[i] }, 0 );
+
+      facts:= Set( FactorsInt( nextsize / size ) );
+      if 1 < Length( facts ) and ( p = 0 or p in facts ) then
+
+        # The chief factor 'nsg[i] / n' is not a prime power,
+        # and our 'p' divides its order.
+        return false;
+
+      fi;
+
+    od;
+    return true;
+    end );
+
+
 #T #############################################################################
 #T ##
 #T #M  IsSolvable( <tbl> )
@@ -3635,8 +3637,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T           nextsize,  # size of largest normal subgroup contained in 'N'
 #T           classes;   # class lengths
 #T 
-#T     nsg:= NormalSubgroups( tbl );
-#T     Sort( nsg, function( x, y ) return Length(x) < Length(y); end );
+#T     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 #T 
 #T     # Go down a chief series, starting with the whole group,
 #T     # until there is no step of prime order.
@@ -4007,8 +4008,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T           nextsize;     # size of next smaller normal subgroup
 #T 
 #T     # Sort normal subgroups according to decreasing number of classes.
-#T     nsg:= ShallowCopy( NormalSubgroups( tbl ) );
-#T     Sort( nsg, function( x, y ) return Length( x ) < Length( y ); end );
+#T     nsg:= ShallowCopy( ClassPositionsOfNormalSubgroups( tbl ) );
 #T 
 #T     elab:= [ [ 1 .. NrConjugacyClasses( tbl ) ] ];
 #T     Unbind( nsg[ Length( nsg ) ] );
@@ -4060,7 +4060,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T           n;        # one normal subgroup of 'tbl'
 #T 
 #T     # Compute all normal subgroups.
-#T     nsg:= NormalSubgroups( tbl );
+#T     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 #T 
 #T     # Take the union of classes in all normal subgroups of prime power order.
 #T     classes:= SizesConjugacyClasses( tbl );
@@ -4137,38 +4137,43 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     end );
 #T 
 #T 
-#T #############################################################################
-#T ##
-#T #M  NormalSubgroups( <tbl> )
-#T ##
-#T InstallOtherMethod( NormalSubgroups, true, [ IsOrdinaryTable ], 0,
-#T     function( tbl )
-#T 
-#T     local kernels,  # list of kernels of irreducible characters
-#T           ker1,     # loop variable
-#T           ker2,     # loop variable
-#T           normal,   # list of normal subgroups, result
-#T           inter;    # intersection of two kernels
-#T 
-#T     # get the kernels of irreducible characters
-#T     kernels:= Set( List( Irr( tbl ), KernelChar ) );
-#T 
-#T     # form all possible intersections of the kernels
-#T     normal:= ShallowCopy( kernels );
-#T     for ker1 in normal do
-#T       for ker2 in kernels do
-#T         inter:= Intersection( ker1, ker2 );
-#T         if not inter in normal then
-#T           Add( normal, inter );
-#T         fi;
-#T       od;
-#T     od;
-#T 
-#T     # return the list of normal subgroups
-#T     return Set( normal );
-#T     end );
-#T 
-#T 
+#############################################################################
+##
+#M  ClassPositionsOfNormalSubgroups( <tbl> )
+##
+InstallOtherMethod( ClassPositionsOfNormalSubgroups,
+    "method for an ordinary character table",
+    true,
+    [ IsOrdinaryTable ], 0,
+    function( tbl )
+
+    local kernels,  # list of kernels of irreducible characters
+          ker1,     # loop variable
+          ker2,     # loop variable
+          normal,   # list of normal subgroups, result
+          inter;    # intersection of two kernels
+
+    # get the kernels of irreducible characters
+    kernels:= Set( List( Irr( tbl ), KernelChar ) );
+
+    # form all possible intersections of the kernels
+    normal:= ShallowCopy( kernels );
+    for ker1 in normal do
+      for ker2 in kernels do
+        inter:= Intersection( ker1, ker2 );
+        if not inter in normal then
+          Add( normal, inter );
+        fi;
+      od;
+    od;
+
+    # return the list of normal subgroups
+    normal:= ListSorted( normal );
+    Sort( normal, function( x, y ) return Length(x) < Length(y); end );
+    return normal;
+    end );
+
+
 #T ############################################################################
 #T ##
 #T #V  PreliminaryLatticeOps . . operations record for normal subgroup lattices
@@ -4196,10 +4201,7 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T           latt;       # the lattice record
 #T 
 #T     # Compute normal subgroups and their sizes
-#T     if not IsBound( tbl.normalSubgroups ) then
-#T       tbl.normalSubgroups:= NormalSubgroups( tbl );
-#T     fi;
-#T     nsg:= tbl.normalSubgroups;
+#T     nsg:= ClassPositionsOfNormalSubgroups( tbl );
 #T     len:= Length( nsg );
 #T     sizes:= List( nsg, x -> Sum( tbl.classes{ x }, 0 ) );
 #T     SortParallel( sizes, nsg );
@@ -4233,31 +4235,6 @@ PrintCharTable := tbl -> PrintCharacterTable( tbl, "t" );
 #T     # return the lattice record
 #T     return latt;
 #T end;
-
-
-#############################################################################
-##
-#F  LowercaseString( <string> ) . . . string consisting of lower case letters
-##
-#T should be meved eventually to 'string.g?'
-LowercaseString := function( str )
-
-    local alp, ALP, result, i, pos;
-
-    alp:= "abcdefghijklmnopqrstuvwxyz";
-    ALP:= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    result:= "";
-    for i in str do
-      pos:= Position( ALP, i );
-      if pos = fail then
-        Add( result, i );
-      else
-        Add( result, alp[ pos ] );
-      fi;
-    od;
-    ConvertToStringRep( result );
-    return result;
-end;
 
 
 #############################################################################

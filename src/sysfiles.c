@@ -63,6 +63,64 @@ extern  int             kill ( int, int );
 **
 
 
+*F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
+*/
+Int SyLastErrorNo;
+
+
+/****************************************************************************
+**
+*V  SyLastErrorMessage  . . . . . . . . . . . . . . . . .  last error message
+*/
+Char SyLastErrorMessage [ 1024 ];
+
+
+/****************************************************************************
+**
+*F  SyClearErrorNo()  . . . . . . . . . . . . . . . . .  clear error messages
+*/
+#include <sys/errno.h>
+
+void SyClearErrorNo ( void )
+{
+    errno = 0;
+    SyLastErrorNo = 0;
+    SyLastErrorMessage[0] = '\0';
+    SyStrncat( SyLastErrorMessage, "no error", 8 );
+}
+
+
+/****************************************************************************
+**
+*F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
+*/
+void SySetErrorNo ( void )
+{
+    Char *	err;
+
+    if ( errno != 0 ) {
+	SyLastErrorNo = errno;
+	err = strerror(errno);
+	SyLastErrorMessage[0] = '\0';
+	SyStrncat( SyLastErrorMessage, err, 1023 );
+    }
+    else {
+	SyClearErrorNo();
+    }
+}
+
+
+/****************************************************************************
+**
+
+
 *F * * * * * * * * * * * * * * * * open/close * * * * * * * * * * * * * * * *
 */
 
@@ -161,7 +219,7 @@ Int SyFopen (
     }
 #if SYS_BSD || SYS_MACH || SYS_USG
     else if ( SyStrcmp(mode,"r") == 0
-           && SyIsReadableFile(namegz)
+           && SyIsReadableFile(namegz) == 0
            && (syBuf[fid].fp = popen(cmd,mode)) ) {
         syBuf[fid].pipe = 1;
     }
@@ -1773,7 +1831,19 @@ Char * SyFgets (
 
 Int SyIsExistingFile ( Char * name )
 {
-    return ( access( name, F_OK ) == 0 ) ? 1 : 0;
+    Int		res;
+
+    SyClearErrorNo();
+    res = access( name, F_OK );
+    if ( res == -1 ) {
+	if ( errno != ENOENT ) {
+	    SySetErrorNo();
+	}
+	else {
+	    res = 1;
+	}
+    }
+    return res;
 }
 
 #endif
@@ -1796,7 +1866,14 @@ Int SyIsExistingFile ( Char * name )
 
 Int SyIsReadableFile ( Char * name )
 {
-    return ( access( name, R_OK ) == 0 ) ? 1 : 0;
+    Int		res;
+
+    SyClearErrorNo();
+    res = access( name, R_OK );
+    if ( res == -1 ) {
+	SySetErrorNo();
+    }
+    return res;
 }
 
 #endif
@@ -1806,7 +1883,7 @@ Int SyIsReadableFile ( Char * name )
 **
 *F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
 **
-**  'SyIsWriteableFile'   returns 1  if  the  file  <name> is  writable and 0
+**  'SyIsWritableFile'   returns  1  if  the  file  <name> is  writable and 0
 **  otherwise. <name> is a system dependent description of the file.
 */
 
@@ -1819,7 +1896,19 @@ Int SyIsReadableFile ( Char * name )
 
 Int SyIsWritableFile ( Char * name )
 {
-    return ( access( name, W_OK ) == 0 ) ? 1 : 0;
+    Int		res;
+
+    SyClearErrorNo();
+    res = access( name, W_OK );
+    if ( res == -1 ) {
+	if ( errno != EROFS && errno != EACCES ) {
+	    SySetErrorNo();
+	}
+	else {
+	    res = 1;
+	}
+    }
+    return res;
 }
 
 #endif
@@ -1842,7 +1931,25 @@ Int SyIsWritableFile ( Char * name )
 
 Int SyIsExecutableFile ( Char * name )
 {
-    return ( access( name, X_OK ) == 0 ) ? 1 : 0;
+    Int		res;
+
+    SyClearErrorNo();
+    res = access( name, X_OK );
+    if ( res == -1 ) {
+	if ( errno == EACCES ) {
+	    if ( SyIsExistingFile(name) == 0 ) {
+		res = 1;
+	    }
+	    else {
+		errno = EACCES;
+		SySetErrorNo();
+	    }
+	}
+	else {
+	    SySetErrorNo();
+	}
+    }
+    return res;
 }
 
 #endif
@@ -1863,16 +1970,18 @@ Int SyIsExecutableFile ( Char * name )
 */
 #if SYS_BSD || SYS_MACH || SYS_USG
 
-#include        <sys/stat.h>
+#include <sys/stat.h>
 
 Int SyIsDirectoryPath ( Char * name )
 {
     struct stat     buf;                /* buffer for `stat'               */
-    int             res;                /* result of `stat'                */
 
-    if ( stat( name, &buf ) == -1 )
-        return 0;
-    return S_ISDIR(buf.st_mode) ? 1 : 0;
+    SyClearErrorNo();
+    if ( stat( name, &buf ) == -1 ) {
+	SySetErrorNo();
+        return -1;
+    }
+    return S_ISDIR(buf.st_mode) ? 0 : 1;
 }
 
 #endif
@@ -1915,7 +2024,7 @@ Char * SyFindGapRootFile ( Char * filename )
             if ( sizeof(result) <= SyStrlen(filename)+SyStrlen(result)-1 )
                 continue;
             SyStrncat( result, filename, SyStrlen(filename) );
-            if ( SyIsReadableFile(result) ) {
+            if ( SyIsReadableFile(result) == 0 ) {
                 return result;
             }
         }
@@ -2144,11 +2253,13 @@ Char * SyTmpname ( void )
     static Int      count = 0;
     Char            cnt[5];
 
+    SyClearErrorNo();
     count++;
     if ( base == 0 ) {
         base = tmpnam( (char*)0 );
     }
     if ( base == 0 ) {
+	SySetErrorNo();
         return 0;
     }
     name[0] = 0;
@@ -2196,8 +2307,10 @@ Char * SyTmpdir ( Char * hint )
 
     /* create a new directory                                              */
     res = mkdir( tmp, 0777 );
-    if ( res == -1 )
+    if ( res == -1 ) {
+	SySetErrorNo();
         return 0;
+    }
 
     return tmp;
 }

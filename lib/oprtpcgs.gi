@@ -22,17 +22,18 @@ InstallOtherMethod( OrbitStabilizerOp,
         "G, pnt, pcgs, oprs, opr", true,
         [ IsGroup, IsObject, IsPcgs, IsList, IsFunction ], 0,
     function( G, pnt, pcgs, oprs, opr )
-    local   orb,        # orbit
-            len,        # lengths of orbit before each extension
-            stab,  S,   # stabilizer and induced pcgs
-            img,  pos,  # image of <pnt> and its position in <orb>
-            stb,        # stabilizing element, a word in <pcgs>
-            i, ii, j, k;# loop variables
+    local   orb,             # orbit
+            len,             # lengths of orbit before each extension
+            stab,  S, rel,   # stabilizer and induced pcgs
+            img,  pos,       # image of <pnt> and its position in <orb>
+            stb,             # stabilizing element, a word in <pcgs>
+            i, ii, j, k;     # loop variables
 
     orb := [ pnt ];
     len := ListWithIdenticalEntries( Length( pcgs ) + 1, 0 );
     len[ Length( len ) ] := 1;
     S := [  ];
+    rel := [  ];
     for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
         img := opr( pnt, oprs[ i ] );
         pos := Position( orb, img );
@@ -65,6 +66,7 @@ InstallOtherMethod( OrbitStabilizerOp,
                 pos := ( pos - 1 ) mod len[ ii ] + 1;
             od;
             Add( S, PcElementByExponents( pcgs, stb ) );
+            Add( rel, RelativeOrders( pcgs )[ i ] );
             
         fi;
         len[ i ] := Length( orb );
@@ -72,8 +74,13 @@ InstallOtherMethod( OrbitStabilizerOp,
         
     # <S> is a reversed IGS.
     stab := SubgroupNC( G, S );
-    SetInducedPcgsWrtHomePcgs( stab,
-            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
+    S    := InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) );
+    SetRelativeOrders( S, Reversed( rel ) );
+    if ParentPcgs( pcgs ) = HomePcgs( stab )  then
+        SetInducedPcgsWrtHomePcgs( stab, S );
+    else
+        SetPcgs( stab, S );
+    fi;
 
     return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
@@ -182,8 +189,13 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     # <S> is a reversed IGS.
     if not HasStabilizerOfExternalSet( xset )  then
         stab := SubgroupNC( G, S );
-        SetInducedPcgsWrtHomePcgs( stab,
-            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
+        S    := InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) );
+      # SetRelativeOrders( S, Reversed( rel ) );
+        if ParentPcgs( pcgs ) = HomePcgs( stab )  then
+            SetInducedPcgsWrtHomePcgs( stab, S );
+        else
+            SetPcgs( stab, S );
+        fi;
         SetStabilizerOfExternalSet( xset, stab );
     fi;
     

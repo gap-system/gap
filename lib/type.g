@@ -287,7 +287,12 @@ SET_TYPE_POSOBJ( TypeOfTypes,      TypeOfTypes            );
 CATEGORIES_FAMILY := [];
 
 CategoryFamily  := function ( elms_filter )
-    local    pair, fam_filter, super, flags;
+    local    pair, fam_filter, super, flags, name;
+
+    name:= "CategoryFamily(";
+    APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NAME_FUNC( elms_filter ) ) );
+    APPEND_LIST_INTR( name, ")" );
+    CONV_STRING( name );
 
     elms_filter:= FLAGS_FILTER( elms_filter );
 
@@ -308,7 +313,7 @@ CategoryFamily  := function ( elms_filter )
     od;
 
     # Construct the family category.
-    fam_filter := NewCategory( "<family category>", super );
+    fam_filter := NewCategory( name, super );
     ADD_LIST( CATEGORIES_FAMILY, [ elms_filter, fam_filter ] );
     return fam_filter;
 end;

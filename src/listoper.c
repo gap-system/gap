@@ -1125,10 +1125,10 @@ Obj             CommList (
 **
 ** 0    0    1    1    2    2    3    3    4    4    5    5    6    6
 ** 0    5    0    5    0    5    0    5    0    5    0    5    0    5
-** CCCCCCCCCCCCRRLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLXXXVVV
+** CCCCCCCCCCCCRRLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLXXXXVVV
 */
 Char * CAT =
-  "ssssssss----ssiiiiiiiieeiiiiiiiiiiiivvvvvvvvvvvvvvvv----------------mm]";
+  "ssssssss----ssiiiiiiiieeiiiiiiiiiiiivvvvvvvvvvvvvvvv-----------------mm]";
 
 void InitListOper ( void )
 {

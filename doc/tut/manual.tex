@@ -1,16 +1,57 @@
 \input ../gapmacro
 \immediate\openout\ans=answers
-
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{Contributions to}\bigskip
+  \centerline{\titlefont The GAP 4 Manual}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont A Tutorial}\medskip
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%%
 \FrontMatter
-%\input copyrigh
-
+\immediate\write\citeout{\bs bibdata{mrabbrev,algebra,myalg}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . . . . . . . .  GAP 4 Tutorial
+%%
 \Chapters
 \Input{introduc}
 \Input{lists}
 \Input{group}
 \Input{opers}
-\Input{../xtndxmpl}
-
+\Input{algvspc}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
 \Appendices
 
 \Chapter Answers to the Exercises
@@ -27,32 +68,13 @@
 \Chapter Index
 
 Page numbers are given in the form <chapter>--<page_within_chapter>. A
-page number  in   {\it italics} refers  to a   whole section which  is
-devoted  to the indexed subject.  Keywords  are  sorted with case  and
-spaces    ignored, e.g.,  ```PermutationCharacter'''   comes    before
-``permutation group''.
+page number  in {\it  italics}  refers  to  a  whole section which  is
+devoted to the indexed subject. Some index entries refer to exercises,
+whose answers in appendix~A  should then  also  be read. Keywords  are
+sorted with case  and spaces ignored, e.g., ```PermutationCharacter'''
+comes before ``permutation group''.
 
 \Index
 
-\undoquotes
-\null\vfill
-\centerline{\titlefont The GAP 4 Tutorial}
-\bigskip
-\centerline{\secfont Lehrstuhl D f\"ur Mathematik}
-\smallskip
-\centerline{\secfont RWTH Aachen}
-\bigskip
-\centerline{\secfont School of Mathematical and Computational
-Sciences}
-\smallskip
-\centerline{\secfont University of St.~Andrews}
-
-\Chapter Contents
-
-\rightline{The pages are numbered chapterwise. This table of contents}
-\rightline{gives for each section the page number within the chapter.}
-\medskip
-
-\TableOfContents
-
+\EndOfBook
 \bye

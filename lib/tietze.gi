@@ -389,6 +389,435 @@ end;
 
 #############################################################################
 ##
+#M  PresentationViaCosetTable(<G>)  . . . . . . . .  construct a presentation
+#M  PresentationViaCosetTable(<G>,<F>,<words>) . . . . .  for the given group
+##
+##  'PresentationViaCosetTable'   constructs   a  presentation  for  a  given
+##  concrete  group.  It applies  John  Cannon's  relations finding algorithm
+##  which has been described in
+##
+##    John J. Cannon:  Construction of  defining relators  for  finte groups.
+##    Discrete Math. 5 (1973), 105-129, and in
+##
+##    Joachim Neubueser: An elementary introduction to coset table methods in
+##    computational  group theory.  Groups-St. Andrews 1981,  edited by C. M.
+##    Campbell and E. F. Robertson, pp. 1-45.  London Math. Soc. Lecture Note
+##    Series no. 71, Cambridge Univ. Press, Cambridge, 1982.
+##
+##  If only a group  <G>  has been  specified,  the single stage algorithm is
+##  applied.
+##
+##  If the  two stage algorithm  is to  be used,  'PresentationViaCosetTable'
+##  expects a subgroup <H> of <G> to be described by two additional arguments
+##  <F>  and  <words>,  where  <F>  is a  free group  with the same number of
+##  generators as  <G>,  and  <words> is a list of words in the generators of
+##  <F>  which supply  a list of generators of  <H>  if they are evaluated as
+##  words in the corresponding generators of <G>.
+##
+PresentationViaCosetTable := function ( arg )
+    local   G,          # given group
+            F,          # given or constructed free group
+            fgens,      # generators of F
+            words,      # words (in the generators of F) defing H
+            twords,     # tidied up list of words
+            H,          # subgroup
+            elts,       # elements of G or H
+            cosets,     # right cosets of G with respect to H
+            R1,         # record containing an fp group isomorphic to H
+            R2,         # record containing an fp group isomorphic to G
+            P,          # resulting presentation
+            ggens,      # concrete generators of G
+            hgens,      # concrete generators of H
+            thgens,     # tidied up list of generators of H
+            ngens,      # number of generators of G
+            one,        # identity element of G
+            F1,         # free group with same number of generators as H
+            FP2,        # fp group isomorphic to G
+            i, w;       # loop variables
+
+    # check the first argument to be a group
+    G := arg[1];
+    if not IsGroup( G ) then
+        Error( "first argument must be a group" );
+    fi;
+    ggens := GeneratorsOfGroup( G );
+    ngens := Length( ggens );
+
+    # check if a subgroup has been specified
+    if Length( arg ) = 1 then
+
+        # apply the single stage algorithm
+        Info( InfoFpGroup, 1, "#I  ",
+            "calling the single stage relations finding algorithm\n" );
+        elts := AsListSorted( G );
+        F := FreeGroup( ngens );
+        R2 := RelsViaCosetTable( G, elts, F );
+
+    else
+
+        # check the second argument to be an fp group.
+        F := arg[2];
+        if not IsFreeGroup( F ) then
+            Error( "second argument must be a free group" );
+        fi;
+
+        # check F for having the same number of generators as G
+        fgens := GeneratorsOfGroup( F );
+        if Length( fgens ) <> ngens then
+            Error( "the given groups have different number of generators" );
+        fi;
+
+        # get the subgroup H
+        words := arg[3];
+        hgens := List( words, w -> MappedWord( w, fgens, ggens ) );
+        H := Subgroup( G, hgens );
+
+        if Size( H ) = 1 or Size( H ) = Size( G ) then
+
+            # apply the single stage algorithm
+            Info( InfoFpGroup, 1, "#I  ",
+                "calling the single stage relations finding algorithm\n" );
+            elts := AsListSorted( G );
+            R2 := RelsViaCosetTable( G, elts, F );
+
+        else
+
+            # apply the two stage algorithm
+            Info( InfoFpGroup, 1, "#I  ",
+                "calling the two stage relations finding algorithm\n",
+                "#I  using a subgroup of size ", Size( H ), " and index ",
+                Size( G ) / Size( H ), "\n" );
+            # eliminate words which define the identity of G
+            one := One( ggens[1] );
+            thgens := [];
+            twords := [];
+            for i in [ 1 .. Length( hgens ) ] do
+                if hgens[i] <> one and not hgens[i] in thgens
+                    and not hgens[i]^-1 in thgens then
+                    Add( thgens, hgens[i] );
+                    Add( twords, words[i] );
+                fi;
+            od;
+            hgens := thgens;
+            words := twords;
+
+            # construct a presentation for the subgroup H
+            elts := AsListSorted( H );
+            F1 := FreeGroup( Length( hgens ) );
+            R1 := RelsViaCosetTable( H, elts, F1, hgens );
+
+            # construct a presentation for the group G
+            cosets := RightCosets( G, H );
+            R2 := RelsViaCosetTable( G, cosets, F, words, H, R1 );
+
+        fi;
+    fi;
+
+    # simplify the resulting presentation by Tietze transformations,
+    # but do not eliminate any generators
+    FP2 := R2.fpGroup;
+    P := PresentationFpGroup( FP2, 0 );
+    P.generatorsLimit := ngens;
+### TzGoGo( P );
+    P.generatorsLimit := 0;
+    P.printLevel := 1;
+
+    # return the resulting presentation
+    return P;
+end;
+
+
+#############################################################################
+##
+#M  RelsViaCosetTable(<G>,<cosets>,<F>)  . . . . . construct relators for the
+#M  RelsViaCosetTable(<G>,<cosets>,<F>,<ggens>)  . . . . . . . given concrete
+#M  RelsViaCosetTable(<G>,<cosets>,<F>,<words>,<H>,<R1>)  . . . . . . . group
+##
+##  'RelsViaCosetTable'  constructs a defining set of relators  for the given
+##  concrete group using John Cannon's relations finding algrotithm.
+##
+##  It is a  subroutine  of function  'PresentationViaCosetTable'.  Hence its
+##  input and output are specifically designed only for this purpose,  and it
+##  does not check the arguments.
+##
+RelsViaCosetTable := function ( arg )
+    local   G,            # given group
+            cosets,       # right cosets of G with respect to H
+            F,            # given free group
+            words,        # given words for the generators of H
+            H,            # subgroup, if specified
+            fam,          # family of H
+            F1,           # free group associated to H
+            R1,           # record containing an fp group isomorphic to H
+            R2,           # record containing an fp group isomorphic to G
+            FP1,          # fp group isomorphic to H
+            fhgens,       # generators of F1
+            hrels,        # relators of F1
+            helts,        # list of elements of H
+            idword,       # identity element of F
+            perms,        # permutations induced by the gens on the cosets
+            stage,        # 1 or 2
+            table,        # columns in the table for gens
+            rels,         # representatives of the relators
+            relsGen,      # relators sorted by start generator
+            subgroup,     # rows for the subgroup gens
+            i, j,         # loop variables
+            gen,          # loop variables for generator
+            gen0, inv0,   # loop variables for generator cols
+            g, g1,        # loop variables for generator cols
+            c,            # loop variable for coset
+            rel,          # loop variables for relator
+            app,          # arguments list for 'MakeConsequences'
+            index,        # index of the table
+            col,          # generator col in auxiliary table
+            perm,         # permutations induced by a generator on the cosets
+            fgens,        # generators of F
+            gens2,        # the above abstract gens and their inverses
+            ggens,        # concrete generators of G
+            ngens,        # number of generators of G
+            ngens2,       # twice the above number
+            order,        # order of a generator
+            actcos,       # part 1 of Schreier vector of G by H
+            actgen,       # part 2 of Schreier vector of G by H
+            tab0,         # auxiliary table in parallel to table <table>
+            cosRange,     # range from 1 to index (= number of cosets)
+            genRange,     # range of the odd integers from 1 to 2*ngens-1
+            geners,       # order in which the table cols are worked off
+            next,         # local coset number
+            w,            # loop variable
+            left1,        # part 1 of Schreier vector of H by trivial group
+            right1,       # part 2 of Schreier vector of H by trivial group
+            n,            # number of subgroup element
+            words2,       # words for the generators of H and their inverses
+            h;            # subgroup element
+
+    # get the arguments, and initialize some local variables
+
+    G := arg[1];
+    cosets := arg[2];
+    F := arg[3];
+    if Length( arg ) = 4 then
+        ggens := arg[4];
+    else
+        ggens := GeneratorsOfGroup( G );
+    fi;
+    ngens := Length( ggens );
+    ngens2 := ngens * 2;
+    index := Length( cosets );
+    tab0 := [];
+    table := [];
+    subgroup := [];
+    cosRange := [ 1 .. index ];
+    genRange := List( [ 1 .. ngens ], i -> 2*i-1 );
+
+    if Length( arg ) < 5 then
+        stage := 1;
+        rels := [];
+    else
+        stage := 2;
+        words := arg[4];
+        H := arg[5];
+        helts := AsListSorted( H );
+        R1 := arg[6];
+        FP1 := R1.fpGroup;
+        fam := ElementsFamily( FamilyObj( FP1 ) );
+        F1 := fam!.freeGroup;
+        fhgens := GeneratorsOfGroup( F1 );
+        hrels := fam!.relators;
+        # initialize the relators of F2 by the rewritten relators of F1
+        rels := List( hrels, rel -> MappedWord( rel, fhgens, words ) );
+        # get the Schreier vector for the elements of H
+        left1 := R1.actcos;
+        right1 := R1.actgen;
+        # extend the list of the generators of F1 as words in the abstract
+        # generators of F2 by their inverses
+        words2 := [];
+        for i in [ 1 .. Length( words ) ] do
+            Add( words2, words[i] );
+            Add( words2, words[i]^-1 );
+        od;
+    fi;
+
+    fgens := GeneratorsOfGroup( F );
+    gens2 := [];
+    idword := One( fgens[1] );
+
+    # get the permutations induced by the generators of G on the given
+    # cosets
+    perms := List( ggens, gen -> Permutation( gen, cosets, OnRight ) );
+
+    # get a coset table from the permutations,
+    # and introduce appropriate relators for the involutory generators
+    for i in [ 1 .. ngens ] do
+        Add( gens2, fgens[i] );
+        Add( gens2, fgens[i]^-1 );
+        perm := perms[i];
+        col := OnTuples( cosRange, perm );
+        gen := ListWithIdenticalEntries( index, 0 );
+        Add( tab0, col );
+        Add( table, gen );
+        order := Order( ggens[i] );
+        if order = 2 then
+            Add( rels, fgens[i]^2 );
+        else
+            col := OnTuples( cosRange, perm^-1 );
+            gen := ListWithIdenticalEntries( index, 0 );
+        fi;
+        Add( tab0, col );
+        Add( table, gen );
+    od;
+
+    # define an appropriate ordering of the cosets,
+    # enter the definitions in the table,
+    # and construct the Schreier vector,
+    cosets := ListWithIdenticalEntries( index, 0 );
+    actcos := ListWithIdenticalEntries( index, 0 );
+    actgen := ListWithIdenticalEntries( index, 0 );
+    cosets[1] := 1;
+    actcos[1] := 1;
+    j := 1;
+    i := 0;
+    while i < index do
+        i := i + 1;
+        c := cosets[i];
+        g := 0;
+        while g < ngens2 do
+            g := g + 1;
+            next := tab0[g][c];
+            if next > 0 and actcos[next] = 0 then
+                g1 := g + 2*(g mod 2) - 1;
+                table[g][c] := next;
+                table[g1][next] := c;
+                tab0[g][c] := 0;
+                tab0[g1][next] := 0;
+                actcos[next] := c;
+                actgen[next] := g;
+                j := j + 1;
+                cosets[j] := next;
+                if j = index then
+                    g := ngens2;
+                    i := index;
+                fi;
+            fi;
+        od;
+    od;
+
+    # compute the representatives for the relators
+    rels := RelatorRepresentatives( rels );
+
+    # make the structure that is passed to 'MakeConsequences'
+    app := ListWithIdenticalEntries( 11, 0 );
+    app[1] := table;
+    app[5] := subgroup;
+
+    # in case stage = 2 we have to handle subgroup relators
+    if stage = 2 then
+
+        # make the rows for the relators and distribute over relsGen
+        relsGen := RelsSortedByStartGen( fgens, rels, table );
+        app[4] := relsGen;
+
+        # start the enumeration and find all consequences
+        for g in genRange do
+            gen0 := tab0[g];
+            for c in cosRange do
+                if gen0[c] = 0 then
+                    app[10] := g;
+                    app[11] := c;
+                    n := MakeConsequences( app );
+                fi;
+            od;
+        od;
+    fi;
+
+    # run through the coset table and find the next zero entry
+    geners := [ 1 .. ngens2 ];
+    for i in cosets do
+        for j in geners do
+            if table[j][i] = 0 then
+
+                # define the entry appropriately,
+                g := j + 2*(j mod 2) - 1;
+                c := tab0[j][i];
+                table[j][i] := c;
+                table[g][c] := i;
+                tab0[j][i] := 0;
+                tab0[g][c] := 0;
+
+                # construct the associated relator
+                rel := idword;
+                while c <> 1 do
+                    g := actgen[c];
+                    rel := rel * gens2[g]^-1;
+                    c := actcos[c];
+                od;
+                rel := rel^-1 * gens2[j]^-1;
+                c := i;
+                while c <> 1 do
+                    g := actgen[c];
+                    rel := rel * gens2[g]^-1;
+                    c := actcos[c];
+                od;
+                if stage = 2 then
+                    h := MappedWord( rel, fgens, ggens );
+                    n := PositionSorted( helts, h );
+                    while n <> 1 do
+                        g := right1[n];
+                        rel := rel * words2[g]^-1;
+                        n := left1[n];
+                    od;
+                fi;
+
+                # compute its representative,
+                # and add it to the set of relators
+                rels := Concatenation(
+                    rels, RelatorRepresentatives( [ rel ] ) );
+
+                # make the rows for the relators and distribute over relsGen
+                relsGen := RelsSortedByStartGen( fgens, rels, table );
+                app[4] := relsGen;
+
+                # mark all already defined entries of table by a zero in
+                # tab0
+                for g in genRange do
+                    gen := table[g];
+                    gen0 := tab0[g];
+                    inv0 := tab0[g+1];
+                    for c in cosRange do
+                        if gen[c] > 0 then
+                            gen0[c] := 0;
+                            inv0[gen[c]] := 0;
+                        fi;
+                    od;
+                od;
+
+                # continue the enumeration and find all consequences
+                for g in genRange do
+                    gen0 := tab0[g];
+                    for c in cosRange do
+                        if gen0[c] = 0 then
+                            app[10] := g;
+                            app[11] := c;
+                            n := MakeConsequences( app );
+                        fi;
+                    od;
+                od;
+            fi;
+        od;
+    od;
+
+    # construct a finitely presented group from the relations,
+    # add the Schreier vector to its components, and return it
+    R2 := rec( );
+    R2.fpGroup := F / rels;
+    R2.actcos := actcos;
+    R2.actgen := actgen;
+    return R2;
+end;
+
+
+#############################################################################
+##
 #M  RemoveRelator( <Tietze record>, <n> ) . . . . . . . . .  remove a relator
 #M                                                        from a presentation
 ##
@@ -1480,7 +1909,7 @@ end;
 ##
 TzHandleLength1Or2Relators := function ( T )
 
-    local absrep2, done, flags, gens, i,IdWord, invs, j, length, lengths,
+    local absrep2, done, flags, gens, i, idword, invs, j, length, lengths,
           numgens, numgens1, numrels, pointers, protected, ptr, ptr1, ptr2,
           redunds, rels, rep, rep1, rep2, tietze, tracingImages, tree,
           treelength, treeNums;
@@ -1505,7 +1934,7 @@ TzHandleLength1Or2Relators := function ( T )
     redunds := tietze[TZ_NUMREDUNDS];
     numgens1 := numgens + 1;
     done := false;
-    IdWord := One( gens[1] );
+    idword := One( gens[1] );
 
     tree := 0;
     if IsBound( T.tree ) then
@@ -1520,7 +1949,9 @@ TzHandleLength1Or2Relators := function ( T )
         done := true;
 
         # loop over all relators and find those of length 1 or 2.
-        for i in [ 1 .. numrels ] do
+        i := 0;
+        while i < numrels do
+            i := i + 1;
             length := lengths[i];
             if length <= 2 and length > 0 and flags[i] <= 2 then
 
@@ -1535,6 +1966,7 @@ TzHandleLength1Or2Relators := function ( T )
                     # handle a relator of length 1.
                     rep1 := AbsInt( rep1 );
                     if rep1 > protected then
+                        # eliminate generator rep1.
                         invs[numgens1-rep1] := 0;
                         invs[numgens1+rep1] := 0;
                         if tree <> 0 then
@@ -1544,7 +1976,7 @@ TzHandleLength1Or2Relators := function ( T )
                         fi;
                         if T.printLevel >= 2 then
                             Print( "#I  eliminating ", gens[rep1],
-                                " = IdWord\n" );
+                                " = idword\n" );
                         fi;
                         # update the generator images, if available.
                         if tracingImages then
@@ -1571,6 +2003,7 @@ TzHandleLength1Or2Relators := function ( T )
                         # the relator is in fact of length at most 1.
                         rep2 := AbsInt( rep2 );
                         if rep2 > protected then
+                            # eliminate generator rep1.
                             invs[numgens1-rep2] := 0;
                             invs[numgens1+rep2] := 0;
                             if tree <> 0 then
@@ -1580,7 +2013,7 @@ TzHandleLength1Or2Relators := function ( T )
                             fi;
                             if T.printLevel >= 2 then
                                 Print( "#I  eliminating ", gens[rep2],
-                                    " = IdWord\n" );
+                                    " = idword\n" );
                             fi;
                             # update the generator images, if available.
                             if tracingImages then
@@ -1592,23 +2025,25 @@ TzHandleLength1Or2Relators := function ( T )
 
                     elif rep1 <> - rep2 then
 
-                        if invs[numgens1+rep1] < 0 and ( rep1 = rep2 or
-                            invs[numgens1-rep2] = invs[numgens1+rep2] ) then
-                            # make the relator a square relator, ...
-                            rels[i][1] := rep1;  rels[i][2] := rep1;
-                            # ... mark it appropriately, ...
-                            flags[i] := 3;
-                            # ... and mark rep1 to be an involution.
-                            invs[numgens1+rep1] := rep1;
-                            done := false;
-                        fi;
+                        if rep1 <> rep2 then
 
-                        # handle a non-square relator of length 2.
-                        absrep2 := AbsInt( rep2 );
-                        if rep1 <> rep2 and absrep2 > protected then
-                            invs[numgens1-rep2] := invs[numgens1+rep1];
-                            invs[numgens1+rep2] := rep1;
-                            if tree <> 0 then
+                          # handle a non-square relator of length 2.
+                          if invs[numgens1-rep2] = invs[numgens1+rep2]
+                              and invs[numgens1+rep1] < 0 then
+                              # add a new square relator for rep1.
+                              numrels := numrels + 1;
+                              rels[numrels] := [ rep1, rep1 ];
+                              lengths[numrels] := 2;
+                              flags[numrels] := 1;
+                              tietze[TZ_NUMRELS] := numrels;
+                              tietze[TZ_TOTAL] := tietze[TZ_TOTAL] + 2;
+                          fi;
+
+                          absrep2 := AbsInt( rep2 );
+                          if absrep2 > protected then
+                             invs[numgens1-rep2] := invs[numgens1+rep1];
+                             invs[numgens1+rep2] := rep1;
+                             if tree <> 0 then
 
                                 ptr1 := AbsInt( treeNums[rep1] );
                                 ptr2 := AbsInt( treeNums[absrep2] );
@@ -1628,8 +2063,8 @@ TzHandleLength1Or2Relators := function ( T )
                                 fi;
                                 pointers[ptr2] := ptr1;
                                 treeNums[absrep2] := 0;
-                            fi;
-                            if tracingImages or T.printLevel >= 2 then
+                             fi;
+                             if tracingImages or T.printLevel >= 2 then
                                 if rep2 > 0 then
                                     rep1 := invs[numgens1+rep1];
                                 fi;
@@ -1642,11 +2077,27 @@ TzHandleLength1Or2Relators := function ( T )
                                     TzUpdateGeneratorImages( T, absrep2,
                                         [ rep1 ] );
                                 fi;
+                             fi;
+                             redunds := redunds + 1;
+                             done := false;
+                          fi;
+
+                        else
+
+                            # handle a square relator.
+                            if invs[numgens1+rep1] < 0 then
+                                # make the relator a square relator, ...
+                                rels[i][1] := rep1;
+                                rels[i][2] := rep1;
+                                # ... mark it appropriately, ...
+                                flags[i] := 3;
+                                # ... and mark rep1 to be an involution.
+                                invs[numgens1+rep1] := rep1;
+                                done := false;
                             fi;
-                            redunds := redunds + 1;
-                            done := false;
 
                         fi;
+
                     fi;
                 fi;
             fi;
@@ -2946,6 +3397,87 @@ TzSubstituteWord := function ( T, word )
     fi;
 
     if T.printLevel >= 1 then  TzPrintStatus( T, true );  fi;
+end;
+
+
+#############################################################################
+##
+#M  TzUpdateGeneratorImage( T, n, word )  . . . . update the generator images
+#M                                              after a Tietze transformation
+##
+##  'TzUpdateGeneratorImages'  assumes  that it is called  by a function that
+##  performs  Tietze transformations  to a presentation record  <T>  in which
+##  images of the old generators  are being traced as Tietze words in the new
+##  generators  as well as preimages of the new generators as Tietze words in
+##  the old generators.
+##
+##  If  <n>  is zero,  it assumes that  a new generator defined by the Tietze
+##  word <word> has just been added to the presentation.  It converts  <word>
+##  from a  Tietze word  in the new generators  to a  Tietze word  in the old
+##  generators and adds that word to the list of preimages.
+##
+##  If  <n>  is greater than zero,  it assumes that the  <n>-th generator has
+##  just been eliminated from the presentation.  It updates the images of the
+##  old generators  by replacing each occurrence of the  <n>-th  generator by
+##  the given Tietze word <word>.
+##
+##  If <n> is less than zero,  it terminates the tracing of generator images,
+##  i. e., it deletes the corresponding record components of <T>.
+##
+##  Note: 'TzUpdateGeneratorImages' is considered to be an internal function.
+##  Hence it does not check the arguments.
+##
+TzUpdateGeneratorImages := function ( T, n, word )
+    
+    local i, image, invword, j, newim, num, oldnumgens;
+
+    if n = 0 then
+
+        # update the preimages of the new generators.
+        newim := [];
+        for num in word do
+            if num > 0 then
+                Append( newim, T.preImagesNewGens[num] );
+            else
+                Append( newim, -1 * Reversed( T.preImagesNewGens[-num] ) );
+            fi;
+        od;
+        Add( T.preImagesNewGens, ReducedRrsWord( newim ) );
+
+    elif n > 0 then
+
+        # update the images of the old generators:
+        # run through all images and replace the n-th generator by word.
+        invword := -1 * Reversed( word );
+        oldnumgens := Length( T.imagesOldGens );
+        for i in [ 1 .. oldnumgens ] do
+            image := T.imagesOldGens[i];
+            newim := [];
+            for j in [ 1 .. Length( image ) ] do
+                if image[j] = n then
+                    Append( newim, word );
+                elif image[j] = -n then
+                    Append( newim, invword );
+                else
+                    Add( newim, image[j] );
+                fi;
+            od;
+            T.imagesOldGens[i] := ReducedRrsWord( newim );
+        od;
+
+    else
+
+        # terminate the tracing of generator images.
+        Unbind( T.imagesOldGens );
+        Unbind( T.preImagesNewGens );
+        if IsBound( T.oldGenerators ) then
+            Unbind( T.oldGenerators );
+        fi;
+        if T.printLevel >= 1 then
+            Print( "#I  terminated the tracing of generator images\n" );
+        fi;
+
+    fi;
 end;
 
 

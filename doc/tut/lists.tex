@@ -9,8 +9,9 @@ special kind of lists, namely as lists without  holes or duplicates whose
 entries are ordered with respect to the precedence relation~`\<'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Plain lists}
+\Section{Plain lists}\null
 
+\atindex{lists!plain}{|indexit}%
 A *list* is a collection of objects separated by  commas and enclosed  in
 brackets.  Let us for example construct the list `primes' of the first 10
 prime numbers.
@@ -118,12 +119,12 @@ actual value  of  the  object  `lll'   on  the  right  hand side  of  the
 assignment. But in  fact it is  identical to the value  of the whole list
 `lll' on the left hand side of the assignment.
 
-A *string*
-\index{strings}%
-is a  very special type of list,  which is printed in  a different way. A
-string is simply a  dense list of  characters. Strings are used mainly in
-filenames  and error  messages. A string  literal can  either  be entered
-simply as the  list of  characters  or by writing  the characters between
+\index{strings}\index{lists!dense}%
+A *string*  is a very  special   type of  list,  which  is  printed in  a
+different way.  A string  is simply  a  dense list of   characters, where
+*dense* means  that the list  has no holes.   Strings are used  mainly in
+filenames and   error messages. A  string  literal can either  be entered
+simply as the  list of characters  or  by writing the characters  between
 doublequotes `\"'.
 \beginexample
     gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
@@ -156,8 +157,9 @@ This way you get  a new list that  contains at position <i> that  element
 whose position is the <i>th entry of the argument in the curly braces.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Identical lists}
+\Section{Identical lists}\null
 
+\atindex{lists!identical}{|indexit}%
 This second  section  about lists is dedicated  to  the subtle difference
 between  equality  and identity  of   lists. It  is  really  important to
 understand   this  difference in  order   to  understand how complex data
@@ -239,21 +241,19 @@ Now return to the  previous section and   find out whether the  functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sets}
 
-{\GAP} knows several special kinds of lists.  A very important one is the
-*set*, which is a list without holes  all of whose  entries belong to the
-same *family*,
-\index{family}%
-which says (more  or less)  that they   can be  compared using  the  `\<'
-operator. The crucial property of a set is then that  its entries must be
-strictly sorted, i.e.,  entries in higher positions  must be greater with
-respect  to~`\<'. In  particular,  a set  cannot have duplicates.  {\GAP}
-calls a set also a *strictly sorted list*
-\index{lists!strictly sorted}%
+\index{lists!strictly sorted}\index{family}%
+{\GAP} knows several special kinds of lists. A  very important one is the
+*set*, which is a  dense list (i.e., without  holes) all of whose entries
+belong to the same  *family*, which says (more or  less) that they can be
+compared using the `\<'  operator. The crucial property of  a set is then
+that   its  entries must  be strictly   sorted, i.e.,   entries in higher
+positions   must be greater  with respect  to~`\<'. In  particular, a set
+cannot have duplicates. {\GAP} calls a  set also a *strictly sorted list*
 and the function `IsSSortedList' tests whether a given  list is a set. It
-returns  a boolean value.  For  any list  contained  in one family  there
-exists a  corresponding   set containing  the  same   elements  (ignoring
+returns  a boolean value.  For any  list contained  in  one family  there
+exists  a    corresponding set containing  the   same  elements (ignoring
 repitions). This set is constructed by the function `Set' which takes the
-list as   its argument and   returns a set  obtained  from this   list by
+list as  its argument   and returns a   set  obtained from this   list by
 ignoring holes and duplicates and by sorting the elements.
 
 The  elements  of  the  sets used  in  the  examples of this  section are
@@ -521,7 +521,7 @@ i.e.,  a list which looks   exactly like the old   one, but has two extra
 properties: (1)~It has no mutable subobjects in common with the old list,
 i.e., every part of the list that can be changed has been copied, so that
 changes to the old list will not affect the new  one. (2)~The new list is
-made a constant, i.e., no part of it can be changed any more.
+made immutable, i.e., no part of it can be changed any more.
 \beginexample
     gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
     gap> list[3][5] := 'w';; list; copy;
@@ -551,6 +551,7 @@ That's  why the result  is called   a ``shallow  copy''.  Since the  list
 entries were subobjects of  the  immutable old  list and  hence immutable
 themselves, the result of `ShallowCopy' is mutable only at the top.
 
+\indextt{StructuralCopy}%
 \exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
 list?
 
@@ -571,13 +572,130 @@ This works only if the original list  does not contain the same subobject
 (up to `IsIdentical') twice. For example, the list which {\GAP} prints as
 `[ ~ ]' will cause this function to recurse infinitely.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vectors and matrices}\null
+
+\index{vectors!row}\index{matrices}%
+This section describes how {\GAP} uses lists to represent row vectors and
+matrices. A *row vector* is a dense list of elements from a common field.
+A *matrix* is a dense list of row vectors of equal length.
+\beginexample
+    gap> v:= [3, 6, 2, 5/2];;  IsRowVector(v);
+    true
+\endexample
+Row vectors  may be  added and multiplied   by scalars from  their field.
+Multiplication of   row vectors of  equal length  results in their scalar
+product.
+\beginexample
+    gap> 2 * v;  v * 1/3;  v * v;
+    [ 6, 12, 4, 5 ]
+    [ 1, 2, 2/3, 5/6 ]
+    221/4  # the scalar product of `v' with itself
+\endexample
+Note  that   the expression `v   *  1/3' is   actually evaluated by first
+multiplying `v' by 1 (which yields again `v')  and by then dividing by 3.
+This  is  also an allowed scalar   operation.  The expression `v/3' would
+result in  the same value. *All  these arithmetical  operations result in
+immutable vectors,*  regardless of whether the   operands were mutable or
+immutable. So if  you want to produce an  immutable list with 100~entries
+equal to~25, you can simply say `25  + 0 * [  1 .. 100 ]', because ranges
+are also vectors (over the rationals).
+
+\indextt{ListWithIdenticalEntries}%
+\exercise  How can  you produce  a mutable  list  with 100~entries  equal
+to~25?
+
+\answer `ShallowCopy( 25 + 0 * [ 1 .. 100 ] )' or `List(  [ 1 .. 100 ], x
+->  25 )'. Since such constructions  are frequently needed, {\GAP} offers
+you a shortcut: you can simply say `ListWithIdenticalEntries( 100, 25 )'.
+
+\beginexample
+    gap> m:= [[1,-1, 1],
+    >         [2, 0,-1],
+    >         [1, 1, 1]];
+    [ [ 1, -1, 1 ], [ 2, 0, -1 ], [ 1, 1, 1 ] ]
+    gap> m[2][1];
+    2 |
+\endexample
+Syntactically a matrix is a list of lists. So the number  2 in the second
+row  and the first  column of the matrix `m'  is referred to as the first
+element of the second element of the list `m' via `m[2][1]'. A matrix may
+be multiplied by scalars, row vectors and other matrices. The row vectors
+and matrices involved in such a multiplication must however have suitable
+dimensions.
+\beginexample
+    gap> [1, 0, 0, 0] * m;
+    Error, Vector *: vectors must have the same length
+    gap> [1, 0, 0] * m;
+    [ 1, 2, 3, 4 ]
+    gap> m * [1, 0, 0];
+    Error, Vector *: vectors must have the same length
+    gap> m * [1, 0, 0, 0];
+    [ 1, 5, 9 ]
+\endexample
+Note that multiplication  of a row vector with  a matrix will result in a
+linear combination of the  rows of the  matrix, while multiplication of a
+matrix with a row  vector results in  a linear combination of the columns
+of the  matrix. In  the latter case  the  row vector is considered   as a
+column vector.
+
+A  matrix of integers can also  be multiplied with  a finite field scalar
+and vice  versa. Such products result in  a matrix  over the finite field
+with the integers mapped into the finite field in the obvious way. Finite
+field matrices are  nicer to read  when  the are `Display'ed  rather than
+`Print'ed.
+\beginexample
+    gap> Display( m * One( GF(5) ) );
+     1 4 1
+     2 . 4
+     1 1 1
+|_
+    gap> Display( m^2 * Z(2) + m * Z(4) );
+    z = Z(4)
+     z^1 z^1 z^2
+       1   1 z^2
+     z^1 z^1 z^2
+\endexample
+Submatrices    can  easily     be    extracted  using    the   expression
+`<mat>\{<rows>\}\{<columns>\}'. They   can also be  assigned to, provided
+the big matrix  is mutable (which  it is not if it  is  the result of  an
+arithmetical operation).
+\beginexample
+    gap> sm := m{ [ 1, 2 ] }{ [ 2, 3 ] };
+    [ [ -1, 1 ], [ 0, -1 ] ]
+    gap> sm{ [ 1, 2 ] }{ [2] } := [[-2],[0]];;  sm;
+    [ [ -1, -2 ], [ 0, 0 ] ]
+\endexample
+
+The interesting point is that matrices appear not only in linear algebra,
+but also as  group elements, provided they are  invertible.  Here we have
+the  first  opportunity  to  meet a   group-theoretical  function, namely
+`Order', which computes the order of a group element.
+\beginexample
+    gap> Order( m * One( GF(5) ) );
+    8
+    gap> Order( m );
+    |#I  Order: warning, order of <mat> might be infinite
+\endexample
+Since the order  of `m' over the  rationals really is  infinite, you will
+have to interrupt {\GAP} by  pressing `<ctl>-C' (followed by `<ctl>-D' or
+`quit;'  to leave the   break loop). To prove  that  the order of `m'  is
+infinite,  we  could look  at  the  minimal  polynomial  of `m'  over the
+rationals.
+\beginexample
+    gap> f := MinimalPolynomial( Rationals, m );;  Factors( f );
+    [ P1C0(-2+x), P1C0(3+x^2) ]
+\endexample
+The first  irreducible factor $X-2$ reveals   that 2 is an  eigenvalue of
+`m', hence its order cannot be finite.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
-% outline-regexp:   "\\\\Chapter\\|\\\\Section"
-% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
-% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

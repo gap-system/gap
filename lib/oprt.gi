@@ -2112,16 +2112,13 @@ InstallOtherMethod( StabilizerOp,
     function( G, d, gens, oprs, opr )
     local   stb,  p,  orbstab;
     
-    if IsIdentical( gens, oprs )  then
-        if opr = OnTuples  or  opr = OnPairs  then
-            stb := G;
-            for p  in d  do
-                stb := StabilizerOp( stb, p, GeneratorsOfGroup( stb ),
-                               GeneratorsOfGroup( stb ), OnPoints );
-            od;
-        else
-            stb := StabilizerOp( G, d, gens, oprs, opr );
-        fi;
+    if     IsIdentical( gens, oprs )
+       and opr = OnTuples  or  opr = OnPairs  then
+        stb := G;
+        for p  in d  do
+            stb := StabilizerOp( stb, p, GeneratorsOfGroup( stb ),
+                           GeneratorsOfGroup( stb ), OnPoints );
+        od;
     else
         orbstab := OrbitStabilizerByGenerators( gens, oprs, d, opr );
         stb := SubgroupNC( G, orbstab.stabilizer );

@@ -246,11 +246,13 @@ char *          Revision_objects_h =
 #define LAST_LIST_TNUM          (T_STRING_SSORT+IMMUTABLE)
 #define LAST_IMM_MUT_TNUM       LAST_LIST_TNUM
 
+/* IMMUTABLE is not used for external types but keep the parity */
 #define FIRST_EXTERNAL_TNUM     (LAST_LIST_TNUM+1)
 #define T_COMOBJ                (FIRST_EXTERNAL_TNUM+ 0)
 #define T_POSOBJ                (FIRST_EXTERNAL_TNUM+ 1)
 #define T_DATOBJ                (FIRST_EXTERNAL_TNUM+ 2)
-#define LAST_EXTERNAL_TNUM      T_DATOBJ
+#define T_DUMMYOBJ              (FIRST_EXTERNAL_TNUM+ 3)
+#define LAST_EXTERNAL_TNUM      T_DUMMYOBJ
 #define LAST_REAL_TNUM          LAST_EXTERNAL_TNUM
 
 #define FIRST_VIRTUAL_TNUM      (LAST_EXTERNAL_TNUM+1)
@@ -263,7 +265,12 @@ char *          Revision_objects_h =
 #define COPYING                 (FIRST_COPYING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_COPYING_TNUM       (LAST_REAL_TNUM + COPYING)
 
-#define FIRST_PRINTING_TNUM     (LAST_COPYING_TNUM + 1)
+/* share the same numbers between `COPYING' and `TESTING' */
+#define FIRST_TESTING_TNUM      FIRST_COPYING_TNUM
+#define TESTING                 COPYING
+#define LAST_TESTING_TNUM       LAST_COPYING_TNUM
+
+#define FIRST_PRINTING_TNUM     (LAST_TESTING_TNUM + 1)
 #define PRINTING                (FIRST_PRINTING_TNUM - FIRST_RECORD_TNUM)
 #define LAST_PRINTING_TNUM      (LAST_LIST_TNUM + PRINTING)
 
@@ -436,6 +443,40 @@ extern Obj (*TypeObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
                         ((*IsMutableObjFuncs[ TNUM_OBJ(obj) ])( obj ))
 
 extern Int (*IsMutableObjFuncs[ LAST_REAL_TNUM+1 ]) ( Obj obj );
+
+/****************************************************************************
+**
+*V  SaveObjFuncs (<type>) . . . . . . . . . . . . . functions to save objects
+**
+** 'SaveObjFuncs' is the dispatch table that  contains, for every type
+**  of  objects, a pointer to the saving function for objects of that type
+**  These should not handle the file directly, but should work via the
+**  functions 'SaveObjRef', 'SaveUInt<n>' (<n> = 1,2,4 or 8), and others
+**  to be determined. Their role is to identify the C types of the various
+**  parts of the bag, and perhaps to leave out some information that does
+**  not need to be saved. By the time this function is called, the bag
+**  size and type have already been saved
+**  No saving function may allocate any bag
+*/
+
+extern void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
+
+     /****************************************************************************
+**
+*V  LoadObjFuncs (<type>) . . . . . . . . . . . . . functions to load objects
+**
+** 'LoadObjFuncs' is the dispatch table that  contains, for every type
+**  of  objects, a pointer to the loading function for objects of that type
+**  These should not handle the file directly, but should work via the
+**  functions 'LoadObjRef', 'LoadUInt<n>' (<n> = 1,2,4 or 8), and others
+**  to be determined. Their role is to reinstall the information in the bag
+**  and reconstruct anything that was left out. By the time this function is
+**  called, the bag size and type have already been loaded and the bag argument
+**  contains the bag in question
+**  No loading function may allocate any bag
+*/
+
+extern void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj, Bag bag);
 
 
 /****************************************************************************

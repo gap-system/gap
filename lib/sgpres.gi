@@ -1991,11 +1991,12 @@ RewriteSubgroupRelators := function ( aug )
 
     # loop over all group relators
     for grel in aug.groupRelators do
+      length := LengthWord( grel );
+      if length > 0 then
 
         # get two copies of the group relator, one as a list of words in the
         # factor table columns and one as a list of words in the coset table
         # column numbers.
-        length := LengthWord( grel );
         nums := [ ]; nums[2*length] := 0;
         cols := [ ]; cols[2*length] := 0;
         for i in [ 1 .. length ]  do
@@ -2040,6 +2041,7 @@ RewriteSubgroupRelators := function ( aug )
                 fi;
             fi;
         od;
+      fi;
     od;
 
     # loop over all primary subgroup generators.

@@ -881,10 +881,18 @@ end;
 ##
 BrauerTable := function( name, ordtbl )
 
-    local filename,     # name of the file containing the Brauer table
-          fld,          # library tables of the whole library file
-          libtbl,       # record with data of the desired table
-          reg,          # Brauer table, result
+    local filename,      # name of the file containing the Brauer table
+          fld,           # library tables of the whole library file
+          libtbl,        # record with data of the desired table
+          reg,           # Brauer table, result
+          nsg,           # normal subgroups of the ordinary table
+          op,            # largest normal $p$-subgroup
+          classes,       # class lengths in `ordtbl'
+          size,          # size of normal $p$-subgroup
+          orders,        # representative orders in `ordtbl'
+          nccl,          # no. of classes in `ordtbl'
+          entry,         # loop over stored fusions
+          fusion,        # one fusion map
           result_blocks,
           i, j,
           ord,
@@ -914,9 +922,52 @@ BrauerTable := function( name, ordtbl )
     filename:= LibInfoCharacterTable( name ).fileName;
     fld:= LibraryTables( filename );
     if fld = fail or not IsBound( fld.( name ) ) then
+
+      # Maybe we have to factor out a normal $p$-subgroup before
+      # we find the table in the library.
+      nsg:= ClassPositionsOfNormalSubgroups( ordtbl );
+      prime:= PartsBrauerTableName( name ).prime;
+      op:= false;
+      j:= 0;
+      classes:= SizesConjugacyClasses( ordtbl );
+      for i in nsg do
+        size:= Collected( Factors( Sum( classes{ i }, 0 ) ) );
+        if Length( size ) = 1 and size[1][1] = prime
+                              and j < size[1][2] then
+          op:= i;
+          j:= size[1][2];
+        fi;
+      od;
+
+      if j = 0 then
+        Info( InfoCharacterTable, 1,
+              "No library table with name '", name, "'" );
+        return fail;
+      fi;
+
+      orders:= OrdersClassRepresentatives( ordtbl );
+      nccl:= NrConjugacyClasses( ordtbl );
+      for entry in ComputedClassFusions( ordtbl ) do
+        fusion:= entry.map;
+        if Filtered( [ 1 .. nccl ], i -> fusion[i] = 1 ) = op then
+          facttbl:= CharacterTableFromLibrary( [ entry.name ] );
+          libtbl:= facttbl mod prime;
+          fusion:= CompositionMaps( InverseMap( fusion ),
+                                    GetFusionMap( libtbl, facttbl ) );
+          for i in [ 1 .. Length( fusion ) ] do
+            if IsList( fusion[i] ) then
+              fusion[i]:= First( fusion[i], x -> orders[x] mod prime <> 0 );
+            fi;
+          od;
+          StoreFusion( libtbl, fusion, ordtbl );
+          return libtbl;
+        fi;
+      od;
+
       Info( InfoCharacterTable, 1,
-            "No library table with name '", name, "'" );
+            "No library table of the factor by O_p" );
       return fail;
+
     fi;
     libtbl:= fld.( name );
 

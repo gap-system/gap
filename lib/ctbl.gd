@@ -370,6 +370,25 @@ HasBlocksInfo := Tester( BlocksInfo );
 
 #############################################################################
 ##
+#A  ClassPositionsOfNormalSubgroups( <ordtbl> )
+##
+##  Every normal subgroup of the group $G$ for that <ordtbl> is the ordinary
+##  character table is a union of conjugacy classes.
+##  `ClassPositionsOfNormalSubgroups' is the list of all positions lists of
+##  the normal subgroups of $G$.
+##
+##  The entries of the list are sorted according to increasing length.
+##
+ClassPositionsOfNormalSubgroups := NewAttribute(
+    "ClassPositionsOfNormalSubgroups", IsOrdinaryTable );
+SetClassPositionsOfNormalSubgroups := Setter(
+    ClassPositionsOfNormalSubgroups );
+HasClassPositionsOfNormalSubgroups := Tester(
+    ClassPositionsOfNormalSubgroups );
+
+
+#############################################################################
+##
 #A  IrredInfo( <tbl> )
 ##
 ##  a list of records, the $i$-th entry belonging to the $i$-th irreducible
@@ -974,14 +993,6 @@ TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
 ##
 TransformingPermutationsCharacterTables := NewOperationArgs(
     "TransformingPermutationsCharacterTables" );
-
-
-#############################################################################
-##
-#F  LowercaseString( <string> ) . . . string consisting of lower case letters
-##
-LowercaseString := NewOperationArgs( "LowercaseString" );
-#T move to another file !!
 
 
 #############################################################################

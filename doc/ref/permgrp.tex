@@ -18,7 +18,7 @@ you can multiply any two permutations.
 The points on  which permutations   in  {\GAP} operate  are the  positive
 integers less than  $2^{28}-1$,  and the image   of a point <i> under   a
 permutation <p> is written $i^p$,  which is expressed  as `<i> ^ <p>'  in
-{\GAP}. If `<i> ^ $p\ne i$', we say that <i> is _moved_ by~<p>, otherwise
+{\GAP}. If `<i> ^ $p\ne i$', we say that <i> is *moved* by~<p>, otherwise
 it is _fixed_. Permutations in {\GAP} are  entered and displayed in cycle
 notation, such as `(1,2,3)(4,5)'.
 
@@ -75,12 +75,12 @@ even when <p> has huge order.
 \>NrMovedPointsPerm( <perm> )
 \>NrMovedPoints( <G> )
 
-`MovedPointsPerm(  <perm>  )' returns  the set   of  points moved  by the
-permutation <perm>, i.e.,  the  set of  positive integers  <i> such  that
-`$i^{perm}\ne i$'. `NrMovedPointsPerm' returns   the cardinality of  that
-set,  `SmallestMovedPointPerm'  and `LargestMovedPointPerm'  its smallest
-resp.~ largest element. If  <perm> is trivial, the  set will be empty, in
-this case the  last two functions return  `infinity' resp.~`0'. The other
+`MovedPointsPerm(   <perm> )'  returns the   set of points  moved by  the
+permutation <perm>,  i.e., the set   of positive integers  <i> such  that
+`$i^{perm}\ne i$'.  `NrMovedPointsPerm'  returns the cardinality  of that
+set, `SmallestMovedPointPerm'    and `LargestMovedPointPerm' its smallest
+resp.\ largest  element. If <perm> is trivial,  the set will be empty, in
+this case  the last two functions  return `infinity' resp.~`0'. The other
 functions do the corresponding computations for permutation groups.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,13 +135,13 @@ is also in <list>, i.e., it must be the union of cycles of <perm>.
 
 `Permuted' returns  a new list  which contains in position $i^{perm}$ the
 element    $list[i]$.  In other words,       it returns a  (shallow,  see
-"ShallowCopy") copy of <list> permuted by <perm>.
+"ShallowCopy") copy of <list>, permuted by <perm>.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Permutation groups}
 
 A permutation group is a  group of permutations on  a finite set $\Omega$
-of  positive integers. {\GAP} does _not_  require the user to specify the
+of  positive integers. {\GAP} does *not*  require the user to specify the
 operation domain  $\Omega$ when a permutation  group is defined. Instead,
 there  are   some functions  that  determine  a   set  on  which a  given
 permutation group acts, although they  might not always guess the  domain
@@ -159,10 +159,10 @@ efficient functions that   avoid backtracking are available for  solvable
 permutation groups (see   "Group   functions!for   solvable   permutation
 groups").
 
-Finally   each  permutation  group  operates  naturally  on  the positive
-integers,   so all operations   functions  can  be  applied  (see chapter
-"Operations!for groups" and  "Operations!for  permutation groups"). These
-operations   also give   rise to   special  kinds   of homomorphisms   of
+Finally  each permutation    group  operates naturally    on the positive
+integers,  so all  operations  functions can  be applied (see  "Operation
+functions!for  groups" and "Operation functions!for permutation groups").
+These operations  also give  rise to  special kinds  of  homomorphisms of
 permutation groups (see "Homomorphisms!for permutation groups").
 
 Remember that     in   the  names   of  {\GAP}    functions,  the  phrase
@@ -180,12 +180,11 @@ category test function is called `IsPermGroup'.
 These functions take a permutation group~<G> on `[1..N]', a group~<H> and
 a homomorphism  $hom\colon  H\to S_n$ and  construct  the wreath  product
 $G\wr_{hom}H$ as a permutation group
-\medskip
+{\parindent\manindent
 \item{$\bullet$} acting  on `[1..N\*n]' in the  imprimitive action in the
 case of `WreathProduct',
 \item{$\bullet$} acting on  `[1..N^n]' in the product  action in the case
-of `WreathProductProductAction'.
-\medskip\noindent
+of `WreathProductProductAction'.\par}
 If $H\le S_n$  is a permutation group  and <hom> is  omitted, the natural
 operation $hom\colon H\hookrightarrow S_n$ is assumed.
 
@@ -344,10 +343,10 @@ available options:
         if <G> is solvable.
 
 `random' (default `1000') &
-        If  this is less  than~1000, the   computation of the  stabilizer
-        chain will be done non-deterministically, as described in "Random
-        methods!for   permutation groups".   The   probability  that  the
-        resulting chain is correct will be at least~$`random'/1000$.
+        If this  is  less than~1000,  the  computation of the  stabilizer
+        chain  will  be   done  non-deterministically, as  described   in
+        \cite{Seress97}. The  probability  that the  resulting  chain  is
+        correct will be at least~$`random'/1000$.
 
 `size' (default `Size( <G> )' if this is present, i.e. `HasSize( <G> )')&
         If this is present, it is assumed to be the size of the group <G>
@@ -402,7 +401,7 @@ stabilizer chain  of    the next stabilizer~$G^{(i+1)}$.  This  gives   a
 recursive  structure  where the  ``outermost''  record  representing  the
 ``topmost'' stabilizer is bound to the group record component `stabChain'
 and   has the components explained below.    Note: Since the structure is
-recursive, _never print a stabilizer chain!_ (Unless you want to exercise
+recursive, *never print a stabilizer chain!* (Unless you want to exercise
 the scrolling capabilities of your terminal.)
 \beginitems
 `identity' &
@@ -437,21 +436,20 @@ the scrolling capabilities of your terminal.)
         first in the list.
 
 `translabels' &
-        the factorized inverse  transversal  that  was found during   the
-        orbit algorithm  carried    out with the inverses   of  `labels\{
+        the factorized inverse   transversal  that was found  during  the
+        orbit algorithm carried   out   with the inverses  of   `labels\{
         genlabels \}', starting from the base point. The directed edge $i
-        \labelto  g j =  ig^{-1}$ in the  Schreier tree is represented by
-        `labels[ translabels[<j>] ]' = <g> in  the stabilizer chain (note
+        \labelto g j  = ig^{-1}$ in the Schreier  tree is  represented by
+        `labels[ translabels[<j>] ]' = <g>  in the stabilizer chain (note
         that <i> can be reconstructed as <jg> from this information). The
-        entries  in the `translabels'  component  are thus just  integers
-        giving  the positions of  the appropriate labels  in the `labels'
+        entries  in the `translabels'   component are thus  just integers
+        giving  the positions of the appropriate   labels in the `labels'
         component. The base point itself (i.e.,  the root of the Schreier
-        tree) has the entry `1'  in `translabels'. This makes it possible
+        tree) has the entry `1' in  `translabels'. This makes it possible
         to assign `transversal\{ orbit \} := labels\{ translabels\{ orbit
-        \} \}' (see   "sublist assignment" and  `transversal' below). The
-        `translabels' component  pays  off handsomely  in the  stabilizer
-        chain   conjugation  (see   "ConjugatedSubgroup!for   permutation
-        groups").
+        \} \}' (see   "sublist!assignment" and  `transversal' below). The
+        `translabels'  component  pays off  handsomely  in the stabilizer
+        chain conjugation (see "ConjugateGroup!for permutation groups").
 
 `transversal' &
         is another  representation of the factorized inverse transversal:
@@ -549,7 +547,7 @@ by choosing at each level a random point from  the basic orbit. All these
 points together uniquely determine a permutation  contained in the group,
 and every element is chosen with the same probability.
 
-\){\fmark Intersection( <G1>, <G2> )}
+\)\fmark Intersection( <G1>, <G2> )
 
 This is really  a  group function,  so we describe  it in  section "Group
 functions!for permutation groups".
@@ -584,25 +582,27 @@ on the concept of  an *R-base*, which generalizes the  concept of  a base
 $(\Omega)  = \Pi_0 \ge \Pi_1 \ge  \ldots \ge \Pi_r$ of ordered partitions
 and a sequence $(a_1,\ldots,a_r)$ of points from  $\Omega$ such that, for
 $i\ge 1$,
-
+{\parindent\manindent
 \item{(1)} $\Pi_i$ contains the singleton cell~$\{a_i\}$;
 
 \item{(2)}  if $g\in  U$ fixes  the  partition $\Pi_{i-1}$  and the point
 $a_i$, then it also fixes the partition~$\Pi_i$;
 
 \item{(3)} the points in singleton cells of $\Pi_r$ form a base of~<G>.
+\par}
 
 It  then follows   that  $(a_1,\ldots,a_r)$ is a base   for  <U> (but not
 necessarily for <G>).  To enumerate all   elements of <U>,  the backtrack
 algorithm constructs, for  each possible base image $(b_1,\ldots,b_r)$, a
 decreasing sequence $(\Omega)  = \Sigma_0  \ge  \Sigma_1 \ge \ldots   \ge
 \Sigma_r$ of ordered partitions such that, for $i\ge 1$,
-
+{\parindent\manindent
 \item{(1')} $\Sigma_i$ contains the singleton cell~$\{b_i\}$;
 
 \item{(2')} if $g\in U$ maps  the partition $\Pi_{i-1}$ to $\Sigma_{i-1}$
 and the point  $a_i$ to $b_i$,  then it also  maps the  partition $\Pi_i$
 to~$\Sigma_i$.
+\par}
 
 Because of property~(3), there is then a  unique $g\in G$ mapping $\Pi_r$
 to $\Sigma_r$,  and it can be constructed   with the aid of  a stabilizer
@@ -619,8 +619,7 @@ algorithm, e.g., to centralizer and normalizer calculations.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Group functions!for permutation groups}
 
-\>ConjugatedSubgroup( <G>, <p> )!{for permutation groups}
-\){<G> ^ <p>}
+\>ConjugateGroup( <G>, <p> )!{for permutation groups}
 
 This function  returns the conjugate  of the  permutation group <G> under
 the permutation <p>. <p> must  be an element of  the parent group of <G>.
@@ -698,19 +697,19 @@ These functions    are    applications  of  the   method   described   in
 are described.
 
 \medskip\noindent
-_Centralizer:_ $\Pi \mapsto \Pi  \wedge \Pi u$.  Here, $\wedge$ denotes a
+*Centralizer:* $\Pi \mapsto \Pi  \wedge \Pi u$.  Here, $\wedge$ denotes a
 ``meet'' of partitions which obeys $(\Psi \wedge  \Psi')h = \Psi h \wedge
 \Psi'h$   for arbitrary partitions $\Psi,\Psi'$   and for any permutation
 <h>. If <U> is a subgroup, this refinement is used for each generator <u>
 of~<U>.
 
 \medskip\noindent
-_Normalizer:_  First, every $g\in N_G(U)$ must  permute the <U>-orbits of
+*Normalizer:*  First, every $g\in N_G(U)$ must  permute the <U>-orbits of
 equal  length among   themselves  (and if  <g>   is  in a  multiple-point
 stabilizer $U^{(i)}$,  also the   $U^{(i)}$-orbits). Furthermore, if  the
 image <ag> of a  point <a> is prescribed, <g>  must map the orbit <aU> to
 the orbit $aUg  = agU$, so  the refinement $\Pi  \mapsto \Pi  \wedge (aU,
-{\rm complement\ of\ }aU)$ can be used.
+{\rm complement}\allowbreak\ {\rm of\ }aU)$ can be used.
 
 Second, $\Pi \mapsto \Pi  \wedge \Delta$  is  used where $\Delta$  is the
 partition into distance zones of an orbital graph of <U> (w.r.t.~a ``base
@@ -733,19 +732,19 @@ permutation  groups"),  this socle is   regular (and elementary abelian);
 then the refinements   for the regular   socle are also  employed in  the
 calculation of the normalizer of~<U>.
 
-\medskip\noindent _Two-closure:_ By definition,   an element of the  full
-symmetric group lies in the  two-closure of <G>  if it preserves all  the
-orbital  graphs $(a,b)G$ of~<G>, and   the refinements derived from  this
-condition for  the normalizer calculation  (where  the orbital graphs may
-more  generally be permuted) can be   strengthened for the computation of
-the  two-closure.  To check  whether  a   given  element belongs  to  the
-two-closure is more difficult, but for a simple primitive group~<G> (with
-few exceptions)  it is shown  in~\cite{LPS88} that  an element belongs to
-the two-closure of~<G> if and only if it normalizes~<G> and preserves all
-orbital graphs.
+% \medskip\noindent
+% *Two-closure:* By definition, an element of the full symmetric group lies
+% in the two-closure of <G> if it preserves all the orbital graphs $(a,b)G$
+% of~<G>,   and the   refinements  derived   from  this  condition  for the
+% normalizer  calculation (where the  orbital graphs may  more generally be
+% permuted) can be strengthened for the computation  of the two-closure. To
+% check  whether a   given  element  belongs to   the  two-closure is  more
+% difficult, but for a simple primitive group~<G>  (with few exceptions) it
+% is shown  in~\cite{LPS88}  that an element    belongs to the  two-closure
+% of~<G> if and only if it normalizes~<G> and preserves all orbital graphs.
 
 \medskip\noindent
-_Intersection:_      If     $\Delta_i$   is  the       partition     into
+*Intersection:*      If     $\Delta_i$   is  the       partition     into
 $H_{a_1,\ldots,a_{i-1}}$-orbits, then the  refinement  used to  construct
 $\Pi_i$    resp.~$\Sigma_i$    is   $\Pi\mapsto      \Pi\wedge  \Delta_i$
 resp.~$\Sigma\mapsto \Sigma\wedge   \Delta_i  t$  where  $t\in  H$  is  a
@@ -761,9 +760,9 @@ Image( <hom>, <P>   ),  <p> ) )'   as  <hom> loops  over  the  transitive
 constituent   homomorphisms  for <G>   (see    "OperationHomomorphism!for
 constituents").
 
-If <G>  is   transitive but  not primitive,   its   <p>-Sylow subgroup is
+If  <G>  is  transitive but  not   primitive,  its <p>-Sylow subgroup  is
 computed as `SylowSubgroup( PreImage( SylowSubgroup( Image( <hom>, <G> ),
-<p> ) ),  <p> )' where <hom> is  the associated blocks  homomorphism (see
+<p> ) ),  <p> )' where  <hom> is the  associated block homomorphism  (see
 "OperationHomomorphism!for blocks").
 
 If <G> is primitive, `SylowSubgroup'  takes random elements in <G>, until
@@ -776,15 +775,15 @@ on the cycles of <g>, and hence must be a proper subgroup of <G>.
 \>Socle( <G> )!{for primitive permutation groups}
 \>Earns( <G>, <D> \[, OnPoints \] )!{for permutation groups}
 
-At  present,  {\GAP}   can   only  calculate the  socle   of  a primitive
-permutation  group. If a primitive group  is affine,  its socle is called
-the _earns_,  and it can then  be calculated as `Earns( <G>, MovedPoints(
-<G>  )    )' (remember that   this  implies  it is  stored   in  <G>, see
-"Operations!for  groups"). The  algorithms for  `Earns'  and `Socle'  are
-based on  the O'Nan-Scott theorem  on primitive groups and were developed
-by   P.~Neumann.  The     theorem  and  the   algorithms  are   described
-in~\cite{Neu86}. `Earns' returns `false'  if <G> is not primitive  on~<D>
-or not     of  affine  type,   whereas `Socle'   signals   an   error for
+At   present,   {\GAP} can  only  calculate the    socle   of a primitive
+permutation group. If  a primitive group is affine,  its socle  is called
+the *earns*, and  it can then  be calculated as `Earns( <G>, MovedPoints(
+<G> ) )' (remember that this implies that the earns is stored in <G>, see
+"Operation functions!for groups"). The algorithms for `Earns' and `Socle'
+are   based on  the O'Nan-Scott theorem    on  primitive groups and  were
+developed  by  P.~Neumann. The theorem and   the algorithms are described
+in~\cite{Neumann87}. `Earns'  returns  `false'  if <G>  is  not primitive
+on~<D>  or not  of  affine type,  whereas `Socle'  signals  an error  for
 non-primitive~<G>.
 
 \>RightTransversal( <G>, <U> )!{for permutation groups} 
@@ -836,20 +835,20 @@ $s\in S_1^{(t)}$,   where <g> is  as above.  Then  the number of  <Ur> is
 defined recursively as
 $$ (b-1).[V\mathbin:U]\, + \, \sum_{t'\<t}|S_1^{(t')}|\, + \,
    \hbox{`Position(  $S_1^{(t)}$, number of  $U_1s$ in $G_1$ )'.} $$
-This method  of enumerating a right  transversal is  slightly modified by
-{\GAP}. If  both the  transversal $S'$  (for <U> in  the block stabilizer
-$\langle U,G_1\rangle$)  and the transversal  $T'$ (for <G> acting on the
-block  system)   have    size   at   most  `MAX_SIZE_TRANSVERSAL'\atindex
-{MAX\noexpand          _SIZE\noexpand            _TRANSVERSAL}{@\noexpand
-`MAX_SIZE_TRANSVERSAL'}{} (where  size  means length times degree  of the
-permutations), they are stored explicitly as lists of permutations, which
-makes  it    faster to construct the     transversal elements in $S'.T'$.
+This  method of enumerating a  right transversal is  slightly modified by
+{\GAP}. If both the  transversal  $S'$ (for <U>  in the  block stabilizer
+$\langle  U,G_1\rangle$) and the transversal $T'$  (for <G> acting on the
+block   system)  have    size   at  most   `MAX_SIZE_TRANSVERSAL'\atindex
+{MAX\noexpand   _SIZE\noexpand  _TRANSVERSAL}{@\noexpand    `MAX\noexpand
+_SIZE\noexpand _TRANSVERSAL'}  (where size  means length times  degree of
+the  permutations), they are stored explicitly  as lists of permutations,
+which makes it faster to  construct the transversal elements in  $S'.T'$.
 Otherwise, only the sets $S_1^{(t)}$ are stored, so that more computation
 is required to construct a transversal element from its number. This rule
-applies not only to the ``top''  transversal for <U>  in <G>, but also to
-the transversals of  the stabilizers (e.g., for  $U_1$ in $G_1$) that are
+applies not only  to the ``top'' transversal for  <U> in <G>, but also to
+the transversals  of the stabilizers (e.g., for  $U_1$ in $G_1$) that are
 needed in the recursive structure  of the object constructed. {\GAP} sets
-`MAX_SIZE_TRANSVERSAL' to~100{,}000,  but you  can  assign other  values,
+`MAX_SIZE_TRANSVERSAL'  to~100{,}000,  but you  can  assign other values,
 depending on your memory configuration.
 
 \>PermutationCharacter( <P> )!{for permutation groups}
@@ -915,8 +914,8 @@ orbit <bH>   of <H> and  its <p>  images under the  cyclic action  of <g>
 basic orbit  $b\langle    H,g\rangle$  of the  extended     group can  be
 constructed with a   simplified  orbit algorithm.  Moreover,  since $g^p$
 fixes the block <bH>,  there must be a transversal  element $t\in H$ such
-that $g^p.t^{-1}$ fixes <b>, and  then the stabilizer  of <b> in $\<
-H,g>$  is the extension of the  stabilizer $H_b$ by the normalizing
+that $g^p.t^{-1}$ fixes <b>, and  then the stabilizer  of <b> in $\langle
+H,g\rangle$  is the extension of the  stabilizer $H_b$ by the normalizing
 element $g^p.t^{-1}$, so  the whole method  can be repeated to extend the
 next layer. It may be necessary to add a new base point at the end of the
 chain.
@@ -1007,13 +1006,13 @@ of <G> and <U> were (and remain) unknown.
 \>Pcgs( <G> )!{for solvable permutation groups}
 
 The generating  system which the  normal series algorithm assigns  to the
-first group  $M_0$ in the series of   a solvable <G>  is a _p_oly_c_yclic
-_g_enerating _s_ystem for~<G>. It can be obtained by the function `Pcgs'.
+first group  $M_0$ in the series of   a solvable <G>  is a *p*oly*c*yclic
+*g*enerating *s*ystem for~<G>. It can be obtained by the function `Pcgs'.
 The concept of a pcgs is explained in section "Pcgs", where we borrow the
 notation from.
 
-\danger In a permutation group <G>, a pcgs is  calculated together with a
-stabilizer chain (which is stored  in  `Pcgs( <G> ).stabChain') with  the
+\danger In a permutation group <G>, a pcgs  is calculated together with a
+stabilizer chain (which is stored  in `Pcgs( <G> )!.stabChain') with  the
 following properties:
 
 (1) $b_jG_i^{(j)}$ is a block for $G_{i-1}^{(j)}$ because $G_i$ is normal
@@ -1026,17 +1025,17 @@ characteristic properties of a pcgs.
 orbits $b_jG_i^{(j)}g_i^k$ for  $k=0,\ldots,  p-1$ with <p>  the relative
 order of~$g_i$.
 
-(3) The `labels' components (as explained  in "Stabilizer chain records")
-are identical on  every level  of the stabilizer   chain and this  common
-`labels'  list (except  for the first   entry, which is  the identity) is
-equal to the list `<pcgs>.generators'.   In fact, the calculation of  the
-generating sequence  is a side-effect of  the stabilizer chain extensions
-performed according to rules (1) and~(2).
+(3) The `labels' components  (as explained in "Stabilizer chain records")
+are  identical  on every level  of  the stabilizer chain  and this common
+`labels' list  (except  for the first  entry, which  is the  identity) is
+equal  to  the list <pcgs>.  In fact,  the calculation of  the generating
+sequence  is a side-effect of  the  stabilizer chain extensions performed
+according to rules (1) and~(2).
 
 \>ExponentsOfPcElement( <pcgs>, <g> )!{for solvable permutation groups}
 \>DepthOfPcElement( <pcgs>, <g> )!{for solvable permutation groups}
-\>LeadingExponentOfPcElement( <pcgs>, <g> )!{for solvable permutation
-groups}
+\>LeadingExponentOfPcElement( <pcgs>, <g> )%
+  !{for solvable permutation groups}
 
 The algorithms  for determining the  (leading) exponents and  depth of an
 element of a solvable permutation group make use  of the stabilizer chain
@@ -1059,13 +1058,13 @@ from $b_jg$ back  to the base  point $b_j$ (see "Stabilizer chains"). Now
 <g> is replaced by $g_1^{-e[1]}g$ and $G_0$ by $G_1$, then the whole step
 is repeated to determine $e[2]$, and so on.
 
-\>RelativeOrderOfPcElement( <pcgs>, <g> )!{for solvable permutation
-groups}
+\>RelativeOrderOfPcElement( <pcgs>, <g> )%
+  !{for solvable permutation groups}
 
-The relative  orders  of <g>   is   found during   the  extension of  the
-stabilizer chain  as the ratio of the  orbit lengths before and after the
-extension with <g>.  The corresponding values for `<pcgs>.generators' are
-stored in <pcgs> as a side-effect of the pcgs calculation.
+The  relative  orders  of  <g>  is  found during   the   extension of the
+stabilizer chain as the ratio  of the orbit  lengths before and after the
+extension with <g>. The corresponding values  for the elements which make
+up <pcgs> are stored as a side-effect of the pcgs calculation.
 
 Functions like `Pcgs' and `ExponentsOfPcElement' were originally designed
 for solvable groups given by  a power-commutator presentation rather than
@@ -1074,6 +1073,16 @@ functions to solvable  permutation   groups,  {\GAP} allows you    to use
 certain functions  that   were written  for ag  groups  also for solvable
 permutation   groups.     Such  functions   are   described    in chapter
 "chapter:Solvable Groups".
+
+\>NormalPcSeries( <pcgs> )!{for solvable permutation groups}
+\>NormalPcFirst( <pcgs> )!{for solvable permutation groups}
+
+The pcgs  which {\GAP} constructs for  a permutation group runs through a
+normal  series with abelian  factors. ``Runs through'' means that certain
+end-parts  `<pcgs>[ $i$ ..  Length( <pcgs> ) ]'  of it form  pcgs for the
+subgroups in this series. The list of these certain values  of $i$ is the
+result of `NormalPcFirst( <pcgs>  )', whereas `NormalPcSeries( <pcgs>  )'
+returns the list of subgroups.
 
 \>IsomorphismPcGroup( <G> )!{for solvable permutation groups}
 
@@ -1085,8 +1094,8 @@ central. Then  the relators belonging  to this  prime-step generating set
 are determined by the function  `ExponentsOfPcElement' (see above) and an
 pc group <A> is constructed.
 
-\>NaturalHomomorphismByNormalSubgroup( <G>, <N> )!{for solvable factor
-groups!of permutation groups}
+\>NaturalHomomorphismByNormalSubgroup( <G>, <N> )%
+  !{for solvable factor groups!of permutation groups}
 
 The construction  of a  pcgs of a  permutation  group by  repeated cyclic
 extension   applies  not only to   solvable permutation   groups but more
@@ -1108,10 +1117,10 @@ pcgs for the factor group~$G/N$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operation functions!for permutation groups}
 
-\>RepresentativeOperation( <G>, \[ <D>, \] <d>, <e> \[, <gens>, <oprs> \]
-\[, <opr> \] )!{for permutation groups}
-\>Stabilizer( <G>, \[ <D>, \] <d> \[, <gens>, <oprs> \] \[, <opr> \]
-)!{for permutation groups}
+\>RepresentativeOperation( <G>, \[ <D>, \] <d>, <e> \[, <gens>, <oprs> %
+                           \] \[, <opr> \] )!{for permutation groups}
+\>Stabilizer( <G>, \[ <D>, \] <d> \[, <gens>, <oprs> \] \[, <opr> \] )%
+  !{for permutation groups}
 
 These two  functions are related  to each other just as `ElementProperty'
 and `SubgroupProperty' are (see "Backtrack searching").
@@ -1135,8 +1144,8 @@ for the elements in the list~<d>.
 
 In all other cases, the default methods are used.
 
-\>Blocks( <G>, <D> \[, <seed> \] \[, OnPoints \] )!{for permutation
-groups}
+\>Blocks( <G>, <D> \[, <seed> \] \[, OnPoints \] )%
+  !{for permutation groups}
 
 In the case of a permutation group acting naturally on a set of integers,
 a   minimal  block   system   is   determined  by   a  method   described
@@ -1147,12 +1156,13 @@ in~\cite{SS94}.
 The   action of  permutation  group <G>   on  a  set <D> of   integers is
 semiregular if  and  only if  ($S_D$ denotes the  symmetric  group of all
 permutations on <D>)
+{\parindent\manindent
 \item{$\bullet$} all orbits of <G> on <D> have the same length,
 \item{$\bullet$} for every point $p\in D$ and for every generator <g> of
     <G> there is a permutation $z_g\in C_{S_D}(G)$ such that $pz_g = pg$,
     and
 \item{$\bullet$} there is  a permutation $z\in  C_{S_D}(G)$ that permutes
-    the orbits of <G> on <D> setwise.
+    the orbits of <G> on <D> setwise.\par}
 
 This can  be tested in time  proportional to $o n^2 +  d n$, where <o> is
 the size of a single  orbit, <n> is the number  of generators of <G>, and
@@ -1161,8 +1171,8 @@ the size of a single  orbit, <n> is the number  of generators of <G>, and
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Homomorphisms!for permutation groups}
 
-\>GroupGeneralMappingByImages( <P>, <H>, <gens>, <imgs> )!{for
-permutation groups}
+\>GroupGeneralMappingByImages( <P>, <H>, <gens>, <imgs> )%
+  !{for permutation groups}
 
 A group homomorphism  of a permutation group  <P> into  another group <H>
 (which need not be  a permutation group)  may be specified by prescribing
@@ -1193,8 +1203,8 @@ additional components at each level of the chain:
 The stabilizer  chain is computed with  a random Schreier-Sims algorithm,
 which uses the size of the source to know when to stop.
 
-\>CoKernel( <ghom> )!{for `GroupGeneralMappingByImages'!for permutation
-groups}
+\>CoKernel( <ghom> )%
+  !{for `GroupGeneralMappingByImages'!for permutation groups}
 
 The  cokernel  of   <ghom> is determined   by   the method   described in
 "CoKernel!for `GroupGeneralMappingByImages'",  where  we take the  set of
@@ -1216,14 +1226,14 @@ substituted is then the subgroup of images of the identity element of the
 source.  In particular,  a  total  <ghom> is  a   mapping if  and only if
 $w_j(imgs)$ is the identity for all~<j>.
 
-\>ImagesRepresentative( <ghom>, <elm> )!{for
-`GroupGeneralMappingByImages'!for permutation groups}
+\>ImagesRepresentative( <ghom>, <elm> )%
+  !{for `GroupGeneralMappingByImages'!for permutation groups}
 
-If $elm=w(gens)$' by reduction along the stabilizer  chain of <ghom>, its
+If $elm=w(gens)$  by reduction along  the stabilizer chain of <ghom>, its
 image is `<elm>^$ghom=w(imgs)$'.
 
-\>CompositionMapping( <hom>, <ghom> )!{for
-`GroupGeneralMappingByImages'!for permutation groups}
+\>CompositionMapping( <hom>, <ghom> )%
+  !{for `GroupGeneralMappingByImages'!for permutation groups}
 
 The  composition  of  <ghom>  with   an arbitrary homomorphism   <hom> is
 constructed  by copying the  stabilizer chain of  <ghom> and replacing in
@@ -1232,10 +1242,9 @@ the `labelimages' components every element with its image under <hom>.
 %				 *  *  *
 \stars
 
-\>OperationHomomorphism( {ExternalSet( <P>, <list> )} )!{for
-constituents}
+\>OperationHomomorphism( <P>, <list> )!{for constituents}
 
-For the   construction  of  a  _constituent  homomorphism_ <chom>,  every
+For the   construction  of  a  *constituent  homomorphism* <chom>,  every
 generator of  <P> is restricted to  <list> (see "RestrictedPerm") and the
 resulting permutation  is conjugated with a permutation `<chom>!.conperm'
 which maps <list> to `[1..Length(<list>)]'.
@@ -1246,90 +1255,88 @@ which maps <list> to `[1..Length(<list>)]'.
 The image  of an element is  computed by restricting  <elm> to <list> and
 conjugating the restricted permutation with `<chom>!.conperm'.
 
-For the image of  a subgroup <H>,   first a stabilizer  chain for  <H> is
+For  the image of  a subgroup <H>, first  a  stabilizer chain  for <H> is
 computed whose base starts off with <list>. Then the images of the strong
 generators of <H> form a strong generating set of the image. A stabilizer
-chain  for the   image  is  constructed by  the   generalized conjugation
-technique described in  "ConjugatedSubgroup!for permutation groups" (with
-`$map(pnt) = pnt$  ^ chom!.conperm' and $hom  = chom$ in the notation  of
+chain for  the  image   is constructed   by the generalized   conjugation
+technique described  in   "ConjugateGroup!for permutation  groups"  (with
+`$map(pnt) =  pnt$ ^ chom!.conperm' and $hom  = chom$ in the  notation of
 that section).
 
 \>PreImage( <chom>, <H> )!{for constituent homomorphisms}
 
-For  the preimage of a   subgroup <H>, first   a stabilizer chain for the
+For  the preimage of a subgroup  <H>,  first a  stabilizer  chain for the
 `<chom>.source' is computed whose base starts off with <list>. The kernel
-of  <chom> is a stabilizer   in this chain. The   preimages of the strong
-generators for  <H>  (i.e.,   their images   under  `<chom>!.conperm^-1')
-together with   the  strong  generators  for the  kernel   form  a strong
+of <chom> is  a stabilizer in  this chain.  The  preimages of the  strong
+generators for    <H> (i.e.,  their  images  under  `<chom>!.conperm^-1')
+together  with  the strong  generators   for  the  kernel form  a  strong
 generating set of the preimage of <H>. Again,  a stabilizer chain for the
 preimage  is constructed by  the  generalized conjugation technique (this
-time   with    `$map(pnt) = pnt$   ^     chom!.conperm'  and `$hom(h)  =$
-PreImagesRepresentative(     <chom>, <h>   )'     in the      notation of
-"ConjugatedSubgroup!for  permutation groups";    the  latter  is  not   a
+time   with  `$map(pnt) =   pnt$   ^  chom!.conperm'   and `$hom(h)    =$
+PreImagesRepresentative(   <chom>,   <h>    )'  in   the     notation  of
+"ConjugateGroup!for  permutation   groups";   the   latter  is  not     a
 homomorphism, so the kernel of <chom> is added to the resulting chain).
 
 %				 *  *  *
 \stars
 
-\>OperationHomomorphism( {ExternalSet( <P>, <blocks>, OnSets )} )!{for
-blocks}
+\>OperationHomomorphism( <P>, <blocks>, OnSets )!{for blocks}
 
-A  _blocks  homomorphism_  <bhom>   in   {\GAP} has  a  record  component
+A  *block   homomorphism* <bhom>  in   {\GAP}    has a record   component
 `<bhom>!.reps', which is a list whose  <i>th position the block number of
 the point~<i>.
 
-\>ImagesRepresentative( <bhom>, <elm> )!{for blocks homomorphisms}
-\>Image( <bhom> \[, <H> \] )!{for blocks homomorphisms}
-\>PreImagesRepresentative( <bhom>, <elm> )!{for blocks homomorphisms}
-\>PreImage( <bhom>, <H> )!{for blocks homomorphisms}
-\>Kernel( <bhom> )!{for blocks homomorphisms}
+\>ImagesRepresentative( <bhom>, <elm> )!{for block homomorphisms}
+\>Image( <bhom> \[, <H> \] )!{for block homomorphisms}
+\>PreImagesRepresentative( <bhom>, <elm> )!{for block homomorphisms}
+\>PreImage( <bhom>, <H> )!{for block homomorphisms}
+\>Kernel( <bhom> )!{for block homomorphisms}
 
-\textindent{(1)}  The image   of an element    <elm> under <bhom> is  the
-permutation   which maps the  point  <i> to  `<bhom>!.reps[ <b>^<elm> ]',
-where <b>  is any  point   from the  <i>th block. So    the image can  be
-constructed with `PermList' (see "PermList").
+(1) The image of an element  <elm> under <bhom>  is the permutation which
+maps the point <i> to `<bhom>!.reps[ <b>^<elm> ]', where <b> is any point
+from the <i>th block. So  the image  can  be constructed with  `PermList'
+(see "PermList").
 
-\textindent{(2)} To find    the  image of  a subgroup   <H>  (default  is
-`<bhom>.source'),  {\GAP} constructs a ``blockwise stabilizer chain''~<S>
-of~<H>, which is   internally  represented like  an ordinary   stabilizer
-chain; indeed,  at the beginning  <S> is  just a  copy of the  stabilizer
-chain of <H>. Then for the first block <B> from <blocks> the current base
-point  of <S> is changed  to  `<B>[1]', and  one level  of the stabilizer
-chain  of   the  image is    constructed by  the generalized  conjugation
-technique  (see   "ConjugatedSubgroup!for permutation     groups"    with
-`$map(pnt) = hom$!.reps[<pnt>]' and  <hom> the blocks homomorphism in the
-notation of that  section; here   the next  stabilizer  must be  computed
-explicitly). The next level `<S>.stabilizer'   is built by enlarging  the
-point stabilizer  of `<B>[1]' to  the  block stabilizer  of <B> by adding
-transversal elements  from~<S>  which map  `<B>[1]'  to the  other points
-of~<B>. This process  is repeated with  <S> replaced  by `<S>.stabilizer'
-and <B> the   next  block from  <blocks>.  After  all  blocks  have  been
-processed in this way, <S> is a stabilizer chain for  the subgroup of <H>
-acting trivially on <blocks>.
+(2) To find the image of a subgroup  <H> (default is `Source( <bhom> )'),
+{\GAP} constructs a ``blockwise  stabilizer chain''~<S> of~<H>, which  is
+internally represented like an ordinary  stabilizer chain; indeed, at the
+beginning <S> is just a copy of the stabilizer chain of <H>. Then for the
+first block <B> from <blocks> the current base point of <S> is changed to
+`<B>[1]',  and one   level of  the  stabilizer  chain   of  the image  is
+constructed  by      the    generalized conjugation     technique    (see
+"ConjugateGroup!for  permutation     groups"   with      `$map(pnt)     =
+hom$!.reps[<pnt>]' and <hom> the block  homomorphism  in the notation  of
+that section; here the next  stabilizer must be computed explicitly). The
+next level `<S>.stabilizer' is built by enlarging the point stabilizer of
+`<B>[1]' to the  block stabilizer of <B>  by adding  transversal elements
+from~<S> which  map `<B>[1]' to the  other points of~<B>. This process is
+repeated  with <S>  replaced by  `<S>.stabilizer'  and <B> the next block
+from <blocks>. After all blocks have been processed in this way, <S> is a
+stabilizer chain for the subgroup of <H> acting trivially on <blocks>.
 
-\textindent{(3)} Thus, if <H>  is   `<hom>.source', <S> also yields   the
-kernel of <hom> after the image has been calculated.
+(3) Thus, if  <H> is `Source(  <hom>  )', <S>  also yields  the kernel of
+<hom> after the image has been calculated.
 
-\textindent{(4)} Using the transversals at all levels of  <S>, it is then
-also possible to construct a preimage of a given permutation of <blocks>,
-i.e., of an element of `<hom>.range'.
+(4) Using the transversals at all levels of <S>, it is then also possible
+to construct a preimage  of a given permutation  of <blocks>, i.e., of an
+element of `Range( <hom> )'.
 
-\textindent{(5)}   The  preimage  of a    subgroup <I> of  `<bhom>.range'
-(default is `<bhom>.range')   is constructed  by  walking the  stabilizer
-chain  of <I> upwards from  the trivial  subgroup  (whose preimage is the
-kernel of <hom> with stabilizer chain <S>) and adding for every level <T>
-a level to <S>: First a base change is performed to get as new base point
-the first point in the  ``base block'' of  <T>, even if  this leads to  a
-trivial basic orbit of  <S>. Then the new top  level  of <S> is  extended
-with a preimage for every element  of `<T>.generators'. Finally, when <T>
-has  reached the top  level of the  stabilizer chain of <I>, the modified
-<S> is a stabilizer chain for the preimage.
+(5) The preimage   of a subgroup <I>  of  `Range( <bhom> )'  (default  is
+`Range( <bhom> )') is constructed by walking  the stabilizer chain of <I>
+upwards from the trivial subgroup (whose preimage  is the kernel of <hom>
+with stabilizer chain <S>) and adding for every level <T> a level to <S>:
+First a base change is performed to get as new base point the first point
+in the ``base block'' of <T>, even if this leads to a trivial basic orbit
+of  <S>. Then the new top  level of <S> is extended  with  a preimage for
+every element of `<T>.generators'. Finally, when  <T> has reached the top
+level of the stabilizer  chain of <I>,  the modified <S> is a  stabilizer
+chain for the preimage.
 
 %				 *  *  *
 \stars
 
-\>NaturalHomomorphismByNormalSubgroup( <G>, <N> )!{for permutation
-groups}
+\>NaturalHomomorphismByNormalSubgroup( <G>, <N> )%
+  !{for permutation groups}
 
 If  the factor  group  $G/N$  is solvable,   the  method is described  in
 "NaturalHomomorphismByNormalSubgroup!for   solvable   factor    groups!of

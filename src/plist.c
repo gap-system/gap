@@ -215,15 +215,20 @@ void SetFilterPlist (
 **
 **  'TypePlist' is the function in 'TypeObjFuncs' for plain lists.
 */
-Obj             TYPE_LIST_NDENSE_MUTABLE;
-Obj             TYPE_LIST_NDENSE_IMMUTABLE;
-Obj             TYPE_LIST_DENSE_NHOM_MUTABLE;
-Obj             TYPE_LIST_DENSE_NHOM_IMMUTABLE;
-Obj             TYPE_LIST_EMPTY_MUTABLE;
-Obj             TYPE_LIST_EMPTY_IMMUTABLE;
-Obj             TYPE_LIST_HOM;
+Obj TYPE_LIST_NDENSE_MUTABLE;
+Obj TYPE_LIST_NDENSE_IMMUTABLE;
+Obj TYPE_LIST_DENSE_NHOM_MUTABLE;
+Obj TYPE_LIST_DENSE_NHOM_IMMUTABLE;
+Obj TYPE_LIST_EMPTY_MUTABLE;
+Obj TYPE_LIST_EMPTY_IMMUTABLE;
+Obj TYPE_LIST_HOM;
 
-Int             KTNumPlist (
+#define IS_TESTING_PLIST(list) \
+    (FIRST_TESTING_TNUM <= TNUM_OBJ(list) \
+  && TNUM_OBJ(list) <= LAST_TESTING_TNUM)
+
+
+Int KTNumPlist (
     Obj                 list )
 {
     Int                 isImm   = 0;    /* is <list> immutable             */
@@ -236,6 +241,7 @@ Int             KTNumPlist (
     Int                 lenList;        /* length of <list>                */
     Obj                 elm;            /* one element of <list>           */
     Int                 i;              /* loop variable                   */
+    Int                 testing;        /* to test or not to test type     */
 
     /* find out whether the list is immutable                              */
     isImm = IS_IMM_PLIST(list);
@@ -243,9 +249,12 @@ Int             KTNumPlist (
     /* get the length of the list                                          */
     lenList = LEN_PLIST( list );
 
+    /* if list has `TESTING' keep that                                     */
+    testing = IS_TESTING_PLIST(list) ? TESTING : 0;
+
     /* special case for empty list                                         */
     if ( lenList == 0 ) {
-        RetypeBag( list, T_PLIST_EMPTY + isImm );
+        RetypeBag( list, T_PLIST_EMPTY + isImm + testing );
         return T_PLIST_EMPTY + isImm;
     }
 
@@ -253,6 +262,11 @@ Int             KTNumPlist (
     elm = ELM_PLIST( list, 1 );
     if ( elm == 0 ) {
         isDense = 0;
+    }
+    else if ( IS_TESTING_PLIST(elm) ) {
+	isHom   = 0;
+	areMut  = IS_MUTABLE_OBJ(elm);
+	isTable = 0;
     }
     else {
         family  = FAMILY_TYPE( TYPE_OBJ(elm) );
@@ -279,27 +293,27 @@ Int             KTNumPlist (
 
     /* set the appropriate flags (not the hom. flag if elms are mutable)   */
     if      ( ! isDense ) {
-        RetypeBag( list, T_PLIST_NDENSE + isImm );
+        RetypeBag( list, T_PLIST_NDENSE + isImm + testing );
         return T_PLIST_NDENSE + isImm;
     }
     else if ( isDense && ! isHom ) {
-        RetypeBag( list, areMut ? T_PLIST_DENSE      + isImm
-                                : T_PLIST_DENSE_NHOM + isImm);
+        RetypeBag( list, areMut ? T_PLIST_DENSE      + isImm + testing
+                                : T_PLIST_DENSE_NHOM + isImm + testing );
         return T_PLIST_DENSE_NHOM + isImm;
     }
     else if ( isDense &&   isHom && ! isTable ) {
-        RetypeBag( list, areMut ? T_PLIST_DENSE + isImm
-                                : T_PLIST_HOM   + isImm );
+        RetypeBag( list, areMut ? T_PLIST_DENSE + isImm + testing
+                                : T_PLIST_HOM   + isImm + testing );
         return T_PLIST_HOM + isImm;
     }
     else /* if ( isDense &&   isHom &&   isTable ) */ {
-        RetypeBag( list, areMut ? T_PLIST_DENSE + isImm
-                                : T_PLIST_TAB   + isImm );
+        RetypeBag( list, areMut ? T_PLIST_DENSE + isImm + testing
+                                : T_PLIST_TAB   + isImm + testing );
         return T_PLIST_TAB + isImm;
     }
 }
 
-Obj             TypePlist (
+Obj TypePlist (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -307,8 +321,12 @@ Obj             TypePlist (
     Obj                 family;         /* family of elements              */
     Obj                 kinds;          /* kinds list of <family>          */
 
+    /* recursion is possible for this type of list                         */
+    RetypeBag( list, TNUM_OBJ(list) + TESTING );
+
     /* get the kind type                                                   */
-    ktype  = KTNumPlist( list );
+    ktype = KTNumPlist( list );
+    RetypeBag( list, TNUM_OBJ(list) - TESTING );
 
     /* handle special cases                                                */
     if      ( ktype == T_PLIST_NDENSE ) {
@@ -362,13 +380,13 @@ Obj             TypePlist (
 
 }
 
-Obj             TypePlistNDenseMut (
+Obj TypePlistNDenseMut (
     Obj                 list )
 {
     return TYPE_LIST_NDENSE_MUTABLE;
 }
 
-Obj             TypePlistNDenseImm (
+Obj TypePlistNDenseImm (
     Obj                 list )
 {
     return TYPE_LIST_NDENSE_IMMUTABLE;
@@ -377,31 +395,31 @@ Obj             TypePlistNDenseImm (
 #define         TypePlistDenseMut       TypePlist
 #define         TypePlistDenseImm       TypePlist
 
-Obj             TypePlistDenseNHomMut (
+Obj TypePlistDenseNHomMut (
     Obj                 list )
 {
     return TYPE_LIST_DENSE_NHOM_MUTABLE;
 }
 
-Obj             TypePlistDenseNHomImm (
+Obj TypePlistDenseNHomImm (
     Obj                 list )
 {
     return TYPE_LIST_DENSE_NHOM_IMMUTABLE;
 }
 
-Obj             TypePlistEmptyMut (
+Obj TypePlistEmptyMut (
     Obj                 list )
 {
     return TYPE_LIST_EMPTY_MUTABLE;
 }
 
-Obj             TypePlistEmptyImm (
+Obj TypePlistEmptyImm (
     Obj                 list )
 {
     return TYPE_LIST_EMPTY_IMMUTABLE;
 }
 
-Obj             TypePlistHom (
+Obj TypePlistHom (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */
@@ -428,7 +446,7 @@ Obj             TypePlistHom (
     return kind;
 }
 
-Obj             TypePlistCyc (
+Obj TypePlistCyc (
     Obj                 list )
 {
     Obj                 kind;           /* kind, result                    */

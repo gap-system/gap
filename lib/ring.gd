@@ -87,6 +87,16 @@ HasIsRing := Tester( IsRing );
 ##  such that addition and multiplication are distributive.
 ##  (The multiplication need not be associative.)
 ##
+##  Note that the identity and the zero of a ring-with-one need *not* be
+##  distinct.
+##  This means that a ring that consists only of its zero element can be
+##  regarded as a ring-with-one.
+#T shall we force *every* trivial ring to be a ring-with-one
+#T by installing an implication?
+##  This is especially useful in the case of finitely presented rings,
+##  in the sense that each factor of a ring-with-one is again a
+##  ring-with-one.
+##
 IsRingWithOne := IsAdditiveGroup and IsMagmaWithOne and IsDistributive;
 SetIsRingWithOne := Setter( IsRingWithOne );
 HasIsRingWithOne := Tester( IsRingWithOne );
@@ -153,20 +163,23 @@ InstallFactorMaintainedMethod( IsAnticommutative,
 ##
 #P  IsIntegralRing( <R> )
 ##
-##  A ring <R> is integral if it is commutative and contains no nontrivial
-##  zero divisors.
+##  A ring-with-one <R> is integral if it is commutative, contains no
+##  nontrivial zero divisors,
+##  and if its identity is distinct from its zero.
 ##
 IsIntegralRing := NewProperty( "IsIntegralRing", IsRing );
 SetIsIntegralRing := Setter( IsIntegralRing );
 HasIsIntegralRing := Tester( IsIntegralRing );
 
 InstallSubsetMaintainedMethod( IsIntegralRing,
-    IsRing and IsIntegralRing, IsRing );
+    IsRing and IsIntegralRing, IsRing and IsNonTrivial );
 
 #T method that fetches this from the family if possible?
 
-InstallTrueMethod( IsIntegralRing, IsRing and IsMagmaWithInversesIfNonzero );
-InstallTrueMethod( IsIntegralRing, IsUniqueFactorizationRing );
+InstallTrueMethod( IsIntegralRing,
+    IsRing and IsMagmaWithInversesIfNonzero and IsNonTrivial );
+InstallTrueMethod( IsIntegralRing,
+    IsUniqueFactorizationRing and IsNonTrivial );
 
 
 #############################################################################

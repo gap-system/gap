@@ -222,7 +222,11 @@ CollectorSQ := function( G, M, isSplit )
     end;
 
     # convert relators into list of lists
-    pcgs := Pcgs( G );
+    if IsPcgs( G ) then 
+        pcgs := G;
+    else
+        pcgs := Pcgs( G );
+    fi;
     r := [];
     o := RelativeOrders( pcgs );
     for i  in [ 1 .. Length(pcgs) ]  do
@@ -323,6 +327,7 @@ AddEquationsSQ := function( eq, t1, t2 )
             c := -x[v][Length(x[v])];
             for i  in eq.spos[w]  do
                 if IsBound(x[i])  then
+                    x[i] := ShallowCopy( x[i] );
                     AddCoeffs( x[i], eq.system[w][i], c );
                     ShrinkCoeffs(x[i]);
                     if 0 = Length(x[i])  then
@@ -390,6 +395,7 @@ SolutionSQ := function( C, eq )
             if j > i  then
                 p := t[j][i];
                 if p <> v  then
+                    t[j] := ShallowCopy( t[j] );
                     AddCoeffs( t[j], t[i], -p );
                     ShrinkCoeffs(t[j]);
                 fi;

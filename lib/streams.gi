@@ -22,7 +22,7 @@ Revision.streams_gi :=
 #############################################################################
 ##
 
-#V  ClosedStreamType
+#V  ClosedStreamType  . . . . . . . . . . . . . . . . type of a closed stream
 ##
 ClosedStreamType := NewType(
     StreamsFamily,
@@ -32,12 +32,12 @@ ClosedStreamType := NewType(
 #############################################################################
 ##
 
-#M  CloseStream( <stream> )
+#M  CloseStream( <stream> ) . . . . . . . . .  set type to <ClosedStreamType>
 ##
 InstallMethod( CloseStream,
     "input stream",
     true,
-    [ IsInputStream ],
+    [ IsStream ],
     0,
 
 function( stream )
@@ -47,7 +47,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <closed-stream> )
+#M  PrintObj( <closed-stream> ) . . . . . . . . . . . . . . . .  pretty print
 ##
 InstallMethod( PrintObj,
     "closed stream",
@@ -70,7 +70,7 @@ end );
 #############################################################################
 ##
 
-#M  ReadAll( <input-text-stream> )
+#M  ReadAll( <input-text-stream> )  . . . . . . . . . . . . .  read all input
 ##
 InstallMethod( ReadAll,
     "input text stream",
@@ -88,14 +88,14 @@ function( stream )
             Append( str, new );
         fi;
     od;
-    return str;
+    return Immutable(str);
     
 end );
 
 
 #############################################################################
 ##
-#M  Read( <input-text-stream> )
+#M  Read( <input-text-stream> )	. . . . . . . . . .  read stream as GAP input
 ##
 InstallOtherMethod( Read,
     "input text stream",
@@ -111,7 +111,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadTest( <input-text-stream> )
+#M  ReadTest( <input-text-stream> ) . . . . . . . . read stream as TEST input
 ##
 InstallOtherMethod( ReadTest,
     "input text stream",
@@ -123,7 +123,19 @@ InstallOtherMethod( ReadTest,
 
 #############################################################################
 ##
-#M  RewindStream( <input-stream> )
+#M  ReadAsFunction( <input-text-stream> ) . . . . . . read stream as function
+##
+InstallOtherMethod( ReadAsFunction,
+    "input text stream",
+    true,
+    [ IsInputTextStream ],
+    0,
+    READ_AS_FUNC_STREAM );
+
+
+#############################################################################
+##
+#M  RewindStream( <input-stream> )  . . . . . . . . . . . . . . rewind stream
 ##
 InstallMethod( RewindStream,
     "input text stream",
@@ -132,7 +144,7 @@ InstallMethod( RewindStream,
     0,
 
 function( stream )
-    SeekPositionStream( stream, 0 );
+    return SeekPositionStream( stream, 0 );
 end );
 
 
@@ -146,31 +158,31 @@ end );
 #############################################################################
 ##
 
-#M  LogTo( <stream> )
+#M  LogTo( <output-text-stream> ) . . . . . . . .  log input/output to stream
 ##
 InstallMethod( LogTo,
     "for output stream",
     true,
     [ IsOutputTextStream ],
     0,
-    function(stream) LOG_TO_STREAM(stream); end );
+    function(stream) LOG_TO_STREAM(stream); end ); # ignore return value
 
 
 #############################################################################
 ##
-#M  LogTo( <filename> )
+#M  LogTo( <filename> ) . . . . . . . . . . . . . .  log input/output to file
 ##
 InstallOtherMethod( LogTo,
     "for output file",
     true,
     [ IsString ],
     0,
-    function(name) LOG_TO(name); end );
+    function(name) LOG_TO(name); end ); # ignore return value
 
 
 #############################################################################
 ##
-#M  LogTo()
+#M  LogTo() . . . . . . . . . . . . . . . . . . . . . . . . . . . . close log
 ##
 InstallOtherMethod( LogTo,
     "close log",
@@ -182,31 +194,31 @@ InstallOtherMethod( LogTo,
 
 #############################################################################
 ##
-#M  InputLogTo( <stream> )
+#M  InputLogTo( <output-text-stream> )  . . . . . . . . . log input to stream
 ##
 InstallMethod( InputLogTo,
     "for output stream",
     true,
     [ IsOutputTextStream ],
     0,
-    function(stream) INPUT_LOG_TO_STREAM(stream); end );
+    function(stream) INPUT_LOG_TO_STREAM(stream); end ); # ignore ret value
 
 
 #############################################################################
 ##
-#M  InputLogTo( <filename> )
+#M  InputLogTo( <filename> )  . . . . . . . . . . . . . . . log input to file
 ##
 InstallOtherMethod( InputLogTo,
     "for output file",
     true,
     [ IsString ],
     0,
-    function(name) INPUT_LOG_TO(name); end );
+    function(name) INPUT_LOG_TO(name); end ); # ignore return value
 
 
 #############################################################################
 ##
-#M  InputLogTo()
+#M  InputLogTo()  . . . . . . . . . . . . . . . . . . . . . . close input log
 ##
 InstallOtherMethod( InputLogTo,
     "close log",
@@ -218,31 +230,31 @@ InstallOtherMethod( InputLogTo,
 
 #############################################################################
 ##
-#M  OutputLogTo( <stream> )
+#M  OutputLogTo( <output-text-stream> ) . . . . . . . .  log output to stream
 ##
 InstallMethod( OutputLogTo,
     "for output stream",
     true,
     [ IsOutputTextStream ],
     0,
-    function(stream) OUTPUT_LOG_TO_STREAM(stream); end );
+    function(stream) OUTPUT_LOG_TO_STREAM(stream); end ); # ignore ret value
 
 
 #############################################################################
 ##
-#M  OutputLogTo( <filename> )
+#M  OutputLogTo( <filename> ) . . . . . . . . . . . . . .  log output to file
 ##
 InstallOtherMethod( OutputLogTo,
     "for output file",
     true,
     [ IsString ],
     0,
-    function(name) OUTPUT_LOG_TO(name); end );
+    function(name) OUTPUT_LOG_TO(name); end ); # ignore return value
 
 
 #############################################################################
 ##
-#M  OutputLogTo()
+#M  OutputLogTo() . . . . . . . . . . . . . . . . . . . . .  close output log
 ##
 InstallOtherMethod( OutputLogTo,
     "close log",
@@ -250,6 +262,52 @@ InstallOtherMethod( OutputLogTo,
     [],
     0,
     function() CLOSE_OUTPUT_LOG_TO(); end );
+
+
+#############################################################################
+##
+#M  WriteAll( <output-text-string>, <string> )  . . . . . . . write all bytes
+##
+InstallMethod( WriteAll,
+    "output text stream",
+    true,
+    [ IsOutputTextStream,
+      IsList ],
+    0,
+                    
+function( stream, string )
+    local   byte;
+
+    if not IsString(string)  then
+        Error( "<string> must be a string" );
+    fi;
+    for byte  in string  do
+        if WriteByte( stream, INT_CHAR(byte) ) <> true  then
+            return fail;
+        fi;
+    od;
+    return true;
+end );
+
+
+#############################################################################
+##
+#M  WriteLine( <output-text-string>, <string> ) . . . . .  write plus newline
+##
+InstallMethod( WriteLine,
+    "output text stream",
+    true,
+    [ IsOutputTextStream,
+      IsList ],
+    0,
+                    
+function( stream, string )
+    local   res;
+
+    res := WriteAll( stream, string );
+    if res <> true  then return res;  fi;
+    return WriteByte( stream, INT_CHAR('\n') );
+end );
 
 
 #############################################################################
@@ -356,7 +414,7 @@ function( stream )
     local   start;
 
     if Length(stream![2]) <= stream![1]  then
-        return fail;
+        return Immutable("");
     fi;
     start := stream![1]+1;
     stream![1] := Length(stream![2]);
@@ -425,6 +483,7 @@ InstallMethod( RewindStream,
 
 function( stream )
     stream![1] := 0;
+    return true;
 end );
 
 
@@ -441,12 +500,13 @@ InstallMethod( SeekPositionStream,
 
 function( stream, pos )
     if pos < 0  then
-        Error( "illegal position <pos>" );
+        return fail;
     fi;
     if Length(stream![2]) < pos  then
-        Error( "illegal position <pos>" );
+        return fail;
     fi;
     stream![1] := pos;
+    return true;
 end );
 
 
@@ -460,7 +520,7 @@ end );
 #############################################################################
 ##
 
-#R  IsInputTextFileRep
+#R  IsInputTextFileRep	. . . . .  representation of a input text file stream
 ##
 IsInputTextFileRep := NewRepresentation(
     "IsInputTextFileRep",
@@ -470,7 +530,7 @@ IsInputTextFileRep := NewRepresentation(
 
 #############################################################################
 ##
-#V  InputTextFileType
+#V  InputTextFileType . . . . . . . . . . .  type of a input text file stream
 ##
 InputTextFileType := NewType(
     StreamsFamily,
@@ -479,14 +539,14 @@ InputTextFileType := NewType(
 
 #############################################################################
 ##
-#V  InputTextFileStillOpen
+#V  InputTextFileStillOpen  . . . . . . . . . . . . . . .  list of open files
 ##
 InputTextFileStillOpen := [];
 
 
 #############################################################################
 ##
-#M  InputTextFile( <str> )
+#M  InputTextFile( <str> )  . . . . . . . . . create a input text file stream
 ##
 InstallMethod( InputTextFile,
     "input text stream from file",
@@ -510,7 +570,7 @@ end );
 #############################################################################
 ##
 
-#M  CloseStream( <input-text-file> )
+#M  CloseStream( <input-text-file> )  . . . . . . . . . . . . . .  close file
 ##
 InstallMethod( CloseStream,
     "input text file",
@@ -537,7 +597,7 @@ end );
 
 #############################################################################
 ##
-#M  IsEndOfStream( <input-text-file> )
+#M  IsEndOfStream( <input-text-file> )  . . . . . . . . . . . . check for eof
 ##
 InstallMethod( IsEndOfStream,
     "input text file",
@@ -552,7 +612,7 @@ end );
 
 #############################################################################
 ##
-#M  PositionStream( <input-text-file> )
+#M  PositionStream( <input-text-file> ) . . . . . . . . . . . .  get position
 ##
 InstallMethod( PositionStream,
     "input text file",
@@ -567,7 +627,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <input-text-file> )
+#M  PrintObj( <input-text-file> ) . . . . . . . . . . . . . . .  pretty print
 ##
 InstallMethod( PrintObj,
     "input text file",
@@ -582,7 +642,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadByte( <input-text-file> )
+#M  ReadByte( <input-text-file> ) . . . . . . . . . . . . . . . get next byte
 ##
 InstallMethod( ReadByte,
     "input text file",
@@ -597,7 +657,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadLine( <input-text-file>> )
+#M  ReadLine( <input-text-file>> )  . . . . . . . . . . . . . . get next line
 ##
 InstallMethod( ReadLine,
     "input text file",
@@ -612,7 +672,7 @@ end );
 
 #############################################################################
 ##
-#M  SeekPositionStream( <input-text-string> )
+#M  SeekPositionStream( <input-text-string> ) . . . . . . . . .  set position
 ##
 InstallMethod( SeekPositionStream,
     "input text file",
@@ -622,9 +682,7 @@ InstallMethod( SeekPositionStream,
     0,
 
 function( stream, pos )
-    if SEEK_POSITION_FILE( stream![1], pos ) = fail  then
-        Error( "illegal position <pos>" );
-    fi;
+    return SEEK_POSITION_FILE( stream![1], pos );
 end );
 
 
@@ -720,7 +778,7 @@ InstallMethod( ReadAll,
     true,
     [ IsInputTextNone and IsInputTextNoneRep ],
     0,
-    ReturnFail );
+    function(stream) return Immutable(""); end );
 
 
 #############################################################################
@@ -756,7 +814,7 @@ InstallMethod( RewindStream,
     true,
     [ IsInputTextNone and IsInputTextNoneRep ],
     0,
-    Ignore );
+    RETURN_TRUE );
 
 
 #############################################################################
@@ -769,7 +827,7 @@ InstallMethod( SeekPositionStream,
     [ IsInputTextNone and IsInputTextNoneRep,
       IsInt ],
     0,
-    Ignore );
+    RETURN_TRUE );
 
 
 #############################################################################
@@ -857,6 +915,7 @@ function( stream, string )
         Error( "<string> must be a string" );
     fi;
     Append( stream![1], string );
+    return true;
 end );
 
 
@@ -876,6 +935,7 @@ function( stream, byte )
         Error( "<byte> must an integer between 1 and 255" );
     fi;
     Add( stream![1], CHAR_INT(byte) );
+    return true;
 end );
 
 
@@ -981,25 +1041,6 @@ end );
 
 #############################################################################
 ##
-#M  WriteAll( <output-text-file>, <string> )
-##
-InstallMethod( WriteAll,
-    "output text file",
-    true,
-    [ IsOutputTextStream and IsOutputTextFileRep,
-      IsList ],
-    0,
-                    
-function( stream, string )
-    if not IsString(string)  then
-        Error( "<string> must be a string" );
-    fi;
-    Append( stream![1], string );
-end );
-
-
-#############################################################################
-##
 #M  WriteByte( <output-text-file>, <byte> )
 ##
 InstallMethod( WriteByte,
@@ -1013,7 +1054,7 @@ function( stream, byte )
     if byte < 1 or 255 < byte  then
         Error( "<byte> must an integer between 1 and 255" );
     fi;
-    WRITE_BYTE_FILE( stream![1], byte );
+    return WRITE_BYTE_FILE( stream![1], byte );
 end );
 
 
@@ -1084,6 +1125,7 @@ function( stream, string )
     if not IsString(string)  then
         Error( "<string> must be a string" );
     fi;
+    return true;
 end );
 
 
@@ -1102,7 +1144,7 @@ function( stream, byte )
     if byte < 1 or 255 < byte  then
         Error( "<byte> must an integer between 1 and 255" );
     fi;
-    Add( stream![1], CHAR_INT(byte) );
+    return true;
 end );
 
 

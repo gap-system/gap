@@ -55,6 +55,7 @@ char *          Revision_intrprtr_c =
 
 #include        "gap.h"                 /* Error                           */
 
+#include        "saveload.h"            /* SaveWorkspace, LoadWorkspace    */
 
 /****************************************************************************
 **
@@ -3932,6 +3933,92 @@ void             IntrAssertEnd3Args ( void )
       PushVoidObj();
   return;
 }
+
+/****************************************************************************
+**
+*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
+**
+*F  IntrSaveWSEnd() . . . . . . . . . . . . . . Actually save the workspace
+**
+**  'IntrSaveWSBegin' is called when the reader starts reading a
+**  SaveWorkspace command. Unusually, there is something to do,
+**  because we must signal an error if we are coding, as the SaveWS
+**  cannot be at the outer level
+*/
+
+void              IntrSaveWSBegin ( void )
+{
+    /* ignore or signal an error
+       perhaps we should signal an error more often?? */
+  
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { ErrorQuit("SaveWorkspace not at outer level",
+					 0L,0L); }
+    if ( CompNowFuncs != 0 ) { return; }
+}
+
+void              IntrSaveWSEnd ( void )
+{
+  Obj filename;
+  /* ignore or signal an error
+     perhaps we should signal an error more often?? */
+  
+  if ( IntrReturning > 0 ) { return; }
+  if ( IntrIgnoring  > 0 ) { return; }
+  if ( IntrCoding    > 0 ) {
+    ErrorQuit("Panic: SaveWorkspace end not at outer level",
+				       0L,0L); }
+  if ( CompNowFuncs != 0 ) { return; }
+  
+  filename = PopObj();
+  PushObj(SaveWorkspace( filename ));
+}
+
+/****************************************************************************
+**
+*F  IntrLoadWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
+**
+*F  IntrLoadWSEnd() . . . . . . . . . . . . . . Actually save the workspace
+**
+**  'IntrLoadWSBegin' is called when the reader starts reading a
+**  LoadWorkspace command. Unusually, there is something to do,
+**  because we must signal an error if we are coding, as the SaveWS
+**  cannot be at the outer level
+**
+**  Some clever footwork may be needed after a LoadWorkspace to get the
+**  stack into a permissible state?
+*/
+
+void              IntrLoadWSBegin ( void )
+{
+    /* ignore or signal an error
+       perhaps we should signal an error more often?? */
+  
+    if ( IntrReturning > 0 ) { return; }
+    if ( IntrIgnoring  > 0 ) { return; }
+    if ( IntrCoding    > 0 ) { ErrorQuit("LoadWorkspace not at outer level",
+					 0L,0L); }
+    if ( CompNowFuncs != 0 ) { return; }
+}
+
+void              IntrLoadWSEnd ( void )
+{
+  Obj filename;
+  /* ignore or signal an error
+     perhaps we should signal an error more often?? */
+  
+  if ( IntrReturning > 0 ) { return; }
+  if ( IntrIgnoring  > 0 ) { return; }
+  if ( IntrCoding    > 0 ) {
+    ErrorQuit("Panic: LoadWorkspace end not at outer level",
+				       0L,0L); }
+  if ( CompNowFuncs != 0 ) { return; }
+  
+  filename = PopObj();
+  PushObj(LoadWorkspace( filename ));
+}
+
 
 
 

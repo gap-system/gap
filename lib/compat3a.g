@@ -125,6 +125,25 @@ CharTableSpecialized := CharacterTableSpecialized;
 
 #############################################################################
 ##
+#F  CharTableSSGroup( <G> )
+##
+##  In {\GAP} 4, the different methods to compute the irreducible characters
+##  of a group are not installed for the computation of the whole character
+##  table but of its attribute `Irr'.
+##  So the command `CharTableSSGroup' does not make sense anymore.
+##  The calculation of irreducible characters via the algorithm that was used
+##  by `CharTableSSGroup' is available in {\GAP} 4 as `IrrConlon'.
+##
+CharTableSSGroup := function( G )
+    Error( "this function is not supported in GAP 4.\n",
+           "Use `IrrConlon' if you want to compute the irreducible\n",
+           "characters of <G> by the algorithm that was used by\n",
+           "`CharTableSSGroup' in GAP 3," );
+end;
+
+
+#############################################################################
+##
 #F  Character( <tbl>, <values> )
 ##
 Character := CharacterByValues;
@@ -194,6 +213,13 @@ DisplayCharTable := Display;
 
 #############################################################################
 ##
+#F  ElementOrdersPowermap( <powermap> )
+##
+ElementOrdersPowermap := ElementOrdersPowerMap;
+
+
+#############################################################################
+##
 #F  Elements( <D> )
 ##
 Elements := AsListSorted;
@@ -253,6 +279,15 @@ FirstNameCharTable := name -> LibInfoCharacterTable( name ).firstName;
 #F  FileNameCharTable( <tblname> )
 ##
 FileNameCharTable  := name -> LibInfoCharacterTable( name ).fileName;
+
+
+#############################################################################
+##
+#F  InducedActionSpaceMats( <basis>, <mats> )
+##
+InducedActionSpaceMats := function( basis, mats )
+    return List( mats, m -> InducedLinearAction( basis, m, OnRight ) );
+end;
 
 
 #############################################################################
@@ -437,6 +472,13 @@ Numerator := NumeratorRat;
 
 #############################################################################
 ##
+#F  OrbitPowermaps( <powermaps>, <matautomorphisms> )
+##
+OrbitPowermaps := OrbitPowerMaps;
+
+
+#############################################################################
+##
 #F  OrderCyc( <cyc> ) . . . . . . . . . . . . . . . . . order of a cyclotomic
 ##
 OrderCyc := Order;
@@ -461,6 +503,65 @@ InstallOtherMethod( PermutationCharacter,
 #F  PowerMapping( <map>, <n> )
 ##
 PowerMapping := \^;
+
+
+#############################################################################
+##
+#F  Powmap( <powermap>, <n> )
+#F  Powmap( <powermap>, <n>, <class> )
+##
+Powmap := function( arg )
+    local powermap, n, i, nth_powermap, class;
+    if arg[1] = [] then
+      Error( "empty powermap" );
+    elif Length( arg ) = 2 and IsInt( arg[2] ) then
+      powermap:= arg[1];
+      n:= arg[2];
+      if IsBound( powermap[n] ) then
+        return powermap[n];
+      else
+        nth_powermap:= [ 1 .. Length( powermap[ Length( powermap ) ] ) ];
+        for i in FactorsInt( n ) do
+          if not IsBound( powermap[i] ) then
+            Error( "power map of prime factor ", i, " not available" );
+          fi;
+          nth_powermap:= CompositionMaps( powermap[i], nth_powermap );
+        od;
+        return nth_powermap;
+      fi;
+    elif Length( arg ) = 3 and IsInt( arg[2] ) and IsInt( arg[3] ) then
+      powermap:= arg[1];
+      n:= arg[2];
+      class:= arg[3];
+      if IsBound( powermap[n] ) then
+        return powermap[n][ class ];
+      else
+        nth_powermap:= [ class ];
+        for i in FactorsInt( n ) do
+          if not IsBound( powermap[i] ) then
+            Error( "power map of prime factor ", i, " not available");
+          fi;
+          nth_powermap[1]:= CompositionMaps( powermap[i], nth_powermap, 1 );
+        od;
+        return nth_powermap[1];
+      fi;
+    fi;
+    Error( "usage: Powmap(powermap,n) resp. Powmap(powermap,n,class)" );
+end;
+
+
+#############################################################################
+##
+#F  Power( <powermap>, <characters>, <n> )
+##
+##  the indirections of <characters> by the <n>-th power map;
+##  this map is calculated from the power map of the prime divisors of <n>.
+##
+Power := function( powermap, characters, n )
+    local nth_powermap;
+    nth_powermap:= Powmap( powermap, n );
+    return List( characters, x -> Indirected( x, nth_powermap ) );
+end;
 
 
 #############################################################################

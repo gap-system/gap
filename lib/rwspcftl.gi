@@ -66,10 +66,14 @@ InstallMethod( FromTheLeftCollector,
     
     # Initialise the various stacks.
     pcp[ PC_STACK_SIZE ]               := 16 * nrgens;
-    pcp[ PC_WORD_STACK ]               := [1..pcp[ PC_STACK_SIZE]] * 0;
-    pcp[ PC_WORD_EXPONENT_STACK ]      := [1..pcp[ PC_STACK_SIZE]] * 0;
-    pcp[ PC_SYLLABLE_STACK ]           := [1..pcp[ PC_STACK_SIZE]] * 0;
-    pcp[ PC_EXPONENT_STACK ]           := [1..pcp[ PC_STACK_SIZE]] * 0;
+    pcp[ PC_WORD_STACK ]               := 
+      ListWithIdenticalEntries( pcp[ PC_STACK_SIZE], 0 );
+    pcp[ PC_WORD_EXPONENT_STACK ]      := 
+      ListWithIdenticalEntries( pcp[ PC_STACK_SIZE], 0 );
+    pcp[ PC_SYLLABLE_STACK ]           := 
+      ListWithIdenticalEntries( pcp[ PC_STACK_SIZE], 0 );
+    pcp[ PC_EXPONENT_STACK ]           := 
+      ListWithIdenticalEntries( pcp[ PC_STACK_SIZE], 0 );
     pcp[ PC_STACK_POINTER ]            := 0;
 
     return Objectify( NewType( FromTheLeftCollectorFamily,
@@ -294,7 +298,7 @@ FromTheLeftCollector_SetCommute := function( pcp )
     ##    Commute[i] is the smallest j >= i such that a_i,...,a_n
     ##    commute with a_(j+1),...,a_n.
     ##
-    com := [1..n] * 0 + n;
+    com := ListWithIdenticalEntries( n, n );
     for g in [n-1,n-2..1] do
         ##
         ##    After the following loop two cases can occur :
@@ -335,8 +339,8 @@ FromTheLeftCollector_Inverse := "still to come";
 FromTheLeftCollector_ExponentSums := function( u, a, z )
     local   sums,  i,  g;
     
-    sums := [a..z] * 0;
     z := z - a + 1;
+    sums := ListWithIdenticalEntries( z, 0 );
     for i in [1,3..Length(u)-1] do
         g := u[i] - a + 1;
         if g >= 1 and g <= z then
@@ -663,7 +667,7 @@ ProductAutomorphisms := function( pcp, alpha, beta )
     for i in [1..ngens] do
         if IsBound( alpha[i] ) then
             w := alpha[i];
-            ev := [1..ngens] * 0;
+            ev := ListWithIdenticalEntries( ngens, 0 );
             for g in [1,3..Length(w)-1] do
                 if w[g+1] <> 0 then
                     CollectWordOrFail( pcp, ev,
@@ -757,13 +761,13 @@ InstallMethod( IsConfluent,
         for j in [k-1,k-2..1] do
             for i in [j-1,j-2..1] do
                 InfoConsistency( "checking ", k, " ", j, " ", i, "\n" );
-                ev1 := [1..n] * 0;
+                ev1 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev1, [j,1,i,1] );
                 w := ObjByExponents( pcp, ev1 );
                 ev1 := FromTheLeftCollector_ExponentSums( [k,1], 1, n );
                 CollectWordOrFail( pcp, ev1, w );
                 
-                ev2 := [1..n] * 0;
+                ev2 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev2, [k,1,j,1,i,1] );
                 
                 if ev1 <> ev2 then
@@ -779,10 +783,10 @@ InstallMethod( IsConfluent,
         for i in [j-1,j-2..1] do
             if IsBound(pcp![ PC_EXPONENTS ][j]) then
                 InfoConsistency( "checking ", j, "^m ", i, "\n" );
-                ev1 := [1..n] * 0;
+                ev1 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev1, [j,pcp![ PC_EXPONENTS ][j], i,1] );
                 
-                ev2 := [1..n] * 0;
+                ev2 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev2, [j,1,i,1] );
                 w := ObjByExponents( pcp, ev2 );
                 ev2 := FromTheLeftCollector_ExponentSums( 
@@ -807,7 +811,7 @@ InstallMethod( IsConfluent,
                     CollectWordOrFail( pcp, ev1, pcp![ PC_POWERS ][i] );
                 fi;
                 
-                ev2 := [1..n] * 0;
+                ev2 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev2,
                         [ j,1,i,pcp![ PC_EXPONENTS ][i] ] );
                 
@@ -822,7 +826,7 @@ InstallMethod( IsConfluent,
     # i^m i = i i^m
     for i in [n,n-1..1] do
         if IsBound( pcp![ PC_EXPONENTS ][i] ) then
-            ev1 := [1..n] * 0;
+            ev1 := ListWithIdenticalEntries( n, 0 );
             CollectWordOrFail( pcp, ev1, [ i,pcp![ PC_EXPONENTS ][i]+1 ] );
             
             ev2 := FromTheLeftCollector_ExponentSums( [i,1], 1, n );
@@ -842,10 +846,10 @@ InstallMethod( IsConfluent,
         if not IsBound( pcp![ PC_EXPONENTS ][i] ) then
             for j in [i+1..n] do
                 InfoConsistency( "checking ", j, " ", -i, " ", i, "\n" );
-                ev1 := [1..n] * 0;
+                ev1 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev1, [j,1,i,-1,i,1] );
                 ev1[j] := ev1[j] - 1;
-                if ev1 <> [1..n] * 0 then
+                if ev1 <> ListWithIdenticalEntries( n, 0 ) then
                     Print( "Inconsistency at ", j, " ", -i, " ", i, "\n" );
                     return false;
                 fi;
@@ -858,7 +862,7 @@ InstallMethod( IsConfluent,
         if not IsBound( pcp![ PC_EXPONENTS ][j] ) then
             for i in [j-1,j-2..1] do
                 InfoConsistency( "checking ", -j, " ", j, " ", i, "\n" );
-                ev1 := [1..n] * 0;
+                ev1 := ListWithIdenticalEntries( n, 0 );
                 CollectWordOrFail( pcp, ev1, [ j,1,i,1 ] );
                 w := ObjByExponents( pcp, ev1 );
                 ev1 := FromTheLeftCollector_ExponentSums( [j,-1], 1, n );
@@ -871,7 +875,7 @@ InstallMethod( IsConfluent,
                 
                 if not IsBound( pcp![ PC_EXPONENTS ][i] ) then
                     InfoConsistency( "checking ", -j, " ", j, " ", -i, "\n" );
-                    ev1 := [1..n] * 0;
+                    ev1 := ListWithIdenticalEntries( n, 0 );
                     CollectWordOrFail( pcp, ev1, [ j,1,i,-1 ] );
                     w := ObjByExponents( pcp, ev1 );
                     ev1 := FromTheLeftCollector_ExponentSums( [j,-1], 1, n );

@@ -68,6 +68,15 @@ ReadTest := NewOperation(
 
 #############################################################################
 ##
+#O  ReadAsFunction( <string> )  . . . . . . . . . . . read a file as function
+##
+ReadAsFunction := NewOperation(
+    "ReadAsFunction",
+    [ IsString ] );
+
+
+#############################################################################
+##
 
 #F  DirectoriesLibrary( <name> )  . . . . . . . .  directories of the library
 ##
@@ -91,9 +100,15 @@ DirectoriesLibrary := function( arg )
         dirs := [];
         for dir  in GAP_ROOT_PATHS  do
             path := Concatenation( dir, name );
-            Add( dirs, Directory(path) );
+            if IsDirectoryPath(path) = true  then
+                Add( dirs, Directory(path) );
+            fi;
         od;
-        DIRECTORIES_LIBRARY.(name) := Immutable(dirs);
+        if 0 < Length(dirs)  then
+            DIRECTORIES_LIBRARY.(name) := Immutable(dirs);
+        else
+            return fail;
+        fi;
     fi;
 
     return DIRECTORIES_LIBRARY.(name);
@@ -122,7 +137,7 @@ end;
 #F  DirectoriesPackageLibrary( <name>, <path> ) . directories of the packages
 ##
 DirectoriesPackageLibrary := function( arg )
-    local   name,  path,  dirs,  dir;
+    local   name,  path,  dirs,  dir,  tmp;
 
     name := arg[1];
     if 1 = Length(arg)  then
@@ -138,10 +153,16 @@ DirectoriesPackageLibrary := function( arg )
     fi;
     dirs := [];
     for dir  in GAP_ROOT_PATHS  do
-        path := Concatenation( dir, "pkg/", name, "/", path );
-        Add( dirs, Directory(path) );
+        tmp := Concatenation( dir, "pkg/", name, "/", path );
+        if IsDirectoryPath(path) = true  then
+            Add( dirs, Directory(tmp) );
+        fi;
     od;
-    return dirs;
+    if 0 < Length(dirs)  then
+        return dirs;
+    else
+        return fail;
+    fi;
 end;
 
 
@@ -157,6 +178,84 @@ DirectoriesSystemPrograms := function()
                                       x -> Directory(x) );
     fi;
     return DIRECTORIES_PROGRAMS;
+end;
+
+
+#############################################################################
+##
+#F  DirectoryTemporary( <hint> )  . . . . . . .  create a temporary directory
+##
+DIRECTORIES_TEMPORARY := [];
+
+DirectoryTemporary := function( arg )
+    local   dir;
+
+    # check arguments
+    if 1 < Length(arg)  then
+        Error( "usage: DirectoryTemporary( [<hint>] )" );
+    fi;
+
+    # create temporary directory
+    dir := TmpDirectory();
+    if dir = fail  then
+        return fail;
+    fi;
+
+    # remember directory name and return
+    Add( DIRECTORIES_TEMPORARY, dir );
+    return Directory(dir);
+end;
+
+
+#T THIS IS A HACK UNTIL 'RemoveDirectory' IS AVAILABLE
+InputTextNone := "2b defined";
+OutputTextNone := "2b defined";
+Process := "2b defined";
+
+InstallAtExit( function()
+    local    i,  input,  output,  tmp,  rm,  proc;
+
+    input  := InputTextNone();
+    output := OutputTextNone();
+    tmp    := Directory("/tmp");
+    rm     := Filename( DirectoriesSystemPrograms(), "rm" );
+    if rm = fail  then
+        Print("#W  cannot execute 'rm' to remove temporary directories\n");
+        return;
+    fi;
+
+    for i  in DIRECTORIES_TEMPORARY  do
+        proc := Process( tmp, rm, input, output, [ "-rf", i ] );
+    od;
+
+end );
+
+
+#############################################################################
+##
+#F  DirectoryCurrent()  . . . . . . . . . . . . . . . . . . current directory
+##
+#T  THIS IS A HACK (will not work if SetDirectoryCurrent is implemented)
+DIRECTORY_CURRENT := false;
+
+DirectoryCurrent := function()
+    if IsBool(DIRECTORY_CURRENT)  then
+        DIRECTORY_CURRENT := Directory("./");
+    fi;
+    return DIRECTORY_CURRENT;
+end;
+
+
+#############################################################################
+##
+
+#F  CrcFile( <filename> ) . . . . . . . . . . . . . . . . .  create crc value
+##
+CrcFile := function( name )
+    if IsReadableFile(name) <> true  then
+        return fail;
+    fi;
+    return GAP_CRC(name);
 end;
 
 

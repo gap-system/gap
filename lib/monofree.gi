@@ -76,7 +76,7 @@ InstallMethod( \[\],
 
 InstallMethod( Position,
     "method for enumerator of a free monoid",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
+    IsCollsElmsX,
     [ IsFreeMonoidEnumerator, IsObject, IsZeroCyc ], 0,
     FreeMonoid_NumberElement );
 
@@ -214,6 +214,8 @@ FreeMonoid := function( arg )
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 <= arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );
+    elif Length( arg ) = 1 and IsList( arg[1] ) and IsEmpty( arg[1] ) then
+      names:= arg[1];
     elif 1 <= Length( arg ) and ForAll( arg, IsString ) then
       names:= arg;
     elif Length( arg ) = 1 and IsList( arg[1] ) then
@@ -242,6 +244,7 @@ FreeMonoid := function( arg )
     fi;
 
     SetIsWholeFamily( M, true );
+    SetIsTrivial( M, false );
 
     # Return the free monoid.
     return M;

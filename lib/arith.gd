@@ -521,16 +521,23 @@ HasAdditiveInverse := Tester( AdditiveInverse );
 ##
 #A  One(<obj>)  . . . . .  multiplicative neutral of an element/domain/family
 ##
-##  'One' returns  the  multiplicative neutral  element of <obj>,  which must
+##  `One' returns  the  multiplicative neutral  element of <obj>,  which must
 ##  either be a multiplicative element, a domain, or a family.
 ##
-##  For an element 'One(<elm>)' is equivalent to '<elm>|^|0'.  If a domain or
-##  a family has a one, then all its  elements (even a zero  if the domain or
-##  family has one)  must have the same  one (so a collections family,  which
-##  contains matrices of all dimensions cannot have a one).
+##  For an element `One(<elm>)' is equivalent to `<elm>|^|0'.
+##  If a domain or a family has a one, then all its elements (even a zero if
+##  the domain or family has one) must have the same one (so a collections
+##  family, which contains matrices of all dimensions, cannot have a one).
 ##
-##  'One' may call 'Representative', but 'Representative' is allowed to
-##  fetch the one of a domain <D> only if 'HasOne( <D>)' is 'true'.
+##  The one of an object need not be distinct from its zero,
+##  so a ring consisting of a single element can be regarded as a
+##  ring-with-one.
+##  This is especially useful in the case of finitely presented algebras,
+##  where a factor of a free algebra-with-one is again an algebra-with-one,
+##  no matter whether or not it is a zero algebra.
+##
+##  `One' may call `Representative', but `Representative' is allowed to
+##  fetch the one of a domain <D> only if `HasOne( <D>)' is `true'.
 ##
 One :=
     NewAttributeKernel( "One",

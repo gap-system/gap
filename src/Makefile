@@ -284,13 +284,13 @@ i386-ibm-linux-gcc2:
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="gcc -ansi -Wall -g" \
-	    LFLAGS="$(LOPTS) -export-dynamic -ldl" \
+	    LFLAGS="$(LOPTS)  -export-dynamic -ldl" \
 	    CFLAGS="$(COPTS) -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_STACK_ALIGN=2 \
 	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
 		       -D_POSIX_SOURCE -DSYS_HAS_SIGNAL_PROTO \
-		       -DSYS_HAS_TIME_PROTO -DSYS_HAS_DL_LIBRARY \
+		       -DSYS_HAS_TIME_PROTO -DSYS_HAS_MISC_PROTO -DSYS_HAS_DL_LIBRARY \
 	               -DSYS_INIT_DYNAMIC='\"Init__Dynamic\"' \
 		       -DSYS_ARCH='\"i386-ibm-linux-gcc2\"'" \
         )
@@ -586,6 +586,7 @@ OBJECTS =   \
  rational.o \
  read.o     \
  records.o  \
+ saveload.o \
  scanner.o  \
  sctable.o  \
  set.o      \
@@ -982,7 +983,7 @@ intrprtr.o: $(SRC)/intrprtr.c $(SRC)/intrprtr.h                         \
 	    $(SRC)/range.h    $(SRC)/string.h                           \
 	    $(SRC)/code.h     $(SRC)/vars.h                             \
 	    $(SRC)/funcs.h                                              \
-	    $(SRC)/gap.h
+	    $(SRC)/gap.h      $(SRC)/saveload.h
 	$(CC) $(CFLAGS)  -o intrprtr.o    -c $(SRC)/intrprtr.c
 
 compiler.o: $(SRC)/compiler.c $(SRC)/compiler.h                         \
@@ -1036,7 +1037,7 @@ gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
             $(SRC)/costab.h                                             \
 	    $(SRC)/code.h     $(SRC)/vars.h                             \
 	    $(SRC)/exprs.h    $(SRC)/stats.h    $(SRC)/funcs.h          \
-	    $(SRC)/intrprtr.h $(SRC)/read.h
+	    $(SRC)/intrprtr.h $(SRC)/read.h     $(SRC)/saveload.h
 	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
 
 streams.o:  $(SRC)/streams.c $(SRC)/streams.h				\
@@ -1051,6 +1052,11 @@ compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \
 	    $(SRC)/system.h
 	$(CC) $(CFLAGS)  -o compstat.o    -c $(SRC)/compstat.c
 
+saveload.o: $(SRC)/saveload.c $(SRC)/saveload.h  $(SRC)/bool.h          \
+            $(SRC)/gap.h      $(SRC)/objects.h   $(SRC)/gasman.h        \
+            $(SRC)/system.h   $(SRC)/calls.h     $(SRC)/gvars.h
+	$(CC) $(CFLAGS)  -o saveload.o    -c $(SRC)/saveload.c
+           
 
 #############################################################################
 ##

@@ -55,9 +55,9 @@ Revision.vspchom_gi :=
 ##  free left modules $V$ and $W$ where $F$ is equal to the left acting
 ##  domain of $V$ and of $W$.
 ##
-##  (It would be possible to allow situations where $F$ is only contained
-##  in the left acting domain of $W$;
-##  this would lead to asymmetry w.r.t. taking the inverse general mapping.)
+#T  (It would be possible to allow situations where $F$ is only contained
+#T  in the left acting domain of $W$;
+#T  this would lead to asymmetry w.r.t. taking the inverse general mapping.)
 ##
 ##  Defining components are
 ##
@@ -86,7 +86,7 @@ Revision.vspchom_gi :=
 ##      generate the cokernel.)
 ##
 ##  If these components are not yet bound, they are computed by
-##  'MakeImagesInfoGeneralLinearMappingByImages'.
+##  'MakeImagesInfoLinearGeneralMappingByImages' when they are needed.
 ##  If 'generators' is a *basis* of a free left module then these
 ##  components can be entered without extra work.
 ##
@@ -105,7 +105,7 @@ Revision.vspchom_gi :=
 ##      generate the kernel.)
 ##
 ##  If these components are not yet bound, they are computed by
-##  'MakePreImagesInfoGeneralLinearMappingByImages'.
+##  'MakePreImagesInfoLinearGeneralMappingByImages' when they are needed.
 ##  If 'genimages' is a *basis* of a free left module then these
 ##  components can be entered without extra work.
 ##
@@ -137,9 +137,10 @@ IsLinearGeneralMappingByImagesDefaultRep := NewRepresentation(
 #M  LeftModuleGeneralMappingByImages( <S>, <R>, <gens>, <imgs> )
 ##
 InstallMethod( LeftModuleGeneralMappingByImages,
-    "method for two free left modules and two lists",
+    "method for two free left modules and two homogeneous lists",
     true,
-    [ IsFreeLeftModule, IsFreeLeftModule, IsList, IsList ], 0,
+    [ IsFreeLeftModule, IsFreeLeftModule,
+      IsHomogeneousList, IsHomogeneousList ], 0,
     function( S, R, gens, imgs )
 
     local map;        # general mapping from <S> to <R>, result
@@ -158,9 +159,7 @@ InstallMethod( LeftModuleGeneralMappingByImages,
     # Make the general mapping.
     map:= Objectify( TypeOfDefaultGeneralMapping( S, R, 
                              IsSPGeneralMapping
-                         and RespectsAddition
-                         and RespectsAdditiveInverses
-                         and RespectsScalarMultiplication
+                         and IsLeftModuleGeneralMapping
                          and IsLinearGeneralMappingByImagesDefaultRep ),
                      rec( 
                           generators := gens,
@@ -197,10 +196,22 @@ InstallMethod( LeftModuleHomomorphismByImages,
     function( S, R, gens, imgs )
     local map;        # homomorphism from <source> to <range>, result
     map:= LeftModuleGeneralMappingByImages( S, R, gens, imgs );
-    SetIsSingleValued( map );
-    SetIsTotal( map );
+    SetIsSingleValued( map, true );
+    SetIsTotal( map, true );
     return map;
     end );
+
+
+#############################################################################
+##
+#M  AsLeftModuleGeneralMappingByImages( <linmap> )  . for a lin. gen. mapping
+##
+InstallMethod( AsLeftModuleGeneralMappingByImages,
+    "method for a linear g.m.b.i.",
+    true,
+    [     IsLeftModuleGeneralMapping
+      and IsLinearGeneralMappingByImagesDefaultRep ], 0,
+    IdFunc );
 
 
 #############################################################################
@@ -340,7 +351,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
     true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map )
-    local genimages, R;
+    local genimages;
 
     # Form the linear combinations of the basis vectors for the
     # corelation space with the 'genimages' of 'map'.
@@ -349,11 +360,9 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       MakeImagesInfoLinearGeneralMappingByImages( map );
     fi;
     genimages:= map!.genimages;
-    R:= Range( map );
-    return LeftModuleByGenerators( LeftActingDomain( R ),
+    return SubmoduleNC( Range( map ),
                List( map!.corelations,
-                     r -> LinearCombination( genimages, r ) ),
-               Zero( R ) );
+                     r -> LinearCombination( genimages, r ) ) );
     end );
 
 
@@ -386,7 +395,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map )
-    local generators, S;
+    local generators;
 
     # Form the linear combinations of the basis vectors for the
     # relation space with the 'generators' of 'map'.
@@ -395,11 +404,9 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       MakePreImagesInfoLinearGeneralMappingByImages( map );
     fi;
     generators:= map!.generators;
-    S:= Source( map );
-    return LeftModuleByGenerators( LeftActingDomain( S ),
+    return SubmoduleNC( Source( map ),
                List( map!.relations,
-                     r -> LinearCombination( generators, r ) ),
-               Zero( S ) );
+                     r -> LinearCombination( generators, r ) ) );
     end );
 
 
@@ -929,9 +936,7 @@ InstallMethod( LeftModuleHomomorphismByMatrix,
                              IsSPGeneralMapping
                          and IsSingleValued
                          and IsTotal
-                         and RespectsAddition
-                         and RespectsAdditiveInverses
-                         and RespectsScalarMultiplication
+                         and IsLeftModuleGeneralMapping
                          and IsLinearMappingByMatrixDefaultRep ),
                      rec( 
                           basissource := BS,
@@ -1161,134 +1166,6 @@ InstallMethod( NaturalHomomorphismBySubspace,
 
     # Run the implications for the factor.
     UseFactorRelation( V, W, img );
-
-    return nathom;
-    end );
-
-
-#############################################################################
-##
-#M  NaturalHomomorphismByIdeal( <A>, <triv> ) . . . . . . . . . . for FLMLORs
-##
-##  Return the identity mapping.
-##
-InstallMethod( NaturalHomomorphismByIdeal,
-    "method for FLMLOR and trivial FLMLOR",
-    IsIdentical,
-    [ IsFLMLOR, IsFLMLOR and IsTrivial ], SUM_FLAGS,
-    function( A, I )
-    return IdentityMapping( A );
-    end );
-
-
-#############################################################################
-##
-#M  NaturalHomomorphismByIdeal( <A>, <I> )  . . . . for two fin. dim. FLMLORs
-##
-##  return a left module m.b.m.
-##
-InstallMethod( NaturalHomomorphismByIdeal,
-    "method for two finite dimensional FLMLORs",
-    IsIdentical,
-    [ IsFLMLOR, IsFLMLOR ], 0,
-    function( A, I )
-
-    local F,
-          Ivectors,
-          mb,
-          compl,
-          gen,
-          B,
-          empty,
-          n,
-          k,
-          T,
-          i,
-          j,
-          coeff,
-          pos,
-          img,
-          canbas,
-          zero,
-          Bimgs,
-          nathom;
-
-    # Check that the FLMLORs are finite dimensional.
-    if not IsFiniteDimensional( A ) or not IsFiniteDimensional( I ) then
-      TryNextMethod();
-    fi;
-
-    # If 'A' is equal to 'I', return a zero mapping.
-    if not IsIdeal( A, I ) then
-      Error( "<I> must be an ideal in <A>" );
-    elif Dimension( A ) = Dimension( I ) then
-      return ZeroMapping( A, NullAlgebra( LeftActingDomain( A ) ) );
-    fi;
-
-    # If the left acting domains are different, adjust them.
-    F:= LeftActingDomain( A );
-    if F <> LeftActingDomain( I ) then
-      F:= Intersection2( A, LeftActingDomain( I ) );
-      A:= AsFLMLOR( F, A );
-      I:= AsFLMLOR( F, I );
-    fi;
-
-    # Compute a basis of 'A' through a basis of 'I'.
-    Ivectors:= BasisVectors( BasisOfDomain( I ) );
-    mb:= MutableBasisByGenerators( F, Ivectors );
-    compl:= [];
-    for gen in BasisVectors( BasisOfDomain( A ) ) do
-      if not IsContainedInSpan( mb, gen ) then
-        Add( compl, gen );
-        CloseMutableBasis( mb, gen );
-      fi;
-    od;
-    B:= BasisByGeneratorsNC( A, Concatenation( Ivectors, compl ) );
-
-    # Compute the structure constants of the quotient algebra.
-    zero:= Zero( F );
-    empty:= [ [], [] ];
-    k:= Length( Ivectors );
-    n:= Length( compl );
-    if   HasIsCommutative( A ) and IsCommutative( A ) then
-      T:= EmptySCTable( n, Zero( F ), "symmetric" );
-    elif HasIsAnticommutative( A ) and IsAnticommutative( A ) then
-      T:= EmptySCTable( n, Zero( F ), "antisymmetric" );
-    else
-      T:= EmptySCTable( n, Zero( F ) );
-    fi;
-    for i in [ 1 .. n ] do
-      for j in [ 1 .. n ] do
-        coeff:= Coefficients( B, compl[i] * compl[j] ){ [ k+1 .. k+n ] };
-        pos:= Filtered( [ 1 .. n ], i -> coeff[i] <> zero );
-        if not IsEmpty( pos ) then
-          T[i][j]:= Immutable( [ pos, coeff{ pos } ] );
-        fi;
-      od;
-    od;
-#T use (anti)symm. here!!!
-
-    # Compute the linear mapping by images.
-    img:= AlgebraByStructureConstants( F, T );
-    canbas:= CanonicalBasis( img );
-    zero:= Zero( F ) * [ 1 .. n ];
-    Bimgs:= Concatenation( List( [ 1 .. k ], v -> zero ),
-                           IdentityMat( n, F ) );
-    nathom:= LeftModuleHomomorphismByMatrix( B, Bimgs, canbas );
-#T take a special representation for nat. hom.s,
-#T (just compute coefficients, and then choose a subset ...)
-    SetIsAlgebraHomomorphism( nathom, true );
-    SetIsSurjective( nathom, true );
-
-    # Enter the preimages info.
-    nathom!.basisimage:= canbas;
-    nathom!.preimagesbasisimage:= Immutable( compl );
-#T relations are not needed if the kernel is known ?
-
-    SetKernelOfAdditiveGeneralMapping( nathom, I );
-
-    # Run the implications for the factor.
-    UseFactorRelation( A, I, img );
 
     return nathom;
     end );

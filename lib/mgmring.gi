@@ -519,7 +519,8 @@ FreeMagmaRing := function( R, M )
     local F,     # family of magma ring elements
           one,   # identity of 'R'
           zero,  # zero of 'R'
-          RM;    # free magma ring, result
+          RM,    # free magma ring, result
+          gens;  # generators of the magma ring
 
     # Check the arguments.
     if not IsRing( R ) or One( R ) = fail then
@@ -585,14 +586,25 @@ FreeMagmaRing := function( R, M )
     fi;
 
     # Construct the generators.
+    # To get meaningful generators,
+    # we have to handle the case that the magma is trivial.
     if IsMagmaWithOne( M ) then
+
+      gens:= GeneratorsOfMagmaWithOne( M );
       SetGeneratorsOfLeftOperatorRingWithOne( RM,
-          List( GeneratorsOfMagmaWithOne( M ),
+          List( gens,
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
+      if IsEmpty( gens ) then
+        SetGeneratorsOfLeftOperatorRing( RM,
+                [ ElementOfMagmaRing( F, zero, [ one ], [ One( M ) ] ) ] );
+      fi;
+        
     else
+
       SetGeneratorsOfLeftOperatorRing( RM,
           List( GeneratorsOfMagma( M ),
                 x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
+
     fi;
 
     # Return the ring.
@@ -810,6 +822,102 @@ InstallMethod( \in,
     else
       TryNextMethod();
     fi;
+    end );
+
+
+#############################################################################
+##
+#M  Enumerator( <RM> )  . . . . . . .  for a free magma ring with finite ring
+##
+##  Let <RM> be a free magma ring over a finite left acting domain $R$
+##  of order $q$, say.
+##
+##  If $m_i$ is the $i$-th element in a fixed enumerator of the underlying
+##  magma then the element $\sum_{i=1}^k r_i m_i$ is at position
+##  $1 + \sum_{i=1}^k p_i q^{i-1}$, where $p_i+1$ is the position of the ring
+##  element $r_i$ in a fixed enumerator of $R$.
+##  Especially, the first element in the enumerator of <RM> is the zero
+##  element of <RM>.
+##
+IsFreeMagmaRingEnumerator := NewRepresentation(
+    "IsFreeMagmaRingEnumerator",
+    IsDomainEnumerator and IsAttributeStoringRep,
+    [ "family", "zerocoeff", "ringenum", "magmaenum", "zero" ] );
+
+InstallMethod( \[\],
+    "method for enumerator of a free magma ring",
+    true,
+    [ IsFreeMagmaRingEnumerator, IsPosRat and IsInt ], 0,
+    function( enum, nr )
+
+    local elm,  # element, result
+          i;    # loop over q-adic expansion
+
+    nr:= CoefficientsQadic( nr-1, Length( enum!.ringenum ) );
+    if Length( enum!.magmaenum ) < Length( nr ) then
+      Error( "too large number" );
+    fi;
+    elm:= enum!.zero;
+    for i in [ 1 .. Length( nr ) ] do
+      elm:= elm + ElementOfMagmaRing( enum!.family, enum!.zerocoeff,
+                                          [ enum!.ringenum[ nr[i]+1 ] ],
+                                          [ enum!.magmaenum[i] ] );
+    od;
+    return elm;
+    end );
+
+InstallMethod( Position,
+    "method for enumerator of a free magma ring",
+    IsCollsElmsX,
+    [ IsFreeMagmaRingEnumerator, IsElementOfFreeMagmaRing, IsZeroCyc ], 0,
+    function( enum, elm, zero )
+
+    local pos,    # position, result
+          q,      # cardinality of the ring
+          rpos,   # position in ring enumerator
+          mpos,   # position in magma enumerator
+          i;      # loop over the expression of `elm'
+
+    elm:= CoefficientsAndMagmaElements( elm );
+    pos:= 1;
+    q:= Length( enum!.ringenum );
+    for i in [ 2, 4 .. Length( elm ) ] do
+      rpos:= Position( enum!.ringenum, elm[i], 0 );
+      if rpos = fail then
+        return fail;
+      fi;
+      mpos:= Position( enum!.magmaenum, elm[ i-1 ], 0 );
+      if mpos = fail then
+        return fail;
+      fi;
+      pos:= pos + ( rpos - 1 ) * q ^ ( mpos - 1 );
+    od;
+    return pos;
+    end );
+
+
+InstallMethod( Enumerator,
+    "method for enumerator of a free magma ring with finite ring",
+    true,
+    [ IsFreeMagmaRing ], 0,
+    function( RM )
+    local R, enum;
+
+    R:= LeftActingDomain( RM );
+    if not IsFinite( LeftActingDomain( RM ) ) then
+      TryNextMethod();
+    fi;
+
+    enum:= Objectify( NewType( FamilyObj( RM ),
+                               IsFreeMagmaRingEnumerator ),
+                    rec( family    := ElementsFamily( FamilyObj( RM ) ),
+                         zerocoeff := Zero( R ),
+                         ringenum  := Enumerator( R ),
+                         magmaenum := Enumerator( UnderlyingMagma( RM ) ),
+                         zero      := Zero( RM ) )
+                     );
+    SetUnderlyingCollection( enum, RM );
+    return enum;
     end );
 
 

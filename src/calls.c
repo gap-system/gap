@@ -1094,17 +1094,21 @@ static void CheckHandlersBag(
     for (j = 0; j < 8; j++)
       {
         hdlr = HDLR_FUNC(bag,j);
-        for (i = 0; i < NHandlerFuncs; i++)
-          {
-            if (hdlr == HandlerFuncs[i].hdlr)
-              break;
-          }
-        if (i == NHandlerFuncs)
-          {
-            Pr("Unregistered Handler %d args  ", j, 0L);
-            PrintObj(NAME_FUNC(bag));
-            Pr("\n",0L,0L);
-          }
+	/* zero handlers are used in a few odd places */
+	if (hdlr != 0)
+	  {
+	    for (i = 0; i < NHandlerFuncs; i++)
+	      {
+		if (hdlr == HandlerFuncs[i].hdlr)
+		  break;
+	      }
+	    if (i == NHandlerFuncs)
+	      {
+		Pr("Unregistered Handler %d args  ", j, 0L);
+		PrintObj(NAME_FUNC(bag));
+		Pr("\n",0L,0L);
+	      }
+	  }
       }
   }
 #endif

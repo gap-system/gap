@@ -81,7 +81,7 @@ InstallMethod( IsEmpty,
 
 #############################################################################
 ##
-#M  IsTrivial(<C>)  . . . . . . . . . . . .  test if a collection ist trivial
+#M  IsTrivial(<C>)  . . . . . . . . . . . . . test if a collection is trivial
 ##
 InstallImmediateMethod( IsTrivial,
     IsCollection and HasSize, 0,
@@ -95,6 +95,25 @@ InstallMethod( IsTrivial,
     function ( C )
     return (Size( C ) = 1);
     end );
+
+InstallImmediateMethod( IsTrivial,
+    IsCollection and HasIsNonTrivial, 0,
+    C -> not IsNonTrivial( C ) );
+
+
+#############################################################################
+##
+#M  IsNonTrivial( <C> ) . . . . . . . . .  test if a collection is nontrivial
+##
+InstallImmediateMethod( IsNonTrivial,
+    IsCollection and HasIsTrivial, 0,
+    C -> not IsTrivial( C ) );
+
+InstallMethod( IsNonTrivial,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
+    C -> Size( C ) <> 1 );
 
 
 #############################################################################

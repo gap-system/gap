@@ -1757,6 +1757,12 @@ void            PrintListDefault (
     Obj                 list )
 {
     Obj                 elm;
+
+    if ( IsStringConv(list) && MUTABLE_TNUM(TNUM_OBJ(list))==T_STRING ) {
+	PrintString(list);
+	return;
+    }
+
     Pr("%2>[ %2>",0L,0L);
     for ( PrintObjIndex=1; PrintObjIndex<=LEN_LIST(list); PrintObjIndex++ ) {
         elm = ELMV0_LIST( list, PrintObjIndex );

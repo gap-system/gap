@@ -1829,6 +1829,8 @@ end;
 ##  It is  based  upon  ideas by  George Havas  and code by  Bohdan Majewski.
 ##  G. Havas and B. Majewski, Integer Matrix Diagonalization, JSC, to appear
 ##
+#T  Should this test for mutability? SL
+
 DiagonalizeIntMatNormDriven := function ( mat )
     local   nrrows,     # number of rows    (length of <mat>)
             nrcols,     # number of columns (length of <mat>[1])
@@ -1980,7 +1982,7 @@ DiagonalizeIntMatNormDriven := function ( mat )
             mat{[d..nrrows]}[pivl] := col;
         fi;
         if mat[d][d] < 0  then
-            mat[d] := - mat[d];
+            MultRowVector(mat[d],-1);
         fi;
 
         # now perform row operations so that the entries in the
@@ -1990,11 +1992,12 @@ DiagonalizeIntMatNormDriven := function ( mat )
         for k  in [ d+1 .. nrrows ]  do
             quo := BestQuoInt( mat[k][d], mat[d][d] );
             if quo = 1  then
-                mat[k] := mat[k] - row;
+#N  Is it worth having SubtractRowVector to speed up this case?  SL
+                AddRowVector(mat[k],-row);
             elif quo = -1  then
-                mat[k] := mat[k] + row;
+                AddRowVector(mat[k],row);
             elif quo <> 0  then
-                mat[k] := mat[k] - quo * row;
+                AddRowVector(mat[k], -quo*row);
             fi;
             clear := clear and mat[k][d] = 0;
         od;
@@ -2064,7 +2067,7 @@ DiagonalizeIntMatNormDriven := function ( mat )
                 mat{[d..nrrows]}[pivl] := col;
             fi;
             if mat[d][d] < 0  then
-                mat[d] := - mat[d];
+                MultRowVector(mat[d],-1);
             fi;
 
             # now perform row operations so that the entries in the
@@ -2073,12 +2076,13 @@ DiagonalizeIntMatNormDriven := function ( mat )
             row := mat[d];
             for k  in [ d+1 .. nrrows ]  do
                 quo := BestQuoInt( mat[k][d], mat[d][d] );
-                if quo = 1  then
-                    mat[k] := mat[k] - row;
+	        if quo = 1  then
+#N  Is it worth having SubtractRowVector to speed up this case?  SL
+                    AddRowVector(mat[k],-row);
                 elif quo = -1  then
-                    mat[k] := mat[k] + row;
+                    AddRowVector(mat[k],row);
                 elif quo <> 0  then
-                    mat[k] := mat[k] - quo * row;
+                    AddRowVector(mat[k], -quo*row);
                 fi;
                 clear := clear and mat[k][d] = 0;
             od;
@@ -2187,24 +2191,6 @@ IdentityMat := function ( arg )
     else
       Error("usage: IdentityMat( <m>[, <F>] )");
     fi;
-end;
-
-
-#############################################################################
-##
-#F  InducedActionSpaceMats( <basis>, <mats>, <opr> )
-##
-##  returns the list of matrices that describe the action of the matrices in
-##  the list <mats> on the row space with basis <basis>, with respect to this
-##  basis.
-##
-InducedActionSpaceMats := function( basis, mats, opr )
-
-#T (Should this replace 'LinearOperation'?)
-
-    return List( mats,
-                 m -> List( BasisVectors( basis ),
-                            x -> Coefficients( basis, opr( x, m ) ) ) );
 end;
 
 

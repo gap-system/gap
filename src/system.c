@@ -2393,7 +2393,7 @@ Int SyFindOrLinkGapRootFile (
 	SyStrncat( name, tmp, 255 );
     }
     if ( result[0] ) {
-        if ( SyIsReadableFile(result) ) {
+        if ( SyIsReadableFile(result) == 0 ) {
             found_gap = 1;
         }
         else {
@@ -3204,7 +3204,7 @@ void sySetGapRCFile ( void )
             (UInt)(sizeof(SyInitfiles[0])-1-SyStrlen(SyInitfiles[i])));
 #endif
 
-        if ( ! SyIsReadableFile(SyInitfiles[i]) ) {
+        if ( SyIsReadableFile(SyInitfiles[i]) != 0 ) {
             SyInitfiles[i][0] = '\0';
         }
     }

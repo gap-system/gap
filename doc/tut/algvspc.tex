@@ -1,0 +1,459 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  algvspc.tex            GAP documentation                Thomas Breuer
+%%
+%H  @(#)$Id$
+%%
+%Y  Copyright (C) 1997, Lehrstuhl D fuer Mathematik, RWTH Aachen, Germany
+%%
+\Chapter{Vector Spaces and Algebras}
+
+In this chapter we show some computations with vector spaces and
+algebras.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Vector Spaces}
+
+A *vector space* over the field $F$ is an additive group that is closed
+under scalar multiplication with elements in $F$.
+In {\GAP}, only those domains are regarded as vector spaces that are
+constructed as vector spaces.
+Especially an additive group that does not know about an acting domain of
+scalars is not regarded as a vector space in {\GAP}.
+
+Every field is itself a vector space, the set of matrices of the same
+shape over a given field is a vector space, the set of linear mappings
+between two vector spaces is a vector space.
+Given a vector space, the linear closure of any subset is again a vector
+space.
+
+\beginexample
+    gap> f:= GF(8); IsVectorSpace( f );
+    GF(2^3)
+    true
+    gap> v:= GF(3)^[2,3]; IsVectorSpace( v );
+    ( GF(3)^[ 2, 3 ] )
+    true
+    gap> w:= GF(3)^2; IsVectorSpace( w );
+    ( GF(3)^2 )
+    true
+    gap> hom:= Hom( GF(3), v, w ); IsVectorSpace( hom );
+    Hom( GF(3), ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) )
+    true
+    gap> Subspace( f, [ Z(2), Z(8)^3 ] );
+    VectorSpace( GF(2), [ Z(2)^0, Z(2^3)^3 ] )
+    gap> m:= [ [ 1, 0, 0 ], [ 0, 1, 1 ] ] * Z(3)^0;
+    [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ] ]
+    gap> Subspace( v, [ m ] );
+    VectorSpace( GF(3), 
+    [ [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ] ] ] )
+    gap> z:= Subspace( hom, [ ZeroMapping( v, w ) ] );
+    VectorSpace( GF(3), 
+    [ ZeroMapping( ( GF(3)^[ 2, 3 ] ), ( GF(3)^2 ) ) ] )
+\endexample
+
+The probably most common $F$-vector spaces in {\GAP} are so-called
+*row spaces*.
+They consist of row vectors, that is, lists whose elements lie in $F$
+or an extension field of $F$.
+
+\beginexample
+    gap> rowsp:= VectorSpace( GF(9), m );
+    VectorSpace( GF(3^2), 
+    [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ] ] )
+    gap> Size( rowsp );
+    81
+    gap> [ 1, 1, 1 ] * Z(3) in rowsp;
+    true
+    gap> [ 0, 0, 1 ] * Z(3) in rowsp;
+    false
+\endexample
+
+Note that the same set of vectors can be a vector space over different
+fields,
+one can construct a space over another field using `AsVectorSpace'.
+
+\beginexample
+    gap> as:= AsVectorSpace( GF(3), rowsp );
+    VectorSpace( GF(3), 
+    [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3)^0 ], 
+      [ Z(3^2), 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3^2), Z(3^2) ] ] )
+    gap> as = rowsp;
+    true
+    gap> AsVectorSpace( GF(27), rowsp );
+    fail
+\endexample
+
+The defining invariant of a vector space $V$ is its *dimension*,
+the maximal cardinality of a tuple of vectors in $V$ that are linearly
+independent over the coefficients field $F$ of $V$.
+Each such maximal tuple of vectors is called a *basis* of the vector
+space.
+For a given basis $B$ of $V$, every vector $v$ in $V$ can be expressed
+uniquely as $v = \sum_{b \in B} c_b b$, with coefficients $c_b \in F$.
+
+In {\GAP}, bases are special lists of vectors.
+They are used mainly for the computation of coefficients and linear
+combinations.
+
+\beginexample
+    gap> Dimension( rowsp );
+    2
+    gap> Dimension( as );
+    4
+    gap> Dimension( z );
+    0
+    gap> Dimension( f );
+    3
+    gap> Dimension( hom );
+    12
+    gap> bas:= Basis( f );
+    CanonicalBasis( GF(2^3) )
+    gap> bas[1]; bas[2]; bas[3];
+    Z(2)^0
+    Z(2^3)
+    Z(2^3)^2
+    gap> coeff:= Coefficients( bas, Z(8)^3 );
+    [ Z(2)^0, Z(2)^0, 0*Z(2) ]
+    gap> LinearCombination( bas, coeff );
+    Z(2^3)^3
+    gap> v:= Rationals^3;
+    ( Rationals^3 )
+    gap> bas:= Basis( v, [ [ 1, 1, 1 ], [ 0, 1, 1 ], [ 0, 0, 1 ] ] );;
+    gap> Coefficients( bas, [ 1, 2, 3 ] );
+    [ 1, 1, 1 ]
+    gap> Coefficients( bas, [ 3, 2, 1 ] );
+    [ 3, -1, -1 ]
+    gap> LinearCombination( bas, [ 1, 2, 3 ] );
+    [ 1, 3, 6 ]
+\endexample
+
+The factor space of a vector space by a subspace is again a vector
+space.
+
+\beginexample
+    gap> s:= Subspace( v, [ [ 1, 1, 1 ] ] );;
+    gap> hom:= NaturalHomomorphismBySubspace( v, s );;
+    gap> KernelOfAdditiveGeneralMapping( hom );
+    VectorSpace( Rationals, [ [ 1, 1, 1 ] ] )
+    gap> Image( hom );
+    ( Rationals^2 )
+    gap> List( bas, vec -> Image( hom, vec ) );
+    [ [ 0, 0 ], [ -1, 0 ], [ -1, -1 ] ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Algebras}
+
+A vector space that is also closed under multiplication is called an
+*algebra*.
+For example, every field is an algebra, the vector space of all
+square matrices of a given dimension over a given field is an algebra,
+and the endomorphisms of a vector space form an algebra.
+{\GAP} knows these facts.
+Note that an algebra in {\GAP} need not be associative.
+
+\beginexample
+    gap> f:= GF(8); IsAlgebra( f );
+    GF(2^3)
+    true
+    gap> a:= GF(2)^[2,2]; IsAlgebra( a );
+    <algebra-with-one over GF(2), with 2 generators>
+    true
+    gap> hom:= End( GF(3), GF(3)^2 );
+    End( GF(3), ( GF(3)^2 ) )
+    gap> IsAlgebra( hom );
+    true
+\endexample
+
+But if a domain was not constructed as an algebra,
+for example if it knows only about its additive or multiplicative
+structure, then {\GAP} does not regard it as algebra.
+One can use `AsAlgebra' to get the domain consisting of the same elements
+but viewed as algebra over an appropriate coefficients domain.
+
+\beginexample
+    gap> bas:= Basis( a );
+    CanonicalBasis( <algebra-with-one over GF(2), with 2 generators> )
+    gap> v:= VectorSpace( GF(2), bas );
+    VectorSpace( GF(2), [ [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), Z(2)^0 ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ 0*Z(2), 0*Z(2) ], [ Z(2)^0, 0*Z(2) ] ], 
+      [ [ 0*Z(2), 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ] )
+    gap> IsAlgebra( v );
+    false
+    gap> AsAlgebra( GF(4), v );
+    fail
+    gap> va:= AsAlgebra( GF(2), v );
+    <algebra of dimension 4 over GF(2)>
+    gap> va = v; va = a;
+    true
+    true
+\endexample
+
+An algebra may or may not contain a multiplicatively neutral element.
+If yes then the algebra may or may not contain the zeroth power
+of its elements.
+If this zeroth power is contained in the algebra then it is accessible
+by `One'.
+The latter distinction constitutes two notions of generation,
+namely of an algebra and an algebra-with-one.
+
+\beginexample
+    gap> m:= [ [ 1, 0 ], [ 0, 0 ] ];;
+    gap> one:= m^0;
+    [ [ 1, 0 ], [ 0, 1 ] ]
+    gap> a:= Algebra( Rationals, [ m ] );
+    <algebra over Rationals, with 1 generators>
+    gap> One( a );
+    fail
+    gap> one in a;
+    false
+    gap> MultiplicativeNeutralElement( a );
+    [ [ 1, 0 ], [ 0, 0 ] ]
+    gap> Dimension( a );
+    1
+    gap> a1:= AlgebraWithOne( Rationals, [ m ] );
+    <algebra-with-one over Rationals, with 1 generators>
+    gap> One( a1 );
+    [ [ 1, 0 ], [ 0, 1 ] ]
+    gap> one in a1;
+    true
+    gap> MultiplicativeNeutralElement( a1 );
+    [ [ 1, 0 ], [ 0, 1 ] ]
+    gap> Dimension( a1 );
+    2
+    gap> GeneratorsOfAlgebra( a1 );
+    [ [ [ 1, 0 ], [ 0, 0 ] ], [ [ 1, 0 ], [ 0, 1 ] ] ]
+    gap> GeneratorsOfAlgebraWithOne( a1 );
+    [ [ [ 1, 0 ], [ 0, 0 ] ] ]
+\endexample
+
+The factor of an algebra by a subspace is of course a vector space,
+and the factor by an ideal is again an algebra.
+
+\beginexample
+    gap> m1:= [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 0 ] ];;
+    gap> m2:= [ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 1 ] ];;
+    gap> a:= Algebra( Rationals, [ m1, m2 ] );
+    <algebra over Rationals, with 2 generators>
+    gap> Dimension( a );
+    3
+    gap> s:= Subspace( a, [ m1 ] );
+    VectorSpace( Rationals, 
+    [ [ [ 0, 1, 0 ], [ 1, 0, 0 ], [ 0, 0, 0 ] ] ] )
+    gap> Dimension( s );
+    1
+    gap> hom1:= NaturalHomomorphismBySubspace( a, s );;
+    gap> Dimension( Image( hom1 ) );
+    2
+    gap> i:= Subalgebra( a, [ m1 ] );
+    <algebra over Rationals, with 1 generators>
+    gap> Dimension( i );
+    2
+    gap> hom2:= NaturalHomomorphismByIdeal( a, i );;
+    gap> Dimension( Image( hom2 ) );
+    1
+\endexample
+
+Besides the more or less ``natural'' occurrencies of the algebras
+shown above, an algebra can also be given by a presentation.
+Any finite dimensional algebra can be described by so-called
+*structure constants*, that is, for a fixed basis $B$,
+the $B$-coefficients of the products of elements in $B$.
+
+\beginexample
+gap> bas:= Basis( a );;
+gap> T:= StructureConstantsTable( bas );
+[ [ [ [ 3 ], [ 1 ] ], [ [  ], [  ] ], [ [ 1 ], [ 1 ] ] ], 
+  [ [ [  ], [  ] ], [ [ 2 ], [ 1 ] ], [ [  ], [  ] ] ], 
+  [ [ [ 1 ], [ 1 ] ], [ [  ], [  ] ], [ [ 3 ], [ 1 ] ] ], 0, 0 ]
+gap> sc:= AlgebraByStructureConstants( Rationals, T );
+<algebra of dimension 3 over Rationals>
+gap> AlgebraByStructureConstants( CF(7), T );
+<algebra of dimension 3 over CF(7)>
+\endexample
+
+An interesting class of algebras for that many special algorithms
+are implemented is the class of *Lie algebras*.
+They arise for example as algebras of matrices, with product defined
+by the Lie bracket $[ A, B ] = A \* B - B \* A$,
+where $\*$ denotes the ordinary matrix product.
+
+Since the multiplication in a domain in {\GAP} is always assumed to be
+the operation `\\\*' (resp. the infix operator `\*'), 
+and since there is already the ``ordinary'' matrix product defined for
+matrices that are formed as lists of their rows,
+we must take other matrices to generate Lie matrix algebras.
+Such matrices can be constructed by `LieObject' from ordinary matrices.
+
+\beginexample
+    gap> a:= GF(2)^[2,2];
+    <algebra-with-one over GF(2), with 2 generators>
+    gap> IsAssociative( a ); IsLieAlgebra( a );
+    true
+    false
+    gap> Dimension( a );
+    4
+    gap> gens:= GeneratorsOfAlgebra( a );
+    [ [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ], 
+      [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ], 
+      [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ]
+    gap> liegens:= List( gens, LieObject );
+    [ LieObject( [ [ 0*Z(2), Z(2)^0 ], [ Z(2)^0, 0*Z(2) ] ] ), 
+      LieObject( [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), 0*Z(2) ] ] ), 
+      LieObject( [ [ Z(2)^0, 0*Z(2) ], [ 0*Z(2), Z(2)^0 ] ] ) ]
+    gap> ForAll( liegens, IsMatrix );
+    true
+    gap> liegens[1] = gens[1];
+    false
+    gap> liegens[1][1]; Length( liegens[1] );
+    [ 0*Z(2), Z(2)^0 ]
+    2
+    gap> liegens[1][1] = gens[1][1];
+    true
+    gap> l:= Algebra( GF(2), liegens );
+    <Lie algebra over GF(2), with 3 generators>
+    gap> IsAssociative( l ); IsLieAlgebra( l );
+    false
+    true
+    gap> Dimension( l );
+    3
+\endexample
+
+So the algebras `a' and `l' behave differently.
+Also the generators of the Lie matrix algebra are regarded as
+different from the generators of the associative matrix algebra.
+But the elements of both algebras are matrices, so one can access
+their rows, and the rows of a matrix and its Lie object are equal.
+
+Since a Lie algebra is a domain that is closed under multiplication,
+operations such as centre and centralizer are defined in {\GAP}.
+But usually the ``centre of a Lie algebra'' and the ``centralizer of a
+subset in a Lie algebra'' are defined as annihilators.
+In {\GAP}, one can compute these algebras with the operations `LieCentre'
+and `LieCentralizer'.
+
+\beginexample
+    gap> LieCentre( l );
+    <Lie algebra of dimension 1 over GF(2)>
+    gap> Centre(l);
+    <Lie algebra of dimension 3 over GF(2)>
+\endexample
+
+Many algorithms for Lie algebras use structure constants tables,
+so it is reasonable to compute with s.c. algebras.
+In order to avoid the check that a s.c. algebra is a Lie algebra,
+one can use `LieAlgebraByStructureConstants'.
+For several series of simple Lie algebras (see "SimpleLieAlgebra")
+there are implementations via s.c. tables.
+
+\beginexample
+    gap> T:= StructureConstantsTable( BasisOfDomain( l ) );;
+    gap> sc:= LieAlgebraByStructureConstants( GF(2), T );
+    <Lie algebra of dimension 3 over GF(2)>
+    gap> SimpleLieAlgebra( "A", 1, Rationals );
+    <Lie algebra of dimension 3 over Rationals>
+\endexample
+
+Another example of algebras is provided by *quaternion algebras*.
+
+\beginexample
+    gap> b5:= EB(5);
+    E(5)+E(5)^4
+    gap> q:= QuaternionAlgebra( FieldByGenerators( [ b5 ] ) );
+    <algebra of dimension 4 over NF(5,[ 1, 4 ])>
+    gap> gens:= GeneratorsOfAlgebra( q );
+    [ e, i, j, k ]
+    gap> e:= gens[1];; i:= gens[2];; j:= gens[3];; k:= gens[4];;
+    gap> IsAssociative( q );
+    true
+    gap> IsCommutative( q );
+    false
+    gap> i*j; j*i;
+    k
+    (-1)*k
+    gap> One( q );
+    e
+\endexample
+
+If the coefficients field is a real subfield of the complex numbers
+then the quaternion algebra is in fact a division ring.
+
+\beginexample
+    gap> IsDivisionRing( q );
+    true
+    gap> Inverse( e+i+j );
+    (1/3)*e+(-1/3)*i+(-1/3)*j
+\endexample
+
+So {\GAP} knows about this fact.
+As in any ring, we can look at groups of units.
+
+\beginexample
+    gap> c5:= StarCyc( b5 );
+    E(5)^2+E(5)^3
+    gap> g1:= 1/2*( b5*e + i - c5*j );
+    (1/2*E(5)+1/2*E(5)^4)*e+(1/2)*i+(-1/2*E(5)^2-1/2*E(5)^3)*j
+    gap> Order( g1 );
+    5
+    gap> g2:= 1/2*( -c5*e + i + b5*k );
+    (-1/2*E(5)^2-1/2*E(5)^3)*e+(1/2)*i+(1/2*E(5)+1/2*E(5)^4)*k
+    gap> Order( g2 );
+    10
+    gap> g:= Group( g1, g2 );;
+    gap> Size( g );
+    120
+    gap> IsPerfect( g );
+    true
+\endexample
+
+Since there is only one perfect group of order 120, up to isomorphism,
+we see that the group `g' is isomorphic to $SL_2(5)$.
+As usual, a permutation representation of the group can be constructed
+using a suitable action of the group.
+
+\beginexample
+    gap> cos:= RightCosets( g, Subgroup( g, [ g1 ] ) );;
+    gap> Length( cos );
+    24
+    gap> hom:= OperationHomomorphism( g, cos, OnRight );;
+    gap> im:= Image( hom );
+    Group( 
+    [ ( 2, 3, 5, 9,15)( 4, 7,12, 8,14)(10,17,23,20,24)(11,19,22,16,13),
+      ( 1, 2, 4, 8, 3, 6,11,20,17,19)( 5,10,18, 7,13,22,12,21,24,15)
+        ( 9,16)(14,23) ], ... )
+    gap> Size( im );
+    120
+\endexample
+
+To get a matrix representation of `g' or of the whole algebra `q',
+we must specify a basis of the vector space on that the algebra acts,
+and compute the linear action of elements w.r.t. this basis.
+
+\beginexample
+    gap> bas:= CanonicalBasis( q );;
+    gap> BasisVectors( bas );
+    [ e, i, j, k ]
+    gap> op:= OperationAlgebraHomomorphism( q, bas, OnRight );
+    <op. hom. <algebra-with-one of dimension 4 over NF(5,
+    [ 1, 4 ])> -> matrices of dim. 4>
+    gap> ImagesRepresentative( op, e );
+    [ [ 1, 0, 0, 0 ], [ 0, 1, 0, 0 ], [ 0, 0, 1, 0 ], [ 0, 0, 0, 1 ] ]
+    gap> ImagesRepresentative( op, i );
+    [ [ 0, 1, 0, 0 ], [ -1, 0, 0, 0 ], [ 0, 0, 0, -1 ], [ 0, 0, 1, 0 ] 
+     ]
+    gap> ImagesRepresentative( op, g1 );
+    [ [ 1/2*E(5)+1/2*E(5)^4, 1/2, -1/2*E(5)^2-1/2*E(5)^3, 0 ], 
+      [ -1/2, 1/2*E(5)+1/2*E(5)^4, 0, -1/2*E(5)^2-1/2*E(5)^3 ], 
+      [ 1/2*E(5)^2+1/2*E(5)^3, 0, 1/2*E(5)+1/2*E(5)^4, -1/2 ], 
+      [ 0, 1/2*E(5)^2+1/2*E(5)^3, 1/2, 1/2*E(5)+1/2*E(5)^4 ] ]
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  algvspc.tex . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
+
+

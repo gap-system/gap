@@ -11,6 +11,18 @@
 Revision.fampred_g :=
     "@(#)$Id$";
 
+#############################################################################
+##
+#O  IsFamFamFam(<F1>,<F2>,<F3>)  test whether F1=F2=F3
+##
+IsFamFamFam := function(F1,F2,F3)
+  return IsIdentical(F1,F2) and IsIdentical(F2,F3);
+end;
+
+IsFamFamFamX := function( F1, F2, F3, F4 )
+    return IsIdentical( F1, F2 ) and IsIdentical( F1, F3 );
+end;
+
 
 #############################################################################
 ##
@@ -53,11 +65,23 @@ IsCollCollsElms := function ( F1, F2 )
        and IsIdentical( ElementsFamily( ElementsFamily( F1 ) ), F2 );
 end;
 
+IsCollCollsElmsElmsX := function ( F1, F2, F3, F4 )
+    return     HasElementsFamily( F1 )
+           and HasElementsFamily( ElementsFamily( F1 ) )
+           and IsIdentical( ElementsFamily( ElementsFamily( F1 ) ), F2 )
+           and IsIdentical( F2, F3 );
+end;
+
 
 #############################################################################
 ##
 #O  IsCollsElmsElms( <F1>, <F2>, <F3> )
 ##
+IsCollsElmsX := function( F1, F2, F3 )
+    return HasElementsFamily(F1)
+       and IsIdentical( ElementsFamily(F1), F2 );
+end;
+
 IsCollsElmsElms := function( F1, F2, F3 )
     return HasElementsFamily(F1)
        and IsIdentical( ElementsFamily(F1), F2 )

@@ -30,6 +30,18 @@ LeftModuleHomomorphismByImages := NewOperation(
 
 #############################################################################
 ##
+#A  AsLeftModuleGeneralMappingByImages( <map> )
+##
+AsLeftModuleGeneralMappingByImages := NewAttribute(
+    "AsLeftModuleGeneralMappingByImages", IsGeneralMapping );
+SetAsLeftModuleGeneralMappingByImages := Setter(
+    AsLeftModuleGeneralMappingByImages );
+HasAsLeftModuleGeneralMappingByImages := Tester(
+    AsLeftModuleGeneralMappingByImages );
+
+
+#############################################################################
+##
 #O  LeftModuleHomomorphismByMatrix( <BS>, <matrix>, <BR> )
 ##
 ##  is the total and single-valued linear general mapping with <BS> a basis

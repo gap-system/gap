@@ -358,7 +358,7 @@ OCAddToFunctions:=function( ocr )
                 for i  in [ 1 .. Length( L ) ]  do
                     L[ i ] := gens[i] * ocr.vectorMap( L[i] );
                 od;
-    	    	return Subgroup( ocr.complement, L );
+    	    	return Group( L ,One(base[1]));
             end;
         fi;
     fi;
@@ -371,43 +371,79 @@ end;
 InstallMethod(OCAddToFunctions2,"pc group",true,[IsRecord,IsHomogeneousList
 and IsDuplicateFreeList and IsMultiplicativeElementWithInverseCollection ],
   0,function( ocr, pcgs )
-local  gens;
+local  gens,npcgs;
 
   if not IsPcgs(pcgs) and not IsModuloPcgs(pcgs) then
     TryNextMethod();
   fi;
 
-    gens := ocr.complementGens;
+  gens := ocr.complementGens;
+  npcgs:= PcgsByPcSequence(FamilyObj(gens[1]),
+           Concatenation(gens,DenominatorOfModuloPcgs(ocr.generators)));
 
-    if not IsBound( ocr.complementToCocycle )  then
-    	Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
-        if not IsBound( ocr.smallGeneratingSet )  then
-            ocr.complementToCocycle := function( K )
-                local   L,  i;
-                L := ShallowCopy( InducedPcgsWrtHomePcgs( K ) );
-                for i  in [ 1 .. Length( gens ) ]  do
-                    L[ i ] := LeftQuotient(gens[ i ], L[ i ]);
-                od;
-                return ocr.listToCocycle( L );
-            end;
-        else
-            ocr.complementToCocycle := function( K )
-                local   L,  S,  i,  j;
-                L := ShallowCopy( InducedPcgsWrtHomePcgs( K ) );
-                S := [];
-                for i  in [ 1 .. Length( ocr.smallGeneratingSet ) ]  do
-    	    	    j := ocr.smallGeneratingSet[ i ];
-                    S[ i ] :=LeftQuotient(gens[ j ],L[ j ]);
-                od;
-                return ocr.listToCocycle( S );
-            end;
-        fi;
-    fi;
+  if not IsBound( ocr.complementToCocycle )  then
+      Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
+      if not IsBound( ocr.smallGeneratingSet )  then
+	  ocr.complementToCocycle := function( K )
+	      local   L,  i;
+	      L:=CanonicalPcgs(InducedPcgsByGenerators(npcgs,
+			       GeneratorsOfGroup(K))){[1..Length(gens)]};
+	      for i  in [ 1 .. Length( gens ) ]  do
+		  L[ i ] := LeftQuotient(gens[ i ], L[ i ]);
+	      od;
+	      return ocr.listToCocycle( L );
+	  end;
+      else
+	  ocr.complementToCocycle := function( K )
+	      local   L,  S,  i,  j;
+	      L:=ShallowCopy(CanonicalPcgs(InducedPcgsByGenerators(npcgs,
+			       GeneratorsOfGroup(K))));
+	      S := [];
+	      for i  in [ 1 .. Length( ocr.smallGeneratingSet ) ]  do
+		  j := ocr.smallGeneratingSet[ i ];
+		  S[ i ] :=LeftQuotient(gens[ j ],L[ j ]);
+	      od;
+	      return ocr.listToCocycle( S );
+	  end;
+      fi;
+  fi;
 
 end);
 
 InstallMethod(OCAddToFunctions2,"generic",true,[IsRecord,IsList],0,
-  Ignore);
+function(ocr,gens)
+local Ngens;
+
+  gens := ocr.complementGens;
+
+  if not IsBound( ocr.complementToCocycle )  then
+      Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
+      if not IsBound( ocr.smallGeneratingSet )  then
+	  if IsModuloPcgs(ocr.modulePcgs) then
+	    Ngens:=NumeratorOfModuloPcgs(ocr.modulePcgs);
+	  else
+	    Ngens:=ocr.modulePcgs;
+	  fi;
+	  ocr.complementToCocycle := function( K )
+	  local   L,i,hom;
+	    # create a homomorphism to decompose into generators
+	    hom:=GroupHomomorphismByImages(ocr.group,K,
+	           Concatenation(GeneratorsOfGroup(K),Ngens),
+	           Concatenation(GeneratorsOfGroup(K),List(Ngens,i->One(K))));
+
+	    L:=[];
+	    for i  in [ 1 .. Length( gens ) ]  do
+		L[ i ] := LeftQuotient(gens[ i ],
+		            ImagesRepresentative(hom,gens[i]));
+	    od;
+	    return ocr.listToCocycle( L );
+	  end;
+      else
+         Error("this should not happen");
+      fi;
+  fi;
+
+end);
 
 #############################################################################
 ##
@@ -1041,10 +1077,20 @@ end;
 ##
 #F  OCAddComplement( <ocr>, <K> ) . . . . . . . . . . . . . . . . . . . local
 ##
-OCAddComplement := function( ocr, K )
+InstallMethod(OCAddComplement,"pc group",true,
+  [IsRecord,IsPcGroup,IsListOrCollection],0,
+function( ocr, G, K )
+    K:=InducedPcgsByGeneratorsNC(NumeratorOfModuloPcgs(ocr.generators),K);
     ocr.complement := Subgroup( ocr.group, K );
     ocr.complementGens:=K;
-end;
+end);
+
+InstallMethod(OCAddComplement,"generic",true,
+  [IsRecord,IsGroup,IsListOrCollection],0,
+function( ocr, G, K )
+    ocr.complement := Subgroup( ocr.group, K );
+    ocr.complementGens:=K;
+end);
 
 
 #############################################################################
@@ -1244,7 +1290,7 @@ OCOneCocycles := function( ocr, onlySplit )
                 K[ i ] := K[ i ] * ocr.vectorMap( n );
             od;
         fi;
-    	OCAddComplement( ocr, K );
+    	OCAddComplement( ocr, ocr.group, K );
     	OCAddToFunctions( ocr );
     fi;
 

@@ -1858,25 +1858,41 @@ end);
 ##  is automatically cyclically reduced).
 ##
 RelatorRepresentatives := function ( rels )
-    local   cyc, i, length, min, rel, reps;
+    local   cyc, fam, i, length, list, min, rel, reversed, reps;
 
-    reps := [];
+    reps := [ ];
 
     # loop over all nontrivial relators
     for rel in rels  do
-        length := LengthWord(rel);
+        length := LengthWord( rel );
         if length > 0  then
 
+            # invert the exponents to get the wanted lexicography.
+            fam := FamilyObj( rel );
+            list := ExtRepOfObj( rel );
+            for i in [ 2, 4 .. Length( list ) ] do
+                list[i] := -list[i];
+            od;
+
             # find the minimal cyclic permutation
-            cyc := rel;
+            reversed := ObjByExtRep( fam, list );
+            cyc := reversed;
             min := cyc;
+            if cyc^-1 < min  then min := cyc^-1;  fi;
             for i  in [ 1 .. length - 1 ]  do
-                cyc := cyc ^ Subword( rel, i, i );
+                cyc := cyc ^ Subword( reversed, i, i );
                 if cyc    < min  then min := cyc;     fi;
                 if cyc^-1 < min  then min := cyc^-1;  fi;
             od;
 
+            # reinvert the exponents.
+            list := ExtRepOfObj( min );
+            for i in [ 2, 4 .. Length( list ) ] do
+                list[i] := -list[i];
+            od;
+
             # if the relator is new, add it to the representatives
+            min := ObjByExtRep( fam, list );
             if not min in reps  then
                 AddSet( reps, min );
             fi;

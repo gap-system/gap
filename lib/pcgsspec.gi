@@ -158,10 +158,18 @@ PcgsSystemWithWf := function( pcgs, wf )
     od;
     Add( first, m+1 );
 
-    return rec( pcgs    := newpcgs, 
-                weights := weights, 
-                layers  := layers,
-                first   := first );
+    # check the induced case
+    if ForAll( [1..m], x -> DepthOfPcElement(pcgs, list[x]) = x ) then
+        return rec( pcgs    := pcgs,
+                    weights := weights, 
+                    layers  := layers,
+                    first   := first );
+    else
+        return rec( pcgs    := newpcgs, 
+                    weights := weights, 
+                    layers  := layers,
+                    first   := first );
+    fi;
 end;
 
 

@@ -35,7 +35,7 @@ DirectoryType := NewType(
 #############################################################################
 ##
 
-#M  Directory( <str> )  . . . . . . . . . . . . create a new directpory object
+#M  Directory( <str> )  . . . . . . . . . . .  create a new directpory object
 ##
 InstallMethod( Directory,
     "string",
@@ -61,7 +61,7 @@ end );
 
 #############################################################################
 ##
-#M  PrintObj( <directory> ) . . . . . . . . . . . . . print a directory object
+#M  PrintObj( <directory> ) . . . . . . . . . . . .  print a directory object
 ##
 InstallMethod( PrintObj,
     "default directory rep",
@@ -77,7 +77,7 @@ end );
 #############################################################################
 ##
 
-#M  Filename( <directory>, <string> ) . . . . . . . . . . .  create a filename
+#M  Filename( <directory>, <string> ) . . . . . . . . . . . create a filename
 ##
 InstallOtherMethod( Filename,
     "string",
@@ -96,7 +96,7 @@ end );
 
 #############################################################################
 ##
-#M  Filename( <directories>, <string> ) . . . . . . . .  search for a filename
+#M  Filename( <directories>, <string> ) . . . . . . . . search for a filename
 ##
 InstallMethod( Filename,
     "string",
@@ -121,7 +121,7 @@ end );
 
 #############################################################################
 ##
-#M  Read( <filename> )  . . . . . . . . . . . . . . . . . . . . read in a file
+#M  Read( <filename> )  . . . . . . . . . . . . . . . . . . .  read in a file
 ##
 READ_INDENT := "";
 
@@ -137,7 +137,7 @@ function ( name )
     readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
     APPEND_LIST_INTR( READ_INDENT, "  " );
     InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
-    found := READ(name);
+    found := IsReadableFile(name) and READ(name);
     READ_INDENT := readIndent;
     if found and READ_INDENT = ""  then
         InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
@@ -150,7 +150,7 @@ end );
 
 #############################################################################
 ##
-#M  ReadTest( <filename> )  . . . . . . . . . . . . . . . . . read a test file
+#M  ReadTest( <filename> )  . . . . . . . . . . . . . . . .  read a test file
 ##
 InstallMethod( ReadTest,
     "string",
@@ -158,6 +158,18 @@ InstallMethod( ReadTest,
     [ IsString ],
     0,
     READ_TEST );
+
+
+#############################################################################
+##
+#M  ReadAsFunction( <filename> )  . . . . . . . . . . read a file as function
+##
+InstallMethod( ReadAsFunction,
+    "string",
+    true,
+    [ IsString ],
+    0,
+    READ_AS_FUNC );
 
 
 #############################################################################

@@ -16,9 +16,9 @@ whose entries are ordered with respect to the precedence relation~`\<'.
 
 \>Length( <list> )
 \>IsBound( <list>[ <pos> ] )
-\>`<list>[ <pos> ]'{list element access}
+\>`<list>[ <pos> ]'{list element!access}
 
-What is a _list_ in  {\GAP} may mathematically be  regarded as a function
+What is a *list* in  {\GAP} may mathematically be  regarded as a function
 <list> defined on  a subset of the  natural numbers which takes as values
 {\GAP} objects. The highest number for which this  function is defined is
 called the `Length' of the list. More  generally, `IsBound( <list>[ <pos>
@@ -38,7 +38,7 @@ equivalent  to the (more  elegant) syntactic expression `IsBound( <list>[
 
 \>`<elm> in <list>'{membership test}!{for lists}
 \>Position( <list>, <elm> \[, <after> \] )
-\>`<list>\{ <poss> \}'{sublist access}
+\>`<list>\{ <poss> \}'{sublist!access}
 
 `<elm> in <list>' returns `true' if <elm> is equal to  one of the entries
 of  <list>, and `false'  otherwise. `Position( <list>,  <elm>, <after> )'
@@ -54,8 +54,8 @@ operations   above.  The  operation  `<list>\{    <poss>  \}' is   called
 `\\\{\\\}'.
 
 \>Unbind( <list>[ <pos> ] )
-\>`<list>[ <pos> ] := <elm>'{list element assignment}
-\>`<list>\{ <poss> \} := <sublist>'{sublist assignment}
+\>`<list>[ <pos> ] := <elm>'{list element!assignment}
+\>`<list>\{ <poss> \} := <sublist>'{sublist!assignment}
 
 These   operations modify a  given  list.  `Unbind'  removes an entry and
 decreases  the `Length' of the list  if it was  the  last entry. `<list>[
@@ -75,16 +75,16 @@ resp.~`\\\{\\\}\\:\\='.
 \>AsList( <D> )
 
 `AsList( <D> )' constructs a {\GAP} object that represents a domain as if
-it  were a list  of its elements. Note that  we say ``a list'', not ``the
+it  were a list of its  elements. Note that we  say ``a list'', not ``the
 list'' because there are many ways of ordering  the elements and, indeed,
-{\GAP} does not guarantee anything about the  ordering it chooses. If you
-say `$list_1$ :=  AsList( $D_1$ );'  and `$list_2$  := AsList( $D_2$  );'
-then even if `$D_1$ = $D_2$', the  orderings of $list_1$ and $list_2$ may
-be different, and consequently you may have `$list_1$ <> $list_2$'. After
-all, $D_1$ may be represented differently than $D_2$ and the `AsList' may
-be constructed   depending  on the   representation.   (Even if you   say
-`$list_3$ := AsList(  $D_1$ );' again  later,  you may have `$list_3$  <>
-$list_1$'.)
+{\GAP} does not guarantee anything about  the ordering it chooses. If you
+say `$list_1$  := AsList( $D_1$ );'  and  `$list_2$ := AsList(  $D_2$ );'
+then even if `$D_1$ = $D_2$', the orderings  of $list_1$ and $list_2$ may
+be  different, and consequently you   may  have `$list_1$ \<>  $list_2$'.
+After all, $D_1$ may  be   represented differently  than $D_2$  and   the
+`AsList' may be constructed depending on the representation. (Even if you
+say  `$list_3$ := AsList( $D_1$  );' again later,  you may have `$list_3$
+\<> $list_1$'.)
 
 Objects constructed by  `AsList' behave like lists, so   you can use  the
 three basic list operations `Length', `IsBound' and `[  ]' with them. The
@@ -103,7 +103,7 @@ the operation `Enumerator'.
 
 \>Enumerator( <D> )
 
-An _enumerator_ is a {\GAP} object that represents  a collection as if it
+An *enumerator* is a {\GAP} object that represents  a collection as if it
 were a list of its elements; just like an object constructed by `AsList'.
 The  remarks  made  at  the  beginning  of  that  section   also apply to
 enumerators,  and the only    difference is  that enumerators  are  space

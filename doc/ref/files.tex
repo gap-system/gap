@@ -1,0 +1,449 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Files and Filenames}
+
+Files   are identified by filenames, which   are represented in {\GAP} as
+strings.  Filenames can be created directly by the user or a program, but
+of course this is operating system dependent.
+
+Filenames for some files can  be constructed in  a system independent way
+using the following functions.  This is done by first getting a directory
+object for the directory the file shall  reside in, and then constructing
+the filename.  However, it is  sometimes necessary to construct filenames
+of files in subdirectories relative to a given directory object.  In this
+case  the  directory separator is  *always*  `{'/'}' even under  `DOS' or
+`MacOS'.
+
+The  section "Directories" describes how  to  construct directory objects
+for the common GAP and system  directories.  Using the command `Filename'
+described in  section "Filename" it  is possible  to construct a filename
+pointing to a  file in  these  directories.  There are  also functions to
+test for accessibility of files, see "File Access".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Portability}
+
+For portability filenames and directory  names should be restricted to at
+most   8 alphanumerical characters  optionally followed  by a dot `{'.'}'
+and between 1 and 3 alphanumerical characters.  Upper case letters should
+be  avoided because some  operating systems  do  not make any distinction
+between case,  so that `NaMe', `Name'  and  `name' all  refer to the same
+file  whereas  some   operating  systems are case   sensitive.   To avoid
+problems only lower case characters should be used.
+
+\>LastSystemError()
+
+returns  a  record describing the   last system error that  has occurred.
+This record   contains  at least   the  component  `message' which   is a
+string. This message is, however,  highly operating system dependent  and
+should only be used as informational message for the user.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{GAP Root Directory}
+
+When   starting {\GAP} it is possible   to specify various directories as
+root directories.  In  {\GAP}'s view of  the world these  directories are
+merged  into one meta-directory, this  directory  is called *{\GAP}  root
+directory* in the following.
+
+For example,  if  ``<root1>;<root2>;...''    is  passed as   argument  to
+`{`-l'}' when   {\GAP} is started   and  {\GAP} wants  to locate  a  file
+``group.gd'' in the {\GAP} root directory it will first check if the file
+exists in `<root1>', if not, it checks `<root2>', and so on.
+
+This layout makes  it possible to  have one  system wide  installation of
+{\GAP}  which is read-only  but still  allows users  to modify individual
+files.  Therefore instead of constructing an absolute path name to a file
+you should always use `DirectoriesLibrary' or `DirectoriesPackageLibrary'
+together with `Filename' to construct a filename for a file in the {\GAP}
+root directory.
+
+*Example*
+
+Assume that the system wide installation lives in ``/usr/local/lib/gap4''
+and you want  to modify the  file ``lib/files.gd'' without disturbing the
+system installation.
+
+In  this case create  a  new directory ``/home/myhome/gap'' containing  a
+subdirectory ``lib'' which contains the modified ``lib/files.gd''.
+
+The directory/file structure now looks like
+
+\begintt
+    /usr/local/lib/gap4/
+    /usr/local/lib/gap4/lib/
+    /usr/local/lib/gap4/lib/files.gd
+    /home/myhome/gap/
+    /home/myhome/gap/lib
+    /home/myhome/gap/lib/files.gd
+\endtt
+
+
+If you start {\GAP} using (under UNIX)
+
+\begintt
+    unix> gap -l '/home/myhome/gap;/usr/local/lib/gap4'
+\endtt
+
+then the  file ``/home/myhome/gap/lib/files.gd'' will   be used when ever
+{\GAP} references the  file with filename  ``lib/files.gd'' in the {\GAP}
+root directory.
+
+This setup also allows  to easily install  new share packages even if  no
+access to the system {\GAP} installation is  possible.  Simply unpack the
+files into ``/home/myhome/gap''.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Directories}
+
+\>DirectoryTemporary( <hint> )
+\)DirectoryTemporary()
+
+returns  a directory  object in the   category `IsDirectory' for a  *new*
+temporary directory.   This is guaranteed to  be  newly created and empty
+immediately  after the call to `DirectoryTemporary'.   {\GAP} will make a
+reasonable effort   to *remove* this   directory  either  when a  garbage
+collection  collects the directory   object  or upon termination  of  the
+{\GAP}   job that   created  the  directory.     <hint> can  be  used  by
+`DirectoryTemporary' to construct    the  name  of the    directory   but
+`DirectoryTemporary' is free to use only a  part of <hint> or even ignore
+it completely.
+
+If `DirectoryTemporary' is   unable to create a  new  directory `fail' is
+returned.  In this case `LastSystemError' can be  used to get information
+about the error.
+
+\>DirectoryCurrent()
+
+returns the directory object for the current directory.
+
+\>DirectoriesLibrary( <lib> )
+\)DirectoriesLibrary()
+
+returns the  directory objects  for  the  {\GAP}  library <lib>  as list.
+<lib> must be one of `"lib"' (the default), `"grp"', `"tbl"', and so on.
+
+The directory <lib> must exist in at  least one of the root directories,
+otherwise `fail' is returned.
+
+As the files in the {\GAP} root  directory (see "GAP Root Directory") can
+be  distributed  into different  directories in the  filespace  a list of
+directories is returned.  In order to find an existing file in the {\GAP}
+root directory you should pass that list to `Filename' as first argument.
+In order to  create  a filename   for  new file  inside the  {\GAP}  root
+directory you   should pass  the first  entry    of that list.   However,
+creating files  inside the {\GAP} root  directory is not  encouraged, you
+should use `DirectoryTemporary' instead.
+
+\>DirectoriesPackageLibrary( <name-pkg>, <lib> )
+\)DirectoriesPackageLibrary( <name-pkg> )
+
+returns  the   directory objects  for   the   package library   <lib>  as
+list. <lib> must be one of `"lib"' (the default), `"grp"', and so on, for
+the contributed package <name-pkg>.
+
+In order to  find a subdirectory hierarchy in  the package  directory you
+can  pass subdirectories in <lib> separated  by `{'/'}'.  For example, to
+find the subdirectory `m11' in the directory `data', use:
+
+\begintt
+    DirectoriesPackageLibrary( <name-pkg>, "data/m11" )
+\endtt
+
+However,   the directory <lib>  must  exist in at   least one of the root
+directories, otherwise `fail' is returned.
+
+\>DirectoriesPackagePrograms( <name-pkg> )
+
+`DirectoriesPackagePrograms'   returns  the directory   objects   for the
+directories where the  executable programs  for the contributed   package
+<name-pkg> reside.
+
+\>DirectoriesSystemPrograms()
+
+`DirectoriesSystemPrograms' returns the directory objects for the list of
+directories where  the system programs reside as  list.  Under  UNIX this
+would usually represent `\$\{PATH\}'.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Filename}
+
+\>Filename( <dir>, <name> )
+
+returns the (system  dependent)  filename as  a string for  the file with
+name   <name> in the  directory  object  <dir>.   `Filename' returns  the
+filename regardless of  whether the directory contains  a file <name>  or
+not.
+
+\>Filename( <list-of-dirs>, <name> )
+
+If <list-of-dir>  is a list (possibly of  length 1) of directory objects,
+then `Filename' will search the directories in order, and will return the
+filename for the file <name> in the first directory which contains a file
+<name> or `fail' if no directory contains a file <name>.
+
+*Examples*
+
+In    order  to      locate   the    system   program    ``date''     use
+`DirectoriesSystemPrograms' together with the second form of `Filename'.
+
+\begintt
+    gap> path := DirectoriesSystemPrograms();;
+    gap> date := Filename( path, "date" );
+    "/bin/date"
+\endtt
+
+In order to locate the library file ``files.gd'' use `DirectoriesLibrary'
+together with the second form of `Filename'.
+
+\begintt
+    gap> path := DirectoriesLibrary();;
+    gap> Filename( path, "files.gd" );
+    "./lib/files.gd"
+\endtt
+
+In  order to construct filenames for  new  files in a temporary directory
+use `DirectoryTemporary' together with the first form of `Filename'.
+
+\begintt
+    gap> tmpdir := DirectoryTemporary();;
+    gap> Filename( [ tmpdir ], "file.new" );
+    fail
+    gap> Filename( tmpdir, "file.new" );    
+    "/var/tmp/tmp.0.021738.0001/file.new"
+\endtt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Special Filenames}
+
+The special filename `"*stdin*"'   denotes the standard input, i.e.,  the
+stream   through   which the  user  enters  commands  to  GAP.  The exact
+behaviour of reading from `"*stdin*"' is  operating system dependent, but
+usually   the  following happens.   If  GAP   was started with  no  input
+redirection, statements are read from  the terminal stream until the user
+enters the end of file character, which  is usually <ctr>-'D'.  Note that
+terminal streams  are  special, in   that they may  yield ordinary  input
+*after* an end of file.  Thus when control returns to  the main read eval
+print loop  the user can continue with  GAP.  If GAP  was started with an
+input redirection, statements are read  from the current position in  the
+input file up to the  end of the file.   When control returns to the main
+read eval print loop the input stream will still  return end of file, and
+GAP will terminate.
+
+The  special filename `"*errin*"' denotes   the stream connected with the
+`stderr' output.  This stream is usually connected  to the terminal, even
+if  the standard input was  redirected, unless the  standard error stream
+was also redirected, in which case opening of `"*errin*"' fails.
+    
+The special filename `"*stdout*"'  can be used to  print to  the standard
+output.
+
+The special  filename `"*errout*"' can be  used to  print to the standard
+error output file, which is usually  connected with the terminal, even if
+the standard output was redirected.
+    
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{File Access}
+
+The  following functions  return `fail'  if a system  error occurred, for
+example, if <name-file> does not exist (except for `IsExistingFile').  In
+this case  the function `LastSystemError'  can be used to get information
+about the error.
+
+\>IsExistingFile( <name-file> )
+
+returns `true'  if   a file  with the filename   <name-file>  exists, and
+`false' otherwise.
+
+\>IsReadableFile( <name-file> )
+
+returns `true' if a  file with the  filename <name-file> exists *and* the
+{\GAP} process has read  permissions for the  file, and `false' if it has
+no such permissions.
+
+\>IsWriteableFile( <name-file> )
+
+returns `true'  if a file with the  filename <name-file> exists *and* the
+{\GAP} process has write permissions for the  file, and `false' if it has
+no such permissions.
+
+\>IsExecuteableFile( <name-file> )
+
+returns `true' if  a file with the  filename <name-file> exists *and* the
+{\GAP} process has execute  permissions for the file,  and 'false' if  it
+has no such permissions.  Note that execute permissions do not imply that
+it is possible to execute the file, e.g., it could be an executable for a
+different machine.
+
+\>IsDirectoryPath( <name-file> )
+
+returns `true' if the file with  the filename <name-file> exists *and* is
+a directory.  It returns `false' if the file exists but  is a plain file.
+Note  that this functions does not  check that if  the {\GAP} process has
+actually write or execute permissions for the directory.
+
+*Examples*
+
+\beginexample
+    # the file ``/bin/date'' exists
+    gap> IsExistingFile( "/bin/date" );    
+    true
+
+    # the file ``/bin/date.new'' does not exist
+    gap> IsExistingFile( "/bin/date.new" );
+    false
+
+    # ``/bin/date'' is not a directory
+    gap> IsExistingFile( "/bin/date/new" );
+    fail
+    gap> LastSystemError().message;
+    "Not a directory"
+
+    # the file ``/bin/date'' is readable
+    gap> IsReadableFile( "/bin/date" );
+    true
+
+    # the file ``/bin/date.new'' does not exist
+    gap> IsReadableFile( "/bin/date.new" );
+    fail
+    gap> LastSystemError().message;        
+    "No such file or directory"
+
+    # the file ``/bin/date'' is not writeable
+    gap> IsWritableFile( "/bin/date" );
+    false
+
+    # but executable
+    gap> IsExecutableFile( "/bin/date" );
+    true
+\endexample
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{File Operations}
+
+\>Read( <name-file> )
+
+reads the input from the  file with the  filename <name-file>, which must
+be a string.
+
+`Read' first opens the file <name-file>.  If the file  does not exist, or
+if GAP can not open it, e.g., because of access restrictions, an error is
+signalled.
+
+Then the contents of the file are read and evaluated, but the results are
+not printed.  The reading and  printing happens exactly as described  for
+the main loop (see "Main Loop").
+
+If a statement in the file causes  an error a  break loop is entered (see
+"Break  Loops").  The input   for this break loop  is  not taken from the
+file, but from  the input connected to the  `stderr'  output of GAP.   If
+`stderr' is not connected  to a terminal, no break  loop is  entered.  If
+this break loop is left  with `quit' (or <ctr>-'D')  GAP does continue to
+read from it.
+
+Note that a statement may not begin in one file and end in another, i.e.,
+<eof> (`end-of-file')   is not treated  as whitespace,  but  as a special
+symbol that must not appear inside any statement.
+
+Note that one file may very well contain a read statement causing another
+file to be read, before input is again taken from the  first file.  There
+is an operating system dependent maximum on the  number of files that may
+be open at once, usually it is 15.
+
+\>ReadAsFunction( <name-file> )
+
+reads the  file  with filename <name-file> as  function  and returns this
+function.
+
+*Example*
+
+Assume that the file ``/tmp/example.g'' contains the following
+
+\begintt
+    local a;
+
+    a := 10;
+    return a*10;
+\endtt
+
+Reading the files as function will not globber a global variable `a'.
+
+\begintt
+    gap> a := 1;
+    1
+    gap> ReadAsFunction("/tmp/example.g")();
+    100
+    gap> a;
+    1
+\endtt
+
+\>ReadTest( <name-file> )
+
+reads a test file, see "Test Files".
+
+\>PrintTo( <name-file> )
+
+works like `Print',  except that the output  is printed to the  file with
+the name <name-file>  instead of the standard output.   This file must of
+course be writable by  GAP, otherwise an  error is signalled.  Note  that
+`PrintTo' will  *overwrite*  the  previous contents  of  this file  if it
+already existed.  `AppendTo'  can   be used to   append to  a file   (see
+"AppendTo").
+    
+There is an  operating system dependent maximum  to the number  of output
+files that may be open at once, usually this is 14.
+
+\>AppendTo( <name-file> )
+
+works like `PrintTo',  except  that the   output does  not overwrite  the
+previous contents of the file, but is appended to the file.
+
+\>LogTo( <name-file> )
+
+causes the subsequent interaction to be logged  to the file with the name
+<name-file>, i.e., everything you  see on your  terminal will also appear
+in this file.  This file must of course be writable  by GAP, otherwise an
+error  is signalled.  Note  that   `LogTo'  will overwrite the   previous
+contents of this file if it already existed.
+
+\)LogTo()
+
+In this form `LogTo' stops logging again.
+
+\>InputLogTo( <name-file> )
+
+causes the  subsequent  input to be   logged to the   file with  the name
+<name-file>, i.e., everything you type  on your terminal will also appear
+in this file.  Note that `InputLogTo'  and `LogTo' cannot  be used at the
+same time while `InputLogTo' and `OutputLogTo' can.
+
+\)InputLogTo()
+
+In this form `InputLogTo' stops logging again.
+
+\>OutputLogTo( <name-file> )
+
+causes the subsequent   output to be logged   to the file  with  the name
+<name-file>, i.e., everything you type on your  terminal will also appear
+in this file.  Note that `OutputLogTo' and `LogTo' cannot  be used at the
+same time while `InputLogTo' and `OutputLogTo' can.
+
+\)OutputLogTo()
+
+In this form `OutputLogTo' stops logging again.
+
+\>CrcFile( <name-file> )
+
+computes a checksum value for the file  with filename <name-file> and returns
+this value as integer. The function return  `fail' if a system error occured,
+for  example,  if <name-file>  does not  exist.   In this   case the function
+`LastSystemError' can be used to get information about the error.
+
+\>RemoveFile( <name-file> )
+
+will remove the file with filename <name-file>  and returns `true' in case of
+success.  The function return `fail' if a system  error occured, for example,
+if your  permissions do not allow the  removal of <name-file>.  In  this case
+the  function  `LastSystemError' can  be  used  to get  information about the
+error.
+

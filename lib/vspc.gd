@@ -68,16 +68,17 @@ IsGaussianSpace := NewCategory( "IsGaussianSpace", IsVectorSpace );
 ##
 #P  IsDivisionRing( <D> )
 ##
-##  A division ring in {\GAP} is an associative algebra <D> with a
+##  A division ring in {\GAP} is a nontrivial associative algebra <D> with a
 ##  multiplicative inverse for each nonzero element.
 ##
 ##  Note that being a division ring is thus not a property that a ring can
 ##  get, because a ring is usually not represented as a vector space.
 ##
-IsDivisionRing :=     IsLeftVectorSpace
+IsDivisionRing :=     IsMagmaWithInversesIfNonzero
                   and IsLeftOperatorRing
-                  and IsAssociative
-                  and IsMagmaWithInversesIfNonzero;
+                  and IsLeftVectorSpace
+                  and IsNonTrivial
+                  and IsAssociative;
 SetIsDivisionRing := Setter( IsDivisionRing );
 HasIsDivisionRing := Tester( IsDivisionRing );
 

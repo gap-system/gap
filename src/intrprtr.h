@@ -804,6 +804,32 @@ extern void             IntrAssertEnd3Args ( void );
 
 extern Obj              CurrentAssertionLevel;
 
+/****************************************************************************
+**
+*F  IntrSaveWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
+**
+*F  IntrSaveWSEnd() . . . . . . . . . . . . . . Actually save the workspace
+**
+**  'IntrSaveWSBegin' is called when the reader starts reading a
+**  SaveWorkspace command. 
+*/
+
+extern void              IntrSaveWSBegin ( void );
+
+extern void              IntrSaveWSEnd ( void );     
+
+/****************************************************************************
+**
+*F  IntrLoadWSBegin() . . . . . . . . . . . . . Start interpeting a save WS
+**
+*F  IntrLoadWSEnd() . . . . . . . . . . . . . . Actually save the workspace
+**
+**  'IntrLoadWSBegin' is called when the reader starts reading a
+**  LoadWorkspace command.
+*/
+
+extern void              IntrLoadWSBegin ( void );
+extern void              IntrLoadWSEnd ( void );
 
 
 /****************************************************************************

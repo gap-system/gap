@@ -143,12 +143,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
       TryNextMethod();
     fi;
 
-    if     HasIsAssociative( Source( mapp ) )
-       and IsAssociative( Source( mapp ) ) then
-      return MonoidByGenerators( kernel );
-    else
-      return MagmaWithOneByGenerators( kernel );
-    fi;
+    return SubmagmaWithOneNC( Source( mapp ), kernel );
     end );
 
 
@@ -202,12 +197,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
       TryNextMethod();
     fi;
 
-    if     HasIsAssociative( Range( mapp ) )
-       and IsAssociative( Range( mapp ) ) then
-      return MonoidByGenerators( cokernel );
-    else
-      return MagmaWithOneByGenerators( cokernel );
-    fi;
+    return SubmagmaWithOneNC( Range( mapp ), cokernel );
     end );
 
 
@@ -315,6 +305,8 @@ InstallMethod( ImagesSet,
                 ( HomeEnumerator( UnderlyingExternalSet( map ) ), b ) );
         fi;
         SetBase( img, UnderlyingExternalSet( map )!.basePermImage );
+#T is this the right place?
+#T and is it allowed to access `!.basePermImage'?
     fi;
     return img;
     end );
@@ -506,7 +498,7 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
       TryNextMethod();
     fi;
 
-    return AdditiveMagmaWithZeroByGenerators( kernel );
+    return SubadditiveMagmaWithZeroNC( Source( mapp ), kernel );
     end );
 
 
@@ -572,7 +564,7 @@ InstallMethod( CoKernelOfAdditiveGeneralMapping,
       TryNextMethod();
     fi;
 
-    return AdditiveMagmaWithZeroByGenerators( cokernel );
+    return SubadditiveMagmaWithZeroNC( Range( mapp ), cokernel );
     end );
 
 
@@ -928,6 +920,7 @@ InstallMethod( ImagesSet,
                GeneratorsOfLeftOperatorRing(
                    CoKernelOfAdditiveGeneralMapping( map ) ),
                genimages ) );
+#T handle the case of ideals!
     end );
 
 
@@ -954,6 +947,7 @@ InstallMethod( ImagesSet,
                GeneratorsOfLeftOperatorRingWithOne(
                    CoKernelOfAdditiveGeneralMapping( map ) ),
                genimages ) );
+#T handle the case of ideals!
     end );
 
 
@@ -979,6 +973,7 @@ InstallMethod( PreImagesSet,
                GeneratorsOfLeftOperatorRing(
                    KernelOfAdditiveGeneralMapping( map ) ),
                genpreimages ) );
+#T handle the case of ideals!
     end );
 
 
@@ -1005,6 +1000,7 @@ InstallMethod( PreImagesSet,
                GeneratorsOfLeftOperatorRingWithOne(
                    KernelOfAdditiveGeneralMapping( map ) ),
                genpreimages ) );
+#T handle the case of ideals!
     end );
 
 

@@ -444,7 +444,7 @@ function( col, word )
     local   l;
 
     # collect <word> into the empty list
-    l := [ 1 .. NumberGeneratorsOfRws(col) ] * 0;
+    l := ListWithIdenticalEntries( NumberGeneratorsOfRws(col), 0);
     if CollectWordOrFail( col, l, word ) = fail  then
         return ReducedForm( col, word );
     fi;

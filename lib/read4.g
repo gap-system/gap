@@ -5,4 +5,5 @@
 ReadLib( "profile.g"   );
 ReadLib( "methwhy.g"   );
 ReadLib( "help.g"      );
+ReadLib( "package.g"   );
 

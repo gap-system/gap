@@ -134,8 +134,10 @@ HELP_BOOKS_INFO := rec();
 ##  libraries.
 ##
 HELP_MAIN_BOOKS := Immutable( [
-    "tutorial",  "doc/tut", "GAP 4 Tutorial",
-    "reference", "doc/ref", "GAP 4 Reference Manual"
+    "tutorial",   "doc/tut", "GAP 4 Tutorial",
+    "reference",  "doc/ref", "GAP 4 Reference Manual",
+    "extending",  "doc/ext", "Extending GAP 4 Reference Manual",
+    "programmer", "doc/prg", "Programmers Tutorial",
 ] );
 
 
@@ -187,21 +189,18 @@ HELP_BOOK_INFO := function( book )
     # check if this is a book from the main library
     path := false;
     book := STRING_LOWER(book);
-    for i  in [ 1, 4 .. Length(HELP_MAIN_BOOKS)-2 ]  do
-        if MATCH_BEGIN( HELP_MAIN_BOOKS[i], book )  then
-            path := HELP_MAIN_BOOKS[i+1];
-            book := HELP_MAIN_BOOKS[i];
+    for i  in [ 1, 4 .. Length(HELP_BOOKS)-2 ]  do
+        if MATCH_BEGIN( HELP_BOOKS[i], book )  then
+            path := HELP_BOOKS[i+1];
+            book := HELP_BOOKS[i];
+            bnam := book;
             break;
         fi;
     od;
 
     # otherwise it is a share package
     if path = false  then
-        path := Concatenation( "pkg/", book, "/doc" );
-        bnam := Concatenation( "Share Package '", book, "'" );
-    else
-        path := path;
-        bnam := HELP_MAIN_BOOKS[i+2];
+        return fail;
     fi;
 
     # get the filename of the "manual.six" file
@@ -526,7 +525,8 @@ end;
 #F  HELP_TEST_EXAMPLES( <book>, <chapter> ) . . . . . . . . test the examples
 ##
 HELP_TEST_EXAMPLES := function( book, chapter )
-    local   info,  chap,  filename,  stream,  examples,  test,  line;
+    local   info,  chap,  filename,  stream,  examples,  test,  line,
+            size;
 
     # get the chapter info
     info := HELP_BOOK_INFO(book);
@@ -557,7 +557,7 @@ HELP_TEST_EXAMPLES := function( book, chapter )
             if examples and not MATCH_BEGIN(line,"\\beginexample")  then
                 if Length(line) < 5  then
                     Print( "* ", line );
-                else
+                elif line[5] <> '#'  then
                     line := line{[5..Length(line)]};
                     Append( test, line );
                 fi;
@@ -568,7 +568,14 @@ HELP_TEST_EXAMPLES := function( book, chapter )
 
     # now do the test
     stream := InputTextString( test );
+
+    size := SizeScreen();
+    SizeScreen( [ 72, ] );
+    RANDOM_SEED(1);
+
     ReadTest(stream);
+
+    SizeScreen(size);
 
 end;
 

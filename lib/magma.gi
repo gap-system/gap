@@ -715,7 +715,7 @@ InstallMethod( Representative,
 
 #############################################################################
 ##
-#M  MultiplicativeNeutralElement( <M> ) . . . . . . . . . identity of a magma
+#M  MultiplicativeNeutralElement( <M> ) . . . . . . . . . . . . . for a magma
 ##
 InstallMethod( MultiplicativeNeutralElement,
     "method for a magma",
@@ -734,6 +734,17 @@ InstallMethod( MultiplicativeNeutralElement,
       TryNextMethod();
     fi;
     end );
+
+
+#############################################################################
+##
+#M  MultiplicativeNeutralElement( <M> ) . . . . . . . .  for a magma-with-one
+##
+InstallMethod( MultiplicativeNeutralElement,
+    "method for a magma-with-one",
+    true,
+    [ IsMagmaWithOne ], 0,
+    One );
 
 
 #############################################################################

@@ -1359,17 +1359,75 @@ Obj IsIdenticalHandler (
     return (obj1 == obj2 ? True : False);
 }
 
+/****************************************************************************
+**
+*V  SaveObjFuncs (<type>) . . . . . . . . . . . . . functions to save objects
+**
+** 'SaveObjFuncs' is the dispatch table that  contains, for every type
+**  of  objects, a pointer to the saving function for objects of that type
+**  These should not handle the file directly, but should work via the
+**  functions 'SaveObjRef', 'SaveUInt<n>' (<n> = 1,2,4 or 8), and others
+**  to be determined. Their role is to identify the C types of the various
+**  parts of the bag, and perhaps to leave out some information that does
+**  not need to be saved. By the time this function is called, the bag
+**  size and type have already been saved
+**  No saving function may allocate any bag
+*/
+
+void (*SaveObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj);
+
+void SaveObjError (
+		   Obj obj
+		   )
+{
+  ErrorQuit(
+	    "Panic: tried to save an object of unknown type '%d'",
+	    (Int)TNUM_OBJ(obj), 0L );
+}
+    
+		   
+     
+     
+/****************************************************************************
+**
+*V  LoadObjFuncs (<type>) . . . . . . . . . . . . . functions to load objects
+**
+** 'LoadObjFuncs' is the dispatch table that  contains, for every type
+**  of  objects, a pointer to the loading function for objects of that type
+**  These should not handle the file directly, but should work via the
+**  functions 'LoadObjRef', 'LoadUInt<n>' (<n> = 1,2,4 or 8), and others
+**  to be determined. Their role is to reinstall the information in the bag
+**  and reconstruct anything that was left out. By the time this function is
+**  called, the bag size and type have already been loaded and the bag argument
+**  contains the bag in question
+**  No loading function may allocate any bag
+*/
+
+void (*LoadObjFuncs[ LAST_REAL_TNUM + 1]) (Obj obj, Bag bag);
+
+void LoadObjError (
+		   Obj obj,
+		   Bag bag
+		   )
+{
+  ErrorQuit(
+	    "Panic: tried to loade an object of unknown type '%d'",
+	    (Int)TNUM_OBJ(obj), 0L );
+}
+
+
 
 /****************************************************************************
 **
 
 *F  InitObjects() . . . . . . . . . . . . . .  initialize the objects package
 **
-**  'InitObjects' initializes the objects package.
+** 'InitObjects' initializes the objects package.
 */
 void InitObjects ( void )
 {
-    Int                 t;              /* loop variable                   */
+
+  Int                 t;              /* loop variable                   */
 
     /* make and install the 'FAMILY_TYPE' function                         */
     InitHandlerFunc( FamilyTypeHandler, "FAMILY_TYPE" );
@@ -1488,12 +1546,18 @@ void InitObjects ( void )
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
         PrintObjFuncs[ t ] = PrintObjObject;
 
-
     /* enter 'PrintUnknownObj' in the dispatching tables                   */
     for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM+PRINTING; t++ )
         PrintPathFuncs[ t ] = PrintPathError;
 
+    /* enter 'SaveObjError' and 'LoadObjError' for all types initially     */
 
+    for ( t = FIRST_REAL_TNUM; t <= LAST_REAL_TNUM; t++ )
+      {
+	SaveObjFuncs[ t ] = SaveObjError;
+	LoadObjFuncs[ t ] = LoadObjError;
+      }
+  
     /* make and install the 'IS_IDENTICAL_OBJ' function                    */
     InitHandlerFunc( IsIdenticalHandler, "IS_IDENTICAL_OBJ" );
     IsIdenticalFunc = NewFunctionC(

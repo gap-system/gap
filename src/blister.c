@@ -1905,41 +1905,51 @@ void InitBlist ( void )
     IsSSortListFuncs[ T_BLIST_SSORT +IMMUTABLE ] = IsSSortBlistYes;
 
     /* install the internal functions                                      */
+    InitHandlerFunc(IsBlistHandler, "IS_BLIST");
     IsBlistFilt = NewFilterC( "IS_BLIST", 1L, "obj", IsBlistHandler );
     AssGVar( GVarName( "IS_BLIST" ), IsBlistFilt );
 
+    InitHandlerFunc(FuncBlistList, "BLIST_LIST");
     AssGVar( GVarName( "BLIST_LIST" ),
          NewFunctionC( "BLIST_LIST", 2L, "list, sub",
                     FuncBlistList ) );
 
+    InitHandlerFunc(FuncListBlist, "LIST_BLIST");
     AssGVar( GVarName( "LIST_BLIST" ),
          NewFunctionC( "LIST_BLIST", 2L, "list, blist",
                     FuncListBlist ) );
 
+    InitHandlerFunc(FuncSizeBlist, "SIZE_BLIST");
     AssGVar( GVarName( "SIZE_BLIST" ),
          NewFunctionC( "SIZE_BLIST", 1L, "blist",
                     FuncSizeBlist ) );
 
+    InitHandlerFunc(FuncIsSubsetBlist, "IS_SUB_BLIST");
     AssGVar( GVarName( "IS_SUB_BLIST" ),
          NewFunctionC( "IS_SUB_BLIST", 2L, "blist1, blist2",
                     FuncIsSubsetBlist ) );
 
+    InitHandlerFunc(FuncUniteBlist, "UNITE_BLIST");
     AssGVar( GVarName( "UNITE_BLIST" ),
          NewFunctionC( "UNITE_BLIST", 2L, "blist1, blist2", 
                     FuncUniteBlist ) );
 
+    InitHandlerFunc(FuncIntersectBlist, "INTER_BLIST");
     AssGVar( GVarName( "INTER_BLIST" ),
          NewFunctionC( "INTER_BLIST", 2L, "blist1, blist2",
                     FuncIntersectBlist ) );
 
+    InitHandlerFunc(FuncSubtractBlist, "SUBTR_BLIST");
     AssGVar( GVarName( "SUBTR_BLIST" ),
          NewFunctionC( "SUBTR_BLIST", 2L, "blist1, blist2",
                     FuncSubtractBlist ) );
 
+    InitHandlerFunc(FuncPositionNthTrueBlist, "PositionNthTrueBlist");
     AssGVar( GVarName( "PositionNthTrueBlist" ),
          NewFunctionC( "PositionNthTrueBlist", 2L, "blist, nth",
                     FuncPositionNthTrueBlist ) );
 
+    InitHandlerFunc(FuncPositionsTrueBlist, "PositionsTrueBlist");
     AssGVar( GVarName( "PositionsTrueBlist" ),
          NewFunctionC( "PositionsTrueBlist", 1L, "blist",
                     FuncPositionsTrueBlist ) );

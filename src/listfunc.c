@@ -986,12 +986,13 @@ void            InitListFunc ( void )
     AssGVar( GVarName( "ADD_LIST" ),
         AddListOper );
 
-    InitHandlerFunc( AppendListIntrHandler, "APPEND_LIST_INTR");
+    InitHandlerFunc( AppendListHandler, "APPEND_LIST");
     AppendListOper = NewOperationC(
 	"APPEND_LIST", 2L, "list, list", AppendListHandler );
     AssGVar( GVarName( "APPEND_LIST" ),
 	AppendListOper );
 
+    InitHandlerFunc( AppendListIntrHandler, "APPEND_LIST_INTR");
     AppendListIntrFunc = NewFunctionC(
         "APPEND_LIST_INTR", 2L, "list1, list2", AppendListIntrHandler );
     AssGVar( GVarName( "APPEND_LIST_INTR" ),

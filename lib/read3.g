@@ -34,6 +34,7 @@ ReadLib( "algebra.gd"  );
 ReadLib( "algfp.gd"    );
 ReadLib( "alglie.gd"   );
 ReadLib( "algsc.gd"    );
+ReadLib( "alghom.gd"   );
 ReadLib( "liefam.gd"   );
 ReadLib( "integer.gd"  );
 ReadLib( "numtheor.gd" );

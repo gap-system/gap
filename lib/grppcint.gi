@@ -169,10 +169,18 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
                              x -> start <= DepthOfPcElement( pcgs, x ) and
                                   next > DepthOfPcElement( pcgs, x ) );
 
+#            pcgsN   := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
+#            pcgsHmN := PcgsByPcSequence( fam, Concatenation( HmN, pcgsN ));
+#            pcgsHF  := pcgsHmN mod pcgsN;
+#            pcgsKmN := PcgsByPcSequence( fam, Concatenation( KmN, pcgsN ) );
+#            pcgsKF  := pcgsKmN mod pcgsN;
+
             pcgsN   := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
-            pcgsHmN := PcgsByPcSequence( fam, Concatenation( HmN, pcgsN ));
+            pcgsHmN := Concatenation( HmN, pcgsN );
+            pcgsHmN := InducedPcgsByPcSequenceNC( pcgs, pcgsHmN );
             pcgsHF  := pcgsHmN mod pcgsN;
-            pcgsKmN := PcgsByPcSequence( fam, Concatenation( KmN, pcgsN ) );
+            pcgsKmN := Concatenation( KmN, pcgsN );
+            pcgsKmN := InducedPcgsByPcSequenceNC( pcgs, pcgsKmN );
             pcgsKF  := pcgsKmN mod pcgsN;
 
             sum := SumFactorizationFunctionPcgs( pcgs, pcgsHF, pcgsKF );
@@ -183,8 +191,8 @@ GlasbyIntersection := function( pcgs, pcgsH, pcgsK )
                 D := B;
             else
                 pcgsS := InducedPcgsByPcSequenceNC( pcgs, pcgs{[start..m]} );
-                pcgsR := PcgsByPcSequence( fam, 
-                                           Concatenation( sum.sum, pcgsN ) );
+                pcgsR := Concatenation( sum.sum, pcgsN );
+                pcgsR := InducedPcgsByPcSequenceNC( pcgs, pcgsR );
                 C := GlasbyStabilizer( pcgs, A, B, pcgsS, pcgsR );
                 D := GlasbyShift( C, B );
             fi;

@@ -153,9 +153,10 @@ OCSmallEquationVector := NewOperationArgs("OCSmallEquationVector");
 
 #############################################################################
 ##
-#O  OCAddComplement( <ocr>, <K> ) . . . . . . . . . . . . . . . . . . . local
+#O  OCAddComplement( <ocr>, <ocr.group>, <K> ) . . . . . . . . . . . . . local
 ##
-OCAddComplement := NewOperationArgs("OCAddComplement");
+OCAddComplement := NewOperation("OCAddComplement",
+  [IsRecord,IsGroup,IsListOrCollection]);
 
 
 #############################################################################

@@ -223,7 +223,7 @@ Inequalities := function( arg )
 
    local tbl, chars, option,
          i, j, h, o, dim, nccl, ncha, c, X, dir, root, ineq, tuete,
-         Conditor, Kombinat, other, mini, con, conO, conU,
+         Conditor, Kombinat, other, mini, con, conO, conU, pos,
          proform, project;
 
    # scan arg
@@ -329,9 +329,14 @@ Inequalities := function( arg )
    # ie: for each class find a root and replace coloumn by difference.
 
    root:= ClassRootsCharTable(tbl);
-   ineq:= [];
-   other:= [];
+   ineq:= [];   other:= [];  pos:= [];
    for i in [2..nccl] do
+      if not c[i] in ineq then
+         AddSet(ineq, c[i]);  Add(pos, i);
+      fi;
+   od;
+   ineq:= [];
+   for i in pos do
       if root[i] = [] then
         AddSet(ineq, c[i]);
         AddSet(other, c[i]);
@@ -719,7 +724,7 @@ end;
 PermBounds := function(tbl, degree)
 
    local i, j, h, o, dim, nccl, ncha, c, X, dir, root, ineq, other, rho,
-         vec, deglist, point;
+         pos, vec, deglist, point;
 
    nccl:= NrConjugacyClasses( tbl );
    X:= RationalizedMat( List( Irr( tbl ), ValuesOfClassFunction ) );
@@ -730,9 +735,14 @@ PermBounds := function(tbl, degree)
    # i.e.: for each class find a root and replace column by difference.
 
    root:= ClassRootsCharTable(tbl);
-   ineq:= [];
-   other:= [];
+   ineq:= [];   other:= [];  pos:= [];
    for i in [2..nccl] do
+      if not c[i] in ineq then
+         AddSet(ineq, c[i]);  Add(pos, i);
+      fi;
+   od;
+   ineq:= [];
+   for i in pos do
       if root[i] = [] then
         AddSet(ineq, c[i]);
         AddSet(other, c[i]);

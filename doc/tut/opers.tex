@@ -140,6 +140,7 @@ method  fails although  the argument  has  all required filters.  In such
 cases, the method will  execute the statement `TryNextMethod();' then the
 next applicable method will be chosen.
 
+\indextt{TryNextMethod}%
 \exercise How  can  `TryNextMethod()' be used   to exploit  the potential
 solvability of a permutation group?
 
@@ -176,6 +177,9 @@ category, e.g.,  if you asked for `Size(  1 )'. The second variant occurs
 if the category was    right,  e.g., if   the  argument  was a list    or
 collection, but there was no applicable method installed.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations and method selection}\null
+
 \index{operations}%
 \danger The method  selection  is not only   used to select  methods  for
 attributes but also for arbitrary  *operations*, which can have more than
@@ -185,6 +189,26 @@ families of the arguments. For example,  the methods for `ConjugateGroup(
 <grp>, <elm> )'  require that <elm> lies  in the  family of <grp>,  i.e.,
 that the family of  <grp> equals the  collections family of the family of
 <elm>.
+
+\indextt{KnownPropertiesOfObject}\indextt{KnownTruePropertiesOfObject}%
+\indextt{KnownAttributesOfObject}%
+If  you want  to know  which properties are  already  known for an object
+<obj>, or  which properties   are known to    be true, you can    use the
+functions       `KnownPropertiesOfObject(         <obj>       )'   resp.\
+`KnownTruePropertiesOfObject( <obj> )'. This will  print a list of  names
+of  properties. These names   are also the  identifiers  of  the property
+getters,  by which  you can retrieve  the value   of  the properties (and
+confirm that they are really `true'). Analogously,  there is the function
+`KnownAttributesOfObject' which lists  the names of the known attributes,
+leaving out the properties.
+
+\indextt{ApplicableMethods}%
+\danger Since {\GAP} lets you know what it already knows about an object,
+it is only natural that  it also lets you  know what methods it considers
+applicable for a certain method,  and in what order  it will try them (in
+case  `TryNextMethod()'  occurs).  `ApplicableMethods( <opr>,  [ $arg_1$,
+$arg_2$, \dots\  ] )' returns the  sorted list  of all applicable methods
+for the call `<opr>( $arg_1$, $arg_2$, \dots\ )'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:

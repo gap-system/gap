@@ -1037,7 +1037,7 @@ InstallMethod( IsIntegralRing,
     local   elms, zero, i, k;
 
     if IsFinite( R )  then
-        if not IsCommutative( R )  then
+        if IsTrivial( R ) or not IsCommutative( R )  then
             return false;
         fi;
         elms := Enumerator( R );

@@ -796,7 +796,7 @@ void ReadFuncExpr (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else {
+    else if ( nrError == 0 ) {
         extern UInt IntrCoding;
 
         CodeEnd(1);
@@ -860,7 +860,7 @@ void ReadFuncExpr1 (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else {
+    else if ( nrError == 0 ) {
         extern UInt IntrCoding;
 
         CodeEnd(1);
@@ -1319,6 +1319,48 @@ void ReadAssert (
       }
 }
 
+/****************************************************************************
+**
+*F  ReadSaveWS( <follow> )  . . . . . . . . . .read a SaveWorkspace statement
+**
+**  'ReadSaveWS' reads a SaveWorkspace statement.
+**  In case of an error it skips all
+**  symbols up to one contained in <follow>.
+**
+**  <Statment> := 'SaveWorkspace' '(' <Expr> ')'
+*/
+void ReadSaveWS (
+    TypSymbolSet        follow )
+{
+    if ( ! READ_ERROR() ) { IntrSaveWSBegin(); }
+    Match( S_SAVEWS, "SaveWorkspace", follow );
+    Match( S_LPAREN, "(", follow );
+    ReadExpr( S_RPAREN | follow, 'r' );
+    Match( S_RPAREN, ")", follow );
+    if ( ! READ_ERROR() ) { IntrSaveWSEnd(); }
+}
+
+/****************************************************************************
+**
+*F  ReadLoadWS( <follow> )  . . . . . . . . . .read a LoadWorkspace statement
+**
+**  'ReadLoadWS' reads a LoadWorkspace statement.
+**  In case of an error it skips all
+**  symbols up to one contained in <follow>.
+**
+**  <Statment> := 'LoadWorkspace' '(' <Expr> ')'
+*/
+void ReadLoadWS (
+    TypSymbolSet        follow )
+{
+    if ( ! READ_ERROR() ) { IntrLoadWSBegin(); }
+    Match( S_LOADWS, "LoadWorkspace", follow );
+    Match( S_LPAREN, "(", follow );
+    ReadExpr( S_RPAREN | follow, 'r' );
+    Match( S_RPAREN, ")", follow );
+    if ( ! READ_ERROR() ) { IntrLoadWSEnd(); }
+}
+
 
 /****************************************************************************
 **
@@ -1424,7 +1466,7 @@ void ReadFor (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( ! READ_ERROR() ) {
+    else if ( nrError == 0  ) {
         extern UInt IntrCoding;
 
         CodeEnd(1);
@@ -1476,7 +1518,7 @@ void ReadWhile (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( ! READ_ERROR() ) {
+    else if ( nrError == 0 ) {
         extern UInt IntrCoding;
 
         CodeEnd(1);
@@ -1527,7 +1569,7 @@ void ReadRepeat (
     }
 
     /* an error has occured *after* the 'IntrFuncExprEnd'                  */
-    else if ( ! READ_ERROR() ) {
+    else if ( nrError == 0 ) {
         extern UInt IntrCoding;
 
         CodeEnd(1);
@@ -1716,12 +1758,12 @@ Obj ReadEvalResult;
 */
 UInt ReadEvalCommand ( void )
 {
-    volatile UInt       type;
-    volatile Obj        stackNams;
-    volatile UInt       countNams;
-    volatile UInt       readTop;
-    volatile UInt       readTilde;
-    volatile UInt       currLHSGVar;
+    UInt                type;
+    Obj                 stackNams;
+    UInt                countNams;
+    UInt                readTop;
+    UInt                readTilde;
+    UInt                currLHSGVar;
     jmp_buf             readJmpError;
 
     /* get the first symbol from the input                                 */
@@ -1747,33 +1789,34 @@ UInt ReadEvalCommand ( void )
     ReadTop     = 0;
     ReadTilde   = 0;
     CurrLHSGVar = 0;
-    if ( ! READ_ERROR() ) {
-        IntrBegin();
+    IntrBegin();
 
-        /* read an expression or an assignment or a procedure call         */
-        if      (Symbol==S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
+    /* read an expression or an assignment or a procedure call             */
+    if      ( Symbol == S_IDENT  ) { ReadExpr(   S_SEMICOLON|S_EOF, 'x' ); }
 
-        /* otherwise read a statement                                      */
-        else if (Symbol==S_UNBIND ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_INFO   ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_ASSERT ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_IF     ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_FOR    ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_WHILE  ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_REPEAT ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_BREAK  ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_RETURN ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_TRYNEXT) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
-        else if (Symbol==S_QUIT   ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
+	/* otherwise read a statement                                      */
+	else if (Symbol==S_UNBIND ) { ReadUnbind( S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_INFO   ) { ReadInfo(   S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_ASSERT ) { ReadAssert( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol== S_SAVEWS) { ReadSaveWS( S_SEMICOLON|S_EOF      ); }
+        else if (Symbol== S_LOADWS) { ReadLoadWS( S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_IF     ) { ReadIf(     S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_FOR    ) { ReadFor(    S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_WHILE  ) { ReadWhile(  S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_REPEAT ) { ReadRepeat( S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_BREAK  ) { ReadBreak(  S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_RETURN ) { ReadReturn( S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_TRYNEXT) { ReadTryNext(S_SEMICOLON|S_EOF      ); }
+	else if (Symbol==S_QUIT   ) { ReadQuit(   S_SEMICOLON|S_EOF      ); }
 
-        /* otherwise try to read an expression                             */
-        else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
+	/* otherwise try to read an expression                             */
+	else                        { ReadExpr(   S_SEMICOLON|S_EOF, 'r' ); }
 
-        /* every statement must be terminated by a semicolon               */
-        if ( Symbol != S_SEMICOLON ) {
-            SyntaxError( "; expected");
-        }
+	/* every statement must be terminated by a semicolon               */
+    if ( Symbol != S_SEMICOLON ) {
+      SyntaxError( "; expected");
     }
+
 
     /* end the interpreter                                                 */
     if ( ! READ_ERROR() ) {

@@ -225,7 +225,6 @@ end );
 
 #############################################################################
 ##
-
 #M  <pcgs1> mod <induced-pcgs2>
 ##
 InstallMethod( MOD,
@@ -236,6 +235,23 @@ InstallMethod( MOD,
 
 function( pcgs, modulo )
     if ParentPcgs(modulo) <> pcgs  then
+        TryNextMethod();
+    fi;
+    return ModuloPcgsByPcSequenceNC( pcgs, pcgs, modulo );
+end );
+
+#############################################################################
+##
+#M  <pcgs1> mod <pcgs2>
+##
+InstallMethod( MOD,
+    IsIdentical,
+    [ IsPcgs,
+      IsPcgs ],
+    0,
+
+function( pcgs, modulo )
+    if modulo <> pcgs  then
         TryNextMethod();
     fi;
     return ModuloPcgsByPcSequenceNC( pcgs, pcgs, modulo );

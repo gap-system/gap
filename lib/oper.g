@@ -1109,7 +1109,7 @@ end;
 #############################################################################
 ##
 
-#F  InstallAtExit( <func> )
+#F  InstallAtExit( <func> ) . . . . . . . . . . function to call when exiting
 ##
 InstallAtExit := function( func )
 
@@ -1123,6 +1123,88 @@ InstallAtExit := function( func )
     fi;
     ADD_LIST( AT_EXIT_FUNCS, func );
 
+end;
+
+
+#############################################################################
+##
+#O  ViewObj( <obj> )  . . . . . . . . . . . . . . . . . . . .  view an object
+##
+ViewObj := NewOperation( "ViewObj", [ IS_OBJECT ] );
+
+
+#############################################################################
+##
+#M  ViewObj( <obj> )  . . . . . . . . . . . . default methods uses `PrintObj'
+##
+InstallMethod( ViewObj,
+    "default method using `PrintObj'",
+    true,
+    [ IS_OBJECT ],
+    0,
+    PRINT_OBJ );
+
+
+#############################################################################
+##
+#F  View( <obj1>, ... ) . . . . . . . . . . . . . . . . . . . .  view objects
+##
+View := function( arg )
+    local   obj;
+
+    for obj  in arg  do
+        ViewObj(obj);
+    od;
+end;
+
+
+#############################################################################
+##
+#O  TeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . . . TeX an object
+##
+TeXObj := NewOperation( "TeXObj", [ IS_OBJECT ] );
+
+
+#############################################################################
+##
+#F  TeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . . . TeX objects
+##
+TeX := function( arg )
+    local   str,  res,  obj;
+
+    str := "";
+    for obj  in arg  do
+        res := TeXObj(obj);
+        APPEND_LIST_INTR( str, res );
+        APPEND_LIST_INTR( str, "%\n" );
+    od;
+    CONV_STRING(str);
+    return str;
+end;
+
+
+#############################################################################
+##
+#O  LaTeXObj( <obj> ) . . . . . . . . . . . . . . . . . . . . LaTeX an object
+##
+LaTeXObj := NewOperation( "LaTeXObj", [ IS_OBJECT ] );
+
+
+#############################################################################
+##
+#F  LaTeX( <obj1>, ... )  . . . . . . . . . . . . . . . . . . . LaTeX objects
+##
+LaTeX := function( arg )
+    local   str,  res,  obj;
+
+    str := "";
+    for obj  in arg  do
+        res := LaTeXObj(obj);
+        APPEND_LIST_INTR( str, res );
+        APPEND_LIST_INTR( str, "%\n" );
+    od;
+    CONV_STRING(str);
+    return str;
 end;
 
 

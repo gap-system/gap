@@ -175,8 +175,7 @@ function( dir, prg, input, output, args )
     if not IsInputTextFileRep(input)  then
         name_input := TmpName();
         new := OutputTextFile( name_input, true );
-        tmp := ReadAll(input);
-        if tmp <> fail  then WriteAll( new, tmp );  fi;
+        WriteAll( new, ReadAll(input) );;
         CloseStream(new);
         input := InputTextFile( name_input );
     fi;
@@ -201,8 +200,7 @@ function( dir, prg, input, output, args )
     if IsBound(name_output)  then
         CloseStream(new_output);
         new := InputTextFile(name_output);
-        tmp := ReadAll(new);
-        if tmp <> fail  then WriteAll( output, tmp );  fi;
+        WriteAll( output, ReadAll(new) );
         CloseStream(new);
         RemoveFile(name_output);
     fi;

@@ -18,6 +18,41 @@ While a ``{\GAP}3 compatibility mode'' is provided (see "Compatibility
 Mode"),its use will disable some of the new features of {\GAP}4. Also it
 certainly can only try to provide partial compatibility.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operation Names}
+
+The way operations and functions are baptized has been unified in {\GAP}4.
+This will help to memorize or even guess the names for operations:
+
+Names that consist of several words are written together with internal
+capitalization starting each new word.
+
+If the name is a verb, the function will modify an object. For example
+`TriangulizeMat'. If the name is a substantive, in contrast, the operation
+will return another object that has the required properties without
+destroying the old object. For example `Concatenation'.
+
+Operations that will return another object mainly split into two classes.
+The first consists of operations that create new objects from
+constituent information. Names for operations
+in this class usually contain ``By''. Examples are `GroupByGenerators',
+`GroupHomomorphismByImages' or `UnivariateLaurentPolynomialByCoefficients'.
+
+Operations in the second class deduce information about an objects. They are
+typically attributes (see "Attributes"). Names for these operations usually
+contain ``Of'', as in `GeneratorsOfGroup' or `DepthOfPcElement'.
+
+Setter and Tester functions for attributes are usually called
+`Set<attribute>' and `Has<attribute>' ("Attributes").
+
+If an operation does substantial work to test its arguments for validity,
+there is  usually a second operation with an added `NC' in the name that
+will work without performing the tests.
+
+Needless to say, all these rules are not followed slavishly, so for example
+one operation is called `Zero' instead of `ZeroOfAdditiveGroup'.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Attributes and record components}
 
@@ -239,6 +274,14 @@ valid return value if the function succeeded.
 Functions like `Position' return `fail' if no object in the list fulfilled
 the specifications.
 
+\>ViewObj(<obj>)
+
+The read-eval-print loop now calls not the operation `PrintObj' to display 
+objects but `ViewObj'. While the standard method installed for `ViewObj' is to
+call `PrintObj', this permits to  install methods to display objects in a
+short form in the read-eval-print loop while retaining `Print' to display
+the object completely.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Changed names}
 
@@ -261,6 +304,8 @@ functionality. A -- probably incomplete -- list follows
 `Numerator'&`NumeratorRat'\cr
 `RandomInvertableMat'&`RandomInvertibleMat'\cr
 `RecFields'&`RecNames'\cr}
+
+The Operation which will be called by `Print' is `PrintObj'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Parent and Subgroups}

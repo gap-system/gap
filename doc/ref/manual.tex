@@ -1,51 +1,87 @@
 \input ../gapmacro
-
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TitlePage . . . . . . . . . . . . . . . . . . . . . . . . nice title page
+%%
+\TitlePage{
+  \centerline{Contributions to}\bigskip
+  \centerline{\titlefont The GAP 4 Manual}\medskip
+  \centerline{\titlefont ---}\medskip
+  \centerline{\titlefont Reference Manual}
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  TableOfContents . . . . . . . . . . . . . .  generate a table of contents
+%%
+\TableOfContents
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  BeginningOfBook . . . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\BeginningOfBook
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  FrontMatter . . . . . . . . . . . . . . . . . . .. GAP 4 Reference Manual
+%%
 \FrontMatter
-%\input copyrigh
-%\input preface
-
+\immediate\write\citeout{\bs bibdata{mrabbrev,algebra,myalg}}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Chapters  . . . . . . . . . . . . . . . . . . . .  GAP 4 Reference Manual
+%%
 \Chapters
-%\input introduc
-%\input inoutput (Chapter ``Communicating with GAP'')
-\Input{lists}
-%\input record   (Chapter ``Records'')
-\Input{group}
+%\Input{lists}
+%\Input{domain}
+%\Input{group}
 \Input{solvgrp}
 \Input{permgrp}
-\Input{newkind}
-%\input matgrp   (Chapter ``Matrix Groups'')
-%\input finpres  (Chapter ``Finitely Presented Groups and Ag Groups'')
-%\input arithmet (Chapter ``Arithmetic'' (incl. Integers, Rationals etc.))
-
 \Input{grplib}
-
+\Input{files}
+\Input{streams}
+\Input{process}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  Appendices  . . . . . . . . . . . . . .  Extending GAP 4 Reference Manual
+%%
 \Appendices
 \input glossary
+%
+%
 
 \Chapter Bibliography
+
+\parindent\manindent
 
 \Bibliography
 
 \Chapter Index
 
-Entries in     `typewriter style' refer  to   {\GAP}  functions (e.g.,
-`Size'); entries in roman type   refer to {\GAP}-specific concepts.  A
-page number in  {\it italics} denotes a  whole section which is  named
-like the   index  entry.  For  mathematical terms,    especially their
-definitions, see   the glossary in  appendix~A. For  references to the
-algorithms implemented in {\GAP}, see the bibliography in appendix~B.
+\parindent 0pt
+
+Entries  in   `typewriter  style' refer   to  {\GAP} functions  (e.g.,
+`Size'); entries in roman type refer to {\GAP}-specific concepts. Page
+numbers are given in the form <chapter>--<page_within_chapter>. A page
+number in  {\it italics} denotes a  whole section  which is named like
+the index entry. For mathematical terms, especially their definitions,
+see  the   glossary in appendix~A.  For   references to the algorithms
+implemented in {\GAP}, see the bibliography in appendix~B.
 
 Keywords   are   sorted  with    case  and   spaces    ignored,  e.g.,
 ```PermutationCharacter''' comes before ``permutation group''.
 
 \Index
 
-\null\vfill
-\centerline{\titlefont Contributions to a forthcoming}
-\centerline{\titlefont GAP 4 Manual}
-
-\Chapter Contents
-  
-\TableOfContents
-
+\EndOfBook
 \bye

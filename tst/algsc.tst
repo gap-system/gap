@@ -86,7 +86,7 @@ gap> Dimension( v );
 ##  Expl. 1: $2.A6$, gen. by 20 quaternionic reflections over $H(\sqrt{3})$
 ##
 gap> q:= QuaternionAlgebra( FieldByGenerators( Rationals, [ ER(3) ] ) );
-<algebra of dimension 4 over NF(12,[ 1, 11 ])>
+<algebra-with-one of dimension 4 over NF(12,[ 1, 11 ])>
 gap> gens:= GeneratorsOfAlgebra( q );
 [ e, i, j, k ]
 gap> z:= Zero( q );;

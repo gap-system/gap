@@ -43,10 +43,12 @@ ReadLib( "alglie.gi"   );
 ReadLib( "algliess.gi" );
 ReadLib( "algsc.gi"    );
 ReadLib( "algmat.gi"   );
+ReadLib( "alghom.gi"   );
 ReadLib( "liefam.gi"   );
 
 ReadLib( "integer.gi"  );
 ReadLib( "numtheor.gi" );
+ReadLib( "string.gi"   );
 
 ReadLib( "ratfun.gi"   );
 ReadLib( "ratfunul.gi" );
@@ -153,6 +155,8 @@ ReadLib( "grpnice.gi"  );
 ReadLib( "morpheus.gi" );
 ReadLib( "grplatt.gi"  );
 ReadLib( "oprtglat.gi" );
+
+ReadLib( "grppcaut.gi" );
 
 
 # files dealing with matrix groups

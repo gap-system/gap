@@ -392,8 +392,9 @@ local mats, gens, zero,one, g, mat, i, vec;
     one:=One(zero);
     for g  in Ggens do
         mat := List( gens, x -> linear( x, g ) );
-        vec := transl(g);
+        vec := ShallowCopy( transl(g) );
         for i  in [ 1 .. Length(mat) ]  do
+            mat[i] := ShallowCopy( mat[i] );
             Add( mat[i], zero );
         od;
         Add( vec, one );

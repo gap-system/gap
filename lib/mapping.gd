@@ -276,6 +276,8 @@ HasIsSingleValued := Tester( IsSingleValued );
 ##  of its source a unique element 'Image( <map>, <elm> )' of its range.
 ##
 IsMapping := IsGeneralMapping and IsTotal and IsSingleValued;
+SetIsMapping := Setter( IsMapping );
+HasIsMapping := Tester( IsMapping );
 
 
 #############################################################################

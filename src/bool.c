@@ -311,11 +311,15 @@ void            InitBool ( void )
     EqFuncs[ T_BOOL ][ T_BOOL ] = EqBool;
     LtFuncs[ T_BOOL ][ T_BOOL ] = LtBool;
 
-    /* make and install the 'IS_BOOL' filter                               */
+    /* make and install the 'IS_BOOL' filter*/
+    InitHandlerFunc( IsBoolHandler, "IS_BOOL");
     IsBoolFilt = NewFilterC( "IS_BOOL", 1L, "obj", IsBoolHandler );
     AssGVar( GVarName( "IS_BOOL" ), IsBoolFilt );
 
     /* make and install the 'RETURN_TRUE' function                         */
+    InitHandlerFunc( ReturnTrue1, "ReturnTrue(1 or many args)");
+    InitHandlerFunc( ReturnTrue2, "ReturnTrue(2 args)");
+    InitHandlerFunc( ReturnTrue3, "ReturnTrue(3 args)");
     ReturnTrueFunc = NewFunctionC( "RETURN_TRUE", -1L, "args", ReturnTrue1 );
     HDLR_FUNC( ReturnTrueFunc, 1 ) = ReturnTrue1;
     HDLR_FUNC( ReturnTrueFunc, 2 ) = ReturnTrue2;
@@ -323,6 +327,9 @@ void            InitBool ( void )
     AssGVar( GVarName( "RETURN_TRUE" ), ReturnTrueFunc );
 
     /* make and install the 'RETURN_FALSE' function                        */
+    InitHandlerFunc( ReturnFalse1, "ReturnFalse(1 or many args)");
+    InitHandlerFunc( ReturnFalse2, "ReturnFalse(2 args)");
+    InitHandlerFunc( ReturnFalse3, "ReturnFalse(3 args)");
     ReturnFalseFunc = NewFunctionC("RETURN_FALSE",-1L,"args",ReturnFalse1);
     HDLR_FUNC( ReturnFalseFunc, 1 ) = ReturnFalse1;
     HDLR_FUNC( ReturnFalseFunc, 2 ) = ReturnFalse2;
@@ -330,6 +337,9 @@ void            InitBool ( void )
     AssGVar( GVarName( "RETURN_FALSE" ), ReturnFalseFunc );
 
     /* make and install the 'RETURN_FAIL' function                        */
+    InitHandlerFunc( ReturnFail1, "ReturnFail(1 or many args)");
+    InitHandlerFunc( ReturnFail2, "ReturnFail(2 args)");
+    InitHandlerFunc( ReturnFail3, "ReturnFail(3 args)");
     ReturnFailFunc = NewFunctionC("RETURN_FAIL", -1L, "args", ReturnFail1);
     HDLR_FUNC( ReturnFailFunc, 1 ) = ReturnFail1;
     HDLR_FUNC( ReturnFailFunc, 2 ) = ReturnFail2;

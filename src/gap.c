@@ -80,6 +80,8 @@ extern char * In;
 
 #include        "compstat.h"            /* statically linked modules       */
 
+#include        "saveload.h"            /* saving and loading              */
+
 #define INCLUDE_DECLARATION_PART
 #include        "gap.h"                 /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
@@ -131,6 +133,38 @@ UInt BreakOnError = 1;
 /****************************************************************************
 **
 
+*F  ViewObjHandler  . . . . . . . . . handler to view object and catch errors
+*/
+UInt ViewObjGVar;
+
+void ViewObjHandler ( Obj obj )
+{
+    volatile Obj        func;
+    jmp_buf		readJmpError;
+
+    /* get the function                                                    */
+    func = ValAutoGVar(ViewObjGVar);
+
+    /* if non-zero use this function, otherwise use `PrintObj'             */
+    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+    if ( ! READ_ERROR() ) {
+	if ( func == 0 || TNUM_OBJ(func) != T_FUNCTION ) {
+	    PrintObj(obj);
+	}
+	else {
+	    CALL_1ARGS( func, obj );
+	}
+	Pr( "\n", 0L, 0L );
+	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    }
+    else {
+	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+    }
+}
+
+
+/****************************************************************************
+**
 *F  main( <argc>, <argv> )  . . . . . . .  main program, read-eval-print loop
 */
 Obj AtExitFunctions;
@@ -190,11 +224,7 @@ int main (
 
             /* print the result                                            */
             if ( ! DualSemicolon ) {
-                IsStringConv( ReadEvalResult );
-		if ( ! READ_ERROR() ) {
-		    PrintObj( ReadEvalResult );
-		    Pr( "\n", 0L, 0L );
-		}
+		ViewObjHandler( ReadEvalResult );
             }
         }
 
@@ -512,7 +542,6 @@ Obj ErrorMode (
     UInt                errorLLevel;
     UInt                type;
     char                prompt [16];
-    jmp_buf		readJmpError;
 
     /* ignore all errors when testing or quitting                          */
     if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
@@ -604,18 +633,8 @@ Obj ErrorMode (
             AssGVar( Last,  ReadEvalResult   );
 
             /* print the result                                            */
-	    IsStringConv( ReadEvalResult );
 	    if ( ! DualSemicolon ) {
-		memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
-		if ( ! READ_ERROR() ) {
-		    PrintObj( ReadEvalResult );
-		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		    Pr( "\n", 0L, 0L );
-		}
-		else {
-		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		    break;
-		}
+		ViewObjHandler( ReadEvalResult );
 	    }
 
         }
@@ -1877,12 +1896,16 @@ void ImportGVarFromLibrary(
         if ( ! SyQuiet ) {
             Pr( "#W  warning: too many imported GVars\n", 0L, 0L );
         }
-        InitCopyGVar( GVarName(name), address );
+	if ( address != 0 ) {
+	    InitCopyGVar( GVarName(name), address );
+	}
     }
     else {
         ImportedGVars[NrImportedGVars]     = GVarName(name);
         ImportedGVarAddrs[NrImportedGVars] = address;
-        InitCopyGVar( ImportedGVars[NrImportedGVars], address );
+	if ( address != 0 ) {
+	    InitCopyGVar( ImportedGVars[NrImportedGVars], address );
+	}
         NrImportedGVars++;
     }
 }
@@ -1905,12 +1928,16 @@ void ImportFuncFromLibrary(
         if ( ! SyQuiet ) {
             Pr( "#W  warning: too many imported Funcs\n", 0L, 0L );
         }
-        InitFopyGVar( GVarName(name), address );
+	if ( address != 0 ) {
+	    InitFopyGVar( GVarName(name), address );
+	}
     }
     else {
         ImportedFuncs[NrImportedFuncs]     = GVarName(name);
         ImportedFuncAddrs[NrImportedFuncs] = address;
-        InitFopyGVar( ImportedFuncs[NrImportedFuncs], address );
+	if ( address != 0 ) {
+	    InitFopyGVar( ImportedFuncs[NrImportedFuncs], address );
+	}
         NrImportedFuncs++;
     }
 }
@@ -1925,9 +1952,20 @@ Obj FuncExportToKernelFinished (
 {
     UInt            i;
     Int             errs = 0;
+    Obj             val;
 
     for ( i = 0;  i < NrImportedGVars;  i++ ) {
-        if ( *ImportedGVarAddrs[i] == 0 ) {
+	if (  ImportedGVarAddrs[i] == 0 ) {
+	    val = ValAutoGVar(ImportedGVars[i]);
+	    if ( val == 0 ) {
+		errs++;
+		if ( ! SyQuiet ) {
+		    Pr( "#W  global variable '%s' has not been defined\n",
+			(Int)NameGVar(ImportedFuncs[i]), 0L );
+		}
+	    }
+	}
+        else if ( *ImportedGVarAddrs[i] == 0 ) {
             errs++;
             if ( ! SyQuiet ) {
                 Pr( "#W  global variable '%s' has not been defined\n",
@@ -1935,12 +1973,22 @@ Obj FuncExportToKernelFinished (
             }
         }
         else {
-            SET_ELM_PLIST( WriteGVars, ImportedGVars[i], INTOBJ_INT(0) );
+	    MakeReadOnlyGVar(ImportedGVars[i]);
         }
     }
     
     for ( i = 0;  i < NrImportedFuncs;  i++ ) {
-        if ( *ImportedFuncAddrs[i] == ErrorMustEvalToFuncFunc
+	if (  ImportedFuncAddrs[i] == 0 ) {
+	    val = ValAutoGVar(ImportedFuncs[i]);
+	    if ( val == 0 || TNUM_OBJ(val) != T_FUNCTION ) {
+		errs++;
+		if ( ! SyQuiet ) {
+		    Pr( "#W  global function '%s' has not been defined\n",
+			(Int)NameGVar(ImportedFuncs[i]), 0L );
+		}
+	    }
+	}
+        else if ( *ImportedFuncAddrs[i] == ErrorMustEvalToFuncFunc
           || *ImportedFuncAddrs[i] == ErrorMustHaveAssObjFunc )
         {
             errs++;
@@ -1950,7 +1998,7 @@ Obj FuncExportToKernelFinished (
             }
         }
         else {
-            SET_ELM_PLIST( WriteGVars, ImportedFuncs[i], INTOBJ_INT(0) );
+	    MakeReadOnlyGVar(ImportedFuncs[i]);
         }
     }
     
@@ -2026,10 +2074,6 @@ void InitGap (
 
 
     /* read all the other packages                                         */
-    InitStreams();
-    SET_REVISION( "streams_c",  Revision_streams_c );
-    SET_REVISION( "streams_h",  Revision_streams_h );
-
     InitObjects();
     SET_REVISION( "objects_c",  Revision_objects_c );
     SET_REVISION( "objects_h",  Revision_objects_h );
@@ -2182,9 +2226,17 @@ void InitGap (
     SET_REVISION( "read_c",     Revision_read_c );
     SET_REVISION( "read_h",     Revision_read_h );
 
+    InitStreams();
+    SET_REVISION( "streams_c",  Revision_streams_c );
+    SET_REVISION( "streams_h",  Revision_streams_h );
+
     InitSysFiles();
     SET_REVISION( "sysfiles_c", Revision_sysfiles_c );
     SET_REVISION( "sysfiles_h", Revision_sysfiles_h );
+
+    InitSaveLoad();
+    SET_REVISION( "saveload_c", Revision_saveload_c );
+    SET_REVISION( "saveload_h", Revision_saveload_h );
 
 
     /* and now for a special hack                                          */
@@ -2200,6 +2252,10 @@ void InitGap (
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
 
+
+    /* construct the `ViewObj' variable                                    */
+    ViewObjGVar = GVarName( "ViewObj" );
+    ImportFuncFromLibrary(  "ViewObj", 0L ); 
 
     /* construct the last and time variables                               */
     Last  = GVarName( "last"  );

@@ -1,0 +1,75 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Processes}
+
+{\GAP} can  call other programs,  such   progams are called  *processes*.
+There are two kind of  process: process that are  start, run and return a
+result, while {\GAP}  is supended until the   process terminate and  such
+process that will run in parallel to  {\GAP} as subprocess and {\GAP} can
+communicate and control the processes using streams.
+
+Note that the latter kind of process are *not* yet implemented.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Process}
+
+\>Process( <dir>, <prg>, <stream-in>, <stream-out>, <options> )
+
+runs  a new process.  `Process' returns  when the process terminates.  It
+returns the return value of the process (if the operating system supports
+such a concept).
+
+<dir> must be a directory  object (see "Directories") which specifies the
+directory in which the process is run.
+
+<prg> is the filename of the program to launch, for portability it should
+be   the  result  of   `Filename'   (see   "Filename") and   should  pass
+`IsExecutableFile'.  Note that  `Process'  does *no* searching through  a
+list of directories, this is done by 'Filename'.
+
+<stream-in>  is the  input stream   that  delivers the characters  to the
+process.   For portability it  should either  be `InputTextNone' (if  the
+process reads  no characters), `InputTextUser' (*@not implemented@*), the
+result  of a call to `InputTextFile'  from which  no characters have been
+read, or the result of a call to `InputTextString'.
+
+`Process' is  free to consume *all* the  input even if the program itself
+does not require any input at all.
+
+<stream-out> is the output stream  which receives the characters from the
+process.  For portability it should   either be `OutputTextNone' (if  the
+process writes  no  characters), `OutputTextUser' (*@not  implemented@*),
+the result of a call to 'OutputTextFile' to which no characters have been
+written, or the result of a call to `OutputTextString'.
+
+<options> is a list of strings which are passed to the process as command
+line argument.  Note that no  substitutions are performed on the strings,
+i.e., they are passed immediately to the process and are not processed by
+a command interpreter (shell).  Further  note that each string is  passed
+as one argument, even if it contains <space> characters.
+
+Note  that  input/output redirection    commands  are *not*   allowed  as
+<options>.
+
+*Examples*
+
+In   order to  find   a  system program  use  `DirectoriesSystemPrograms'
+together with `Filename'.
+
+\begintt
+   gap> path := DirectoriesSystemPrograms();;
+   gap> date := Filename( path, "date" );
+   "/bin/date"
+\endtt
+
+Now execute `date' with no argument and no input, collect the output into
+a string stream.
+
+\begintt
+    gap> str := "";; a := OutputTextString(str,true);;
+    gap> str := "";; a := OutputTextString(str,true);;
+    gap> Process( DirectoryCurrent(), date, InputTextNone(), a, [] );
+    0
+    gap> CloseStream(a);
+    gap> Print(str);   
+    Fri Jul 11 09:04:23 MET DST 1997
+\endtt

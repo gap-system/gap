@@ -30,6 +30,43 @@ extern UInt   syNrchar;               /* nr of chars already on the line */
 /****************************************************************************
 **
 
+
+*F * * * * * * * * * * * * system error messages  * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*V  SyLastErrorNo . . . . . . . . . . . . . . . . . . . . . last error number
+*/
+extern Int SyLastErrorNo;
+
+
+/****************************************************************************
+**
+*V  SyLastErrorMessage  . . . . . . . . . . . . . . . . .  last error message
+*/
+extern Char SyLastErrorMessage [ 1024 ];
+
+
+/****************************************************************************
+**
+*F  SyClearErrorNo()  . . . . . . . . . . . . . . . . .  clear error messages
+*/
+extern void SyClearErrorNo ( void );
+
+
+/****************************************************************************
+**
+*F  SySetErrorNo()  . . . . . . . . . . . . . . . . . . . . set error message
+*/
+extern void SySetErrorNo ( void );
+
+
+/****************************************************************************
+**
+
 *F  IS_SPEC( <C> )  . . . . . . . . . . . . . . . . . . .  is <C> a separator
 */
 #define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')

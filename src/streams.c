@@ -31,6 +31,9 @@ char * Revision_streams_c =
 #include        "lists.h"               /* generic lists package           */
 #include        "plist.h"               /* plain lists                     */
 
+#include        "records.h"             /* generic records package         */
+#include        "precord.h"             /* plain records                   */
+
 #include        "bool.h"                /* booleans                        */
 #include        "string.h"              /* strings                         */
 
@@ -160,13 +163,7 @@ Int READ_TEST ( void )
 
             /* print the result                                            */
             if ( ! DualSemicolon ) {
-                IsStringConv( ReadEvalResult );
-
-		/* if an error occurs stop printing                        */
-		if ( ! READ_ERROR() ) {
-		    PrintObj( ReadEvalResult );
-		}
-                Pr( "\n", 0L, 0L );
+		ViewObjHandler( ReadEvalResult );
             }
         }
 
@@ -587,6 +584,7 @@ Obj FuncPRINT_TO (
 		PrintObj( arg );
 	    }
 	    else {
+		CloseOutput();
 		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 		ReadEvalError();
 	    }
@@ -629,27 +627,28 @@ Obj FuncPRINT_TO_STREAM (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
-            PrintString1(arg);
-        }
-        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
-            PrintFunction( arg );
-            PrintObjFull = 0;
-        }
-        else {
-	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
-	    /* if an error occurs stop printing                            */
-	    if ( ! READ_ERROR() ) {
-		PrintObj( arg );
+	/* if an error occurs stop printing                                */
+	memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	if ( ! READ_ERROR() ) {
+	    if (IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING) {
+		PrintString1(arg);
+	    }
+	    else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+		PrintObjFull = 1;
+		PrintFunction( arg );
+		PrintObjFull = 0;
 	    }
 	    else {
-		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		ReadEvalError();
+		PrintObj( arg );
 	    }
+	}
+	else {
+	    CloseOutput();
 	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-        }
+	    ReadEvalError();
+	}
+	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -710,6 +709,7 @@ Obj FuncAPPEND_TO (
 		PrintObj( arg );
 	    }
 	    else {
+		CloseOutput();
 		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 		ReadEvalError();
 	    }
@@ -752,27 +752,28 @@ Obj FuncAPPEND_TO_STREAM (
     /* print all the arguments, take care of strings and functions         */
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
-            PrintString1(arg);
-        }
-        else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
-            PrintFunction( arg );
-            PrintObjFull = 0;
-        }
-        else {
-	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
 
-	    /* if an error occurs stop printing                            */
-	    if ( ! READ_ERROR() ) {
-		PrintObj( arg );
+	/* if an error occurs stop printing                                */
+	memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	if ( ! READ_ERROR() ) {
+	    if (IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING) {
+		PrintString1(arg);
+	    }
+	    else if ( TNUM_OBJ( arg ) == T_FUNCTION ) {
+		PrintObjFull = 1;
+		PrintFunction( arg );
+		PrintObjFull = 0;
 	    }
 	    else {
-		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-		ReadEvalError();
+		PrintObj( arg );
 	    }
+	}
+	else {
+	    CloseOutput();
 	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
-        }
+	    ReadEvalError();
+	}
+	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
     }
 
     /* close the output file again, and return nothing                     */
@@ -908,7 +909,7 @@ Obj FuncREAD_AS_FUNC_STREAM (
     Obj                 stream )
 {
     /* try to open the file                                                */
-    if ( ! OpenTestStream(stream) ) {
+    if ( ! OpenInputStream(stream) ) {
         return Fail;
     }
 
@@ -1006,12 +1007,49 @@ Obj FuncRemoveFile (
 /****************************************************************************
 **
 
+*F  FuncLastSystemError( <self> ) .  . . . . . .  return the last system error
+*/
+UInt ErrorMessageRNam;
+UInt ErrorNumberRNam;
+
+Obj FuncLastSystemError (
+    Obj             self )
+{
+    Obj             err;
+    Obj             msg;
+
+    /* constructed an error record                                         */
+    err = NEW_PREC(0);
+
+    /* check if an errors has occured                                      */
+    if ( SyLastErrorNo != 0 ) {
+	ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(SyLastErrorNo) );
+	C_NEW_STRING(msg, SyStrlen(SyLastErrorMessage), SyLastErrorMessage);
+	ASS_REC( err, ErrorMessageRNam, msg );
+    }
+
+    /* no error has occured                                                */
+    else {
+	ASS_REC( err, ErrorNumberRNam, INTOBJ_INT(0) );
+	C_NEW_STRING( msg, 8, "no error" );
+	ASS_REC( err, ErrorMessageRNam, msg );
+    }
+
+    /* return the error record                                             */
+    return err;
+}
+
+
+/****************************************************************************
+**
 *F  FuncIsExistingFile( <self>, <name> )  . . . . . . does file <name> exists
 */
 Obj FuncIsExistingFile (
     Obj             self,
     Obj             filename )
 {
+    Int             res;
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1021,7 +1059,8 @@ Obj FuncIsExistingFile (
     }
     
     /* call the system dependent function                                  */
-    return SyIsExistingFile( CSTR_STRING(filename) ) ? True : False;
+    res = SyIsExistingFile( CSTR_STRING(filename) );
+    return res == -1 ? Fail : ( res == 0 ? True : False );
 }
 
 
@@ -1033,6 +1072,8 @@ Obj FuncIsReadableFile (
     Obj             self,
     Obj             filename )
 {
+    Int             res;
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1042,7 +1083,8 @@ Obj FuncIsReadableFile (
     }
     
     /* call the system dependent function                                  */
-    return SyIsReadableFile( CSTR_STRING(filename) ) ? True : False;
+    res = SyIsReadableFile( CSTR_STRING(filename) );
+    return res == -1 ? Fail : ( res == 0 ? True : False );
 }
 
 
@@ -1054,6 +1096,8 @@ Obj FuncIsWritableFile (
     Obj             self,
     Obj             filename )
 {
+    Int             res;
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1063,7 +1107,8 @@ Obj FuncIsWritableFile (
     }
     
     /* call the system dependent function                                  */
-    return SyIsWritableFile( CSTR_STRING(filename) ) ? True : False;
+    res = SyIsWritableFile( CSTR_STRING(filename) );
+    return res == -1 ? Fail : ( res == 0 ? True : False );
 }
 
 
@@ -1075,6 +1120,8 @@ Obj FuncIsExecutableFile (
     Obj             self,
     Obj             filename )
 {
+    Int             res;
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1084,7 +1131,8 @@ Obj FuncIsExecutableFile (
     }
     
     /* call the system dependent function                                  */
-    return SyIsExecutableFile( CSTR_STRING(filename) ) ? True : False;
+    res = SyIsExecutableFile( CSTR_STRING(filename) );
+    return res == -1 ? Fail : ( res == 0 ? True : False );
 }
 
 
@@ -1096,6 +1144,8 @@ Obj FuncIsDirectoryPath (
     Obj             self,
     Obj             filename )
 {
+    Int             res;
+
     /* check the argument                                                  */
     while ( ! IsStringConv( filename ) ) {
         filename = ErrorReturnObj(
@@ -1105,7 +1155,8 @@ Obj FuncIsDirectoryPath (
     }
     
     /* call the system dependent function                                  */
-    return SyIsDirectoryPath( CSTR_STRING(filename) ) ? True : False;
+    res = SyIsDirectoryPath( CSTR_STRING(filename) );
+    return res == -1 ? Fail : ( res == 0 ? True : False );
 }
 
 
@@ -1159,7 +1210,10 @@ Obj FuncINPUT_TEXT_FILE (
     }
     
     /* call the system dependent function                                  */
+    SyClearErrorNo();
     fid = SyFopen( CSTR_STRING(filename), "r" );
+    if ( fid == - 1)
+	SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
 
@@ -1213,12 +1267,15 @@ Obj FuncOUTPUT_TEXT_FILE (
     }
     
     /* call the system dependent function                                  */
+    SyClearErrorNo();
     if ( append == True ) {
 	fid = SyFopen( CSTR_STRING(filename), "a" );
     }
     else {
 	fid = SyFopen( CSTR_STRING(filename), "w" );
     }
+    if ( fid == - 1)
+	SySetErrorNo();
     return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
 
@@ -1577,6 +1634,13 @@ void InitStreams ()
 
 
     /* file access test functions                                          */
+    ErrorNumberRNam  = RNamName("number");
+    ErrorMessageRNam = RNamName("message");
+
+    C_NEW_GVAR_FUNC( "LastSystemError", 0L, "", 
+                  FuncLastSystemError,
+        "src/sreams.c:LastSystemError" );
+
     C_NEW_GVAR_FUNC( "IsExistingFile", 1L, "filename", 
                   FuncIsExistingFile,
         "src/sreams.c:IsExistingFile" );

@@ -39,13 +39,21 @@ immediately  plunge   into the exciting  parts  of  {\GAP} and  only read
 detailed information about elementary   things (in the reference  manual)
 when you really need it.
 
-Since this    book should  be    a  tutorial,  we  have    included  some
-exercises. They interrupt the example session every now  and then and ask
-something that you might   well have asked yourself   when you typed  the
-examples printed here.   You should then try to   solve this question  by
-typing  in  some   more examples  and   studying the  output  that {\GAP}
-delivers. If you  want to  check whether  you drew the  right conclusions
-from  what  you saw, you  can  look up the   answer  to every exercise in
+\danger  Some paragraphs are marked  with a ``dangerous bend'' sign, like
+this paragraph. This sign indicates that the material described is rather
+technical, and rather  more suitable  for  a reference manual  than for a
+tutorial. We  have included such  material because we  think that it will
+give a better  understanding to the interested   reader. But there  is no
+harm in simply skipping  these dangerous bends,  and the sign should help
+the reader in doing so.
+
+Since this  book   should be a  tutorial,  we  also  have included   some
+exercises. They interrupt the example session every  now and then and ask
+something that  you might  well have  asked yourself  when you  typed the
+examples printed  here.  You should then   try to solve this  question by
+typing in  some more  examples   and  studying  the  output  that  {\GAP}
+delivers. If you want  to check whether  you  drew the right  conclusions
+from what  you saw,  you can  look  up the  answer  to every exercise  in
 appendix~A\null.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +61,7 @@ appendix~A\null.
 
 \atindex{starting GAP}{@starting {\GAP}}%
 \atindex{leaving GAP}{@leaving {\GAP}}%
-\atindex{quit}{@\noexpand`quit'}%
+\indextt{quit}%
 If the  program is correctly  installed then you  start  {\GAP} by simply
 typing  `gap' at  the  prompt of your   operating system followed by  the
 <return> key (sometimes also called the <newline> key).
@@ -437,6 +445,7 @@ should better  say that they  are not only  equal but *identical*. {\GAP}
 provides the function `IsIdentical' to test whether this is the case, you
 can, e.g., say `IsIdentical( a, b )'.
 
+\indextt{IsIdentical}%
 \exercise  `IsIdentical'   works not only  for   variables,  but also for
 constants. Try  the commands  `IsIdentical(  -1, -1 )'  and `IsIdentical(
 (1,2), (1,2) )' and explain the outcome.

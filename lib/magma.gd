@@ -43,10 +43,11 @@ IsMagmaWithOne :=
 ##
 #C  IsMagmaWithInversesIfNonzero(<obj>)
 ##
-##  A magma with inverses and zero in  {\GAP} is a magma with  one $S$ with a
-##  zero element $z$ and with an operation
-##  $'\^-1' \: S\setminus \{ z \} \rightarrow S \setminus \{ z \}$ that  maps
-##  each nonzero element of the magma to its inverse.
+##  A magma with inverses and zero in {\GAP} is a magma-with-one $S$
+##  and with an operation
+##  $'\^-1' \: S\setminus Z \rightarrow S \setminus Z$,
+##  with $Z$ either empty or containing the zero element of $S$,
+##  that maps each nonzero element of $S$ to its inverse.
 ##
 IsMagmaWithInversesIfNonzero :=
     NewCategory( "IsMagmaWithInversesIfNonzero",
@@ -60,6 +61,13 @@ IsMagmaWithInversesIfNonzero :=
 ##  A magma-with-inverses in {\GAP} is a magma-with-one $S$ with an operation
 ##  $'\^-1' \: S \rightarrow  S$ that maps each element  of the magma  to its
 ##  inverse.
+##
+##  Note that not every trivial magma is a magma-with-one.
+##  But every trivial magma-with-one is a magma-with-inverses.
+##  This holds also if the identity of the magma-with-one is a zero element.
+##  So a magma-with-inverses-if-nonzero can be a magma-with-inverses
+##  if either it contains no zero element or consists of a zero element that
+##  has itself as zero-th power.
 ##
 IsMagmaWithInverses :=
     NewCategory( "IsMagmaWithInverses",

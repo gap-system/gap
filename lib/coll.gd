@@ -157,10 +157,18 @@ SUBSET_MAINTAINED_INFO := [];
 #F  InstallSubsetMaintainedMethod( <opr>, <super_req>, <sub_req> )
 ##
 ##  <opr> must be a property or an attribute.
-##  Let $S$ be a domain that has the property <sub_req> and is known to be a
-##  subset of a domain $D$ such that $D$ has the property <super_req>
-##  and such that the value of <opr> is known for $D$.
+##  Let $S$ be a domain in the filter <sub_req> that is known to be a subset
+##  of a domain $D$ in the filter <super_req> such that the value of <opr> is
+##  known for $D$.
 ##  Then the value of <opr> for $S$ shall be the same as the value for $D$.
+##
+##  If <opr> is a property and the filter <super_req> lies in the filter
+##  <opr> then we can use also the following inverse implication.
+##  If $D$ is in the filter whose intersection with <opr> is <super_req>
+##  and if $S$ is in the filter <sub_req>, $S$ is a subset of $D$, and
+##  the value of <opr> for $S$ is `false'
+##  then the value of <opr> for $D$ is also `false'.
+#T This is implemented only for the case <super_req> = <opr> and <sub_req>.
 ##
 ##  We must be careful to choose the right ranks for the methods.
 ##  Note that one method may require a property that is acquired using
@@ -341,9 +349,9 @@ InstallMethod( UseIsomorphismRelation,
 #F  InstallIsomorphismMaintainedMethod( <opr>, <old_req>, <new_req> )
 ##
 ##  <opr> must be a property or an attribute.
-##  Let $D$ be a domain that has the property <new_req> and is known to be
-##  isomorphic to a domain $E$ such that $E$ has the property <old_req>
-##  and such that the value of <opr> is known for $E$.
+##  Let $D$ be a domain in the filter <new_req> that is known to be
+##  isomorphic to a domain $E$ in the filter <old_req> for that the value of
+##  <opr> is known.
 ##  Then the value of <opr> for $D$ shall be the same as the value for $E$.
 ##
 InstallIsomorphismMaintainedMethod := function( opr, old_req, new_req )
@@ -407,9 +415,9 @@ InstallMethod( UseFactorRelation,
 #F                                 <factor_req> )
 ##
 ##  <opr> must be a property or an attribute.
-##  Let $F$ be a domain that has the property <factor_req> and is known to be
-##  the homomorphic image of a domain $D$ with the property <numer_req> by a
-##  domain with the property <denom_req>
+##  Let $F$ be a domain in the filter <factor_req> that is known to be
+##  the homomorphic image of a domain $D$ in the filter <numer_req> by a
+##  domain in the filter <denom_req>,
 ##  such that the value of <opr> is known for $D$.
 ##  Then the value of <opr> for $F$ shall be the same as the value for $D$.
 ##
@@ -520,6 +528,25 @@ IsTrivial :=
         IsCollection );
 SetIsTrivial := Setter( IsTrivial );
 HasIsTrivial := Tester( IsTrivial );
+
+
+#############################################################################
+##
+#P  IsNonTrivial(<C>) . . . . . . . . . .  test if a collection is nontrivial
+##
+##  'IsNonTrivial' returns 'true' if the collection <C> is empty or consists
+##  of at least two elements.
+##  (see "IsTrivial")
+##
+#N  1996/08/08 M.Schoenert is this a sensible definition?
+##
+IsNonTrivial :=
+    NewProperty( "IsNonTrivial",
+        IsCollection );
+SetIsNonTrivial := Setter( IsNonTrivial );
+HasIsNonTrivial := Tester( IsNonTrivial );
+#T I need this to distinguish trivial rings-with-one from fields!
+#T (indication to introduce antifilters?)
 
 
 #############################################################################

@@ -317,7 +317,7 @@ SubFLMLORWithOneNC := function( arg )
     local S, gens;
     if IsEmpty( arg[2] ) then
 
-      # Note that 'S' is not trivial,
+      # Note that 'S' is in general not trivial,
       # and if we call 'Objectify' here then 'S' does not get a special
       # representation (e.g., as a matrix algebra).
       # So the argument that special methods would catch this case
@@ -392,37 +392,6 @@ LieAlgebra := function( arg )
     # Return the result.
     return A;
 end;
-
-
-#T #############################################################################
-#T ##
-#T #F  AlgebraString( <A>, <name> )  . . . . . . . .  algebra information string
-#T ##
-#T AlgebraString := function( A, name )
-#T     if   IsBound( A.name )  then
-#T       if   IsBound( A.dimension )  then
-#T         return Concatenation( A.name, " (dimension ",
-#T                               StringInt( A.dimension ), ")" );
-#T       elif IsBound( A.size )  then
-#T         return Concatenation( A.name, " (size ", StringInt( A.size ), ")" );
-#T       else
-#T         return A.name;
-#T       fi;
-#T     elif IsBound( A.dimension )  then
-#T       return Concatenation( "<", name, "> (",
-#T                             StringInt(Length(GeneratorsOfAlgebra(A))),
-#T                             " gens, dimension ", StringInt( A.dimension ),
-#T                             ")" );
-#T     elif IsBound( A.size )  then
-#T       return Concatenation( "<", name, "> (",
-#T                             StringInt(Length(GeneratorsOfAlgebra(A))),
-#T                             " gens, size ", StringInt( A.size ), ")" );
-#T     else
-#T       return Concatenation( "<", name, "> (",
-#T                             StringInt(Length(GeneratorsOfAlgebra(A))),
-#T                             " gens)" );
-#T     fi;
-#T     end;
 
 
 #############################################################################
@@ -596,12 +565,18 @@ IdentityFromSCTable := function( T )
           sum;
 
     n:= Length( T ) - 2;
+    zero:= T[ n+2 ];
+
+    # If the table belongs to a trivial algebra,
+    # the identity is equal to the zero.
+    if n = 0 then
+      return EmptyRowVector( FamilyObj( zero ) );
+    fi;
 
     # Set up the equation system,
     # in row $i$ and column $(k-1)*n + j$ we have $c_{ijk}$.
     equ:= [];
-    zero:= T[ Length( T ) ];
-    zerovec:= List( [ 1 .. n^2 ], x -> zero );
+    zerovec:= ListWithIdenticalEntries( n^2, zero );
     vec:= ShallowCopy( zerovec );
     one:= One( zero );
 
@@ -620,9 +595,12 @@ IdentityFromSCTable := function( T )
     od;
 
     sol:= SolutionMat( equ, vec );
-    if sol <> fail then
 
-      # Check whether the solution acts trivially from the right.
+    # If we have a candidate and if the algebra is not known
+    # to be commutative then check whether the candidate
+    # acts trivially also from the right.
+    if sol <> fail and T[ n+1 ] <> 1 then
+
       for j in [ 1 .. n ] do
         for k in [ 1 .. n ] do
           sum:= zero;
@@ -674,7 +652,14 @@ QuotientFromSCTable := function( T, x, c )
 
     M:= [];
     n:= Length( c );
-    zero:= [ 1 .. n ] * T[ Length( T ) ];
+
+    # If the algebra is zero dimensional,
+    # the zero is also the identity and thus also its inverse.
+    if n = 0 then
+      return c;
+    fi;
+
+    zero:= ListWithIdenticalEntries( n, T[ Length( T ) ] );
     for i in [ 1 .. n ] do
       row:= ShallowCopy( zero );
       for j in [ 1 .. n ] do
@@ -991,7 +976,8 @@ InstallMethod( IsZeroSquaredRing,
 ##
 InstallMethod( Centre,
     "method for a finite dimensional associative FLMLOR",
-    true, [ IsFLMLOR and IsAssociative ], 0,
+    true,
+    [ IsFLMLOR and IsAssociative ], 0,
     function( A )
 
     local   C,      # centre of <A>, result
@@ -1033,7 +1019,8 @@ InstallMethod( Centre,
 ##
 InstallMethod( IsJacobianRing,
     "method for a (finite dimensional) FLMLOR",
-    true, [ IsFLMLOR ], 0,
+    true,
+    [ IsFLMLOR ], 0,
     function( A )
 
     local n,   # dimension of 'A'
@@ -1045,6 +1032,7 @@ InstallMethod( IsJacobianRing,
     fi;
 
     # In characteristic 2 we have to make sure that $a \* a = 0$.
+#T really?
     T:= StructureConstantsTable( BasisOfDomain( A ) );
     if Characteristic( A ) = 2 then
       n:= Dimension( A );
@@ -1060,126 +1048,25 @@ InstallMethod( IsJacobianRing,
     end );
 
 
-#T #############################################################################
-#T ##
-#T #M  FpAlgebra( <K>, <A> ) . . . . . . . . . . . .  f.p. algebra of an algebra
-#T ##
-#T ##  Construct the free nonassociative algebra $F$ on a basis of <A>,
-#T ##  and factor out the two-sided ideal $I$ spanned by the structure relators.
-#T ##  Then clearly the kernel of the homomorphism from $F$ to <A> contains $I$,
-#T ##  on the other hand any expression in the kernel can be reduced to a sum
-#T ##  of generators modulo the structure relators of <A>, and this must be
-#T ##  trivial since the images of generators were assumed to be linearly
-#T ##  independent.
-#T ##
-#T InstallMethod( FpAlgebra, true, [ IsDivisionRing, IsAlgebra ], 0,
-#T     function( K, A )
-#T 
-#T     local T,         # structure constants table w.r. to a basis of 'A'
-#T           F,         # free algebra
-#T           rels,      # relators list
-#T           Fgens,     # algebra generators of 'F'
-#T           Tijpos,    # positions of nonzero coefficients in 'T[i][j]'
-#T           Tijval,    # nonzero coefficients in 'T[i][j]'
-#T           rhs,       # right hand side of a relation
-#T           i, j, k;   # loop over basis vectors
-#T 
-#T     if LeftActingDomain( A ) <> K then
-#T       return FpAlgebra( AsAlgebra( K, A ) );
-#T     fi;
-#T 
-#T     T     := StructureConstantsTable( BasisOfDomain( A ) );
-#T     F     := FreeAlgebra( K, Dimension( A ) );
-#T     rels  := [];
-#T     Fgens := GeneratorsOfAlgebra( F );
-#T 
-#T     for i in [ 1 .. Dimension( A ) ] do
-#T       for j in [ 1 .. Dimension( A ) ] do
-#T         Tijpos:= T[i][j][1];
-#T         Tijval:= T[i][j][2];
-#T         rhs:= Zero( F );
-#T         for k in [ 1 .. Length( Tijpos ) ] do
-#T           rhs:= rhs + Tijval[k] * Fgens[ Tijpos[k] ];
-#T         od;
-#T         Add( rels, Fgens[i] * Fgens[j] - rhs );
-#T       od;
-#T     od;
-#T 
-#T     return F / rels;
-#T     end );
-
-
 #############################################################################
 ##
-#M  FpAlgebra( <K>, <A> ) . . . . . .  f.p. algebra of an associative algebra
-##
-##  Construct this algebra $F$ on a basis of <A>,
-##  and factor out the ideal $I$ spanned by the structure relators.
-##  Then clearly the kernel of the homomorphism from $F$ to <A> contains $I$,
-##  on the other hand any expression in the kernel can be reduced to a sum
-##  of generators modulo the structure relators of <A>, and this must be
-##  trivial since the images of generators were assumed to be linearly
-##  independent.
-##
-#T use/compute structure constants?
-##
-InstallMethod( FpAlgebra,
-    "method for division ring and fin. dim. associative algebra",
-    true, [ IsDivisionRing, IsAlgebra and IsAssociative ], 0,
-    function( K, A )
-
-    local B,         # basis of 'A'
-          dim,       # dimension of 'A'
-          vectors,   # basis vectors of 'B'
-          F,         # free algebra
-          Fgens,     # algebra generators of 'F'
-          rels,      # relators list
-          coeff,     # coefficients of one product
-          rhs,       # right hand side of a relation
-          i, j, k;   # loop over 'B'
-
-    if not IsFiniteDimensional( A ) or One( A ) = fail then
-      TryNextMethod();
-    fi;
-
-    B       := BasisOfDomain( A );
-    dim     := Dimension( A );
-    vectors := BasisVectors( B );
-    F       := FreeAssociativeAlgebra( K, Dimension( A ) );
-    Fgens   := GeneratorsOfAlgebraWithOne( F );
-    rels    := [];
-
-    for i in [ 1 .. dim ] do
-      for j in [ 1 .. dim ] do
-        coeff:= Coefficients( B, vectors[i] * vectors[j] );
-        rhs:= Zero( F );
-        for k in [ 1 .. dim ] do
-          rhs:= rhs + coeff[k] * Fgens[k];
-        od;
-        Add( rels, Fgens[i] * Fgens[j] - rhs );
-      od;
-    od;
-    return F / rels;
-    end );
-
-
-#############################################################################
-##
-#M  Intersection2( <A1>, <A2> ) . . . . . . . .  intersection of two algebras
+#M  Intersection2( <A1>, <A2> ) . . . . . . . . . intersection of two FLMLORs
 ##
 InstallMethod( Intersection2,
     "generic method for two FLMLORs",
-    IsIdentical, [ IsFLMLOR, IsFLMLOR ], 0,
+    IsIdentical,
+    [ IsFLMLOR, IsFLMLOR ], 0,
     Intersection2Spaces( AsFLMLOR, SubFLMLORNC, FLMLOR ) );
 
 
 #############################################################################
 ##
-#M  Intersection2( <A1>, <A2> ) . . . . intersection of two algebras-with-one
+#M  Intersection2( <A1>, <A2> ) . . . .  intersection of two FLMLORs-with-one
 ##
 InstallMethod( Intersection2,
     "generic method for two FLMLORs-with-one",
-    IsIdentical, [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
+    IsIdentical,
+    [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
     Intersection2Spaces( AsFLMLORWithOne, SubFLMLORWithOneNC,
                          FLMLORWithOne ) );
 
@@ -1190,11 +1077,12 @@ InstallMethod( Intersection2,
 #M  \/( <A>, <relators> ) . . . . . . . . .  factor of an algebra by an ideal
 ##
 ##  is the factor algebra of the finite dimensional algebra <A> modulo
-##  the ideal <I> or the list of ideal generators <relators>.
+##  the ideal <I> or the ideal spanned by the collection <relators>.
 ##  
 InstallOtherMethod( \/,
     "method for FLMLOR and collection",
-    IsIdentical, [ IsFLMLOR, IsCollection ], 0,
+    IsIdentical,
+    [ IsFLMLOR, IsCollection ], 0,
     function( A, relators )
     if IsFLMLOR( relators ) then
       TryNextMethod();
@@ -1217,7 +1105,8 @@ InstallOtherMethod( \/,
 ##
 InstallMethod( IsFinite,
     "generic method for a FLMLOR",
-    true, [ IsFLMLOR ], 0,
+    true,
+    [ IsFLMLOR ], 0,
     A ->   ( IsFiniteDimensional( A ) and IsFinite( LeftActingDomain( A ) ) )
          or ForAll( GeneratorsOfLeftOperatorRing( A ), IsZero ) );
 
@@ -1228,27 +1117,32 @@ InstallMethod( IsFinite,
 ##
 InstallMethod( IsFinite,
     "generic method for a FLMLOR-with-one",
-    true, [ IsFLMLORWithOne ], 0,
-    A -> IsFiniteDimensional( A ) and IsFinite( LeftActingDomain( A ) ) );
+    true,
+    [ IsFLMLORWithOne ], 0,
+    A ->    IsTrivial( A )
+         or (     IsFiniteDimensional( A )
+              and IsFinite( LeftActingDomain( A ) ) ) );
 
 
 #############################################################################
 ##
-#M  TrivialSubadditiveMagmaWithZero( <A> )  . . . . . . . . .  for an algebra
+#M  TrivialSubadditiveMagmaWithZero( <A> )  . . . . . . . . . .  for a FLMLOR
 ##
 InstallMethod( TrivialSubadditiveMagmaWithZero,
     "method for a FLMLOR",
-    true, [ IsFLMLOR ], 0,
+    true,
+    [ IsFLMLOR ], 0,
     A -> SubFLMLORNC( A, [] ) );
 
 
 #############################################################################
 ##
-#M  AsAlgebra( <F>, <C> )  view a collection as an algebra over the field <F>
+#M  AsFLMLOR( <R>, <D> )  . . view a collection as a FLMLOR over the ring <R>
 ##
 InstallMethod( AsFLMLOR,
     "method for a ring and a collection",
-    true, [ IsRing, IsCollection ], 0,
+    true,
+    [ IsRing, IsCollection ], 0,
     function( F, D )
     local A, L;
 
@@ -1270,14 +1164,14 @@ InstallMethod( AsFLMLOR,
     SetIsFinite( A, true );
 #T ?
 
-    # Return the algebra.
+    # Return the FLMLOR.
     return A;
     end );
 
 
 #############################################################################
 ##
-#M  AsAlgebra( <F>, <V> ) .  view a left module as algebra over the field <F>
+#M  AsFLMLOR( <F>, <V> )  . . view a left module as FLMLOR over the field <F>
 ##
 ##  is an algebra over <F> that is equal (as set) to <V>.
 ##  For that, perhaps the field of <A> has to be changed before
@@ -1345,7 +1239,7 @@ InstallMethod( AsFLMLOR,
 
 #############################################################################
 ##
-#M  AsAlgebra( <F>, <A> ) . . . view an algebra as algebra over the field <F>
+#M  AsFLMLOR( <F>, <A> )  . . . view an algebra as algebra over the field <F>
 ##
 ##  is an algebra over <F> that is equal (as set) to <D>.
 ##  For that, perhaps the field of <A> has to be changed before
@@ -1353,7 +1247,8 @@ InstallMethod( AsFLMLOR,
 ##
 InstallMethod( AsFLMLOR,
     "method for a division ring and an algebra",
-    true, [ IsDivisionRing, IsFLMLOR ], 0,
+    true,
+    [ IsDivisionRing, IsFLMLOR ], 0,
     function( F, D )
 
     local L, A;
@@ -1400,7 +1295,7 @@ InstallMethod( AsFLMLOR,
 
 #############################################################################
 ##
-#M  AsAlgebraWithOne( <F>, <D> )  . . . .  view a coll. as a algebra-with-one
+#M  AsFLMLORWithOne( <R>, <D> ) . . . . . . view a coll. as a FLMLOR-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "method for a ring and a collection",
@@ -1413,7 +1308,7 @@ InstallMethod( AsFLMLORWithOne,
 
 #############################################################################
 ##
-#M  AsAlgebraWithOne( <F>, <V> )  .  view a left module as a algebra-with-one
+#M  AsFLMLORWithOne( <F>, <V> ) . .  view a left module as a algebra-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "method for a division ring and a free left module",
@@ -1464,8 +1359,11 @@ InstallMethod( AsFLMLORWithOne,
 
     else
 
-      V:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( V ) ), V );
-      return AsAlgebraWithOne( F, V );
+      # Note that we need not use the isomorphism and subset relations
+      # (see below) because this is the task of the calls to
+      # `AsAlgebraWithOne'.
+      A:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( V ) ), V );
+      return AsAlgebraWithOne( F, A );
 
     fi;
 
@@ -1477,11 +1375,12 @@ InstallMethod( AsFLMLORWithOne,
 
 #############################################################################
 ##
-#M  AsAlgebraWithOne( <F>, <D> )  . . . view an algebra as a algebra-with-one
+#M  AsFLMLORWithOne( <F>, <D> ) . . . . view an algebra as a algebra-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "method for a division ring and an algebra",
-    true, [ IsDivisionRing, IsFLMLOR ], 0,
+    true,
+    [ IsDivisionRing, IsFLMLOR ], 0,
     function( F, D )
 
     local L, A;
@@ -1515,6 +1414,9 @@ InstallMethod( AsFLMLORWithOne,
 
     else
 
+      # Note that we need not use the isomorphism and subset relations
+      # (see below) because this is the task of the calls to
+      # `AsAlgebraWithOne'.
       D:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( D ) ), D );
       return AsAlgebraWithOne( F, D );
 
@@ -1528,11 +1430,12 @@ InstallMethod( AsFLMLORWithOne,
 
 #############################################################################
 ##
-#M  AsAlgebraWithOne( <F>, <D> )  . view an alg.-with-one as an alg.-with-one
+#M  AsFLMLORWithOne( <F>, <D> ) . . view an alg.-with-one as an alg.-with-one
 ##
 InstallMethod( AsFLMLORWithOne,
     "method for a division ring and a algebra-with-one",
-    true, [ IsDivisionRing, IsFLMLORWithOne ], 0,
+    true,
+    [ IsDivisionRing, IsFLMLORWithOne ], 0,
     function( F, D )
 
     local L, A;
@@ -1561,6 +1464,9 @@ InstallMethod( AsFLMLORWithOne,
 
     else
 
+      # Note that we need not use the isomorphism and subset relations
+      # (see below) because this is the task of the calls to
+      # `AsAlgebraWithOne'.
       D:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( D ) ), D );
       return AsAlgebraWithOne( F, D );
 
@@ -1627,7 +1533,7 @@ InstallMethod( ClosureLeftOperatorRing,
 
     # otherwise make a new left operator ring-with-one
     else
-      return FLMLOR( LeftActingDomain( A ),
+      return FLMLORWithOne( LeftActingDomain( A ),
                  Concatenation( GeneratorsOfLeftOperatorRingWithOne( A ),
                                 [ a ] ) );
     fi;
@@ -1816,13 +1722,12 @@ MutableBasisOfClosureUnderAction :=
       
     # Return the mutable basis.
     return MB;
-
 end;
 
 
 #############################################################################
 ##
-#M  \=( <A1>, <A2> ) . . . . . . . . . . . . . test if two algebras are equal
+#M  \=( <A1>, <A2> ) . . . . . . . . . . . . .  test if two FLMLORs are equal
 ##
 InstallMethod( \=,
     "method for two FLMLORs",
@@ -1844,7 +1749,7 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  \=( <A1>, <A2> )  . . . . . . . . test if two algebras-with-one are equal
+#M  \=( <A1>, <A2> )  . . . . . . . .  test if two FLMLORs-with-one are equal
 ##
 InstallMethod( \=,
     "method for two FLMLORs-with-one",
@@ -1867,11 +1772,12 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  IsSubset( <G>, <H> )  . . . . . . . . . . . . test for subset of algebras
+#M  IsSubset( <G>, <H> )  . . . . . . . . . . . .  test for subset of FLMLORs
 ##
 InstallMethod( IsSubset,
     "method for two FLMLORs",
-    IsIdentical, [ IsFLMLOR, IsFLMLOR ], 0,
+    IsIdentical,
+    [ IsFLMLOR, IsFLMLOR ], 0,
     function( D1, D2 )
     local inters;
     if LeftActingDomain( D1 ) = LeftActingDomain( D2 ) then
@@ -2021,21 +1927,27 @@ InstallOtherMethod( IsIdeal,
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( PrintObj, true,
-    [ IsAlgebra and HasDimension ], 1,
+InstallMethod( PrintObj,
+    "method for an algebra with known dimension",
+    true,
+    [ IsAlgebra and HasDimension ], 1,   # override method requiring gens.
     function( A )
     Print( "<algebra of dimension ", Dimension( A ),
            " over ", LeftActingDomain( A ), ">" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for an algebra with known generators",
+    true,
     [ IsAlgebra and HasGeneratorsOfAlgebra ], 0,
     function( A )
     Print( "<algebra over ", LeftActingDomain( A ), ", with ",
            Length( GeneratorsOfAlgebra( A ) ), " generators>" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for an algebra",
+    true,
     [ IsAlgebra ], 0,
     function( A )
     Print( "<algebra over ", LeftActingDomain( A ), ">" );
@@ -2048,21 +1960,27 @@ InstallMethod( PrintObj, true,
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( PrintObj, true,
-    [ IsAlgebraWithOne and HasDimension ], 1,
+InstallMethod( PrintObj,
+    "method for an algebra-with-one with known dimension",
+    true,
+    [ IsAlgebraWithOne and HasDimension ], 1,   # override method requ. gens.
     function( A )
     Print( "<algebra-with-one of dimension ", Dimension( A ),
            " over ", LeftActingDomain( A ), ">" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for an algebra-with-one with known generators",
+    true,
     [ IsAlgebraWithOne and HasGeneratorsOfAlgebraWithOne ], 0,
     function( A )
     Print( "<algebra-with-one over ", LeftActingDomain( A ), ", with ",
            Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for an algebra-with-one",
+    true,
     [ IsAlgebraWithOne ], 0,
     function( A )
     Print( "<algebra-with-one over ", LeftActingDomain( A ), ">" );
@@ -2075,21 +1993,27 @@ InstallMethod( PrintObj, true,
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
-InstallMethod( PrintObj, true,
-    [ IsLieAlgebra and HasDimension ], 1,
+InstallMethod( PrintObj,
+    "method for a Lie algebra with known dimension",
+    true,
+    [ IsLieAlgebra and HasDimension ], 1,       # override method requ. gens.
     function( A )
     Print( "<Lie algebra of dimension ", Dimension( A ),
            " over ", LeftActingDomain( A ), ">" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a Lie algebra with known generators",
+    true,
     [ IsLieAlgebra and HasGeneratorsOfAlgebra ], 0,
     function( A )
     Print( "<Lie algebra over ", LeftActingDomain( A ), ", with ",
            Length( GeneratorsOfAlgebra( A ) ), " generators>" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a Lie algebra",
+    true,
     [ IsLieAlgebra ], 0,
     function( A )
     Print( "<Lie algebra over ", LeftActingDomain( A ), ">" );
@@ -2102,7 +2026,8 @@ InstallMethod( PrintObj, true,
 ##
 InstallMethod( AsSubalgebra,
     "method for two algebras",
-    IsIdentical, [ IsAlgebra, IsAlgebra ], 0,
+    IsIdentical,
+    [ IsAlgebra, IsAlgebra ], 0,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
@@ -2125,7 +2050,7 @@ InstallMethod( AsSubalgebra,
     end );
 
 InstallMethod( AsSubalgebra,
-    "method for an algebra and a algebra-with-one",
+    "method for an algebra and an algebra-with-one",
     IsIdentical,
     [ IsAlgebra, IsAlgebraWithOne ], 0,
     function( A, U )
@@ -2141,8 +2066,10 @@ InstallMethod( AsSubalgebra,
 
     # Construct and return the subalgebra.
     S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebraWithOne( U ) );
+
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
+
     return S;
     end );
 
@@ -2168,8 +2095,10 @@ InstallMethod( AsSubalgebraWithOne,
 
     # Construct and return the subalgebra.
     S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebra( U ) );
+
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
+
     return S;
     end );
 
@@ -2189,8 +2118,10 @@ InstallMethod( AsSubalgebraWithOne,
 
     # Construct and return the subalgebra.
     S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebraWithOne( U ) );
+
     UseIsomorphismRelation( U, S );
     UseSubsetRelation( U, S );
+
     return S;
     end );
 
@@ -2442,6 +2373,8 @@ InstallMethod( Centre,
     fi;
 
     # Construct the equation system.
+#T better: introduce function `CentreFromSCTable'
+#T (which assumes a commutative coefficients domain)
     B:= BasisOfDomain( A );
     T:= StructureConstantsTable( B );
     n:= Dimension( A );
@@ -2470,6 +2403,7 @@ InstallMethod( Centre,
 
     # Construct the centre.
     C:= SubalgebraNC( A, M, "basis" );
+#T If 'A' is an algebra-with-one then also the centre is!
 
     # Return the centre.
     return C;
@@ -2656,7 +2590,8 @@ InstallMethod( RadicalOfAlgebra,
           bas,   # a basis of 'B' (corresponding to the basis of <A>)
           rad;   # a basis of the radical of <A>
 
-    if not IsAssociative( A ) then
+    # Make sure that the algebra is associative and not a matrix algebra.
+    if IsRingElementCollCollColl( A ) or not IsAssociative( A ) then
       TryNextMethod();
     fi;
 
@@ -2716,18 +2651,21 @@ InstallMethod( IsTrivial,
 ##
 #M  IsTrivial( <A> )  . . . . . . . . . . . . . . . . . for a FLMLOR-with-one
 ##
+##  A FLMLOR-with-one is trivial if and only if its identity is equal to its
+##  zero.
+##
 InstallMethod( IsTrivial,
     "method for a FLMLOR-with-one",
     true,
     [ IsFLMLORWithOne ], 0,
-    ReturnFalse );
+    A -> not IsZero( One( A ) ) );
 
 
 #############################################################################
 ##
 #M  GeneratorsOfLeftModule( <A> )
 ##
-##  We assume that it is possible to construct a basis for an algebra.
+##  We assume that it is possible to construct a basis for the algebra <A>.
 ##  If <A> is finite dimensional and if we know algebra generators
 ##  then the process of successive closure under the action of <A> on itself
 ##  yields this.
@@ -3025,7 +2963,8 @@ InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
 ##
 InstallOtherMethod( DirectSumOfAlgebras,
     "method for two algebras",
-    true, [ IsAlgebra, IsAlgebra ], 0,
+    true,
+    [ IsAlgebra, IsAlgebra ], 0,
     function( A1, A2 )
 
     local n,    # The dimension of the resulting algebra.
@@ -3081,7 +3020,7 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
 #############################################################################
 ##
-#M  DirectSumOfAlgebras( <list> )
+#M  DirectSumOfAlgebras( <list> ) . . . . . . .  for a dense list of algebras
 ##
 InstallMethod( DirectSumOfAlgebras,
     "method for list of algebras",
@@ -3145,17 +3084,45 @@ InstallMethod( IsCentral,
                              GeneratorsOfAlgebraWithOne ) );
 
 
-#T #############################################################################
-#T ##
-#T #F  FreeAlgebra( <R>, <rank> ) . . . . . . . . . . free algebra of given rank
-#T #F  FreeAlgebra( <R>, <rank>, <name> )
-#T #F  FreeAlgebra( <R>, <name1>, <name2>, ... )
-#T ##
-#T ##  is a (nonassociative) free algebra of rank <rank>.
-#T ##
-#T FreeAlgebra := function( arg )
-#T     Error( "sorry, nonassociative free algebras are not yet supported" );
-#T end;
+#############################################################################
+##
+#F  FreeAlgebra( <R>, <rank> ) . . . . . . . . . . free algebra of given rank
+#F  FreeAlgebra( <R>, <rank>, <name> )
+#F  FreeAlgebra( <R>, <name1>, <name2>, ... )
+##
+FreeAlgebra := function( arg )
+
+    local   R,          # coefficients ring
+            names;      # names of the algebra generators
+
+    # Check the argument list.
+    if Length( arg ) = 0 or not IsRing( arg[1] ) then
+      Error( "first argument must be a ring" );
+    fi;
+
+    R:= arg[1];
+
+    # Construct names of generators.
+    if   Length( arg ) = 2 and IsInt( arg[2] ) then
+      names:= List( [ 1 .. arg[2] ],
+                    i -> Concatenation( "x.", String(i) ) );
+    elif     Length( arg ) = 2
+         and IsList( arg[2] )
+         and ForAll( arg[2], IsString ) then
+      names:= arg[2];
+    elif Length( arg ) = 3 and IsInt( arg[2] ) and IsString( arg[3] ) then
+      names:= List( [ 1 .. arg[2] ],
+                    x -> Concatenation( arg[3], ".", String(x) ) );
+    elif ForAll( [ 2 .. Length( arg ) ], IsString ) then
+      names:= arg{ [ 2 .. Length( arg ) ] };
+    else
+      Error( "usage: FreeAlgebra( <R>, <rank> )\n",
+                 "or FreeAlgebra( <R>, <name1>, ... )" );
+    fi;
+
+    # Construct the algebra as free magma algebra of a free magma over 'R'.
+    return FreeMagmaRing( R, FreeMagma( names ) );
+end;
 
 
 #############################################################################

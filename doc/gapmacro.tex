@@ -12,6 +12,7 @@
 %%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
 %%  "ref"    refer to a label (like "function!for category")
 %%  \cite{.} make a citation
+%%  \index{.} \indextt{.} make index entry (\indextt in typewriter style)
 %%
 %%  \beginitems         produce itemized texts with 3pc hanging indentation
 %%    item & text
@@ -39,9 +40,10 @@
 %%  \){\fmark ...}
 %%      the same without label and index entry
 %%
-%%  \FrontMatter, \Chapters, \Appendices  parts of the book
-%%  \Bibliography, \Index                 make these chapters (w/o head)
-%%  \TableOfContents
+%%  \BeginningOfBook
+%%  \FrontMatter, \Chapters, \Appendices     parts of the book
+%%  \Bibliography, \Index, \TableOfContents  make these chapters (w/o head)
+%%  \EndOfBook
 %%
 
 % Page dimensions and double column output.
@@ -193,11 +195,12 @@
 {\catcode`@=11
 \gdef\makelabel#1#2{\expandafter\gdef\csname r@#1\endcsname{#2}}
 \gdef\doref#1"{\expandafter\ifx\csname r@#1\endcsname\relax\lqq#1''%
-  \immediate\write16{Label #1 undefined.}\global\labundeftrue
+  \immediate\write16{Label `#1' undefined.}\global\labundeftrue
   \else \csname r@#1\endcsname \fi\endgroup}
 \gdef\ov#1#2#3#4{\def\tempa{#2}\def\tempb{for #3}\ifx\tempa\tempb\else
   \expandafter\ifx\csname r@#1!for #3\endcsname \relax
-  \else \ #4$\,\to\,$\csname r@#1!for #3\endcsname.\fi \fi}}
+  \else \allowbreak\null\nobreak\hskip.5em plus 1fill
+    \hbox{#4$\,\to\,$\csname r@#1!for #3\endcsname.}\fi \fi}}
 
 % Macros for generating the table of contents.
 \newif\iffirstsec \firstsectrue
@@ -222,7 +225,7 @@
   \expandafter\ifx\csname r@#1\endcsname\next\else\global\labchangedtrue\fi
   \immediate\write\labelout{\noexpand\makelabel{#1}{\next}}}}
  \gdef\sigel#1{[\expandafter\ifx\csname c@#1\endcsname\relax
-  \immediate\write16{Reference #1 undefined.}\global\labundeftrue
+  \immediate\write16{Reference `#1' undefined.}\global\labundeftrue
   #1\else \csname c@#1\endcsname\fi]}
  \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
   \item{\sigel{#2}}}}
@@ -232,18 +235,20 @@
 \def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
 \def\index#1{\bothindex I{#1}{}{}}
 \def\atindex#1#2{\bothindex I{#1}{#2}{}}
+\def\indextt#1{\atindex{#1}{@`#1'}}
 \def\indexit#1{{\it #1}}
 
 % Macros for chapter and section headings.
 \def\filename{appendix}
 \def\tocstrut{{\setbox0=\hbox{1}\vrule width 0pt height\ht0}}
 \outer\def\Input#1{\def\filename{#1.tex}\input #1}
-\def\emptychapter{\noexpand\tocstrut}
+\def\emptychapter{\noexpand\tocstrut} \let\thechapter=\emptychapter
 \outer\long\def\Chapter#1 \par{\vfill\supereject \headlinefalse
-  \ifodd\pageno\else\null\eject\headlinefalse\fi
+  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
   \advance\chapno by1 \secno=0 \exno=0 \ifnum\pageno>0 \pageno=1 \fi
   \def\chapname{#1} \label{chapter:#1}
-  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
+  \ifx\thechapter\emptychapter\else
+    \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}\fi
   \immediate\write\secindout{C \filename\space\thechapter. \chapname}
   \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
   \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
@@ -267,15 +272,41 @@
 \def\fmark{\noindent\llap{\manual\char120\rm\enspace}}
 \def\moveup#1{\leavevmode \raise.16ex\hbox{\rm #1}}
 \def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
-\def\>{\ifx\par\fpar \else
-    \ifvmode \vskip -\lastskip \fi \medskip
-    \begingroup\let\par=\fpar \parskip 0pt \fi
-  \endgraf\futurelet\next\oporfunc}
+\def\>{\begingroup\undoquotes\obeylines\angle}
+\def\){\begingroup\obeylines\cloparen}
+{\obeylines
+\gdef\angle#1
+  {\endgroup \ifx\par\fpar \else%
+    \ifvmode \vskip -\lastskip \fi \medskip%
+    \begingroup\let\par=\fpar \parskip 0pt \fi%
+  \endgraf\nobreak\oporfunc#1\end}%
+\gdef\cloparen#1
+  {\endgroup \ifx\par\fpar \else%
+    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi%
+  \endgraf {\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}%
+  \noindent\typewriter#1'}}%
+\gdef\scanparen#1(#2\end{{\def\tempa{#2}\ifx\tempa\empty%
+  \begingroup\cloparen\fmark#1
+  \label{#1}\bothindex F{#1}{@`#1'}{}%
+  \else\delparen#1(#2\end \fi}}}
+\def\delparen#1(\end{\function#1}
+\def\oporfunc#1#2\end{\ifx#1`\def\next{\operation#1#2}\else
+                             \def\next{\scanparen#1#2(\end}\fi \next}
+\long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}}\fmark\typewriter#1'%
+  \ifx#3!\def\next{\suboperation{#2}}
+    \else\overlay{#2}\null \label{#2}%
+    \bothindex F{#2}{}{}\let\next=#3\fi\next}
+\long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}\fmark\typewriter#1(#2)'}%
+  \ifx#3!\def\next{\subfunction{#1}}\else
+    \overlay{#1}\null\label{#1}\bothindex F{#1}{@`#1'}{}%
+    \let\next=#3\fi\next}
 \def\subfunction#1#2{\overlay{#1}{#2}\label{#1!#2}%
-  \bothindex F{#1}{@\noexpand`#1'}{!#2}\endgroup}
+  \bothindex F{#1}{@`#1'}{!#2}}
 \def\suboperation#1#2{\overlay{#1}{#2}\label{#1!#2}%
-  \bothindex F{#1}{}{!#2}\endgroup}
-\def\overlay#1#2{\hfill{\it
+  \bothindex F{#1}{}{!#2}}
+\def\overlay#1#2{\hskip 0pt plus 1filll{\it
   \ov{#1}{#2}{groups}{groups}%
   \ov{#1}{#2}{solvable groups}{solv\thinspace gps}%
   \ov{#1}{#2}{permutation groups}{perm\thinspace gps}%
@@ -305,30 +336,12 @@
   \else\immediate\write\ans{\next}\let\next=\copyans\fi\next}}
 
 % Macros for the active backquote character (`).
-\tracinglostchars=0 \hyphenchar\tentt=128 \lccode`.=`.
 {\catcode`.=\active \gdef.{\char'056 \penalty0}}
-\def\typewriter#1'{\leavevmode{\catcode`.=\active
-  \chardef\{=`{ \chardef\}=`} \chardef*=`* \chardef"=`" \chardef~=`~
-  \tt #1}}
+\def\writetyper{\catcode`.=\active \chardef\{ =`{ \chardef\}=`}
+                      \chardef*=`* \chardef"=`"   \chardef~=`~}
 \catcode``=\active
-\def\)#1{\ifx\par\fpar \else
-    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi
-  \endgraf {\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}
-  \noindent{`#1'}}}
-\def\oporfunc{\ifx\next`\let\next=\operation \else\let\next=\function
-  \fi\next}
-\long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
-  \def\|{\vrule\relax}}\fmark{`#1'}%
-  \ifx#3!\begingroup\undoquotes\def\next{\suboperation{#2}}
-    \else\overlay{#2}\null \label{#2}%
-    \bothindex F{#2}{}{}\let\next=#3\fi\next}
-\long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
-  \def\|{\vrule\relax}\fmark{`#1(#2)'}}%
-  \ifx#3!\begingroup\undoquotes\def\next{\subfunction{#1}}\else
-    \overlay{#1}\null\label{#1}\bothindex F{#1}{@\noexpand`#1'}{}%
-    \let\next=#3\fi
-  \next}
 \def`{\futurelet\next\backquote}
+\def\typewriter#1'{\leavevmode{\writetyper \chardef`=96 \tt #1}}
 \def\backquote{\ifx\next`\let\next=\doublebackquote
                     \else\let\next=\typewriter \fi \next}
 \def\doublebackquote`{\lqq}
@@ -354,7 +367,8 @@
   \immediate\closein#1 \input\jobname.#2 \fi}
 
 % Macros for the parts of the manual.
-\outer\def\FrontMatter{\let\thechapter=\emptychapter
+\outer\def\FrontMatter{\iffirstsec\else\enddoublecolumns\fi
+  \let\thechapter=\emptychapter
   \def\lefthead{\it\chapname} \let\righthead=\lefthead
 
   \begingroup
@@ -370,7 +384,9 @@
   \immediate\openout\secindout=\jobname.six
   \immediate\openout\citeout  =\jobname.aux
   \immediate\write\citeout{\bs bibstyle{alpha}}
-  \immediate\write\citeout{\bs bibdata{mrabbrev,algebra,myalg}}}
+
+  \ifodd\pageno\else\headlinefalse\null\vfill\eject\fi
+  \pageno=1 }
   
 \outer\def\Chapters{\vfill\eject
   \chapno=0 \def\thechapter{\the\chapno}
@@ -399,14 +415,14 @@
   \def\subsub{\advance\leftskip by2\smallmanindent}
   \obeylines
   \inputaux\indexin{ind}
-  \enddoublecolumns
-  
-  \vfill\supereject
+  \enddoublecolumns}
+
+\outer\def\EndOfBook{\vfill\supereject
   \immediate\write16{##}
   \immediate\closeout\citeout
   \immediate\write16{## Citations for BibTeX written on \jobname.aux.}
   \immediate\closeout\indexout
-  \immediate\write16{## Index entries written on \jobname.idx.}
+  \immediate\write16{## Index entries for makeindex written on \jobname.idx.}
   \immediate\closeout\secindout
   \immediate\write16{## Section index entries written on \jobname.six.}
   \immediate\closeout\labelout
@@ -417,14 +433,77 @@
   references.}\fi
   \iflabchanged\immediate\write16{## Labels have changed, run again. (Or
   they were multiply defined.)}\fi
-  \immediate\write16{##}
-  \pageno=-1
-  \headlinefalse
-  \let\thechapter=\emptychapter \def\label##1{}
-  \def\lefthead{\chapname} \let\righthead=\lefthead}
+  \immediate\write16{##}}
 
-\outer\def\TableOfContents{\begingroup
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \BeginningOfBook  . . . . . . . . . . . . . . . . . . . .  start the book
+%%
+\outer\def\BeginningOfBook{%
+  \pageno=-1%
+  \headlinefalse%
+  \let\thechapter=\emptychapter%
+  \def\lefthead{\chapname}%
+  \let\righthead=\lefthead%
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \TableOfContents  . . . . . . . . . . . . . . produce a table of contents
+%%
+% name of the chapter containing the table of contents
+\def\TOCHeader{Contents}
+%
+%
+% explaination at the beginning of the table of contents
+\def\TOCMatter{%
+  \rightline{The pages are numbered chapterwise. This table of contents}
+  \rightline{gives for each section the page number within the chapter.}}
+%
+%
+% macros for generating the table of contents
+\newif\iffirstsec\firstsectrue
+\def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
+%
+%
+% produce the chapter "Contents"
+\outer\def\TableOfContents{%
+  \vfill
+  \supereject
+  \headlinefalse
+  \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
+  \def\chapname{\TOCHeader}
+  \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
+  \setbox1=\vbox{%
+      \titlefont
+      \advance\hsize by-\wd0
+      \advance\hsize by-2em
+      \leftskip 0pt plus 1fil
+      \parfillskip 0pt
+      \baselineskip 44pt\relax
+      \TOCHeader}
+  \line{\box0\hfil\box1}
+  \nobreak
+  \vskip 20pt
+  \noindent
+  \TOCMatter
+  \vskip 20pt
+  \noindent
+  \begingroup
   \let!=\space
   \inputaux\tocin{toc}\vfill\eject
-  \endgroup}
-  
+  \endgroup
+}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%F  \TitlePage{<text>}	. . . . . . . . . . . . . . . . generate a title page
+%%
+\long\def\TitlePage#1{%
+  \null\vfill#1\null\vfill
+}
+%
+%

@@ -529,6 +529,7 @@ AlgebraByStructureConstantsArg := function( arglist, filter )
       SetZero( Fam, ObjByExtRep( Fam, EmptyRowVector( FamilyObj(zero) ) ) );
       gens:= Immutable( [] );
       A:= FLMLORByGenerators( R, gens, Zero( Fam ) );
+      SetIsTrivial( A, true );
     fi;
     Fam!.basisVectors:= gens;
 
@@ -729,120 +730,6 @@ OctaveAlgebra := F -> AlgebraByStructureConstants(
         [[],[]] ],
       0, Zero(F) ],
     "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" );
-
-
-#T #############################################################################
-#T ##
-#T #M  LeftModuleByGenerators( <R>, <gens> ) . . . . . for s.c. algebra elements
-#T #M  LeftModuleByGenerators( <R>, <gens>, <zero> ) . for s.c. algebra elements
-#T ##
-#T InstallMethod( LeftModuleByGenerators, true,
-#T     [ IsRing, IsSCAlgebraObjCollection ], 0,
-#T     function( R, gens )
-#T     local V;
-#T 
-#T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsLeftVectorSpace
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     else
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsFreeLeftModule
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     fi;
-#T 
-#T     SetLeftActingDomain( V, R );
-#T     SetGeneratorsOfLeftModule( V, AsList( gens ) );
-#T 
-#T     return V;
-#T     end );
-#T 
-#T InstallOtherMethod( LeftModuleByGenerators, true,
-#T     [ IsRing, IsSCAlgebraObjCollection, IsSCAlgebraObj ], 0,
-#T     function( R, gens, zero )
-#T     local V;
-#T 
-#T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsLeftVectorSpace
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     else
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsFreeLeftModule
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     fi;
-#T 
-#T     SetLeftActingDomain( V, R );
-#T     SetGeneratorsOfLeftModule( V, AsList( mat ) );
-#T     SetZero( V, Immutable( zero ) );
-#T 
-#T     return V;
-#T     end );
-#T 
-#T 
-#T #############################################################################
-#T ##
-#T #M  FLMLORByGenerators( <R>, <gens> ) . . . . . . . for s.c. algebra elements
-#T #M  FLMLORByGenerators( <R>, <gens>, <zero> ) . . . for s.c. algebra elements
-#T ##
-#T InstallMethod( FLMLORByGenerators, true,
-#T     [ IsRing, IsSCAlgebraObjCollection ], 0,
-#T     function( R, gens )
-#T     local V;
-#T 
-#T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsAlgebra
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     else
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsFLMLOR
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     fi;
-#T 
-#T     SetLeftActingDomain( V, R );
-#T     SetGeneratorsOfLeftOperatorRing( V, AsList( gens ) );
-#T 
-#T     return V;
-#T     end );
-#T 
-#T InstallOtherMethod( FLMLORByGenerators, true,
-#T     [ IsRing, IsSCAlgebraObjCollection, IsSCAlgebraObj ], 0,
-#T     function( R, gens, zero )
-#T     local V;
-#T 
-#T     if HasIsDivisionRing( R ) and IsDivisionRing( R ) then
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsAlgebra
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     else
-#T       V:= Objectify( NewType( FamilyObj( R ),
-#T                                   IsFLMLOR
-#T                               and IsSCAlgebraObjSpace
-#T                               and IsAttributeStoringRep ),
-#T                      rec() );
-#T     fi;
-#T 
-#T     SetLeftActingDomain( V, R );
-#T     SetGeneratorsOfLeftOperatorRing( V, AsList( gens ) );
-#T     SetZero( V, Immutable( zero ) );
-#T 
-#T     return V;
-#T     end );
 
 
 #############################################################################
