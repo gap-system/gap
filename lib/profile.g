@@ -48,7 +48,7 @@ end;
 ##
 DisplayProfile := function( arg )
     local    prof,  tmp,  i,  p,  w,  j,  line,  str,  n,  s,  tsum,  other,
-             funcs,  k,  all,  nam,  tsto;
+             funcs,  k,  all,  nam,  tsto,  sum;
 
     # stop profiling of functions needed below
     for i  in PROFILED_FUNCTIONS  do
@@ -111,13 +111,14 @@ DisplayProfile := function( arg )
 
     # set width and names
     if ForAll( prof, i -> i[5] = 0 )  then
-        w := [ 7, 7, 7, -50 ];
-        p := [ 2, 3, 4,   1 ];
-        n := [ "count", "time", "self", "function" ];
+        w := [ 7, 7,  7,  7, -43 ];
+        p := [ 2, 4, -1, -2,   1 ];
+        n := [ "count", "self/ms", "sum/ms", "chld/ms", "function" ];
     else
-        w := [ 7, 7, 7, 7, 7, -30 ];
-        p := [ 2, 3, 4, 5, 6,   1 ];
-        n := [ "count", "time", "self", "stor", "self", "function" ];
+        w := [ 7, 7,  7, 7,  7, -30 ];
+        p := [ 2, 4, -1, 6, -3,   1 ];
+        n := [ "count", "self/ms", "chld/ms", "stor/kb", "chld/kb",
+               "function" ];
     fi;
     s := "  ";
 
@@ -150,13 +151,23 @@ DisplayProfile := function( arg )
     Print( line, "\n" );
 
     # print profile
+    sum := 0;
     for i  in prof  do
 	line := "";
 	for j  in [ 1 .. Length(p) ]  do
-	    str := FormattedString( i[p[j]], w[j] );
-  	    if Length(str) > AbsInt(w[j])  then
-	        str := str{[1..AbsInt(w[j])-1]};
-	        Add( str, '*' );
+            if p[j] = -1  then
+                sum := sum + i[4];
+                str := FormattedString( sum, w[j] );
+            elif p[j] = -2  then
+                str := FormattedString( i[3]-i[4], w[j] );
+            elif p[j] = -3  then
+                str := FormattedString( i[5]-i[6], w[j] );
+            else
+                str := FormattedString( i[p[j]], w[j] );
+            fi;
+            if Length(str) > AbsInt(w[j])  then
+                str := str{[1..AbsInt(w[j])-1]};
+                Add( str, '*' );
 	    fi;
 	    Append( line, str );
 	    Append( line, s   );
@@ -425,7 +436,7 @@ end;
 ##
 
 
-#F  DisplayRevision()
+#F  DisplayRevision() . . . . . . . . . . . . . . .  display revision entries
 ##
 DisplayRevision := function()
     local   names,  source,  library,  unknown,  name,  p,  s,  type,  
@@ -490,7 +501,7 @@ end;
 
 #############################################################################
 ##
-#F  DisplayCacheStats()
+#F  DisplayCacheStats() . . . . . . . . . . . . . .  display cache statistics
 ##
 DisplayCacheStats := function()
     local   cache,  names,  pos,  i;
@@ -546,7 +557,7 @@ end;
 
 #############################################################################
 ##
-#F  ClearCacheStats()
+#F  ClearCacheStats() . . . . . . . . . . . . . . . .  clear cache statistics
 ##
 ClearCacheStats := function()
     CLEAR_CACHE_INFO();
@@ -585,6 +596,7 @@ STOP_TEST := function( file, fac )
     Print( START_NAME, "\n" );
     Print( "GAP4stones: ", QuoInt( fac, time ), "\n" );
 end;
+
 
 #############################################################################
 ##

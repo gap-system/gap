@@ -683,7 +683,7 @@ InstallMethod( BasisByGeneratorsNC,
 ##  of the left module generators of <V>.
 ##
 ##  The second is available if <V> is a FLMLOR for that left operator
-##  (unital) ring generators are known;
+##  ring(-with-one) generators are known;
 ##  it calls 'PrepareNiceFreeLeftModule( <V> )'
 ##  and then computes left module generators of <V> via the process of
 ##  closing a basis under multiplications.
@@ -723,8 +723,8 @@ NiceFreeLeftModuleForFLMLOR := function( A, side )
     PrepareNiceFreeLeftModule( A );
 
     # Get the appropriate algebra generators.
-    if HasGeneratorsOfLeftOperatorUnitalRing( A ) then
-      Agens:= GeneratorsOfLeftOperatorUnitalRing( A );
+    if HasGeneratorsOfLeftOperatorRingWithOne( A ) then
+      Agens:= GeneratorsOfLeftOperatorRingWithOne( A );
     else
       Agens:= GeneratorsOfLeftOperatorRing( A );
     fi;

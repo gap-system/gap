@@ -446,12 +446,13 @@ RootSystem := NewAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
 
 ##############################################################################
 ##
-#F  SimpleLieAlgebra( <type>, <n> )
+#F  SimpleLieAlgebra( <type>, <n>, <F> )
 ##
 ##  This function constructs the simple Lie algebra of type <type> and
-##  of rank <n>.
+##  of rank <n> over the field <F>.
 ##
-##  <type> must be one of "A", "B", "C", "D", "E", "F", "G".
+##  <type> must be one of "A", "B", "C", "D", "E", "F", "G",
+##  "H", "K", "S", "W".
 ##
 SimpleLieAlgebra := NewOperationArgs( "SimpleLieAlgebra" );
 

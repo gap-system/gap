@@ -703,9 +703,9 @@ InstallMethod( RingByGenerators,
 
 #############################################################################
 ##
-#M  UnitalRingByGenerators( <elms> )  . . . . . . . . . .  ring by generators
+#M  RingWithOneByGenerators( <elms> ) . . . . . . . . . .  for FFE collection
 ##
-InstallMethod( UnitalRingByGenerators,
+InstallMethod( RingWithOneByGenerators,
     "method for a collection of FFE",
     true,
     [ IsFFECollection ], 0,

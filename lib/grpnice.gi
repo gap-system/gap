@@ -535,6 +535,23 @@ end );
 
 #############################################################################
 ##
+#M  IsomorphismPcGroup
+##
+InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
+  [IsGroup and IsHandledByNiceMonomorphism],0,
+function(g)
+local mon,iso;
+   mon:=NiceMonomorphism(g);
+   iso:=IsomorphismPcGroup(NiceObject(g));
+   if iso=fail then
+     return fail;
+   else
+     return mon*iso;
+   fi;
+end);
+
+#############################################################################
+##
 
 #E  grpnice.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

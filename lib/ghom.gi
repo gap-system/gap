@@ -12,28 +12,6 @@ Revision.ghom_gi :=
 
 #############################################################################
 ##
-#M  <hom1> = <hom2> . . . . . . . . . . . . . . . . . for group homomorphisms
-##
-InstallMethod( \=, IsIdentical, [ IsGroupHomomorphism, IsGroupHomomorphism ],
- 0, function( hom1, hom2 )
-    local   gen;
-    
-    if    Source( hom1 ) <> Source( hom2 )
-       or Range ( hom1 ) <> Range ( hom2 )  then
-        return false;
-    fi;
-    for gen  in GeneratorsOfGroup( Source( hom1 ) )  do
-        if ImagesRepresentative( hom1, gen ) <>
-           ImagesRepresentative( hom2, gen )  then
-            return false;
-        fi;
-    od;
-    return true;
-end );
-
-
-#############################################################################
-##
 
 #M  <a> = <b> . . . . . . . . . . . . . . . . . . . . . . . . . .  via images
 ##
@@ -52,6 +30,9 @@ InstallMethod( CompositionMapping2, "using `AsGroupGeneralMappingByImages'",
         FamSource1EqFamRange2,
         [ IsGroupHomomorphism, IsGroupGeneralMapping ], 0,
     function( hom1, hom2 )
+    if not KnowsHowToDecompose(Source(hom2)) then
+      TryNextMethod();
+    fi;
     hom2 := AsGroupGeneralMappingByImages( hom2 );
     return GroupGeneralMappingByImages( Source( hom2 ), Range( hom1 ),
            hom2!.generators, List( hom2!.genimages, img ->
@@ -62,10 +43,29 @@ InstallMethod( CompositionMapping2, "using `AsGroupGeneralMappingByImages'",
         FamSource1EqFamRange2,
         [ IsGroupHomomorphism, IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
+    if not KnowsHowToDecompose(Source(hom2)) then
+      TryNextMethod();
+    fi;
     hom2 := AsGroupGeneralMappingByImages( hom2 );
     return GroupHomomorphismByImages( Source( hom2 ), Range( hom1 ),
            hom2!.generators, List( hom2!.genimages, img ->
                    ImagesRepresentative( hom1, img ) ) );
+end );
+
+#############################################################################
+##
+#M  Inverse( <hom> )  . . . . . . . . . . . . . . . . . . . . . .  via images
+##
+InstallOtherMethod( Inverse, true,
+        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
+    hom -> Inverse( AsGroupGeneralMappingByImages( hom ) ) );
+
+InstallOtherMethod( SetInverse, true,
+        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
+          IsGeneralMapping ], SUM_FLAGS,
+    function( hom, inv )
+    SetInverse( AsGroupGeneralMappingByImages( hom ), inv );
+    TryNextMethod();
 end );
 
 #############################################################################
@@ -601,6 +601,14 @@ GroupIsomorphismByFunctions := function( G, H, I, P )
     return hom;
 end;
 
+
+#############################################################################
+##
+##  Local Variables:
+##  mode:             outline-minor
+##  outline-regexp:   "#[WCROAPMFVE]"
+##  fill-column:      77
+##  End:
 
 #############################################################################
 ##

@@ -357,7 +357,7 @@ ALN := NotifyCharTableName;
 ##
 ALF := function( arg )
 
-    local pos;
+    local pos, text;
 
     if ALN <> Ignore then
 
@@ -383,9 +383,10 @@ ALF := function( arg )
     fi;
 
     if Length( arg ) = 4 then
+      text:= Concatenation( arg[4] );
+      ConvertToStringRep( text );
       Add( LIBTABLE.( TABLEFILENAME ).( arg[1] ).fusions,
-           rec( name:= arg[2], map:= arg[3],
-                text:= Concatenation( arg[4] ) ) );
+           rec( name:= arg[2], map:= arg[3], text:= text ) );
     else
       Add( LIBTABLE.( TABLEFILENAME ).( arg[1] ).fusions,
            rec( name:= arg[2], map:= arg[3] ) );
@@ -1566,6 +1567,7 @@ CharTableLibrary := function( arglist )
 #T change back after comparison of the library!
       if IsBound( libtbl.text ) and IsString( libtbl.text[1] ) then
         libtbl.text:= Concatenation( libtbl.text );
+        ConvertToStringRep( libtbl.text );
       fi;
 
       # Store the fusion sources.

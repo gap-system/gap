@@ -203,6 +203,12 @@ VectorSpaceByPcgsOfElementaryAbelianGroup := NewOperationArgs(
 ##
 GapInputPcGroup := NewOperationArgs( "GapInputPcGroup" );
 
+#############################################################################
+##
+#O  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
+##
+CanonicalSubgroupRepresentativePcGroup :=
+  NewOperationArgs( "CanonicalSubgroupRepresentativePcGroup" );
 
 #############################################################################
 ##

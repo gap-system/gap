@@ -246,6 +246,68 @@ end;
 #############################################################################
 ##
 
+#O  GeneralLinearGroupCons( <filter>, <d>, <q> )
+##
+GeneralLinearGroupCons := NewConstructor(
+    "GeneralLinearGroupCons",
+    [ IsGroup, IsInt, IsInt ] );
+
+
+#############################################################################
+##
+#F  GeneralLinearGroup( <d>, <q> )  . . . . . . . . . .  general linear group
+##
+GeneralLinearGroup := function ( arg )
+
+    if Length(arg) = 2  then
+        return GeneralLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+        return GeneralLinearGroupCons( arg[1], arg[2], arg[3] );
+
+    else
+        Error( "usage: GeneralLinearGroup( <d>, <q> )" );
+    fi;
+
+end;
+
+GL := GeneralLinearGroup;
+
+
+#############################################################################
+##
+
+#O  SpecialLinearGroupCons( <filter>, <d>, <q> )
+##
+SpecialLinearGroupCons := NewConstructor(
+    "SpecialLinearGroupCons",
+    [ IsGroup, IsInt, IsInt ] );
+
+
+#############################################################################
+##
+#F  SpecialLinearGroup( <d>, <q> )  . . . . . . . . . .  special linear group
+##
+SpecialLinearGroup := function ( arg )
+
+    if Length(arg) = 2  then
+        return SpecialLinearGroupCons( IsMatrixGroup, arg[1], arg[2] );
+
+    elif Length(arg) = 3  then
+        return SpecialLinearGroupCons( arg[1], arg[2], arg[3] );
+
+    else
+        Error( "usage: SpecialLinearGroup( <d>, <q> )" );
+    fi;
+
+end;
+
+SL := SpecialLinearGroup;
+
+
+#############################################################################
+##
+
 #O  SymmetricGroupCons( <filter>, <deg> )
 ##
 SymmetricGroupCons := NewConstructor(

@@ -17,11 +17,11 @@ Revision.domain_gi :=
 #M  SetParent( <D>, <P> ) . . . . . . . method to run the subset implications
 ##
 InstallMethod( SetParent,
-    "method that calls 'RunSubsetImplications'",
+    "method that calls 'UseSubsetRelation'",
     IsIdentical,
     [ IsDomain, IsDomain ], SUM_FLAGS,
     function( D, P )
-    RunSubsetImplications( P, D );
+    UseSubsetRelation( P, D );
     TryNextMethod();
     end );
 
@@ -65,6 +65,17 @@ InstallOtherMethod( DomainByGenerators, true,
     SetGeneratorsOfDomain( D, AsList( generators ) );
     return D;
     end );
+
+
+#############################################################################
+##
+#M  FinalizeDomain( <D> ) . . . . . . . . . . . . . . . . . .  default method
+##
+InstallMethod( FinalizeDomain,
+    "default method 'Ignore'",
+    true,
+    [ IsDomain ], 0,
+    Ignore );
 
 
 #############################################################################

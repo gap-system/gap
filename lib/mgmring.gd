@@ -56,9 +56,9 @@ IsFreeMagmaRing := NewCategory( "IsFreeMagmaRing", IsFLMLOR );
 
 #############################################################################
 ##
-#C  IsFreeMagmaUnitalRing( <obj> )
+#C  IsFreeMagmaRingWithOne( <obj> )
 ##
-IsFreeMagmaUnitalRing := IsFreeMagmaRing and IsMagmaWithOne;
+IsFreeMagmaRingWithOne := IsFreeMagmaRing and IsMagmaWithOne;
 
 
 #############################################################################

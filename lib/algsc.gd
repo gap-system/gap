@@ -10,7 +10,7 @@
 ##  constants (s.c.).
 ##
 ##  An s. c. algebra is a free left module $A$ of fixed dimension $n$, say,
-##  over a unital ring $R$, with multiplication defined on the vectors of
+##  over a ring-with-one $R$, with multiplication defined on the vectors of
 ##  the standard basis $B$ of $A$ by the structure constants table.
 ##
 ##  A *full s.c. algebra* is an s.c. algebra that contains $B$.
@@ -77,7 +77,7 @@ IsSCAlgebraObjFamily := CategoryFamily( "IsSCAlgebraObjFamily",
 #P  IsFullSCAlgebra( <A> )
 ##
 ##  An s. c. algebra is a free left module $A$ of fixed dimension $n$, say,
-##  over a unital ring $R$, with multiplication defined on the vectors of
+##  over a ring-with-one $R$, with multiplication defined on the vectors of
 ##  the standard basis $B$ of $A$ by the structure constants table.
 ##
 ##  A *full s.c. algebra* is an s.c. algebra that contains $B$.

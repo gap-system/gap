@@ -56,6 +56,10 @@ InstallMethod( MutableBasisByGenerators,
     function( R, vectors )
     local B;
 
+    if ForAll( vectors, IsZero ) then
+      return MutableBasisByGenerators( R, [], vectors[1] );
+    fi;
+
     B:= rec(
              immutableBasis   := BasisOfDomain(
                                      LeftModuleByGenerators( R, vectors ) ),
@@ -180,6 +184,10 @@ IsMutableBasisViaNiceMutableBasisRep := NewRepresentation(
 MutableBasisViaNiceMutableBasisMethod2 := function( R, vectors )
 
     local M, nice, B;
+
+    if ForAll( vectors, IsZero ) then
+      return MutableBasisViaNiceMutableBasisMethod3( R, [], vectors[1] );
+    fi;
 
     M:= LeftModuleByGenerators( R, vectors );
     PrepareNiceFreeLeftModule( M );

@@ -112,23 +112,53 @@ end );
 #############################################################################
 ##
 
-#M  <pcgs1> mod <pcgs2>
+#M  ModuloParentPcgs( <pcgs> )
 ##
-InstallMethod( MOD,
-    IsIdentical,
+InstallMethod( ModuloParentPcgs,
+    true,
+    [ IsPcgs ],
+    0,
+    pcgs -> ParentPcgs( pcgs ) mod pcgs );
+
+
+#############################################################################
+##
+#M  ModuloPcgsByPcSequenceNC( <home>, <pcs>, <modulo> )
+##
+InstallMethod( ModuloPcgsByPcSequenceNC,
+    "generic method",
+    true,
     [ IsPcgs,
-      IsPcgs ],
+      IsList,
+      IsInducedPcgs ],
     0,
 
-function( pcgs, modulo )
-    local   wm,  pcs,  filter,  new,  wd,  i;
+function( home, list, modulo )
+    local   pcgs,  wm,  wp,  wd,  pcs,  filter,  new,  i;
 
-    # compute the weights in <modulo>
-    wm := List( modulo, x -> DepthOfPcElement( pcgs, x ) );
+    # <list> is a pcgs for the sum of <list> and <modulo>
+    if IsPcgs(list) and ParentPcgs(modulo) = list  then
+        pcgs := list;
+        wm   := List( modulo, x -> DepthOfPcElement( pcgs, x ) );
+        wp   := [ 1 .. Length(list) ];
+        wd   := Difference( wp, wm );
+        pcs  := list{wd};
 
-    # remove these elements from <pcgs>
-    wd  := Difference( [1..Length(pcgs)], wm );
-    pcs := pcgs{wd};
+    # otherwise compute the sum
+    else
+        pcgs := SumPcgs( home, modulo, list );
+        wm   := List( modulo, x -> DepthOfPcElement( pcgs, x ) );
+        wp   := List( list,   x -> DepthOfPcElement( pcgs, x ) );
+        if not IsSubset( pcgs, list )  then
+            pcgs := List(pcgs);
+            for i  in [ 1 .. Length(list) ]  do
+                pcgs[wp[i]] := list[i];
+            od;
+            pcgs := InducedPcgsByPcSequenceNC( home, pcgs );
+        fi;
+        wd   := Difference( wp, wm );
+        pcs  := list{ List( wd, x -> Position( wp, x ) ) };
+    fi;
 
     # check which filter to use
     filter := IsModuloPcgs;
@@ -136,6 +166,12 @@ function( pcgs, modulo )
         filter := filter and IsModuloTailPcgsRep;
     else
         filter := filter and IsModuloPcgsRep;
+    fi;
+    if IsFiniteOrdersPcgs(pcgs)  then
+        filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    fi;
+    if IsPrimeOrdersPcgs(pcgs)  then
+        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs;
     fi;
 
     # construct a pcgs from <pcs>
@@ -147,12 +183,6 @@ function( pcgs, modulo )
 
     # store the one and other information
     SetOneOfPcgs( new, OneOfPcgs(pcgs) );
-    if IsFiniteOrdersPcgs(pcgs)  then
-        SetIsFiniteOrdersPcgs( new, true );
-    fi;
-    if IsPrimeOrdersPcgs(pcgs)  then
-        SetIsPrimeOrdersPcgs( new, true );
-    fi;
     SetRelativeOrders( new, RelativeOrders(pcgs){wd} );
 
     # store other useful information
@@ -173,6 +203,60 @@ function( pcgs, modulo )
     # and return
     return new;
 
+end );
+
+
+#############################################################################
+##
+#M  ModuloPcgsByPcSequence( <home>, <pcs>, <modulo> )
+##
+InstallMethod( ModuloPcgsByPcSequence,
+    "generic method",
+    true,
+    [ IsPcgs,
+      IsList,
+      IsInducedPcgs ],
+    0,
+
+function( home, list, modulo )
+    return ModuloPcgsByPcSequenceNC( home, list, modulo );
+end );
+
+
+#############################################################################
+##
+
+#M  <pcgs1> mod <induced-pcgs2>
+##
+InstallMethod( MOD,
+    IsIdentical,
+    [ IsPcgs,
+      IsInducedPcgs ],
+    0,
+
+function( pcgs, modulo )
+    if ParentPcgs(modulo) <> pcgs  then
+        TryNextMethod();
+    fi;
+    return ModuloPcgsByPcSequenceNC( pcgs, pcgs, modulo );
+end );
+
+
+#############################################################################
+##
+#M  <induced-pcgs1> mod <induced-pcgs2>
+##
+InstallMethod( MOD,
+    IsIdentical,
+    [ IsInducedPcgs,
+      IsInducedPcgs ],
+    0,
+
+function( pcgs, modulo )
+    if ParentPcgs(modulo) <> ParentPcgs(pcgs)  then
+        TryNextMethod();
+    fi;
+    return ModuloPcgsByPcSequenceNC( ParentPcgs(pcgs), pcgs, modulo );
 end );
 
 
@@ -234,9 +318,9 @@ end );
 #M  ExponentsOfPcElement( <pcgs>, <elm>, <poss> )
 ##
 InstallOtherMethod( ExponentsOfPcElement,
-    "with positions, falling back to ExponentsOfPcElement",
+    "pcgs modulo pcgs with positions, falling back to ExponentsOfPcElement",
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
-    [ IsPcgs,
+    [ IsModuloPcgs,
       IsObject,
       IsList ],
     0,
@@ -489,17 +573,6 @@ InstallOtherMethod( RelativeOrderOfPcElement,
 function( pcgs, elm )
     return RelativeOrderOfPcElement( NumeratorOfModuloPcgs(pcgs), elm );
 end );
-
-#############################################################################
-##
-#M  ModuloParentPcgs( <pcgs> ) 	. . . . . . . . . . . . . . delegate the task
-##
-InstallMethod( ModuloParentPcgs,
-    true,
-    [ IsPcgs ],
-    0,
-    pcgs -> ParentPcgs( pcgs ) mod pcgs );
-
 
 #############################################################################
 ##

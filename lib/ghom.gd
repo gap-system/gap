@@ -42,7 +42,7 @@ NaturalHomomorphismByNormalSubgroupInParent := NewAttribute(
 
 IsGroupGeneralMappingByImages := NewRepresentation
     ( "IsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsAttributeStoringRep,
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
       [ "generators", "genimages", "elements", "images" ] );
 
 IsGroupGeneralMappingByPcgs := NewRepresentation
@@ -51,7 +51,8 @@ IsGroupGeneralMappingByPcgs := NewRepresentation
 
 IsGroupGeneralMappingByAsGroupGeneralMappingByImages := NewRepresentation
     ( "IsGroupGeneralMappingByAsGroupGeneralMappingByImages",
-      IsGroupGeneralMapping and IsAttributeStoringRep, [  ] );
+      IsGroupGeneralMapping and IsSPGeneralMapping and IsAttributeStoringRep,
+      [  ] );
 
 AsGroupGeneralMappingByImages := NewAttribute( "AsGroupGeneralMappingByImages",
     IsGroupGeneralMapping );
@@ -63,7 +64,9 @@ InnerAutomorphism := NewOperation( "InnerAutomorphism",
 
 IsInnerAutomorphismRep := NewRepresentation( "IsInnerAutomorphismRep",
     IsGroupHomomorphism and IsBijective and IsAttributeStoringRep
-    and IsMultiplicativeElementWithInverse, [ "conjugator" ] );
+    and IsMultiplicativeElementWithInverse and IsSPGeneralMapping,
+    [ "conjugator" ] );
+
 
 #############################################################################
 ##
@@ -74,9 +77,10 @@ IsInnerAutomorphismRep := NewRepresentation( "IsInnerAutomorphismRep",
 ##
 IsNaturalHomomorphismPcGroupRep := NewRepresentation
     ( "IsNaturalHomomorphismPcGroupRep",
-      IsGroupHomomorphism and IsSurjective and
-      IsComponentObjectRep and IsAttributeStoringRep,
+      IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
+      IsAttributeStoringRep,
       [ "pcgsSource", "pcgsRange" ] );
+
 
 #############################################################################
 ##
@@ -84,9 +88,10 @@ IsNaturalHomomorphismPcGroupRep := NewRepresentation
 ##
 IsLeftQuotientNaturalHomomorphisms := NewRepresentation
     ( "IsLeftQuotientNaturalHomomorphisms",
-      IsGroupHomomorphism and IsSurjective and
-      IsComponentObjectRep and IsAttributeStoringRep,
+      IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
+      IsAttributeStoringRep,
       [ "modM", "modN" ] );
+
 
 #############################################################################
 ##
@@ -101,9 +106,13 @@ IsLeftQuotientNaturalHomomorphismsPcGroup := NewRepresentation
       IsLeftQuotientNaturalHomomorphisms,
       [ "modM", "modN" ] );
 
-FilterGroupGeneralMappingByImages := NewOperationArgs( "FilterGroupGeneralMappingByImages" );
+FilterGroupGeneralMappingByImages := NewOperationArgs(
+    "FilterGroupGeneralMappingByImages" );
+
 MakeMapping := NewOperationArgs( "MakeMapping" );
-GroupIsomorphismByFunctions := NewOperationArgs( "GroupIsomorphismByFunctions" );
+GroupIsomorphismByFunctions := NewOperationArgs(
+    "GroupIsomorphismByFunctions" );
+
 
 #############################################################################
 ##

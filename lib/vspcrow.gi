@@ -1382,7 +1382,7 @@ InstallMethod( MutableBasisByGenerators,
                      rec(
                           basisVectors:= ShallowCopy( newvectors.vectors ),
                           heads:= ShallowCopy( newvectors.heads ),
-                          zero:= Zero( newvectors.vectors[1] ),
+                          zero:= Zero( vectors[1] ),
                           leftActingDomain := R
                           ) );
 

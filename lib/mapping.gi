@@ -56,6 +56,32 @@ InstallMethod( IsFinite,
 
 #############################################################################
 ##
+#M  IsOne( <map> )  . . . . . . . . . . . . . . . . . . . for general mapping
+##
+InstallOtherMethod( IsOne,
+    "method for general mapping",
+    true,
+    [ IsGeneralMapping ], 0,
+    map ->     Source( map ) = Range( map )
+           and IsBijective( map )
+           and ForAll( Source( map ), elm -> ImageElm( map, elm ) = elm ) );
+
+
+#############################################################################
+##
+#M  IsZero( <map> ) . . . . . . . . . . . . . . . . . . . for general mapping
+##
+InstallOtherMethod( IsZero,
+    "method for general mapping",
+    true,
+    [ IsGeneralMapping ], 0,
+    map ->     Zero( Range( map ) ) <> fail
+           and IsTotal( map )
+           and ImagesSource( map ) = [ Zero( Range( map ) ) ] );
+
+
+#############################################################################
+##
 #M  Enumerator( <map> ) . . . . . . . . . . . . . . . . . for general mapping
 ##
 InstallMethod( Enumerator,
@@ -107,6 +133,28 @@ InstallMethod( \in,
     return elm[2] in ImagesElm( map, elm[1] );
     end );
 
+
+#############################################################################
+##
+#M  Size( <map> ) . . . . . . . . . . . . . . . . . . . . . . . for a mapping
+##
+InstallMethod( Size,
+    "method for a (total and single-valued) mapping",
+    true,
+    [ IsGeneralMapping and IsTotal and IsSingleValued ], 0,
+    map -> Size( Source( map ) ) );
+    
+
+#############################################################################
+##
+#M  Size( <map> ) . . . . . . for an injective and surjective general mapping
+##
+InstallMethod( Size,
+    "method for an injective and surjective mapping",
+    true,
+    [ IsGeneralMapping and IsInjective and IsSurjective ], 0,
+    map -> Size( Range( map ) ) );
+    
 
 #############################################################################
 ##
@@ -633,6 +681,18 @@ InstallOtherMethod( \/,
 ##
 #M  ImageElm( <map>, <elm> )  . . . . . . . . . . . . for mapping and element
 ##
+InstallOtherMethod( ImageElm,
+    "method for general mapping, and element",
+    FamSourceEqFamElm,
+    [ IsGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not ( IsSingleValued( map ) and IsTotal( map ) ) then
+      Error( "<map> must be single-valued and total" );
+    fi;
+    return ImageElm( map, elm );
+    end );
+
+
 InstallMethod( ImageElm,
     "method for mapping, and element",
     FamSourceEqFamElm,
@@ -646,7 +706,7 @@ InstallMethod( ImageElm,
 ##
 InstallMethod( ImagesElm,
     "method for non s.p. general mapping, and element",
-    true,
+    FamSourceEqFamElm,
     [ IsNonSPGeneralMapping, IsObject ], 0,
     function( map, elm )
     Error( "no default function to compute images of <elm> under <map>" );
@@ -659,7 +719,7 @@ InstallMethod( ImagesElm,
 ##
 InstallMethod( ImagesElm,
     "method for general mapping with enumerator, and element",
-    true,
+    FamSourceEqFamElm,
     [ IsGeneralMapping and HasEnumerator, IsObject ], 0,
     function( map, elm )
     local imgs, pair;
@@ -761,6 +821,17 @@ InstallMethod( ImagesRepresentative,
 ##
 #M  PreImageElm( <map>, <elm> )
 ##
+InstallOtherMethod( PreImageElm,
+    "method for general mapping, and element",
+    FamRangeEqFamElm,
+    [ IsGeneralMapping, IsObject ], 0,
+    function( map, elm )
+    if not ( IsInjective( map ) and IsSurjective( map ) ) then
+      Error( "<map> must be injective and surjective" );
+    fi;
+    return PreImageElm( map, elm );
+    end );
+
 InstallMethod( PreImageElm,
     "method for inj. & surj. general mapping, and element",
     FamRangeEqFamElm,

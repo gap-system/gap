@@ -324,14 +324,14 @@ InstallMethod( \=, IsIdentical,
     end );
 
 InstallMethod( \=, IsIdentical,
-    [ IsMapping and IsIdentityMappingRep, IsFrobeniusAutomorphism ], 0,
+    [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
     function ( id, aut )
     return Source( id ) = Source( aut ) and aut!.power = 1;
 #T ReturnFalse?
     end );
 
 InstallMethod( \=, IsIdentical,
-    [ IsFrobeniusAutomorphism, IsMapping and IsIdentityMappingRep ], 0,
+    [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
     function ( aut, id )
     return Source( id ) = Source( aut ) and aut!.power = 1;
 #T ReturnFalse?
@@ -388,7 +388,7 @@ InstallMethod( \^, true, [ IsFrobeniusAutomorphism, IsInt ], 0,
     end );
 
 InstallMethod( \<, IsIdentical,
-    [ IsMapping and IsIdentityMappingRep, IsFrobeniusAutomorphism ], 0,
+    [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
     function ( id, aut )
     local source1, # source of 'id'
           source2, # source of 'aut'
@@ -422,7 +422,7 @@ InstallMethod( \<, IsIdentical,
     end );
 
 InstallMethod( \<, IsIdentical,
-    [ IsFrobeniusAutomorphism, IsMapping and IsIdentityMappingRep ], 0,
+    [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
     function ( aut, id )
     local source1, # source of 'aut'
           source2, # source of 'id'

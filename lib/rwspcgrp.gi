@@ -296,7 +296,7 @@ InstallMethod( \^,
 #M  <IsNBitsPcWordRep> ^ <small-int>
 ##
 InstallMethod( \^,
-    "generic method for n bits pc word rep",
+    "generic method for n bits pc word rep and small int",
     true,
     [ IsMultiplicativeElementWithInverseByPolycyclicCollector
         and IsNBitsPcWordRep, 

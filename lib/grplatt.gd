@@ -1,8 +1,6 @@
 #############################################################################
 ##
 #W  grplatt.gd                GAP library                   Martin Sch"onert,
-#W                                                          J"urgen Mnich,
-#AH        How much of the code dates back to Mnich ?
 #W                                                          Alexander Hulpke
 ##
 #H  @(#)$Id$

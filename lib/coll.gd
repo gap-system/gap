@@ -112,6 +112,202 @@ end;
 
 #############################################################################
 ##
+#O  UseSubsetRelation( <super>, <sub> )
+##
+##  Methods for this operation deduce possibly useful information from the
+##  collection <super> to its subset <sub>, or vice versa.
+##
+##  'UseSubsetRelation' is called automatically whenever substructures
+##  of domains are constructed.
+##  So the methods must be *cheap*, and the requirements should be as
+##  sharp as possible!
+##
+##  To achieve that *all* applicable methods are executed, all methods for
+##  this operation except the default method installed below must end with
+##  'TryNextMethod()'.
+##
+UseSubsetRelation := NewOperation( "UseSubsetRelation",
+    [ IsCollection, IsCollection ] );
+
+InstallMethod( UseSubsetRelation,
+    "default method that returns 'true'",
+    IsIdentical,
+    [ IsCollection, IsCollection ], 0,
+    function( super, sub )
+    return true;
+    end );
+
+
+#############################################################################
+##
+#F  InstallSubsetMaintainedMethod( <opr>, <super_req>, <sub_req> )
+##
+##  <opr> must be a property or an attribute.
+##  Let $S$ be a domain that has the property <sub_req> and is known to be a
+##  subset of a domain $D$ such that $D$ has the property <super_req>
+##  and such that the value of <opr> is known for $D$.
+##  Then the value of <opr> for $S$ shall be the same as the value for $D$.
+##
+InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
+    local setter, tester, infostring;
+
+    setter:= Setter( operation );
+    tester:= Tester( operation );
+    infostring:= "method for operation ";
+    APPEND_LIST_INTR( infostring, NAME_FUNCTION( operation ) );
+
+    InstallMethod( UseSubsetRelation,
+        infostring,
+        IsIdentical,
+        [ IsCollection and Tester( super_req ) and super_req and tester,
+          IsCollection and Tester( sub_req ) and sub_req ], 0,
+        function( super, sub )
+        if not tester( sub ) then
+          setter( sub, operation( super ) );
+        fi;
+#T argument for ``antifilters'' ?
+        TryNextMethod();
+        end );
+end;
+
+
+#############################################################################
+##
+#O  UseIsomorphismRelation( <old>, <new> )
+##
+##  Methods for this operation deduce possibly useful information from the
+##  collection <old> to the isomorphic collection <new>.
+##
+##  'UseIsomorphismRelation' is called automatically whenever isomorphic
+##  structures of domains are constructed.
+##  So the methods must be *cheap*, and the requirements should be as
+##  sharp as possible!
+##
+##  To achieve that *all* applicable methods are executed, all methods for
+##  this operation except the default method installed below must end with
+##  'TryNextMethod()'.
+##
+UseIsomorphismRelation := NewOperation( "UseIsomorphismRelation",
+    [ IsCollection, IsCollection ] );
+
+InstallMethod( UseIsomorphismRelation,
+    "default method that returns 'true'",
+    true,
+    [ IsCollection, IsCollection ], 0,
+    function( old, new )
+    return true;
+    end );
+
+
+#############################################################################
+##
+#F  InstallIsomorphismMaintainedMethod( <opr>, <old_req>, <new_req> )
+##
+##  <opr> must be a property or an attribute.
+##  Let $D$ be a domain that has the property <new_req> and is known to be
+##  isomorphic to a domain $E$ such that $E$ has the property <old_req>
+##  and such that the value of <opr> is known for $E$.
+##  Then the value of <opr> for $D$ shall be the same as the value for $E$.
+##
+InstallIsomorphismMaintainedMethod := function( opr, old_req, new_req )
+    local setter, tester, infostring;
+
+    setter:= Setter( opr );
+    tester:= Tester( opr );
+    infostring:= "method for operation ";
+    APPEND_LIST_INTR( infostring, NAME_FUNCTION( opr ) );
+
+    InstallMethod( UseIsomorphismRelation,
+        infostring,
+        true,
+        [ IsCollection and Tester( old_req ) and old_req and tester,
+          IsCollection and Tester( new_req ) and new_req ], 0,
+        function( old, new )
+        if not tester( new ) then
+          setter( new, opr( old ) );
+        fi;
+        TryNextMethod();
+        end );
+end;
+
+
+#############################################################################
+##
+#O  UseFactorRelation( <numer>, <denom>, <factor> )
+##
+##  Methods for this operation deduce possibly useful information from the
+##  collection <numer> or its subset <denom> to the collection <factor> that
+##  is isomorphic to the factor of <numer> by <denom>, or vice versa.
+##
+##  'UseFactorRelation' is called automatically whenever factor structures
+##  of domains are constructed.
+##  So the methods must be *cheap*, and the requirements should be as
+##  sharp as possible!
+##
+##  To achieve that *all* applicable methods are executed, all methods for
+##  this operation except the default method installed below must end with
+##  'TryNextMethod()'.
+##
+UseFactorRelation := NewOperation( "UseFactorRelation",
+    [ IsCollection, IsCollection, IsCollection ] );
+
+IsIdenticalObjObjX := function( F1, F2, F3 )
+    return IsIdentical( F1, F2 );
+end;
+
+InstallMethod( UseFactorRelation,
+    "default method that returns 'true'",
+    IsIdenticalObjObjX,
+    [ IsCollection, IsCollection, IsCollection ], 0,
+    function( numer, denom, factor )
+    return true;
+    end );
+
+
+#############################################################################
+##
+#F  InstallFactorMaintainedMethod( <opr>, <numer_req>, <denom_req>,
+#F                                 <factor_req> )
+##
+##  <opr> must be a property or an attribute.
+##  Let $F$ be a domain that has the property <factor_req> and is known to be
+##  the homomorphic image of a domain $D$ with the property <numer_req> by a
+##  domain with the property <denom_req>
+##  such that the value of <opr> is known for $D$.
+##  Then the value of <opr> for $F$ shall be the same as the value for $D$.
+##
+##  Note that the implications installed by 'InstallFactorMaintainedMethod'
+##  can be used in the case of isomorphisms.
+##  So they should *not* be installed also as isomorphism maintained methods.
+##
+InstallFactorMaintainedMethod := function( opr, numer_req, denom_req,
+                                           factor_req )
+    local setter, tester, infostring;
+
+    InstallIsomorphismMaintainedMethod( opr, numer_req, factor_req );
+
+    setter:= Setter( opr );
+    tester:= Setter( opr );
+    infostring:= "method for operation ";
+    APPEND_LIST_INTR( infostring, NAME_FUNCTION( opr ) );
+
+    InstallMethod( UseFactorRelation,
+        infostring,
+        IsIdenticalObjObjX,
+        [ IsCollection and Tester( numer_req ) and numer_req and tester,
+          IsCollection and Tester( denom_req ) and denom_req,
+          IsCollection and Tester( factor_req ) and factor_req ], 0,
+        function( numer, denom, factor )
+        if not tester( factor ) then
+          setter( factor, opr( numer ) );
+        fi;
+        TryNextMethod();
+        end );
+end;
+
+
+#############################################################################
+##
 #C  IsIterator(<obj>) . . . . . . . . . . .  test if an object is an iterator
 ##
 IsIterator :=
@@ -189,9 +385,9 @@ IsFinite :=
 SetIsFinite := Setter( IsFinite );
 HasIsFinite := Tester( IsFinite );
 
-InstallSubsetTrueMethod( IsFinite,
+InstallSubsetMaintainedMethod( IsFinite,
     IsCollection and IsFinite, IsCollection );
-InstallFactorTrueMethod( IsFinite,
+InstallFactorMaintainedMethod( IsFinite,
     IsCollection and IsFinite, IsCollection, IsCollection );
 
 InstallTrueMethod( IsFinite, IsTrivial );
@@ -220,6 +416,9 @@ Size :=
         IsListOrCollection );
 SetSize := Setter( Size );
 HasSize := Tester( Size );
+
+InstallIsomorphismMaintainedMethod( Size,
+    IsCollection, IsCollection );
 
 
 #############################################################################

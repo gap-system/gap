@@ -23,6 +23,36 @@ IsModuloPcgs := NewCategory(
     IsHomogeneousList and IsDuplicateFreeList 
     and IsMultiplicativeElementWithInverseCollection );
 
+#############################################################################
+##
+
+#O  ModuloPcgsByPcSequenceNC( <home>, <pcs>, <modulo> )
+##
+ModuloPcgsByPcSequenceNC := NewOperation(
+    "ModuloPcgsByPcSequenceNC",
+    [ IsPcgs, IsList, IsPcgs ] );
+
+
+#############################################################################
+##
+#O  ModuloPcgsByPcSequence( <home>, <pcs>, <modulo> )
+##
+ModuloPcgsByPcSequence := NewOperation(
+    "ModuloPcgsByPcSequence",
+    [ IsPcgs, IsList, IsPcgs ] );
+
+
+#############################################################################
+##
+#A  ModuloParentPcgs( <pcgs> )
+##
+ModuloParentPcgs := NewAttribute(
+    "ModuloParentPcgs",
+    IsPcgs );
+
+SetModuloParentPcgs := Setter(ModuloParentPcgs);
+HasModuloParentPcgs := Tester(ModuloParentPcgs);
+
 
 #############################################################################
 ##
@@ -47,18 +77,6 @@ NumeratorOfModuloPcgs := NewAttribute(
 
 SetNumeratorOfModuloPcgs := Setter(NumeratorOfModuloPcgs);
 HasNumeratorOfModuloPcgs := Tester(NumeratorOfModuloPcgs);
-
-
-#############################################################################
-##
-#A  ModuloParentPcgs( <pcgs> )
-##
-ModuloParentPcgs := NewAttribute(
-    "ModuloParentPcgs",
-    IsPcgs );
-
-SetModuloParentPcgs := Setter(ModuloParentPcgs);
-HasModuloParentPcgs := Tester(ModuloParentPcgs);
 
 
 #############################################################################

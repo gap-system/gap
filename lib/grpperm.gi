@@ -750,7 +750,7 @@ InstallMethod( ConjugateSubgroup, "<P>, <g>", true,
     S := EmptyStabChain( [  ], One( H ) );
     ConjugateStabChain( StabChainAttr( G ), S, g, g );
     SetStabChain( H, S );
-    RunIsomorphismImplications( G, H );
+    UseIsomorphismRelation( G, H );
     return H;
 end );
 
@@ -1999,6 +1999,12 @@ local gens;
   # call the recursive function to do the work
   return GeneratorsSmallestStab(MinimalStabChain(G));
 end);
+
+InstallMethod(KnowsHowToDecompose,"perm group: always true",IsIdentical,
+  [IsPermGroup,IsList],0,ReturnTrue);
+
+InstallOtherMethod(KnowsHowToDecompose,"perm group: always true",true,
+  [IsPermGroup],0,ReturnTrue);
 
 #############################################################################
 ##

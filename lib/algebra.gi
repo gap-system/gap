@@ -7,7 +7,7 @@
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file contains generic methods for algebras and unital algebras.
+##  This file contains generic methods for algebras and algebras-with-one.
 ##
 Revision.algebra_gi :=
     "@(#)$Id$";
@@ -33,14 +33,14 @@ InstallMethod( Representative,
 
 #############################################################################
 ##
-#M  Representative( <A> ) . . . .  one element of a left operator unital ring
+#M  Representative( <A> ) . . .  one element of a left operator ring-with-one
 ##
 InstallMethod( Representative,
-    "method for left operator unital ring with known generators",
+    "method for left operator ring-with-one with known generators",
     true,
-    [ IsLeftOperatorUnitalRing and HasGeneratorsOfLeftOperatorUnitalRing ],
+    [ IsLeftOperatorRingWithOne and HasGeneratorsOfLeftOperatorRingWithOne ],
     0,
-    RepresentativeFromGenerators( GeneratorsOfLeftOperatorUnitalRing ) );
+    RepresentativeFromGenerators( GeneratorsOfLeftOperatorRingWithOne ) );
 
 
 #############################################################################
@@ -86,34 +86,34 @@ InstallOtherMethod( FLMLORByGenerators,
 
 #############################################################################
 ##
-#M  UnitalFLMLORByGenerators( <R>, <gens> ) . unit. <R>-FLMLOR gen. by <gens>
-#M  UnitalFLMLORByGenerators( <R>, <gens>, <zero> )
+#M  FLMLORWithOneByGenerators( <R>, <gens> ) . unit. <R>-FLMLOR gen. by <gens>
+#M  FLMLORWithOneByGenerators( <R>, <gens>, <zero> )
 ##
-InstallMethod( UnitalFLMLORByGenerators,
+InstallMethod( FLMLORWithOneByGenerators,
     "method for ring and collection",
     true,
     [ IsRing, IsCollection ], 0,
     function( R, gens )
     local A;
     A:= Objectify( NewKind( FamilyObj( gens ),
-                            IsUnitalFLMLOR and IsAttributeStoringRep ),
+                            IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
-    SetGeneratorsOfLeftOperatorUnitalRing( A, AsList( gens ) );
+    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( gens ) );
     return A;
     end );
 
-InstallOtherMethod( UnitalFLMLORByGenerators,
+InstallOtherMethod( FLMLORWithOneByGenerators,
     "method for ring, homogeneous list, and ring element",
     true,
     [ IsRing, IsHomogeneousList, IsRingElement ], 0,
     function( R, gens, zero )
     local A;
     A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
-                            IsUnitalFLMLOR and IsAttributeStoringRep ),
+                            IsFLMLORWithOne and IsAttributeStoringRep ),
                    rec() );
     SetLeftActingDomain( A, R );
-    SetGeneratorsOfLeftOperatorUnitalRing( A, AsList( gens ) );
+    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( gens ) );
     SetZero( A, zero );
     return A;
     end );
@@ -231,55 +231,55 @@ SubalgebraNC := SubFLMLORNC;
 
 #############################################################################
 ##
-#F  UnitalAlgebra( <F>, <gens> )
-#F  UnitalAlgebra( <F>, <gens>, <zero> )
-#F  UnitalAlgebra( <F>, <gens>, "basis" )
-#F  UnitalAlgebra( <F>, <gens>, <zero>, "basis" )
+#F  AlgebraWithOne( <F>, <gens> )
+#F  AlgebraWithOne( <F>, <gens>, <zero> )
+#F  AlgebraWithOne( <F>, <gens>, "basis" )
+#F  AlgebraWithOne( <F>, <gens>, <zero>, "basis" )
 ##
-UnitalFLMLOR := function( arg )
+FLMLORWithOne := function( arg )
 
     local A;
 
     # ring and list of generators
     if Length( arg ) = 2 and IsRing( arg[1] )
                          and IsList( arg[2] ) and 0 < Length( arg[2] ) then
-      A:= UnitalFLMLORByGenerators( arg[1], arg[2] );
+      A:= FLMLORWithOneByGenerators( arg[1], arg[2] );
 
     # ring, list of generators plus zero
     elif Length( arg ) = 3 and IsRing( arg[1] )
                            and IsList( arg[2] ) then
       if arg[3] = "basis" then
-        A:= UnitalFLMLORByGenerators( arg[1], arg[2] );
+        A:= FLMLORWithOneByGenerators( arg[1], arg[2] );
         UseBasis( A, arg[2] );
       else
-        A:= UnitalFLMLORByGenerators( arg[1], arg[2], arg[3] );
+        A:= FLMLORWithOneByGenerators( arg[1], arg[2], arg[3] );
       fi;
 
     # ring, list of generators plus zero
     elif Length( arg ) = 4 and IsRing( arg[1] )
                            and IsList( arg[2] )
                            and arg[4] = "basis" then
-      A:= UnitalFLMLORByGenerators( arg[1], arg[2], arg[3] );
+      A:= FLMLORWithOneByGenerators( arg[1], arg[2], arg[3] );
       UseBasis( A, arg[2] );
 
     # no argument given, error
     else
-      Error( "usage: UnitalFLMLOR( <F>, <gens> ), ",
-             "UnitalFLMLOR( <F>, <gens>, <zero> )" );
+      Error( "usage: FLMLORWithOne( <F>, <gens> ), ",
+             "FLMLORWithOne( <F>, <gens>, <zero> )" );
     fi;
 
     # Return the result.
     return A;
 end;
 
-UnitalAlgebra := UnitalFLMLOR;
+AlgebraWithOne := FLMLORWithOne;
 
 
 #############################################################################
 ##
-#F  UnitalSubalgebra( <A>, <gens> ) . .  unital subalg. of <A> gen. by <gens>
+#F  SubalgebraWithOne( <A>, <gens> )   subalg.-with-one of <A> gen. by <gens>
 ##
-UnitalSubFLMLOR := function( arg )
+SubFLMLORWithOne := function( arg )
     local S;
     if Length( arg ) <= 1 or not IsFLMLOR( arg[1] )
                           or not IsHomogeneousList( arg[2] ) then
@@ -289,30 +289,30 @@ UnitalSubFLMLOR := function( arg )
 
     elif IsEmpty( arg[2] ) then
 
-      return UnitalSubFLMLORNC( arg[2], arg[2] );
+      return SubFLMLORWithOneNC( arg[2], arg[2] );
 
     elif     IsIdentical( FamilyObj( arg[1] ),
                           FamilyObj( arg[2] ) )
          and ForAll( arg[2], v -> v in arg[1] )
-         and ( IsUnitalFLMLOR( arg[1] ) or One( arg[1] ) <> fail ) then
-      S:= UnitalFLMLORByGenerators( LeftActingDomain( arg[1] ), arg[2] );
+         and ( IsFLMLORWithOne( arg[1] ) or One( arg[1] ) <> fail ) then
+      S:= FLMLORWithOneByGenerators( LeftActingDomain( arg[1] ), arg[2] );
       SetParent( S, arg[1] );
       if Length( arg ) = 3 and arg[3] = "basis" then
         UseBasis( S, arg[2] );
       fi;
       return S;
     fi;
-    Error( "usage: UnitalSubFLMLOR( <V>, <gens> [, \"basis\"] )" );
+    Error( "usage: SubFLMLORWithOne( <V>, <gens> [, \"basis\"] )" );
 end;
 
-UnitalSubalgebra := UnitalSubFLMLOR;
+SubalgebraWithOne := SubFLMLORWithOne;
 
 
 #############################################################################
 ##
-#F  UnitalSubalgebraNC( <A>, <gens> )
+#F  SubalgebraWithOneNC( <A>, <gens> )
 ##
-UnitalSubFLMLORNC := function( arg )
+SubFLMLORWithOneNC := function( arg )
     local S, gens;
     if IsEmpty( arg[2] ) then
 
@@ -322,12 +322,12 @@ UnitalSubFLMLORNC := function( arg )
       # So the argument that special methods would catch this case
       # does not hold!
       gens:= [ One( arg[1] ) ];
-      S:= UnitalFLMLORByGenerators( LeftActingDomain( arg[1] ), gens );
+      S:= FLMLORWithOneByGenerators( LeftActingDomain( arg[1] ), gens );
       UseBasis( S, gens );
 
     else
 
-      S:= UnitalFLMLORByGenerators( LeftActingDomain( arg[1] ), arg[2] );
+      S:= FLMLORWithOneByGenerators( LeftActingDomain( arg[1] ), arg[2] );
       if Length( arg ) = 3 and arg[3] = "basis" then
         UseBasis( S, arg[2] );
       fi;
@@ -338,7 +338,7 @@ UnitalSubFLMLORNC := function( arg )
     return S;
 end;
 
-UnitalSubalgebraNC := UnitalSubFLMLORNC;
+SubalgebraWithOneNC := SubFLMLORWithOneNC;
 
 
 #############################################################################
@@ -936,9 +936,9 @@ InstallMethod( IsCommutative,
     IsCommutativeFromGenerators( GeneratorsOfAlgebra ) );
 
 InstallMethod( IsCommutative,
-    "method for an associative unital FLMLOR",
-    true, [ IsUnitalFLMLOR and IsAssociative ], 0,
-    IsCommutativeFromGenerators( GeneratorsOfUnitalAlgebra ) );
+    "method for an associative FLMLOR-with-one",
+    true, [ IsFLMLORWithOne and IsAssociative ], 0,
+    IsCommutativeFromGenerators( GeneratorsOfAlgebraWithOne ) );
 
 
 #############################################################################
@@ -1145,7 +1145,7 @@ InstallMethod( FpAlgebra,
     dim     := Dimension( A );
     vectors := BasisVectors( B );
     F       := FreeAssociativeAlgebra( K, Dimension( A ) );
-    Fgens   := GeneratorsOfUnitalAlgebra( F );
+    Fgens   := GeneratorsOfAlgebraWithOne( F );
     rels    := [];
 
     for i in [ 1 .. dim ] do
@@ -1174,12 +1174,12 @@ InstallMethod( Intersection2,
 
 #############################################################################
 ##
-#M  Intersection2( <A1>, <A2> ) . . . . . intersection of two unital algebras
+#M  Intersection2( <A1>, <A2> ) . . . . intersection of two algebras-with-one
 ##
 InstallMethod( Intersection2,
-    "generic method for two unital FLMLORs",
-    IsIdentical, [ IsUnitalFLMLOR, IsUnitalFLMLOR ], 0,
-    Intersection2Spaces( AsUnitalFLMLOR, UnitalSubFLMLORNC, UnitalFLMLOR ) );
+    "generic method for two FLMLORs-with-one",
+    IsIdentical, [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
+    Intersection2Spaces( AsFLMLORWithOne, SubFLMLORWithOneNC, FLMLORWithOne ) );
 
 
 #############################################################################
@@ -1369,11 +1369,11 @@ InstallMethod( IsFinite,
 
 #############################################################################
 ##
-#M  IsFinite( <A> ) . . . . . . . . . check whether a unital FLMLOR is finite
+#M  IsFinite( <A> ) . . . . . . . . check whether a FLMLOR-with-one is finite
 ##
 InstallMethod( IsFinite,
-    "generic method for a FLMLOR",
-    true, [ IsUnitalFLMLOR ], 0,
+    "generic method for a FLMLOR-with-one",
+    true, [ IsFLMLORWithOne ], 0,
     A -> IsFiniteDimensional( A ) and IsFinite( LeftActingDomain( A ) ) );
 
 
@@ -1396,26 +1396,13 @@ InstallMethod( IsFinite,
 #T
 #############################################################################
 ##
-#M  TrivialSubalgebra( <A> )  . . . . . . .  trivial subalgebra of an algebra
+#M  TrivialSubadditiveMagmaWithZero( <A> )  . . . . . . . . .  for an algebra
 ##
-InstallMethod( TrivialSubFLMLOR,
+InstallMethod( TrivialSubadditiveMagmaWithZero,
     "method for a FLMLOR",
     true, [ IsFLMLOR ], 0,
     A -> SubFLMLORNC( A, [] ) );
 #T should be an ideal
-
-
-#############################################################################
-##
-#M  TrivialSubspace( <A> )  . . . . . . . . . .  trivial subspace of a FLMLOR
-##
-##  We want that this knows to be a FLMLOR.
-#T should know to be an ideal (in its parent?), too!
-##
-InstallMethod( TrivialSubspace,
-    "method for a FLMLOR",
-    true, [ IsFLMLOR ], 0,
-    TrivialSubFLMLOR );
 
 
 #############################################################################
@@ -1512,8 +1499,8 @@ InstallMethod( AsFLMLOR,
 
     fi;
 
-    RunIsomorphismImplications( V, A );
-    RunSubsetImplications( V, A );
+    UseIsomorphismRelation( V, A );
+    UseSubsetRelation( V, A );
 
     return A;
     end );
@@ -1568,30 +1555,30 @@ InstallMethod( AsFLMLOR,
 
     fi;
 
-    RunIsomorphismImplications( D, A );
-    RunSubsetImplications( D, A );
+    UseIsomorphismRelation( D, A );
+    UseSubsetRelation( D, A );
     return A;
     end );
 
 
 #############################################################################
 ##
-#M  AsUnitalAlgebra( <F>, <D> ) . . . . . .  view a coll. as a unital algebra
+#M  AsAlgebraWithOne( <F>, <D> )  . . . .  view a coll. as a algebra-with-one
 ##
-InstallMethod( AsUnitalFLMLOR,
+InstallMethod( AsFLMLORWithOne,
     "method for a ring and a collection",
     true,
     [ IsRing, IsCollection ], 0,
     function( F, D )
-    return AsUnitalFLMLOR( AsFLMLOR( F, D ) );
+    return AsFLMLORWithOne( AsFLMLOR( F, D ) );
     end );
 
 
 #############################################################################
 ##
-#M  AsUnitalAlgebra( <F>, <V> ) . . .  view a left module as a unital algebra
+#M  AsAlgebraWithOne( <F>, <V> )  .  view a left module as a algebra-with-one
 ##
-InstallMethod( AsUnitalFLMLOR,
+InstallMethod( AsFLMLORWithOne,
     "method for a division ring and a free left module",
     true,
     [ IsDivisionRing, IsFreeLeftModule ], 0,
@@ -1606,9 +1593,9 @@ InstallMethod( AsUnitalFLMLOR,
 
     elif LeftActingDomain( V ) = F then
 
-      A:= UnitalFLMLOR( F, GeneratorsOfLeftModule( V ) );
+      A:= FLMLORWithOne( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a unital FLMLOR" );
+        Error( "<V> is not a FLMLOR-with-one" );
       fi;
       if HasBasisOfDomain( V ) then
         SetBasisOfDomain( A, BasisOfDomain( V ) );
@@ -1620,9 +1607,9 @@ InstallMethod( AsUnitalFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( V ) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
                                              y -> x * y ) ) );
-      A:= UnitalFLMLOR( F, L );
+      A:= FLMLORWithOne( F, L );
       if A <> V then
-        Error( "<V> is not a unital FLMLOR" );
+        Error( "<V> is not a FLMLOR-with-one" );
       fi;
 
     elif IsSubset( F, LeftActingDomain( V ) ) then
@@ -1633,29 +1620,29 @@ InstallMethod( AsUnitalFLMLOR,
                                  y -> not x * y in V ) ) then
         Error( "field change leads out of <V>" );
       fi;
-      A:= UnitalFLMLOR( F, GeneratorsOfLeftModule( V ) );
+      A:= FLMLORWithOne( F, GeneratorsOfLeftModule( V ) );
       if A <> V then
-        Error( "<V> is not a unital FLMLOR" );
+        Error( "<V> is not a FLMLOR-with-one" );
       fi;
 
     else
 
-      V:= AsUnitalAlgebra( Intersection( F, LeftActingDomain( V ) ), V );
-      return AsUnitalAlgebra( F, V );
+      V:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( V ) ), V );
+      return AsAlgebraWithOne( F, V );
 
     fi;
 
-    RunIsomorphismImplications( V, A );
-    RunSubsetImplications( V, A );
+    UseIsomorphismRelation( V, A );
+    UseSubsetRelation( V, A );
     return A;
     end );
 
 
 #############################################################################
 ##
-#M  AsUnitalAlgebra( <F>, <D> ) . . . . . view an algebra as a unital algebra
+#M  AsAlgebraWithOne( <F>, <D> )  . . . view an algebra as a algebra-with-one
 ##
-InstallMethod( AsUnitalFLMLOR,
+InstallMethod( AsFLMLORWithOne,
     "method for a division ring and an algebra",
     true, [ IsDivisionRing, IsFLMLOR ], 0,
     function( F, D )
@@ -1669,7 +1656,7 @@ InstallMethod( AsUnitalFLMLOR,
 
     elif LeftActingDomain( D ) = F then
 
-      A:= UnitalFLMLOR( F, GeneratorsOfLeftOperatorRing( D ) );
+      A:= FLMLORWithOne( F, GeneratorsOfLeftOperatorRing( D ) );
 
     elif IsSubset( LeftActingDomain( D ), F ) then
 
@@ -1677,7 +1664,7 @@ InstallMethod( AsUnitalFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
-      A:= UnitalFLMLOR( F, L );
+      A:= FLMLORWithOne( F, L );
 
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
@@ -1687,28 +1674,28 @@ InstallMethod( AsUnitalFLMLOR,
                                  y -> not x * y in D ) ) then
         Error( "field change leads out of <D>" );
       fi;
-      A:= UnitalFLMLOR( F, GeneratorsOfLeftOperatorRing( D ) );
+      A:= FLMLORWithOne( F, GeneratorsOfLeftOperatorRing( D ) );
 
     else
 
-      D:= AsUnitalAlgebra( Intersection( F, LeftActingDomain( D ) ), D );
-      return AsUnitalAlgebra( F, D );
+      D:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( D ) ), D );
+      return AsAlgebraWithOne( F, D );
 
     fi;
 
-    RunIsomorphismImplications( D, A );
-    RunSubsetImplications( D, A );
+    UseIsomorphismRelation( D, A );
+    UseSubsetRelation( D, A );
     return A;
     end );
 
 
 #############################################################################
 ##
-#M  AsUnitalAlgebra( <F>, <D> ) . . view a unital algebra as a unital algebra
+#M  AsAlgebraWithOne( <F>, <D> )  . view an alg.-with-one as an alg.-with-one
 ##
-InstallMethod( AsUnitalFLMLOR,
-    "method for a division ring and a unital algebra",
-    true, [ IsDivisionRing, IsUnitalFLMLOR ], 0,
+InstallMethod( AsFLMLORWithOne,
+    "method for a division ring and a algebra-with-one",
+    true, [ IsDivisionRing, IsFLMLORWithOne ], 0,
     function( F, D )
 
     local L, A;
@@ -1723,7 +1710,7 @@ InstallMethod( AsUnitalFLMLOR,
       L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
-      A:= UnitalAlgebra( F, L );
+      A:= AlgebraWithOne( F, L );
 
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
@@ -1733,17 +1720,17 @@ InstallMethod( AsUnitalFLMLOR,
                                  y -> not x * y in D ) ) then
         Error( "field change leads out of the algebra" );
       fi;
-      A:= UnitalAlgebra( F, GeneratorsOfAlgebra( D ) );
+      A:= AlgebraWithOne( F, GeneratorsOfAlgebra( D ) );
 
     else
 
-      D:= AsUnitalAlgebra( Intersection( F, LeftActingDomain( D ) ), D );
-      return AsUnitalAlgebra( F, D );
+      D:= AsAlgebraWithOne( Intersection( F, LeftActingDomain( D ) ), D );
+      return AsAlgebraWithOne( F, D );
 
     fi;
 
-    RunIsomorphismImplications( D, A );
-    RunSubsetImplications( D, A );
+    UseIsomorphismRelation( D, A );
+    UseSubsetRelation( D, A );
     return A;
     end );
 
@@ -1792,36 +1779,36 @@ InstallMethod( ClosureLeftOperatorRing,
     end );
 
 InstallMethod( ClosureLeftOperatorRing,
-    "method for a unital FLMLOR and a ring element",
+    "method for a FLMLOR-with-one and a ring element",
     IsCollsElms,
-    [ IsUnitalFLMLOR, IsRingElement ], 0,
+    [ IsFLMLORWithOne, IsRingElement ], 0,
     function( A, a )
 
     # if possible test if the element lies in the ring already,
-    if a in GeneratorsOfLeftOperatorUnitalRing( A ) then
+    if a in GeneratorsOfLeftOperatorRingWithOne( A ) then
       return A;
 
-    # otherwise make a new left operator unital ring
+    # otherwise make a new left operator ring-with-one
     else
       return FLMLOR( LeftActingDomain( A ),
-                 Concatenation( GeneratorsOfLeftOperatorUnitalRing( A ),
+                 Concatenation( GeneratorsOfLeftOperatorRingWithOne( A ),
                                 [ a ] ) );
     fi;
     end );
 
 InstallMethod( ClosureLeftOperatorRing,
-    "method for a unital FLMLOR with basis, and a ring element",
+    "method for a FLMLOR-with-one with basis, and a ring element",
     IsCollsElms,
-    [ IsUnitalFLMLOR and HasBasisOfDomain, IsRingElement ], 0,
+    [ IsFLMLORWithOne and HasBasisOfDomain, IsRingElement ], 0,
     function( A, a )
 
     # test if the element lies in the FLMLOR already,
     if a in A then
         return A;
 
-    # otherwise make a new unital FLMLOR
+    # otherwise make a new FLMLOR-with-one
     else
-      return UnitalFLMLOR( LeftActingDomain( A ),
+      return FLMLORWithOne( LeftActingDomain( A ),
                  Concatenation( BasisVectors( BasisOfDomain( A ) ), [ a ] ),
                  "basis" );
     fi;
@@ -1854,13 +1841,13 @@ InstallMethod( ClosureLeftOperatorRing,
     end );
 
 InstallMethod( ClosureLeftOperatorRing,
-    "method for two left operator unital rings",
+    "method for two left operator rings-with-one",
     IsIdentical,
-    [ IsLeftOperatorUnitalRing, IsLeftOperatorUnitalRing ], 0,
+    [ IsLeftOperatorRingWithOne, IsLeftOperatorRingWithOne ], 0,
     function( A, S )
     local   g;          # one generator
 
-    for g in GeneratorsOfLeftOperatorUnitalRing( S ) do
+    for g in GeneratorsOfLeftOperatorRingWithOne( S ) do
       A := ClosureLeftOperatorRing( A, g );
     od;
     return A;
@@ -1921,7 +1908,7 @@ InstallMethod( ClosureLeftOperatorRing,
 ##  $A_{i+1} = \langle A_i \cup \bigcup_{g\in S} ( A_i g \cup g A_i ) \rangle$
 ##  the closure as an $F$-space.
 ##
-##  (For unital algebras we have to initialize $A_0 = \{ F \*\ A.one \}$,
+##  (For algebras-with-one we have to initialize $A_0 = \{ F \*\ A.one \}$,
 ##  here the recursion holds also for $i = 0$.)
 ##
 ##  If the algebra is (known to be) associative then we do not need to
@@ -2001,8 +1988,9 @@ end;
 #M  \=( <A1>, <A2> ) . . . . . . . . . . . . . test if two algebras are equal
 ##
 InstallMethod( \=,
-    "method for two unital FLMLORs",
-    IsIdentical, [ IsFLMLOR, IsFLMLOR ], 0,
+    "method for two FLMLORs",
+    IsIdentical,
+    [ IsFLMLOR, IsFLMLOR ], 0,
     function( A1, A2 )
     local inters;
     if LeftActingDomain( A1 ) = LeftActingDomain( A2 ) then
@@ -2019,21 +2007,22 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  \=( <A1>, <A2> ) . . . . . . . . .  test if two unital algebras are equal
+#M  \=( <A1>, <A2> )  . . . . . . . . test if two algebras-with-one are equal
 ##
 InstallMethod( \=,
-    "method for two unital FLMLORs",
-    IsIdentical, [ IsUnitalFLMLOR, IsUnitalFLMLOR ], 0,
+    "method for two FLMLORs-with-one",
+    IsIdentical,
+    [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
     function( A1, A2 )
     local inters;
     if LeftActingDomain( A1 ) = LeftActingDomain( A2 ) then
-      return   GeneratorsOfUnitalAlgebra( A1 ) = GeneratorsOfUnitalAlgebra( A2 )
-        or (     ForAll( GeneratorsOfUnitalAlgebra( A1 ), gen -> gen in A2 )
-             and ForAll( GeneratorsOfUnitalAlgebra( A2 ), gen -> gen in A1 ) );
+      return   GeneratorsOfAlgebraWithOne( A1 ) = GeneratorsOfAlgebraWithOne( A2 )
+        or (     ForAll( GeneratorsOfAlgebraWithOne( A1 ), gen -> gen in A2 )
+             and ForAll( GeneratorsOfAlgebraWithOne( A2 ), gen -> gen in A1 ) );
     else
       inters:= Intersection2( LeftActingDomain( A1 ),
                               LeftActingDomain( A2 ) );
-      return AsUnitalFLMLOR( inters, A1 ) = AsUnitalFLMLOR( inters, A2 );
+      return AsFLMLORWithOne( inters, A1 ) = AsFLMLORWithOne( inters, A2 );
     fi;
     end );
 
@@ -2059,13 +2048,13 @@ InstallMethod( IsSubset,
     end );
 
 InstallMethod( IsSubset,
-    "method for two unital FLMLORs",
-    IsIdentical, [ IsUnitalFLMLOR, IsUnitalFLMLOR ], 0,
+    "method for two FLMLORs-with-one",
+    IsIdentical, [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
     function( G, H )
-    return     GeneratorsOfLeftOperatorUnitalRing( G )
-             = GeneratorsOfLeftOperatorUnitalRing( H )
+    return     GeneratorsOfLeftOperatorRingWithOne( G )
+             = GeneratorsOfLeftOperatorRingWithOne( H )
           or ( Dimension( H ) <= Dimension( G )
-               and IsSubset( G, GeneratorsOfLeftOperatorUnitalRing( H ) ) );
+               and IsSubset( G, GeneratorsOfLeftOperatorRingWithOne( H ) ) );
     end );
 
 
@@ -2077,8 +2066,8 @@ InstallMethod( IsSubset,
 ##  i.e., whether <S> is contained in <A> and $a * i$ lies in <S>
 ##  for all basis vectors $a$ of <A> and $s$ of <S>.
 ##
-##  For associative (unital) algebras, we need to check only the products of
-##  (unital) algebra generators.
+##  For associative algebras(-with-one), we need to check only the products
+##  of algebra(-with-one) generators.
 ##
 IsLeftIdealFromGenerators :=
     function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
@@ -2125,11 +2114,11 @@ InstallOtherMethod( IsLeftIdeal,
                                GeneratorsOfLeftModule ) );
 
 InstallOtherMethod( IsLeftIdeal,
-    "method for associative unital FLMLOR and free left module",
+    "method for associative FLMLOR-with-one and free left module",
     IsIdentical,
-    [ IsUnitalFLMLOR and IsAssociative, IsFreeLeftModule ], 0,
+    [ IsFLMLORWithOne and IsAssociative, IsFreeLeftModule ], 0,
     IsLeftIdealFromGenerators( AsFLMLOR, AsLeftModule,
-                               GeneratorsOfLeftOperatorUnitalRing,
+                               GeneratorsOfLeftOperatorRingWithOne,
                                GeneratorsOfLeftModule ) );
 
 InstallMethod( IsLeftIdeal,
@@ -2149,8 +2138,8 @@ InstallMethod( IsLeftIdeal,
 ##  i.e., whether <S> is contained in <A> and $s * a$ lies in <S>
 ##  for all basis vectors $a$ of <A> and $s$ of <S>.
 ##
-##  For associative (unital) algebras, we need to check only the products of
-##  (unital) algebra generators.
+##  For associative algebras(-with-one), we need to check only the products
+##  of algebra(-with-one) generators.
 ##
 IsRightIdealFromGenerators :=
     function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
@@ -2197,11 +2186,11 @@ InstallOtherMethod( IsRightIdeal,
                                 GeneratorsOfLeftModule ) );
 
 InstallOtherMethod( IsRightIdeal,
-    "method for associative unital FLMLOR and free left module",
+    "method for associative FLMLOR-with-one and free left module",
     IsIdentical,
-    [ IsUnitalFLMLOR and IsAssociative, IsFreeLeftModule ], 0,
+    [ IsFLMLORWithOne and IsAssociative, IsFreeLeftModule ], 0,
     IsRightIdealFromGenerators( AsFLMLOR, AsLeftModule,
-                                GeneratorsOfLeftOperatorUnitalRing,
+                                GeneratorsOfLeftOperatorRingWithOne,
                                 GeneratorsOfLeftModule ) );
 
 InstallMethod( IsRightIdeal,
@@ -2272,28 +2261,28 @@ InstallMethod( PrintObj, true,
 
 #############################################################################
 ##
-#M  PrintObj( <A> ) . . . . . . . . . . . . . . pretty print a unital algebra
+#M  PrintObj( <A> ) . . . . . . . . . . . . . pretty print a algebra-with-one
 ##
 ##  print left acting domain, if known also dimension or no. of generators
 ##
 InstallMethod( PrintObj, true,
-    [ IsUnitalAlgebra and HasDimension ], 1,
+    [ IsAlgebraWithOne and HasDimension ], 1,
     function( A )
-    Print( "<unital algebra of dimension ", Dimension( A ),
+    Print( "<algebra-with-one of dimension ", Dimension( A ),
            " over ", LeftActingDomain( A ), ">" );
     end );
 
 InstallMethod( PrintObj, true,
-    [ IsUnitalAlgebra and HasGeneratorsOfUnitalAlgebra ], 0,
+    [ IsAlgebraWithOne and HasGeneratorsOfAlgebraWithOne ], 0,
     function( A )
-    Print( "<unital algebra over ", LeftActingDomain( A ), ", with ",
-           Length( GeneratorsOfUnitalAlgebra( A ) ), " generators>" );
+    Print( "<algebra-with-one over ", LeftActingDomain( A ), ", with ",
+           Length( GeneratorsOfAlgebraWithOne( A ) ), " generators>" );
     end );
 
 InstallMethod( PrintObj, true,
-    [ IsUnitalAlgebra ], 0,
+    [ IsAlgebraWithOne ], 0,
     function( A )
-    Print( "<unital algebra over ", LeftActingDomain( A ), ">" );
+    Print( "<algebra-with-one over ", LeftActingDomain( A ), ">" );
     end );
 
 
@@ -2345,16 +2334,17 @@ InstallMethod( AsSubalgebra,
     # Construct the subalgebra.
     S:= SubalgebraNC( A, GeneratorsOfAlgebra( U ) );
 
-    RunIsomorphismImplications( U, S );
-    RunSubsetImplications( U, S );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
 
     # Return the subalgebra.
     return S;
     end );
 
 InstallMethod( AsSubalgebra,
-    "method for an algebra and a unital algebra",
-    IsIdentical, [ IsAlgebra, IsUnitalAlgebra ], 0,
+    "method for an algebra and a algebra-with-one",
+    IsIdentical,
+    [ IsAlgebra, IsAlgebraWithOne ], 0,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
@@ -2363,22 +2353,22 @@ InstallMethod( AsSubalgebra,
 
     # Construct the generators list.
     if LeftActingDomain( A ) <> LeftActingDomain( U ) then
-      U:= AsUnitalAlgebra( LeftActingDomain( A ), U );
+      U:= AsAlgebraWithOne( LeftActingDomain( A ), U );
     fi;
 
     # Construct and return the subalgebra.
-    S:= UnitalSubalgebraNC( A, GeneratorsOfUnitalAlgebra( U ) );
-    RunIsomorphismImplications( U, S );
-    RunSubsetImplications( U, S );
+    S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebraWithOne( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
     return S;
     end );
 
 
 #############################################################################
 ##
-#M  AsUnitalSubalgebra(<A>, <U>) . . .  view algebra as subalgebra of another
+#M  AsSubalgebraWithOne(<A>, <U>) . . .  view algebra as subalgebra of another
 ##
-InstallMethod( AsUnitalSubalgebra,
+InstallMethod( AsSubalgebraWithOne,
     "method for two algebras",
     IsIdentical, [ IsAlgebra, IsAlgebra ], 0,
     function( A, U )
@@ -2390,19 +2380,20 @@ InstallMethod( AsUnitalSubalgebra,
     fi;
 
     if LeftActingDomain( A ) <> LeftActingDomain( U ) then
-      U:= AsUnitalAlgebra( LeftActingDomain( A ), U );
+      U:= AsAlgebraWithOne( LeftActingDomain( A ), U );
     fi;
 
     # Construct and return the subalgebra.
-    S:= UnitalSubalgebraNC( A, GeneratorsOfAlgebra( U ) );
-    RunIsomorphismImplications( U, S );
-    RunSubsetImplications( U, S );
+    S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebra( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
     return S;
     end );
 
-InstallMethod( AsUnitalSubalgebra,
-    "method for an algebra and a unital algebra",
-    IsIdentical, [ IsAlgebra, IsUnitalAlgebra ], 0,
+InstallMethod( AsSubalgebraWithOne,
+    "method for an algebra and a algebra-with-one",
+    IsIdentical,
+    [ IsAlgebra, IsAlgebraWithOne ], 0,
     function( A, U )
     local S;
     if not IsSubset( A, U ) then
@@ -2410,13 +2401,13 @@ InstallMethod( AsUnitalSubalgebra,
     fi;
 
     if LeftActingDomain( A ) <> LeftActingDomain( U ) then
-      U:= AsUnitalAlgebra( LeftActingDomain( A ), U );
+      U:= AsAlgebraWithOne( LeftActingDomain( A ), U );
     fi;
 
     # Construct and return the subalgebra.
-    S:= UnitalSubalgebraNC( A, GeneratorsOfUnitalAlgebra( U ) );
-    RunIsomorphismImplications( U, S );
-    RunSubsetImplications( U, S );
+    S:= SubalgebraWithOneNC( A, GeneratorsOfAlgebraWithOne( U ) );
+    UseIsomorphismRelation( U, S );
+    UseSubsetRelation( U, S );
     return S;
     end );
 
@@ -2541,8 +2532,8 @@ CentralizerInFiniteDimensionalAlgebra := function( A, S, issubset )
     M:= List( M, x -> LinearCombination( B, x ) );
 
     # Return the subalgebra.
-    if IsUnitalFLMLOR( A ) then
-      return UnitalSubalgebraNC( A, M, "basis" );
+    if IsFLMLORWithOne( A ) then
+      return SubalgebraWithOneNC( A, M, "basis" );
     else
       return SubalgebraNC( A, M, "basis" );
     fi;
@@ -2902,12 +2893,12 @@ InstallMethod( IsTrivial,
 
 #############################################################################
 ##
-#M  IsTrivial( <A> )  . . . . . . . . . . . . . . . . . . for a unital FLMLOR
+#M  IsTrivial( <A> )  . . . . . . . . . . . . . . . . . for a FLMLOR-with-one
 ##
 InstallMethod( IsTrivial,
-    "method for a unital FLMLOR",
+    "method for a FLMLOR-with-one",
     true,
-    [ IsUnitalFLMLOR ], 0,
+    [ IsFLMLORWithOne ], 0,
     ReturnFalse );
 
 
@@ -2983,12 +2974,12 @@ InstallMethod( BasisOfDomain,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  . . . . . basis from FLMLOR gens. for unital FLMLOR
+#M  BasisOfDomain( <A> )  . . . . basis from FLMLOR gens. for FLMLOR-with-one
 ##
 InstallMethod( BasisOfDomain,
-    "method for a unital FLMLOR",
+    "method for a FLMLOR-with-one",
     true,
-    [ IsUnitalFLMLOR ], 0,
+    [ IsFLMLORWithOne ], 0,
     function( A )
 
     # If generators as left module are known
@@ -2999,8 +2990,8 @@ InstallMethod( BasisOfDomain,
 
     return ImmutableBasis( MutableBasisOfClosureUnderAction(
              LeftActingDomain( A ),
-             GeneratorsOfLeftOperatorUnitalRing( A ),
-             GeneratorsOfLeftOperatorUnitalRing( A ),
+             GeneratorsOfLeftOperatorRingWithOne( A ),
+             GeneratorsOfLeftOperatorRingWithOne( A ),
              "both",
              [ One( A ) ],
              Zero( A ),
@@ -3010,12 +3001,12 @@ InstallMethod( BasisOfDomain,
 
 #############################################################################
 ##
-#M  BasisOfDomain( <A> )  .  basis from FLMLOR gens. for assoc. unital FLMLOR
+#M  BasisOfDomain( <A> )   basis from FLMLOR gens. for assoc. FLMLOR-with-one
 ##
 InstallMethod( BasisOfDomain,
-    "method for an associative unital FLMLOR",
+    "method for an associative FLMLOR-with-one",
     true,
-    [ IsUnitalFLMLOR and IsAssociative ], 0,
+    [ IsFLMLORWithOne and IsAssociative ], 0,
     function( A )
 
     # If generators as left module are known
@@ -3026,8 +3017,8 @@ InstallMethod( BasisOfDomain,
 
     return ImmutableBasis( MutableBasisOfClosureUnderAction(
              LeftActingDomain( A ),
-             GeneratorsOfLeftOperatorUnitalRing( A ),
-             GeneratorsOfLeftOperatorUnitalRing( A ),
+             GeneratorsOfLeftOperatorRingWithOne( A ),
+             GeneratorsOfLeftOperatorRingWithOne( A ),
              "left",
              [ One( A ) ],
              Zero( A ),
@@ -3173,13 +3164,13 @@ InstallOtherMethod( DerivedSeriesOfAlgebra,
 
 #############################################################################
 ##
-#M  GeneratorsOfLeftOperatorRing( <A> ) . . . . . . . . . for a unital FLMLOR
+#M  GeneratorsOfLeftOperatorRing( <A> ) . . . . . . . . for a FLMLOR-with-one
 ##
 InstallMethod( GeneratorsOfLeftOperatorRing,
-    "method for a unital FLMLOR",
-    true, [ IsUnitalFLMLOR ], 0,
+    "method for a FLMLOR-with-one",
+    true, [ IsFLMLORWithOne ], 0,
     A -> Set( Concatenation( [ One( A ) ],
-                             GeneratorsOfLeftOperatorUnitalRing( A ) ) ) );
+                             GeneratorsOfLeftOperatorRingWithOne( A ) ) ) );
 
 
 #############################################################################
@@ -3194,11 +3185,11 @@ InstallMethod( GeneratorsOfLeftOperatorRing,
 
 #############################################################################
 ##
-#M  GeneratorsOfLeftOperatorUnitalRing( <A> ) .  for FLMLOR with module gens.
+#M  GeneratorsOfLeftOperatorRingWithOne( <A> ) .  for FLMLOR with module gens.
 ##
-InstallMethod( GeneratorsOfLeftOperatorUnitalRing,
-    "method for a unital FLMLOR with known left module generators",
-    true, [ IsUnitalFLMLOR and HasGeneratorsOfLeftModule ], 0,
+InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
+    "method for a FLMLOR-with-one with known left module generators",
+    true, [ IsFLMLORWithOne and HasGeneratorsOfLeftModule ], 0,
     A -> GeneratorsOfLeftModule( A ) );
 
 
@@ -3325,12 +3316,12 @@ InstallMethod( IsCentral,
                              GeneratorsOfAlgebra ) );
 
 InstallMethod( IsCentral,
-    "method for two associative unital FLMLORs",
+    "method for two associative FLMLORs-with-one",
     IsIdentical,
-    [ IsUnitalFLMLOR and IsAssociative,
-      IsUnitalFLMLOR and IsAssociative ], 0,
-    IsCentralFromGenerators( GeneratorsOfUnitalAlgebra,
-                             GeneratorsOfUnitalAlgebra ) );
+    [ IsFLMLORWithOne and IsAssociative,
+      IsFLMLORWithOne and IsAssociative ], 0,
+    IsCentralFromGenerators( GeneratorsOfAlgebraWithOne,
+                             GeneratorsOfAlgebraWithOne ) );
 
 
 #T #############################################################################

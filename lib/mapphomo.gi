@@ -13,7 +13,9 @@
 ##  1. methods for general mappings that respect multiplication
 ##  2. methods for general mappings that respect addition
 ##  3. methods for general mappings that respect scalar multiplication
-##  4. ...
+##  4. properties and attributes of gen. mappings that respect multiplicative
+##     and additive structure
+##  5. default equality tests for structure preserving mappings
 ##
 Revision.mapphomo_gi :=
     "@(#)$Id$";
@@ -155,7 +157,7 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true,
     [ IsGeneralMapping and RespectsMultiplication
                        and RespectsOne and IsInjective ], SUM_FLAGS,
-    map -> TrivialSubmonoid( Source( map ) ) );
+    map -> TrivialSubmagmaWithOne( Source( map ) ) );
 
 
 #############################################################################
@@ -205,7 +207,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     [ IsGeneralMapping and RespectsMultiplication
                        and RespectsOne and IsSingleValued ], SUM_FLAGS,
 #T SUM_FLAGS ?
-    map -> TrivialSubmonoid( Range( map ) ) );
+    map -> TrivialSubmagmaWithOne( Range( map ) ) );
 
 
 #############################################################################
@@ -285,7 +287,7 @@ InstallMethod( PreImagesElm,
       IsObject ], 0,
       function( map, elm )
     local   pre;
-    
+
     pre:= ImagesRepresentative( map, elm );
     if pre = fail then
       return [];
@@ -423,18 +425,18 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
           Add( kernel, pair[1] );
         fi;
       od;
-      return AdditiveMagmaWithZeroByGenerators( kernel );
 
     elif IsFinite( Source( mapp ) ) then
 
       zeroR:= Zero( Range( mapp ) );
       kernel:= Filtered( Enumerator( Source( mapp ) ),
                          s -> Tuple( [ s, zeroR ] ) in mapp );
-      return AdditiveMagmaWithZeroByGenerators( kernel );
 
     else
       Error( "cannot compute kernel of infinite mapping" );
     fi;
+
+    return AdditiveMagmaWithZeroByGenerators( kernel );
     end );
 
 
@@ -449,6 +451,18 @@ InstallMethod( KernelOfAdditiveGeneralMapping,
     [ IsGeneralMapping and RespectsAddition
                        and RespectsZero and IsInjective ], SUM_FLAGS,
     map -> TrivialSubadditiveMagmaWithZero( Source( map ) ) );
+
+
+#############################################################################
+##
+#M  KernelOfAdditiveGeneralMapping( <map> ) . . . . . . . .  for zero mapping
+##
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "method for zero mapping",
+    true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero and IsZero ],
+    SUM_FLAGS,
+    Source );
 
 
 #############################################################################
@@ -578,7 +592,7 @@ InstallMethod( PreImagesElm,
       IsObject ], 0,
       function( map, elm )
     local   pre;
-    
+
     pre:= ImagesRepresentative( map, elm );
     if pre = fail then
       return [];
@@ -598,9 +612,11 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
       IsAdditiveGroup ], 0,
     function( map, elms )
+
     if not IsSurjective( map ) then
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
+
     return ClosureAdditiveGroup( KernelOfAdditiveGeneralMapping( map ),
                    SubadditiveMagmaWithInversesNC( Source( map ),
                    List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
@@ -654,6 +670,140 @@ InstallMethod( RespectsScalarMultiplication,
 
 #############################################################################
 ##
+#M  KernelOfAdditiveGeneralMapping( <mapp> )  . . for a finite linear mapping
+##
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "method for a finite linear mapping",
+    true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero
+                       and RespectsScalarMultiplication ], 0,
+    function( mapp )
+
+    local zeroR, kernel, pair;
+
+    if not IsExtLSet( Source( mapp ) ) then
+      TryNextMethod();
+    fi;
+
+    if IsFinite( mapp ) then
+
+      zeroR:= Zero( Range( mapp ) );
+      kernel:= [];
+      for pair in Enumerator( mapp ) do
+        if pair[2] = zeroR then
+          Add( kernel, pair[1] );
+        fi;
+      od;
+
+    elif IsFinite( Source( mapp ) ) then
+
+      zeroR:= Zero( Range( mapp ) );
+      kernel:= Filtered( Enumerator( Source( mapp ) ),
+                         s -> Tuple( [ s, zeroR ] ) in mapp );
+
+    else
+      Error( "cannot compute kernel of infinite mapping" );
+    fi;
+
+    return LeftModuleByGenerators( LeftActingDomain( Source( mapp ) ),
+                                   kernel );
+    end );
+
+
+#############################################################################
+##
+#M  CoKernelOfAdditiveGeneralMapping( <mapp> )  . . for finite linear mapping
+##
+InstallMethod( CoKernelOfAdditiveGeneralMapping,
+    "method for a finite linear mapping",
+    true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero
+                       and RespectsScalarMultiplication ], 0,
+    function( mapp )
+
+    local zeroS, cokernel, pair;
+
+    if not IsExtLSet( Range( mapp ) ) then
+      TryNextMethod();
+    fi;
+
+    if IsFinite( mapp ) then
+
+      zeroS:= Zero( Source( mapp ) );
+      cokernel:= [];
+      for pair in Enumerator( mapp ) do
+        if pair[1] = zeroS then
+          Add( cokernel, pair[2] );
+        fi;
+      od;
+
+    elif IsFinite( Range( mapp ) ) then
+
+      zeroS:= Zero( Source( mapp ) );
+      cokernel:= Filtered( Enumerator( Range( mapp ) ),
+                           r -> Tuple( [ zeroS, r ] ) in mapp );
+
+    else
+      Error( "cannot compute cokernel of infinite mapping" );
+    fi;
+
+    return LeftModuleByGenerators( LeftActingDomain( Range( mapp ) ),
+                                   cokernel );
+    end );
+
+
+#############################################################################
+##
+#M  ImagesSet( <map>, <elms> )  . . . . .  for linear mapping and left module
+##
+InstallMethod( ImagesSet,
+    "method for linear mapping and left module",
+    CollFamSourceEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
+      IsLeftModule ], 0,
+    function( map, elms )
+
+    if not IsTotal( map ) then
+      elms:= Intersection2( elms, PreImagesRange( map ) );
+    fi;
+
+    return ClosureLeftModule( CoKernelOfAdditiveGeneralMapping( map ),
+                   LeftModuleByGenerators( LeftActingDomain( elms ),
+                   List( GeneratorsOfLeftModule( elms ),
+                         gen -> ImagesRepresentative( map, gen ) ) ) );
+    end );
+
+
+#############################################################################
+##
+#M  PreImagesSet( <map>, <elms> ) . . . .  for linear mapping and left module
+##
+InstallMethod( PreImagesSet,
+    "method for linear mapping and left module",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
+      IsAdditiveGroup ], 0,
+    function( map, elms )
+
+    if not IsSurjective( map ) then
+      elms:= Intersection( elms, ImagesSource( map ) );
+    fi;
+
+    return ClosureLeftModule( KernelOfAdditiveGeneralMapping( map ),
+                   LeftModuleByGenerators( LeftActingDomain( elms ),
+                   List( GeneratorsOfLeftModule( elms ),
+                         gen -> PreImagesRepresentative( map, gen ) ) ) );
+    end );
+
+
+#############################################################################
+##
+##  4. properties and attributes of gen. mappings that respect multiplicative
+##     and additive structure
+##
+
+#############################################################################
+##
 #M  IsFieldHomomorphism( <mapp> )
 ##
 InstallMethod( IsFieldHomomorphism,
@@ -661,6 +811,196 @@ InstallMethod( IsFieldHomomorphism,
     true,
     [ IsGeneralMapping ], 0,
     map -> IsRingHomomorphism( map ) and IsField( Source( map ) ) );
+
+
+#############################################################################
+##
+##  5. default equality tests for structure preserving mappings
+##
+##  The default methods for equality tests of single-valued and structure
+##  preserving general mappings first check some necessary conditions:
+##  Source and range of both must be equal, and if both know whether they
+##  are injective, surjective or total, the values must be equal if the
+##  general mappings are equal.
+##
+##  In the second step, appropriate generators of the preimage of the general
+##  mappings are considered.
+##  If the general mapping respects multiplication, one, inverses, addition,
+##  zero, additive inverses, scalar multiplication then
+##  the preimage is a magma, magma-with-one, magma-with-inverses,
+##  additive-magma, additive-magma-with-zero, additive-magma-with-inverses,
+##  respectively.
+##  So the general mappings are equal if the images of the appropriate
+##  generators are equal.
+##
+
+
+#############################################################################
+##
+#F  InstallEqMethodForMappingsFromGenerators( <IsStruct>,
+#F                           <GeneratorsOfStruct>, <respects>, <infostring> )
+##
+InstallEqMethodForMappingsFromGenerators := function( IsStruct,
+    GeneratorsOfStruct, respects, infostring )
+
+    InstallMethod( \=,
+        Concatenation( "method for two s.v. gen. mappings", infostring ),
+        IsIdentical,
+        [ IsGeneralMapping and IsSingleValued and respects,
+          IsGeneralMapping and IsSingleValued and respects ],
+        0,
+        function( map1, map2 )
+        local gen;
+        if   not IsStruct( Source( map1 ) ) then
+          TryNextMethod();
+        elif     HasIsInjective( map1 ) and HasIsInjective( map2 )
+             and IsInjective( map1 ) <> IsInjective( map2 ) then
+          return false;
+        elif     HasIsSurjective( map1 ) and HasIsSurjective( map2 )
+             and IsSurjective( map1 ) <> IsSurjective( map2 ) then
+          return false;
+        elif     HasIsTotal( map1 ) and HasIsTotal( map2 )
+             and IsTotal( map1 ) <> IsTotal( map2 ) then
+          return false;
+        elif    Source( map1 ) <> Source( map2 )
+             or Range ( map1 ) <> Range ( map2 ) then
+          return false;
+        fi;
+
+        for gen in GeneratorsOfStruct( PreImagesRange( map1 ) ) do
+          if    ImagesRepresentative( map1, gen )
+             <> ImagesRepresentative( map2, gen ) then
+            return false;
+          fi;
+        od;
+        return true;
+        end );
+end;
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . . . . . . . . . . . .  for s.v. gen. map.
+##
+InstallEqMethodForMappingsFromGenerators( IsDomain,
+    GeneratorsOfDomain,
+    IsObject,
+    "" );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . . . . . .  for s.v. gen. map. resp. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsMagma,
+    GeneratorsOfMagma,
+    RespectsMultiplication,
+    " that respect mult." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . .  for s.v. gen. map. resp. mult. and one
+##
+InstallEqMethodForMappingsFromGenerators( IsMagmaWithOne,
+    GeneratorsOfMagmaWithOne,
+    RespectsMultiplication and RespectsOne,
+    " that respect mult. and one" );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . . for s.v. gen. map. resp. mult. and inv.
+##
+InstallEqMethodForMappingsFromGenerators( IsMagmaWithInverses,
+    GeneratorsOfMagmaWithInverses,
+    RespectsMultiplication and RespectsInverses,
+    " that respect mult. and inv." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . . . . . . . for s.v. gen. map. resp. add.
+##
+InstallEqMethodForMappingsFromGenerators( IsAdditiveMagma,
+    GeneratorsOfAdditiveMagma,
+    RespectsAddition,
+    " that respect add." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . . .  for s.v. gen. map. resp. add. and zero
+##
+InstallEqMethodForMappingsFromGenerators( IsAdditiveMagmaWithZero,
+    GeneratorsOfAdditiveMagmaWithZero,
+    RespectsAddition and RespectsZero,
+    " that respect add. and zero" );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . . . for s.v. gen. map. resp. add. and add. inv.
+##
+InstallEqMethodForMappingsFromGenerators( IsAdditiveMagmaWithInverses,
+    GeneratorsOfAdditiveMagmaWithInverses,
+    RespectsAddition and RespectsAdditiveInverses,
+    " that respect add. and add. inv." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  . . .  for s.v. gen. map. resp. mult.,add.,add.inv.
+##
+InstallEqMethodForMappingsFromGenerators( IsRing,
+    GeneratorsOfRing,
+    RespectsMultiplication and
+    RespectsAddition and RespectsAdditiveInverses,
+    " that respect mult.,add.,add.inv." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )  .  for s.v. gen. map. resp. mult.,one,add.,add.inv.
+##
+InstallEqMethodForMappingsFromGenerators( IsRingWithOne,
+    GeneratorsOfRingWithOne,
+    RespectsMultiplication and RespectsOne and
+    RespectsAddition and RespectsAdditiveInverses,
+    " that respect mult.,one,add.,add.inv." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )   for s.v. gen. map. resp. add.,add.inv.,scal. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsLeftModule,
+    GeneratorsOfLeftModule,
+    RespectsAddition and RespectsAdditiveInverses and
+    RespectsScalarMultiplication,
+    " that respect add.,add.inv.,scal. mult." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )   for s.v.g.m. resp. add.,add.inv.,mult.,scal. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsLeftOperatorRing,
+    GeneratorsOfLeftOperatorRing,
+    RespectsAddition and RespectsAdditiveInverses and
+    RespectsMultiplication and RespectsScalarMultiplication,
+    " that respect add.,add.inv.,mult.,scal. mult." );
+
+
+#############################################################################
+##
+#M  \=( <map1>, <map2> )   s.v.g.m. resp. add.,add.inv.,mult.,one,scal. mult.
+##
+InstallEqMethodForMappingsFromGenerators( IsLeftOperatorRingWithOne,
+    GeneratorsOfLeftOperatorRingWithOne,
+    RespectsAddition and RespectsAdditiveInverses and
+    RespectsMultiplication and RespectsOne and RespectsScalarMultiplication,
+    " that respect add.,add.inv.,mult.,one,scal. mult." );
 
 
 #############################################################################

@@ -77,14 +77,14 @@ IsFiniteDimensional := NewProperty( "IsFiniteDimensional",
 SetIsFiniteDimensional := Setter( IsFiniteDimensional );
 HasIsFiniteDimensional := Tester( IsFiniteDimensional );
 
-InstallSubsetTrueMethod( IsFiniteDimensional,
+InstallSubsetMaintainedMethod( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional, IsFreeLeftModule );
 
-InstallFactorTrueMethod( IsFiniteDimensional,
+InstallFactorMaintainedMethod( IsFiniteDimensional,
     IsFreeLeftModule and IsFiniteDimensional,
     IsFreeLeftModule, IsFreeLeftModule );
 
-InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsTrivial );
+InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsFinite );
 
 
 #############################################################################
@@ -191,9 +191,9 @@ HasGeneratorsOfRightModule := HasGeneratorsOfRightOperatorAdditiveGroup;
 ##
 #A  TrivialSubmodule( <M> )
 ##
-TrivialSubmodule := NewAttribute( "TrivialSubmodule", IsAdditiveGroup );
-SetTrivialSubmodule := Setter( TrivialSubmodule );
-HasTrivialSubmodule := Tester( TrivialSubmodule );
+TrivialSubmodule := TrivialSubadditiveMagmaWithZero;
+SetTrivialSubmodule := SetTrivialSubadditiveMagmaWithZero;
+HasTrivialSubmodule := HasTrivialSubadditiveMagmaWithZero;
 
 #T Submodule := NewOperation( "Submodule", [ IsLeftModule or IsRightModule ] );
 #T belongs to left or right or bimodules ?

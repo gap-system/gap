@@ -1402,6 +1402,46 @@ InstallOtherMethod( \*,
     0,
     PROD_LIST_SCL_DEFAULT );
 
+InstallOtherMethod( \*,
+    "catch some cases of 'mult. element * list'",
+    true,
+    [ IsMultiplicativeElement,
+      IsList ],
+    0,
+    function( elm, list )
+    local new, i;
+    if IsList( elm ) or IsTable( list ) then
+      TryNextMethod();
+    fi;
+    new:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        new[i]:= elm * list[i];
+      fi;
+    od;
+    return Immutable( new );
+    end );
+
+InstallOtherMethod( \*,
+    "catch some cases of 'list * mult. element'",
+    true,
+    [ IsList,
+      IsMultiplicativeElement ],
+    0,
+    function( list, elm )
+    local new, i;
+    if IsList( elm ) or IsTable( list ) then
+      TryNextMethod();
+    fi;
+    new:= [];
+    for i in [ 1 .. Length( list ) ] do
+      if IsBound( list[i] ) then
+        new[i]:= list[i] * elm;
+      fi;
+    od;
+    return Immutable( new );
+    end );
+
 
 #############################################################################
 ##

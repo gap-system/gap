@@ -216,6 +216,11 @@ local u,v,o,i,j,img;
   return Set(o);
 end);
 
+RightCosetCanonicalRepresentativeDeterminator := 
+function(U,a)
+  return [CanonicalRightCosetElement(U,a)];
+end;
+
 InstallMethod(RightCoset,"generic",IsCollsElms,
   [IsGroup,IsObject],0,
 function(U,g)
@@ -223,34 +228,31 @@ local d;
   # noch tests...
 
   d:=Objectify(RightCosetsDefaultKind(FamilyObj(U)),rec());
-  SetLeftActingDomain(d,U);
+  SetActingDomain(d,U);
   SetRepresentative(d,g);
   SetSize(d,Size(U));
+  SetCanonicalRepresentativeDeterminatorOfExternalSet(d,
+      RightCosetCanonicalRepresentativeDeterminator);
   return d;
 end);
 
 InstallMethod(PrintObj,"RightCoset",true,[IsRightCoset],0,
 function(d)
-  Print("RightCoset(",LeftActingDomain(d),",",Representative(d),")");
+  Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
 end);
 
-InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
-function(a,b)
-  return CanonRepObj(a)
-         =CanonRepObj(b);
-end);
+# AH: obsolete!
+#InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+#function(a,b)
+#  return CanonicalRepresentativeOfExternalSet(a)
+#         =CanonicalRepresentativeOfExternalSet(b);
+#end);
 
-InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
-function(a,b)
-  return CanonRepObj(a)
-         <CanonRepObj(b);
-end);
-
-InstallMethod(CanonRepObj,"RightCoset",true,
-[IsRightCoset],0,
-function(c)
-  return CanonicalRightCosetElement(LeftActingDomain(c),Representative(c));
-end);
+#InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+#function(a,b)
+#  return CanonicalRepresentativeOfExternalSet(a)
+#         <CanonicalRepresentativeOfExternalSet(b);
+#end);
 
 DoubleCosets := function(G,U,V)
   if not IsSubgroup(G,U) and IsSubgroup(G,V) then

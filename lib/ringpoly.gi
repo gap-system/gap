@@ -20,7 +20,7 @@ Revision.ringpoly_gi :=
 ##
 #T polynomial rings should be special cases of free magma rings!  one needs
 #T to set an underlying magma with one, and modify the kind to be
-#T UnitalAlgebra and FreeMagmaUnitalRing.  (for example, ring generators in
+#T AlgebraWithOne and FreeMagmaRingWithOne.  (for example, ring generators in
 #T the case of polynomial rings over finite fields are then automatically
 #T computable ...)
 ##
@@ -53,9 +53,9 @@ function( r, n )
     kind := IsPolynomialRing and IsAttributeStoringRep and IsFreeLeftModule;
     if Length(n) = 1 and HasIsField(r) and IsField(r)  then
         kind := kind and IsUnivariatePolynomialRing and IsEuclideanRing
-                     and IsUnitalAlgebra;
-    elif Length(n) = 1 and IsUnitalRing(r) then
-        kind := kind and IsUnivariatePolynomialRing and IsUnitalFLMLOR;
+                     and IsAlgebraWithOne;
+    elif Length(n) = 1 and IsRingWithOne(r) then
+        kind := kind and IsUnivariatePolynomialRing and IsFLMLORWithOne;
     elif Length(n) = 1  then
         kind := kind and IsUnivariatePolynomialRing;
     fi;
@@ -88,9 +88,9 @@ function( r, n )
     SetOne(  prng, ind[1]^0 );
     SetZero( prng, ind[1]*Zero(r) );
 
-    # set the generators left operator unital ring if the rank is one
-    if IsUnitalRing(r) then
-        SetGeneratorsOfLeftOperatorUnitalRing( prng, ind );
+    # set the generators left operator ring-with-one if the rank is one
+    if IsRingWithOne(r) then
+        SetGeneratorsOfLeftOperatorRingWithOne( prng, ind );
     fi;
 
     # and return

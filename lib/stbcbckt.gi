@@ -10,6 +10,9 @@
 ##  intersections.
 ##
 ##  $Log$
+##  Revision 4.23  1997/02/06 09:53:00  htheisse
+##  threw away some unused code
+##
 ##  Revision 4.22  1997/01/22 16:56:09  htheisse
 ##  fixed a grievous typo (`cellno' is now `lengths')
 ##  removed a line which pruned too much (a bug)
@@ -1046,7 +1049,6 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
            range,        # range for construction of <del>
            fix,  fixP,   # fixpoints of partitions at root of search tree
            obj,  prm,    # temporary variables for constructed permutation
-           star,         # cf. Butler 1985
            i,  dd,  p;   # loop variables
     
 #############################################################################
@@ -1176,28 +1178,6 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
             od;
         fi;
         del[ d ] := BlistList( range, orb[ d ] );
-        
-        # For normalizer  calculation,  find the approximation  $\bar X_H(T)$
-        # from Butler's section 3.
-        if IsBound( rbase.subchain )  then
-            if rbase.star[ d ] = false  then
-                dd := 1;
-            else
-                star := rbase.star[ d ];
-                dd := star[ 1 ] + 1;
-                IntersectBlist( del[ d ], First( star[ 2 ].blists,
-                        bl -> bl[ image.bimg[ star[ 1 ] ] ] ) );
-                if star[ 3 ] < branch  then
-                    SubtractBlist( del[ d ], First
-                            ( star[ 2 ].stabilizer.blists,
-                              bl -> bl[ image.bimg[ dd - 1 ] ] ) );
-                fi;
-            fi;
-            for i  in [ dd .. d - 1 ]  do
-                SubtractBlist( del[ d ], First( rbase.subchain.blists,
-                        bl -> bl[ image.bimg[ i ] ] ) );
-            od;
-        fi;
         
         # Loop  over the candidate images  for the  current base point. First
         # the special case ``image = base'' up to current level.
@@ -1699,21 +1679,6 @@ end;
 
 #############################################################################
 ##
-#F  Refinements.SubgroupOrbits( <U>, <strat> )  . . . . . . . for normalisers
-##
-Refinements.SubgroupOrbits := function( rbase, image, strat )
-    local   F,  P;
-    
-    F := image.data[ 2 ];
-    F := Stabilizer( F, image.bimg{ [ 1 .. image.depth ] }, OnTuples );
-    P := OrbitsPartition( F, rbase.domain );
-    StratMeetPartition( P, image.partition );
-    P := CollectedPartition( P, 1 );
-    return MeetPartitionStrat( rbase, image, P, strat );
-end;
-
-#############################################################################
-##
 #F  Refinements.TwoClosure( <G>, <Q>, <d>, <strat> )  . . . . . . two-closure
 ##
 Refinements.TwoClosure := function( rbase, image, G, f, Q, strat )
@@ -1722,40 +1687,6 @@ Refinements.TwoClosure := function( rbase, image, G, f, Q, strat )
     pnt := FixpointCellNo( image.partition, f );
     t   := InverseRepresentative( rbase.suborbits.stabChain, pnt );
     return MeetPartitionStrat( rbase, image, Q, t, strat );
-end;
-
-#############################################################################
-##
-#F  Refinements.FinishIsomorphism( <E>, <Pr> )  . . . . .  finish isomorphism
-##
-Refinements.FinishIsomorphism := function( rbase, image, E )
-    local   P,  F,  baseImgs,  hom,  i,  pos,  p;
-    
-    P := image.partition;
-    E := E!.original;
-    F := image.data[ 2 ]!.original;
-    baseImgs := F.classes{ image.bimg };
-    hom := GroupHomomorphismByImages( E, F, rbase.baseGens, baseImgs );
-    if     (         IsBound( E.fpGroup )
-                 and ForAll( E.fpGroup.relators, word -> MappedWord
-                     ( word, GeneratorsOfGroup( E.fpGroup ), baseImgs ) =
-                         One( F ) )
-              or     not IsBound( E.fpGroup )
-                 and IsMapping( hom )
-                 and OnTuples( rbase.baseGens, hom ) = baseImgs ) #T bad hack
-       and IsSurjective( hom )  then
-        for i  in [ 1 .. Size( E.classes ) ]  do
-            if not i in rbase.base  then
-                pos := Position( F.classes,
-                            ImagesRepresentative( hom, E.classes[ i ] ) );
-                IsolatePoint( P, pos );
-                ProcessFixpoint( image, i, pos );
-            fi;
-        od;
-        return true;
-    else
-        return false;
-    fi;
 end;
 
 #############################################################################
@@ -1856,11 +1787,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
            doneblox,   # blox already considered
            doneroot,   # roots of orbital graphs already considered
            tra,        # degree of transitivity of <E>
-           orgE,  len,  i,  range;
-    
-    if IsBound( E!.original )  then  orgE := E!.original;
-                               else  orgE := false;       fi;
-    n := Length( Omega );
+           len,  i,  range;
     
     # If  <E>  is a multiply  transitive  subgroup  of  <G>, consider orbital
     # graphs of the first non 2-transitive stabilizer.
@@ -1872,23 +1799,19 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
     fi;
         
     # Find the order in which to process the points in the base choice.
-    if orgE = false  then
-        if NumberCells( B ) = 1  then
-            order := false;
-        else
-            max := 0;  min := infinity;  i := 0;
-            while i < NumberCells( B )  do
-                i := i + 1;  len := B.lengths[ i ];
-                if len > max  then  max := len;  L := i;  fi;
-                if len < min  then  min := len;  l := i;  fi;
-            od;
-            order := Maximum( List( GeneratorsOfGroup( E ), OrderPerm ) );
-            if 2 * order < n  then  order := Cell( B, l );
-                              else  order := Cell( B, L );  fi;
-        fi;
+    if NumberCells( B ) = 1  then
+        order := false;
     else
-        order := List( GeneratorsOfGroup( orgE ),
-                       gen -> Position( orgE.classes, gen ) );
+        n := Length( Omega );
+        max := 0;  min := infinity;  i := 0;
+        while i < NumberCells( B )  do
+            i := i + 1;  len := B.lengths[ i ];
+            if len > max  then  max := len;  L := i;  fi;
+            if len < min  then  min := len;  l := i;  fi;
+        od;
+        order := Maximum( List( GeneratorsOfGroup( E ), OrderPerm ) );
+        if 2 * order < n  then  order := Cell( B, l );
+                          else  order := Cell( B, L );  fi;
     fi;
     
     # Construct an  R-base. Start with  the partition into  <G>-orbits on the
@@ -1897,42 +1820,32 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
     rbase := EmptyRBase( G, Omega, CollectedPartition( B, div ) );
     range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
     rbase.suborbits := [  ];
-    if false  and  orgE = false  and  not repr  then
-        rbase.subchain := DeepCopy( StabChainAttr( E ) );
-        rbase.sublevel := rbase.subchain;
-        rbase.star     := [  ];
-    fi;
     
     if NumberCells( B ) = 1  then  rbase.blox := false;
                              else  rbase.blox := B;      fi;
-    if orgE <> false  then
-        rbase.baseGens := [  ];
-        reg := fail;
+        
+    # See if <E> has a regular orbit or is affine.
+    orbs := Orbits( E, Omega );
+    reg := PositionProperty( orbs, orb -> Length( orb ) = Size( E ) );
+    if reg <> fail  then
+        Info( InfoBckt, 1, "Subgroup has regular orbit" );
+        rbase.reggrp := function( E, Omega )  return E;  end;
+        rbase.regorb := EmptyStabChain( [  ], One( E ),
+                                orbs[ reg ][ 1 ] );
+        AddGeneratorsExtendSchreierTree( rbase.regorb,
+                GeneratorsOfGroup( E ) );
     else
-        
-        # See if <E> has a regular orbit or is affine.
-        orbs := Orbits( E, Omega );
-        reg := PositionProperty( orbs, orb -> Length( orb ) = Size( E ) );
+        reg := Earns( E, Omega );
         if reg <> fail  then
-            Info( InfoBckt, 1, "Subgroup has regular orbit" );
-            rbase.reggrp := function( E, Omega )  return E;  end;
-            rbase.regorb := EmptyStabChain( [  ], One( E ),
-                                    orbs[ reg ][ 1 ] );
+            Info( InfoBckt, 1, "Subgroup is affine" );
+            rbase.reggrp := Earns;
+            rbase.regorb := EmptyStabChain( [  ], One( reg ),
+                                    Omega[ 1 ] );
             AddGeneratorsExtendSchreierTree( rbase.regorb,
-                    GeneratorsOfGroup( E ) );
-        else
-            reg := Earns( E, Omega );
-            if reg <> fail  then
-                Info( InfoBckt, 1, "Subgroup is affine" );
-                rbase.reggrp := Earns;
-                rbase.regorb := EmptyStabChain( [  ], One( reg ),
-                                        Omega[ 1 ] );
-                AddGeneratorsExtendSchreierTree( rbase.regorb,
-                        GeneratorsOfGroup( reg ) );
-            fi;
+                    GeneratorsOfGroup( reg ) );
         fi;
-        
     fi;
+        
     doneblox := [  ];
     doneroot := [  ];
         
@@ -1940,67 +1853,10 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
         local   len,  a,  Q,  S,  dd,  strat,  orb,  f,  fpt,  subs,  k,  i,
                 start,  oldstart,  types,  typ,  coll,  pnt,  done;
 
-        if reg <> fail  then
-            NextLevelRegularGroups( P, rbase );
-        elif orgE = false  and  IsBound( rbase.subchain )
-                           and  IsBound( rbase.sublevel.orbit )  then
-            NextRBasePoint( P, rbase, rbase.sublevel.orbit );
-        else
-            NextRBasePoint( P, rbase, order );
-        fi;
+        if reg <> fail  then  NextLevelRegularGroups( P, rbase );
+                        else  NextRBasePoint( P, rbase, order );   fi;
         len := Length( rbase.base );
         a := rbase.base[ len ];
-        
-        if IsBound( rbase.subchain )  then
-            ChangeStabChain( rbase.sublevel, [ a ], false );
-            rbase.sublevel.blists := List( OrbitsPerms
-                ( rbase.sublevel.generators, Omega ),
-                orb -> BlistList( range, orb ) );
-            rbase.sublevel := rbase.sublevel.stabilizer;
-            rbase.star[ len ] := false;
-            for i  in [ 1 .. len - 1 ]  do
-                S := rbase.subchain;  dd := 1;
-                while S.orbit[ 1 ] <> a  do
-                    if a in OrbitStabChain( S, rbase.base[ i ] )  then
-                        rbase.star[ len ] := [ i, S, dd ];
-                    fi;
-                    S := S.stabilizer;  dd := dd + 1;
-                od;
-            od;
-
-            orb := OrbitsPartition( rbase.sublevel, rbase.domain );
-            StratMeetPartition( orb, P );
-            orb := CollectedPartition( orb, 1 );
-            strat := StratMeetPartition( rbase, P, orb );
-            AddRefinement( rbase, "SubgroupOrbits", [ strat ] );
-        fi;
-        
-#        # Automorphism group calculation.
-#        if orgE <> false  then
-#            Add( rbase.baseGens, orgE.classes[ a ] );
-#            
-#            # Finish the automorphism if enough images are known.
-#            if Size( SubgroupNC( orgE, rbase.baseGens ) ) =
-#               Size( orgE )  then
-#                for i  in Omega  do
-#                    if not i in rbase.base  then
-#                        IsolatePoint( P, i );
-#                        ProcessFixpoint( rbase, i );
-#                    fi;
-#                od;
-#                
-#                # Find  a  presentation    for  <orgE> with    generators
-#                # <rbase.baseGens>.
-#                if IsPermGroup( orgE )  then
-#                    orgE.fpGroup := PermGroupOps_FpGroup
-#                                    ( orgE, "a", 0, rbase.baseGens );
-#                fi;
-#        
-#                AddRefinement( rbase, "FinishIsomorphism", [ E ] );
-#            fi;
-#            
-#        fi;
-        
         if len >= tra  then
             
             # For each fixpoint in <P>, consider the suborbits rooted at it.
@@ -2079,8 +1935,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                   fi;
               od;
               
-              if orgE = false  then  f := FixcellPoint( P, doneroot );
-                               else  f := false;                        fi;
+              f := FixcellPoint( P, doneroot );
             od;
         fi;
         
@@ -2092,7 +1947,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                 AddRefinement( rbase, "_MakeBlox", [ len ] );
             fi;
         fi;
-        
+         
         # Split off blocks whose images are known.
         if rbase.blox <> false  then
             k := FixcellsCell( P, rbase.blox.cellno, (), doneblox );
@@ -2116,8 +1971,6 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
 
     return rbase;
 end;
-
-InnerAutomorphisms := ReturnFalse;
 
 #############################################################################
 ##
@@ -2321,49 +2174,27 @@ end;
 #F  IsomorphismPermGroup( <arg> ) . . . . . isomorphism / conjugating element
 ##
 IsomorphismPermGroup := function( arg )
-    local   G,  E,  F,  orgE,  orgF,  Pr,  n,  L,  R,  Omega,  rbase,  data,
+    local   G,  E,  F,  Pr,  n,  L,  R,  Omega,  rbase,  data,
             Q,  BF;
     
-    if Length( arg ) mod 2 = 1  then
-        G := arg[ 1 ];
-        E := arg[ 2 ];
-        F := arg[ 3 ];
-        if   Size( E ) <> Size( F )  then  return fail;
-        elif IsTrivial( E )          then  return ();
-        elif Size( E ) = 2  then
-            if Length( arg ) > 3  then
-                L := arg[ 4 ];  R := arg[ 5 ];
-            else
-                L := TrivialSubgroup( G );  R := L;
-            fi;
-            E := First( GeneratorsOfGroup( E ), gen -> Order( gen ) <> 1 );
-            F := First( GeneratorsOfGroup( F ), gen -> Order( gen ) <> 1 );
-            return RepOpElmTuplesPermGroup( true, G, [ E ], [ F ], L, R );
+    G := arg[ 1 ];
+    E := arg[ 2 ];
+    F := arg[ 3 ];
+    if   Size( E ) <> Size( F )  then  return fail;
+    elif IsTrivial( E )          then  return ();
+    elif Size( E ) = 2  then
+        if Length( arg ) > 3  then
+            L := arg[ 4 ];  R := arg[ 5 ];
+        else
+            L := TrivialSubgroup( G );  R := L;
         fi;
-        Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
-                         GeneratorsOfGroup( E ), GeneratorsOfGroup( F ) ) );
-        Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in F );
-        # [ E, GeneratorsOfGroup( F ), OnTuples,
-        #   gen -> ForAll( gen!.rgtObj, g -> g in gen!.lftObj ) ];
-    else
-        orgE := arg[ 1 ];
-        orgF := arg[ 2 ];
-        if IsTrivial( orgE )  then
-            orgE.classes := [  ];
-            if IsTrivial( orgF )  then
-                orgE.classes := [  ];
-                return ();
-            else
-                return fail;
-            fi;
-        fi;
-        E := InnerAutomorphisms( orgE );
-        F := InnerAutomorphisms( orgF );
-        n := Maximum( Size( orgE.classes ), Size( orgF.classes ) );
-        Omega := [ 1 .. n ];
-        G := SymmetricGroup( n );
-        Pr := ReturnTrue;
+        E := First( GeneratorsOfGroup( E ), gen -> Order( gen ) <> 1 );
+        F := First( GeneratorsOfGroup( F ), gen -> Order( gen ) <> 1 );
+        return RepOpElmTuplesPermGroup( true, G, [ E ], [ F ], L, R );
     fi;
+    Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
+                     GeneratorsOfGroup( E ), GeneratorsOfGroup( F ) ) );
+    Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in F );
     if Length( arg ) > 3  then
         L := arg[ Length( arg ) - 1 ];
         R := arg[ Length( arg ) ];
@@ -2393,44 +2224,23 @@ end;
 #F  AutomorphismGroupPermGroup( <arg> ) . . . automorphism group / normalizer
 ##
 AutomorphismGroupPermGroup := function( arg )
-    local   G,  E,  div,  n,  Omega,  Pr,  orgE,  P,
+    local   G,  E,  div,  n,  Omega,  Pr,  P,
             rbase,  data,  N,  B,  L,  cl,  i;
     
-    if Length( arg ) > 1  then
-        G := arg[ 1 ];
-        E := arg[ 2 ];
-        if IsTrivial( E )  then
-            return G;
-        elif Size( E ) = 2  then
-            if Length( arg ) > 2  then  L := arg[ 3 ];
-                                  else  L := TrivialSubgroup( G );  fi;
-            E := [ First( GeneratorsOfGroup( E ),
-                         gen -> Order( gen ) <> 1 ) ];
-            return RepOpElmTuplesPermGroup( false, G, E, E, L, L );
-        fi;
-        Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
-                         GeneratorsOfGroup( E ) ) );
-        Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in E );
-        # [ E, GeneratorsOfGroup( E ), OnTuples,
-        #   gen -> ForAll( gen!.rgtObj, g -> g in gen!.lftObj ) ];
-    else
-        orgE := arg[ 1 ];
-        if IsTrivial( orgE )  then
-            orgE.classes := [  ];
-            orgE.genAutomorphisms := [  ];
-            return orgE;
-        fi;
-        E := InnerAutomorphisms( orgE );
-        SetSize( E, Index( orgE, Centre( orgE ) ) );
-        E!.original := orgE;
-        
-        # Find a supergroup of the automorphism group without NAUTY.
-        n := Size( orgE.classes );
-        Omega := [ 1 .. n ];
-        G := SymmetricGroup( n );
-        
-        Pr := ReturnTrue;
+    G := arg[ 1 ];
+    E := arg[ 2 ];
+    if IsTrivial( E )  then
+        return G;
+    elif Size( E ) = 2  then
+        if Length( arg ) > 2  then  L := arg[ 3 ];
+                              else  L := TrivialSubgroup( G );  fi;
+        E := [ First( GeneratorsOfGroup( E ),
+                     gen -> Order( gen ) <> 1 ) ];
+        return RepOpElmTuplesPermGroup( false, G, E, E, L, L );
     fi;
+    Omega := MovedPointsPerms( Concatenation( GeneratorsOfGroup( G ),
+                     GeneratorsOfGroup( E ) ) );
+    Pr := gen -> ForAll( GeneratorsOfGroup( E ), g -> g ^ gen in E );
     if   Length( arg ) = 3  then  L := arg[ 3 ];
     elif IsSubset( G, E )   then  L := E;
     else                          L := TrivialSubgroup( G );  fi;
@@ -2453,14 +2263,6 @@ AutomorphismGroupPermGroup := function( arg )
     else
         N := ShallowCopy( G );
     fi;
-    
-    # In the automorphism group case, construct explicit automorphisms.
-    if IsBound( orgE )  then
-        N.genAutomorphisms := List( GeneratorsOfGroup( N ), gen ->
-            GroupHomomorphismByImages( orgE, orgE, rbase.baseGens,
-            List( rbase.base, i -> orgE.classes[ i ^ gen ] ) ) );
-    fi;
-    
     return N;
 end;
 
@@ -2625,7 +2427,8 @@ PermGroupOps_TwoClosure := function( arg )
             Pr := function( gen )
                 local   k;
                 
-                if not ForAll( GeneratorsOfGroup( G ), g -> g ^ gen in G )  then
+                if not ForAll( GeneratorsOfGroup( G ),
+                           g -> g ^ gen in G )  then
                     return false;
                 fi;
                 for k  in merge  do

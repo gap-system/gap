@@ -427,6 +427,24 @@ end );
 
 #############################################################################
 ##
+#M  <xorb> < <yorb> . . . . . . . . . . . . . . . . . by ``canon. rep'' test
+##
+InstallMethod( \<, IsIdentical,
+        [ IsExternalOrbit and HasCanonicalRepresentativeOfExternalSet,
+          IsExternalOrbit and HasCanonicalRepresentativeOfExternalSet ],
+        SUM_FLAGS,
+    function( xorb, yorb )
+    if not IsIdentical( ActingDomain     ( xorb ), ActingDomain     ( yorb ) )
+    or not IsIdentical( FunctionOperation( xorb ), FunctionOperation( yorb ) )
+       then
+        TryNextMethod();
+    fi;
+    return CanonicalRepresentativeOfExternalSet( xorb ) <
+           CanonicalRepresentativeOfExternalSet( yorb );
+end );
+
+#############################################################################
+##
 #M  <pnt> in <xorb> . . . . . . . . . . . . . . . . . . by ``conjugacy'' test
 ##
 InstallMethod( \in, IsElmsColls, [ IsObject, IsExternalOrbit ], 0,
@@ -443,6 +461,19 @@ InstallMethod( \in, IsElmsColls, [ IsObject,
     else
         TryNextMethod();
     fi;
+end );
+
+# this method should have a higher priority than the previous to avoid
+# searches in vain.
+InstallMethod( \in, "by CanonicalRepresentativeDeterminator", 
+  IsElmsColls, [ IsObject,
+        IsExternalOrbit and
+	HasCanonicalRepresentativeDeterminatorOfExternalSet ], 1,
+function( pnt, xorb )
+local func;
+  func:=CanonicalRepresentativeDeterminatorOfExternalSet(xorb);
+  return CanonicalRepresentativeOfExternalSet( xorb ) = 
+    func(ActingDomain(xorb),pnt)[1];
 end );
 
 #############################################################################
@@ -1305,20 +1336,6 @@ end;
 #############################################################################
 ##
 
-#F  Earns( <arg> ) . . . . . . . . elementary abelian regular normal subgroup
-##
-Earns := function( arg )
-    return AttributeOperation( EarnsOp, EarnsAttr, false, arg );
-end;
-
-InstallMethod( EarnsOp, true, OrbitsishReq, 0,
-    function( G, D, gens, oprs, opr )
-    Error( "sorry, I am too lazy to compute the earns" );
-end );
-
-#############################################################################
-##
-
 #F  OrbitLength( <arg> )  . . . . . . . . . . . . . . . . . . .  orbit length
 ##
 OrbitLength := function( arg )
@@ -1522,11 +1539,6 @@ InstallMethod( IsTransitiveOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return IsSubset( OrbitOp( G, D[ 1 ], gens, oprs, opr ), D );
 end );
-InstallMethod( IsTransitiveOp, true,
-        [ IsGroup, IsList and IsEmpty,
-          IsList,
-          IsList,
-          IsFunction ], 0, ReturnTrue );
 
 #############################################################################
 ##
@@ -1535,15 +1547,6 @@ InstallMethod( IsTransitiveOp, true,
 Transitivity := function( arg )
     return AttributeOperation( TransitivityOp, TransitivityAttr, false, arg );
 end;
-InstallMethod( TransitivityOp,
-        "G, [  ], gens, perms, opr", true,
-        [ IsGroup, IsList and IsEmpty,
-          IsList,
-          IsList,
-          IsFunction ], SUM_FLAGS,
-    function( G, D, gens, oprs, opr )
-    return 0;
-end );
 
 InstallMethod( TransitivityOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
@@ -1565,6 +1568,53 @@ InstallMethod( IsPrimitiveOp, true, OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return     IsTransitive( G, D, gens, oprs, opr )
            and Length( Blocks( G, D, gens, oprs, opr ) ) = 1;
+end );
+
+#############################################################################
+##
+#F  Earns( <arg> ) . . . . . . . . elementary abelian regular normal subgroup
+##
+Earns := function( arg )
+    return AttributeOperation( EarnsOp, EarnsAttr, false, arg );
+end;
+
+InstallMethod( EarnsOp, "fail if non-affine", true,
+        [ IsGroup and Tester( IsPrimitiveAffineProp ), IsList,
+          IsList,
+          IsList,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, gens, oprs, opr )
+    if not IsPrimitiveAffineProp( G )  then  return fail;
+                                       else  TryNextMethod();  fi;
+end );
+
+InstallMethod( EarnsOp, true, OrbitsishReq, 0,
+    function( G, D, gens, oprs, opr )
+    Error( "sorry, I am too lazy to compute the earns" );
+end );
+
+#############################################################################
+##
+#M  Setter( EarnsAttr )( <G>, fail )  . . . . . . . . . . .  never set `fail'
+##
+InstallMethod( Setter( EarnsAttr ), true, [ IsGroup, IsBool ], SUM_FLAGS,
+    function( G, fail )
+    Setter( IsPrimitiveAffineProp )( G, false );
+end );
+
+#############################################################################
+##
+#F  IsPrimitiveAffine( <arg> )  . . . . . . . . . . . .  is operation affine?
+##
+IsPrimitiveAffine := function( arg )
+    return AttributeOperation( IsPrimitiveAffineOp, IsPrimitiveAffineProp,
+                   false, arg );
+end;
+
+InstallMethod( IsPrimitiveAffineOp, true, OrbitsishReq, 0,
+    function( G, D, gens, oprs, opr )
+    return     IsPrimitive( G, D, gens, oprs, opr )
+           and Earns( G, D, gens, oprs, opr ) <> fail;
 end );
 
 #############################################################################
@@ -1911,6 +1961,29 @@ InstallMethod( CanonicalRepresentativeOfExternalSet, true,
     aslist := AsList( xset );
     return First( HomeEnumerator( xset ), p -> p in aslist );
 end );
+
+# for external sets that know how to get the canonical representative
+InstallMethod( CanonicalRepresentativeOfExternalSet, 
+      "by CanonicalRepresentativeDeterminator",
+      true,
+      [ IsExternalSet
+        and HasCanonicalRepresentativeDeterminatorOfExternalSet ],
+      2*SUM_FLAGS+1,
+function( xset )
+local func,can;
+
+  if IsBound(xset!.CanonicalRepresentativeOfExternalSet) then
+    return xset!.CanonicalRepresentativeOfExternalSet;
+  fi;
+  func:=CanonicalRepresentativeDeterminatorOfExternalSet(xset);
+  can:=func(ActingDomain(xset),Representative(xset));
+  # note the stabilizer we got for free
+  if not HasStabilizerOfExternalSet(xset) and IsBound(can[2]) then
+    SetStabilizerOfExternalSet(xset,can[2]^(can[3]^-1));
+  fi;
+  SetCanonicalRepresentativeOfExternalSet(xset,can[1]);
+  return can[1];
+end ) ;
 
 #############################################################################
 ##

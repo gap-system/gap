@@ -123,22 +123,22 @@ InstallOtherMethod( DefaultRingByGenerators,
 
 #############################################################################
 ##
-#M  UnitalRingByGenerators( <mats> )   unital ring gen. by a list of matrices
+#M  RingWithOneByGenerators( <mats> )  ring-with-one gen. by list of matrices
 ##
 ##  If <mats> is a list of matrices over a field then we construct a matrix
 ##  algebra over its prime field.
 ##
-InstallOtherMethod( UnitalRingByGenerators,
+InstallOtherMethod( RingWithOneByGenerators,
     "method for a list of matrices over a finite field",
     true,
     [ IsFFECollCollColl ], 0,
-    mats -> UnitalAlgebraByGenerators( GF( Characteristic( mats ) ), mats ) );
+    mats -> AlgebraWithOneByGenerators( GF( Characteristic( mats ) ), mats ) );
 
-InstallOtherMethod( UnitalRingByGenerators,
+InstallOtherMethod( RingWithOneByGenerators,
     "method for a list of matrices over the Cyclotomics",
     true,
     [ IsCyclotomicsCollCollColl ], 0,
-    mats -> UnitalAlgebraByGenerators( Rationals, mats ) );
+    mats -> AlgebraWithOneByGenerators( Rationals, mats ) );
 
 #T how to formulate this for any field?
 
@@ -412,11 +412,11 @@ InstallOtherMethod( FLMLORByGenerators,
 
 #############################################################################
 ##
-#M  UnitalFLMLORByGenerators( <F>, <mats> )
-#M  UnitalFLMLORByGenerators( <F>, <empty>, <zero> )
-#M  UnitalFLMLORByGenerators( <F>, <mats>, <zero> )
+#M  FLMLORWithOneByGenerators( <F>, <mats> )
+#M  FLMLORWithOneByGenerators( <F>, <empty>, <zero> )
+#M  FLMLORWithOneByGenerators( <F>, <mats>, <zero> )
 ##
-InstallMethod( UnitalFLMLORByGenerators,
+InstallMethod( FLMLORWithOneByGenerators,
     "method for division ring and list of matrices over it",
     IsElmsCollColls,
     [ IsDivisionRing, IsCollection and IsList ], 0,
@@ -436,20 +436,20 @@ InstallMethod( UnitalFLMLORByGenerators,
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
       A:= Objectify( NewKind( FamilyObj( mats ),
-                                  IsUnitalFLMLOR
+                                  IsFLMLORWithOne
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
       A:= Objectify( NewKind( FamilyObj( mats ),
-                                  IsUnitalFLMLOR
+                                  IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
     fi;
 
     SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorUnitalRing( A, AsList( mats ) );
+    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( mats ) );
     A!.vectordim:= dims;
 
     # If the generators are associative elements then so is 'A'.
@@ -461,7 +461,7 @@ InstallMethod( UnitalFLMLORByGenerators,
     return A;
     end );
 
-InstallOtherMethod( UnitalFLMLORByGenerators,
+InstallOtherMethod( FLMLORWithOneByGenerators,
     "method for division ring, empty list, and square matrix",
     true,
     [ IsDivisionRing, IsList and IsEmpty, IsMatrix ], 0,
@@ -477,13 +477,13 @@ InstallOtherMethod( UnitalFLMLORByGenerators,
     fi;
 
     A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
-                                IsUnitalFLMLOR
+                                IsFLMLORWithOne
                             and IsGaussianSpace
                             and IsGaussianMatrixSpaceRep
                             and IsAssociative ),
                    rec() );
     SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorUnitalRing( A, empty );
+    SetGeneratorsOfLeftOperatorRingWithOne( A, empty );
     SetZero( A, zero );
     A!.vectordim:= DimensionsMat( zero );
 
@@ -491,7 +491,7 @@ InstallOtherMethod( UnitalFLMLORByGenerators,
     return A;
     end );
 
-InstallOtherMethod( UnitalFLMLORByGenerators,
+InstallOtherMethod( FLMLORWithOneByGenerators,
     "method for division ring, list of matrices	over it, and matrix",
     true,
     [ IsDivisionRing, IsCollection and IsList, IsMatrix ], 0,
@@ -519,20 +519,20 @@ InstallOtherMethod( UnitalFLMLORByGenerators,
 
     if ForAll( mats, mat -> ForAll( mat, row -> IsSubset( F, row ) ) ) then
       A:= Objectify( NewKind( FamilyObj( mats ),
-                                  IsUnitalFLMLOR
+                                  IsFLMLORWithOne
                               and IsGaussianSpace
                               and IsGaussianMatrixSpaceRep ),
                      rec() );
     else
       A:= Objectify( NewKind( FamilyObj( mats ),
-                                  IsUnitalFLMLOR
+                                  IsFLMLORWithOne
                               and IsVectorSpace
                               and IsNonGaussianMatrixSpaceRep ),
                      rec() );
     fi;
 
     SetLeftActingDomain( A, F );
-    SetGeneratorsOfLeftOperatorUnitalRing( A, AsList( mats ) );
+    SetGeneratorsOfLeftOperatorRingWithOne( A, AsList( mats ) );
     SetZero( A, zero );
     A!.vectordim:= dims;
 
@@ -814,16 +814,16 @@ InstallMethod( Centralizer,
 
 #############################################################################
 ##
-#M  Centralizer( <A>, <mat> ) . . . . . . for unital matrix FLMLOR and matrix
+#M  Centralizer( <A>, <mat> ) . . . . . for matrix FLMLOR-with-one and matrix
 ##
 InstallMethod( Centralizer,
-    "method for unital associative Gaussian matrix FLMLOR, and matrix",
+    "method for associative Gaussian matrix FLMLOR-with-one, and matrix",
     IsCollsElms,
-    [ IsMatrixFLMLOR and IsUnitalFLMLOR
+    [ IsMatrixFLMLOR and IsFLMLORWithOne
                      and IsAssociative and IsGaussianSpace,
       IsMatrix ], 0,
     function( A, mat )
-    return UnitalSubalgebraNC( A,
+    return SubalgebraWithOneNC( A,
                CentralizerInAssociativeGaussianMatrixAlgebra(
                    BasisVectors( BasisOfDomain( A ) ),
                    [ mat ] ),
@@ -833,16 +833,16 @@ InstallMethod( Centralizer,
 
 #############################################################################
 ##
-#M  Centralizer( <A>, <C> ) . . .  for unital matrix FLMLOR and matrix FLMLOR
+#M  Centralizer( <A>, <C> ) . .  for matrix FLMLOR-with-one and matrix FLMLOR
 ##
 InstallMethod( Centralizer,
-    "method for unital associative Gaussian matrix FLMLOR, and FLMLOR",
+    "method for associative Gaussian matrix FLMLOR-with-one, and FLMLOR",
     IsIdentical,
-    [ IsMatrixFLMLOR and IsUnitalFLMLOR
+    [ IsMatrixFLMLOR and IsFLMLORWithOne
                      and IsAssociative and IsGaussianSpace,
       IsMatrixFLMLOR ], 0,
     function( A, C )
-    return UnitalSubalgebraNC( A,
+    return SubalgebraWithOneNC( A,
                CentralizerInAssociativeGaussianMatrixAlgebra(
                    BasisVectors( BasisOfDomain( A ) ),
                    GeneratorsOfAlgebra( C ) ),
@@ -993,7 +993,7 @@ FullMatrixFLMLOR := function( R, n )
     od;
 
     # Construct the FLMLOR.
-    A:= UnitalAlgebraByGenerators( R, gens );
+    A:= AlgebraWithOneByGenerators( R, gens );
     SetIsFullMatrixModule( A, true );
 
     # Return the FLMLOR.
@@ -1273,9 +1273,9 @@ NullAlgebra := R -> FLMLORByGenerators( R, [],
 #T #M  FpAlgebra( <F>, <A> )
 #T ##
 #T InstalMethod( FpAlgebra,
-#T     "method for ring and unital associative FLMLOR",
+#T     "method for ring and associative FLMLOR-with-one",
 #T     true,
-#T     [ IsRing, IsUnitalFLMLOR ], 0,
+#T     [ IsRing, IsFLMLORWithOne ], 0,
 #T     function( F, A )
 #T 
 #T     local base,         # base of 'A'
@@ -1589,7 +1589,7 @@ NullAlgebra := R -> FLMLORByGenerators( R, [],
 #T ##
 #T #F  SpecialUnitalMatrixAssociativeAlgebraOps.StandardBasis( <A> )
 #T ##
-#T ##  Let $A$ be a unital matrix algebra over the field $F$.
+#T ##  Let $A$ be a matrix algebra-wth-one over the field $F$.
 #T ##
 #T ##  Define $A_i$ to be the linear space generated by all words of length at
 #T ##  most $i$, in terms of the generators of $A$.

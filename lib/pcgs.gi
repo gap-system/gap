@@ -27,7 +27,10 @@ InstallMethod( IsPcgsComputable, true, [ IsGroup ], 0, ReturnFalse );
 ##  `HasPcgs' implies  `IsPcgsComputable',  which implies `IsSolvable',  so a
 ##  pcgs cannot be set for insoluble permutation groups.
 ##
-InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], SUM_FLAGS, Ignore );
+InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], SUM_FLAGS,
+    function( G, fail )
+    SetIsSolvableGroup( G, false );
+end );
 
 
 #############################################################################
@@ -124,17 +127,17 @@ InstallMethod( PcgsByPcSequenceCons,
 function( filter, imp, efam, pcs )
     local   pcgs,  fam,  rws;
 
-    # construct a pcgs object
-    pcgs := rec();
-    pcgs.pcSequence := Immutable(pcs);
-
     # if the <efam> has a family pcgs check if the are equal
-    if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcgs!.pcSequence  then
+    if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcs  then
         imp := imp and IsFamilyPcgs;
     fi;
     if 0 = Length(pcs)  then
         imp := imp and IsEmpty;
     fi;
+
+    # construct a pcgs object
+    pcgs := rec();
+    pcgs.pcSequence := Immutable(pcs);
 
     # get the pcgs family
     fam := CollectionsFamily(efam);
@@ -544,6 +547,24 @@ end );
 
 #############################################################################
 ##
+#M  SetRelativeOrders( <prime-orders-pcgs>, <orders> )
+##
+SET_RELATIVE_ORDERS := SETTER_FUNCTION(
+    "RelativeOrders", HasRelativeOrders );
+
+
+InstallMethod( SetRelativeOrders,
+    "setting orders for prime orders pcgs",
+    true,
+    [ IsPcgs and IsComponentObjectRep and IsAttributeStoringRep and
+        HasIsPrimeOrdersPcgs and HasIsFiniteOrdersPcgs,
+      IsList ],
+    SUM_FLAGS+2,
+    SET_RELATIVE_ORDERS );
+
+
+#############################################################################
+##
 #M  SetRelativeOrders( <pcgs>, <orders> )
 ##
 InstallMethod( SetRelativeOrders,
@@ -551,17 +572,17 @@ InstallMethod( SetRelativeOrders,
     true,
     [ IsPcgs and IsComponentObjectRep and IsAttributeStoringRep,
       IsList ],
-    SUM_FLAGS,
+    SUM_FLAGS+1,
 
 function( pcgs, orders )
-    if not HasIsPrimeOrdersPcgs(pcgs)  then
-        SetIsPrimeOrdersPcgs( pcgs, ForAll( orders, x -> IsPrimeInt(x) ) );
-    fi;
     if not HasIsFiniteOrdersPcgs(pcgs)  then
         SetIsFiniteOrdersPcgs( pcgs,
             ForAll( orders, x -> x <> 0 and x <> infinity ) );
     fi;
-    TryNextMethod();
+    if IsFiniteOrdersPcgs(pcgs) and not HasIsPrimeOrdersPcgs(pcgs)  then
+        SetIsPrimeOrdersPcgs( pcgs, ForAll( orders, x -> IsPrimeInt(x) ) );
+    fi;
+    SET_RELATIVE_ORDERS( pcgs, orders );
 end );
 
 

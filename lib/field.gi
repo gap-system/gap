@@ -368,9 +368,9 @@ InstallMethod( GeneratorsOfRing,
 
 #############################################################################
 ##
-#M  GeneratorsOfUnitalRing( <F> ) . unital ring generators of a division ring
+#M  GeneratorsOfRingWithOne( <F> )  . . . . . . . . . . . for a division ring
 ##
-InstallMethod( GeneratorsOfUnitalRing,
+InstallMethod( GeneratorsOfRingWithOne,
     "method for a division ring with known generators",
     true,
     [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
@@ -480,8 +480,8 @@ InstallMethod( AsDivisionRing,
 
     E:= DivisionRingByGenerators( F, GeneratorsOfDivisionRing( D ) );
 
-    RunIsomorphismImplications( D, E );
-    RunSubsetImplications( D, E );
+    UseIsomorphismRelation( D, E );
+    UseSubsetRelation( D, E );
 
     return E;
     end );

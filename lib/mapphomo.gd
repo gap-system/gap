@@ -299,6 +299,8 @@ RespectsScalarMultiplication := NewProperty( "RespectsScalarMultiplication",
 SetRespectsScalarMultiplication := Setter( RespectsScalarMultiplication );
 HasRespectsScalarMultiplication := Tester( RespectsScalarMultiplication );
 
+InstallTrueMethod( RespectsAdditiveInverses, RespectsScalarMultiplication );
+
 
 #############################################################################
 ##

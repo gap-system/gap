@@ -53,31 +53,31 @@ InstallMethod( PrintObj, true,
 
 #############################################################################
 ##
-#M  Print( <R> )  . . . . . . . . . . . . . . . . . . . . print a unital ring
+#M  PrintObj( <R> ) . . . . . . . . . . . . . . . . . . print a ring-with-one
 ##
 InstallMethod( PrintObj, true,
-    [ IsUnitalRing and HasParent and HasGeneratorsOfUnitalRing ], 0,
+    [ IsRingWithOne and HasParent and HasGeneratorsOfRingWithOne ], 0,
     function( R )
     Print( "Subring( ", Parent( R ), ", ",
-           GeneratorsOfUnitalRing( R ), " )" );
+           GeneratorsOfRingWithOne( R ), " )" );
     end );
 
 InstallMethod( PrintObj, true,
-    [ IsUnitalRing and HasParent ], 0,
+    [ IsRingWithOne and HasParent ], 0,
     function( R )
     Print( "Subring( ", Parent( R ), ", ... )" );
     end );
 
 InstallMethod( PrintObj, true,
-    [ IsUnitalRing and HasGeneratorsOfUnitalRing ], 0,
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     function( R )
-    Print( "UnitalRing( ", GeneratorsOfUnitalRing( R ), " )" );
+    Print( "RingWithOne( ", GeneratorsOfRingWithOne( R ), " )" );
     end );
 
 InstallMethod( PrintObj, true,
-    [ IsUnitalRing ], 0,
+    [ IsRingWithOne ], 0,
     function( R )
-    Print( "UnitalRing( ... )" );
+    Print( "RingWithOne( ... )" );
     end );
 
 
@@ -147,12 +147,12 @@ InstallMethod( IsCentral,
     IsCentralFromGenerators( GeneratorsOfRing, GeneratorsOfRing ) );
 
 InstallMethod( IsCentral,
-    "method for two associative unital rings",
+    "method for two associative rings-with-one",
     IsIdentical,
-    [ IsUnitalRing and IsAssociative,
-      IsUnitalRing and IsAssociative ], 0,
-    IsCentralFromGenerators( GeneratorsOfUnitalRing,
-                             GeneratorsOfUnitalRing ) );
+    [ IsRingWithOne and IsAssociative,
+      IsRingWithOne and IsAssociative ], 0,
+    IsCentralFromGenerators( GeneratorsOfRingWithOne,
+                             GeneratorsOfRingWithOne ) );
 
 
 #############################################################################
@@ -174,19 +174,21 @@ InstallImmediateMethod( IsCommutative,
 
 InstallMethod( IsCommutative,
     "method for an associative ring",
-    true, [ IsRing and IsAssociative ], 0,
+    true,
+    [ IsRing and IsAssociative ], 0,
     IsCommutativeFromGenerators( GeneratorsOfRing ) );
 
 InstallMethod( IsCommutative,
-    "method for an associative unital ring",
-    true, [ IsUnitalRing and IsAssociative ], 0,
-    IsCommutativeFromGenerators( GeneratorsOfUnitalRing ) );
+    "method for an associative ring-with-one",
+    true,
+    [ IsRingWithOne and IsAssociative ], 0,
+    IsCommutativeFromGenerators( GeneratorsOfRingWithOne ) );
 
 
 #############################################################################
 ##
 #M  GeneratorsOfRing( <R> )
-#M  GeneratorsOfUnitalRing( <R> )
+#M  GeneratorsOfRingWithOne( <R> )
 ##
 ##  'GeneratorsOfMagma' of a ring
 ##  are also 'GeneratorsOfRing'.
@@ -194,9 +196,9 @@ InstallMethod( IsCommutative,
 ##  are also 'GeneratorsOfRing'.
 ##
 ##  'GeneratorsOfMagmaWithOne' of a ring
-##  are also 'GeneratorsOfUnitalRing'.
-##  'GeneratorsOfRing' of a unital ring
-##  are also 'GeneratorsOfUnitalRing'.
+##  are also 'GeneratorsOfRingWithOne'.
+##  'GeneratorsOfRing' of a ring-with-one
+##  are also 'GeneratorsOfRingWithOne'.
 ##
 InstallImmediateMethod( GeneratorsOfRing,
     IsRing and HasGeneratorsOfMagma, 0,
@@ -206,12 +208,12 @@ InstallImmediateMethod( GeneratorsOfRing,
     IsRing and HasGeneratorsOfAdditiveMagmaWithInverses, 0,
     GeneratorsOfAdditiveMagmaWithInverses );
 
-InstallImmediateMethod( GeneratorsOfUnitalRing,
-    IsUnitalRing and HasGeneratorsOfMagmaWithOne, 0,
+InstallImmediateMethod( GeneratorsOfRingWithOne,
+    IsRingWithOne and HasGeneratorsOfMagmaWithOne, 0,
     GeneratorsOfMagmaWithOne );
 
-InstallImmediateMethod( GeneratorsOfUnitalRing,
-    IsUnitalRing and HasGeneratorsOfRing, 0,
+InstallImmediateMethod( GeneratorsOfRingWithOne,
+    IsRingWithOne and HasGeneratorsOfRing, 0,
     GeneratorsOfRing );
 
 
@@ -219,8 +221,8 @@ InstallMethod( GeneratorsOfRing, true, [ IsRing ], 0,
     GeneratorsOfMagma );
 
 InstallMethod( GeneratorsOfRing, true,
-    [ IsUnitalRing and HasGeneratorsOfUnitalRing ], 0,
-    R -> Set( Concatenation( GeneratorsOfUnitalRing( R ), [ One(R) ] ) ) );
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    R -> Set( Concatenation( GeneratorsOfRingWithOne( R ), [ One(R) ] ) ) );
 
 
 #############################################################################
@@ -234,10 +236,10 @@ InstallMethod( Representative,
     RepresentativeFromGenerators( GeneratorsOfRing ) );
 
 InstallMethod( Representative,
-    "method for a unital ring with generators",
+    "method for a ring-with-one with generators",
     true,
-    [ IsUnitalRing and HasGeneratorsOfUnitalRing ], 0,
-    RepresentativeFromGenerators( GeneratorsOfUnitalRing ) );
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    RepresentativeFromGenerators( GeneratorsOfRingWithOne ) );
 
 
 #############################################################################
@@ -656,43 +658,43 @@ end;
 
 #############################################################################
 ##
-#M  UnitalRingByGenerators( <gens> )  . unital ring generated by a collection
+#M  RingWithOneByGenerators( <gens> ) . .  ring-with-one gen. by a collection
 ##
-InstallMethod( UnitalRingByGenerators,
+InstallMethod( RingWithOneByGenerators,
     "method for a collection",
     true,
     [ IsCollection ], 0,
     function( gens )
     local R;
     R:= Objectify( NewKind( FamilyObj( gens ),
-                            IsUnitalRing and IsAttributeStoringRep ),
+                            IsRingWithOne and IsAttributeStoringRep ),
                    rec() );
-    SetGeneratorsOfUnitalRing( R, gens );
+    SetGeneratorsOfRingWithOne( R, gens );
     return R;
     end );
 
 
 #############################################################################
 ##
-#F  UnitalRing( <z>, ... )  . . . . . . unital ring generated by a collection
-#F  UnitalRing( [ <z>, ... ] )  . . . . unital ring generated by a collection
+#F  RingWithOne( <z>, ... ) . . . . . ring-with-one generated by a collection
+#F  RingWithOne( [ <z>, ... ] ) . . . ring-with-one generated by a collection
 ##
-UnitalRing := function ( arg )
+RingWithOne := function ( arg )
     local   R;          # ring containing the elements of <arg>, result
 
     # special case for one square matrix
     if      Length(arg) = 1
         and IsMatrix( arg[1] ) and Length( arg[1] ) = Length( arg[1][1] )
     then
-        R := UnitalRingByGenerators( arg );
+        R := RingWithOneByGenerators( arg );
 
     # special case for list of elements
     elif Length(arg) = 1  and IsList(arg[1])  then
-        R := UnitalRingByGenerators( arg[1] );
+        R := RingWithOneByGenerators( arg[1] );
 
     # other cases
     else
-        R := UnitalRingByGenerators( arg );
+        R := RingWithOneByGenerators( arg );
     fi;
 
     # return the ring
@@ -792,14 +794,14 @@ InstallMethod( IsSubset,
 
 #############################################################################
 ##
-#M  IsSubset( <R>, <S> )  . . . . . . . . . . . . . . .  for two unital rings
+#M  IsSubset( <R>, <S> )  . . . . . . . . . . . . . .  for two rings-with-one
 ##
 InstallMethod( IsSubset,
-    "method for two unital rings",
+    "method for two rings-with-one",
     IsIdentical,
-    [ IsUnitalRing, IsUnitalRing and HasGeneratorsOfUnitalRing ], 0,
+    [ IsRingWithOne, IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     function( R, S )
-    return IsSubset( R, GeneratorsOfUnitalRing( S ) );
+    return IsSubset( R, GeneratorsOfRingWithOne( S ) );
     end );
 
 

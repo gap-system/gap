@@ -736,7 +736,7 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         pcgs!.stabChain := N!.stabChain;
         pcgs!.nrGensSeries := [ Length( N ) ];
         SetPcSeries( pcgs, [ GroupOfPcgs( N ) ] );
-        pcgs := ExtendedPcgs( pcgs, Reversed( G ) );
+        pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
     SetNumeratorOfModuloPcgs  ( pcgs, G );
@@ -1048,13 +1048,6 @@ end );
 #############################################################################
 ##
 
-#M  NiceMonomorphism( <G> ) . . . . . . . . . . . . .  perm group as pc group
-##
-InstallMethod( NiceMonomorphism, true, [ IsPermGroup ], 0,
-    IsomorphismPcGroup );
-
-#############################################################################
-##
 #M  IsomorphismPcGroup( <G> ) . . . . . . . . . . . .  perm group ac pc group
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,

@@ -225,9 +225,11 @@ HasIsAssociative := Tester( IsAssociative );
 
 InstallCollectionsTrueMethod( IsAssociative,
     IsAssociativeElement, IsMagma );
-InstallSubsetTrueMethod( IsAssociative,
+
+InstallSubsetMaintainedMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma );
-InstallFactorTrueMethod( IsAssociative,
+
+InstallFactorMaintainedMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma, IsMagma );
 
 InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
@@ -252,9 +254,11 @@ HasIsAbelian := HasIsCommutative;
 
 InstallCollectionsTrueMethod( IsCommutative,
     IsCommutativeElement, IsMagma );
-InstallSubsetTrueMethod( IsCommutative,
+
+InstallSubsetMaintainedMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma );
-InstallFactorTrueMethod( IsCommutative,
+
+InstallFactorMaintainedMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma, IsMagma );
 
 InstallTrueMethod( IsCommutative, IsMagma and IsTrivial );

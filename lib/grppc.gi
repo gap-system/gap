@@ -129,24 +129,11 @@ end );
 ##
 #M  Subgroup Methods
 ##
-InstallSubgroupMethod(
-    HasHomePcgs,
-    IsObject,
+InstallTrueMethod( IsPcgsComputable, IsGroup and HasHomePcgs );
+InstallTrueMethod( IsPcgsComputable, IsGroup and HasFamilyPcgs );
 
-function( G, S )
-    SetHomePcgs( S, HomePcgs(G) );
-    SetIsPcgsComputable( S, true );
-end );
-
-
-InstallSubgroupMethod(
-    HasFamilyPcgs,
-    IsObject,
-
-function( G, S )
-    SetFamilyPcgs( S, FamilyPcgs(G) );
-    SetIsPcgsComputable( S, true );
-end );
+InstallSubsetMaintainedMethod( HomePcgs, IsGroup, IsGroup );
+InstallSubsetMaintainedMethod( FamilyPcgs, IsGroup, IsGroup );
 
 
 #############################################################################
@@ -520,7 +507,7 @@ function( U, g )
     SetInducedPcgsWrtHomePcgs( N, pag );
 
     # maintain useful information
-    RunIsomorphismImplications( U, N );
+    UseIsomorphismRelation( U, N );
 
     return N;
 
@@ -1055,6 +1042,174 @@ end;
 InstallMethod( Enumerator, true,
         [ IsGroup and IsPcgsComputable and IsFinite ], 0,
     G -> EnumeratorByPcgs( Pcgs( G ), [ 1 .. Length( Pcgs( G ) ) ] ) );
+
+InstallMethod(KnowsHowToDecompose,"pc group: always true",IsIdentical,
+  [IsPcGroup,IsList],0,ReturnTrue);
+
+InstallOtherMethod(KnowsHowToDecompose,"pc group: always true",true,
+  [IsPcGroup],0,ReturnTrue);
+
+#############################################################################
+##
+#M  CanonicalSubgroupRepresentativePcGroup( <G>, <U> )
+##
+CanonicalSubgroupRepresentativePcGroup:=function(G,U)
+local e,	# EAS
+      pcgs,     # himself
+      hom,	# isomorphism to EAS group
+      start,	# index of largest abelian quotient
+      i,	# loop
+      n,	# e[i]
+      m,        # e[i+1]
+      V,	# canon. rep
+      fv,	# <V,m>
+      no,	# its normalizer
+      orb,rep,	# orbit, repres.
+      o,	# orb index
+      nno,	# growing normalizer
+      min,
+      minrep,	# minimum indicator
+      p,	# orbit pos.
+      ce;	# conj. elm
+
+  if not IsSubgroup(G,U) then
+    Error("#W  CSR Closure\n");
+    G:=Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(G),
+                                        GeneratorsOfGroup(U)));
+  fi;
+  e:=ElementaryAbelianSeries(G);
+  #if not IsParent(G) or not IsElementaryAbelianAgSeries(G) then
+  #  e:=ElementaryAbelianSeries(G);
+  #  hom:=IsomorphismAgGroup(e);
+  #  G:=Image(hom,G);
+  #  U:=Image(hom,U);
+  #else
+  #  hom:=false;
+  #fi;
+  e:=ElementaryAbelianSeries(G);
+  pcgs:=Concatenation(List([1..Length(e)-1],i->
+    InducedPcgsWrtHomePcgs(e[i]) mod InducedPcgsWrtHomePcgs(e[i+1])));
+  pcgs:=PcgsByPcSequence(ElementsFamily(FamilyObj(G)),pcgs);
+  #AH evtl. noch neue Gruppe
+
+  # find the largest abelian quotient
+  start:=2;
+  while start<Length(e) and HasAbelianFactorGroup(G,e[start+1]) do
+    start:=start+1;
+  od;
+
+  #initialize
+  V:=U;
+  ce:=One(G);
+  no:=G;
+
+  for i in [start..Length(e)-1] do
+    # lift from G/e[i] to G/e[i+1]
+    n:=e[i];
+    m:=e[i+1];
+
+    # map v,no
+    fv:=ClosureGroup(m,V);
+    #img:=CanonicalPcgs(InducedPcgsByGenerators(pcgs,GeneratorsOfGroup(fv)));
+    no:=ClosureGroup(m,no);
+    
+#    if true then
+
+    nno:=Normalizer(no,fv);
+    rep:=RightTransversal(no,nno);
+    orb:=List(rep,i->CanonicalPcgs(InducedPcgsByGenerators(pcgs,
+                                      GeneratorsOfGroup(fv^i))));
+    min:=orb[1];
+    minrep:=rep[1];
+    for o in [2..Length(orb)] do
+      if orb[o]<min then
+	min:=orb[o];
+	minrep:=rep[o];
+      fi;
+    od;
+
+    #else
+    #  # minimize the Cgs, orbit/stabilizer/repres. alg
+    #  orb:=[img];
+    #  rep:=[f.identity];
+    #  min:=img;
+    #  minrep:=f.identity;
+    #  nno:=TrivialSubgroup(f);
+#
+      o:=1;
+#      while o<=Length(orb) do
+#	for g in no.generators do
+#	  img:=Cgs(Subgroup(f,OnTuples(orb[o],g)));
+#	  p:=Position(orb,img);
+#	  if p=false then
+#	    # new orbit element
+#	    Add(orb,img);
+#	    Add(rep,rep[o]*g);
+#	    if img<min then
+#	      min:=img;
+#	      minrep:=rep[o]*g;
+#	    fi;
+#	  else
+#	    # old element, grow normalizer
+#	    nno:=Closure(nno,rep[o]*g/rep[p]);
+#	  fi;
+#	od;
+#	o:=o+1;
+#      od;
+#    fi;
+
+    # conjugate normalizer to new minimal one
+    no:=nno^minrep;
+    ce:=ce*minrep;
+    V:=V^minrep;
+  od;
+
+  #if hom<>false then 
+  #  V:=PreImage(hom,V);
+  #  no:=PreImage(hom,no);
+  #  ce:=PreImagesRepresentative(hom,ce);
+  #fi;
+  return [V,no,ce];
+end;
+
+
+#############################################################################
+##
+#M  ConjugacyClassSubgroups(<G>,<g>) . . . . . . .  constructor for pc groups
+##  This method installs 'CanonicalSubgroupRepresentativePcGroup' as
+##  CanonicalRepresentativeDeterminator
+##
+InstallMethod(ConjugacyClassSubgroups,IsIdentical,[IsPcGroup,IsPcGroup],0,
+function(G,U)
+local filter,cl;
+
+    cl:=Objectify(NewKind(CollectionsFamily(FamilyObj(G)),
+      IsConjugacyClassSubgroupsRep),rec());
+    SetActingDomain(cl,G);
+    SetRepresentative(cl,U);
+    SetFunctionOperation(cl,OnPoints);
+    SetCanonicalRepresentativeDeterminatorOfExternalSet(cl,
+	CanonicalSubgroupRepresentativePcGroup);
+    return cl;
+end);
+
+InstallOtherMethod(RepresentativeOperationOp,"pc group on subgroups",true,
+  [IsPcGroup,IsPcGroup,IsPcGroup,IsFunction],0,
+function(G,U,V,f)
+local c1,c2;
+  if f<>OnPoints or not (IsSubgroup(G,U) and IsSubgroup(G,V)) then
+    TryNextMethod();
+  fi;
+  if Size(U)<>Size(V) then
+    return fail;
+  fi;
+  c1:=CanonicalSubgroupRepresentativePcGroup(G,U);
+  c2:=CanonicalSubgroupRepresentativePcGroup(G,V);
+  if c1[1]<>c2[1] then
+    return fail;
+  fi;
+  return c1[3]/c2[3];
+end);
 
 #############################################################################
 ##

@@ -24,11 +24,11 @@ IsLDistributive := NewProperty( "IsLDistributive", IsRingElementCollection );
 SetIsLDistributive := Setter( IsLDistributive );
 HasIsLDistributive := Tester( IsLDistributive );
 
-InstallSubsetTrueMethod( IsLDistributive,
+InstallSubsetMaintainedMethod( IsLDistributive,
     IsRingElementCollection and IsLDistributive,
     IsRingElementCollection );
 
-InstallFactorTrueMethod( IsLDistributive,
+InstallFactorMaintainedMethod( IsLDistributive,
     IsRingElementCollection and IsLDistributive,
     IsRingElementCollection,
     IsRingElementCollection );
@@ -46,11 +46,11 @@ IsRDistributive := NewProperty( "IsRDistributive", IsRingElementCollection );
 SetIsRDistributive := Setter( IsRDistributive );
 HasIsRDistributive := Tester( IsRDistributive );
 
-InstallSubsetTrueMethod( IsRDistributive,
+InstallSubsetMaintainedMethod( IsRDistributive,
     IsRingElementCollection and IsRDistributive,
     IsRingElementCollection );
 
-InstallFactorTrueMethod( IsRDistributive,
+InstallFactorMaintainedMethod( IsRDistributive,
     IsRingElementCollection and IsRDistributive,
     IsRingElementCollection,
     IsRingElementCollection );
@@ -80,16 +80,16 @@ HasIsRing := Tester( IsRing );
 
 #############################################################################
 ##
-#C  IsUnitalRing( <R> )
+#C  IsRingWithOne( <R> )
 ##
-##  A unital ring in {\GAP} is an additive group that is also a
+##  A ring-with-one in {\GAP} is an additive group that is also a
 ##  magma-with-one,
 ##  such that addition and multiplication are distributive.
 ##  (The multiplication need not be associative.)
 ##
-IsUnitalRing := IsAdditiveGroup and IsMagmaWithOne and IsDistributive;
-SetIsUnitalRing := Setter( IsUnitalRing );
-HasIsUnitalRing := Tester( IsUnitalRing );
+IsRingWithOne := IsAdditiveGroup and IsMagmaWithOne and IsDistributive;
+SetIsRingWithOne := Setter( IsRingWithOne );
+HasIsRingWithOne := Tester( IsRingWithOne );
 
 
 #############################################################################
@@ -106,7 +106,7 @@ HasIsUnitalRing := Tester( IsUnitalRing );
 IsUniqueFactorizationRing := NewCategory( "IsUniqueFactorizationRing",
     IsRing );
 
-#T InstallSubsetTrueMethod( IsUniqueFactorizationRing,
+#T InstallSubsetMaintainedMethod( IsUniqueFactorizationRing,
 #T     IsRing and IsUniqueFactorizationRing, IsRing );
 #T ???
 
@@ -127,7 +127,7 @@ IsUniqueFactorizationRing := NewCategory( "IsUniqueFactorizationRing",
 #T new category ``valuated domain''?
 ##
 IsEuclideanRing := NewCategory( "IsEuclideanRing",
-    IsUnitalRing and IsUniqueFactorizationRing );
+    IsRingWithOne and IsUniqueFactorizationRing );
 
 
 #############################################################################
@@ -142,10 +142,10 @@ IsAnticommutative := NewProperty( "IsAnticommutative", IsRing );
 SetIsAnticommutative := Setter( IsAnticommutative );
 HasIsAnticommutative := Tester( IsAnticommutative );
 
-InstallSubsetTrueMethod( IsAnticommutative,
+InstallSubsetMaintainedMethod( IsAnticommutative,
     IsRing and IsAnticommutative, IsRing );
 
-InstallFactorTrueMethod( IsAnticommutative,
+InstallFactorMaintainedMethod( IsAnticommutative,
     IsRing and IsAnticommutative, IsRing, IsRing );
 
 
@@ -160,7 +160,8 @@ IsIntegralRing := NewProperty( "IsIntegralRing", IsRing );
 SetIsIntegralRing := Setter( IsIntegralRing );
 HasIsIntegralRing := Tester( IsIntegralRing );
 
-InstallSubsetTrueMethod( IsIntegralRing, IsRing and IsIntegralRing, IsRing );
+InstallSubsetMaintainedMethod( IsIntegralRing,
+    IsRing and IsIntegralRing, IsRing );
 
 #T method that fetches this from the family if possible?
 
@@ -182,9 +183,11 @@ HasIsJacobianRing := Tester( IsJacobianRing );
 
 InstallCollectionsTrueMethod( IsJacobianRing,
     IsJacobianElement, IsRing );
-InstallSubsetTrueMethod( IsJacobianRing,
+
+InstallSubsetMaintainedMethod( IsJacobianRing,
     IsRing and IsJacobianRing, IsRing );
-InstallFactorTrueMethod( IsJacobianRing,
+
+InstallFactorMaintainedMethod( IsJacobianRing,
     IsRing and IsJacobianRing, IsRing, IsRing );
 
 
@@ -203,9 +206,11 @@ InstallTrueMethod( IsAnticommutative, IsRing and IsZeroSquaredRing );
 
 InstallCollectionsTrueMethod( IsZeroSquaredRing,
     IsZeroSquaredElement, IsRing );
-InstallSubsetTrueMethod( IsZeroSquaredRing,
+
+InstallSubsetMaintainedMethod( IsZeroSquaredRing,
     IsRing and IsZeroSquaredRing, IsRing );
-InstallFactorTrueMethod( IsZeroSquaredRing,
+
+InstallFactorMaintainedMethod( IsZeroSquaredRing,
     IsRing and IsZeroSquaredRing, IsRing, IsRing );
 
 
@@ -229,12 +234,12 @@ HasGeneratorsOfRing := Tester( GeneratorsOfRing );
 
 #############################################################################
 ##
-#A  GeneratorsOfUnitalRing( <R> )
+#A  GeneratorsOfRingWithOne( <R> )
 ##
-GeneratorsOfUnitalRing := NewAttribute( "GeneratorsOfUnitalRing",
-    IsUnitalRing );
-SetGeneratorsOfUnitalRing := Setter( GeneratorsOfUnitalRing );
-HasGeneratorsOfUnitalRing := Tester( GeneratorsOfUnitalRing );
+GeneratorsOfRingWithOne := NewAttribute( "GeneratorsOfRingWithOne",
+    IsRingWithOne );
+SetGeneratorsOfRingWithOne := Setter( GeneratorsOfRingWithOne );
+HasGeneratorsOfRingWithOne := Tester( GeneratorsOfRingWithOne );
 
 
 #############################################################################
@@ -800,25 +805,25 @@ Ring := NewOperationArgs( "Ring" );
 
 #############################################################################
 ##
-#O  UnitalRingByGenerators( [ <z>, ... ] )
+#O  RingWithOneByGenerators( [ <z>, ... ] )
 ##
-UnitalRingByGenerators := NewOperation( "UnitalRingByGenerators",
+RingWithOneByGenerators := NewOperation( "RingWithOneByGenerators",
     [ IsCollection ] );
 
 
 #############################################################################
 ##
-#F  UnitalRing( <r>, <s>, ... )  . . .  unital ring generated by a collection
-#F  UnitalRing( <coll> ) . . . . . . .  unital ring generated by a collection
+#F  RingWithOne( <r>, <s>, ... )  . . ring-with-one generated by a collection
+#F  RingWithOne( <coll> ) . . . . . . ring-with-one generated by a collection
 ##
-##  In the first form 'UnitalRing' returns the smallest ring with one that
+##  In the first form 'RingWithOne' returns the smallest ring with one that
 ##  contains all the elements <r>, <s>... etc.
-##  In the second form 'UnitalRing' returns the smallest ring with one that
+##  In the second form 'RingWithOne' returns the smallest ring with one that
 ##  contains all the elements in the collection <coll>.
 ##  If any element is not an element of a ring or if the elements lie in no
 ##  common ring an error is raised.
 ##  
-UnitalRing := NewOperationArgs( "UnitalRing" );
+RingWithOne := NewOperationArgs( "RingWithOne" );
 
 
 #############################################################################
@@ -864,11 +869,11 @@ SubringNC := NewOperationArgs( "SubringNC" );
 
 #############################################################################
 ##
-#F  UnitalSubring( <R>, <gens> )  . unital subring of <R> generated by <gens>
-#F  UnitalSubringNC( <R>, <gens> )  unital subring of <R> generated by <gens>
+#F  SubringWithOne( <R>, <gens> )   .  subring-with-one of <R> gen. by <gens>
+#F  SubringWithOneNC( <R>, <gens> ) .  subring-with-one of <R> gen. by <gens>
 ##
-UnitalSubring := NewOperationArgs( "UnitalSubring" );
-UnitalSubringNC := NewOperationArgs( "UnitalSubringNC" );
+SubringWithOne := NewOperationArgs( "SubringWithOne" );
+SubringWithOneNC := NewOperationArgs( "SubringWithOneNC" );
 
 
 #############################################################################

@@ -274,7 +274,7 @@ ExtensionsOfModule := function( pcgsS, modu, conj, dim )
 
     # we know that conj and modu are equivalent - compute e
     MTX.IsIrreducible( conj );
-    iso := MTX.Isomorphism( conj, modu );
+    iso := MTX.Isomorphism( modu, conj );
     e   := (gmat * iso^(-r));
     e   := e[1][1];
 
@@ -440,7 +440,6 @@ LiftAbsAndIrredModules := function( pcgsS, pcgsN, modrec, dim )
 
         # if the are equivalent
         if type <> i then
-            Print("    induce module ", i,"\n");
             if r * small.dimension * d <= dim then
                 Add( new, InducedModule( pcgsS, modu ) );
             fi;
@@ -462,10 +461,8 @@ LiftAbsAndIrredModules := function( pcgsS, pcgsN, modrec, dim )
             s     := EquivalenceType( galfp, conj );
 
             if s = 1 then
-                Print("    extend module ", i,"\n");
                 Append( new, ExtensionsOfModule( pcgsS, modu, conj, dim ) );
             else 
-                Print("    induce module by field reduction ", i,"\n");
                 Add( new, 
                 InducedModuleByFieldReduction(pcgsS, modu, conj, gal[s], s));
             fi;
@@ -505,7 +502,6 @@ AbsAndIrredModules := function( G, F, dim )
 
     # step up pc series
     for i in Reversed( [1..m-1] ) do
-        Print("step ",i," ",Length(modrec), " modules \n");
         pcgsS := InducedPcgsByPcSequence( pcgs, pcgs{[i..m]} );
         pcgsN := InducedPcgsByPcSequence( pcgs, pcgs{[i+1..m]} );
         modrec := LiftAbsAndIrredModules( pcgsS, pcgsN, modrec, dim );
@@ -551,7 +547,7 @@ function( G, F, dim )
     modus := AbsAndIrredModules( G, F, dim );
     for i in [1..Length(modus)] do
         tmp := modus[i].irred;
-        tmp.splitfield := modus[i].absirr.field;
+        tmp.absolutelyIrreducible := modus[i].absirr;
         modus[i] := tmp;
     od;
     return modus;
@@ -596,3 +592,28 @@ IrreducibleModules2 := function( G, F )
     return List( MTX.CollectedFactors( modu ), x -> x[1] );
 end;
 
+CheckMod := function( pcgsS, irr )
+    local n, gens, i, j, c, t, w, k;
+
+    n := Length( pcgsS );
+    gens := irr.generators;
+    for i in [1..n] do
+        for j in [i+1..n] do
+            c := Comm( gens[j], gens[i] );
+            t := ExponentsOfPcElement( pcgsS, Comm(pcgsS[j], pcgsS[i]) );
+            w := IdentityMat( irr.dimension, irr.field );
+            for k in [1..n] do
+                w := w * gens[k]^t[k];
+            od;
+            if c <> w then Error("mod check\n"); fi;
+        od;
+        c := gens[i]^RelativeOrders( pcgsS )[i];
+        t := ExponentsOfPcElement( pcgsS, 
+                                   pcgsS[i]^RelativeOrders( pcgsS)[i] );
+        w := IdentityMat( irr.dimension, irr.field );
+        for k in [1..n] do
+            w := w * gens[k]^t[k];
+        od;
+        if c <> w then Error("mod check\n"); fi;
+    od;
+end;       

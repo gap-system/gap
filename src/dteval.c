@@ -21,6 +21,10 @@ static int             Exponent;
 Obj                    komprimiere;
 
 extern Obj             ShallowCopyPlist( Obj  list );
+extern Obj             CollectPolycyc (
+                                        Obj pcp,
+                                        Obj list,
+                                        Obj word );
 
 void       MultGen(
                     Obj     xk,
@@ -68,59 +72,6 @@ void       MultGen(
     }
 }
 
-void       MultGen2(
-                    Obj     xk,
-                    Obj     copy,
-                    int     gen,
-                    Obj     power,
-                    Obj     pseudoreps    )
-{
-    UInt  i, j, len;
-    Obj *  xkptr;
-    Obj *  cpptr;
-    Obj   sum, sum1, sum2, prod, ord, Evaluation(), help;
-
-    if ( IS_INTOBJ(power)  &&  INT_INTOBJ(power) == 0 )
-        return;
-    sum = SumInt(ELM_PLIST(xk, gen),  power);
-    if ( IS_INTOBJ( ELM_PLIST(pseudoreps, gen) ) )
-    {
-        SET_ELM_PLIST(xk, gen, sum);
-	CHANGED_BAG(xk);
-        return;
-    }
-    xkptr = ADDR_OBJ(xk);
-    cpptr = ADDR_OBJ(copy);
-    len = LEN_PLIST(xk);
-    for (i=0; i<= len; i++)
-        *cpptr++ = *xkptr++;
-    SET_ELM_PLIST(xk, gen, sum);
-    CHANGED_BAG(xk);     
-    sum = ElmPRec( ELM_PLIST(pseudoreps, gen), evlist );
-    sum1 = ElmPRec( ELM_PLIST(pseudoreps, gen), evlistvec);
-    len = LEN_PLIST(sum);
-    for ( i=1; i <= len;  i++ )
-    {
-	ord = Evaluation( ELM_PLIST( sum, i), copy, power  );
-        if ( !IS_INTOBJ(ord)  ||  INT_INTOBJ(ord) != 0 )
-	{
-	    help = ELM_PLIST(sum1, i);
-	    for ( j=1; 
-                  j < LEN_PLIST( help );
-	          j+=2    )
-	    {
-	        prod = ProdInt( ord, ELM_PLIST(  help, j+1 ) );
-		sum2 = SumInt(ELM_PLIST( xk, CELM( help,j ) ),
-                              prod);
-	        SET_ELM_PLIST(xk, CELM( help, j ),  
-                              sum2 );
-	        CHANGED_BAG(xk);
-	    }
-	}
-    }
-}
-
-
 
 
 Obj     Evaluation(
@@ -163,21 +114,6 @@ void        Mult(
 
 
 
-void        Mult2(
-                  Obj    xk,
-                  Obj    y,
-                  Obj    pseudoreps  )
-{
-    UInt     i, help3;
-    Obj      copy;
-    void     MultGen2();
-
-    help3 = LEN_PLIST(y);
-    copy = NEW_PLIST(T_PLIST, LEN_PLIST(xk));
-    for (i=1; i < help3; i+=2)
-        MultGen2(xk, copy, CELM( y, i), ELM_PLIST( y, i+1) , pseudoreps);
-}
-
 
 void        Multbound(
                   Obj    xk,
@@ -194,20 +130,6 @@ void        Multbound(
 }
 
 
-void        VecMult(
-                     Obj    xk,
-                     Obj    yk,
-                     Obj    pseudoreps )
-{
-    UInt    i;
-    void    MultGen();
-
-    for (i=1; i<=LEN_PLIST(yk);i++)
-        if ( CELM(yk, i) != 0 )
-	    MultGen(xk, i, ELM_PLIST(yk, i), pseudoreps);
-}
-
-
 
 
 Obj       Multiply(
@@ -215,7 +137,7 @@ Obj       Multiply(
 		     Obj      y,       
                      Obj      pseudoreps  )
 {
-    int    i, j;
+    UInt   i, j, help, len;
     Obj    xk, res;
     void   Mult();
 
@@ -223,12 +145,14 @@ Obj       Multiply(
         return y;
     if ( LEN_PLIST( y ) == 0 )
         return x;
-    xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
+    help = LEN_PLIST(pseudoreps);
+    len = LEN_PLIST(x);
+    xk = NEW_PLIST( T_PLIST, help );
+    SET_LEN_PLIST(xk, help );
     j = 1;
-    for (i=1; i <= LEN_PLIST(pseudoreps); i++)
+    for (i=1; i <= help; i++)
     {
-        if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
+        if ( j >= len  ||  i < CELM(x, j) )
 	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
 	else
 	{
@@ -237,9 +161,9 @@ Obj       Multiply(
 	}
     }
     Mult(xk, y, pseudoreps);
-    res = NEW_PLIST(T_PLIST, 2*LEN_PLIST(xk));
+    res = NEW_PLIST(T_PLIST, 2*help);
     j = 0;
-    for (i=1; i <= LEN_PLIST(xk); i++)
+    for (i=1; i <= help; i++)
     {
         if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
 	{
@@ -253,49 +177,6 @@ Obj       Multiply(
     return res;
 }
 
-
-Obj       Multiply2(
-		     Obj      x,
-		     Obj      y,       
-                     Obj      pseudoreps  )
-{
-    int    i, j;
-    Obj    xk, res;
-    void   Mult2();
-
-    if ( LEN_PLIST( x ) == 0 )
-        return y;
-    if ( LEN_PLIST( y ) == 0 )
-        return x;
-    xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
-    j = 1;
-    for (i=1; i <= LEN_PLIST(pseudoreps); i++)
-    {
-        if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
-	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-	else
-	{
-	    SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
-	    j+=2;
-	}
-    }
-    Mult2(xk, y, pseudoreps);
-    res = NEW_PLIST(T_PLIST, 2*LEN_PLIST(xk));
-    j = 0;
-    for (i=1; i <= LEN_PLIST(xk); i++)
-    {
-        if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-	{
-	    j+=2;
-	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-	}
-    }
-    SET_LEN_PLIST(res, j);
-    SHRINK_PLIST(res, j);
-    return res;
-}
 
 
 
@@ -306,7 +187,7 @@ Obj       Multiplybound(
                      Int      end,
                      Obj      pseudoreps  )
 {
-    UInt   i, j, k, len;
+    UInt   i, j, k, len, help;
     Obj    xk, res, sum;
     void   Multbound();
 
@@ -369,12 +250,14 @@ Obj       Multiplybound(
 	SHRINK_PLIST(res, i-1);
 	return res;
     }
-    xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
+    len = LEN_PLIST(pseudoreps);
+    help = LEN_PLIST(x);
+    xk = NEW_PLIST( T_PLIST, len );
+    SET_LEN_PLIST(xk, len );
     j = 1;
-    for (i=1; i <= LEN_PLIST(pseudoreps); i++)
+    for (i=1; i <= len; i++)
     {
-        if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
+        if ( j >= help  ||  i < CELM(x, j) )
 	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
 	else
 	{
@@ -383,9 +266,9 @@ Obj       Multiplybound(
 	}
     }
     Multbound(xk, y, anf, end, pseudoreps);
-    res = NEW_PLIST(T_PLIST, 2*LEN_PLIST(xk));
+    res = NEW_PLIST(T_PLIST, 2*len);
     j = 0;
-    for (i=1; i <= LEN_PLIST(xk); i++)
+    for (i=1; i <= len; i++)
     {
         if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
 	{
@@ -412,17 +295,6 @@ Obj      FuncMultiply(
     return Multiply(x, y, pseudoreps);
 }
 
-
-Obj      Func2Multiply(
-		       Obj      self,
-		       Obj      x,
-		       Obj      y,
-		       Obj      pseudoreps      )
-{
-    Obj    Multiply2();
-
-    return Multiply2(x, y, pseudoreps);
-}
 
 
 Obj      FuncMultiplybound(
@@ -502,44 +374,6 @@ Obj        FuncPower(
 
 
 
-Obj      Invert2(
-		 Obj      x,
-		 Obj      pseudoreps )
-{
-    Obj     res, xk, m, copy;
-    int     i, j;
-    void    MultGen2();
-
-    if ( LEN_PLIST( x ) == 0  )
-        return x;
-    xk = NEW_PLIST(T_PLIST, LEN_PLIST(pseudoreps));
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
-    for (i=1; i <= LEN_PLIST(xk); i++)
-        SET_ELM_PLIST(xk, i, INTOBJ_INT(0));   
-    i = CELM( x,  LEN_PLIST( x ) - 1  );
-    m = ProdInt(INTOBJ_INT(-1), ELM_PLIST(x,  LEN_PLIST(x) )   );
-    SET_ELM_PLIST(xk, i, m);
-    CHANGED_BAG(xk);
-    copy = NEW_PLIST(T_PLIST, LEN_PLIST(xk));
-    for (i = LEN_PLIST(x)-3; i>=1; i-=2)
-        MultGen2(xk,   copy, CELM(x, i),
-                ProdInt(INTOBJ_INT(-1), ELM_PLIST(x, i+1) ),
-                pseudoreps                );
-    res = NEW_PLIST(T_PLIST, 2*LEN_PLIST(xk) );
-    j = 0;
-    for (i=1; i <= LEN_PLIST(xk); i++)
-    {
-        if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-	{
-	    j+=2;
-	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-	}
-    }
-    SET_LEN_PLIST(res, j);
-    SHRINK_PLIST(res, j);
-    return res;
-}
    
 
 Obj      Solution( Obj       x,
@@ -704,53 +538,6 @@ Obj       FuncDTConjugate( Obj      self,
 
 
 
-Obj       Commutator1( Obj      x,
-		       Obj      y,
-		       Obj      pseudoreps )
-{
-    Obj     Multiply(), Solution(), res;
-
-    res = Multiply(x, y, pseudoreps);
-    res = Solution(y, res, pseudoreps);
-    res = Solution(x, res, pseudoreps);
-    return res;
-}
-
-
-Obj      Commutatorred1( Obj    x,
-			 Obj    y,
-			 Obj    pcp  )
-{
-    Obj    orders, Commutator1(), mod, c, res;
-    UInt   i, len;
-
-    orders = ElmPRec(pcp, Orders);
-    res = Commutator1(x, y, ElmPRec( pcp, DeepThoughtPols) );
-    len = LEN_PLIST(res);
-    for (i=2; i<=len; i+=2)
-        if ( CELM(res, i-1) <= LEN_PLIST(orders)         &&
-             ( c=ELM_PLIST( orders, CELM( res, i-1 ) )) != 0 )
-	{
-	    mod = ModInt( ELM_PLIST(res, i), c );
-	    SET_ELM_PLIST( res, i, mod);
-	    CHANGED_BAG(res);
-	}
-    return res;
-}
-
-
-Obj       FuncDTCommutator1( Obj      self,
-			     Obj      x,
-			     Obj      y,
-			     Obj      pcp  )
-{
-    Obj    Commutatorred1(), res;
-    void   ReduceWord();
-
-    res = Commutatorred1(x, y, pcp);
-    ReduceWord(res, pcp);
-    return res;
-}
 
 
 Obj       FuncDTQuotient( Obj      self,
@@ -772,116 +559,6 @@ Obj       FuncDTQuotient( Obj      self,
 }
 
 
-void      VecPower(
-                   Obj         xk,
-	           Obj         n,
-	           Obj         pseudoreps     )
-{
-    void    VecInvert(), VecMult();
-    Obj     yk, zk;
-    UInt    i, len;
-    Obj *   zkptr;
-    Obj *   ykptr;
-
-    yk = ShallowCopyPlist(xk);
-    zk = NEW_PLIST(T_PLIST, LEN_PLIST(xk));
-    for  (i=LEN_PLIST(xk); i!=0; i--)
-        SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-    while( LtInt(INTOBJ_INT(0), n) )
-    {
-/*        PrintVal(n);
-	Pr("\n", 0L, 0L);         */
-        if ( ModInt(n, INTOBJ_INT(2) ) == INTOBJ_INT(1)  )
-	    VecMult(xk, yk, pseudoreps);
-	if ( LtInt(INTOBJ_INT(1), n)  )
-	{
-	    ykptr = ADDR_OBJ(yk);
-	    zkptr = ADDR_OBJ(zk);
-	    len = LEN_PLIST(yk);
-	    for (i=0; i<=len; i++)
-	       *zkptr++ = *ykptr++;
-	    CHANGED_BAG(zk);
-	    VecMult(yk, zk, pseudoreps);
-	}
-	n = QuoInt(n, INTOBJ_INT(2) );
-    }
-}
-
-
-Obj        NPower(
-                   Obj      x,
-		   Obj      n,
-		   Obj      pseudoreps)
-{
-    Obj    res, xk,m, y, Solution();
-    UInt   i, j, len;
-    void   VecPower();
-
-    if (IS_INTOBJ(n) && INT_INTOBJ(n) == 0 )
-    {
-        res = NEW_PLIST(T_PLIST, 0);
-        SET_LEN_PLIST(res, 0);
-	return res;
-    }
-    if ( IS_INTOBJ( ELM_PLIST( pseudoreps, CELM(x, 1) ) )  )
-    {
-        len = LEN_PLIST(x);
-        res = NEW_PLIST( T_PLIST, len );
-	SET_LEN_PLIST(res, len );
-	for (i=2;i<=len;i+=2)
-	{
-	    m = ProdInt( ELM_PLIST(x, i), n );
-	    SET_ELM_PLIST(res, i, m );
-	    SET_ELM_PLIST(res, i-1, ELM_PLIST(x, i-1) );
-	    CHANGED_BAG( res );
-	}
-	return res;
-    }
-    if (  TYPE_OBJ(n) == T_INTNEG  ||  INT_INTOBJ(n) < 0  ) 
-    {
-        y = NEW_PLIST( T_PLIST, 0 );
-	SET_LEN_PLIST(y, 0);
-	return  NPower( Solution(x, y, pseudoreps), 
-                        ProdInt(INTOBJ_INT(-1), n),   pseudoreps  );        
-    }
-    xk = NEW_PLIST( T_PLIST, LEN_PLIST(pseudoreps) );
-    SET_LEN_PLIST(xk, LEN_PLIST(pseudoreps) );
-    j = 1;
-    for (i=1; i <= LEN_PLIST(pseudoreps); i++)
-    {
-        if ( j >= LEN_PLIST(x)  ||  i < CELM(x, j) )
-	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
-	else
-	{
-	    SET_ELM_PLIST(xk, i, ELM_PLIST(x, j+1) );
-	    j+=2;
-	}
-    }
-    VecPower(xk, n, pseudoreps);
-    res = NEW_PLIST(T_PLIST, 2*LEN_PLIST(xk));
-    j = 0;
-    for (i=1; i <= LEN_PLIST(xk); i++)
-    {
-        if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
-	{
-	    j+=2;
-	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
-	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
-	}
-    }
-    SET_LEN_PLIST(res, j);
-    SHRINK_PLIST(res, j);
-    return res;
-}
-
-
-Obj      FuncNPover( Obj   self,
-		     Obj   x,
-		     Obj   n,
-		     Obj   pseudoreps  )
-{
-    return NPower(x, n, pseudoreps);
-}
 
 
 Obj      Multiplyboundred( Obj     x,
@@ -956,15 +633,6 @@ Obj      Solutionred( Obj       x,
 
 
 
-Obj      FuncPowerred( Obj       self,
-                       Obj       x,
-                       Obj       n,
-		       Obj       pcp   )
-{
-    Obj      Powerred();
-
-    return  Powerred(x, n, pcp);
-}
 
 
 void     ReduceWord( Obj      x,
@@ -1084,6 +752,48 @@ Obj      FuncDTSolution( Obj     self,
     ReduceWord(res, pcp);
     return res;
 }
+
+
+Obj     FuncWernerProduct( Obj      self,
+			   Obj      lword,
+			   Obj      rword,
+			   Obj      pcp  )
+{
+    Obj   res, xk;
+    UInt  help, len, i, j;
+
+    help = CELM(pcp, 1);
+    xk = NEW_PLIST( T_PLIST, help );
+    SET_LEN_PLIST(xk, help );
+    len = LEN_PLIST(lword);
+    j = 1;
+    for (i=1; i <= help; i++)
+    {
+        if ( j >= len  ||  i < CELM(lword, j) )
+	    SET_ELM_PLIST(xk, i, INTOBJ_INT(0) );
+	else
+	{
+	    SET_ELM_PLIST(xk, i, ELM_PLIST(lword, j+1) );
+	    j+=2;
+	}
+    }
+    CollectPolycyc(pcp, xk, rword);
+    res = NEW_PLIST(T_PLIST, 2*help);
+    j = 0;
+    for (i=1; i <= help; i++)
+    {
+        if ( !( IS_INTOBJ( ELM_PLIST(xk, i) )  &&  CELM(xk, i) == 0 ) )
+	{
+	    j+=2;
+	    SET_ELM_PLIST(res, j-1, INTOBJ_INT(i) );
+	    SET_ELM_PLIST(res, j, ELM_PLIST(xk, i) );
+	}
+    }
+    SET_LEN_PLIST(res, j);
+    SHRINK_PLIST(res, j);
+    return res;
+}
+
 	
 
 void     InitDTEvaluation(void)
@@ -1102,10 +812,6 @@ void     InitDTEvaluation(void)
     AssGVar( GVarName("Multiplybound"), NewFunctionC("Multiplybound", 5L,
              "lword, rword, beginning, end, representatives", 
               FuncMultiplybound)       );
-    AssGVar( GVarName("2Multiply"), NewFunctionC("2Multiply", 3L,
-             "lword, rword, representatives", Func2Multiply)    );
-    AssGVar( GVarName("Poverred"), NewFunctionC("Poverred", 3L,
-	     "word, exponent, rewritingsystem", FuncPowerred)    );
     AssGVar( GVarName("ReduceWordC"), NewFunctionC("ReduceWordC", 2L,
 	     "word, rewritingsystem", FuncReduceWord )      );
     AssGVar( GVarName("DTMultiply"), NewFunctionC("DTMultiply", 3L,
@@ -1114,15 +820,13 @@ void     InitDTEvaluation(void)
              "word, exponent, rewritingsytem", FuncDTPower)  );
     AssGVar( GVarName("DTSolution"), NewFunctionC("DTSolution", 3L,
              "lword, rword, rewritingsystem", FuncDTSolution)   );
-    AssGVar( GVarName("NPover"), NewFunctionC("NPover", 3L,
-             "word, exponent, representatives", FuncNPover)    );
     AssGVar( GVarName("DTCommutator"), NewFunctionC("DTCommutator", 3L,
              "lword, rword, rewritingsystem", FuncDTCommutator)    );
-    AssGVar( GVarName("DTCommutator1"), NewFunctionC("DTCommutator1", 3L,
-             "lword, rword, rewritingsystem", FuncDTCommutator1)    );
     AssGVar( GVarName("DTQuotient"), NewFunctionC("DTQuotient", 3L,
              "lword, rword, rewritingsystem", FuncDTQuotient)   );
     AssGVar( GVarName("DTConjugate"), NewFunctionC("DTConjugate", 3L,
              "lword, rword, rewritingsystem", FuncDTConjugate)   );
+    AssGVar( GVarName("WernerProduct"), NewFunctionC("WernerProduct", 3L,
+             "lword, rword, rewritingsystem", FuncWernerProduct)   );
     InitFopyGVar(GVarName("komprimiere"), &komprimiere);
 }

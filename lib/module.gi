@@ -124,8 +124,8 @@ InstallMethod( AsLeftModule, true, [ IsRing, IsLeftModule ], 0,
 
     fi;
 
-    RunIsomorphismImplications( M, W );
-    RunSubsetImplications( M, W );
+    UseIsomorphismRelation( M, W );
+    UseSubsetRelation( M, W );
     return W;
     end );
 
@@ -288,9 +288,9 @@ end;
 
 #############################################################################
 ##
-#M  TrivialSubmodule( <M> ) . . . . . . .  trivial submodule of a left module
+#M  TrivialSubadditiveMagmaWithZero( <M> )  . . . . . . . . for a left module
 ##
-InstallMethod( TrivialSubmodule,
+InstallMethod( TrivialSubadditiveMagmaWithZero,
     "generic method for left modules",
     true, [ IsLeftModule ], 0,
     M -> SubmoduleNC( M, [] ) );

@@ -230,7 +230,6 @@ KindOfDefaultGeneralMapping := NewOperationArgs(
 IdentityMapping := NewAttribute( "IdentityMapping", IsCollection );
 SetIdentityMapping := Setter( IdentityMapping );
 HasIdentityMapping := Tester( IdentityMapping );
-#T file 'colls.g'?
 
 
 #############################################################################
@@ -410,6 +409,18 @@ CompositionMapping := NewOperationArgs( "CompositionMapping" );
 
 #############################################################################
 ##
+#O  ZeroMapping( <S>, <R> ) . . . . . . . . . .  zero mapping from <S> to <R>
+##
+##  A zero mapping is a total general mapping that maps each element of its
+##  source to the zero element of its range.
+##
+##  (Each mapping with empty source is a zero mapping.)
+##
+ZeroMapping := NewOperation( "ZeroMapping", [ IsCollection, IsCollection ] );
+
+
+#############################################################################
+##
 #O  Embedding( <S>, <T> ) . . . . . . .  embedding of one domain into another
 #O  Embedding( <S>, <T>, <i> )
 ##
@@ -432,6 +443,25 @@ Projection := NewOperation( "Projection", [ IsDomain, IsDomain ] );
 ##  and with elements in the list <elms> of tuples.
 ##
 GeneralMappingByElements := NewOperationArgs( "GeneralMappingByElements" );
+
+
+#############################################################################
+##
+#M  IsBijective . . . . . . . . . . . . . . . . . . . .  for identity mapping
+#M  IsMultiplicativeElementWithInverse  . . . . . . . .  for identity mapping
+##
+InstallTrueMethod( IsBijective, IsGeneralMapping and IsOne );
+InstallTrueMethod( IsMultiplicativeElementWithInverse,
+    IsGeneralMapping and IsOne );
+
+
+#############################################################################
+##
+#M  IsSingleValued  . . . . . . . . . . . . . . . . . . . .  for zero mapping
+#M  IsTotal . . . . . . . . . . . . . . . . . . . . . . . .  for zero mapping
+##
+InstallTrueMethod( IsSingleValued, IsGeneralMapping and IsZero );
+InstallTrueMethod( IsTotal, IsGeneralMapping and IsZero );
 
 
 #############################################################################

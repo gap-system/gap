@@ -392,6 +392,10 @@ ReadLib( "grppcrep.gd" );
 ReadLib( "onecohom.gd" );
 ReadLib( "grppccom.gd" );
 
+ReadLib( "twocohom.gd" );
+ReadLib( "grppcext.gd");
+ReadLib( "grppcfp.gd");
+
 ReadLib( "morpheus.gd" );
 ReadLib( "grplatt.gd"  );
 
@@ -401,12 +405,8 @@ ReadLib( "grpfp.gd"    );
 # files dealing with trees and hash tables
 ReadLib( "hash.gd"     );
 
-# files needed for Deep Thought
+# files needed for deep thought
 ReadLib( "dt.g" );
-
-# group library
-ReadGrp( "basic.gd"    );
-ReadGrp( "perf.gd"     );
 
 # family predicates (needed for all 'InstallMethod')
 ReadLib( "fampred.g"   );
@@ -420,6 +420,11 @@ ReadLib( "grpnice.gd"  );
 # files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
 ReadLib( "grpmat.gd"   );
 ReadLib( "grpffmat.gd" );
+
+# group library
+ReadGrp( "basic.gd"    );
+ReadGrp( "perf.gd"     );
+
 
 #############################################################################
 ##
@@ -563,6 +568,10 @@ ReadLib( "grppcrep.gi" );
 
 ReadLib( "onecohom.gi" );
 ReadLib( "grppccom.gi" );
+
+ReadLib( "twocohom.gi" );
+ReadLib( "grppcext.gi");
+ReadLib( "grppcfp.gi");
 
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );

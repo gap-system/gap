@@ -612,7 +612,7 @@ ZmodnZ := function( n )
       F!.kindOfZmodnZObj![4]:= F!.kindOfZmodnZObj;
 
       # Make the domain.
-      R:= UnitalRingByGenerators( [ ZmodnZObj( F, 1 ) ] );
+      R:= RingWithOneByGenerators( [ ZmodnZObj( F, 1 ) ] );
       SetIsWholeFamily( R, true );
 
       # Store the ring.

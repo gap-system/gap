@@ -24,14 +24,14 @@ IsFLMLOR := IsFreeLeftModule and IsLeftOperatorRing;
 
 #############################################################################
 ##
-#C  IsUnitalFLMLOR( <obj> )
+#C  IsFLMLORWithOne( <obj> )
 ##
-##  A unital FLMLOR in {\GAP} is a unital ring that is also a free left
+##  A FLMLOR-with-one in {\GAP} is a ring-with-one that is also a free left
 ##  module.
-##  Examples are unital magma rings or unital algebras (but also over the
+##  Examples are magma rings-with-one or algebras-with-one (but also over the
 ##  integers).
 ##
-IsUnitalFLMLOR := IsFreeLeftModule and IsLeftOperatorUnitalRing;
+IsFLMLORWithOne := IsFreeLeftModule and IsLeftOperatorRingWithOne;
 
 
 #############################################################################
@@ -47,15 +47,15 @@ IsAlgebra := IsLeftVectorSpace and IsLeftOperatorRing;
 
 #############################################################################
 ##
-#C  IsUnitalAlgebra( <obj> )
+#C  IsAlgebraWithOne( <obj> )
 ##
-##  A unital algebra in {\GAP} is a unital ring that is also a left vector
-##  space.
-##  Note that this means that being a unital algebra is not a property a
-##  unital ring can get,
-##  since a unital ring is usually not represented as an external left set.
+##  A algebra-with-one in {\GAP} is a ring-with-one that is also
+##  a left vector space.
+##  Note that this means that being an algebra-with-one is not a property a
+##  ring-with-one can get,
+##  since a ring-with-one is usually not represented as an external left set.
 ##
-IsUnitalAlgebra := IsLeftVectorSpace and IsLeftOperatorUnitalRing;
+IsAlgebraWithOne := IsLeftVectorSpace and IsLeftOperatorRingWithOne;
 
 
 #############################################################################
@@ -94,14 +94,14 @@ HasGeneratorsOfLeftOperatorRing := Tester( GeneratorsOfLeftOperatorRing );
 
 #############################################################################
 ##
-#A  GeneratorsOfLeftOperatorUnitalRing
+#A  GeneratorsOfLeftOperatorRingWithOne
 ##
-GeneratorsOfLeftOperatorUnitalRing := NewAttribute(
-    "GeneratorsOfLeftOperatorUnitalRing", IsLeftOperatorUnitalRing );
-SetGeneratorsOfLeftOperatorUnitalRing := Setter(
-    GeneratorsOfLeftOperatorUnitalRing );
-HasGeneratorsOfLeftOperatorUnitalRing := Tester(
-    GeneratorsOfLeftOperatorUnitalRing );
+GeneratorsOfLeftOperatorRingWithOne := NewAttribute(
+    "GeneratorsOfLeftOperatorRingWithOne", IsLeftOperatorRingWithOne );
+SetGeneratorsOfLeftOperatorRingWithOne := Setter(
+    GeneratorsOfLeftOperatorRingWithOne );
+HasGeneratorsOfLeftOperatorRingWithOne := Tester(
+    GeneratorsOfLeftOperatorRingWithOne );
 
 
 #############################################################################
@@ -115,11 +115,11 @@ HasGeneratorsOfAlgebra := HasGeneratorsOfLeftOperatorRing;
 
 #############################################################################
 ##
-#A  GeneratorsOfUnitalAlgebra( <A> )
+#A  GeneratorsOfAlgebraWithOne( <A> )
 ##
-GeneratorsOfUnitalAlgebra := GeneratorsOfLeftOperatorUnitalRing;
-SetGeneratorsOfUnitalAlgebra := SetGeneratorsOfLeftOperatorUnitalRing;
-HasGeneratorsOfUnitalAlgebra := HasGeneratorsOfLeftOperatorUnitalRing;
+GeneratorsOfAlgebraWithOne := GeneratorsOfLeftOperatorRingWithOne;
+SetGeneratorsOfAlgebraWithOne := SetGeneratorsOfLeftOperatorRingWithOne;
+HasGeneratorsOfAlgebraWithOne := HasGeneratorsOfLeftOperatorRingWithOne;
 
 
 #############################################################################
@@ -179,9 +179,9 @@ HasRadicalOfAlgebra := Tester( RadicalOfAlgebra );
 ##
 #A  TrivialSubalgebra( <A> )
 ##
-TrivialSubFLMLOR := NewAttribute( "TrivialSubFLMLOR", IsFLMLOR );
-SetTrivialSubFLMLOR := Setter( TrivialSubFLMLOR );
-HasTrivialSubFLMLOR := Tester( TrivialSubFLMLOR );
+TrivialSubFLMLOR := TrivialSubadditiveMagmaWithZero;
+SetTrivialSubFLMLOR := SetTrivialSubadditiveMagmaWithZero;
+HasTrivialSubFLMLOR := HasTrivialSubadditiveMagmaWithZero;
 
 TrivialSubalgebra := TrivialSubFLMLOR;
 SetTrivialSubalgebra := SetTrivialSubFLMLOR;
@@ -262,12 +262,12 @@ AsAlgebra := AsFLMLOR;
 
 #############################################################################
 ##
-#O  AsUnitalAlgebra( <F>, <A> )  . . . .  view <A> as unital algebra over <F>
+#O  AsAlgebraWithOne( <F>, <A> )  . . . view <A> as algebra-with-one over <F>
 ##
-AsUnitalFLMLOR := NewOperation( "AsUnitalFLMLOR",
+AsFLMLORWithOne := NewOperation( "AsFLMLORWithOne",
     [ IsRing, IsCollection ] );
 
-AsUnitalAlgebra := AsUnitalFLMLOR;
+AsAlgebraWithOne := AsFLMLORWithOne;
 
 
 #############################################################################
@@ -281,12 +281,12 @@ AsSubalgebra := AsSubFLMLOR;
 
 #############################################################################
 ##
-#O  AsUnitalSubalgebra( <A>, <S> )  . .  view <S> as unital subalgebra of <A>
+#O  AsSubalgebraWithOne( <A>, <S> ) . . view <S> as subalgebra-wth-one of <A>
 ##
-AsUnitalSubFLMLOR := NewOperation( "AsUnitalSubFLMLOR",
+AsSubFLMLORWithOne := NewOperation( "AsSubFLMLORWithOne",
     [ IsFLMLOR, IsDomain ] );
 
-AsUnitalSubalgebra := AsUnitalSubFLMLOR;
+AsSubalgebraWithOne := AsSubFLMLORWithOne;
 
 
 #############################################################################
@@ -424,7 +424,7 @@ ClosureAlgebra := ClosureLeftOperatorRing;
 ##  of <A> act via multiplication from the respective side(s).
 ##
 ##  <init> is a list of initial generating vectors.
-##  It usually contains 'One( <A> )' in the case of unital algebras,
+##  It usually contains 'One( <A> )' in the case of algebras-with-one,
 ##  the algebra generators of <A> in the case of other algebras,
 ##  and ideal generators in the ideal case.
 ##
@@ -512,66 +512,66 @@ SubalgebraNC := SubFLMLORNC;
 
 #############################################################################
 ##
-#O  UnitalAlgebraByGenerators(<F>,<gens>) .  unital <F>-algebra by generators
-#O  UnitalAlgebraByGenerators( <F>, <gens>, <zero> )
+#O  AlgebraWithOneByGenerators(<F>,<gens>)  . <F>-alg.-with-one by generators
+#O  AlgebraWithOneByGenerators( <F>, <gens>, <zero> )
 ##
-UnitalFLMLORByGenerators := NewOperation( "UnitalFLMLORByGenerators",
+FLMLORWithOneByGenerators := NewOperation( "FLMLORWithOneByGenerators",
     [ IsRing, IsCollection ] );
 
-UnitalAlgebraByGenerators := UnitalFLMLORByGenerators;
+AlgebraWithOneByGenerators := FLMLORWithOneByGenerators;
 
 
 #############################################################################
 ##
-#F  UnitalAlgebra( <F>, <gens> )
-#F  UnitalAlgebra( <F>, <gens>, <zero> )
-#F  UnitalAlgebra( <F>, <gens>, "basis" )
-#F  UnitalAlgebra( <F>, <gens>, <zero>, "basis" )
+#F  AlgebraWithOne( <F>, <gens> )
+#F  AlgebraWithOne( <F>, <gens>, <zero> )
+#F  AlgebraWithOne( <F>, <gens>, "basis" )
+#F  AlgebraWithOne( <F>, <gens>, <zero>, "basis" )
 ##
-##  'UnitalAlgebra( <F>, <gens> )' is the unital algebra over the division
+##  'AlgebraWithOne( <F>, <gens> )' is the algebra-with-one over the division
 ##  ring <F>, generated by the vectors in the list <gens>.
 ##
 ##  If there are three arguments, a division ring <F> and a list <gens>
 ##  and an element <zero>,
-##  then 'UnitalAlgebra( <F>, <gens>, <zero> )' is the unital <F>-algebra
+##  then 'AlgebraWithOne( <F>, <gens>, <zero> )' is the <F>-algebra-with-one
 ##  generated by <gens>, with zero element <zero>.
 ##
 ##  If the last argument is the string '\"basis\"' then the vectors in
 ##  <gens> are known to form a basis of the algebra (as an <F>-vector space).
 ##
-UnitalFLMLOR := NewOperationArgs( "UnitalFLMLOR" );
+FLMLORWithOne := NewOperationArgs( "FLMLORWithOne" );
 
-UnitalAlgebra := UnitalFLMLOR;
+AlgebraWithOne := FLMLORWithOne;
 
 
 #############################################################################
 ##
-#F  UnitalSubalgebra( <A>, <gens> ) . .  unital subalg. of <A> gen. by <gens>
+#F  SubalgebraWithOne( <A>, <gens> )   subalg.-with-one of <A> gen. by <gens>
 ##
-##  is the unital algebra generated by <gens>, with parent algebra <V>.
+##  is the algebra-with-one generated by <gens>, with parent algebra <V>.
 ##
-#F  UnitalSubalgebra( <A>, <gens>, "basis" )
+#F  SubalgebraWithOne( <A>, <gens>, "basis" )
 ##
-##  is the unital subalgebra of <A> for that <gens> is a list of basis
+##  is the subalgebra-with-one of <A> for that <gens> is a list of basis
 ##  vectors.
 ##  It is *not* checked whether <gens> really are linearly independent
 ##  and whether all in <gens> lie in <A>.
 ##
-UnitalSubFLMLOR := NewOperationArgs( "UnitalSubFLMLOR" );
+SubFLMLORWithOne := NewOperationArgs( "SubFLMLORWithOne" );
 
-UnitalSubalgebra := UnitalSubFLMLOR;
+SubalgebraWithOne := SubFLMLORWithOne;
 
 
 #############################################################################
 ##
-#F  UnitalSubalgebraNC( <A>, <gens>, "basis" )
-#F  UnitalSubalgebraNC( <A>, <gens> )
+#F  SubalgebraWithOneNC( <A>, <gens>, "basis" )
+#F  SubalgebraWithOneNC( <A>, <gens> )
 ##
-##  'UnitalSubalgebraNC' does not check whether all in <gens> lie in <V>.
+##  'SubalgebraWithOneNC' does not check whether all in <gens> lie in <V>.
 ##
-UnitalSubFLMLORNC := NewOperationArgs( "UnitalSubFLMLORNC" );
+SubFLMLORWithOneNC := NewOperationArgs( "SubFLMLORWithOneNC" );
 
-UnitalSubalgebraNC := UnitalSubFLMLORNC;
+SubalgebraWithOneNC := SubFLMLORWithOneNC;
 
 
 #############################################################################

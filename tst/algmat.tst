@@ -21,14 +21,14 @@ gap> Ring( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
 <algebra over Rationals, with 2 generators>
 
 
-gap> UnitalRing( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
+gap> RingWithOne( [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >                  [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
-<unital algebra over GF(3), with 2 generators>
+<algebra-with-one over GF(3), with 2 generators>
 
-gap> UnitalRing( [ [ 1, E(5) ], [ E(5), 0 ] ] );
-<unital algebra over Rationals, with 1 generators>
-gap> UnitalRing( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
-<unital algebra over Rationals, with 2 generators>
+gap> RingWithOne( [ [ 1, E(5) ], [ E(5), 0 ] ] );
+<algebra-with-one over Rationals, with 1 generators>
+gap> RingWithOne( [ [ 1, 0 ], [ 0, 0 ] ], [ [ 0, E(5) ], [ E(7), 5 ] ] );
+<algebra-with-one over Rationals, with 2 generators>
 
 gap> mat:= [ [ 1, E(4) ], [ 1, 1 ] ];
 [ [ 1, E(4) ], [ 1, 1 ] ]
@@ -81,9 +81,9 @@ gap> Dimension( d );
 
 #############################################################################
 
-gap> uz:= UnitalAlgebra( GF(3), [],
+gap> uz:= AlgebraWithOne( GF(3), [],
 >                            [ [ 0*Z(9), 0*Z(3) ], [ 0*Z(3), 0*Z(3) ] ] );
-<unital algebra over GF(3), with 0 generators>
+<algebra-with-one over GF(3), with 0 generators>
 gap> IsGaussianMatrixSpaceRep( uz );
 true
 gap> IsTrivial( uz );
@@ -91,32 +91,32 @@ false
 gap> Dimension( uz );
 1
 
-gap> ua:= UnitalAlgebra( GF(3), [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
+gap> ua:= AlgebraWithOne( GF(3), [ [ [ Z(9), Z(3) ], [ Z(3), 0*Z(3) ] ],
 >                   [ [ 0*Z(9), Z(27) ], [ Z(3)^0, Z(3) ] ] ] );
-<unital algebra over GF(3), with 2 generators>
+<algebra-with-one over GF(3), with 2 generators>
 gap> IsNonGaussianMatrixSpaceRep( ua );
 true
 gap> Dimension( ua );
 24
 
-gap> ub:= UnitalAlgebra( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
-<unital algebra over Rationals, with 1 generators>
+gap> ub:= AlgebraWithOne( Rationals, [ [ [ 1, E(5) ], [ E(5), 0 ] ] ] );
+<algebra-with-one over Rationals, with 1 generators>
 gap> IsNonGaussianMatrixSpaceRep( ub );
 true
 gap> Dimension( ub );
 8
 
-gap> uc:= UnitalAlgebra( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
+gap> uc:= AlgebraWithOne( CF(5), [ [ [ 1, E(5) ], [ E(5), 0 ] ] ],
 >                     [ [ 0, 0 ], [ 0, 0 ] ] );
-<unital algebra over CF(5), with 1 generators>
+<algebra-with-one over CF(5), with 1 generators>
 gap> IsGaussianMatrixSpaceRep( uc );
 true
 gap> Dimension( uc );
 2
 
-gap> ud:= UnitalAlgebra( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ],
+gap> ud:= AlgebraWithOne( Rationals, [ [ [ 1, 0 ], [ 0, 0 ] ],
 >                       [ [ 0, E(3) ], [ E(4), 5 ] ] ] );
-<unital algebra over Rationals, with 2 generators>
+<algebra-with-one over Rationals, with 2 generators>
 gap> IsNonGaussianMatrixSpaceRep( ud );
 true
 gap> Dimension( ud );
@@ -166,11 +166,11 @@ gap> cen = c;
 true
 
 gap> cen:= Centralizer( uc, GeneratorsOfAlgebra( uc )[1] );
-<unital algebra of dimension 2 over CF(5)>
+<algebra-with-one of dimension 2 over CF(5)>
 gap> cen = uc;
 true
 gap> cen:= Centralizer( uc, cen );
-<unital algebra of dimension 2 over CF(5)>
+<algebra-with-one of dimension 2 over CF(5)>
 gap> cen = uc;
 true
 
@@ -184,15 +184,15 @@ gap> Dimension( cen );
 5
 
 gap> cen:= Centralizer( ua, One( ua ) );
-<unital algebra of dimension 24 over GF(3)>
+<algebra-with-one of dimension 24 over GF(3)>
 gap> cen = ua;
 true
 gap> cen:= Centralizer( ua, GeneratorsOfAlgebra( ua )[1] );
-<unital algebra of dimension 23 over GF(3)>
+<algebra-with-one of dimension 23 over GF(3)>
 gap> Dimension( cen );
 23
 gap> cen:= Centralizer( ua, cen );
-<unital algebra of dimension 5 over GF(3)>
+<algebra-with-one of dimension 5 over GF(3)>
 gap> Dimension( cen );
 5
 
@@ -213,7 +213,7 @@ gap> Dimension( fullcen );
 #############################################################################
 
 gap> f:= GF(2)^[3,3];
-<unital algebra over GF(2), with 2 generators>
+<algebra-with-one over GF(2), with 2 generators>
 gap> f = FullMatrixFLMLOR( GF(2), 3 );
 true
 gap> IsFullMatrixModule( f );
@@ -229,7 +229,7 @@ gap> Dimension( u );
 gap> IsSubset( f, u );
 true
 gap> cenu:= Centralizer( f, u );
-<unital algebra of dimension 5 over GF(2)>
+<algebra-with-one of dimension 5 over GF(2)>
 gap> Dimension( cenu );
 5
 

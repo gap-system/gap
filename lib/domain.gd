@@ -51,16 +51,41 @@ Domain := DomainByGenerators;
 
 #############################################################################
 ##
+#O  FinalizeDomain( <D> )
+##
+##  There are several cases where a domain cannot be constructed by the
+##  default method that calls 'Objectify' and sets some attributes.
+##  The reason is that --depending on the elements-- one wants to set some
+##  more attributes or one wants to specialize the representation and add
+##  some components.
+##  Examples for this situation are polycyclically presented groups and
+##  matrix algebras.
+##
+##  In order to avoid too many methods for the constructors one can install
+##  methods for 'FinalizeDomain'.
+##  This operation should be called in the default constructor method after
+##  the default construction.
+##  Its (non-default) methods must end with a call to 'TryNextMethod',
+##  otherwise it cannot be guaranteed that all finalization methods are
+##  executed.
+##
+FinalizeDomain := NewOperation( "FinalizeDomain", [ IsDomain ] );
+
+
+#############################################################################
+##
 #A  Parent(<D>)
-#F  SetParent(<D>,<P>)
+#O  SetParent(<D>,<P>)
 #F  HasParent(<D>)
 ##
-##  'Parent' returns the parent domain of the domain <D>.   If the parent has
-##  not been set with 'SetParent' then 'Parent( <D> )' is identical to <D>.
+##  'Parent' returns the parent domain of the domain <D>.
+##  If the parent has not been set with 'SetParent' then 'Parent( <D> )' is
+##  identical to <D>.
 ##
-##  One can set  a super-collection <P>  of a domain <D>  to be the parent of
-##  <D> using   'SetParent( <D>, <P>  )'.   After this,  <P>  is the value of
-##  'Parent( <D> )', and 'HasParent( <D> )' is 'true'.
+##  One can set a super-collection <P> of a domain <D> to be the parent of
+##  <D> using 'SetParent( <D>, <P>  )'.
+##  After this, <P> is the value of 'Parent( <D> )',
+##  and 'HasParent( <D> )' is 'true'.
 ##
 ParentAttr := NewAttribute( "Parent", IsDomain );
 SetParent  := Setter( ParentAttr );

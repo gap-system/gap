@@ -411,7 +411,7 @@ InstallMethod( Generators, true, [ IsRing ], 0,
     GeneratorsOfRing );
 InstallMethod( Generators, true, [ IsAlgebra ], 0,
     GeneratorsOfAlgebra );
-InstallMethod( Generators, true, [ IsUnitalAlgebra ], 0,
+InstallMethod( Generators, true, [ IsAlgebraWithOne ], 0,
     GeneratorsOfUnitalAlgebra );
 
 
@@ -757,8 +757,8 @@ OPS.AsSubalgebra := AsSubalgebra;
 OPS.AsSubgroup := AsSubgroup;
 # OPS.AsSubmodule := AsSubmodule;
 OPS.AsSubspace := AsSubspace;
-OPS.AsUnitalAlgebra := AsUnitalAlgebra;
-OPS.AsUnitalSubalgebra := AsUnitalSubalgebra;
+OPS.AsUnitalAlgebra := AsAlgebraWithOne;
+OPS.AsUnitalSubalgebra := AsSubalgebraWithOne;
 # OPS.AscendingChain := AscendingChain;
 # OPS.Associates := Associates;
 # OPS.AutomorphismGroup := AutomorphismGroup;
@@ -1065,8 +1065,8 @@ OPS.Transitivity := Transitivity;
 OPS.TrivialSubalgebra := TrivialSubalgebra;
 OPS.TrivialSubgroup := TrivialSubgroup;
 OPS.Union := Union;
-OPS.UnitalAlgebra := UnitalAlgebra;
-OPS.UnitalSubalgebra := UnitalSubalgebra;
+OPS.UnitalAlgebra := AlgebraWithOne;
+OPS.UnitalSubalgebra := SubalgebraWithOne;
 OPS.Units := Units;
 OPS.UpperCentralSeries := UpperCentralSeriesOfGroup;
 # OPS.Weight := Weight;

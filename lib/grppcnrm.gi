@@ -1,62 +1,155 @@
 #############################################################################
 ##
-#F  PCGS_STABILIZER( <pcgs>, <pnt>, <op>, <data> )  . . . . . . . . . . local
+#W  grppcnrm.gi                 GAP Library                      Frank Celler
 ##
-PCGS_STABILIZER := function( pcgs, pnt, op, data )
-    local   pa,  one,  orb,  prod,  n,  s,  i,  mi,  np,  j,  o,  len,  
-            l1,  k,  l2,  r,  e;
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the methods for normalizers of polycylic groups.
+##
+Revision.grppcnrm_gi :=
+    "@(#)$Id$";
 
 
-    # operate on canonical versions
-    one := OneOfPcgs(pcgs);
-    pnt := op( data, pnt, one );
+#############################################################################
+##
 
-    # store representatives in <r>
-    orb  := [ pnt ];
-    prod := [ 1 ];
-    n    := [];
-    s    := [];
+#F  PCGS_STABILIZER( <pcgs>, <pnt>, <op> )  . . . . . . . . . . . . . . local
+##
+PCGS_STABILIZER := function( arg )
+    local   pcgs,  pnt,  op,  data,  one,  orb,  prod,  n,  s,  i,  
+            mi,  np,  j,  o,  len,  l1,  k,  l2,  r,  e,  stab,  ros;
 
-    # go *up* the composition series
-    for i  in Reversed([1..Length(pcgs)])  do
-        mi := pcgs[i];
-        np := op( data, pnt, mi );
+    pcgs := arg[1];
+    pnt  := arg[2];
+    op   := arg[3];
+    one  := OneOfPcgs(pcgs);
+    ros  := RelativeOrders(pcgs);
+    pcgs := ShallowCopy(pcgs);
 
-        # is <np> really a new point or is it in <orb>
-        j := Position( orb, np );
+    # without data blob
+    if Length(arg) = 3  then
 
-        # add it if it is new
-        if j = fail  then
-            o := RelativeOrderOfPcElement( pcgs, mi );
-            Add( prod, prod[Length(prod)] * o );
-            Add( n, i );
-            len := Length(orb);
-            l1  := 0;
-            for k  in [ 1 .. o-1 ]  do
-                l2 := l1 + len;
-                for j  in [ 1 .. len ]  do
-                    orb[j+l2] := op( data, orb[j+l1], mi );
+        # operate on canonical versions
+        pnt := op( pnt, one );
+
+        # store representatives in <r>
+        orb  := [ pnt ];
+        prod := [ 1 ];
+        n    := [];
+        s    := [];
+        stab := [];
+
+        # go *up* the composition series
+        for i  in Reversed([1..Length(pcgs)])  do
+            mi := pcgs[i];
+            np := op( pnt, mi );
+
+            # is <np> really a new point or is it in <orb>
+            j := Position( orb, np );
+
+            # add it if it is new
+            if j = fail  then
+                o := ros[i];
+                Add( prod, prod[Length(prod)] * o );
+                Add( n, i );
+                len := Length(orb);
+                l1  := 0;
+                for k  in [ 1 .. o-1 ]  do
+                    l2 := l1 + len;
+                    for j  in [ 1 .. len ]  do
+                        orb[j+l2] := op( orb[j+l1], mi );
+                    od;
+                    l1 := l2;
                 od;
-                l1 := l2;
-            od;
 
-        # if it is the start point the element stabilizes
-        elif j = 1 then
-            Add( s, mi );
+            # if it is the start point the element stabilizes
+            elif j = 1 then
+                Add( s, mi );
 
-        # compute a stabilizing element
-        else
-            r   := one;
-            j   := j-1;
-    	    len := Length(prod);
-            for k  in [ 1 .. len-1 ]  do
-                e := QuoInt( j, prod[len-k] );
-                r := pcgs[n[len-k]]^e * r;
-                j := j mod prod[len-k];
-            od;
-            Add( s, pcgs[i] / r );
-        fi;
-    od;
+            # compute a stabilizing element
+            else
+                if not IsBound(stab[j])  then
+                    r   := one;
+                    l1  := j-1;
+                    len := Length(prod);
+                    for k  in [ 1 .. len-1 ]  do
+                        e  := QuoInt( l1, prod[len-k] );
+                        r  := pcgs[n[len-k]]^e * r;
+                        l1 := l1 mod prod[len-k];
+                        if l1 = 0  then
+                            break;
+                        fi;
+                    od;
+                    stab[j] := r;
+                fi;
+                Add( s, pcgs[i] / stab[j] );
+            fi;
+        od;
+
+    # with data blob
+    else
+        data := arg[4];
+
+        # operate on canonical versions
+        pnt := op( data, pnt, one );
+
+        # store representatives in <r>
+        orb  := [ pnt ];
+        prod := [ 1 ];
+        n    := [];
+        s    := [];
+        stab := [];
+
+        # go *up* the composition series
+        for i  in Reversed([1..Length(pcgs)])  do
+            mi := pcgs[i];
+            np := op( data, pnt, mi );
+
+            # is <np> really a new point or is it in <orb>
+            j := Position( orb, np );
+
+            # add it if it is new
+            if j = fail  then
+                o := ros[i];
+                Add( prod, prod[Length(prod)] * o );
+                Add( n, i );
+                len := Length(orb);
+                l1  := 0;
+                for k  in [ 1 .. o-1 ]  do
+                    l2 := l1 + len;
+                    for j  in [ 1 .. len ]  do
+                        orb[j+l2] := op( data, orb[j+l1], mi );
+                    od;
+                    l1 := l2;
+                od;
+
+            # if it is the start point the element stabilizes
+            elif j = 1 then
+                Add( s, mi );
+
+            # compute a stabilizing element
+            else
+                if not IsBound(stab[j])  then
+                    r   := one;
+                    l1  := j-1;
+                    len := Length(prod);
+                    for k  in [ 1 .. len-1 ]  do
+                        e  := QuoInt( l1, prod[len-k] );
+                        r  := pcgs[n[len-k]]^e * r;
+                        l1 := l1 mod prod[len-k];
+                        if l1 = 0  then
+                            break;
+                        fi;
+                    od;
+                    stab[j] := r;
+                fi;
+                Add( s, pcgs[i] / stab[j] );
+            fi;
+        od;
+    fi;
+
     Info( InfoPcNormalizer, 3, "orbit length: ", Length(orb) );
     return Reversed(s);
 
@@ -65,19 +158,173 @@ end;
 
 #############################################################################
 ##
-#M  PCGS_NORMALIZER( <home-pcgs>, <pcgs>, <point-pcgs>, <modulo-pcgs> )
+#F  PCGS_STABILIZER_HOMOMORPHIC( <pcgs>, <homs>, <pnt>, <op> )  . . . . local
 ##
-PCGS_NORMALIZER_OPB := function( data, pnt, obj )
-    return pnt^obj;
+PCGS_STABILIZER_HOMOMORPHIC := function( arg )
+    local   pcgs,  homs,  pnt,  op,  ros,  one,  hone,  orb,  prod,  
+            n,  s,  stab,  i,  mi,  np,  j,  o,  len,  l1,  k,  l2,  
+            r,  e,  data;
+
+    pcgs := arg[1];
+    homs := arg[2];
+    pnt  := arg[3];
+    op   := arg[4];
+    if 0 = Length(pcgs)  then
+        return pcgs;
+    fi;
+    if Length(pcgs) <> Length(homs)  then
+        Error( "expecting ", Length(pcgs), " homomorphic images in <homs>" );
+    fi;
+    ros  := RelativeOrders(pcgs);
+    one  := OneOfPcgs(pcgs);
+    hone := One(homs[1]);
+    pcgs := ShallowCopy(pcgs);
+
+    # without data blob
+    if Length(arg) = 4  then
+
+        # operate on canonical versions
+        pnt := op( pnt, hone );
+
+        # store representatives in <r>
+        orb  := [ pnt ];
+        prod := [ 1 ];
+        n    := [];
+        s    := [];
+        stab := [];
+
+        # go *up* the composition series
+        for i  in Reversed([1..Length(pcgs)])  do
+            mi := homs[i];
+            np := op( pnt, mi );
+
+            # is <np> really a new point or is it in <orb>
+            j := Position( orb, np );
+
+            # add it if it is new
+            if j = fail  then
+                o := ros[i];
+                Add( prod, prod[Length(prod)] * o );
+                Add( n, i );
+                len := Length(orb);
+                l1  := 0;
+                for k  in [ 1 .. o-1 ]  do
+                    l2 := l1 + len;
+                    for j  in [ 1 .. len ]  do
+                        orb[j+l2] := op( orb[j+l1], mi );
+                    od;
+                    l1 := l2;
+                od;
+
+            # if it is the start point the element stabilizes
+            elif j = 1 then
+                Add( s, pcgs[i] );
+
+            # compute a stabilizing element
+            else
+                if not IsBound(stab[j])  then
+                    r   := one;
+                    l1  := j-1;
+                    len := Length(prod);
+                    for k  in [ 1 .. len-1 ]  do
+                        e  := QuoInt( l1, prod[len-k] );
+                        r  := pcgs[n[len-k]]^e * r;
+                        l1 := l1 mod prod[len-k];
+                        if l1 = 0  then
+                            break;
+                        fi;
+                    od;
+                    stab[j] := r;
+                fi;
+                Add( s, pcgs[i] / stab[j] );
+            fi;
+        od;
+
+    # with data blob
+    else
+        data := arg[5];
+
+        # operate on canonical versions
+        pnt := op( data, pnt, hone );
+
+        # store representatives in <r>
+        orb  := [ pnt ];
+        prod := [ 1 ];
+        n    := [];
+        s    := [];
+        stab := [];
+
+        # go *up* the composition series
+        for i  in Reversed([1..Length(pcgs)])  do
+            mi := homs[i];
+            np := op( data, pnt, mi );
+
+            # is <np> really a new point or is it in <orb>
+            j := Position( orb, np );
+
+            # add it if it is new
+            if j = fail  then
+                o := ros[i];
+                Add( prod, prod[Length(prod)] * o );
+                Add( n, i );
+                len := Length(orb);
+                l1  := 0;
+                for k  in [ 1 .. o-1 ]  do
+                    l2 := l1 + len;
+                    for j  in [ 1 .. len ]  do
+                        orb[j+l2] := op( data, orb[j+l1], mi );
+                    od;
+                    l1 := l2;
+                od;
+
+            # if it is the start point the element stabilizes
+            elif j = 1 then
+                Add( s, pcgs[i] );
+
+            # compute a stabilizing element
+            else
+                if not IsBound(stab[j])  then
+                    r   := one;
+                    l1  := j-1;
+                    len := Length(prod);
+                    for k  in [ 1 .. len-1 ]  do
+                        e  := QuoInt( l1, prod[len-k] );
+                        r  := pcgs[n[len-k]]^e * r;
+                        l1 := l1 mod prod[len-k];
+                        if l1 = 0  then
+                            break;
+                        fi;
+                    od;
+                    stab[j] := r;
+                fi;
+                Add( s, pcgs[i] / stab[j] );
+            fi;
+        od;
+    fi;
+
+    Info( InfoPcNormalizer, 3, "orbit length: ", Length(orb) );
+    return Reversed(s);
+
 end;
 
-PCGS_NORMALIZER_OPC := function( data, elm, obj )
-    return CanonicalPcElement( data[1], elm^obj );
+
+#############################################################################
+##
+#F  PCGS_NORMALIZER( <home>, <norm>, <point>, <pcgs>, <modulo> )
+##
+PCGS_NORMALIZER_OPB := POW;
+
+PCGS_NORMALIZER_OPC1 := function( data, elm, obj )
+    return HeadPcElementByNumber( data[1], elm^obj, data[2] );
+end;
+
+PCGS_NORMALIZER_OPC2 := function( data, elm, obj )
+    return CanonicalPcElement( data, elm^obj );
 end;
 
 PCGS_NORMALIZER_OPD := function( data, lst, obj )
-    lst := HOMOMORPHIC_IGS( data[1], lst, obj );
-    NORMALIZE_IGS( data[1], lst );
+    lst := HOMOMORPHIC_IGS( data, lst, obj );
+    NORMALIZE_IGS( data, lst );
     return lst;
 end;
 
@@ -123,9 +370,30 @@ PCGS_NORMALIZER_OPE := function( data, lst, obj )
     return lst;
 end;
 
+PCGS_NORMALIZER_DATAE := function( home, modulo )
+    local   id,  ros,  sub,  i,  dg,  exp,  max;
+
+    id  := OneOfPcgs(home);
+    ros := RelativeOrders(home);
+    sub := [];
+    for i  in modulo  do
+        dg  := DepthOfPcElement( home, i );
+        exp := LeadingExponentOfPcElement( home, i );
+        if exp <> 1  then
+            i := i ^ (1/exp mod ros[dg]);
+        fi;
+        sub[dg] := i;
+    od;
+    max := Length(home)+1;
+    while 2 <= max and IsBound(sub[max-1])  do
+        max := max-1;
+    od;
+    return [ home, sub, max, ros ];
+end;
+
 
 PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
-    local   op,  s,  id,  ros,  sub,  i,  dg,  exp,  max,  data;
+    local   op,  s,  data;
 
     Info( InfoPcNormalizer, 5, "home:       ", ShallowCopy(home) );
     Info( InfoPcNormalizer, 4, "normalizer: ", ShallowCopy(pcgs) );
@@ -143,45 +411,35 @@ PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
             Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case B" );
             pnt  := pnt[1];
             op   := PCGS_NORMALIZER_OPB;
-            data := 0;
+            s    := PCGS_STABILIZER( pcgs, pnt, op );
         else
-            Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case C" );
             pnt  := pnt mod modulo;
-            pnt  := CanonicalPcElement( modulo, pnt[1] );
-            op   := PCGS_NORMALIZER_OPC;
-            data := [modulo];
+            pnt  := pnt[1];
+            if ParentPcgs(modulo)=home and IsTailInducedPcgsRep(modulo)  then
+                Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case C1" );
+                op   := PCGS_NORMALIZER_OPC1;
+                data := [ home, modulo!.tailStart ];
+            else
+                Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case C2" );
+                op   := PCGS_NORMALIZER_OPC2;
+                data := modulo;
+            fi;
+            s := PCGS_STABILIZER( pcgs, pnt, op, data );
         fi;
-        s := PCGS_STABILIZER( pcgs, pnt, op, data );
 
     # if the <modulo> is trivial it is relatively easy
     elif 0 = Length(modulo)  then
         Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case D" );
         op   := PCGS_NORMALIZER_OPD;
-        data := [home];
-        pnt  := op( data, ShallowCopy(pnt), id );
-        s    := PCGS_STABILIZER( pcgs, pnt, op, data );
+        pnt  := ShallowCopy(pnt);
+        s    := PCGS_STABILIZER( pcgs, pnt, op, home );
         
-    # it is get complicated
+    # it is get more complicated
     else
         Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER case E" );
-        id  := OneOfPcgs(home);
-        ros := RelativeOrders(home);
-        sub := [];
-        for i  in modulo  do
-            dg  := DepthOfPcElement( home, i );
-            exp := LeadingExponentOfPcElement( home, i );
-            if exp <> 1  then
-                i := i ^ (1/exp mod ros[dg]);
-            fi;
-            sub[dg] := i;
-        od;
-        max := Length(home)+1;
-        while 2 <= max and IsBound(sub[max-1])  do
-            max := max-1;
-        od;
+        data := PCGS_NORMALIZER_DATAE( home, modulo );
         op   := PCGS_NORMALIZER_OPE;
-        data := [ home, sub, max, ros ];
-        pnt  := op( data, ShallowCopy( pnt mod modulo ), id );
+        pnt  := ShallowCopy( pnt mod modulo );
         s    := PCGS_STABILIZER( pcgs, pnt, op, data );
     fi;
 
@@ -193,6 +451,183 @@ PCGS_NORMALIZER := function( home, pcgs, pnt, modulo )
 
 end;
 
+
+#############################################################################
+##
+#F  PCGS_NORMALIZER_LINEAR( <home>, <norm>, <point>, <modulo-pcgs> )
+##
+PCGS_NORMALIZER_LINEAR_OPA := function( mat, obj )
+    mat := List( mat, x -> x * obj );
+    TriangulizeMat(mat);
+    return mat;
+end;
+
+PCGS_NORMALIZER_LINEAR := function( home, pcgs, pnt, modulo )
+    local   f,  o,  m,  sub,  s;
+
+    Info( InfoPcNormalizer, 5, "home:       ", ShallowCopy(home) );
+    Info( InfoPcNormalizer, 4, "normalizer: ", ShallowCopy(pcgs) );
+    Info( InfoPcNormalizer, 4, "point:      ", ShallowCopy(pnt) );
+    Info( InfoPcNormalizer, 5, "modulo:     ", ShallowCopy(modulo) );
+
+    # construct the linear operation
+    f := GF( RelativeOrderOfPcElement( home, modulo[1] ) );
+    o := One(f);
+    m := List( pcgs, x -> List( modulo, y ->
+             ExponentsOfPcElement( modulo, y^x ) * o ) );
+
+    # convert <pnt> into a subspace
+    sub := pnt mod DenominatorOfModuloPcgs(modulo);
+    sub := List( sub, x -> ExponentsOfPcElement( modulo, x ) * o );
+
+    # compute the stabilizer
+    Info( InfoPcNormalizer, 3, "PCGS_NORMALIZER_LINEAR case A" );
+    s := PCGS_STABILIZER_HOMOMORPHIC(
+             pcgs, m, sub, PCGS_NORMALIZER_LINEAR_OPA );
+
+    # convert it into a modulo pcgs
+    pcgs := SumPcgs( home, DenominatorOfModuloPcgs(pcgs), s )
+        mod DenominatorOfModuloPcgs(pcgs);
+    Info( InfoPcNormalizer, 4, "new norm:   ", ShallowCopy(pcgs) );
+    return pcgs;
+
+end;
+
+
+#############################################################################
+##
+#F  PCGS_CONJUGATING_WORD_GS( <home>, <n>, <u>, <v>, <k> )
+##
+##  Let <u> / <k> and <v>  / <k> be two  p-groups such that <u>*<n> = <v>*<n>
+##  and let <n> be an elementary abelian  q-group with q  <> p. Then a word x
+##  of <n> with <u> ^ x = <v> is returned. <k> must be normal in <u>*<n>.
+##
+##  It is important, that the weights of <K> are less than those of <N>.
+##
+PCGS_CONJUGATING_WORD_GS := function( home, n, u, v, k )
+    local   id,  x,  q,  i,  p,  t,  m,  vv,  mm,  xx,  j;
+
+    # if <n> or <u> / <k> is trivial, just return identity
+    id := OneOfPcgs(home);
+    if 0 = Length(n) or 0 = Length(u) or u = v  then
+        return id;
+    fi;
+
+    # Find  the  word  <n>  using the algorithm of Kantor. See S.P.Glasby and
+    # Michael  C.  Slattery,  "Computing  intersections  and  normalizers  in
+    # soluble groups", 1989.
+
+    x := id;
+    q := RelativeOrderOfPcElement( home, n[1] );
+    for i  in Reversed( [ 1 .. Length(u) ] )  do
+
+        # the orders must be coprime
+        p := RelativeOrderOfPcElement( home, u[i] );
+        if q = p  then
+            Error( "relative orders <u> and <n> are not coprime" );
+        fi;
+
+        # Compute an integer <t> such that <t> * <p> = -1 mod <q>.
+        t := -Gcdex( p, q ).coeff1;
+        while t > q  do t := t - q;  od;
+        while t < 0  do t := t + q;  od;
+
+        m  := LeftQuotient( u[i]^x, v[i] );
+        m  := SiftedPcElement( k, m );
+        vv := id;
+        mm := id;
+        xx := id;
+
+        # construct the product m^v * (m^2)^(v^2) * ... * (m^p-1)^(v^p-1)
+        for j  in [ 1 .. p-1 ]  do
+            vv := vv * v[i];
+            mm := mm * m;
+            xx := xx * ( mm^vv );
+        od;
+        x := x * ( xx ^ t );
+    od;
+
+    return x;
+
+end;
+
+
+#############################################################################
+##
+#F  PCGS_NORMALIZER_GLASBY( <home>, <norm>, <nis>, <pcgs>, <modulo> )
+##
+PCGS_NORMALIZER_GLASBY := function( home, pcgs, nis, u1, u2 )
+    local   id,  stb,  data,  pnt,  i,  cnj,  ns,  one,  mats,  sys,  
+            sol,  v,  j;
+
+    # The situtation is as follows:
+    #
+    #	    	S
+    #	    	 \
+    #	    	  \
+    #	    	   Us
+    #	    	  /  \
+    #	    	 /    \
+    #	       U1      Ns       N
+    #	    	 \    /  \     /
+    #	    	  \  /	  \   /
+    #	    	   U2	   NiS
+    #                \	  /
+    #	    	      \	 /
+    #	    	       Un
+    #
+    # and <S> stabilizes <U2>
+
+    # first correct (S mod NiS)
+    Info( InfoPcNormalizer, 4, "correcting glasby block stabilizer" );
+    id   := OneOfPcgs(pcgs);
+    stb  := NumeratorOfModuloPcgs(pcgs) mod NumeratorOfModuloPcgs(nis);
+    stb  := ShallowCopy(stb);
+    data := PCGS_NORMALIZER_DATAE( home, u2 );
+    pnt  := PCGS_NORMALIZER_OPE( data, u1 mod u2, id );
+    for i  in [ 1 .. Length(stb) ]  do
+        cnj := PCGS_NORMALIZER_OPE( data, pnt, stb[i] );
+        cnj := PCGS_CONJUGATING_WORD_GS( home, nis, cnj, pnt, u2 );
+        stb[i] := stb[i] * cnj;
+    od;
+
+    # now compute the stabilizer in <nis>
+    Info( InfoPcNormalizer, 4, "computing the centralizer in <nis>" );
+
+    # first the operation of <pnt> on (NiS mod U2)
+    ns   := SumPcgs( home, u2, NumeratorOfModuloPcgs(nis) ) mod u2;
+    one  := One( GF(RelativeOrderOfPcElement(home,ns[1])) );
+    mats := List( pnt, x -> List( ns, y ->
+                ExponentsOfPcElement( ns, y^x ) * one ) );
+
+    # set up the system of equations
+    one := One(mats[1]);
+    sys := [];
+    for i  in [ 1 .. Length(mats[1]) ]  do
+    	sys[i] := [];
+    	for j  in [ 1 .. Length(mats) ]  do
+    	    Append( sys[i], one[i] - mats[j][i] );
+    	od;
+    od;
+    sol := NullspaceMat(sys);
+    for v  in sol  do
+        v := List( v, IntFFE );
+        Add( stb, PcElementByExponents(ns,v) );
+    od;
+
+    # Now we have the normalizer in <S> / <U2>.  Get the complete preimage.
+    return SumPcgs( home, u2, stb )
+       mod DenominatorOfModuloPcgs(pcgs);
+
+end;
+
+
+#############################################################################
+##
+#F  PCGS_NORMALIZER_COBOUNDS( <home>, <norm>, <nis>, <pcgs>, <modulo> )
+##
+PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, pnt, modulo )
+end;
 
 
 #############################################################################
@@ -322,7 +757,7 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 Info( InfoPcNormalizer, 2, "<ue>[", i, "] /\\ <e>[", i-1,
                       "] using linear operation" );
 
-                s := PcGroup_LinearNO( s, ei_1, ui_1 );
+                s := PCGS_NORMALIZER_LINEAR( g, s, ui_1, ei_1 );
 
             # otherwise use a normal stabilizer
             else
@@ -393,15 +828,13 @@ PcGroup_NormalizerWrtHomePcgs := function( u, f1, f2, f3, f4 )
                 if ( pj = pi_1 and f1 ) or ( pj <> pi_1 and f2 )  then
                     Info( InfoPcNormalizer, 2, "<ue>[", i, "] /\\ <e>[", j,
                           "] using cobounds" );
-
-                    s := PcGroup_CoboundsNO( s, si_1, uj, uk );
+                    s := PCGS_NORMALIZER_COBOUNDS( g, s, si_1, uj, uk );
 
                 # glasby
                 elif pj <> pi_1 and f3  then
                     Info( InfoPcNormalizer, 2, "<ue>[", i, "] /\\ <e>[", j,
                           "] using Glasby" );
-
-                    s := PcGroup_GlasbyNO( s, si_1, uj, uk );
+                    s := PCGS_NORMALIZER_GLASBY( g, s, si_1, uj, uk );
 
                 # orbit
                 else
@@ -464,6 +897,7 @@ end;
 
 #############################################################################
 ##
+
 #M  NormalizerInHomePcgs( <pc-group> )
 ##
 InstallMethod( NormalizerInHomePcgs,
@@ -473,6 +907,9 @@ InstallMethod( NormalizerInHomePcgs,
     0,
 
 function( u )
+    if not IsPrimeOrdersPcgs(HomePcgs(u))  then
+        TryNextMethod();
+    fi;
     return PcGroup_NormalizerWrtHomePcgs( u, true, false, true, true );
 end );
 

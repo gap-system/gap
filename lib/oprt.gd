@@ -5,6 +5,13 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.16  1997/02/07 13:55:44  ahulpke
+#H  Added 'CanonicalRepresentativeDeterminatorOfExternalSet' and utilized it for
+#H  right cosets.
+#H
+#H  Revision 4.15  1997/02/06 09:51:24  htheisse
+#H  introduced `IsPrimitiveAffine'
+#H
 #H  Revision 4.14  1997/01/30 13:26:18  htheisse
 #H  reorganised the representation of operation homomorphisms to fix a bug
 #H
@@ -91,6 +98,23 @@ SetCanonicalRepresentativeOfExternalSet :=
 HasCanonicalRepresentativeOfExternalSet :=
   Tester( CanonicalRepresentativeOfExternalSet );
 
+# a CanonicalRepresentativeDeterminatorOfExternalSet is a function that
+# takes as arguments the acting group and the point. It returns a list
+# of length 3: [CanonRep, NormalizerCanonRep, ConjugatingElm]. 
+# list components 2 and 3 do not need to be bound.
+
+CanonicalRepresentativeDeterminatorOfExternalSet := NewAttribute
+    ( "CanonicalRepresentativeDeterminatorOfExternalSet", IsExternalSet );
+SetCanonicalRepresentativeDeterminatorOfExternalSet :=
+  Setter( CanonicalRepresentativeDeterminatorOfExternalSet );
+HasCanonicalRepresentativeDeterminatorOfExternalSet :=
+  Tester( CanonicalRepresentativeDeterminatorOfExternalSet );
+
+# Xsets that know how to get a canonical representative should claim they
+# have one for purposes of method selection
+InstallTrueMethod(HasCanonicalRepresentativeOfExternalSet,
+  HasCanonicalRepresentativeDeterminatorOfExternalSet);
+
 OperatorOfExternalSet := NewAttribute( "OperatorOfExternalSet",
                                  IsExternalSet );
 SetOperatorOfExternalSet := Setter( OperatorOfExternalSet );
@@ -176,10 +200,6 @@ MaximalBlocksOp := NewOperation( "MaximalBlocks",
       IsList,
       IsFunction ] );
 
-Earns := NewOperationArgs( "Earns" );
-EarnsOp := NewOperation( "Earns", OrbitsishReq );
-EarnsAttr := NewAttribute( "Earns", IsExternalSet );
-
 OrbitLength := NewOperationArgs( "OrbitLength" );
 OrbitLengthOp := NewOperation( "OrbitLength", OrbitishReq );
 
@@ -206,6 +226,14 @@ TransitivityAttr := NewAttribute( "Transitivity", IsObject );
 IsPrimitive := NewOperationArgs( "IsPrimitive" );
 IsPrimitiveOp := NewOperation( "IsPrimitive", OrbitsishReq );
 IsPrimitiveProp := NewProperty( "IsPrimitive", IsObject );
+
+Earns := NewOperationArgs( "Earns" );
+EarnsOp := NewOperation( "Earns", OrbitsishReq );
+EarnsAttr := NewAttribute( "Earns", IsObject );
+
+IsPrimitiveAffine := NewOperationArgs( "IsPrimitiveAffine" );
+IsPrimitiveAffineOp := NewOperation( "IsPrimitiveAffine", OrbitsishReq );
+IsPrimitiveAffineProp := NewProperty( "IsPrimitiveAffine", IsObject );
 
 IsSemiRegular := NewOperationArgs( "IsSemiRegular" );
 IsSemiRegularOp := NewOperation( "IsSemiRegular", OrbitsishReq );

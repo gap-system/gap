@@ -537,6 +537,7 @@ int    FindTree(
 	    return   i;
 	i = DT_RIGHT(tree, i);
     }
+    return 0;
 }
 
 

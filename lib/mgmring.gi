@@ -434,7 +434,7 @@ InstallMethod( PrintObj, true, [ IsFreeMagmaRing ], 0,
 #############################################################################
 ##
 #M  GeneratorsOfLeftOperatorRing( <RM> )
-#M  GeneratorsOfLeftOperatorUnitalRing( <RM> )
+#M  GeneratorsOfLeftOperatorRingWithOne( <RM> )
 ##
 InstallMethod( GeneratorsOfLeftOperatorRing, true, [ IsFreeMagmaRing ], 0,
     function( RM )
@@ -447,8 +447,8 @@ InstallMethod( GeneratorsOfLeftOperatorRing, true, [ IsFreeMagmaRing ], 0,
 #T only for 'IsFreeMagmaRingElmDefaultRepColl' ? (rubbish)
 #T or different way to create ???
 
-InstallMethod( GeneratorsOfLeftOperatorUnitalRing, true,
-    [ IsFreeMagmaUnitalRing ], 0,
+InstallMethod( GeneratorsOfLeftOperatorRingWithOne, true,
+    [ IsFreeMagmaRingWithOne ], 0,
     function( RM )
     local one, F;
     one:= One( LeftActingDomain( RM ) );
@@ -497,7 +497,7 @@ FreeMagmaRing := function( R, M )
     # Make the magma ring object.
     if IsMagmaWithOne( M ) then
       RM:= Objectify( NewKind( CollectionsFamily( F ),
-                                   IsFreeMagmaUnitalRing
+                                   IsFreeMagmaRingWithOne
                                and IsAttributeStoringRep ),
                       rec() );
     else
@@ -743,7 +743,7 @@ InstallMethod( IsWholeFamily, true, [ IsFreeMagmaRing ], 0,
 #############################################################################
 ##
 #M  GeneratorsOfRing( <RM> )
-#M  GeneratorsOfUnitalRing( <RM> )
+#M  GeneratorsOfRingWithOne( <RM> )
 ##
 ##  If the underlying magma has an identity and if we know ring generators
 ##  for the ring <R>, we take the left operator ring generators together
@@ -763,14 +763,14 @@ InstallMethod( GeneratorsOfRing, true, [ IsFreeMagmaRing ], 0,
     fi;
     end );
 
-InstallMethod( GeneratorsOfUnitalRing, true, [ IsFreeMagmaUnitalRing ], 0,
+InstallMethod( GeneratorsOfRingWithOne, true, [ IsFreeMagmaRingWithOne ], 0,
     function( RM )
     local R, emb;
     R:= LeftActingDomain( RM );
     emb:= Embedding( R, RM );
     if emb <> fail then
-      return Concatenation( GeneratorsOfLeftOperatorUnitalRing( RM ),
-                            List( GeneratorsOfUnitalRing( R ),
+      return Concatenation( GeneratorsOfLeftOperatorRingWithOne( RM ),
+                            List( GeneratorsOfRingWithOne( R ),
                                   r -> ImageElm( emb, r ) ) );
     else
       TryNextMethod();

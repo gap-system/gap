@@ -35,7 +35,8 @@ end;
 MORPHEUSELMS := 50000;
 
 IsOperationHomomorphismAutomGroup := NewRepresentation(
-  "IsOperationHomomorphismAutomGroup",IsOperationHomomorphismByBase,
+  "IsOperationHomomorphismAutomGroup",
+  IsOperationHomomorphismDirectly and IsOperationHomomorphismByBase,
   ["basepos"]);
 
 #############################################################################
@@ -73,6 +74,22 @@ local xset,g,imgs;
   SetIsBijective(elm,true);
   return elm;
 end);
+
+#############################################################################
+##
+#M  \*( <map1>, <map2> )  . . . . . . . . . . . . .  for two automorphisms
+##
+InstallMethod( \*,
+    "method for two automorphisms",
+    FamSource2EqFamRange1,
+    [ IsGeneralMapping and IsMultiplicativeElementWithInverse,
+      IsGeneralMapping and IsMultiplicativeElementWithInverse ], 0,
+function( map1, map2 )
+local com;
+  com:=CompositionMapping2( map2, map1 );
+  SetFilterObj(com,IsMultiplicativeElementWithInverse);
+  return com;
+end );
 
 
 #############################################################################

@@ -461,7 +461,7 @@ InstallMethod( ExponentSumWord,
     fi;
     n:= 0;
     g:= gen[1];
-    for i in [ 1, 3 .. Length( w ) ] do
+    for i in [ 1, 3 .. Length( w ) - 1 ] do
       if w[i] = g then
         n:= n + w[ i+1 ];
       fi;
@@ -484,7 +484,7 @@ InstallMethod( Subword,
     0,
     function( w, from, to )
     local extw, pos, nextexp, sub;
-
+   
     extw:= ExtRepOfObj( w );
     to:= to - from + 1;
 

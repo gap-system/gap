@@ -11,6 +11,9 @@
 ##  representation of the groups.
 ##
 ##  $Log$
+##  Revision 4.9  1997/02/07 18:24:03  htheisse
+##  fixed a bug and tidied up a bit
+##
 ##  Revision 4.8  1997/01/30 09:14:25  htheisse
 ##  re-introduced induced pcgs wrt home pcgs in one place
 ##
@@ -69,7 +72,7 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
                dimensionN     := r,
                dimensionC     := n );
     if n = 0  or  r = 0  then
-        cg.inverse := IdentityMat( r, one );
+        cg.inverse := NullMapMatrix;
         return cg;
     fi;
     
@@ -707,8 +710,7 @@ ClassesSolvableGroup := function( arg )
            blist,pos,q, # these control grouping of <cls> into <team>s
            p,           # prime dividing $|G|$
            ord,         # order of a rational class modulo <modL>
-           new, g1, l1, #\ auxiliary variables for determination of the
-           power, pow,  #/ power tree
+           new, power,  # auxiliary variables for determination of power tree
            cl,  c,  i;  # loop variables
     
     # Get the arguments.
@@ -716,8 +718,8 @@ ClassesSolvableGroup := function( arg )
     U     := arg[ 2 ];
     limit := arg[ 3 ];
     mode  := arg[ 4 ];
-    if not IsNormal( H, U )  then
-        Error( "<H> must normalize <U>" );
+    if H <> U  then
+        Error( "not yet implemented" );
     elif limit = true  then
         limit := rec( order := infinity,
                        size := 0 );
@@ -915,22 +917,21 @@ ClassesSolvableGroup := function( arg )
                    and (    limit.size = 0
                          or limit.size mod Size( new[ 1 ] ) = 0 )  then
                     if IsBound( cl!.power )  then  # construct the power tree
-                        g1 := cl!.power!.operator;
-                        l1 := cl!.power!.exponent;
-                        cl!.power!.candidates :=
-                          [ ( Representative( new[ 1 ] ) ^ g1 ) ^ ( p * l1 ) ];
+                      if ord = 1  then
+                        power := cl!.power;
+                      else
+                        cl!.power!.candidates := [ ( Representative(new[1]) ^
+                            cl!.power!.operator ) ^ (p*cl!.power!.exponent) ];
                         power := CentralStepRatClPGroup( U, Lp, N, mK, mL,
                                          cl!.power )[ 1 ];
-                        power!.operator := g1 * power!.operator;
-                        if ord <= p  then
-                            power!.exponent := l1;
-                        else
-                            power!.exponent := l1 / ( 1 ^ power!.exponent )
-                                               mod ( ord / p );
-                        fi;
-                        for c  in new  do
-                            c!.power := power;
-                        od;
+                        power!.operator := cl!.power!.operator
+                                             * power!.operator;
+                        power!.exponent := cl!.power!.exponent
+                                             / power!.exponent mod ord;
+                      fi;
+                      for c  in new  do
+                        c!.power := power;
+                      od;
                     fi;
                     Append( newcls, new );
                 fi;
@@ -959,8 +960,15 @@ ClassesSolvableGroup := function( arg )
         else
             return tra[ 1 ] / tra[ 2 ];
         fi;
-    elif candidates <> false  # centralizer calculation
-     and not IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
+    elif candidates <> false  # identification of classes
+     and IsIdentical( FamilyObj( U ), FamilyObj( candidates ) )  then
+        for q  in [ 1 .. Length( cls ) ]  do
+            cls[ q ]!.operator := tra[ q ];
+            if mode mod 2 = 1  then  # rational classes
+                cls[ q ]!.exponent := exp[ q ];
+            fi;
+        od;
+    elif candidates <> false  then  # centralizer calculation
         return ConjugateSubgroup( StabilizerOfExternalSet( cls[ 1 ] ),
                        tra ^ -1 );
     elif mode mod 4 = 3  then  # rational classes and power tree

@@ -11,11 +11,6 @@
 Revision.field_gd :=
     "@(#)$Id$";
 
-#T maintained attributes under isomorphisms:
-#T     Conductor,
-#T     DegreeOverPrimeField,
-#T     GaloisStabilizer,
-#T     Size,
 
 #############################################################################
 ##
@@ -39,9 +34,10 @@ IsNumberField := NewProperty( "IsNumberField", IsField );
 SetIsNumberField := Setter( IsNumberField );
 HasIsNumberField := Tester( IsNumberField );
 
-InstallSubsetTrueMethod( IsNumberField,
+InstallSubsetMaintainedMethod( IsNumberField,
     IsField and IsNumberField, IsField );
-InstallIsomorphismTrueMethod( IsNumberField,
+
+InstallIsomorphismMaintainedMethod( IsNumberField,
     IsField and IsNumberField, IsField );
 
 
@@ -58,10 +54,10 @@ HasIsAbelianNumberField := Tester( IsAbelianNumberField );
 InstallTrueMethod( IsNumberField,
     IsAbelianNumberField );
 
-InstallSubsetTrueMethod( IsAbelianNumberField,
+InstallSubsetMaintainedMethod( IsAbelianNumberField,
     IsField and IsAbelianNumberField, IsField );
 
-InstallIsomorphismTrueMethod( IsAbelianNumberField,
+InstallIsomorphismMaintainedMethod( IsAbelianNumberField,
     IsField and IsAbelianNumberField, IsField );
 
 
@@ -78,7 +74,7 @@ HasIsCyclotomicField := Tester( IsCyclotomicField );
 
 InstallTrueMethod( IsAbelianNumberField, IsCyclotomicField );
 
-InstallIsomorphismTrueMethod( IsCyclotomicField,
+InstallIsomorphismMaintainedMethod( IsCyclotomicField,
     IsField and IsCyclotomicField, IsField );
 
 
@@ -90,7 +86,7 @@ IsPrimeField := NewProperty( "IsPrimeField", IsDivisionRing );
 SetIsPrimeField := Setter( IsPrimeField );
 HasIsPrimeField := Tester( IsPrimeField );
 
-InstallIsomorphismTrueMethod( IsPrimeField,
+InstallIsomorphismMaintainedMethod( IsPrimeField,
     IsField and IsPrimeField, IsField );
 
 
@@ -106,6 +102,9 @@ InstallIsomorphismTrueMethod( IsPrimeField,
 Conductor := NewAttribute( "Conductor", IsAbelianNumberField );
 SetConductor := Setter( Conductor );
 HasConductor := Tester( Conductor );
+
+InstallIsomorphismMaintainedMethod( Conductor,
+    IsField and IsAbelianNumberField, IsField );
 
 
 #############################################################################
@@ -130,6 +129,9 @@ DegreeOverPrimeField := NewAttribute( "DegreeOverPrimeField",
     IsDivisionRing );
 SetDegreeOverPrimeField := Setter( DegreeOverPrimeField );
 HasDegreeOverPrimeField := Tester( DegreeOverPrimeField );
+
+InstallIsomorphismMaintainedMethod( DegreeOverPrimeField,
+    IsDivisionRing, IsDivisionRing );
 
 
 #############################################################################
@@ -175,6 +177,9 @@ HasGaloisGroup := Tester( GaloisGroup );
 GaloisStabilizer := NewAttribute( "GaloisStabilizer", IsAbelianNumberField );
 SetGaloisStabilizer := Setter( GaloisStabilizer );
 HasGaloisStabilizer := Tester( GaloisStabilizer );
+
+InstallIsomorphismMaintainedMethod( GaloisStabilizer,
+    IsField and IsAbelianNumberField, IsField );
 
 
 #############################################################################

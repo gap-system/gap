@@ -1112,224 +1112,6 @@ Obj SizeScreenHandler (
 
 /****************************************************************************
 **
-*F  FuncSWAP_MPTR( <self>, <obj1>, <obj2> ) . . . . . . . swap master pointer
-*/
-Obj FuncSWAP_MPTR (
-    Obj			self,
-    Obj			obj1,
-    Obj			obj2 )
-{
-    if ( TYPE_OBJ(obj1) == T_INT || TYPE_OBJ(obj1) == T_FFE ) {
-	ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
-	return 0;
-    }
-    if ( TYPE_OBJ(obj2) == T_INT || TYPE_OBJ(obj2) == T_FFE ) {
-	ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
-	return 0;
-    }
-	
-    SwapMasterPoint( obj1, obj2 );
-    return 0;
-}
-
-
-/****************************************************************************
-**
-
-*F  FuncGASMAN( <self>, <args> )  . . . . . . . . .  expert function 'GASMAN'
-**
-**  'FuncGASMAN' implements the internal function 'GASMAN'
-**
-**  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
-*/
-Obj             FuncGASMAN (
-    Obj                 self,
-    Obj                 args )
-{
-    Obj                 cmd;            /* argument                        */
-    UInt                i,  k;          /* loop variables                  */
-
-    /* check the argument                                                  */
-    while ( ! IS_LIST(args) || LEN_LIST(args) == 0 ) {
-        args = ErrorReturnObj(
-            "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\" )",
-            0L, 0L,
-            "you can return a list of arguments" );
-    }
-
-    /* loop over the arguments                                             */
-    for ( i = 1; i <= LEN_LIST(args); i++ ) {
-
-        /* evaluate and check the command                                  */
-        cmd = ELM_PLIST( args, i );
-    again:
-        while ( ! IsStringConv(cmd) ) {
-           cmd = ErrorReturnObj(
-               "GASMAN: <cmd> must be a string (not a %s)",
-               (Int)(InfoBags[TYPE_OBJ(cmd)].name), 0L,
-               "you can return a string for <cmd>" );
-       }
-
-        /* if request display the statistics                               */
-        if ( SyStrcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
-            Pr( "\t\t%30s  ", (Int)"type",  0L          );
-	    Pr( "%8d %8d  ",  (Int)"alive", (Int)"size" );
-	    Pr( "%8d %8d\n",  (Int)"total", (Int)"size" );
-            for ( k = 0; k < 256; k++ ) {
-                if ( InfoBags[k].name != 0 ) {
-                    Pr("%30s  ",   (Int)InfoBags[k].name, 0L );
-                    Pr("%8d %8d  ",(Int)InfoBags[k].nrLive,
-                                   (Int)InfoBags[k].sizeLive);
-                    Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
-                                   (Int)InfoBags[k].sizeAll);
-                }
-            }
-        }
-
-        /* if request display the statistics                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
-            for ( k = 0; k < 256; k++ ) {
-                InfoBags[k].nrAll   = InfoBags[k].nrLive;
-                InfoBags[k].sizeAll = InfoBags[k].sizeLive;
-            }
-        }
-
-        /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
-            CollectBags(0,1);
-        }
-
-        /* or collect the garbage                                          */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
-            CollectBags(0,0);
-        }
-
-        /* or finally toggle Gasman messages                               */
-        else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
-            SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
-        }
-
-        /* otherwise complain                                              */
-        else {
-            cmd = ErrorReturnObj(
-                "GASMAN: <cmd> must be %s or %s",
-                (Int)"\"display\" or \"clear\"",
-                (Int)"\"collect\" or \"message\" or \"partial\"",
-                "you can return a new string for <cmd>" );
-            goto again;
-        }
-    }
-
-    /* return nothing, this function is a procedure                        */
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncSHALLOW_SIZE( <self>, <obj> ) . . . .  expert function 'SHALLOW_SIZE'
-*/
-Obj             FuncSHALLOW_SIZE (
-    Obj                 self,
-    Obj                 obj )
-{
-    return INTOBJ_INT( SIZE_BAG( obj ) );
-}
-
-
-/****************************************************************************
-**
-*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
-*/
-Obj FuncTYPE_OBJ (
-    Obj			self,
-    Obj			obj )
-{
-    Obj			res;
-    Obj                 str;
-    Char *              cst;
-
-    res = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( res, 2 );
-
-    /* set the type                                                        */
-    SET_ELM_PLIST( res, 1, INTOBJ_INT( TYPE_OBJ(obj) ) );
-    cst = InfoBags[TYPE_OBJ(obj)].name;
-    str = NEW_STRING( SyStrlen(cst) );
-    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
-    SET_ELM_PLIST( res, 2, str );
-
-    /* and return                                                          */
-    return res;
-}
-
-
-/****************************************************************************
-**
-*F  FuncXTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
-*/
-Obj FuncXTYPE_OBJ (
-    Obj			self,
-    Obj			obj )
-{
-    Obj			res;
-    Obj                 str;
-    UInt                xtype;
-    Char *              cst;
-
-    res = NEW_PLIST( T_PLIST, 2 );
-    SET_LEN_PLIST( res, 2 );
-
-    /* set the type                                                        */
-    xtype = XType(obj);
-    SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
-    if ( xtype == T_OBJECT ) {
-	cst = "virtual object";
-    }
-    else if ( xtype == T_MAT_CYC ) {
-	cst = "virtual mat cyc";
-    }
-    else if ( xtype == T_MAT_FFE ) {
-	cst = "virtual mat ffe";
-    }
-    else {
-	cst = InfoBags[xtype].name;
-    }
-    str = NEW_STRING( SyStrlen(cst) );
-    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
-    SET_ELM_PLIST( res, 2, str );
-
-    /* and return                                                          */
-    return res;
-}
-
-
-/****************************************************************************
-**
-*F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
-*/
-Obj         FuncOBJ_HANLDE (
-    Obj                 self,
-    Obj                 obj )
-{
-    return (Obj)INT_INTOBJ(obj);
-}
-
-
-/****************************************************************************
-**
-*F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
-*/
-Obj             FuncHANLDE_OBJ (
-    Obj                 self,
-    Obj                 obj )
-{
-    return (Obj)INTOBJ_INT((Int)obj);
-}
-
-
-/****************************************************************************
-**
 
 *F  MAKE_INIT( <filename> )
 */
@@ -1506,6 +1288,281 @@ Obj             FuncMAKE_INIT (
       Revisions[RevisionsSize++] = revision; \
   } while (0)
 
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * debug functions  * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  FuncGASMAN( <self>, <args> )  . . . . . . . . .  expert function 'GASMAN'
+**
+**  'FuncGASMAN' implements the internal function 'GASMAN'
+**
+**  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
+*/
+Obj FuncGASMAN (
+    Obj                 self,
+    Obj                 args )
+{
+    Obj                 cmd;            /* argument                        */
+    UInt                i,  k;          /* loop variables                  */
+    Char                buf[128];       /* output buffer                   */
+
+    /* check the argument                                                  */
+    while ( ! IS_LIST(args) || LEN_LIST(args) == 0 ) {
+        args = ErrorReturnObj(
+            "usage: GASMAN( \"display\"|\"clear\"|\"collect\"|\"message\" )",
+            0L, 0L,
+            "you can return a list of arguments" );
+    }
+
+    /* loop over the arguments                                             */
+    for ( i = 1; i <= LEN_LIST(args); i++ ) {
+
+        /* evaluate and check the command                                  */
+        cmd = ELM_PLIST( args, i );
+again:
+        while ( ! IsStringConv(cmd) ) {
+           cmd = ErrorReturnObj(
+               "GASMAN: <cmd> must be a string (not a %s)",
+               (Int)(InfoBags[TYPE_OBJ(cmd)].name), 0L,
+               "you can return a string for <cmd>" );
+       }
+
+        /* if request display the statistics                               */
+        if ( SyStrcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
+            Pr( "%40s  ",    (Int)"type",   0L           );
+	    Pr( "%8s %8s  ", (Int)"#alive", (Int)"byte"  );
+	    Pr( "%8s %8s\n", (Int)"#total", (Int)"kbyte" );
+            for ( k = 0; k < 256; k++ ) {
+                if ( InfoBags[k].name != 0 ) {
+		    *buf = 0;
+		    SyStrncat( buf, InfoBags[k].name, 40 );
+                    Pr("%40s  ",   (Int)buf, 0L );
+                    Pr("%8d %8d  ",(Int)InfoBags[k].nrLive,
+                                   (Int)InfoBags[k].sizeLive);
+                    Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
+                                   ((Int)InfoBags[k].sizeAll)/1024);
+                }
+            }
+        }
+
+        /* if request display the statistics                               */
+        else if ( SyStrcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
+            for ( k = 0; k < 256; k++ ) {
+#ifdef GASMAN_CLEAR_RESET_TO_LIVE
+                InfoBags[k].nrAll   = InfoBags[k].nrLive;
+                InfoBags[k].sizeAll = InfoBags[k].sizeLive;
+#else
+                InfoBags[k].nrAll   = 0;
+                InfoBags[k].sizeAll = 0;
+#endif
+            }
+        }
+
+        /* or collect the garbage                                          */
+        else if ( SyStrcmp( CSTR_STRING(cmd), "collect" ) == 0 ) {
+            CollectBags(0,1);
+        }
+
+        /* or collect the garbage                                          */
+        else if ( SyStrcmp( CSTR_STRING(cmd), "partial" ) == 0 ) {
+            CollectBags(0,0);
+        }
+
+        /* or finally toggle Gasman messages                               */
+        else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
+            SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
+        }
+
+        /* otherwise complain                                              */
+        else {
+            cmd = ErrorReturnObj(
+                "GASMAN: <cmd> must be %s or %s",
+                (Int)"\"display\" or \"clear\"",
+                (Int)"\"collect\" or \"message\" or \"partial\"",
+                "you can return a new string for <cmd>" );
+            goto again;
+        }
+    }
+
+    /* return nothing, this function is a procedure                        */
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSHALLOW_SIZE( <self>, <obj> ) . . . .  expert function 'SHALLOW_SIZE'
+*/
+Obj FuncSHALLOW_SIZE (
+    Obj                 self,
+    Obj                 obj )
+{
+    return INTOBJ_INT( SIZE_BAG( obj ) );
+}
+
+
+/****************************************************************************
+**
+*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
+*/
+Obj FuncTYPE_OBJ (
+    Obj			self,
+    Obj			obj )
+{
+    Obj			res;
+    Obj                 str;
+    Char *              cst;
+
+    res = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( res, 2 );
+
+    /* set the type                                                        */
+    SET_ELM_PLIST( res, 1, INTOBJ_INT( TYPE_OBJ(obj) ) );
+    cst = InfoBags[TYPE_OBJ(obj)].name;
+    str = NEW_STRING( SyStrlen(cst) );
+    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    SET_ELM_PLIST( res, 2, str );
+
+    /* and return                                                          */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncXTYPE_OBJ( <self>, <obj> )  . . . . . . . expert function 'XTYPE_OBJ'
+*/
+Obj FuncXTYPE_OBJ (
+    Obj			self,
+    Obj			obj )
+{
+    Obj			res;
+    Obj                 str;
+    UInt                xtype;
+    Char *              cst;
+
+    res = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( res, 2 );
+
+    /* set the type                                                        */
+    xtype = XType(obj);
+    SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
+    if ( xtype == T_OBJECT ) {
+	cst = "virtual object";
+    }
+    else if ( xtype == T_MAT_CYC ) {
+	cst = "virtual mat cyc";
+    }
+    else if ( xtype == T_MAT_FFE ) {
+	cst = "virtual mat ffe";
+    }
+    else {
+	cst = InfoBags[xtype].name;
+    }
+    str = NEW_STRING( SyStrlen(cst) );
+    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    SET_ELM_PLIST( res, 2, str );
+
+    /* and return                                                          */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
+*/
+Obj FuncOBJ_HANLDE (
+    Obj                 self,
+    Obj                 obj )
+{
+    UInt		hand;
+    UInt                prod;
+    Obj                 rem;
+
+    if ( IS_INTOBJ(obj) ) {
+	return (Obj)INT_INTOBJ(obj);
+    }
+    else if ( TYPE_OBJ(obj) == T_INTPOS ) {
+	hand = 0;
+	prod = 1;
+	while ( EQ( obj, INTOBJ_INT(0) ) == 0 ) {
+	    rem  = RemInt( obj, INTOBJ_INT( 1 << 16 ) );
+	    obj  = QuoInt( obj, INTOBJ_INT( 1 << 16 ) );
+	    hand = hand + prod * INT_INTOBJ(rem);
+	    prod = prod * ( 1 << 16 );
+	}
+	return (Obj) hand;
+    }
+    else {
+	ErrorQuit( "<handle> must be a positive integer", 0L, 0L );
+	return 0;
+    }
+}
+
+
+/****************************************************************************
+**
+*F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
+*/
+Obj FuncHANLDE_OBJ (
+    Obj                 self,
+    Obj                 obj )
+{
+    Obj                 hnum;
+    Obj                 prod;
+    Obj                 tmp;
+    UInt		hand;
+
+    hand = (UInt) obj;
+    hnum = INTOBJ_INT(0);
+    prod = INTOBJ_INT(1);
+    while ( 0 < hand ) {
+	tmp  = PROD( prod, INTOBJ_INT( hand & 0xffff ) );
+	prod = PROD( prod, INTOBJ_INT( 1 << 16 ) );
+	hnum = SUM(  hnum, tmp );
+	hand = hand >> 16;
+    }
+    return hnum;
+}
+
+
+/****************************************************************************
+**
+*F  FuncSWAP_MPTR( <self>, <obj1>, <obj2> ) . . . . . . . swap master pointer
+**
+**  Never use this function unless you are debugging.
+*/
+Obj FuncSWAP_MPTR (
+    Obj			self,
+    Obj			obj1,
+    Obj			obj2 )
+{
+    if ( TYPE_OBJ(obj1) == T_INT || TYPE_OBJ(obj1) == T_FFE ) {
+	ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
+	return 0;
+    }
+    if ( TYPE_OBJ(obj2) == T_INT || TYPE_OBJ(obj2) == T_FFE ) {
+	ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
+	return 0;
+    }
+	
+    SwapMasterPoint( obj1, obj2 );
+    return 0;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * initialize package * * * * * * * * * * * * * * *
+*/
 
 /****************************************************************************
 **

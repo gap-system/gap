@@ -1750,7 +1750,7 @@ InstallMethod( \=,
 InstallMethod( \=,
     "method for identity mapping and ANF automorphism",
     IsIdentical,
-    [ IsMapping and IsIdentityMappingRep,
+    [ IsMapping and IsOne,
       IsFieldHomomorphism and IsANFAutomorphismRep ], 0,
     function ( id, aut )
     return     Source( id ) = Source( aut )
@@ -1761,7 +1761,7 @@ InstallMethod( \=,
     "method for ANF automorphism and identity mapping",
     IsIdentical,
     [ IsFieldHomomorphism and IsANFAutomorphismRep,
-      IsMapping and IsIdentityMappingRep ], 0,
+      IsMapping and IsOne ], 0,
     function ( aut, id )
     return     Source( id ) = Source( aut )
            and aut!.galois = 1;
@@ -1786,7 +1786,7 @@ InstallMethod( \<,
 InstallMethod( \<,
     "method for identity mapping and ANF automorphism",
     IsIdentical,
-    [ IsMapping and IsIdentityMappingRep,
+    [ IsMapping and IsOne,
       IsFieldHomomorphism and IsANFAutomorphismRep ], 0,
     function ( id, aut )
     return    Source( id ) < Source( aut )
@@ -1798,7 +1798,7 @@ InstallMethod( \<,
     "method for ANF automorphism and identity mapping",
     IsIdentical,
     [ IsFieldHomomorphism and IsANFAutomorphismRep,
-      IsMapping and IsIdentityMappingRep ], 0,
+      IsMapping and IsOne ], 0,
     function ( aut, id )
     return Source( aut ) < Source( id );
     end );

@@ -17,16 +17,6 @@ Revision.csetgrp_gd:=
 ##
 InfoCoset := NewInfoClass ("InfoCoset");
 
-
-#############################################################################
-##
-#A  CanonRepObj(<G>,<U>) . . . . . . . Canonical rerpresentative that is
-##  only guaranteed to stay canonical for objects in the same representation
-##  This is only to be used in algorithms, but not necessarily an end-user
-##  function.
-##
-CanonRepObj := NewAttribute("CanonRepObj",IsDomain);
-
 #############################################################################
 ##
 #F  AscendingChain(<G>,<U>) . . . . . . .  chain of subgroups G=G_1>...>G_n=U
@@ -93,7 +83,7 @@ RepresentativesContainedRightCosets := NewAttribute(
 #C  IsRightCoset
 ##
 IsRightCoset := NewCategory("IsRightCoset",
-    IsDomain and IsExtLSet);
+    IsDomain and IsExternalSet);
 
 #############################################################################
 ##

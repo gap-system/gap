@@ -397,8 +397,8 @@ RelativeBasisNC := NewOperation( "RelativeBasisNC",
 ##           above.
 ##           (There are two generic methods for this, namely for the cases
 ##           that either left module generators of <V> are known or that
-##           <V> is a (unital) FLMLOR with known (unital) left operator ring
-##           generators.)
+##           <V> is a FLMLOR(-with-one) with known left operator
+##           ring(-with-one) generators.)
 ##  3. 'C:= BasisOfDomain( W )'
 ##           computes a basis of the nice module 'W' (That this is possible
 ##           is a problem of 'W' and must of course be assumed!).

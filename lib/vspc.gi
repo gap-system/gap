@@ -90,8 +90,8 @@ InstallMethod( AsSubspace, IsIdentical, [ IsVectorSpace, IsVectorSpace ], 0,
                             GeneratorsOfLeftModule( W ),
                             Zero( W ) );
     SetParent( newW, V );
-    RunIsomorphismImplications( W, newW );
-    RunSubsetImplications( W, newW );
+    UseIsomorphismRelation( W, newW );
+    UseSubsetRelation( W, newW );
 
     return newW;
     end );
@@ -174,8 +174,8 @@ InstallMethod( AsLeftModule, true, [ IsDivisionRing, IsVectorSpace ], 0,
 
     fi;
 
-    RunIsomorphismImplications( V, W );
-    RunSubsetImplications( V, W );
+    UseIsomorphismRelation( V, W );
+    UseSubsetRelation( V, W );
     return W;
     end );
 
@@ -264,8 +264,8 @@ Intersection2Spaces := function( AsStructure, Substructure, Structure )
       fi;
 
       # Run implications by the subset relation.
-      RunSubsetImplications( V, inters );
-      RunSubsetImplications( W, inters );
+      UseSubsetRelation( V, inters );
+      UseSubsetRelation( W, inters );
 
       # Return the result.
       return inters;

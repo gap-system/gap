@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.19  1997/02/06 09:53:48  htheisse
+#H  moved a `Transitivity' method here
+#H
 #H  Revision 4.18  1997/01/29 15:54:30  mschoene
 #H  fixed a few more doubly defined locals
 #H
@@ -674,6 +677,16 @@ InstallMethod( TransitivityOp,
         return TransitivityOp( G, D{ [ 2 .. Length( D ) ] },
                        gens, gens, opr ) + 1;
     fi;
+end );
+
+InstallMethod( TransitivityOp,
+        "G, [  ], gens, perms, opr", true,
+        [ IsGroup, IsList and IsEmpty,
+          IsList,
+          IsList,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, gens, oprs, opr )
+    return 0;
 end );
 
 #############################################################################

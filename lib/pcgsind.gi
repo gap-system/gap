@@ -47,6 +47,7 @@ IsTailInducedPcgsRep := NewRepresentation(
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <empty-list> )
 ##
 InstallMethod( InducedPcgsByPcSequenceNC,
+    "pcgs, empty list",
     true,
     [ IsPcgs,
       IsList and IsEmpty ],
@@ -90,7 +91,8 @@ end );
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
 InstallMethod( InducedPcgsByPcSequenceNC,
-    true,
+    "pcgs, homogeneous list",
+    IsIdentical,
     [ IsPcgs,
       IsCollection and IsHomogeneousList ],
     0,
@@ -127,6 +129,12 @@ function( pcgs, pcs )
         filter := filter and IsParentPcgsFamilyPcgs;
     fi;
     filter := filter and IsInducedPcgs;
+    if HasIsPrimeOrdersPcgs(pcgs) and IsPrimeOrdersPcgs(pcgs)  then
+        filter := filter and HasIsPrimeOrdersPcgs and IsPrimeOrdersPcgs;
+    fi;
+    if HasIsFiniteOrdersPcgs(pcgs) and IsFiniteOrdersPcgs(pcgs)  then
+        filter := filter and HasIsFiniteOrdersPcgs and IsFiniteOrdersPcgs;
+    fi;
 
     # construct a pcgs from <pcs>
     igs := PcgsByPcSequenceCons(
@@ -175,17 +183,11 @@ function( pcgs, pcs )
         tmp := igs!.depthsInParent[i];
     od;
 
-    # we know the relative orders
-    if HasIsPrimeOrdersPcgs(pcs) and IsPrimeOrdersPcgs(pcs)  then
-        SetIsPrimeOrdersPcgs( pcgs, true );
-    fi;
-    if HasIsFiniteOrdersPcgs(pcs) and IsFiniteOrdersPcgs(pcs)  
-      and not HasIsFiniteOrdersPcgs(pcgs) then
-        SetIsFiniteOrdersPcgs( pcgs, true );
-    fi;
+    # if we know the relative orders use them
     if HasRelativeOrders(pcgs)  then
         tmp := RelativeOrders(pcgs);
-        SetRelativeOrders( igs, tmp{igs!.depthsInParent} );
+        tmp := tmp{igs!.depthsInParent};
+        SetRelativeOrders( igs, tmp );
     fi;
 
     # and return
@@ -196,11 +198,8 @@ end );
 
 #############################################################################
 ##
-#M  InducedPcgsByPcSequence( <pcgs>, <pcs> )
+#M  InducedPcgsByPcSequence( <pcgs>, <empty-list> )
 ##
-
-
-#############################################################################
 InstallMethod( InducedPcgsByPcSequence,
     true,
     [ IsPcgs,
@@ -214,11 +213,13 @@ end );
 
 
 #############################################################################
+##
+#M  InducedPcgsByPcSequence( <pcgs>, <pcs> )
+##
 InstallMethod( InducedPcgsByPcSequence,
     true,
     [ IsPcgs,
-      IsMultiplicativeElementWithInverseByPolycyclicCollectorCollection 
-        and IsHomogeneousList ],
+      IsCollection and IsHomogeneousList ],
     0,
 
 function( pcgs, pcs )
@@ -633,7 +634,8 @@ HOMOMORPHIC_IGS := function( arg )
                 g  := ReducedPcElement( pcgs, g, pag[dg] );
                 dg := DepthOfPcElement( pcgs, g );
             od;
-            if g <> id  then                pag[dg] := g;
+            if g <> id  then
+                pag[dg] := g;
             fi;
         od;
     else

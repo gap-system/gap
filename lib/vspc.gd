@@ -27,11 +27,11 @@ IsLeftOperatorRing :=     IsLeftOperatorAdditiveGroup
 
 #############################################################################
 ##
-#C  IsLeftOperatorUnitalRing
+#C  IsLeftOperatorRingWithOne
 ##
-IsLeftOperatorUnitalRing :=     IsLeftOperatorAdditiveGroup
-                            and IsUnitalRing
-                            and IsAssociativeLOpDProd;
+IsLeftOperatorRingWithOne :=     IsLeftOperatorAdditiveGroup
+                             and IsRingWithOne
+                             and IsAssociativeLOpDProd;
 #T really?
 
 
@@ -190,7 +190,7 @@ SubspaceNC := SubmoduleNC;
 ##  <V> and <W> or as $F$-<Struct>, in both cases with knwon basis.
 ##
 ##  This function is used to handle the intersections of two vector spaces,
-##  two algebras, two unital algebras, two left ideals, two right ideals,
+##  two algebras, two algebras-with-one, two left ideals, two right ideals,
 ##  two two-sided ideals.
 ##
 Intersection2Spaces := NewOperationArgs( "Intersection2Spaces" );

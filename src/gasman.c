@@ -1180,8 +1180,8 @@ UInt ResizeBag (
 jmp_buf RegsBags;
 
 #ifdef SPARC
-        asm("           .globl  _SparcStackFuncBags             ");
-        asm("   _SparcStackFuncBags:                            ");
+        asm("           .globl  SparcStackFuncBags              ");
+        asm("   SparcStackFuncBags:                             ");
         asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
         asm("           mov     %sp,%o0                         ");
         asm("           retl                                    ");

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.5  1997/02/06 09:52:58  htheisse
+#H  threw away some unused code
+#H
 #H  Revision 4.4  1997/01/13 16:59:34  htheisse
 #H  uses a quick for `IsSymmetricGroup'
 #H
@@ -44,7 +47,6 @@ PartitionBacktrack := NewOperationArgs( "PartitionBacktrack" );
 Refinements := NewOperationArgs( "Refinements" );
 NextLevelRegularGroups := NewOperationArgs( "NextLevelRegularGroups" );
 RBaseGroupsBloxPermGroup := NewOperationArgs( "RBaseGroupsBloxPermGroup" );
-InnerAutomorphisms := NewOperationArgs( "InnerAutomorphisms" );
 RepOpSetsPermGroup := NewOperationArgs( "RepOpSetsPermGroup" );
 RepOpElmTuplesPermGroup := NewOperationArgs( "RepOpElmTuplesPermGroup" );
 IsomorphismPermGroup := NewOperationArgs( "IsomorphismPermGroup" );
