@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Permutations and Permutation Groups}
 
-\def\labelto#1{\buildrel\lower0.8ex\hbox{$\scriptstyle #1$}\over\to}
+\def\labelto#1{\buildrel\lower0.8ex\hbox{$\scriptstyle #1$}\over\to}%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Permutations}
@@ -174,20 +174,50 @@ category test function is called `IsPermGroup'.
 
 \>DirectProduct( ... )!{for permutation groups}
 
-\>WreathProduct( <G>, <H> \[, <hom> \] )!{for permutation groups}
-\>WreathProductProductAction( <G>, <H> \[, <hom> \] )
+\>WreathProduct( <G>, <H> )!{for permutation groups}
+\>WreathProductProductAction( <G>, <H> )
 
-These functions take a permutation group~<G> on `[1..N]', a group~<H> and
-a homomorphism  $hom\colon  H\to S_n$ and  construct  the wreath  product
-$G\wr_{hom}H$ as a permutation group
+These functions  take  a permutation group~<G>  on $\Omega$,  a group~<H>
+acting on $\Delta$  (via  a homomorphism $\alpha\colon  <H>\to S_\Delta$)
+and   construct the wreath product   $<G>\wr_\alpha <H>$ as a permutation
+group
 \beginlist
-  \item{$\bullet$} acting on `[1..N\*n]' in the imprimitive action in the
-    case of `WreathProduct',
-  \item{$\bullet$} acting on `[1..N^n]' in the product action in the case
-    of `WreathProductProductAction'.
+  \item{$\bullet$} acting   on `[ 1 ..   $|\Omega\times\Delta|$ ]' in the
+    imprimitive action in the case of `WreathProduct',
+  \item{$\bullet$} acting on `[ 1  .. $|\Omega^\Delta|$ ]' in the product
+    action in the case of `WreathProductProductAction'.
 \endlist
-If $H\le S_n$  is a permutation group  and <hom> is  omitted, the natural
-operation $hom\colon H\hookrightarrow S_n$ is assumed.
+Both  arguments <G>  and <H>  may be  permutation groups or homomorphisms
+with permutation groups as range. If <G> is given as a group, $\Omega$ is
+set  to `MovedPoints(  <G> )',  but if <G>   is given as a homomorphisms,
+$\Omega$ is set to  `MovedPoints( Range( <G> )  )', whereas <G> will then
+be replaced by  `Image( <G> )'.  (This allows $\Omega$  to include points
+not moved  by <G>,  e.g.,  in  the case  of `OperationHomomorphism(  <G>,
+$\Omega$ )', whose `Range' is $S_\Omega$.) Similarly,  if <H> is given as
+a group, `$\alpha$ = IdentityMapping( <H> )', otherwise `$\alpha$ = <H>';
+and again `$\Delta$ =  MovedPoints( Range( $\alpha$  ) )' and <H> will be
+set to `Image( $\alpha$ )'.
+\beginexample
+    gap> s4 := Group((2,3,4,5),(2,3));;
+    gap> WreathProduct(s4,s4);
+    Group( [ (1,2,3,4), (1,2), (5,6,7,8), (5,6), ( 9,10,11,12), ( 9,10), 
+      (13,14,15,16), (13,14), ( 1, 5, 9,13)( 2, 6,10,14)( 3, 7,11,15)
+        ( 4, 8,12,16), ( 1, 5)( 2, 6)( 3, 7)( 4, 8) ], ... )  # on [1..16]
+|_
+    gap> w := WreathProduct( OperationHomomorphism( s4, [1..5] ), s4 );;
+    gap> Orbits( w, MovedPoints(w) );
+    [ [ 1, 6, 11, 16 ], 
+      [ 2, 3, 7, 4, 8, 12, 5, 9, 13, 17, 10, 14, 18, 15, 19, 20 ] ]
+|_
+    gap> WreathProduct( s4,
+    >        OperationHomomorphism( TrivialSubgroup(s4), [2..5] ) );
+    Group( [ (1,2,3,4), (1,2), (5,6,7,8), (5,6), ( 9,10,11,12), ( 9,10), 
+      (13,14,15,16), (13,14) ], ... )  # the base group |$S|sb4|sp4|$
+\endexample
+There is one exception to the `MovedPoints' rule: If the top group <H> is
+the  trivial group, e.g.,  constructed  as `SymmetricGroup( 1  )',  it is
+considered to be of degree~1, because otherwise  the wreath product would
+be trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Stabilizer chains}
@@ -300,15 +330,15 @@ version of the present chain, if it is not already reduced). Here are the
 available options:
 \beginitems
 `base' &
-        If  this is present, it  must be a  list of points, through which
-        the resulting  stabilizer  chain will run.   This means that  the
-        sequence of base points  will start off  with `base' if the chain
-        is not reduced;  if it  is  reduced, however,  points from `base'
+        If this is  present, it must be  a list of  points, through which
+        the resulting stabilizer   chain  will run. This  means  that the
+        sequence  of base points will start  off with `base' if the chain
+        is not  reduced; if it is  reduced,  however, points  from `base'
         that would lead to trivial basic orbits will be skipped. Repeated
-        occurrences of  points  in `base' are  ignored.  If  a stabilizer
+        occurrences  of  points in `base'  are  ignored.  If a stabilizer
         chain for <G> is already known a base change is performed instead
-        as described in~\cite{Butler82b}. If  `base' is the only option
-        you want  to pass to `StabChain',  you  can type `StabChain( <G>,
+        as described  in~\cite{Butler82b}. If `base'   is the only option
+        you want to  pass to `StabChain', you  can type  `StabChain( <G>,
         <list> )' instead of `StabChain( <G>, rec( base := <list> ) )'.
 
 `knownBase' &
@@ -349,7 +379,8 @@ available options:
         \cite{Seress97}. The  probability  that the  resulting  chain  is
         correct will be at least~$`random'/1000$.
 
-`size' (default `Size( <G> )' if this is present, i.e. `HasSize( <G> )')&
+`size' (default `Size( <G> )' if this is present, i.e., if `HasSize( <G>
+)')&
         If this is present, it is assumed to be the size of the group <G>
         This      information    can  be    used    to   prove    that  a
         non-deterministically constructed stabilizer chain is correct. In
@@ -389,147 +420,6 @@ However, this  is just what the preceding  function does to find a strong
 generating set.     \ (More interesting  strong   generating  sets can be
 produced   by `Pcgs'  for  solvable  permutation  groups,  see  "Pcgs!for
 solvable permutation groups" below.)
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Stabilizer chain records}
-
-If a  permutation group  has a   stabilizer chain, this   is stored  as a
-recursive structure. This  structure  is itself  a record~<S>  and it has
-(1)~components that provide information about  one level~$G^{(i)}$ of the
-stabilizer chain (which  we call  the  ``current stabilizer'')  and (2)~a
-component `stabilizer'  that  holds   another such  record,   namely  the
-stabilizer chain  of    the next stabilizer~$G^{(i+1)}$.  This  gives   a
-recursive  structure  where the  ``outermost''  record  representing  the
-``topmost'' stabilizer is bound to the group record component `stabChain'
-and   has the components explained below.    Note: Since the structure is
-recursive, *never print a stabilizer chain!* (Unless you want to exercise
-the scrolling capabilities of your terminal.)
-\beginitems
-`identity' &
-        the identity element of the current stabilizer.
-
-`labels' &
-        a list of permutations that serve as labels for the Schreier tree
-        of  the current stabilizer,  i.e., as elements for the factorized
-        inverse Schreier transversal.  The  first entry  is this list  is
-        always the  `identity',    for  reasons explained   below   under
-        `translabels'.  {\GAP}  tries  to  arrange   things so  that  the
-        `labels' components are  identical (i.e., the same {\GAP} object)
-        on every stabilizer of the chain;  this implies that the `labels'
-        of   one stabilizer  do  not  necessarily   all lie  in the  next
-        stabilizer (but see `genlabels' below).
-
-`genlabels' &
-        a list of integers that point to some  of the permutations in the
-        `labels' component. The    `labels' addressed in this   way taken
-        together form a generating set for the current stabilizer. If the
-        `genlabels' component is empty,  the rest of the stabilizer chain
-        represents  the trivial subgroup, and  can be ignored, e.g., when
-        calculating the size.
-
-`generators' &
-        a generating set for    the current stabilizer. Usually this   is
-        `labels\{ genlabels \}', but it can be a different set.
-
-`orbit' &
-        the vertices of  the Schreier tree,  which  form the basic  orbit
-        $b_iG^{(i)}$, ordered in such a way that the  base point $b_i$ is
-        first in the list.
-
-`translabels' &
-        the factorized inverse   transversal  that was found  during  the
-        orbit algorithm carried   out   with the inverses  of   `labels\{
-        genlabels \}', starting from the base point. The directed edge $i
-        \labelto g j  = ig^{-1}$ in the Schreier  tree is  represented by
-        `labels[ translabels[<j>] ]' = <g>  in the stabilizer chain (note
-        that <i> can be reconstructed as <jg> from this information). The
-        entries  in the `translabels'   component are thus  just integers
-        giving  the positions of the appropriate   labels in the `labels'
-        component. The base point itself (i.e.,  the root of the Schreier
-        tree) has the entry `1' in  `translabels'. This makes it possible
-        to assign `transversal\{ orbit \} := labels\{ translabels\{ orbit
-        \} \}' (see   "sublist!assignment" and  `transversal' below). The
-        `translabels'  component  pays off  handsomely  in the stabilizer
-        chain conjugation (see "ConjugateGroup!for permutation groups").
-
-`transversal' &
-        is another  representation of the factorized inverse transversal:
-        as a list   with `transversal[<j>] =  labels[ translabels[<j>] ]'
-        (the base point  itself has entry `()').  To look up  an entry in
-        this list is faster than to evaluate  the expression on the right
-        hand side,  and   since this operation   appears  most  often  in
-        permutation   group     code    (e.g.,    in      the    function
-        `InverseRepresentative' below), the speed-up is really worth this
-        extra record component.
-
-`stabilizer' &
-        If  the  current stabilizer is  not   yet the trivial  group, the
-        stabilizer chain continues with   the stabilizer of  the  current
-        base  point,  which is    again  represented as  a   record  with
-        components `labels',    `identity',    `genlabels', `generators',
-        `orbit',     `translabels',  `transversal'     (and      possibly
-        `stabilizer'). This record is bound to the `stabilizer' component
-        of the current stabilizer. The last member  of a stabilizer chain
-        is recognized  by the fact that  it has no `stabilizer' component
-        bound.
-\enditems
-It is possible that different stabilizer  chains share the same record as
-one of their iterated `stabilizer' components.  Note that the `stabChain'
-record and `stabilizer'  records further down   are not themselves  group
-records. Thus you cannot take such a record and  apply group functions to
-it. Instead, the following functions can be used to access these records.
-Let <S> denote a stabilizer chain.
-\beginitems
-\function IsFixedStabilizer( <S>, <pnt> ) &
-        returns `true'  if <pnt> is fixed by   all generators of  <S> and
-        `false' otherwise.
-
-\function EmptyStabChain( <labels>, <id> \[, <pnt> \] ) &
-        constructs  a   stabilizer  chain  for   the trivial   group with
-        `identity=<id>' and `labels=$\{id\}\cup  labels$'  (but of course
-        with `genlabels=[ ]' and `generators=[ ]'). If the optional third
-        argument <pnt>  is present, the only stabilizer   of the chain is
-        initialized with the  one-point basic orbit  `[ <pnt> ]' and with
-        `translabels' and `transversal' components.
-        
-\function InsertTrivialStabilizer( <S>, <pnt> ) &
-        `InsertTrivialStabilizer' initializes the current stabilizer with
-        <pnt> as `EmptyStabChain' did,   but assigns the original <S>  to
-        the new `<S>.stabilizer'  component, such that  a new  level with
-        trivial basic  orbit (but identical  `labels' and `ShallowCopy'ed
-        `genlabels' and   `generators', see "ShallowCopy")  is  inserted.
-        These functions are  recommended if <pnt> really  is fixed by the
-        generators of  <S>, because then new  generators can be added and
-        the  orbit  and transversal at  the same  time  extended with the
-        following function.
-
-\function AddGeneratorsExtendSchreierTree( <S>, <new> ) &
-        adds the elements  in <new> to the list  of generators of <S> and
-        at the  same time extends the  orbit and transversal. This is the
-        only legal way  to extend  a  Schreier tree (because  it involves
-        careful handling of the tree components).
-
-\function InverseRepresentative( <S>, <pnt> ) &
-        calculates the transversal element which  maps <pnt> back to  the
-        base point of  <S>. It just  runs back through the  Schreier tree
-        from <pnt> to the root and multiplies the labels along the way.
-
-\function SiftedPermutation( <S>, <g> ) &
-        sifts  the element  <g> as  follows: <g>  is replaced by  `<g> \*
-        InverseRepresentative(  <S>, <S>.orbit[1] ^   <g> )', then <S> is
-        replaced by `<S>.stabilizer' and  this process is repeated  until
-        <S> is trivial or `<S>.orbit[1] ^ <g>' is  not in the basic orbit
-        `<S>.orbit'.  The remainder <g>  is returned, it  is the identity
-        permutation if  and  only if the  original <g>  was in  the group
-        described by the original~<S>.
-
-\function GroupStabChain( \[ <G>, \] <S> ) &
-        constructs a permutation group with stabilizer chain <S>, i.e., a
-        group    with  generators `Generators( <S>  )'   to  which <S> is
-        assigned as component  `stabChain'. If the  optional argument <G>
-        is  given, the result  will be  a subgroup (in  the {\GAP} sense)
-        of~<G>.
-\enditems
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Set functions!for permutation groups}
@@ -578,10 +468,10 @@ base and stabilizer chain. The optional third argument must be a subgroup
 of <U> known in advance, which will speed up the computation when given.
 
 \danger The method which  is used to determine the  subgroup <U> is based
-on the concept of  an *R-base*, which generalizes the  concept of  a base
-(see  \cite{Leon91}). An  R-base    consists  of a  decreasing   sequence
-$(\Omega)  = \Pi_0 \ge \Pi_1 \ge  \ldots \ge \Pi_r$ of ordered partitions
-and a sequence $(a_1,\ldots,a_r)$ of points from  $\Omega$ such that, for
+on the concept  of an *R-base*, which generalizes  the concept  of a base
+(see  \cite{Leon91}).   An  R-base  consists  of a   decreasing  sequence
+$(\Omega) \ge \Pi_0 \ge \Pi_1 \ge \ldots \ge \Pi_r$ of ordered partitions
+and a sequence $(a_1,\ldots,a_r)$ of  points from $\Omega$ such that, for
 $i\ge 1$,
 \beginlist
   \item{(1)} $\Pi_i$ contains the singleton cell~$\{a_i\}$;
@@ -590,10 +480,10 @@ $i\ge 1$,
   \item{(3)} the points in singleton cells of $\Pi_r$ form a base of~<G>.
 \endlist
 
-It  then follows   that  $(a_1,\ldots,a_r)$ is a base   for  <U> (but not
-necessarily for <G>).  To enumerate all   elements of <U>,  the backtrack
-algorithm constructs, for  each possible base image $(b_1,\ldots,b_r)$, a
-decreasing sequence $(\Omega)  = \Sigma_0  \ge  \Sigma_1 \ge \ldots   \ge
+It  then  follows that  $(a_1,\ldots,a_r)$  is  a base  for  <U> (but not
+necessarily  for <G>).  To enumerate all  elements of  <U>, the backtrack
+algorithm constructs, for each possible  base image $(b_1,\ldots,b_r)$, a
+decreasing sequence  $(\Omega) \ge \Sigma_0  \ge  \Sigma_1 \ge \ldots \ge
 \Sigma_r$ of ordered partitions such that, for $i\ge 1$,
 \beginlist
   \item{(1')} $\Sigma_i$ contains the singleton cell~$\{b_i\}$;
@@ -613,52 +503,6 @@ to rules~(2)  and~(2') is known as  *refinement*. The partition backtrack
 method is efficient if strong refinements are known  that are tailored to
 the property  in question, which is  the case in  the applications of the
 algorithm, e.g., to centralizer and normalizer calculations.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Internal representation of ordered partitions}\null
-\atindex{ordered partitions!internal representation}{|indexit}%
-
-{\GAP} represents  an ordered partition as  a  record with  the following
-components.
-\beginitems
-`points' &
-        a list of all points contained in the partition, such that points
-        from the same cell are neighboured,
-
-`cellno' &
-        a list whose <i>th entry is the number of the cell which contains
-        the point <i>,
-
-`firsts' &
-        a list  such that  `points[firsts[<j>]]'  is  the first point  in
-        `points' which is in cell <j>,
-
-`lengths' &
-        a list of the cell lengths.
-\enditems
-With these components, the <m>th cell of a  partition <P> is expressed as
-`<P>.points{ [ <P>.firsts[<m>]  .. <P>.firsts[<m>] + <P>.lengths[<m>] - 1
-] }'.  The most important operations, however,  to  be performed upon <P>
-are the splitting of a cell and the reuniting of the two parts. Following
-the strategy of J.~Leon, this is done as follows:
-
-(1) The points which make up  the cell that is  to be split are sorted so
-that the ones that  remain inside occupy  positions `[ <P>.firsts[<m>] ..
-<last> ]' in the list `<P>.points'.
-
-(2)   The  points  at   positions   `[  <last>+1 ..   <P>.firsts[<m>]   +
-<P>.lengths[<m>]-1  ]'  form   the new   cell. This    new  cell requires
-additional  entries   in  `<P>.firsts'   (namely, `<last>+1')    and   in
-`<P>.lengths'.
-
-(3) The  entries  `<P>.cellno{      [ <last>+1 ..      <P>.firsts[<m>]  +
-P.lengths[<m>]-1 ] }' must be set to the number of the new cell.
-
-(4) The entry    `<P>.lengths[<m>]'  must   be  reduced  to   `<last>   -
-<P>.firsts[<m>] + 1'.
-
-Then reuniting the  two cells requires  only the reversal of steps~2 to~4
-above. The list `<P>.points' need not be rearranged.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Group functions!for permutation groups}
@@ -1112,11 +956,11 @@ up <pcgs> are stored as a side-effect of the pcgs calculation.
 
 Functions like `Pcgs' and `ExponentsOfPcElement' were originally designed
 for solvable groups given by  a power-commutator presentation rather than
-by a strong  generating set of  permutations. With the extension of these
-functions to solvable  permutation   groups,  {\GAP} allows you    to use
-certain functions  that   were written  for ag  groups  also for solvable
-permutation   groups.     Such  functions   are   described    in chapter
-"chapter Solvable Groups".
+by a strong generating  set of permutations.  With the extension of these
+functions  to  solvable  permutation groups, {\GAP}   allows  you to  use
+certain  functions that were written   for  ag groups  also for  solvable
+permutation  groups.  Such functions  are  described in chapter~"Solvable
+Groups".
 
 \>NormalPcSeries( <pcgs> )!{for solvable permutation groups}
 \>NormalPcFirst( <pcgs> )!{for solvable permutation groups}
@@ -1141,13 +985,18 @@ pc group <A> is constructed.
 \>NaturalHomomorphismByNormalSubgroup( <G>, <N> )%
   !{for solvable factor groups!of permutation groups}
 
-The construction  of a  pcgs of a  permutation  group by  repeated cyclic
-extension   applies  not only to   solvable permutation   groups but more
-generally to a solvable factor  group $G/N$ of  a permutation group  <G>.
+The  construction of  a pcgs of  a  permutation group  by repeated cyclic
+extension applies   not  only to  solvable permutation   groups  but more
+generally to a solvable  factor group $G/N$  of a permutation group  <G>,
+which may itself  be unsolvable. Is this case,  the  resulting pcgs looks
+very    much like a  modulo    pcgs  (see "Modulo polycyclic   generating
+systems"),   but  it   cannot  have   a    `NumeratorOfModuloPcgs' nor  a
+`DenominatorOfModuloPcgs'.
+
 The image of `NaturalHomomorphismByNormalSubgroup( <G>,  <N> )' will then
 be represented as a pc group, which is built  from the pcgs of $G/N$ just
-like in the  case of `IsomorphismPcGroup'. This  is  possible because the
-function `ExponentsOfPcElement' and  its relatives are also applicable to
+like  in the case of `IsomorphismPcGroup'.   This is possible because the
+function `ExponentsOfPcElement' and its relatives  are also applicable to
 a pcgs of such a factor group.
 
 In the description of the pcgs algorithm in "Group functions!for solvable
@@ -1283,7 +1132,7 @@ The  composition  of  <ghom>  with   an arbitrary homomorphism   <hom> is
 constructed  by copying the  stabilizer chain of  <ghom> and replacing in
 the `labelimages' components every element with its image under <hom>.
 
-%				 *  *  *
+%                                *  *  *
 \stars
 
 \>OperationHomomorphism( <P>, <list> )!{for constituents}
@@ -1321,7 +1170,7 @@ PreImagesRepresentative(   <chom>,   <h>    )'  in   the     notation  of
 "ConjugateGroup!for  permutation   groups";   the   latter  is  not     a
 homomorphism, so the kernel of <chom> is added to the resulting chain).
 
-%				 *  *  *
+%                                *  *  *
 \stars
 
 \>OperationHomomorphism( <P>, <blocks>, OnSets )!{for blocks}
@@ -1376,7 +1225,7 @@ every element of `<T>.generators'. Finally, when  <T> has reached the top
 level of the stabilizer  chain of <I>,  the modified <S> is a  stabilizer
 chain for the preimage.
 
-%				 *  *  *
+%                                *  *  *
 \stars
 
 \>NaturalHomomorphismByNormalSubgroup( <G>, <N> )%
@@ -1388,11 +1237,13 @@ permutation groups".
 
 In all other cases, ask Alexander.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
-% mode:             text
-% mode:             outline-minor
-% outline-regexp:   "\\\\Chapter\\|\\\\Section\\|\\\\stars"
-% fill-column:      73
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section\\|\\\\stars"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% fill-column:        73
 % End:
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

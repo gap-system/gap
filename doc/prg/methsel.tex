@@ -34,9 +34,9 @@ On the other hand, operations are more.
 Namely, an operation corresponds to a set of {\GAP} functions,
 called the *methods* of the operation.
 
-Each call of an operation causes that a suitable method is selected
+Each call of an operation causes a suitable method to be selected
 and then called.
-The decision what method to select is made according to the types
+The choice of what method to select is made according to the types
 of the arguments,
 the underlying mechanism is described in the following sections.
 
@@ -45,8 +45,8 @@ and `PrintObj' is the operation that is called for each argument of
 `Print'.
 
 Also all attributes and properties are operations.
-When an attribute is called then one of its methods is called
-also if the attribute value is already stored;
+Each attribute has a special method which is called
+if the attribute value is already stored;
 this method should of course simply return this value.
 
 As stated above, the setter of an attribute is called automatically
@@ -105,7 +105,7 @@ For unary operations such as attributes and properties,
 there is no such relation to postulate,
 <famp> is `ReturnTrue' for these operations,
 a function that does always return `true'.
-For binary operations, a usual value of <famp> is `IsIdentical',
+For binary operations, the usual value of <famp> is `IsIdentical',
 which means that both arguments must lie in the same family.
 
 If no method is applicable,
@@ -142,7 +142,7 @@ incommensurable methods.
 For example, take an operation with one method for permutation groups,
 another method for nilpotent groups,
 but no method for nilpotent permutation groups,
-and call this operation with a permutation group that knows to be
+and call this operation with a permutation group known to be
 nilpotent.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -196,7 +196,7 @@ because <attr> expects only one argument,
 and that <req> is not a list of requirements but the argument requirement
 itself.
 
-For example, the size of a permutation group can be computed very cheap
+For example, the size of a permutation group can be computed very cheaply
 if a stabilizer chain of the group is known.
 So it is reasonable to install an immediate method for `Size' with
 requirement `IsGroup and Tester( <stab> )',
@@ -216,7 +216,7 @@ Immediate methods are thought of as a possibility for objects to gain
 useful knowledge.
 They must not be used to force the storing of ``defining information''
 in an object.
-In other words, {\GAP} should work also if all immediate methods are
+In other words, {\GAP} should work even if all immediate methods are
 invalidated.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,7 +226,7 @@ It may happen that a property <prop> is implied by another filter <filt>,
 which is usually a meet of other properties,
 or the meet of some properties and some categories.
 Such a logical implication can be installed as an immediate method for
-<prop> that requires <filt> and that returns always `true'.
+<prop> that requires <filt> and that always returns `true'.
 It should be installed via
 
 \>InstallTrueMethod( <prop>, <filt> )

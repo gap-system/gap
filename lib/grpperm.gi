@@ -559,6 +559,7 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
     function ( G, U )
     local   N,          # normal closure of <U> in <G>, result
             chain,      # stabilizer chain for the result
+            rchain,     # restored version of <chain>, for `VerifySGS'
             options,    # options record for stabilizer chain construction
             gensG,      # generators of the group <G>
             genG,       # one generator of the group <G>
@@ -625,8 +626,14 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
     elif random = 1000  then
         missing := chain.missing;
         correct := chain.correct;
-        chain   := SCRRestoredRecord( chain );
-        result  := VerifySGS( chain, missing, correct );
+        rchain  := SCRRestoredRecord( chain );
+        result  := VerifySGS( rchain, missing, correct );
+        if not IsPerm(result) then 
+            repeat 
+                result := SCRStrongGenTest2(chain,[0,0,1,10/chain.diam,0,0]);
+            until result <> ();
+        fi;
+        chain := rchain;
     else
         k := First([0..14],x->(3/5)^x <= 1-random/1000);
         if IsBound(options.knownBase) then 

@@ -37,7 +37,7 @@ Note that binary streams are *not* yet implemented.
 Whereas it   is cheap to append  to  a stream, streams  do consume system
 resources, only a limited amount can be open at any time, therefore it is
 neccessary  to  close a stream   as soon as possible  using `CloseStream'
-described in section "CloseStream".  If  creating of a stream failed then
+described in section "CloseStream".  If  creation of a stream failed then
 `LastSystemError' (see "LastSystemError") can  be used to get information
 about the failure.  However,  if an error occurred  in one of the read or
 write functions `LastError' (see "LastError") should be used.
@@ -187,7 +187,7 @@ next `ReadByte' fails.
 
 \>Read( <input-text-stream> )!{for streams}
 
-reads the input-text-stream as input  until `end-of-stream' occurrs.  See
+reads the input-text-stream as  input  until `end-of-stream' occurs.  See
 "File Operations" for details.
 
 \>ReadAsFunction( <input-text-stream> )!{for streams}
@@ -227,7 +227,7 @@ reached the `end-of-stream'.
 returns  the   next line as   string  *including*  the  newline character
 `{'\\n'}' or `fail' if <input-stream> has reached `end-of-stream'.
 
-Note that *no* newline is added if the last line of is incomplete.
+Note that *no* newline is added if the last line is incomplete.
 
 \>ReadAll( <input-text-stream> )
 

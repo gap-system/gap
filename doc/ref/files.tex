@@ -190,7 +190,7 @@ not.
 
 \>Filename( <list-of-dirs>, <name> )
 
-If <list-of-dir>  is a list (possibly of  length 1) of directory objects,
+If <list-of-dirs> is a list (possibly  of length 1) of directory objects,
 then `Filename' will search the directories in order, and will return the
 filename for the file <name> in the first directory which contains a file
 <name> or `fail' if no directory contains a file <name>.
@@ -337,8 +337,8 @@ actually write or execute permissions for the directory.
 
 \>Read( <name-file> )
 
-reads the input from the  file with the  filename <name-file>, which must
-be a string.
+reads   the input from  the  file  with  the  filename <name-file>,  this
+filename must be given as a string.
 
 `Read' first opens the file <name-file>.  If the file  does not exist, or
 if GAP can not open it, e.g., because of access restrictions, an error is

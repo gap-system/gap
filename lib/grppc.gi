@@ -15,7 +15,6 @@ Revision.grppc_gi :=
 
 #############################################################################
 ##
-
 #M  CanonicalPcgsWrtFamilyPcgs( <grp> )
 ##
 InstallMethod( CanonicalPcgsWrtFamilyPcgs,
@@ -983,6 +982,139 @@ function( G, d, e, opr )
     return ClassesSolvableGroup( G, G, true, 4, [ d, e ] );
 end );
 
+#############################################################################
+##
+#M  CentralizerModulo(<H>,<N>,<elm>)   full preimage of C_(H/N)(elm.N)
+##
+InstallMethod(CentralizerModulo,"pcgs computable groups, for elm",
+  IsCollsCollsElms,[IsGroup and IsPcgsComputable, IsGroup and
+  IsPcgsComputable, IsMultiplicativeElementWithInverse],0,
+function(H,NT,elm)
+local G,	   # common parent
+      home,Hp,     # the home pcgs, induced pcgs
+      eas, step,   # elementary abelian series in <G> through <U>
+      ea2,	   # used for factor series
+      K,    L,     # members of <eas>
+      Kp,mK,Lp,mL, # induced and modulo pcgs's
+      KcapH,LcapH, # pcgs's of intersections with <H>
+      N,   cent,   # elementary abelian factor, for affine action
+      tra,         # transversal for candidates
+      team,        # team of candidates with same image under homomorphism
+      blist,pos,q, # these control grouping of <cls> into <team>s
+      p,           # prime dividing $|G|$
+      ord,         # order of a rational class modulo <modL>
+      new, power,  # auxiliary variables for determination of power tree
+      cl,  c,  i;  # loop variables
+
+    # Treat the trivial case.
+    if Index(H,NT)=1 or (HasAbelianFactorGroup(H,NT) and elm in H)
+     or elm in NT then
+      return H;
+    fi;
+
+    if elm in H then 
+      G:=H;
+    else
+      G:=ClosureGroup(H,elm);
+    fi;
+
+    # Calculate a (central) elementary abelian series.
+    if not IsPermGroup( G )  then
+        HomePcgs( G );
+    fi;
+
+    if IsPrimePowerInt( Size( G ) )  then
+        p := FactorsInt( Size( G ) )[ 1 ];
+        eas := PCentralSeries( G, p );
+        cent := ReturnTrue;
+    else
+        eas := ElementaryAbelianSeries( G );
+        cent := function( cl, N, L )
+            return ForAll( N, k -> ForAll
+              ( InducedPcgsWrtHomePcgs( cl.centralizer )
+                   { [ 1 .. Length( InducedPcgsWrtHomePcgs( cl.centralizer ) )
+                          - Length( InducedPcgsWrtHomePcgs( L ) ) ] },
+                   c -> Comm( k, c ) in L ) );
+        end;
+    fi;
+
+    # series to NT
+    ea2:=List(eas,i->ClosureGroup(NT,i));
+    eas:=[];
+    for i in ea2 do
+      if not i in eas then
+	Add(eas,i);
+      fi;
+    od;
+
+    home := HomePcgs( G );
+    H:=AsSubgroup(G,H);
+    Hp:=InducedPcgsWrtHomePcgs(H);
+
+    # Initialize the algorithm for the trivial group.
+    step := 1;
+    while IsSubset( eas[ step + 1 ], H )  do
+        step := step + 1;
+    od;
+    L  := eas[ step ];
+    Lp := InducedPcgsWrtHomePcgs( L );
+    if not IsIdentical( G, H )  then
+        LcapH := NormalIntersectionPcgs( home, Hp, Lp );
+    fi;
+
+    mL := ModuloPcgsByPcSequenceNC( home, Pcgs( H ), Lp );
+    cl := rec( representative := elm,
+		  centralizer := H );
+    tra := One( H );
+
+#    cls := List( candidates, c -> cl );
+#    tra := List( candidates, c -> One( H ) );
+    tra:=One(H);
+    
+    # Now go back through the factors by all groups in the elementary abelian
+    # series.
+    for step  in [ step + 1 .. Length( eas ) ]  do
+        K  := L;
+        Kp := Lp;
+        L  := eas[ step ];
+        Lp := InducedPcgsWrtHomePcgs( L );
+        N  := Kp mod Lp;
+        SetFilterObj( N, IsPcgs );
+	if not IsIdentical( G, H )  then
+	  KcapH   := LcapH;
+	  LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
+	  N!.capH := KcapH mod LcapH;
+        else
+	  N!.capH := N;
+        fi;
+    
+	cl.candidates := cl.representative;
+	if cent( cl, N, L )  then
+	    cl := CentralStepClEANS( G, H, N, cl )[1];
+	else
+	    cl := GeneralStepClEANS( G, H, N, cl )[1];
+	fi;
+	tra := tra * cl.operator;
+	
+    od;
+
+    cl:=ConjugateSubgroup( cl.centralizer, tra ^ -1 );
+    Assert(2,ForAll(GeneratorsOfGroup(cl),i->Comm(elm,i) in NT));
+    Assert(2,IsSubgroup(G,cl));
+    return cl;
+
+end);
+
+InstallMethod(CentralizerModulo,"group centralizer via generators",
+  IsFamFamFam,[IsGroup and IsPcgsComputable, IsGroup and
+  IsPcgsComputable, IsGroup],0,
+function(G,NT,U)
+local i;
+  for i in GeneratorsOfGroup(U) do
+    G:=CentralizerModulo(G,NT,i);
+  od;
+  return G;
+end);
 
 #############################################################################
 ##

@@ -51,14 +51,15 @@ local xset,fam,hom;
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
 				PermutationsFamily );
   hom := rec(  );
-  hom:=Objectify(NewType(fam,IsOperationHomomorphismAutomGroup ),hom);
+  hom:=Objectify(NewType(fam,
+                 IsOperationHomomorphismAutomGroup and IsSurjective ),hom);
   SetUnderlyingExternalSet( hom, xset );
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetIsInjective(hom,true);
   SetRange( hom, Image( hom ) );
-  Setter(OperationHomomorphismAttr)(xset,hom);
-  Setter(IsomorphismPermGroup)(aut,OperationHomomorphism(xset));
-  SetNiceMonomorphism(aut,OperationHomomorphism(xset));
+  Setter(SurjectiveOperationHomomorphismAttr)(xset,hom);
+  Setter(IsomorphismPermGroup)(aut,OperationHomomorphism(xset,"surjective"));
+  SetNiceMonomorphism(aut,OperationHomomorphism(xset,"surjective"));
   SetIsHandledByNiceMonomorphism(aut,true);
 end;
 

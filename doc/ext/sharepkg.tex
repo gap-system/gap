@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%W  sharepkg.tex              GAP documentation             Werner Nickel
+%%
+%H  @(#)$Id$
+%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Share Packages}
+
+A {\GAP} share package  is a part of the  {\GAP} distribution that is not
+automatically  available  when {\GAP}  is  started.   A  share package is
+activated by the function   RequirePackage().  Share packages reside   in
+subdirectories  of  the directory pkg which  itself  is one of the dozend
+subdirectories of a typical {\GAP} installation.
+
+A share package extends  the functionality of   {\GAP} as defined by  the
+{\GAP} kernel,  the   {\GAP}  library  and  the  various  data libraries.
+Typically, a share package includes one or more standalone programs which
+perfom tasks that either are not available in  {\GAP} or can be performed
+much faster by purpose written programs.  However, this is not always the
+case:  some share library packages   are entirely  written in the  {\GAP}
+language.
+
+The responsibility  of a share package remains   with the original author
+while the   responsibility of the rest of   {\GAP} lies  with  the {\GAP}
+developer team.  A share   package undergoes a formal refereeing  process
+before it becomes  part of the  {\GAP} distribution.  This process is  in
+many  ways similar to  the refereeing process  of a  paper submitted to a
+journal.  It assesses the quality and usefulness of the submitted package
+and makes sure that it can be started  and runs smoothly.  Share packages
+should be submitted  to the chaiman of  the {\GAP} council, Prof. Charles
+Wright.
+
+A share package is the way to make software written by (groups of) {\GAP}
+users available to the computational community.
+
+% share packages need not be available on all platforms, due to
+% incompatibilities between standalones and the OS.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The Structure of a Share Package}
+
+Every share  package  is in a  subdirectory  of  the directory  pkg which
+itself is a  subdirectory of a {\GAP}  root directory.  *The name of this
+directory is  the name of  the share  package.* It is  this name  that is
+passed  as  the only argument  to  RequirePackage() when  the  package is
+loaded.  The share package directory must contain a file called 'init.g'.
+This is only file of a share library package that is directly read by the
+function RequirePackage().  'init.g'  contains the necessary {\GAP}  code
+to setup all that the share package needs.
+
+To illustrate this, create  the following directories  in your home area:
+'pkg' and  'pkg/example'.  Inside the directory  'example'  create the
+file 'init.g' with the single line
+\begintt
+'Print( "reading the init file of share package example" )'
+\endtt
+The next bit is a bit tricky  because you have  to find out what the root
+directories of {\GAP}  on your  system are.   This  is done by   starting
+{\GAP}  and looking  at the  variable  'GAP_ROOT_PATHS'.  This a list  of
+directories which {\GAP}  searches upon   start  up for things like   the
+{\GAP} library.
+\begintt
+gap> GAP_ROOT_PATHS;
+[ "/gap/4.0/" ]
+gap> 
+\endtt
+Now start {\GAP} with the command 
+\beginitems
+gap -l \"./;/gap/4.0/\"
+\enditems
+The  string between the  pair  of double quotes    are the components  of
+'GAP_ROOT_PATHS' seperated by semicolons.  We have added at the beginning
+the string  './' denoting the  current directory.  This  adds the current
+directory to the list of {\GAP} root directories.   Now you can load your
+share package:
+\beginitems
+gap> RequirePackage("example");
+\#I  Reading init file of the share package example.
+\enditems
+This is a very rudimentary share package.  It does not do anything useful
+yet, but we have succeeded in loading it via 'RequirePackage()'.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Writing a Share Package}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Standalone Programs in a Share Package}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Relevant Functions}
+
+\>RequirePackage( <name> )
+
+checks if the share package with name <name> has been initialised earlier
+in  which   case  nothing  happens.   Otherwise    the share   package is
+initialised  by reading the file  'init.g'  from the corresponding  share
+package directory.
+
+\>ReadPkg( <name> )
+
+\>DeclarePackageDocumentation( <name> )
+\>ReadAsFile( <filename> )
+%LastSystemError()
+%DirectoriesPackageProgram()
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Writing Documentation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%E  Emacs . . . . . . . . . . . . . . . . . . . . . local emacs variables
+%%
+%%  Local Variables:
+%%  fill-column:    73
+%%  End:
+%%

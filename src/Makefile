@@ -80,6 +80,7 @@ unknown:
 	@echo "                            (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
 	@echo "'mips-sgi-irix-gcc2'        for SGI Mips under IRIX 5/6 with GNU cc 2"
 	@echo "'mips-sgi-irix-cc'          for SGI Mips under IRIX 5/6 with cc"
+	@echo "'power-ibm-aix-cc'	   for IBM RS/600 under AIX 4.2 with cc"
 	@echo "'sparc-sun-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
 	@echo "'sparc-sun-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
 	@echo ""
@@ -396,6 +397,51 @@ i386-next-nextstep-cc-prof:
 		ARCH="-arch i386"  \
 		ADIR="i386" EXTDIR="-prof" \
 		CDYNOPTIONS="-pg"
+
+
+#############################################################################
+##
+#F  power-ibm-aix-cc
+##
+##  IBM RS/6000 with AIX 4.2
+##  From: Jens Rosenboom <jens@exp-math.uni-essen.de>
+##  
+power-ibm-aix-cc:
+	(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d power-ibm-aix-cc; then \
+	      mkdir power-ibm-aix-cc; \
+	  fi; \
+	  cd ../bin/power-ibm-aix-cc; \
+	)
+	(cd ../bin/power-ibm-aix-cc; \
+	  $(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+	    CC="cc" \
+	    LFLAGS="$(LOPTS) -g -bmaxdata:0x80000000 -ldl" \
+	    CFLAGS="$(COPTS) -g -O2" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) \
+	      -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
+	      -DSYS_HAS_DL_LIBRARY \
+              -DSYS_HAS_READ_PROTO \
+	      -DSYS_HAS_SIGNAL_PROTO \
+	      -DSYS_HAS_IOCTL_PROTO \
+	      -DSYS_HAS_STRING_PROTO \
+	      -DSYS_HAS_MISC_PROTO \
+	      -DSYS_ARCH='\"power-ibm-aix-cc\"'" \
+	)
+	@(cd ../bin/power-ibm-aix-cc; \
+	  $(MAKE) -f ../../src/Makefile gac \
+	    SRC="../../src" \
+	    CC="cc" \
+            TARGET="power-ibm-aix-cc" \
+            COPTIONS="-g -O2" \
+	    CLINKER="cc -ldl" \
+            CDYNOPTIONS="-g -brtl -O2" \
+            CDYNLINKER="ld" \
+            CDYNLINKING="-brtl " \
+	)
 
 
 #############################################################################

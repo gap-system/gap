@@ -105,7 +105,7 @@ NicomorphismOfFFEMatrixGroup := function( grp )
         xset := ExternalSubset( grp, V, One( grp ) );
     fi;
     SetBase( xset, One( grp ) );
-    nice := OperationHomomorphism( xset );
+    nice := OperationHomomorphism( xset,"surjective" );
     SetIsInjective( nice, true );
     return nice;
 end;

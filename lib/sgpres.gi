@@ -167,8 +167,8 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     fi;
 
     # give some information
-    Info( InfoFpGroup, 2, "#I  ", "AugmentedCosetTableMtc called:" );
-    Info( InfoFpGroup, 2, "#I      defined deleted alive   maximal");
+    Info( InfoFpGroup, 2, "AugmentedCosetTableMtc called:" );
+    Info( InfoFpGroup, 2, "    defined deleted alive   maximal");
     nrdef := 1;
     nrmax := 1;
     nrdel := 0;
@@ -373,7 +373,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
 
                 # give some information
                 while nrinf <= nrdef+nrdel  do
-                    Info( InfoFpGroup, 2, "#I\t", nrdef, "\t", nrinf-nrdef,
+                    Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrinf-nrdef,
                         "\t", 2*nrdef-nrinf, "\t", nrmax );
                     nrinf := nrinf + 1000;
                 od;
@@ -384,7 +384,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
         firstDef := next[firstDef];
     od;
 
-    Info( InfoFpGroup, 2, "#I\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel,
+    Info( InfoFpGroup, 2, "\t", nrdef, "\t", nrdel, "\t", nrdef-nrdel,
         "\t", nrmax );
 
     # In case of type = -1 return just index and exponent of the given cyclic
@@ -392,7 +392,7 @@ AugmentedCosetTableMtc := function ( G, H, ttype, string )
     if ttype = -1 then
         index := nrdef - nrdel;
         SetIndexInWholeGroup( H, index );
-        Info( InfoFpGroup, 1, "#I  index = ", index, "  total = ", nrdef,
+        Info( InfoFpGroup, 1, "index = ", index, "  total = ", nrdef,
             "  max = ", nrmax );
         aug := rec( );
 aug.index := index;
@@ -416,7 +416,7 @@ aug.index := index;
     index := Length( table[1] );
     if not HasIndexInWholeGroup( H ) then
         SetIndexInWholeGroup( H, index );
-        Info( InfoFpGroup, 1, "#I  index = ", index, "  total = ", nrdef,
+        Info( InfoFpGroup, 1, "index = ", index, "  total = ", nrdef,
             "  max = ", nrmax );
     elif IndexInWholeGroup( H ) <> index then
         Error( "inconsistent values for the index of H in G" );
@@ -510,7 +510,7 @@ aug.index := index;
     # display a message
     if treelength > 0 then
         numgens := Length( defs );
-        Info( InfoFpGroup, 1, "#I  MTC defined ", numgens, " primary and ",
+        Info( InfoFpGroup, 1, "MTC defined ", numgens, " primary and ",
             treelength - numgens, " secondary subgroup generators" );
     fi;
 
@@ -913,13 +913,13 @@ AugmentedCosetTableRrs := function ( G, cosTable, type, string )
             od;
             aug.conversionList := convert;
         fi;
+        aug.subgroupGenerators := gens;
     fi;
-    aug.subgroupGenerators := gens;
 
     # display a message
     numgens := Length( defs );
-    Info( InfoFpGroup, 1, "#I  RRS defined ", numgens, " primary and ",
-        treelength - numgens, " secondary subgroup generators\n" );
+    Info( InfoFpGroup, 1, "RRS defined ", numgens, " primary and ",
+        treelength - numgens, " secondary subgroup generators" );
 
     # return the augmented coset table.
     return aug;
@@ -1275,7 +1275,7 @@ PresentationNormalClosureRrs := function ( arg )
     # get the coset table of N in G by constructing the coset table of the
     # trivial subgroup in K.
     cosTable := CosetTable( K, TrivialSubgroup( K ) );
-    Info( InfoFpGroup, 1, "#I  index is ", Length( cosTable[1] ), "\n" );
+    Info( InfoFpGroup, 1, "index is ", Length( cosTable[1] ) );
 
     # separate pairs of table columns which have been forced to be identical
     # by normal subgroup generators, but not by group relators.
@@ -1359,7 +1359,7 @@ PresentationSubgroupMtc := function ( arg )
     if printlevel >= 1 then  TzPrintStatus( T, true );  fi;
 
     # decode the subgroup generators tree.
-    Info( InfoFpGroup, 1, "#I  calling DecodeTree\n" );
+    Info( InfoFpGroup, 1, "calling DecodeTree" );
     T.printLevel := printlevel;
     DecodeTree( T );
     T.printLevel := 1;
@@ -1418,8 +1418,7 @@ PresentationSubgroupRrs := function ( arg )
     else
         # construct the coset table of H in G if it is not yet available.
         if not HasCosetTableInWholeGroup( H ) then
-            Info( InfoFpGroup, 1, "#I  index is ", IndexInWholeGroup( H ),
-                "\n" );
+            Info( InfoFpGroup, 1, "index is ", IndexInWholeGroup( H ) );
         fi;
         table := CosetTableInWholeGroup( H );
     fi;
@@ -1522,7 +1521,7 @@ RelatorMatrixAbelianizedNormalClosureRrs := function ( G, H )
     # get the coset table of N in G by constructing the coset table of the
     # trivial subgroup in K.
     cosTable := CosetTable( K, TrivialSubgroup( K ) );
-    Info( InfoFpGroup, 1, "#I  index is ", Length( cosTable[1] ), "\n" );
+    Info( InfoFpGroup, 1, "index is ", Length( cosTable[1] ) );
 
     # separate pairs of table columns which have been forced to be identical
     # by normal subgroup generators, but not by group relators.
@@ -1625,8 +1624,7 @@ RelatorMatrixAbelianizedSubgroupRrs := function ( G, H )
     else
         # construct the coset table of H in G if it is not yet available.
         if not HasCosetTableInWholeGroup( H ) then
-            Info( InfoFpGroup, 1, "#I  index is ", IndexInWholeGroup( H ),
-                "\n" );
+            Info( InfoFpGroup, 1, "index is ", IndexInWholeGroup( H ) );
         fi;
         table := CosetTableInWholeGroup( H );
     fi;
@@ -1757,9 +1755,9 @@ RewriteAbelianizedSubgroupRelators := function ( aug )
     numrels := 0;
 
     # display some information.
-    Info( InfoFpGroup, 2, "#I  index is ", index, "\n" );
-    Info( InfoFpGroup, 2, "#I  number of generators is ", numgens, "\n" );
-    Info( InfoFpGroup, 2, "#I  tree length is ", treelength, "\n" );
+    Info( InfoFpGroup, 2, "index is ", index );
+    Info( InfoFpGroup, 2, "number of generators is ", numgens );
+    Info( InfoFpGroup, 2, "tree length is ", treelength );
 
     # initialize the structure that is passed to 'ApplyRel2'
     app2 := ListWithIdenticalEntries( 9, 0 );

@@ -168,7 +168,7 @@ and the following works already.
 \endtt
 
 Of course we must install some methods for arithmetic and other
-operations if the elements shall behave as we want.
+operations if the elements are to behave as we want.
 We start with a method that allows to print elements nicely.
 
 \begintt
@@ -448,7 +448,7 @@ But we can do this more elegantly via installing a *logical implication*.
 
 In effect, every domain that consists of elements in `IsZmodnZObj'
 will automatically store that it is finite,
-also if `IsFinite' is not called for it.
+even if `IsFinite' is not called for it.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -472,14 +472,14 @@ representation of elements in finite prime fields.
 
 Note that this is only one step towards the desired compatibility.
 Namely, after having a second representation of elements in finite
-prime fields, we may want that the function `GF' (which is the usual
+prime fields, we may wish that the function `GF' (which is the usual
 function to create finite fields in {\GAP}) is able to return
 `ZmodnZ( <p> )' when `GF( <p> )' is called for a large prime <p>.
 Moreover, then we have to decide about a default representation of
 elements in `GF( <p> )' for primes <p> where both representations are
 available.
 Of course we can force the new representation by explicitly calling
-`ZmodnZ' and `ZmodnZObj' whenever we want, but it is not a priory
+`ZmodnZ' and `ZmodnZObj' whenever we want, but it is not a priori
 clear in which situation which representation is preferable.
 
 The same questions will occur when we want to implement a new

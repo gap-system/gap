@@ -2063,9 +2063,14 @@ void InitSystem (
 
     /* print a usage message                                               */
  usage:
-    fputs("usage: gap [-l <libname>] [-h <hlpname>] [-m <memory>]\n",stderr);
-    fputs("           [-g] [-n] [-q] [-b] [-x <nr>]  [-y <nr>]\n",stderr);
-    fputs("           <file>...\n",stderr);
+    fputs("usage: gap [-b] [-e] [-f] [-g] [-n] [-p] [-q] [-r]\n",stderr);
+    fputs("           [-D] [-E] [-M] [-N]\n", stderr );
+    fputs("           [-a <memory>] [-c <cache size>] [-i <init>]\n",stderr);
+    fputs("           [-l <root1>;...] [-m <memory>] [-o <memory>]\n",stderr );
+    fputs("           [-x <lines>] [-y <cols>] [-z <frequency>]\n",stderr);
+    fputs("           [-B <execs>] [-Z <frequency>]\n",stderr );
+    fputs("           [-C <output> <input> <name> <magic1>]\n",stderr);
+    fputs("           [<file>...]\n",stderr);
     fputs("  run the Groups, Algorithms and Programming system.\n",stderr);
     SyExit( 1 );
 }

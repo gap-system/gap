@@ -47,18 +47,18 @@ subgroup.
     false
     true
 \endexample
-Once information about a group like `a8' has  been computed, it is stored
+Once information about a group like `a8'  has been computed, it is stored
 in the group so that it can simply be looked up  if it is required again.
 This holds for all pieces of information  in the previous example. Had we
-computed `a8'  as `CommutatorSubgroup( s8, s8  )',  however, it would not
+computed  `a8' as `CommutatorSubgroup(  s8, s8 )',  however, it would not
 have been stored, because it would then  have been computed as a function
-of *two* arguments, and hence one could not attribute it to just of them.
-(Of course  the function `CommutatorSubgroup'  can compute the commutator
-subgroup of *two* arbitrary subgroups.)  The situation is a bit different
-for Sylow <p>-subgroups:  The function `SylowSubgroup' also  requires two
-arguments, namely  a group and  a prime <p>, but the  result is stored in
-the  group  --- namely  together with  the   prime <p> in a  list  called
-`ComputedSylowSubgroups', but we won't dwell on the details here.
+of *two* arguments, and hence one could  not attribute it  to just one of
+them. (Of  course   the function  `CommutatorSubgroup'  can  compute  the
+commutator subgroup of *two* arbitrary subgroups.) The situation is a bit
+different for Sylow  <p>-subgroups:  The  function  `SylowSubgroup'  also
+requires two arguments, namely a group and a prime <p>, but the result is
+stored in the  group --- namely together  with  the prime  <p> in a  list
+called `ComputedSylowSubgroups', but we won't dwell on the details here.
 \beginexample
     gap> syl2 := SylowSubgroup( a8, 2 );; Size( syl2 );
     64
@@ -420,7 +420,7 @@ without  any knowledge about the  cosets  they represent. In other words,
 ``canonical representative'' associated with `elm' is `elm' itself, which
 is not among the elements of the list.
 
-The  image  of the natural  homomorphism   is the permutation  group that
+The image of  the natural homomorphism  is the permutation group `f' that
 results from the operation of `norm' on the right  transversal. It can be
 calculcated by either of the following commands. The second of them shows
 that the external set `t' contains all information  that is necessary for
@@ -828,15 +828,15 @@ case it is of course merely a `GroupGeneralMappingByImages'.
     gap> rev := GroupGeneralMappingByImages( s3, s4,
     >           [(1,2),(2,3)], GeneratorsOfGroup(s4) );;
 \endexample
-Now   we    have $a\buildrel   hom\over\longmapsto    b   \iff b\buildrel
-rev\over\longmapsto a$ for $a\in `s4'$ and $b\in  `s3'$. Since every such
-$b$ has 4~preimages under `hom', it now  has 4~images under $a$. And like
-the 4~preimages form  a coset of the kernel  $V_4\le `s4'$ of `hom', they
-now form a  coset of the *cokernel*  $V_4\le `s4'$ of `rev'. The cokernel
-itself is the set of all images of `One(  s3 )' (it  is a normal subgroup
-in the group of all images under `rev'). And this is  why {\GAP} wants to
-perform  such a  reversal   of arrows:  it  calculcates the  kernel  of a
-homomorphism like  `hom' as the   cokernel of the reversed group  general
+Now we      have  $a\buildrel  hom\over\longmapsto  b    \iff  b\buildrel
+rev\over\longmapsto a$ for $a\in `s4'$ and  $b\in `s3'$. Since every such
+$b$ has 4~preimages  under `hom', it now  has 4~images under $a$. Just as
+the 4~preimages form a  coset of the kernel $V_4\le  `s4'$ of `hom', they
+also form a coset of the *cokernel*  $V_4\le `s4'$ of `rev'. The cokernel
+itself is the set of all images of  `One( s3 )' (it  is a normal subgroup
+in the group of all images under `rev'). And  this is why {\GAP} wants to
+perform such  a  reversal of  arrows:  it calculcates   the  kernel of  a
+homomorphism like `hom'  as the  cokernel of  the  reversed group general
 mapping (here `rev').
 \beginexample
     gap> CoKernel( rev );
@@ -869,7 +869,7 @@ inverse general mapping (with arrows reversed) is a homomorphism.
 \endexample
 
 {\bf  Summary.}   In this section   we  have constructed homomorphisms by
-specifying images for a set of generators. We have seen that by reverting
+specifying images for a set of generators. We have seen that by reversing
 the direction of  the mapping, we get  group general mappings, which need
 not be single-valued (unless the mapping was injective) nor total (unless
 the mapping was surjective).
@@ -877,30 +877,30 @@ the mapping was surjective).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Nice monomorphisms}
 
-In this section we  will construct a  matrix group  of degree~2  over the
-Gaussian  rationals.    Because  the group of   all   invertible $2\times
-2$-matrices over this field  is infinite, {\GAP} cannot  be sure from the
-beginning that our group is finite, even though *we* know  that it is the
+In this  section we will construct  a matrix group   of degree~2 over the
+Gaussian  rationals. Because    the  group of   all  invertible  $2\times
+2$-matrices over this  field is infinite, {\GAP}  cannot be sure from the
+beginning that our group is finite, even though *we*  know that it is the
 quaternion group of order~8, hence finite. To investigate it, we will try
 to construct a monomorphism of the matrix group into a permutation group,
-which is much nicer to  work with. The image  of this *nice monomorphism*
-is then isomorphic to  our matrix group,  and we can perform calculations
-in the nice group and lift the results back to  the matrix group with the
-nice monomorphism.
+which is much nicer to  work with. The  image of this *nice monomorphism*
+is then  isomorphic to our matrix group,  and we can perform calculations
+in the nice group and lift the results back  to the matrix group with the
+nice monomorphism. (The  imaginary root of $-1$  is obtained as `E(4)', a
+4th root of unity.)
 \beginexample
     gap> i := E(4);; grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
     gap> SetName( grp, "Q8" );
-    gap> orb := Union( Orbits( grp, One( grp ) ) );
+    gap> orb := Union( Orbits( grp, [ [1,0], [0,1] ] ) );
     [ [ 1, 0 ], [ E(4), 0 ], [ 0, 1 ], [ -1, 0 ], [ 0, E(4) ],
         [ 0, -E(4) ], [ -E(4), 0 ], [ 0, -1 ] ]
 \endexample
-The list `orb' is the union of orbits under `grp'  which contains a basis
-for the two-dimensional row  vector  space over  the rationals (we  which
-conveniently   obtain   as `One(  grp   )',  i.e.,  the identity matrix).
-Therefore the action on `orb' is faithful on 8~points, and hence `grp' is
-finite. We have made use here of the  possibility to call `Orbits' with a
-list that is not closed  under the operation: it will  be replaced by the
-closure on  which the orbits  are then determined  (in our case, there is
+The list `orb' is the union of orbits  under `grp' which contains a basis
+for  the two-dimensional row vector  space  over the rationals. Therefore
+the action on `orb' is  faithful on 8~points, and  hence `grp' is finite.
+We  have made use here  of the possibility to  call  `Orbits' with a list
+that is  not closed  under  the operation:  it  will be  replaced by  the
+closure  on which the  orbits are then determined  (in our case, there is
 only one orbit).
 \beginexample
     gap> hom := OperationHomomorphism( grp, orb );; IsInjective( hom );
@@ -926,12 +926,12 @@ classes!for groups" in the reference manual).
     [ 1, 1, 2, 2, 2 ]
 \endexample
 All the steps we have made above are automatically performed by {\GAP} if
-you  simply   ask for `ConjugacyClasses(  grp  )',   provided that {\GAP}
-already knows that  `grp' is finite,  e.g., because you asked  `IsFinite(
-grp )'  before. The reason  for this is that a   finite matrix group like
-`grp' is ``handled by a nice monomorphism'',  like `hom' is one. For such
-groups,  {\GAP} uses  the command   `NiceMonomorphism'   to construct   a
-monomorphism like `hom' and then proceeds as we have done above.
+you  simply ask for `ConjugacyClasses(   grp   )', provided that   {\GAP}
+already knows  that `grp' is finite, e.g.,  because  you asked `IsFinite(
+grp  )' before. The reason  for this is that  a  finite matrix group like
+`grp' is ``handled by a nice monomorphism''. For such groups, {\GAP} uses
+the command `NiceMonomorphism' to construct a monomorphism like `hom' and
+then proceeds as we have done above.
 \beginexample
     gap> grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
     gap> IsHandledByNiceMonomorphism( grp );
@@ -953,10 +953,9 @@ monomorphism like `hom' and then proceeds as we have done above.
     true
 \endexample
 
-\exercise (To be done after you know about  methods and method selection,
-see  Chapter~"chapter Attributes and their   Methods".) Study the  {\GAP}
-library to find  out how the  finiteness of  `grp' was determined  in the
-above example.
+\exercise (To be done after you know  about methods and method selection,
+see Chapter~"Attributes and their Methods".)  Study the {\GAP} library to
+find out how the finiteness of `grp' was determined in the above example.
 
 \answer `IsFinite' delegates to  `Size' which delegates  to `Enumerator'.
 This  operation finally constructs    a list of  all  group   elements by

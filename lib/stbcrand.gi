@@ -293,137 +293,6 @@ end;
 
 #############################################################################
 ##
-#F  SiftAsWord()  . . . . . . . . . . . . shift a permutation written as word
-##
-##  given a list of permutations perm, the routine computes the residue
-##  at the sifting of perm through the SGS of G
-##  the output is a list of length 2: the first component is the siftee,
-##  as a word, the second component is 0 if perm in G, and i if the siftee
-##  on the i^th level could not be computed.
-##
-SiftAsWord := function(G,perm)
-    local   i,          # loop variable
-            y,          # element of permutation domain
-            word,       # the list collecting the siftee of perm
-            len,        # length of word
-            coset,      # word representing a coset in a stabilizer
-            index,      # the level where the siftee cannot be computed
-            stb;        #the stabilizer group we currently work with
-
-    # perm must be a list of permutations itself!
-    stb := G;
-    word := perm;
-    index := 0;
-    while IsBound(stb.stabilizer) do 
-       index:=index+1;
-       y:=ImageInWord(stb.orbit[1],word);
-       if IsBound(stb.transversal[y]) then 
-          coset :=  CosetRepAsWord(stb.orbit[1],y,stb.transversal);
-          len := Length(word); 
-          for i in [1..Length(coset)] do
-              word[len+i] := coset[i];
-          od; 
-          stb:=stb.stabilizer;
-       else 
-          return([word,index]);
-       fi;
-    od;
-
-    index := 0;
-    return [word,index];
-end;
-
-
-#############################################################################
-##
-#F  CosetRepAsWord()  . . . . . . . . .  write a coset representative as word
-##
-##  returns the cosetrep carrying y to the base point x as a word in the
-##  generators. If y is not in the orbit of x, returns []
-##
-CosetRepAsWord := function(x,y,transversal)
-    local   word,       # list of permutations
-            point;      # element of permutation domain
-
-    word := [];
-    if IsBound(transversal[y])  then
-        point := y;
-        repeat
-            word[Length(word)+1] := transversal[point];
-            point := point^transversal[point];
-        until point = x;
-    fi;
-    return word;
-end;
-
-
-#############################################################################
-##
-#F  ImageInWord() . . .  image of a point under a permutation written as word
-##
-##  computes the image of x when the list of permutations word is applied
-##
-ImageInWord := function(x,word)
-    local   i,          # loop variable
-            value;      # element of permutation domain
-
-    value := x;
-    for i in [1..Length(word)] do
-        value := value^word[i];
-    od;
-    return value;
-end;
-
-
-#############################################################################
-##
-#F  InverseAsWord() . . . . . . . . . .  invert a permutation written as word
-##
-##  given a list of permutations "list", the inverses of these permutations
-##  in inverselist, and a list of permutations "word" with elements from
-##  list, returns the inverse of word as a list of inverses from inverselist
-##
-InverseAsWord := function(word,list,inverselist)
-    local   i,          # loop variable
-            inverse;    # the inverse of word
-
-    inverse := [];
-    for i in [1..Length(word)] do
-        inverse[i] := inverselist[Position(list,word[Length(word)+1-i])];
-    od;
-    return inverse;
-end;
-
-
-#############################################################################
-##
-#F  RandomElmAsWord() . . . . . . . . . . . .  random element written as word
-##
-##  given an SGS for G, returns a uniformly distributed random element of G
-##  as a word in the strong generators
-##
-RandomElmAsWord := function(stb)
-    local  word,    # the random element
-           orbit,   # basic orbit of <stb>
-           v, p;    # (index of) random element of orbit
-
-    word:=[];
-    while IsBound(stb.stabilizer) do
-       orbit := stb.orbit;
-       v := Random([1..Length(orbit)]);
-       p := orbit[ v ];
-       while p <> orbit[ 1 ]  do
-           Add( word, stb.transversal[ p ] );
-           p := p ^   stb.transversal[ p ];
-       od;
-       stb:=stb.stabilizer;
-    od;
-    return  word;
-
-end;
-
-#############################################################################
-##
 
 #F  SCRMakeStabStrong( ... )  . . . . . . . . . . . . . . . . . . . . . local
 ##
@@ -1496,11 +1365,15 @@ VerifySGS := function(S,missing,correct)
                 longer := Concatenation(temp.generators, [gen]);
                 orbit := OrbitPerms( longer, temp.orbit[ 1 ] );
                 blks := Blocks( GroupByGenerators( longer ), orbit, set );
-                pos := Position( blks, set );
-                extension := ExtensionOnBlocks( temp, n, blks, [gen] );
-                temp2 := extension[1];
-                newgen := extension[2][1]; 
-                InsertTrivialStabilizer(temp2, n + pos); 
+                if Length(blks) * Length(set) <> Length(orbit) then
+                    result := "false0";
+                else
+                    pos := Position( blks, set );
+                    extension := ExtensionOnBlocks( temp, n, blks, [gen] );
+                    temp2 := extension[1];
+                    newgen := extension[2][1]; 
+                    InsertTrivialStabilizer(temp2, n + pos); 
+                fi;
             fi; 
  
             # first generator in first group can be verified easily

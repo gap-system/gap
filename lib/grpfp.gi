@@ -1166,7 +1166,7 @@ LowIndexSubgroupsFpGroup := function ( arg )
             i, j;       # loop variables
 
     # give some information
-    Info( InfoFpGroup, 1, "#I  LowIndexSubgroupsFpGroup called" );
+    Info( InfoFpGroup, 1, "LowIndexSubgroupsFpGroup called" );
 
     # check the arguments
     G := arg[1];
@@ -1528,7 +1528,7 @@ LowIndexSubgroupsFpGroup := function ( arg )
                 else
 
                     # give some information
-                    Info( InfoFpGroup, 2,  "#I   class ", Length(subs)+1,
+                    Info( InfoFpGroup, 2,  " class ", Length(subs)+1,
                                   " of index ", nrcos,
                                   " and length ", nrcos / nrfix );
 
@@ -1687,7 +1687,7 @@ if HasSize( G ) then SetSize( sub, Size( G ) / indexInWholeGroup ); fi;
     od;
 
     # give some final information
-    Info( InfoFpGroup, 1, "#I  LowIndexSubgroupsFpGroup returns ",
+    Info( InfoFpGroup, 1, "LowIndexSubgroupsFpGroup returns ",
                  Length(subs), " classes" );
 
     # return the subgroups

@@ -405,8 +405,8 @@ NonInnerGroups := function( e, B, size )
 
     # construct wreath prods
     S := SymmetricGroup( e );
-    H := WreathProduct( P, S, IdentityMapping(S), [1..e] );
-    G := WreathProduct( F, S, IdentityMapping(S), [1..e] );
+    H := WreathProduct( P, S );
+    G := WreathProduct( F, S );
 
     # compute epimorphism
     gensH := GeneratorsOfGroup( H );

@@ -2762,15 +2762,13 @@ Obj FuncAddAbelianRelator (
 
     /* check the arguments                                                 */
     if ( ! IS_PLIST(rels) ) {
-        ErrorQuit(
-            "<rels> must be a plain list (not a %s)",
+        ErrorQuit( "<rels> must be a plain list (not a %s)",
             (Int)(InfoBags[TNUM_OBJ(rels)].name), 0L );
         return 0;
     }
     ptRels = &(ELM_PLIST(rels,1)) - 1;
-    if ( ! TNUM_OBJ(number) != T_INT ) {
-        ErrorQuit(
-            "<rels> must be a small integer (not a %s)",
+    if ( TNUM_OBJ(number) != T_INT ) {
+        ErrorQuit( "<number> must be a small integer (not a %s)",
             (Int)(InfoBags[TNUM_OBJ(number)].name), 0L );
         return 0;
     }

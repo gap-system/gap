@@ -75,18 +75,21 @@
 %   the one found in App. E.
 \def\onepageout#1{{\setbox255=\vbox{#1}
   \hsize=\pagewidth \vsize=\pageheight \plainoutput}}
-     
-\output{\onepageout{\unvbox255}}
-\newbox\partialpage
-\def\begindoublecolumns{\begingroup
-  \output={\global\setbox\partialpage=\vbox{\unvbox255}}\eject
-  \output={\doublecolumnout} \hsize=\colwidth \vsize=2\pageheight}
+\def\normaloutput{\onepageout{\unvbox255}}
+
+\output={\normaloutput}
+\newbox\partialpage \newdimen\origvsize \newif\ifrigid
+\def\begindoublecolumns{\origvsize=\vsize \begingroup
+  \output={\global\setbox\partialpage=\vbox{\unvbox255\kern0pt}}\eject
+  \output={\doublecolumnout} \hsize=\colwidth \dimen@=\pageheight
+  \advance\dimen@ by-\ht\partialpage \multiply\dimen@ by2
+  \ifdim\dimen@<2\baselineskip \dimen@=2\baselineskip\fi
+  \vsize=\dimen@}
 \def\enddoublecolumns{\output={\balancecolumns}\eject
   \endgroup \pagegoal=\vsize}
 \def\doublecolumnout{\splittopskip=\topskip \splitmaxdepth=\maxdepth
-  \dimen@=\pageheight \advance\dimen@ by-\ht\partialpage
-  \setbox0=\vsplit255 to\dimen@ \setbox2=\vsplit255 to\dimen@
-  \onepageout\pagesofar
+  \setbox0=\vsplit255 to.5\vsize \setbox2=\vsplit255 to.5\vsize
+  \onepageout\pagesofar \global\vsize=2\pageheight
   \unvbox255 \penalty\outputpenalty}
 \def\pagesofar{\unvbox\partialpage
   \wd0=\hsize \wd2=\hsize \hbox to\pagewidth{\box0\hfil\separator\hfil\box2}}
@@ -99,9 +102,14 @@
   {\vbadness=10000 \loop \global\setbox3=\copy0
     \global\setbox1=\vsplit3 to\dimen@
     \ifdim\ht3>\dimen@ \global\advance\dimen@ by1pt \repeat}
-  \setbox0=\vbox to\dimen@{\unvbox1}
-  \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
-  \pagesofar}
+  \ifrigid
+    \setbox0=\vtop{\unvbox1}
+    \setbox2=\vtop{\unvbox3}
+  \else
+    \setbox0=\vbox to\dimen@{\unvbox1}
+    \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
+  \fi
+  \global\output={\normaloutput}\global\vsize=\origvsize \pagesofar}
 \catcode`@=12
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -117,6 +125,7 @@
 \font\secfont=cmssdc10 at 14pt
 \font\manual=manfnt
 \font\sf=cmss10
+\font\bsf=cmssdc10
 \font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
 \font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
 
@@ -148,7 +157,7 @@
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
  \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}%
  \gdef\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active%
-   \parindent 0pt \def\_^^M{\allowbreak}%
+   \parindent 0pt \def\_^^M{\allowbreak}\def\${$}\def\`{`}%
    \def\par{\ifvmode\allowbreak\vskip 1pc plus 1pt\else\endgraf\nobreak\fi}%
    \obeyspaces \obeylines \tt}}
 \outer\def\begintt{\par
@@ -211,7 +220,8 @@
 \newif\iffirstsec \firstsectrue
 \def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
 \def\chapcontents#1#2#3{\iffirstsec\else \enddoublecolumns\firstsectrue\fi
-  \medbreak \leftline{\bf\hbox to\manindent{\hss #1\kern\smallmanindent}#2}}
+  \medbreak \leftline{\bf\strut\hbox to\manindent
+   {\hss #1\kern\smallmanindent}#2}}
 \def\seccontents#1#2#3{\iffirstsec\nobreak\smallskip\firstsecfalse
   \begindoublecolumns\fi
    \line{\kern\manindent\vbox{\advance\hsize by-\manindent
@@ -237,8 +247,8 @@
  \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
   \item{\sigel{#2}}}}
 \def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
-\def\dosecindex#1#2#3{\ifx\thechapter\normalchapter\let\ =\space
-  \immediate\write\secindout{#1 \thechapter.\the\secno. #2#3}\fi}
+\def\dosecindex#1#2#3{\ifx\thechapter\normalchapter{\let\ =\space
+  \immediate\write\secindout{#1 \thechapter.\the\secno. #2#3}}\fi}
 \def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
 \def\index#1{\bothindex I{#1}{}{}}
 \def\atindex#1#2{\bothindex I{#1}{#2}{}}
@@ -252,10 +262,10 @@
 \def\emptychapter{\noexpand\tocstrut}
 \def\normalchapter{\the\chapno}
 
-\long\def\Chapter#1 \par{\vfill\supereject \headlinefalse
+\def\Chapter#1 \par{\vfill\supereject \headlinefalse
   \ifodd\pageno\else\null\vfill\eject\headlinefalse\fi
   \advance\chapno by1 \secno=0 \exno=0 \ifnum\pageno>0 \pageno=1 \fi
-  \def\chapname{#1} \label{chapter #1}
+  \def\chapname{#1} \label{#1}
   \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
   \ifx\thechapter\normalchapter
     \immediate\write\secindout{C \filename\space\thechapter. \chapname}\fi
@@ -264,8 +274,7 @@
     \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
   \line{\box0\hfil\box1}\nobreak \vskip 40pt \noindent}
 
-\outer\long\def\Section#1#2\par{\medskip \advance\secno by1
-  {\let!=\space \mark{Section \the\secno. #1}}
+\outer\def\Section#1#2\par{\medskip \advance\secno by1
   \ifx\thechapter\emptychapter
     \edef\tempa{\the\secno}
   \else
@@ -275,8 +284,8 @@
   \dosecindex S{#1}{}{\let\ =\space\label{#1}}
   \ifx#2\null\else \edef\tempb{{#1}}
     \expandafter\doindex\tempb{|indexit}{}\fi
-  {\baselineskip 18pt\let!=\space \noindent\secfont
-   \tempa \enspace #1\par}\nobreak\medskip\noindent}
+  \noindent{\baselineskip 18pt\let!=\space \mark{Section \the\secno. #1}%
+  \secfont \tempa \enspace #1}\par\nobreak\medskip\noindent}
 
 \def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}
   {\the\pageno}}}
@@ -333,40 +342,20 @@
 \def\beginitems{%
   \smallskip
   \begingroup
-    \def&{%
-      \par
-      \nobreak
-      \hangindent
-      \manindent
-      \hangafter 0
-      {\parskip 0pt\noindent}
-      \ignorespaces
-     }
+    \def&{\par \nobreak \hangindent\manindent \hangafter 0
+      {\parskip 0pt\noindent}\ignorespaces}
     \parindent 0pt
     \catcode`&=\active
 }
-\def\enditems{%
-  \par
-  \endgroup
-  \smallskip
-  \noindent
-  \ignorespaces
-}
+\def\enditems{\par \endgroup \smallskip \noindent \ignorespaces}
 
 % Macro for item lists.
-\catcode`&=\active
 \def\beginlist{%
   \smallskip
   \begingroup
     \parindent=2em
 }
-\def\endlist{%
-  \par
-  \endgroup
-  \smallskip
-  \noindent
-  \ignorespaces
-}
+\def\endlist{\par \endgroup \smallskip \noindent \ignorespaces}
 \catcode`&=4
 
 % Macros for exercises.
@@ -522,6 +511,7 @@
   \TOCMatter
   \vskip 20pt
   \begingroup
+  \rigidtrue
   \let!=\space
   \inputaux\tocin{}{toc}\vfill\eject
   \endgroup

@@ -134,8 +134,8 @@ EXECUTE_PROCESS_FILE_STREAM := function( dir, prg, input, output, args )
     if not IsDirectoryPath(dir)  then
         Error( "directory <dir> does not exist" );
     fi;
-    if not IsExecutableFile(prg)  then
-        Error( "program <prg> does not exist" );
+    if IsExecutableFile(prg) <> true then
+        Error( "program <prg> does not exist or is not executable" );
     fi;
 
     # execute the process

@@ -459,8 +459,8 @@ PresentationViaCosetTable := function ( arg )
     if Length( arg ) = 1 then
 
         # apply the single stage algorithm
-        Info( InfoFpGroup, 1, "#I  ",
-            "calling the single stage relations finding algorithm\n" );
+        Info( InfoFpGroup, 1,
+            "calling the single stage relations finding algorithm" );
         elts := AsListSorted( G );
         F := FreeGroup( ngens );
         R2 := RelsViaCosetTable( G, elts, F );
@@ -487,18 +487,19 @@ PresentationViaCosetTable := function ( arg )
         if Size( H ) = 1 or Size( H ) = Size( G ) then
 
             # apply the single stage algorithm
-            Info( InfoFpGroup, 1, "#I  ",
-                "calling the single stage relations finding algorithm\n" );
+            Info( InfoFpGroup, 1,
+                "calling the single stage relations finding algorithm" );
             elts := AsListSorted( G );
             R2 := RelsViaCosetTable( G, elts, F );
 
         else
 
             # apply the two stage algorithm
-            Info( InfoFpGroup, 1, "#I  ",
-                "calling the two stage relations finding algorithm\n",
-                "#I  using a subgroup of size ", Size( H ), " and index ",
-                Size( G ) / Size( H ), "\n" );
+            Info( InfoFpGroup, 1,
+                "calling the two stage relations finding algorithm" );
+            Info( InfoFpGroup, 1,
+                "using a subgroup of size ", Size( H ), " and index ",
+                Size( G ) / Size( H ) );
             # eliminate words which define the identity of G
             one := One( ggens[1] );
             thgens := [];

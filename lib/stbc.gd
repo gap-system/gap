@@ -4,36 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.25  1997/05/28 13:19:56  fceller
-#H  changed 'DeepCopy' to 'StructuralCopy'
-#H
-#H  Revision 4.24  1997/03/12 13:19:34  htheisse
-#H  replaced `StructuralCopy' by `CopyStabChain' to save labels
-#H
-#H  Revision 4.23  1997/03/04 12:29:16  htheisse
-#H  introduced `ChooseNextBasePoint', debugged soluble stab chains
-#H
-#H  Revision 4.22  1997/02/26 14:00:33  htheisse
-#H  changed algorithm for stab chain with base in solvable groups
-#H
-#H  Revision 4.21  1997/01/16 10:46:51  fceller
-#H  renamed 'NewConstructor' to 'NewOperation',
-#H  renamed 'NewOperationFlags1' to 'NewConstructor'
-#H
-#H  Revision 4.20  1997/01/07 13:35:14  ahulpke
-#H  Added the transitive groups data library
-#H
-#H  Revision 4.19  1997/01/06 16:44:26  ahulpke
-#H  Added 'AlternatingGroup'
-#H
-#H  Revision 4.18  1997/01/06 16:21:03  htheisse
-#H  turned `IsSymmetricGroup' from a representation into a property
-#H
-#H  Revision 4.17  1996/12/19 09:59:15  htheisse
-#H  added revision lines
-#H
-##
 Revision.stbc_gd :=
     "@(#)$Id$";
 
@@ -141,11 +111,6 @@ IndicesStabChain := NewOperationArgs( "IndicesStabChain" );
 ListStabChain := NewOperationArgs( "ListStabChain" );
 OrbitStabChain := NewOperationArgs( "OrbitStabChain" );
 StabChainRandomPermGroup := NewOperationArgs( "StabChainRandomPermGroup" );
-SiftAsWord := NewOperationArgs( "SiftAsWord" );
-CosetRepAsWord := NewOperationArgs( "CosetRepAsWord" );
-ImageInWord := NewOperationArgs( "ImageInWord" );
-InverseAsWord := NewOperationArgs( "InverseAsWord" );
-RandomElmAsWord := NewOperationArgs( "RandomElmAsWord" );
 SCRMakeStabStrong := NewOperationArgs( "SCRMakeStabStrong" );
 SCRStrongGenTest := NewOperationArgs( "SCRStrongGenTest" );
 SCRSift := NewOperationArgs( "SCRSift" );

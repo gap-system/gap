@@ -154,7 +154,7 @@ DirectoriesPackageLibrary := function( arg )
     dirs := [];
     for dir  in GAP_ROOT_PATHS  do
         tmp := Concatenation( dir, "pkg/", name, "/", path );
-        if IsDirectoryPath(path) = true  then
+        if IsDirectoryPath(tmp) = true  then
             Add( dirs, Directory(tmp) );
         fi;
     od;

@@ -79,7 +79,7 @@ There is a new global variable
 in {\GAP}~4.
 It is intended as a return value of a function for the case that it
 could not perform its task.
-For example, `Inverse' returns `fail' if its is called with a singular
+For example, `Inverse' returns `fail' if it is called with a singular
 matrix, and `Position' returns `fail' if the second argument is not
 contained in the list given as first argument.
 
@@ -140,7 +140,7 @@ A -- probably incomplete -- list follows
     AgGroup                 PcGroup            # (also composita)
     Backtrace               Where
     CharTable               CharacterTable     # (also composita)
-    Denomiantor             DenominatorRat
+    Denominator             DenominatorRat
     Elements                AsListSorted
     IsBijective             IsBijection
     IsFunc                  IsFunction
@@ -213,7 +213,7 @@ for example there is one operation `Zero' instead of two operations
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Immutability}
+\Section{Immutable objects}
 
 {\GAP}~4 supports ``immutable'' objects.
 Such objects cannot be changed, attempting to do so issues an error.
@@ -733,7 +733,7 @@ The different files address different aspects of compatibility.
 
 `compat3c.g' &
     permits to implement your own elements represented as records,
-    and using operations records to provide a `Print' methods and
+    and using operations records to provide a `Print' method and
     the basic arithmetic operations,
 
 `compat3d.g' &

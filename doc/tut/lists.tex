@@ -67,12 +67,12 @@ list `primes', you simply type
     gap> primes[7];
     17 
 \endexample
-and you  will get the  value  of the  seventh prime.  This  value  can be
-handled like any other value, for example multiplied by 2 or  assigned to
-a variable.  On the other hand this mechanism allows to assign a value to
-a  position in  a list.  So the next prime 43 may be inserted in the list
-directly  after  the  last  occupied  position  of `primes'.   This  last
-occupied position is returned by the function `Length'.
+This value can be handled like any other value, for example multiplied by
+2 or assigned to a  variable. On the other hand  this mechanism allows to
+assign a value to  a position in  a  list. So the   next prime 43  may be
+inserted  in the   list directly  after the  last   occupied position  of
+`primes'. This  last occupied    position  is returned  by  the  function
+`Length'.
 \beginexample
     gap> Length(primes);
     13
@@ -271,12 +271,12 @@ that have bothered   us in    Section~"Identical Lists". The     function
 `Immutable' takes as argument a list and returns an immutable copy of it,
 i.e., a list  which  looks exactly like the   old one, but has  two extra
 properties:
-(1)~The new list is immutable, i.e., itself and its subobjects cannot be
+(1)~The new list is immutable, i.e.,  itself and its subobjects cannot be
     changed.
-(2)~For that, every part of the list that can be changed has been copied,
-    so that changes to the old list will not affect the new one. In other
-    words, the new list has no mutable  subobjects in common with the old
-    list.
+(2)~In constructing the copy, every part of  the list that can be changed
+    has been copied, so that changes to the  old list will not affect the
+    new one.  In other words, the new  list has no  mutable subobjects in
+    common with the old list.
 \begintt
     gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
     gap> list[3][5] := 'w';; list; copy;
@@ -299,12 +299,12 @@ be added to the list, removed or exchanged. Such  changes would of course
 lead  to serious inconsistencies with  other  knowledge that may already
 have been calculcated for the group.
 
-A  converse function to  `Immutable' is `ShallowCopy', which produces a
-new  mutable list whose $i$th entry  is the $i$th  entry of the old list.
-The single entries are not copied, they are just  placed in the new list.
-That's  why the result  is called   a ``shallow  copy''.  Since the  list
-entries were subobjects of  the  immutable old  list and  hence immutable
-themselves, the result of `ShallowCopy' is mutable only at the top.
+A converse function to `Immutable' is `ShallowCopy', which produces a new
+mutable list  whose $i$th entry  is the $i$th entry of  the old list. The
+single  entries  are not copied,  they are  just placed in  the new list.
+That's why the  result is called a ``shallow  copy''. If the  old list is
+immutable, and hence  the  list  entries  are immutable themselves,   the
+result of `ShallowCopy' is mutable only at the top.
 
 \indextt{StructuralCopy}%
 \exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
@@ -680,11 +680,12 @@ matrix with a row  vector results in  a linear combination of the columns
 of the  matrix. In  the latter case  the  row vector is considered   as a
 column vector.
 
-A  matrix of integers can also  be multiplied with  a finite field scalar
+A matrix  of integers can  also be multiplied with  a finite field scalar
 and vice  versa. Such products result in  a matrix  over the finite field
 with the integers mapped into the finite field in the obvious way. Finite
-field matrices are  nicer to read  when they are `Display'ed  rather than
-`Print'ed.
+field matrices  are nicer to read when  they are  `Display'ed rather than
+`Print'ed. (Here  we write `Z(  <q> )' to denote a  primitive root of the
+finite field with <q> elements.)
 \beginexample
     gap> Display( m * One( GF(5) ) );
      1 4 1
@@ -728,8 +729,8 @@ rationals.
     gap> f := MinimalPolynomial( Rationals, m );;  Factors( f );
     [ P1C0(-2+x), P1C0(3+x^2) ]
 \endexample
-`Factors' returns a list of irreducible factors of the polynomial `f'.
-The notion `P1C0' means that the factors are univariate polynomials in
+`Factors'  returns a list of  irreducible factors  of the polynomial `f'.
+The notation `P1C0' means that  the factors are univariate polynomials in
 characteristic zero.
 
 The first  irreducible factor $X-2$ reveals   that 2 is an  eigenvalue of

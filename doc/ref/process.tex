@@ -78,7 +78,6 @@ a string stream.
 
 \begintt
     gap> str := "";; a := OutputTextString(str,true);;
-    gap> str := "";; a := OutputTextString(str,true);;
     gap> Process( DirectoryCurrent(), date, InputTextNone(), a, [] );
     0
     gap> CloseStream(a);
@@ -86,6 +85,32 @@ a string stream.
     Fri Jul 11 09:04:23 MET DST 1997
 \endtt
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Exec}
+
+\>Exec( <cmd> )
+\>Exec( <cmd>, <shell> )
+
+runs a shell in the current directory to execute  the command <cmd>.  The
+first form runs a  Bourne shell while the  second command runs  the shell
+<shell>.  <shell> needs  to understand the  option  <-c> followed by  the
+command to be executed as a string.  Any  output of <cmd>  is sent to the
+standard output.
+
+\begintt
+    gap> Exec( "date" )
+    Thu Jul 24 10:04:13 BST 1997
+\endtt
+
+<cmd> is  interpreted by the shell  and therefore we  can make use of the
+various features that a shell offers as in following example.
+
+\beginexample
+   gap> Exec( "echo \"GAP is great!\" > foo" );    
+   gap> Exec( "cat foo" );
+   GAP is great!
+   gap> Exec( "rm foo" );
+\endexample
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%

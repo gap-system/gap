@@ -898,6 +898,13 @@ NormalizerInParent := NewAttribute( "NormalizerInParent", IsGroup );
 SetNormalizerInParent := Setter( NormalizerInParent );
 HasNormalizerInParent := Tester( NormalizerInParent );
 
+#############################################################################
+##
+#O  CentralizerModulo(<G>,<N>,<elm>)   full preimage of C_(G/N)(elm.N)
+##
+CentralizerModulo := NewOperation("CentralizerModulo",
+  [IsGroup,IsGroup,IsObject]);
+
 
 #############################################################################
 ##

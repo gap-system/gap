@@ -724,12 +724,13 @@ lengths.    These   colleagues   are   named,   e.g.,   `OrbitLength'  or
 \>MaximalBlocks( <G>, <D> \[, <seed> \] \[, <gens>, <oprs> \] %
                  \[, <opr> \] )
 
-`Blocks'  resp.~`MaximalBlocks'  determine a minimal  resp.~maximal block
-system  (i.e., one with blocks  of minimal resp.~maximal cardinality) for
+`Blocks' resp.~`MaximalBlocks'  determine  a minimal  resp.~maximal block
+system (i.e., one with  blocks of minimal resp.~maximal cardinality)  for
 the operation of <G> on <D>. If the optional argument <seed> is given, it
-must be a subset of <D> containing at least  two points; then only blocks
-containing <seed> will be considered, and the resulting block system will
-be minimal resp.~maximal among the ones with this restriction.
+must be a subset of <D> containing at  least two points; then only blocks
+containing <seed> will  be considered, and in  the case of  `Blocks', the
+resulting   block  system will  be  minimal    among the ones   with this
+restriction.
 
 In general, `MaximalBlocks' calls `Blocks' for  <G> acting on <D>, and if
 the operation of <G> on the resulting  block system <B> is not primitive,
@@ -753,21 +754,40 @@ a maximal block system for <G> on~<D>.
 \>Earns( <G>, <D> \[, <gens>, <oprs> \] \[, <opr> \] )
 \indextt{EarnsAttr}%
 
-The `Is\dots'  functions from the first group  test certain properties of
+The `Is\dots' functions  from the first  group test certain properties of
 operations. If they are alternatively called  with an external set <xset>
-as the only  argument, the results are   stored and looked up  in <xset>.
-This is possible,  since the result depends  only on the operation (which
-is fully  described by the  external set  <xset>),  and not on additional
-arguments such as <pnt>   for `Orbit'. These  functions can  therefore be
-regarded as properties of  external sets, and  such {\GAP} properties are
-accessible as `<Function>Prop( <xset> )'  where <Function> is a name from
-the above list. In particular, you can set the value of an property in an
-external   set with `Setter( <Function>Prop    )( <xset>,  <val> )'  (the
-abbreviations    `Set<Function>Prop'  and `Has<Function>Prop'   are *not*
-provided because these properties   should rarely  appear in  the  code).
-Results are also  stored and looked up in  a permutation group <G> if the
-operation  <opr> is `OnPoints', not  specified via <gens> and <oprs>, and
-`MovedPoints( <G> )' is already known and equal to~<D>.
+as the only argument,  the results  are stored and  looked up  in <xset>.
+This is  possible, since the result  depends only on the operation (which
+is fully  described  by the external  set <xset>),  and not on additional
+arguments such  as <pnt>  for `Orbit'. These  functions can  therefore be
+regarded  as properties of external  sets, and such {\GAP} properties are
+accessible as `IsSemiRegularProp( <xset>  )' etc. In particular, you  can
+set  the   value of an   property   in  an  external   set with  `Setter(
+IsSemiRegularProp   )(    <xset>,    <val>    )'   (the     abbreviations
+`SetIsSemiRegularProp'  and  `HasIsSemiRegularProp'  are   *not* provided
+because these properties should rarely appear in the code).
+
+Although  the properties are  properly   defined only for external  sets,
+their values are also stored and looked up  in a permutation group <G> if
+the operation  <opr> is `OnPoints', not specified  via <gens> and <oprs>,
+and `MovedPoints( <G>   )' is already known  and  equal to~<D>.  In other
+words, every permutation  group <G> can  store the same properties as its
+``natural external set'' `ExternalSet( <G>,   MovedPoints( <G> ) )'.  The
+idea behind  this that these natural external  sets are  often implicitly
+meant when permutation   groups appear in the  code,   and the programmer
+should be  able to take advance  of the storage-look-up mechanism without
+having to call `ExternalSet' explicitly.
+\beginexample
+    gap> s4 := Group( (1,2,3,4),(1,2) );;
+    gap> IsPrimitiveAffine( s4, MovedPoints( s4 ) );
+    true
+    gap> Tester( IsPrimitiveAffineProp )( s4 );  
+    true
+    gap> IsPrimitiveAffineProp( s4 );
+    true
+\endexample
+Observe that `IsPrimitiveAffineProp', being a property, requires only one
+argument, whereas `IsPrimitiveAffine' requires two.
 
 The same mechanism is also used  for non boolean-valued functions such as
 `Orbits', `Transitivity' and `Earns', the corresponding {\GAP} attributes

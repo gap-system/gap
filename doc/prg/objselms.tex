@@ -71,7 +71,7 @@ In a sense, the only reason to introduce objects such as integers and
 permutations in {\GAP} is the wish to form domains of them.
 
 Domains have an *operational structure*,
-that is, a collection of operations under that the domain is closed.
+that is, a collection of operations under which the domain is closed.
 For example, a group is closed under multiplication,
 taking the zeroth power of elements, and taking inverses of elements.
 
@@ -162,21 +162,21 @@ Thus a change in `l1' does not affect `l2'.
     true
 \endexample
 Here, `l1' and `l2' are identical objects,
-so changing `l1' means to change also `l2'.
+so to change `l1' it to change `l2' also.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Mutability and Copyability}
 
 For many purposes, *mutable* objects are useful.
-One example are mutable lists,
-they can be changed by assigning values to positions
+For example, mutable lists
+can be changed by assigning values to positions
 or by unbinding values at certain positions.
 Similarly, one can assign values to components of a mutable record,
 or unbind them.
 
 In other situations, however,
 one wants to ensure that certain objects are *immutable*,
-i. e., that they cannot be changed.
+i.e., that they cannot be changed.
 For example, take the identity of a matrix group.
 Since this matrix may be referred to as identity of the group in several
 places, it would be fatal to modify its entries, or add or unbind rows.

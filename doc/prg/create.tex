@@ -9,7 +9,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Creating New Objects}
 
-The first sections of this chapter inform how filters are created,
+The first sections of this chapter explain how filters are created,
 see~"Creating Categories", "Creating Representations",
 "Creating Attributes and Properties", "Creating Other Filters".
 
@@ -287,10 +287,10 @@ Also analogously to records, values can be assigned to components of
 <cobj> via `<cobj>!.<name>:= <val>'.
 
 Note that it is possible to add components and to change the values of
-components also if <cobj> claims that it is immutable, i.e., if <cobj>
+components even if <cobj> claims that it is immutable, i.e., if <cobj>
 is not in the category `IsMutable'.
 
-So one must be *very careful* when `!.' shall be used.
+So one must be *very careful* when `!.' is used.
 Especially, <name> must be among the admissible component names for
 the representation of <cobj>, see~"Creating Representations".
 
@@ -405,7 +405,7 @@ Basic operations for lists are `Length', `\\[\\]', and `IsBound\\[\\]'.
 Note that the access to the position <pos> in the list <list>
 via `<list>[<pos>]' is handled by the call `\\[\\]( <list>, <pos> )'
 to the operation `\\[\\]'.
-to explain the somewhat strange name `\\[\\]' of this operation,
+To explain the somewhat strange name `\\[\\]' of this operation,
 note that non-alphanumeric characters like `[' and `]' may occur in
 {\GAP} variable names only if they are escaped by a `\\' character.
 
@@ -555,9 +555,9 @@ Calls to the following functions belong to the declaration part.
 
 Calls to the following functions belong to the implementation part.
 
-`InstallMethod'
-`InstallImmediateMethod'
-`InstallOtherMethod'
+`InstallMethod',
+`InstallImmediateMethod',
+`InstallOtherMethod',
 `NewFamily',
 `NewRepresentation',
 `NewType',
