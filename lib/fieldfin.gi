@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file    contains  methods for  finite  fields.    Note that  we must
 ##  distinguish finite fields and fields that  consist of 'FFE's.  (The image
@@ -266,7 +266,6 @@ InstallMethod( CanonicalBasis, true, [ IsField and IsFinite ], 0,
 IsFrobeniusAutomorphism := NewRepresentation( "IsFrobeniusAutomorphism",
         IsFieldHomomorphism
     and IsMapping
-    and IsMultiplicativeElementWithInverse
     and IsAttributeStoringRep,
     [ "power" ] );
 
@@ -317,39 +316,55 @@ FrobeniusAutomorphism := function ( F )
     return FrobeniusAutomorphismI( F, Characteristic( F ) );
 end;
 
-InstallMethod( \=, IsIdentical,
+#############################################################################
+##
+#M  \=( <frob1>, <frob2> )
+#M  \=( <id>, <frob> )
+#M  \=( <frob>, <id> )
+##
+InstallMethod( \=,
+    "method for two Frobenius automorphisms",
+    IsIdentical,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
     function ( aut1, aut2 )
     return Source( aut1 ) = Source( aut2 ) and aut1!.power  = aut2!.power;
     end );
 
-InstallMethod( \=, IsIdentical,
+InstallMethod( \=,
+    "method for identity mapping and Frobenius automorphism",
+    IsIdentical,
     [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
     function ( id, aut )
     return Source( id ) = Source( aut ) and aut!.power = 1;
-#T ReturnFalse?
     end );
 
-InstallMethod( \=, IsIdentical,
+InstallMethod( \=,
+    "method for Frobenius automorphism and identity mapping",
+    IsIdentical,
     [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
     function ( aut, id )
     return Source( id ) = Source( aut ) and aut!.power = 1;
-#T ReturnFalse?
     end );
 
-InstallMethod( ImageElm, FamSourceEqFamElm,
+InstallMethod( ImageElm,
+    "method for Frobenius automorphism and source element",
+    FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function ( aut, elm )
     return elm ^ aut!.power;
     end );
 
-InstallMethod( ImagesElm, FamSourceEqFamElm,
+InstallMethod( ImagesElm,
+    "method for Frobenius automorphism and source element",
+    FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function ( aut, elm )
     return [ elm ^ aut!.power ];
     end );
 
-InstallMethod( ImagesSet, CollFamSourceEqFamElms,
+InstallMethod( ImagesSet,
+    "method for Frobenius automorphism and field contained in the source",
+    CollFamSourceEqFamElms,
     [ IsFrobeniusAutomorphism, IsField ], 0,
     function ( aut, elms )
     if IsSubset( Source( aut ), elms )  then
@@ -359,13 +374,17 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
     fi;
     end );
 
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+InstallMethod( ImagesRepresentative,
+    "method for Frobenius automorphism and source element",
+    FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
     function ( aut, elm )
     return elm ^ aut!.power;
     end );
 
-InstallMethod( CompositionMapping2, IsIdentical,
+InstallMethod( CompositionMapping2,
+    "method for two Frobenius automorphisms",
+    IsIdentical,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
     function ( aut1, aut2 )
     if Characteristic( Source( aut1 ) )
@@ -377,7 +396,10 @@ InstallMethod( CompositionMapping2, IsIdentical,
     fi;
     end );
 
-InstallMethod( Inverse, true, [ IsFrobeniusAutomorphism ], 0,
+InstallMethod( InverseGeneralMapping,
+    "method for a Frobenius automorphism",
+    true,
+    [ IsFrobeniusAutomorphism ], 0,
     aut -> FrobeniusAutomorphismI( Source( aut ),
                                    Size( Source( aut ) ) / aut!.power ) );
 

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for fields consisting of cyclotomics.
 ##
@@ -1685,12 +1685,11 @@ IsANFAutomorphismRep := NewRepresentation( "IsANFAutomorphismRep",
 
 #############################################################################
 ##
-#V  IsANFAutomorphism( <obj> )
+#P  IsANFAutomorphism( <obj> )
 ##
 IsANFAutomorphism := IsANFAutomorphismRep
     and IsFieldHomomorphism
     and IsMapping
-    and IsMultiplicativeElementWithInverse
     and IsBijective;
 
 
@@ -1736,6 +1735,8 @@ end;
 #############################################################################
 ##
 #M  \=( <aut1>, <aut2> )  . . . .  for automorphisms of abelian number fields
+#M  \=( <id>, <aut> ) . . . . . .  for automorphisms of abelian number fields
+#M  \=( <aut>, <id> ) . . . . . .  for automorphisms of abelian number fields
 ##
 InstallMethod( \=,
     "method for two ANF automorphisms",
@@ -1811,10 +1812,9 @@ InstallMethod( \<,
 InstallMethod( ImageElm,
     "method for ANF automorphism and scalar",
     FamSourceEqFamElm,
-    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsScalar ], 0,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsCyc ], 0,
     function ( aut, elm )
     return GaloisCyc( elm, aut!.galois );
-#T works only for 'IsCyc'?
     end );
 
 
@@ -1929,23 +1929,13 @@ InstallMethod( CompositionMapping2,
 
 #############################################################################
 ##
-#M  Inverse( <aut> )  . . . . . . . . . . . . for autom. of ab. number fields
+#M  InverseGeneralMapping( <aut> )  . . . . . for autom. of ab. number fields
 ##
-InstallOtherMethod( Inverse,
+InstallOtherMethod( InverseGeneralMapping,
     "method for ANF automorphism",
-    true, [ IsFieldHomomorphism and IsANFAutomorphismRep ], 0,
+    true,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep ], 0,
     aut -> ANFAutomorphism( Source( aut ), 1 / aut!.galois ) );
-
-
-#############################################################################
-##
-#M  One( <aut> )  . . . . . . . . . . . . . . for autom. of ab. number fields
-##
-InstallOtherMethod( One,
-    "method for ANF automorphism",
-    true, [ IsFieldHomomorphism and IsANFAutomorphismRep ], 0,
-    aut -> IdentityMapping( Source( aut ) ) );
-#T more general method!
 
 
 #############################################################################
@@ -1954,7 +1944,8 @@ InstallOtherMethod( One,
 ##
 InstallMethod( \^,
     "method for ANF automorphism and integer",
-    true, [ IsFieldHomomorphism and IsANFAutomorphismRep, IsInt ], 0,
+    true,
+    [ IsFieldHomomorphism and IsANFAutomorphismRep, IsInt ], 0,
     function ( aut, i )
     return ANFAutomorphism( Source( aut ), aut!.galois^i );
     end );

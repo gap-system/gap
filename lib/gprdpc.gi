@@ -57,9 +57,9 @@ end );
 
 #############################################################################
 ##
-#A EmbeddingOp
+#A Embedding
 ##
-InstallMethod( EmbeddingOp,
+InstallMethod( Embedding,
         "of pc group and integer",
          true, 
          [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
@@ -87,9 +87,9 @@ end );
 
 #############################################################################
 ##
-#A ProjectionOp
+#A Projection
 ##
-InstallMethod( ProjectionOp,
+InstallMethod( Projection,
         "of pc group and integer",
          true, 
          [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
@@ -113,7 +113,7 @@ InstallMethod( ProjectionOp,
     N := Subgroup( D, Pcgs(D){Concatenation( [1..list[i]], 
                                              [list[i+1]+1..Length(Pcgs(D))])});
     SetIsSurjective( hom, true );
-    # SetKernel( hom, N );
+    SetKernelOfMultiplicativeGeneralMapping( hom, N );
 
     # store information
     info.projections[i] := hom;
@@ -133,8 +133,8 @@ InstallMethod( SemidirectProduct,
 function( G, aut, N )
     local info, H;
     H := SplitExtension( G, aut, N );
-    info := rec( factor := G,
-                 subgroup := N,
+    info := rec( groups := [G, N],
+                 lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
                  embeddings := [],
                  projections := [] );
     SetSemidirectProductInfo( H, info );
@@ -144,9 +144,100 @@ end );
 InstallOtherMethod( SemidirectProduct,
     "generic method for pc groups",
     true, 
-    [ IsPcGroup, IsObject ],
+    [ IsPcGroup, IsRecord],
     0,
 function( G, M )
-    return Extension( G, M, 0 );
+    local H, info;
+    H := Extension( G, M, 0 );
+    info := rec( groups := [G, AbelianGroup( 
+                 List([1..M.dimension], x -> Characteristic(M.field)) )],
+                 lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
+                 embeddings := [],
+                 projections := [] );
+    SetSemidirectProductInfo( H, info );
+    return H;
+end );
+
+InstallOtherMethod( SemidirectProduct,
+    "generic method for pc groups",
+    true, 
+    [ IsPcGroup, IsGroupHomomorphism],
+    0,
+function( G, pr )
+    local U, M, H, info;
+    U := Image( pr );
+    M := rec( dimension  := DimensionOfMatrixGroup( U ),
+              field      := FieldOfMatrixGroup( U ),
+              generators := List( Pcgs( G ), x -> ImagesElm( pr, x ) ) );
+    H := Extension( G, M, 0 );
+    info := rec( groups := [G, AbelianGroup( 
+                 List([1..M.dimension], x -> Characteristic(M.field)) )],
+                 lenlist := [0, Length(Pcgs(G)), Length(Pcgs(H))],
+                 embeddings := [],
+                 projections := [] );
+    SetSemidirectProductInfo( H, info );
+    return H;
+end );
+
+#############################################################################
+##
+#A Embedding
+##
+InstallMethod( Embedding,
+        "of pc group and integer",
+         true, 
+         [ IsPcGroup and HasSemidirectProductInfo, IsInt and IsPosRat ], 
+         0,
+    function( D, i )
+    local info, G, imgs, hom;
+
+    # check
+    info := SemidirectProductInfo( D );
+    if IsBound( info.embeddings[i] ) then 
+        return info.embeddings[i];
+    fi;
+
+    # compute embedding
+    G := info.groups[i];
+    imgs := Pcgs(D){[info.lenlist[i]+1 .. info.lenlist[i+1]]};
+    hom := GroupHomomorphismByImages( G, D, AsList( Pcgs(G) ), imgs );
+    SetIsInjective( hom, true );
+
+    # store information
+    info.embeddings[i] := hom;
+    return hom;
+end );
+
+#############################################################################
+##
+#A Projection
+##
+InstallOtherMethod( Projection,
+        "of pc group and integer",
+         true, 
+         [ IsPcGroup and HasSemidirectProductInfo ],
+         0,
+    function( D )
+    local info, G, imgs, hom, N, list;
+
+    # check
+    info := SemidirectProductInfo( D );
+    if IsBound( info.projections ) then 
+        return info.projections;
+    fi;
+
+    # compute projection
+    G    := info.groups[1];
+    list := info.lenlist;
+    imgs := Concatenation( AsList( Pcgs(G) ),
+                           List( [list[2]+1..list[3]], x -> One(G)));
+    hom := GroupHomomorphismByImages( D, G, AsList( Pcgs(D) ), imgs );
+    N := Subgroup( D, Pcgs(D){Concatenation( [list[2]+1..list[3]] )});
+    SetIsSurjective( hom, true );
+    SetKernelOfMultiplicativeGeneralMapping( hom, N );
+
+    # store information
+    info.projections := hom;
+    return hom;
 end );
 

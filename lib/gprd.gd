@@ -5,6 +5,13 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.9  1997/03/18 09:09:06  ahulpke
+#H  ProjectionOp -> Projection
+#H
+#H  Revision 4.8  1997/03/17 16:04:00  ahulpke
+#H  Made 'EmbeddingOp' to 'Embedding'
+#H  Installed embeddings and projection for wreath product of permutation group
+#H
 #H  Revision 4.7  1997/03/10 15:43:12  beick
 #H  removed new catagory for products of groups, added products of pc groups
 #H
@@ -74,18 +81,6 @@ HasSemidirectProductInfo := Tester(SemidirectProductInfo);
 WreathProductInfo := NewAttribute( "WreathProductInfo", IsGroup, "mutable" );
 SetWreathProductInfo := Setter(WreathProductInfo);
 HasWreathProductInfo := Tester(WreathProductInfo);
-
-#############################################################################
-##
-#O EmbeddingOp( <G>, <i> )
-##
-EmbeddingOp := NewOperation( "EmbeddingOp", [IsGroup, IsInt and IsPosRat] );
-
-#############################################################################
-##
-#O ProjectionOp( <G>, <i> )
-##
-ProjectionOp := NewOperation( "ProjectionOp", [IsGroup, IsInt and IsPosRat] );
 
 #############################################################################
 ##

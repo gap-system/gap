@@ -135,6 +135,13 @@ extern  Int             GrowPlist (
 
 /****************************************************************************
 **
+*F  IS_IMM_PLIST( <list> )  . . . . . . . . . . .  is a plain listy immutable
+*/
+#define IS_IMM_PLIST(list)  ((TYPE_OBJ(list) - T_PLIST) % 2)
+
+
+/****************************************************************************
+**
 
 *F  InitPlist() . . . . . . . . . . . . . . . . . initialize the list package
 **

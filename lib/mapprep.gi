@@ -6,7 +6,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains (representation dependent)
 ##
@@ -41,7 +41,7 @@ IsDefaultGeneralMappingRep := NewRepresentation(
     "IsDefaultGeneralMappingRep",
     IsGeneralMapping and HasSource and HasRange,
     [] );
-#T methods to handle attributes 'One' and 'InverseGeneralMapping', 
+#T methods to handle attributes 'One', 'Inverse', and 'InverseGeneralMapping', 
 #T 'ImagesSource', 'PreImagesRange'?
 
 
@@ -469,8 +469,7 @@ IsMappingByFunctionRep := NewRepresentation(
 IsMappingByFunctionWithInverseRep := NewRepresentation(
     "IsMappingByFunctionWithInverseRep",
         IsMappingByFunctionRep
-    and IsBijective
-    and IsMultiplicativeElementWithInverse,
+    and IsBijective,
 #T 1996/10/10 fceller where to put non-reps, 4th position?
     [ "fun", "invFun" ] );
 
@@ -593,9 +592,9 @@ InstallMethod( PreImagesRepresentative,
 
 #############################################################################
 ##
-#M  Inverse( <map> )  . . . . . . . . . . . . . . . . for mapping by function
+#M  InverseGeneralMapping( <map> )  . . . . . . . . . for mapping by function
 ##
-InstallMethod( Inverse,
+InstallMethod( InverseGeneralMapping,
     "method for mapping by function",
     true,
     [ IsMappingByFunctionWithInverseRep ], 0,
@@ -603,7 +602,7 @@ InstallMethod( Inverse,
     local inv;
     inv:= MappingByFunction( Range( map ), Source( map ),
                              map!.invFun, map!.fun );
-    SetInverse( inv, map );
+    SetInverseGeneralMapping( inv, map );
     return inv;
     end );
 
@@ -663,17 +662,9 @@ IsInverseGeneralMappingRep := NewRepresentation(
 #M  InverseGeneralMapping( <map> ) . . . inverse mapping of a general mapping
 ##
 ##  This inverse of a general mapping is again a general mapping.
-##  (If one wants a mapping, one has to call 'Inverse'.
-##  This will cause a check that <map> is bijective.)
 ##
 InstallImmediateMethod( InverseGeneralMapping,
     IsGeneralMapping and HasInverse, 0,
-    Inverse );
-
-InstallMethod( InverseGeneralMapping,
-    "method for bijective general mapping",
-    true,
-    [ IsGeneralMapping and IsBijective ], 0,
     Inverse );
 
 InstallMethod( InverseGeneralMapping,
@@ -736,57 +727,6 @@ InstallMethod( InverseGeneralMapping,
     SetInverseGeneralMapping( inv, map );
 
     # return the inverse general mapping
-    return inv;
-    end );
-
-
-#############################################################################
-##
-#M  Inverse( <map> )  . . . . . . . . .  inverse mapping of a general mapping
-##
-##  The inverse of a general mapping is again a general mapping.
-#T allowed ??
-##  The inverse of a mapping <map> is a mapping if and only if <map> is
-##  bijective, otherwise is a general mapping.
-##
-InstallOtherMethod( Inverse,
-    "method for a general mapping",
-    true,
-    [ IsGeneralMapping ], 0,
-    function ( map )
-    local   inv;
-
-    # make the mapping
-    if IsBijective( map ) then
-      inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
-                                                    Source( map ),
-                                    IsInverseGeneralMappingRep
-                                and IsMapping
-                                and IsInjective
-                                and IsSurjective
-                                and IsAttributeStoringRep ),
-                       rec() );
-    else
-#T allowed ??
-      inv:= Objectify( KindOfDefaultGeneralMapping( Range( map ),
-                                                    Source( map ),
-                                    IsInverseGeneralMappingRep
-                                and IsAttributeStoringRep ),
-                       rec() );
-    fi;
-
-    # if possible, enter preimage and image
-    if HasImagesSource( map ) then
-      SetPreImagesRange( inv, ImagesSource( map ) );
-    fi;
-    if HasPreImagesRange( map )  then
-      SetImagesSource( inv, PreImagesRange( map ) );
-    fi;
-
-    # we know the inverse mapping of the inverse mapping ;-)
-    SetInverse( inv, map );
-
-    # return the inverse mapping
     return inv;
     end );
 
@@ -1000,14 +940,6 @@ InstallMethod( PrintObj,
     Print( "InverseGeneralMapping( ", InverseGeneralMapping( inv )," )" );
     end );
 
-InstallMethod( PrintObj,
-    "for an inverse mapping",
-    true,
-    [ IsMapping and IsBijective and IsInverseGeneralMappingRep ], 100,
-    function ( inv )
-    Print( "Inverse( ", InverseGeneralMapping( inv )," )" );
-    end );
-
 
 #############################################################################
 ##
@@ -1082,8 +1014,7 @@ InstallMethod( IdentityMapping,
                      rec() );
 
     # the identity mapping is self-inverse
-    SetInverse( id, id );
-#T !!
+    SetInverseGeneralMapping( id, id );
 
     # set the respectings
     ImmediateImplicationsIdentityMapping( id );

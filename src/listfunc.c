@@ -57,11 +57,25 @@ void            AddList (
     ASS_LIST( list, pos, obj );
 }
 
+extern Obj AddListHandler(
+    Obj                 self,
+    Obj                 list,
+    Obj                 obj );
+
 void            AddPlist (
     Obj                 list,
     Obj                 obj )
 {
     Int                 pos;            /* position to assign to           */
+
+    if ( IS_IMM_PLIST(list) ) {
+	list = ErrorReturnObj(
+	        "Lists Assignment: <list> must be a mutable list",
+		0L, 0L,
+		"you may return a mutable list" );
+	AddListHandler( 0, list, obj );
+	return;
+    }
     RetypeBag( list, T_PLIST );
     pos = LEN_PLIST( list ) + 1;
     GROW_PLIST( list, pos );

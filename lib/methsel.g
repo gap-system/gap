@@ -183,6 +183,15 @@ end;
 
 #############################################################################
 ##
+#F  METHOD_XARGS
+##
+METHOD_XARGS := function(arg)
+    Error( "not supported yet" );
+end;
+
+
+#############################################################################
+##
 
 #F  # # # # # # # # # # # # #  try next method  # # # # # # # # # # # # # # #
 ##
@@ -386,6 +395,15 @@ end;
 
 #############################################################################
 ##
+#F  NEXT_METHOD_XARGS
+##
+NEXT_METHOD_XARGS := function(arg)
+    Error( "not supported yet" );
+end;
+
+
+#############################################################################
+##
 
 #F  # # # # # # # # # # #  verbose method selection # # # # # # # # # # # # #
 ##
@@ -556,6 +574,15 @@ VMETHOD_6ARGS := function ( operation, kind1, kind2, kind3,
     od;
     Error( "no method found for operation ", NAME_FUNCTION(operation),
            " with 6 arguments" );
+end;
+
+
+#############################################################################
+##
+#F  VMETHOD_XARGS
+##
+VMETHOD_XARGS := function(arg)
+    Error( "not supported yet" );
 end;
 
 
@@ -772,6 +799,15 @@ end;
 
 #############################################################################
 ##
+#F  NEXT_VMETHOD_XARGS
+##
+NEXT_VMETHOD_XARGS := function(arg)
+    Error( "not supported yet" );
+end;
+
+
+#############################################################################
+##
 
 #F  # # # # # # # # # # # #  constructor selection  # # # # # # # # # # # # #
 ##
@@ -935,6 +971,15 @@ CONSTRUCTOR_6ARGS := function ( operation, flags1, kind2, kind3,
     od;
     Error( "no method found for operation ", NAME_FUNCTION(operation),
            " with 6 arguments" );
+end;
+
+
+#############################################################################
+##
+#F  CONSTRUCTOR_XARGS
+##
+CONSTRUCTOR_XARGS := function(arg)
+    Error( "not supported yet" );
 end;
 
 
@@ -1143,6 +1188,15 @@ end;
 
 #############################################################################
 ##
+#F  NEXT_CONSTRUCTOR_XARGS
+##
+NEXT_CONSTRUCTOR_XARGS := function(arg)
+    Error( "not supported yet" );
+end;
+
+
+#############################################################################
+##
 
 #F  # # # # # # # # # #  verbose constructor selection  # # # # # # # # # # #
 ##
@@ -1313,6 +1367,15 @@ VCONSTRUCTOR_6ARGS := function ( operation, flags1, kind2, kind3,
     od;
     Error( "no method found for operation ", NAME_FUNCTION(operation),
            " with 6 arguments" );
+end;
+
+
+#############################################################################
+##
+#F  VCONSTRUCTOR_XARGS
+##
+VCONSTRUCTOR_XARGS := function(arg)
+    Error( "not supported yet" );
 end;
 
 
@@ -1524,6 +1587,15 @@ NEXT_VCONSTRUCTOR_6ARGS := function ( operation, k, flags1, kind2, kind3,
     od;
     Error( "no method found for operation ", NAME_FUNCTION(operation),
            " with 6 arguments" );
+end;
+
+
+#############################################################################
+##
+#F  NEXT_VCONSTRUCTOR_XARGS
+##
+NEXT_VCONSTRUCTOR_XARGS := function(arg)
+    Error( "not supported yet" );
 end;
 
 

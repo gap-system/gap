@@ -377,7 +377,7 @@ NextIterator :=
 ##
 IsEmpty :=
     NewProperty( "IsEmpty",
-        IsCollection );
+        IsListOrCollection );
 SetIsEmpty := Setter( IsEmpty );
 HasIsEmpty := Tester( IsEmpty );
 

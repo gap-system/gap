@@ -101,7 +101,7 @@ InstallMethod( SetParent,
 ##
 #M  DomainByGenerators(<F>,<empty>) . . . . . . . . for family and empty list
 ##
-InstallMethod( DomainByGenerators,
+InstallOtherMethod( DomainByGenerators,
     "method for family and empty list",
     true,
     [ IsFamily, IsList and IsEmpty ], 0,

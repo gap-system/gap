@@ -6,7 +6,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for general mappings.
 ##
@@ -83,23 +83,17 @@
 ##  range, underlying relation.
 #T would it be allowed to use also preimage and image?
 ##
-##  General mappings can be composed via '\*' and --in reversed order--
-##  'CompositionMapping'.
-##  So general mappings are multiplicative elements.
-##  If source and range coincide, the 'One' of a general mapping is defined
-##  as the identity mapping of the source (which may differ from the
-##  preimage).
-##
-##  (It is not guaranteed that a general mapping whose source is equal to
-##  its range is in the category 'IsMultiplicativeElementWithOne'.)
-##
-##  For two general mappings with same source, range, preimage, and image,
-##  the sum is defined pointwise, i.e., the images of a point under the sum
-##  is the set of all sums with first summand in the images of the first
-##  general mapping and second summand in the images of the second general
-##  mapping.
-##
-##  Scalar multiplication of general mappings is defined likewise.
+##  General mappings are in the category of multiplicative elements with
+##  inverses.
+##  Similar to matrices, not every general mapping has an inverse or an
+##  identity, and we define the behaviour of 'One' and 'Inverse' for
+##  general mappings as follows.
+##  'One' returns 'fail' when called for a general mapping whose source and
+##  range differ, otherwise 'One' returns the identity mapping of the source.
+##  (Note that the source may differ from the preimage).
+##  'Inverse' returns 'fail' when called for a non-bijective general mapping
+##  or for a general mapping whose source and range differ; otherwise
+##  'Inverse' returns the inverse mapping.
 ##
 ##  Besides the usual inverse of multiplicative elements, which means that
 ##  'Inverse( <g> ) \* <g> = <g> \* Inverse( <g> ) = One( <g> )',
@@ -110,9 +104,26 @@
 ##  For a general mapping that has an inverse in the usual sense,
 ##  i.e., for a bijection of the source, of course both concepts coincide.
 ##
+##  'Inverse' may delegate to 'InverseGeneralMapping'.
+##  'InverseGeneralMapping' must not delegate to 'Inverse', but a known
+##  value of 'Inverse' may be fetched.
+##  So methods to compute the inverse of a general mapping should be
+##  installed for 'InverseGeneralMapping'.
+##
 ##  (Note that in many respects, general mappings behave similar to matrices,
 ##  for example one can define left and right identities and inverses, which
 ##  do not fit into the current concepts of {\GAP}.)
+##
+##  In addition to the composition via '\*', general mappings can be composed
+##  --in reversed order-- via 'CompositionMapping'.
+##
+##  For two general mappings with same source, range, preimage, and image,
+##  the sum is defined pointwise, i.e., the images of a point under the sum
+##  is the set of all sums with first summand in the images of the first
+##  general mapping and second summand in the images of the second general
+##  mapping.
+##
+##  Scalar multiplication of general mappings is defined likewise.
 ##
 Revision.mapping_gd :=
     "@(#)$Id$";
@@ -128,7 +139,7 @@ Revision.mapping_gd :=
 ##  of 'IsSPGeneralMapping' and 'IsNonSPGeneralMapping'.
 ##
 IsGeneralMapping := NewCategory( "IsGeneralMapping",
-    IsMultiplicativeElement and IsAssociativeElement );
+    IsMultiplicativeElementWithInverse and IsAssociativeElement );
 
 IsSPGeneralMapping := NewCategory( "IsSPGeneralMapping", IsObject );
 IsNonSPGeneralMapping := NewCategory( "IsNonSPGeneralMapping", IsObject );
@@ -151,27 +162,6 @@ IsGeneralMappingCollection := CategoryCollections(
 ##
 IsGeneralMappingsFamily := CategoryFamily(
     "IsGeneralMappingsFamily", IsGeneralMapping );
-
-
-#############################################################################
-##
-#C  IsEndoGeneralMapping( <obj> )
-##
-##  If a general mapping has this category then its source and range are
-##  equal.
-##  It is not guaranteed that a general mapping with equal source and range
-##  has this category.
-##
-IsEndoGeneralMapping := NewCategory( "IsEndoGeneralMapping",
-    IsGeneralMapping );
-
-
-#############################################################################
-##
-#M  IsEndoGeneralMapping( <map> ) . . . . . . . . for mult. elm. with inverse
-##
-InstallTrueMethod( IsEndoGeneralMapping,
-    IsGeneralMapping and IsMultiplicativeElementWithInverse );
 
 
 #############################################################################
@@ -214,6 +204,19 @@ SetIsConstantTimeAccessGeneralMapping := Setter(
     IsConstantTimeAccessGeneralMapping );
 HasIsConstantTimeAccessGeneralMapping := Tester(
     IsConstantTimeAccessGeneralMapping );
+
+
+#############################################################################
+##
+#P  IsEndoGeneralMapping( <obj> )
+##
+##  If a general mapping has this property then its source and range are
+##  equal.
+##
+IsEndoGeneralMapping := NewProperty( "IsEndoGeneralMapping",
+    IsGeneralMapping );
+SetIsEndoGeneralMapping := Setter( IsEndoGeneralMapping );
+HasIsEndoGeneralMapping := Tester( IsEndoGeneralMapping );
 
 
 #############################################################################
@@ -295,22 +298,6 @@ HasIsSurjective := Tester( IsSurjective );
 IsBijective := IsSingleValued and IsTotal and IsInjective and IsSurjective;
 SetIsBijective := Setter( IsBijective );
 HasIsBijective := Tester( IsBijective );
-
-
-#############################################################################
-##
-#M  IsBijective( <map> )  . . for gen. mapping that is a mult. elm. with inv.
-##
-InstallTrueMethod( IsBijective,
-    IsGeneralMapping and IsMultiplicativeElementWithInverse );
-
-
-#############################################################################
-##
-#M  IsMultiplicativeElementWithInverse( <map> )  . for bijective gen. mapping
-##
-InstallTrueMethod( IsMultiplicativeElementWithInverse,
-    IsEndoGeneralMapping and IsBijective );
 
 
 #############################################################################
@@ -438,7 +425,7 @@ ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 ##  <elm> under the general mapping <map>, i.e., a single element <img>,
 ##  such that '<img> in ImagesElm( <map>, <elm> )' (see "ImagesElm").
 ##
-##  If <elm> is not in the soucre of <map>, or if <elm> has no images under
+##  If <elm> is not in the source of <map>, or if <elm> has no images under
 ##  <map>, 'fail' is returned.
 ##
 ImagesRepresentative := NewOperation( "ImagesRepresentative",
@@ -682,16 +669,18 @@ ZeroMapping := NewOperation( "ZeroMapping", [ IsCollection, IsCollection ] );
 ##
 #O  Embedding( <S>, <T> ) . . . . . . .  embedding of one domain into another
 #O  Embedding( <S>, <T>, <i> )
+#O  Embedding( <S>, <i> )
 ##
-Embedding := NewOperation( "Embedding", [ IsDomain, IsDomain ] );
+Embedding := NewOperation( "Embedding", [ IsDomain, IsObject ] );
 
 
 #############################################################################
 ##
 #O  Projection( <S>, <T> )  . . . . . . projection of one domain onto another
 #O  Projection( <S>, <T>, <i> )
+#O  Projection( <S>, <i> )
 ##
-Projection := NewOperation( "Projection", [ IsDomain, IsDomain ] );
+Projection := NewOperation( "Projection", [ IsDomain, IsObject ] );
 
 
 #############################################################################
@@ -707,11 +696,8 @@ GeneralMappingByElements := NewOperationArgs( "GeneralMappingByElements" );
 #############################################################################
 ##
 #M  IsBijective . . . . . . . . . . . . . . . . . . . .  for identity mapping
-#M  IsMultiplicativeElementWithInverse  . . . . . . . .  for identity mapping
 ##
 InstallTrueMethod( IsBijective, IsGeneralMapping and IsOne );
-InstallTrueMethod( IsMultiplicativeElementWithInverse,
-    IsGeneralMapping and IsOne );
 
 
 #############################################################################

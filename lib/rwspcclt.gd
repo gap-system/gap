@@ -192,11 +192,11 @@ SetPowerNC := NewOperation(
 ##
 SetRelativeOrder := NewOperation(
     "SetRelativeOrder",
-    [ IsPolycyclicCollector and IsMutable, IsObject, IsInt ] );
+    [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
 SetRelativeOrderNC := NewOperation(
     "SetRelativeOrderNC",
-    [ IsPolycyclicCollector and IsMutable, IsObject, IsInt ] );
+    [ IsPolycyclicCollector and IsMutable, IsObject, IsObject ] );
 
 
 #############################################################################

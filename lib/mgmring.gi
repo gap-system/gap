@@ -317,27 +317,6 @@ InstallMethod( \*,
     end );
 
 
-#############################################################################
-##
-#F  IsMagmaRingsRings( <FamRM>, <FamR> )  . . . . . . . . .  family predicate
-#F  IsRingsMagmaRings( <FamR>, <FamRM> )  . . . . . . . . .  family predicate
-#F  IsMagmasMagmaRings( <FamM>, <FamRM> ) . . . . . . . . .  family predicate
-##
-IsMagmaRingsRings := function( FamRM, FamR )
-    return     IsBound( FamRM!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
-end;
-
-IsRingsMagmaRings := function( FamR, FamRM )
-    return     IsBound( FamRM!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
-end;
-
-IsMagmasMagmaRings := function( FamM, FamRM )
-    return     IsBound( FamRM!.familyMagma )
-           and IsIdentical( ElementsFamily( FamRM!.familyMagma ), FamM );
-end;
-
 #T install multiplication with magma elements from left and right !
 
 
@@ -1018,6 +997,41 @@ InstallMethod( PreImagesElm,
       return fail;
     fi;
     end );
+
+
+#############################################################################
+##
+#M  ExtRepOfObj( <elm> )  . . . . . . . . . . . . for free magma ring element
+##
+##  The external representation of elements in a free magma ring is defined
+##  as a list of length 2, the first entry being the zero coefficient,
+##  the second being a zipped list containing the external representations
+##  of the monomials and their coefficients.
+##
+InstallMethod( ExtRepOfObj,
+    "method for free magma ring element",
+#T eventually more specific!
+    true,
+    [ IsRingElement and IsFreeMagmaRingObjDefaultRep ], 0,
+    function( elm )
+    local zero, i;
+    zero:= elm![1];
+    elm:= ShallowCopy( elm![2] );
+    for i in [ 1, 3 .. Length( elm ) - 1 ] do
+      elm[i]:= ExtRepOfObj( elm[i] );
+    od;
+    return [ zero, elm ];
+    end );
+
+
+#############################################################################
+##
+#M  ObjByExtRep( <Fam>, <descr> ) . . . . for free magma ring elements family
+##
+#T  missing and needed: ObjByExtRep for free algebras!
+#T  (cannot be implemented because a family of free magma ring elements has
+#T  no specific flag!)
+##
 
 
 #############################################################################

@@ -1,9 +1,9 @@
 /****************************************************************************
 **
 ** Deep Thought deals with trees.  A tree < tree > is a concatenation of 
-** several nodes where each node is a 7-tuple of immediate integers.  If
+** several nodes where each node is a 5-tuple of immediate integers.  If
 ** < tree > is an atom it contains only one node,  thus it is itself a
-** 7-tuple. If < tree > is not an atom we obtain its list representation by
+** 5-tuple. If < tree > is not an atom we obtain its list representation by
 **
 **  < tree >  :=  topnode(<tree>) concat left(<tree>) concat right(<tree>) .
 **
@@ -230,9 +230,10 @@ extern Obj             ShallowCopyPlist( Obj  list );
 void  UnmarkTree(
 		  Obj   tree )
 {
-    int     i; /*  loop variable                     */
+    UInt     i, len; /*  loop variable                     */
 
-    for (i=1; i <= DT_LENGTH(tree, 1); i++ )
+    len = DT_LENGTH(tree, 1);
+    for (i=1; i <= len; i++ )
         DT_UNMARK(tree, i);
 }
 
@@ -269,22 +270,26 @@ Obj  FuncUnmarkTree(
 **  is equal to {1,...,n} for a positive integer n,  'Mark' actually returns
 **  the Maximum of {pos(a) | a almost equal to (<reftree>, index)}.
 */
-int   Mark(
+UInt   Mark(
 	    Obj   tree,
 	    Obj   reftree,
 	    int   index  )
 {
-    int  i, /*  loop variable                    */
-         m; /*  integer to return                */
+    UInt  i, /*  loop variable                    */
+          m, /*  integer to return                */
+          len;
+    Obj   refgen;
 
     m = 0;
     i = 1;
-    while ( i <= DT_LENGTH(tree, 1) )
+    len = DT_LENGTH(tree, 1);
+    refgen = DT_GEN(reftree, index);
+    while ( i <= len )
     {
         /*  skip all nodes (<tree>, i) with 
         **  num(<tree>, i) > num(<reftree>, index)     */
-        while( i < DT_LENGTH(tree, 1) && 
-               DT_GEN(tree, i)  >  DT_GEN(reftree, index) )
+        while( i < len && 
+               DT_GEN(tree, i)  >  refgen )
 	    i++;
 	if ( AlmostEqual(tree, i, reftree, index) )
 	{
@@ -328,7 +333,7 @@ int     AlmostEqual(
 		     Obj    tree2,
 		     int    index2    )
 {
-    int   k; /*   loop variable                                             */
+    UInt   k, schranke; /*   loop variable                                             */
     /*  First the two top nodes of tree(<tree1>, index1) and
     **  tree(<tree2>, index2) (that are (<tree1>, index1) and 
     **  (<tree2, index2) ) are compared by testing the equality of the 2-nd,
@@ -344,7 +349,8 @@ int     AlmostEqual(
     **  entries of the nodes.  Note that we know at this point,  that 
     **  tree(<tree1>, index1) and tree(<tree2>, index2) have the same number
     **  of nodes                                                             */
-    for (k = index1 + 1;  k < index1 + DT_LENGTH(tree1, index1);  k++ )
+    schranke = index1 + DT_LENGTH(tree1, index1);
+    for (k = index1 + 1;  k < schranke;  k++ )
     {
         if ( DT_GEN(tree1, k) != DT_GEN(tree2, k + index2 - index1 ) )
 	    return  0;
@@ -377,12 +383,13 @@ int     Equal(
 	       Obj     tree2,
 	       int     index2   )
 {
-    int   k; /*  loop variable                                               */
+    UInt   k, schranke; /*  loop variable                                   */
 
     /*  Each node of tree(<tree1>, index1) is compared to the corresponding
     **  node of tree(<tree2>, index2) by testing the equality of the 1-st,
     **  2-nd,  5-th and 6-th nodes.                                          */
-    for (k=index1; k < index1 + DT_LENGTH(tree1, index1);  k++)
+    schranke = index1 + DT_LENGTH(tree1, index1);
+    for (k=index1; k < schranke;  k++)
     {
         if ( DT_GEN(tree1, k) != DT_GEN(tree2, k + index2 - index1 ) )
 	    return  0;
@@ -425,20 +432,24 @@ Obj    Mark2(
 	      Obj        reftree,
 	      int        index2   )
 {
-    int    i; /*  loop variable                                          */
-    Obj    new, 
-           list; /*  list to return                                      */
+    UInt    i, /*  loop variable                                          */
+            len;
+    Obj     new, 
+            list, /*  list to return                                      */
+            refgen;
 
     /*  initialize <list>                                                 */
     list = NEW_PLIST(T_PLIST, 0);
     SET_LEN_PLIST(list, 0);
     i = index1;
-    while( i < index1 + DT_LENGTH(tree, index1) )
+    len = index1 + DT_LENGTH(tree, index1) - 1;
+    refgen = DT_GEN(reftree, index2);
+    while( i <= len )
     {
         /*  skip all nodes (<tree>, i) with 
         **  num(<tree>, i) > num(<reftree>, index)     */
-        while( i < index1 + DT_LENGTH(tree, index1) - 1    &&
-	       DT_GEN(tree, i) > DT_GEN(reftree, index2)   )
+        while( i < len     &&
+	       DT_GEN(tree, i) > refgen   )
 	    i++;
 	if ( AlmostEqual(tree, i, reftree, index2) )
 	{
@@ -507,16 +518,17 @@ Obj    Mark2(
 **  does not exist 'Findtree' returns 0 (as C integer).  Note that this holds
 **  if and only if tree(<tree>, index) is marked.
 */
-int    FindTree(
+UInt    FindTree(
 		 Obj     tree,
 		 int     index )
 {
-    int   i; /*     loop variable                                       */
+    UInt   i, len; /*     loop variable                                    */
 
     /*  return 0 if (<tree>, index) is marked                           */
     if ( DT_IS_MARKED(tree, index) )
         return  0;
     i = index;
+    len = index + DT_LENGTH(tree, index);
     /*  loop over all nodes of tree(<tree>, index) to find a tree with the
     **  properties described above.                                       */
     while( i < index + DT_LENGTH(tree, index)  )
@@ -576,12 +588,13 @@ Obj    MakeFormulaVector(
 			  Obj    tree,
 			  Obj    pr   )
 {
-    int   i, /*    denominator of a binomial coefficient              */
+    UInt  i, /*    denominator of a binomial coefficient              */
           j, /*    loop variable                                      */
           u; /*    node index                                         */
     Obj   rel, /*  stores relations of <pr>                           */
           vec, /*  stores formula vector to return                    */
-          prod;/*  stores the product of two integers                 */
+          prod,/*  stores the product of two integers                 */
+          gen;
 
     /*  initialize <vec> and set the first four elements              */
     vec = NEW_PLIST(T_PLIST, 4);
@@ -625,9 +638,10 @@ Obj    MakeFormulaVector(
 	    rel = ELM_PLIST( ELM_PLIST(pr, INT_INTOBJ( DT_GEN(tree, 
                                                         DT_LEFT(tree, u) ) ) ),
 			     INT_INTOBJ( DT_GEN(tree, DT_RIGHT(tree, u) ) )  );
+	    gen = DT_GEN(tree, u);
 	    while ( 1  )
 	    {
-	        if ( ELM_PLIST(rel, j) == DT_GEN(tree, u)  )
+	        if ( ELM_PLIST(rel, j) == gen  )
 		{
 		    prod = ProdInt(ELM_PLIST(vec, 2),
 				   binomial(ELM_PLIST(rel, j+1), 
@@ -637,7 +651,7 @@ Obj    MakeFormulaVector(
 		    CHANGED_BAG(vec);
 		    break;
 		}
-		j++;j++;
+		j+=2;
 	    }
 	}
 	u = FindTree(tree, 1);
@@ -678,45 +692,26 @@ Obj    FuncMakeFormulaVector(
 **  'binomial' returns the binomial coefficient of the integers <n> and <k>.
 **  This function is identical to the gap library function 'Binomial'.
 */
-Obj  binomial(
-	       Obj     n,
-	       Obj     k    )
+Obj  binomial( Obj   n,
+	       Obj   k  )
 {
-    int  j;
-    Obj  bin,i;
+    UInt    j, kc;
+    Obj     bin, help;
 
-    if   ( LtInt(k, INTOBJ_INT(0) ) )
-        bin = INTOBJ_INT(0);
-    else if ( EqInt(k, INTOBJ_INT(0) ) )
-        bin = INTOBJ_INT(1);
-    else if ( LtInt(n, INTOBJ_INT(0)) )
-        bin = ProdInt( PowInt( INTOBJ_INT(-1), k),
-		       binomial( DiffInt( DiffInt(k, n), INTOBJ_INT(1) ), k ));
-    else if ( LtInt(n, k) )
-        bin = INTOBJ_INT(0);
-    else if ( EqInt(n, k) )
-        bin = INTOBJ_INT(1);
-    else if ( LtInt( DiffInt(n, k), k) )
-        bin = binomial(n, DiffInt(n, k) );
-    else
-    {
-        bin = INTOBJ_INT(1);
-	j = 1;
-	i = SumInt( DiffInt(n, k), INTOBJ_INT(1) );
-	while ( !( LtInt(n, i) )  )
-	{
-	    bin = ProdInt(bin, i);
-	    while( j <= INT_INTOBJ(k)  &&  ModInt( bin, INTOBJ_INT(j) )  ==
-		                           INTOBJ_INT(0)                    )
-	    {
-	        bin = QuoInt(bin, INTOBJ_INT(j) );
-		j = j+1;
-	    }
-	    i = SumInt(i, INTOBJ_INT(1) );
-	}
-    }
+    if ( LtInt( INTOBJ_INT(0), n)  &&  LtInt(n, k)  )
+        return INTOBJ_INT(0);
+    if ( IS_INTOBJ(n)  &&  n == k )
+        return INTOBJ_INT(1);
+    kc = INT_INTOBJ(k);
+    bin = INTOBJ_INT(1);
+    help = DiffInt(n, k);
+    for (j=1; j<=kc; j++)
+        bin = ProdInt( bin, SumInt(help, INTOBJ_INT(j) )  );
+    for (j=1; j<=kc; j++)
+        bin = QuoInt(bin, INTOBJ_INT(j) );
     return  bin;
 }
+    
 
 
 /****************************************************************************
@@ -845,7 +840,7 @@ void    GetPols(
            tree1;
     void   GetReps(),
            FindNewReps2();
-    UInt   i,j,k,l;
+    UInt   i,j,k,l, lenr, lenl, len;
 
     lreps = NEW_PLIST(T_PLIST, 2);
     rreps = NEW_PLIST(T_PLIST, 2);
@@ -853,8 +848,10 @@ void    GetPols(
     SET_LEN_PLIST(rreps, 0);
     GetReps( ELM_PLIST(list, 1), pr, lreps );
     GetReps( ELM_PLIST(list, 2), pr, rreps );
-    for  (i=1; i<=LEN_PLIST(lreps); i++)
-        for  (j=1; j<=LEN_PLIST(rreps); j++)
+    lenr = LEN_PLIST(rreps);
+    lenl = LEN_PLIST(lreps);
+    for  (i=1; i<=lenl; i++)
+        for  (j=1; j<=lenr; j++)
 	    {
 	        k = LEN_PLIST( ELM_PLIST(lreps, i) )
 		  + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
@@ -866,11 +863,13 @@ void    GetPols(
 		SET_ELM_PLIST(tree, 4, INTOBJ_INT((int)(k/5)) );
 		SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
 		tree1 = ELM_PLIST(lreps, i);
-		for  (l=1; l<=LEN_PLIST( tree1 ); l++)
+		len = LEN_PLIST( tree1 );
+		for  (l=1; l<=len; l++)
 		    SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
 		k = LEN_PLIST(tree1) + 5;
 		tree1 = ELM_PLIST(rreps, j);
-		for  (l=1; l<=LEN_PLIST(tree1); l++)
+		len = LEN_PLIST( tree1 );
+		for  (l=1; l<=len; l++)
 		    SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
 		UnmarkTree(tree);
 		FindNewReps2(tree, pols, pr);
@@ -904,7 +903,7 @@ void    GetReps(
            tree,
            tree1;
     void   FindNewReps1();
-    UInt   i,j,k,l;
+    UInt   i,j,k,l, lenr, lenl, len;;
 
     if  ( LEN_PLIST(list) != 4 )
     {
@@ -918,8 +917,10 @@ void    GetReps(
     SET_LEN_PLIST(rreps, 0);
     GetReps( ELM_PLIST(list, 1), pr, lreps );
     GetReps( ELM_PLIST(list, 2), pr, rreps );
-    for  (i=1; i<=LEN_PLIST(lreps); i++)
-        for  (j=1; j<=LEN_PLIST(rreps); j++)
+    lenl = LEN_PLIST( lreps );
+    lenr = LEN_PLIST( rreps );
+    for  (i=1; i<=lenl; i++)
+        for  (j=1; j<=lenr; j++)
 	{
             k = LEN_PLIST( ELM_PLIST(lreps, i) )
 	        + LEN_PLIST( ELM_PLIST(rreps, j) ) + 5;/* m"ogliche Inkom-*/
@@ -936,11 +937,13 @@ void    GetReps(
 	    else
 		SET_ELM_PLIST(tree, 5, INTOBJ_INT(0) );
 	    tree1 = ELM_PLIST(lreps, i);
-	    for  (l=1; l<=LEN_PLIST( tree1 ); l++)
+	    len = LEN_PLIST( tree1 );
+	    for  (l=1; l<=len; l++)
 	        SET_ELM_PLIST(tree, l+5, ELM_PLIST(tree1, l) );
 	    k = LEN_PLIST(tree1) + 5;
 	    tree1 = ELM_PLIST(rreps, j);
-	    for  (l=1; l<=LEN_PLIST(tree1); l++)
+	    len = LEN_PLIST( tree1 );
+	    for  (l=1; l<=len; l++)
 	        SET_ELM_PLIST(tree, l+k, ELM_PLIST(tree1, l) );
 	    UnmarkTree(tree);
 	    FindNewReps1(tree, reps);
@@ -1199,10 +1202,10 @@ void   FindNewReps(
                        **  class of subtrees of right(<tree>)            */
           list1,       /*  stores a sublist of <reps>                    */
           rel;         /*  stores a commutator relation from <pr>        */
-    int   a,           /*  stores a subtree of right((<tree>)            */
-          n,           /*  Length of lsubs                               */
+    Int   a;           /*  stores a subtree of right((<tree>)            */
+    UInt  n,           /*  Length of lsubs                               */
           m,           /*  Length of rsubs                               */
-          i;           /*  loop variable                                 */
+          i, lenrel;   /*  loop variable                                 */
 
     /*  get a subtree of right(<tree>) which is unmarked but whose 
     **  subtrees are all marked                                          */
@@ -1238,8 +1241,9 @@ void   FindNewReps(
 	    else
 	    {
                 y = ShallowCopyPlist(tree);
+		lenrel = LEN_PLIST(rel);
                 for  (  i=3;  
-                        i < LEN_PLIST( rel )  &&
+                        i < lenrel  &&
                         ELM_PLIST(rel, i) <= max;  
                         i+=2                                        )
 		{
@@ -1680,11 +1684,16 @@ void    SetSubs(
 		 Obj       a,
 		 Obj       tree    )
 {
-    int   i,j;  /*  loop variables                                         */
+    UInt   i,j;  /*  loop variables                                         */
+    UInt   len, len2;
     
-    for  (i=1; i <= LEN_PLIST(list); i++)
-        for  (j=1;  j <= LEN_PLIST( ELM_PLIST(list, i) );  j++)
+    len = LEN_PLIST(list);
+    for  (i=1; i <= len; i++)
+    {
+        len2 = LEN_PLIST( ELM_PLIST(list, i) );
+        for  (j=1;  j <= len2;  j++)
 	    SET_DT_POS(tree, CELM( ELM_PLIST(list, i), j), ELM_PLIST(a, i) );
+    }
 }
 
 
@@ -1700,14 +1709,18 @@ void    UnmarkAEClass(
 		       Obj      tree,
 		       Obj      list  )
 {
-    int  i,j;
+    UInt  i,j, len, len2;
 
-   for  (i=1; i <= LEN_PLIST(list); i++)
-        for (j=1;  j <= LEN_PLIST( ELM_PLIST(list, i) );  j++)
+    len = LEN_PLIST(list);
+    for  (i=1; i <= len; i++)
+    {
+        len2 = LEN_PLIST( ELM_PLIST(list, i) );
+        for (j=1;  j <= len2;  j++)
 	{
 	    DT_UNMARK(tree, CELM( ELM_PLIST(list, i), j)  );
 	    SET_DT_POS(tree, CELM( ELM_PLIST(list, i), j), INTOBJ_INT(i) );
 	}
+    }
 }
 
 

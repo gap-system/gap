@@ -381,7 +381,7 @@ InstallMethod( Enumerator, true, [ IsExternalSubset ], 0,
     sublist := MovedPoints( ImagesSource
                        ( OperationHomomorphismAttr( xset ) ) );
     if IsEmpty( sublist )  then
-        Add( sublist, PositionCanonical( henum, Representative( xset ) ) );
+        sublist := [ PositionCanonical( henum, Representative( xset ) ) ];
     fi;
     return Objectify( NewKind( FamilyObj( henum ), IsSubsetEnumerator ),
         rec( homeEnumerator := henum,
@@ -604,7 +604,7 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
             hom.conperm := MappingPermListList( D, [ 1 .. Length( D ) ] );
         elif     IsPermGroup( G )
              and IsList( D )
-             and ForAll( D, IsSSortedList )
+             and ForAll( D, IsList and IsSSortedList )
              and Sum( D, Length ) = Length( Union( D ) )
              and opr = OnSets  then
             filter := IsBlocksHomomorphism;
@@ -859,11 +859,43 @@ InstallOtherMethod( OrbitStabilizerOp,
           IsList,
           IsFunction ], 0,
     function( G, pnt, gens, oprs, opr )
-    return Immutable( rec
-                   ( orbit := OrbitOp( G, pnt, gens, oprs, opr ),
-                stabilizer := StabilizerOp( G, pnt, gens, oprs, opr ) ) );
-end );
+    local   orbstab;
     
+    orbstab := OrbitStabilizerByGenerators( gens, oprs, pnt, opr );
+    orbstab.stabilizer := SubgroupNC( G, orbstab.stabilizer );
+    return Immutable( orbstab );
+end );
+
+#############################################################################
+##
+#F  OrbitStabilizerByGenerators( <gens>, <oprs>, <d>, <opr> )  Schreier's th.
+##
+OrbitStabilizerByGenerators := function( gens, oprs, d, opr )
+    local   orb,  stb,  rep,  pnt,  img,  sch,  i;
+
+    orb := [ d ];
+    stb := [  ];
+    if not IsEmpty( gens )  then
+        rep := [ One( gens[ 1 ] ) ];
+        for pnt  in orb  do
+            for i  in [ 1 .. Length( gens ) ]  do
+                img := opr( pnt, oprs[ i ] );
+                if not img in orb  then
+                    Add( orb, img );
+                    Add( rep, rep[Position(orb,pnt)]*gens[ i ] );
+                else
+                    sch := rep[Position(orb,pnt)]*gens[ i ]
+                           / rep[Position(orb,img)];
+                    if not sch in stb  then
+                        Add( stb, sch );
+                    fi;
+                fi;
+            od;
+        od;
+    fi;
+    return rec( orbit := orb, stabilizer := stb );
+end;
+
 #############################################################################
 ##
 #F  Orbits( <arg> ) . . . . . . . . . . . . . . . . . . . . . . . . .  orbits
@@ -1866,7 +1898,7 @@ Stabilizer := function( arg )
     fi;
 end;
 
-InstallOtherMethod( StabilizerOp,
+InstallMethod( StabilizerOp,
         "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, d, gens, oprs, opr )
@@ -1879,7 +1911,7 @@ InstallOtherMethod( StabilizerOp,
         return PreImage( hom, StabilizerOp
                        ( ImagesSource( hom ), d, OnPoints ) );
     else
-        return StabilizerOp( G, D, d, opr );
+        return StabilizerOp( G, d, opr );
     fi;
 end );
 
@@ -1890,91 +1922,31 @@ InstallOtherMethod( StabilizerOp,
           IsList,
           IsFunction ], 0,
     function( G, d, gens, oprs, opr )
-    if not IsIdentical( gens, oprs )  then
-        return StabilizerOp( G, OrbitOp( G, d, gens, oprs, opr ), d,
-                       gens, oprs, opr );
+    local   stb,  p;
+    
+    if IsIdentical( gens, oprs )  then
+        if opr = OnTuples  or  opr = OnPairs  then
+            stb := G;
+            for p  in d  do
+                stb := StabilizerOp( stb, p, OnPoints );
+            od;
+        else
+            stb := StabilizerOp( G, d, opr );
+        fi;
     else
-        return StabilizerOp( G, d, opr );
+        stb := SubgroupNC( G, OrbitStabilizerByGenerators
+                       ( gens, oprs, d, opr ).stabilizer );
     fi;
-end );
-
-InstallMethod( StabilizerOp,
-        "G, D, pnt, opr", true,
-        [ IsGroup, IsList, IsObject, IsFunction ], 0,
-    function( G, D, d, opr )
-    return StabilizerOp( G, d, opr );
+    return stb;
 end );
 
 InstallOtherMethod( StabilizerOp,
         "G, pnt, opr", true,
         [ IsGroup, IsObject, IsFunction ], 0,
     function( G, d, opr )
-    local   stb,        # stabilizer, result
-            orb,        # orbit
-            rep,        # representatives for the points in the orbit <orb>
-            set,        # orbit <orb> as set for faster membership test
-            gen,        # generator of the group <G>
-            pnt,        # point in the orbit <orb>
-            img,        # image of the point <pnt> under the generator <gen>
-            sch;        # schreier generator of the stabilizer
-
-    # standard operation
-    if   opr = OnPoints  then
-        orb := [ d ];
-        set := [ d ];
-        rep := [ One( G ) ];
-        stb := TrivialSubgroup( G );
-        for pnt  in orb  do
-            for gen  in GeneratorsOfGroup( G )  do
-                img := pnt ^ gen;
-                if not img in set  then
-                    Add( orb, img );
-                    AddSet( set, img );
-                    Add( rep, rep[Position(orb,pnt)]*gen );
-                else
-                    sch := rep[Position(orb,pnt)]*gen
-                           / rep[Position(orb,img)];
-                    if not sch in stb  then
-                        stb := ClosureGroup( stb, sch );
-                    fi;
-                fi;
-            od;
-        od;
-
-    # compute iterated stabilizers for the operation on pairs or on tuples
-    elif opr = OnPairs  or opr = OnTuples  then
-        stb := G;
-        for pnt in d  do
-            stb := StabilizerOp( stb, pnt, OnPoints );
-        od;
-
-    # other operation
-    else
-        orb := [ d ];
-        set := [ d ];
-        rep := [ One( G ) ];
-        stb := TrivialSubgroup( G );
-        for pnt  in orb  do
-            for gen  in GeneratorsOfGroup( G )  do
-                img := opr( pnt, gen );
-                if not img in set  then
-                    Add( orb, img );
-                    AddSet( set, img );
-                    Add( rep, rep[Position(orb,pnt)]*gen );
-                else
-                    sch := rep[Position(orb,pnt)]*gen
-                           / rep[Position(orb,img)];
-                    if not sch in stb  then
-                        stb := ClosureGroup( stb, sch );
-                    fi;
-                fi;
-            od;
-        od;
-
-    fi;
-
-    # return the stabilizer <stb>
-    return stb;
+    return SubgroupNC( G, OrbitStabilizerByGenerators
+                   ( GeneratorsOfGroup( G ), GeneratorsOfGroup( G ),
+                     d, opr ).stabilizer );
 end );
 
 #############################################################################
@@ -2026,13 +1998,7 @@ InstallMethod( OperatorOfExternalSet, true, [ IsExternalSet ], 0,
 #M  StabilizerOfExternalSet( <xset> ) . . . . . . . . . . . . . . . . . . . .
 ##
 InstallMethod( StabilizerOfExternalSet, true, [ IsExternalSet ], 0,
-        xset -> StabilizerOp( ActingDomain( xset ),
-                Representative( xset ), FunctionOperation( xset ) ) );
-
-InstallMethod( StabilizerOfExternalSet, true,
-        [ IsExternalSet and HasHomeEnumerator ], 0,
-    xset -> StabilizerOp( ActingDomain( xset ), HomeEnumerator( xset ),
-            Representative( xset ), FunctionOperation( xset ) ) );
+        xset -> Stabilizer( xset, Representative( xset ) ) );
 
 #############################################################################
 ##
@@ -2055,18 +2021,21 @@ end );
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . .  if a base is known
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsOperationHomomorphismByBase and HasImagesSource,
+        [ IsOperationHomomorphismDirectly and
+          IsOperationHomomorphismByBase and HasImagesSource,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
-    local   xset,  D,  opr,  base,  imgs;
+    local   xset,  D,  opr,  imgs;
 
     xset := hom!.externalSet;
     D := HomeEnumerator( xset );
     opr := FunctionOperation( xset );
-    base := List( Base( xset ), b -> PositionCanonical( D, b ) );
+    if not IsBound( xset!.base )  then
+        xset!.base := List( Base( xset ), b -> PositionCanonical( D, b ) );
+    fi;
     imgs := List( Base( xset ), b -> PositionCanonical( D, opr( b, elm ) ) );
     return RepresentativeOperationOp( ImagesSource( hom ),
-                   base, imgs, OnTuples );
+                   xset!.base, imgs, OnTuples );
 end );
 
 #############################################################################
@@ -2101,8 +2070,9 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     for b  in base  do
         Add( mat, V[ PositionCanonical( V, b ) ^ elm ] );
     od;
-    if mat in Source( hom )  then  return mat;
-                             else  return fail;  fi;
+    if    IsGeneralLinearGroup( Source( hom ) )
+       or mat in Source( hom )  then  return mat;
+                                else  return fail;  fi;
 end );
 
 #############################################################################

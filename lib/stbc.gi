@@ -811,8 +811,8 @@ ConjugateStabChain := function( arg )
         # If this is a  new  labels component, map  the  labels and mark  the
         # component so that it can be recognized at deeper levels.
         if len = 0  or
-           IsMultiplicativeElementWithInverse( S.labels[ len ] )  then
-            if IsMultiplicativeElementWithInverse( hom )  then
+           IsPerm( S.labels[ len ] )  then
+            if IsPerm( hom )  then
                 labels := OnTuples( S.labels, hom );
                 labpos := [ 1 .. len ];
             else
@@ -836,8 +836,7 @@ ConjugateStabChain := function( arg )
         
         # Map the orbit and edges.
         edges := [  ];
-        if     IsMultiplicativeElementWithInverse( map )
-           and IsMultiplicativeElementWithInverse( hom )  then
+        if IsPerm( map )  and  IsPerm( hom )  then
             orbit := OnTuples( S.orbit, map );
             edges{ orbit } := S.translabels{ S.orbit };
         else
@@ -863,7 +862,7 @@ ConjugateStabChain := function( arg )
                     edges[ img ] := pos;
                 fi;
             od;
-            if not IsMultiplicativeElementWithInverse( hom )  then
+            if not IsPerm( hom )  then
                 T.labpos := labpos;
             fi;
         fi;
@@ -909,7 +908,7 @@ ConjugateStabChain := function( arg )
     
     # Now that all labels have been mapped, complete  the `genlabels' and put
     # in `generators'.
-    if not IsMultiplicativeElementWithInverse( hom )  then
+    if not IsPerm( hom )  then
         L := arg[ 2 ];
         while IsBound( L.labpos )  do
             L.genlabels := Set( L.labpos{ L.genlabels } );

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.20  1997/03/17 14:20:42  htheisse
+#H  added generic method for `OrbitStabilizer'
+#H
 #H  Revision 4.19  1997/03/12 13:17:51  htheisse
 #H  added method for preimages under GL -> perm op homom
 #H
@@ -260,8 +263,7 @@ RepresentativeOperationOp := NewOperation( "RepresentativeOperation",
     [ IsGroup, IsList, IsObject, IsObject, IsFunction ] );
 
 Stabilizer := NewOperationArgs( "Stabilizer" );
-StabilizerOp := NewOperation( "Stabilizer",
-    [ IsGroup, IsList, IsObject, IsFunction ] );
+StabilizerOp := NewOperation( "Stabilizer", OrbitishReq );
 
 StabilizerOfExternalSet := NewAttribute( "StabilizerOfExternalSet",
                                    IsExternalSet );
@@ -276,6 +278,8 @@ OperationHomomorphismSubsetAsGroupGeneralMappingByImages := NewOperationArgs
 Operation := NewOperationArgs( "Operation" );
 OperationOrbit := NewOperationArgs( "OperationOrbit" );
 OrbitByPosOp := NewOperationArgs( "OrbitByPosOp" );
+OrbitStabilizerByGenerators := NewOperationArgs
+                               ( "OrbitStabilizerByGenerators" );
 SetCanonicalRepresentativeOfExternalOrbitByPcgs :=
   NewOperationArgs( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
 

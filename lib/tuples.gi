@@ -77,7 +77,7 @@ end);
 #M  TuplesFamily ( [] ) . . .  . . . . . . . . . . . . .family of empty tuple
 ##
 
-InstallMethod( TuplesFamily, 
+InstallOtherMethod( TuplesFamily, 
         true, [ IsList and IsEmpty ], 0,
         function( empty )
     Info(InfoTuples, 2, "Reused tuples family, length 0");

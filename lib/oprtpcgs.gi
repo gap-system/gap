@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.18  1997/03/17 14:20:50  htheisse
+#H  added generic method for `OrbitStabilizer'
+#H
 #H  Revision 4.17  1997/02/12 16:30:23  htheisse
 #H  corrected enumerators for external subsets; cleaned up the code
 #H
@@ -408,7 +411,7 @@ end );
 ##
 #M  StabilizerOp( <G>, <D>, <pt>, <U>, <V>, <op> )  . . . . . . based on pcgs
 ##
-InstallOtherMethod( StabilizerOp,
+InstallMethod( StabilizerOp,
         "G, D, pnt, pcgs, oprs, opr", true,
         [ IsGroup, IsList, IsObject, IsPcgs,
           IsList,

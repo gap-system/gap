@@ -253,7 +253,8 @@ InstallMethod( IsSubset,
 ##
 InstallMethod( Dimension,
     "method for a free left module",
-    true, [ IsFreeLeftModule ], 0,
+    true,
+    [ IsFreeLeftModule ], 0,
     function( V )
     if IsFiniteDimensional( V ) then
       return Length( BasisVectors( BasisOfDomain( V ) ) );
@@ -261,6 +262,17 @@ InstallMethod( Dimension,
       return infinity;
     fi;
     end );
+
+
+#############################################################################
+##
+#M  IsFiniteDimensional( <M> )  . for a free left module with known dimension
+##
+InstallMethod( IsFiniteDimensional,
+    "method for a free left module with known dimension",
+    true,
+    [ IsFreeLeftModule and HasDimension ], 0,
+    M -> IsInt( Dimension( M ) ) );
 
 
 #############################################################################

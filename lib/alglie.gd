@@ -418,7 +418,7 @@ PthPowerImage := NewOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
 ##  is contained in $S$.
 ##  If such an algebra exists then it is returned,
 ##  otherwise 'fail' is returned.
-##  
+##
 FindSl2 := NewOperationArgs( "FindSl2" );
 
 
@@ -455,6 +455,42 @@ RootSystem := NewAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
 ##  "H", "K", "S", "W".
 ##
 SimpleLieAlgebra := NewOperationArgs( "SimpleLieAlgebra" );
+
+
+#############################################################################
+##
+#F  DescriptionOfNormalizedUEAElement( <T>, <listofpairs> )
+##
+##  <T> is the structure constants table of a finite dim. Lie algebra $L$.
+##
+##  <listofpairs> is a list of the form
+##  $[ l_1, c_1, l_2, c_2, \ldots, l_n, c_n ]$
+##  where the $c_i$ are coefficients and the $l_i$ encode monomials
+##  $x_{i_1}^{e_1} x_{i_2}^{e_2} \cdots x_{i_m}^{e_m}$ as lists
+##  $[ i_1, e_1, i_2, e_2, \ldots, i_m, e_m ]$.
+##  (All $e_k$ are nonzero.)
+##  Here the generator $x_k$ of the universal enveloping algebra corresponds
+##  to the $k$-th basis vector of $L$.
+##
+##  'DescriptionOfNormalizedUEAElement' applies successively the rewriting
+##  rules of the universal enveloping algebra of $L$ such that the final
+##  value descibes the same element as <listofpairs>, each monomial is
+##  normalized, and the monomials are ordered lexicographically.
+##  This list is the return value.
+##
+DescriptionOfNormalizedUEAElement := NewOperationArgs(
+    "DescriptionOfNormalizedUEAElement" );
+
+
+#############################################################################
+##
+#A  UniversalEnvelopingAlgebra( <L> ) . . . . . . . . . . . for a Lie algebra
+##
+UniversalEnvelopingAlgebra := NewAttribute(
+    "UniversalEnvelopingAlgebra",
+    IsLieAlgebra );
+SetUniversalEnvelopingAlgebra := Setter( UniversalEnvelopingAlgebra );
+HasUniversalEnvelopingAlgebra := Tester( UniversalEnvelopingAlgebra );
 
 
 #############################################################################

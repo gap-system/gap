@@ -502,7 +502,7 @@ function( pcgs, gens, imgs )
     return igs;
 end );
 
-InstallMethod( InducedPcgsByGeneratorsWithImages,
+InstallOtherMethod( InducedPcgsByGeneratorsWithImages,
     true,
     [ IsPcgs and IsPrimeOrdersPcgs,
       IsList and IsEmpty,
@@ -522,7 +522,7 @@ end );
 
 
 #############################################################################
-InstallMethod( InducedPcgsByGeneratorsNC,
+InstallOtherMethod( InducedPcgsByGeneratorsNC,
     true,
     [ IsPcgs,
       IsList and IsEmpty ],
@@ -555,7 +555,7 @@ end );
 
 
 #############################################################################
-InstallMethod( InducedPcgsByGenerators,
+InstallOtherMethod( InducedPcgsByGenerators,
     true,
     [ IsPcgs,
       IsList and IsEmpty ],

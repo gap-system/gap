@@ -18,6 +18,10 @@ ExtensionSQ := function( C, G, M, c )
     # construct module generators
     field := M.field;
     Mgens := M.generators;
+    if Length(Mgens) = 0 then
+        return AbelianGroup( List([1..M.dimension], 
+                              x -> Characteristic(M.field)));
+    fi;
     d := Length(Mgens[1]);
     n := Length(Pcgs( G ));
 
@@ -140,7 +144,7 @@ function( G, M )
     co := TwoCohomologySQ( C, G, M );
     cc := VectorSpace( M.field, co );
 
-    for i in [1..Size(cc)] do
+    for i in [2..Size(cc)] do
         c := AsList( cc )[i];
         Add( ext, ExtensionSQ( C, G, M, c ) );
     od;

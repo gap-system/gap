@@ -492,7 +492,9 @@ AbsAndIrredModules := function( G, F, dim )
     pcgs  := Pcgs( G );
     m     := Length( pcgs );
 
-    if m = 0 and Dimension( F ) <= dim then return [TrivialModule( 0, F )]; 
+    if m = 0 and Dimension( F ) <= dim then 
+        return [rec( irred:= TrivialModule( 0, F ),
+							 absirr := TrivialModule( 0, F ))]; 
     elif m = 0 then return []; fi;
     if dim = 0 then dim := 2^16-1; fi;
 

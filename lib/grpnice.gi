@@ -69,6 +69,22 @@ end );
 
 #############################################################################
 ##
+#M  NiceMonomorphism
+##
+InstallMethod(NiceMonomorphism,
+  "for subgroups that get the nice monomorphism by their parent",true,
+    [ IsGroup and IsHandledByNiceMonomorphism and HasParent],0,
+function(G)
+local P;
+  P:=Parent(G);
+  if not IsHandledByNiceMonomorphism(P) then
+    TryNextMethod();
+  fi;
+  return NiceMonomorphism(P);
+end);
+
+#############################################################################
+##
 
 #M  \^( <G>, <g> )
 ##
@@ -549,6 +565,28 @@ local mon,iso;
      return mon*iso;
    fi;
 end);
+
+#############################################################################
+##
+#M  ConjugacyClasses
+##
+InstallMethod(ConjugacyClasses,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism],0,
+function(g)
+local mon,cl,clg,c,i;
+   mon:=NiceMonomorphism(g);
+   cl:=ConjugacyClasses(NiceObject(g));
+   clg:=[];
+   for i in cl do
+     c:=ConjugacyClass(g,PreImagesRepresentative(mon,Representative(i)));
+     if HasStabilizerOfExternalSet(i) then
+       SetStabilizerOfExternalSet(c,PreImage(mon,StabilizerOfExternalSet(i)));
+     fi;
+     Add(clg,c);
+   od;
+   return clg;
+end);
+
 
 #############################################################################
 ##

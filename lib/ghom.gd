@@ -64,7 +64,7 @@ InnerAutomorphism := NewOperation( "InnerAutomorphism",
 
 IsInnerAutomorphismRep := NewRepresentation( "IsInnerAutomorphismRep",
     IsGroupHomomorphism and IsBijective and IsAttributeStoringRep
-    and IsMultiplicativeElementWithInverse and IsSPGeneralMapping,
+    and IsSPGeneralMapping,
     [ "conjugator" ] );
 
 
@@ -86,6 +86,8 @@ GroupIsomorphismByFunctions := NewOperationArgs(
     "GroupIsomorphismByFunctions" );
 
 IsomorphismPermGroup := NewAttribute("IsomorphismPermGroup",IsGroup);
+HasIsomorphismPermGroup := Tester( IsomorphismPermGroup );
+SetIsomorphismPermGroup := Setter( IsomorphismPermGroup );
 
 #############################################################################
 ##

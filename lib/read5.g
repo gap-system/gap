@@ -35,6 +35,7 @@ ReadLib( "vspcmat.gi"  );
 ReadLib( "vspchom.gi"  );
 
 ReadLib( "algebra.gi"  );
+ReadLib( "algfp.gi"    );
 ReadLib( "alglie.gi"   );
 ReadLib( "algliess.gi" );
 ReadLib( "algsc.gi"    );
@@ -111,6 +112,7 @@ ReadLib( "gprd.gi"     );
 ReadLib( "ghomperm.gi" );
 ReadLib( "grpperm.gi"  );
 ReadLib( "gprdperm.gi" );
+ReadLib( "gprdpc.gi" );
 ReadLib( "oprt.gi"     );
 ReadLib( "oprtperm.gi" );
 ReadLib( "oprtpcgs.gi" );

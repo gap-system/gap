@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.24  1997/03/18 09:10:26  htheisse
+#H  corrected `RepresentativeOperation' for perm groups
+#H
+#H  Revision 4.23  1997/03/17 14:20:53  htheisse
+#H  added generic method for `OrbitStabilizer'
+#H
 #H  Revision 4.22  1997/03/04 16:04:48  htheisse
 #H  checked the `oprt*' functions against the descriptions of the 3.4 manual
 #H
@@ -523,8 +529,10 @@ InstallMethod( EarnsOp,
     fi;
     
     n := Length( Omega );
-    if not IsPrimePowerInt( n )  or  not IsPrimitive( G, Omega )  then
+    if not IsPrimePowerInt( n )  then
         return fail;
+    elif not IsPrimitive( G, Omega )  then
+        Error( "sorry, cannot compute the earns for imprimitive groups" );
     fi;
     
     # Try a shortcut for solvable groups (or if a solvable normal subgroup is
@@ -802,19 +810,38 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
             r,                  # slice of the representative
             S,                  # stabilizer of <G>
             rep2,               # representative in <S>
-            i,  f;              # loop variable
+            i,  f;              # loop variables
 
     # standard operation on points, make a basechange and trace the rep
-    if   opr = OnPoints  and IsInt(d)  then
+    if opr = OnPoints and IsInt( d )  then
+        d := [ d ];  e := [ e ];
+        S := true;
+    elif     ( opr = OnPairs or opr = OnTuples )
+         and IsList( d ) and ForAll( d, IsInt )  then
+        S := true;
+    fi;
+    if IsBound( S )  then
         if d = e  then
             rep := One( G );
         else
-            S := StabChainOp( G, [ e ] );
-            if e = BasePoint( S )  and  IsInBasicOrbit( S, d )  then
-                rep := InverseRepresentative( S, d );
-            else
-                rep := fail;
-            fi;
+            S := StabChainOp( G, d );
+            rep := S.identity;
+            for i  in [ 1 .. Length( d ) ]  do
+                if BasePoint( S ) = d[ i ]  then
+                    f := e[ i ] / rep;
+                    if not IsInBasicOrbit( S, f )  then
+                        rep := fail;
+                        break;
+                    else
+                        rep := LeftQuotient( InverseRepresentative( S, f ),
+                                       rep );
+                    fi;
+                    S := S.stabilizer;
+                elif e[ i ] <> d[ i ] ^ rep  then
+                    rep := fail;
+                    break;
+                fi;
+            od;
         fi;
 
     # operation on (lists of) permutations, use backtrack
@@ -829,26 +856,6 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
     # operation on permgroups, use backtrack
     elif opr = OnPoints  and IsPermGroup(d)  then
         rep := IsomorphismPermGroups( G, d, e );
-
-    # operation on pairs or tuples of points, iterate
-    elif (opr = OnPairs  or opr = OnTuples)  and ForAll( d, IsInt )  then
-        S   := StabChainOp( G, d );
-        rep := S.identity;
-        i   := 1;
-        while i <= Length(d)  and rep <> fail  do
-            if BasePoint( S ) = d[ i ]  then
-                f := e[ i ] / rep;
-                if not IsInBasicOrbit( S, f )  then
-                    rep := fail;
-                else
-                    rep := LeftQuotient( InverseRepresentative( S, f ), rep );
-                fi;
-                S := S.stabilizer;
-            elif e[i] <> d[i] ^ rep  then
-                rep := fail;
-            fi;
-            i := i + 1;
-        od;
 
     # operation on pairs on tuples of other objects, iterate
     elif opr = OnPairs  or opr = OnTuples  then
@@ -889,17 +896,24 @@ InstallOtherMethod( StabilizerOp,
         [ IsPermGroup, IsObject, IsFunction ], 0,
     function( G, d, opr )
     local   K,          # stabilizer <K>, result
-            S;          # stabilizer chain of G
+            S,  base;
 
     # standard operation on points, make a stabchain beginning with <d>
-    if   opr = OnPoints  and IsInt(d)  then
-        S := StabChainOp( G, [ d ] );
-        if BasePoint( S ) = d  then
-            K := GroupStabChain( G, S.stabilizer, true );
-        else
-            K := G;
-        fi;
-        
+    if opr = OnPoints and IsInt( d )  then
+        base := [ d ];
+    elif     ( opr = OnPairs or opr = OnTuples )
+      and IsList( d ) and ForAll( d, IsInt )  then
+        base := d;
+    fi;
+    if IsBound( base )  then
+        K := StabChainOp( G, base );
+        S := K;
+        while IsBound( S.orbit )  and  S.orbit[ 1 ] in base  do
+            S := S.stabilizer;
+        od;
+        if IsIdentical( S, K )  then  K := G;
+                                else  K := GroupStabChain( G, S, true );  fi;
+                            
     # standard operation on (lists of) permutations, take the centralizer
     elif opr = OnPoints  and IsPerm( d )  then
         K := Centralizer( G, d );
@@ -911,15 +925,6 @@ InstallOtherMethod( StabilizerOp,
     # standard operation on a permutation group, take the normalizer
     elif opr = OnPoints  and IsPermGroup(d)  then
         K := Normalizer( G, d );
-
-    # operation on tuples of points, make a stabchain beginning with <d>
-    elif (opr = OnPairs  or opr = OnTuples)  and ForAll( d, IsInt )  then
-        S := StabChainOp( G, d );
-        while     BasePoint( S ) <> false
-              and BasePoint( S ) in d  do
-            S := S.stabilizer;
-        od;
-        K := GroupStabChain( G, S, true );
 
     # operation on sets of points, use a backtrack
     elif opr = OnSets  and ForAll( d, IsInt )  then

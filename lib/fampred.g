@@ -66,6 +66,12 @@ IsCollsElmsElmsElms := function( F1, F2, F3, F4 )
        and IsIdentical( F2, F4 );
 end;
 
+IsCollsElmsElmsX := function( F1, F2, F3, F4 )
+    return HasElementsFamily(F1)
+       and IsIdentical( ElementsFamily(F1), F2 )
+       and IsIdentical( F2, F3 );
+end;
+
 IsCollCollsElmsElms := function( F1, F2, F3 )
     return HasElementsFamily(F1)
        and HasElementsFamily( ElementsFamily(F1) )
@@ -308,6 +314,28 @@ end;
 ##
 FamRangeNotEqFamElm := function( FamMap, FamElm )
     return not FamRangeEqFamElm( FamMap, FamElm );
+end;
+
+
+#############################################################################
+##
+#F  IsMagmaRingsRings( <FamRM>, <FamR> )  . . . . . . . . .  family predicate
+#F  IsRingsMagmaRings( <FamR>, <FamRM> )  . . . . . . . . .  family predicate
+#F  IsMagmasMagmaRings( <FamM>, <FamRM> ) . . . . . . . . .  family predicate
+##
+IsMagmaRingsRings := function( FamRM, FamR )
+    return     IsBound( FamRM!.familyRing )
+           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
+end;
+
+IsRingsMagmaRings := function( FamR, FamRM )
+    return     IsBound( FamRM!.familyRing )
+           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
+end;
+
+IsMagmasMagmaRings := function( FamM, FamRM )
+    return     IsBound( FamRM!.familyMagma )
+           and IsIdentical( ElementsFamily( FamRM!.familyMagma ), FamM );
 end;
 
 

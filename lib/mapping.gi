@@ -6,7 +6,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains
 ##  1. the design of families of general mappings
@@ -117,6 +117,17 @@ InstallOtherMethod( IsZero,
     map ->     Zero( Range( map ) ) <> fail
            and IsTotal( map )
            and ImagesSource( map ) = [ Zero( Range( map ) ) ] );
+
+
+#############################################################################
+##
+#M  IsEndoGeneralMapping( <map> ) . . . . . . . . . . . . for general mapping
+##
+InstallOtherMethod( IsEndoGeneralMapping,
+    "method for general mapping",
+    true,
+    [ IsGeneralMapping ], 0,
+    map -> Source( map ) = Range( map ) );
 
 
 #############################################################################
@@ -702,10 +713,10 @@ InstallOtherMethod( One,
     true,
     [ IsGeneralMapping ], 0,
     function( map )
-    if Source( map ) = Range( map ) then
+    if IsEndoGeneralMapping( map ) then
       return IdentityMapping( Source( map ) );
     else
-      Error( "source and range of <map> are different" );
+      return fail;
     fi;
     end );
 
@@ -719,6 +730,23 @@ InstallOtherMethod( Zero,
     true,
     [ IsGeneralMapping ], 0,
     map -> ZeroMapping( Source( map ), Range( map ) ) );
+
+
+#############################################################################
+##
+#M  Inverse( <map> )  . . . . . . . . . . delegate to 'InverseGeneralMapping'
+##
+InstallMethod( Inverse,
+    "method for a general mapping",
+    true,
+    [ IsGeneralMapping ], 0,
+    function( map )
+    if IsEndoGeneralMapping( map ) and IsBijective( map ) then
+      return InverseGeneralMapping( map );
+    else
+      return fail;
+    fi;
+    end );
 
 
 #############################################################################
@@ -1273,7 +1301,9 @@ InstallMethod( \<,
 
     # compare the image sets
     return     i <= Length( elms )
-           and ImagesElm( map1, elms[i] ) < ImagesElm( map2, elms[i] );
+           and   EnumeratorSorted( ImagesElm( map1, elms[i] ) )
+               < EnumeratorSorted( ImagesElm( map2, elms[i] ) );
+#T note that we do not have a generic '\<' method for domains !
     end );
 
 

@@ -22,6 +22,14 @@
 ##  Note that the group ring of a permutation group is a free magma ring
 ##  as well as any (multivariate) polynomial ring.
 ##
+#T Eventually we will need two representations of free magma ring elements,
+#T namely one for arbitrary magmas (e.g., permutation groups)
+#T and another one for magmas with external representation
+#T (e.g., free monoids).
+#T The latter with yield an external representation for the elements of the
+#T free magma ring, and thus an external representation for elements in
+#T f.p. algebras.
+##
 Revision.mgmring_gd :=
     "@(#)$Id$";
 

@@ -45,6 +45,7 @@ IsOperationHomomorphismAutomGroup := NewRepresentation(
 ##
 StoreNiceMonomorphismAutomGroup := function(aut,elms,elmsgens)
 local xset,fam,hom;
+  elmsgens:=Filtered(elmsgens,i->i in elms);
   xset:=ExternalSet(aut,elms);
   SetBase(xset,elmsgens);
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),

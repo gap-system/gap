@@ -175,9 +175,12 @@ IsHomogeneousList :=
 
 #############################################################################
 ##
-#M  IsHomogeneousList( <coll_and_list> )
+#M  IsHomogeneousList( <coll_and_list> )  . . for a collection that is a list
+#M  IsHomogeneousList( <empty> )  . . . . . . . . . . . . . for an empty list
 ##
 InstallTrueMethod( IsHomogeneousList, IsList and IsCollection );
+
+InstallTrueMethod( IsHomogeneousList, IsList and IsEmpty );
 
 
 #############################################################################

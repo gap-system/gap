@@ -126,9 +126,8 @@ gap> IsAssociative( l1 );
 false
 gap> Dimension( l1 );
 10
-
-# ucs:= UpperCentralSeriesOfAlgebra( l1 );  # needs homomorphisms!
-
+gap> ucs:= UpperCentralSeriesOfAlgebra( l1 );
+[ <Lie algebra over Rationals, with 0 generators> ]
 gap> lcs:= LowerCentralSeriesOfAlgebra( l1 );
 [ <Lie algebra of dimension 10 over Rationals> ]
 gap> IsSolvableAlgebra( l1 );
@@ -159,7 +158,7 @@ gap> LieCentre( s1 );
 gap> LieCentralizer( l1, s1 );
 <Lie algebra of dimension 4 over Rationals>
 gap> ps:= ProductSpace( l1, s1 );
-VectorSpace( Rationals, [ v.4, v.3, v.6, v.5, v.9, v.8 ] )
+<Lie algebra of dimension 6 over Rationals>
 gap> LieCentralizer( l1, ps );
 <Lie algebra of dimension 0 over Rationals>
 gap> LieNormalizer( l1, ps );
@@ -424,9 +423,9 @@ gap> IsAssociative( l2 );
 false
 gap> Dimension( l2 );
 15
-
-# ucs:= UpperCentralSeriesOfAlgebra( l2 );
-
+gap> ucs:= UpperCentralSeriesOfAlgebra( l2 );
+[ <Lie algebra of dimension 1 over Rationals>, 
+  <Lie algebra over Rationals, with 0 generators> ]
 gap> lcs:= LowerCentralSeriesOfAlgebra( l2 );
 [ <Lie algebra of dimension 15 over Rationals>, 
   <Lie algebra of dimension 14 over Rationals> ]
@@ -459,7 +458,7 @@ gap> LieCentre( s2 );
 gap> LieCentralizer( l2, s2 );
 <Lie algebra of dimension 9 over Rationals>
 gap> ps:= ProductSpace( l2, s2 );
-VectorSpace( Rationals, [ v.5, v.6, v.1, v.9, v.10, v.13 ] )
+<Lie algebra of dimension 6 over Rationals>
 gap> LieCentralizer( l2, ps );
 <Lie algebra of dimension 1 over Rationals>
 gap> LieNormalizer( l2, ps );
@@ -583,9 +582,8 @@ gap> IsAssociative( l3 );
 false
 gap> Dimension( l3 );
 14
-
-# ucs:= UpperCentralSeriesOfAlgebra( l3 );
-
+gap> ucs:= UpperCentralSeriesOfAlgebra( l3 );
+[ <Lie algebra over Rationals, with 0 generators> ]
 gap> lcs:= LowerCentralSeriesOfAlgebra( l3 );
 [ <Lie algebra of dimension 14 over Rationals>, 
   <Lie algebra of dimension 10 over Rationals> ]
@@ -617,7 +615,7 @@ gap> LieCentre( s3 );
 gap> LieCentralizer( l3, s3 );
 <Lie algebra of dimension 10 over Rationals>
 gap> ps:= ProductSpace( l3, s3 );
-VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
+<Lie algebra of dimension 4 over Rationals>
 gap> LieCentralizer( l3, ps );
 <Lie algebra of dimension 4 over Rationals>
 gap> LieNormalizer( l3, ps );

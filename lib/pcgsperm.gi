@@ -339,7 +339,8 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
             U := StabChainAttr( U );
             if IsBound( U.base )  then  i := U.base;
                                   else  i := fail;   fi;
-            U := CopyStabChain( U );
+            U := StabChainBaseStrongGenerators( BaseStabChain( U ),
+                         StrongGeneratorsStabChain( U ) );
             if i <> fail  then
                 U.base := i;
             fi;
@@ -834,17 +835,16 @@ end );
 ##
 InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
     function( pcgs )
-    local   series,  N,  i;
-    
-    N := CopyStabChain( StabChainAttr( TrivialSubgroup
-                 ( GroupOfPcgs( pcgs ) ) ) );
-    series := [ CopyStabChain( N ) ];
+    local   series,  G,  N,  i;
+
+    G := GroupOfPcgs( pcgs );
+    N := CopyStabChain( StabChainAttr( TrivialSubgroup( G ) ) );
+    series := [ GroupStabChain( G, CopyStabChain( N ), true ) ];
     for i  in Reversed( [ 2 .. Length( pcgs ) ] )  do
         AddNormalizingElementPcgs( N, pcgs[ i ] );
-        Add( series, GroupStabChain( GroupOfPcgs( pcgs ),
-                CopyStabChain( N ), true ) );
+        Add( series, GroupStabChain( G, CopyStabChain( N ), true ) );
     od;
-    Add( series, GroupOfPcgs( pcgs ) );
+    Add( series, G );
     return Reversed( series );
 end );        
 

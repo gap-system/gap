@@ -127,23 +127,17 @@ function( efam, gens, orders )
 
     # underlying family vermutlich nicht n"otig
 
-
-    # and the relative orders
-    SetRelativeOrders( dt, ShallowCopy(orders) );
-
     # and the generators
     SetGeneratorsOfRws( dt, gens );
     SetNumberGeneratorsOfRws( dt, Length(gens) );
+
+    # and the relative orders
+    SetRelativeOrders( dt, ShallowCopy(orders) );
 
     # we haven't computed the deep thought polynomials and the generator orders
     OutdatePolycyclicCollector(dt);
 
     # test whether dtrws is finite and set the corresponding feature
-    if  0 in RelativeOrders( dt )  then
-	SetFeatureObj( dt, IsFinite, false );
-    else
-	SetFeatureObj( dt, IsFinite, true );
-    fi;
     # and return
     return dt;
 
@@ -214,20 +208,68 @@ function( dtrws, orders )
 
     # check the orders
     for  i in orders  do
-        if  not IsInt(i)  or  i < 0  or  i=1  then
-            Error( "relative orders must be zero or integers greater than 1" );
+        if  (not IsInt(i)  and  i <> infinity)  or  i < 0  or  i=1  then
+            Error( "relative orders must be zero or infinity or integers greater than 1" );
 	fi;
     od;
     orders := ShallowCopy(orders);
     for  i in [1..Length(orders)]  do
 	if  IsBound(orders[i])  then
-	    if  orders[i] = 0  then
+	    if  orders[i] = 0  or  orders[i] = infinity  then
 	        Unbind(orders[i]);
 	    fi;
 	fi;
     od;
     dtrws![PC_EXPONENTS] := orders;
+    if  Length(orders) < dtrws![PC_NUMBER_OF_GENERATORS]  or  
+        not IsHomogeneousList( orders )                        then
+	SetFeatureObj( dtrws, IsFinite, false );
+    else
+	SetFeatureObj( dtrws, IsFinite, true );
+    fi;
 end   );
+
+
+#############################################################################
+##
+#M  SetRelativeOrder( <dtrws>, <i>, <ord> )
+##
+
+InstallMethod( SetRelativeOrder,
+      true,
+      [ IsDeepThoughtCollectorRep and IsPowerConjugateCollector and
+        IsMutable,
+        IsInt,
+        IsObject  ],
+      0,
+
+function( dtrws, i, ord )
+
+    if  i <= 0  then
+	Error("<i> must be positive");
+    fi;
+    if  i > dtrws![PC_NUMBER_OF_GENERATORS]  then
+	Error( "<i> must be at most ", dtrws![PC_NUMBER_OF_GENERATORS] );
+    fi;
+    if  (not IsInt(ord)  and  ord <> infinity)  or  ord < 0  or  ord=1  then
+	Error( "relative order must be zero or infinity or an integer greater than 1" );
+    fi;
+    if  ord = infinity  or  ord = 0  then
+	if  IsBound( dtrws![PC_EXPONENTS][i] )  then
+	    Unbind( dtrws![PC_EXPONENTS][i] );
+	    SetFeatureObj( dtrws, IsFinite, false );
+	fi;
+    else
+	dtrws![PC_EXPONENTS][i] := ord;
+	if  0 in RelativeOrders( dtrws )  then
+	    SetFeatureObj( dtrws, IsFinite, false );
+	else
+	    SetFeatureObj( dtrws, IsFinite, true );
+	fi;
+    fi;
+end   );
+    
+
 
 
 #############################################################################
@@ -235,7 +277,7 @@ end   );
 #M  RelativeOrders( <dtrws> )
 ##
 
-InstallMethod( RelativeOrders,
+InstallMethod( RelativeOrders,"Method for Deep Thought",
       true,
       [ IsDeepThoughtCollectorRep  and  IsPowerConjugateCollector ],
       0,

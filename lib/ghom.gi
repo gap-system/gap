@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 Revision.ghom_gi :=
     "@(#)$Id$";
@@ -54,18 +54,18 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <hom> )  . . . . . . . . . . . . . . . . . . . . . .  via images
+#M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . .  via images
 ##
-InstallOtherMethod( Inverse, true,
+InstallMethod( InverseGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> Inverse( AsGroupGeneralMappingByImages( hom ) ) );
+    hom -> InverseGeneralMapping( AsGroupGeneralMappingByImages( hom ) ) );
 
-InstallOtherMethod( SetInverse, true,
+InstallOtherMethod( SetInverseGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
           HasAsGroupGeneralMappingByImages,
           IsGeneralMapping ], SUM_FLAGS,
     function( hom, inv )
-    SetInverse( AsGroupGeneralMappingByImages( hom ), inv );
+    SetInverseGeneralMapping( AsGroupGeneralMappingByImages( hom ), inv );
     TryNextMethod();
 end );
 
@@ -182,6 +182,23 @@ InstallMethod( GroupHomomorphismByImages, true,
     return hom;
 end );
 
+
+#############################################################################
+##
+#M  AsGroupGeneralMappingByImages( <map> )  . . . . .  for group homomorphism
+##
+InstallMethod( AsGroupGeneralMappingByImages,
+    "method for a group homomorphism",
+    true,
+    [ IsGroupHomomorphism ], 0,
+    function( map )
+    local gens;
+    gens:= GeneratorsOfGroup( PreImagesRange( map ) );
+    return GroupHomomorphismByImages( Source( map ), Range( map ),
+               gens, List( gens, g -> ImagesRepresentative( map, g ) ) );
+    end );
+
+
 #############################################################################
 ##
 #M  AsGroupGeneralMappingByImages( <hom> )  . . . . . . . . . . . .  for GHBI
@@ -235,15 +252,16 @@ InstallMethod( PreImagesRange, true, [ IsGroupGeneralMappingByImages ], 0,
 
 #############################################################################
 ##
-#M  Inverse( <hom> )  . . . . . . . . . . . . . . . . . . . . . . .  for GHBI
+#M  InverseGeneralMapping( <hom> )  . . . . . . . . . . . . . . . .  for GHBI
 ##
-InstallOtherMethod( Inverse, true, [ IsGroupGeneralMappingByImages ], 0,
+InstallMethod( InverseGeneralMapping,
+    true, [ IsGroupGeneralMappingByImages ], 0,
     function( hom )
     return GroupGeneralMappingByImages( Range( hom ),   Source( hom ),
                                         hom!.genimages, hom!.generators );
 end );
 
-InstallOtherMethod( Inverse, true,
+InstallMethod( InverseGeneralMapping, true,
         [ IsGroupGeneralMappingByImages and IsBijective ], 0,
     function( hom )
     hom := GroupHomomorphismByImages( Range( hom ),   Source( hom ),
@@ -252,15 +270,6 @@ InstallOtherMethod( Inverse, true,
     return hom;
 end );
 
-InstallMethod( Inverse, true,
-        [ IsGroupGeneralMappingByImages and IsBijective
-          and IsMultiplicativeElementWithInverse ], 0,
-    function( hom )
-    hom := GroupHomomorphismByImages( Range( hom ),   Source( hom ),
-                                      hom!.genimages, hom!.generators );
-    SetIsBijective( hom, true );
-    return hom;
-end );
 
 #############################################################################
 ##
@@ -345,14 +354,15 @@ end );
 ##
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernelOfMultiplicativeGeneralMapping( Inverse( hom ) ) );
+    hom -> CoKernelOfMultiplicativeGeneralMapping(
+               InverseGeneralMapping( hom ) ) );
 
 #############################################################################
 ##
 #M  IsInjective( <hom> )  . . . . . . . . . . . . . . . . . . . . .  for GHBI
 ##
 InstallMethod( IsInjective, true, [ IsGroupGeneralMappingByImages ], 0,
-    hom -> IsSingleValued( Inverse( hom ) ) );
+    hom -> IsSingleValued( InverseGeneralMapping( hom ) ) );
 
 #############################################################################
 ##
@@ -382,7 +392,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     if IsBound( hom!.images )  and elm in hom!.images  then
         return hom!.elements[ Position( hom!.images, elm ) ];
     else
-        return ImagesRepresentative( Inverse( hom ), elm );
+        return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
     fi;
 end );
 
@@ -433,9 +443,9 @@ end );
 
 #############################################################################
 ##
-#M  Inverse( <inn> )  . . . . . . . . . . . . . . . .  for inner automorphism
+#M  InverseGeneralMapping( <inn> )  . . . . . . . . .  for inner automorphism
 ##
-InstallMethod( Inverse, true, [ IsInnerAutomorphismRep ], 0,
+InstallMethod( InverseGeneralMapping, true, [ IsInnerAutomorphismRep ], 0,
     function( inn )
     return InnerAutomorphism( Source( inn ), inn!.conjugator ^ -1 );
 end );

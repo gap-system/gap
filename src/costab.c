@@ -2663,7 +2663,7 @@ Obj FuncStandardizeTable2 (
 	           (Int)(InfoBags[TYPE_OBJ(objTable)].name), 0L );
 	return 0;
     }
-    ptTabl2 = ADDR_OBJ(objTable);
+    ptTabl2 = ADDR_OBJ(objTable2);
 
     /* run over all cosets                                                 */
     acos = 1;

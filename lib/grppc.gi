@@ -831,8 +831,7 @@ end );
 #M  RepresentativeOperation( <G>, <d>, <e>, OnPoints )   using affine methods
 ##
 InstallOtherMethod( RepresentativeOperationOp,
-    "element conjugacy in pcgs computable groups",
-    true,
+    "element conjugacy in pcgs computable groups", IsCollsElmsElmsX,
     [ IsGroup and IsPcgsComputable and IsFinite,
       IsMultiplicativeElementWithInverse,
       IsMultiplicativeElementWithInverse,

@@ -1472,6 +1472,54 @@ Obj FuncLOAD_STAT (
 
 /****************************************************************************
 **
+*F  FuncSHOW_STAT() . . . . . . . . . . . . . . . . . . . show static modules
+*/
+Obj FuncSHOW_STAT (
+    Obj                 self )
+{
+    Obj			modules;
+    Obj                 crc1;
+    Obj                 name;
+    StructCompInitInfo* info;
+    Int                 k;
+    Int                 im;
+
+    /* count the number of install modules                                 */
+    for ( k = 0,  im = 0;  CompInitFuncs[k];  k++ ) {
+        info = (*(CompInitFuncs[k]))();
+        if ( info == 0 ) {
+            continue;
+        }
+	im++;
+    }
+
+    /* make a list of modules with crc values                              */
+    modules = NEW_PLIST( T_PLIST, 2*im );
+    SET_LEN_PLIST( modules, 2*im );
+
+    for ( k = 0,  im = 1;  CompInitFuncs[k];  k++ ) {
+        info = (*(CompInitFuncs[k]))();
+        if ( info == 0 ) {
+            continue;
+        }
+	name = NEW_STRING( SyStrlen(info->magic2) );
+	SyStrncat( CSTR_STRING(name), info->magic2, SyStrlen(info->magic2) );
+	SET_ELM_PLIST( modules, im, name );
+
+	/* compute the crc value                                           */
+        crc1 = INTOBJ_INT( info->magic1 >> 16 );
+        crc1 = PROD( INTOBJ_INT(1<<16), crc1 );
+        crc1 = SUM( crc1, INTOBJ_INT( info->magic1 & 0xFFFFL ) );
+	SET_ELM_PLIST( modules, im+1, crc1 );
+	im += 2;
+    }
+
+    return modules;
+}
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * streams and files related functions  * * * * * * * * * *
 */
@@ -2605,6 +2653,10 @@ void InitGap (
     AssGVar( GVarName( "LOAD_STAT" ),
          NewFunctionC( "LOAD_STAT", 2L, "filename, crc",
                     FuncLOAD_STAT ) );
+
+    AssGVar( GVarName( "SHOW_STAT" ),
+         NewFunctionC( "SHOW_STAT", 0L, "",
+                    FuncSHOW_STAT ) );
 
 
     /* streams and files related functions                                 */

@@ -657,7 +657,7 @@ InstallMethod( PositionBound,
 #M  Add(<list>,<obj>)
 ##
 InstallMethod( Add,
-    true, [ IsList, IsObject ], 0,
+    true, [ IsList and IsMutable, IsObject ], 0,
     ADD_LIST_DEFAULT );
 
 

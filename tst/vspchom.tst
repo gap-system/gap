@@ -350,7 +350,7 @@ gap> nathom:= NaturalHomomorphismBySubspace( w,
 >                 Subspace( w, [ [ Z(3), Z(3) ] ] ) );
 <linear mapping by matrix, ( GF(3)^2 ) -> ( GF(3)^1 )>
 gap> ImagesSource( nathom );
-VectorSpace( GF(3), [ [ Z(3)^0 ], [ Z(3) ] ] )
+( GF(3)^1 )
 gap> PreImagesRange( nathom );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( nathom );

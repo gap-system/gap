@@ -169,6 +169,17 @@ Int             GrowPlist (
 
 /****************************************************************************
 **
+*F  IS_IMM_PLIST( <list> )  . . . . . . . . . . .  is a plain listy immutable
+**
+**  'IS_IMM_PLIST'  is  defined in  the declaration  part  of this package as
+**  follows
+**
+#define IS_IMM_PLIST(list) ((TYPE_OBJ(list) - T_PLIST) % 2)
+*/
+
+
+/****************************************************************************
+**
 
 *F  SetFilterPlist( <list>, <fil> ) . . . . . . . . . . . . . . set a feature
 */
@@ -210,8 +221,6 @@ Obj             KIND_LIST_DENSE_NHOM_IMMUTABLE;
 Obj             KIND_LIST_EMPTY_MUTABLE;
 Obj             KIND_LIST_EMPTY_IMMUTABLE;
 Obj             KIND_LIST_HOM;
-
-#define IS_IMM_PLIST(list)  ((TYPE_OBJ(list) - T_PLIST) % 2)
 
 Int             KTypePlist (
     Obj                 list )

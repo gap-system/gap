@@ -3115,6 +3115,245 @@ InstallMethod( RootSystem,
 
 #############################################################################
 ##
+#F  DescriptionOfNormalizedUEAElement( <T>, <listofpairs> )
+##
+DescriptionOfNormalizedUEAElement := function( T, listofpairs )
+
+    local normalized,        # ordered list of normalized coeff./monom. pairs
+          indices,           # list that stores at position $i$ up to what
+                             # position the $i$-th monomial is known to be
+                             # normalized
+          i, j, k, l,        # loop variables
+          2i,                # '2*i'
+          scalar,            # coefficient of the monomial under work
+          mon,               # monomial under work
+          len,               # length of the monomial under work
+          head,              # initial part of the monomial under work
+          middle,            # middle part of the monomial under work
+          tail,              # trailing part of the monomial under work
+          index,             # new value of 'indices[i]'
+          Tcoeffs,           # one entry in 'T'
+          lennorm,           # length of 'normalized' at the moment
+          zero;              # zero coefficient
+
+    normalized := [];
+
+    while not IsEmpty( listofpairs ) do
+
+      listofpairs:= Compacted( listofpairs );
+
+      # 'indices' is a list of positive integers $[ j_1, j_2, \ldots, j_m ]$
+      # s.t. the initial part $x_{i_1}^{e_1} \cdots x_{i_{j_k}}^{e_{j_k}}$
+      # of the $k$-th monomial is known to be normalized,
+      # i.e., $i_1 < i_2 < \cdots < i_{j_k}$.
+      # (So $j_k = 1$ for all $k$ will always be correct.)
+      indices:= List( [ 1 .. Length( listofpairs )/2 ], x -> 1 );
+
+      # Loop over the monomials that shall be normalized.
+      for i in [ 1, 2 .. Length( indices ) ] do
+
+        # If the 'i'-th monomial is already normalized,
+        # put it into 'normalized'.
+        # Otherwise swap the first non-ordered generators.
+        2i:= 2*i;
+        scalar:= listofpairs[ 2i ];
+        mon:= listofpairs[ 2i-1 ];
+        len:= Length( mon );
+        j:= 2 * indices[i] - 1;
+        while j < len - 2 do
+
+          if mon[j] < mon[ j+2 ] then
+
+            # 'mon' is better normalized than 'indices' tells.
+            j:= j+2;
+            indices[i]:= indices[i] + 1;
+
+          elif mon[j] = mon[ j+2 ] then
+
+            # absorption
+            mon[ j+1 ]:= mon[ j+1 ] + mon[ j+3 ];
+            for k in [ j+2 .. len-2 ] do
+              mon[k]:= mon[ k+2 ];
+            od;
+            Unbind( mon[  len  ] );
+            Unbind( mon[ len-1 ] );
+            len:= len - 2;
+            j:= j+2;
+
+          else
+
+            # We must swap two generators.
+            # First construct head and tail of the arising monomials.
+            head:= mon{ [ 1 .. j-1 ] };
+            if 1 < mon[ j+1 ] then
+              Add( head, mon[  j  ]     );
+              Add( head, mon[ j+1 ] - 1 );
+            fi;
+
+            middle:= [ mon[ j+2 ], 1, mon[j], 1 ];
+
+            if 1 < mon[ j+3 ] then
+              tail:= Concatenation( [ mon[ j+2 ], mon[ j+3 ] - 1 ],
+                                    mon{ [ j+4 .. len ] } );
+            else
+              tail:= mon{ [ j+4 .. len ] };
+            fi;
+
+            # Adjust 'indices[i]'.
+            index:= indices[i] - 1;
+            if index = 0 then
+              index:= 1;
+            fi;
+
+            indices[i]:= index;
+
+            # Replace the monomial by the swapped one.
+            listofpairs[ 2i-1 ]:= Concatenation( head, middle, tail );
+
+            # Add the coeffs/monomials that are given by the commutator.
+            # The part between 'head' and 'tail' of these listofpairs is
+            # $\sum_{k=1}^d c_{ijk} x_d$.
+            Tcoeffs:= T[ mon[j] ][ mon[ j+2 ] ];
+            for k in [ 1 .. Length( Tcoeffs[1] ) ] do
+              Append( listofpairs,
+                  [ Concatenation( head, [ Tcoeffs[1][k], 1 ], tail ),
+                    scalar * Tcoeffs[2][k] ] );
+              Add( indices, index );
+            od;
+
+            break;
+
+          fi;
+
+        od;
+
+        # If the monomial is normalized then move it to 'normalized'.
+        if len - 2 <= j then
+
+          # Find the correct position in 'normalized',
+          # and insert the monomial.
+          lennorm:= Length( normalized );
+          k:= 2;
+          while k <= lennorm do
+            if listofpairs[ 2i-1 ] < normalized[ k-1 ] then
+              for l in [ lennorm, lennorm-1 .. k-1 ] do
+                normalized[l+2]:= normalized[l];
+              od;
+              normalized[ k-1 ]:= listofpairs[ 2i-1 ];
+              normalized[  k  ]:= scalar;
+              break;
+            elif listofpairs[ 2i-1 ] = normalized[ k-1 ] then
+              normalized[k]:= normalized[k] + scalar;
+              break;
+            fi;
+            k:= k+2;
+          od;
+          if lennorm < k then
+            normalized[ lennorm+1 ]:= listofpairs[ 2i-1 ];
+            normalized[ lennorm+2 ]:= scalar;
+          fi;
+
+          # Remove the monomial from 'listofpairs'.
+          Unbind( listofpairs[ 2i-1 ] );
+          Unbind( listofpairs[  2i  ] );
+
+        fi;
+
+      od;
+
+    od;
+
+    # Remove monomials with multiplicity zero;
+    if not IsEmpty( normalized ) then
+      zero:= Zero( normalized[2] );
+      for i in [ 2, 4 .. Length( normalized ) ] do
+        if normalized[i] = zero then
+          Unbind( normalized[ i-1 ] );
+          Unbind( normalized[  i  ] );
+        fi;
+      od;
+      normalized:= Compacted( normalized );
+    fi;
+
+    # Return the normal form.
+    return normalized;
+end;
+
+
+#############################################################################
+##
+#M  UniversalEnvelopingAlgebra( <L> ) . . . . . . . . . . . for a Lie algebra
+##
+InstallMethod( UniversalEnvelopingAlgebra,
+    "method for a finite dimensional Lie algebra",
+    true,
+    [ IsLieAlgebra ], 0,
+    function( L )
+
+    local F,          # free associative algebra
+          U,          # universal enveloping algebra, result
+          gen,        # loop over algebra generators of 'U'
+          Fam,        # elements family of 'U'
+          T,          # s.c. table of a basis of 'L'
+          FamMon,     # family of monomials
+          FamFree;    # elements family of 'F'
+
+    # Check the argument.
+    if not IsFiniteDimensional( L ) then
+      Error( "<L> must be finite dimensional" );
+    fi;
+
+    # Construct the universal enveloping algebra.
+    F:= FreeAssociativeAlgebra( LeftActingDomain( L ), Dimension( L ), "x" );
+    U:= FactorFreeAlgebraByRelators( F, [ Zero( F ) ] );
+#T do not cheat here!
+
+    # Enter knowledge about 'U'.
+    SetDimension( U, infinity );
+    for gen in GeneratorsOfLeftOperatorRing( U ) do
+      SetIsNormalForm( gen, true );
+    od;
+    SetIsNormalForm( Zero( U ), true );
+
+    # Enter data to handle elements.
+    Fam:= ElementsFamily( FamilyObj( U ) );
+    Fam!.normalizedKind:= NewKind( Fam,
+                                       IsPackedAlgebraElmDefaultRep
+                                   and IsNormalForm );
+
+    T:= StructureConstantsTable( BasisOfDomain( L ) );
+    FamMon:= ElementsFamily( FamilyObj( UnderlyingMagma( F ) ) );
+    FamFree:= ElementsFamily( FamilyObj( F ) );
+
+    SetNiceNormalFormByExtRepFunction( Fam,
+        function( Fam, extrep ) 
+        local zero, i;
+        zero:= extrep[1];
+        extrep:= DescriptionOfNormalizedUEAElement( T, extrep[2] );
+        for i in [ 1, 3 .. Length( extrep ) - 1 ] do
+          extrep[i]:= ObjByExtRep( FamMon, extrep[i] );
+        od;
+        return Objectify( Fam!.normalizedKind,
+                   [ Objectify( FamFree!.defaultKind, [ zero, extrep ] ) ] );
+        end );
+
+    SetOne( U, ElementOfFpAlgebra( Fam, One( F ) ) );
+
+    # Enter 'L'; it is used to set up the embedding (as a vector space).
+    Fam!.liealgebra:= L;
+#T is not allowed ...
+
+    # Return the universal enveloping algebra.
+    return U;
+    end );
+
+#T missing: embedding of the Lie algebra (as vector space)
+#T missing: relators (only compute them if they are explicitly wanted)
+#T          (attribute 'Relators'?)
+
+
+#############################################################################
+##
 #E  alglie.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

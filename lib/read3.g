@@ -29,6 +29,7 @@ ReadLib( "basismut.gd" );
 ReadLib( "vspc.gd"     );
 ReadLib( "vspchom.gd"  );
 ReadLib( "algebra.gd"  );
+ReadLib( "algfp.gd"    );
 ReadLib( "alglie.gd"   );
 ReadLib( "algsc.gd"    );
 ReadLib( "liefam.gd"   );
@@ -72,7 +73,6 @@ ReadLib( "pcgsspec.gd" );
 ReadLib( "grppc.gd"    );
 
 ReadLib( "mgmring.gd"  );
-ReadLib( "algfp.gd"    );
 ReadLib( "grptbl.gd"   );
 
 ReadLib( "grpperm.gd"  );

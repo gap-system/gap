@@ -70,6 +70,14 @@ InstallMethod( IsEmpty,
     return (Size( C ) = 0);
     end );
 
+InstallMethod( IsEmpty,
+    "method for a list",
+    true, [ IsList ], 0,
+    function ( list )
+    return (Length( list ) = 0);
+    end );
+#T non-homogeneous lists should know that they are nonempty
+
 
 #############################################################################
 ##

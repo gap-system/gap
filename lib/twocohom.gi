@@ -256,13 +256,13 @@ CollectorSQ := function( G, M, isSplit )
 
     # create module gens (the transposed is a technical detail)
     r.module := List( M.generators, x -> TransposedMat(x) );
-    r.mone   := M.generators[1]^0;  
-    r.mzero  := 0*M.generators[1]; 
+    r.mone   := IdentityMat( M.dimension, M.field );
+    r.mzero  := NullMat( M.dimension, M.dimension, M.field );
 
     # add avoid 
     r.avoid := [];
     if isSplit  then
-        k := Characteristic( One( M.field ) );
+        k := Characteristic( M.field );
         for i  in [ 1 .. Length(r.orders) ]  do
             for j  in [ 1 .. i ]  do
                 if r.orders[i] <> k and r.orders[j] <> k  then

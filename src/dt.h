@@ -3,7 +3,7 @@ extern void  UnmarkTree(
 		  Obj   z );
 
 
-extern int   Mark(
+extern UInt   Mark(
 	    Obj   tree,
 	    Obj   reftree,
 	    int   index  );
@@ -31,7 +31,7 @@ extern Obj    Mark2(
 	      int        index2   );
 
 
-extern int    FindTree(
+extern UInt    FindTree(
 		 Obj     tree,
 		 int     index );
 
@@ -44,7 +44,6 @@ extern Obj    MakeFormulaVector(
 extern Obj  binomial(
 	       Obj     n,
 	       Obj     k    );
-
 
 
 extern int     Leftof(

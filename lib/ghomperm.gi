@@ -343,7 +343,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
         [ IsPermGroupGeneralMappingByImages,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
-    return ImagesRepresentative( Inverse( hom ), elm );
+    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
 end );
 
 #############################################################################
@@ -369,7 +369,7 @@ InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
         S.generators  := S.labels     { S.genlabels };
         S.genimages   := S.labelimages{ S.genlabels };
         S.transimages := [  ];
-        S.transimages{ S.orbit } := S.labels{ S.translabels{ S.orbit } };
+        S.transimages{ S.orbit } := S.labelimages{ S.translabels{ S.orbit } };
         S := S.stabilizer;
     od;
     prd := GroupHomomorphismByImages( Source( hom2 ), Range( hom1 ),
@@ -386,7 +386,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
         [ IsToPermGroupGeneralMappingByImages,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
-    return ImagesRepresentative( Inverse( hom ), elm );
+    return ImagesRepresentative( InverseGeneralMapping( hom ), elm );
 end );
 
 #############################################################################
@@ -545,10 +545,10 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
            [ 1 .. n ], (), conperminv, hom,
            CoKernelOfMultiplicativeGeneralMapping );
     
-    if    not HasInverse( hom )
-       or not HasStabChain( Inverse( hom ) )
+    if    not HasInverseGeneralMapping( hom )
+       or not HasStabChain( InverseGeneralMapping( hom ) )
        or not HasKernelOfMultiplicativeGeneralMapping( hom )  then
-        MakeStabChainLong( Inverse( hom ),
+        MakeStabChainLong( InverseGeneralMapping( hom ),
                 StabChainOp( longgroup, [ n + 1 .. n + k ] ),
                 [ n + 1 .. n + k ], conperminv, (), hom,
                 KernelOfMultiplicativeGeneralMapping );
@@ -845,6 +845,7 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
 
 InstallMethod( ImagesSource, true, [ IsBlocksHomomorphism ], 0,
     hom -> ImagesSet( hom, Source( hom ) ) );
+#T necessary at all?
 
 #############################################################################
 ##

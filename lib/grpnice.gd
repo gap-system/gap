@@ -49,6 +49,8 @@ IsHandledByNiceMonomorphism := NewProperty(
 SetIsHandledByNiceMonomorphism := Setter(IsHandledByNiceMonomorphism);
 HasIsHandledByNiceMonomorphism := Tester(IsHandledByNiceMonomorphism);
 
+InstallSubsetMaintainedMethod(IsHandledByNiceMonomorphism,
+  IsHandledByNiceMonomorphism and IsGroup,IsGroup);
 
 #############################################################################
 ##

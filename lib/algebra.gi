@@ -2591,9 +2591,9 @@ InstallMethod( ProductSpace,
     # Create the appropriate domain.
     if HasParent( U ) and HasParent( V )
                       and IsIdentical( Parent( U ), Parent( V ) ) then
-      C:= SubmoduleNC( Parent( U ), vectors );
+      C:= SubmoduleNC( Parent( U ), vectors, "basis" );
     else
-      C:= FreeLeftModule( MB[2], vectors );
+      C:= FreeLeftModule( MB[2], vectors, "basis" );
     fi;
 
     # Insert the basis.
@@ -2638,7 +2638,7 @@ InstallMethod( ProductSpace,
     MB:= MutableBasisOfProductSpace( U, V )[1];
 
     # The result is an ideal in 'U'.
-    C:= SubalgebraNC( P, BasisVectors( MB ) );
+    C:= SubalgebraNC( P, BasisVectors( MB ), "basis" );
 
     SetIsIdealInParent( C, true );
     SetBasisOfDomain( C, ImmutableBasis( MB ) );
@@ -2666,7 +2666,7 @@ InstallMethod( ProductSpace,
 
     # The result is an ideal in the parent of 'U'.
     MB:= MutableBasisOfProductSpace( U, V )[1];
-    C:= SubalgebraNC( Parent( U ), BasisVectors( MB ) );
+    C:= SubalgebraNC( Parent( U ), BasisVectors( MB ), "basis" );
 
     SetIsIdealInParent( C, true ); 
     SetBasisOfDomain( C, ImmutableBasis( MB ) );
