@@ -304,26 +304,9 @@ end );
 
 #############################################################################
 ##
-#M  HomePcgs( <G> )
+#M  ParentPcgs( <pcgs> )
 ##
-InstallMethod( HomePcgs, true, [ IsGroup ], 0, Pcgs );
-
-#############################################################################
-##
-#M  InducedPcgsWrtHomePcgs( <G> )
-##
-InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
-        [ IsGroup ], 0,
-    function( G )
-    local   home;
-    
-    home := HomePcgs( G );
-    if IsIdentical( home, Pcgs( G ) )  then
-        return InducedPcgsByPcSequenceNC( home, home );
-    else
-        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
-    fi;
-end );
+InstallOtherMethod( ParentPcgs, true, [ IsPcgs ], 0, IdFunc );
 
 #############################################################################
 ##
@@ -506,18 +489,6 @@ function( pcgs, basis, list )
 
     return elm;
 
-end );
-
-
-#############################################################################
-##
-#M  Pcgs( <G> )
-##
-InstallMethod( Pcgs, "fail if insolvable", true,
-        [ HasIsSolvableGroup ], SUM_FLAGS,
-    function( G )
-    if not IsSolvableGroup( G )  then  return fail;
-                                 else  TryNextMethod();  fi;
 end );
 
 

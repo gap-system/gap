@@ -1199,6 +1199,7 @@ CharacterTableSpecialized := function( gtab, q )
       # Compute the name of the table.
       if IsBound( gtab!.specializedname ) then
         taf.identifier:= gtab!.specializedname( q );
+        ConvertToStringRep( taf.identifier );
       fi;
 
       # Compute the group order.
@@ -1279,7 +1280,14 @@ ConvertToLibraryCharacterTableNC := function( record )
     names:= RecNames( record );
 
     # Make the object.
-    if record.underlyingCharacteristic = 0 then
+    if IsBound( record.isGenericTable ) and record.isGenericTable then
+      Objectify( NewKind( NearlyCharacterTablesFamily,
+                          IsGenericCharacterTableRep ),
+                 record );
+    elif not IsBound( record.underlyingCharacteristic ) then
+      Error( "<record> must have one of 'isGenericTable' or ",
+             "'underlyingCharacteristic'" );
+    elif record.underlyingCharacteristic = 0 then
       Objectify( NewKind( NearlyCharacterTablesFamily,
                               IsOrdinaryTable
                           and IsLibraryCharacterTableRep ),
@@ -2718,7 +2726,6 @@ end;
 #T                "cliffordTable",
 #T                "construction",
 #T                "projectives",
-#T                "maxes",
 #T               ] );
 #T 
 #T     for fld in flds do
@@ -2788,35 +2795,36 @@ end;
 #T       fi;
 #T     fi;
 #T 
-#T     # Write the 'maxes' information to the file.
-#T     if IsBound( tbl!.maxes ) then
-#T       linelen:= Length( name ) + 16;
-#T       maxes:= tbl!.maxes;
-#T       Print( "ARC(\"", name, "\",\"maxes\",[" );
-#T       for i in [ 1 .. Length( maxes )-1 ] do
-#T         if IsBound( maxes[i] ) then
-#T           if linelen + Length( maxes[i] ) + 3 < 77 then
-#T             linelen:= linelen + Length( maxes[i] ) + 3;
-#T           else
-#T             Print( "\n" );
-#T             linelen:= Length( maxes[i] ) + 3;
-#T           fi;
-#T           Print( "\"", maxes[i], "\"," );
-#T         else
-#T           if linelen + 1 < 77 then
-#T             linelen:= linelen + 1;
-#T           else
-#T             Print( "\n" );
-#T             linelen:= 1;
-#T           fi;
-#T           Print( "," );
-#T         fi;
-#T       od;
-#T       if linelen + Length( maxes[ Length( maxes ) ] ) + 5 >= 77 then
-#T         Print( "\n" );
-#T       fi;
-#T       Print( "\"", maxes[ Length( maxes ) ], "\"]);\n" );
-#T     fi;
+#T maxes belong to supported info, or ?
+#T #T     # Write the 'maxes' information to the file.
+#T #T     if HasMaxes( tbl ) then
+#T #T       linelen:= Length( name ) + 16;
+#T #T       maxes:= Maxes( tbl );
+#T #T       Print( "ARC(\"", name, "\",\"maxes\",[" );
+#T #T       for i in [ 1 .. Length( maxes )-1 ] do
+#T #T         if IsBound( maxes[i] ) then
+#T #T           if linelen + Length( maxes[i] ) + 3 < 77 then
+#T #T             linelen:= linelen + Length( maxes[i] ) + 3;
+#T #T           else
+#T #T             Print( "\n" );
+#T #T             linelen:= Length( maxes[i] ) + 3;
+#T #T           fi;
+#T #T           Print( "\"", maxes[i], "\"," );
+#T #T         else
+#T #T           if linelen + 1 < 77 then
+#T #T             linelen:= linelen + 1;
+#T #T           else
+#T #T             Print( "\n" );
+#T #T             linelen:= 1;
+#T #T           fi;
+#T #T           Print( "," );
+#T #T         fi;
+#T #T       od;
+#T #T       if linelen + Length( maxes[ Length( maxes ) ] ) + 5 >= 77 then
+#T #T         Print( "\n" );
+#T #T       fi;
+#T #T       Print( "\"", maxes[ Length( maxes ) ], "\"]);\n" );
+#T #T     fi;
 #T 
 #T     end;
 #T 

@@ -138,6 +138,17 @@ end );
 
 #############################################################################
 ##
+#M  IsInternallyConsistent( <obj> ) . . . . . . . default method 'ReturnTrue'
+##
+InstallMethod( IsInternallyConsistent,
+    "default method 'ReturnTrue'",
+    true,
+    [ IsObject ], 0,
+    ReturnTrue );
+
+
+#############################################################################
+##
 
 #E  object.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

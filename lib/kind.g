@@ -4,12 +4,26 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file defines the format of families and kinds.
 ##
 Revision.kind_g :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#V  POS_DATA_KIND . . . . . . . . position where the data of a kind is stored
+#V  POS_NUMB_KIND . . . . . . . position where the number of a kind is stored
+#V  POS_FIRST_FREE_KIND . . . . .  first position that has no overall meaning
+##
+##  Note that the family and the flags list are stored at positions 1 and 2,
+##  respectively.
+##
+POS_DATA_KIND := 3;
+POS_NUMB_KIND := 4;
+POS_FIRST_FREE_KIND := 5;
 
 
 #############################################################################
@@ -395,7 +409,7 @@ NEW_KIND := function ( kindOfKinds, family, flags, data )
     if IsBound( cache[hash] )  then
         cached := cache[hash];
         if IS_EQUAL_FLAGS( flags, cached![2] )  then
-            if    IS_IDENTICAL_OBJ(  data,  cached![3] )
+            if    IS_IDENTICAL_OBJ(  data,  cached![ POS_DATA_KIND ] )
               and IS_IDENTICAL_OBJ(  kindOfKinds, KIND_OBJ(cached) )
             then
                 NEW_KIND_CACHE_HIT := NEW_KIND_CACHE_HIT + 1;
@@ -454,7 +468,8 @@ NewKind5 := function ( kindOfKinds, family, filter, data, stuff )
                          family!.IMP_FLAGS,
                          FLAGS_FILTER(filter) ) ),
                       data );
-    kind![4] := stuff;
+    kind![ POS_FIRST_FREE_KIND ] := stuff;
+#T really ??
     return kind;
 end;
 
@@ -508,7 +523,7 @@ function ( kind )
 
     family := kind![1];
     flags  := kind![2];
-    data   := kind![3];
+    data   := kind![ POS_DATA_KIND ];
     Print( "NewKind( ", family );
     if flags <> [] or data <> false then
         Print( ", " );
@@ -533,8 +548,8 @@ Subkind2 := function ( kind, filter )
                      WITH_IMPS_FLAGS( AND_FLAGS(
                         kind![2],
                         FLAGS_FILTER( filter ) ) ),
-                     kind![3] );
-    for i in [4..LEN_POSOBJ(kind)] do
+                     kind![ POS_DATA_KIND ] );
+    for i in [ POS_FIRST_FREE_KIND .. LEN_POSOBJ( kind ) ] do
         if IsBound( kind![i] ) then
             new![i] := kind![i];
         fi;
@@ -551,7 +566,7 @@ Subkind3 := function ( kind, filter, data )
                         kind![2],
                         FLAGS_FILTER( filter ) ) ),
                      data );
-    for i in [4..LEN_POSOBJ(kind)] do
+    for i in [ POS_FIRST_FREE_KIND .. LEN_POSOBJ( kind ) ] do
         if IsBound( kind![i] ) then
             new![i] := kind![i];
         fi;
@@ -588,8 +603,8 @@ SupKind2 := function ( kind, filter )
                      SUB_FLAGS(
                         kind![2],
                         FLAGS_FILTER( filter ) ),
-                     kind![3] );
-    for i in [4..LEN_POSOBJ(kind)] do
+                     kind![ POS_DATA_KIND ] );
+    for i in [ POS_FIRST_FREE_KIND .. LEN_POSOBJ( kind ) ] do
         if IsBound( kind![i] ) then
             new![i] := kind![i];
         fi;
@@ -606,7 +621,7 @@ SupKind3 := function ( kind, filter, data )
                         kind![2],
                         FLAGS_FILTER( filter ) ),
                      data );
-    for i in [4..LEN_POSOBJ(kind)] do
+    for i in [ POS_FIRST_FREE_KIND .. LEN_POSOBJ( kind ) ] do
         if IsBound( kind![i] ) then
             new![i] := kind![i];
         fi;
@@ -653,9 +668,14 @@ end;
 #############################################################################
 ##
 #F  DataKind( <K> ) . . . . . . . . . . . . . . defining data of the kind <K>
+#F  SetDataKind( <K>, <data> )  . . . . . . set defining data of the kind <K>
 ##
 DataKind := function ( K )
-    return K![3];
+    return K![ POS_DATA_KIND ];
+end;
+
+SetDataKind := function ( K, data )
+    K![ POS_DATA_KIND ]:= data;
 end;
 
 
@@ -664,7 +684,7 @@ end;
 #F  SharedKind( <K> ) . . . . . . . . . . . . . . shared data of the kind <K>
 ##
 SharedKind := function ( K )
-    return K![3];
+    return K![ POS_DATA_KIND ];
 end;
 
 

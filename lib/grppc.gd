@@ -68,7 +68,7 @@ HasFamilyPcgs := Tester(FamilyPcgs);
 
 #############################################################################
 ##
-#A  HomePcgs( <grp> )
+#A  HomePcgs( <grp> ) . . . . . . . . . . . . . . . must be subset maintained
 ##
 HomePcgs := NewAttribute(
     "HomePcgs",
@@ -214,12 +214,5 @@ CanonicalSubgroupRepresentativePcGroup :=
 
 #############################################################################
 ##
-#F  ChiefSeriesPcGroup(G)
-##
-ChiefSeriesPcGroup := NewOperationArgs("ChiefSeriesPcGroup");
-
-#############################################################################
-##
-
 #E  grppc.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

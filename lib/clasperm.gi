@@ -7,35 +7,6 @@
 ##  This   file contains the functions   that calculate ordinary and rational
 ##  classes for permutation groups.
 ##
-#H  $Log$
-#H  Revision 4.9  1997/04/14 08:32:29  htheisse
-#H  made use of `ExternalOrbitsStabilizers'
-#H
-#H  Revision 4.8  1997/04/01 09:00:53  htheisse
-#H  replaced `PreImage' by `PreImages'
-#H
-#H  Revision 4.7  1997/01/30 09:14:52  htheisse
-#H  changed the syntax of `CompleteGaloisGroupPElement'
-#H
-#H  Revision 4.6  1997/01/29 15:54:10  mschoene
-#H  fixed a few more doubly defined locals
-#H
-#H  Revision 4.5  1997/01/27 11:20:42  htheisse
-#H  cleaned up the code
-#H
-#H  Revision 4.4  1997/01/21 15:07:13  htheisse
-#H  introduced `PositionCanonical'
-#H
-#H  Revision 4.3  1997/01/13 17:04:06  htheisse
-#H  added class/centralizer functions for soluble groups
-#H
-#H  Revision 4.2  1997/01/10 11:39:59  htheisse
-#H  fixed a typo
-#H
-#H  Revision 4.1  1997/01/10 08:45:38  htheisse
-#H  added conjugacy class functions for perm groups and pcgs groups
-#H
-##
 Revision.clasperm_gi :=
     "@(#)$Id$";
 
@@ -218,7 +189,7 @@ end );
 #############################################################################
 ##
 
-#F  CompleteGaloisGroupPElement( <cl>, <power>, <p> ) . . . . add the p'-part
+#F  CompleteGaloisGroupPElement( <cl>, <gal>, <power>, <p> )  add the p'-part
 ##
 ##  This  function assumes  that  the <p>-part  of the Galois  group  of  the
 ##  rational class <cl>  is already  bound  to  '<cl>.galoisGroup'.  It  then
@@ -227,7 +198,7 @@ end );
 ##  Galois group.  <power> must the <p>-th power of <cl> .  If <p> = 2, there
 ##  is nothing to be done, since the Galois group is a 2-group then.
 ##
-CompleteGaloisGroupPElement := function( class, power, p )
+CompleteGaloisGroupPElement := function( class, gal, power, p )
     local  G,  rep,  order,
            phi,             # size of the prime residue class group
            primitiveRoot,   # generator of the cyclic prime residue class group
@@ -243,8 +214,8 @@ CompleteGaloisGroupPElement := function( class, power, p )
            fusingElement,   # element that  does the generating automorphism
            i;               # loop variable
 
-    # If <p>=2 or the class is central, there is nothing to do.
-    if p > 2  and  not IsBound( class!.isCentral )  then
+    # If $p=2$, there is nothing to do.
+    if p > 2  then
         G := ActingDomain( class );
         rep := Representative( class );
         order := Order( rep );
@@ -261,7 +232,7 @@ CompleteGaloisGroupPElement := function( class, power, p )
         # of  the Galois  group (already known   from the calculation in  the
         # Sylow subgroup).
         phi                  := order / p * ( p - 1 );
-        sizeKnownPart        := Size( GaloisGroup( class ) );
+        sizeKnownPart        := Size( gal );
         sizeUnknownPart      := GcdInt( p - 1, phi / sizeKnownPart );
         primitiveRoot        := PermResidueClass
                                 ( PrimitiveRootMod( order ), order );
@@ -286,11 +257,11 @@ CompleteGaloisGroupPElement := function( class, power, p )
                 # by a power of the generator of Gal(<g>^<p>).
                 if Size( StabilizerOfExternalSet( class ) ) =
                    Size( StabilizerOfExternalSet( power ) )  then
-                    if sizeKnownPart*div[i]>Size( GaloisGroup( power ) )  then
+                    if sizeKnownPart*div[i]>Size(GaloisGroup(power))  then
                         fusingElement := fail;
                     else
                         fusingElement := power!.fusingElement ^
-                                         (Size( GaloisGroup( power ) )/
+                                         (Size(GaloisGroup(power)) /
                                           (sizeKnownPart*div[i]));
                         if rep ^ fusingElement <> rep ^ ( 1 ^ exp )  then
                             fusingElement := fail;
@@ -317,11 +288,12 @@ CompleteGaloisGroupPElement := function( class, power, p )
         # Construct the Galois  group as  subgroup of  a prime residue  class
         # group   and enter  the  conjugating   element   which induces   the
         # generating automorphism into the class record.
-        SetGaloisGroup( class, SubgroupNC( PrimeResidueClassGroup( order ),
-                [ primitiveRoot ^ ( phi / sizeKnownPart / div[ i ] ) ] ) );
+        gal := SubgroupNC( PrimeResidueClassGroup( order ),
+                [ primitiveRoot ^ ( phi / sizeKnownPart / div[ i ] ) ] );
         class!.fusingElement := fusingElement;
 
     fi;
+    return gal;
 end;
 
 #############################################################################
@@ -333,7 +305,7 @@ ConstructList := function( T, list, roots, power )
     
     allRoots := [ power ];
     for i  in [ 2 .. Length( T ) ]  do
-        if T[ i ]!.power = power  then
+        if T[ i ].power = power  then
             j := Length( list ) + 1;
             list[ j ] := i;
             roots[ j ] := [  ];
@@ -354,22 +326,21 @@ end;
 SortRationalClasses := function( rationalClasses, p )
     Sort( rationalClasses, function( cl1, cl2 )
         local  ppart;
-        if   Order( Representative( cl1 ) ) <
-             Order( Representative( cl2 ) )  then
+        if   Order( cl1.representative ) <
+             Order( cl2.representative )  then
             return true;
-        elif Order( Representative( cl1 ) ) >
-           Order( Representative( cl2 ) )  then
+        elif Order( cl1.representative ) >
+             Order( cl2.representative )  then
             return false;
         else
-            ppart := p ^ LogInt( Size( StabilizerOfExternalSet( cl1 ) ), p );
-            if Size( StabilizerOfExternalSet( cl2 ) ) mod ppart <> 0  then
+            ppart := p ^ LogInt( Size( cl1.centralizer ), p );
+            if Size( cl2.centralizer ) mod ppart <> 0  then
                 return true;
-            elif Size( StabilizerOfExternalSet( cl2 ) )
-              mod ( ppart * p ) = 0  then
+            elif Size( cl2.centralizer ) mod ( ppart * p ) = 0  then
                 return false;
             else
-                ppart := p ^ LogInt( Size( GaloisGroup( cl1 ) ), p );
-                return Size( GaloisGroup( cl2 ) ) mod ppart <> 0;
+                ppart := p ^ LogInt( Size( cl1!.galoisGroup ), p );
+                return Size( cl2!.galoisGroup ) mod ppart <> 0;
             fi;
         fi;
       end );
@@ -387,7 +358,7 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
     if Size( N ) > Size( S )  then
 
         # Construct the fusing operation of the group <N>.
-        representatives := List( rationalClasses, Representative );
+        representatives := List( rationalClasses, cl -> cl.representative );
         classreps := [  ];
         gens := TryPcgsPermGroup( [ N, S, TrivialSubgroup( N ) ],
                         false, false, false );
@@ -404,7 +375,7 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
             fi;
         od;
         classimages := List( ClassesSolvableGroup( S, S, true, 1, classreps ),
-                             Representative );
+                             cl -> cl.representative );
         genimages := [  ];
         for i  in [ 1 .. Length( gensNmodS ) ]  do
             prm := List( [ 1 + ( i - 1 ) * Length( rationalClasses )
@@ -419,9 +390,9 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
         fusedClasses := [  ];
         for orb  in orbs  do
             cl := rationalClasses[ Representative( orb ) ];
-            SetStabilizerOfExternalSet( cl, Centralizer
-                    ( StabilizerOfExternalSet( orb ), Representative( cl ),
-                      StabilizerOfExternalSet( cl ) ) );
+            cl.centralizer := Centralizer
+                    ( StabilizerOfExternalSet( orb ), cl.representative,
+                      cl.centralizer );
             Add( fusedClasses, cl );
         od;
         
@@ -429,11 +400,11 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
         porb := [  ];
         for i  in [ 1 .. Length( fusedClasses ) ]  do
             pos := Position( representatives,
-                             Representative( fusedClasses[ i ]!.power ) );
+                             fusedClasses[ i ].power.representative );
             porb[ i ] := PositionProperty( orbs, o -> pos in AsList( o ) );
         od;
         for i  in [ 1 .. Length( fusedClasses ) ]  do
-            fusedClasses[ i ]!.power := fusedClasses[ porb[ i ] ];
+            fusedClasses[ i ].power := fusedClasses[ porb[ i ] ];
         od;
         
         return fusedClasses;
@@ -449,6 +420,7 @@ end;
 RationalClassesPElements := function( arg )
     local  G,               # the group
            p,               # the prime
+           minprime,        # is <p> the minimal prime dividing $|G|$?
            sumSizes,        # sum of all class lengths known so far, optional
            rationalClasses, # rational classes of <p>-elements, result
            S,               # Sylow <p> subgroup of <G>
@@ -459,16 +431,16 @@ RationalClassesPElements := function( arg )
            roots,           # list of indices of roots of a class
            found,           # classes already found
            movedTo,         # list of new positions of fused classes
+           power,  gal,     # power and Galois group of current class
            i, j, cl, Scl;   # loop variables
     
     # Get the arguments.
     G := arg[ 1 ];
     p := arg[ 2 ];
+    minprime :=  p = 2  or  p = Set( FactorsInt( Size( G ) ) )[ 1 ];
     if Length( arg ) > 2  then  sumSizes := arg[ 3 ];
                           else  sumSizes := -1;        fi;
     
-    rationalClasses := [  ];
-                          
     Info( InfoClasses, 1, "Calculating Sylow ", p, "-subgroup of |G| = ", 
         Size( G ) );
     S := SylowSubgroup( G, p );
@@ -484,17 +456,17 @@ RationalClassesPElements := function( arg )
                           gen -> Order( gen ) = Size( S ) );
         fi;
 
+        rationalClasses := [  ];
         j := LogInt( Size( S ), p );
         for i  in [ 1 .. j ]  do
             cl := RationalClass( G, gen ^ ( p ^ ( j - i ) ) );
             SetStabilizerOfExternalSet( cl, Centralizer( G,
                     Representative( cl ), S ) );
-            SetGaloisGroup( cl, GroupByPrimeResidues( [  ], p ^ i ) );
-            if i = 1  then
-                CompleteGaloisGroupPElement( cl, 1, p );
-            else
-                CompleteGaloisGroupPElement( cl, rationalClasses[i-1], p );
-            fi;
+            gal := GroupByPrimeResidues( [  ], p ^ i );
+            if i = 1  then  power := 1;
+                      else  power := rationalClasses[ i - 1 ];  fi;
+            SetGaloisGroup( cl, CompleteGaloisGroupPElement
+                    ( cl, gal, power, p ) );
             Add( rationalClasses, cl );
         od;
         return rationalClasses;
@@ -504,11 +476,15 @@ RationalClassesPElements := function( arg )
     
     # Special treatment for elementary abelian Sylow subgroups.
     if IsElementaryAbelian( S )  then
-        rationalSClasses := RationalClassesInEANS( N, S );
-        for cl  in rationalSClasses  do
-            SetGaloisGroup( cl, GroupByPrimeResidues( [  ],
-                    Order( Representative( cl ) ) ) );
-            cl!.power := rationalSClasses[ 1 ];
+        rationalClasses := RationalClassesInEANS( N, S );
+        rationalSClasses := [  ];
+        for cl  in rationalClasses  do
+            Scl := rec( representative := Representative( cl ),
+                           centralizer := StabilizerOfExternalSet( cl ),
+                           galoisGroup := GroupByPrimeResidues( [  ],
+                                          Order( Representative( cl ) ) ),
+                                 power := rec( representative := One( S ) ) );
+            Add( rationalSClasses, Scl );
         od;
         
     else
@@ -522,12 +498,12 @@ RationalClassesPElements := function( arg )
         
     fi;
     
-    # Sort the classes.  Change the '.group' entries  to <G> and the '.power'
-    # entries so that they contain the index of the power class.
+    # Sort the classes. Change the `.power'  entries so that they contain the
+    # index of the power class.
     SortRationalClasses( rationalSClasses, p );
     for cl  in rationalSClasses  do
-        cl!.power := PositionProperty( rationalSClasses, 
-            c -> Representative( c ) = Representative( cl!.power ) );
+        cl.power := PositionProperty( rationalSClasses, 
+                            c -> c.representative = cl.power.representative );
     od;
     Info( InfoClasses, 1, Length( rationalSClasses ), " classes to fuse" );
     
@@ -539,26 +515,27 @@ RationalClassesPElements := function( arg )
     movedTo := [ 0 ];
 
     # Make <G>-classes out of the <N>-classes, putting them in a new list.
+    rationalClasses := [  ];
     j := 1;
     while     j < Length( list )
           and sumSizes < Size( G )  do
         j := j + 1;
         if not list[ j ] in found  then
             Scl := rationalSClasses[ list[ j ] ];
-            cl := RationalClass( G, Representative( Scl ) );
-            cl!.power := Scl!.power;
             
-            # NOTE: centralizer and Galois group are not w.r.t. $G$ here.
-            SetStabilizerOfExternalSet( cl, StabilizerOfExternalSet( Scl ) );
-            SetGaloisGroup( cl, GaloisGroup( Scl ) );
-
             # If the class is  central, since we  have already considered the
             # Sylow  normalizer, it will not fuse to any other central class,
             # so it can be added to the list.
-            if IsBound( Scl!.isCentral )  then
+            if IsBound( Scl.isCentral )  then
                 i := fail;
             else
-                i := Position( rationalClasses, cl );
+                i := PositionProperty( rationalClasses, c -> ForAny
+                  ( RightTransversalInParent( Scl.galoisGroup ), e ->
+                     RepOpElmTuplesPermGroup( true, G,
+                             [ Scl.representative ],
+                             [ Representative( c ) ^ ( 1 ^ e ) ],
+                             Scl.centralizer,
+                             StabilizerOfExternalSet( c ) ) <> fail ) );
             fi;
             if i = fail  then
                 i := Length( rationalClasses ) + 1;
@@ -566,8 +543,20 @@ RationalClassesPElements := function( arg )
 
             movedTo[ list[ j ] ] := i;
             if i > Length( rationalClasses )  then
+                cl := RationalClass( G, Scl.representative );
                 SetStabilizerOfExternalSet( cl, Centralizer( G,
-                    Representative( cl ), StabilizerOfExternalSet( Scl ) ) );
+                    Representative( cl ), Scl.centralizer ) );
+                if movedTo[ Scl.power ] = 0  then
+                    power := 1;
+                else
+                    power := rationalClasses[ movedTo[ Scl.power ] ];
+                fi;
+                if minprime  or  IsBound( Scl.isCentral )  then
+                    SetGaloisGroup( cl, Scl.galoisGroup );
+                else
+                    SetGaloisGroup( cl, CompleteGaloisGroupPElement
+                            ( cl, Scl.galoisGroup, power, p ) );
+                fi;
                 Add( rationalClasses, cl );
                 if sumSizes >= 0  then
                     sumSizes := sumSizes + Size( cl );
@@ -578,21 +567,6 @@ RationalClassesPElements := function( arg )
                 UniteSet( found, roots[ j ] );
             fi;
         fi;
-    od;
-
-    # Update  the '.power' entries according  to  the  new  positions  of the
-    # classes and complete the Galois groups.
-    for j  in [ 1 .. Length( rationalClasses ) ]  do
-        rationalClasses[ j ]!.powers      := [  ];
-        if movedTo[ rationalClasses[ j ]!.power ] = 0  then
-            rationalClasses[ j ]!.powers[ p ] := 1;
-        else
-            rationalClasses[ j ]!.powers[ p ] := rationalClasses[ movedTo
-                [ rationalClasses[ j ]!.power ] ];
-        fi;
-        Unbind( rationalClasses[ j ]!.power );
-        CompleteGaloisGroupPElement( rationalClasses[ j ], 
-                rationalClasses[ j ]!.powers[ p ], p );
     od;
 
     return rationalClasses;

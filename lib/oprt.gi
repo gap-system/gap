@@ -896,29 +896,68 @@ end );
 #F  OrbitStabilizerByGenerators( <gens>, <oprs>, <d>, <opr> )  Schreier's th.
 ##
 OrbitStabilizerByGenerators := function( gens, oprs, d, opr )
-    local   orb,  stb,  rep,  pnt,  img,  sch,  i;
+    local   orb,  stb,  rep,  p,  q,  img,  sch,  i;
 
     orb := [ d ];
     stb := [  ];
     if not IsEmpty( gens )  then
         rep := [ One( gens[ 1 ] ) ];
-        for pnt  in orb  do
+        p := 1;
+        while p <= Length( orb )  do
             for i  in [ 1 .. Length( gens ) ]  do
-                img := opr( pnt, oprs[ i ] );
-                if not img in orb  then
+                img := opr( orb[ p ], oprs[ i ] );
+                q := Position( orb, img );
+                if q = fail  then
                     Add( orb, img );
-                    Add( rep, rep[Position(orb,pnt)]*gens[ i ] );
+                    Add( rep, rep[ p ] * gens[ i ] );
                 else
-                    sch := rep[Position(orb,pnt)]*gens[ i ]
-                           / rep[Position(orb,img)];
+                    sch := rep[ p ] * gens[ i ] / rep[ q ];
                     if not sch in stb  then
                         Add( stb, sch );
                     fi;
                 fi;
             od;
+            p := p + 1;
         od;
     fi;
     return rec( orbit := orb, stabilizer := stb );
+end;
+
+OrbitStabilizerListByGenerators := function( gens, oprs, d, opr )
+    local   orb,  stb,  s,  rep,  r,  p,  q,  img,  sch,  i,  j;
+
+    orb := [ d ];
+    stb := List( gens, x -> [  ] );  Add( stb, [  ] );
+    s := stb[ Length( stb ) ];
+    if not IsEmpty( gens[ 1 ] )  then
+        rep := List( gens, x -> [One(x[1])] );  Add( rep, [One(oprs[1])] );
+        r := rep[ Length( rep ) ];
+        p := 1;
+        while p <= Length( orb )  do
+            for i  in [ 1 .. Length( oprs ) ]  do
+                img := opr( orb[ p ], oprs[ i ] );
+                q := Position( orb, img );
+                if q = fail  then
+                    Add( orb, img );
+                    for j  in [ 1 .. Length( gens ) ]  do
+                        Add( rep[ j ], rep[ j ][ p ] * gens[ j ][ i ] );
+                    od;
+                    Add( r, r[ p ] * oprs[ i ] );
+                else
+                    sch := r[ p ] * oprs[ i ] / r[ q ];
+                    if not sch in s  then
+                        Add( s, sch );
+                        for j  in [ 1 .. Length( gens ) ]  do
+                            Add( stb[ j ], rep[ j ][ p ] * gens[ j ][ i ] /
+                                 rep[ j ][ q ] );
+                        od;
+                    fi;
+                fi;
+            od;
+            p := p + 1;
+        od;
+    fi;
+    return rec( orbit := orb, stabilizers := stb );
 end;
 
 #############################################################################

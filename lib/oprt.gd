@@ -4,57 +4,38 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.22  1997/04/14 08:31:09  htheisse
-#H  added `ExternalOrbitsStabilizers'
-#H  new method for `ImagesSource' with known base
-#H
-#H  Revision 4.21  1997/04/09 09:17:08  htheisse
-#H  gave sparse homomorphisms an external set
-#H  allowed \`Permutation' to return fail instead of error
-#H  added new methods for matrix groups nice monomorphisms
-#H
-#H  Revision 4.20  1997/03/17 14:20:42  htheisse
-#H  added generic method for `OrbitStabilizer'
-#H
-#H  Revision 4.19  1997/03/12 13:17:51  htheisse
-#H  added method for preimages under GL -> perm op homom
-#H
-#H  Revision 4.18  1997/03/04 16:04:43  htheisse
-#H  checked the `oprt*' functions against the descriptions of the 3.4 manual
-#H
-#H  Revision 4.17  1997/02/12 16:30:18  htheisse
-#H  corrected enumerators for external subsets; cleaned up the code
-#H
-#H  Revision 4.16  1997/02/07 13:55:44  ahulpke
-#H  Added 'CanonicalRepresentativeDeterminatorOfExternalSet' and utilized it for
-#H  right cosets.
-#H
-#H  Revision 4.15  1997/02/06 09:51:24  htheisse
-#H  introduced `IsPrimitiveAffine'
-#H
-#H  Revision 4.14  1997/01/30 13:26:18  htheisse
-#H  reorganised the representation of operation homomorphisms to fix a bug
-#H
-#H  Revision 4.13  1997/01/09 18:03:00  htheisse
-#H  added `SparseOperationHomomorphism'
-#H
-#H  Revision 4.12  1997/01/09 16:31:37  ahulpke
-#H  Added StabilizerOfBlockNC
-#H
-#H  Revision 4.11  1996/12/19 09:40:51  htheisse
-#H  reduced number of calls of `NewKind'
-#H
-##
 Revision.oprt_gd :=
     "@(#)$Id$";
 
 InfoOperation := NewInfoClass( "InfoOperation" );
 
+#############################################################################
+##
+#C  IsExternalSet . . . . . . . . . . . . . . . . . category of external sets
+##
+##  An external set  specifies an operation <opr>:  <D>  x <G>  --> <D>  of a
+##  group <G> on a finite domain <D>. If <D> is not a list, an enumerator for
+##  <D> is automatically chosen and fixed.
+##
 IsExternalSet := NewCategory( "IsExternalSet", IsDomain );
+
+#############################################################################
+##
+#R  IsExternalSubset . . . . . . . . . . . representation of external subsets
+##
+##  An external subset is the restriction  of an external  set to a subset of
+##  <D>, i.e., to a union of orbits.
+##
 IsExternalSubset := NewRepresentation( "IsExternalSubset",
     IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [ "start" ] );                            
+
+#############################################################################
+##
+#R  IsExternalOrbit  . . . . . . . . . . .  representation of external orbits
+##
+##  An external orbit is an external subset on one orbit.
+##
 IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
     IsExternalSubset, [ "start" ] );
 IsExternalSetByPcgs := NewCategory( "IsExternalSetByPcgs", IsExternalSet );
@@ -108,18 +89,41 @@ IsGeneralLinearOperationHomomorphismWithBase := NewRepresentation
       IsGeneralLinearOperationHomomorphism,
       [ "externalSet" ] );
 
+#############################################################################
+##
+#A  ActingDomain( <xset> )  . . . . . . . . . . . . . . . . . . the group <G>
+##
 ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );
 SetActingDomain := Setter( ActingDomain );
 HasActingDomain := Tester( ActingDomain );
 
-FunctionOperation := NewAttribute( "FunctionOperation", IsExternalSet );
-SetFunctionOperation := Setter( FunctionOperation );
-HasFunctionOperation := Tester( FunctionOperation );
-
+#############################################################################
+##
+#A  HomeEnumerator( <xset> )  . . . . . . .  the enumerator of the domain <D>
+##
+##  For external   subsets, this is  different  from `Enumerator(  <xset> )',
+##  which enumerates the union of orbits.
+##
 HomeEnumerator := NewAttribute( "HomeEnumerator", IsExternalSet );
 SetHomeEnumerator := Setter( HomeEnumerator );
 HasHomeEnumerator := Tester( HomeEnumerator );
 
+#############################################################################
+##
+#A  FunctionOperation( <xset> ) . . . . . . . . . . . . .  the function <opr>
+##
+FunctionOperation := NewAttribute( "FunctionOperation", IsExternalSet );
+SetFunctionOperation := Setter( FunctionOperation );
+HasFunctionOperation := Tester( FunctionOperation );
+
+#############################################################################
+##
+#A  CanonicalRepresentativeOfExternalSet( <xset> )  . . . . . . . . . . . . .
+##
+##  The canonical representative of an  external set may  only depend on <G>,
+##  <D>, <opr> and (in the case of  external subsets) `Enumerator( <xset> )'.
+##  It must not depend, e.g., on the representative of an external orbit.
+##
 CanonicalRepresentativeOfExternalSet := NewAttribute
     ( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
 SetCanonicalRepresentativeOfExternalSet :=
@@ -144,11 +148,22 @@ HasCanonicalRepresentativeDeterminatorOfExternalSet :=
 InstallTrueMethod(HasCanonicalRepresentativeOfExternalSet,
   HasCanonicalRepresentativeDeterminatorOfExternalSet);
 
+#############################################################################
+##
+#A  OperatorOfExternalSet( <xset> ) . . . . . . . . . . . . . . . . . . . . .
+##
+##  an     element     mapping      `Representative(     <xset>    )'      to
+##  `CanonicalRepresentativeOfExternalSet( <xset> ' under the given operation
+##
 OperatorOfExternalSet := NewAttribute( "OperatorOfExternalSet",
                                  IsExternalSet );
 SetOperatorOfExternalSet := Setter( OperatorOfExternalSet );
 HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
 
+#############################################################################
+##
+#A  OperationHomomorphism( <xset> ) . homomorphism into S_{HomeEnumerator(D)}
+##
 OperationHomomorphismAttr := NewAttribute( "OperationHomomorphism",
                                  IsExternalSet );
 
@@ -161,6 +176,14 @@ OrbitsishReq := [ IsGroup, IsList,
                   IsList,
                   IsFunction ];
 
+#############################################################################
+##
+
+#O  ExternalSet( <G>, <D>, [<gens>,<oprs>,] <opr> ) .  construct external set
+##
+##  If <gens> and  <oprs> are specified, <gens>  must be a generating set for
+##  <G>, and the operation is $(d,gens[i]) -> opr(d,oprs[i])$.
+##
 ExternalSet := NewOperationArgs( "ExternalSet" );
 ExternalSetOp := NewOperation( "ExternalSet", OrbitsishReq );
 ExternalSetAttr := NewAttribute( "ExternalSet", IsGroup );
@@ -170,6 +193,12 @@ ExternalSetByFilterConstructor := NewOperationArgs
 ExternalSetByKindConstructor := NewOperationArgs
                                 ( "ExternalSetByKindConstructor" );
 
+#############################################################################
+##
+#O  ExternalSubset( <G>, <D>, <start>, [<gens>,<oprs>,] <opr> ) . . . . . . .
+##
+##  constructs the external subset on the union of orbits of <start>.
+##
 ExternalSubset := NewOperationArgs( "ExternalSubset" );
 ExternalSubsetOp := NewOperation( "ExternalSubset",
     [ IsGroup, IsList, IsList,
@@ -177,14 +206,17 @@ ExternalSubsetOp := NewOperation( "ExternalSubset",
       IsList,
       IsFunction ] );
 
+#############################################################################
+##
+#O  ExternalOrbit( <G>, <D>, <pnt>, [<gens>,<oprs>,] <opr> )  . . . . . . . .
+##
+##  constructs the external subset on the orbit of <pnt>.
+##
 ExternalOrbit := NewOperationArgs( "ExternalOrbit" );
 ExternalOrbitOp := NewOperation( "ExternalOrbit", OrbitishReq );
 
 Orbit := NewOperationArgs( "Orbit" );
 OrbitOp := NewOperation( "Orbit", OrbitishReq );
-
-OrbitStabilizer := NewOperationArgs( "OrbitStabilizer" );
-OrbitStabilizerOp := NewOperation( "OrbitStabilizer", OrbitishReq );
 
 Orbits := NewOperationArgs( "Orbits" );
 OrbitsOp := NewOperation( "Orbits", OrbitsishReq );
@@ -282,8 +314,19 @@ RepresentativeOperation := NewOperationArgs( "RepresentativeOperation" );
 RepresentativeOperationOp := NewOperation( "RepresentativeOperation",
     [ IsGroup, IsList, IsObject, IsObject, IsFunction ] );
 
+#############################################################################
+##
+#O  Stabilizer( <G>, <pnt>, <opr> ) . . . . . . . . . . . . . . . . . . . . .
+#O  OrbitStabilizer( <G>, <pnt>, <opr> )  . . rec(orbit:=...,stabilizer:=...)
+#A  StabilizerOfExternalSet( <xset> ) .  stabilizer of `Representative(xset)'
+##
+##  The stabilizer must have <G> as its parent.
+##
 Stabilizer := NewOperationArgs( "Stabilizer" );
 StabilizerOp := NewOperation( "Stabilizer", OrbitishReq );
+
+OrbitStabilizer := NewOperationArgs( "OrbitStabilizer" );
+OrbitStabilizerOp := NewOperation( "OrbitStabilizer", OrbitishReq );
 
 StabilizerOfExternalSet := NewAttribute( "StabilizerOfExternalSet",
                                    IsExternalSet );
@@ -300,11 +343,14 @@ OperationOrbit := NewOperationArgs( "OperationOrbit" );
 OrbitByPosOp := NewOperationArgs( "OrbitByPosOp" );
 OrbitStabilizerByGenerators := NewOperationArgs
                                ( "OrbitStabilizerByGenerators" );
+OrbitStabilizerListByGenerators := NewOperationArgs
+                               ( "OrbitStabilizerListByGenerators" );
 SetCanonicalRepresentativeOfExternalOrbitByPcgs :=
   NewOperationArgs( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
 
 #############################################################################
 ##
+
 #F  StabilizerOfBlockNC( <G>, <B> )  . . . . block stabilizer for perm groups
 ##
 StabilizerOfBlockNC := NewOperationArgs( "StabilizerOfBlockNC" );
@@ -319,4 +365,4 @@ StabilizerOfBlockNC := NewOperationArgs( "StabilizerOfBlockNC" );
 
 #############################################################################
 ##
-#E  12345678.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#E  oprt.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

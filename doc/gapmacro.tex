@@ -119,39 +119,30 @@
 
 % macros for verbatim scanning (almost copied from `The TeXbook')
 \chardef\other=12
-\def\ttverbatim{\begingroup
-  \catcode`\\=\other
-  \catcode`\{=\other
-  \catcode`\}=\other
-  \catcode`\<=\other
-  \catcode`\$=\other
-  \catcode`\%=\other
-  \catcode`\~=\other
-  \catcode`\^=\other
-  \catcode`\_=\other
-  \catcode`\*=\other
-  \catcode`\`=\other
-  \catcode`\!=\other
-  \catcode`\"=\other
-  \catcode`\&=\other
-  \catcode`\#=\active
+\def\undocatcodespecials{\catcode`\\=\other     \catcode`\{=\other
+  \catcode`\}=\other     \catcode`\<=\other     \catcode`\$=\other
+  \catcode`\%=\other     \catcode`\~=\other     \catcode`\^=\other
+  \catcode`\_=\other     \catcode`\*=\other     \catcode`\`=\other
+  \catcode`\!=\other     \catcode`\"=\other     \catcode`\&=\other
+  \catcode`\#=\other     \catcode`\|=\other}
+\def\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active
   \obeyspaces \obeylines \tt}
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
  \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}}
-\outer\def\begintt{\medskip\ttverbatim
+\outer\def\begintt{\par
   \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
-  \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
+  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
-  |gdef|ttfinish#1^^M#2\endtt{#1{#2}|endgroup %
+  |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
   |medskip|noindent|ignorespaces}}
-\outer\def\beginexample{\medskip\ttverbatim
+\outer\def\beginexample{\par
   \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
-  \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
+  \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
-  |gdef|examplefinish#1^^M#2\endexample{#1{#2}|endgroup %
+  |gdef|examplefinish#1^^M#2\endexample{#1|medskip{#2}|endgroup %
   |medskip|noindent|ignorespaces}}
 
 % Input/output streams. Chapter and section counters.
@@ -283,22 +274,7 @@
   \copytoblankline}
 \def\copytoblankline{\begingroup\setupcopy\copyans}
 {\undoquotes
-\gdef\setupcopy{\catcode`\\=\other
-  \catcode`\{=\other
-  \catcode`\}=\other
-  \catcode`\<=\other
-  \catcode`\$=\other
-  \catcode`\%=\other
-  \catcode`\~=\other
-  \catcode`\^=\other
-  \catcode`\_=\other
-  \catcode`\*=\other
-  \catcode`\`=\other
-  \catcode`\!=\other
-  \catcode`\"=\other
-  \catcode`\&=\other
-  \catcode`\#=\other
-  \catcode`\|=\other \obeylines \obeyspaces}
+\gdef\setupcopy{\undocatcodespecials \obeylines \obeyspaces}
 \obeylines \gdef\copyans#1
   {\def\next{#1}%
   \ifx\next\empty\let\next=\endgroup %

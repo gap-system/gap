@@ -64,7 +64,7 @@ KindOfDefaultGeneralMapping := function( source, range, filter )
                     IsDefaultGeneralMappingRep and filter );
 
     # Store source and range.
-    Kind![3]:= [ source, range ];
+    SetDataKind( Kind, [ source, range ] );
 
     # Return the kind.
     return Kind;

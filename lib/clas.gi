@@ -114,7 +114,6 @@ InstallOtherMethod( Centralizer, true, [ IsConjugacyClassGroupRep ], 0,
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
-
 ConjugacyClassesByRandomSearch := function ( G )
     local   classes,    # conjugacy classes of <G>, result
             class,      # one class of <G>
@@ -203,7 +202,17 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
 end;
 
 InstallMethod( ConjugacyClasses, true, [ IsSolvableGroup ], 20,
-    G -> ClassesSolvableGroup( G, G, true, 0 ) );
+    function( G )
+    local   cls,  cl,  c;
+    
+    cls := [  ];
+    for cl  in ClassesSolvableGroup( G, G, true, 0 )  do
+        c := ConjugacyClass( G, cl.representative );
+        SetStabilizerOfExternalSet( c, cl.centralizer );
+        Add( cls, c );
+    od;
+    return cls;
+end );
 
 #############################################################################
 ##
@@ -500,10 +509,31 @@ end;
 
 InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
     function( G )
-    if not IsPrimePowerInt( Size( G ) )  then
-        TryNextMethod();
+    local   rcls,  cl,  rcl,  sum;
+    
+    rcls := [  ];
+    if IsPrimePowerInt( Size( G ) )  then
+        for cl  in ClassesSolvableGroup( G, G, true, 1 )  do
+            rcl := RationalClass( G, cl.representative );
+            SetStabilizerOfExternalSet( rcl, cl.centralizer );
+            SetGaloisGroup( rcl, cl.galoisGroup );
+            Add( rcls, rcl );
+        od;
+    else
+        sum := 0;
+        for cl  in ClassesSolvableGroup( G, G, true, 0 )  do
+            rcl := RationalClass( G, cl.representative );
+            SetStabilizerOfExternalSet( rcl, cl.centralizer );
+            if not rcl in rcls  then
+                Add( rcls, rcl );
+                sum := sum + Size( rcl );
+                if sum = Size( G )  then
+                    break;
+                fi;
+            fi;
+        od;
     fi;
-    return ClassesSolvableGroup( G, G, true, 1 );
+    return rcls;
 end );
 
 #############################################################################

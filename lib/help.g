@@ -11,6 +11,19 @@
 Revision.help_g :=
     "@(#)$Id$";
 
+#############################################################################
+##
+#F  ReplaceSubstring( <string>, <old>, <new> )
+##
+ReplaceSubstring := function( string, old, new )
+    local   i;
+    
+    for i  in [ 0 .. Length( string ) - Length( old ) ]  do
+        if string{ i + [ 1 .. Length( old ) ] } = old  then
+            string{ i + [ 1 .. Length( old ) ] } := new;
+        fi;
+    od;
+end;
 
 #############################################################################
 ##
@@ -322,7 +335,8 @@ end;
 #F  HELP_PRINT_SECTION( <book>, <chapter>, <section> )
 ##
 HELP_PRINT_SECTION := function( book, chapter, section )
-    local   info,  chap,  filename,  stream,  done,  line,  lines;
+    local   info,  chap,  filename,  stream,  done,  line,  lines,
+            verbatim;
 
     # get the chapter info
     info := HELP_BOOK_INFO(book);
@@ -348,6 +362,7 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                                  info.chapters[chapter], '_' ) );
     fi;
     ReadLine(stream);
+    verbatim := false;
     repeat
         line := ReadLine(stream);
         if line <> fail  then
@@ -357,25 +372,39 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                 line := line{[1..Length(line)-1]};
 
                 # blanks lines are ok
-                if 0 = Length(line)  then
+                if 0 = Length(line)  and  not verbatim  then
                     Add( lines, line );
 
-                # ignore lines starting with '%'
-                elif line[1] = '%'  then
+                # ignore lines starting or ending with '%'
+                elif line[1] = '%'  or  line[Length(line)] = '%'  then
                     ;
 
-                # ignore the index command
-                elif MATCH_BEGIN(line,"\\index")  then
-                    ;
-
+                # ignore answers to exercises
+                elif MATCH_BEGIN(line,"\\answer")  then
+                    repeat
+                        line := ReadLine(stream);
+                    until line = fail  or  line = "\n";
+                    
                 # example environment
-                elif MATCH_BEGIN(line,"\\beginexample")  then
+                elif MATCH_BEGIN(line,"\\beginexample")
+                  or MATCH_BEGIN(line,"\\begintt")  then
+                    verbatim := true;
                     Add( lines, "" );
-                elif MATCH_BEGIN(line,"\\endexample")  then
+                elif MATCH_BEGIN(line,"\\endexample")
+                  or MATCH_BEGIN(line,"\\endtt")  then
+                    verbatim := false;
                     Add( lines, "" );
-
+                
                 # use everything else
                 else
+                    if not verbatim  then
+                        if MATCH_BEGIN(line,"\\exercise")  then
+                            line{[1..9]} := "EXERCISE:";
+                        fi;
+                        ReplaceSubstring( line, "~", " " );
+                        ReplaceSubstring( line, "{\\GAP}", "  GAP " );
+                        ReplaceSubstring( line, "\\", " " );
+                    fi;
                     Add( lines, line );
                 fi;
             fi;

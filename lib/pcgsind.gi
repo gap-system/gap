@@ -523,6 +523,22 @@ end );
 
 #############################################################################
 ##
+#M  InducedPcgsWrtHomePcgs( <G> )
+##
+InstallMethod( InducedPcgsWrtHomePcgs, true, [ IsGroup ], 0,
+    function( G )
+    local   home;
+    
+    home := HomePcgs( G );
+    if HasPcgs( G )  and  home = Pcgs( G )  then
+        return InducedPcgsByPcSequenceNC( home, home );
+    else
+        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+    fi;
+end );
+
+#############################################################################
+##
 #M  CanonicalPcgsByGeneratorsWithImages( <pcgs>, <gens>, <imgs> )
 ##
 InstallMethod( CanonicalPcgsByGeneratorsWithImages,

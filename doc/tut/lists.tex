@@ -111,12 +111,13 @@ actual value  of  the  object  `lll'   on  the  right  hand side  of  the
 assignment. But in  fact it is  identical to the value  of the whole list
 `lll' on the left hand side of the assignment.
 
-A *string* is   a very  special type  of  list,  which  is printed in   a
-different way. A string is simply a dense list of characters. Strings are
-used mainly in filenames and error messages. A  string literal can either
-be entered simply as the list of  characters or by writing the characters
-between  doublequotes `\"'. GAP will  always output strings in the latter
-format.
+A *string*
+\index{strings}%
+is a  very special type of list,  which is printed in  a different way. A
+string is simply a  dense list of  characters. Strings are used mainly in
+filenames  and error  messages. A string  literal can  either  be entered
+simply as the  list of  characters  or by writing  the characters between
+doublequotes `\"'.
 \beginexample
     gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
     "Hallo world."
@@ -125,6 +126,15 @@ format.
     gap> s1[7];
     'w' 
 \endexample
+
+\exercise True or false: A dense list of  characters is always printed as
+a string by {\GAP}, i.e., between doublequotes, not in square brackets.
+
+\answer False, the  empty list  is a string,   but  it is either   always
+printed `[ ]' or always `\"\"', depending on how it was entered. Also the
+automatic conversion   into strings  takes   place  only on  the  ``outer
+level'', not for lists inside lists.
+
 Sublists of lists can easily be extracted and assigned using the operator
 `<list>\{ <positions> \}'.
 \beginexample
@@ -223,7 +233,7 @@ the functions `Add' and `Append' change their arguments.
 \Section{Sets}
 
 {\GAP} knows several special kinds of lists.  A very important one is the
-*set*, which is a  list without holes all of  whose entries belong to the
+*set*, which is a list without holes  all of whose  entries belong to the
 same *family*,
 \index{family}%
 which says (more  or less)  that they   can be  compared using  the  `\<'
@@ -231,7 +241,7 @@ operator. The crucial property of a set is then that  its entries must be
 strictly sorted, i.e.,  entries in higher positions  must be greater with
 respect  to~`\<'. In  particular,  a set  cannot have duplicates.  {\GAP}
 calls a set also a *strictly sorted list*
-\index{list!strictly sorted}%
+\index{lists!strictly sorted}%
 and the function `IsSSortedList' tests whether a given  list is a set. It
 returns  a boolean value.  For  any list  contained  in one family  there
 exists a  corresponding   set containing  the  same   elements  (ignoring
@@ -489,6 +499,62 @@ elements from the original list corresponding to these positions.
     gap> primes{ [1 .. 10] };
     [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
 \endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Immutability}
+
+{\GAP} has a mechanism that protects lists against  changes like the ones
+that have bothered     us in section   "Identical  lists".  The  function
+`Immutable' takes as argument a list and returns an immutable copy of it,
+i.e.,  a list which  looks  exactly like the  old one,  but has two extra
+properties: (1)~It has no non-constant subobjects in  common with the old
+list, i.e., every part of the list  that can be  changed has been copied,
+so that changes to the old list will not affect  the new one. (2)~The new
+list is made a constant, i.e., no part of it can be changed any more.
+\beginexample
+    gap> list := [ 1, 2, "three", [ 4 ] ];; copy := Immutable( list );;
+    gap> list[3][5] := 'w';; list; copy;
+    [ 1, 2, [ 't', 'h', 'r', 'e', 'w' ], [ 4 ] ]
+    [ 1, 2, "three", [ 4 ] ]
+    gap> copy[3][5] := 'w';
+    Lists Assignment: <list> must be a mutable list
+    Entering break read-eval-print loop, you can 'quit;' to quit to outer \
+    loop,
+    or you can return and ignore the assignment to continue
+    brk> quit;
+\endexample
+As a consequence of  these rules, in the  immutable copy of a list  which
+contains an already immutable list as subobject, this immutable subobject
+need not be copied,  because it is a   constant. This is the idea  behind
+`Immutable': it produces lists that behave like constants. Such lists are
+useful in many complex {\GAP} objects,  for example as generator lists of
+groups. By  making them immutable, {\GAP}  ensures that no generators can
+be added to the list, removed or exchanged. Such  changes would of course
+lead  to serious inconsistencies with  other  attributes that may already
+have been calculcated for the group.
+
+The  converse function to `Immutable'  is `ShallowCopy', which produces a
+new mutable list whose  $i$th entry is the  $i$th entry of the old  list.
+Since these entries  are subobjects of the immutable  old list  and hence
+immutable themselves, the result of `ShallowCopy'  is mutable only at the
+top level whereas the entries of the list are treated as constants, i.e.,
+are not copied. That's why the result is called a ``shallow copy''.
+
+\exercise How can you produce a ``deep copy'' of an immutable list?
+
+\answer `DeepCopy(  list   )' will  copy `list'  only  as deep  as  it is
+mutable, hence it will not copy an immutable list at all.  So you have to
+iterate the effect  of `ShallowCopy', e.g.,  with the following recursive
+function:
+\begintt
+    DeepCopyList := function( old )
+    local   new,  entry;
+        new := [  ];  for entry  in old  do
+        if IsList( entry )  then  Add( new, DeepCopyList( entry ) );
+                            else  Add( new, entry );  fi;  od;
+        return new;
+    end;
+\endtt
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:

@@ -1,0 +1,123 @@
+\Chapter{Operations and Attributes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Attributes}
+
+In the preceding chapters,  we have seen  how to obtain information about
+mathematical  objects   in {\GAP}: We   have  to pass  the   object as an
+*argument* to  a function, and the   *result* will be  the value  of that
+function call. For example, the integer which is  the size of a group <G>
+is  the value of the  expression `Size( <G> )'.   Computing the size of a
+group generally requires a substantial amount of work, therefore it seems
+desirable to store the size somewhere once it has been calculated. If the
+size  of <G> is demanded   again later, it can  simply  be looked up. The
+natural place  to  store such information  about  <G>  is the object  <G>
+itself, and  you should imagine that  {\GAP} puts the size somewhere into
+<G> when `Size( <G>   )' is executed  for the  first  time, and   if this
+function call is executed  again later, the size is  simply looked up and
+returned, without further computation.
+
+\index{getter!of an attribute}\index{setter!of an attribute}
+\index{tester!of an attribute}\index{methods}
+This means  that  the behavior of the   function `Size' has  to depend on
+whether the argument to the function already knows  its size, and if not,
+that the  size   must be  stored  in  the  argument   after it  has  been
+calculated. These two extra  tasks are done by  two other  functions that
+accompany  `Size( <G> )',  namely the *tester*  `HasSize( <G>  )' and the
+*setter*  `SetSize( <G>, <size> )'. The  tester returns `true' or `false'
+according to  whether <G>  already knows its  size, and  the  setter puts
+<size>  into <G> as the  value of `Size'. The   function `Size' itself is
+called the *getter*, and from the preceding discussion  we see that there
+must really be two  getters, or rather two *methods*  for the getter: The
+first  method is used when  the tester returns  `false'; it is the method
+which first does  the real computation and then  executes the setter with
+the computed value. The second method is used when the the tester returns
+`true'; it simply  returns the stored value.  This method is also  called
+the *system getter*.
+\beginexample
+    gap> G := Group( RandomInvertibleMat(4,GF(4)),
+    >                RandomInvertibleMat(4,GF(4)) );; Size( G ); time;
+    11612160  # most probably `G' is the general linear group
+    3583      # this may of course vary on your machine
+    gap> Size( G ); time;
+    11612160
+    0
+\endexample
+The convenient thing  for the user  is that  {\GAP} automatically chooses
+the right method for the  getter, i.e., it  calls the real-work getter at
+most once and  the system getter in  all subsequent occurrences. *At most
+once* because the value of a function like  `Size' can also be set before
+the getter  is called  at  all; to do  this  you simply call  the  setter
+directly.
+
+A triple of a getter,  a setter and a tester  is called an *attribute* in
+{\GAP}. When a new attribute is  defined, all three functions are created
+together  and the getter contains  references to  the  other two. This is
+necessary because when the  getter is called,  it must first consult  the
+tester,  and perhaps execute the setter  in the end. Therefore the getter
+could be implemented as follows:
+\begintt
+    getter := function( obj )
+        local   value;
+
+        if tester( obj )  then
+            value := system_getter( obj );
+        else
+            value := real_work_getter( obj );
+            setter( obj, value );
+        fi;
+        return value;
+    end;
+\endtt
+The  only  function which depends  on  the   mathematical  nature of  the
+attribute  is  the real-work  getter, and  this  is of   course  what the
+programmer of an attribute has to install.
+
+\exercise  What  do you think:  Is  the {\GAP} function  `Random' also an
+attribute?
+
+\answer Of course  not, because then the  first random element of a group
+would be stored by  the setter and returned over  and  over again by  the
+system getter every  time `Random' is  called in  the sequel.  Not a very
+random behavior.
+
+There is a general important rule about attributes: *Once the value of an
+attribute for an object has been set, it cannot be reset, i.e., it cannot
+be changed any more.* This is achieved by having two methods not only for
+the getter but also for the setter: If an object already has an attribute
+value stored, i.e., if the tester returns `true',  the setter simply does
+nothing.
+\beginexample
+    gap> SetSize( G, 0 ); Size( G );
+    11612160
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Properties and filters}\null
+
+\atindex{properties}{|indexit}\atindex{filters}{|indexit}%
+Certain attributes, like `IsAbelian', are boolean-valued. Such attributes
+are known to {\GAP} as *properties*, because their values are stored in a
+slightly  different  way. A property  also has  a getter,  a setter and a
+tester, but in this  case,  the getter as  well as  the tester returns  a
+boolean value.  Therefore {\GAP} stores   both  values in  the same  way,
+namely as a bit  in a boolean  list, and treats  property getters and all
+testers (of attributes or properties) uniformly, namely as *filters*. You
+can imagine that a filter of an object is a bit,  i.e., a switch which is
+set either to `true' or  to `false'.  Since they  allow only two  values,
+filters  can  be compared very  quickly, and  the  scheme by which {\GAP}
+chooses  the method, e.g., for a  getter or a  setter (as we have seen in
+the  previous section), is mostly based  on  the examiniation of filters,
+not on  the examiniation of  other attribute values.  For details on this
+*method selection*, see "Method selection".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
+% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

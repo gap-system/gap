@@ -10,8 +10,8 @@ in most cases.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Permutation groups}
 
-Permutation  groups are so  easy  to input  because their elements,  i.e.
-permutations, are  so  easy to type:  they are  entered and displayed  in
+Permutation  groups  are so easy to  input  because their elements, i.e.,
+permutations,  are  so easy to  type: they  are  entered and displayed in
 disjoint cycle notation. So let's construct a permutation group:
 \beginexample
     gap> s8 := Group( (1,2), (1,2,3,4,5,6,7,8) );
@@ -245,24 +245,27 @@ So far we have  seen a few  applications of the functions `Operation' and
 that   the  natural homomorphism `hom'    constructed  above is  also  an
 *operation homomorphism*;
 \index{homomorphism!operation}%
-this is also  the reason  why its  image is represented  as a permutation
-group: it is the natural representation  for operations. We will now look
-at this  natural   homomorphism again to   find  out on what objects   it
-operates. These objects form  a so-called *external  set* which is stored
-in the homomorphism similar to a record component.
+this is also the  reason why its  image  is represented as  a permutation
+group: it is the natural representation for  operations. We will now look
+at   this natural  homomorphism again to   find  out on  what objects  it
+operates. These objects form a so-called *external set*
+\index{external set}%
+which is stored in the homomorphism similar to a record component.
 \beginexample
     gap> t := hom!.externalSet;
     RightTransversal( 2^3:L_3(2), Group( 
     [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8), 
       (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )
 \endexample
-The external  set is a *right  transversal* of a  subgroup <U> in `norm',
-such  that  the kernel of the   operation is the desired  normal subgroup
-`elab'.  This right transversal contains  one  element from each coset of
-<U>. But   an external  set   is more than just  a   list of its  points:
-Altogether  three things are  necessary    to  specify an  operation:   a
-group~<G>, a set~<D>, and a  function $<opr>\colon <D>\times <G>\to <D>$.
-We can access these ingredients with the following functions:
+The external  set is a *right  transversal*
+\index{right transversal}%
+of a subgroup <U> in `norm', such that the kernel of the operation is the
+desired  normal subgroup  `elab'.  This  right  transversal contains  one
+element from each coset of <U>. But  an external set  is more than just a
+list  of its points: Altogether three  things are necessary to specify an
+operation: a group~<G>, a  set~<D>, and a function $<opr>\colon <D>\times
+<G>\to  <D>$. We   can access   these   ingredients with   the  following
+functions:
 \beginexample
     gap> ActingDomain(t); Enumerator(t); FunctionOperation(t)=OnRight;
     2^3:L_3(2)
@@ -275,18 +278,18 @@ The function `OnRight' means multiplication from the  right, which is the
 usual way to  operate on a right transversal.  `OnRight(  <d>, <g> )'  is
 defined as `<d> * <g>'.
 
-\exercise In analogy to `OnRight' there should  be `OnLeft', but actually
-there  are two  functions `OnLeftInverse'  and `OnLeftAntiOperation'. How
-are they defined and why?
+\exercise In analogy to `OnRight'  you might imagine a function `OnLeft',
+but  actually  there      are   two   functions     `OnLeftInverse'   and
+`OnLeftAntiOperation'. How are they defined and why?
 
-\answer   `OnLeftInverse( <d>,  <g>    )'  means `<g>^-1   *  <d>',  i.e.
-multiplication with the   inverse  from   the  left, which   defines   an
-operation. In constrast, the mapping  $<left>\colon (<d>,<g>) \mapsto <g>
-* <d>$ does not yield an  operation, but an anti-operation, i.e. $<left>(
+\answer   `OnLeftInverse(  <d>,  <g>  )'  means   `<g>^-1 *  <d>',  i.e.,
+multiplication  with the  inverse   from   the  left, which defines    an
+operation. In constrast,  the mapping $<left>\colon (<d>,<g>) \mapsto <g>
+* <d>$ does not yield an operation, but an anti-operation, i.e., $<left>(
 <left>( <d>,  <g>_1 ), <g>_2  ) = <left>( <d>, <g>_2  * <g>_1 )$, whereas
-for  an operation, the right hand  side is  required  to have the product
-$<g>_1 * <g>_2$. The {\GAP}  function which performs this mapping  <left>
-is  therefore called  `OnLeftAntiOperation', and, unlike `OnLeftInverse',
+for an  operation, the  right hand side  is required  to have the product
+$<g>_1 * <g>_2$.  The {\GAP} function which  performs this mapping <left>
+is therefore called  `OnLeftAntiOperation', and, unlike  `OnLeftInverse',
 this cannot be used as last argument to an operation function.
 
 Observe that the  external set `t' and  its `Enumerator' are  printed the
@@ -314,6 +317,16 @@ looks  for  the position of  the  coset  described  by the representative
 representative of  the same  coset (which must  be contained  in `t') and
 then looks for its position, hence the name.
 
+\exercise   What   would     be  the  result    of   the  function   call
+`PositionCanonical( AsList(t), elm )' (where `AsList(t)' is equivalent to
+`AsList(Enumerator(t))')?
+
+\answer `fail', because `AsList(t)'  is simply a list of  representatives
+without  any knowledge about the  cosets  they represent. In other words,
+{\GAP}    does not  know  that  they   are   representatives, and so  the
+``canonical representative'' associated with `elm' is `elm' itself, which
+is not among the elements of the list.
+
 The  image  of the natural  homomorphism   is the permutation  group that
 results from the operation of `norm' on the right  transversal. It can be
 calculcated by either of the following commands. The second of them shows
@@ -325,6 +338,17 @@ that the external set `t' contains all information  that is necessary for
     gap> Operation( t );
     L_3(2)
 \endexample
+
+\exercise What difference does  it make whether something  is stored in a
+record  component   like `hom!.externalSet'   or   as  an attribute  like
+`Enumerator(t)'?
+
+\answer  A record component like `hom!.externalSet'  must be entered when
+the object `hom'  is constructed, which  makes sense because an operation
+homomorphism  like `hom'   is constructed   for   a given  external  set.
+Attributes like `Enumerator(t)' need not be  set upon construction of the
+object, they  can be computed and stored  when they  are required for the
+first time and subsequently be looked up.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroups!as stabilizers}
@@ -719,8 +743,8 @@ group with the nice monomorphism.
     gap> i := E(4);; grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
     gap> SetName( grp, "Q8" );
     gap> orb := Union( Orbits( grp, One( grp ) ) );
-    [ [ 1, 0 ], [ E(4), 0 ], [ 0, 1 ], [ -1, 0 ], [ 0, E(4) ], [ 0, -E(4) ], 
-        [ -E(4), 0 ], [ 0, -1 ] ]
+    [ [ 1, 0 ], [ E(4), 0 ], [ 0, 1 ], [ -1, 0 ], [ 0, E(4) ],
+        [ 0, -E(4) ], [ -E(4), 0 ], [ 0, -1 ] ]
 \endexample
 The list `orb' is the  union of orbits under `grp'  which contain a basis
 for the  two-dimensional row  vector space over   the rationals (we which
@@ -744,8 +768,8 @@ the latter is also called `StabilizerOfExternalSet' in {\GAP}.
 \beginexample
     gap> pcls := ConjugacyClasses( p );; gcls := [  ];;
     gap> for pc  in pcls  do
-    >      gc := ConjugacyClass( grp, PreImageElm(hom,Representative(pc)) );
-    >      SetStabilizerOfExternalSet( gc, PreImage(hom,Centralizer(pc)) );
+    >      gc := ConjugacyClass(grp,PreImageElm(hom,Representative(pc)));
+    >      SetStabilizerOfExternalSet(gc,PreImage(hom,Centralizer(pc)));
     >      Add( gcls, gc );
     >    od; List( gcls, Size );
     [ 1, 1, 2, 2, 2 ]
@@ -769,12 +793,13 @@ monomorphism like `hom' and then proceeds as we have done above.
     false
     gap> IsFinite( grp );
     true
-    gap> IsHandledByNiceMonomorphism( grp ); hom := NiceMonomorphism( grp );
+    gap> IsHandledByNiceMonomorphism( grp );
     true
+    gap> hom := NiceMonomorphism( grp );
     <operation homomorphism>
     gap> hom!.externalSet; p := Image( hom );
-    [ [ 1, 0 ], [ 0, 1 ], [ E(4), 0 ], [ 0, -E(4) ], [ -1, 0 ], [ 0, E(4) ], 
-      [ 0, -1 ], [ -E(4), 0 ] ]
+    [ [ 1, 0 ], [ 0, 1 ], [ E(4), 0 ], [ 0, -E(4) ], [ -1, 0 ],
+      [ 0, E(4) ], [ 0, -1 ], [ -E(4), 0 ] ]
     Group( [ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ], ... )
     gap> ConjugacyClasses( grp ) = gcls;
     true
@@ -798,7 +823,7 @@ automorphism group.
 `p' is an operation homomorphism. What is its underlying external set?
 
 \answer `NiceMonomorphism( aut )!.externalSet' gives the list
-\begintt
+\begintt|nobreak
     [ (1,2,5,7)(3,6,8,4), (1,3,5,8)(2,4,7,6), (1,4,5,6)(2,8,7,3), 
       (1,6,5,4)(2,3,7,8), (1,7,5,2)(3,4,8,6), (1,8,5,3)(2,6,7,4) ]
 \endtt

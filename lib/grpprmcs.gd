@@ -30,7 +30,6 @@ CentralizerTransSymmCSPG := NewOperationArgs( "CentralizerTransSymmCSPG" );
 IntersectionNormalClosurePermGroup := NewOperationArgs( "IntersectionNormalClosurePermGroup" );
 ActionAbelianCSPG := NewOperationArgs( "ActionAbelianCSPG" );
 ImageOnAbelianCSPG := NewOperationArgs( "ImageOnAbelianCSPG" );
-
 ChiefSeriesPermGroup := NewOperationArgs( "ChiefSeriesPermGroup" );
 
 #############################################################################

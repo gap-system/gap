@@ -5,6 +5,8 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
 ##  This  file contains  methods for   associative words  that  depend on the
 ##  representation.
 ##
@@ -80,13 +82,6 @@ IsInfBitsAssocWord := NewRepresentation(
 ##  in order to make sure that calls of 'NewKind' fetch kinds that know
 ##  this data.
 ##
-# AWP_PURE_KIND         :=  4;
-# AWP_NR_BITS_EXP       :=  5;
-# AWP_NR_GENS           :=  6;
-# AWP_NR_BITS_PAIR      :=  7;
-# AWP_FUN_OBJ_BY_VECTOR :=  8;
-# AWP_FUN_ASSOC_WORD    :=  9;
-# AWP_FIRST_FREE        := 10;
 
 
 #############################################################################

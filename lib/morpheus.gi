@@ -54,6 +54,7 @@ local xset,fam,hom;
   hom:=Objectify(NewKind(fam,IsOperationHomomorphismAutomGroup ),hom);
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetIsInjective(hom,true);
+  SetRange( hom, Image( hom ) );
   Setter(OperationHomomorphismAttr)(xset,hom);
   Setter(IsomorphismPermGroup)(aut,OperationHomomorphism(xset));
   SetNiceMonomorphism(aut,OperationHomomorphism(xset));

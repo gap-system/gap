@@ -1979,7 +1979,7 @@ InstallMethod( DirectSumDecomposition,
 
       # We decompose the action of the splitting element:
 
-        facs:= Factors( f );
+        facs:= Factors( PolynomialRing( F ), f );
         B:= [];
         for i in facs do
           Add( B, List( NullspaceMat( TransposedMat( Value( i, M ) ) ),
@@ -2043,8 +2043,10 @@ InstallMethod( DirectSumDecomposition,
           M:= TransposedMat( mat );
 
           f:= MinimalPolynomial( F, M );
-          facs:= Factors( f );
+          facs:= Factors( PolynomialRing( F ), f );
+
           if Length(facs)=1 then
+
             if DegreeOfUnivariateLaurentPolynomial(f)=Dimension(B[k]) then
 
               # The space is irreducible.
@@ -2353,7 +2355,7 @@ InstallMethod( DirectSumDecomposition,
 
         fi;
 
-        facs:= Factors( f );
+        facs:= Factors( PolynomialRing( F ), f );
 
       # Now we find elements h1,...,hs such that 'hi = 1 mod facs[i]' and
       # 'hi = 0 mod facs[j]' if 'i<>j'.

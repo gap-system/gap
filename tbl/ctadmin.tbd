@@ -92,7 +92,6 @@ LIBTABLE := rec(
 SupportedLibraryTableComponents := [
      "factors",
      "tomfusion",
-     "maxes", 
      "cliffordTable",
      "construction", 
      "extInfo",
@@ -442,6 +441,9 @@ CharacterTableSpecialized := NewOperationArgs( "CharacterTableSpecialized" );
 ##  converts the record <record> into a library character table (ordinary or
 ##  modular).
 ##  No consistency checks are made, and <record> is not copied.
+##
+##  <record> must have one of the components 'isGenericTable' or
+##  'underlyingCharacteristic'.
 ##
 ##  The components listed in 'SupportedCharacterTableInfo' are used to set
 ##  properties and attributes.

@@ -15,7 +15,7 @@ Revision.pcgsperm_gd :=
 ##  cannot be calculcated via `PcSeries' and `Size'.
 ##
 IsPcgsPermGroupRep := NewRepresentation( "IsPcgsPermGroupRep",
-    IsPcgsDefaultRep, [ "group", "stabChain", "series", "nrGensSeries" ] );
+    IsPcgsDefaultRep, [ "group", "stabChain", "series" ] );
 
 #############################################################################
 ##
@@ -23,7 +23,7 @@ IsPcgsPermGroupRep := NewRepresentation( "IsPcgsPermGroupRep",
 ##
 IsModuloPcgsPermGroupRep := NewRepresentation( "IsModuloPcgsPermGroupRep",
     IsPcgsPermGroupRep,
-    [ "group", "stabChain", "series", "nrGensSeries", "denominator" ] );
+    [ "group", "stabChain", "series", "denominator" ] );
 
 WordVector := NewOperationArgs( "WordVector" );
 WordNumber := NewOperationArgs( "WordNumber" );

@@ -229,6 +229,18 @@ ChiefSeriesUnderAction := NewOperation( "ChiefSeriesUnderAction",
 
 #############################################################################
 ##
+#O  ChiefSeriesThrough( <G>,<list> )
+##
+##  is a chief series of the group <G> going through the normal subgroups in
+##  <l>. <l> must be a list of normal subgroups of <G> contained in each
+##  other, sorted by size.
+##
+ChiefSeriesThrough := NewOperation( "ChiefSeriesThrough",
+    [ IsGroup, IsList ] );
+
+
+#############################################################################
+##
 #A  CommutatorFactorGroup( <G> )
 ##
 CommutatorFactorGroup := NewAttribute( "CommutatorFactorGroup", IsGroup );

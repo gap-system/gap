@@ -95,6 +95,17 @@ end );
 
 #############################################################################
 ##
+#M  Pcgs( <G> )
+##
+InstallMethod( Pcgs, "fail if insolvable", true,
+        [ HasIsSolvableGroup ], SUM_FLAGS,
+    function( G )
+    if not IsSolvableGroup( G )  then  return fail;
+                                 else  TryNextMethod();  fi;
+end );
+
+#############################################################################
+##
 #M  Pcgs( <pcgrp> )
 ##
 InstallMethod( Pcgs,
@@ -111,6 +122,10 @@ InstallMethod( Pcgs,
     InducedPcgsWrtHomePcgs );
 
 
+InstallMethod( Pcgs, "take induced pcgs", true,
+    [ IsGroup and HasInducedPcgsWrtHomePcgs ], SUM_FLAGS,
+    InducedPcgsWrtHomePcgs );
+
 #############################################################################
 ##
 #M  Pcgs( <whole-family-grp> )
@@ -123,6 +138,12 @@ InstallMethod( Pcgs,
 function( grp )
     return FamilyPcgs(grp);
 end );
+
+#############################################################################
+##
+#M  HomePcgs( <G> )
+##
+InstallMethod( HomePcgs, true, [ IsGroup ], 0, Pcgs );
 
 
 #############################################################################
@@ -1227,9 +1248,13 @@ end);
 
 #############################################################################
 ##
-#F  ChiefSeriesUnderActionPcGroup( <U>, <G> )
+#F  ChiefSeriesUnderAction( <U>, <G> )
 ##
-ChiefSeriesUnderActionPcGroup := function( U, G )
+InstallMethod( ChiefSeriesUnderAction,
+    "method for a pcgs computable group",
+    IsIdentical,
+    [ IsGroup, IsGroup and IsPcgsComputable ], 0,
+function( U, G )
 local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
   e:=ElementaryAbelianSeries(G);
   ser:=[G];
@@ -1256,17 +1281,7 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     fi;
   od;
   return ser;
-end;
-#T why not installed directly as method?
-
-ChiefSeriesPcGroup := G -> ChiefSeriesUnderActionPcGroup( G, G );
-#T necessary at all?
-
-InstallMethod( ChiefSeriesUnderAction,
-    "method for a pcgs computable group",
-    IsIdentical,
-    [ IsGroup, IsGroup and IsPcgsComputable ], 0,
-    ChiefSeriesUnderActionPcGroup );
+end);
 
 
 #############################################################################

@@ -328,6 +328,9 @@ HasBlocksInfo := Tester( BlocksInfo );
 ##  a list of records, the $i$-th entry belonging to the $i$-th irreducible
 ##  character.
 ##
+##  Usual entries are 
+##  'classparam'
+##
 #T remove this, better store the info in the irred. characters themselves
 #T ('IrredInfo' is used in 'Display' and '\*' methods)
 ##
@@ -540,6 +543,10 @@ CharacterTableDirectProduct := NewOperation( "CharacterTableDirectProduct",
 ##
 #O  CharacterTableFactorGroup( <tbl>, <classes> )
 ##
+##  is the table of the factor group of <tbl> by the intersection of kernels
+##  of those irreducible characters of <tbl> that contain <classes> in their
+##  kernel.
+##
 CharacterTableFactorGroup := NewOperation( "CharacterTableFactorGroup",
     [ IsNearlyCharacterTable, IsHomogeneousList ] );
 
@@ -727,6 +734,7 @@ FusionConjugacyClassesOp := NewOperation( "FusionConjugacyClassesOp",
 ComputedClassFusions := NewAttribute( "ComputedClassFusions",
     IsNearlyCharacterTable, "mutable" );
 SetComputedClassFusions := Setter( ComputedClassFusions );
+HasComputedClassFusions := Tester( ComputedClassFusions );
 
 
 #############################################################################
@@ -751,6 +759,11 @@ SetComputedClassFusions := Setter( ComputedClassFusions );
 ##
 ##  (For the computation of class fusions, see 'FusionConjugacyClasses'.)
 ##
+##  Note that the stored fusion map may differ from the entered map if the
+##  table <destination> has a 'ClassPermutation'.
+##  So one should not fetch fusion maps directly via access to
+##  'ComputedFusionMaps'.
+##
 GetFusionMap := NewOperationArgs( "GetFusionMap" );
 
 
@@ -764,6 +777,11 @@ GetFusionMap := NewOperationArgs( "GetFusionMap" );
 ##
 ##  If a list <fusionmap> is entered, the same holds for
 ##  '<fusion> = rec( map:= <fusionmap> )'.
+##
+##  Note that the stored fusion map may differ from the entered map if the
+##  table <destination> has a 'ClassPermutation'.
+##  So one should not fetch fusion maps directly via access to
+##  'ComputedFusionMaps'.
 ##
 StoreFusion := NewOperationArgs( "StoreFusion" );
 
@@ -826,6 +844,13 @@ HasComputedPowerMaps := Tester( ComputedPowerMaps );
 ##  the identity map.
 ##
 InverseMap := NewOperationArgs( "InverseMap" );
+
+
+#############################################################################
+##
+#F  NrPolyhedralSubgroups( <tbl>, <c1>, <c2>, <c3>)  . # polyhedral subgroups
+##
+NrPolyhedralSubgroups := NewOperationArgs( "NrPolyhedralSubgroups" );
 
 
 #############################################################################
@@ -897,6 +922,16 @@ ConvertToBrauerTableNC := NewOperationArgs( "ConvertToBrauerTableNC" );
 
 #############################################################################
 ##
+#F  PrintCharacterTable( <tbl>, <varname> )
+##
+##  prints the supported information about the character table <tbl>,
+##  as assignment to the variable with name <varname>.
+##
+PrintCharacterTable := NewOperationArgs( "PrintCharacterTable" );
+
+
+#############################################################################
+##
 #F  TableAutomorphisms( <name> )
 ##
 TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
@@ -916,6 +951,35 @@ TransformingPermutationsCharacterTables := NewOperationArgs(
 ##
 LowercaseString := NewOperationArgs( "LowercaseString" );
 #T move to another file !!
+
+
+#############################################################################
+##
+#F  ClassStructureCharTable(<tbl>,<classes>)  . gener. class mult. coefficent
+##
+ClassStructureCharTable := NewOperationArgs( "ClassStructureCharTable" );
+
+
+#############################################################################
+##
+#F  MatClassMultCoeffsCharTable( <tbl>, <class> )
+#F                                     . . . matrix of class mult coefficents
+##
+##  is a matrix <M> of structure constants where
+##  '<M>[j][k] = ClassMultiplicationCoefficient( <tbl>, <class>, j, k )'
+##
+MatClassMultCoeffsCharTable := NewOperationArgs(
+    "MatClassMultCoeffsCharTable" );
+
+
+#############################################################################
+##
+#F  RealClassesCharTable( <tbl> ) . . . .  the real-valued classes of a table
+##
+##  An element $x$ is real iff it is conjugate to its inverse
+##  $x^-1 = x^{o(x)-1}$.
+##
+RealClassesCharTable := NewOperationArgs( "RealClassesCharTable" );
 
 
 #############################################################################
@@ -1041,6 +1105,17 @@ CharacterTableWithSortedClasses := NewOperation(
 ##  see "Conventions for Character Tables".
 ##
 SortedCharacterTable := NewOperationArgs( "SortedCharacterTable" );
+
+
+#############################################################################
+##
+#F  CASString( <tbl> )
+##
+##  is a string that encodes the CAS library format of the character table
+##  <tbl>.
+##  The used line length is 'SizeScreen()[1]'.
+##
+CASString := NewOperationArgs( "CASString" );
 
 
 #############################################################################

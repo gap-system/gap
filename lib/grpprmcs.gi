@@ -2408,16 +2408,25 @@ end;
 
 #############################################################################
 ##
-#F  ChiefSeriesPermGroup(<G>[,<through>])
+#F  ChiefSeriesPermGroup([<H>,]<G>[,<through>])
 ##
 ChiefSeriesPermGroup := function(arg)
-local G,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
+local G,H,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
       through;
   G:=arg[1];
-  if Length(arg)>1 then
-    through:=arg[2];
-  else
-    through:=[];
+  H:=G;
+  through:=[];
+  if Length(arg)=2 then
+    if IsGroup(arg[2]) then
+      H:=arg[1];
+      G:=arg[2];
+    else
+      through:=arg[2]; 
+    fi;
+  elif Length(arg)>2 then
+    H:=arg[1];
+    G:=arg[2];
+    through:=arg[3];
   fi;
   nser:=[G];
   U:=G;
@@ -2440,12 +2449,12 @@ local G,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
       fi;
     fi;
 
-    if IsNormal(G,cs) then
+    if IsNormal(H,cs) then
       # step is normal
       Add(nser,cs);
       n:=cs;
     else
-      o:=GroupOnSubgroupsOrbit(G,cs);
+      o:=GroupOnSubgroupsOrbit(H,cs);
       Info(InfoGroup,1,"orblen=",Length(o));
       n:=Intersection(o);
       #n:=o[1];
@@ -2477,7 +2486,7 @@ local G,nser,U,i,j,k,cs,n,o,mat,mats,row,p,one,m,c,v,ser,gens,r,dim,im,
 
 	# now construct matrices for operation
 	mats:=[];
-	for i in GeneratorsOfGroup(G) do
+	for i in GeneratorsOfGroup(H) do
 	  mat:=[];
 	  for j in gens do
 	    im:=j^i;
@@ -2536,6 +2545,18 @@ end;
 #M  ChiefSeries
 ##
 InstallMethod(ChiefSeries,"perm group",true,[IsPermGroup],0,
+  ChiefSeriesPermGroup);
+
+InstallMethod(ChiefSeriesUnderAction,"perm group",true,[IsPermGroup,
+              IsPermGroup],0,
+  ChiefSeriesPermGroup);
+
+InstallMethod(ChiefSeriesThrough,"perm group",true,[IsPermGroup,
+              IsList],0,
+  ChiefSeriesPermGroup);
+
+InstallOtherMethod(ChiefSeriesThrough,"perm group under perm group action",
+              true,[IsPermGroup,IsPermGroup,IsList],0,
   ChiefSeriesPermGroup);
 
 #############################################################################

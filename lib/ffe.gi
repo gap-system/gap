@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for 'FFE's.
 ##  Note that we must distinguish finite fields and fields that consist of
@@ -26,7 +26,7 @@ Revision.ffe_gi :=
 
 #############################################################################
 ##
-##  DegreeFFE( <vector> )
+#M  DegreeFFE( <vector> )
 ##
 InstallOtherMethod( DegreeFFE, true, [ IsRowVector and IsFFECollection ], 0,
     function( list )
@@ -67,8 +67,8 @@ FFEFamily := function( p )
         # Store the kind for the representation of prime field elements
         # via residues.
         F!.kindOfZmodnZObj:= NewKind( F, IsZmodpZObjLarge and IsModulusRep );
-        F!.kindOfZmodnZObj![3]:= p;
-        F!.kindOfZmodnZObj![4]:= F!.kindOfZmodnZObj;
+        SetDataKind( F!.kindOfZmodnZObj, p );
+        F!.kindOfZmodnZObj![ ZNZ_PURE_KIND ]:= F!.kindOfZmodnZObj;
 
         SetOne(  F, ZmodnZObj( F, 1 ) );
         SetZero( F, ZmodnZObj( F, 0 ) );
@@ -81,8 +81,8 @@ FFEFamily := function( p )
         # Store the kind for the representation of prime field elements
         # via residues.
         F!.kindOfZmodnZObj:= NewKind( F, IsZmodpZObjSmall and IsModulusRep );
-        F!.kindOfZmodnZObj![3]:= p;
-        F!.kindOfZmodnZObj![4]:= F!.kindOfZmodnZObj;
+        SetDataKind( F!.kindOfZmodnZObj, p );
+        F!.kindOfZmodnZObj![ ZNZ_PURE_KIND ]:= F!.kindOfZmodnZObj;
 
         SetOne(  F, Z(p)^0 );
         SetZero( F, 0*Z(p) );

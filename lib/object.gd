@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for all objects.
 ##
@@ -95,14 +95,6 @@ IsMutable := NewCategoryKernel( "IsMutable",
 
 #############################################################################
 ##
-
-#O  MakeMutable( <obj> )  . . . . . . . . . . . . . .  make an object mutable
-##
-MakeMutable := Ignore;
-
-
-#############################################################################
-##
 #O  Immutable( <obj> )
 ##
 Immutable := IMMUTABLE_COPY_OBJ;
@@ -167,6 +159,24 @@ PrintObj := NewOperationKernel( "PrintObj",
 #O  Display( <obj> )  . . . . . . . . . . . . . . . . . . . display an object
 ##
 Display := NewOperation( "Display",
+    [ IsObject ] );
+
+
+#############################################################################
+##
+#O  IsInternallyConsistent( <obj> )
+##
+##  For debugging purposes, it may be useful to check the consistency of
+##  an object <obj> that is composed from other (composed) objects.
+##
+##  There is a default method of 'IsInternallyConsistent', with rank zero,
+##  that returns 'true'.
+##  So it is possible (and recommended) to check the consistency of
+##  subobjects of <obj> recursively by 'IsInternallyConsistent'.
+##
+##  (Note that 'IsInternallyConsistent' is not an attribute.)
+##
+IsInternallyConsistent := NewOperation( "IsInternallyConsistent",
     [ IsObject ] );
 
 

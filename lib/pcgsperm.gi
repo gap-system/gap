@@ -413,9 +413,7 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     else                      seriesAttr := false;                    fi;
     pcgs := PcgsStabChainSeries( filter, grp, seriesAttr, series, oldlen );
     if whole  then
-        if not HasPcgs( grp )  then
-            SetPcgs( grp, pcgs );
-        fi;
+        SetPcgs( grp, pcgs );
         SetIsSolvableGroup( grp, true );
         if cent  then
             SetIsNilpotentGroup( grp, true );
@@ -438,7 +436,7 @@ end;
 #F  PcgsStabChainSeries( <filter>, <G>, <seriesAttr>, <series>, <oldlen> )  .
 ##
 PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
-    local   pcgs,  i;
+    local   pcgs,  first,  i;
     
     pcgs := PcgsByPcSequenceCons(
                     IsPcgsDefaultRep,
@@ -449,12 +447,10 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     pcgs!.stabChain := series[ 1 ];
     SetGroupOfPcgs( pcgs, G );
     SetRelativeOrders( pcgs, series[ 1 ].relativeOrders );
-    if not HasStabChain( G )  then
-        SetStabChain( G, series[ 1 ] );
-    fi;
-    pcgs!.nrGensSeries := [  ];
+    SetStabChain( G, series[ 1 ] );
+    first := [  ];
     for i  in [ 1 .. Length( series ) ]  do
-        Add( pcgs!.nrGensSeries, Length( series[ i ].genlabels ) );
+        Add( first, Length( series[ i ].genlabels ) );
         Unbind( series[ i ].relativeOrders );
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
@@ -462,9 +458,8 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
         series[ i ]!.noInSeries := i;
     od;
+    SetEAFirst( pcgs, first[ 1 ] - first + 1 );
     pcgs!.series := series;
-    pcgs!.nrGensSeries := pcgs!.nrGensSeries -
-                          pcgs!.nrGensSeries[ Length( series ) ];
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
     fi;
@@ -476,26 +471,25 @@ end;
 #F  TailOfPcgsPermGroup( <pcgs>, <from> ) . . . . . . . . construct tail pcgs
 ##
 TailOfPcgsPermGroup := function( pcgs, from )
-    local   tail,  i,  ffrom;
+    local   tail,  i;
     
     i := 1;
-    ffrom := Length( pcgs ) - pcgs!.nrGensSeries[ i ] + 1;
-    while ffrom < from  do
+    while EAFirst( pcgs )[ i ] < from  do
         i := i + 1;
-        ffrom := Length( pcgs ) - pcgs!.nrGensSeries[ i ] + 1;
     od;
     tail := PcgsByPcSequenceCons(
                     IsPcgsDefaultRep,
                     IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
                     FamilyObj( OneOfPcgs( pcgs ) ),
-                    pcgs{ [ ffrom .. Length( pcgs ) ] } );
+                    pcgs{ [ EAFirst( pcgs )[ i ] .. Length( pcgs ) ] } );
     tail!.stabChain := StabChainAttr( pcgs!.series[ i ] );
     SetRelativeOrders( tail, RelativeOrders( pcgs )
             { [ from .. Length( pcgs ) ] } );
-    tail!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
-    tail!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
-    if from < ffrom  then
-        tail := ExtendedPcgs( tail, pcgs{ [ from .. ffrom - 1 ] } );
+    SetEAFirst( tail, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
+    tail!.series := pcgs!.series{ [ i .. Length( EAFirst( pcgs ) ) ] };
+    if from < EAFirst( pcgs )[ i ]  then
+        tail := ExtendedPcgs( tail,
+                        pcgs{ [ from .. EAFirst( pcgs )[ i ] - 1 ] } );
     fi;
     return tail;
 end;
@@ -508,8 +502,7 @@ PcgsMemberPcSeriesPermGroup := function( U )
     local   home,  pcgs;
 
     home := HomePcgs( U );
-    pcgs := TailOfPcgsPermGroup( home,
-                Length( home ) - home!.nrGensSeries[ U!.noInSeries ] + 1 );
+    pcgs := TailOfPcgsPermGroup( home, EAFirst( home )[ U!.noInSeries ] );
     SetGroupOfPcgs( pcgs, U );
     return pcgs;
 end;
@@ -712,13 +705,13 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         pcgs!.stabChain := G!.stabChain;
         SetRelativeOrders( pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] } );
         i := 1;
-        while G!.nrGensSeries[ i ] > Length( N )  do
+        while Length( G ) - EAFirst( G )[ i ] >= Length( N )  do
             i := i + 1;
         od;
+        SetEAFirst( pcgs, Concatenation( EAFirst( G ){ [ 1 .. i - 1 ] },
+                [ Length( pcgs ) + 1 ] ) );
         pcgs!.series := Concatenation
             ( G!.series{ [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] );
-        pcgs!.nrGensSeries := Concatenation
-            ( G!.nrGensSeries{ [ 1 .. i - 1 ] }, [ Length( N ) ] );
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
@@ -728,15 +721,14 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
         SetRelativeOrders( pcgs, [  ] );
+        SetEAFirst( pcgs, [ 1 ] );
         pcgs!.series := [ GroupOfPcgs( N ) ];
-        pcgs!.nrGensSeries := [ Length( N ) ];
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
     SetNumeratorOfModuloPcgs  ( pcgs, G );
     SetDenominatorOfModuloPcgs( pcgs, N );
     pcgs!.denominator := GroupOfPcgs( N );
-    pcgs!.nrGensSeries := pcgs!.nrGensSeries - Length( N );
     return pcgs;
 end );
 
@@ -779,10 +771,6 @@ InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
-InstallMethod( Pcgs, "take induced pcgs", true,
-        [ IsPermGroup and HasInducedPcgsWrtHomePcgs ], 0,
-    InducedPcgsWrtHomePcgs );
-
 InstallMethod( Pcgs, "Sims's method", true, [ IsPermGroup ], 0,
     function( G )
     local   pcgs;
@@ -845,7 +833,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     function( pcgs, pcs )
     local   igs,  i;
 
-    i := Position( pcgs!.nrGensSeries, Length( pcs ) );
+    i := Position( Length( pcgs ) - EAFirst( pcgs ) + 1, Length( pcs ) );
     if i = fail  or
        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
        pcs  then
@@ -860,8 +848,8 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     igs!.stabChain := StabChainAttr( pcgs!.series[ i ] );
     SetRelativeOrders( igs, RelativeOrders( pcgs )
             { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
-    igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
+    SetEAFirst( igs, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
+    igs!.series := pcgs!.series{ [ i .. Length( EAFirst( pcgs ) ) ] };
     SetParentPcgs( igs, pcgs );
     igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
     return igs;
@@ -909,9 +897,8 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
+    SetEAFirst( pcgs, Concatenation( [ 1 ], EAFirst( N ) ) );
     pcgs!.series := Concatenation( [ GroupStabChain( S ) ], N!.series );
-    pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
-            N!.nrGensSeries );
     return pcgs;
 end );
 
@@ -1010,7 +997,7 @@ end );
 ##
 InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     function( G )
-    local   iso,  A,  pcgs,  index;
+    local   iso,  A,  pcgs;
     
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
@@ -1023,10 +1010,9 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
             return fail;
         fi;
     fi;
-    index := Length( pcgs ) + 1 - pcgs!.nrGensSeries;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, index, false );
+    A := PcGroupPcgs( pcgs, EAFirst( pcgs ), false );
     iso := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
     
@@ -1040,7 +1026,7 @@ end );
 InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
         [ IsPermGroup, IsPermGroup ], 0,
     function( G, N )
-    local   map,  pcgs,  A,  index;
+    local   map,  pcgs,  A;
     
     # Make  a pcgs   based on  an  elementary   abelian series (good  for  ag
     # routines).
@@ -1048,10 +1034,9 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     if not IsPcgs( pcgs )  then
         TryNextMethod();
     fi;
-    index := Length( pcgs ) + 1 - pcgs!.nrGensSeries;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, index, false );
+    A := PcGroupPcgs( pcgs, EAFirst( pcgs ), false );
     UseFactorRelation( G, N, A );
     map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );

@@ -119,6 +119,14 @@ PcSeries := NewAttribute(
 SetPcSeries := Setter(PcSeries);
 HasPcSeries := Tester(PcSeries);
 
+#############################################################################
+##
+#A  EAFirst( <pcgs> )
+##
+EAFirst := NewAttribute( "EAFirst", IsPcgs );
+SetEAFirst := Setter( EAFirst );
+HasEAFirst := Tester( EAFirst );
+
 
 #############################################################################
 ##
