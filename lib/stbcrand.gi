@@ -10,6 +10,9 @@
 ##  with verification.
 ##
 #H  $Log$
+#H  Revision 4.10  1997/05/23 08:14:38  htheisse
+#H  replaced `RemoveSet' by `Difference'
+#H
 #H  Revision 4.9  1997/04/28 07:36:51  htheisse
 #H  fixed a wrong comparison
 #H
@@ -503,7 +506,7 @@ SCRMakeStabStrong := function ( S, new, param, orbits, where, basesize, base,
                 basesize[where[S.orbit[1]]]
                     := basesize[where[S.orbit[1]]] + 1;
             fi;
-            RemoveSet(missing,firstmove);
+            missing := Difference( missing, [ firstmove ] );
         else
             if Position(base,firstmove) < Position(base,S.orbit[1]) then
                 S.stabilizer               := ShallowCopy(S);
@@ -517,7 +520,7 @@ SCRMakeStabStrong := function ( S, new, param, orbits, where, basesize, base,
                     basesize[where[S.orbit[1]]]
                       := basesize[where[S.orbit[1]]] + 1;
                 fi;
-                RemoveSet(missing,firstmove);
+                missing := Difference( missing, [ firstmove ] );
             fi;
         fi;
 

@@ -307,13 +307,14 @@ InstallMethod( ImagesSet,
     UseIsomorphismRelation( elms, img );
     if     IsOperationHomomorphism( map )
        and HasBase( map!.externalSet )
+       and not HasBase( img )
        and not HasStabChain( img )  then
-        if not IsBound( map!.externalSet!.baseIntegers )  then
-            map!.externalSet!.baseIntegers := List( Base( map!.externalSet ),
+        if not IsBound( map!.externalSet!.basePermImage )  then
+            map!.externalSet!.basePermImage := List( Base( map!.externalSet ),
                 b -> PositionCanonical( HomeEnumerator( map!.externalSet ),
                                         b ) );
         fi;
-        SetBase( img, map!.externalSet!.baseIntegers );
+        SetBase( img, map!.externalSet!.basePermImage );
     fi;
     return img;
     end );

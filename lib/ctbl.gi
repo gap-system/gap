@@ -1592,16 +1592,23 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( direct, tbl1, fus );
+    StoreFusion( direct, fus, tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( direct, tbl2, fus );
+    StoreFusion( direct, fus, tbl2 );
 
-    StoreFusion( tbl1, direct, [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ], "1" );
-    StoreFusion( tbl2, direct, [ 1 .. ncc2 ], "2" );
+    StoreFusion( tbl1,
+                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                      specification := "1" ),
+                 direct );
+
+    StoreFusion( tbl2,
+                 rec( map := [ 1 .. ncc2 ],
+                      specification := "2" ),
+                 direct );
 
     # Return the table of the direct product.
     return direct;
@@ -1648,16 +1655,23 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( reg, tbl1, fus );
+    StoreFusion( reg, fus, tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( reg, tbl2, fus );
+    StoreFusion( reg, fus, tbl2 );
 
-    StoreFusion( tbl1, reg, [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ], "1" );
-    StoreFusion( tbl2, reg, [ 1 .. ncc2 ], "2" );
+    StoreFusion( tbl1,
+                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                      specification := "1" ),
+                 reg );
+
+    StoreFusion( tbl2,
+                 rec( map := [ 1 .. ncc2 ],
+                      specification := "2" ),
+                 reg );
 
     # Return the table.
     return reg;
@@ -1704,16 +1718,23 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( reg, tbl1, fus );
+    StoreFusion( reg, fus, tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( reg, tbl2, fus );
+    StoreFusion( reg, fus, tbl2 );
 
-    StoreFusion( tbl1, reg, [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ], "1" );
-    StoreFusion( tbl2, reg, [ 1 .. ncc2 ], "2" );
+    StoreFusion( tbl1,
+                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                      specification := "1" ),
+                 reg );
+
+    StoreFusion( tbl2,
+                 rec( map := [ 1 .. ncc2 ],
+                      specification := "2" ),
+                 reg );
 
     # Return the table.
     return reg;
@@ -1762,16 +1783,23 @@ InstallMethod( CharacterTableDirectProduct,
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= i; od;
     od;
-    StoreFusion( reg, tbl1, fus );
+    StoreFusion( reg, fus, tbl1 );
 
     fus:= [];
     for i in [ 1 .. ncc1 ] do
       for j in [ 1 .. ncc2 ] do fus[ ( i - 1 ) * ncc2 + j ]:= j; od;
     od;
-    StoreFusion( reg, tbl2, fus );
+    StoreFusion( reg, fus, tbl2 );
 
-    StoreFusion( tbl1, reg, [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ], "1" );
-    StoreFusion( tbl2, reg, [ 1 .. ncc2 ], "2" );
+    StoreFusion( tbl1,
+                 rec( map := [ 1, ncc2+1 .. (ncc1-1)*ncc2+1 ],
+                      specification := "1" ),
+                 reg );
+
+    StoreFusion( tbl2,
+                 rec( map := [ 1 .. ncc2 ],
+                      specification := "2" ),
+                 reg );
 
     # Return the table.
     return reg;
@@ -1870,7 +1898,7 @@ InstallMethod( CharacterTableFactorGroup,
     # Transfer necessary power maps of 'tbl' to 'F'.
     inverse:= ProjectionMap( factorfusion );
     F.ComputedPowerMaps:= [];
-    for p in Set( Factors( F.size ) ) do
+    for p in Set( Factors( F.Size ) ) do
       F.ComputedPowerMaps[p]:= factorfusion{ PowerMap( tbl, p ){ inverse } };
     od;
 
@@ -1878,7 +1906,7 @@ InstallMethod( CharacterTableFactorGroup,
     ConvertToLibraryCharacterTableNC( F );
 
     # Store the factor fusion on 'tbl'.
-    StoreFusion( tbl, F, rec( map:= factorfusion, type:= "factor" ) );
+    StoreFusion( tbl, rec( map:= factorfusion, type:= "factor" ), F );
 
     # Return the result.
     return F;
@@ -1908,9 +1936,9 @@ InstallMethod( CharacterTableIsoclinic,
     local classes, half, kernel;
     classes:= SizesConjugacyClasses( tbl );
     half:= Size( tbl ) / 2;
-    kernel:= Filtered( Irr( tbl ),
-                 chi ->     DegreeOfCharacter( chi ) = 1
-                        and Sum( classes{ KernelChar( chi ) }, 0 ) = half );
+    kernel:= Filtered( Irr( tbl ), chi -> DegreeOfCharacter( chi ) = 1 );
+    kernel:= List( kernel, KernelChar );
+    kernel:= Filtered( kernel, ker -> Sum( classes{ ker }, 0 ) = half );
     if IsEmpty( kernel ) or 1 < Length( kernel ) then
       Error( "normal subgroup of index 2 not uniquely determined,\n",
              "use CharTableIsoclinic( <tbl>, <classes_of_nsg> )" );
@@ -2004,7 +2032,7 @@ InstallOtherMethod( CharacterTableIsoclinic,
     factorfusion:= CollapsedMat( nonfaith, [] ).fusion;
 
     # Adjust the power maps.
-    for p in Set( Factors( isoclinic.size ) ) do
+    for p in Set( Factors( isoclinic.Size ) ) do
 
       map:= PowerMap( tbl, p );
 
@@ -2109,6 +2137,118 @@ InstallMethod( CharacterTableIsoclinic,
 
 #############################################################################
 ##
+#F  CharacterTableOfNormalSubgroup( <tbl>, <classes> )
+##
+CharacterTableOfNormalSubgroup := function( tbl, classes )
+
+    local sizesclasses,   # class lengths of the result
+          size,           # size of the result
+          nccl,           # no. of classes
+          orders,         # repr. orders of the result
+          centralizers,   # centralizer orders of the result
+          result,         # result table
+          err,            # list of classes that must split
+          inverse,        # inverse map of `classes'
+          p,              # loop over primes
+          irreducibles,   # list of irred. characters
+          chi,            # loop over irreducibles of `tbl'
+          char;           # one character values list for `result'
+
+    if not IsOrdinaryTable( tbl ) then
+      Error( "<tbl> must be an ordinary character table" );
+    fi;
+
+    sizesclasses:= SizesConjugacyClasses( tbl ){ classes };
+    size:= Sum( sizesclasses );
+
+    if Size( tbl ) mod size <> 0 then
+      Error( "<classes> is not a normal subgroup" );
+    fi;
+
+    nccl:= Length( classes );
+    orders:= OrdersClassRepresentatives( tbl ){ classes };
+    centralizers:= List( sizesclasses, x -> size / x );
+
+    result:= Concatenation( "Rest(", Identifier( tbl ), ",",
+                            String( classes ), ")" );
+    ConvertToStringRep( result );
+
+    result:= rec(
+        UnderlyingCharacteristic   := 0,
+        Identifier                 := result,
+        Size                       := size,
+        SizesCentralizers          := centralizers,
+        SizesConjugacyClasses      := sizesclasses,
+        OrdersClassRepresentatives := orders,
+        ComputedPowerMaps          := []             );
+
+    err:= Filtered( [ 1 .. nccl ],
+                    x-> centralizers[x] mod orders[x] <> 0 );
+    if not IsEmpty( err ) then
+      Info( InfoCharacterTable, 2,
+            "CharacterTableOfNormalSubgroup: classes in " , err,
+            " necessarily split" );
+    fi;
+    inverse:= InverseMap( classes );
+
+    for p in [ 1 .. Length( ComputedPowerMaps( tbl ) ) ] do
+      if IsBound( ComputedPowerMaps( tbl )[p] ) then
+        result.ComputedPowerMaps[p]:=
+            CompositionMaps( inverse,
+                CompositionMaps( ComputedPowerMaps( tbl )[p], classes ) );
+      fi;
+    od;
+
+    # Compute the irreducibles if known.
+    irreducibles:= [];
+    if HasIrr( tbl ) then
+
+      for chi in Irr( tbl ) do
+        char:= ValuesOfClassFunction( chi ){ classes };
+        if     Sum( [ 1 .. nccl ],
+                  i -> sizesclasses[i] * char[i] * GaloisCyc(char[i],-1), 0 )
+               = size
+           and not char in irreducibles then
+          Add( irreducibles, char );
+        fi;
+      od;
+
+    fi;
+
+    if Length( irreducibles ) = nccl then
+
+      result.Irr:= irreducibles;
+
+      # Convert the record into a library table.
+      ConvertToLibraryCharacterTableNC( result );
+
+    else
+
+      p:= Size( tbl ) / size;
+      if IsPrimeInt( p ) and not IsEmpty( irreducibles ) then
+        Info( InfoCharacterTable, 2,
+              "CharacterTableOfNormalSubgroup: The table must have ",
+              p * NrConjugacyClasses( tbl ) -
+              ( p^2 - 1 ) * Length( irreducibles ), " classes\n",
+              "#I   (now ", Length( classes ), ", after nec. splitting ",
+              Length( classes ) + (p-1) * Length( err ), ")" );
+      fi;
+
+      Error( "tables in progress not yet supported" );
+#T !!
+
+    fi;
+
+    # Store the fusion into 'tbl'.
+    StoreFusion( result, classes, tbl );
+
+    # Return the result.
+    return result;
+end;
+
+
+#############################################################################
+##
 #F  CharacterTableQuaternionic( <4n> )
 ##
 CharacterTableQuaternionic := function( 4n )
@@ -2182,7 +2322,7 @@ InstallMethod( CharacterTableRegular,
     od;
     
     regular:= ConvertToBrauerTableNC( regular );
-    StoreFusion( regular, ordtbl, rec( map:= fusion, type:= "choice" ) );
+    StoreFusion( regular, rec( map:= fusion, type:= "choice" ), ordtbl );
 
     return regular;
     end );

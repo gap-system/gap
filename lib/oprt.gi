@@ -68,10 +68,10 @@ AttributeOperation := function( propop, propat, usetype, args )
     
     # In the case of a permutation group $G$ acting on  its moved points, use
     # an attribute for $G$.
-    attrG := IsIdentical( gens, oprs )
+    attrG := gens = oprs
          and opr = OnPoints
          and HasMovedPoints( G )
-         and IsIdentical( MovedPoints( G ), D );
+         and D = MovedPoints( G );
     if attrG  and  Tester( propat )( G )  then
         result := propat( G );
     elif     usetype
@@ -249,10 +249,10 @@ ExternalSetByTypeConstructor := function( type, G, D, gens, oprs, opr )
         xset!.operators     := oprs;
         xset!.funcOperation := opr;
     fi;
-    SetActingDomain  ( xset, G );
-    SetHomeEnumerator( xset, D );
+    xset!.ActingDomain   := G;
+    xset!.HomeEnumerator := D;
     if not IsExternalSetByOperatorsRep( xset )  then
-        SetFunctionOperation( xset, opr );
+        xset!.FunctionOperation := opr;
     fi;
     return xset;
 end;
@@ -2238,7 +2238,7 @@ InstallMethod( ImagesSource, true,
     
     xset := hom!.externalSet;
     img := ImagesSet( hom, Source( hom ) );
-    if not HasBase( img )  then
+    if not HasStabChain( img )  and  not HasBase( img )  then
         if not IsBound( xset!.basePermImage )  then
             D := HomeEnumerator( xset );
             xset!.basePermImage := List( Base( xset ),

@@ -248,6 +248,38 @@ end;
 
 #############################################################################
 ##
+#F  SubgroupMethodByNiceMonomorphismCollColl( <oper>, <par> )
+##
+SubgroupMethodByNiceMonomorphismCollColl := function( oper, par )
+
+    # check the argument length
+    if 2 <> Length(par)  then
+        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+    fi;
+    par    := ShallowCopy(par);
+    par[1] := par[1] and IsHandledByNiceMonomorphism;
+    par[2] := par[2] and IsHandledByNiceMonomorphism;
+
+    # install the method
+    InstallOtherMethod( oper,
+        "handled by nice monomorphism",
+        IsIdentical,
+        par,
+        NICE_FLAGS,
+        function( obj1, obj2 )
+            local   nice,  img;
+            if not IsSubgroup( obj1, obj2 )  then
+                TryNextMethod();
+            fi;
+            nice := NiceMonomorphism(obj1);
+            img := oper( NiceObject(obj1), Image(nice,obj2) );
+            return GroupByNiceMonomorphism( nice, img );
+        end );
+end;
+
+
+#############################################################################
+##
 #F  GroupMethodByNiceMonomorphismCollOther( <oper>, <par> )
 ##
 GroupMethodByNiceMonomorphismCollOther := function( oper, par )

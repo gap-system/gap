@@ -45,23 +45,14 @@ extern int    fputs ( SYS_CONST char *, FILE * );
 /****************************************************************************
 **
 
-*F * * * * * * * * * * * * * * * * input/output * * * * * * * * * * * * * * *
+
+*F * * * * * * * * * * * * * * * * open/close * * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
 
-*F  IS_SPEC( <C> )  . . . . . . . . . . . . . . . . . . .  is <C> a separator
-**
-**  'IS_SPEC' is defined as follows
-**
-#define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
-*/
-
-
-/****************************************************************************
-**
 *V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
 **
 **  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
@@ -149,6 +140,7 @@ Int SyFopen (
     /* try to open the file                                                */
     if ( (syBuf[fid].fp = fopen(name,mode)) ) {
         syBuf[fid].pipe = 0;
+	syBuf[fid].echo = syBuf[fid].fp;
     }
     else if ( SyStrcmp(mode,"r") == 0
            && SyIsReadableFile(namegz)
@@ -229,6 +221,505 @@ Int SyIsEndOfFile (
 
     return feof(syBuf[fid].fp);
 }
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * * * output * * * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  syEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
+*/
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+
+    /* if running under a window handler, duplicate '@'                    */
+    if ( SyWindow && ch == '@' ) {
+        ch2 = ch;
+        write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+    }
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    PUTCHAR( ch );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    PUTCHAR( ch );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    Char                ch2;
+
+    /* write the character to the associate echo output device             */
+    ch2 = ch;
+    write( fileno(syBuf[fid].echo), (char*)&ch2, 1 );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchoch( <ch>, <fid> ) . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+void syEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+
+    /* probably only paranoid                                              */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return;
+
+    /* echo the character                                                  */
+    if ( 31 < (ch & 0x7F) || ch == '\b' || ch == '\n' || ch == '\r' )
+        putchar( ch );
+    else if ( ch == CTR('G') )
+        SysBeep( 1 );
+    else
+        putchar( '?' );
+
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  SyEchoch( <ch>, <fid> ) . . . . . . . . . . . . .  echo a char from <fid>
+*/
+Int SyEchoch (
+    Int                 ch,
+    Int                 fid )
+{
+    /* check file identifier                                               */
+    if ( sizeof(syBuf)/sizeof(syBuf[0]) <= fid || fid < 0 ) {
+        return -1;
+    }
+    if ( syBuf[fid].fp == (FILE*)0 ) {
+        return -1;
+    }
+    syEchoch(ch,fid);
+    return 0;
+}
+
+
+
+/****************************************************************************
+**
+*F  syEchos( <ch>, <fid> )  . . . . . . . . . . . echo a char to <fid>, local
+*/
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . .  BSD/MACH
+*/
+#if SYS_BSD || SYS_MACH
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#if SYS_USG
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . OS2 EMX
+*/
+#if SYS_OS2_EMX
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), str );
+
+    /* otherwise, write it to the associate echo output device             */
+    else
+        write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . .  MS-DOS
+*/
+#if SYS_MSDOS_DJGPP
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* handle stopped output                                               */
+    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
+
+    /* echo the string                                                     */
+    for ( s = str; *s != '\0'; s++ )
+        PUTCHAR( *s );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . TOS
+*/
+#if SYS_TOS_GCC2
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* handle stopped output                                               */
+    while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
+
+    /* echo the string                                                     */
+    for ( s = str; *s != '\0'; s++ )
+        PUTCHAR( *s );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#if SYS_VMS
+
+void            syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    write( fileno(syBuf[fid].echo), str, SyStrlen(str) );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC MPW
+*/
+#if SYS_MAC_MPW
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+    for ( s = str; *s != '\0'; s++ )
+        putchar( *s );
+    fflush( stdout );
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  syEchos( <ch>, <fid> )  . . . . . . . . . . . . . . . . . . . . . MAC SYC
+*/
+#if SYS_MAC_SYC
+
+void syEchos (
+    Char *              str,
+    Int                 fid )
+{
+    Char *              s;
+
+    /* probably only paranoid                                              */
+    if ( ! isatty( fileno(syBuf[fid].fp) ) )
+        return;
+
+    /* print the string                                                    */
+    for ( s = str; *s != '\0'; s++ )
+        putchar( *s );
+
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
+**
+**  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
+*/
+
+
+/****************************************************************************
+**
+*f  SyFputs( <line>, <fid> )  . . .  BSD/MACH/USG/OS2 EMX/VMS/MAC MPW/MAC SYC
+*/
+#if SYS_BSD||SYS_MACH||SYS_USG||SYS_OS2_EMX||SYS_VMS||SYS_MAC_MPW||SYS_MAC_SYC
+
+void SyFputs (
+    Char *              line,
+    Int                 fid )
+{
+    UInt                i;
+
+    /* if outputing to the terminal compute the cursor position and length */
+    if ( fid == 1 || fid == 3 ) {
+        syNrchar = 0;
+        for ( i = 0; line[i] != '\0'; i++ ) {
+            if ( line[i] == '\n' )  syNrchar = 0;
+            else                    syPrompt[syNrchar++] = line[i];
+        }
+        syPrompt[syNrchar] = '\0';
+    }
+
+    /* otherwise compute only the length                                   */
+    else {
+        for ( i = 0; line[i] != '\0'; i++ )
+            ;
+    }
+
+    /* if running under a window handler, send the line to it              */
+    if ( SyWindow && fid < 4 )
+        syWinPut( fid, (fid == 1 ? "@n" : "@f"), line );
+
+    /* otherwise, write it to the output file                              */
+    else
+#if ! (SYS_MAC_MPW || SYS_MAC_SYC)
+        write( fileno(syBuf[fid].fp), line, i );
+#endif
+#if SYS_MAC_MPW || SYS_MAC_SYC
+        fputs( line, syBuf[fid].fp );
+#endif
+}
+
+#endif
+
+
+/****************************************************************************
+**
+*f  SyFputs( <line>, <fid> )  . . . . . . . . . . . . . . . . . . . MSDOS/TOS
+*/
+#if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
+
+void SyFputs (
+    Char *              line,
+    Int                 fid )
+{
+    UInt                i;
+    Char *              s;
+
+    /* handle the console                                                  */
+    if ( isatty( fileno(syBuf[fid].fp) ) ) {
+
+        /* test whether this is a line with a prompt                       */
+        syNrchar = 0;
+        for ( i = 0; line[i] != '\0'; i++ ) {
+            if ( line[i] == '\n' )  syNrchar = 0;
+            else                    syPrompt[syNrchar++] = line[i];
+        }
+        syPrompt[syNrchar] = '\0';
+
+        /* handle stopped output                                           */
+        while ( syStopout )  syStopout = (GETKEY() == CTR('S'));
+
+        /* output the line                                                 */
+        for ( s = line; *s != '\0'; s++ )
+            PUTCHAR( *s );
+    }
+
+    /* ordinary file                                                       */
+    else {
+        fputs( line, syBuf[fid].fp );
+    }
+
+}
+
+#endif
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * * * input  * * * * * * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  IS_SPEC( <C> )  . . . . . . . . . . . . . . . . . . .  is <C> a separator
+**
+**  'IS_SPEC' is defined as follows
+**
+#define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
+*/
 
 
 /****************************************************************************

@@ -614,6 +614,25 @@ CharacterTableIsoclinic := NewOperation( "CharacterTableIsoclinic",
 
 #############################################################################
 ##
+#O  CharacterTableOfNormalSubgroup( <ordtbl>, <classes> )
+##
+##  returns the restriction of the ordinary character table <ordtbl>
+##  to the classes in the list <classes>.
+##
+##  In most cases, this table is only an approximation of the character table
+##  of this normal subgroup, and some classes of the normal subgroup must be
+##  split, see "CharTableSplitClasses".
+##  The result is only a table in progress then.
+##
+##  If the classes in <classes> need not to be split then the result is a
+##  proper character table.
+##
+CharacterTableOfNormalSubgroup := NewOperationArgs(
+    "CharacterTableOfNormalSubgroup" );
+
+
+#############################################################################
+##
 #F  CharacterTableQuaternionic( <4n> )
 ##
 ##  is the character table of the quaternionic group of order <4n>
@@ -698,7 +717,7 @@ SubgroupFusions := PossibleClassFusions;
 #O  PossiblePowerMaps( <tbl>, <prime> )
 #O  PossiblePowerMaps( <tbl>, <prime>, <options> )
 ##
-##  returns a list of possibilities for the <prime>-th power map of the
+##  is a list of possibilities for the <prime>-th power map of the
 ##  character table <tbl>.
 ##  If <tbl> is a Brauer table, the map is computed from the power map
 ##  of the ordinary table.
@@ -736,7 +755,7 @@ SubgroupFusions := PossibleClassFusions;
 ##       possible minus-characters.
 ##
 PossiblePowerMaps := NewOperation( "PossiblePowerMaps",
-    [ IsOrdinaryTable, IsOrdinaryTable, IsRecord ] );
+    [ IsCharacterTable, IsInt, IsRecord ] );
 
 Powermap := PossiblePowerMaps;
 

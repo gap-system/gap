@@ -284,9 +284,9 @@ extern UInt SyCacheSize;
 
 /****************************************************************************
 **
-*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
+*V  SyCheckForCompletion  . . . . . . . . . . . .  check for completion files
 */
-extern Int SyCheckForCompFiles;
+extern Int SyCheckForCompletion;
 
 
 /****************************************************************************

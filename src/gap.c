@@ -2214,7 +2214,7 @@ void InitGap (
              (SyDebugLoading ? True : False) );
 
     AssGVar( GVarName( "CHECK_FOR_COMP_FILES" ),
-             (SyCheckForCompFiles ? True : False) );
+             (SyCheckForCompletion ? True : False) );
 
 
     /* install the internal functions                                      */

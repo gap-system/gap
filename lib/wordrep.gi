@@ -116,7 +116,10 @@ end;
 ##
 #M  Print( <w> )
 ##
-InstallMethod( PrintObj, true, [ IsAssocWord ], 0,
+InstallMethod( PrintObj,
+    "method for an associative word",
+    true,
+    [ IsAssocWord ], 0,
     function( elm )
 
     local names,
@@ -151,7 +154,10 @@ InstallMethod( PrintObj, true, [ IsAssocWord ], 0,
 ##
 #M  String( <w> )
 ##
-InstallMethod( String, true, [ IsAssocWord ], 0,
+InstallMethod( String,
+    "method for an associative word",
+    true,
+    [ IsAssocWord ], 0,
     function( elm )
 
     local names,
@@ -201,7 +207,9 @@ end;
 ##
 #M  ObjByExtRep( <F>, <descr> )
 ##
-InstallMethod( ObjByExtRep, true,
+InstallMethod( ObjByExtRep,
+    "method for a family of associative words, and a homogeneous list",
+    true,
     [ IsAssocWordFamily, IsHomogeneousList ], 0,
     function( F, descr )
     local maxexp,   # maximal exponent in 'descr'
@@ -230,6 +238,30 @@ InstallMethod( ObjByExtRep, true,
     fi;
     end );
 
+InstallOtherMethod( ObjByExtRep, true,
+    [ IsAssocWordFamily and Is8BitsFamily, IsHomogeneousList ], 0,
+    function( F, descr )
+    return AssocWord( F!.types[1], descr );
+    end );
+
+InstallOtherMethod( ObjByExtRep, true,
+    [ IsAssocWordFamily and Is16BitsFamily, IsHomogeneousList ], 0,
+    function( F, descr )
+    return AssocWord( F!.types[2], descr );
+    end );
+
+InstallOtherMethod( ObjByExtRep, true,
+    [ IsAssocWordFamily and Is32BitsFamily, IsHomogeneousList ], 0,
+    function( F, descr )
+    return AssocWord( F!.types[3], descr );
+    end );
+
+InstallOtherMethod( ObjByExtRep, true,
+    [ IsAssocWordFamily and IsInfBitsFamily, IsHomogeneousList ], 0,
+    function( F, descr )
+    return AssocWord( F!.types[4], descr );
+    end );
+
 
 #############################################################################
 ##
@@ -243,7 +275,7 @@ InstallMethod( ObjByExtRep, true,
 ##  size then objects of the corresponding type are created faster.
 ##
 InstallOtherMethod( ObjByExtRep, true,
-    [ IsAssocWordFamily, IsInt, IsInt, IsHomogeneousList ], 0,
+    [ IsAssocWordFamily, IsCyclotomic, IsInt, IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
 
     local info, expbits;
@@ -272,142 +304,265 @@ InstallOtherMethod( ObjByExtRep, true,
 ##
 #M  Install (internal) methods for objects of the 8 bits type
 ##
-InstallMethod( ExtRepOfObj, true, [ Is8BitsAssocWord ], 0,
+InstallMethod( ExtRepOfObj,
+    "method for an 8 bits assoc. word",
+    true,
+    [ Is8BitsAssocWord ], 0,
     8Bits_ExtRepOfObj );
 
-InstallMethod( \=, IsIdentical, [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
+InstallMethod( \=,
+    "method for two 8 bits assoc. words",
+    IsIdentical,
+    [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Equal );
 
-InstallMethod( \<, IsIdentical, [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
+InstallMethod( \<,
+    "method for two 8 bits assoc. words",
+    IsIdentical,
+    [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Less );
 
-InstallMethod( \*, IsIdentical, [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
+InstallMethod( \*,
+    "method for two 8 bits assoc. words",
+    IsIdentical,
+    [ Is8BitsAssocWord, Is8BitsAssocWord ], 0,
     8Bits_Product );
 
-InstallMethod( One, true, [ Is8BitsAssocWord and IsAssocWordWithOne ], 0,
+InstallMethod( One,
+    "method for an 8 bits assoc. word-with-one",
+    true,
+    [ Is8BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 8Bits_AssocWord( FamilyObj( x )!.types[1], [] ) );
 
-InstallMethod( \^, true, [ Is8BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+InstallMethod( \^,
+    "method for an 8 bits assoc. word, and a small integer",
+    true,
+    [ Is8BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     8Bits_Power );
 
-InstallMethod( ExponentSyllable, true, [ Is8BitsAssocWord,
-    IsInt and IsPosRat ], 0, 8Bits_ExponentSyllable );
+InstallMethod( ExponentSyllable,
+    "method for an 8 bits assoc. word, and a pos. integer",
+    true,
+    [ Is8BitsAssocWord, IsInt and IsPosRat ], 0,
+    8Bits_ExponentSyllable );
 
-InstallMethod( GeneratorSyllable, true, [ Is8BitsAssocWord, IsInt ], 0,
+InstallMethod( GeneratorSyllable,
+    "method for an 8 bits assoc. word, and an integer",
+    true,
+    [ Is8BitsAssocWord, IsInt ], 0,
     8Bits_GeneratorSyllable );
 
-InstallMethod( NumberSyllables, true, [ Is8BitsAssocWord ], 0,
+InstallMethod( NumberSyllables,
+    "method for an 8 bits assoc. word",
+    true,
+    [ Is8BitsAssocWord ], 0,
     8Bits_NumberSyllables );
 
-InstallMethod( ExponentSums, true, [ Is8BitsAssocWord ], 0,
+InstallMethod( ExponentSums,
+    "method for an 8 bits assoc. word",
+    true,
+    [ Is8BitsAssocWord ], 0,
     8Bits_ExponentSums1 );
 
-InstallOtherMethod( ExponentSums, true, [ Is8BitsAssocWord, IsInt, IsInt ],
-    0, 8Bits_ExponentSums3 );
+InstallOtherMethod( ExponentSums,
+    "method for an 8 bits assoc. word, and two integers",
+    true,
+    [ Is8BitsAssocWord, IsInt, IsInt ], 0,
+    8Bits_ExponentSums3 );
 
 
 #############################################################################
 ##
 #M  Install (internal) methods for objects of the 16 bits type
 ##
-InstallMethod( ExtRepOfObj, true, [ Is16BitsAssocWord ], 0,
+InstallMethod( ExtRepOfObj,
+    "method for a 16 bits assoc. word",
+    true,
+    [ Is16BitsAssocWord ], 0,
     16Bits_ExtRepOfObj );
 
-InstallMethod( \=, IsIdentical, [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
+InstallMethod( \=,
+    "method for two 16 bits assoc. words",
+    IsIdentical,
+    [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Equal );
 
-InstallMethod( \<, IsIdentical, [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
+InstallMethod( \<,
+    "method for two 16 bits assoc. words",
+    IsIdentical,
+    [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Less );
 
-InstallMethod( \*, IsIdentical, [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
+InstallMethod( \*,
+    "method for two 16 bits assoc. words",
+    IsIdentical,
+    [ Is16BitsAssocWord, Is16BitsAssocWord ], 0,
     16Bits_Product );
 
-InstallMethod( One, true, [ Is16BitsAssocWord and IsAssocWordWithOne ], 0,
+InstallMethod( One,
+    "method for a 16 bits assoc. word-with-one",
+    true,
+    [ Is16BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 16Bits_AssocWord( FamilyObj( x )!.types[2], [] ) );
 
-InstallMethod( \^, true, [ Is16BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+InstallMethod( \^,
+    "method for a 16 bits assoc. word, and small integer",
+    true,
+    [ Is16BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     16Bits_Power );
 
-InstallMethod( ExponentSyllable, true, [ Is16BitsAssocWord,
-    IsInt and IsPosRat ], 0, 16Bits_ExponentSyllable );
+InstallMethod( ExponentSyllable,
+    "method for a 16 bits assoc. word, and pos. integer",
+    true,
+    [ Is16BitsAssocWord, IsInt and IsPosRat ], 0,
+    16Bits_ExponentSyllable );
 
-InstallMethod( GeneratorSyllable, true, [ Is16BitsAssocWord, IsInt ], 0,
+InstallMethod( GeneratorSyllable,
+    "method for a 16 bits assoc. word, and integer",
+    true,
+    [ Is16BitsAssocWord, IsInt ], 0,
     16Bits_GeneratorSyllable );
 
-InstallMethod( NumberSyllables, true, [ Is16BitsAssocWord ], 0,
+InstallMethod( NumberSyllables,
+    "method for a 16 bits assoc. word",
+    true,
+    [ Is16BitsAssocWord ], 0,
     16Bits_NumberSyllables );
 
-InstallMethod( ExponentSums, true, [ Is16BitsAssocWord ], 0,
+InstallMethod( ExponentSums,
+    "method for a 16 bits assoc. word",
+    true,
+    [ Is16BitsAssocWord ], 0,
     16Bits_ExponentSums1 );
 
-InstallOtherMethod( ExponentSums, true, [ Is16BitsAssocWord, IsInt, IsInt ],
-    0, 16Bits_ExponentSums3 );
+InstallOtherMethod( ExponentSums,
+    "method for a 16 bits assoc. word, and two integers",
+    true,
+    [ Is16BitsAssocWord, IsInt, IsInt ], 0,
+    16Bits_ExponentSums3 );
 
 
 #############################################################################
 ##
 #M  Install (internal) methods for objects of the 32 bits type
 ##
-InstallMethod( ExtRepOfObj, true, [ Is32BitsAssocWord ], 0,
+InstallMethod( ExtRepOfObj,
+    "method for a 32 bits assoc. word",
+    true,
+    [ Is32BitsAssocWord ], 0,
     32Bits_ExtRepOfObj );
 
-InstallMethod( \=, IsIdentical, [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
+InstallMethod( \=,
+    "method for two 32 bits assoc. words",
+    IsIdentical,
+    [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Equal );
 
-InstallMethod( \<, IsIdentical, [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
+InstallMethod( \<,
+    "method for two 32 bits assoc. words",
+    IsIdentical,
+    [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Less );
 
-InstallMethod( \*, IsIdentical, [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
+InstallMethod( \*,
+    "method for two 32 bits assoc. words",
+    IsIdentical,
+    [ Is32BitsAssocWord, Is32BitsAssocWord ], 0,
     32Bits_Product );
 
-InstallMethod( One, true, [ Is32BitsAssocWord and IsAssocWordWithOne ], 0,
+InstallMethod( One,
+    "method for a 32 bits assoc. word-with-one",
+    true,
+    [ Is32BitsAssocWord and IsAssocWordWithOne ], 0,
     x -> 32Bits_AssocWord( FamilyObj( x )!.types[3], [] ) );
 
-InstallMethod( \^, true, [ Is32BitsAssocWord, IsInt and IsSmallIntRep ], 0,
+InstallMethod( \^,
+    "method for a 32 bits assoc. word, and small integer",
+    true,
+    [ Is32BitsAssocWord, IsInt and IsSmallIntRep ], 0,
     32Bits_Power );
 
-InstallMethod( ExponentSyllable, true, [ Is32BitsAssocWord,
-    IsInt and IsPosRat ], 0, 32Bits_ExponentSyllable );
+InstallMethod( ExponentSyllable,
+    "method for a 32 bits assoc. word, and pos. integer",
+    true,
+    [ Is32BitsAssocWord, IsInt and IsPosRat ], 0,
+    32Bits_ExponentSyllable );
 
-InstallMethod( GeneratorSyllable, true, [ Is32BitsAssocWord,
-    IsInt and IsPosRat ], 0, 32Bits_GeneratorSyllable );
+InstallMethod( GeneratorSyllable,
+    "method for a 32 bits assoc. word, and pos. integer",
+    true,
+    [ Is32BitsAssocWord, IsInt and IsPosRat ], 0,
+    32Bits_GeneratorSyllable );
 
-InstallMethod( NumberSyllables, true, [ Is32BitsAssocWord ], 0,
+InstallMethod( NumberSyllables,
+    "method for a 32 bits assoc. word",
+    true,
+    [ Is32BitsAssocWord ], 0,
     32Bits_NumberSyllables );
 
-InstallMethod( ExponentSums, true, [ Is32BitsAssocWord ], 0,
+InstallMethod( ExponentSums,
+    "method for a 32 bits assoc. word",
+    true,
+    [ Is32BitsAssocWord ], 0,
     32Bits_ExponentSums1 );
 
-InstallOtherMethod( ExponentSums, true, [ Is32BitsAssocWord, IsInt, IsInt ],
-    0, 32Bits_ExponentSums3 );
+InstallOtherMethod( ExponentSums,
+    "method for a 32 bits assoc. word",
+    true,
+    [ Is32BitsAssocWord, IsInt, IsInt ], 0,
+    32Bits_ExponentSums3 );
 
 
 #############################################################################
 ##
 #M  Install methods for objects of the infinity type
 ##
-InstallMethod( ExtRepOfObj, true, [ IsInfBitsAssocWord ], 0,
+InstallMethod( ExtRepOfObj,
+    "method for a inf. bits assoc. word",
+    true,
+    [ IsInfBitsAssocWord ], 0,
     function( elm ) return elm![1]; end );
 
-InstallMethod( \=, IsIdentical, [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
+InstallMethod( \=,
+    "method for two inf. bits assoc. words",
+    IsIdentical,
+    [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
     function( x, y ) return x![1] = y![1]; end );
 
-InstallMethod( \<, IsIdentical, [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
+InstallMethod( \<,
+    "method for two inf. bits assoc. words",
+    IsIdentical,
+    [ IsInfBitsAssocWord, IsInfBitsAssocWord ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
-InstallMethod( One, true, [ IsInfBitsAssocWord and IsAssocWordWithOne ], 0,
+InstallMethod( One,
+    "method for an inf. bits assoc. word-with-one",
+    true,
+    [ IsInfBitsAssocWord and IsAssocWordWithOne ], 0,
     x -> InfBits_AssocWord( FamilyObj( x )!.types[4], [] ) );
 
-InstallMethod( ExponentSyllable, true, [ IsInfBitsAssocWord, 
-    IsInt and IsPosRat ], 0, function( x, i ) return x![1][ 2*i ]; end );
+InstallMethod( ExponentSyllable,
+    "method for an inf. bits assoc. word, and a pos. integer",
+    true,
+    [ IsInfBitsAssocWord, IsInt and IsPosRat ], 0,
+    function( x, i ) return x![1][ 2*i ]; end );
 
-InstallMethod( GeneratorSyllable, true, [ IsInfBitsAssocWord, IsInt ], 0,
+InstallMethod( GeneratorSyllable,
+    "method for an inf. bits assoc. word, and an integer",
+    true,
+    [ IsInfBitsAssocWord, IsInt ], 0,
     function( x, i ) return x![1][ 2*i-1 ]; end );
 
-InstallMethod( NumberSyllables, true, [ IsInfBitsAssocWord ], 0,
+InstallMethod( NumberSyllables,
+    "method for an inf. bits assoc. word",
+    true,
+    [ IsInfBitsAssocWord ], 0,
     function( x ) return Length( x![1] ) / 2; end );
 
-InstallMethod( ExponentSums, true, [ IsInfBitsAssocWord ], 0,
+InstallMethod( ExponentSums,
+    "method for an inf. bits assoc. word",
+    true,
+    [ IsInfBitsAssocWord ], 0,
     function( obj )
     local expvec, i;
     expvec:= [];
@@ -421,7 +576,9 @@ InstallMethod( ExponentSums, true, [ IsInfBitsAssocWord ], 0,
     return expvec;
     end );
 
-InstallOtherMethod( ExponentSums, true,
+InstallOtherMethod( ExponentSums,
+    "method for an inf. bits assoc. word, and two integers",
+    true,
     [ IsInfBitsAssocWord, IsInt, IsInt ], 0,
     function( obj, from, to )
     local expvec, i;
@@ -474,26 +631,38 @@ end;
 ##  type will be constructed then we store this in the family,
 ##  and 'ObjByExtRep' will construct only such objects.
 ##
-InstallOtherMethod( ObjByExtRep, true,
-    [ IsAssocWordFamily and Is8BitsAssocWord, IsInt, IsInt, IsList ], 0,
+InstallOtherMethod( ObjByExtRep,
+    "method for an 8 bits assoc. words family, two integers, and a list",
+    true,
+    [ IsAssocWordFamily and Is8BitsFamily, IsInt, IsInt,
+      IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
     return 8Bits_AssocWord( F!.types[1], descr );
     end );
 
-InstallOtherMethod( ObjByExtRep, true,
-    [ IsAssocWordFamily and Is16BitsAssocWord, IsInt, IsInt, IsList ], 0,
+InstallOtherMethod( ObjByExtRep,
+    "method for a 16 bits assoc. words family, two integers, and a list",
+    true,
+    [ IsAssocWordFamily and Is16BitsFamily, IsInt, IsInt,
+      IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
     return 16Bits_AssocWord( F!.types[2], descr );
     end );
 
-InstallOtherMethod( ObjByExtRep, true,
-    [ IsAssocWordFamily and Is32BitsAssocWord, IsInt, IsInt, IsList ], 0,
+InstallOtherMethod( ObjByExtRep,
+    "method for a 32 bits assoc. words family, two integers, and a list",
+    true,
+    [ IsAssocWordFamily and Is32BitsFamily, IsInt, IsInt,
+      IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
     return 32Bits_AssocWord( F!.types[3], descr );
     end );
 
-InstallOtherMethod( ObjByExtRep, true,
-    [ IsAssocWordFamily and IsInfBitsAssocWord, IsInt, IsInt, IsList ], 0,
+InstallOtherMethod( ObjByExtRep,
+    "method for an inf. bits assoc. words family, two integers, and a list",
+    true,
+    [ IsAssocWordFamily and IsInfBitsFamily, IsCyclotomic, IsInt,
+      IsHomogeneousList ], 0,
     function( F, exp, maxcand, descr )
     return InfBits_AssocWord( F!.types[4], descr );
     end );
@@ -522,7 +691,7 @@ StoreInfoFreeMagma := function( F, names, req )
 
     if not IsFinite( names ) then
 
-      SetFilterObj( F, IsInfBitsAssocWord );
+      SetFilterObj( F, IsInfBitsFamily );
 
     else
 
@@ -687,7 +856,7 @@ InstallMethod( \[\],
     true,
     [ IsList and IsInfiniteListOfGeneratorsRep, IsInt and IsPosRat ], 0,
     function( list, i )
-    return ObjByExtRep( list![1], 1, 1, [ i, 1 ] );
+    return ObjByExtRep( list![1], [ i, 1 ] );
     end );
 
 InstallMethod( Position,
@@ -706,7 +875,27 @@ InstallMethod( Position,
       return obj[1];
     fi;
     end );
-    
+
+
+#############################################################################
+##
+#M  Random( <list> )  . . . . . . . . . .  for an infinite list of generators
+##
+InstallMethod( Random,
+    "method for an infinite list of generators",
+    true,
+    [ IsList and IsInfiniteListOfGeneratorsRep ], 0,
+    function( list )
+    local pos;
+    pos:= Random( Integers );
+    if 0 <= pos then
+      return list[ 2 * pos + 1 ];
+    else
+      return list[ -2 * pos ];
+    fi;
+    end );
+#T should be moved to list.gi, or?
+
 
 #############################################################################
 ##

@@ -893,13 +893,13 @@ end;
 #F  SubtractBlistOrbitStabChain( <blist>, <R>, <pnt> )  remove orbit as blist
 ##
 SubtractBlistOrbitStabChain := function( blist, R, pnt )
-    local   orb,  l,  img;
+    local   orb,  gen,  img;
     
     orb := [ pnt ];
     blist[ pnt ] := false;
     for pnt  in orb  do
-        for l  in R.genlabels  do
-            img := pnt ^ R.labels[ l ];
+        for gen  in R.generators  do
+            img := pnt ^ gen;
             if blist[ img ]  then
                 blist[ img ] := false;
                 Add( orb, img );
@@ -915,6 +915,7 @@ end;
 ##
 PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     local  PBEnumerate,
+           blen,         # length of R-base
            rep,          # representative or `false', the result
            branch,       # level where $Lstab\ne Rstab$ starts
            image,        # image information running through the tree
@@ -964,6 +965,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
         # images.
         if d > Length( rbase.base )  then
             if IsTrivialRBase( rbase )  then
+                blen := Length( rbase.base );
                 
                 # Do     not  add the   identity    element  in the  subgroup
                 # construction.
@@ -1106,12 +1108,11 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
         while b <> fail  do
             
             # Try to prune the node with prop 8(ii) of Leon's paper.
-            if not repr  and  not wasTriv  then
+            if not repr  and  not wasTriv  and  IsBound( R[ d ].orbit )  then
                 dd := branch;
                 while dd < d  do
-                    if IsInBasicOrbit( L[ dd ], a ) and not
-                       ( orb[ dd ][ b ] and PBIsMinimal
-                         ( range, R[ dd ].orbit[ 1 ], b, R[ d ] ) )  then
+                    if IsInBasicOrbit( L[ dd ], a )  and  not PBIsMinimal
+                       ( range, R[ dd ].orbit[ 1 ], b, R[ d ] )  then
                         Info( InfoBckt, 2, d, ": point ", b,
                                 " pruned by minimality condition" );
                         dd := d + 1;
@@ -1165,8 +1166,18 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                         branch := d;
                     fi;
 
-                    ChangeStabChain( R[ d ], [ b ], false );
-                    R[ d + 1 ] := R[ d ].stabilizer;
+                    if 2 * d <= blen  then
+                        ChangeStabChain( R[ d ], [ b ], false );
+                        R[ d + 1 ] := R[ d ].stabilizer;
+                    else
+                        if IsBound( R[ d ].stabilizer )  then
+                            R[ d + 1 ] := StrongGeneratorsStabChain( R[ d ] );
+                        else
+                            R[ d + 1 ] := R[ d ].generators;
+                        fi;
+                        R[ d + 1 ] := rec( generators := Filtered
+                            ( R[ d + 1 ], gen -> b ^ gen = b ) );
+                    fi;
                     
                 else
                     Info( InfoBckt, 2, d, ": point ", b,
@@ -1310,6 +1321,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     
     org := [  ];  orb := [  ];  orB := [  ];
     range := [ 1 .. rbase.domain[ Length( rbase.domain ) ] ];
+    blen := infinity;
     rep := PBEnumerate( 1, not repr );
     if not repr  then
         ReduceStabChain( L[ 1 ] );
@@ -1909,7 +1921,7 @@ RepOpSetsPermGroup := function( arg )
                     fi;
                 fi;
             od;
-            return GroupByGenerators( gens );
+            return GroupByGenerators( gens, () );
         fi;
     fi;
     

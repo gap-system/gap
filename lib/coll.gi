@@ -158,11 +158,12 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#M  Representative(<C>)
+#M  Representative( <C> ) . . . . . . . . . . . . . . . . .  for a collection
 ##
 InstallMethod( Representative,
     "method for a collection",
-    true, [ IsCollection ], 0,
+    true,
+    [ IsCollection ], 0,
     function ( C )
     local   elm;
     for elm in Enumerator( C ) do
@@ -171,15 +172,22 @@ InstallMethod( Representative,
     Error( "<C> must be nonempty to have a representative" );
     end );
 
+
+#############################################################################
+##
+#M  Representative( <C> ) . . . . . . . . . . for a collection that is a list
+##
 InstallMethod( Representative,
     "method for a collection that is a list",
-    true, [ IsCollection and IsList ], 0,
+    true,
+    [ IsCollection and IsList ], 0,
     function ( C )
     local   elm;
-    for elm in C do
-        return elm;
-    od;
-    Error( "<C> must be nonempty to have a representative" );
+    if IsEmpty( C ) then
+      Error( "<C> must be nonempty to have a representative" );
+    else
+      return C[1];
+    fi;
     end );
 
 InstallImmediateMethod( RepresentativeSmallest,
@@ -212,7 +220,8 @@ InstallMethod( RepresentativeSmallest,
 ##
 InstallMethod( Random,
     "method for a collection that is an internal list",
-    true, [ IsCollection and IsList and IsInternalRep ], 100,
+    true,
+    [ IsCollection and IsList and IsInternalRep ], 100,
 #T ?
     RANDOM_LIST );
 

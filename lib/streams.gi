@@ -557,7 +557,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "stream(", obj![2], ")" );
+    Print( "inputstream(", obj![2], ")" );
 end );
 
 
@@ -674,7 +674,7 @@ InstallMethod( PrintObj,
     0,
         
 function( obj )
-    Print( "output-stream(", Length(obj![1]), ")" );
+    Print( "outputstream(", obj![2], ")" );
 end );
 
 
@@ -713,6 +713,126 @@ function( stream, byte )
         Error( "<byte> must an integer between 1 and 255" );
     fi;
     Add( stream![1], CHAR_INT(byte) );
+end );
+
+
+#############################################################################
+##
+
+#F  # # # # # # # # # # # #  output text file # # # # # # # # # # # # # # # #
+##
+
+
+#############################################################################
+##
+
+#R  IsOutputTextFileRep
+##
+IsOutputTextFileRep := NewRepresentation(
+    "IsOutputTextFileRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#V  OutputTextFileType
+##
+OutputTextFileType := NewType(
+    StreamsFamily,
+    IsOutputTextStream and IsOutputTextFileRep );
+
+
+#############################################################################
+##
+#M  OutputTextFile( <str>, <append> )
+##
+InstallMethod( OutputTextFile,
+    "output text stream from file",
+    true,
+    [ IsList,
+      IsBool ],
+    0,
+        
+function( str, append )
+    local   fid;
+
+    fid := OUTPUT_TEXT_FILE( str, append );
+    if fid = fail  then
+        return fail;
+    else
+        return Objectify( OutputTextFileType, [fid,Immutable(str)] );
+    fi;
+end );
+
+
+#############################################################################
+##
+
+#M  CloseStream( <output-text-file> )
+##
+InstallMethod( CloseStream,
+    "output text file",
+    true,
+    [ IsOutputStream and IsOutputTextFileRep ],
+    0,
+
+function( stream )
+    CLOSE_FILE(stream![1]);
+    SET_TYPE_COMOBJ( stream, ClosedStreamType );
+end );
+        
+
+#############################################################################
+##
+#M  PrintObj( <output-text-file> )
+##
+InstallMethod( PrintObj,
+    "output text file",
+    true,
+    [ IsOutputTextFileRep ],
+    0,
+        
+function( obj )
+    Print( "output-stream(", obj![2], ")" );
+end );
+
+
+#############################################################################
+##
+#M  WriteAll( <output-text-file>, <string> )
+##
+InstallMethod( WriteAll,
+    "output text file",
+    true,
+    [ IsOutputTextStream and IsOutputTextFileRep,
+      IsList ],
+    0,
+                    
+function( stream, string )
+    if not IsString(string)  then
+        Error( "<string> must be a string" );
+    fi;
+    Append( stream![1], string );
+end );
+
+
+#############################################################################
+##
+#M  WriteByte( <output-text-file>, <byte> )
+##
+InstallMethod( WriteByte,
+    "output text file",
+    true,
+    [ IsOutputTextStream and IsOutputTextFileRep,
+      IsInt ],
+    0,
+                    
+function( stream, byte )
+    if byte < 1 or 255 < byte  then
+        Error( "<byte> must an integer between 1 and 255" );
+    fi;
+    WRITE_BYTE_FILE( stream![1], byte );
 end );
 
 

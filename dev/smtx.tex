@@ -36,6 +36,7 @@ qmatrices} and {\tt nmatrices} giving new matrices for the three possible
 actions and {\tt nbasis} an extension of the basis given in {\tt sub} with
 respect to which the action is performed.\\
 The routine returns {\tt fail} if {\tt sub} is not a proper subspace.\\
+The basis given in {\tt sub} must be normed!\\
 There are a couple of further routines that basically just call
 SubQuotActions to provide several layers of interfacing (and also return
 {\tt fail} if {\tt sub} is not a submodule basis):
@@ -44,7 +45,8 @@ SubQuotActions to provide several layers of interfacing (and also return
 just calls {\tt SubQuotActions}, but returns module actions instead of
 matrices and returns the computed results in a list in sequence
 (sub,quot,both,basis) instead of record components. If no {\tt type} is
-given, it is assumed to be 7.
+given, it is assumed to be 7.\\
+The basis given in {\tt sub} must be normed!
 
 \smtxcmd{SMTX.SubGModuleAction(sub,matrices)}
 computes matrices for just the subspace action. SCHEDULED FOR ELIMINATION!
@@ -52,9 +54,14 @@ computes matrices for just the subspace action. SCHEDULED FOR ELIMINATION!
 \smtxcmd{SMTX.InducedActionSubmodule(module,sub)}
 creates a new module corresponding to the action of {\tt module} on {\tt sub}.
 
-\smtxcmd{SMTX.InducedActionFactorModule(module,sub)}
+\smtxcmd{SMTX.InducedActionSubmoduleNB(module,sub)}
+Dito, but the basis in {\tt sub} must be normed.
+
+\smtxcmd{SMTX.InducedActionFactorModule(module,sub[,compl])}
 creates a new module corresponding to the action of {\tt module} on the
-factor of {\tt sub}.
+factor of {\tt sub}. If {\tt compl} is given, it has to be a basis of a
+(vectorspace-)complement of {\tt sub}. The action then will correspond to
+{\tt compl}.
 
 \smtxcmd{SMTX.ProperSubmoduleBasis(module)}
 returns the action on a proper submodule and {\tt fail} if none exists.

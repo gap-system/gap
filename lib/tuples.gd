@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for tuples
 ##
@@ -16,16 +16,16 @@ Revision.tuples_gd :=
 
 #############################################################################
 ##
-#C  IsTuple( <obj> ) . . . . . . . . . . . . . . . . . . . category of tuples
+#C  IsTuple( <obj> )  . . . . . . . . . . . . . . . . . .  category of tuples
 ##
 
-IsTuple := NewCategory( "IsTuple", IsDenseList );
-InstallTrueMethod( IsMultiplicativeElementWithInverse, IsTuple );
-InstallTrueMethod( IsMultiplicativeElementWithOne, IsTuple );
+IsTuple := NewCategory( "IsTuple",
+    IsDenseList and IsMultiplicativeElementWithInverse );
+
 
 #############################################################################
 ##
-#C  IsTuplesFamily( <family> ) . . . . . . . . . category of tuples families
+#C  IsTuplesFamily( <family> )  . . . . . . . . . category of tuples families
 ##
 
 IsTuplesFamily := CategoryFamily( "IsTuplesFamily", IsTuple  );
@@ -41,7 +41,7 @@ IsTuplesCollection := CategoryCollections( "IsTuplesCollection", IsTuple  );
 
 #############################################################################
 ##
-#O  TuplesFamily ( <famlist> ) . . . . . . . . . family of tuples of elements
+#O  TuplesFamily ( <famlist> )  . . . . . . . .  family of tuples of elements
 ##
 ##
   
@@ -50,7 +50,7 @@ TuplesFamily := NewOperation( "TuplesFamily", [ IsCollection ] );
 
 #############################################################################
 ##
-#A  ComponentsOfTuplesFamily( <tuplesfam> ) . . . . . . . .component families 
+#A  ComponentsOfTuplesFamily( <tuplesfam> ) . . . . . . .  component families 
 ##
 ##
 
@@ -61,7 +61,7 @@ HasComponentsOfTuplesFamily := Tester(ComponentsOfTuplesFamily);
 
 #############################################################################
 ##
-#V  TUPLES_FAMILIES . . . . . . . . . . . .all tuples families so far created
+#V  TUPLES_FAMILIES . . . . . . . . . . .  all tuples families so far created
 ##
 ##  TUPLES_FAMILIES is a list whose ith component is a list of all i+1 
 ##  component tuples families known so far
@@ -70,14 +70,14 @@ HasComponentsOfTuplesFamily := Tester(ComponentsOfTuplesFamily);
 TUPLES_FAMILIES := [];
 
 
-##############################################################################
+#############################################################################
 ##
-#O  Tuple ( <objlist> ) . . . . .. . . . . . . . basic tuple making operation
-#O  Tuple ( <tuplesfam>, <objlist> ) . . .  alternate form if family is known
+#O  Tuple ( <objlist> ) . . . . . . . . . . . .  basic tuple making operation
+#O  Tuple ( <tuplesfam>, <objlist> )  . . . alternate form if family is known
 ##
 ##  methods of this type have to be OtherMethods
 ##
-#O  TupleNC ( <tuplesfam>, <objlist> ) . . . . omits check on object families
+#O  TupleNC ( <tuplesfam>, <objlist> )  . . .  omits check on object families
 ##                                             and objlist length  
 ##
 
@@ -85,7 +85,9 @@ Tuple := NewOperation( "Tuple", [ IsList ]);
 TupleNC := NewOperation( "TupleNC", [ IsTuplesFamily, IsList ]);
 
 
-
+#############################################################################
+##
+#E  tuples.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 
 

@@ -4,69 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.18  1997/03/17 14:20:50  htheisse
-#H  added generic method for `OrbitStabilizer'
-#H
-#H  Revision 4.17  1997/02/12 16:30:23  htheisse
-#H  corrected enumerators for external subsets; cleaned up the code
-#H
-#H  Revision 4.16  1997/01/28 12:50:24  htheisse
-#H  avoided setting of `HomePcgs'
-#H
-#H  Revision 4.15  1997/01/27 11:21:06  htheisse
-#H  removed some of Juergen Mnich's code
-#H
-#H  Revision 4.14  1997/01/21 15:07:33  htheisse
-#H  introduced `PositionCanonical'
-#H
-#H  Revision 4.13  1997/01/20 16:51:11  htheisse
-#H  replaced `HomePcgs' by `ParentPcgs'
-#H
-#H  Revision 4.12  1997/01/15 15:59:55  htheisse
-#H  gave stabilizers an induced pcgs
-#H
-#H  Revision 4.11  1997/01/09 17:57:37  htheisse
-#H  used enumerator to make representative canonical
-#H
-#H  Revision 4.10  1996/12/19 09:41:51  htheisse
-#H  changed some names (in connection with oprt.gi change)
-#H
-#H  Revision 4.9  1996/11/29 16:29:43  htheisse
-#H  corrected solvable orbit algorithm
-#H
-#H  Revision 4.8  1996/11/21 09:55:08  beick
-#H  added stuff for pc groups
-#H
-#H  Revision 4.7  1996/11/19  13:22:37  htheisse
-#H  changed method for `Stabilizer' in `oprtpcgs.gi'
-#H  cleaned up the code
-#H
-#H  Revision 4.6  1996/11/13 15:24:09  htheisse
-#H  added `OrbitStabilizer'
-#H  encouraged use of pcgs for soluble groups
-#H  cleaned up the code
-#H
-#H  Revision 4.5  1996/11/07 12:31:18  htheisse
-#H  introduced `ExternalSubset'
-#H  added `SetBase' for external sets
-#H  renamed `Parent' to `HomeEnumerator' for external sets
-#H  tidied up a bit
-#H
-#H  Revision 4.4  1996/10/31 12:19:46  htheisse
-#H  replaced `RelativeOrderPcgs( pcgs, i )' by `RelativeOrders( pcgs )[ i ]'
-#H
-#H  Revision 4.3  1996/10/14 12:56:42  fceller
-#H  'Position', 'PositionBound', and 'PositionProperty' return 'fail'
-#H  instead of 'false'
-#H
-#H  Revision 4.2  1996/10/08 11:27:40  htheisse
-#H  changed the operation functions, introduced ``external sets''
-#H
-#H  Revision 4.1  1996/10/01 14:50:10  htheisse
-#H  added methods for operations of soluble groups, which use a pcgs
-#H
-##
 Revision.oprtpcgs_gi :=
     "@(#)$Id$";
 
@@ -132,7 +69,8 @@ InstallMethod( OrbitStabilizerOp,
 #
 #    # <S> is a reversed IGS.
 #    stab := SubgroupNC( G, S );
-#    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
+#    SetInducedPcgsWrtHomePcgs( stab,
+#            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
 #    
 #    return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
@@ -189,7 +127,8 @@ InstallOtherMethod( OrbitStabilizerOp,
         
     # <S> is a reversed IGS.
     stab := SubgroupNC( G, S );
-    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
+    SetInducedPcgsWrtHomePcgs( stab,
+            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
 
     return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
@@ -274,9 +213,7 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
         fi;
         len[ i ] := Length( orb );
     od;
-    if not HasEnumerator( xset )  then
-        SetEnumerator( xset, orb );
-    fi;
+    SetEnumerator( xset, orb );
 
     # Construct the operator for the minimal point at <mpos>.
     oper := 0 * [ 1 .. Length( pcgs ) ];
@@ -290,13 +227,18 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
         mpos := mpos mod len[ ii ] + 1;
     od;
     SetCanonicalRepresentativeOfExternalSet( xset, D[ min ] );
-    SetOperatorOfExternalSet( xset,
-            PcElementByExponents( pcgs, oper ) ^ -1 );
+    if not HasOperatorOfExternalSet( xset )  then
+        SetOperatorOfExternalSet( xset,
+                PcElementByExponents( pcgs, oper ) ^ -1 );
+    fi;
             
     # <S> is a reversed IGS.
-    stab := SubgroupNC( G, S );
-    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
-    SetStabilizerOfExternalSet( xset, stab );
+    if not HasStabilizerOfExternalSet( xset )  then
+        stab := SubgroupNC( G, S );
+        SetInducedPcgsWrtHomePcgs( stab,
+            InducedPcgsByPcSequenceNC( ParentPcgs( pcgs ), Reversed( S ) ) );
+        SetStabilizerOfExternalSet( xset, stab );
+    fi;
     
 end;
 
@@ -310,9 +252,7 @@ InstallMethod( Enumerator, "<xorb by pcgs>", true,
     local   orbstab;
     
     orbstab := OrbitStabilizer( xorb, Representative( xorb ) );
-    if not HasStabilizerOfExternalSet( xorb )  then
-        SetStabilizerOfExternalSet( xorb, orbstab.stabilizer );
-    fi;
+    SetStabilizerOfExternalSet( xorb, orbstab.stabilizer );
     return orbstab.orbit;
 end );
 
@@ -348,9 +288,7 @@ InstallMethod( StabilizerOfExternalSet, true,
     local   orbstab;
 
     orbstab := OrbitStabilizer( xorb, Representative( xorb ) );
-    if not HasEnumerator( xorb )  then
-        SetEnumerator( xorb, orbstab.orbit );
-    fi;
+    SetEnumerator( xorb, orbstab.orbit );
     return orbstab.stabilizer;
 end );
 

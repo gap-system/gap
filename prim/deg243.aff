@@ -1,29 +1,14 @@
-P := [
-[1,1,1,0,0],
-[1,2,0,0,0],
-[1,1,2,0,0],
-[0,0,0,1,1],
-[0,0,0,1,2]]*Z(3)^0;
-id := IdentityMat( 5, Z(3)^0 );
-m := List( id, ShallowCopy );
-m[ 1 ][ 1 ] := Z(3);
-m[ 2 ][ 2 ] := Z(3);
-24splitS5 := GroupByGenerators( OnTuples
-  ( [ -id, m, Permuted( id, (1,2) ), Permuted( id, (1,2,3,4,5) ) ], P ) );
-SetName( 24splitS5, "2x(2^4:S_5)" );
-
-M11a := [
-[0,2,1,0,0],
+M11 := Group(
+[[0,2,1,0,0],
 [2,1,1,2,2],
 [0,1,1,2,2],
 [1,0,2,2,1],
-[1,2,2,2,0]]*Z(3)^0;
-M11b := [
-[0,0,2,0,2],
+[1,2,2,2,0]]*Z(3)^0,
+[[0,0,2,0,2],
 [1,1,2,2,0],
 [2,2,2,2,2],
 [1,2,1,1,0],
-[2,2,0,2,1]]*Z(3)^0;
+[2,2,0,2,1]]*Z(3)^0 );
 
 AFFINE_NON_SOLVABLE_GROUPS[ 243 ] := [
  function() return
@@ -35,12 +20,24 @@ AFFINE_NON_SOLVABLE_GROUPS[ 243 ] := [
 
  # stabilizers of linear systems of imprimitivity
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( WreathProductOfMatrixGroup(
-   GL( 1, 3 ), SymmetricGroup( 5 ) ) );
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup
+  (WreathProductOfMatrixGroup(GL(1,3),SymmetricGroup(5)),1));
  end,
  function() return
-  PrimitiveAffinePermGroupByMatrixGroup( WreathProductOfMatrixGroup(
-    GL( 1, 3 ), AlternatingGroup( 5 ) ) );
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup
+  (WreathProductOfMatrixGroup(GL(1,3),SymmetricGroup(5)),2));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup
+  (WreathProductOfMatrixGroup(GL(1,3),SymmetricGroup(5)),3));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup
+  (WreathProductOfMatrixGroup(GL(1,3),SymmetricGroup(5)),4));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup
+  (WreathProductOfMatrixGroup(GL(1,3),SymmetricGroup(5)),5));
  end,
    
  # classical subgroups
@@ -59,37 +56,29 @@ AFFINE_NON_SOLVABLE_GROUPS[ 243 ] := [
  function() return
  PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(0,5,3),5));
  end,
- function() return
- PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,1));
- end,
- function() return
- PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,2));
- end,
- function() return
- PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,3));
- end,
- function() return
- PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,4));
- end,
- function() return
- PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(24splitS5,5));
- end,
 
  # almost simple subgroups
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( Group( M11a, M11b ) );
+ PrimitiveAffinePermGroupByMatrixGroup( Normalizer( GL( 5, 3 ), M11 ) );
  end,
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( Group( TransposedMat(M11a)^-1,
-                                               TransposedMat(M11b)^-1 ) );
+  PrimitiveAffinePermGroupByMatrixGroup( M11 );
  end,
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( Group( M11a,
-  M11b*M11a*M11b^2*M11a*M11b ) );
+ PrimitiveAffinePermGroupByMatrixGroup( Normalizer( GL( 5, 3 ),
+  Group( TransposedMat(M11.1), TransposedMat(M11.2) ) ) );
  end,
  function() return
- PrimitiveAffinePermGroupByMatrixGroup( Group( TransposedMat(M11a)^-1,
-  TransposedMat(M11b*M11a*M11b^2*M11a*M11b)^-1 ) );
+  PrimitiveAffinePermGroupByMatrixGroup( Group( TransposedMat(M11.1),
+                                                TransposedMat(M11.2) ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Normalizer( GL( 5, 3 ),
+  Group( M11.1, M11.2*M11.1*M11.2^2*M11.1*M11.2 ) ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( Group( M11.1,
+   M11.2*M11.1*M11.2^2*M11.1*M11.2 ) );
  end
 ];
  

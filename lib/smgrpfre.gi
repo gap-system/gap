@@ -411,12 +411,12 @@ FreeSemigroup := function( arg )
 
     # Get and check the argument list, and construct names if necessary.
     if   Length( arg ) = 1 and arg[1] = infinity then
-      names:= InfiniteListOfNames( "s." );
+      names:= InfiniteListOfNames( "s" );
     elif Length( arg ) = 2 and arg[1] = infinity then
       names:= InfiniteListOfNames( arg[2] );
     elif Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
-                    i -> Concatenation( "s.", String(i) ) );
+                    i -> Concatenation( "s", String(i) ) );
     elif Length( arg ) = 2 and IsInt( arg[1] ) and 0 < arg[1] then
       names:= List( [ 1 .. arg[1] ],
                     i -> Concatenation( arg[2], String(i) ) );

@@ -817,11 +817,12 @@ PrintClmsToLib := NewOperationArgs( "PrintClmsToLib" );
 
 #############################################################################
 ##
-#F  OrbitsResidueClass( <pq> )
+#F  OrbitsResidueClass( <pq>, <set> )
 ##
 ##  is used in the generic character table of the groups $p \colon q$.
 ##  <pq> must be a list of length 2, the first entry being $p$, the second
 ##  being $q$.
+##  <set> is the set of points to act on.
 ##
 OrbitsResidueClass := NewOperationArgs( "OrbitsResidueClass" );
 

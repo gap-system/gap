@@ -93,7 +93,7 @@ local D,C,cl,pl;
   D.classreps:=List(cl,Representative);
   D.klanz:=Length(cl);
   D.classrange:=[1..D.klanz];
-  Info(InfoCharTable,1,D.klanz," classes");
+  Info(InfoCharacterTable,1,D.klanz," classes");
 
   # compute the permutation we apply to the classes
   pl:=[1..D.klanz];
@@ -114,6 +114,7 @@ local D,C,cl,pl;
   D.centralizers:=SizesCentralizers(C);
   D.orders:=OrdersClassRepresentatives(C);
 
+  IsAbelian(G); # force computation
   DxPreparation(G,D);
 
   return D;
@@ -408,7 +409,7 @@ local i,pcomp,m,r,D,neue,tm,news;
     tm:=D.characterMorphisms;
     news:=Union(List(neue,i->Orbit(tm,i,D.asCharacterMorphism)));
     if Length(news)>Length(neue) then
-      Info(InfoCharTable,1,"new Characters by character morphisms found");
+      Info(InfoCharacterTable,1,"new Characters by character morphisms found");
     fi;
     neue:=news;
   fi;
@@ -643,9 +644,9 @@ end;
 
 #############################################################################
 ##
-#F  Eigenbase(<mat>,<field>) . . . . . components of Eigenvects resp. base
+#F  DxEigenbase(<mat>,<field>) . . . . . components of Eigenvects resp. base
 ##
-Eigenbase := function(M,f)
+DxEigenbase := function(M,f)
   local dim,v,w,i,k,KS,scalarSeq,eigenvalues,base,minpol,bases;
   k:=Length(M);
   repeat
@@ -666,7 +667,7 @@ Eigenbase := function(M,f)
       fi;
     od;
     if dim<k then
-      Info(InfoCharTable,2,"Failed to calculate eigenspaces.");
+      Info(InfoCharacterTable,2,"Failed to calculate eigenspaces.");
     fi;
   until dim=k;
   return rec(base:=bases,
@@ -697,13 +698,13 @@ SplitStep := function(D,bestMat)
     bestMatCol:=D.requiredCols[bestMat];
     bestMatSplit:=D.splitBases[bestMat];
     M:=IdentityMat(k,1)*0;
-    Info(InfoCharTable,1,"Matrix ",bestMat,",Representative of Order ",
+    Info(InfoCharacterTable,1,"Matrix ",bestMat,",Representative of Order ",
        Order(D.classreps[bestMat]),
        ",Centralizer: ",D.centralizers[bestMat]);
 
     Add(D.yetmats,bestMat);
     for col in bestMatCol do
-      Info(InfoCharTable,2,"Computing column ",col,":");
+      Info(InfoCharacterTable,2,"Computing column ",col,":");
       D.ClassMatrixColumn(D,M,bestMat,col);
     od;
 
@@ -731,7 +732,7 @@ SplitStep := function(D,bestMat)
           N[row][col]:=Row[activeCols[col]];
         od;
       od;
-      eigen:=Eigenbase(N,f);
+      eigen:=DxEigenbase(N,f);
       # Base umrechnen
       eigenbase:=List(eigen.base,i->List(i,j->j*base));
     #eigenvalues:=List(eigen.values,i->i/D.classiz[bestMat]);
@@ -795,7 +796,7 @@ SplitStep := function(D,bestMat)
     fi;
   od;
 
-  Info(InfoCharTable,1,"Dimensions: ",List(raeume,i->i.dim));
+  Info(InfoCharacterTable,1,"Dimensions: ",List(raeume,i->i.dim));
   D.raeume:=raeume;
 end;
 
@@ -904,7 +905,7 @@ SplitTwoSpace := function(D,raum)
     v1:=v1[1];
     ol:=[1];
   else
-    Info(InfoCharTable,1,"Attempt:",raum.dim);
+    Info(InfoCharacterTable,1,"Attempt:",raum.dim);
     v1:=raum.invariantbase[1];
     v2:=raum.invariantbase[2];
     ol:=Filtered(DivisorsInt(Size(raum.stabilizer)),i->i<raum.dim/2+1);
@@ -1016,10 +1017,10 @@ SplitTwoSpace := function(D,raum)
     str:="Two orbit";
   fi;
   if NotFailed then
-    Info(InfoCharTable,1,str," space split");
+    Info(InfoCharacterTable,1,str," space split");
     return char;
   else
-    Info(InfoCharTable,1,str," split failed");
+    Info(InfoCharacterTable,1,str," split failed");
     raum.twofail:=true;
     return [];
   fi;
@@ -1053,7 +1054,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,k,neuc;
       mods:=[];
       irrs:=[];
       for j in [1,2] do
-        Info(InfoCharTable,2,"lifting character no.",
+        Info(InfoCharacterTable,2,"lifting character no.",
                         Length(D.irreducibles)+Length(incirrs));
         if IsBound(neuer[j].char) then
           ch:=neuer[j].char[1];
@@ -1068,7 +1069,7 @@ local i,newRaeume,raum,neuer,j,ch,irrs,mods,incirrs,incmods,nb,rt,k,neuc;
 	fi;
       od;
       for j in rt do
-        Info(InfoCharTable,1,"TwoDimSpace image");
+        Info(InfoCharacterTable,1,"TwoDimSpace image");
         nb:=D.asCharacterMorphism(raum.base[1],j);
         neuc:=List(irrs,i->D.asCharacterMorphism(i,j));
         if not ForAny([i+1..Length(D.raeume)],i->nb in D.raeume[i].space) then
@@ -1408,7 +1409,7 @@ BestSplittingMatrix := function(D)
   bw:=0;
   # run through them in pl sequence
   for n in Filtered(D.permlist,i->i in D.matrices) do
-    Info(InfoCharTable,3,n,":",Int(wert[n]));
+    Info(InfoCharacterTable,3,n,":",Int(wert[n]));
     if wert[n]>=bw then
       bn:=n;
       bw:=wert[n];
@@ -1668,7 +1669,7 @@ DoubleCentralizerOrbit := function(D,c1,c2)
     often:=List(trans,i->Length(i));
     return [List(trans,i->i[1]),often];
   else
-    Info(InfoCharTable,2,"using DoubleCosets;");
+    Info(InfoCharacterTable,2,"using DoubleCosets;");
     cent:=Centralizer(D.classes[inv]);
     l:=DoubleCosets(D.group,cent,Centralizer(D.classes[c2]));
     s1:=Size(cent);
@@ -1704,13 +1705,13 @@ StandardClassMatrixColumn := function(D,M,r,t)
 	for i in D.classrange do
 	  M[i^p][t]:=M[i][c];
 	od;
-	Info(InfoCharTable,2,"by GaloisImage");
+	Info(InfoCharacterTable,2,"by GaloisImage");
 	return;
       fi;
     fi;
 
     T:=DoubleCentralizerOrbit(D,r,t);
-    Info(InfoCharTable,2,Length(T[1])," instead of ",D.classiz[r]);
+    Info(InfoCharacterTable,2,Length(T[1])," instead of ",D.classiz[r]);
 
     if IsDxLargeGroup(D.group) then
       # if r and t are unique,the conjugation test can be weak (i.e. up to
@@ -1738,7 +1739,7 @@ StandardClassMatrixColumn := function(D,M,r,t)
             # were these classes detected weak ?
             e:=M[i[1]][t];
             if e>0 then
-              Info(InfoCharTable,2,"GaloisIdentification ",i,": ",e);
+              Info(InfoCharacterTable,2,"GaloisIdentification ",i,": ",e);
             fi;
             for j in i do
               M[j][t]:=e/Length(i);
@@ -1769,15 +1770,16 @@ end;
 ##
 #F  DxAbelianPreparation(<G>) . . specific initialisation for abelian groups
 ##
-DxAbelianPreparation := function(G)
-  local D,i,a,b;
-  D:=DixonRecord(G);
+InstallMethod(DxPreparation,"abelian",true,[IsGroup and IsAbelian,IsRecord],0,
+function(G,D)
+  local i,a,b,cl;
   D.identification:=function(a,b) return b; end;
   D.rationalidentification:=D.identification;
   D.ClassMatrixColumn:=StandardClassMatrixColumn;
 
+  cl:=D.classes;
   D.ids:=[];
-  for i in [1..D.klanz] do
+  for i in D.classrange do
     D.ids[i]:=D.identification(D,D.classreps[i]);
   od;
   D.rids:=D.ids;
@@ -1786,17 +1788,15 @@ DxAbelianPreparation := function(G)
 
   return D;
 
-end;
-
+end);
 
 #############################################################################
 ##
-#M  DxPreparation(<G>)
+#M  DxPreparation(<G>,<D>)
 ##
 InstallMethod(DxPreparation,"generic",true,[IsGroup,IsRecord],0,
 function(G,D)
 local i,j,enum,cl;
-  Print("#W  Warning: Generic Group Routines can be very slow\n");
   D.identification:=IdentificationGenericGroup;
   D.rationalidentification:=IdentificationGenericGroup;
   D.ClassMatrixColumn:=StandardClassMatrixColumn;
@@ -1924,7 +1924,7 @@ local G,     # group
     prime:=prime+exp;
   od;
   f:=GF(prime);
-  Info(InfoCharTable,1,"choosing prime ",prime);
+  Info(InfoCharacterTable,1,"choosing prime ",prime);
 
   z:=PowerModInt(PrimitiveRootMod(prime),(prime-1)/exp,prime);
   D.modularMap:=DxGeneratePrimeCyclotomic(exp,z* One(f));
@@ -2007,7 +2007,7 @@ local r,i,j,ch,ra,
   for i in [1..Length(D.raeume)] do
     r:=D.raeume[i];
     if r.dim=1 then
-      Info(InfoCharTable,2,"lifting character no.",
+      Info(InfoCharacterTable,2,"lifting character no.",
                       Length(D.irreducibles)+1);
       if IsBound(r.char) then
         ch:=r.char[1];
@@ -2047,23 +2047,18 @@ DixontinI := function(D)
 local C,p,u,irr;
 
   if IsBound(D.shorttests) then
-    Info(InfoCharTable,2,D.shorttests," shortened conjugation tests");
+    Info(InfoCharacterTable,2,D.shorttests," shortened conjugation tests");
   fi;
-  Info(InfoCharTable,1,"Total:",Length(D.yetmats)," matrices,",
+  Info(InfoCharacterTable,1,"Total:",Length(D.yetmats)," matrices,",
                  D.yetmats);
   C:=D.charTable;
 
-  # get the nontrivial characters (the trivial one is the only one with only
-  # one entry).
-  irr:=Filtered(D.irreducibles,i->Length(Set(i))>1);
-  Sort(irr);
-  irr:=Concatenation([D.trivialCharacter],irr);
-  irr:=List(irr,i->CharacterByValues(C,i));
-
-  SetInfoText(C,"origin: Dixon's Algorithm");
+  irr:=List(D.irreducibles,i->CharacterByValues(C,i));
 
   # Sort the characters by degrees.
-  #SortCharactersCharTable(C);
+  irr:=SortedCharacters(C,irr);
+
+  SetInfoText(C,"origin: Dixon's Algorithm");
 
   # Throw away not any longer used components of the Dixon record.
   for u in Difference(RecNames(D),
@@ -2079,13 +2074,12 @@ local C,p,u,irr;
 end;
 
 #############################################################################
-##
-#F  CharTableDixonSchneider(<G>) . . . . .  character table of finite group G
+#F  IrrDixonSchneider(<G>) . . . . .  character table of finite group G
 ##
 ##  Compute the table of the irreducible characters of G,using the
 ##  Dixon/Schneider method.
 ##
-CharTableDixonSchneider := function(arg)
+IrrDixonSchneider := function(arg)
 local G,k,C,D,opt;
 
   G:=arg[1];
@@ -2117,7 +2111,7 @@ end;
 #M  Irr(<C>)  call Dixon-Schneider-algorithm
 ##
 InstallMethod(Irr,"Dixon/Schneider",true,[IsGroup],0,
-  CharTableDixonSchneider);
+  IrrDixonSchneider);
 
 #############################################################################
 ##

@@ -1540,8 +1540,7 @@ ConsiderKernels := function( arg )
       od;
     fi;
     for kernel in kernels do
-      suborder:= 0;
-      for i in kernel do suborder:= suborder + tbl.classes[i]; od;
+      suborder:= Sum( SizesConjugacyClasses( tbl ){ kernel }, 0 );
       if tbl_size mod suborder <> 0 then
         Info( InfoCharacterTable, 2,
               "ConsiderKernels: kernel of character is not a", " subgroup" );
@@ -1660,7 +1659,7 @@ ConsiderSmallerPowermaps := function( arg )
 
     for i in omega do
 
-      factors:= FactorsInt( prime mod tbl.orders[i] );
+      factors:= FactorsInt( prime mod tbl_orders[i] );
       if factors = [ 1 ] or factors = [ 0 ] then factors:= []; fi;
 
       if ForAll( Set( factors ), x -> IsBound( tbl_powermap[x] ) ) then
@@ -1825,7 +1824,7 @@ PowermapsAllowedBySymmetrisations :=
                                         CompositionMaps( chars[i], pow ) );
         fi;
       else
-        numbofposs[i]:= "infinity";
+        numbofposs[i]:= infinity;
         if ForAny( chars[i], x -> IsCyc(x) and not IsRat(x) ) then
 
           # maybe the indeterminateness of the rationalized character is
@@ -1909,10 +1908,11 @@ PowermapsAllowedBySymmetrisations :=
     numbofposs:=        numbofposs{ remain };
     powerchars:=        powerchars{ remain };
 
-    if chars = [] then
-      Info( InfoCharacterTable, 2, "#I  PossiblePowerMapssAllowedBySymmetrisations: no character",
-                      " with indeterminateness\n#I    between ", minamb,
-                      " and ", maxamb, " significant now\n" );
+    if IsEmpty( chars ) then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMapssAllowedBySymmetrisations: no character",
+            " with indeterminateness\n",
+            "#I    between ", minamb, " and ", maxamb, " significant now" );
       return [ pow ];
     fi;
     possibilities:= [];
@@ -2002,266 +2002,267 @@ PowermapsAllowedBySymmetrisations :=
 end;
   
 
-#T hier!
-#T #############################################################################
-#T ##
-#T #F  PossiblePowerMaps( <tbl>, <prime> )
-#T #F  PossiblePowerMaps( <tbl>, <prime>, <parameters> )
-#T ##
-#T ##  returns a list of possibilities for the <prime>-th powermap of the
-#T ##  character table <tbl>.
-#T ##  If <tbl> is a Brauer table, the map is computed from the power map
-#T ##  of the ordinary table '<tbl>.ordinary' which may cause a call of
-#T ##  'Powermap' for this table.
-#T ##  
-#T ##  The optional record <parameters> may have the following fields\:
-#T ##  
-#T ##  'chars':\\
-#T ##       a list of characters which are used for the check of kernels
-#T ##       (see "ConsiderKernels"), the test of congruences (see "Congruences")
-#T ##       and the test of scalar products of symmetrisations
-#T ##       (see "PowermapsAllowedBySymmetrisations");
-#T ##       the default is '<tbl>.irreducibles'
-#T ##  
-#T ##  'powermap':\\
-#T ##       a (parametrized) map which is an approximation of the desired map
-#T ##  
-#T ##  'decompose':\\
-#T ##       a boolean; if 'true', the symmetrisations of 'chars' must have all
-#T ##       constituents in 'chars', that will be used in the algorithm;
-#T ##       if 'chars' is not bound and '<tbl>.irreducibles' is complete,
-#T ##       the default value of 'decompose' is 'true', otherwise 'false'
-#T ##  
-#T ##  'quick':\\
-#T ##       a boolean; if 'true', the subroutines are called with the option
-#T ##       '\"quick\"'; especially, a unique map will be returned immediately
-#T ##       without checking all symmetrisations; the default value is 'false'
-#T ##  
-#T ##  'parameters':\\
-#T ##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
-#T ##       the subroutine 'PowermapsAllowedBySymmetrisations'\:
-#T ##       It only uses characters with actual indeterminateness up to
-#T ##       'maxamb', tests decomposability only for characters with actual
-#T ##       indeterminateness at least 'minamb' and admits a branch only
-#T ##       according to a character if there is one with at most 'maxlen'
-#T ##       possible minus-characters.
-#T ##
-#T InstallMethod( PossiblePowerMaps,
-#T     "method for an ordinary character table and a prime",
-#T     true,
-#T     [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
-#T     function( tbl, p )
-#T ...
-#T Powermap := function( arg )
-#T 
-#T     local i, x,
-#T           tbl,     # character table, first argument
-#T           chars,
-#T           prime,   # prime number, second argument
-#T           powermap, indet,
-#T           maxamb,
-#T           minamb,
-#T           maxlen,
-#T           poss, rat, pow, approxval, powerval, approxpowermap, quick, ok,
-#T           decompose,
-#T           fus,      # Brauer table: fusion map from 'tbl' to 'tbl.ordinary'
-#T           inv;      # Brauer table: inverse map of 'fus'
-#T     
-#T     if not ( Length( arg ) in [ 2, 3 ] and IsOrdinaryTable( arg[1] )
-#T              and IsPrimeInt( arg[2] ) )
-#T        or ( Length( arg ) = 3 and not IsRecord( arg[3] ) ) then
-#T       Error( "usage: Powermap( <tbl>, <prime> )\n",
-#T              " resp. Powermap( <tbl>, <prime>, <parameters> )" );
-#T     fi;
-#T     
-#T     tbl:=   arg[1];
-#T     prime:= arg[2];
-#T 
-#T     if Length( arg ) = 3 then       # parameters
-#T       if IsBound( arg[3].chars ) then
-#T         chars:= arg[3].chars;
-#T         decompose:= false;
-#T       else
-#T         if IsBound( tbl.irreducibles ) then
-#T           chars:= tbl.irreducibles;
-#T           if Length( chars ) = Length( tbl.centralizers ) then
-#T             decompose:= true;
-#T           else
-#T             decompose:= false;
-#T           fi;
-#T         else
-#T           chars:= [];
-#T           decompose:= false;
-#T         fi;
-#T       fi;
-#T       if IsBound( arg[3].powermap ) then
-#T         approxpowermap:= arg[3].powermap;
-#T       else
-#T         approxpowermap:= [];
-#T       fi;
-#T       if IsBound( arg[3].quick ) and arg[3].quick = true then
-#T         quick:= true;
-#T       else
-#T         quick:= false;
-#T       fi;
-#T       if IsBound( arg[3].decompose ) then
-#T         if arg[3].decompose = true then
-#T           decompose:= true;
-#T         else
-#T           decompose:= false;
-#T         fi;
-#T       fi;
-#T       if IsBound( arg[3].parameters ) then
-#T         maxamb:= arg[3].parameters.maxamb;
-#T         minamb:= arg[3].parameters.minamb;
-#T         maxlen:= arg[3].parameters.maxlen;
-#T       else
-#T         maxamb:= 100000;
-#T         minamb:= 10000;
-#T         maxlen:= 10;
-#T       fi;
-#T     else
-#T       if IsBound( tbl.irreducibles ) then 
-#T         chars:= tbl.irreducibles;
-#T       else
-#T         chars:= [];
-#T       fi;
-#T       if Length( chars ) = Length( tbl.centralizers ) then
-#T         decompose:= true;
-#T       else
-#T         decompose:= false;
-#T       fi;
-#T       approxpowermap:= [];
-#T       quick:= false;
-#T       maxamb:= 100000;
-#T       minamb:= 10000;
-#T       maxlen:= 10;
-#T     fi;
-#T     
-#T     powermap:= InitPowermap( tbl, prime );
-#T     if powermap = false then
-#T       Info( InfoCharacterTable, 2, "#I  PossiblePowerMaps: no initialization possible\n" );
-#T       return [];
-#T     fi;
-#T     
-#T     # use 'approxpowermap'\:
-#T     ok:= MeetMaps( powermap, approxpowermap );
-#T     if ok <> true then
-#T #T ?
-#T       Info( InfoCharacterTable, 2,
-#T             "PossiblePowerMaps: possible maps not compatible with ",
-#T                       "<approxpowermap> at class ", ok );
-#T       return [];
-#T     fi;
-#T 
-#T     if not Congruences( tbl, chars, powermap, prime, quick ) then
-#T       Info( InfoCharacterTable, 2,
-#T             "PossiblePowerMaps: errors in Congruences" );
-#T       return [];
-#T     fi;
-#T     if not ConsiderKernels( tbl, chars, powermap, prime, quick ) then
-#T       Info( InfoCharacterTable, 2,
-#T             "PossiblePowerMaps: errors in ConsiderKernels" );
-#T       return [];
-#T     fi;
-#T     if not ConsiderSmallerPowermaps( tbl, powermap, prime, quick ) then
-#T       Info( InfoCharacterTable, 2,
-#T             "PossiblePowerMaps: errors in ConsiderSmallerPowermaps" );
-#T       return [];
-#T     fi;
-#T     
-#T     if 2 <= InfoLevel( InfoCharacterTable ) then
-#T ??
-#T       Print( "#I  PossiblePowerMaps: ", Ordinal( prime ),
-#T              " powermap initialized; congruences, kernels and\n",
-#T              "#I    maps for smaller primes considered.\n",
-#T              "#I    The actual indeterminateness is ",
-#T              Indeterminateness( powermap ), ".\n" );
-#T       if quick then
-#T         Print( "#I    (\"quick\" option specified)\n" );
-#T       fi;
-#T 
-#T     fi;
-#T     
-#T     if quick and ForAll( powermap, IsInt ) then return [ powermap ]; fi;
-#T     
-#T     # now use restricted characters:
-#T     # If the parameter \"decompose\" was entered, use decompositions
-#T     # of minus-characters of <chars> into <chars>;
-#T     # otherwise only check the scalar products with <chars>.
-#T     
-#T     if decompose then                 # usage of decompositions allowed
-#T       if Indeterminateness( powermap ) < minamb then
-#T         Info( InfoCharacterTable, 2,
-#T               "PossiblePowerMaps: indeterminateness too small for test",
-#T               " of decomposability" );
-#T         poss:= [ powermap ];
-#T       else
-#T         Info( InfoCharacterTable, 2,
-#T               "PossiblePowerMaps: now test decomposability of rational ",
-#T               "minus-characters" );
-#T         rat:= RationalizedMat( chars );
-#T 
-#T         poss:= PowermapsAllowedBySymmetrisations( tbl, rat, rat, powermap,
-#T                              prime, rec( maxlen:= maxlen,
-#T                                          contained:= ContainedCharacters,
-#T                                          minamb:= minamb,
-#T                                          maxamb:= "infinity",
-#T                                          quick:= quick ) );
-#T         if 2 <= InfoLevel( InfoCharacterTable ) then
-#T 
-#T           Print( "#I  PossiblePowerMaps: decomposability tested,\n" );
-#T           if Length( poss ) = 1 then
-#T             Print( "#I    1 solution with indeterminateness ",
-#T                    Indeterminateness( poss[1] ), "\n" );
-#T           else
-#T             Print( "#I    ", Length( poss ),
-#T                    " solutions with indeterminateness\n",
-#T                    List( poss, Indeterminateness ), "\n" );
-#T           fi;
-#T         fi;
-#T         if quick and Length( poss ) = 1 and ForAll( poss[1], IsInt ) then
-#T           return [ poss[1] ];
-#T         fi;
-#T       fi;
-#T     else
-#T       Info( InfoCharacterTable, 2,
-#T             "PossiblePowerMaps: no test of decomposability allowed" );
-#T       poss:= [ powermap ];
-#T     fi;
-#T     
-#T     Info( InfoCharacterTable, 2,
-#T           "PossiblePowerMaps: test scalar products",
-#T           " of minus-characters" );
-#T     
-#T     powermap:= [];
-#T     for pow in poss do
-#T       Append( powermap,
-#T               PowermapsAllowedBySymmetrisations( tbl, chars, chars, pow,
-#T                           prime, rec( maxlen:= maxlen,
-#T                                       contained:= ContainedPossibleCharacters,
-#T                                       minamb:= 1,
-#T                                       maxamb:= maxamb,
-#T                                       quick:= quick ) ) );
-#T     od;
-#T 
-#T     if 2 <= InfoLevel( InfoCharacterTable ) then
-#T 
-#T       if ForAny( powermap, x -> ForAny( x, IsList ) ) then
-#T         Print( "#I  PossiblePowerMaps: ", Length(powermap), " parametrized solution" );
-#T         if Length(powermap) = 1 then Print(",\n"); else Print("s,\n"); fi;
-#T         Print( "#I    no further improvement was possible with given",
-#T                " characters\n",
-#T                "#I    and maximal checked ambiguity of ", maxamb, "\n" );
-#T       else
-#T         Print( "#I  PossiblePowerMaps: ", Length( powermap ), " solution" );
-#T         if Length(powermap) = 1 then Print("\n"); else Print("s\n"); fi;
-#T       fi;
-#T     fi;
-#T     return powermap;
-#T end;
-#T 
-#T 
+#############################################################################
+##
+#M  PossiblePowerMaps( <ordtbl>, <prime> )
+##
+InstallOtherMethod( PossiblePowerMaps,
+    "method for an ordinary character table and a prime",
+    true,
+    [ IsOrdinaryTable, IsInt and IsPosRat ], 0,
+    function( ordtbl, prime )
+    return PossiblePowerMaps( ordtbl, prime, rec() );
+    end );
+
+
+#############################################################################
+##
+#M  PossiblePowerMaps( <ordtbl>, <prime>, <parameters> )
+##
+InstallMethod( PossiblePowerMaps,
+    "method for an ordinary character table, a prime, and a record",
+    true,
+    [ IsOrdinaryTable, IsInt and IsPosRat, IsRecord ], 0,
+    function( ordtbl, prime, arec )
+
+    local chars,          # list of characters to be used
+          decompose,      # boolean: is decomposition of characters allowed?
+          approxpowermap, # known approximation of the power map
+          quick,          # boolean: immediately return if the map is unique?
+          maxamb,         # entry in parameters record
+          minamb,         # entry in parameters record
+          maxlen,         # entry in parameters record
+          powermap,       # parametrized map of possibilities
+          ok,             # intermediate result of `MeetMaps'
+          poss,           # list of possible maps
+          rat,            # rationalized characters
+          pow;            # loop over possibilities found up to now
+
+    # Check the arguments.
+    if not IsPrimeInt( prime ) then
+      Error( "<prime> must be a prime" );
+    fi;
+
+    # Evaluate the parameters.
+    if IsBound( arec.chars ) then
+      chars:= arec.chars;
+      decompose:= false;
+    elif HasIrr( ordtbl ) then
+      chars:= Irr( ordtbl );
+      decompose:= true;
+    else
+      chars:= [];
+      decompose:= false;
+    fi;
+
+    # Override `decompose' if it is explicitly set.
+    if IsBound( arec.decompose ) then
+      decompose:= arec.decompose;
+    fi;
+
+    if IsBound( arec.powermap ) then
+      approxpowermap:= arec.powermap;
+    else
+      approxpowermap:= [];
+    fi;
+
+    quick:= IsBound( arec.quick ) and ( arec.quick = true );
+
+    if IsBound( arec.parameters ) then
+      maxamb:= arec.parameters.maxamb;
+      minamb:= arec.parameters.minamb;
+      maxlen:= arec.parameters.maxlen;
+    else
+      maxamb:= 100000;
+      minamb:= 10000;
+      maxlen:= 10;
+    fi;
+
+    # Initialize the parametrized map.
+    powermap:= InitPowermap( ordtbl, prime );
+    if powermap = fail then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: no initialization possible" );
+      return [];
+    fi;
+    
+    # Use the known approximation 'approxpowermap',
+    # and check the other local conditions.
+    ok:= MeetMaps( powermap, approxpowermap );
+    if   ok <> true then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: incompatibility with ",
+                      "<approxpowermap> at class ", ok );
+      return [];
+    elif not Congruences( ordtbl, chars, powermap, prime, quick ) then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: errors in Congruences" );
+      return [];
+    elif not ConsiderKernels( ordtbl, chars, powermap, prime, quick ) then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: errors in ConsiderKernels" );
+      return [];
+    elif not ConsiderSmallerPowermaps( ordtbl, powermap, prime, quick ) then
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: errors in ConsiderSmallerPowermaps" );
+      return [];
+    fi;
+    
+    Info( InfoCharacterTable, 2,
+          "PossiblePowerMaps: ", Ordinal( prime ),
+          " powermap initialized; congruences, kernels and\n",
+          "#I    maps for smaller primes considered.\n",
+          "#I    The actual indeterminateness is ",
+          Indeterminateness( powermap ), "." );
+    if quick then
+      Info( InfoCharacterTable, 2,
+            "  (\"quick\" option specified)" );
+    fi;
+    
+    if quick and ForAll( powermap, IsInt ) then
+      return [ powermap ];
+    fi;
+    
+    # Now use restricted characters.
+    # If decomposition of characters is allowed then
+    # use decompositions of minus-characters of `chars' into `chars'.
+    
+    if decompose then
+
+      if Indeterminateness( powermap ) < minamb then
+
+        Info( InfoCharacterTable, 2,
+              "PossiblePowerMaps: indeterminateness too small for test",
+              " of decomposability" );
+        poss:= [ powermap ];
+
+      else
+
+        Info( InfoCharacterTable, 2,
+              "PossiblePowerMaps: now test decomposability of rational ",
+              "minus-characters" );
+        rat:= RationalizedMat( chars );
+
+        poss:= PowermapsAllowedBySymmetrisations( ordtbl, rat, rat, powermap,
+                             prime, rec( maxlen:= maxlen,
+                                         contained:= ContainedCharacters,
+                                         minamb:= minamb,
+                                         maxamb:= infinity,
+                                         quick:= quick ) );
+
+        Info( InfoCharacterTable, 2,
+              "PossiblePowerMaps: decomposability tested,\n",
+              "#I    ", Length( poss ),
+              " solution(s) with indeterminateness\n",
+              List( poss, Indeterminateness ) );
+
+        if quick and Length( poss ) = 1 and ForAll( poss[1], IsInt ) then
+          return [ poss[1] ];
+        fi;
+
+      fi;
+
+    else
+
+      Info( InfoCharacterTable, 2,
+            "PossiblePowerMaps: no test of decomposability allowed" );
+      poss:= [ powermap ];
+
+    fi;
+    
+    # Check the scalar products of minus-characters of `chars' with `chars'.
+    Info( InfoCharacterTable, 2,
+          "PossiblePowerMaps: test scalar products",
+          " of minus-characters" );
+    
+    powermap:= [];
+    for pow in poss do
+      Append( powermap,
+              PowermapsAllowedBySymmetrisations( ordtbl, chars, chars, pow,
+                       prime, rec( maxlen:= maxlen,
+                                   contained:= ContainedPossibleCharacters,
+                                   minamb:= 1,
+                                   maxamb:= maxamb,
+                                   quick:= quick ) ) );
+    od;
+
+    # Give a final message about the result.
+    if 2 <= InfoLevel( InfoCharacterTable ) then
+      if ForAny( powermap, x -> ForAny( x, IsList ) ) then
+        Info( InfoCharacterTable, 2,
+              "PossiblePowerMaps: ", Length(powermap),
+              " parametrized solution(s),\n",
+              "#I    no further improvement was possible with given",
+              " characters\n",
+              "#I    and maximal checked ambiguity of ", maxamb );
+      else
+        Info( InfoCharacterTable, 2,
+              "PossiblePowerMaps: ", Length( powermap ), " solution(s)" );
+      fi;
+    fi;
+
+    # Return the result.
+    return powermap;
+    end );
+
+
+#############################################################################
+##
+#M  PossiblePowerMaps( <modtbl>, <prime> )
+##
+InstallOtherMethod( PossiblePowerMaps,
+    "method for a Brauer character table and a prime",
+    true,
+    [ IsBrauerTable, IsInt and IsPosRat ], 0,
+    function( modtbl, prime )
+    local ordtbl, poss, fus, inv;
+    ordtbl:= OrdinaryCharacterTable( modtbl );
+    if IsBound( ComputedPowerMaps( ordtbl )[ prime ] ) then
+      return [ ComputedPowerMaps( ordtbl )[ prime ] ];
+    fi;
+    poss:= PossiblePowerMaps( ordtbl, prime, rec() );
+    fus:= GetFusionMap( modtbl, ordtbl );
+    inv:= InverseMap( fus );
+    return Set( List( poss,
+             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) ) );
+    end );
+
+
+#############################################################################
+##
+#M  PossiblePowerMaps( <modtbl>, <prime>, <parameters> )
+##
+InstallMethod( PossiblePowerMaps,
+    "method for a Brauer character table, a prime, and a record",
+    true,
+    [ IsBrauerTable, IsInt and IsPosRat, IsRecord ], 0,
+    function( modtbl, prime, arec )
+    local ordtbl, poss, fus, inv, quick, decompose;
+    ordtbl:= OrdinaryCharacterTable( modtbl );
+    if IsBound( ComputedPowerMaps( ordtbl )[ prime ] ) then
+      return [ ComputedPowerMaps( ordtbl )[ prime ] ];
+    fi;
+    quick:= IsBound( arec.quick ) and ( arec.quick = true );
+    decompose:= IsBound( arec.decompose ) and ( arec.decompose = true );
+    if IsBound( arec.parameters ) then
+      poss:= PossiblePowerMaps( ordtbl, prime,
+               rec( quick      := quick,
+                    decompose  := decompose,
+                    parameters := rec( maxamb:= arec.parameters.maxamb,
+                                       minamb:= arec.parameters.minamb,
+                                       maxlen:= arec.parameters.maxlen ) ) );
+    else
+      poss:= PossiblePowerMaps( ordtbl, prime,
+               rec( quick      := quick,
+                    decompose  := decompose ) );
+    fi;
+    fus:= GetFusionMap( modtbl, ordtbl );
+    inv:= InverseMap( fus );
+    return Set( List( poss,
+             x -> CompositionMaps( inv, CompositionMaps( x, fus ) ) ) );
+    end );
+
+
 #T #############################################################################
 #T ##
 #T #F  ConsiderTableAutomorphisms( <parafus>, <grp> )
@@ -2708,7 +2709,7 @@ end;
 #T                                         CompositionMaps( chars[i], fus ) );
 #T         fi;
 #T       else
-#T         numbofposs[i]:= "infinity";
+#T         numbofposs[i]:= infinity;
 #T         if ForAny( chars[i], x -> IsCyc(x) and not IsRat(x) ) then
 #T     
 #T           # maybe the indeterminateness of the rationalized
@@ -3135,7 +3136,7 @@ InstallOtherMethod( PossibleClassFusions,
 #T                       rec( maxlen:= maxlen,
 #T                            contained:= ContainedCharacters,
 #T                            minamb:= minamb,
-#T                            maxamb:= "infinity",
+#T                            maxamb:= infinity,
 #T                            quick:= quick ) );
 #T 
 #T         poss:= Filtered( poss, x ->

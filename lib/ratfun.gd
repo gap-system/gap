@@ -525,6 +525,12 @@ LeadingMonomialPosExtRep := NewOperationArgs("LeadingMonomialPosExtRep");
 
 PolynomialReduction := NewOperationArgs("PolynomialReduction");
 
+#############################################################################
+##
+#F  ValueMultivariate(poly,vals[,one]) 
+##                               
+ValueMultivariate := NewOperationArgs("ValueMultivariate");
+
 
 #############################################################################
 ##

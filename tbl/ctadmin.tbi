@@ -1582,10 +1582,11 @@ ConstructDirectProduct := function( arg )
               CharacterTableFromLibrary( tbl.factors[i] ) );
     od;
     if 1 < Length( arg ) then
-      Error( "three argument version not yet provided!" );
-#T       SortClassesCharTable( t, arg[2] );
-#T       SortCharactersCharTable( t, arg[3] );
-#T       Unbind( t.permutation );
+      t:= CharacterTableWithSortedClasses( t, arg[2] );
+      t:= CharacterTableWithSortedCharacters( t, arg[3] );
+      if not IsBound( tbl.ClassPermutation ) then
+        tbl.ClassPermutation:= ();
+      fi;
     fi;
     TransferComponentsToLibraryTableRecord( t, tbl );
     if 1 < Length( tbl.factors ) then
@@ -1594,22 +1595,26 @@ ConstructDirectProduct := function( arg )
 end;
 
 
-#T #############################################################################
-#T ##
-#T #F  ConstructSubdirect( <tbl>, <factors>, <choice> )
-#T ##
-#T ConstructSubdirect := function( tbl, factors, choice  )
-#T 
-#T     local t, i;
-#T 
-#T     t:= CharacterTableFromLibrary( factors[1] );
-#T     for i in [ 2 .. Length( factors ) ] do
-#T       t:= CharacterTableDirectProduct( t,
-#T               CharacterTableFromLibrary( factors[i] ) );
-#T     od;
-#T     t:= CharacterTableNormalSubgroup( t, choice );
-#T     TransferComponentsToLibraryTableRecord( t, tbl );
-#T end;
+#############################################################################
+##
+#F  ConstructSubdirect( <tbl>, <factors>, <choice> )
+##
+ConstructSubdirect := function( tbl, factors, choice  )
+
+    local t, i;
+
+    t:= CharacterTableFromLibrary( factors[1] );
+    for i in [ 2 .. Length( factors ) ] do
+      t:= CharacterTableDirectProduct( t,
+              CharacterTableFromLibrary( factors[i] ) );
+    od;
+    t:= CharacterTableOfNormalSubgroup( t, choice );
+    TransferComponentsToLibraryTableRecord( t, tbl );
+#T Due to my stupidity, the table files contain 'return ConstructSubdirect',
+#T which was no problem in GAP-3.
+#T So I need a 'return' statement here.
+    return 0;
+end;
 
 
 #############################################################################
@@ -1802,7 +1807,7 @@ ConstructPermuted := function( tbl, libnam, prmclasses, prmchars )
 
     # Store the components in 'tbl'.
     TransferComponentsToLibraryTableRecord( t, tbl );
-#T Due to my stupidity, hte table files contain 'return ConstructPermuted',
+#T Due to my stupidity, the table files contain 'return ConstructPermuted',
 #T which was no problem in GAP-3.
 #T So I need a 'return' statement here.
     return 0;
@@ -2936,20 +2941,18 @@ end;
 
 #############################################################################
 ##
-#F  OrbitsResidueClass( <pq> )
+#F  OrbitsResidueClass( <pq>, <set> )
 ##
-OrbitsResidueClass := function( pq )
+OrbitsResidueClass := function( pq, set )
 
     local gen,
           orbs,
-          set,
           pnt,
           orb,
           i;
 
     gen:= PowerModInt( PrimitiveRootMod( pq[1] ), (pq[1]-1)/pq[2], pq[1] );
     orbs:= [];
-    set:= [ 1 .. pq[1]-1 ];
     while not IsEmpty( set ) do
       pnt:= set[1];
       orb:= [];

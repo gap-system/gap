@@ -26,8 +26,7 @@ local dim,m;
   m:=rec(field:=f,
          dimension:=dim,
 	 generators:=l,
-	 isMTXModule:=true,
-	 basis:=IdentityMat(dim,One(f))
+	 isMTXModule:=true
 	 );
 
   return m;
@@ -62,7 +61,6 @@ SMTX.IsMTXModule:=function(module)
   return IsBound(module.isMTXModule) and
          IsBound(module.field) and
          IsBound(module.generators) and
-         IsBound(module.basis) and
          IsBound(module.dimension);
 end;
 
@@ -522,6 +520,39 @@ local module,sub,  ans, dim, subdim, F,qmodule;
 
    qmodule := GModuleByMats (ans.qmatrices, F);
    return qmodule;
+
+end;
+
+#############################################################################
+##
+#F  SMTX.InducedActionFactorModuleWithBasis( module, sub ) 
+##
+SMTX.InducedActionFactorModuleWithBasis := function (module,sub)
+local ans, dim, subdim, F,qmodule;
+
+   sub:=List(sub,ShallowCopy);
+   TriangulizeMat(sub);
+
+   subdim := Length (sub);
+   dim := SMTX.Dimension(module);
+   if subdim = dim then
+      return List(module.generators,i->[[]]);
+   fi;
+
+   F:=SMTX.Field(module);
+
+   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
+                                sub,dim,subdim,One(F),2);
+
+   if ans=fail then
+     return fail;
+   fi;
+
+   # fetch new basis
+   sub:=ans.nbasis{[Length(sub)+1..module.dimension]};
+
+   qmodule := GModuleByMats (ans.qmatrices, F);
+   return [qmodule,sub];
 
 end;
 

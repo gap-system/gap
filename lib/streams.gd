@@ -223,6 +223,15 @@ OutputTextString := NewOperation(
 
 #############################################################################
 ##
+#O  OutputTextFile( <string>, <append> )
+##
+OutputTextFile := NewOperation(
+    "OutputTextFile",
+    [ IsList, IsBool ] );
+
+
+#############################################################################
+##
 
 #F  AppendTo( <stream>, <arg1>, ... )
 ##

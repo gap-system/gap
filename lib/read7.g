@@ -39,6 +39,7 @@ ReadLib( "ctblmoli.gi" );
 ReadLib( "ctblmono.gi" );
 ReadLib( "ctblgrp.gi"  );
 ReadLib( "ctblperm.gi" );
+ReadLib( "ctblpc.gi" );
 
 ReadTbl( "ctprimar.tbl" );
 ReadTbl( "ctadmin.tbi"  );

@@ -440,6 +440,8 @@ GroupMethodByNiceMonomorphismCollColl( NormalIntersection,
 ##
 GroupMethodByNiceMonomorphismCollColl( Normalizer,
     [ IsGroup, IsGroup ] );
+SubgroupMethodByNiceMonomorphismCollColl( Normalizer,
+    [ IsGroup, IsGroup ] );
 
 
 #############################################################################

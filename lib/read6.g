@@ -22,3 +22,10 @@ ReadSmall( "idgroup.g" );
 #X  Read transitive groups library
 ##
 ReadTrans( "trans.grp" );
+
+
+#############################################################################
+##
+#X  Read primitive groups library
+##
+ReadPrim( "primitiv.gi" );

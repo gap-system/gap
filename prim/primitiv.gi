@@ -234,7 +234,8 @@ CohortProductAction := function( coh, n )
     
     S := SymmetricGroup( n );
     N := WreathProductProductAction( Source( coh ), S );
-    G := WreathProductProductAction( Kernel( coh ), TrivialSubgroup( S ) );
+    G := WreathProductProductAction( KernelOfMultiplicativeGeneralMapping
+                 ( coh ), TrivialSubgroup( S ) );
     prd := ConstructCohort( N, G, MovedPoints( G ) );
     SetName( prd, Concatenation( Name( coh ), "^", String( n ) ) );
     return prd;
@@ -383,7 +384,8 @@ GLnbylqtolInGLnq := function( M, k )
         SetName( G, Concatenation( Name( M ), " < GL(", String( d * k ),
                 ",", String( q ), ")" ) );
     fi;
-    if HasSize( M )  or  IsGeneralLinearGroup( M )  then
+    if HasSize( M )  or
+       HasIsGeneralLinearGroup( M ) and IsGeneralLinearGroup( M )  then
         SetSize( G, Size( M ) );
     fi;
     return G;
@@ -432,7 +434,8 @@ StabFldExt := function( M, k )
                 String( RootInt( Size( FieldOfMatrixGroup( M ) ), k ) ),
                 ")" ) );
     fi;
-    if HasSize( M )  or  IsGeneralLinearGroup( M )  then
+    if HasSize( M )  or
+       HasIsGeneralLinearGroup( M ) and IsGeneralLinearGroup( M )  then
         SetSize( G, Size( M ) * k );
     fi;
     return G;
@@ -449,8 +452,8 @@ InstallMethod( PerfectResiduum, true, [ IsGroup ], 0,
     function( G )
     local   P;
     
-    P := AsSubgroup( G,
-                 DerivedSeries( G )[ Length( DerivedSeries( G ) ) ] );
+    P := AsSubgroup( G, DerivedSeriesOfGroup( G )
+                 [ Length( DerivedSeriesOfGroup( G ) ) ] );
     if HasName( G )  then
         SetName( P, Concatenation( Name( G ), "^\infty" ) );
     fi;
@@ -466,8 +469,8 @@ AlmostDerivedSubgroup := function( G, nr )
     
     hom := NaturalHomomorphismByNormalSubgroupInParent
            ( PerfectResiduum( G ) );
-    U := PreImage( hom, Representative( ConjugacyClassesSubgroups
-                 ( Image( hom ) )[ nr ] ) );
+    U := PreImage( hom, Representative
+                 ( ConjugacyClassesSubgroups( Image( hom ) )[ nr ] ) );
     if HasName( G )  then
         SetName( U, Concatenation( Name( G ), "_", String( nr ) ) );
     fi;
@@ -543,37 +546,39 @@ fi;
 ##
 #V  AFFINE_NON_SOLVABLE_GROUPS  . . . . . . . . . . . . . . . of degree < 256
 ##
-if not IsBound( AFFINE_NON_SOLVABLE_GROUPS )  then
-    
 AFFINE_NON_SOLVABLE_GROUPS := [  ];
-AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 3 ] := [ function() return
-  PrimitiveAffinePermGroupByMatrixGroup( GL( 3, 2 ) );
-end ];
-AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 5 ] := [ function() return
-  PrimitiveAffinePermGroupByMatrixGroup( GL( 5, 2 ) );
-end ];
-AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 7 ] := [ function() return
-  PrimitiveAffinePermGroupByMatrixGroup( GL( 7, 2 ) );
-end ];
-
-ASLMaker := function( n, q, nr )
-    return function()
-        return PrimitiveAffinePermGroupByMatrixGroup
-               ( AlmostDerivedSubgroup( GL( n, q ), nr ) );
+    
+BOOT_AFFINE_NON_SOLVABLE_GROUPS := function()
+    local   ASLMaker,  p,  hom,  nr;
+    
+    AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 3 ] := [ function() return
+      PrimitiveAffinePermGroupByMatrixGroup( GL( 3, 2 ) );
+    end ];
+    AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 5 ] := [ function() return
+      PrimitiveAffinePermGroupByMatrixGroup( GL( 5, 2 ) );
+    end ];
+    AFFINE_NON_SOLVABLE_GROUPS[ 2 ^ 7 ] := [ function() return
+      PrimitiveAffinePermGroupByMatrixGroup( GL( 7, 2 ) );
+    end ];
+    
+    ASLMaker := function( n, q, nr )
+        return function()
+            return PrimitiveAffinePermGroupByMatrixGroup
+                   ( AlmostDerivedSubgroup( GL( n, q ), nr ) );
+        end;
     end;
-end;
-
-for p  in [ [3,3], [5,2], [5,3], [7,2], [7,3], [11,2], [13,2] ]  do
-    AFFINE_NON_SOLVABLE_GROUPS[ p[1] ^ p[2] ] := [  ];
-    hom := NaturalHomomorphismByNormalSubgroupInParent
-           ( DerivedSubgroup( GL( p[2], p[1] ) ) );
-    for nr  in Reversed
-      ( [ 1 .. Length( ConjugacyClassesSubgroups( Range(hom) ) ) ] )  do
-        AFFINE_NON_SOLVABLE_GROUPS[p[1]^p[2]][nr] := ASLMaker(p[2],p[1],nr);
+    
+    for p  in [ [3,3], [5,2], [5,3], [7,2], [7,3], [11,2], [13,2] ]  do
+        AFFINE_NON_SOLVABLE_GROUPS[ p[1] ^ p[2] ] := [  ];
+        hom := NaturalHomomorphismByNormalSubgroupInParent
+               ( DerivedSubgroup( GL( p[2], p[1] ) ) );
+        for nr  in Reversed
+          ( [ 1 .. Length( ConjugacyClassesSubgroups( Range(hom) ) ) ] )  do
+            AFFINE_NON_SOLVABLE_GROUPS[p[1]^p[2]][nr] :=
+              ASLMaker(p[2],p[1],nr);
+        od;
     od;
-od;
-
-fi;
+end;
 
 #############################################################################
 ##
@@ -716,6 +721,9 @@ MakePrimitiveGroup := function( deg, nr )
         fi;
 
         # Now look at the non-solvable affine groups.
+        if IsEmpty( AFFINE_NON_SOLVABLE_GROUPS )  then
+            BOOT_AFFINE_NON_SOLVABLE_GROUPS();
+        fi;
         if     not IsBound( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )
            and not READ_GAP_ROOT( Concatenation
                        ( "prim/deg", String( deg ), ".aff" ) )  then
@@ -825,6 +833,8 @@ NrSolvableAffinePrimitiveGroups := function( deg )
     
     if not IsPrimePowerInt( deg )  then
         return 0;
+    elif deg > 255  then
+        Error( "affine primitive groups: degree must be < 256" );
     else
         p := FactorsInt( deg )[ 1 ];
         n := LogInt( deg, p );
@@ -843,7 +853,12 @@ end;
 NrAffinePrimitiveGroups := function( deg )
     if not IsPrimePowerInt( deg )  then
         return 0;
+    elif deg > 255  then
+        Error( "affine primitive groups: degree must be < 256" );
     else
+        if IsEmpty( AFFINE_NON_SOLVABLE_GROUPS )  then
+            BOOT_AFFINE_NON_SOLVABLE_GROUPS();
+        fi;
         if     not IsBound( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )
            and not READ_GAP_ROOT( Concatenation
                        ( "prim/deg", String( deg ), ".aff" ) )  then

@@ -1584,6 +1584,44 @@ end);
 
 #############################################################################
 ##
+#F  ValueMultivariate(poly,vals[,one]) 
+##                               
+ValueMultivariate := function(arg)
+local f,vals,one,i,j,v,c,m;
+  f:=arg[1];
+  vals:=arg[2];
+  if Length(arg)>2 then
+    one:=arg[3];
+  else
+    one:=One(vals[1]);
+  fi;
+  f:=ExtRepOfObj(f);
+  v:=f[1];
+  f:=f[2];
+  i:=1;
+  while i<=Length(f) do
+    c:=f[i];
+    m:=one;
+    j:=1;
+    while j<=Length(c) do
+      m:=m*vals[c[j]]^c[j+1];
+      j:=j+2;
+    od;
+    v:=v+f[i+1]*m;
+    i:=i+2;
+  od;
+  return v;
+end;
+
+InstallOtherMethod(Value,"multivariate",true,[IsPolynomial,IsList],0,
+  ValueMultivariate);
+
+InstallOtherMethod(Value,"multivariate with special one",true,
+  [IsPolynomial,IsList,IsMultiplicativeElementWithInverse],0,
+  ValueMultivariate);
+
+#############################################################################
+##
 #E  ratfun.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

@@ -3,7 +3,7 @@
 #W  word.gi                     GAP library                     Thomas Breuer
 #W                                                             & Frank Celler
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 #H  @(#)$Id$
 ##
@@ -21,7 +21,10 @@ Revision.word_gi :=
 ##  The equality operator '=' evaluates to 'true' if the two words <w1> and
 ##  <w2> are equal and to 'false' otherwise.
 ##
-InstallMethod( \=, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
+InstallMethod( \=,
+    "method for two assoc. words",
+    IsIdentical,
+    [ IsAssocWord, IsAssocWord ], 0,
     function( x, y )
     return ExtRepOfObj( x ) = ExtRepOfObj( y );
     end );
@@ -35,6 +38,7 @@ InstallMethod( \=, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
 ##  representation is chosen.
 ##
 InstallMethod( \<,
+    "method for two assoc. words",
     IsIdentical,
     [ IsAssocWord,
       IsAssocWord ],
@@ -65,7 +69,10 @@ end );
 ##  Multiplication of words is done by concatenating the words
 ##  and removing adjacent pairs of an abstract generator and its inverse.
 ##
-InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
+InstallMethod( \*,
+    "method for two assoc. words",
+    IsIdentical,
+    [ IsAssocWord, IsAssocWord ], 0,
     function( x, y )
 
     local xx,    # external representation of 'x'
@@ -81,7 +88,7 @@ InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
       return y;
     fi;
     yy:= ExtRepOfObj( y );
-    if yy = [] then
+    if IsEmpty( yy ) then
       return x;
     fi;
 
@@ -168,7 +175,10 @@ InstallMethod( \*, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
 ##  So we must guarantee that words with inverses get the method that handles
 ##  the case of cancellation.
 ##
-InstallMethod( \^, true, [ IsAssocWord, IsPosRat and IsInt ], 0,
+InstallMethod( \^,
+    "method for an assoc. word, and a positive integer",
+    true,
+    [ IsAssocWord, IsPosRat and IsInt ], 0,
     function( x, n )
 
     local xx,      # external representation of 'x'
@@ -180,7 +190,7 @@ InstallMethod( \^, true, [ IsAssocWord, IsPosRat and IsInt ], 0,
     if 1 < n then
 
       xx:= ExtRepOfObj( x );
-      if xx = [] then
+      if IsEmpty( xx ) then
         return x;
       fi;
 
@@ -236,7 +246,10 @@ InstallMethod( \^, true, [ IsAssocWord, IsPosRat and IsInt ], 0,
     fi;
     end );
 
-InstallMethod( \^, true, [ IsAssocWordWithInverse, IsInt ], 0,
+InstallMethod( \^,
+    "method for an assoc. word with inverse, and an integer",
+    true,
+    [ IsAssocWordWithInverse, IsInt ], 0,
     function( x, n )
 
     local xx,      # external representation of 'x'
@@ -258,7 +271,7 @@ InstallMethod( \^, true, [ IsAssocWordWithInverse, IsInt ], 0,
     fi;
 
     xx:= ExtRepOfObj( x );
-    if xx = [] then
+    if IsEmpty( xx ) then
       return x;
     fi;
 
@@ -351,7 +364,10 @@ InstallMethod( \^, true, [ IsAssocWordWithInverse, IsInt ], 0,
     fi;
     end );
 
-InstallMethod( Inverse, true, [ IsAssocWordWithInverse ], 0,
+InstallMethod( Inverse,
+    "method for an assoc. word with inverse",
+    true,
+    [ IsAssocWordWithInverse ], 0,
     function( x )
 
     local xx,      # external representation of 'x'
@@ -361,7 +377,7 @@ InstallMethod( Inverse, true, [ IsAssocWordWithInverse ], 0,
 
     # Consider special cases.
     xx:= ExtRepOfObj( x );
-    if xx = [] then
+    if IsEmpty( xx ) then
       return x;
     fi;
 
@@ -391,7 +407,10 @@ InstallMethod( Inverse, true, [ IsAssocWordWithInverse ], 0,
 
 #M  LengthWord( <w> )
 ##
-InstallMethod( LengthWord, true, [ IsAssocWord ], 0,
+InstallMethod( LengthWord,
+    "method for an assoc. word",
+    true,
+    [ IsAssocWord ], 0,
     function( w )
     local len, i;
     w:= ExtRepOfObj( w );
@@ -407,7 +426,10 @@ InstallMethod( LengthWord, true, [ IsAssocWord ], 0,
 ##
 #M  ExponentSyllable( <w>, <n> )
 ##
-InstallMethod( ExponentSyllable, true, [ IsAssocWord, IsInt and IsPosRat ],
+InstallMethod( ExponentSyllable,
+    "method for an assoc. word, and a positive integer",
+    true,
+    [ IsAssocWord, IsInt and IsPosRat ],
     0,
     function( w, n )
     return ExtRepOfObj( w )[ 2*n ];
@@ -418,7 +440,10 @@ InstallMethod( ExponentSyllable, true, [ IsAssocWord, IsInt and IsPosRat ],
 ##
 #M  GeneratorSyllable( <w>, <n> )
 ##
-InstallMethod( GeneratorSyllable, true, [ IsAssocWord, IsInt and IsPosRat ],
+InstallMethod( GeneratorSyllable,
+    "method for an assoc. word, and a positive integer",
+    true,
+    [ IsAssocWord, IsInt and IsPosRat ],
     0,
     function( w, n )
     return ExtRepOfObj( w )[ 2*n-1 ];
@@ -429,7 +454,10 @@ InstallMethod( GeneratorSyllable, true, [ IsAssocWord, IsInt and IsPosRat ],
 ##
 #M  NumberSyllables( <w> )
 ##
-InstallMethod( NumberSyllables, true, [ IsAssocWord ], 0,
+InstallMethod( NumberSyllables,
+    "method for an assoc. word",
+    true,
+    [ IsAssocWord ], 0,
     w -> Length( ExtRepOfObj( w ) ) / 2 );
 
 
@@ -437,7 +465,10 @@ InstallMethod( NumberSyllables, true, [ IsAssocWord ], 0,
 ##
 #M  ExponentSums( <w> )
 ##
-InstallMethod( ExponentSums, true, [ IsAssocWord ], 0,
+InstallMethod( ExponentSums,
+    "method for an assoc. word",
+    true,
+    [ IsAssocWord ], 0,
     function( w )
     Error( "what is this?" );
     end );
@@ -483,7 +514,7 @@ InstallMethod( Subword,
     [ IsAssocWord, IsPosRat and IsInt, IsPosRat and IsInt ],
     0,
     function( w, from, to )
-    local extw, pos, nextexp, sub;
+    local extw, pos, nextexp, firstexp, sub;
    
     extw:= ExtRepOfObj( w );
     to:= to - from + 1;
@@ -500,9 +531,9 @@ InstallMethod( Subword,
     # Throw away 'Subword( w, 1, from-1 )'.
     nextexp:= nextexp - from + 1;
     if 0 < extw[ pos ] then
-      extw[ pos ]:= nextexp;
+      firstexp:= nextexp;
     else
-      extw[ pos ]:= - nextexp;
+      firstexp:= - nextexp;
     fi;
 
     # Fill the subword.
@@ -514,6 +545,11 @@ InstallMethod( Subword,
       to:= to - nextexp;
       nextexp:= AbsInt( extw[ pos ] );
     od;
+
+    # Adjust the first exponent.
+    if not IsEmpty( sub ) then
+      sub[2]:= firstexp;
+    fi;
 
     # Add the trailing pair.
     if 0 < to then
@@ -581,7 +617,9 @@ IsElmsCollsX := function( F1, F2, F3 )
            and IsIdentical( F1, ElementsFamily( F2 ) );
 end;
 
-InstallMethod( MappedWord, IsElmsCollsX,
+InstallMethod( MappedWord,
+    "method for an assoc. word, a homogeneous list, and a list",
+    IsElmsCollsX,
     [ IsAssocWord, IsHomogeneousList, IsList ], 0,
     function( x, gens1, gens2 )
 
@@ -589,7 +627,7 @@ InstallMethod( MappedWord, IsElmsCollsX,
 
     gens1:= List( gens1, x -> ExtRepOfObj( x )[1] );
     x:= ExtRepOfObj( x );
-    if Length( x ) = 0 then
+    if IsEmpty( x ) then
 
       # This happens for monoid element objects.
       mapped:= gens2[1] ^ 0;

@@ -6,7 +6,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic character tables
 ##  Cyclic, Dihedral, Symmetric, Alternating, WeylB, WeylD, GL2, SL2odd,
@@ -16,8 +16,6 @@ Revision.ctgeneri_tbl :=
     "@(#)$Id$";
 
 SET_TABLEFILENAME("ctgeneri");
-
-if not IsBound( InfoCharTable2 ) then InfoCharTable2:= Ignore; fi;
 
 
 #############################################################################
@@ -1145,11 +1143,11 @@ size:=(pq->pq[1]*pq[2]),
 text:="generic character table of P:Q for prime P",
 centralizers:= [ function(pq,l) return pq[1]*pq[2]/Length(l); end,
                  function(pq,l) return pq[2]; end ],
-classparam:= [ pq -> List( OrbitsResidueClass( pq ),
+classparam:= [ pq -> List( OrbitsResidueClass( pq, [ 0 .. pq[1]-1 ] ),
                            x -> Set( List( x, y -> E(pq[1])^y ) ) ),
                pq -> List([1..pq[2]-1],x->E(pq[2])^x)],
 charparam:= [ pq -> [0..pq[2]-1],
-              OrbitsResidueClass ],
+              pq -> OrbitsResidueClass( pq, [ 1 .. pq[1]-1 ] ) ],
 powermap:= [ function(pq,l,pow)
              return [1,Set(List(l,x->GaloisCyc(x,pow)))]; end,
              function(pq,l,pow)

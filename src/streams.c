@@ -1068,7 +1068,7 @@ Obj FuncCLOSE_FILE (
 
 /****************************************************************************
 **
-*F  FuncINPUT_TEXT_FILE( <self>, <name>  )  . . . . . . . . . . open a stream
+*F  FuncINPUT_TEXT_FILE( <self>, <name> ) . . . . . . . . . . . open a stream
 */
 Obj FuncINPUT_TEXT_FILE (
     Obj             self,
@@ -1110,6 +1110,42 @@ Obj FuncIS_END_OF_FILE (
     
     ret = SyIsEndOfFile( INT_INTOBJ(fid) );
     return ret == -1 ? Fail : ( ret == 0 ? False : True );
+}
+
+
+/****************************************************************************
+**
+*F  FuncOUTPUT_TEXT_FILE( <self>, <name>, <append> )  . . . . . open a stream
+*/
+Obj FuncOUTPUT_TEXT_FILE (
+    Obj             self,
+    Obj             filename,
+    Obj             append )
+{
+    Int             fid;
+
+    /* check the argument                                                  */
+    while ( ! IsStringConv( filename ) ) {
+        filename = ErrorReturnObj(
+            "<filename> must be a string (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L,
+            "you can return a string for <filename>" );
+    }
+    while ( append != True && append != False ) {
+        filename = ErrorReturnObj(
+            "<append> must be a boolean (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(append)].name), 0L,
+            "you can return a string for <append>" );
+    }
+    
+    /* call the system dependent function                                  */
+    if ( append == True ) {
+	fid = SyFopen( CSTR_STRING(filename), "a" );
+    }
+    else {
+	fid = SyFopen( CSTR_STRING(filename), "w" );
+    }
+    return fid == -1 ? Fail : INTOBJ_INT(fid);
 }
 
 
@@ -1230,6 +1266,37 @@ Obj FuncSEEK_POSITION_FILE (
     }
     
     ret = SyFseek( INT_INTOBJ(fid), INT_INTOBJ(pos) );
+    return ret == -1 ? Fail : True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncWRITE_BYTE_FILE( <self>, <fid>, <byte> )  . . . . . . .  write a byte
+*/
+Obj FuncWRITE_BYTE_FILE (
+    Obj             self,
+    Obj             fid,
+    Obj             ch )
+{
+    Int             ret;
+
+    /* check the argument                                                  */
+    while ( ! IS_INTOBJ(fid) ) {
+        fid = ErrorReturnObj(
+            "<fid> must be an integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(fid)].name), 0L,
+            "you can return an integer for <fid>" );
+    }
+    while ( ! IS_INTOBJ(ch) ) {
+        ch = ErrorReturnObj(
+            "<ch> must be an integer (not a %s)",
+            (Int)(InfoBags[TNUM_OBJ(ch)].name), 0L,
+            "you can return an integer for <ch>" );
+    }
+    
+    /* call the system dependent function                                  */
+    ret = SyEchoch( INT_INTOBJ(ch), INT_INTOBJ(fid) );
     return ret == -1 ? Fail : True;
 }
 
@@ -1360,6 +1427,10 @@ void InitStreams ()
                   FuncINPUT_TEXT_FILE,
         "src/sreams.c:INPUT_TEXT_FILE" );
 
+    C_NEW_GVAR_FUNC( "OUTPUT_TEXT_FILE", 2L, "filename, append",
+                  FuncOUTPUT_TEXT_FILE,
+        "src/sreams.c:OUTPUT_TEXT_FILE" );
+
     C_NEW_GVAR_FUNC( "IS_END_OF_FILE", 1L, "fid",
                   FuncIS_END_OF_FILE,
         "src/sreams.c:IS_END_OF_FILE" );
@@ -1379,6 +1450,10 @@ void InitStreams ()
     C_NEW_GVAR_FUNC( "SEEK_POSITION_FILE", 2L, "fid, pos",
                   FuncSEEK_POSITION_FILE,
         "src/sreams.c:SEEK_POSITION_FILE" );
+
+    C_NEW_GVAR_FUNC( "WRITE_BYTE_FILE", 2L, "fid, byte",
+                  FuncWRITE_BYTE_FILE,
+        "src/sreams.c:WRITE_BYTE_FILE" );
 }
 
 

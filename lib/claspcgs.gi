@@ -966,6 +966,53 @@ end;
 
 #############################################################################
 ##
+
+#M  CanonicalRepresentativeOfExternalSet( <cl> )  . conj. cl. of solv. groups
+##
+InstallMethod( CanonicalRepresentativeOfExternalSet, true,
+        [ IsConjugacyClassGroupRep ], 0,
+    function( cl )
+    local   G,  rep;
+    
+    G := ActingDomain( cl );
+    if not IsPcgsComputable( G )  then
+        TryNextMethod();
+    fi;
+    rep := ClassesSolvableGroup( G, G, true, 0, [ Representative( cl ) ] )
+           [ 1 ];
+    if not HasStabilizerOfExternalSet( cl )  then
+        SetStabilizerOfExternalSet( cl,
+                ConjugateSubgroup( rep.centralizer, rep.operator ^ -1 ) );
+    fi;
+    SetOperatorOfExternalSet( cl, rep.operator );
+    return rep.representative;
+end );
+        
+#############################################################################
+##
+#M  OperatorOfExternalSet( <cl> ) . . . . . . . . . conj. cl. of solv. groups
+##
+InstallMethod( OperatorOfExternalSet, true,
+        [ IsConjugacyClassGroupRep ], 0,
+    function( cl )
+    local   G,  rep;
+    
+    G := ActingDomain( cl );
+    if not IsPcgsComputable( G )  then
+        TryNextMethod();
+    fi;
+    rep := ClassesSolvableGroup( G, G, true, 0, [ Representative( cl ) ] )
+           [ 1 ];
+    if not HasStabilizerOfExternalSet( cl )  then
+        SetStabilizerOfExternalSet( cl,
+                ConjugateSubgroup( rep.centralizer, rep.operator ^ -1 ) );
+    fi;
+    SetCanonicalRepresentativeOfExternalSet( cl, rep.representative );
+    return rep.operator;
+end );
+        
+#############################################################################
+##
 ##  Local Variables:
 ##  mode:             outline-minor
 ##  outline-regexp:   "#[WCROAPMFVE]"

@@ -78,7 +78,7 @@ end );
 InstallMethod( IsGeneralLinearGroup,
     "size comparison",
     true,
-    [ IsFFEMatrixGroup ],
+    [ IsFFEMatrixGroup and IsFinite ],
     0,
 
 function( grp )
@@ -94,7 +94,6 @@ end );
 NicomorphismOfFFEMatrixGroup := function( grp )
     local   field,  dim,  V,  xset,  nice;
     
-    Size( grp );
     field := FieldOfMatrixGroup( grp );
     dim   := DimensionOfMatrixGroup( grp );
     V     := field ^ dim;
@@ -114,7 +113,7 @@ end;
 InstallMethod( NiceMonomorphism,
     "falling back on GL",
     true,
-    [ IsFFEMatrixGroup ],
+    [ IsFFEMatrixGroup and IsFinite ],
     0,
 
 function( grp )
@@ -128,7 +127,7 @@ end );
 #M  IsomorphismPermGroup( <grp> ) . . . . . . . . . operation on vector space
 ##
 InstallMethod( IsomorphismPermGroup, "ffe matrix group", true,
-        [ IsFFEMatrixGroup ], 0,
+        [ IsFFEMatrixGroup and IsFinite ], 0,
     function( grp )
     local   nice;
     
@@ -162,7 +161,7 @@ end );
 InstallMethod( Size,
     "general linear group",
     true,
-    [ IsFFEMatrixGroup and IsGeneralLinearGroup ],
+    [ IsFFEMatrixGroup and IsFinite and IsGeneralLinearGroup ],
     0,
 
 function( G )
@@ -180,7 +179,7 @@ function( G )
 end );
 
 InstallMethod( \in, "general linear group", IsElmsColls,
-        [ IsMatrix, IsFFEMatrixGroup and IsGeneralLinearGroup ], 0,
+    [ IsMatrix, IsFFEMatrixGroup and IsFinite and IsGeneralLinearGroup ], 0,
     function( mat, G )
     return     Length( mat ) = Length( mat[ 1 ] )
            and Length( mat ) = DimensionOfMatrixGroup( G )

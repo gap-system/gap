@@ -80,13 +80,26 @@ IsAssocWordWithInverseFamily :=
 
 #############################################################################
 ##
+#C  Is8BitsFamily
+#C  Is16BitsFamily
+#C  Is32BitsFamily
+#C  IsInfBitsFamily
+##
+Is8BitsFamily := NewCategory( "Is8BitsFamily", IsFamily );
+Is16BitsFamily := NewCategory( "Is16BitsFamily", IsFamily );
+Is32BitsFamily := NewCategory( "Is32BitsFamily", IsFamily );
+IsInfBitsFamily := NewCategory( "IsInfBitsFamily", IsFamily );
+
+
+#############################################################################
+##
 #T  IsFreeSemigroup( <obj> )
 #T  IsFreeMonoid( <obj> )
 #C  IsFreeGroup( <obj> )
 ##
-##  Note that we cannot define 'IsFreeMonoid' as
-##  'IsAssocWordWithOneCollection and IsMonoid' because then
-##  every free group would be a free monoid, which is not true!
+#T  Note that we cannot define 'IsFreeMonoid' as
+#T  'IsAssocWordWithOneCollection and IsMonoid' because then
+#T  every free group would be a free monoid, which is not true!
 ##
 IsFreeGroup := IsAssocWordWithInverseCollection and IsGroup;
 

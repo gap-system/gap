@@ -8,23 +8,19 @@ Ein Modul M ist ein Record mit folgenden Komponenten:
 
     rec( field := K,
          generators := G,
-         basis := B,
          dimension := d ).
 
+The dimension is always the ``natural'' dimension in which the matrices
+live.
 K ist der Koerper, ueber welchen die Matrizen G  zu verstehen sind.  G
 ist eine  Liste von  n x n Matrizen, der  zugrunde liegende Vektorraum
-ist der Vektorraum K^n der Zeilenvektoren ueber K  der Laenge n, B ist
-die Basis eines  d-dimensionalen Teilraums von K^n, welcher  invariant
-unter G ist.
+ist der Vektorraum K^n der Zeilenvektoren ueber K  der Laenge n,
 
 Zusaetzlich  darf  jede   MeatAxe   noch  eine Komponente   mit  Namen
 "name_der_meataxe"  anlegen.      Diese  Information  darf   weder von
-Benutzern des MeatAxe-Interfaces   verwendet werden  noch duerfen  die
-Eintraege "field",  "generators",  "basis",  "dimension" nachtraeglich
+Benutzern des MeatAxe-Interfaces   verwendet werden, noch duerfen  die
+Eintraege "field",  "generators",  "dimension" nachtraeglich
 geaendert werden.
-
-Flags heissen genauso wie die Funktion, also 'IsIrreducible' mit grossem
-'I' am Anfang.
 
 Verfuegbare Funktionen
 ======================
@@ -43,38 +39,42 @@ MTX.DegreeSplittingField( <M> )
   returns the degree of the splitting field of <M> over the *prime*
   field.
 
-MTX.ProperSubmodule( <M> )
+MTX.BasisProperSubmodule( <M> )
 --------------------------
-  returns  a  proper   submodule  of  <M>  or   'fail'   if <M>  acts
+  returns the basis of a proper submodule of <M> or 'fail' if <M>  acts
   irreducibly.
 
-MTX.MaximalSubmodule( M )
+MTX.BasisMaximalSubmodule( M )
 -------------------------
-  liefert  einen maximalen Untermodul S mit  {0} < S  < M bzw 'fail',
-  falls kein solcher existiert.
+  liefert die  Basis eines maximalen Untermodul S mit  {0} < S  < M,
+  bzw 'fail', falls kein solcher existiert.
 
-MTX.MinimalSubmodule( <M> )
+MTX.BasisMinimalSubmodule( <M> )
 ---------------------------
   returns a minimal submodule S of <M> if <M> acts reducibly and 'fail'
   otherwise.
 
-MTX.CompositionSeries( M )
+MTX.BasesCompositionSeries( M )
 --------------------------
-  liefert die  Kompositionreihe von M als Liste von Untermoduln [ M_1,
-  M_2, ..., M_n ], wobei M_1 = M, M_n = {0}, M_i > M_i+1.
+  liefert Basen der Untermoduln einer Kompositionreihe von M als Liste von
+  Untermoduln [ M_1, M_2, ..., M_n ], wobei M_1 = M, M_n = {0}, M_i > M_i+1.
 
 MTX.CompositionFactors( M )
 --------------------------
   liefert   die Kompositionsfaktoren  von M    als   Liste von  Moduln
   entsprechender Dimension.
 
-MTX.MaximalSubmodules( M )
+MTX.BasesMaximalSubmodules( M )
 --------------------------
-  liefert eine Liste aller maximalen Untermoduln von M.
+  liefert eine Liste der Basen aller maximalen Untermoduln von M.
 
-MTX.MinimalSubmodules( M )
+MTX.BasesMinimalSubmodules( M )
 --------------------------
-  liefert eine Liste aller minimalen Untermoduln von M.
+  liefert eine Liste der Basen aller minimalen Untermoduln von M.
+
+MTX.BasesSubmodules( M )
+-----------------------
+  returns a list of bases of all submodules of M.
 
 MTX.Lattice( M )
 ----------------
@@ -107,21 +107,24 @@ MTX.IndecomposableSummands( M )
   liefert eine  Zerlegung in unzerlegbaren  Summanden von M  als Liste
   von Untermoduln.
 
-MTX.Submodule( M, L )
----------------------
-  liefert den  von L erzeugten Untermodul  von M.  L ist  hierbei eine
-  Liste von Vektoren.
-
 MTX.InducedActionFactorModule( M, B_1[, B_2] )
 ----------------------------------------------
   liefert die Operation von M auf dem Faktorraum M.basis / B_1.  Falls
   B_2  gegeben ist, so muss B_2   die Basis B_1  zu  einer Basis von M
   ergaenzen.
 
+
+InducedActionFactorModuleWithBasis (M, B_1)
+-------------------------------------------
+  Same as InducedActionFactorModule(M, B_1, B_2), but first computes the B_2
+  and returns [<induced action>, B_2].
+
 MTX.InducedActionSubmodule( <M>, <B> )
 --------------------------------------
   returns the action, i.e. a new  module whose generators are matrices
   of dimension <M>.dimension, on <M> using <B> as basis for <M>
+
+  The standard basis of the induced action corresponds to <B>.
 
 MTX.IdentifierSmallCorank( M, max rank, number of tries )
 ---------------------------------------------------------
@@ -143,11 +146,4 @@ MTX.MatrixIdentifier( M, identifier )
 MTX.StandardBasis( M )
 ----------------------
   ????????????
-
-
-
-
-
-
-
 
