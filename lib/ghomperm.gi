@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  ghomperm.gi                 GAP library            UPol, ASer, MSch, HThe
+#W  ghomperm.gi                 GAP library       Akos Seress, Heiko Thei"sen
 ##
 #H  @(#)$Id$
 ##
@@ -354,13 +354,23 @@ InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
         [ IsGroupHomomorphism,
           IsPermGroupGeneralMappingByImages and IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
-    local   prd,  stb;
+    local   prd,  stb,  levs,  S;
 
-    stb := EmptyStabChain( [  ], One( Range( hom1 ) ) );
-    ConjugateStabChain( StabChainAttr( hom2 ), stb, hom1, () );
+    stb := DeepCopy( StabChainAttr( hom2 ) );
+    levs := [  ];
+    S := stb;
+    while IsBound( S.stabilizer )  do
+        if not ForAny( levs, lev -> IsIdentical( lev, S.labelimages ) )  then
+            Add( levs, S );
+            S.labelimages := List( S.labelimages, g ->
+                                   ImagesRepresentative( hom1, g ) );
+        fi;
+        S.generators := S.labels     { S.genlabels };
+        S.genimages  := S.labelimages{ S.genlabels };
+        S := S.stabilizer;
+    od;
     prd := GroupHomomorphismByImages( Source( hom2 ), Range( hom1 ),
-                   stb.labels{ [ 2 .. Length( stb.labels ) ] },
-                   stb.labelimages{ [ 2 .. Length( stb.labels ) ] } );
+                   stb.generators, stb.genimages );
     SetStabChain( prd, stb );
     return prd;
 end );
@@ -938,6 +948,15 @@ end );
 
 #############################################################################
 ##
+#F  IsomorphismPermGroup( <G> )
+##
+InstallMethod(IsomorphismPermGroup,"perm groups",true,[IsPermGroup],0,
+function(G)
+  return IdentityMapping(G);
+end);
+
+#############################################################################
+##
 ##  Local Variables:
 ##  mode:             outline-minor
 ##  outline-regexp:   "#[WCROAPMFVE]"
@@ -947,4 +966,3 @@ end );
 #############################################################################
 ##
 #E  ghomperm.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

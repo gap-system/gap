@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.6  1997/02/13 10:38:18  ahulpke
+#H  Added 'Embedding' and 'Projection' for semidirect products
+#H
 #H  Revision 4.5  1997/01/16 10:46:24  fceller
 #H  renamed 'NewConstructor' to 'NewOperation',
 #H  renamed 'NewOperationFlags1' to 'NewConstructor'
@@ -27,12 +30,14 @@ Revision.gprd_gd :=
 
 IsProductGroups := NewCategory( "IsProductGroups", IsGroup );
 Embeddings := NewAttribute( "Embeddings", IsProductGroups, "mutable" );
+SetEmbeddings := Setter(Embeddings);
 
 EmbeddingOp := NewOperation( "Embedding",
     [ IsProductGroups, IsPosRat and IsInt ] );
 #T 1997/01/16 fceller was old 'NewConstructor'
 
 Projections := NewAttribute( "Projections", IsProductGroups, "mutable" );
+SetProjections := Setter(Projections);
 
 ProjectionOp := NewOperation( "Projection",
     [ IsProductGroups, IsPosRat and IsInt ] );
@@ -47,6 +52,9 @@ IsSubdirectProductGroups := NewCategory( "IsSubdirectProductGroups",
                                     IsProductGroups );
 SubdirectProduct := NewOperation( "SubdirectProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ] );
+
+IsSemidirectProductGroups := NewCategory( "IsSemidirectProductGroups",
+                                 IsProductGroups );
 
 WreathProduct := NewOperation( "WreathProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism ] );

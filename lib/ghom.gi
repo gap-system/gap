@@ -511,71 +511,6 @@ InstallInParentMethod( NaturalHomomorphismByNormalSubgroupInParent,
 
 #############################################################################
 ##
-#M  <modN> mod <modM> . . . . . . . . . . . . natural homomorphism G/N -> G/M
-##
-InstallOtherMethod( \mod, true,
-        [ IsGroupHomomorphism and IsSurjective,
-          IsGroupHomomorphism and IsSurjective ], 0,
-    function( modN, modM )
-    local   filter;
-    
-    if not IsIdentical( Source( modM ), Source( modN ) )  then
-        TryNextMethod();
-    elif     IsNaturalHomomorphismPcGroupRep( modN )
-         and IsNaturalHomomorphismPcGroupRep( modM )  then
-        filter := IsLeftQuotientNaturalHomomorphismsPcGroup;
-    else
-        filter := IsLeftQuotientNaturalHomomorphisms;
-    fi;
-    return Objectify( KindOfDefaultGeneralMapping(
-                          Range( modN ), Range( modM ),
-                          filter and IsSPGeneralMapping ),
-                      rec( modM := modM, modN := modN ) );
-end );
-
-InstallMethod( Source, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
-    quo -> Range( quo!.modN ) );
-
-InstallMethod( Range, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
-    quo -> Range( quo!.modM ) );
-
-InstallMethod( KernelOfMultiplicativeGeneralMapping,
-    true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
-    quo -> ImagesSet( quo!.modN,
-                      KernelOfMultiplicativeGeneralMapping( quo!.modM ) ) );
-
-InstallMethod( PrintObj, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
-    function( hom )
-    Print( Source( hom ), " -> ", Range( hom ) );
-end );
-
-#############################################################################
-##
-#M  ImagesRepresentative( <hom>, <elm> )  . . for such a natural homomorphism
-##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsLeftQuotientNaturalHomomorphisms,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return ImagesRepresentative( hom!.modM,
-                   PreImagesRepresentative( hom!.modN, elm ) );
-end );
-
-#############################################################################
-##
-#M  PreImagesRepresentative( <hom>, <elm> ) . for such a natural homomorphism
-##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsLeftQuotientNaturalHomomorphisms,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return ImagesRepresentative( hom!.modN,
-                   PreImagesRepresentative( hom!.modM, elm ) );
-end );
-
-#############################################################################
-##
-
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . .  if given by pcgs
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
@@ -601,6 +536,14 @@ GroupIsomorphismByFunctions := function( G, H, I, P )
     return hom;
 end;
 
+#############################################################################
+##
+#F  IsomorphismPermGroup( <G> )
+##
+InstallMethod(IsomorphismPermGroup,"right regular",true,[IsGroup],0,
+function(G)
+  return OperationHomomorphism(G,G,OnRight);
+end);
 
 #############################################################################
 ##
@@ -613,6 +556,4 @@ end;
 #############################################################################
 ##
 #E  ghom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
 

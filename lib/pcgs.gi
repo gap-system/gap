@@ -216,24 +216,7 @@ InstallMethod( DepthOfPcElement,
     0,
 
 function( pcgs, elm )
-    return DepthVector( ExponentsOfPcElement( pcgs, elm ) );
-end );
-
-
-#############################################################################
-##
-#M  DepthOfPcElement( <pcgs>, <elm>, <from> )
-##
-InstallOtherMethod( DepthOfPcElement,
-    "generic method, ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
-    [ IsPcgs,
-      IsObject,
-      IsInt ],
-    0,
-
-function( pcgs, elm, from )
-    return DepthVector( ExponentsOfPcElement( pcgs, elm ), from );
+    return PositionNot( ExponentsOfPcElement( pcgs, elm ), 0 );
 end );
 
 
@@ -328,7 +311,7 @@ function( pcgs, elm )
     local   exp,  dep;
 
     exp := ExponentsOfPcElement( pcgs, elm );
-    dep := DepthVector(exp);
+    dep := PositionNot( exp, 0 );
     if Length(exp) < dep  then
         return fail;
     else

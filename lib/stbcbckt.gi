@@ -10,6 +10,9 @@
 ##  intersections.
 ##
 ##  $Log$
+##  Revision 4.24  1997/02/12 14:58:56  htheisse
+##  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
+##
 ##  Revision 4.23  1997/02/06 09:53:00  htheisse
 ##  threw away some unused code
 ##
@@ -2171,9 +2174,9 @@ end;
 
 #############################################################################
 ##
-#F  IsomorphismPermGroup( <arg> ) . . . . . isomorphism / conjugating element
+#F  IsomorphismPermGroups( <arg> )  . . . . isomorphism / conjugating element
 ##
-IsomorphismPermGroup := function( arg )
+IsomorphismPermGroups := function( arg )
     local   G,  E,  F,  Pr,  n,  L,  R,  Omega,  rbase,  data,
             Q,  BF;
     

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.20  1997/02/12 14:58:52  htheisse
+#H  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
+#H
 #H  Revision 4.19  1997/02/06 09:53:48  htheisse
 #H  moved a `Transitivity' method here
 #H
@@ -95,15 +98,15 @@ end );
 
 #############################################################################
 ##
-#M  Blocks( <G>, <D>, [  ], <gens>, <oprs>, <OnPoints> )  . find block system
+#M  Blocks( <G>, <D>, <gens>, <oprs>, <OnPoints> )  . . . . find block system
 ##
 InstallOtherMethod( BlocksOp,
-        "G, ints, [  ], gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection, IsList and IsEmpty,
+        "G, ints, gens, perms, opr", true,
+        [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], 0,
-    function( G, D, noseed, gens, oprs, opr )
+    function( G, D, gens, oprs, opr )
     local   blocks,     # block system of <G>, result
             orbit,      # orbit of 1 under <G>
             trans,      # factored inverse transversal for <orbit>
@@ -857,7 +860,7 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
 
     # operation on permgroups, use backtrack
     elif opr = OnPoints  and IsPermGroup(d)  then
-        rep := IsomorphismPermGroup( G, d, e );
+        rep := IsomorphismPermGroups( G, d, e );
 
     # operation on pairs or tuples of points, iterate
     elif (opr = OnPairs  or opr = OnTuples)  and ForAll( d, IsInt )  then

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.4  1997/02/13 10:38:20  ahulpke
+#H  Added 'Embedding' and 'Projection' for semidirect products
+#H
 #H  Revision 4.3  1996/12/19 09:59:01  htheisse
 #H  added revision lines
 #H
@@ -55,6 +58,14 @@ InstallOtherMethod( Projection, true,
 end );
 
 InstallMethod( Projections, true, [ IsProductGroups ], 0, P -> [  ] );
+
+# method for semidirect products
+InstallOtherMethod( Projection, true,
+        [ IsSemidirectProductGroups ], 0,
+    function( D )
+    
+    return Projections( D )[1];
+end );
 
 #############################################################################
 ##

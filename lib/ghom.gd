@@ -72,39 +72,11 @@ IsInnerAutomorphismRep := NewRepresentation( "IsInnerAutomorphismRep",
 ##
 #R  IsNaturalHomomorphismPcGroupRep . . . . . . . . natural hom in a pc group
 ##
-##  In this representation, the range is always a pc group. This fact is used
-##  by the methods for `IsLeftQuotientNaturalHomomorphismsPcGroup'.
-##
 IsNaturalHomomorphismPcGroupRep := NewRepresentation
     ( "IsNaturalHomomorphismPcGroupRep",
       IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
       IsAttributeStoringRep,
       [ "pcgsSource", "pcgsRange" ] );
-
-
-#############################################################################
-##
-#R  IsLeftQuotientNaturalHomomorphisms  . . . natural homomorphism G/N -> G/M
-##
-IsLeftQuotientNaturalHomomorphisms := NewRepresentation
-    ( "IsLeftQuotientNaturalHomomorphisms",
-      IsGroupHomomorphism and IsSurjective and IsSPGeneralMapping and
-      IsAttributeStoringRep,
-      [ "modM", "modN" ] );
-
-
-#############################################################################
-##
-#R  IsLeftQuotientNaturalHomomorphismsPcGroup .  nat. homomorphism G/N -> G/M
-##
-##  Because   of     the  remark   after   `IsNaturalHomomorphismPcGroupRep',
-##  homomorphisms in this representation  always go from a  pc group to  a pc
-##  group.
-##
-IsLeftQuotientNaturalHomomorphismsPcGroup := NewRepresentation
-    ( "IsLeftQuotientNaturalHomomorphismsPcGroup",
-      IsLeftQuotientNaturalHomomorphisms,
-      [ "modM", "modN" ] );
 
 FilterGroupGeneralMappingByImages := NewOperationArgs(
     "FilterGroupGeneralMappingByImages" );
@@ -113,6 +85,7 @@ MakeMapping := NewOperationArgs( "MakeMapping" );
 GroupIsomorphismByFunctions := NewOperationArgs(
     "GroupIsomorphismByFunctions" );
 
+IsomorphismPermGroup := NewAttribute("IsomorphismPermGroup",IsGroup);
 
 #############################################################################
 ##
@@ -125,4 +98,3 @@ GroupIsomorphismByFunctions := NewOperationArgs(
 #############################################################################
 ##
 #E  ghom.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.17  1997/02/12 16:30:18  htheisse
+#H  corrected enumerators for external subsets; cleaned up the code
+#H
 #H  Revision 4.16  1997/02/07 13:55:44  ahulpke
 #H  Added 'CanonicalRepresentativeDeterminatorOfExternalSet' and utilized it for
 #H  right cosets.
@@ -36,6 +39,7 @@ IsExternalSubset := NewRepresentation( "IsExternalSubset",
     [ "underlyingSet", "start" ] );                            
 IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
     IsExternalSubset, [ "underlyingSet", "start" ] );
+IsExternalSetByPcgs := NewCategory( "IsExternalSetByPcgs", IsExternalSet );
 
 XSET_XSSETKIND := 4;
 XSET_XORBKIND  := 5;
@@ -45,11 +49,8 @@ IsExternalSetDefaultRep := NewRepresentation( "IsExternalSetDefaultRep",
     [ "underlyingSet" ] );
 IsExternalSetByOperatorsRep := NewRepresentation
   ( "IsExternalSetByOperatorsRep",
-    IsExternalSetDefaultRep,
+    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
     [ "underlyingSet", "generators", "operators", "funcOperation" ] );
-IsExternalSetByPcgsRep := NewRepresentation( "IsExternalSetByPcgsRep",
-    IsExternalSetByOperatorsRep,
-    [ "underlyingSet", "generators", "operators" ] );
 
 IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
     IsGroupHomomorphism and

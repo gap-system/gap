@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.6  1997/02/12 14:58:53  htheisse
+#H  renamed `IsomorphismPermGroup' to `IsomorphismPermGroups'
+#H
 #H  Revision 4.5  1997/02/06 09:52:58  htheisse
 #H  threw away some unused code
 #H
@@ -49,7 +52,7 @@ NextLevelRegularGroups := NewOperationArgs( "NextLevelRegularGroups" );
 RBaseGroupsBloxPermGroup := NewOperationArgs( "RBaseGroupsBloxPermGroup" );
 RepOpSetsPermGroup := NewOperationArgs( "RepOpSetsPermGroup" );
 RepOpElmTuplesPermGroup := NewOperationArgs( "RepOpElmTuplesPermGroup" );
-IsomorphismPermGroup := NewOperationArgs( "IsomorphismPermGroup" );
+IsomorphismPermGroups := NewOperationArgs( "IsomorphismPermGroups" );
 AutomorphismGroupPermGroup := NewOperationArgs( "AutomorphismGroupPermGroup" );
 PermGroupOps_ElementProperty := NewOperationArgs( "PermGroupOps_ElementProperty" );
 PermGroupOps_SubgroupProperty := NewOperationArgs( "PermGroupOps_SubgroupProperty" );

@@ -573,43 +573,59 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
 
     # if all generators are in <G>, <G> is the closure
     gens := Filtered( gens, gen -> not gen in G );
-    if Length(gens) = 0  then
-        C := G;
+    if IsEmpty( gens )  then
+        return G;
+    fi;
         
     # otherwise decide between random and deterministic methods
-    else
-        P := Parent( G );
+    P := Parent( G );
+    inpar := IsSubset( P, gens );
+    while not inpar  and  not IsIdentical( P, Parent( P ) )  do
+        P := Parent( P );
         inpar := IsSubset( P, gens );
-        while not inpar  and  not IsIdentical( P, Parent( P ) )  do
-            P := Parent( P );
-            inpar := IsSubset( P, gens );
-        od;
-        if inpar  then
-            CopyOptionsDefaults( P, options );
-        elif not IsBound( options.random )  then
-            options.random := DefaultStabChainOptions.random;
-        fi;
-        
-        # make the base of G compatible with options.base
-        chain := DeepCopy( StabChainAttr( G ) );
-        if IsBound( options.base )  then
-            ChangeStabChain( chain, options.base,
-                    IsBound( options.reduced ) and options.reduced );
-        fi;
-
-        if LargestMovedPointPerms( Concatenation( GeneratorsOfGroup( G ),
-                   gens ) ) <= 100  then
-            options := ShallowCopy( options );
-            options.base := BaseStabChain( chain );
-            StabChainStrong( chain, gens, options );
-        else
-            chain := ClosureRandomPermGroup( chain, gens, options );
-        fi;
-        if inpar  then  C := GroupStabChain( P, chain, true );
-                  else  C := GroupStabChain( chain );           fi;
-        SetStabChainOptions( C, rec( random := options.random ) );
-        
+    od;
+    if inpar  then
+        CopyOptionsDefaults( P, options );
+    elif not IsBound( options.random )  then
+        options.random := DefaultStabChainOptions.random;
     fi;
+    
+    # perhaps <G> is normal in <C> with solvable factor group
+    if     DefaultStabChainOptions.tryPcgs
+       and ForAll( gens, gen -> ForAll( GeneratorsOfGroup( G ),
+                   g -> g ^ gen in G ) )  then
+        if inpar  then
+            C := SubgroupNC( P,
+                         Concatenation( GeneratorsOfGroup( G ), gens ) );
+        else
+            C := GroupByGenerators
+                 ( Concatenation( GeneratorsOfGroup( G ), gens ) );
+        fi;
+        if IsPcgs( TryPcgsPermGroup( [ C, G ], false, false, false ) )  then
+            SetStabChainOptions( C, rec( random := options.random ) );
+            return C;
+        fi;
+    fi;
+    
+    # make the base of G compatible with options.base
+    chain := DeepCopy( StabChainAttr( G ) );
+    if IsBound( options.base )  then
+        ChangeStabChain( chain, options.base,
+                IsBound( options.reduced ) and options.reduced );
+    fi;
+    
+    if LargestMovedPointPerms( Concatenation( GeneratorsOfGroup( G ),
+               gens ) ) <= 100  then
+        options := ShallowCopy( options );
+        options.base := BaseStabChain( chain );
+        StabChainStrong( chain, gens, options );
+    else
+        chain := ClosureRandomPermGroup( chain, gens, options );
+    fi;
+    if inpar  then  C := GroupStabChain( P, chain, true );
+              else  C := GroupStabChain( chain );           fi;
+    SetStabChainOptions( C, rec( random := options.random ) );
+        
     return C;
 end );
 

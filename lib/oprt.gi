@@ -75,8 +75,7 @@ AttributeOperation := function( propop, propat, usekind, args )
     if attrG  and  Tester( propat )( G )  then
         result := propat( G );
     elif     usekind
-         and IsBound( xset )
-         and IsExternalSetDefaultRep( xset )  then
+         and IsBound( xset )  then
         result := propop( G, xset, gens, oprs, opr );
     else
         result := propop( G, D, gens, oprs, opr );
@@ -141,8 +140,7 @@ OrbitishOperation := function( orbish, famrel, usekind, args )
         oprs := gens;
     fi;
     if     usekind
-       and IsBound( xset )
-       and IsExternalSetDefaultRep( xset )  then
+       and IsBound( xset )  then
         return orbish( G, xset, pnt, gens, oprs, opr );
     elif IsBound( D )  then
         return orbish( G, D, pnt, gens, oprs, opr );
@@ -150,6 +148,56 @@ OrbitishOperation := function( orbish, famrel, usekind, args )
         return orbish( G, pnt, gens, oprs, opr );
     fi;
 end;
+
+#############################################################################
+##
+#R  IsSubsetEnumerator  . . . . . . . . . . . . . . .  enumerator for subsets
+##
+IsSubsetEnumerator := NewRepresentation( "IsSubsetEnumerator",
+    IsEnumerator and IsAttributeStoringRep,
+    [ "homeEnumerator", "sublist" ] );
+
+#############################################################################
+##
+#M  Length( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
+##
+InstallMethod( Length, true, [ IsSubsetEnumerator ], 0,
+    senum -> SizeBlist( senum!.sublist ) );
+
+#############################################################################
+##
+#M  <senum>[ <num> ]  . . . . . . . . . . . . . . . . .  for such enumerators
+##
+InstallMethod( \[\], true, [ IsSubsetEnumerator, IsPosRat and IsInt ], 0,
+    function( senum, num )
+    num := PositionNthTrueBlist( senum!.sublist, num );
+    if num = fail  then  return fail;
+                   else  return senum!.homeEnumerator[ num ];  fi;
+end );
+
+#############################################################################
+##
+#M  PositionCanonical( <senum>, <elm> ) . . . . . . . .  for such enumerators
+##
+InstallMethod( PositionCanonical, true, [ IsSubsetEnumerator, IsObject ], 0,
+    function( senum, elm )
+    local   pos;
+    
+    pos := PositionCanonical( senum!.homeEnumerator, elm );
+    if pos = fail  or  not senum!.sublist[ pos ]  then
+        return fail;
+    else
+        return SizeBlist( senum!.sublist{ [ 1 .. pos ] } );
+    fi;
+end );
+
+#############################################################################
+##
+#M  AsList( <senum> ) . . . . . . . . . . . . . . . . .  for such enumerators
+##
+InstallMethod( AsList, true, [ IsSubsetEnumerator ], 0,
+    senum -> senum!.homeEnumerator{ ListBlist
+            ( [ 1 .. Length( senum!.homeEnumerator ) ], senum!.sublist ) } );
 
 #############################################################################
 ##
@@ -164,32 +212,29 @@ InstallMethod( ExternalSetOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
-    return ExternalSetByFilterConstructor( IsExternalSetDefaultRep,
+    return ExternalSetByFilterConstructor( IsExternalSet,
                    G, D, gens, oprs, opr );
 end );
 
 ExternalSetByFilterConstructor := function( filter, G, D, gens, oprs, opr )
-    local   xset,  kind;
+    local   xset;
 
     xset := rec(  );
-    if IsPcgs( gens )  or  not IsIdentical( gens, oprs )  then
-        if IsPcgs( gens )  then
-            kind := NewKind( FamilyObj( D ), IsExternalSetByPcgsRep );
-        else
-            kind := NewKind( FamilyObj( D ), IsExternalSetByOperatorsRep );
-        fi;
+    if IsPcgs( gens )  then
+        filter := filter and IsExternalSetByPcgs;
+    fi;
+    if not IsIdentical( gens, oprs )  then
+        filter := filter and IsExternalSetByOperatorsRep;
         xset.generators    := gens;
         xset.operators     := oprs;
         xset.funcOperation := opr;
     else
-        kind := NewKind( FamilyObj( D ), IsExternalSetDefaultRep );
+        filter := filter and IsExternalSetDefaultRep;
     fi;
-    Objectify( kind, xset );
-    SetFilterObj( xset, filter );
+    Objectify( NewKind( FamilyObj( D ), filter ), xset );
     SetActingDomain  ( xset, G );
     SetHomeEnumerator( xset, D );
-    if not IS_SUBSET_FLAGS( kind![2],
-               FLAGS_FILTER( IsExternalSetByOperatorsRep ) )  then
+    if not IsExternalSetByOperatorsRep( xset )  then
         SetFunctionOperation( xset, opr );
     fi;
     return xset;
@@ -199,15 +244,14 @@ ExternalSetByKindConstructor := function( kind, G, D, gens, oprs, opr )
     local   xset;
     
     xset := Objectify( kind, rec(  ) );
-    if IsPcgs( gens )  or  not IsIdentical( gens, oprs )  then
+    if not IsIdentical( gens, oprs )  then
         xset!.generators    := gens;
         xset!.operators     := oprs;
         xset!.funcOperation := opr;
     fi;
     SetActingDomain  ( xset, G );
     SetHomeEnumerator( xset, D );
-    if not IS_SUBSET_FLAGS( kind![2],
-               FLAGS_FILTER( IsExternalSetByOperatorsRep ) )  then
+    if not IsExternalSetByOperatorsRep( xset )  then
         SetFunctionOperation( xset, opr );
     fi;
     return xset;
@@ -224,7 +268,7 @@ InstallMethod( Size, true, [ IsExternalSet ], 0,
 ##
 #M  Enumerator( <xset> )  . . . . . . . . . . . . . . . .  the underlying set
 ##
-InstallMethod( Enumerator, true, [ IsExternalSetDefaultRep ], 0,
+InstallMethod( Enumerator, true, [ IsExternalSet ], 0,
     HomeEnumerator );
 
 #############################################################################
@@ -236,7 +280,7 @@ InstallMethod( FunctionOperation, true, [ IsExternalSetByOperatorsRep ], 0,
     local   D;
         D := Enumerator( xset );
         return D[ PositionCanonical( D, p ) ^
-                  ( g ^ OperationHomomorphism( xset ) ) ];
+                  ( g ^ OperationHomomorphismAttr( xset ) ) ];
     end );
     
 #############################################################################
@@ -280,7 +324,7 @@ end );
 
 InstallOtherMethod( ExternalSubsetOp,
         "G, xset, start, gens, oprs, opr", true,
-        [ IsGroup, IsExternalSetDefaultRep, IsList,
+        [ IsGroup, IsExternalSet, IsList,
           IsList,
           IsList,
           IsFunction ], 0,
@@ -319,22 +363,31 @@ end );
 
 #############################################################################
 ##
+#M  Size( <xset> ) . . . . . . . . . . . . . . . . . . . for external subsets
+##
+InstallMethod( Size, true, [ IsExternalSubset ], 0,
+    xset -> NrMovedPoints( ImagesSource
+            ( OperationHomomorphismAttr( xset ) ) ) );
+
+#############################################################################
+##
 #M  Enumerator( <xset> )  . . . . . . . . . . . . . . .  for external subsets
 ##
 InstallMethod( Enumerator, true, [ IsExternalSubset ], 0,
     function( xset )
-    local   G,  gens;
+    local   henum,  sublist;
     
-    G := ActingDomain( xset );
-    gens := GeneratorsOfGroup( G );
-    return Concatenation( Orbits( G, xset!.start, gens, gens,
-                   FunctionOperation( xset ) ) );
+    henum := HomeEnumerator( xset );
+    sublist := MovedPoints( ImagesSource
+                       ( OperationHomomorphismAttr( xset ) ) );
+    if IsEmpty( sublist )  then
+        Add( sublist, PositionCanonical( henum, Representative( xset ) ) );
+    fi;
+    return Objectify( NewKind( FamilyObj( henum ), IsSubsetEnumerator ),
+        rec( homeEnumerator := henum,
+                    sublist := BlistList( [ 1 .. Length( henum ) ], sublist )
+             ) );
 end );
-
-InstallMethod( Enumerator, true,
-        [ IsExternalSubset and IsExternalSetByOperatorsRep ], 0,
-    xset -> Concatenation( Orbits( ActingDomain( xset ), xset!.start,
-            xset!.generators, xset!.operators, xset!.funcOperation ) ) );
 
 #############################################################################
 ##
@@ -359,7 +412,7 @@ end );
 
 InstallOtherMethod( ExternalOrbitOp,
         "G, xset, pnt, gens, oprs, opr", true,
-        [ IsGroup, IsExternalSetDefaultRep, IsObject,
+        [ IsGroup, IsExternalSet, IsObject,
           IsList,
           IsList,
           IsFunction ], 0,
@@ -427,7 +480,7 @@ end );
 
 #############################################################################
 ##
-#M  <xorb> < <yorb> . . . . . . . . . . . . . . . . . by ``canon. rep'' test
+#M  <xorb> < <yorb> . . . . . . . . . . . . . . . . .  by ``canon. rep'' test
 ##
 InstallMethod( \<, IsIdentical,
         [ IsExternalOrbit and HasCanonicalRepresentativeOfExternalSet,
@@ -507,7 +560,7 @@ OperationHomomorphism := function( arg )
     return OperationHomomorphismAttr( xset );
 end;
 
-InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSetDefaultRep ], 0,
+InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     function( xset )
     local   G,  D,  opr,  fam,  kind,  hom,  i;
     
@@ -870,7 +923,28 @@ InstallMethod( SparseOperationHomomorphismOp,
           IsList,
           IsFunction ], 0,
     function( G, D, start, gens, oprs, opr )
-    return SparseOperationHomomorphismOp( G, start, gens, oprs, opr );
+    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs;
+
+    start := List( start, p -> PositionCanonical( D, p ) );
+    list := List( gens, gen -> [  ] );
+    ps := 1;
+    while ps <= Length( start )  do
+        p := D[ start[ ps ] ];
+        for i  in [ 1 .. Length( gens ) ]  do
+            gen := oprs[ i ];
+            img := PositionCanonical( D, opr( p, gen ) );
+            pos := Position( start, img );
+            if pos = fail  then
+                Add( start, img );
+                pos := Length( start );
+            fi;
+            list[ i ][ ps ] := pos;
+        od;
+        ps := ps + 1;
+    od;
+    imgs := List( list, PermList );
+    return GroupHomomorphismByImages
+           ( G, SymmetricGroup( Length( start ) ), gens, imgs );
 end );
 
 InstallOtherMethod( SparseOperationHomomorphismOp,
@@ -880,7 +954,7 @@ InstallOtherMethod( SparseOperationHomomorphismOp,
           IsList,
           IsFunction ], 0,
     function( G, start, gens, oprs, opr )
-    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom;
+    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs;
 
     start := ShallowCopy( start );
     list := List( gens, gen -> [  ] );
@@ -900,10 +974,8 @@ InstallOtherMethod( SparseOperationHomomorphismOp,
         ps := ps + 1;
     od;
     imgs := List( list, PermList );
-    hom := OperationHomomorphism( G, start, gens, oprs, opr );
-    SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImages
-            ( G, SymmetricGroup( Length( start ) ), gens, imgs ) );
-    return hom;
+    return GroupHomomorphismByImages
+           ( G, SymmetricGroup( Length( start ) ), gens, imgs );
 end );
 
 #############################################################################
@@ -939,7 +1011,7 @@ end );
 
 InstallOtherMethod( ExternalOrbitsOp,
         "G, xset, gens, oprs, opr", true,
-        [ IsGroup, IsExternalSetDefaultRep,
+        [ IsGroup, IsExternalSet,
           IsList,
           IsList,
           IsFunction ], 0,
@@ -968,12 +1040,20 @@ end );
 #F  Permutation( <arg> )  . . . . . . . . . . . . . . . . . . . . permutation
 ##
 Permutation := function( arg )
-    local   g,  D,  gens,  oprs,  opr,  hom;
+    local   g,  D,  gens,  oprs,  opr,  xset,  hom;
 
     # Get the arguments.
     g := arg[ 1 ];
-    if IsExternalSet( arg[ 2 ] )  then
-        hom := OperationHomomorphism( arg[ 2 ] );
+    if Length( arg ) = 2  and  IsExternalSet( arg[ 2 ] )  then
+        xset := arg[ 2 ];
+        D := Enumerator( xset );
+        if IsExternalSetByOperatorsRep( xset )  then
+            gens := xset!.generators;
+            oprs := xset!.operators;
+            opr  := xset!.funcOperation;
+        else
+            opr := FunctionOperation( xset );
+        fi;
     else
         D := arg[ 2 ];
         if IsDomain( D )  then
@@ -987,16 +1067,17 @@ Permutation := function( arg )
         if Length( arg ) > 3  then
             gens := arg[ 3 ];
             oprs := arg[ 4 ];
-            if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalSetByFilterConstructor
-                       ( IsExternalSetDefaultRep,
-                         GroupByGenerators( gens ), D, gens, oprs, opr ) );
-            fi;
         fi;
     fi;
     
-    if IsBound( hom )  then  return g ^ hom;
-                       else  return PermutationOp( g, D, opr );  fi;
+    if IsBound( gens )  and  not IsIdentical( gens, oprs )  then
+        hom := OperationHomomorphismAttr( ExternalSetByFilterConstructor
+                       ( IsExternalSet,
+                         GroupByGenerators( gens ), D, gens, oprs, opr ) );
+        return ImagesRepresentative( hom, g );
+    else
+        return PermutationOp( g, D, opr );
+    fi;
 end;
                                 
 InstallMethod( PermutationOp, true, [ IsObject, IsList, IsFunction ], 0,
@@ -1030,12 +1111,17 @@ PermutationCycle := function( arg )
 
     # Get the arguments.
     g := arg[ 1 ];
-    if IsExternalSet( arg[ 2 ] )  then
+    if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
         xset := arg[ 2 ];
-        pnt := arg[ 3 ];
-        D := HomeEnumerator( xset );
-        opr := FunctionOperation( xset );
-        hom := OperationHomomorphism( xset );
+        pnt  := arg[ 3 ];
+        D := Enumerator( xset );
+        if IsExternalSetByOperatorsRep( xset )  then
+            gens := xset!.generators;
+            oprs := xset!.operators;
+            opr  := xset!.funcOperation;
+        else
+            opr := FunctionOperation( xset );
+        fi;
     else
         D := arg[ 2 ];
         if IsDomain( D )  then
@@ -1050,15 +1136,14 @@ PermutationCycle := function( arg )
         if Length( arg ) > 4  then
             gens := arg[ 4 ];
             oprs := arg[ 5 ];
-            if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalOrbitOp
-                    ( GroupByGenerators( gens ), D, pnt, gens, oprs, opr ) );
-            fi;
         fi;
     fi;
     
-    if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        g := g ^ hom;
+    if IsBound( gens )  and  not IsIdentical( gens, oprs )  then
+        hom := OperationHomomorphismAttr( ExternalSetByFilterConstructor
+                       ( IsExternalSet,
+                         GroupByGenerators( gens ), D, gens, oprs, opr ) );
+        g := ImagesRepresentative( hom, g );
         return PermutationOp( g, CycleOp( g, PositionCanonical( D, pnt ),
                        OnPoints ), OnPoints );
     else
@@ -1092,14 +1177,17 @@ Cycle := function( arg )
     
     # Get the arguments.
     g := arg[ 1 ];
-    if IsExternalSet( arg[ 2 ] )  then
+    if Length( arg ) = 3  and  IsExternalSet( arg[ 2 ] )  then
         xset := arg[ 2 ];
-        pnt := arg[ 3 ];
-        if HasHomeEnumerator( xset )  then
-            D := HomeEnumerator( xset );
+        pnt  := arg[ 3 ];
+        D := Enumerator( xset );
+        if IsExternalSetByOperatorsRep( xset )  then
+            gens := xset!.generators;
+            oprs := xset!.operators;
+            opr  := xset!.funcOperation;
+        else
+            opr := FunctionOperation( xset );
         fi;
-        opr := FunctionOperation( xset );
-        hom := OperationHomomorphism( xset );
     else
         if Length( arg ) > 2  and
            IsIdentical( FamilyObj( arg[ 2 ] ),
@@ -1121,15 +1209,14 @@ Cycle := function( arg )
         if Length( arg ) > p + 1  then
             gens := arg[ p + 1 ];
             oprs := arg[ p + 2 ];
-            if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalOrbitOp
-                    ( GroupByGenerators( gens ), D, pnt, gens, oprs, opr ) );
-            fi;
         fi;
     fi;
     
-    if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return D{ CycleOp( g ^ hom, PositionCanonical( D, pnt ), OnPoints ) };
+    if IsBound( gens )  and  not IsIdentical( gens, oprs )  then
+        hom := OperationHomomorphismAttr( ExternalOrbitOp
+               ( GroupByGenerators( gens ), D, pnt, gens, oprs, opr ) );
+        return D{ CycleOp( ImagesRepresentative( hom, g ),
+                       PositionCanonical( D, pnt ), OnPoints ) };
     elif IsBound( D )  then
         return CycleOp( g, D, pnt, opr );
     else
@@ -1179,11 +1266,17 @@ Cycles := function( arg )
     
     # Get the arguments.
     g := arg[ 1 ];
-    if IsExternalSet( arg[ 2 ] )  then
+    if Length( arg ) = 2  and  IsExternalSet( arg[ 2 ] )  then
         xset := arg[ 2 ];
         D := Enumerator( xset );
-        opr := FunctionOperation( xset );
-        hom := OperationHomomorphism( xset );
+        if IsExternalSetByOperatorsRep( xset )  then
+            gens := xset!.generators;
+            oprs := xset!.operators;
+            opr  := xset!.funcOperation;
+        else
+            opr := FunctionOperation( xset );
+        fi;
+        D := Enumerator( xset );
     else
         D := arg[ 2 ];
         if IsDomain( D )  then
@@ -1197,17 +1290,15 @@ Cycles := function( arg )
         if Length( arg ) > 3  then
             gens := arg[ 3 ];
             oprs := arg[ 4 ];
-            if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalSetByFilterConstructor
-                       ( IsExternalSetDefaultRep,
-                         GroupByGenerators( gens ), D, gens, oprs, opr ) );
-            fi;
         fi;
     fi;
     
-    if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return List( CyclesOp( g ^ hom, [ 1 .. Length( D ) ], OnPoints ),
-                     cyc -> D{ cyc } );
+    if IsBound( gens )  and  not IsIdentical( gens, oprs )  then
+        hom := OperationHomomorphismAttr( ExternalSetByFilterConstructor
+                       ( IsExternalSet,
+                         GroupByGenerators( gens ), D, gens, oprs, opr ) );
+        return List( CyclesOp( ImagesRepresentative( hom, g ),
+                       [ 1 .. Length( D ) ], OnPoints ), cyc -> D{ cyc } );
     else
         return CyclesOp( g, D, opr );
     fi;
@@ -1240,98 +1331,33 @@ end );
 #F  Blocks( <arg> ) . . . . . . . . . . . . . . . . . . . . . . . . .  blocks
 ##
 Blocks := function( arg )
-    local   G,  D,  seed,  gens,  oprs,  opr,  xset,  p;
-    
-    # Get the arguments.
-    if IsExternalSet( arg[ 1 ] )  then
-        xset := arg[ 1 ];
-        if Length( arg ) > 1  then  seed := arg[ 2 ];
-                              else  seed := [  ];      fi;
-        G := ActingDomain( xset );
-        D := Enumerator( xset );
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-    else
-        G := arg[ 1 ];
-        D := arg[ 2 ];
-        if IsDomain( D )  then
-            D := Enumerator( D );
-        fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            opr := arg[ Length( arg ) ];
-            p := 0;
-        else
-            opr := OnPoints;
-            p := 1;
-        fi;
-        if Length( arg ) mod 2 = p  then  seed := arg[ 3 ];  p := 4;
-                                    else  seed := [  ];      p := 3;  fi;
-        if Length( arg ) > p  then
-            gens := arg[ p     ];
-            oprs := arg[ p + 1 ];
-        fi;
-    fi;
-    
-    if not IsBound( gens )  then
-        gens := GeneratorsOfGroup( G );
-        oprs := gens;
-    fi;
-    return BlocksOp( G, D, seed, gens, oprs, opr );
+    return OrbitishOperation( BlocksOp, IsIdentical, true, arg );
 end;
     
+InstallOtherMethod( BlocksOp,
+        "G, D, [  ], gens, oprs, opr", true,
+        [ IsGroup, IsList, IsList and IsEmpty,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, D, noseed, gens, oprs, opr )
+    return BlocksOp( G, D, gens, oprs, opr );
+end );
+
 #############################################################################
 ##
 #F  MaximalBlocks( <arg> )  . . . . . . . . . . . . . . . . .  maximal blocks
 ##
 MaximalBlocks := function( arg )
-    local   G,  D,  seed,  gens,  oprs,  opr,  xset,  p;
-    
-    # Get the arguments.
-    if IsExternalSet( arg[ 1 ] )  then
-        xset := arg[ 1 ];
-        if Length( arg ) > 1  then  seed := arg[ 2 ];
-                              else  seed := false;     fi;
-        G := ActingDomain( xset );
-        D := Enumerator( xset );
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-    else
-        G := arg[ 1 ];
-        D := arg[ 2 ];
-        if IsDomain( D )  then
-            D := Enumerator( D );
-        fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            opr := arg[ Length( arg ) ];
-            p := 0;
-        else
-            opr := OnPoints;
-            p := 1;
-        fi;
-        if Length( arg ) mod 2 = p  then  seed := arg[ 3 ];  p := 4;
-                                    else  seed := false;     p := 3;  fi;
-        if Length( arg ) > p  then
-            gens := arg[ p     ];
-            oprs := arg[ p + 1 ];
-        fi;
-    fi;
-    
-    if not IsBound( gens )  then
-        gens := GeneratorsOfGroup( G );
-        oprs := gens;
-    fi;
-    return MaximalBlocksOp( G, D, seed, gens, oprs, opr );
+    return OrbitishOperation( MaximalBlocksOp, IsIdentical, true, arg );
 end;
+
+InstallOtherMethod( MaximalBlocksOp,
+        "G, D, gens, oprs, opr", true,
+        OrbitsishReq, 0,
+    function( G, D, gens, oprs, opr )
+    return MaximalBlocksOp( G, D, [  ], gens, oprs, opr );
+end );
 
 #############################################################################
 ##
@@ -1339,57 +1365,7 @@ end;
 #F  OrbitLength( <arg> )  . . . . . . . . . . . . . . . . . . .  orbit length
 ##
 OrbitLength := function( arg )
-    local   G,  D,  pnt,  gens,  oprs,  opr,  xset,  p;
-    
-    # Get the arguments.
-    if IsExternalSet( arg[ 1 ] )  then
-        xset := arg[ 1 ];
-        pnt := arg[ 2 ];
-        G := ActingDomain( xset );
-        if HasHomeEnumerator( xset )  then
-            D := HomeEnumerator( xset );
-        fi;
-        if IsExternalSetByOperatorsRep( xset )  then
-            gens := xset!.generators;
-            oprs := xset!.operators;
-            opr  := xset!.funcOperation;
-        else
-            opr := FunctionOperation( xset );
-        fi;
-    else
-        G := arg[ 1 ];
-        if Length( arg ) > 2  and
-           IsIdentical( FamilyObj( arg[ 2 ] ),
-                        CollectionsFamily( FamilyObj( arg[ 3 ] ) ) )  then
-            D := arg[ 2 ];
-            if IsDomain( D )  then
-                D := Enumerator( D );
-            fi;
-            p := 3;
-        else
-            p := 2;
-        fi;
-        pnt := arg[ p ];
-        if Length( arg ) > p + 1  then
-            gens := arg[ p + 1 ];
-            oprs := arg[ p + 2 ];
-        fi;
-        if IsFunction( arg[ Length( arg ) ] )  then
-            opr := arg[ Length( arg ) ];
-        else
-            opr := OnPoints;
-        fi;
-    fi;
-    
-    if not IsBound( gens )  then
-        gens := GeneratorsOfGroup( G );
-        oprs := gens;
-    fi;
-    if IsBound( D )  then
-        return OrbitLengthOp( G, D, pnt, gens, oprs, opr );
-    else
-        return OrbitLengthOp( G, pnt, gens, oprs, opr );
-    fi;
+    return OrbitishOperation( OrbitLengthOp, IsCollsElms, false, arg );
 end;
 
 InstallMethod( OrbitLengthOp, true, OrbitishReq, 0,
@@ -1435,7 +1411,7 @@ CycleLength := function( arg )
             D := HomeEnumerator( xset );
         fi;
         opr := FunctionOperation( xset );
-        hom := OperationHomomorphism( xset );
+        hom := OperationHomomorphismAttr( xset );
     else
         if Length( arg ) > 2  and
            IsIdentical( FamilyObj( arg[ 2 ] ),
@@ -1458,14 +1434,15 @@ CycleLength := function( arg )
             gens := arg[ p + 1 ];
             oprs := arg[ p + 2 ];
             if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalOrbitOp
+                hom := OperationHomomorphismAttr( ExternalOrbitOp
                     ( GroupByGenerators( gens ), D, pnt, gens, oprs, opr ) );
             fi;
         fi;
     fi;
     
     if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return CycleLengthOp( g ^ hom, PositionCanonical( D, pnt ), OnPoints );
+        return CycleLengthOp( ImagesRepresentative( hom, g ),
+                       PositionCanonical( D, pnt ), OnPoints );
     elif IsBound( D )  then
         return CycleLengthOp( g, D, pnt, opr );
     else
@@ -1492,7 +1469,7 @@ CycleLengths := function( arg )
         xset := arg[ 2 ];
         D := Enumerator( xset );
         opr := FunctionOperation( xset );
-        hom := OperationHomomorphism( xset );
+        hom := OperationHomomorphismAttr( xset );
     else
         D := arg[ 2 ];
         if IsDomain( D )  then
@@ -1507,15 +1484,16 @@ CycleLengths := function( arg )
             gens := arg[ 3 ];
             oprs := arg[ 4 ];
             if not IsIdentical( gens, oprs )  then
-                hom := OperationHomomorphism( ExternalSetByFilterConstructor
-                       ( IsExternalSetDefaultRep,
+                hom := OperationHomomorphismAttr
+                       ( ExternalSetByFilterConstructor( IsExternalSet,
                          GroupByGenerators( gens ), D, gens, oprs, opr ) );
             fi;
         fi;
     fi;
     
     if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        return CycleLengthsOp( g ^ hom, [ 1 .. Length( D ) ], OnPoints );
+        return CycleLengthsOp( ImagesRepresentative( hom, g ),
+                       [ 1 .. Length( D ) ], OnPoints );
     else
         return CycleLengthsOp( g, D, opr );
     fi;
@@ -1670,7 +1648,7 @@ RepresentativeOperation := function( arg )
         else
             opr := FunctionOperation( xset );
         fi;
-        hom := OperationHomomorphism( xset );
+        hom := OperationHomomorphismAttr( xset );
     else
         G := arg[ 1 ];
         if Length( arg ) > 2  and
@@ -1694,21 +1672,17 @@ RepresentativeOperation := function( arg )
         if Length( arg ) > p + 2  then
             gens := arg[ p + 2 ];
             oprs := arg[ p + 3 ];
-            if     not IsPcgs( gens )
-               and not (     IsIdentical( GeneratorsOfGroup( G ), gens )
-                         and IsIdentical( gens, oprs ) )  then
+            if not IsPcgs( gens )  and  not IsIdentical( gens, oprs )  then
                 if not IsBound( D )  then
                     D := OrbitOp( G, d, gens, oprs, opr );
                 fi;
-                hom := OperationHomomorphism( ExternalOrbitOp
+                hom := OperationHomomorphismAttr( ExternalOrbitOp
                        ( G, D, d, gens, oprs, opr ) );
             fi;
         fi;
     fi;
     
-    if IsBound( gens )  and  IsPcgs( gens )  then
-        return RepresentativeOperation( G, D, d, e, gens, oprs, opr );
-    elif IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
+    if IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
         d := PositionCanonical( D, d );  e := PositionCanonical( D, e );
         rep := RepresentativeOperationOp( ImagesSource( hom ), d, e,
                        OnPoints );
@@ -1717,7 +1691,11 @@ RepresentativeOperation := function( arg )
         fi;
         return rep;
     elif IsBound( D )  then
-        return RepresentativeOperationOp( G, D, d, e, opr );
+        if IsBound( gens )  and  IsPcgs( gens )  then
+            return RepresentativeOperation( G, D, d, e, gens, oprs, opr );
+        else
+            return RepresentativeOperationOp( G, D, d, e, opr );
+        fi;
     else
         return RepresentativeOperationOp( G, d, e, opr );
     fi;
@@ -1845,7 +1823,7 @@ InstallOtherMethod( StabilizerOp,
     local   hom;
     
     if not IsIdentical( gens, oprs )  then
-        hom := OperationHomomorphism( ExternalOrbitOp
+        hom := OperationHomomorphismAttr( ExternalOrbitOp
                        ( G, D, d, gens, oprs, opr ) );
         d := PositionCanonical( D[ d ] );
         return PreImage( hom, StabilizerOp
@@ -2054,7 +2032,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     xset := hom!.externalSet;
     return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
         FunctionOperation( xset ) ),
-        MovedPoints( ImagesSource( AsGroupGeneralMappingByImages(hom) ) ) );
+        MovedPoints( ImagesSource( AsGroupGeneralMappingByImages( hom ) ) ) );
 end );
 
 #############################################################################

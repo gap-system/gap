@@ -305,7 +305,7 @@ InstallOtherMethod( SplitExtension,
     0,
 function( G, aut, N )
     local pcgsG, fpg, n, gensG, pcgsN, fpn, d, gensN, F, gensF, relators,
-          rel, new, g, n, e, t, l, i, j, k, H;
+          rel, new, g, n, e, t, l, i, j, k, H, m, gensH,hom1,hom2;
     
     pcgsG := Pcgs( G );
     fpg   := FpGroupPcGroup( G );
@@ -332,12 +332,12 @@ function( G, aut, N )
         for j in [1..d] do
 
             # left hand side
-            l := Comm( gensN[j], gensG[i] );
+            l := Comm( gensF[n+j], gensF[i] );
 
             # right hand side
             g := Image( aut, pcgsG[i] );
-            n := Image( g, pcgsN[j] );
-            e := ExponentsOfPcElement( pcgsN, (pcgsN[j]^-1 * n)^-1 );
+            m := Image( g, pcgsN[j] );
+            e := ExponentsOfPcElement( pcgsN, (pcgsN[j]^-1 * m)^-1 );
             t := One( F );
             for k in [1..d] do
                 t := t * gensF[n+k]^e[k];
@@ -355,6 +355,18 @@ function( G, aut, N )
     od;
 
     H := PcGroupFpGroup( rec( group := F, relators := relators ) );
+    SetFilterObj(H,IsSemidirectProductGroups);
+    gensH:=GeneratorsOfGroup(H);
+    hom1:=GroupHomomorphismByImages(G,H,pcgsG,gensH{[1..Length(pcgsG)]});
+    SetKernelOfMultiplicativeGeneralMapping(hom1,TrivialSubgroup(G));
+    hom2:=GroupHomomorphismByImages(N,H,pcgsN,
+            gensH{[Length(pcgsG)+1..Length(gensH)]});
+    SetKernelOfMultiplicativeGeneralMapping(hom2,TrivialSubgroup(N));
+    SetEmbeddings(H,[hom1,hom2]);
+    hom1:=GroupHomomorphismByImages(H,G,gensH,
+            Concatenation(pcgsG,List(pcgsN,i->One(G))));
+    SetKernelOfMultiplicativeGeneralMapping(hom1,Image(hom2));
+    SetProjections(H,[hom1]);
     return H;
 end);
 

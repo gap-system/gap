@@ -281,23 +281,6 @@ end );
 #############################################################################
 ##
 
-#M  DepthOfPcElement( <modulo-pcgs>, <elm>, <from> )
-##
-InstallOtherMethod( DepthOfPcElement,
-    "pcgs modulo pcgs, ExponentsOfPcElement",
-    function(F1,F2,F3) return IsCollsElms(F1,F2); end,
-    [ IsModuloPcgs,
-      IsObject,
-      IsInt ],
-    0,
-
-function( pcgs, elm, from )
-    return DepthVector( ExponentsOfPcElement( pcgs, elm ), from );
-end );
-
-
-#############################################################################
-##
 #M  ExponentOfPcElement( <modulo-pcgs>, <elm>, <pos> )
 ##
 InstallOtherMethod( ExponentOfPcElement,
@@ -374,7 +357,7 @@ function( pcgs, elm )
     local   exp,  dep;
 
     exp := ExponentsOfPcElement( pcgs, elm );
-    dep := DepthVector(exp);
+    dep := PositionNot( exp, 0 );
     if Length(exp) < dep  then
         return fail;
     else
@@ -594,7 +577,7 @@ function( pcgs, elm )
     if d > Length(num)  then
         return Length(pcgs)+1;
     elif d in pcgs!.moduloDepths  then
-        return DepthVector( ExponentsOfPcElement( pcgs, elm ) );
+        return PositionNot( ExponentsOfPcElement( pcgs, elm ), 0 );
     else
         return pcgs!.depthMap[d];
     fi;

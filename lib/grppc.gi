@@ -800,14 +800,30 @@ end );
 #M  Centralizer( <G>, <g> ) . . . . . . . . . . . . . .  using affine methods
 ##
 InstallMethod( Centralizer,
-    "pcgs computable groups",
+    "pcgs computable group and element",
     IsCollsElms,
     [ IsGroup and IsPcgsComputable and IsFinite,
       IsMultiplicativeElementWithInverse ],
     0,  # in solvable permutation groups, backtrack seems preferable
         
-    function( G, g )
-    return ClassesSolvableGroup( G, G, true, 0, g );
+function( G, g )
+    return ClassesSolvableGroup( G, Group( g ), true, 0, g );
+end );
+
+InstallMethod( Centralizer,
+    "pcgs computable groups",
+    IsIdentical,
+    [ IsGroup and IsPcgsComputable and IsFinite,
+      IsGroup and IsPcgsComputable and IsFinite ],
+    0,  # in solvable permutation groups, backtrack seems preferable
+
+function( G, H )
+    local   h;
+    
+    for h  in MinimalGeneratingSet( H )  do
+        G := ClassesSolvableGroup( G, H, true, 0, h );
+    od;
+    return G;
 end );
 
 #############################################################################

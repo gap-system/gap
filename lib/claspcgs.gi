@@ -10,36 +10,6 @@
 ##  functions   rely only on   the existence of pcgs,  not  on the particular
 ##  representation of the groups.
 ##
-##  $Log$
-##  Revision 4.9  1997/02/07 18:24:03  htheisse
-##  fixed a bug and tidied up a bit
-##
-##  Revision 4.8  1997/01/30 09:14:25  htheisse
-##  re-introduced induced pcgs wrt home pcgs in one place
-##
-##  Revision 4.7  1997/01/28 12:50:22  htheisse
-##  avoided setting of `HomePcgs'
-##
-##  Revision 4.6  1997/01/27 11:20:39  htheisse
-##  cleaned up the code
-##
-##  Revision 4.5  1997/01/20 16:51:49  htheisse
-##  introduced an awful bad hack
-##
-##  Revision 4.4  1997/01/20 16:19:52  htheisse
-##  added methods for induced and modulo perm pcgs
-##  used them in conjugacy class routines for soluble groups
-##
-##  Revision 4.3  1997/01/13 17:04:04  htheisse
-##  added class/centralizer functions for soluble groups
-##
-##  Revision 4.2  1997/01/11 13:02:42  htheisse
-##  fixed an error in `CentralStepRatClPGroup'; cleaned up the code
-##
-##  Revision 4.1  1997/01/10 08:45:35  htheisse
-##  added conjugacy class functions for perm groups and pcgs groups
-##
-##
 Revision.claspcgs_gi :=
     "@(#)$Id$";
 
@@ -163,14 +133,14 @@ end;
 
 #############################################################################
 ##
-#F  KernelHcommaC( <N>, <C>, <h> )  . . . . . . . . . . . . . . . . . . local
+#F  KernelHcommaC( <N>, <h>, <C> )  . . . . . . . . . . . . . . . . . . local
 ##
 ##  Given a homomorphism C -> N, c |-> [h,c],  this function determines (a) a
 ##  vector space decomposition N =  [h,C] + K with  projection onto K and (b)
 ##  the  ``kernel'' S <  C which plays   the role of  C_G(h)  in lemma 3.1 of
 ##  [Mecky, Neub\"user, Bull. Aust. Math. Soc. 40].
 ##
-KernelHcommaC := function( N, C, h )
+KernelHcommaC := function( N, h, C )
     local   i,  tmp,  v;
     
     N!.subspace := SubspaceVectorSpaceGroup( N, RelativeOrders( N )[ 1 ],
@@ -222,9 +192,9 @@ end;
     
 #############################################################################
 ##
-#F  CentralStepRatClPGroup( <G>, <L>, <N>, <mK>, <mL>, <cl> ) . . . . . local
+#F  CentralStepRatClPGroup( <G>, <N>, <mK>, <mL>, <cl> )  . . . . . . . local
 ##
-CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
+CentralStepRatClPGroup := function( G, N, mK, mL, cl )
     local  h,           # preimage of `Representative( <cl> )' under <hom>
            candexps,    # list of exponent vectors for <h> mod <candidates>
            classes,     # the resulting list of classes
@@ -296,8 +266,10 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
         if IsBound( cl!.kernel )  then
             N := cl!.kernel;
         else
-            N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod L;
-            N!.CmodL := ExtendedPcgs( L, KernelHcommaC( N, N!.CmodK, h ) );
+            N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod
+                        DenominatorOfModuloPcgs( N );
+            N!.CmodL := ExtendedPcgs( DenominatorOfModuloPcgs( N ),
+                                KernelHcommaC( N, h, N!.CmodK ) );
         fi;
         if IsBound( cl!.candidates )  then
             cl!.candidates := List( cl!.candidates, c ->
@@ -499,9 +471,9 @@ end;
 
 #############################################################################
 ##
-#F  CentralStepClEANS( <G>, <K>, <L>, <N>, <cl> ) . . . . . . . . . . . local
+#F  CentralStepClEANS( <H>, <U>, <N>, <cl> )  . . . . . . . . . . . . . local
 ##
-CentralStepClEANS := function( G, K, L, N, cl )
+CentralStepClEANS := function( H, U, N, cl )
     local  classes,    # classes to be constructed, the result
            field,      # field over which <N> is a vector space
            h,          # preimage `Representative( cl )' under <hom>
@@ -511,22 +483,24 @@ CentralStepClEANS := function( G, K, L, N, cl )
     
     field := GF( RelativeOrders( N )[ 1 ] );
     h := Representative( cl );
-    N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod L;
-    N!.CmodL := ExtendedPcgs( L, KernelHcommaC( N, N!.CmodK, h ) );
-    C := SubgroupNC( G, N!.CmodL );
+    N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod
+                DenominatorOfModuloPcgs( N!.capH );
+    N!.CmodL := ExtendedPcgs( DenominatorOfModuloPcgs( N!.capH ),
+                        KernelHcommaC( N, h, N!.CmodK ) );
+    C := SubgroupNC( H, N!.CmodL );
     SetPcgs( C, N!.CmodL );
     
     classes := [  ];
     if IsBound( cl!.candidates )  then
         gens := N!.CmodK{ N!.subspace.needed };
-        if IsIdentical( FamilyObj( G ), FamilyObj( cl!.candidates ) )  then
+        if IsIdentical( FamilyObj( U ), FamilyObj( cl!.candidates ) )  then
             for c  in cl!.candidates  do
                 exp := ExponentsOfPcElement( N, LeftQuotient( h, c ) )
                        * One( field );
                 w := exp * N!.subspace.projection;
                 exp{ N!.subspace.baseComplement } :=
                   w - exp{ N!.subspace.baseComplement };
-                c := ConjugacyClass( G, h * PcElementByExponents
+                c := ConjugacyClass( U, h * PcElementByExponents
                              ( N, N{ N!.subspace.baseComplement }, w ) );
                 SetStabilizerOfExternalSet( c, C );
                 c!.operator := WordVector( gens,
@@ -535,16 +509,16 @@ CentralStepClEANS := function( G, K, L, N, cl )
                 Add( classes, c );
             od;
         else
-            c := ConjugacyClass( G, cl!.candidates );
+            c := ConjugacyClass( U, cl!.candidates );
             SetStabilizerOfExternalSet( c, C );
-            c!.operator := One( G );
+            c!.operator := One( H );
             Add( classes, c );
         fi;
         
     else
         gens := N{ N!.subspace.baseComplement };
         for w  in field ^ Length( gens )  do
-            c := ConjugacyClass( G, h * PcElementByExponents( N, gens, w ) );
+            c := ConjugacyClass( U, h * PcElementByExponents( N, gens, w ) );
             SetStabilizerOfExternalSet( c, C );
             Add( classes, c );
         od;
@@ -554,9 +528,9 @@ end;
 
 #############################################################################
 ##
-#F  CorrectConjugacyClass( <orb>, <G>, <h>, <n>, <N>, <L>, <cNh> )   cf. MN89
+#F  CorrectConjugacyClass( <orb>, <H>, <U>, <h>, <n>, <N>, <cNh> )   cf. MN89
 ##
-CorrectConjugacyClass := function( orb, G, h, n, N, L, cNh )
+CorrectConjugacyClass := function( orb, H, U, h, n, N, cNh )
     local   cl,  stab,  comm,  s,  C;
     
     stab := ShallowCopy( Pcgs( StabilizerOfExternalSet( orb ) ) );
@@ -568,21 +542,21 @@ CorrectConjugacyClass := function( orb, G, h, n, N, L, cNh )
     comm := comm * N!.subspace.inverse;
     for s  in [ 1 .. Length( comm ) ]  do
         stab[ s ] := stab[ s ] / PcElementByExponents
-          ( N, N{ N!.subspace.needed }, comm[ s ] );
+          ( N!.capH, N!.capH{ N!.subspace.needed }, comm[ s ] );
     od;
-    cl := ConjugacyClass( G, h * n );
-    Append( stab, cNh );
-    C := SubgroupNC( G, stab );
-    SetPcgs( C, ExtendedPcgs( L, stab ) );
+    cl := ConjugacyClass( U, h * n );
+    stab := ExtendedPcgs( cNh, stab );
+    C := SubgroupNC( H, stab );
+    SetPcgs( C, stab );
     SetStabilizerOfExternalSet( cl, C );
     return cl;
 end;
 
 #############################################################################
 ##
-#F  GeneralStepClEANS( <G>, <K>, <L>, <N>, <cl> ) . . . . . . . . . . . local
+#F  GeneralStepClEANS( <H>, <U>, <N>, <cl> )  . . . . . . . . . . . . . local
 ##
-GeneralStepClEANS := function( G, K, L, N, cl )
+GeneralStepClEANS := function( H, U, N, cl )
     local  classes,    # classes to be constructed, the result
            field,      # field over which <N> is a vector space
            h,          # preimage `Representative( cl )' under <hom>
@@ -604,19 +578,17 @@ GeneralStepClEANS := function( G, K, L, N, cl )
     h := Representative( cl );
     
     # Determine the subspace $[h,N]$ and calculate the centralizer of <h>.
-    cNh := KernelHcommaC( N, N, h );
+    cNh := ExtendedPcgs( DenominatorOfModuloPcgs( N!.capH ),
+                   KernelHcommaC( N, h, N!.capH ) );
     r := Length( N!.subspace.baseComplement );
     ran := [ 1 .. r ];
     
     # Construct matrices for the affine operation on $N/[h,N]$.
     aff := AffineSpace( field ^ r );
     gens := Pcgs( C );
-    if gens = fail  then
-        gens := GeneratorsOfGroup( C );
-    fi;
     imgs := [  ];
     for c  in gens  do
-        if c in K  then
+        if c in GroupOfPcgs( NumeratorOfModuloPcgs( N ) )  then
             M := IdentityMat( r + 1, field );
         else
             M := [  ];
@@ -635,7 +607,7 @@ GeneralStepClEANS := function( G, K, L, N, cl )
 
     classes := [  ];
     if IsBound( cl!.candidates )  then
-        if IsIdentical( FamilyObj( G ), FamilyObj( cl!.candidates ) )  then
+        if IsIdentical( FamilyObj( U ), FamilyObj( cl!.candidates ) )  then
             Rep := CanonicalRepresentativeOfExternalSet;
         else
             cl!.candidates := [ cl!.candidates ];
@@ -652,9 +624,9 @@ GeneralStepClEANS := function( G, K, L, N, cl )
             pos := Position( cls, rep );
             if pos = fail  then
                 Add( cls, rep );
-                c := CorrectConjugacyClass( orb, G, h, rep, N, L, cNh );
+                c := CorrectConjugacyClass( orb, H, U, h, rep, N, cNh );
             else
-                c := ConjugacyClass( G, h * rep );
+                c := ConjugacyClass( U, h * rep );
                 SetStabilizerOfExternalSet( c,
                         StabilizerOfExternalSet( classes[ pos ] ) );
             fi;
@@ -682,7 +654,7 @@ GeneralStepClEANS := function( G, K, L, N, cl )
         for orb  in orbs  do
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                        CanonicalRepresentativeOfExternalSet( orb ){ ran } );
-            c := CorrectConjugacyClass( orb, G, h, rep, N, L, cNh );
+            c := CorrectConjugacyClass( orb, H, U, h, rep, N, cNh );
             Add( classes, c );
         od;
     fi;
@@ -694,15 +666,16 @@ end;
 #F  ClassesSolvableGroup( <H>, <U>, <limit>, <mode>, <cands> )  cool function
 ##
 ClassesSolvableGroup := function( arg )
-    local  G,           # the supergroup (of <H> and <U>)
+    local  G,  home,    # the supergroup (of <H> and <U>), the home pcgs
            U,           # group in which to find the <H>-classes
-           H,           # group operating on <U>
+           H,  Hp,      # group operating on <U>, a pcgs for <H>
            limit,       # limit on order of representatives
            mode,        # LSB: ratCl | power | test :MSB
            candidates,  # candidates to be replaced by their canonical reps.
            eas, step,   # elementary abelian series in <G> through <U>
            K,    L,     # members of <eas>
            Kp,mK,Lp,mL, # induced and modulo pcgs's
+           KcapH,LcapH, # pcgs's of intersections with <H>
            N,   cent,   # elementary abelian factor, for affine action
            cls, newcls, # classes in range/source of homomorphism
            tra, exp,    # transversal and exponents for candidates
@@ -718,13 +691,14 @@ ClassesSolvableGroup := function( arg )
     U     := arg[ 2 ];
     limit := arg[ 3 ];
     mode  := arg[ 4 ];
-    if H <> U  then
-        Error( "not yet implemented" );
-    elif limit = true  then
+    if limit = true  then
         limit := rec( order := infinity,
                        size := 0 );
     fi;
-    G := ClosureGroup( H, U );
+    if H = U  then  G := H;
+              else  G := ClosureGroup( H, U );  fi;
+    home := HomePcgs( G );
+    Hp := InducedPcgsByGenerators( home, GeneratorsOfGroup( H ) );
     if Length( arg ) = 5  then  candidates := arg[ 5 ];
                           else  candidates := false;     fi;
     
@@ -760,27 +734,39 @@ ClassesSolvableGroup := function( arg )
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
         eas := PCentralSeries( G, p );
-        cent := true;
+        cent := ReturnTrue;
     elif mode mod 2 = 1  then  # rational classes
         Error( "<G> must be a p-group" );
     else
         eas := ElementaryAbelianSeries( G );
-        # eas := ElementaryAbelianSeries( [ G, U, TrivialSubgroup( G ) ] );
-        cent := false;
+        cent := function( cl, N, L )
+            return ForAll( N, k -> ForAll
+                           ( Pcgs( StabilizerOfExternalSet( cl ) )
+                             {[1..Length(Pcgs(StabilizerOfExternalSet(cl)))
+                               -Length(InducedPcgsWrtHomePcgs(L))]},
+                             c -> Comm( k, c ) in L ) );
+        end;
     fi;
 
     # Initialize the algorithm for the trivial group.
-    step := Position( eas, U );
+    step := 1;
+    while IsSubset( eas[ step + 1 ], U )  do
+        step := step + 1;
+    od;
     L  := eas[ step ];
     Lp := InducedPcgsWrtHomePcgs( L );
+    if not IsIdentical( G, H )  then
+        LcapH := NormalIntersectionPcgs( home, Hp, Lp );
+    fi;
     if    mode mod 2 = 1  # rational classes
        or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
-        mL := ModuloParentPcgs( Lp );
+        mL := ModuloPcgsByPcSequenceNC( home, Pcgs( U ), Lp );
     fi;
     if     candidates <> false  # centralizer calculation
        and not IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
         cl := ConjugacyClass( U, candidates );
         SetStabilizerOfExternalSet( cl, H );
+        SetPcgs( StabilizerOfExternalSet( cl ), Hp );
         tra := One( U );
     elif mode mod 2 = 1  then  # rational classes
         cl := RationalClass( U, One( U ) );
@@ -815,10 +801,17 @@ ClassesSolvableGroup := function( arg )
         Lp := InducedPcgsWrtHomePcgs( L );
         N  := Kp mod Lp;
         SetFilterObj( N, IsPcgs );
+        if not IsIdentical( G, H )  then
+            KcapH   := LcapH;
+            LcapH   := NormalIntersectionPcgs( home, Hp, Lp );
+            N!.capH := KcapH mod LcapH;
+        else
+            N!.capH := N;
+        fi;
         if    mode mod 2 = 1   # rational classes; construct the power tree
            or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
             mK := mL;
-            mL := ModuloParentPcgs( Lp );
+            mL := ModuloPcgsByPcSequenceNC( home, Pcgs( U ), Lp );
         fi;
         
         # Identification of classes.
@@ -861,15 +854,11 @@ ClassesSolvableGroup := function( arg )
                 od;
                 
                 if mode mod 2 = 1  then  # rational classes
-                    newcls := CentralStepRatClPGroup
-                              ( U, Lp, N, mK, mL, cl );
-                elif cent  or  ForAll( N, k -> ForAll
-                  ( Pcgs( StabilizerOfExternalSet( cl ) )
-                  {[1..Length(Pcgs(StabilizerOfExternalSet(cl)))-Length(Lp)]},
-                   c -> Comm( k, c ) in L ) )  then
-                    newcls := CentralStepClEANS( U, K, Lp, N, cl );
+                    newcls := CentralStepRatClPGroup( U, N, mK, mL, cl );
+                elif cent( cl, N, L )  then
+                    newcls := CentralStepClEANS( H, U, N, cl );
                 else
-                    newcls := GeneralStepClEANS( U, K, Lp, N, cl );
+                    newcls := GeneralStepClEANS( H, U, N, cl );
                 fi;
                 
                 # Update <cls>, <tra> and <exp>.
@@ -892,13 +881,10 @@ ClassesSolvableGroup := function( arg )
 
         elif candidates <> false  then  # centralizer calculation
             cls[ 1 ]!.candidates := Representative( cls[ 1 ] );
-            if cent  or  ForAll( N, k -> ForAll
-               ( Pcgs( StabilizerOfExternalSet( cls[ 1 ] ) )
-                 {[1..Length(Pcgs(StabilizerOfExternalSet(cl)))-Length(Lp)]},
-                 c -> Comm( k, c ) in L ) )  then
-                cls := CentralStepClEANS( U, K, Lp, N, cls[ 1 ] );
+            if cent( cls[ 1 ], N, L )  then
+                cls := CentralStepClEANS( H, U, N, cls[ 1 ] );
             else
-                cls := GeneralStepClEANS( U, K, Lp, N, cls[ 1 ] );
+                cls := GeneralStepClEANS( H, U, N, cls[ 1 ] );
             fi;
             tra := tra * cls[ 1 ]!.operator;
             
@@ -911,7 +897,7 @@ ClassesSolvableGroup := function( arg )
                     SetRepresentative( cl!.power, PcElementByExponents( mK,
                         ExponentsOfPcElement( mK, Representative(cl!.power))));
                 fi;
-                new := CentralStepRatClPGroup( U, Lp, N, mK, mL, cl );
+                new := CentralStepRatClPGroup( U, N, mK, mL, cl );
                 ord := OrderModK( Representative( new[ 1 ] ), mL );
                 if     ord <= limit.order
                    and (    limit.size = 0
@@ -922,7 +908,7 @@ ClassesSolvableGroup := function( arg )
                       else
                         cl!.power!.candidates := [ ( Representative(new[1]) ^
                             cl!.power!.operator ) ^ (p*cl!.power!.exponent) ];
-                        power := CentralStepRatClPGroup( U, Lp, N, mK, mL,
+                        power := CentralStepRatClPGroup( U, N, mK, mL,
                                          cl!.power )[ 1 ];
                         power!.operator := cl!.power!.operator
                                              * power!.operator;
@@ -941,13 +927,10 @@ ClassesSolvableGroup := function( arg )
         else
             newcls := [  ];
             for cl  in cls  do
-                if cent  or  ForAll( N, k -> ForAll
-                  ( Pcgs( StabilizerOfExternalSet( cl ) )
-                  {[1..Length(Pcgs(StabilizerOfExternalSet(cl)))-Length(Lp)]},
-                   c -> Comm( k, c ) in L ) )  then
-                    Append( newcls, CentralStepClEANS( U, K, Lp, N, cl ) );
+                if cent( cl, N, L )  then
+                    Append( newcls, CentralStepClEANS( H, U, N, cl ) );
                 else
-                    Append( newcls, GeneralStepClEANS( U, K, Lp, N, cl ) );
+                    Append( newcls, GeneralStepClEANS( H, U, N, cl ) );
                 fi;
             od;
             cls := newcls;

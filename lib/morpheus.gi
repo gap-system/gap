@@ -506,10 +506,9 @@ local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
 
   # get standard generating system
   if not IsPermGroup(G) then
-    Error("works only for perm groups");
-    #p:=PermGroup(G);
-    #gens:=IndependentGeneratorsAbelianPermGroup(p);
-    #gens:=List(gens,i->Image(p.bijection,i));
+    p:=IsomorphismPermGroup(G);
+    gens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    gens:=List(gens,i->PreImagesRepresentative(p,i));
   else
     gens:=IndependentGeneratorsAbelianPermGroup(G);
   fi;
@@ -611,20 +610,18 @@ local o,p,gens,hens;
 
   # get standard generating system
   if not IsPermGroup(G) then
-    Error("works only for perm groups");
-    #p:=PermGroup(G);
-    #gens:=IndependentGeneratorsAbelianPermGroup(p);
-    #gens:=List(gens,i->Image(p.bijection,i));
+    p:=IsomorphismPermGroup(G);
+    gens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    gens:=List(gens,i->PreImagesRepresentative(p,i));
   else
     gens:=IndependentGeneratorsAbelianPermGroup(G);
   fi;
 
   # get standard generating system
   if not IsPermGroup(H) then
-    Error("works only for perm groups");
-    #p:=PermGroup(H);
-    #hens:=IndependentGeneratorsAbelianPermGroup(p);
-    #hens:=List(hens,i->Image(p.bijection,i));
+    p:=IsomorphismPermGroup(H);
+    hens:=IndependentGeneratorsAbelianPermGroup(Image(p));
+    hens:=List(hens,i->PreImagesRepresentative(p,i));
   else
     hens:=IndependentGeneratorsAbelianPermGroup(H);
   fi;

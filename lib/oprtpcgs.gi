@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.17  1997/02/12 16:30:23  htheisse
+#H  corrected enumerators for external subsets; cleaned up the code
+#H
 #H  Revision 4.16  1997/01/28 12:50:24  htheisse
 #H  avoided setting of `HomePcgs'
 #H
@@ -206,9 +209,15 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     G    := ActingDomain( xset );
     D    := HomeEnumerator( xset );
     pnt  := Representative( xset );
-    pcgs := xset!.generators;
-    oprs := xset!.operators;
-    opr  := xset!.funcOperation;
+    if IsExternalSetDefaultRep( xset )  then
+        pcgs := Pcgs( G );
+        oprs := pcgs;
+        opr  := FunctionOperation( xset );
+    else
+        pcgs := xset!.generators;
+        oprs := xset!.operators;
+        opr  := xset!.funcOperation;
+    fi;
     
     orb := [ pnt ];
     len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
@@ -293,7 +302,7 @@ end;
 #M  Enumerator( <xorb> )  . . . . . . . . . . . . . . . . . . . . . . . . . .
 ##
 InstallMethod( Enumerator, "<xorb by pcgs>", true,
-        [ IsExternalOrbit and IsExternalSetByPcgsRep ], 0,
+        [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     local   orbstab;
     
@@ -309,7 +318,7 @@ end );
 #M  CanonicalRepresentativeOfExternalSet( <xorb> )  . . . . . . . . . . . . .
 ##
 InstallMethod( CanonicalRepresentativeOfExternalSet, true,
-        [ IsExternalOrbit and IsExternalSetByPcgsRep ], 0,
+        [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     SetCanonicalRepresentativeOfExternalOrbitByPcgs( xorb );
     return CanonicalRepresentativeOfExternalSet( xorb );
@@ -320,7 +329,7 @@ end );
 #M  OperatorOfExternalSet( <xorb> ) . . . . . . . . . . . . . . . . . . . . .
 ##
 InstallMethod( OperatorOfExternalSet, true,
-        [ IsExternalOrbit and IsExternalSetByPcgsRep ], 0,
+        [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     SetCanonicalRepresentativeOfExternalOrbitByPcgs( xorb );
     return OperatorOfExternalSet( xorb );
@@ -331,7 +340,7 @@ end );
 #M  StabilizerOfExternalSet( <xorb> ) . . . . .  stabilizer of representative
 ##
 InstallMethod( StabilizerOfExternalSet, true,
-        [ IsExternalOrbit and IsExternalSetByPcgsRep ], 0,
+        [ IsExternalOrbit and IsExternalSetByPcgs ], 0,
     function( xorb )
     local   orbstab;
 

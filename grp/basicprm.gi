@@ -99,12 +99,12 @@ function( filter, dom )
             SetIsSimpleGroup(  alt, false );
             SetIsPerfectGroup( alt, false );
         fi;
+        Setter( IsPrimitiveAffineProp )( alt, Length( dom ) < 5 );
     fi;
     SetIsAlternatingGroup( alt, true );
     SetIsNaturalAlternatingGroup( alt, true );
     return alt;
 end );
-
 
 #############################################################################
 ##
@@ -230,6 +230,7 @@ function( filters, dom )
         SetMovedPoints(   sym, dom );
         SetNrMovedPoints( sym, Length(dom) );
     fi;
+    Setter( IsPrimitiveAffineProp )( sym, Length( dom ) < 5 );
     SetIsSymmetricGroup( sym, true );
     SetIsNaturalSymmetricGroup( sym, true );
     return sym;
@@ -286,6 +287,23 @@ InstallMethod( Size,
     0,
     sym -> Factorial( NrMovedPoints(sym) ) );
 
+
+#############################################################################
+##
+#M  StabilizerOp( <nat-sym-grp>, <int>, OnPoints )
+##
+InstallOtherMethod( StabilizerOp,
+    true,
+    [ IsNaturalSymmetricGroup, IsPosRat and IsInt, IsFunction ],
+    0,
+
+function( sym, p, opr )
+    if opr <> OnPoints  then
+        TryNextMethod();
+    fi;
+    return AsSubgroup( sym,
+           SymmetricGroup( Difference( MovedPoints( sym ), [ p ] ) ) );
+end );
 
 #############################################################################
 ##

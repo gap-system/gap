@@ -293,9 +293,11 @@ end);
 InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
-    local   pcgsF,  F,  hom;
+    local   pcgsK,  pcgsF,  F,  hom;
 
-    pcgsF := Pcgs( G ) mod Pcgs( N );
+    pcgsK := NormalIntersectionPcgs( ParentPcgs( Pcgs( G ) ),
+                     Pcgs( N ), Pcgs( G ) );
+    pcgsF := Pcgs( G ) mod pcgsK;
     F := GroupByPcgs( pcgsF );
     hom := Objectify( NewKind( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),
@@ -305,7 +307,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
                         pcgsRange  := Pcgs( F ) ) );
     SetSource( hom, G );
     SetRange ( hom, F );
-    SetKernelOfMultiplicativeGeneralMapping( hom, N );
+    SetKernelOfMultiplicativeGeneralMapping( hom, GroupOfPcgs( pcgsK ) );
     return hom;
 end );
 
@@ -340,34 +342,6 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     
     exp := ExponentsOfPcElement( hom!.pcgsRange, elm );
     return PcElementByExponents( hom!.pcgsSource, exp );
-end );
-
-#############################################################################
-##
-#M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . .  via depth maps
-##
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsLeftQuotientNaturalHomomorphismsPcGroup,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    local   exp;
-    
-    exp := ExponentsOfPcElement( hom!.modN!.pcgsRange, elm );
-    return PcElementByExponents( hom!.modM!.pcgsRange, exp );
-end );
-
-#############################################################################
-##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . .  via depth maps
-##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsLeftQuotientNaturalHomomorphismsPcGroup,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    local   exp;
-    
-    exp := ExponentsOfPcElement( hom!.modM!.pcgsRange, elm );
-    return PcElementByExponents( hom!.modN!.pcgsRange, exp );
 end );
 
 #############################################################################
