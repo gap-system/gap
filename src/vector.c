@@ -19,10 +19,10 @@ char *          Revision_vector_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* system dependent functions      */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 
+#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
 
 #include        "ariths.h"              /* generic operations package      */
 #include        "lists.h"               /* generic list package            */

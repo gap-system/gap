@@ -72,7 +72,19 @@ InstallMethod( NiceObject,
     0,
 
 function( G )
-    return ImagesSet( NiceMonomorphism(G), G );
+    local   nice,  img,  D;
+    
+    nice := NiceMonomorphism( G );
+    img := ImagesSet( nice, G );
+    if IsOperationHomomorphism( nice ) and HasBase( nice!.externalSet )  then
+        if not IsBound( nice!.externalSet!.basePermImage )  then
+            D := HomeEnumerator( nice!.externalSet );
+            nice!.externalSet!.basePermImage := List
+                ( Base( nice!.externalSet ), b -> PositionCanonical( D, b ) );
+        fi;
+        SetBase( img, nice!.externalSet!.basePermImage );
+    fi;
+    return img;
 end );
 
 

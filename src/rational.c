@@ -45,10 +45,11 @@ char *          Revision_rational_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -883,11 +884,14 @@ void            InitRat ( void )
 
 
     /* install the internal functions                                      */
+    InitHandlerFunc( IsRatHandler, "IS_RAT" );
     IsRatFilt = NewFilterC( "IS_RAT", 1L, "obj",
                                 IsRatHandler );
     AssGVar( GVarName( "IS_RAT" ), IsRatFilt );
+    InitHandlerFunc( FuncNumeratorRat, "NUMERATOR_RAT" );
     AssGVar( GVarName( "NUMERATOR_RAT" ),
              NewFunctionC( "NUMERATOR_RAT", 1L, "rat", FuncNumeratorRat ) );
+    InitHandlerFunc( FuncDenominatorRat, "DENOMINATOR_RAT" );
     AssGVar( GVarName( "DENOMINATOR_RAT" ),
              NewFunctionC( "DENOMINATOR_RAT", 1L, "rat", FuncDenominatorRat ) );
 }

@@ -22,10 +22,11 @@ char *          Revision_lists_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* ObjFunc                         */
@@ -1736,6 +1737,7 @@ void            InitLists ()
     UInt                type;           /* loop variable                   */
 
     /* make and install the 'IS_LIST' filter                               */
+    InitHandlerFunc( IsListHandler, "IS_LIST" );
     IsListFilt = NewFilterC(
         "IS_LIST", 1L, "obj", IsListHandler );
     AssGVar( GVarName( "IS_LIST" ), IsListFilt );
@@ -1750,6 +1752,7 @@ void            InitLists ()
     }
 
     /* make and install the 'LEN_LIST' operation                           */
+    InitHandlerFunc( LenListHandler, "LEN_LIST" );
     LenListAttr = NewAttributeC(
         "LEN_LIST", 1L, "list", LenListHandler );
     AssGVar( GVarName( "LEN_LIST" ), LenListAttr );
@@ -1761,6 +1764,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ISB_LIST' operation                           */
+    InitHandlerFunc( IsbListHandler, "ISB_LIST" );
     IsbListOper = NewOperationC(
         "ISB_LIST", 2L, "list, pos", IsbListHandler );
     AssGVar( GVarName( "ISB_LIST" ), IsbListOper );
@@ -1774,6 +1778,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ELM0_LIST' operation                          */
+    InitHandlerFunc( Elm0ListHandler, "ELM0_LIST" );
     Elm0ListOper = NewOperationC(
         "ELM0_LIST", 2L, "list, pos", Elm0ListHandler );
     AssGVar( GVarName( "ELM0_LIST" ), Elm0ListOper );
@@ -1787,6 +1792,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ELM_LIST' operation                           */
+    InitHandlerFunc( ElmListHandler, "ELM_LIST" );
     ElmListOper = NewOperationC(
         "ELM_LIST", 2L, "list, pos", ElmListHandler );
     AssGVar( GVarName( "ELM_LIST" ), ElmListOper );
@@ -1802,6 +1808,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ELMS_LIST' operation                          */
+    InitHandlerFunc( ElmsListHandler, "ELMS_LIST" );
     ElmsListOper = NewOperationC(
         "ELMS_LIST", 2L, "list, poss", ElmsListHandler );
     AssGVar( GVarName( "ELMS_LIST" ), ElmsListOper );
@@ -1814,11 +1821,15 @@ void            InitLists ()
     for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
         ElmsListFuncs[ type ] = ElmsListObject;
     }
+
+
+    InitHandlerFunc( ElmsListDefaultHandler, "ELMS_LIST_DEFAULT");
     ElmsListDefaultFunc = NewFunctionC(
-        "ELMS_LIST_DEFAULT", 2L, "list, poss", ElmsListDefaultHandler );
+	 "ELMS_LIST_DEFAULT", 2L, "list, poss", ElmsListDefaultHandler );
     AssGVar( GVarName( "ELMS_LIST_DEFAULT" ), ElmsListDefaultFunc );
 
     /* make and install the 'UNB_LIST' operation                           */
+    InitHandlerFunc( UnbListHandler, "UNB_LIST" );
     UnbListOper = NewOperationC(
         "UNB_LIST", 2L, "list, pos", UnbListHandler );
     AssGVar( GVarName( "UNB_LIST" ), UnbListOper );
@@ -1833,6 +1844,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ASS_LIST' operation                           */
+    InitHandlerFunc( AssListHandler, "ASS_LIST" );
     AssListOper = NewOperationC(
         "ASS_LIST", 3L, "list, pos, obj", AssListHandler );
     AssGVar( GVarName( "ASS_LIST" ), AssListOper );
@@ -1847,6 +1859,7 @@ void            InitLists ()
     }
 
     /* make and install the 'ASSS_LIST' operation                          */
+    InitHandlerFunc( AsssListHandler, "ASSS_LIST" );
     AsssListOper = NewOperationC(
         "ASSS_LIST", 3L, "list, poss, objs", AsssListHandler );
     AssGVar( GVarName( "ASSS_LIST" ), AsssListOper );
@@ -1859,11 +1872,14 @@ void            InitLists ()
     for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
         AsssListFuncs[ type ] = AsssListObject;
     }
+    
+    InitHandlerFunc( AsssListDefaultHandler, "ASSS_LIST_DEFAULT");
     AsssListDefaultFunc = NewFunctionC(
         "ASSS_LIST_DEFAULT", 3L, "list, poss, objs", AsssListDefaultHandler );
     AssGVar( GVarName( "ASSS_LIST_DEFAULT" ), AsssListDefaultFunc );
 
     /* make and install the 'IS_DENSE_LIST' filter                         */
+    InitHandlerFunc( IsDenseListHandler, "IS_DENSE_LIST" );
     IsDenseListFilt = NewFilterC(
         "IS_DENSE_LIST", 1L, "obj", IsDenseListHandler );
     AssGVar( GVarName( "IS_DENSE_LIST" ), IsDenseListFilt );
@@ -1878,6 +1894,7 @@ void            InitLists ()
     }
 
     /* make and install the 'IS_HOMOG_LIST' filter                         */
+    InitHandlerFunc( IsHomogListHandler, "IS_HOMOG_LIST" );
     IsHomogListFilt = NewFilterC(
         "IS_HOMOG_LIST", 1L, "obj", IsHomogListHandler );
     AssGVar( GVarName( "IS_HOMOG_LIST" ), IsHomogListFilt );
@@ -1892,6 +1909,7 @@ void            InitLists ()
     }
 
     /* make and install the 'IS_TABLE_LIST' filter                         */
+    InitHandlerFunc( IsTableListHandler, "IS_TABLE_LIST" );
     IsTableListFilt = NewFilterC(
         "IS_TABLE_LIST", 1L, "obj", IsTableListHandler );
     AssGVar( GVarName( "IS_TABLE_LIST" ), IsTableListFilt );
@@ -1906,6 +1924,7 @@ void            InitLists ()
     }
 
     /* make and install the 'IS_SSORT_LIST' property                       */
+    InitHandlerFunc( IsSSortListHandler, "IS_SSORT_LIST" );
     IsSSortListProp = NewPropertyC(
         "IS_SSORT_LIST", 1L, "obj", IsSSortListHandler );
     AssGVar( GVarName( "IS_SSORT_LIST" ), IsSSortListProp );
@@ -1918,15 +1937,20 @@ void            InitLists ()
     for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
         IsSSortListFuncs[ type ] = IsSSortListObject;
     }
+
+    InitHandlerFunc( IsSSortListDefaultHandler, "IS_SSORT_LIST_DEFAULT");
     IsSSortListDefaultFunc = NewFunctionC(
         "IS_SSORT_LIST_DEFAULT",1L,"obj", IsSSortListDefaultHandler );
     AssGVar( GVarName( "IS_SSORT_LIST_DEFAULT" ), IsSSortListDefaultFunc );
 
     /* make and install the 'IS_NSORT_LIST' property                       */
+    InitHandlerFunc( IsNSortListHandler, "IS_NSORT_LIST" );
     IsNSortListProp = NewPropertyC(
         "IS_NSORT_LIST", 1L, "obj", IsNSortListHandler );
+    AssGVar( GVarName( "IS_NSORT_LIST" ), IsNSortListProp );
 
     /* make and install the 'IS_POSS_LIST' property                        */
+    InitHandlerFunc( IsPossListHandler, "IS_POSS_LIST" );
     IsPossListProp = NewPropertyC(
         "IS_POSS_LIST", 1L, "obj", IsPossListHandler );
     AssGVar( GVarName( "IS_POSS_LIST" ), IsPossListProp );
@@ -1939,11 +1963,15 @@ void            InitLists ()
     for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
         IsPossListFuncs[ type ] = IsPossListObject;
     }
+
+    InitHandlerFunc( IsPossListDefaultHandler, "IS_POSS_LIST_DEFAULT");
     IsPossListDefaultFunc = NewFunctionC(
         "IS_POSS_LIST_DEFAULT",1L,"obj", IsPossListDefaultHandler );
     AssGVar( GVarName( "IS_POSS_LIST_DEFAULT" ), IsPossListDefaultFunc );
 
-    /* make and install the 'POS_LIST' operation                           */
+    /* make and install the 'POS_LIST' operation                           */    
+    InitHandlerFunc( PosListHandler2, "POS_LIST 2 args" );
+    InitHandlerFunc( PosListHandler3, "POS_LIST 3 args" );
     PosListOper = NewOperationC(
         "POS_LIST", -1, "list, obj", DoOperation0Args );
     HDLR_FUNC( PosListOper, 2 ) = PosListHandler2;
@@ -1958,6 +1986,8 @@ void            InitLists ()
     for ( type = FIRST_EXTERNAL_TYPE; type <= LAST_EXTERNAL_TYPE; type++ ) {
         PosListFuncs[ type ] = PosListObject;
     }
+
+    InitHandlerFunc( PosListDefaultHandler, "POS_LIST_DEFAULT");
     PosListDefaultFunc = NewFunctionC(
         "POS_LIST_DEFAULT", 3L, "list, obj, start", PosListDefaultHandler );
     AssGVar( GVarName( "POS_LIST_DEFAULT" ), PosListDefaultFunc );

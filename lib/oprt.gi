@@ -367,14 +367,25 @@ end );
 ##
 InstallMethod( Enumerator, true, [ IsExternalSubset ], 0,
     function( xset )
-    local   henum,  sublist,  pnt;
+    local   G,  henum,  gens,  oprs,  opr,  sublist,  pnt,  pos;
     
+    G := ActingDomain( xset );
     henum := HomeEnumerator( xset );
-    sublist := BlistList( [ 1 .. Length( henum ) ],
-                       MovedPoints( ImagesSource
-                               ( OperationHomomorphismAttr( xset ) ) ) );
+    if IsExternalSetByOperatorsRep( xset )  then
+        gens := xset!.generators;
+        oprs := xset!.operators;
+        opr  := xset!.funcOperation;
+    else
+        gens := GeneratorsOfGroup( G );
+        oprs := gens;
+        opr  := FunctionOperation( xset );
+    fi;
+    sublist := BlistList( [ 1 .. Length( henum ) ], [  ] );
     for pnt  in xset!.start  do
-        sublist[ PositionCanonical( henum, pnt ) ] := true;
+        pos := PositionCanonical( henum, pnt );
+        if not sublist[ pos ]  then
+            OrbitByPosOp( G, henum, sublist, pos, pnt, gens, oprs, opr );
+        fi;
     od;
     return Objectify( NewKind( FamilyObj( henum ), IsSubsetEnumerator ),
         rec( homeEnumerator := henum,
@@ -440,6 +451,13 @@ InstallMethod( PrintObj, true, [ IsExternalOrbit ], 0,
     function( xorb )
     Print( Representative( xorb ), "^G < ", HomeEnumerator( xorb ) );
 end );
+
+#############################################################################
+##
+#M  AsList( <xorb> )  . . . . . . . . . . . . . . . . . .  by orbit algorithm
+##
+InstallMethod( AsList, true, [ IsExternalOrbit ], 0,
+    xorb -> Orbit( xorb, Representative( xorb ) ) );
 
 #############################################################################
 ##
@@ -1032,8 +1050,8 @@ InstallMethod( ExternalOrbitsOp,
         "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
-    local   blist,  orbs,  next,  pnt,  orb,  p;
-    
+    local   blist,  orbs,  next,  pnt,  orb;
+
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
     orbs := [  ];
     next := 1;
@@ -1041,10 +1059,9 @@ InstallMethod( ExternalOrbitsOp,
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, D, pnt, gens, oprs, opr );
         SetCanonicalRepresentativeOfExternalSet( orb, pnt );
+        SetEnumerator( orb, OrbitByPosOp( G, D, blist, next, pnt,
+                gens, oprs, opr ) );
         Add( orbs, orb );
-        for p  in orb  do
-            blist[ PositionCanonical( D, p ) ] := true;
-        od;
         next := Position( blist, false, next );
     od;
     return Immutable( orbs );
@@ -1057,7 +1074,7 @@ InstallOtherMethod( ExternalOrbitsOp,
           IsList,
           IsFunction ], 0,
     function( G, xset, gens, oprs, opr )
-    local   D,  blist,  orbs,  next,  pnt,  orb,  p;
+    local   D,  blist,  orbs,  next,  pnt,  orb;
 
     D := Enumerator( xset );
     blist := BlistList( [ 1 .. Length( D ) ], [  ] );
@@ -1067,6 +1084,68 @@ InstallOtherMethod( ExternalOrbitsOp,
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, xset, pnt, gens, oprs, opr );
         SetCanonicalRepresentativeOfExternalSet( orb, pnt );
+        SetEnumerator( orb, OrbitByPosOp( G, D, blist, next, pnt,
+                gens, oprs, opr ) );
+        Add( orbs, orb );
+        next := Position( blist, false, next );
+    od;
+    return Immutable( orbs );
+end );
+
+#############################################################################
+##
+#F  ExternalOrbitsStabilizers( <arg> )  . . . . . .  list of transitive xsets
+##
+ExternalOrbitsStabilizers := function( arg )
+    return AttributeOperation( ExternalOrbitsStabilizersOp,
+                   ExternalOrbitsStabilizersAttr, true, arg );
+end;
+
+InstallMethod( ExternalOrbitsStabilizersOp,
+        "G, D, gens, oprs, opr", true,
+        OrbitsishReq, 0,
+    function( G, D, gens, oprs, opr )
+    local   blist,  orbs,  next,  pnt,  orb,  orbstab,  p;
+
+    blist := BlistList( [ 1 .. Length( D ) ], [  ] );
+    orbs := [  ];
+    next := 1;
+    while next <> fail  do
+        pnt := D[ next ];
+        orb := ExternalOrbitOp( G, D, pnt, gens, oprs, opr );
+        orbstab := OrbitStabilizer( G, D, pnt, gens, oprs, opr );
+        SetCanonicalRepresentativeOfExternalSet( orb, pnt );
+        SetEnumerator( orb, orbstab.orbit );
+        SetStabilizerOfExternalSet( orb, orbstab.stabilizer );
+        Add( orbs, orb );
+        for p  in orb  do
+            blist[ PositionCanonical( D, p ) ] := true;
+        od;
+        next := Position( blist, false, next );
+    od;
+    return Immutable( orbs );
+end );
+
+InstallOtherMethod( ExternalOrbitsStabilizersOp,
+        "G, xset, gens, oprs, opr", true,
+        [ IsGroup, IsExternalSet,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, xset, gens, oprs, opr )
+    local   D,  blist,  orbs,  next,  pnt,  orb,  orbstab,  p;
+
+    D := Enumerator( xset );
+    blist := BlistList( [ 1 .. Length( D ) ], [  ] );
+    orbs := [  ];
+    next := 1;
+    while next <> fail  do
+        pnt := D[ next ];
+        orb := ExternalOrbitOp( G, xset, pnt, gens, oprs, opr );
+        orbstab := OrbitStabilizer( G, D, pnt, gens, oprs, opr );
+        SetCanonicalRepresentativeOfExternalSet( orb, pnt );
+        SetEnumerator( orb, orbstab.orbit );
+        SetStabilizerOfExternalSet( orb, orbstab.stabilizer );
         Add( orbs, orb );
         for p  in orb  do
             blist[ PositionCanonical( D, p ) ] := true;
@@ -1408,6 +1487,16 @@ InstallMethod( BlocksOp,
     return List( B, b -> D{ b } );
 end );
 
+InstallMethod( BlocksOp,
+        "G, [  ], seed, gens, oprs, opr", true,
+        [ IsGroup, IsList and IsEmpty, IsList,
+          IsList,
+          IsList,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, seed, gens, oprs, opr )
+    return Immutable( [  ] );
+end );
+
 #############################################################################
 ##
 #F  MaximalBlocks( <arg> )  . . . . . . . . . . . . . . . . .  maximal blocks
@@ -1636,6 +1725,16 @@ InstallMethod( TransitivityOp, true, OrbitsishReq, 0,
     return Transitivity( ImagesSource( hom ), [ 1 .. Length( D ) ] );
 end );
 
+InstallMethod( TransitivityOp,
+        "G, [  ], gens, perms, opr", true,
+        [ IsGroup, IsList and IsEmpty,
+          IsList,
+          IsList,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, gens, oprs, opr )
+    return 0;
+end );
+
 #############################################################################
 ##
 #F  IsPrimitive( <G>, <D>, <gens>, <oprs>, <opr> )  . . . .  primitivity test
@@ -1712,6 +1811,26 @@ InstallMethod( IsSemiRegularOp, true, OrbitsishReq, 0,
     
     hom := OperationHomomorphism( G, D, gens, oprs, opr );
     return IsSemiRegular( ImagesSource( hom ), [ 1 .. Length( D ) ] );
+end );
+
+InstallMethod( IsSemiRegularOp,
+        "G, [  ], gens, perms, opr", true,
+        [ IsGroup, IsList and IsEmpty,
+          IsList,
+          IsList,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, gens, oprs, opr )
+    return true;
+end );
+
+InstallMethod( IsSemiRegularOp,
+        "G, D, gens, [  ], opr", true,
+        [ IsGroup, IsList,
+          IsList,
+          IsList and IsEmpty,
+          IsFunction ], SUM_FLAGS,
+    function( G, D, gens, oprs, opr )
+    return IsTrivial( G );
 end );
 
 #############################################################################
@@ -2059,14 +2178,37 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     xset := hom!.externalSet;
     D := HomeEnumerator( xset );
     opr := FunctionOperation( xset );
-    if not IsBound( xset!.base )  then
-        xset!.base := List( Base( xset ), b -> PositionCanonical( D, b ) );
+    if not IsBound( xset!.basePermImage )  then
+        xset!.basePermImage := List( Base( xset ),
+                                    b -> PositionCanonical( D, b ) );
     fi;
     imgs := List( Base( xset ), b -> PositionCanonical( D, opr( b, elm ) ) );
     return RepresentativeOperationOp( ImagesSource( hom ),
-                   xset!.base, imgs, OnTuples );
+                   xset!.basePermImage, imgs, OnTuples );
 end );
 
+#############################################################################
+##
+#M  ImagesSource( <hom> ) . . . . . . . . . . . . . . . . . set base in image
+##
+InstallMethod( ImagesSource, true,
+        [ IsOperationHomomorphismByBase ], 0,
+    function( hom )
+    local   xset,  img,  D;
+    
+    xset := hom!.externalSet;
+    img := ImagesSet( hom, Source( hom ) );
+    if not HasBase( img )  then
+        if not IsBound( xset!.basePermImage )  then
+            D := HomeEnumerator( xset );
+            xset!.basePermImage := List( Base( xset ),
+                                        b -> PositionCanonical( D, b ) );
+        fi;
+        SetBase( img, xset!.basePermImage );
+    fi;
+    return img;
+end );
+    
 #############################################################################
 ##
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . .  restricted `Permutation'

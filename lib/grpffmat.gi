@@ -21,7 +21,7 @@ IsGeneralLinearGroupWithFormRep := NewRepresentation
     ( "IsGeneralLinearGroupWithFormRep", IsMatrixGroup, [ "form" ] );
 
 IsGeneralUnitaryGroupWithFormRep := NewRepresentation
-    ( "IsGeneralLinearGroupWithFormRep", IsMatrixGroup, [ "form" ] );
+    ( "IsGeneralUnitaryGroupWithFormRep", IsMatrixGroup, [ "form" ] );
 
 #############################################################################
 ##
@@ -42,6 +42,7 @@ InstallMethod( \in, IsElmsColls,
     return mat * G!.form * List( TransposedMat( mat ),
                    row -> OnTuples( row, f ) ) = G!.form;
 end );
+
 
 #############################################################################
 ##
@@ -121,8 +122,21 @@ function( grp )
                    Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
 end );
 
-InstallMethod( IsomorphismPermGroup, "return Niceomorphism",true,
-  [IsFFEMatrixGroup],0,NiceMonomorphism);
+
+#############################################################################
+##
+#M  IsomorphismPermGroup( <grp> ) . . . . . . . . . operation on vector space
+##
+InstallMethod( IsomorphismPermGroup, "ffe matrix group", true,
+        [ IsFFEMatrixGroup ], 0,
+    function( grp )
+    local   nice;
+    
+    nice := NicomorphismOfFFEMatrixGroup( grp );
+    SetRange( nice, Image( nice ) );
+    SetIsBijective( nice, true );
+    return nice;
+end );
 
 #############################################################################
 ##

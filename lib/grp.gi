@@ -1,10 +1,13 @@
 #############################################################################
 ##
-#W  grp.gi                      GAP library                     .............
+#W  grp.gi                      GAP library                     Thomas Breuer
+#W                                                               Frank Celler
+#W                                                               Bettina Eick
+#W                                                             Heiko Theissen
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic methods for groups.
 ##
@@ -337,8 +340,13 @@ InstallMethod( AsGroup,
 
 #############################################################################
 ##
-#M  ChiefSeries( <G> )
+#M  ChiefSeries( <G> )  . . . . . . . .  delegate to 'ChiefSeriesUnderAction'
 ##
+InstallMethod( ChiefSeries,
+    "method for a group (delegate to 'ChiefSeriesUnderAction'",
+    true,
+    [ IsGroup ], 0,
+    G -> ChiefSeriesUnderAction( G, G ) );
 
 
 #############################################################################
@@ -686,8 +694,103 @@ InstallMethod( NrConjugacyClasses,
 
 #############################################################################
 ##
-#M  Omega( <G> )
+#M  Omega( <G> )  . . . . . . . . . . . . . . . . .  for an abelian $p$-group
 ##
+#T the code should be cleaned,
+#T especially one should avoid the many unnecessary calls of 'Difference'
+##
+InstallMethod( Omega,
+    "method for a p-group (abelian)",
+    true,
+    [ IsGroup ], 0,
+    function( G )
+
+    local facts,  # prime factors of the size of 'G'
+          p,      # unique prime divisor of the size of 'G'
+          pcgs,   # PCGS of 'G'
+          i, j, rel, rl, rc, ng, ml, mc, m, k, q,
+          one;    # identity of 'G'
+
+    if not IsAbelian( G ) then
+      TryNextMethod();
+    fi;
+#T should be changed as soon as a generic method for p-groups is available.
+
+    # Check that 'G' is a 'p'-group.
+    facts:= Set( Factors( Size( G ) ) );
+    if 1 < Length( facts ) then
+      Error( "<G> must be a p-group" );
+    fi;
+
+    p:= facts[1];
+    pcgs:= Pcgs( G );
+    ng:= ShallowCopy( pcgs );
+
+    # 'rel' is the relation matrix of 'G'.
+    rel:= List( ng, x -> ShallowCopy( AdditiveInverse(
+                             ExponentsOfPcElement( pcgs, x^p ) ) ) );
+    for i in [ 1 .. Length( rel ) ] do
+      rel[i][i]:= rel[i][i] + p;
+    od;
+    # rel:= List( ng, x -> List( ng, function(y) if x=y then return p;
+    #           else return 0; fi; end)-ExponentsOfPcElement( ng, x^p ) );
+
+    # rl, rc are the remaining lines and columns of rel to be used
+    rl:= [ 1 .. Length( ng ) ];
+    rc:= [ 1 .. Length( ng ) ];
+    while 1 < Length( rl ) do
+
+      # find empty column, find min entry
+      m:= AbsInt( Maximum( rel[ rl[1] ] ) ) + 1;
+      for i in rl do
+        for j in rc do
+          if rel[i][j] <> 0 and AbsInt( rel[i][j] ) < m then
+            # 'rel[ml][mc]' is minimal entry of 'rel'
+            ml:= i;
+            mc:= j;
+            m:= AbsInt( rel[i][j] );
+          fi;
+        od;
+      od;
+      while Maximum(List(Difference(rl,[ml]),x->AbsInt(rel[x][mc])))>0 do
+        for i in Difference(rl,[ml]) do
+          AddRowVector( rel[i], rel[ml], -QuoInt(rel[i][mc],rel[ml][mc]) );
+          # rel[i]:=rel[i]-QuoInt(rel[i][mc],rel[ml][mc])*rel[ml];
+        od;    
+        # find min entry
+        m:=AbsInt(Maximum(rel[rl[1]]))+1;
+        for i in rl do
+          for j in rc do
+            if rel[i][j] <> 0 and AbsInt(rel[i][j]) < m then
+              # rel[ml][mc] is minimal entry of rel
+              ml:=i; mc:=j; m:=AbsInt(rel[i][j]);
+            fi;
+          od;
+        od;
+      od;
+      for i in Difference(rc,[mc]) do
+        q:= QuoInt(rel[ml][i],rel[ml][mc]);
+        rel[ml][i]:= rel[ml][i] - q*rel[ml][mc];
+        ng[mc]:=ng[mc]*ng[i]^q;
+      od;
+      if Maximum(List(Difference(rc,[mc]),x->AbsInt(rel[ml][x])))=0 then
+        RemoveSet( rl, ml );
+        RemoveSet( rc, mc );
+      fi;
+    od;
+
+    # Construct the generators.
+    m:= [];
+    one:= One( G );
+    for i in ng do
+      if i <> one then
+        Add( m, i^(Order(i)/p) );
+      fi;
+    od;
+
+    return SubgroupNC( G, m );
+    end );
+
 
 #############################################################################
 ##
@@ -987,6 +1090,7 @@ InstallMethod( Agemo,
         return NormalClosure( G, SubgroupNC( G, C ) );
     fi;
     end );
+
 
 #############################################################################
 ##
@@ -1290,10 +1394,25 @@ InstallMethod( Core,
     return C;
     end );
 
+
 #############################################################################
 ##
 #M  FactorGroup( <G>, <N> )
+#M  \/( <G>, <N> )
 ##
+InstallMethod( FactorGroup,
+    "generic method for two groups",
+    IsIdentical,
+    [ IsGroup, IsGroup ], 0,
+    function( G, N )
+    return ImagesSource( NaturalHomomorphismByNormalSubgroup( G, N ) );
+    end );
+
+InstallOtherMethod( \/,
+    "generic method for two groups",
+    IsIdentical,
+    [ IsGroup, IsGroup ], 0,
+    FactorGroup );
 
 
 #############################################################################
@@ -1717,9 +1836,10 @@ HallSubgroup := function( G, pi )
     return known[Product(pi)];
 end;
 
+
 #############################################################################
 ##
-#M  SylowSubgroupOp( <G>, <p> ) . . . . . . . . .operation for Sylow subgroup 
+#M  SylowSubgroupOp( <G>, <p> ) . . . . . . . . . . . for a group and a prime
 ##
 InstallMethod( SylowSubgroupOp,
     "generic method for group and prime",
@@ -1750,6 +1870,33 @@ InstallMethod( SylowSubgroupOp,
     # return the Sylow <p> subgroup
     return S;
     end );
+
+
+#############################################################################
+##
+#M  SylowSubgroupOp( <G>, <p> ) . . . . . . for a nilpotent group and a prime
+##
+InstallMethod( SylowSubgroupOp,
+    "method for a nilpotent group, and a prime",
+    true,
+    [ IsGroup and IsNilpotentGroup, IsPosRat and IsInt ], 0,
+    function( G, p )
+    local gens, g, ord;
+
+    gens:= [];
+    for g in GeneratorsOfGroup( G ) do
+      ord:= Order( g );
+      if ord mod p = 0 then
+        while ord mod p = 0 do
+          ord:= ord / p;
+        od;
+        Add( gens, g^ord );
+      fi;
+    od;
+
+    return SubgroupNC( G, gens );
+    end );
+
 
 #############################################################################
 ##

@@ -52,10 +52,11 @@ char *          Revision_range_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* system dependent functions      */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 
+#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -1203,6 +1204,7 @@ void            InitRange ( void )
     PlainListFuncs  [ T_RANGE_SSORT +IMMUTABLE ] = PlainRange;
 
     /* install the internal function                                       */
+    InitHandlerFunc( IsRangeHandler, "IsRange" );
     IsRangeFilt = NewFilterC( "IsRange", 1L, "obj",
                                 IsRangeHandler );
     AssGVar( GVarName( "IS_RANGE" ), IsRangeFilt );

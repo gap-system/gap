@@ -13,10 +13,11 @@ char *          Revision_listoper_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -1254,70 +1255,87 @@ void InitListOper ( void )
         }
     }
 
+    InitHandlerFunc( EqListListHandler, "EQ_LIST_LIST_DEFAULT");
     EqListListFunc = NewFunctionC(
         "EQ_LIST_LIST_DEFAULT", 2L, "listL, listR", EqListListHandler );
     AssGVar( GVarName( "EQ_LIST_LIST_DEFAULT" ), EqListListFunc );
 
+    InitHandlerFunc( LtListListHandler, "LT_LIST_LIST_DEFAULT");
     LtListListFunc = NewFunctionC(
         "LT_LIST_LIST_DEFAULT", 2L, "listL, listR", LtListListHandler );
     AssGVar( GVarName( "LT_LIST_LIST_DEFAULT" ), LtListListFunc );
 
+    InitHandlerFunc( InListDefaultHandler, "IN_LIST_DEFAULT");
     InListDefaultFunc = NewFunctionC(
         "IN_LIST_DEFAULT", 2L, "obj, list", InListDefaultHandler );
     AssGVar( GVarName( "IN_LIST_DEFAULT" ), InListDefaultFunc );
 
+    InitHandlerFunc( SumSclListHandler, "SUM_SCL_LIST_DEFAULT");
     SumSclListFunc = NewFunctionC(
         "SUM_SCL_LIST_DEFAULT", 2L, "listL, listR", SumSclListHandler );
     AssGVar( GVarName( "SUM_SCL_LIST_DEFAULT" ), SumSclListFunc );
 
+    InitHandlerFunc( SumListSclHandler, "SUM_LIST_SCL_DEFAULT");
     SumListSclFunc = NewFunctionC(
         "SUM_LIST_SCL_DEFAULT", 2L, "listL, listR", SumListSclHandler );
     AssGVar( GVarName( "SUM_LIST_SCL_DEFAULT" ), SumListSclFunc );
 
+    InitHandlerFunc( SumListListHandler, "SUM_LIST_LIST_DEFAULT");
     SumListListFunc = NewFunctionC(
         "SUM_LIST_LIST_DEFAULT", 2L, "listL, listR", SumListListHandler );
     AssGVar( GVarName( "SUM_LIST_LIST_DEFAULT" ), SumListListFunc );
 
+    InitHandlerFunc( ZeroListDefaultHandler, "ZERO_LIST_DEFAULT");
     ZeroListDefaultFunc = NewFunctionC(
         "ZERO_LIST_DEFAULT", 1L, "list", ZeroListDefaultHandler );
     AssGVar( GVarName( "ZERO_LIST_DEFAULT" ), ZeroListDefaultFunc );
 
+    InitHandlerFunc( AInvListDefaultHandler, "AINV_LIST_DEFAULT");
     AInvListDefaultFunc = NewFunctionC(
         "AINV_LIST_DEFAULT", 1L, "list", AInvListDefaultHandler );
     AssGVar( GVarName( "AINV_LIST_DEFAULT" ), AInvListDefaultFunc );
 
+    InitHandlerFunc( DiffSclListHandler, "DIFF_SCL_LIST_DEFAULT");
     DiffSclListFunc = NewFunctionC(
         "DIFF_SCL_LIST_DEFAULT", 2L, "listL, listR", DiffSclListHandler );
     AssGVar( GVarName( "DIFF_SCL_LIST_DEFAULT" ), DiffSclListFunc );
 
+    InitHandlerFunc( DiffListSclHandler, "DIFF_LIST_SCL_DEFAULT");
     DiffListSclFunc = NewFunctionC(
         "DIFF_LIST_SCL_DEFAULT", 2L, "listL, listR", DiffListSclHandler );
     AssGVar( GVarName( "DIFF_LIST_SCL_DEFAULT" ), DiffListSclFunc );
 
+    InitHandlerFunc( DiffListListHandler, "DIFF_LIST_LIST_DEFAULT");
     DiffListListFunc = NewFunctionC(
         "DIFF_LIST_LIST_DEFAULT", 2L, "listL, listR", DiffListListHandler );
     AssGVar( GVarName( "DIFF_LIST_LIST_DEFAULT" ), DiffListListFunc );
 
+    InitHandlerFunc( ProdSclListHandler, "PROD_SCL_LIST_DEFAULT");
     ProdSclListFunc = NewFunctionC(
         "PROD_SCL_LIST_DEFAULT", 2L, "listL, listR", ProdSclListHandler );
     AssGVar( GVarName( "PROD_SCL_LIST_DEFAULT" ), ProdSclListFunc );
 
+    InitHandlerFunc( ProdListSclHandler, "PROD_LIST_SCL_DEFAULT");
     ProdListSclFunc = NewFunctionC(
         "PROD_LIST_SCL_DEFAULT", 2L, "listL, listR", ProdListSclHandler );
     AssGVar( GVarName( "PROD_LIST_SCL_DEFAULT" ), ProdListSclFunc );
 
+    InitHandlerFunc( ProdListListHandler, "PROD_LIST_LIST_DEFAULT");
     ProdListListFunc = NewFunctionC(
         "PROD_LIST_LIST_DEFAULT", 2L, "listL, listR", ProdListListHandler );
     AssGVar( GVarName( "PROD_LIST_LIST_DEFAULT" ), ProdListListFunc );
 
+    InitHandlerFunc( OneMatrixHandler, "ONE_MATRIX");
     OneMatrixFunc = NewFunctionC(
         "ONE_MATRIX", 1L, "list", OneMatrixHandler );
     AssGVar( GVarName( "ONE_MATRIX" ), OneMatrixFunc );
 
+    InitHandlerFunc( InvMatrixHandler, "INV_MATRIX");
     InvMatrixFunc = NewFunctionC(
         "INV_MATRIX", 1L, "list", InvMatrixHandler );
     AssGVar( GVarName( "INV_MATRIX" ), InvMatrixFunc );
 
+    InitHandlerFunc( PowMatrixIntHandler, "POW_MATRIX_INT");
     InvMatrixFunc = NewFunctionC(
         "POW_MATRIX_INT", 2L, "list, int", PowMatrixIntHandler );
     AssGVar( GVarName( "POW_MATRIX_INT" ), PowMatrixIntFunc );

@@ -20,10 +20,11 @@ char *          Revision_intrprtr_c =
 #include        <assert.h>              /* assert                          */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -3942,9 +3943,9 @@ void InitIntrprtr ( void )
 {
     UInt	    lev;
 
-    InitGlobalBag( &IntrResult );
-    InitGlobalBag( &IntrState  );
-    InitGlobalBag( &StackObj   );
+    InitGlobalBag( &IntrResult, "interpreter: result"       );
+    InitGlobalBag( &IntrState,  "interpreter: state"        );
+    InitGlobalBag( &StackObj,   "interpreter: object stack" );
 
     /* The work of handling Info messages is delegated to the GAP level */
     ImportFuncFromLibrary( "InfoDecision", &InfoDecision );

@@ -26,6 +26,8 @@ InstallMethod( AbelianGroupCons,
     0,
 
 function( filter, ints )
+    local   grp;
+
     if not ForAll( ints, IsInt )  then
         Error( "<ints> must be a list of integers" );
     fi;
@@ -35,7 +37,10 @@ function( filter, ints )
 
     ints := Filtered( ints, x -> 1 < x );
     ints := List( ints, x -> CyclicGroupCons( IsPermGroup, x ) );
-    return CallFuncList( DirectProduct, ints );
+    grp  := CallFuncList( DirectProduct, ints );
+    SetSize( grp, Product(ints) );
+    SetIsAbelian( grp, true );
+    return grp;
 end );
 
 
@@ -148,25 +153,6 @@ end );
 
 #############################################################################
 ##
-#M  IsNaturalAlternatingGroup( <sym> )
-##
-InstallMethod( IsNaturalAlternatingGroup,
-    "size comparison",
-    true,
-    [ IsPermGroup ],
-    0,
-
-function( alt )
-    if 0 = NrMovedPoints(alt)  then
-        return IsTrivial(alt);
-    else
-        return Size(alt) * 2 = Factorial( NrMovedPoints(alt) );
-    fi;
-end );
-
-
-#############################################################################
-##
 #M  CyclicGroupCons( <IsPermGroup and IsRegularProp>, <n> )
 ##
 InstallMethod( CyclicGroupCons,
@@ -181,6 +167,7 @@ function( filter, n )
 
     c := Group( PermList( Concatenation( [2..n], [1] ) ) );
     SetSize( c, n );
+    SetIsCyclic( c, true );
     return c;
 end );
 
@@ -238,6 +225,64 @@ function( filters, dom )
     IsRange( dom );
     SetName( sym, Concatenation( "Sym", String( dom ) ) );
     return sym;
+end );
+
+
+#############################################################################
+##
+#M  SymmetricGroupCons( <IsPermGroup and IsRegularProp>, <deg> )
+##
+InstallMethod( SymmetricGroupCons,
+    "regular perm group with degree",
+    true,
+    [ IsPermGroup and IsRegularProp and IsFinite,
+      IsInt and IsPosRat ],
+    0,
+
+function( filter, deg )
+    return SymmetricGroupCons( IsPermGroup and IsRegularProp,
+                               [ 1 .. deg ] );
+end );
+
+
+#############################################################################
+##
+#M  SymmetricGroupCons( <IsPermGroup and IsRegularProp>, <dom> )
+##
+InstallOtherMethod( SymmetricGroupCons,
+    "regular perm group with domain",
+    true,
+    [ IsPermGroup and IsRegularProp and IsFinite,
+      IsDenseList ],
+    0,
+
+function( filter, dom )
+    local   alt;
+
+    alt := SymmetricGroupCons( IsPermGroup, dom );
+    alt := Operation( alt, AsList(alt), OnRight );
+    SetIsSymmetricGroup( alt, true );
+    return alt;
+end );
+
+
+#############################################################################
+##
+
+#M  IsNaturalAlternatingGroup( <sym> )
+##
+InstallMethod( IsNaturalAlternatingGroup,
+    "size comparison",
+    true,
+    [ IsPermGroup ],
+    0,
+
+function( alt )
+    if 0 = NrMovedPoints(alt)  then
+        return IsTrivial(alt);
+    else
+        return Size(alt) * 2 = Factorial( NrMovedPoints(alt) );
+    fi;
 end );
 
 
@@ -324,44 +369,6 @@ InstallMethod( PrintObj,
 
 function(sym)
     Print( "Sym( ", MovedPoints(sym), " )" );
-end );
-
-
-#############################################################################
-##
-#M  SymmetricGroupCons( <IsPermGroup and IsRegularProp>, <deg> )
-##
-InstallMethod( SymmetricGroupCons,
-    "regular perm group with degree",
-    true,
-    [ IsPermGroup and IsRegularProp and IsFinite,
-      IsInt and IsPosRat ],
-    0,
-
-function( filter, deg )
-    return SymmetricGroupCons( IsPermGroup and IsRegularProp,
-                               [ 1 .. deg ] );
-end );
-
-
-#############################################################################
-##
-#M  SymmetricGroupCons( <IsPermGroup and IsRegularProp>, <dom> )
-##
-InstallOtherMethod( SymmetricGroupCons,
-    "regular perm group with domain",
-    true,
-    [ IsPermGroup and IsRegularProp and IsFinite,
-      IsDenseList ],
-    0,
-
-function( filter, dom )
-    local   alt;
-
-    alt := SymmetricGroupCons( IsPermGroup, dom );
-    alt := Operation( alt, AsList(alt), OnRight );
-    SetIsSymmetricGroup( alt, true );
-    return alt;
 end );
 
 

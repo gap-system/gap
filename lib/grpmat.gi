@@ -11,6 +11,8 @@
 Revision.grpmat_gi :=
     "@(#)$Id$";
 
+InstallMethod( KnowsHowToDecompose, "matrix groups", true,
+        [ IsMatrixGroup, IsList ], 0, ReturnFalse );
 
 #############################################################################
 ##
@@ -42,6 +44,11 @@ InstallMethod( DefaultFieldOfMatrixGroup, "from one in char 0", true,
                                       else  TryNextMethod();  fi;
 end );
 
+InstallOtherMethod( DefaultFieldOfMatrixGroup,
+        "from source of nice monomorphism", true,
+        [ IsMatrixGroup and HasNiceMonomorphism ], 0,
+    grp -> DefaultFieldOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+
 
 #############################################################################
 ##
@@ -61,6 +68,11 @@ InstallMethod( DimensionOfMatrixGroup, "from one", true,
     [ IsMatrixGroup and HasOne ], 1,
     grp -> Length( One( grp ) ) );
 
+InstallOtherMethod( DimensionOfMatrixGroup,
+        "from source of nice monomorphism", true,
+        [ IsMatrixGroup and HasNiceMonomorphism ], 0,
+    grp -> DimensionOfMatrixGroup( Source( NiceMonomorphism( grp ) ) ) );
+
 
 #############################################################################
 ##
@@ -70,19 +82,44 @@ InstallOtherMethod( One, true, [ IsMatrixGroup ], 0,
     grp -> IdentityMat( DimensionOfMatrixGroup( grp ),
                         DefaultFieldOfMatrixGroup( grp ) ) );
 
+InstallOtherMethod( One, "from source of nice monomorphism", true,
+        [ IsMatrixGroup and HasNiceMonomorphism ], 0,
+    grp -> One( Source( NiceMonomorphism( grp ) ) ) );
+
+
+#############################################################################
+##
+#M  IsomorphismPermGroup( <mat-grp> )
+##
+InstallMethod( IsomorphismPermGroup, true, [ IsMatrixGroup and IsFinite ], 0,
+    function( grp )
+    local   nice;
+    
+    nice := SparseOperationHomomorphism( grp, One( grp ) );
+    SetRange( nice, Image( nice ) );
+    SetIsBijective( nice, true );
+    SetBase( nice!.externalSet, One( grp ) );
+    SetFilterObj( nice, IsOperationHomomorphismByBase );
+    return nice;
+end );
 
 #############################################################################
 ##
 #M  NiceMonomorphism( <mat-grp> )
 ##
 InstallMethod( NiceMonomorphism, true, [ IsMatrixGroup and IsFinite ], 0,
-    function( grp )
-    local   nice;
-    
-    nice := SparseOperationHomomorphism( grp, One( grp ) );
-    SetIsInjective( nice, true );
-    return nice;
-end );
+        IsomorphismPermGroup );
+#    function( grp )
+#    local   nice;
+#    
+#    nice := IsomorphismPermGroup( grp );
+#    SetNiceMonomorphism( grp, nice );
+#    if IsSolvableGroup( Image( nice ) )  then
+#        nice := nice * IsomorphismPcGroup( Image( nice ) );
+#        SetNiceMonomorphism( grp, nice );
+#    fi;
+#    return nice;
+#end );
 
 
 #############################################################################

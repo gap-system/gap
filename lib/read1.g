@@ -24,8 +24,13 @@ ReadLib( "rest.gi"     );
 ReadLib( "listcoef.gi" );
 
 ReadLib( "info.gd"     );
-ReadLib( "assert.gd"   );
 ReadLib( "info.gi"     );
+ReadLib( "assert.gd"   );
 ReadLib( "assert.gi"   );
 
+ReadLib( "files.gd"    );
+ReadLib( "streams.gd"  );
+ReadLib( "files.gi"    );
+ReadLib( "streams.gi"  );
 
+ReadLib( "help.g"      );

@@ -71,10 +71,11 @@ char *          Revision_blister_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* system dependent functions      */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 
+#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* generic call mechanism          */

@@ -225,10 +225,41 @@ InstallMethod( Length, true, [IsDefaultTupleRep], 0,
     return Length(ComponentsOfTuplesFamily( FamilyObj (tuple)));
 end);
 
+##############################################################################
+##
+#M  Inverse( <tuple> )
+##
+InstallMethod( Inverse, true, [IsTuple], 0,
+function( elm )
+    return Tuple( List( elm, x -> Inverse( x ) ) );
+end );
 
+##############################################################################
+##
+#M  One( <tuple> )
+##
+InstallMethod( One, true, [IsTuple], 0,
+function( elm )
+    return Tuple( List( elm, x -> One( x ) ) );
+end);
 
+##############################################################################
+##
+#M  \*( <tuple>, <tuple> )
+##
+InstallMethod( \*, true, [IsTuple, IsTuple ], 0,
+function( elm1, elm2 )
+    local n;
+    n := Length( elm1 );
+    return Tuple( List( [1..n], x -> elm1[x]*elm2[x] ) );
+end );
 
-
-
-
+##############################################################################
+##
+#M  \^( <tuple>, <tuple> ) 
+##
+InstallMethod( \^, true, [IsTuple, IsInt], 0,
+function( elm, x )
+    return Tuple( List( elm, y -> y^x ) );
+end);
 

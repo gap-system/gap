@@ -39,10 +39,11 @@ char *          Revision_sctable_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* Bag, NewBag                     */
 
+#include        "gasman.h"              /* Bag, NewBag                     */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -367,9 +368,11 @@ Obj             SCTableProductHandler (
 */
 void            InitSCTable ( void )
 {
+    InitHandlerFunc( SCTableEntryHandler, "SC_TABLE_ENTRY" );
     SCTableEntryFunc = NewFunctionC(
         "SC_TABLE_ENTRY", 4L, "table,i,j,k", SCTableEntryHandler );
     AssGVar( GVarName( "SC_TABLE_ENTRY" ), SCTableEntryFunc );
+    InitHandlerFunc( SCTableProductHandler, "SC_TABLE_PRODUCT" );
     SCTableProductFunc = NewFunctionC(
         "SC_TABLE_PRODUCT", 3L, "table,list1,list2", SCTableProductHandler );
     AssGVar( GVarName( "SC_TABLE_PRODUCT" ), SCTableProductFunc );

@@ -669,9 +669,27 @@ extern  Bag                     MarkedBags;
 
 /****************************************************************************
 **
+*V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
+*/
+#ifndef NR_GLOBAL_BAGS
+#define NR_GLOBAL_BAGS  20000L
+#endif
+
+
+typedef struct {
+    Bag *                   addr [NR_GLOBAL_BAGS];
+    Char *                  cookie [NR_GLOBAL_BAGS];
+    UInt                    nr;
+} TypeGlobalBags;
+
+extern TypeGlobalBags GlobalBags;
+
+
+/****************************************************************************
+**
 *F  InitGlobalBag(<addr>) . . . . . inform Gasman about global bag identifier
 **
-**  'InitGlobalBag( <addr> )'
+**  'InitGlobalBag( <addr>, <cookie> )'
 **
 **  'InitGlobalBag'  informs {\Gasman} that there is  a bag identifier at the
 **  address <addr>, which must be of  type '(Bag\*)'.  {\Gasman} will look at
@@ -686,9 +704,15 @@ extern  Bag                     MarkedBags;
 **  by default.   If the application has  more global variables that may hold
 **  bag  identifier, you  have to  compile  {\Gasman} with a  higher value of
 **  'NR_GLOBAL_BAGS', i.e., with 'make COPTS=-DNR_GLOBAL_BAGS=<nr>'.
+**
+**  <cookie> is a C string, which should uniquely identify this global
+**  bag from all others.  It is used  in reconstructing  the Workspace
+**  after a save and load
 */
+
 extern  void            InitGlobalBag (
-            Bag *               addr );
+            Bag *               addr,
+	    Char *              cookie );
 
 
 /****************************************************************************
@@ -856,6 +880,17 @@ extern  void            InitBags (
             UInt                dirty,
             TypeAbortFuncBags   abort_func );
 
+/****************************************************************************
+**
+*F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
+**
+**  This calls a C function on every bag, including garbage ones, by simply
+**  walking the masterpointer area. Not terribly safe
+**
+*/
+
+extern void CallbackForAllBags(
+     void (*func)() );
 
 
 /****************************************************************************

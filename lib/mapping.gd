@@ -194,6 +194,22 @@ HasFamilySource := Tester( FamilySource );
 
 #############################################################################
 ##
+#A  FamiliesOfGeneralMappingsAndRanges( <Fam> )
+##
+##  is a list that stores at the odd positions the families of general
+##  mappings with source in the family <Fam>, at the even positions the
+##  families of ranges of the general mappings.
+##
+FamiliesOfGeneralMappingsAndRanges := NewAttribute(
+    "FamiliesOfGeneralMappingsAndRanges", IsFamily, "mutable" );
+SetFamiliesOfGeneralMappingsAndRanges := Setter(
+    FamiliesOfGeneralMappingsAndRanges );
+HasFamiliesOfGeneralMappingsAndRanges := Tester(
+    FamiliesOfGeneralMappingsAndRanges );
+
+
+#############################################################################
+##
 #P  IsConstantTimeAccessGeneralMapping( <map> )
 ##
 ##  is 'true' if the underlying relation of the general mapping <map>

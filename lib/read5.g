@@ -33,6 +33,7 @@ ReadLib( "vspc.gi"     );
 ReadLib( "vspcrow.gi"  );
 ReadLib( "vspcmat.gi"  );
 ReadLib( "vspchom.gi"  );
+ReadLib( "lattice.gi"  );
 
 ReadLib( "algebra.gi"  );
 ReadLib( "algfp.gi"    );

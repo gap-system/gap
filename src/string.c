@@ -49,10 +49,11 @@ char *          Revision_string_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* system dependent functions      */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 
+#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -174,7 +175,7 @@ again:
         val = ErrorReturnObj(
             "<val> must be an integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
-            "you can return a string for <val>" );
+            "you can return an integer for <val>" );
     }
     chr = INT_INTOBJ(val);
     if ( 255 < chr || chr < 0 ) {
@@ -186,6 +187,27 @@ again:
 
     /* return the character                                                */
     return ObjsChar[chr];
+}
+
+
+/****************************************************************************
+**
+*F  FuncINT_CHAR( <self>, <char> )  . . . . . . . . . . . . . integer by char
+*/
+Obj FuncINT_CHAR (
+    Obj		    self,
+    Obj             val )
+{
+    /* get and check the character                                         */
+    while ( ! IS_INTOBJ(val) ) {
+        val = ErrorReturnObj(
+            "<val> must be a character (not a %s)",
+            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            "you can return a character for <val>" );
+    }
+
+    /* return the character                                                */
+    return INTOBJ_INT(*(UChar*)ADDR_OBJ(val));
 }
 
 
@@ -334,7 +356,7 @@ Obj             KindString (
 **
 **  'CleanString' is the function in 'CleanObjFuncs' for strings.
 */
-Obj             CopyString (
+Obj CopyString (
     Obj                 list,
     Int                 mut )
 {
@@ -1110,24 +1132,39 @@ Obj             IsStringConvHandler (
 
 /****************************************************************************
 **
+
 *F  InitString()  . . . . . . . . . . . . . . . .  initializes string package
 **
 **  'InitString' initializes the string package.
+**
+**  CharCookie is a space for the cookies passed into InitGlobalBags with the
+**  character   constants. This  must  be   static, and   different for  each
+**  character, as the cookies are only copied as pointers in InitGlobalBags.
+**
 */
-void            InitString ( void )
-{
-    Int                 i;
-    Int                 t1, t2;
+static Char CharCookie[256][17];
 
+void InitString ( void )
+{
+    Int                 i,j;
+    Int                 t1, t2;
+    Char *              cookie_base = "string: char ";
+    
     /* install the marking function                                        */
-    InfoBags[           T_CHAR          ].name = "character";
-    InitMarkFuncBags(   T_CHAR          , MarkNoSubBags );
+    InfoBags[         T_CHAR ].name = "character";
+    InitMarkFuncBags( T_CHAR , MarkNoSubBags );
 
     /* make all the character constants once and for all                   */
     for ( i = 0; i < 256; i++ ) {
         ObjsChar[i] = NewBag( T_CHAR, 1L );
         *(UChar*)ADDR_OBJ(ObjsChar[i]) = (UChar)i;
-        InitGlobalBag( &ObjsChar[i] );
+	for (j = 0; j < 13; j++)
+	  CharCookie[i][j] = cookie_base[j];
+	CharCookie[i][13] = '0' + i/100;
+	CharCookie[i][14] = '0' + (i % 100)/10;
+	CharCookie[i][15] = '0' + i % 10;
+	CharCookie[i][16] = '\0';
+        InitGlobalBag( &ObjsChar[i], &(CharCookie[i][0]) );
     }
 
     /* install the kind method                                             */
@@ -1242,10 +1279,12 @@ void            InitString ( void )
     for ( t1 = FIRST_EXTERNAL_TYPE; t1 <= LAST_EXTERNAL_TYPE; t1++ ) {
         IsStringFuncs[ t1 ] = IsStringObject;
     }
+    InitHandlerFunc( IsStringHandler, "IS_STRING" );
     IsStringFilt = NewFilterC(
         "IS_STRING", 1L, "obj", IsStringHandler );
     AssGVar( GVarName( "IS_STRING" ), IsStringFilt );
 
+    InitHandlerFunc( ConvStringHandler, "CONV_STRING" );
     ConvStringFunc = NewFunctionC(
         "CONV_STRING", 1L, "string", ConvStringHandler );
     AssGVar( GVarName( "CONV_STRING" ), ConvStringFunc );
@@ -1255,12 +1294,19 @@ void            InitString ( void )
     for ( i = 0; i < SIZE_OBJ(IsStringFilt)/sizeof(Obj); i++ ) {
         ADDR_OBJ(IsStringConvFilt)[i] = ADDR_OBJ(IsStringFilt)[i];
     }
+    InitHandlerFunc( IsStringConvHandler, "IS_STRING_CONV" );
     HDLR_FUNC(IsStringConvFilt,1) = IsStringConvHandler;
     AssGVar( GVarName( "IS_STRING_CONV" ), IsStringConvFilt );
 
+    InitHandlerFunc( FuncCHAR_INT, "CHAR_INT" );
     AssGVar( GVarName( "CHAR_INT" ),
          NewFunctionC( "CHAR_INT", 1L, "integer",
                     FuncCHAR_INT ) );
+
+    InitHandlerFunc( FuncINT_CHAR, "INT_CHAR" );
+    AssGVar( GVarName( "INT_CHAR" ),
+         NewFunctionC( "INT_CHAR", 1L, "character",
+                    FuncINT_CHAR ) );
 }
 
 

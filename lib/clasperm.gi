@@ -8,6 +8,9 @@
 ##  classes for permutation groups.
 ##
 #H  $Log$
+#H  Revision 4.9  1997/04/14 08:32:29  htheisse
+#H  made use of `ExternalOrbitsStabilizers'
+#H
 #H  Revision 4.8  1997/04/01 09:00:53  htheisse
 #H  replaced `PreImage' by `PreImages'
 #H
@@ -409,17 +412,16 @@ FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
                    x -> Position( representatives, classimages[ x ] ) );
             Add( genimages, PermList( prm ) );
         od;
-        orbs := ExternalOrbits( N, [ 1 .. Length( rationalClasses ) ],
+        orbs := ExternalOrbitsStabilizers( N,
+                        [ 1 .. Length( rationalClasses ) ],
                         Concatenation( gensNmodS, gensS ),
                         Concatenation( genimages, List( gensS, g -> () ) ) );
         fusedClasses := [  ];
         for orb  in orbs  do
             cl := rationalClasses[ Representative( orb ) ];
-            if HasStabilizerOfExternalSet( orb )  then
-                SetStabilizerOfExternalSet( cl, Centralizer
+            SetStabilizerOfExternalSet( cl, Centralizer
                     ( StabilizerOfExternalSet( orb ), Representative( cl ),
                       StabilizerOfExternalSet( cl ) ) );
-            fi;
             Add( fusedClasses, cl );
         od;
         

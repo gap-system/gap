@@ -1227,9 +1227,9 @@ end);
 
 #############################################################################
 ##
-#F  ChiefSeriesPcGroup(G)
+#F  ChiefSeriesUnderActionPcGroup( <U>, <G> )
 ##
-ChiefSeriesPcGroup := function(G)
+ChiefSeriesUnderActionPcGroup := function( U, G )
 local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
   e:=ElementaryAbelianSeries(G);
   ser:=[G];
@@ -1240,7 +1240,7 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
     else
       pcgs:=InducedPcgsWrtHomePcgs(e[i-1]);
       mpcgs:=pcgs mod InducedPcgsWrtHomePcgs(e[i]);
-      op:=LinearOperationLayer(GeneratorsOfGroup(G),mpcgs);
+      op:=LinearOperationLayer(GeneratorsOfGroup(U),mpcgs);
       m:=GModuleByMats(op,GF(RelativeOrderOfPcElement(pcgs,pcgs[1])));
       cs:=MTX.BasesCompositionSeries(m);
       Sort(cs,function(a,b) return Length(a)>Length(b);end);
@@ -1257,9 +1257,17 @@ local e,ser,i,j,k,pcgs,mpcgs,op,m,cs,n;
   od;
   return ser;
 end;
+#T why not installed directly as method?
 
-InstallMethod(ChiefSeries,"pc group",true,[IsPcGroup],0,
-  ChiefSeriesPcGroup);
+ChiefSeriesPcGroup := G -> ChiefSeriesUnderActionPcGroup( G, G );
+#T necessary at all?
+
+InstallMethod( ChiefSeriesUnderAction,
+    "method for a pcgs computable group",
+    IsIdentical,
+    [ IsGroup, IsGroup and IsPcgsComputable ], 0,
+    ChiefSeriesUnderActionPcGroup );
+
 
 #############################################################################
 ##

@@ -12,10 +12,11 @@ char *          Revision_bool_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -287,11 +288,11 @@ void            InitBool ( void )
     InitMarkFuncBags(   T_BOOL          , MarkNoSubBags );
 
     /* make the two bags                                                   */
-    InitGlobalBag( &True  );
+    InitGlobalBag( &True, "TRUE"  );
     True  = NewBag( T_BOOL, 0L );
-    InitGlobalBag( &False );
+    InitGlobalBag( &False, "FALSE" );
     False = NewBag( T_BOOL, 0L );
-    InitGlobalBag( &Fail );
+    InitGlobalBag( &Fail, "FAIL" );
     Fail = NewBag( T_BOOL, 0L );
     AssGVar( GVarName( "FAIL" ), Fail );
 

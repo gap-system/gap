@@ -75,7 +75,7 @@ InstallMethod( RespectsOne,
     R:= Range(  map );
     return     IsMagmaWithOne( S )
            and IsMagmaWithOne( R )
-           and One( R ) in ImagesElm( One( R ) );
+           and One( R ) in ImagesElm( map, One( S ) );
     end );
 
 
@@ -434,7 +434,7 @@ InstallMethod( RespectsZero,
     R:= Range(  map );
     return     IsAdditiveMagmaWithZero( S )
            and IsAdditiveMagmaWithZero( R )
-           and Zero( R ) in ImagesElm( Zero( S ) );
+           and Zero( R ) in ImagesElm( map, Zero( S ) );
     end );
 
 

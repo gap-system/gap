@@ -12,10 +12,11 @@ char *          Revision_ariths_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* InfoBags                        */
 
+#include        "gasman.h"              /* InfoBags                        */
 #include        "objects.h"             /* TYPE_OBJ, FIRST_VIRTUAL_TYPE,...*/
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* ObjFunc                         */

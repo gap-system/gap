@@ -16,10 +16,11 @@ char *          Revision_precord_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* global variables                */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -1230,6 +1231,7 @@ void            InitPRecord ( void )
 
 
     /* install the internal functions                                      */
+    InitHandlerFunc( RecNamesHandler, "REC_NAMES" );
     RecNamesFunc = NewFunctionC(
         "REC_NAMES", 1L, "rec", RecNamesHandler );
     AssGVar( GVarName( "REC_NAMES" ), RecNamesFunc );

@@ -68,7 +68,12 @@ InstallAttributeMethodByGroupGeneralMappingByImages :=
             "also for `AsGroupGeneralMappingByImages'", true,
             [ HasAsGroupGeneralMappingByImages, value_filter ], SUM_FLAGS,
             function( hom, value )
-                Setter( attr )( AsGroupGeneralMappingByImages( hom ), value );
+                local    asggmbi;
+
+                asggmbi := AsGroupGeneralMappingByImages( hom );
+                if not HasAsGroupGeneralMappingByImages( asggmbi )  then
+                    Setter( attr )( asggmbi, value );
+                fi;
                 TryNextMethod();
             end );
 end;

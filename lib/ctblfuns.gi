@@ -2960,6 +2960,64 @@ InstallMethod( UglyVector,
     end );
 
 
+#############################################################################
+##
+#M  ScalarProduct( <V>, <chi>, <psi> ) . . . .  for module of class functions
+##
+##  Left modules of class functions carry the usual bilinear form.
+##
+InstallOtherMethod( ScalarProduct,
+    "method for left module of class functions, and two class functions",
+    IsCollsElmsElms,
+    [ IsFreeLeftModule and IsClassFunctionsSpaceRep,
+      IsClassFunction, IsClassFunction ], 0,
+    function( V, x1, x2 )
+
+     local tbl,     # character table
+           i,       # loop variable
+           scpr,    # scalar product, result
+           weight;  # lengths of conjugacy classes
+
+     tbl:= V!.elementsunderlying;
+     weight:= SizesConjugacyClasses( tbl );
+     x1:= ValuesOfClassFunction( x1 );
+     x2:= ValuesOfClassFunction( x2 );
+     scpr:= 0;
+     for i in [ 1 .. Length( x1 ) ] do
+       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+     od;
+     return scpr / Size( tbl );
+     end );
+
+
+#############################################################################
+##
+#M  ScalarProduct( <V>, <chivals>, <psivals> )  . . for module of class funs.
+##
+##  Left modules of class functions carry the usual bilinear form.
+##
+InstallOtherMethod( ScalarProduct,
+    "method for module of class functions, and two values lists",
+    Is2Identical3,
+    [ IsFreeLeftModule and IsClassFunctionsSpaceRep,
+      IsHomogeneousList, IsHomogeneousList ], 0,
+    function( V, x1, x2 )
+
+     local tbl,     # character table
+           i,       # loop variable
+           scpr,    # scalar product, result
+           weight;  # lengths of conjugacy classes
+
+     tbl:= V!.elementsunderlying;
+     weight:= SizesConjugacyClasses( tbl );
+     scpr:= 0;
+     for i in [ 1 .. Length( x1 ) ] do
+       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+     od;
+     return scpr / Size( tbl );
+     end );
+
+
 ##############################################################################
 ##
 #F  NormalSubgroupClasses( <G>, <classes> )

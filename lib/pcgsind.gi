@@ -389,7 +389,7 @@ InstallMethod( InducedPcgsByGeneratorsWithImages,
 
 function( pcgs, gens, imgs )
     local  ro, max, id, igs, chain, new, seen, old, u, uw, up, e, x, c, 
-           cw, d, i, j;
+           cw, d, i, j, f;
 
     # do family check here to avoid problems with the empty list
     if not IsIdentical( FamilyObj(pcgs), FamilyObj(gens) )  then
@@ -398,6 +398,9 @@ function( pcgs, gens, imgs )
     if Length( gens ) <> Length( imgs ) then
         Error( "<gens> and <imgs> must have equal length");
     fi;
+
+    # get the trivial case first
+    if gens = AsList( pcgs ) then return [pcgs, imgs]; fi;
 
     # get relative orders and composition length
     ro  := RelativeOrders(pcgs);
@@ -413,7 +416,10 @@ function( pcgs, gens, imgs )
     chain := max+1;
 
     # <new> contains a list of generators and images
-    new := List( Reversed([1..Length(gens)]), i -> [gens[i], imgs[i]]);
+    new := List( [1..Length(gens)], i -> [gens[i], imgs[i]]);
+    f   := function( x, y ) return DepthOfPcElement( pcgs, x[1] )
+                                   < DepthOfPcElement( pcgs, y[1] ); end;
+    Sort( new, f );
 
     # <seen> holds a list of words already seen
     seen := Union( Set( gens ), [id[1]] );

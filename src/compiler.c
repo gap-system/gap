@@ -17,10 +17,11 @@ char * Revision_compiler_c =
 #include        <stdarg.h>              /* variable argument list macros   */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* InitGVars                       */
 
 #include        "calls.h"               /* NARG_FUNC, NLOC_FUNC, NAMS_FU...*/
@@ -5791,12 +5792,13 @@ void            InitCompiler ( void )
 
 
     /* announce the global variables                                       */
-    InitGlobalBag( &CompInfoGVar );
-    InitGlobalBag( &CompInfoRNam );
-    InitGlobalBag( &CompFunctions  );
+    InitGlobalBag( &CompInfoGVar, "CompInfoGVar" );
+    InitGlobalBag( &CompInfoRNam, "CompInfoRNam" );
+    InitGlobalBag( &CompFunctions, "CompFunctions"  );
 
 
     /* make the compile function                                           */
+    InitHandlerFunc(CompileFuncHandler,"Compile function");
     CompileFuncFunc = NewFunctionC(
         "CompileFunc", 5L, "output, func, name, magic1, magic2",
         CompileFuncHandler );

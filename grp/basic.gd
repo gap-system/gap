@@ -117,7 +117,15 @@ end;
 
 #############################################################################
 ##
+#P  IsOneGeneratorGroup
+##
+IsOneGeneratorGroup := NewProperty(
+    "IsOneGeneratorGroup",
+    IsGroup );
 
+
+#############################################################################
+##
 #O  CyclicGroupCons( <filter>, <n> )
 ##
 CyclicGroupCons := NewConstructor(

@@ -33,9 +33,9 @@
 
 
 #include       "system.h"
-#include       "scanner.h"
 #include       "gasman.h"
 #include       "objects.h"
+#include       "scanner.h"
 #include       "bool.h"
 #include       "calls.h"
 #include       "gap.h"
@@ -1738,15 +1738,24 @@ void    InitDeepThought( void )
     exp = RNamName("exp");
     bas = RNamName("bas");
     /*  install the internal functions                                      */
+    InitHandlerFunc( FuncMakeFormulaVector, "dt: make formula vector");
     AssGVar( GVarName( "MakeFormulaVector" ), NewFunctionC("MakeFormulaVector",
              2L, "tree, presentation", FuncMakeFormulaVector )       );
+
+    InitHandlerFunc( FuncFindNewReps, "dt: find new reps");
     AssGVar( GVarName( "FindNewReps" ), NewFunctionC("FindNewReps",
              4L, "tree, representatives, presentation, maximum",
 	     FuncFindNewReps )                                    );
+
+    InitHandlerFunc( FuncUnmarkTree, "dt: unmark tree");
     AssGVar( GVarName( "UnmarkTree" ), NewFunctionC("UnmarkTree",
              1L, "tree",	     FuncUnmarkTree )  );
+
+    InitHandlerFunc( FuncGetPols, "dt: get polynomials");
     AssGVar( GVarName( "GetPols" ), NewFunctionC(" GetPols",
              3L, "list, presentation, polynomials", FuncGetPols)      );
+    
+    InitHandlerFunc( Funcposition, "dt: evaluation");
     AssGVar( GVarName( "DT_evaluation" ), NewFunctionC( "DT_evaluation",
 	     1L, "vector", Funcposition)         );
     InitFopyGVar( GVarName( "dt_add" ), &Dt_add );

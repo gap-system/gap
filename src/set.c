@@ -24,10 +24,11 @@ char *          Revision_set_c =
 #include        <assert.h>              /* assert                          */
 
 #include        "system.h"              /* system dependent functions      */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 
+#include        "gasman.h"              /* NewBag, ResizeBag, CHANGED_BAG  */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -872,34 +873,42 @@ Obj             SubtractSetHandler (
 void            InitSet ( void )
 {
     /* install internal functions                                          */
+    InitHandlerFunc( SetListHandler, "LIST_SORTED_LIST" );
     SetListFunc = NewFunctionC(
         "LIST_SORTED_LIST", 1L, "list", SetListHandler );
     AssGVar( GVarName( "LIST_SORTED_LIST" ), SetListFunc );
 
+    InitHandlerFunc( IsEqualSetHandler, "IS_EQUAL_SET" );
     IsEqualSetFunc = NewFunctionC(
         "IS_EQUAL_SET", 2L, "set1, set2", IsEqualSetHandler );
     AssGVar( GVarName( "IS_EQUAL_SET" ), IsEqualSetFunc );
+    InitHandlerFunc( IsSubsetSetHandler, "IS_SUBSET_SET" );
     IsSubsetSetFunc = NewFunctionC(
         "IS_SUBSET_SET", 2L, "set1, set2", IsSubsetSetHandler );
     AssGVar( GVarName( "IS_SUBSET_SET" ), IsSubsetSetFunc );
+    InitHandlerFunc( AddSetHandler, "ADD_SET" );
     AddSetFunc = NewFunctionC(
         "ADD_SET", 2L, "set, val", AddSetHandler );
     AssGVar( GVarName( "ADD_SET" ), AddSetFunc );
+    InitHandlerFunc( RemoveSetHandler, "REM_SET" );
     RemoveSetFunc = NewFunctionC(
         "REM_SET", 2L, "set, val", RemoveSetHandler );
     AssGVar( GVarName( "REM_SET" ), RemoveSetFunc );
+    InitHandlerFunc( UniteSetHandler, "UNITE_SET" );
     UniteSetFunc = NewFunctionC(
         "UNITE_SET", 2L, "set1, set2", UniteSetHandler );
     AssGVar( GVarName( "UNITE_SET" ), UniteSetFunc );
+    InitHandlerFunc( IntersectSetHandler, "INTER_SET" );
     IntersectSetFunc = NewFunctionC(
         "INTER_SET", 2L, "set1, set2", IntersectSetHandler );
     AssGVar( GVarName( "INTER_SET" ), IntersectSetFunc );
+    InitHandlerFunc( SubtractSetHandler, "SUBTR_SET" );
     SubtractSetFunc = NewFunctionC(
         "SUBTR_SET", 2L, "set1, set2", SubtractSetHandler );
     AssGVar( GVarName( "SUBTR_SET" ), SubtractSetFunc );
 
     /* create the temporary union bag                                      */
-    InitGlobalBag( &TmpUnion );
+    InitGlobalBag( &TmpUnion, "set: temporary union" );
     TmpUnion = NEW_PLIST( T_PLIST_HOM_SSORT, 1024 );
     SET_LEN_PLIST( TmpUnion, 1024 );
 }

@@ -86,11 +86,15 @@ FrobeniusCharacterValue := NewOperationArgs( "FrobeniusCharacterValue" );
 
 #############################################################################
 ##
-#F  Tensored( <chars1>, <chars2> )
+#O  Tensored( <chars1>, <chars2> )
 ##
-##  returns the list of tensor products of <chars1> with <chars2>.
+##  Let <chars1> and <chars2> be lists of class functions of the same
+##  character table.
+##  `Tensored' returns the list of tensor products of all in <chars1> with
+##  all in <chars2>.
 ##
-Tensored := NewOperationArgs( "Tensored" );
+Tensored := NewOperation( "Tensored",
+    [ IsClassFunctionCollection, IsClassFunctionCollection ] );
 
 
 #############################################################################

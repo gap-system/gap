@@ -69,31 +69,11 @@ end;
 
 #############################################################################
 ##
-
-#F  Read( <name> )  . . . . . . . . . . . . . . . . read in file named <name>
+#F  InfoRead? . . . . . . . . . . . . . . . . . . . . print what file is read
 ##
-READ_INDENT := "";
-
 if DEBUG_LOADING           then InfoRead1 := Print;   fi;
 if not IsBound(InfoRead1)  then InfoRead1 := Ignore;  fi;
 if not IsBound(InfoRead2)  then InfoRead2 := Ignore;  fi;
-
-Read := function ( name )
-    local   readIndent,  found;
-
-    readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
-    APPEND_LIST_INTR( READ_INDENT, "  " );
-    InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
-    found := READ(name);
-    READ_INDENT := readIndent;
-    if found and READ_INDENT = ""  then
-        InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
-    fi;
-    if not found  then
-        Error( "file \"", name, "\" must exist and be readable" );
-    fi;
-    #return found;
-end;
 
 
 #############################################################################

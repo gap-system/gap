@@ -430,21 +430,15 @@ end;
 ## (i.e. each has leading coefficient 1 in a unique place).
 ## SMTX.InducedActionSubmodule ( module, sub ) computes the submodule of
 ## module for which sub is the basis.
-## If  sub is empty or generates the whole space, then the empty sequence
-## is returned.
 ## If sub does not generate a submodule then fail is returned.
 SMTX.InducedActionSubmodule := function ( module, sub )
    local   ans, dim, subdim, smodule,F;
 
-   ans := [];
    subdim := Length (sub);
    if subdim = 0 then
-      return ans;
+      return List(module.generators,i->[[]]);
    fi;
    dim := SMTX.Dimension(module);
-   if subdim = dim then
-      return ans;
-   fi;
    F:=SMTX.Field(module);
 
    ans:=SMTX.SubQuotActions(SMTX.Generators(module),
@@ -473,21 +467,16 @@ end;
 ## module is a module record, and sub is a list of generators of a submodule.
 ## IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
 ## (i.e. each has leading coefficient 1 in a unique place).
-## If  sub is empty or generates the whole space, then the empty sequence
-## is returned. Otherwise, qmodule is returned, where qmodule
+## Qmodule is returned, where qmodule
 ## is the quotient module.
 ## 
 SMTX.InducedActionFactorModule := function ( module, sub )
 local   ans, dim, subdim, F,qmodule;
 
-   ans := [];
    subdim := Length (sub);
-   if subdim=0 then
-      return ans;
-   fi;
    dim := SMTX.Dimension(module);
    if subdim = dim then
-      return ans;
+      return List(module.generators,i->[[]]);
    fi;
 
    F:=SMTX.Field(module);
@@ -516,8 +505,7 @@ end;
 ## SMTX.InducedAction computes the submodule and quotient
 ## and the original module with its matrices written wrt to the basis used
 ## to compute smodule and qmodule. 
-## If  sub is empty or generates the whole space, then the empty sequence
-## is returned. Otherwise, [smodule, qmodule, nmodule] is returned, 
+## [smodule, qmodule, nmodule] is returned, 
 ## where smodule is the submodule and qmodule the quotient module.
 ## The matrices of nmodule have the form  A  0  where  A  and  B  are the
 ##                                        C  B
@@ -533,15 +521,8 @@ local module,sub,typ,ans,dim,subdim,F,one,erg;
    else
      typ:=7;
    fi;
-   ans := [];
    subdim := Length (sub);
-   if subdim=0 then
-      return ans;
-   fi;
    dim := SMTX.Dimension(module);
-   if subdim=dim then
-      return ans;
-   fi;
    F := SMTX.Field(module); one := One (F);
 
    erg:=SMTX.SubQuotActions(SMTX.Generators(module),

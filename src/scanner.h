@@ -32,6 +32,7 @@ char *          Revision_scanner_h =
 
 /****************************************************************************
 **
+
 *V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
 **
 **  The  variable 'Symbol' contains the current  symbol read from  the input.
@@ -375,6 +376,149 @@ extern  void            Pr (
 
 /****************************************************************************
 **
+
+*T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
+**
+**  'TypInputFile' describes the  information stored  for  open input  files:
+**
+**  'isstream' is 'true' if input come from a stream.
+**
+**  'file'  holds the  file identifier  which  is received from 'SyFopen' and
+**  which is passed to 'SyFgets' and 'SyFclose' to identify this file.
+**
+**  'name' is the name of the file, this is only used in error messages.
+**
+**  'line' is a  buffer that holds the  current input  line.  This is  always
+**  terminated by the character '\0'.  Because 'line' holds  only part of the
+**  line for very long lines the last character need not be a <newline>.
+**
+**  'ptr' points to the current character within that line.  This is not used
+**  for the current input file, where 'In' points to the  current  character.
+**
+**  'number' is the number of the current line, is used in error messages.
+**
+**  'stream' is none zero if the input points to a stream.
+**
+**  'sline' contains the next line from the stream as GAP string.
+**
+*/
+typedef struct {
+    UInt        isstream;
+    Int         file;
+    Char        name [256];
+    Char        line [256];
+    Char *      ptr;
+    UInt        symbol;
+    Int         number;
+    Obj         stream;
+    Obj         sline;
+    Int         spos;
+} TypInputFile;
+
+
+
+/****************************************************************************
+**
+*V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
+*V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
+*V  In  . . . . . . . . . . . . . . . . . pointer to current character, local
+**
+**  'InputFiles' is the stack of the open input  files.  It is represented as
+**  an array of structures of type 'TypInputFile'.
+**
+**  'Input' is a pointer to the current input file.   It points to the top of
+**  the stack 'InputFiles'.
+**
+**  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
+**  current input character.  It points into the buffer 'Input->line'.
+*/
+
+extern TypInputFile    InputFiles [16];
+extern TypInputFile *  Input;
+extern Char *          In;
+
+
+/****************************************************************************
+**
+*T  TypOutputFiles  . . . . . . . . . structure of an open output file, local
+*V  OutputFiles . . . . . . . . . . . . . . stack of open output files, local
+*V  Output  . . . . . . . . . . . . . . pointer to current output file, local
+**
+**  'TypOutputFile' describes the information stored for open  output  files:
+**  'file' holds the file identifier which is  received  from  'SyFopen'  and
+**  which is passed to  'SyFputs'  and  'SyFclose'  to  identify  this  file.
+**  'line' is a buffer that holds the current output line.
+**  'pos' is the position of the current character on that line.
+**
+**  'OutputFiles' is the stack of open output files.  It  is  represented  as
+**  an array of structures of type 'TypOutputFile'.
+**
+**  'Output' is a pointer to the current output file.  It points to  the  top
+**  of the stack 'OutputFiles'.
+*/
+typedef struct {
+    Int         file;
+    Char        line [256];
+    Int         pos;
+    Int         indent;
+    Int         spos;
+    Int         sindent;
+}       TypOutputFile;
+
+extern TypOutputFile   OutputFiles [16];
+extern TypOutputFile * Output;
+
+
+/****************************************************************************
+**
+*V  InputLog  . . . . . . . . . . . . . . . file identifier of logfile, local
+**
+**  'InputLog' is the file identifier of the current input logfile.  If it is
+**  not -1 the    scanner echoes all input   from  the files  '*stdin*'   and
+**  '*errin*' to this file.
+*/
+extern Int             InputLog;
+
+
+/****************************************************************************
+**
+*V  OutputLog . . . . . . . . . . . . . . . file identifier of logfile, local
+**
+**  'OutputLog' is the file identifier of  the current output logfile.  If it
+**  is  not -1  the  scanner echoes  all output  to  the files '*stdout*' and
+**  '*errout*' to this file.
+*/
+extern Int             OutputLog;
+
+
+/****************************************************************************
+**
+*V  TestInput . . . . . . . . . . . . .  file identifier of test input, local
+*V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
+*V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
+**
+**  'TestInput' is the file  identifier of the  file for test input.  If this
+**  is not -1 and 'GetLine'  reads a line  from  'TestInput' that begins with
+**  '#>' 'GetLine'  assumes that this  was  expected as   output that did not
+**  appear and echoes this input line to 'TestOutput'.
+**
+**  'TestOutput' is the current output file  for test output.  If 'TestInput'
+**  is not -1 then 'PutLine' compares every line that is about to  be printed
+**  to 'TestOutput' with the next line from 'TestInput'.  If this line starts
+**  with '#>' and the rest of it  matches the output  line the output line is
+**  not printed and the input comment line is discarded.  Otherwise 'PutLine'
+**  prints the output line and does not discard the input line.
+**
+**  'TestLine' holds the one line that is read from 'TestInput' to compare it
+**  with a line that is about to be printed to 'TestOutput'.
+*/
+extern TypInputFile *  TestInput;
+extern TypOutputFile * TestOutput;
+extern Char            TestLine [256];
+
+
+/****************************************************************************
+**
 *F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
 **
 **  'OpenInput' opens  the file with  the name <filename>  as  current input.
@@ -643,6 +787,7 @@ extern  UInt            CloseTest ( void );
 
 /****************************************************************************
 **
+
 *F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
 **
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the

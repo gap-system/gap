@@ -567,7 +567,7 @@ GeneralStepClEANS := function( H, U, N, cl )
            aff,        # <N> as affine space
            xset,       # affine operation of <C> on <aff>
            imgs,  M,   # generating matrices for affine operation
-           orbs,  orb, # orbits of affine operation
+           orb,        # orbit of affine operation
            Rep,        # representative function to use for <orb>
            n,  k,      # cf. Mecky--Neub\"user paper
            cls,rep,pos,# set of classes with canonical representatives
@@ -650,8 +650,7 @@ GeneralStepClEANS := function( H, U, N, cl )
         od;
         
     else
-        orbs := ExternalOrbits( xset );
-        for orb  in orbs  do
+        for orb  in ExternalOrbitsStabilizers( xset )  do
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                        CanonicalRepresentativeOfExternalSet( orb ){ ran } );
             c := CorrectConjugacyClass( orb, H, U, h, rep, N, cNh );

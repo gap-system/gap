@@ -17,10 +17,11 @@ char * Revision_opers_c =
 #include        <assert.h>
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* generic call mechanism          */
@@ -5114,39 +5115,108 @@ void InitOpers ( void )
 {
     Int                        i;
 
+    /* declare the handlers used in various places */
+    InitHandlerFunc( DoFilter, "DoFilter");
+    InitHandlerFunc( DoSetFilter, "DoSetFilter");
+    InitHandlerFunc( DoAndFilter, "DoAndFilter");
+    InitHandlerFunc( DoSetAndFilter, "DoSetAndFilter");
+    InitHandlerFunc( DoReturnTrueFilter, "DoReturnTrueFilter");
+    InitHandlerFunc( DoSetReturnTrueFilter, "DoSetReturnTrueFilter");
+    
+    InitHandlerFunc( DoAttribute, "DoAttribute");
+    InitHandlerFunc( DoSetAttribute, "DoSetAttribute");
+    InitHandlerFunc( DoTestAttribute, "DoTestAttribute");
+    InitHandlerFunc( DoVerboseAttribute, "DoVerboseAttribute");
+    InitHandlerFunc( DoMutableAttribute, "DoMutableAttribute");
+    InitHandlerFunc( DoVerboseMutableAttribute, "DoVerboseMutableAttribute");
+
+    InitHandlerFunc( DoProperty, "DoProperty");
+    InitHandlerFunc( DoSetProperty, "DoSetProperty");
+    InitHandlerFunc( DoTestProperty, "DoTestProperty");
+    InitHandlerFunc( DoVerboseProperty, "DoVerboseProperty");
+
+    InitHandlerFunc( DoSetterFunction, "DoSetterFunction");
+    InitHandlerFunc( DoGetterFunction, "DoGetterFunction");
+    
+    InitHandlerFunc( DoOperation0Args, "DoOperation0Args");
+    InitHandlerFunc( DoOperation1Args, "DoOperation1Args");
+    InitHandlerFunc( DoOperation2Args, "DoOperation2Args");
+    InitHandlerFunc( DoOperation3Args, "DoOperation3Args");
+    InitHandlerFunc( DoOperation4Args, "DoOperation4Args");
+    InitHandlerFunc( DoOperation5Args, "DoOperation5Args");
+    InitHandlerFunc( DoOperation6Args, "DoOperation6Args");
+    InitHandlerFunc( DoOperationXArgs, "DoOperationXArgs");
+
+    InitHandlerFunc( DoVerboseOperation0Args, "DoVerboseOperation0Args");
+    InitHandlerFunc( DoVerboseOperation1Args, "DoVerboseOperation1Args");
+    InitHandlerFunc( DoVerboseOperation2Args, "DoVerboseOperation2Args");
+    InitHandlerFunc( DoVerboseOperation3Args, "DoVerboseOperation3Args");
+    InitHandlerFunc( DoVerboseOperation4Args, "DoVerboseOperation4Args");
+    InitHandlerFunc( DoVerboseOperation5Args, "DoVerboseOperation5Args");
+    InitHandlerFunc( DoVerboseOperation6Args, "DoVerboseOperation6Args");
+    InitHandlerFunc( DoVerboseOperationXArgs, "DoVerboseOperationXArgs");
+    
+    InitHandlerFunc( DoConstructor0Args, "DoConstructor0Args");
+    InitHandlerFunc( DoConstructor1Args, "DoConstructor1Args");
+    InitHandlerFunc( DoConstructor2Args, "DoConstructor2Args");
+    InitHandlerFunc( DoConstructor3Args, "DoConstructor3Args");
+    InitHandlerFunc( DoConstructor4Args, "DoConstructor4Args");
+    InitHandlerFunc( DoConstructor5Args, "DoConstructor5Args");
+    InitHandlerFunc( DoConstructor6Args, "DoConstructor6Args");
+    InitHandlerFunc( DoConstructorXArgs, "DoConstructorXArgs");
+
+    InitHandlerFunc( DoVerboseConstructor0Args, "DoVerboseConstructor0Args");
+    InitHandlerFunc( DoVerboseConstructor1Args, "DoVerboseConstructor1Args");
+    InitHandlerFunc( DoVerboseConstructor2Args, "DoVerboseConstructor2Args");
+    InitHandlerFunc( DoVerboseConstructor3Args, "DoVerboseConstructor3Args");
+    InitHandlerFunc( DoVerboseConstructor4Args, "DoVerboseConstructor4Args");
+    InitHandlerFunc( DoVerboseConstructor5Args, "DoVerboseConstructor5Args");
+    InitHandlerFunc( DoVerboseConstructor6Args, "DoVerboseConstructor6Args");
+    InitHandlerFunc( DoVerboseConstructorXArgs, "DoVerboseConstructorXArgs");
+    
+    
     /* make the property blist functions                                   */
+    InitHandlerFunc( FuncAND_FLAGS, "AND_FLAGS" );
     AssGVar( GVarName( "AND_FLAGS" ),
          NewFunctionC( "AND_FLAGS", 2L, "oper1, oper2",
                     FuncAND_FLAGS ) );
 
+    InitHandlerFunc( FuncSUB_FLAGS, "SUB_FLAGS" );
     AssGVar( GVarName( "SUB_FLAGS" ),
          NewFunctionC( "SUB_FLAGS", 2L, "oper1, oper2",
                     FuncSUB_FLAGS ) );
 
+    InitHandlerFunc( FuncHASH_FLAGS, "HASH_FLAGS" );
     AssGVar( GVarName( "HASH_FLAGS" ),
          NewFunctionC( "HASH_FLAGS", 1L, "flags",
                     FuncHASH_FLAGS ) );
 
+    InitHandlerFunc( FuncIS_EQUAL_FLAGS, "IS_EQUAL_FLAGS" );
     AssGVar( GVarName( "IS_EQUAL_FLAGS" ),
          NewFunctionC( "IS_EQUAL_FLAGS", 2L, "flags1, flags2",
                     FuncIS_EQUAL_FLAGS ) );
 
+    InitHandlerFunc( FuncIS_SUBSET_FLAGS, "IS_SUBSET_FLAGS" );
     AssGVar( GVarName( "IS_SUBSET_FLAGS" ),
          NewFunctionC( "IS_SUBSET_FLAGS", 2L, "flags1, flags2",
                     FuncIS_SUBSET_FLAGS ) );
 
+    InitHandlerFunc( FuncTRUES_FLAGS, "TRUES_FLAGS" );
     AssGVar( GVarName( "TRUES_FLAGS" ),
          NewFunctionC( "TRUES_FLAGS", 1L, "flags",
                     FuncTRUES_FLAGS ) );
 
+    InitHandlerFunc( FuncSIZE_FLAGS, "SIZE_FLAGS" );
     AssGVar( GVarName( "SIZE_FLAGS" ),
          NewFunctionC( "SIZE_FLAGS", 1L, "flags",
                     FuncSIZE_FLAGS ) );
 
+    InitHandlerFunc( FuncLEN_FLAGS, "LEN_FLAGS" );
     AssGVar( GVarName( "LEN_FLAGS" ),
          NewFunctionC( "LEN_FLAGS", 1L, "flags",
                     FuncLEN_FLAGS ) );
 
+    InitHandlerFunc( FuncELM_FLAGS, "ELM_FLAGS" );
     AssGVar( GVarName( "ELM_FLAGS" ),
          NewFunctionC( "ELM_FLAGS", 2L, "flags, pos",
                     FuncELM_FLAGS ) );
@@ -5166,102 +5236,126 @@ void InitOpers ( void )
 
 
     /* make the functions that support new operations                      */
+    InitHandlerFunc( FuncIsOperation, "IS_OPERATION" );
     AssGVar( GVarName( "IS_OPERATION" ),
          NewFunctionC( "IS_OPERATION", 1L, "value",
                    FuncIsOperation ) );
 
+    InitHandlerFunc( FuncFlag1Filter, "FLAG1_FILTER" );
     AssGVar( GVarName( "FLAG1_FILTER" ),
          NewFunctionC( "FLAG1_FILTER", 1L, "oper",
                     FuncFlag1Filter ) );
 
+    InitHandlerFunc( FuncSetFlag1Filter, "SET_FLAG1_FILTER" );
     AssGVar( GVarName( "SET_FLAG1_FILTER" ),
          NewFunctionC( "SET_FLAG1_FILTER", 2L, "oper, flag1",
                     FuncSetFlag1Filter ) );
 
+    InitHandlerFunc( FuncFlag2Filter, "FLAG2_FILTER" );
     AssGVar( GVarName( "FLAG2_FILTER" ),
          NewFunctionC( "FLAG2_FILTER", 1L, "oper",
                     FuncFlag2Filter ) );
 
+    InitHandlerFunc( FuncSetFlag2Filter, "SET_FLAG2_FILTER" );
     AssGVar( GVarName( "SET_FLAG2_FILTER" ),
          NewFunctionC( "SET_FLAG2_FILTER", 2L, "oper, flag2",
                     FuncSetFlag2Filter ) );
 
+    InitHandlerFunc( FuncFlagsFilter, "FLAGS_FILTER" );
     AssGVar( GVarName( "FLAGS_FILTER" ),
          NewFunctionC( "FLAGS_FILTER", 1L, "oper",
                     FuncFlagsFilter ) );
 
+    InitHandlerFunc( FuncSetFlagsFilter, "SET_FLAGS_FILTER" );
     AssGVar( GVarName( "SET_FLAGS_FILTER" ),
          NewFunctionC( "SET_FLAGS_FILTER", 2L, "oper, flags",
                     FuncSetFlagsFilter ) );
 
+    InitHandlerFunc( FuncSetterFilter, "SETTER_FILTER" );
     AssGVar( GVarName( "SETTER_FILTER" ),
          NewFunctionC( "SETTER_FILTER", 1L, "oper",
                     FuncSetterFilter ) );
 
+    InitHandlerFunc( FuncSetSetterFilter, "SET_SETTER_FILTER" );
     AssGVar( GVarName( "SET_SETTER_FILTER" ),
          NewFunctionC( "SET_SETTER_FILTER", 2L, "oper, other",
                     FuncSetSetterFilter ) );
 
+    InitHandlerFunc( FuncTesterFilter, "TESTER_FILTER" );
     AssGVar( GVarName( "TESTER_FILTER" ),
          NewFunctionC( "TESTER_FILTER", 1L, "oper",
                     FuncTesterFilter ) );
 
+    InitHandlerFunc( FuncSetTesterFilter, "SET_TESTER_FILTER" );
     AssGVar( GVarName( "SET_TESTER_FILTER" ),
          NewFunctionC( "SET_TESTER_FILTER", 2L, "oper, other",
                     FuncSetTesterFilter ) );
 
+    InitHandlerFunc( FuncMethodsOperation, "METHODS_OPERATION" );
     AssGVar( GVarName( "METHODS_OPERATION" ),
          NewFunctionC( "METHODS_OPERATION", 2L, "oper, narg",
                     FuncMethodsOperation ) );
 
+    InitHandlerFunc( FuncSetMethodsOperation, "SET_METHODS_OPERATION" );
     AssGVar( GVarName( "SET_METHODS_OPERATION" ),
          NewFunctionC( "SET_METHODS_OPERATION", 3L, "oper, narg, meths",
                     FuncSetMethodsOperation ) );
 
+    InitHandlerFunc( FuncChangedMethodsOperation, "CHANGED_METHODS_OPERATION" );
     AssGVar( GVarName( "CHANGED_METHODS_OPERATION" ),
          NewFunctionC( "CHANGED_METHODS_OPERATION", 2L, "oper, narg",
                     FuncChangedMethodsOperation) );
 
 
     /* make the functions for filter, operations, properties, attributes   */
+    InitHandlerFunc( NewFilterHandler, "NewFilter" );
     NewFilterFunc = NewFunctionC(
         "NewFilter", 1L, "name", NewFilterHandler );
     AssGVar( GVarName( "NEW_FILTER" ), NewFilterFunc );
 
+    InitHandlerFunc( NewOperationHandler, "NewOperation" );
     NewOperationFunc = NewFunctionC(
         "NewOperation", 1L, "name", NewOperationHandler );
     AssGVar( GVarName( "NEW_OPERATION" ), NewOperationFunc );
 
+    InitHandlerFunc( NewConstructorHandler, "NewConstructor" );
     NewConstructorFunc = NewFunctionC(
         "NewConstructor", 1L, "name", NewConstructorHandler );
     AssGVar( GVarName( "NEW_CONSTRUCTOR" ), NewConstructorFunc );
 
+    InitHandlerFunc( NewAttributeHandler, "NewAttribute" );
     NewAttributeFunc = NewFunctionC(
         "NewAttribute", 1L, "name", NewAttributeHandler );
     AssGVar( GVarName( "NEW_ATTRIBUTE" ), NewAttributeFunc );
 
+    InitHandlerFunc( NewMutableAttributeHandler, "NewMutableAttribute" );
     NewMutableAttributeFunc = NewFunctionC(
         "NewMutableAttribute", 1L, "name", NewMutableAttributeHandler );
     AssGVar( GVarName( "NEW_MUTABLE_ATTRIBUTE" ), NewMutableAttributeFunc );
 
+    InitHandlerFunc( NewPropertyHandler, "NewProperty" );
     NewPropertyFunc = NewFunctionC(
         "NewProperty", 1L, "name", NewPropertyHandler );
     AssGVar( GVarName( "NEW_PROPERTY" ), NewPropertyFunc );
 
+    InitHandlerFunc( FuncSetterFunction, "SetterFunction" );
     SetterFunctionFunc = NewFunctionC(
         "SetterFunction", 2L, "name, filter", FuncSetterFunction );
     AssGVar( GVarName( "SETTER_FUNCTION" ), SetterFunctionFunc );
 
+    InitHandlerFunc( FuncGetterFunction, "GetterFunction" );
     GetterFunctionFunc = NewFunctionC(
         "GetterFunction", 1L, "name", FuncGetterFunction );
     AssGVar( GVarName( "GETTER_FUNCTION" ), GetterFunctionFunc );
 
 
     /* make the trace functions                                            */
+    InitHandlerFunc( FuncTraceMethods, "TRACE_METHODS" );
     AssGVar( GVarName( "TRACE_METHODS" ),
          NewFunctionC( "TRACE_METHODS", 1L, "oper",
                     FuncTraceMethods ) );
 
+    InitHandlerFunc( FuncUntraceMethods, "UNTRACE_METHODS" );
     AssGVar( GVarName( "UNTRACE_METHODS" ),
          NewFunctionC( "UNTRACE_METHODS", 1L, "oper",
                     FuncUntraceMethods ) );
@@ -5366,10 +5460,12 @@ void InitOpers ( void )
     }
 #endif
 
+    InitHandlerFunc( FuncOPERS_CACHE_INFO, "OPERS_CACHE_INFO" );
     AssGVar( GVarName( "OPERS_CACHE_INFO" ),
          NewFunctionC( "OPERS_CACHE_INFO", 0L, "",
                     FuncOPERS_CACHE_INFO ) );
 
+    InitHandlerFunc( FuncCLEAR_CACHE_INFO, "CLEAR_CACHE_INFO" );
     AssGVar( GVarName( "CLEAR_CACHE_INFO" ),
          NewFunctionC( "CLEAR_CACHE_INFO", 0L, "",
                     FuncCLEAR_CACHE_INFO ) );

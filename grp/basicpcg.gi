@@ -50,6 +50,7 @@ function( filter, ints )
     od;
     f := PolycyclicFactorGroup( f, r );
     SetSize( f, Product(ints) );
+    SetIsAbelian( f, true );
     return f;
 end );
 
@@ -101,6 +102,31 @@ function( filter, n )
     Add( r, g[Length(g)] ^ pi[Length(g)] );
     f := PolycyclicFactorGroup( f, r );
     SetSize( f, n );
+    SetIsCyclic( f, true );
+    return f;
+end );
+
+
+#############################################################################
+##
+#M  CyclicGroupCons( <IsPcGroup and IsFinite and IsOneGeneratorGroup>, <n> )
+##
+InstallMethod( CyclicGroupCons,
+    "pc group",
+    true,
+    [ IsPcGroup and IsFinite and IsOneGeneratorGroup,
+      IsInt and IsPosRat ],
+    0,
+
+function( filter, n )
+    local   f,  g,  r;
+
+    f := FreeGroup(1);
+    g := GeneratorsOfGroup(f);
+    r := [ g[1]^n ];
+    f := PolycyclicFactorGroup( f, r );
+    SetSize( f, n );
+    SetIsCyclic( f, true );
     return f;
 end );
 

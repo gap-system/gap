@@ -29,13 +29,23 @@ char *          Revision_scanner_c =
 
 #include        "system.h"              /* system dependent functions      */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
+#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+
 #define INCLUDE_DECLARATION_PART
 #include        "scanner.h"             /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
 
+#include        "calls.h"               /* CALL_1ARGS, Function            */
+
+#include        "bool.h"                /* True, False                     */
+
+#include        "string.h"              /* ObjsChar, NEW_STRING, CSTR_ST...*/
+
 
 /****************************************************************************
 **
+
 *V  Symbol  . . . . . . . . . . . . . . . . .  current symbol read from input
 **
 **  The  variable 'Symbol' contains the current  symbol read from  the input.
@@ -252,6 +262,7 @@ Char *          Prompt;
 
 /****************************************************************************
 **
+
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
 *V  InputFiles[]  . . . . . . . . . . . . .  stack of open input files, local
 *V  Input . . . . . . . . . . . . . . .  pointer to current input file, local
@@ -277,15 +288,6 @@ Char *          Prompt;
 **  'In' is a  pointer to  the current  input character, i.e.,  '*In' is  the
 **  current input  character.  It points  into the buffer 'Input->line'.
 */
-typedef struct {
-    Int         file;
-    Char        name [64];
-    Char        line [256];
-    Char *      ptr;
-    UInt        symbol;
-    Int         number;
-}       TypInputFile;
-
 TypInputFile    InputFiles [16];
 TypInputFile *  Input;
 Char *          In;
@@ -309,15 +311,6 @@ Char *          In;
 **  'Output' is a pointer to the current output file.  It points to  the  top
 **  of the stack 'OutputFiles'.
 */
-typedef struct {
-    Int         file;
-    Char        line [256];
-    Int         pos;
-    Int         indent;
-    Int         spos;
-    Int         sindent;
-}       TypOutputFile;
-
 TypOutputFile   OutputFiles [16];
 TypOutputFile * Output;
 
@@ -350,24 +343,680 @@ Int             OutputLog = -1;
 *V  TestOutput  . . . . . . . . . . . . file identifier of test output, local
 *V  TestLine  . . . . . . . . . . . . . . . . one line from test input, local
 **
-**  'TestInput' is the file  identifier of the  file for test input.  If this
-**  is not -1 and 'GetLine'  reads a line  from  'TestInput' that begins with
-**  '#>' 'GetLine'  assumes that this  was  expected as   output that did not
-**  appear and echoes this input line to 'TestOutput'.
+**  'TestInput' is the file identifier  of the file for  test input.  If this
+**  is  not -1  and  'GetLine' reads  a line  from  'TestInput' that does not
+**  begins with  'gap>'  'GetLine' assumes  that this was  expected as output
+**  that did not appear and echoes this input line to 'TestOutput'.
 **
 **  'TestOutput' is the current output file  for test output.  If 'TestInput'
-**  is not -1 then 'PutLine' compares every line that is about to  be printed
-**  to 'TestOutput' with the next line from 'TestInput'.  If this line starts
-**  with '#>' and the rest of it  matches the output  line the output line is
-**  not printed and the input comment line is discarded.  Otherwise 'PutLine'
-**  prints the output line and does not discard the input line.
+**  is not -1 then 'PutLine' compares every line that is  about to be printed
+**  to 'TestOutput' with the next  line from 'TestInput'.   If this line does
+**  not starts with 'gap>'  and the rest of  it  matches the output line  the
+**  output  line  is not printed  and the  input   comment line is discarded.
+**  Otherwise 'PutLine' prints the output line and does not discard the input
+**  line.
 **
 **  'TestLine' holds the one line that is read from 'TestInput' to compare it
 **  with a line that is about to be printed to 'TestOutput'.
 */
-Int             TestInput  = -1;
-Int             TestOutput = -1;
+TypInputFile *  TestInput  = 0;
+TypOutputFile * TestOutput = 0;
 Char            TestLine [256];
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * open input/output functions  * * * * * * * * * * * *
+*/
+
+
+/****************************************************************************
+**
+
+*F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
+**
+**  'OpenInput' opens  the file with  the name <filename>  as  current input.
+**  All  subsequent input will  be taken from that  file, until it is  closed
+**  again  with 'CloseInput'  or  another file  is opened  with  'OpenInput'.
+**  'OpenInput'  will not  close the  current  file, i.e., if  <filename>  is
+**  closed again, input will again be taken from the current input file.
+**
+**  'OpenInput'  returns 1 if  it   could  successfully open  <filename>  for
+**  reading and 0  to indicate  failure.   'OpenInput' will fail if  the file
+**  does not exist or if you do not have permissions to read it.  'OpenInput'
+**  may  also fail if  you have too  many files open at once.   It  is system
+**  dependent how many are  too many, but  16  files should  work everywhere.
+**
+**  Directely after the 'OpenInput' call the variable  'Symbol' has the value
+**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
+**  The first symbol is read by 'Read' in the first call to 'Match' call.
+**
+**  You can open  '*stdin*' to  read  from the standard  input file, which is
+**  usually the terminal, or '*errin*' to  read from the standard error file,
+**  which  is  the  terminal  even if '*stdin*'  is  redirected from  a file.
+**  'OpenInput' passes those  file names  to  'SyFopen' like any other  name,
+**  they are  just  a  convention between the  main  and the system  package.
+**  'SyFopen' and thus 'OpenInput' will  fail to open  '*errin*' if the  file
+**  'stderr'  (Unix file  descriptor  2)  is  not a  terminal,  because  of a
+**  redirection say, to avoid that break loops take their input from a file.
+**
+**  It is not neccessary to open the initial input  file, 'InitScanner' opens
+**  '*stdin*' for  that purpose.  This  file on   the other   hand  cannot be
+**  closed by 'CloseInput'.
+*/
+UInt OpenInput (
+    Char *              filename )
+{
+    Int                 file;
+
+    /* fail if we can not handle another open input file                   */
+    if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
+        return 0;
+
+    /* in test mode keep reading from test input file for break loop input */
+    if ( TestInput != 0 && ! SyStrcmp( filename, "*errin*" ) )
+        return 1;
+
+    /* try to open the input file                                          */
+    file = SyFopen( filename, "r" );
+    if ( file == -1 )
+        return 0;
+
+    /* remember the current position in the current file                   */
+    if ( Input != InputFiles-1 ) {
+        Input->ptr    = In;
+        Input->symbol = Symbol;
+    }
+
+    /* enter the file identifier and the file name                         */
+    Input++;
+    Input->isstream = 0;
+    Input->file = file;
+    Input->name[0] = '\0';
+    SyStrncat( Input->name, filename, sizeof(Input->name) );
+
+    /* start with an empty line and no symbol                              */
+    In = Input->line;
+    In[0] = In[1] = '\0';
+    Symbol = S_ILLEGAL;
+    Input->number = 1;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenInputStream( <stream> ) . . . . . . .  open a stream as current input
+*/
+UInt OpenInputStream (
+    Obj                 stream )
+{
+    Int                 file;
+
+    /* fail if we can not handle another open input file                   */
+    if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
+        return 0;
+
+    /* remember the current position in the current file                   */
+    if ( Input != InputFiles-1 ) {
+        Input->ptr    = In;
+        Input->symbol = Symbol;
+    }
+
+    /* enter the file identifier and the file name                         */
+    Input++;
+    Input->isstream = 1;
+    Input->stream = stream;
+    Input->sline = 0;
+    Input->name[0] = '\0';
+    SyStrncat( Input->name, "stream", 6 );
+
+    /* start with an empty line and no symbol                              */
+    In = Input->line;
+    In[0] = In[1] = '\0';
+    Symbol = S_ILLEGAL;
+    Input->number = 1;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseInput()  . . . . . . . . . . . . . . . . .  close current input file
+**
+**  'CloseInput'  will close the  current input file.   Subsequent input will
+**  again be taken from the previous input file.   'CloseInput' will return 1
+**  to indicate success.
+**
+**  'CloseInput' will not close the initial input file '*stdin*', and returns
+**  0  if such  an  attempt is made.   This is  used in  'Error'  which calls
+**  'CloseInput' until it returns 0, therebye closing all open input files.
+**
+**  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
+**  close the current output file, which will lead to very strange behaviour.
+*/
+UInt            CloseInput ( void )
+{
+    /* refuse to close the initial input file                              */
+    if ( Input == InputFiles )
+        return 0;
+
+    /* refuse to close the test input file                                 */
+    if ( Input == TestInput )
+        return 0;
+
+    /* close the input file                                                */
+    if ( ! Input->isstream ) {
+        SyFclose( Input->file );
+    }
+
+    /* revert to last file                                                 */
+    Input--;
+    In     = Input->ptr;
+    Symbol = Input->symbol;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+
+*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
+**
+**  'OpenTest'  opens the file with the  name <filename> as current input for
+**  test mode.  All subsequent input will  be taken  from that file, until it
+**  is closed   again with  'CloseTest'   or another  file is   opened   with
+**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
+**  <filename> is  closed again, input will be  taken again from  the current
+**  input file.
+**
+**  Test mode works as follows.  If the scanner  is about to  print a line to
+**  the  current output file  (or to be more precise  to the output file that
+**  was current when  'OpenTest' was called) this line  is  compared with the
+**  next line from the test input  file, i.e., the  one opened by 'OpenTest'.
+**  If this line starts with '#>' and the rest of it  matches the output line
+**  the output line is  not printed and the input  comment line is discarded.
+**  Otherwise the  scanner prints the output line   and does not  discard the
+**  input line.
+**
+**  On the other hand if an input line is encountered on  the test input that
+**  starts with '#>' the scanner assumes that this is an expected output line
+**  that did not appear and echoes this line to the current output file.
+**
+**  The upshot is that  you can write  test files that consist of alternating
+**  input and,  as  '#>' test  comment  lines the  expected  output.   If GAP
+**  behaves normal and produces the expected  output then nothing is printed.
+**  But if something  goes wrong you see  what actually was printed  and what
+**  was expected instead.
+**
+**  As a convention GAP test files should end with a  print  statement  like:
+**
+**    Print("prime   3.002   06-Jul-90 ",417000000/Runtime()," GAPstones\n");
+**
+**  without a matching '#>' comment line.  This tells the user that the  test
+**  file completed and also how much time it took.  The  constant  should  be
+**  such that a VAX 11/780 gets roughly 1000 GAPstones.
+**
+**  'OpenTest' returns 1 if it could successfully open <filename> for reading
+**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
+**  exist or if you have no permissions to read it.  'OpenTest' may also fail
+**  if you have too many files open at once.  It is system dependent how many
+**  are too may, but 16 files shoule work everywhere.
+**
+**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
+**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
+**  The first symbol is read by 'Read' in the first call to 'Match' call.
+*/
+UInt OpenTest (
+    Char *              filename )
+{
+    /* do not allow to nest test files                                     */
+    if ( TestInput != 0 )
+        return 0;
+
+    /* try to open the file as input file                                  */
+    if ( ! OpenInput( filename ) )
+        return 0;
+
+    /* remember this is a test input                                       */
+    TestInput   = Input;
+    TestOutput  = Output;
+    TestLine[0] = '\0';
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenTestStream( <stream> )  . . . . .  open an input stream for test mode
+*/
+UInt OpenTestStream (
+    Obj 		stream )
+{
+    /* do not allow to nest test files                                     */
+    if ( TestInput != 0 )
+        return 0;
+
+    /* try to open the file as input file                                  */
+    if ( ! OpenInputStream( stream ) )
+        return 0;
+
+    /* remember this is a test input                                       */
+    TestInput   = Input;
+    TestOutput  = Output;
+    TestLine[0] = '\0';
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
+**
+**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
+**  Subsequent  input   will again be taken   from  the previous  input file.
+**  Output will no longer be compared with  comment lines from the test input
+**  file.  'CloseTest' will return 1 to indicate success.
+**
+**  'CloseTest' will not close a non test input file and returns 0 if such an
+**  attempt is made.
+*/
+UInt            CloseTest ( void )
+{
+    /* refuse to a non test file                                           */
+    if ( TestInput != Input )
+        return 0;
+
+    /* close the input file                                                */
+    if ( ! Input->isstream ) {
+        SyFclose( Input->file );
+    }
+
+    /* revert to last file                                                 */
+    Input--;
+    In     = Input->ptr;
+    Symbol = Input->symbol;
+
+    /* we are no longer in test mode                                       */
+    TestInput   = 0;
+    TestOutput  = 0;
+    TestLine[0] = '\0';
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+
+*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
+**
+**  'OpenOutput' opens the file  with the name  <filename> as current output.
+**  All subsequent output will go  to that file, until either   it is  closed
+**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
+**  The file is truncated to size 0 if it existed, otherwise it  is  created.
+**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
+**  closed again, output will go again to the current output file.
+**
+**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
+**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
+**  have  permissions to create the  file or write   to it.  'OpenOutput' may
+**  also   fail if you   have  too many files   open  at once.   It is system
+**  dependent how many are too many, but 16 files should work everywhere.
+**
+**  You can open '*stdout*'  to write  to the standard output  file, which is
+**  usually the terminal, or '*errout*' to write  to the standard error file,
+**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
+**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
+**  they are just a convention between the main and the system package.
+**
+**  It is not neccessary to open the initial output file, 'InitScanner' opens
+**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
+**  closed by 'CloseOutput'.
+*/
+UInt            OpenOutput (
+    Char *              filename )
+{
+    Int                 file;
+
+    /* fail if we can not handle another open output file                  */
+    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+        return 0;
+
+    /* in test mode keep printing to test output file for breakloop output */
+    if ( TestInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
+        return 1;
+
+    /* try to open the file                                                */
+    file = SyFopen( filename, "w" );
+    if ( file == -1 )
+        return 0;
+
+    /* put the file on the stack, start at position 0 on an empty line     */
+    Output++;
+    Output->file    = file;
+    Output->line[0] = '\0';
+    Output->pos     = 0;
+    Output->indent  = 0;
+
+    /* variables related to line splitting, very bad place to split        */
+    Output->spos    = 0;
+    Output->sindent = 666;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
+**
+**  'CloseOutput' will  first flush all   pending output and  then  close the
+**  current  output  file.   Subsequent output will  again go to the previous
+**  output file.  'CloseOutput' returns 1 to indicate success.
+**
+**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
+**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
+**  'CloseOutput' until it returns 0, thereby closing all open output files.
+**
+**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
+**  close the current output file, which will lead to very strange behaviour.
+**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
+**  'PrintTo' call or an error will not yield much better results.
+*/
+UInt            CloseOutput ( void )
+{
+    /* refuse to close the initial output file '*stdout*'                  */
+    if ( Output == OutputFiles )
+        return 0;
+
+    /* refuse to close the test output file                                */
+    if ( Output == TestOutput )
+        return 0;
+
+    /* flush output and close the file                                     */
+    Pr( "%c", (Int)'\03', 0L );
+    SyFclose( Output->file );
+
+    /* revert to previous output file and indicate success                 */
+    Output--;
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenAppend( <filename> )  . . open a file as current output for appending
+**
+**  'OpenAppend' opens the file  with the name  <filename> as current output.
+**  All subsequent output will go  to that file, until either   it is  closed
+**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
+**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
+**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
+**  description applies to 'OpenAppend' too.
+*/
+UInt            OpenAppend (
+    Char *              filename )
+{
+    Int                 file;
+
+    /* fail if we can not handle another open output file                  */
+    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
+        return 0;
+
+    /* in test mode keep printing to test output file for breakloop output */
+    if ( TestInput != 0 && ! SyStrcmp( filename, "*errout*" ) )
+        return 1;
+
+    /* try to open the file                                                */
+    file = SyFopen( filename, "a" );
+    if ( file == -1 )
+        return 0;
+
+    /* put the file on the stack, start at position 0 on an empty line     */
+    Output++;
+    Output->file    = file;
+    Output->line[0] = '\0';
+    Output->pos     = 0;
+    Output->indent  = 0;
+
+    /* variables related to line splitting, very bad place to split        */
+    Output->spos    = 0;
+    Output->sindent = 666;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseAppend() . . . . . . . . . . . . . . . . . close current output file
+**
+**  'CloseAppend' will  first flush all   pending output and  then  close the
+**  current  output  file.   Subsequent output will  again go to the previous
+**  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
+**  is exactely equal to 'CloseOutput' so its description applies.
+*/
+UInt            CloseAppend ( void )
+{
+    /* refuse to close the initial output file '*stdout*'                  */
+    if ( Output == OutputFiles )
+        return 0;
+
+    /* refuse to close the test output file                                */
+    if ( Output == TestOutput )
+        return 0;
+
+    /* flush output and close the file                                     */
+    Pr( "%c", (Int)'\03', 0L );
+    SyFclose( Output->file );
+
+    /* revert to previous output file and indicate success                 */
+    Output--;
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenInputLog( <filename> )  . . . . . . . . . . . . . log input to a file
+**
+**  'OpenInputLog'  instructs the  scanner  to echo  all input from the files
+**  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
+**  truncated to size 0 if it existed, otherwise it is created.
+**
+**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
+**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
+**  not have  permissions to create the file  or write to it.  'OpenInputLog'
+**  may also fail  if you  have  too many  files open  at once.  It is system
+**  dependent  how many are too many,  but 16 files  should work  everywhere.
+**  Finally 'OpenInputLog' will fail if there is already a current logfile.
+*/
+UInt            OpenInputLog (
+    Char *              filename )
+{
+
+    /* refuse to open a logfile if we already log to one                   */
+    if ( InputLog != -1 )
+        return 0;
+
+    /* try to open the file                                                */
+    InputLog = SyFopen( filename, "w" );
+    if ( InputLog == -1 )
+        return 0;
+
+    /* otherwise indicate success                                          */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseInputLog() . . . . . . . . . . . . . . . . close the current logfile
+**
+**  'CloseInputLog'  closes  the current  logfile again,  so  that input from
+**  '*stdin*'  and   '*errin*'  will  no  longer   be  echoed   to  a   file.
+**  'CloseInputLog' will return 1 to indicate success.
+**
+**  'CloseInputLog' will fail if there is no logfile active and will return 0
+**  in this case.
+*/
+UInt            CloseInputLog ( void )
+{
+    /* refuse to close a non existent logfile                              */
+    if ( InputLog == -1 )
+        return 0;
+
+    /* close the logfile                                                   */
+    SyFclose( InputLog );
+    InputLog = -1;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenOutputLog( <filename> )  . . . . . . . . . . .  log output to a file
+**
+**  'OpenInputLog'  instructs the  scanner to echo   all output to  the files
+**  '*stdout*' and '*errout*' to the file with name  <filename>.  The file is
+**  truncated to size 0 if it existed, otherwise it is created.
+**
+**  'OpenOutputLog'  returns 1 if it  could  successfully open <filename> for
+**  writing and 0 to  indicate failure.  'OpenOutputLog'  will fail if you do
+**  not have permissions to create the file  or write to it.  'OpenOutputLog'
+**  may also  fail if you have  too many  files  open at  once.  It is system
+**  dependent how many are  too many,  but  16 files should  work everywhere.
+**  Finally 'OpenOutputLog' will fail if there is already a current logfile.
+*/
+UInt            OpenOutputLog (
+    Char *              filename )
+{
+
+    /* refuse to open a logfile if we already log to one                   */
+    if ( OutputLog != -1 )
+        return 0;
+
+    /* try to open the file                                                */
+    OutputLog = SyFopen( filename, "w" );
+    if ( OutputLog == -1 )
+        return 0;
+
+    /* otherwise indicate success                                          */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseOutputLog()  . . . . . . . . . . . . . . . close the current logfile
+**
+**  'CloseInputLog' closes   the current logfile   again, so  that output  to
+**  '*stdout*'  and    '*errout*'  will no   longer  be   echoed to  a  file.
+**  'CloseOutputLog' will return 1 to indicate success.
+**
+**  'CloseOutputLog' will fail if there is  no logfile active and will return
+**  0 in this case.
+*/
+UInt            CloseOutputLog ( void )
+{
+    /* refuse to close a non existent logfile                              */
+    if ( OutputLog == -1 )
+        return 0;
+
+    /* close the logfile                                                   */
+    SyFclose( OutputLog );
+    OutputLog = -1;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
+**
+**  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files
+**  '*stdin*' and  '*errin*'  and  all  output to  the  files '*stdout*'  and
+**  '*errout*' to the file with  name <filename>.  The  file is truncated  to
+**  size 0 if it existed, otherwise it is created.
+**
+**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
+**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
+**  permissions  to create the file or   write to  it.  'OpenOutput' may also
+**  fail if you have too many files open at once.  It is system dependent how
+**  many   are too   many, but  16   files should  work everywhere.   Finally
+**  'OpenLog' will fail if there is already a current logfile.
+*/
+UInt            OpenLog (
+    Char *              filename )
+{
+
+    /* refuse to open a logfile if we already log to one                   */
+    if ( InputLog != -1 || OutputLog != -1 )
+        return 0;
+
+    /* try to open the file                                                */
+    InputLog = SyFopen( filename, "w" );
+    OutputLog = InputLog;
+    if ( InputLog == -1 )
+        return 0;
+
+    /* otherwise indicate success                                          */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+*F  CloseLog()  . . . . . . . . . . . . . . . . . . close the current logfile
+**
+**  'CloseLog' closes the current logfile again, so that input from '*stdin*'
+**  and '*errin*' and output to '*stdout*' and '*errout*' will no  longer  be
+**  echoed to a file.  'CloseLog' will return 1 to indicate success.
+**
+**  'CloseLog' will fail if there is no logfile active and will return  0  in
+**  this case.
+*/
+UInt            CloseLog ( void )
+{
+    /* refuse to close a non existent logfile                              */
+    if ( InputLog == -1 || OutputLog == -1 || InputLog != OutputLog )
+        return 0;
+
+    /* close the logfile                                                   */
+    SyFclose( InputLog );
+    InputLog = -1;
+    OutputLog = -1;
+
+    /* indicate success                                                    */
+    return 1;
+}
+
+
+/****************************************************************************
+**
+
+*V  ReadLineFunc  . . . . . . . . . . . . . . . . . . . . . . . .  'ReadLine'
+*/
+Obj ReadLineFunc;
 
 
 /****************************************************************************
@@ -384,15 +1033,47 @@ Char            TestLine [256];
 **  If there is an  input logfile in use  and the input  file is '*stdin*' or
 **  '*errin*' 'GetLine' echoes the new line to the logfile.
 */
-Char            GetLine ( void )
+static void GetLine2 ( void )
 {
-    /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
-    if ( Input->file == 0 ) {
-        if ( ! SyQuiet ) Pr( "%s%c", (Int)Prompt, (Int)'\03' );
-        else             Pr( "%c", (Int)'\03', 0L );
+    if ( Input->isstream ) {
+        if ( Input->sline == 0 
+          || SyStrlen(CSTR_STRING(Input->sline)) <= Input->spos )
+        {
+            Input->sline = CALL_1ARGS( ReadLineFunc, Input->stream );
+            Input->spos  = 0;
+	}
+	if ( Input->sline == Fail ) {
+	    In[0] = '\377';  In[1] = '\0';
+	}
+	else {
+	  SyStrncat( In, Input->spos + CSTR_STRING(Input->sline), 
+		     sizeof(Input->line) );
+	  Input->spos += SyStrlen(In);
+	}
     }
-    else if ( Input->file == 2 ) {
-        Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+    else {
+        if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
+            In[0] = '\377';  In[1] = '\0';
+	}
+    }
+}
+
+
+Char GetLine ( void )
+{
+    Char	    buf[200];
+    Char *          p;
+    Char *          q;
+
+    /* if file is '*stdin*' or '*errin*' print the prompt and flush it     */
+    if ( ! Input->isstream ) {
+        if ( Input->file == 0 ) {
+            if ( ! SyQuiet ) Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+            else             Pr( "%c", (Int)'\03', 0L );
+        }
+        else if ( Input->file == 2 ) {
+            Pr( "%s%c", (Int)Prompt, (Int)'\03' );
+        }
     }
 
     /* bump the line number                                                */
@@ -405,17 +1086,32 @@ Char            GetLine ( void )
     NrErrLine = 0;
 
     /* read a line from an ordinary input file                             */
-    if ( Input->file != TestInput ) {
+    if ( TestInput != Input ) {
 
         /* try to read a line                                              */
-        if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
-            In[0] = '\377';  In[1] = '\0';
-        }
+        GetLine2();
+
+	/* convert '?' at the beginning into 'HELP'                        */
+	if ( In[0] == '?' ) {
+            buf[0] = '\0';
+	    SyStrncat( buf, In+1, 199 );
+	    In[0] = '\0';
+	    SyStrncat( In, "HELP(\"", 6 );
+            for ( p = In+6,  q = buf;  *q;  q++ ) {
+                if ( *q != '"' && *q != '\n' ) {
+                    *p++ = *q;
+                }
+            }
+	    *p = '\0';
+            SyStrncat( In, "\");\n", 4 );
+	}
 
         /* if neccessary echo the line to the logfile                      */
-        if ( InputLog != -1 && (Input->file == 0 || Input->file == 2) ) {
-            SyFputs( In, InputLog );
-        }
+	if ( ! Input->isstream ) {
+            if ( InputLog != -1 && (Input->file == 0 || Input->file == 2) ) {
+                SyFputs( In, InputLog );
+            }
+	}
 
     }
 
@@ -432,8 +1128,8 @@ Char            GetLine ( void )
             }
 
             /* otherwise try to read a line                                */
-            else if ( ! SyFgets( In, sizeof(Input->line), Input->file ) ) {
-                In[0] = '\377';  In[1] = '\0';
+            else {
+	        GetLine2();
             }
 
             /* if the line starts with a prompt its an input line          */
@@ -447,8 +1143,8 @@ Char            GetLine ( void )
 
             /* if the line is not empty or a comment, print it             */
             else if ( In[0] != '\n' && In[0] != '#' && In[0] != '\377' ) {
-                SyFputs( "- ", TestOutput );
-                SyFputs( In, TestOutput );
+                SyFputs( "- ", TestOutput->file );
+                SyFputs( In, TestOutput->file );
                 In[0] = '\0';
             }
 
@@ -463,6 +1159,7 @@ Char            GetLine ( void )
 
 /****************************************************************************
 **
+
 *F  GET_CHAR()  . . . . . . . . . . . . . . . . get the next character, local
 **
 **  'GET_CHAR' returns the next character from  the current input file.  This
@@ -1015,15 +1712,25 @@ void            Match (
 **  Finally 'PutLine' checks whether the user has hit '<ctr>-C' to  interrupt
 **  the printing.
 */
-void            PutLine ( void )
+void PutLine ( void )
 {
+    Char *          p;
+
     /* if in test mode and the next input line matches print nothing       */
-    if ( TestInput != -1 && TestOutput == Output->file ) {
+    if ( TestInput != 0 && TestOutput == Output ) {
         if ( TestLine[0] == '\0' ) {
-            if ( ! SyFgets( TestLine, sizeof(TestLine), TestInput ) ) {
+            if ( ! SyFgets( TestLine, sizeof(TestLine), TestInput->file ) ) {
                 TestLine[0] = '\0';
             }
         }
+	p = TestLine + (SyStrlen(TestLine)-2);
+	while ( TestLine <= p && ( *p == ' ' || *p == '\t' ) ) {
+	    p[1] = '\0';  p[0] = '\n';  p--;
+	}
+	p = Output->line + (SyStrlen(Output->line)-2);
+	while ( Output->line <= p && ( *p == ' ' || *p == '\t' ) ) {
+	    p[1] = '\0';  p[0] = '\n';  p--;
+	}
         if ( ! SyStrcmp( TestLine, Output->line ) ) {
             TestLine[0] = '\0';
         }
@@ -1458,575 +2165,7 @@ void            Pr (
 
 /****************************************************************************
 **
-*F  OpenInput( <filename> ) . . . . . . . . . .  open a file as current input
-**
-**  'OpenInput' opens  the file with  the name <filename>  as  current input.
-**  All  subsequent input will  be taken from that  file, until it is  closed
-**  again  with 'CloseInput'  or  another file  is opened  with  'OpenInput'.
-**  'OpenInput'  will not  close the  current  file, i.e., if  <filename>  is
-**  closed again, input will again be taken from the current input file.
-**
-**  'OpenInput'  returns 1 if  it   could  successfully open  <filename>  for
-**  reading and 0  to indicate  failure.   'OpenInput' will fail if  the file
-**  does not exist or if you do not have permissions to read it.  'OpenInput'
-**  may  also fail if  you have too  many files open at once.   It  is system
-**  dependent how many are  too many, but  16  files should  work everywhere.
-**
-**  Directely after the 'OpenInput' call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-**
-**  You can open  '*stdin*' to  read  from the standard  input file, which is
-**  usually the terminal, or '*errin*' to  read from the standard error file,
-**  which  is  the  terminal  even if '*stdin*'  is  redirected from  a file.
-**  'OpenInput' passes those  file names  to  'SyFopen' like any other  name,
-**  they are  just  a  convention between the  main  and the system  package.
-**  'SyFopen' and thus 'OpenInput' will  fail to open  '*errin*' if the  file
-**  'stderr'  (Unix file  descriptor  2)  is  not a  terminal,  because  of a
-**  redirection say, to avoid that break loops take their input from a file.
-**
-**  It is not neccessary to open the initial input  file, 'InitScanner' opens
-**  '*stdin*' for  that purpose.  This  file on   the other   hand can not be
-**  closed by 'CloseInput'.
-*/
-UInt            OpenInput (
-    Char *              filename )
-{
-    Int                 file;
 
-    /* fail if we can not handle another open input file                   */
-    if ( Input+1 == InputFiles+(sizeof(InputFiles)/sizeof(InputFiles[0])) )
-        return 0;
-
-    /* in test mode keep reading from test input file for break loop input */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errin*" ) )
-        return 1;
-
-    /* try to open the input file                                          */
-    file = SyFopen( filename, "r" );
-    if ( file == -1 )
-        return 0;
-
-    /* remember the current position in the current file                   */
-    if ( Input != InputFiles-1 ) {
-        Input->ptr    = In;
-        Input->symbol = Symbol;
-    }
-
-    /* enter the file identifier and the file name                         */
-    Input++;
-    Input->file = file;
-    Input->name[0] = '\0';
-    SyStrncat( Input->name, filename, sizeof(Input->name) );
-
-    /* start with an empty line and no symbol                              */
-    In = Input->line;
-    In[0] = In[1] = '\0';
-    Symbol = S_ILLEGAL;
-    Input->number = 1;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseInput()  . . . . . . . . . . . . . . . . .  close current input file
-**
-**  'CloseInput'  will close the  current input file.   Subsequent input will
-**  again be taken from the previous input file.   'CloseInput' will return 1
-**  to indicate success.
-**
-**  'CloseInput' will not close the initial input file '*stdin*', and returns
-**  0  if such  an  attempt is made.   This is  used in  'Error'  which calls
-**  'CloseInput' until it returns 0, therebye closing all open input files.
-**
-**  Calling 'CloseInput' if the  corresponding  'OpenInput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-*/
-UInt            CloseInput ( void )
-{
-    /* refuse to close the initial input file                              */
-    if ( Input == InputFiles )
-        return 0;
-
-    /* refuse to close the test input file                                 */
-    if ( Input->file == TestInput )
-        return 0;
-
-    /* close the input file                                                */
-    SyFclose( Input->file );
-
-    /* revert to last file                                                 */
-    Input--;
-    In     = Input->ptr;
-    Symbol = Input->symbol;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenOutput( <filename> )  . . . . . . . . . open a file as current output
-**
-**  'OpenOutput' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseOutput' or  another  file is  opened with 'OpenOutput'.
-**  The file is truncated to size 0 if it existed, otherwise it  is  created.
-**  'OpenOutput' does not  close  the  current file, i.e., if  <filename>  is
-**  closed again, output will go again to the current output file.
-**
-**  'OpenOutput'  returns  1 if it  could  successfully  open  <filename> for
-**  writing and 0 to indicate failure.  'OpenOutput' will fail if  you do not
-**  have  permissions to create the  file or write   to it.  'OpenOutput' may
-**  also   fail if you   have  too many files   open  at once.   It is system
-**  dependent how many are too many, but 16 files should work everywhere.
-**
-**  You can open '*stdout*'  to write  to the standard output  file, which is
-**  usually the terminal, or '*errout*' to write  to the standard error file,
-**  which is the terminal  even   if '*stdout*'  is  redirected to   a  file.
-**  'OpenOutput' passes  those  file names to 'SyFopen'  like any other name,
-**  they are just a convention between the main and the system package.
-**
-**  It is not neccessary to open the initial output file, 'InitScanner' opens
-**  '*stdout*' for that purpose.  This  file  on the other hand   can not  be
-**  closed by 'CloseOutput'.
-*/
-UInt            OpenOutput (
-    Char *              filename )
-{
-    Int                 file;
-
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errout*" ) )
-        return 1;
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "w" );
-    if ( file == -1 )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 666;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseOutput() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseOutput' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseOutput' returns 1 to indicate success.
-**
-**  'CloseOutput' will  not  close the  initial output file   '*stdout*', and
-**  returns 0 if such attempt is made.  This  is  used in 'Error' which calls
-**  'CloseOutput' until it returns 0, thereby closing all open output files.
-**
-**  Calling 'CloseOutput' if the corresponding 'OpenOutput' call failed  will
-**  close the current output file, which will lead to very strange behaviour.
-**  On the other  hand if you  forget  to call  'CloseOutput' at the end of a
-**  'PrintTo' call or an error will not yield much better results.
-*/
-UInt            CloseOutput ( void )
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
-        return 0;
-
-    /* refuse to close the test output file                                */
-    if ( Output->file == TestOutput )
-        return 0;
-
-    /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0L );
-    SyFclose( Output->file );
-
-    /* revert to previous output file and indicate success                 */
-    Output--;
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenAppend( <filename> )  . . open a file as current output for appending
-**
-**  'OpenAppend' opens the file  with the name  <filename> as current output.
-**  All subsequent output will go  to that file, until either   it is  closed
-**  again  with 'CloseAppend' or  another  file is  opened with 'OpenOutput'.
-**  Unlike 'OpenOutput' 'OpenAppend' does not truncate the file to size 0  if
-**  it exists.  Appart from that 'OpenAppend' is equal to 'OpenOutput' so its
-**  description applies to 'OpenAppend' too.
-*/
-UInt            OpenAppend (
-    Char *              filename )
-{
-    Int                 file;
-
-    /* fail if we can not handle another open output file                  */
-    if ( Output+1==OutputFiles+(sizeof(OutputFiles)/sizeof(OutputFiles[0])) )
-        return 0;
-
-    /* in test mode keep printing to test output file for breakloop output */
-    if ( TestInput != -1 && ! SyStrcmp( filename, "*errout*" ) )
-        return 1;
-
-    /* try to open the file                                                */
-    file = SyFopen( filename, "a" );
-    if ( file == -1 )
-        return 0;
-
-    /* put the file on the stack, start at position 0 on an empty line     */
-    Output++;
-    Output->file    = file;
-    Output->line[0] = '\0';
-    Output->pos     = 0;
-    Output->indent  = 0;
-
-    /* variables related to line splitting, very bad place to split        */
-    Output->spos    = 0;
-    Output->sindent = 666;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseAppend() . . . . . . . . . . . . . . . . . close current output file
-**
-**  'CloseAppend' will  first flush all   pending output and  then  close the
-**  current  output  file.   Subsequent output will  again go to the previous
-**  output file.  'CloseAppend' returns 1 to indicate success.  'CloseAppend'
-**  is exactely equal to 'CloseOutput' so its description applies.
-*/
-UInt            CloseAppend ( void )
-{
-    /* refuse to close the initial output file '*stdout*'                  */
-    if ( Output == OutputFiles )
-        return 0;
-
-    /* refuse to close the test output file                                */
-    if ( Output->file == TestOutput )
-        return 0;
-
-    /* flush output and close the file                                     */
-    Pr( "%c", (Int)'\03', 0L );
-    SyFclose( Output->file );
-
-    /* revert to previous output file and indicate success                 */
-    Output--;
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenInputLog( <filename> )  . . . . . . . . . . . . . log input to a file
-**
-**  'OpenInputLog'  instructs the  scanner  to echo  all input from the files
-**  '*stdin*' and  '*errin*' to the file  with  name <filename>.  The file is
-**  truncated to size 0 if it existed, otherwise it is created.
-**
-**  'OpenInputLog' returns 1  if it  could successfully open  <filename>  for
-**  writing  and  0 to indicate failure.  'OpenInputLog' will fail  if you do
-**  not have  permissions to create the file  or write to it.  'OpenInputLog'
-**  may also fail  if you  have  too many  files open  at once.  It is system
-**  dependent  how many are too many,  but 16 files  should work  everywhere.
-**  Finally 'OpenInputLog' will fail if there is already a current logfile.
-*/
-UInt            OpenInputLog (
-    Char *              filename )
-{
-
-    /* refuse to open a logfile if we already log to one                   */
-    if ( InputLog != -1 )
-        return 0;
-
-    /* try to open the file                                                */
-    InputLog = SyFopen( filename, "w" );
-    if ( InputLog == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseInputLog() . . . . . . . . . . . . . . . . close the current logfile
-**
-**  'CloseInputLog'  closes  the current  logfile again,  so  that input from
-**  '*stdin*'  and   '*errin*'  will  no  longer   be  echoed   to  a   file.
-**  'CloseInputLog' will return 1 to indicate success.
-**
-**  'CloseInputLog' will fail if there is no logfile active and will return 0
-**  in this case.
-*/
-UInt            CloseInputLog ( void )
-{
-    /* refuse to close a non existent logfile                              */
-    if ( InputLog == -1 )
-        return 0;
-
-    /* close the logfile                                                   */
-    SyFclose( InputLog );
-    InputLog = -1;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenOutputLog( <filename> )  . . . . . . . . . . .  log output to a file
-**
-**  'OpenInputLog'  instructs the  scanner to echo   all output to  the files
-**  '*stdout*' and '*errout*' to the file with name  <filename>.  The file is
-**  truncated to size 0 if it existed, otherwise it is created.
-**
-**  'OpenOutputLog'  returns 1 if it  could  successfully open <filename> for
-**  writing and 0 to  indicate failure.  'OpenOutputLog'  will fail if you do
-**  not have permissions to create the file  or write to it.  'OpenOutputLog'
-**  may also  fail if you have  too many  files  open at  once.  It is system
-**  dependent how many are  too many,  but  16 files should  work everywhere.
-**  Finally 'OpenOutputLog' will fail if there is already a current logfile.
-*/
-UInt            OpenOutputLog (
-    Char *              filename )
-{
-
-    /* refuse to open a logfile if we already log to one                   */
-    if ( OutputLog != -1 )
-        return 0;
-
-    /* try to open the file                                                */
-    OutputLog = SyFopen( filename, "w" );
-    if ( OutputLog == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseOutputLog()  . . . . . . . . . . . . . . . close the current logfile
-**
-**  'CloseInputLog' closes   the current logfile   again, so  that output  to
-**  '*stdout*'  and    '*errout*'  will no   longer  be   echoed to  a  file.
-**  'CloseOutputLog' will return 1 to indicate success.
-**
-**  'CloseOutputLog' will fail if there is  no logfile active and will return
-**  0 in this case.
-*/
-UInt            CloseOutputLog ( void )
-{
-    /* refuse to close a non existent logfile                              */
-    if ( OutputLog == -1 )
-        return 0;
-
-    /* close the logfile                                                   */
-    SyFclose( OutputLog );
-    OutputLog = -1;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenLog( <filename> ) . . . . . . . . . . . . . log interaction to a file
-**
-**  'OpenLog'  instructs  the scanner to   echo  all  input   from  the files
-**  '*stdin*' and  '*errin*'  and  all  output to  the  files '*stdout*'  and
-**  '*errout*' to the file with  name <filename>.  The  file is truncated  to
-**  size 0 if it existed, otherwise it is created.
-**
-**  'OpenLog' returns 1 if it could  successfully open <filename> for writing
-**  and 0  to indicate failure.   'OpenLog' will  fail if  you do  not   have
-**  permissions  to create the file or   write to  it.  'OpenOutput' may also
-**  fail if you have too many files open at once.  It is system dependent how
-**  many   are too   many, but  16   files should  work everywhere.   Finally
-**  'OpenLog' will fail if there is already a current logfile.
-*/
-UInt            OpenLog (
-    Char *              filename )
-{
-
-    /* refuse to open a logfile if we already log to one                   */
-    if ( InputLog != -1 || OutputLog != -1 )
-        return 0;
-
-    /* try to open the file                                                */
-    InputLog = SyFopen( filename, "w" );
-    OutputLog = InputLog;
-    if ( InputLog == -1 )
-        return 0;
-
-    /* otherwise indicate success                                          */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseLog()  . . . . . . . . . . . . . . . . . . close the current logfile
-**
-**  'CloseLog' closes the current logfile again, so that input from '*stdin*'
-**  and '*errin*' and output to '*stdout*' and '*errout*' will no  longer  be
-**  echoed to a file.  'CloseLog' will return 1 to indicate success.
-**
-**  'CloseLog' will fail if there is no logfile active and will return  0  in
-**  this case.
-*/
-UInt            CloseLog ( void )
-{
-    /* refuse to close a non existent logfile                              */
-    if ( InputLog == -1 || OutputLog == -1 || InputLog != OutputLog )
-        return 0;
-
-    /* close the logfile                                                   */
-    SyFclose( InputLog );
-    InputLog = -1;
-    OutputLog = -1;
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  OpenTest( <filename> )  . . . . . . . .  open an input file for test mode
-**
-**  'OpenTest'  opens the file with the  name <filename> as current input for
-**  test mode.  All subsequent input will  be taken  from that file, until it
-**  is closed   again with  'CloseTest'   or another  file is   opened   with
-**  'OpenInput'.   'OpenTest' will  not  close the   current file,  i.e.,  if
-**  <filename> is  closed again, input will be  taken again from  the current
-**  input file.
-**
-**  Test mode works as follows.  If the scanner  is about to  print a line to
-**  the  current output file  (or to be more precise  to the output file that
-**  was current when  'OpenTest' was called) this line  is  compared with the
-**  next line from the test input  file, i.e., the  one opened by 'OpenTest'.
-**  If this line starts with '#>' and the rest of it  matches the output line
-**  the output line is  not printed and the input  comment line is discarded.
-**  Otherwise the  scanner prints the output line   and does not  discard the
-**  input line.
-**
-**  On the other hand if an input line is encountered on  the test input that
-**  starts with '#>' the scanner assumes that this is an expected output line
-**  that did not appear and echoes this line to the current output file.
-**
-**  The upshot is that  you can write  test files that consist of alternating
-**  input and,  as  '#>' test  comment  lines the  expected  output.   If GAP
-**  behaves normal and produces the expected  output then nothing is printed.
-**  But if something  goes wrong you see  what actually was printed  and what
-**  was expected instead.
-**
-**  As a convention GAP test files should end with a  print  statement  like:
-**
-**    Print("prime   3.002   06-Jul-90 ",417000000/Runtime()," GAPstones\n");
-**
-**  without a matching '#>' comment line.  This tells the user that the  test
-**  file completed and also how much time it took.  The  constant  should  be
-**  such that a VAX 11/780 gets roughly 1000 GAPstones.
-**
-**  'OpenTest' returns 1 if it could successfully open <filename> for reading
-**  and  0 to indicate failure.  'OpenTest'  will fail if   the file does not
-**  exist or if you have no permissions to read it.  'OpenTest' may also fail
-**  if you have too many files open at once.  It is system dependent how many
-**  are too may, but 16 files shoule work everywhere.
-**
-**  Directely after the 'OpenTest'  call the variable  'Symbol' has the value
-**  'S_ILLEGAL' to indicate that no symbol has yet been  read from this file.
-**  The first symbol is read by 'Read' in the first call to 'Match' call.
-*/
-UInt            OpenTest (
-    Char *              filename )
-{
-    /* do not allow to nest test files                                     */
-    if ( TestInput != -1 )
-        return 0;
-
-    /* try to open the file as input file                                  */
-    if ( ! OpenInput( filename ) )
-        return 0;
-
-    /* remember this is a test input                                       */
-    TestInput   = Input->file;
-    TestOutput  = Output->file;
-    TestLine[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
-*F  CloseTest() . . . . . . . . . . . . . . . . . . close the test input file
-**
-**  'CloseTest'  closes the  current test  input  file and ends  test   mode.
-**  Subsequent  input   will again be taken   from  the previous  input file.
-**  Output will no longer be compared with  comment lines from the test input
-**  file.  'CloseTest' will return 1 to indicate success.
-**
-**  'CloseTest' will not close a non test input file and returns 0 if such an
-**  attempt is made.
-*/
-UInt            CloseTest ( void )
-{
-    /* refuse to a non test file                                           */
-    if ( TestInput != Input->file )
-        return 0;
-
-    /* close the input file                                                */
-    SyFclose( Input->file );
-
-    /* revert to last file                                                 */
-    Input--;
-    In     = Input->ptr;
-    Symbol = Input->symbol;
-
-    /* we are no longer in test mode                                       */
-    TestInput   = -1;
-    TestOutput  = -1;
-    TestLine[0] = '\0';
-
-    /* indicate success                                                    */
-    return 1;
-}
-
-
-/****************************************************************************
-**
 *F  InitScanner() . . . . . . . . . . . . . .  initialize the scanner package
 **
 **  'InitScanner' initializes  the  scanner  package.  This  justs  sets  the
@@ -2035,12 +2174,27 @@ UInt            CloseTest ( void )
 void            InitScanner ( void )
 {
     Int                 ignore;
+    Int                 i;
+    static Char         cookie[sizeof(InputFiles)/sizeof(InputFiles[0])][9];
 
     Input  = InputFiles-1;   ignore = OpenInput(  "*stdin*"  );
     Output = OutputFiles-1;  ignore = OpenOutput( "*stdout*" );
 
     InputLog = -1;  OutputLog = -1;
-    TestInput = -1;  TestOutput = -1;
+    TestInput = 0;  TestOutput = 0;
+
+    for ( i = 0;  i < sizeof(InputFiles)/sizeof(InputFiles[0]);  i++ ) {
+      cookie[i][0] = 's';
+      cookie[i][1] = 't';
+      cookie[i][2] = 'r';
+      cookie[i][3] = 'e';
+      cookie[i][4] = 'a';
+      cookie[i][5] = 'm';
+      cookie[i][6] = ' ';
+      cookie[i][7] = '0'+i;
+      cookie[i][8] = '\0';
+      InitGlobalBag(&(InputFiles[i].stream), &(cookie[i][0]));
+    }
 }
 
 

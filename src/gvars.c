@@ -29,10 +29,11 @@ char *          Revision_gvars_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, SIZE_OBJ, ...    */
+
+#include        "scanner.h"             /* Pr                              */
 
 #define INCLUDE_DECLARATION_PART
 #include        "gvars.h"               /* declaration part of the package */
@@ -360,6 +361,28 @@ UInt            GVarName (
     return INT_INTOBJ(gvar);
 }
 
+/****************************************************************************
+**
+*V  CopyAndFopyGVars . . kernel table of kernel copies and "fopies" of global
+**                       variables
+**
+**  This needs to be kept inside the kernel so that the copies can be updated
+**  after loading a workspace.
+*/  
+
+typedef struct  { 
+  Obj * copy;
+  UInt isFopy;
+  Char * name;
+} TypeCopyGVar;
+
+#ifndef MAX_COPY_AND_FOPY_GVARS
+#define MAX_COPY_AND_FOPY_GVARS 4096
+#endif
+
+static TypeCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
+
+static NCopyAndFopyGVars = 0;
 
 /****************************************************************************
 **
@@ -394,6 +417,17 @@ void            InitCopyGVar (
 
     /* now copy the value of <gvar> to <cvar>                              */
     *copy = VAL_GVAR(gvar);
+
+    /* make a record in the kernel also, for saving and loading */
+    if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
+      {
+	Pr("No room to record CopyGVar\n",0L,0L);
+	SyExit(1);
+      }
+    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 0;
+    CopyAndFopyGVars[NCopyAndFopyGVars].name = NameGVar(gvar);
+    NCopyAndFopyGVars++;
 }
 
 
@@ -444,6 +478,17 @@ void            InitFopyGVar (
     else {
         *copy = ErrorMustHaveAssObjFunc;
     }
+    
+    /* make a record in the kernel also, for saving and loading */
+    if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
+      {
+	Pr("No room to record FopyGVar\n",0L,0L);
+	SyExit(1);
+      }
+    CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
+    CopyAndFopyGVars[NCopyAndFopyGVars].isFopy = 1;
+    CopyAndFopyGVars[NCopyAndFopyGVars].name = NameGVar(gvar);
+    NCopyAndFopyGVars++;
 }
 
 
@@ -457,7 +502,21 @@ void            InitFopyGVar (
 **  Actually  when such expressions  appear in functions, one should probably
 **  use a local variable.  But for now this is good enough.
 */
-UInt            Tilde;
+UInt Tilde;
+
+
+/****************************************************************************
+**
+*F  MakeReadOnlyGVar( <gvar> )  . . . . . .  make a global variable read only
+*/
+Obj MakeReadOnlyGVarFunc;
+
+Obj MakeReadOnlyGVar (
+    UInt                gvar )
+{       
+    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
+    CHANGED_BAG(WriteGVars)
+}
 
 
 /****************************************************************************
@@ -471,14 +530,10 @@ UInt            Tilde;
 **  'MakeReadOnlyGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read only.
 */
-Obj             MakeReadOnlyGVarFunc;
-
-Obj             MakeReadOnlyGVarHandler (
+Obj MakeReadOnlyGVarHandler (
     Obj                 self,
     Obj                 name )
 {       
-    UInt                gvar;           /* the global variable             */
-
     /* check the argument                                                  */
     while ( ! IsStringConv( name ) ) {
         name = ErrorReturnObj(
@@ -488,12 +543,24 @@ Obj             MakeReadOnlyGVarHandler (
     }
 
     /* get the variable and make it read only                              */
-    gvar = GVarName( CSTR_STRING(name) );
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
-    CHANGED_BAG(WriteGVars)
+    MakeReadOnlyGVar(GVarName(CSTR_STRING(name)));
 
     /* return void                                                         */
     return 0;
+}
+
+
+/****************************************************************************
+**
+*F  MakeReadWriteGVar( <gvar> ) . . . . . . make a global variable read write
+*/
+Obj MakeReadWriteGVarFunc;
+
+Obj MakeReadWriteGVar (
+    UInt                gvar )
+{
+    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(1) );
+    CHANGED_BAG(WriteGVars)
 }
 
 
@@ -508,14 +575,10 @@ Obj             MakeReadOnlyGVarHandler (
 **  'MakeReadWriteGVar' make the global  variable with the name <name>  (which
 **  must be a GAP string) read and writable.
 */
-Obj             MakeReadWriteGVarFunc;
-
-Obj             MakeReadWriteGVarHandler (
+Obj MakeReadWriteGVarHandler (
     Obj                 self,
     Obj                 name )
 {
-    UInt                gvar;           /* the global variable             */
-
     /* check the argument                                                  */
     while ( ! IsStringConv( name ) ) {
         name = ErrorReturnObj(
@@ -525,8 +588,7 @@ Obj             MakeReadWriteGVarHandler (
     }
 
     /* get the variable and make it read write                             */
-    gvar = GVarName( CSTR_STRING(name) );
-    SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(1) );
+    MakeReadWriteGVar(GVarName(CSTR_STRING(name)));
 
     /* return void                                                         */
     return 0;
@@ -666,38 +728,43 @@ UInt            completion_gvar (
 void            InitGVars ( void )
 {
     /* make the error functions for 'AssGVar'                              */
-    InitGlobalBag( &ErrorMustEvalToFuncFunc );
+    InitGlobalBag( &ErrorMustEvalToFuncFunc, "gvars: error function 1" );
+    InitHandlerFunc( ErrorMustEvalToFuncHandler,
+		     "error must evaluate to a function");
     ErrorMustEvalToFuncFunc = NewFunctionC( "ErrorMustEvalToFunc", -1L,"args",
                                 ErrorMustEvalToFuncHandler );
-    InitGlobalBag( &ErrorMustHaveAssObjFunc );
+    
+    InitGlobalBag( &ErrorMustHaveAssObjFunc, "gvars: error function 2" );
+    InitHandlerFunc( ErrorMustHaveAssObjHandler,
+		     "error must have associated object");
     ErrorMustHaveAssObjFunc = NewFunctionC( "ErrorMustHaveAssObj", -1L,"args",
                                 ErrorMustHaveAssObjHandler );
 
     /* make the lists for global variables                                 */
     CountGVars = 0;
-    InitGlobalBag( &ValGVars );
+    InitGlobalBag( &ValGVars, "gvars: values" );
     ValGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( ValGVars, 0 );
     PtrGVars = ADDR_OBJ( ValGVars );
-    InitGlobalBag( &NameGVars );
+    InitGlobalBag( &NameGVars, "gvars: names" );
     NameGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( NameGVars, 0 );
-    InitGlobalBag( &WriteGVars );
+    InitGlobalBag( &WriteGVars, "gvars: writable flags" );
     WriteGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( WriteGVars, 0 );
-    InitGlobalBag( &ExprGVars );
+    InitGlobalBag( &ExprGVars, "gvars: expressions for AUTO" );
     ExprGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( ExprGVars, 0 );
-    InitGlobalBag( &CopiesGVars );
+    InitGlobalBag( &CopiesGVars, "gvars: kernel copies" );
     CopiesGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CopiesGVars, 0 );
-    InitGlobalBag( &FopiesGVars );
+    InitGlobalBag( &FopiesGVars, "gvars: kernel fopies"  );
     FopiesGVars = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( FopiesGVars, 0 );
 
     /* make the list of global variables                                   */
     SizeGVars = 997;
-    InitGlobalBag( &TableGVars );
+    InitGlobalBag( &TableGVars, "gvars: hash tables" );
     TableGVars = NEW_PLIST( T_PLIST, SizeGVars );
     SET_LEN_PLIST( TableGVars, SizeGVars );
 
@@ -705,14 +772,18 @@ void            InitGVars ( void )
     Tilde = GVarName( "~" );
 
     /* install the functions 'MakeReadOnlyGVar' and 'MakeReadWriteGVar'    */
+    InitHandlerFunc( MakeReadOnlyGVarHandler, "make gvar read only");
     MakeReadOnlyGVarFunc = NewFunctionC( "MakeReadOnlyGVar", 1L, "name",
                                 MakeReadOnlyGVarHandler );
     AssGVar( GVarName( "MakeReadOnlyGVar" ), MakeReadOnlyGVarFunc );
+
+    InitHandlerFunc( MakeReadWriteGVarHandler, "make gvar read write");
     MakeReadWriteGVarFunc = NewFunctionC( "MakeReadWriteGVar", 1L, "name",
                                 MakeReadWriteGVarHandler );
     AssGVar( GVarName( "MakeReadWriteGVar" ), MakeReadWriteGVarFunc );
             
     /* install the function 'AUTO'                                         */
+    InitHandlerFunc( AUTOHandler, "AUTO");
     AUTOFunc = NewFunctionC( "AUTO", -1L, "args", AUTOHandler );
     AssGVar( GVarName( "AUTO" ), AUTOFunc );
 }

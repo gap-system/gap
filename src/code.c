@@ -17,10 +17,10 @@ char *          Revision_code_c =
 #include        <assert.h>              /* assert                          */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                             ?*/
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                             ?*/
 
 #include        "calls.h"               /* NARG_FUNC, NLOC_FUNC, NAMS_FU...*/
 /*N 1996/06/16 mschoene func expressions should be different from funcs    */
@@ -3076,12 +3076,12 @@ void            CodeAssertEnd3Args ( void )
 void            InitCode ( void )
 {
     /* make the result variable known to Gasman                            */
-    InitGlobalBag( &CodeResult );
+    InitGlobalBag( &CodeResult, "CodeResult" );
 
     /* allocate the statements and expressions stacks                      */
-    InitGlobalBag( &StackStat );
+    InitGlobalBag( &StackStat, "StackStat" );
     StackStat = NewBag( T_BODY, 64*sizeof(Stat) );
-    InitGlobalBag( &StackExpr );
+    InitGlobalBag( &StackExpr, "StackExpr" );
     StackExpr = NewBag( T_BODY, 64*sizeof(Expr) );
 
     /* install the marking functions for function body bags                */

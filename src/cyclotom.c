@@ -89,10 +89,11 @@ char *          Revision_cyclotom_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -1892,12 +1893,12 @@ void            InitCyc ( void )
 
     /* create the result buffer                                            */
     ResultCyc = NEW_PLIST( T_PLIST, 1024 );
-    InitGlobalBag( &ResultCyc );
+    InitGlobalBag( &ResultCyc , "cyclotomic result buffer");
     res = ADDR_OBJ( ResultCyc );
     for ( i = 0; i < 1024; i++ ) { res[i] = INTOBJ_INT(0); }
 
     /* tell Gasman about the place were we remember the primitive root     */
-    InitGlobalBag( &LastECyc );
+    InitGlobalBag( &LastECyc, "cyclotomic: primitive root");
 
     /* install the kind function                                           */
     ImportGVarFromLibrary( "KIND_CYC", &KIND_CYC );
@@ -1954,26 +1955,32 @@ void            InitCyc ( void )
     ProdFuncs[ T_CYC    ][ T_RAT    ] = ProdCycInt;
 
     /* and finally install the internal functions                          */
+    InitHandlerFunc( EHandler, "E" );
     EOper = NewOperationC( "E", 1L, "n",
                                 EHandler );
     AssGVar( GVarName( "E" ), EOper );
 
+    InitHandlerFunc( IsCycHandler, "IS_CYC" );
     IsCycFilt = NewFilterC( "IS_CYC", 1L, "obj",
                                 IsCycHandler );
     AssGVar( GVarName( "IS_CYC" ), IsCycFilt );
 
+    InitHandlerFunc( IsCycIntHandler, "IS_CYC_INT" );
     IsCycIntOper = NewOperationC( "IS_CYC_INT", 1L, "obj",
                                 IsCycIntHandler );
     AssGVar( GVarName( "IS_CYC_INT" ), IsCycIntOper );
 
+    InitHandlerFunc( NofCycHandler, "N_OF_CYC" );
     NofCycOper = NewOperationC( "N_OF_CYC", 1L, "cyc",
                                 NofCycHandler );
     AssGVar( GVarName( "N_OF_CYC" ), NofCycOper );
 
+    InitHandlerFunc( CoeffsCycHandler, "COEFFS_CYC" );
     CoeffsCycOper = NewOperationC( "COEFFS_CYC", 1L, "cyc",
                                 CoeffsCycHandler );
     AssGVar( GVarName( "COEFFS_CYC" ), CoeffsCycOper );
 
+    InitHandlerFunc( GaloisCycHandler, "GALOIS_CYC" );
     GaloisCycOper = NewOperationC( "GALOIS_CYC", 2L, "cyc, n",
                                 GaloisCycHandler );
     AssGVar( GVarName( "GALOIS_CYC" ), GaloisCycOper );

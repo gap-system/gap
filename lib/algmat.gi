@@ -1,10 +1,11 @@
 #############################################################################
 ##
 #W  algmat.gi                   GAP library                     Thomas Breuer
+#W                                                            Willem de Graaf
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains those functions that mainly deal with matrix algebras,
 ##  that is, associative matrix algebras and matrix Lie algebras.
@@ -744,7 +745,7 @@ InstallMethod( RadicalOfAlgebra,
           return TrivialSubalgebra( A );
         fi;
 
-        I:= List( R, x -> x*I );
+        I:= List( R, x -> LinearCombination( I, x ) );
         t:= Length(I);
         pexp:= pexp*p;
 
@@ -755,7 +756,7 @@ InstallMethod( RadicalOfAlgebra,
         # Transform back.
 
         bsp:= BasisByGeneratorsNC( VectorSpace( G, bb ), bb );
-        R:= List( I, i -> Coefficients( bsp, i ) * bas );
+        R:= List( I, i -> LinearCombination( bas, Coefficients( bsp, i )) );
 
       else
 

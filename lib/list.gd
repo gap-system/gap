@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the definition of operations and functions for lists.
 ##
@@ -188,6 +188,16 @@ InstallTrueMethod( IsHomogeneousList, IsList and IsEmpty );
 #M  IsFinite( <homoglist> )
 ##
 InstallTrueMethod( IsFinite, IsHomogeneousList and IsInternalRep );
+
+
+#############################################################################
+##
+#P  IsNSortedList(<obj>)
+##
+IsNSortedList :=
+    NewPropertyKernel( "IsNSortedList",
+        IsDenseList,
+        IS_NSORT_LIST );
 
 
 #############################################################################

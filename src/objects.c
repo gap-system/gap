@@ -12,12 +12,13 @@ char * Revision_objects_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
-#include        "scanner.h"             /* Pr                              */
 #include        "gasman.h"              /* Retype                          */
 
 #define INCLUDE_DECLARATION_PART
 #include        "objects.h"             /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
+
+#include        "scanner.h"             /* Pr                              */
 
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
@@ -1371,12 +1372,14 @@ void InitObjects ( void )
     Int                 t;              /* loop variable                   */
 
     /* make and install the 'FAMILY_KIND' function                         */
+    InitHandlerFunc( FamilyKindHandler, "FAMILY_KIND" );
     FamilyKindFunc = NewFunctionC(
         "FAMILY_KIND", 1L, "kind", FamilyKindHandler );
     AssGVar( GVarName( "FAMILY_KIND" ), FamilyKindFunc );
 
 
     /* make and install the 'KIND_OBJ' function                            */
+    InitHandlerFunc( KindObjHandler, "KIND_OBJ" );
     KindObjFunc = NewFunctionC(
         "KIND_OBJ", 1L, "obj", KindObjHandler );
     AssGVar( GVarName( "KIND_OBJ" ), KindObjFunc );
@@ -1386,12 +1389,14 @@ void InitObjects ( void )
 
 
     /* make and install the 'FAMILY_OBJ' function                          */
+    InitHandlerFunc( FamilyObjHandler, "FAMILY_OBJ" );
     FamilyObjFunc = NewFunctionC(
         "FAMILY_OBJ", 1L, "obj", FamilyObjHandler );
     AssGVar( GVarName( "FAMILY_OBJ" ), FamilyObjFunc );
 
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
+    InitHandlerFunc( IsMutableObjHandler, "IS_MUTABLE_OBJ" );
     IsMutableObjFilt = NewFilterC(
         "IS_MUTABLE_OBJ", 1L, "obj", IsMutableObjHandler );
     AssGVar( GVarName( "IS_MUTABLE_OBJ" ),
@@ -1406,6 +1411,7 @@ void InitObjects ( void )
 
 
     /* make and install the 'IS_COPYABLE_OBJ' filter                       */
+    InitHandlerFunc( IsCopyableObjHandler, "IS_COPYABLE_OBJ" );
     IsCopyableObjFilt = NewFilterC(
         "IS_COPYABLE_OBJ", 1L, "obj", IsCopyableObjHandler );
     AssGVar( GVarName( "IS_COPYABLE_OBJ" ),
@@ -1420,6 +1426,7 @@ void InitObjects ( void )
 
 
     /* make and install the 'SHALLOW_COPY_OBJ' operation                   */
+    InitHandlerFunc( ShallowCopyObjHandler, "SHALLOW_COPY_OBJ" );
     ShallowCopyObjOper = NewOperationC(
         "SHALLOW_COPY_OBJ", 1L, "obj", ShallowCopyObjHandler );
     AssGVar( GVarName( "SHALLOW_COPY_OBJ" ),
@@ -1438,10 +1445,12 @@ void InitObjects ( void )
 
 
     /* make and install the 'COPY_OBJ' function                            */
+    InitHandlerFunc( ImmutableCopyObjHandler, "IMMUTABLE_COPY_OBJ" );
     ImmutableCopyObjFunc = NewFunctionC(
         "IMMUTABLE_COPY_OBJ", 1L, "obj", ImmutableCopyObjHandler );
     AssGVar( GVarName( "IMMUTABLE_COPY_OBJ" ),
         ImmutableCopyObjFunc );
+    InitHandlerFunc( MutableCopyObjHandler, "DEEP_COPY_OBJ" );
 
     MutableCopyObjFunc = NewFunctionC(
         "DEEP_COPY_OBJ", 1L, "obj", MutableCopyObjHandler );
@@ -1471,6 +1480,7 @@ void InitObjects ( void )
 
 
     /* make and install the 'PRINT_OBJ' operation                          */
+    InitHandlerFunc( PrintObjHandler, "PRINT_OBJ" );
     PrintObjOper = NewOperationC(
         "PRINT_OBJ", 1L, "obj", PrintObjHandler );
     AssGVar( GVarName( "PRINT_OBJ" ), PrintObjOper );
@@ -1485,6 +1495,7 @@ void InitObjects ( void )
 
 
     /* make and install the 'IS_IDENTICAL_OBJ' function                    */
+    InitHandlerFunc( IsIdenticalHandler, "IS_IDENTICAL_OBJ" );
     IsIdenticalFunc = NewFunctionC(
         "IS_IDENTICAL_OBJ", 2, "obj1, obj2", IsIdenticalHandler );
     AssGVar( GVarName( "IS_IDENTICAL_OBJ" ), IsIdenticalFunc );
@@ -1512,39 +1523,49 @@ void InitObjects ( void )
 
 
     /* make and install the functions for low level accessing of objects   */
+    InitHandlerFunc( IS_COMOBJ_Handler, "IS_COMOBJ" );
     IS_COMOBJ_Func = NewFunctionC(
         "IS_COMOBJ", 1L, "obj", IS_COMOBJ_Handler );
     AssGVar( GVarName( "IS_COMOBJ" ), IS_COMOBJ_Func );
-
+    
+    InitHandlerFunc( SET_KIND_COMOBJ_Handler, "SET_KIND_COMOBJ" );
     SET_KIND_COMOBJ_Func = NewFunctionC(
         "SET_KIND_COMOBJ", 2L, "obj, kind", SET_KIND_COMOBJ_Handler );
     AssGVar( GVarName( "SET_KIND_COMOBJ" ), SET_KIND_COMOBJ_Func );
-
+    
+    InitHandlerFunc( IS_POSOBJ_Handler, "IS_POSOBJ" );
     IS_POSOBJ_Func = NewFunctionC(
         "IS_POSOBJ", 1L, "obj", IS_POSOBJ_Handler );
     AssGVar( GVarName( "IS_POSOBJ" ), IS_POSOBJ_Func );
-
+    
+    InitHandlerFunc( SET_KIND_POSOBJ_Handler, "SET_KIND_POSOBJ" );
     SET_KIND_POSOBJ_Func = NewFunctionC(
         "SET_KIND_POSOBJ", 2L, "obj, kind", SET_KIND_POSOBJ_Handler );
     AssGVar( GVarName( "SET_KIND_POSOBJ" ), SET_KIND_POSOBJ_Func );
-
+    
+    InitHandlerFunc( LEN_POSOBJ_Handler, "LEN_POSOBJ" );
     LEN_POSOBJ_Func = NewFunctionC(
         "LEN_POSOBJ", 1L, "obj", LEN_POSOBJ_Handler );
     AssGVar( GVarName( "LEN_POSOBJ" ), LEN_POSOBJ_Func );
-
+    
+    InitHandlerFunc( IS_DATOBJ_Handler, "IS_DATOBJ" );
     IS_DATOBJ_Func = NewFunctionC(
         "IS_DATOBJ", 1L, "obj", IS_DATOBJ_Handler );
     AssGVar( GVarName( "IS_DATOBJ" ), IS_DATOBJ_Func );
-
+    
+    InitHandlerFunc( SET_KIND_DATOBJ_Handler, "SET_KIND_DATOBJ" );
     SET_KIND_DATOBJ_Func = NewFunctionC(
         "SET_KIND_DATOBJ", 2L, "obj, kind", SET_KIND_DATOBJ_Handler );
     AssGVar( GVarName( "SET_KIND_DATOBJ" ), SET_KIND_DATOBJ_Func );
 
 
     /* install the debug functions                                         */
+    InitHandlerFunc( SIZE_OBJ_Handler, "SIZE_OBJ" );
     SIZE_OBJ_Func = NewFunctionC(
         "SIZE_OBJ", 1L, "obj", SIZE_OBJ_Handler );
     AssGVar( GVarName( "SIZE_OBJ" ), SIZE_OBJ_Func );    
+
+    InitHandlerFunc( TYPE_OBJ_Handler, "TYPE_OBJ" );
     TYPE_OBJ_Func = NewFunctionC(
         "TYPE_OBJ", 1L, "obj", TYPE_OBJ_Handler );
     AssGVar( GVarName( "TYPE_OBJ" ), TYPE_OBJ_Func );

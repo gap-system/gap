@@ -12,7 +12,9 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 **
-**  The file 'system.c' contains  all  operating system dependent  functions.
+**  The  files   "system.c" and  "sysfiles.c"  contains all  operating system
+**  dependent  functions.  This file contains  all system dependent functions
+**  except file and stream operations, which are implemented in "sysfiles.c".
 **  The following labels determine which operating system is actually used.
 **
 **  SYS_IS_BSD
@@ -137,40 +139,8 @@ char * Revision_system_c =
 #include        "system.h"              /* declaration part of the package */
 #undef  INCLUDE_DECLARATION_PART
 
-#ifdef SYS_HAS_ANSI
-# define SYS_ANSI       SYS_HAS_ANSI
-#else
-# ifdef __STDC__
-#  define SYS_ANSI      1
-# else
-#  define SYS_ANSI      0
-# endif
-#endif
+#include        "sysfiles.h"            /* file input/output               */
 
-#ifdef SYS_HAS_CONST
-# define SYS_CONST      SYS_HAS_CONST
-#else
-# ifdef __STDC__
-#  define SYS_CONST     const
-# else
-#  define SYS_CONST
-# endif
-#endif
-
-#ifdef __MWERKS__
-# define SYS_IS_MAC_MPW             1
-# define SYS_HAS_CALLOC_PROTO       1
-#endif
-
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-
-#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
-# include       <unistd.h>
-# define SYS_UNISTD_H
-#endif
 
 #ifndef SYS_HAS_STDIO_PROTO             /* ANSI/TRAD decl. from H&S 15     */
 extern FILE * fopen ( SYS_CONST char *, SYS_CONST char * );
@@ -179,6 +149,12 @@ extern void   setbuf ( FILE *, char * );
 extern char * fgets ( char *, int, FILE * );
 extern int    fputs ( SYS_CONST char *, FILE * );
 #endif
+
+#ifdef __MWERKS__
+# define SYS_IS_MAC_MPW             1
+# define SYS_HAS_CALLOC_PROTO       1
+#endif
+
 
 
 /****************************************************************************
@@ -241,65 +217,38 @@ Char            SyFlags [] = {
 
 #ifdef SYS_IS_BSD
     'b', 's', 'd',
-# define SYS_BSD        1
-#else
-# define SYS_BSD        0
 #endif
 
 #ifdef SYS_IS_MACH
     'm', 'a', 'c', 'h',
-# define SYS_MACH       1
-#else
-# define SYS_MACH       0
 #endif
 
 #ifdef SYS_IS_USG
     'u', 's', 'g',
-# define SYS_USG        1
-#else
-# define SYS_USG        0
 #endif
 
 #ifdef SYS_IS_OS2_EMX
     'o', 's', '2', ' ', 'e', 'm', 'x',
-# define SYS_OS2_EMX    1
-#else
-# define SYS_OS2_EMX    0
 #endif
 
 #ifdef SYS_IS_MSDOS_DJGPP
     'm', 's', 'd', 'o', 's', ' ', 'd', 'j', 'g', 'p', 'p',
-# define SYS_MSDOS_DJGPP 1
-#else
-# define SYS_MSDOS_DJGPP 0
 #endif
 
 #ifdef SYS_IS_TOS_GCC2
     't', 'o', 's', ' ', 'g', 'c', 'c', '2',
-# define SYS_TOS_GCC2   1
-#else
-# define SYS_TOS_GCC2   0
 #endif
 
 #ifdef SYS_IS_VMS
     'v', 'm', 's',
-# define SYS_VMS        1
-#else
-# define SYS_VMS        0
 #endif
 
 #ifdef SYS_IS_MAC_MPW
     'm', 'a', 'c', ' ', 'm', 'p', 'w',
-# define SYS_MAC_MPW    1
-#else
-# define SYS_MAC_MPW    0
 #endif
 
 #ifdef SYS_IS_MAC_SYC
     'm', 'a', 'c', ' ', 's', 'y', 'c',
-# define SYS_MAC_SYC    1
-#else
-# define SYS_MAC_SYC    0
 #endif
 
 #if __GNUC__
@@ -325,22 +274,26 @@ Char            SyFlags [] = {
 /****************************************************************************
 **
 
-*V  syStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
+*F  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
 **
-**  'syStackSpace' is the amount of stackspace that GAP gets.
+**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
+**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
+**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
+**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
+**  from a macro passed from the makefile, because it is machine dependent.
 **
-**  Under TOS and on the  Mac special actions must  be  taken to ensure  that
-**  enough space is available.
+**  This value is passed to 'InitBags'.
 */
-#if SYS_TOS_GCC2
-# define __NO_INLINE__
-int _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
-static UInt syStackSpace = 64 * 1024;
+#ifdef  SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
 #endif
 
-#if SYS_MAC_MPW || SYS_MAC_SYC
-static UInt syStackSpace = 64 * 1024;
+#ifndef SYS_HAS_STACK_ALIGN
+#define SYS_STACK_ALIGN         sizeof(UInt *)
 #endif
+
+UInt SyStackAlign = SYS_STACK_ALIGN;
 
 
 /****************************************************************************
@@ -352,6 +305,94 @@ Char * SyArchitecture = "unknown";
 #else
 Char * SyArchitecture = SYS_ARCH;
 #endif
+
+
+/****************************************************************************
+**
+*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
+**
+**  'SyBanner' determines whether GAP should print the banner.
+**
+**  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
+**  changed by the '-b' option to have GAP surpress the banner.
+**
+**  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+UInt SyBanner = 1;
+
+
+/****************************************************************************
+**
+*V  SyCTRD  . . . . . . . . . . . . . . . . . . .  true if '<ctr>-D' is <eof>
+*/
+UInt SyCTRD = 1;             
+
+
+/****************************************************************************
+**
+*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
+**
+**  'SyCacheSize' is the size of the data cache.
+**
+**  This is per  default 0, which means that  there is no usuable data cache.
+**  It is usually changed with the '-c' option in the script that starts GAP.
+**
+**  This value is passed to 'InitBags'.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+UInt SyCacheSize = 0;
+
+
+/****************************************************************************
+**
+*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
+*/
+Int SyCheckForCompFiles = 1;
+
+
+/****************************************************************************
+**
+*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
+*/
+Char SyCompileInput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
+*/
+Char * SyCompileMagic1;
+
+
+/****************************************************************************
+**
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
+*/
+Char SyCompileName [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
+*/
+Char SyCompileOutput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*/
+Int SyCompilePlease = 0;
+
+
+/****************************************************************************
+**
+*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
+*/
+Int SyDebugLoading = 0;
 
 
 /****************************************************************************
@@ -373,8 +414,9 @@ Char * SyArchitecture = SYS_ARCH;
 **  filename.  Further neccessary transformation of  the filename are done in
 **  'SyOpen'.
 **
-**  Put in this package because the command line processing takes place here.  */
-Char SyGapRootPath [16*256];
+**  Put in this package because the command line processing takes place here.
+*/
+Char SyGapRootPath [MAX_GAP_DIRS*256];
 
 
 /****************************************************************************
@@ -384,48 +426,55 @@ Char SyGapRootPath [16*256];
 **  'SyGapRootPaths' conatins the  names   of the directories where   the GAP
 **  files are located, it is derived from 'SyGapRootPath'.
 **
-**  Put in this package because the command line processing takes place here.  */
-Char SyGapRootPaths [16] [256];
+**  Put in this package because the command line processing takes place here.
+*/
+Char SyGapRootPaths [MAX_GAP_DIRS] [256];
 
 
 /****************************************************************************
 **
-*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
+*V  SyInitfiles[] . . . . . . . . . . .  list of filenames to be read in init
 **
-**  'SyBanner' determines whether GAP should print the banner.
+**  'SyInitfiles' is a list of file to read upon startup of GAP.
 **
-**  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
-**  changed by the '-b' option to have GAP surpress the banner.
+**  It contains the 'init.g' file and a user specific init file if it exists.
+**  It also contains all names all the files specified on the  command  line.
 **
-**  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
+**  This is used in 'InitGap' which tries to read those files  upon  startup.
+**
+**  Put in this package because the command line processing takes place here.
+**
+**  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
+*/
+Char SyInitfiles [16] [256];
+
+
+/****************************************************************************
+**
+*V  SyLineEdit  . . . . . . . . . . . . . . . . . . . .  support line editing
+**
+**  0: no line editing
+**  1: line editing if terminal
+**  2: always line editing (EMACS)
+*/
+UInt SyLineEdit = 1;
+
+
+/****************************************************************************
+**
+*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+**
+**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
+**  not.
+**
+**  Per default it is false, i.e. Gasman is silent about garbage collections.
+**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**
+**  This is used in the function 'SyMsgsBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt SyBanner = 1;
-
-
-/****************************************************************************
-**
-*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
-**
-**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
-**
-**  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
-**  It can be changed by the '-q' option to have GAP operate in silent  mode.
-**
-**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
-**  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-UInt SyQuiet = 0;
-
-
-/****************************************************************************
-**
-*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
-*/
-Int SyDebugLoading = 0;
+UInt SyMsgsFlagBags = 0;
 
 
 /****************************************************************************
@@ -461,19 +510,35 @@ UInt SyNrRows = 24;
 
 /****************************************************************************
 **
-*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
 **
-**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
-**  not.
+**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
 **
-**  Per default it is false, i.e. Gasman is silent about garbage collections.
-**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
+**  It can be changed by the '-q' option to have GAP operate in silent  mode.
 **
-**  This is used in the function 'SyMsgsBags' below.
+**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
+**  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
 **
 **  Put in this package because the command line processing takes place here.
 */
-UInt SyMsgsFlagBags = 0;
+UInt SyQuiet = 0;
+
+
+/****************************************************************************
+**
+*V  SyStorMax . . . . . . . . . . . . . . . . . . . maximal size of workspace
+**
+**  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
+**
+**  This is per default 64 MByte,  which is often a  reasonable value.  It is
+**  usually changed with the '-t' option in the script that starts GAP.
+**
+**  This is used in the function 'SyAllocBags'below.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+Int SyStorMax = 64 * 1024 * 1024L;
 
 
 /****************************************************************************
@@ -512,62 +577,6 @@ Int SyStorMin = 0;
 
 /****************************************************************************
 **
-*V  SyStorMax . . . . . . . . . . . . . . . . . . . maximal size of workspace
-**
-**  'SyStorMax' is the maximal size of the workspace allocated by Gasman.
-**
-**  This is per default 64 MByte,  which is often a  reasonable value.  It is
-**  usually changed with the '-t' option in the script that starts GAP.
-**
-**  This is used in the function 'SyAllocBags'below.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-Int SyStorMax = 64 * 1024 * 1024L;
-
-
-/****************************************************************************
-**
-*F  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
-**
-**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
-**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
-**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
-**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
-**  from a macro passed from the makefile, because it is machine dependent.
-**
-**  This value is passed to 'InitBags'.
-*/
-#ifdef  SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         SYS_HAS_STACK_ALIGN
-#endif
-
-#ifndef SYS_HAS_STACK_ALIGN
-#define SYS_STACK_ALIGN         sizeof(UInt *)
-#endif
-
-UInt SyStackAlign = SYS_STACK_ALIGN;
-
-
-/****************************************************************************
-**
-*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
-**
-**  'SyCacheSize' is the size of the data cache.
-**
-**  This is per  default 0, which means that  there is no usuable data cache.
-**  It is usually changed with the '-c' option in the script that starts GAP.
-**
-**  This value is passed to 'InitBags'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-UInt SyCacheSize = 0;
-
-
-/****************************************************************************
-**
 *V  SySystemInitFile  . . . . . . . . . . .  name of the system "init.g" file
 */
 Char SySystemInitFile [256];
@@ -575,69 +584,9 @@ Char SySystemInitFile [256];
 
 /****************************************************************************
 **
-*V  SyInitfiles[] . . . . . . . . . . .  list of filenames to be read in init
-**
-**  'SyInitfiles' is a list of file to read upon startup of GAP.
-**
-**  It contains the 'init.g' file and a user specific init file if it exists.
-**  It also contains all names all the files specified on the  command  line.
-**
-**  This is used in 'InitGap' which tries to read those files  upon  startup.
-**
-**  Put in this package because the command line processing takes place here.
-**
-**  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
-*/
-Char SyInitfiles [16] [256];
-
-
-/****************************************************************************
-**
-*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
-*/
-Int SyCheckForCompFiles = 1;
-
-
-/****************************************************************************
-**
 *V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
 */
 int SyUseModule = 1;
-
-
-/****************************************************************************
-**
-*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
-*/
-Int SyCompilePlease = 0;
-
-
-/****************************************************************************
-**
-*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
-*/
-Char SyCompileOutput [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
-*/
-Char SyCompileInput [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
-*/
-Char SyCompileName [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic string
-*/
-Char * SyCompileMagic1;
 
 
 /****************************************************************************
@@ -655,6 +604,26 @@ UInt SyWindow = 0;
 
 /****************************************************************************
 **
+*V  syStackSpace  . . . . . . . . . . . . . . . . . . . amount of stack space
+**
+**  'syStackSpace' is the amount of stackspace that GAP gets.
+**
+**  Under TOS and on the  Mac special actions must  be  taken to ensure  that
+**  enough space is available.
+*/
+#if SYS_TOS_GCC2
+# define __NO_INLINE__
+int _stksize = 64 * 1024;   /* GNU C, amount of stack space    */
+static UInt syStackSpace = 64 * 1024;
+#endif
+
+#if SYS_MAC_MPW || SYS_MAC_SYC
+static UInt syStackSpace = 64 * 1024;
+#endif
+
+
+/****************************************************************************
+**
 
 *F * * * * * * * * * * * * * time related functions * * * * * * * * * * * * *
 */
@@ -662,11 +631,16 @@ UInt SyWindow = 0;
 /****************************************************************************
 **
 
-*V  syStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
-*V  syStopTime  . . . . . . . . . . . . . . . . . . time when reading started
+*V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
 */
-UInt   syStartTime;
-UInt   syStopTime;
+UInt SyStartTime;
+
+
+/****************************************************************************
+**
+*V  SyStopTime  . . . . . . . . . . . . . . . . . . time when reading started
+*/
+UInt SyStopTime;
 
 
 /****************************************************************************
@@ -708,7 +682,7 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -syStartTime;
+    return buf.ru_utime.tv_sec*1000 + buf.ru_utime.tv_usec/1000 -SyStartTime;
 }
 
 #endif
@@ -732,7 +706,7 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return 100 * tbuf.tms_utime / (60/10) - syStartTime;
+    return 100 * tbuf.tms_utime / (60/10) - SyStartTime;
 }
 
 #endif
@@ -767,7 +741,7 @@ UInt SyTime ( void )
         fputs("gap: panic 'SyTime' cannot get time!\n",stderr);
         SyExit( 1 );
     }
-    return 100 * tbuf.tms_utime / (HZ / 10) - syStartTime;
+    return 100 * tbuf.tms_utime / (HZ / 10) - SyStartTime;
 }
 
 #endif
@@ -801,7 +775,7 @@ extern  long            clock ( void );
 
 UInt SyTime ( void )
 {
-    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - syStartTime;
+    return 100 * (UInt)clock() / (SYS_CLOCKS/10) - SyStartTime;
 }
 
 #endif
@@ -828,7 +802,7 @@ UInt SyTime ( void )
 
 UInt SyTime ( void )
 {
-    return 100 * (UInt)TickCount() / (60/10) - syStartTime;
+    return 100 * (UInt)TickCount() / (60/10) - SyStartTime;
 }
 
 #endif
@@ -978,147 +952,6 @@ Char * SyStrncat (
 }
 
 #endif
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * * * input/output * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
-**
-**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
-**  routines  from   allocating their  buffers  using  'malloc',  which would
-**  otherwise confuse Gasman.
-*/
-struct {
-    FILE *      fp;                     /* file pointer for this file      */
-    FILE *      echo;                   /* file pointer for the echo       */
-    UInt        pipe;                   /* file is really a pipe           */
-    Char        buf [BUFSIZ];           /* the buffer for this file        */
-} syBuf [16];
-
-
-/****************************************************************************
-**
-*F  SyFopen( <name>, <mode> ) . . . . . . . .  open the file with name <name>
-**
-**  The function 'SyFopen'  is called to open the file with the name  <name>.
-**  If <mode> is "r" it is opened for reading, in this case  it  must  exist.
-**  If <mode> is "w" it is opened for writing, it is created  if  neccessary.
-**  If <mode> is "a" it is opened for appending, i.e., it is  not  truncated.
-**
-**  'SyFopen' returns an integer used by the scanner to  identify  the  file.
-**  'SyFopen' returns -1 if it cannot open the file.
-**
-**  The following standard files names and file identifiers  are  guaranteed:
-**  'SyFopen( "*stdin*", "r")' returns 0 identifying the standard input file.
-**  'SyFopen( "*stdout*","w")' returns 1 identifying the standard outpt file.
-**  'SyFopen( "*errin*", "r")' returns 2 identifying the brk loop input file.
-**  'SyFopen( "*errout*","w")' returns 3 identifying the error messages file.
-**
-**  If it is necessary to adjust the  filename  this  should  be  done  here.
-**  Right now GAP does not read nonascii files, but if this changes sometimes
-**  'SyFopen' must adjust the mode argument to open the file in binary  mode.
-*/
-Int SyFopen (
-    Char *              name,
-    Char *              mode )
-{
-    Int                 fid;
-    Char                namegz [1024];
-    Char                cmd [1024];
-
-    /* handle standard files                                               */
-    if ( SyStrcmp( name, "*stdin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )  return -1;
-        return 0;
-    }
-    else if ( SyStrcmp( name, "*stdout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )  return -1;
-        return 1;
-    }
-    else if ( SyStrcmp( name, "*errin*" ) == 0 ) {
-        if ( SyStrcmp( mode, "r" ) != 0 )  return -1;
-        if ( syBuf[2].fp == (FILE*)0 )  return -1;
-        return 2;
-    }
-    else if ( SyStrcmp( name, "*errout*" ) == 0 ) {
-        if ( SyStrcmp( mode, "w" ) != 0 )  return -1;
-        return 3;
-    }
-
-    /* try to find an unused file identifier                               */
-    for ( fid = 4; fid < sizeof(syBuf)/sizeof(syBuf[0]); ++fid )
-        if ( syBuf[fid].fp == (FILE*)0 )  break;
-    if ( fid == sizeof(syBuf)/sizeof(syBuf[0]) )
-        return (Int)-1;
-
-    /* set up <namegz> and <cmd> for pipe command                          */
-    namegz[0] = '\0';
-    SyStrncat( namegz, name, sizeof(namegz)-5 );
-    SyStrncat( namegz, ".gz", 4 );
-    cmd[0] = '\0';
-    SyStrncat( cmd, "gunzip <", 9 );
-    SyStrncat( cmd, namegz, sizeof(cmd)-10 );
-
-    /* try to open the file                                                */
-    if      ( (syBuf[fid].fp = fopen(name,mode)) ) {
-        syBuf[fid].pipe = 0;
-    }
-    else if ( SyStrcmp(mode,"r") == 0
-           && access(namegz,R_OK) == 0
-           && (syBuf[fid].fp = popen(cmd,mode)) ) {
-        syBuf[fid].pipe = 1;
-    }
-    else {
-        return (Int)-1;
-    }
-
-    /* allocate the buffer                                                 */
-    setbuf( syBuf[fid].fp, syBuf[fid].buf );
-
-    /* return file identifier                                              */
-    return fid;
-}
-
-
-/****************************************************************************
-**
-*F  SyFclose( <fid> ) . . . . . . . . . . . . . . . . .  close the file <fid>
-**
-**  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
-**  from 'SyFopen'.
-*/
-void SyFclose (
-    Int                 fid )
-{
-    /* check file identifier                                               */
-    if ( syBuf[fid].fp == (FILE*)0 ) {
-        fputs("gap: panic 'SyFclose' asked to close closed file!\n",stderr);
-        SyExit( 1 );
-    }
-
-    /* refuse to close the standard files                                  */
-    if ( fid == 0 || fid == 1 || fid == 2 || fid == 3 ) {
-        return;
-    }
-
-    /* try to close the file                                               */
-    if ( (syBuf[fid].pipe == 0 && fclose( syBuf[fid].fp ) == EOF)
-      || (syBuf[fid].pipe == 1 && pclose( syBuf[fid].fp ) == -1) ) {
-        fputs("gap: 'SyFclose' cannot close file, ",stderr);
-        fputs("maybe your file system is full?\n",stderr);
-    }
-
-    /* mark the buffer as unused                                           */
-    syBuf[fid].fp = (FILE*)0;
-}
 
 
 /****************************************************************************
@@ -1825,324 +1658,6 @@ void syStopraw (
 
 /****************************************************************************
 **
-*F  syGetch( <fid> )  . . . . . . . . . . . . .  get a char from <fid>, local
-*/
-#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
-#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
-#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . .  BSD/MACH
-*/
-#if SYS_BSD || SYS_MACH
-
-Int syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( SyWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    /* return the character                                                */
-    return ch;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . USG
-*/
-#if SYS_USG
-
-Int syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 || ch == '\0' )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( SyWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 || ch == '\0' )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    /* return the character                                                */
-    return ch;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . OS2 EMX
-*/
-#if SYS_OS2_EMX
-
-#ifndef SYS_KBD_H                       /* keyboard scan codes             */
-# include       <sys/kbdscan.h>
-# define SYS_KBD_H
-#endif
-
-Int syGetch (
-    Int                 fid )
-{
-    UChar               ch;
-    Int                 ch2;
-
-syGetchAgain:
-    /* read a character                                                    */
-    while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
-        ;
-
-    /* if running under a window handler, handle special characters        */
-    if ( SyWindow && ch == '@' ) {
-        do {
-            while ( read(fileno(syBuf[fid].fp), &ch, 1) != 1 )
-                ;
-        } while ( ch < '@' || 'z' < ch );
-        if ( ch == 'y' ) {
-            syWinPut( fileno(syBuf[fid].echo), "@s", "" );
-            ch = syGetch(fid);
-        }
-        else if ( 'A' <= ch && ch <= 'Z' )
-            ch = CTR(ch);
-    }
-
-    ch2 = ch;
-
-    /* handle function keys                                                */
-    if ( ch == '\0' ) {
-        while ( read( fileno(syBuf[fid].fp), &ch, 1 ) != 1 )
-            ;
-        switch ( ch ) {
-        case K_LEFT:            ch2 = CTR('B');  break;
-        case K_RIGHT:           ch2 = CTR('F');  break;
-        case K_UP:
-        case K_PAGEUP:          ch2 = CTR('P');  break;
-        case K_DOWN:
-        case K_PAGEDOWN:        ch2 = CTR('N');  break;
-        case K_DEL:             ch2 = CTR('D');  break;
-        case K_HOME:            ch2 = CTR('A');  break;
-        case K_END:             ch2 = CTR('E');  break;
-        case K_CTRL_END:        ch2 = CTR('K');  break;
-        case K_CTRL_LEFT:
-        case K_ALT_B:           ch2 = ESC('B');  break;
-        case K_CTRL_RIGHT:
-        case K_ALT_F:           ch2 = ESC('F');  break;
-        case K_ALT_D:           ch2 = ESC('D');  break;
-        case K_ALT_DEL:
-        case K_ALT_BACKSPACE:   ch2 = ESC(127);  break;
-        case K_ALT_U:           ch2 = ESC('U');  break;
-        case K_ALT_L:           ch2 = ESC('L');  break;
-        case K_ALT_C:           ch2 = ESC('C');  break;
-        case K_CTRL_PAGEUP:     ch2 = ESC('<');  break;
-        case K_CTRL_PAGEDOWN:   ch2 = ESC('>');  break;
-        default:                goto syGetchAgain;
-        }
-    }
-
-    /* return the character                                                */
-    return ch2;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . .  MS-DOS
-*/
-#if SYS_MSDOS_DJGPP
-
-Int syGetch (
-    Int                 fid )
-{
-    Int                 ch;
-
-    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
-    if ( syTypeahead[0] != '\0' ) {
-        ch = syTypeahead[0];
-        strcpy( syTypeahead, syTypeahead+1 );
-    }
-
-    /* otherwise read from the keyboard                                    */
-    else {
-        ch = GETKEY();
-    }
-
-    /* postprocess the character                                           */
-    if ( 0x110 <= ch && ch <= 0x132 )   ch = ESC( syAltMap[ch-0x110] );
-    else if ( ch == 0x147 )             ch = CTR('A');
-    else if ( ch == 0x14f )             ch = CTR('E');
-    else if ( ch == 0x148 )             ch = CTR('P');
-    else if ( ch == 0x14b )             ch = CTR('B');
-    else if ( ch == 0x14d )             ch = CTR('F');
-    else if ( ch == 0x150 )             ch = CTR('N');
-    else if ( ch == 0x153 )             ch = CTR('D');
-    else                                ch &= 0xFF;
-
-    /* return the character                                                */
-    return ch;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . TOS
-*/
-#if SYS_TOS_GCC2
-
-Int syGetch (
-    Int                 fid )
-{
-    Int                 ch;
-
-    /* if chars have been typed ahead and read by 'SyIsIntr' read them     */
-    if ( syTypeahead[0] != '\0' ) {
-        ch = syTypeahead[0];
-        strcpy( syTypeahead, syTypeahead+1 );
-    }
-
-    /* otherwise read from the keyboard                                    */
-    else {
-        ch = GETKEY();
-    }
-
-    /* postprocess the character                                           */
-    if (      ch == 0x00480000 )        ch = CTR('P');
-    else if ( ch == 0x004B0000 )        ch = CTR('B');
-    else if ( ch == 0x004D0000 )        ch = CTR('F');
-    else if ( ch == 0x00500000 )        ch = CTR('N');
-    else if ( ch == 0x00730000 )        ch = CTR('Y');
-    else if ( ch == 0x00740000 )        ch = CTR('Z');
-    else                                ch = ch & 0xFF;
-
-    /* return the character                                                */
-    return ch;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . . . VMS
-*/
-#if SYS_VMS
-
-Int syGetch (
-    Int                 fid )
-{
-    Char                ch;
-
-    /* read a character                                                    */
-    smg$read_keystroke( &syVirKbd, &ch );
-
-    /* return the character                                                */
-    return ch;
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC MPW
-*/
-#if SYS_MAC_MPW
-
-int syGetch (
-    Int                 fid )
-{
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*f  syGetch( <fid> )  . . . . . . . . . . . . . . . . . . . . . . . . MAC SYC
-*/
-#if SYS_MAC_SYC
-
-Int syGetch2 (
-    Int                 fid,
-    Int                 cur )
-{
-    Int                 ch;
-
-    /* probably only paranoid                                              */
-    if ( ! isatty( fileno(syBuf[fid].fp) ) )
-        return EOF;
-
-    /* make the current character reverse to simulate a cursor             */
-    syEchoch( (cur != '\0' ? cur : ' ') | 0x80, fid );
-    syEchoch( '\b', fid );
-
-    /* get a character, ignore EOF and chars beyond 0x7F (reverse video)   */
-    while ( ((ch = getchar()) == EOF) || (0x7F < ch) )
-        ;
-
-    /* handle special characters                                           */
-    if (      ch == 28 )  ch = CTR('B');
-    else if ( ch == 29 )  ch = CTR('F');
-    else if ( ch == 30 )  ch = CTR('P');
-    else if ( ch == 31 )  ch = CTR('N');
-
-    /* make the current character normal again                             */
-    syEchoch( (cur != '\0' ? cur : ' '), fid );
-    syEchoch( '\b', fid );
-
-    /* return the character                                                */
-    return ch;
-}
-
-Int syGetch (
-    Int                 fid )
-{
-    /* return character                                                    */
-    return syGetch2( fid, '\0' );
-}
-
-#endif
-
-
-/****************************************************************************
-**
 *F  syEchoch( <ch>, <fid> ) . . . . . . . . . . . echo a char to <fid>, local
 */
 
@@ -2501,625 +2016,6 @@ void syEchos (
 /****************************************************************************
 **
 
-*F  SyFgets( <line>, <lenght>, <fid> )  . . . . .  get a line from file <fid>
-**
-**  'SyFgets' is called to read a line from the file  with  identifier <fid>.
-**  'SyFgets' (like 'fgets') reads characters until either  <length>-1  chars
-**  have been read or until a <newline> or an  <eof> character is encoutered.
-**  It retains the '\n' (unlike 'gets'), if any, and appends '\0' to  <line>.
-**  'SyFgets' returns <line> if any char has been read, otherwise '(char*)0'.
-**
-**  'SyFgets'  allows to edit  the input line if the  file  <fid> refers to a
-**  terminal with the following commands:
-**
-**      <ctr>-A move the cursor to the beginning of the line.
-**      <esc>-B move the cursor to the beginning of the previous word.
-**      <ctr>-B move the cursor backward one character.
-**      <ctr>-F move the cursor forward  one character.
-**      <esc>-F move the cursor to the end of the next word.
-**      <ctr>-E move the cursor to the end of the line.
-**
-**      <ctr>-H, <del> delete the character left of the cursor.
-**      <ctr>-D delete the character under the cursor.
-**      <ctr>-K delete up to the end of the line.
-**      <esc>-D delete forward to the end of the next word.
-**      <esc>-<del> delete backward to the beginning of the last word.
-**      <ctr>-X delete entire input line, and discard all pending input.
-**      <ctr>-Y insert (yank) a just killed text.
-**
-**      <ctr>-T exchange (twiddle) current and previous character.
-**      <esc>-U uppercase next word.
-**      <esc>-L lowercase next word.
-**      <esc>-C capitalize next word.
-**
-**      <tab>   complete the identifier before the cursor.
-**      <ctr>-L insert last input line before current character.
-**      <ctr>-P redisplay the last input line, another <ctr>-P will redisplay
-**              the line before that, etc.  If the cursor is not in the first
-**              column only the lines starting with the string to the left of
-**              the cursor are taken. The history is limitied to ~8000 chars.
-**      <ctr>-N Like <ctr>-P but goes the other way round through the history
-**      <esc>-< goes to the beginning of the history.
-**      <esc>-> goes to the end of the history.
-**      <ctr>-O accept this line and perform a <ctr>-N.
-**
-**      <ctr>-V enter next character literally.
-**      <ctr>-U execute the next command 4 times.
-**      <esc>-<num> execute the next command <num> times.
-**      <esc>-<ctr>-L repaint input line.
-**
-**  Not yet implemented commands:
-**
-**      <ctr>-S search interactive for a string forward.
-**      <ctr>-R search interactive for a string backward.
-**      <esc>-Y replace yanked string with previously killed text.
-**      <ctr>-_ undo a command.
-**      <esc>-T exchange two words.
-*/
-extern UInt iscomplete_rnam (
-            Char *              name,
-            UInt                len );
-
-extern UInt completion_rnam (
-            Char *              name,
-            UInt                len );
-
-extern UInt iscomplete_gvar (
-            Char *              name,
-            UInt                len );
-
-extern UInt completion_gvar (
-            Char *              name,
-            UInt                len );
-
-extern void syWinPut (
-            Int                 fid,
-            Char *              cmd,
-            Char *              str );
-
-UInt            syLineEdit = 1;         /* 0: no line editing              */
-                                        /* 1: line editing if terminal     */
-                                        /* 2: always line editing (EMACS)  */
-UInt            syCTRD = 1;             /* true if '<ctr>-D' is <eof>      */
-UInt            syNrchar;               /* nr of chars already on the line */
-Char            syPrompt [256];         /* characters alread on the line   */
-
-Char            syHistory [8192];       /* history of command lines        */
-Char *          syHi = syHistory;       /* actual position in history      */
-UInt            syCTRO;                 /* number of '<ctr>-O' pending     */
-
-#define IS_SEP(C)       (!IsAlpha(C) && !IsDigit(C) && (C)!='_')
-
-Char * SyFgets (
-    Char *              line,
-    UInt                length,
-    Int                 fid )
-{
-    Int                 ch,  ch2,  ch3, last;
-    Char                * p,  * q,  * r,  * s,  * t;
-    Char                * h;
-    static Char         yank [512];
-    Char                old [512],  new [512];
-    Int                 oldc,  newc;
-    Int                 rep;
-    Char                buffer [512];
-    Int                 rn;
-
-    /* no line editing if the file is not '*stdin*' or '*errin*'           */
-    if ( fid != 0 && fid != 2 ) {
-        p = fgets( line, (int)length, syBuf[fid].fp );
-        return p;
-    }
-
-    /* no line editing if the user disabled it                             */
-    if ( syLineEdit == 0 ) {
-        syStopTime = SyTime();
-        p = fgets( line, (int)length, syBuf[fid].fp );
-        syStartTime += SyTime() - syStopTime;
-        return p;
-    }
-
-    /* no line editing if the file cannot be turned to raw mode            */
-    if ( syLineEdit == 1 && ! syStartraw(fid) ) {
-        syStopTime = SyTime();
-        p = fgets( line, (int)length, syBuf[fid].fp );
-        syStartTime += SyTime() - syStopTime;
-        return p;
-    }
-
-    /* stop the clock, reading should take no time                         */
-    syStopTime = SyTime();
-
-    /* the line starts out blank                                           */
-    line[0] = '\0';  p = line;  h = syHistory;
-    for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
-    oldc = 0;
-    last = 0;
-
-    while ( 1 ) {
-
-        /* get a character, handle <ctr>V<chr>, <esc><num> and <ctr>U<num> */
-        rep = 1;  ch2 = 0;
-        do {
-            if ( syCTRO % 2 == 1  )  { ch = CTR('N'); syCTRO = syCTRO - 1; }
-            else if ( syCTRO != 0 )  { ch = CTR('O'); rep = syCTRO / 2; }
-#if ! SYS_MAC_SYC
-            else ch = syGetch(fid);
-#endif
-#if SYS_MAC_SYC
-            else ch = syGetch2(fid,*p);
-#endif
-            if ( ch2==0        && ch==CTR('V') ) {             ch2=ch; ch=0;}
-            if ( ch2==0        && ch==CTR('[') ) {             ch2=ch; ch=0;}
-            if ( ch2==0        && ch==CTR('U') ) {             ch2=ch; ch=0;}
-            if ( ch2==CTR('[') && ch==CTR('V') ) { ch2=ESC(CTR('V'));  ch=0;}
-            if ( ch2==CTR('[') && isdigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
-            if ( ch2==CTR('[') && ch=='['      ) {             ch2=ch; ch=0;}
-            if ( ch2==CTR('U') && ch==CTR('V') ) { rep=4*rep;  ch2=ch; ch=0;}
-            if ( ch2==CTR('U') && ch==CTR('[') ) { rep=4*rep;  ch2=ch; ch=0;}
-            if ( ch2==CTR('U') && ch==CTR('U') ) { rep=4*rep;  ch2=ch; ch=0;}
-            if ( ch2==CTR('U') && isdigit(ch)  ) { rep=ch-'0'; ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('V') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('[') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && ch==CTR('U') ) {             ch2=ch; ch=0;}
-            if ( isdigit(ch2)  && isdigit(ch)  ) { rep=10*rep+ch-'0';  ch=0;}
-        } while ( ch == 0 );
-        if ( ch2==CTR('V') )       ch  = CTV(ch);
-        if ( ch2==ESC(CTR('V')) )  ch  = CTV(ch | 0x80);
-        if ( ch2==CTR('[') )       ch  = ESC(ch);
-        if ( ch2==CTR('U') )       rep = 4*rep;
-        if ( ch2=='[' && ch=='A')  ch  = CTR('P');
-        if ( ch2=='[' && ch=='B')  ch  = CTR('N');
-        if ( ch2=='[' && ch=='C')  ch  = CTR('F');
-        if ( ch2=='[' && ch=='D')  ch  = CTR('B');
-
-        /* now perform the requested action <rep> times in the input line  */
-        while ( rep-- > 0 ) {
-            switch ( ch ) {
-
-            case CTR('A'): /* move cursor to the start of the line         */
-                while ( p > line )  --p;
-                break;
-
-            case ESC('B'): /* move cursor one word to the left             */
-            case ESC('b'):
-                if ( p > line ) do {
-                    --p;
-                } while ( p>line && (!IS_SEP(*(p-1)) || IS_SEP(*p)));
-                break;
-
-            case CTR('B'): /* move cursor one character to the left        */
-                if ( p > line )  --p;
-                break;
-
-            case CTR('F'): /* move cursor one character to the right       */
-                if ( *p != '\0' )  ++p;
-                break;
-
-            case ESC('F'): /* move cursor one word to the right            */
-            case ESC('f'):
-                if ( *p != '\0' ) do {
-                    ++p;
-                } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
-                break;
-
-            case CTR('E'): /* move cursor to the end of the line           */
-                while ( *p != '\0' )  ++p;
-                break;
-
-            case CTR('H'): /* delete the character left of the cursor      */
-            case 127:
-                if ( p == line ) break;
-                --p;
-                /* let '<ctr>-D' do the work                               */
-
-            case CTR('D'): /* delete the character at the cursor           */
-                           /* on an empty line '<ctr>-D' is <eof>          */
-                if ( p == line && *p == '\0' && syCTRD ) {
-                    ch = EOF; rep = 0; break;
-                }
-                if ( *p != '\0' ) {
-                    for ( q = p; *(q+1) != '\0'; ++q )
-                        *q = *(q+1);
-                    *q = '\0';
-                }
-                break;
-
-            case CTR('X'): /* delete the line                              */
-                p = line;
-                /* let '<ctr>-K' do the work                               */
-
-            case CTR('K'): /* delete to end of line                        */
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
-                for ( r = yank; *r != '\0'; ++r ) ;
-                for ( s = p; *s != '\0'; ++s )  r[s-p] = *s;
-                r[s-p] = '\0';
-                *p = '\0';
-                break;
-
-            case ESC(127): /* delete the word left of the cursor           */
-                q = p;
-                if ( p > line ) do {
-                    --p;
-                } while ( p>line && (!IS_SEP(*(p-1)) || IS_SEP(*p)));
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
-                for ( r = yank; *r != '\0'; ++r ) ;
-                for ( ; yank <= r; --r )  r[q-p] = *r;
-                for ( s = p; s < q; ++s )  yank[s-p] = *s;
-                for ( r = p; *q != '\0'; ++q, ++r )
-                    *r = *q;
-                *r = '\0';
-                break;
-
-            case ESC('D'): /* delete the word right of the cursor          */
-            case ESC('d'):
-                q = p;
-                if ( *q != '\0' ) do {
-                    ++q;
-                } while ( *q!='\0' && (IS_SEP(*(q-1)) || !IS_SEP(*q)));
-                if ( last!=CTR('X') && last!=CTR('K') && last!=ESC(127)
-                  && last!=ESC('D') && last!=ESC('d') )  yank[0] = '\0';
-                for ( r = yank; *r != '\0'; ++r ) ;
-                for ( s = p; s < q; ++s )  r[s-p] = *s;
-                r[s-p] = '\0';
-                for ( r = p; *q != '\0'; ++q, ++r )
-                    *r = *q;
-                *r = '\0';
-                break;
-
-            case CTR('T'): /* twiddle characters                           */
-                if ( p == line )  break;
-                if ( *p == '\0' )  --p;
-                if ( p == line )  break;
-                ch2 = *(p-1);  *(p-1) = *p;  *p = ch2;
-                ++p;
-                break;
-
-            case CTR('L'): /* insert last input line                       */
-                for ( r = syHistory; *r != '\0' && *r != '\n'; ++r ) {
-                    ch2 = *r;
-                    for ( q = p; ch2; ++q ) {
-                        ch3 = *q; *q = ch2; ch2 = ch3;
-                    }
-                    *q = '\0'; ++p;
-                }
-                break;
-
-            case CTR('Y'): /* insert (yank) deleted text                   */
-                for ( r = yank; *r != '\0' && *r != '\n'; ++r ) {
-                    ch2 = *r;
-                    for ( q = p; ch2; ++q ) {
-                        ch3 = *q; *q = ch2; ch2 = ch3;
-                    }
-                    *q = '\0'; ++p;
-                }
-                break;
-
-            case CTR('P'): /* fetch old input line                         */
-                while ( *h != '\0' ) {
-                    for ( q = line; q < p; ++q )
-                        if ( *q != h[q-line] )  break;
-                    if ( q == p )  break;
-                    while ( *h != '\n' && *h != '\0' )  ++h;
-                    if ( *h == '\n' ) ++h;
-                }
-                q = p;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case CTR('N'): /* fetch next input line                        */
-                h = syHi;
-                if ( h > syHistory ) {
-                    do {--h;} while (h>syHistory && *(h-1)!='\n');
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                }
-                while ( *h != '\0' ) {
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                    do {--h;} while (h>syHistory && *(h-1)!='\n');
-                    for ( q = line; q < p; ++q )
-                        if ( *q != h[q-line] )  break;
-                    if ( q == p )  break;
-                    if ( h==syHistory )  while ( *h != '\0' ) ++h;
-                }
-                q = p;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case ESC('<'): /* goto beginning of the history                */
-                while ( *h != '\0' ) ++h;
-                do {--h;} while (h>syHistory && *(h-1)!='\n');
-                q = p = line;
-                while ( *h!='\0' && h[q-line]!='\n' && h[q-line]!='\0' ) {
-                    *q = h[q-line];  ++q;
-                }
-                *q = '\0';
-                while ( *h != '\0' && *h != '\n' )  ++h;
-                if ( *h == '\n' ) ++h;  else h = syHistory;
-                syHi = h;
-                break;
-
-            case ESC('>'): /* goto end of the history                      */
-                h = syHistory;
-                p = line;
-                *p = '\0';
-                syHi = h;
-                break;
-
-            case CTR('S'): /* search for a line forward                    */
-                /* search for a line forward, not fully implemented !!!    */
-                if ( *p != '\0' ) {
-                    ch2 = syGetch(fid);
-                    q = p+1;
-                    while ( *q != '\0' && *q != ch2 )  ++q;
-                    if ( *q == ch2 )  p = q;
-                }
-                break;
-
-            case CTR('R'): /* search for a line backward                   */
-                /* search for a line backward, not fully implemented !!!   */
-                if ( p > line ) {
-                    ch2 = syGetch(fid);
-                    q = p-1;
-                    while ( q > line && *q != ch2 )  --q;
-                    if ( *q == ch2 )  p = q;
-                }
-                break;
-
-            case ESC('U'): /* uppercase word                               */
-            case ESC('u'):
-                if ( *p != '\0' ) do {
-                    if ('a' <= *p && *p <= 'z')  *p = *p + 'A' - 'a';
-                    ++p;
-                } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
-                break;
-
-            case ESC('C'): /* capitalize word                              */
-            case ESC('c'):
-                while ( *p!='\0' && IS_SEP(*p) )  ++p;
-                if ( 'a' <= *p && *p <= 'z' )  *p = *p + 'A'-'a';
-                if ( *p != '\0' ) ++p;
-                /* lowercase rest of the word                              */
-
-            case ESC('L'): /* lowercase word                               */
-            case ESC('l'):
-                if ( *p != '\0' ) do {
-                    if ('A' <= *p && *p <= 'Z')  *p = *p + 'a' - 'A';
-                    ++p;
-                } while ( *p!='\0' && (IS_SEP(*(p-1)) || !IS_SEP(*p)));
-                break;
-
-            case ESC(CTR('L')): /* repaint input line                      */
-                syEchoch('\n',fid);
-                for ( q = syPrompt; q < syPrompt+syNrchar; ++q )
-                    syEchoch( *q, fid );
-                for ( q = old; q < old+sizeof(old); ++q )  *q = ' ';
-                oldc = 0;
-                break;
-
-            case EOF:     /* end of file on input                          */
-                break;
-
-            case CTR('M'): /* append \n and exit                           */
-            case CTR('J'):
-                while ( *p != '\0' )  ++p;
-                *p++ = '\n'; *p = '\0';
-                rep = 0;
-                break;
-
-            case CTR('O'): /* accept line, perform '<ctr>-N' next time     */
-                while ( *p != '\0' )  ++p;
-                *p++ = '\n'; *p = '\0';
-                syCTRO = 2 * rep + 1;
-                rep = 0;
-                break;
-
-            case CTR('I'): /* try to complete the identifier before dot    */
-                if ( p == line || IS_SEP(p[-1]) ) {
-                    ch2 = ch & 0xff;
-                    for ( q = p; ch2; ++q ) {
-                        ch3 = *q; *q = ch2; ch2 = ch3;
-                    }
-                    *q = '\0'; ++p;
-                }
-                else {
-                    if ( (q = p) > line ) do {
-                        --q;
-                    } while ( q>line && (!IS_SEP(*(q-1)) || IS_SEP(*q)));
-                    rn = (line < q && *(q-1) == '.');
-                    r = buffer;  s = q;
-                    while ( s < p )  *r++ = *s++;
-                    *r = '\0';
-                    if ( (rn ? iscomplete_rnam( buffer, p-q )
-                             : iscomplete_gvar( buffer, p-q )) ) {
-                           if ( last != CTR('I') )
-                            syEchoch( CTR('G'), fid );
-                        else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos( "\n    ", fid );
-                            syEchos( buffer, fid );
-                            while ( (rn ? completion_rnam( buffer, p-q )
-                                        : completion_gvar( buffer, p-q )) ) {
-                                syEchos( "\n    ", fid );
-                                syEchos( buffer, fid );
-                            }
-                            syEchos( "\n", fid );
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
-                        }
-                    }
-                    else if ( (rn ? ! completion_rnam( buffer, p-q )
-                                  : ! completion_gvar( buffer, p-q )) ) {
-                        if ( last != CTR('I') )
-                            syEchoch( CTR('G'), fid );
-                        else {
-                            syWinPut( fid, "@c", "" );
-                            syEchos("\n    identifier has no completions\n",
-                                    fid);
-                            for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                syEchoch( *q, fid );
-                            for ( q = old; q < old+sizeof(old); ++q )
-                                *q = ' ';
-                            oldc = 0;
-                            syWinPut( fid, (fid == 0 ? "@i" : "@e"), "" );
-                        }
-                    }
-                    else {
-                        t = p;
-                        for ( s = buffer+(p-q); *s != '\0'; s++ ) {
-                            ch2 = *s;
-                            for ( r = p; ch2; r++ ) {
-                                ch3 = *r; *r = ch2; ch2 = ch3;
-                            }
-                            *r = '\0'; p++;
-                        }
-                        while ( t < p
-                             && (rn ? completion_rnam( buffer, t-q )
-                                    : completion_gvar( buffer, t-q )) ) {
-                            r = t;  s = buffer+(t-q);
-                            while ( r < p && *r == *s ) {
-                                r++; s++;
-                            }
-                            s = p;  p = r;
-                            while ( *s != '\0' )  *r++ = *s++;
-                            *r = '\0';
-                        }
-                        if ( t == p ) {
-                            if ( last != CTR('I') )
-                                syEchoch( CTR('G'), fid );
-                            else {
-                                syWinPut( fid, "@c", "" );
-                                buffer[t-q] = '\0';
-                                while (
-                                  (rn ? completion_rnam( buffer, t-q )
-                                      : completion_gvar( buffer, t-q )) ) {
-                                    syEchos( "\n    ", fid );
-                                    syEchos( buffer, fid );
-                                }
-                                syEchos( "\n", fid );
-                                for ( q=syPrompt; q<syPrompt+syNrchar; ++q )
-                                    syEchoch( *q, fid );
-                                for ( q = old; q < old+sizeof(old); ++q )
-                                    *q = ' ';
-                                oldc = 0;
-                                syWinPut( fid, (fid == 0 ? "@i" : "@e"), "");
-                            }
-                        }
-                    }
-                }
-                break;
-
-            default:      /* default, insert normal character              */
-                ch2 = ch & 0xff;
-                for ( q = p; ch2; ++q ) {
-                    ch3 = *q; *q = ch2; ch2 = ch3;
-                }
-                *q = '\0'; ++p;
-                break;
-
-            } /* switch ( ch ) */
-
-            last = ch;
-
-        }
-
-        if ( ch==EOF || ch=='\n' || ch=='\r' || ch==CTR('O') ) {
-            syEchoch('\r',fid);  syEchoch('\n',fid);  break;
-        }
-
-        /* now update the screen line according to the differences         */
-        for ( q = line, r = new, newc = 0; *q != '\0'; ++q ) {
-            if ( q == p )  newc = r-new;
-            if ( *q==CTR('I') )  { do *r++=' '; while ((r-new+syNrchar)%8); }
-            else if ( *q==0x7F ) { *r++ = '^'; *r++ = '?'; }
-            else if ( '\0'<=*q && *q<' '  ) { *r++ = '^'; *r++ = *q+'@'; }
-            else if ( ' ' <=*q && *q<0x7F ) { *r++ = *q; }
-            else {
-                *r++ = '\\';                 *r++ = '0'+*(UChar*)q/64%4;
-                *r++ = '0'+*(UChar*)q/8 %8;  *r++ = '0'+*(UChar*)q   %8;
-            }
-            if ( r >= new+SyNrCols-syNrchar-2 ) {
-                if ( q >= p ) { q++; break; }
-                new[0] = '$';   new[1] = r[-5]; new[2] = r[-4];
-                new[3] = r[-3]; new[4] = r[-2]; new[5] = r[-1];
-                r = new+6;
-            }
-        }
-        if ( q == p )  newc = r-new;
-        for (      ; r < new+sizeof(new); ++r )  *r = ' ';
-        if ( q[0] != '\0' && q[1] != '\0' )
-            new[SyNrCols-syNrchar-2] = '$';
-        else if ( q[1] == '\0' && ' ' <= *q && *q < 0x7F )
-            new[SyNrCols-syNrchar-2] = *q;
-        else if ( q[1] == '\0' && q[0] != '\0' )
-            new[SyNrCols-syNrchar-2] = '$';
-        for ( q = old, r = new; r < new+sizeof(new); ++r, ++q ) {
-            if ( *q == *r )  continue;
-            while (oldc<(q-old)) { syEchoch(old[oldc],fid);  ++oldc; }
-            while (oldc>(q-old)) { syEchoch('\b',fid);       --oldc; }
-            *q = *r;  syEchoch( *q, fid ); ++oldc;
-        }
-        while ( oldc < newc ) { syEchoch(old[oldc],fid);  ++oldc; }
-        while ( oldc > newc ) { syEchoch('\b',fid);       --oldc; }
-
-    }
-
-    /* Now we put the new string into the history,  first all old strings  */
-    /* are moved backwards,  then we enter the new string in syHistory[].  */
-    for ( q = syHistory+sizeof(syHistory)-3; q >= syHistory+(p-line); --q )
-        *q = *(q-(p-line));
-    for ( p = line, q = syHistory; *p != '\0'; ++p, ++q )
-        *q = *p;
-    syHistory[sizeof(syHistory)-3] = '\n';
-    if ( syHi != syHistory )
-        syHi = syHi + (p-line);
-    if ( syHi > syHistory+sizeof(syHistory)-2 )
-        syHi = syHistory+sizeof(syHistory)-2;
-
-    /* send the whole line (unclipped) to the window handler               */
-    syWinPut( fid, (*line != '\0' ? "@r" : "@x"), line );
-
-    /* strip away prompts (usefull for pasting old stuff)                  */
-    if (line[0]=='g'&&line[1]=='a'&&line[2]=='p'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='b'&&line[1]=='r'&&line[2]=='k'&&line[3]=='>'&&line[4]==' ')
-        for ( p = line, q = line+5; q[-1] != '\0'; p++, q++ )  *p = *q;
-    if (line[0]=='>'&&line[1]==' ')
-        for ( p = line, q = line+2; q[-1] != '\0'; p++, q++ )  *p = *q;
-
-    /* switch back to cooked mode                                          */
-    if ( syLineEdit == 1 )
-        syStopraw(fid);
-
-    /* start the clock again                                               */
-    syStartTime += SyTime() - syStopTime;
-
-    /* return the line (or '0' at end-of-file)                             */
-    if ( *line == '\0' )
-        return (Char*)0;
-    return line;
-}
-
-
-/****************************************************************************
-**
 *F  SyFputs( <line>, <fid> )  . . . . . . . .  write a line to the file <fid>
 **
 **  'SyFputs' is called to put the  <line>  to the file identified  by <fid>.
@@ -3354,7 +2250,7 @@ UInt SyIsIntr ( void )
     syIsIntrCount = syIsIntrFreq;
 
     /* check for interrupts stuff the rest in typeahead buffer             */
-    if ( syLineEdit && KBHIT() ) {
+    if ( SyLineEdit && KBHIT() ) {
         while ( KBHIT() ) {
             ch = GETKEY();
             if ( ch == CTR('C') || ch == CTR('Z') || ch == 0x12E ) {
@@ -3891,151 +2787,13 @@ Char *          SyWinCmd (
 /****************************************************************************
 **
 
-*F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
 */
 
 
 /****************************************************************************
 **
 
-*F  SyIsExistingFile( <name> )  . . . . . . . . . . . does file <name> exists
-**
-**  'SyIsExistingFile' returns 1 if the  file <name> exists and 0  otherwise.
-**  It does not check if the file is readable, writable or excuteable. <name>
-**  is a system dependent description of the file.
-*/
-
-
-/****************************************************************************
-**
-*f  SyIsExistingFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
-*/
-#if SYS_BSD || SYS_MACH || SYS_USG
-
-Int SyIsExistingFile ( Char * name )
-{
-    if ( access( name, F_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyIsReadableFile( <name> )  . . . . . . . . . . . is file <name> readable
-**
-**  'SyIsReadableFile'   returns 1  if the   file  <name> is   readable and 0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-
-
-/****************************************************************************
-**
-*f  SyIsReadableFile( <name> )  . . . . . . . . . . . . . . . .  BSD/Mach/USG
-*/
-#if SYS_BSD || SYS_MACH || SYS_USG
-
-Int SyIsReadableFile ( Char * name )
-{
-    if ( access( name, R_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyIsWritable( <name> )  . . . . . . . . . . . is the file <name> writable
-**
-**  'SyIsWriteableFile'   returns 1  if  the  file  <name> is  writable and 0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-
-
-/****************************************************************************
-**
-*f  SyIsWritable( <name> )  . . . . . . . . . . . . . . . . . .  BSD/Mach/USG
-*/
-#if SYS_BSD || SYS_MACH || SYS_USG
-
-Int SyIsWritableFile ( Char * name )
-{
-    if ( access( name, W_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyIsExecutableFile( <name> )  . . . . . . . . . is file <name> executable
-**
-**  'SyIsExecutableFile' returns 1 if the  file <name>  is  executable and  0
-**  otherwise. <name> is a system dependent description of the file.
-*/
-
-
-/****************************************************************************
-**
-*f  SyIsExecutableFile( <name> )  . . . . . . . . . . . . . . .  BSD/Mach/USG
-*/
-#if SYS_BSD || SYS_MACH || SYS_USG
-
-Int SyIsExecutableFile ( Char * name )
-{
-    if ( access( name, X_OK ) == 0 ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyFindGapRootFile( <filename> ) . . . . . . . .  find file in system area
-*/
-Char * SyFindGapRootFile ( Char * filename )
-{
-    static Char	    result [256];
-    Int             k;
-
-    for ( k=0;  k<sizeof(SyGapRootPaths)/sizeof(SyGapRootPaths[0]);  k++ ) {
-	if ( SyGapRootPaths[k][0] ) {
-	    result[0] = '\0';
-	    SyStrncat( result, SyGapRootPaths[k], sizeof(result) );
-	    if ( sizeof(result) <= SyStrlen(filename)+SyStrlen(result)-1 )
-		continue;
-	    SyStrncat( result, filename, SyStrlen(filename) );
-	    if ( SyIsReadableFile(result) ) {
-		return result;
-	    }
-	}
-    }
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  SyFindOrLinkGapRootFile( <filename>, <crc>, <res>, <len> ) 	 load or link
 **
 **  'SyFindOrLinkGapRootFile'  tries to find a GAP  file in the root area and
@@ -4198,162 +2956,6 @@ Int SyFindOrLinkGapRootFile (
 
 /****************************************************************************
 **
-*F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
-**
-**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
-**  The function 'SyExit' must perform all the neccessary cleanup operations.
-**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
-**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
-*/
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
-
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.3   */
-extern  void            exit ( int );
-#endif
-
-#if SYS_MAC_SYC
-#ifndef SYS_CONSOLE_H                   /* console stuff                   */
-# include       <Console.h>             /* 'console_options'               */
-# define SYS_CONSOLE_H
-#endif
-#endif
-
-void SyExit (
-    UInt                ret )
-{
-#if SYS_MAC_MPW
-# ifndef SYS_HAS_TOOL
-    fputs("gap: please use <option>-'Q' to close the window.\n",stdout);
-# endif
-#endif
-
-#if SYS_MAC_SYC
-    /* if something went wrong, then give the user a change to see it      */
-    if ( ret != 0 )
-        console_options.pause_atexit = 1;
-
-    /* if GAP will pause before exiting, tell the user                     */
-    if ( console_options.pause_atexit == 1 )
-        printf( "gap: enter <return> to exit");
-#endif
-
-    exit( (int)ret );
-}
-
-
-/****************************************************************************
-**
-*F  SyExec( <cmd> ) . . . . . . . . . . . execute command in operating system
-**
-**  'SyExec' executes the command <cmd> (a string) in the operating system.
-**
-**  'SyExec'  should call a command  interpreter  to execute the command,  so
-**  that file name expansion and other common  actions take place.  If the OS
-**  does not support this 'SyExec' should print a message and return.
-**
-**  For UNIX we can use 'system', which does exactly what we want.
-*/
-#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
-# if SYS_ANSI
-#  include      <stdlib.h>
-# endif
-# define SYS_STDLIB_H
-#endif
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.2   */
-extern  int             system ( SYS_CONST char * );
-#endif
-
-#if ! (SYS_MAC_MPW || SYS_MAC_SYC)
-
-void            SyExec (
-    Char *              cmd )
-{
-    Int                 ignore;
-
-    syWinPut( 0, "@z", "" );
-    ignore = system( cmd );
-    syWinPut( 0, "@mAgIc", "" );
-}
-
-#endif
-
-#if SYS_MAC_MPW || SYS_MAC_SYC
-
-void            SyExec (
-    Char *              cmd;
-{
-}
-
-#endif
-
-
-/****************************************************************************
-**
-*F  SyTmpname() . . . . . . . . . . . . . . . . . return a temporary filename
-**
-**  'SyTmpname' creates and returns a new temporary name.
-*/
-#ifndef SYS_STDIO_H                     /* standard input/output functions */
-# include       <stdio.h>
-# define SYS_STDIO_H
-#endif
-
-#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 15.16  */
-extern  char * tmpnam ( char * );
-#endif
-
-#ifdef SYS_HAS_BROKEN_TMPNAM
-
-Char * SyTmpname ()
-{
-    static Char   * base = 0;
-    static Char     name[1024];
-    static Int      count = 0;
-    Char            cnt[4];
-
-    count++;
-    if ( base == 0 ) {
-        base = tmpnam( (char*)0 );
-    }
-    if ( base == 0 ) {
-        return 0;
-    }
-    name[0] = 0;
-    SyStrncat( name, base, SyStrlen(base) );
-    SyStrncat( name, ".", 1 );
-    cnt[0] = (count/100) % 10 + '0';
-    cnt[1] = (count/ 10) % 10 + '0';
-    cnt[2] = (count/  1) % 10 + '0';
-    cnt[3] = 0;
-    SyStrncat( name, cnt, 4 );
-    return name;
-}
-
-#else
-
-Char * SyTmpname ( void )
-{
-    return tmpnam( (char*)0 );
-}
-
-#endif
-
-
-/****************************************************************************
-**
-
-*F * * * * * * * * * * * * * * dynamic loading  * * * * * * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
 *F  SyGAPCRC( <name> )  . . . . . . . . . . . . . . . . . . crc of a GAP file
 **
 **  This function should  be clever and handle  white spaces and comments but
@@ -4573,7 +3175,7 @@ void            SyHelp (
     UInt                i, j;           /* loop variables                  */
 
     /* try to switch the input into raw mode                               */
-    raw = (syLineEdit == 1 && syStartraw( fin ));
+    raw = (SyLineEdit == 1 && syStartraw( fin ));
 
     /* inform the window handler                                           */
     syWinPut( fin, "@h", "" );
@@ -5871,6 +4473,56 @@ void            SyAbortBags (
 /****************************************************************************
 **
 
+*F  SyExit( <ret> ) . . . . . . . . . . . . . exit GAP with return code <ret>
+**
+**  'SyExit' is the offical  way  to  exit GAP, bus errors are the inoffical.
+**  The function 'SyExit' must perform all the neccessary cleanup operations.
+**  If ret is 0 'SyExit' should signal to a calling proccess that all is  ok.
+**  If ret is 1 'SyExit' should signal a  failure  to  the  calling proccess.
+*/
+#ifndef SYS_STDLIB_H                    /* ANSI standard functions         */
+# if SYS_ANSI
+#  include      <stdlib.h>
+# endif
+# define SYS_STDLIB_H
+#endif
+
+#ifndef SYS_HAS_MISC_PROTO              /* ANSI/TRAD decl. from H&S 19.3   */
+extern  void            exit ( int );
+#endif
+
+#if SYS_MAC_SYC
+#ifndef SYS_CONSOLE_H                   /* console stuff                   */
+# include       <Console.h>             /* 'console_options'               */
+# define SYS_CONSOLE_H
+#endif
+#endif
+
+void SyExit (
+    UInt                ret )
+{
+#if SYS_MAC_MPW
+# ifndef SYS_HAS_TOOL
+    fputs("gap: please use <option>-'Q' to close the window.\n",stdout);
+# endif
+#endif
+
+#if SYS_MAC_SYC
+    /* if something went wrong, then give the user a change to see it      */
+    if ( ret != 0 )
+        console_options.pause_atexit = 1;
+
+    /* if GAP will pause before exiting, tell the user                     */
+    if ( console_options.pause_atexit == 1 )
+        printf( "gap: enter <return> to exit");
+#endif
+
+    exit( (int)ret );
+}
+
+
+/****************************************************************************
+**
 *F  SySetGapRootPath( <string> )  . . . . . . . . .  set the root directories
 **
 **  'SySetGapRootPath' takes a  string and create  a list of root directories
@@ -6068,6 +4720,7 @@ void            InitSystem (
     Int                 pre = 63*1024;  /* amount to pre'malloc'ate        */
     UInt                gaprc = 1;      /* read the .gaprc file            */
     Char *              ptr;            /* pointer to the pre'malloc'ated  */
+    Char *              ptr1;           /* more pre'malloc'ated  */
     Char *              gapRoot = 0;    /* gap root directory              */
     UInt                i;              /* loop variable                   */
 
@@ -6337,13 +4990,13 @@ void            InitSystem (
 
         /* '-n', disable command line editing                              */
         case 'n':
-            syLineEdit = 0;
+            SyLineEdit = 0;
             break;
 
 
         /* '-f', force line editing                                        */
         case 'f':
-            syLineEdit = 2;
+            SyLineEdit = 2;
             break;
 
 
@@ -6377,7 +5030,7 @@ void            InitSystem (
 
         /* '-e', do not quit GAP on '<ctr>-D'                              */
         case 'e':
-            syCTRD = ! syCTRD;
+            SyCTRD = ! SyCTRD;
             break;
 
 
@@ -6418,7 +5071,7 @@ void            InitSystem (
         /* '-E', running under Emacs under OS/2                            */
 #if SYS_OS2_EMX
         case 'E':
-            syLineEdit = 2;
+            SyLineEdit = 2;
             syBuf[2].fp = stdin;
             syBuf[2].echo = stderr;
             break;
@@ -6466,8 +5119,8 @@ void            InitSystem (
 
     /* when running in package mode set ctrl-d and line editing            */
     if ( SyWindow ) {
-	syLineEdit   = 1;
-	syCTRD       = 1;
+	SyLineEdit   = 1;
+	SyCTRD       = 1;
 	syWinPut( 0, "@p", "" );
 	syBuf[2].fp = stdin;  syBuf[2].echo = stdout;
 	syBuf[3].fp = stdout;
@@ -6490,6 +5143,7 @@ void            InitSystem (
 
     /* premalloc stuff                                                     */
     ptr = malloc( pre );
+    ptr1 = malloc(4);
     if ( ptr != 0 )  free( ptr );
 
     /* try to find 'LIBNAME/init.g' to read it upon initialization         */
@@ -6555,7 +5209,7 @@ void            InitSystem (
 #endif
 
     /* start the clock                                                     */
-    syStartTime = SyTime();
+    SyStartTime = SyTime();
 
     /* now we start                                                        */
     return;

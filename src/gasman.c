@@ -123,6 +123,11 @@ char * Revision_gasman_c =
 #include        "objects.h"             /* Obj                             */
 #include        "scanner.h"             /* Pr                              */
 #include        "code.h"                /* T_LVARS                         */
+#else
+#ifdef DEBUG_GLOBAL_BAGS
+#include        "objects.h"             /* Obj                             */
+#include        "scanner.h"             /* Pr                              */
+#endif
 #endif
 
 
@@ -509,37 +514,66 @@ void MarkAllSubBagsDefault (
 
 }
 
-
 /****************************************************************************
 **
-*F  InitGlobalBag(<addr>) . . . . . inform Gasman about global bag identifier
+*F  CallbackForAllBags( <func> ) call a C function on all non-zero mptrs
 **
-**  'InitGlobalBag' simply leaves the address <addr> in a global array, where
-**  it is used by 'CollectBags'.
+**  This calls a C function on every bag, including garbage ones, by simply
+**  walking the masterpointer area. Not terribly safe
+**
 */
-#ifndef NR_GLOBAL_BAGS
-#define NR_GLOBAL_BAGS  20000L
-#endif
+
+void CallbackForAllBags(
+     void (*func)() )
+{
+  Bag ptr;
+  for (ptr = (Bag)MptrBags; ptr < (Bag)OldBags; ptr ++)
+    if (*ptr != 0)
+      {
+	(*func)(ptr);
+      }
+}
 
 
-typedef struct {
-    Bag *                   addr [NR_GLOBAL_BAGS];
-    UInt                    nr;
-} TypeGlobalBags;
-
+/****************************************************************************
+**  
+*V  GlobalBags  . . . . . . . . . . . . . . . . . . . . . list of global bags
+*/  
 TypeGlobalBags GlobalBags;
 
 
+/****************************************************************************
+**
+*F  InitGlobalBag(<addr>, <cookie>) inform Gasman about global bag identifier
+**
+**  'InitGlobalBag' simply leaves the address <addr> in a global array, where
+**  it is used by 'CollectBags'. <cookie> is also recorded to allow things to
+**  be matched up after loading a saved workspace.
+*/
 void InitGlobalBag (
-    Bag *               addr )
+    Bag *               addr,
+    Char *              cookie )
 {
-    extern  TypeAbortFuncBags   AbortFuncBags;
+    extern TypeAbortFuncBags   AbortFuncBags;
 
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)(
             "Panic: Gasman cannot handle so many global variables" );
     }
-    GlobalBags.addr[GlobalBags.nr++] = addr;
+#ifdef DEBUG_GLOBAL_BAGS
+    {
+      UInt i;
+      for (i = 0; i < GlobalBags.nr; i++)
+	if ( 0 == SyStrcmp(GlobalBags.cookie[i], cookie) )
+	  if (GlobalBags.addr[i] == addr)
+	    Pr("Duplicate global bag entry %s\n", (Int)cookie, 0L);
+	  else
+	    Pr("Duplicate global bag cookie %s\n", (Int)cookie, 0L);
+    }
+#endif    
+    GlobalBags.addr[GlobalBags.nr] = addr;
+    GlobalBags.cookie[GlobalBags.nr] = cookie;
+    GlobalBags.nr++;
 }
 
 
@@ -1672,6 +1706,7 @@ void SwapMasterPoint (
 }
 
 
+
 /****************************************************************************
 **
 
@@ -1688,8 +1723,7 @@ void SwapMasterPoint (
 **  'SET_ELM_BAG' are functions to support  debugging.  They are not intended
 **  to be used  in an application  using {\Gasman}.  Note  that the functions
 **  'TYPE_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
-**  which are usually not available in a debugger.
-*/
+**  which are usually not available in a debugger.  */
 #ifdef  DEBUG_FUNCTIONS_BAGS
 
 #undef  TYPE_BAG

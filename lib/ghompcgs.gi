@@ -32,8 +32,8 @@ function( G, H, gens, imgs )
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
-           rec( generators       := AsList(pcgs[1]),
-                genimages        := pcgs[2],
+           rec( generators       := gens, 
+                genimages        := imgs, 
                 sourcePcgs       := pcgs[1],
                 sourcePcgsImages := pcgs[2] ) );
 
@@ -67,8 +67,8 @@ function( G, H, gens, imgs )
            GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   ElementsFamily( FamilyObj( H ) ) ),
            filter ),
-           rec( generators       := AsList(pcgs[1]),
-                genimages        := pcgs[2],
+           rec( generators       := gens, 
+                genimages        := imgs, 
                 sourcePcgs       := pcgs[1],
                 sourcePcgsImages := pcgs[2] ) );
 
@@ -329,15 +329,22 @@ end);
 InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
         [ IsPcGroup, IsPcGroup ], 0,
     function( G, N )
-    local   pcgsK,  pcgsF,  F,  hom;
-
-    if IsInducedPcgs( G )  then
-        pcgsK := NormalIntersectionPcgs( ParentPcgs( Pcgs( G ) ),
-                         Pcgs( N ), Pcgs( G ) );
-    else
-        pcgsK := Pcgs( N );
+    local   pcgsG,  pcgsN,  pcgsK,  pcgsF,  F,  hom;
+    
+    pcgsG := Pcgs( G );  pcgsN := Pcgs( N );
+    if IsInducedPcgs( pcgsN )  then
+        if ParentPcgs( pcgsN ) = pcgsG  then
+            pcgsK := pcgsN;
+        elif     IsInducedPcgs( pcgsG )
+             and ParentPcgs( pcgsN ) = ParentPcgs( pcgsG )  then
+            pcgsK := NormalIntersectionPcgs( ParentPcgs( pcgsG ),
+                             pcgsN, pcgsG );
+        fi;
     fi;
-    pcgsF := Pcgs( G ) mod pcgsK;
+    if not IsBound( pcgsK )  then
+        pcgsK := InducedPcgsByGenerators( pcgsG, GeneratorsOfGroup( N ) );
+    fi;
+    pcgsF := pcgsG mod pcgsK;
     F := GroupByPcgs( pcgsF );
     hom := Objectify( NewKind( GeneralMappingsFamily
                    ( ElementsFamily( FamilyObj( G ) ),

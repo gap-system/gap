@@ -20,10 +20,10 @@ char *          Revision_funcs_c =
 #include        <assert.h>              /* assert                          */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
 
 #include        "calls.h"               /* CALL_<i>ARGS, Function, ObjFunc */
 
@@ -1068,7 +1068,7 @@ void            ExecEnd (
 void            InitFuncs ( void )
 {
     /* make the global variable known to Gasman                            */
-    InitGlobalBag( &ExecState );
+    InitGlobalBag( &ExecState, "funcs: ExecState" );
 
     /* install the evaluators and executors                                */
     ExecStatFuncs [ T_PROCCALL_0ARGS ] = ExecProccall0args;
@@ -1107,6 +1107,16 @@ void            InitFuncs ( void )
     PrintExprFuncs[ T_FUNCCALL_6ARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNCCALL_XARGS ] = PrintFunccall;
     PrintExprFuncs[ T_FUNC_EXPR      ] = PrintFuncExpr;
+
+
+    InitHandlerFunc( DoExecFunc0args, "0 arg interpreted function");
+    InitHandlerFunc( DoExecFunc1args, "1 arg interpreted function");
+    InitHandlerFunc( DoExecFunc2args, "2 arg interpreted function");
+    InitHandlerFunc( DoExecFunc3args, "3 arg interpreted function");
+    InitHandlerFunc( DoExecFunc4args, "4 arg interpreted function");
+    InitHandlerFunc( DoExecFunc5args, "5 arg interpreted function");
+    InitHandlerFunc( DoExecFunc6args, "6 arg interpreted function");
+    InitHandlerFunc( DoExecFuncXargs, "X arg interpreted function");
 }
 
 

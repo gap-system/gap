@@ -5,6 +5,10 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.22  1997/04/14 08:31:09  htheisse
+#H  added `ExternalOrbitsStabilizers'
+#H  new method for `ImagesSource' with known base
+#H
 #H  Revision 4.21  1997/04/09 09:17:08  htheisse
 #H  gave sparse homomorphisms an external set
 #H  allowed \`Permutation' to return fail instead of error
@@ -194,6 +198,12 @@ SparseOperationHomomorphismOp := NewOperation( "SparseOperationHomomorphismOp",
 ExternalOrbits := NewOperationArgs( "ExternalOrbits" );
 ExternalOrbitsOp := NewOperation( "ExternalOrbits", OrbitsishReq );
 ExternalOrbitsAttr := NewAttribute( "ExternalOrbits", IsExternalSet );
+
+ExternalOrbitsStabilizers := NewOperationArgs( "ExternalOrbitsStabilizers" );
+ExternalOrbitsStabilizersOp := NewOperation( "ExternalOrbitsStabilizers",
+                                       OrbitsishReq );
+ExternalOrbitsStabilizersAttr := NewAttribute( "ExternalOrbitsStabilizers",
+                                         IsExternalSet );
 
 Permutation := NewOperationArgs( "Permutation" );
 PermutationOp := NewOperation( "Permutation",

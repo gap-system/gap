@@ -40,10 +40,11 @@ char *          Revision_permutat_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* Function                        */
@@ -3458,34 +3459,42 @@ void            InitPermutat ( void )
 
 
     /* install the internal functions                                      */
+    InitHandlerFunc( IsPermHandler, "IS_PERM" );
     IsPermFilt = NewFilterC( "IS_PERM", 1L, "obj",
                                 IsPermHandler );
     AssGVar( GVarName( "IS_PERM" ), IsPermFilt );
 
+    InitHandlerFunc( FuncPermList, "PermList" );
     AssGVar( GVarName( "PermList" ),
          NewFunctionC( "PermList", 1L, "list",
                     FuncPermList                   ) );
 
+    InitHandlerFunc( FuncLargestMovedPointPerm, "LargestMovedPointPerm" );
     AssGVar( GVarName( "LargestMovedPointPerm" ),
          NewFunctionC( "LargestMovedPointPerm", 1L, "perm",
                     FuncLargestMovedPointPerm      ) );
 
+    InitHandlerFunc( FuncCycleLengthPermInt, "CycleLengthPermInt" );
     AssGVar( GVarName( "CycleLengthPermInt" ),
          NewFunctionC( "CycleLengthPermInt", 2L, "perm, point",
                     FuncCycleLengthPermInt         ) );
 
+    InitHandlerFunc( FuncCyclePermInt, "CyclePermInt" );
     AssGVar( GVarName( "CyclePermInt" ),
          NewFunctionC( "CyclePermInt", 2L, "perm, point",
                     FuncCyclePermInt               ) );
 
+    InitHandlerFunc( FuncOrderPerm, "OrderPerm" );
     AssGVar( GVarName( "OrderPerm" ),
          NewFunctionC( "OrderPerm", 1L, "perm",
                     FuncOrderPerm                  ) );
 
+    InitHandlerFunc( FuncSignPerm, "SignPerm" );
     AssGVar( GVarName( "SignPerm" ),
          NewFunctionC( "SignPerm", 1L, "perm",
                     FuncSignPerm                   ) );
 
+    InitHandlerFunc( FuncSmallestGeneratorPerm, "SmallestGeneratorPerm" );
     AssGVar( GVarName( "SmallestGeneratorPerm" ),
          NewFunctionC( "SmallestGeneratorPerm", 1L, "perm",
                     FuncSmallestGeneratorPerm      ) );
@@ -3493,12 +3502,12 @@ void            InitPermutat ( void )
 
     /* make the buffer bag                                                 */
     TmpPerm = NEW_PERM4( 1000 );
-    InitGlobalBag( &TmpPerm );
+    InitGlobalBag( &TmpPerm, "permutation: buffer" );
 
 
     /* make the identity permutation                                       */
     IdentityPerm = NEW_PERM2( 0 );
-    InitGlobalBag( &IdentityPerm );
+    InitGlobalBag( &IdentityPerm, "permutation: ()" );
 
 
     /* install the 'ONE' function for permutations                         */

@@ -472,7 +472,8 @@ gac: $(SRC)/gac
 ##  used directly, they should only be addressed by the  recursive  calls  of
 ##  'make' from above.
 ##
-OBJECTS =   system.o   scanner.o  gasman.o         \
+OBJECTS =   system.o   sysfiles.o                  \
+	    scanner.o  gasman.o                    \
 	    objects.o  gvars.o                     \
 	    calls.o    opers.o                     \
 	    ariths.o   records.o  lists.o          \
@@ -490,7 +491,7 @@ OBJECTS =   system.o   scanner.o  gasman.o         \
 	    code.o     vars.o                      \
 	    exprs.o    stats.o    funcs.o          \
 	    intrprtr.o compiler.o compiled.o       \
-	    read.o     gap.o
+	    read.o     gap.o      streams.o
 
 gap: $(OBJECTS) compstat.o
 	$(CC) $(LFLAGS)  -o gap  $(OBJECTS) compstat.o
@@ -505,7 +506,11 @@ gap: $(OBJECTS) compstat.o
 ##  implicit rules work only if the source is in the same directory).
 ##
 system.o:   $(SRC)/system.c   $(SRC)/system.h
-	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o system.o      -c $(SRC)/system.c
+	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o system.o    -c $(SRC)/system.c
+
+sysfiles.o: $(SRC)/sysfiles.c $(SRC)/sysfiles.h                         \
+            $(SRC)/system.h
+	$(CC) $(CFLAGS_SYS) $(CFLAGS_SIG)  -o sysfiles.o  -c $(SRC)/sysfiles.c
 
 scanner.o:  $(SRC)/scanner.c  $(SRC)/scanner.h                          \
 	    $(SRC)/system.h
@@ -932,7 +937,11 @@ gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
 	    $(SRC)/intrprtr.h $(SRC)/read.h
 	$(CC) $(CFLAGS)  -o gap.o         -c $(SRC)/gap.c
 
-compstat.o: $(SRC)/compstat.c                                           \
+streams.o:  $(SRC)/streams.c $(SRC)/streams.h                         \
+	    $(SRC)/system.h  $(SRC)/sysfiles.h
+	$(CC) $(CFLAGS)  -o streams.o     -c $(SRC)/streams.c
+
+compstat.o: $(SRC)/compstat.c $(SRC)/compstat.h                         \
 	    $(SRC)/system.h
 	$(CC) $(CFLAGS)  -o compstat.o    -c $(SRC)/compstat.c
 

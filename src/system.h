@@ -12,13 +12,147 @@
 **
 *Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 **
-**  The file 'system.c' declares  all  operating system dependent  functions.
+**  The  file 'system.c'  declares  all operating system  dependent functions
+**  except file/stream handling which is done in "sysfiles.h".
 */
-
 #ifdef  INCLUDE_DECLARATION_PART
 char * Revision_system_h =
    "@(#)$Id$";
 #endif
+
+#ifndef SYS_STDIO_H                     /* standard input/output functions */
+# include       <stdio.h>
+# define SYS_STDIO_H
+#endif
+
+#ifndef SYS_UNISTD_H                    /* definition of 'R_OK'            */
+# include       <unistd.h>
+# define SYS_UNISTD_H
+#endif
+
+#define CTR(C)          ((C) & 0x1F)    /* <ctr> character                 */
+#define ESC(C)          ((C) | 0x100)   /* <esc> character                 */
+#define CTV(C)          ((C) | 0x200)   /* <ctr>V quotes characters        */
+
+
+/****************************************************************************
+**
+
+*V  SYS_ANSI  . . . . . . . . . . . . . . . . . . . . . . . . . . . .  ANSI C
+*/
+#ifdef SYS_HAS_ANSI
+# define SYS_ANSI       SYS_HAS_ANSI
+#else
+# ifdef __STDC__
+#  define SYS_ANSI      1
+# else
+#  define SYS_ANSI      0
+# endif
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_CONST . . . . . . . . . . . . . . . . . . . . . . . . . constant type
+*/
+#ifdef SYS_HAS_CONST
+# define SYS_CONST      SYS_HAS_CONST
+#else
+# ifdef __STDC__
+#  define SYS_CONST     const
+# else
+#  define SYS_CONST
+# endif
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_BSD . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . BSD
+*/
+#ifdef SYS_IS_BSD
+# define SYS_BSD        1
+#else
+# define SYS_BSD        0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_MACH  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  MACH
+*/
+#ifdef SYS_IS_MACH
+# define SYS_MACH       1
+#else
+# define SYS_MACH       0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_USG . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . USG
+*/
+#ifdef SYS_IS_USG
+# define SYS_USG        1
+#else
+# define SYS_USG        0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_OS2_EMX . . . . . . . . . . . . . . . . . . . . . . OS2 using GCC/EMX
+*/
+#ifdef SYS_IS_OS2_EMX
+# define SYS_OS2_EMX    1
+#else
+# define SYS_OS2_EMX    0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_MSDOS_DJGPP . . . . . . . . . . . . . . . . . . . . . MSDOS using GCC
+*/
+#ifdef SYS_IS_MSDOS_DJGPP
+# define SYS_MSDOS_DJGPP 1
+#else
+# define SYS_MSDOS_DJGPP 0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_VMS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . VMS
+*/
+#ifdef SYS_IS_VMS
+# define SYS_VMS        1
+#else
+# define SYS_VMS        0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_MAC_MPW . . . . . . . . . . . . . . . . . . . . . . . . MAC using MPW
+*/
+#ifdef SYS_IS_MAC_MPW
+# define SYS_MAC_MPW    1
+#else
+# define SYS_MAC_MPW    0
+#endif
+
+
+/****************************************************************************
+**
+*V  SYS_MAC_SYC . . . . . . . . . . . . . . . . . . . . . . . . MAC using SYC
+*/
+#ifdef SYS_IS_MAC_SYC
+# define SYS_MAC_SYC    1
+#else
+# define SYS_MAC_SYC    0
+#endif
+
 
 
 /****************************************************************************
@@ -35,7 +169,9 @@ char * Revision_system_h =
 **  '(U)Int<n>' should be exactly <n> bytes long
 **  '(U)Int' should be the same length as a bag identifier
 */
-#ifdef SYS_IS_64_BIT            /* 64 bit machines -- well alphas anyway */
+
+/* 64 bit machines -- well alphas anyway                                   */
+#ifdef SYS_IS_64_BIT
 typedef char                    Char;
 typedef char                    Int1;
 typedef short int               Int2;
@@ -46,7 +182,9 @@ typedef unsigned char           UInt1;
 typedef unsigned short int      UInt2;
 typedef unsigned int            UInt4;
 typedef unsigned long int       UInt;
-#else                           /* 32bit machines */
+
+/* 32bit machines                                                          */
+#else
 typedef char                    Char;
 typedef char                    Int1;
 typedef short int               Int2;
@@ -84,9 +222,112 @@ extern Char SyFlags [];
 /****************************************************************************
 **
 
+*F  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
+**
+**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
+**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
+**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
+**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
+**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
+**  from a macro passed from the makefile, because it is machine dependent.
+**
+**  This value is passed to 'InitBags'.
+*/
+extern UInt SyStackAlign;
+
+
+/****************************************************************************
+**
 *V  SyArchitecture  . . . . . . . . . . . . . . . .  name of the architecture
 */
 extern Char * SyArchitecture;
+
+
+/****************************************************************************
+**
+*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
+**
+**  'SyBanner' determines whether GAP should print the banner.
+**
+**  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
+**  changed by the '-b' option to have GAP surpress the banner.
+**
+**  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+extern UInt SyBanner;
+
+
+/****************************************************************************
+**
+*V  SyCTRD  . . . . . . . . . . . . . . . . . . .  true if '<ctr>-D' is <eof>
+*/
+extern UInt SyCTRD;
+
+
+/****************************************************************************
+**
+*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
+**
+**  'SyCacheSize' is the size of the data cache.
+**
+**  This is per  default 0, which means that  there is no usuable data cache.
+**  It is usually changed with the '-c' option in the script that starts GAP.
+**
+**  This value is passed to 'InitBags'.
+**
+**  Put in this package because the command line processing takes place here.
+*/
+extern UInt SyCacheSize;
+
+
+/****************************************************************************
+**
+*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
+*/
+extern Int SyCheckForCompFiles;
+
+
+/****************************************************************************
+**
+*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
+*/
+extern Char SyCompileInput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic number
+*/
+extern Char * SyCompileMagic1;
+
+
+/****************************************************************************
+**
+*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
+*/
+extern Char SyCompileName [256];
+
+
+/****************************************************************************
+**
+*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
+*/
+extern Char SyCompileOutput [256];
+
+
+/****************************************************************************
+**
+*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
+*/
+extern Int SyCompilePlease;
+
+/****************************************************************************
+**
+*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
+*/
+extern Int SyDebugLoading;
 
 
 /****************************************************************************
@@ -109,7 +350,9 @@ extern Char * SyArchitecture;
 **  'SyOpen'.
 **
 **  Put in this package because the command line processing takes place here.  */
-extern Char SyGapRootPath [16*256];
+#define MAX_GAP_DIRS 256
+
+extern Char SyGapRootPath [MAX_GAP_DIRS*256];
 
 
 /****************************************************************************
@@ -120,47 +363,53 @@ extern Char SyGapRootPath [16*256];
 **  files are located, it is derived from 'SyGapRootPath'.
 **
 **  Put in this package because the command line processing takes place here.  */
-extern Char SyGapRootPaths [16] [256];
+extern Char SyGapRootPaths [MAX_GAP_DIRS] [256];
 
 
 /****************************************************************************
 **
-*V  SyBanner  . . . . . . . . . . . . . . . . . . . . . . . . surpress banner
+*V  SyInitfiles[] . . . . . . . . . . .  list of filenames to be read in init
 **
-**  'SyBanner' determines whether GAP should print the banner.
+**  'SyInitfiles' is a list of file to read upon startup of GAP.
 **
-**  Per default it  is true,  i.e.,  GAP prints the  nice  banner.  It can be
-**  changed by the '-b' option to have GAP surpress the banner.
+**  It contains the 'init.g' file and a user specific init file if it exists.
+**  It also contains all names all the files specified on the  command  line.
 **
-**  It is copied into the GAP variable 'BANNER', which  is used  in 'init.g'.
+**  This is used in 'InitGap' which tries to read those files  upon  startup.
+**
+**  Put in this package because the command line processing takes place here.
+**
+**  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
+*/
+extern Char SyInitfiles [16] [256];
+
+
+/****************************************************************************
+**
+*V  SyLineEdit  . . . . . . . . . . . . . . . . . . . .  support line editing
+**
+**  0: no line editing
+**  1: line editing if terminal
+**  2: always line editing (EMACS)
+*/
+extern UInt SyLineEdit;
+
+
+/****************************************************************************
+**
+*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+**
+**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
+**  not.
+**
+**  Per default it is false, i.e. Gasman is silent about garbage collections.
+**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**
+**  This is used in the function 'SyMsgsBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern UInt SyBanner;
-
-
-/****************************************************************************
-**
-*V  SyDebugLoading  . . . . . . . . .  output messages about loading of files
-*/
-extern Int SyDebugLoading;
-
-
-/****************************************************************************
-**
-*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
-**
-**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
-**
-**  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
-**  It can be changed by the '-q' option to have GAP operate in silent  mode.
-**
-**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
-**  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-extern UInt SyQuiet;
+extern UInt SyMsgsFlagBags;
 
 
 /****************************************************************************
@@ -196,35 +445,19 @@ extern UInt SyNrRows;
 
 /****************************************************************************
 **
-*V  SyMsgsFlagBags  . . . . . . . . . . . . . . . . .  enable gasman messages
+*V  SyQuiet . . . . . . . . . . . . . . . . . . . . . . . . . surpress prompt
 **
-**  'SyMsgsFlagBags' determines whether garabage collections are reported  or
-**  not.
+**  'SyQuit' determines whether GAP should print the prompt and  the  banner.
 **
-**  Per default it is false, i.e. Gasman is silent about garbage collections.
-**  It can be changed by using the  '-g'  option  on the  GAP  command  line.
+**  Per default its false, i.e. GAP prints the prompt and  the  nice  banner.
+**  It can be changed by the '-q' option to have GAP operate in silent  mode.
 **
-**  This is used in the function 'SyMsgsBags' below.
-**
-**  Put in this package because the command line processing takes place here.
-*/
-extern UInt SyMsgsFlagBags;
-
-
-/****************************************************************************
-**
-*V  SyStorMin . . . . . . . . . . . . . .  default size for initial workspace
-**
-**  'SyStorMin' is the size of the initial workspace allocated by Gasman.
-**
-**  This is per default  4 Megabyte,  which  is  often  a  reasonable  value.
-**  It is usually changed with the '-m' option in the script that starts GAP.
-**
-**  This value is used in the function 'SyAllocBags' below.
+**  It is used by the functions in 'gap.c' to surpress printing the  prompts.
+**  Is also copied into the GAP variable 'QUIET' which is used  in  'init.g'.
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern Int SyStorMin;
+extern UInt SyQuiet;
 
 
 /****************************************************************************
@@ -245,34 +478,18 @@ extern Int SyStorMax;
 
 /****************************************************************************
 **
-*F  SyStackAlign  . . . . . . . . . . . . . . . . . .  alignment of the stack
+*V  SyStorMin . . . . . . . . . . . . . .  default size for initial workspace
 **
-**  'SyStackAlign' is  the  alignment  of items on the stack.   It  must be a
-**  divisor of  'sizof(Bag)'.  The  addresses of all identifiers on the stack
-**  must be  divisable by 'SyStackAlign'.  So if it  is 1, identifiers may be
-**  anywhere on the stack, and if it is  'sizeof(Bag)',  identifiers may only
-**  be  at addresses  divisible by  'sizeof(Bag)'.  This value is initialized
-**  from a macro passed from the makefile, because it is machine dependent.
+**  'SyStorMin' is the size of the initial workspace allocated by Gasman.
 **
-**  This value is passed to 'InitBags'.
-*/
-extern UInt SyStackAlign;
-
-
-/****************************************************************************
+**  This is per default  4 Megabyte,  which  is  often  a  reasonable  value.
+**  It is usually changed with the '-m' option in the script that starts GAP.
 **
-*V  SyCacheSize . . . . . . . . . . . . . . . . . . . . . . size of the cache
-**
-**  'SyCacheSize' is the size of the data cache.
-**
-**  This is per  default 0, which means that  there is no usuable data cache.
-**  It is usually changed with the '-c' option in the script that starts GAP.
-**
-**  This value is passed to 'InitBags'.
+**  This value is used in the function 'SyAllocBags' below.
 **
 **  Put in this package because the command line processing takes place here.
 */
-extern UInt SyCacheSize;
+extern Int SyStorMin;
 
 
 /****************************************************************************
@@ -284,68 +501,9 @@ extern Char SySystemInitFile [256];
 
 /****************************************************************************
 **
-*V  SyInitfiles[] . . . . . . . . . . .  list of filenames to be read in init
-**
-**  'SyInitfiles' is a list of file to read upon startup of GAP.
-**
-**  It contains the 'init.g' file and a user specific init file if it exists.
-**  It also contains all names all the files specified on the  command  line.
-**
-**  This is used in 'InitGap' which tries to read those files  upon  startup.
-**
-**  Put in this package because the command line processing takes place here.
-**
-**  For UNIX this list contains 'LIBNAME/init.g' and '$HOME/.gaprc'.
-*/
-extern Char SyInitfiles [16] [256];
-
-
-/****************************************************************************
-**
-*V  SyCheckForCompFiles . . . . . . . . . . . . .  check for completion files
-*/
-extern Int SyCheckForCompFiles;
-
-
-/****************************************************************************
-**
 *V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
 */
 extern int SyUseModule;
-
-
-/****************************************************************************
-**
-*V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
-*/
-extern Int SyCompilePlease;
-
-/****************************************************************************
-**
-*V  SyCompileOutput . . . . . . . . . . . . . . . . . . into this output file
-*/
-extern Char SyCompileOutput [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileInput  . . . . . . . . . . . . . . . . . .  from this input file
-*/
-extern Char SyCompileInput [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileName . . . . . . . . . . . . . . . . . . . . . .  with this name
-*/
-extern Char SyCompileName [256];
-
-
-/****************************************************************************
-**
-*V  SyCompileMagic1 . . . . . . . . . . . . . . . . . . and this magic number
-*/
-extern Char * SyCompileMagic1;
 
 
 /****************************************************************************
@@ -370,6 +528,20 @@ extern UInt SyWindow;
 /****************************************************************************
 **
 
+*V  SyStartTime . . . . . . . . . . . . . . . . . . time when GAP was started
+*/
+extern UInt SyStartTime;
+
+
+/****************************************************************************
+**
+*V  SyStopTime  . . . . . . . . . . . . . . . . . . time when reading started
+*/
+extern UInt SyStopTime;
+
+
+/****************************************************************************
+**
 *F  SyTime()  . . . . . . . . . . . . . . . return time spent in milliseconds
 **
 **  'SyTime' returns the number of milliseconds spent by GAP so far.
@@ -503,7 +675,7 @@ extern Int SyFopen (
 **  'SyFclose' closes the file with the identifier <fid>  which  is  obtained
 **  from 'SyFopen'.
 */
-extern void SyFclose (
+extern Int SyFclose (
             Int                 fid );
 
 
@@ -636,6 +808,25 @@ extern Char * SyWinCmd (
 
 *F * * * * * * * * * * * * * file and execution * * * * * * * * * * * * * * *
 */
+
+
+/****************************************************************************
+**
+
+*V  syBuf . . . . . . . . . . . . . .  buffer and other info for files, local
+**
+**  'syBuf' is  a array used as  buffers for  file I/O to   prevent the C I/O
+**  routines  from   allocating their  buffers  using  'malloc',  which would
+**  otherwise confuse Gasman.
+*/
+typedef struct {
+    FILE *      fp;                     /* file pointer for this file      */
+    FILE *      echo;                   /* file pointer for the echo       */
+    UInt        pipe;                   /* file is really a pipe           */
+    Char        buf [BUFSIZ];           /* the buffer for this file        */
+} SYS_SY_BUF;
+
+extern SYS_SY_BUF syBuf [256];
 
 
 /****************************************************************************

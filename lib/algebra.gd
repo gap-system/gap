@@ -716,6 +716,16 @@ IsQuaternionCollColl := CategoryCollections( "IsQuaternionCollColl",
 #############################################################################
 ##
 #F  QuaternionAlgebra( <F> )
+#F  QuaternionAlgebra( <F>, <a>, <b> )
+##
+##  is a quaternion algebra over the field <F> with parameters <a> and <b> in
+##  <F>, i.e., a four-dimensional associative <F>-algebra with basis
+##  $(e,i,j,k)$ and multiplication defined by
+##  $e e = e$, $e i = i e = i$, $e j = j e = j$, $e k = k e = k$,
+##  $i i = <a> e$, $i j = - j i = k$, $i k = - k i = <a> j$,
+##  $j j = <b> e$, $j k = - k j = <b> i$,
+##  $k k = - <a> <b> e$.
+##  The default values for <a> and <b> are $-1$ in <F>.
 ##
 ##  The embedding of the field 'GaussianRationals' into a quaternion algebra
 ##  $A$ over 'Rationals' is not uniquely determined.

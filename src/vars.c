@@ -19,10 +19,11 @@ char * Revision_vars_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NAMI_FUNC, ENVI_FUNC            */
@@ -3006,8 +3007,8 @@ void            InitVars ( )
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );
 
     /* make 'CurrLVars' known to Gasman                                    */
-    InitGlobalBag( &CurrLVars );
-    InitGlobalBag( &BottomLVars );
+    InitGlobalBag( &CurrLVars, "vars: current LVars" );
+    InitGlobalBag( &BottomLVars, "vars: bottom LVars" );
     BottomLVars = NewBag( T_LVARS, 3*sizeof(Obj) );
     CurrLVars   = BottomLVars;
     tmp = NewFunctionC( "bottom", 0, "", 0 );

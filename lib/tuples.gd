@@ -20,7 +20,8 @@ Revision.tuples_gd :=
 ##
 
 IsTuple := NewCategory( "IsTuple", IsDenseList );
-
+InstallTrueMethod( IsMultiplicativeElementWithInverse, IsTuple );
+InstallTrueMethod( IsMultiplicativeElementWithOne, IsTuple );
 
 #############################################################################
 ##

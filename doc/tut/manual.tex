@@ -1,20 +1,28 @@
 \input ../gapmacro
-\def\exercise{\begingroup\def\par{\endgraf\endgroup\medskip\noindent}
-  \medskip\noindent{\bf Exercise:}\quad}
+\immediate\openout\ans=answers
 
 \FrontMatter
 %\input copyrigh
-%\input preface
 
 \Chapters
-\input lists
-\input group
+\Input{introduc}
+\Input{lists}
+\Input{group}
 
 \Appendices
 
+\Chapter Answers to the Exercises
+
+\parskip 1ex plus 0.5ex minus 0.5ex
+\immediate\closeout\ans
+\input answers
+
+\Chapter Bibliography
+
 \Bibliography
 
-\Chapter{Index}
+\Chapter Index
+
 A page number in {\it italics} denotes a whole  section which is named
 like   the index entry.  Keywords  are   sorted  with case and  spaces
 ignored,  e.g., ```PermutationCharacter''' comes before  ``permutation
@@ -34,6 +42,8 @@ group''.
 Sciences}
 \smallskip
 \centerline{\secfont University of St.~Andrews}
+
+\Chapter Contents
   
 \TableOfContents
 

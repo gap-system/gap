@@ -124,11 +124,12 @@ SeekPositionStream := NewOperation(
 #############################################################################
 ##
 
-#O  CloseInput( <input-stream> )
+
+#O  CloseStream( <stream> )
 ##
-CloseInput := NewOperation(
-    "CloseInput",
-    [ IsInputStream ] );
+CloseStream := NewOperation(
+    "CloseStream",
+    [ IsStream ] );
 
 
 #############################################################################

@@ -26,10 +26,11 @@
 %%    verbatim material   temporary escape character)
 %%  \endtt
 %%
-%%  \Chapter{title}
-%%  \Section{title}\null\par
+%%  \Input{file}  includes file `file.tex' (not recommended for appendices)
+%%  \Chapter title \par
+%%  \Section{title} \par
 %%      make  chapter  or section   title. Automatically  generates  table of
-%%      contents. \null after \Section inhibits labels and indexing.
+%%      contents. \null after \Section{...} inhibits labels and indexing.
 %%  \>function( arguments )!{ index subentry }
 %%  \>`a binop b'{binary operation}!{ index subentry }
 %%      make a  heading for a subsection   explaining a function  or a binary
@@ -39,8 +40,8 @@
 %%      the same without label and index entry
 %%
 %%  \FrontMatter, \Chapters, \Appendices  parts of the book
-%%  \Bibliography, \TableOfContents       make these chapters automatically
-%%  \Index                                make index without chapter head
+%%  \Bibliography, \Index                 make these chapters (w/o head)
+%%  \TableOfContents
 %%
 
 % Page dimensions and double column output.
@@ -137,7 +138,7 @@
   \obeyspaces \obeylines \tt}
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
- \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\char35 \hbox{\rm &1}\par}}
+ \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}}
 \outer\def\begintt{\medskip\ttverbatim
   \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
   \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
@@ -155,9 +156,9 @@
 
 % Input/output streams. Chapter and section counters.
 \newwrite\labelout \newwrite\indexout \newwrite\secindout
-\newwrite\tocout   \newwrite\citeout
+\newwrite\tocout   \newwrite\citeout  \newwrite\ans
 \newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
-\newcount\chapno   \newcount\secno
+\newcount\chapno   \newcount\secno    \newcount\exno
 
 % Additional active characters and their default meanings.
 \mathcode`.="2201 \mathchardef\.="702E
@@ -166,7 +167,8 @@
 \catcode`!=\active \let!=\excl
 \catcode`^=\active \def^{\ifmmode\sp\else{\char`\^}\fi}
 \catcode`_=\active \def_{\ifmmode\sb\else\_\fi}         \let\_=\underscore
-\catcode`*=\active \def*#1*{{\sl #1}}                   \chardef\*=`*
+\catcode`*=\active \def*{\ifmmode\let\next=\*\else\let\next=\bold\fi\next}
+                   \def\bold#1*{{\sl #1\/}}             \chardef\*=`*
 \catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1}}\chardef\<=`<
 \catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
                                                         \chardef\\=`\\
@@ -212,26 +214,34 @@
  \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
   \item{\sigel{#2}}}}
 \def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
-\def\atindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}{\folio}}%
-  \write\secindout{\thechapter.\the\secno. #1#3}\ifvmode\nobreak\fi}
-\def\index#1{\atindex{#1}{}{}}
+\def\doindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}{\folio}}%
+  \ifvmode\nobreak\fi}
+\def\dosecindex#1#2#3{\immediate\write\secindout
+  {#1 \thechapter.\the\secno. #2#3}}
+\def\bothindex#1#2#3#4{\doindex{#2}{#3}{#4}\dosecindex{#1}{#2}{#4}}
+\def\index#1{\bothindex I{#1}{}{}}
+\def\atindex#1#2{\bothindex I{#1}{#2}{}}
 \def\indexit#1{{\it #1}}
 
 % Macros for chapter and section headings.
+\def\filename{appendix}
 \def\tocstrut{{\setbox0=\hbox{1}\vrule width 0pt height\ht0}}
-\def\Chapter#1{\vfill\supereject \headlinefalse
-  \advance\chapno by1 \secno=0 \def\chapname{#1}
+\outer\def\Input#1{\def\filename{#1.tex}\input #1}
+\outer\long\def\Chapter#1 \par{\vfill\supereject \headlinefalse
+  \advance\chapno by1 \secno=0 \exno=0 \def\chapname{#1}
   \label{chapter:#1}
   \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\folio}}
+  \immediate\write\secindout{C \filename\space\thechapter. \chapname}
   \setbox0=\hbox{\inchhigh\kern-.075em\thechapter}
   \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
     \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
   \line{\box0\hfil\box1}\nobreak \vskip 40pt plus10pt \noindent}
-\long\def\Section#1#2\par{\medskip \advance\secno by1
+\outer\long\def\Section#1#2\par{\medskip \advance\secno by1
   {\let!=\space \mark{Section \the\secno. #1}}
   \edef\tempa{\thechapter.\the\secno}\expandafter\writesecline\tempa\\{#1}
-  \ifx#2\null\else \label{#1}\edef\tempa{#1}
-    \expandafter\atindex\expandafter{\tempa}{\noexpand|indexit}{}\fi
+  \dosecindex S{#1}{}
+  \ifx#2\null\else \label{#1}\edef\tempa{{#1}}
+    \expandafter\doindex\tempa{|indexit}{}\fi
   {\baselineskip 18pt\let!=\space \noindent\secfont\thechapter.\the\secno
    \enspace #1\par}\nobreak\medskip\noindent}
 \def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}{\folio}}}
@@ -247,8 +257,9 @@
     \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi
   \endgraf\futurelet\next\oporfunc}
 \def\subfunction#1#2{\overlay{#1}{#2}\label{#1!#2}%
-  \atindex{#1}{@\noexpand`#1'}{!#2}\endgroup}
-\def\suboperation#1#2{\overlay{#1}{#2}\label{#1!#2}\index{#1!#2}\endgroup}
+  \bothindex F{#1}{@\noexpand`#1'}{!#2}\endgroup}
+\def\suboperation#1#2{\overlay{#1}{#2}\label{#1!#2}%
+  \bothindex F{#1}{}{!#2}\endgroup}
 \def\overlay#1#2{\hfill{\it
   \ov{#1}{#2}{groups}{groups}%
   \ov{#1}{#2}{solvable groups}{solv\thinspace gps}%
@@ -261,6 +272,37 @@
        \noindent\ignorespaces}}
 \def\beginitems{\smallskip\begingroup \parindent 0pt \catcode`&=\active}
 \def\enditems{\par\endgroup\smallskip\noindent\ignorespaces}
+
+% Macros for exercises.
+\outer\def\exercise{\advance\exno by1\begingroup
+  \def\par{\endgraf\endgroup\medskip\noindent}
+  \medskip\noindent\fmark{\bf Exercise \thechapter.\the\exno.}\quad}
+\outer\def\answer{\immediate\write\ans{}%
+  \immediate\write\ans{\noexpand\textindent
+    {\noexpand\bf\thechapter.\the\exno.}}%
+  \copytoblankline}
+\def\copytoblankline{\begingroup\setupcopy\copyans}
+{\undoquotes
+\gdef\setupcopy{\catcode`\\=\other
+  \catcode`\{=\other
+  \catcode`\}=\other
+  \catcode`\<=\other
+  \catcode`\$=\other
+  \catcode`\%=\other
+  \catcode`\~=\other
+  \catcode`\^=\other
+  \catcode`\_=\other
+  \catcode`\*=\other
+  \catcode`\`=\other
+  \catcode`\!=\other
+  \catcode`\"=\other
+  \catcode`\&=\other
+  \catcode`\#=\other
+  \catcode`\|=\other \obeylines \obeyspaces}
+\obeylines \gdef\copyans#1
+  {\def\next{#1}%
+  \ifx\next\empty\let\next=\endgroup %
+  \else\immediate\write\ans{\next}\let\next=\copyans\fi\next}}
 
 % Macros for the active backquote character (`).
 \tracinglostchars=0 \hyphenchar\tentt=128 \lccode`.=`.
@@ -278,11 +320,13 @@
 \long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
   \def\|{\vrule\relax}}\fmark{`#1'}%
   \ifx#3!\begingroup\undoquotes\def\next{\suboperation{#2}}
-    \else\overlay{#2}\null \label{#2}\index{#2}\let\next=#3\fi\next}
+    \else\overlay{#2}\null \label{#2}%
+    \bothindex F{#2}{}{}\let\next=#3\fi\next}
 \long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
   \def\|{\vrule\relax}\fmark{`#1(#2)'}}%
   \ifx#3!\begingroup\undoquotes\def\next{\subfunction{#1}}\else
-    \overlay{#1}\null\label{#1}\atindex{#1}{@\noexpand`#1'}{}\let\next=#3\fi
+    \overlay{#1}\null\label{#1}\bothindex F{#1}{@\noexpand`#1'}{}%
+    \let\next=#3\fi
   \next}
 \def`{\futurelet\next\backquote}
 \def\backquote{\ifx\next`\let\next=\doublebackquote
@@ -308,7 +352,7 @@
   \immediate\closein#1 \input\jobname.#2 \fi}
 
 % Macros for the parts of the manual.
-\def\FrontMatter{\def\thechapter{\noexpand\tocstrut}
+\outer\def\FrontMatter{\def\thechapter{\noexpand\tocstrut}
   \def\lefthead{\it\chapname} \let\righthead=\lefthead
 
   \begingroup
@@ -326,31 +370,27 @@
   \immediate\write\citeout{\bs bibstyle{alpha}}
   \immediate\write\citeout{\bs bibdata{}}}
   
-\def\Chapters{\vfill\eject
+\outer\def\Chapters{\vfill\eject
   \chapno=0 \def\thechapter{\the\chapno}
   \def\lefthead{{\it Chapter \the\chapno. \chapname}}
   \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
 
-\def\Appendices{\vfill\eject
-  \parskip 1ex plus 0.5ex minus 0.5ex
-  \parindent 0pt
+\outer\def\Appendices{\vfill\eject
+  \def\filename{appendix}
   \chapno=0 \def\thechapter{\noexpand\appno{\the\chapno}}
   \def\lefthead{{\it Appendix \appno{\the\chapno}. \chapname}}
   \let\righthead=\lefthead}
 
-\def\Bibliography{\Chapter{Bibliography}
-  \begingroup\undoquotes\frenchspacing
+\outer\def\Bibliography{\begingroup\undoquotes\frenchspacing
+  \parskip 1ex plus 0.5ex minus 0.5ex
   \def\begin##1##2{} \def\end##1{}
   \let\newblock=\relax \let\em=\sl
-  \parindent\manindent
   \inputaux\citein{bbl}
   \endgroup}
   
-\def\Index{\bigskip
+\outer\def\Index{\bigskip
   \begindoublecolumns
-  \parskip 0pt
-  \rightskip 0pt plus2em
-  \emergencystretch 2em
+  \parindent 0pt \parskip 0pt \rightskip 0pt plus2em \emergencystretch 2em
   \everypar{\hangindent\smallmanindent}
   \def\par{\endgraf\leftskip 0pt}
   \def\sub{\advance\leftskip by\smallmanindent}
@@ -360,30 +400,29 @@
   \enddoublecolumns
   
   \vfill\supereject
+  \immediate\write16{##}
   \immediate\closeout\citeout
-  \immediate\write16{Citations for BibTeX written on \jobname.aux.}
+  \immediate\write16{## Citations for BibTeX written on \jobname.aux.}
   \immediate\closeout\indexout
-  \immediate\write16{Index entries written on \jobname.idx.}
+  \immediate\write16{## Index entries written on \jobname.idx.}
   \immediate\closeout\secindout
-  \immediate\write16{Section index entries written on \jobname.six.}
+  \immediate\write16{## Section index entries written on \jobname.six.}
   \immediate\closeout\labelout
-  \immediate\write16{Label definitions written on \jobname.lab.}
+  \immediate\write16{## Label definitions written on \jobname.lab.}
   \immediate\closeout\tocout
-  \immediate\write16{Table of contents written on \jobname.toc.}
-
+  \immediate\write16{## Table of contents written on \jobname.toc.}
+  \iflabundef\immediate\write16{## There were undefined labels or
+  references.}\fi
+  \iflabchanged\immediate\write16{## Labels have changed, run again. (Or
+  they were multiply defined.)}\fi
+  \immediate\write16{##}
   \pageno=-1
-  \headlinefalse}
+  \headlinefalse
+  \def\thechapter{\noexpand\tocstrut} \def\label##1{}
+  \def\lefthead{\chapname} \let\righthead=\lefthead}
 
-\def\TableOfContents{\def\thechapter{\noexpand\tocstrut}
-  \def\lefthead{\chapname} \let\righthead=\lefthead
-  \def\label##1{}
-  \Chapter{Contents}
-  
-  \begingroup
+\outer\def\TableOfContents{\begingroup
   \let!=\space
   \inputaux\tocin{toc}\vfill\eject
-  \endgroup
+  \endgroup}
   
-  \iflabundef\immediate\write16{There were undefined labels or references.}\fi
-  \iflabchanged\immediate\write16{Labels have changed, run again. (Or
-  they were multiply defined.)}\fi}

@@ -541,25 +541,41 @@ end;
 
 #############################################################################
 ##
+#F  QuaternionAlgebra( <F>, <a>, <b> )
 #F  QuaternionAlgebra( <F> )
 ##
-QuaternionAlgebra := function( F )
-    local A;
+QuaternionAlgebra := function( arg )
+    local F, a, b, e, A;
+
+    if Length( arg ) = 1 then
+      F:= arg[1];
+      a:= AdditiveInverse( One( F ) );
+      b:= a;
+    elif Length( arg ) = 3 then
+      F:= arg[1];
+      a:= arg[2];
+      b:= arg[3];
+    else
+      Error( "usage: QuaternionAlgebra( <F>[, <a>, <b>] )" );
+    fi;
 
     # Construct the algebra.
+    e:= One( F );
     A:= AlgebraByStructureConstantsArg(
             [ F,
-              [ [[[1],[1]],[[2],[ 1]],[[3],[ 1]],[[4],[ 1]]],
-                [[[2],[1]],[[1],[-1]],[[4],[ 1]],[[3],[-1]]],
-                [[[3],[1]],[[4],[-1]],[[1],[-1]],[[2],[ 1]]],
-                [[[4],[1]],[[3],[ 1]],[[2],[-1]],[[1],[-1]]],
+              [ [ [[1],[e]], [[2],[ e]], [[3],[ e]], [[4],[   e]] ],
+                [ [[2],[e]], [[1],[ a]], [[4],[ e]], [[3],[   a]] ],
+                [ [[3],[e]], [[4],[-e]], [[1],[ b]], [[2],[  -b]] ],
+                [ [[4],[e]], [[3],[-a]], [[2],[ b]], [[1],[-a*b]] ],
                 0, Zero(F) ],
               "e", "i", "j", "k" ],
             IsSCAlgebraObj and IsQuaternion );
 
-    # A quaternion algebra over the rationals is a division ring.
-    if F = Rationals then
+    # A quaternion algebra with parameters $-1$ over the rationals
+    # is a division ring.
+    if F = Rationals and a = -1 and b = -1 then
       SetFilterObj( A, IsMagmaWithInversesAndZero );
+#T better: use 'DivisionRingByGenerators' !
     fi;
 
     # Return the quaternion algebra.

@@ -28,6 +28,7 @@ ReadLib( "basis.gd"    );
 ReadLib( "basismut.gd" );
 ReadLib( "vspc.gd"     );
 ReadLib( "vspchom.gd"  );
+ReadLib( "lattice.gd"  );
 ReadLib( "algebra.gd"  );
 ReadLib( "algfp.gd"    );
 ReadLib( "alglie.gd"   );

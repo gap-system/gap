@@ -1,4 +1,112 @@
-Filename := function( dirs, name )
+#############################################################################
+##
+#W  files.gi                    GAP Library                      Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the methods for files and directories.
+##
+Revision.files_gi :=
+    "@(#)$Id$";
+
+
+#############################################################################
+##
+
+#R  IsDirectoryRep
+##
+IsDirectoryRep := NewRepresentation(
+    "IsDirectoryRep",
+    IsPositionalObjectRep,
+    [] );
+
+
+#############################################################################
+##
+#V  DirectoryKind
+##
+DirectoryKind := NewKind(
+    DirectoriesFamily,
+    IsDirectory and IsDirectoryRep );
+
+
+#############################################################################
+##
+
+#M  Directory( <str> )
+##
+InstallMethod( Directory,
+    "string",
+    true,
+    [ IsString ],
+    0,
+        
+function( str )
+    if '\\' in str or ':' in str  then
+        Error( "<str> must not contain '\\' or ':'" );
+    fi;
+    if str[Length(str)] = '/'  then
+        str := Immutable(str);
+    else
+        str := Immutable( Concatenation( str, "/" ) );
+    fi;
+    return Objectify( DirectoryKind, [str] );
+end );
+
+
+
+
+
+#############################################################################
+##
+#M  PrintObj( <directory> )
+##
+InstallMethod( PrintObj,
+    "default directory rep",
+    true,
+    [ IsDirectoryRep ],
+    0,
+        
+function( obj )
+    Print( "dir(", obj![1] ,")" );
+end );
+
+
+#############################################################################
+##
+
+#M  Filename( <directory>, <string> )
+##
+InstallOtherMethod( Filename,
+    "string",
+    true,
+    [ IsDirectory,
+      IsString ],
+    0,
+
+function( dir, name )
+    if '/' in name or '\\' in name or ':' in name  then
+        Error( "<name> must not contain '/', '\\' or ':'" );
+    fi;
+    return Immutable( Concatenation( dir![1], name ) );
+end );
+
+
+#############################################################################
+##
+#M  Filename( <directories>, <string> )
+##
+InstallMethod( Filename,
+    "string",
+    true,
+    [ IsList,
+      IsString ],
+    0,
+
+function( dirs, name )
+    local   dir,  new;
 
     for dir  in dirs  do
         new := Filename( dir, name );
@@ -8,69 +116,52 @@ Filename := function( dirs, name )
     od;
     return fail;
 
-end;
+end );
 
 
-Filename := function( dir, name )
-    return Concatenation( dir!.dirname, name );
-end;
+#############################################################################
+##
+#M  Read( <filename> )
+##
+READ_INDENT := "";
 
+InstallMethod( Read,
+    "string",
+    true,
+    [ IsString ],
+    0,
 
-DIRS_SYSTEM_PROGRAMS := Immutable( List(
-    DIRECTORIES_SYSTEM_PROGRAMS. 
-    x -> Directory(x) ) );
+function ( name )
+    local   readIndent,  found;
 
-
-DirectoriesSystemPrograms := function()
-    return DIRS_SYSTEM_PROGRAMS;
-end;
-
-
-DIR_CURRENT := Directory("./");
-
-
-DirectoryCurrent := function()
-    return DIR_CURRENT;
-end;
-
-
-DirectoriesPackagePrograms := function( name )
-    arch := GAP_ARCHITECTURE;
-    dirs := [];
-    for dir  in GAP_ROOT_PATHS  do
-        path := Concatenation( dir, "pkg/", name, "bin/", arch, "/" );
-        Add( dirs, Directory(path) );
-    od;
-    return dirs;
-end;
-
-
-DirectoriesLibrary := function( arg )
-    local   name,  dirs,  dir,  path;
-
-    if 0 = Length(arg)  then
-        name := "lib";
-    elif 1 = Length(arg)  then
-        name := arg[1];
-    else
-        Error( "DirectoriesLibrary( [<name>] )" );
+    readIndent := SHALLOW_COPY_OBJ( READ_INDENT );
+    APPEND_LIST_INTR( READ_INDENT, "  " );
+    InfoRead1( "#I", READ_INDENT, "Read( \"", name, "\" )\n" );
+    found := READ(name);
+    READ_INDENT := readIndent;
+    if found and READ_INDENT = ""  then
+        InfoRead1( "#I  Read( \"", name, "\" ) done\n" );
     fi;
-
-    dirs := [];
-    for dir  in GAP_ROOT_PATHS  do
-        path := Concatenation( dir, name );
-        Add( dirs, Directory(path) );
-    od;
-
-    return dirs;
-end;
+    if not found  then
+        Error( "file \"", name, "\" must exist and be readable" );
+    fi;
+end );
 
 
-Directory := function( str )
-    return Objectify( IsDirectory and IsDirectoryRep,
-                      rec( dirname := Immutable(str) ) );
-end;
+#############################################################################
+##
+#M  ReadTest( <filename> )
+##
+InstallMethod( ReadTest,
+    "string",
+    true,
+    [ IsString ],
+    0,
+    READ_TEST );
 
 
+#############################################################################
+##
 
-
+#E  files.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

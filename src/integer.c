@@ -85,10 +85,11 @@ char *          Revision_integer_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -2567,20 +2568,29 @@ void            InitInt ( void )
 
 
     /* install the internal function                                       */
+    InitHandlerFunc( IsIntHandler, "IS_INT" );
     IsIntFilt = NewFilterC(
         "IS_INT", 1L, "obj", IsIntHandler );
     AssGVar( GVarName( "IS_INT" ), IsIntFilt );
+
+    InitHandlerFunc( FuncQuoInt, "QUO_INT");
     AssGVar( GVarName( "QUO_INT" ),
              NewFunctionC( "QUO_INT", 2L, "int1, int2", FuncQuoInt ) );
+
+    InitHandlerFunc( FuncRemInt, "REM_INT");
     AssGVar( GVarName( "REM_INT" ),
              NewFunctionC( "REM_INT", 2L, "int1, int2", FuncRemInt ) );
+
+    InitHandlerFunc( FuncGcdInt, "GCD_INT");
     AssGVar( GVarName( "GCD_INT" ),
              NewFunctionC( "GCD_INT", 2L, "int1, int2", FuncGcdInt ) );
 
+    InitHandlerFunc( ProdIntObjHandler, "PROD_INT_OBJ");
     ProdIntObjFunc = NewFunctionC(
         "PROD_INT_OBJ", 2L, "n, op", ProdIntObjHandler );
     AssGVar( GVarName( "PROD_INT_OBJ" ), ProdIntObjFunc );
 
+    InitHandlerFunc( PowObjIntHandler, "POW_OBJ_INT");
     PowObjIntFunc = NewFunctionC(
         "POW_OBJ_INT", 2L, "op, n", PowObjIntHandler );
     AssGVar( GVarName( "POW_OBJ_INT" ), PowObjIntFunc );

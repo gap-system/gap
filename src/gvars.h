@@ -173,6 +173,24 @@ extern  UInt            Tilde;
 
 /****************************************************************************
 **
+*F  iscomplete_gvar( <name>, <len> )  . . . . . . . . . . . . .  check <name>
+*/
+extern UInt iscomplete_gvar (
+            Char *              name,
+            UInt                len );
+
+
+/****************************************************************************
+**
+*F  completion_gvar( <name>, <len> )  . . . . . . . . . . . . find completion
+*/
+extern UInt completion_gvar (
+            Char *              name,
+            UInt                len );
+
+
+/****************************************************************************
+**
 *F  InitGVars() . . . . . . . . . . . initialize the global variables package
 **
 **  'InitGVars' initializes the global variables package.

@@ -25,9 +25,9 @@ ClosedStreamKind := NewKind(
 #############################################################################
 ##
 
-#M  CloseInput( <input-stream> )
+#M  CloseStream( <input-stream> )
 ##
-InstallMethod( CloseInput,
+InstallMethod( CloseStream,
     "input stream",
     true,
     [ IsInputStream ],
@@ -76,6 +76,34 @@ function( stream )
     return str;
     
 end );
+
+
+#############################################################################
+##
+#M  Read( <input-text-stream> )
+##
+InstallOtherMethod( Read,
+    "input text stream",
+    true,
+    [ IsInputTextStream ],
+    0,
+
+function( stream )
+    READ_STREAM(stream);
+    CloseStream(stream);
+end );
+
+
+#############################################################################
+##
+#M  ReadTest( <input-text-stream> )
+##
+InstallOtherMethod( ReadTest,
+    "input text stream",
+    true,
+    [ IsInputTextStream ],
+    0,
+    READ_TEST_STREAM );
 
 
 #############################################################################
@@ -328,9 +356,9 @@ end );
 #############################################################################
 ##
 
-#M  CloseInput( <input-text-file> )
+#M  CloseStream( <input-text-file> )
 ##
-InstallMethod( CloseInput,
+InstallMethod( CloseStream,
     "input text file",
     true,
     [ IsInputStream and IsInputTextFileRep ],

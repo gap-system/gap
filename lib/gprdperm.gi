@@ -71,7 +71,8 @@ InstallMethod( DirectProduct2,
     local info;
     info := DirectProductInfo( D );
     return DirectProductPermGroupConstructor( info.groups, [ H ],
-           info.olds, info.news, info.perms, GeneratorsOfGroup( D ) );
+           info.olds, info.news, info.perms,
+                   ShallowCopy( GeneratorsOfGroup( D ) ) );
 end );
 
 #############################################################################

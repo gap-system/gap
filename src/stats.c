@@ -16,10 +16,11 @@ char *          Revision_stats_c =
 
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar                         */
 
 #include        "calls.h"               /* NAMI_FUNC used by EVAL_EXPR     */
@@ -1845,7 +1846,7 @@ void            InitStats ( void )
     /* for a lot of trouble if 'CurrStat' ever becomes the last reference. */
     /* furthermore, statements are no longer bags                          */
     /* InitGlobalBag( &CurrStat );                                         */
-    InitGlobalBag( &ReturnObjStat );
+    InitGlobalBag( &ReturnObjStat, "stats: returned object" );
 
     /* install executors for non-statements                                */
     for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {

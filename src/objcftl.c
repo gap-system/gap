@@ -3,14 +3,14 @@
 *A  pcc.c                       GAP source                   Werner Nickel
 **
 **
-**  This file contains a collector from thye left for polycyclic
+**  This file contains a collector from the left for polycyclic
 **  presentations.
 */
 
 #include "system.h"
-#include "scanner.h"
 #include "gasman.h"
 #include "objects.h"
+#include "scanner.h"
 #include "plist.h"
 #include "gvars.h"
 #include "calls.h"
@@ -411,9 +411,13 @@ void InitPcc ( void ) {
     AssGVar( GVarName( "PC_DEFAULT_KIND" ), INTOBJ_INT( PC_DEFAULT_KIND ) );
 
     /* Install internal functions. */
+
+    InitHandlerFunc( FuncCollectPolycyc, "CollectPolycyclic");
     AssGVar( GVarName( "CollectPolycyclic" ), 
         NewFunctionC( "CollectPolycyclic", 3L, 
                     "pcp, list, word", FuncCollectPolycyc ) );
+
+    InitHandlerFunc( FunBinaryPower, "BinaryPower");
     AssGVar( GVarName( "BinaryPower" ), 
         NewFunctionC( "BinaryPower", 3L, 
                     "pcp, word, exponent", FunBinaryPower ) );

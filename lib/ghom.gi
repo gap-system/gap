@@ -542,12 +542,18 @@ end;
 
 #############################################################################
 ##
-#F  IsomorphismPermGroup( <G> )
+#M  IsomorphismPermGroup( <G> ) . . . . . . . . .  by right regular operation
 ##
-InstallMethod(IsomorphismPermGroup,"right regular",true,[IsGroup],0,
-function(G)
-  return OperationHomomorphism(G,G,OnRight);
-end);
+InstallMethod( IsomorphismPermGroup, "right regular operation", true,
+        [ IsGroup and IsFinite ], 0,
+    function( G )
+    local   nice;
+    
+    nice := OperationHomomorphism( G, G, OnRight );
+    SetRange( nice, Image( nice ) );
+    SetIsBijective( nice, true );
+    return nice;
+end );
 
 #############################################################################
 ##

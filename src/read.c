@@ -11,13 +11,15 @@
 char *          Revision_read_c =
    "@(#)$Id$";
 
+
 #include        <setjmp.h>              /* jmp_buf, setjmp, longjmp        */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* Tilde, VAL_GVAR, AssGVar        */
 
 #include        "calls.h"               /* NAMS_FUNC, ENVI_FUNC            */
@@ -1684,7 +1686,7 @@ UInt            ReadEvalCommand ( void )
 **  It does not expect the  first symbol of its input  already read and  wont
 **  reads to the end of the input (unless an error happens).
 */
-UInt            ReadEvalFile ( void )
+UInt ReadEvalFile ( void )
 {
     UInt                type;
     Obj                 stackNams;
@@ -1694,6 +1696,10 @@ UInt            ReadEvalFile ( void )
     UInt                currLHSGVar;
     jmp_buf             readJmpError;
     UInt                nr;
+    Obj                 name;
+    Obj                 nams;
+    Int                 nloc;
+    Int                 i;
 
     /* get the first symbol from the input                                 */
     Match( Symbol, "", 0UL );
@@ -1720,8 +1726,37 @@ UInt            ReadEvalFile ( void )
     CurrLHSGVar = 0;
     IntrBegin();
 
+    /* check for local variables                                           */
+    nloc = 0;
+    nams = NEW_PLIST( T_PLIST, nloc );
+    SET_LEN_PLIST( nams, nloc );
+    CountNams += 1;
+    ASS_LIST( StackNams, CountNams, nams );
+    if ( Symbol == S_LOCAL ) {
+        Match( S_LOCAL, "local", 0L );
+        name = NEW_STRING( SyStrlen(Value) );
+        SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+        nloc += 1;
+        ASS_LIST( nams, nloc, name );
+        Match( S_IDENT, "identifier", STATBEGIN|S_END );
+        while ( Symbol == S_COMMA ) {
+            Match( S_COMMA, ",", 0L );
+            for ( i = 1; i <= nloc; i++ ) {
+                if ( SyStrcmp(CSTR_STRING(ELM_LIST(nams,i)),Value) == 0 ) {
+                    SyntaxError("name used for two locals");
+                }
+            }
+            name = NEW_STRING( SyStrlen(Value) );
+            SyStrncat( CSTR_STRING(name), Value, SyStrlen(Value) );
+            nloc += 1;
+            ASS_LIST( nams, nloc, name );
+            Match( S_IDENT, "identifier", STATBEGIN|S_END );
+        }
+        Match( S_SEMICOLON, ";", STATBEGIN|S_END );
+    }
+
     /* fake the 'function ()'                                              */
-    IntrFuncExprBegin( 0L, 0L, (Obj)0 );
+    IntrFuncExprBegin( 0L, nloc, nams );
 
     /* read the statements                                                 */
     nr = ReadStats( S_SEMICOLON | S_EOF );
@@ -1777,8 +1812,8 @@ void            ReadEvalError ( void )
 */
 void            InitRead ( void )
 {
-    InitGlobalBag( &ReadEvalResult );
-    InitGlobalBag( &StackNams );
+    InitGlobalBag( &ReadEvalResult, "read: ReadEvalResult" );
+    InitGlobalBag( &StackNams, "read: names stack" );
 }
 
 

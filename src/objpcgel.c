@@ -10,10 +10,11 @@ char * Revision_objpcgel_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 #include        "gap.h"                 /* Error                           */
 
@@ -434,41 +435,54 @@ void InitPcElements ( void )
 
 
     /* methods for boxed objs                                              */
+    InitHandlerFunc( FuncLessBoxedObj, "LessBoxedObj" );
     AssGVar( GVarName( "LessBoxedObj" ),
          NewFunctionC( "LessBoxedObj", 2L, "lobj, lobj",
                     FuncLessBoxedObj ) );
 
+    InitHandlerFunc( FuncEqualBoxedObj, "EqualBoxedObj" );
     AssGVar( GVarName( "EqualBoxedObj" ),
          NewFunctionC( "EqualBoxedObj", 2L, "lobj, lobj",
                     FuncEqualBoxedObj ) );
 
 
     /* finite power conjugate collector words                              */
+    InitHandlerFunc( FuncNBitsPcWord_Comm, "NBitsPcWord_Comm" );
     AssGVar( GVarName( "NBitsPcWord_Comm" ),
          NewFunctionC( "NBitsPcWord_Comm", 2L,
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Comm ) );
 
+    InitHandlerFunc( FuncNBitsPcWord_Conjugate,
+		     "NBitsPcWord_Conjugate" );
     AssGVar( GVarName( "NBitsPcWord_Conjugate" ),
          NewFunctionC( "NBitsPcWord_Conjugate", 2L,
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Conjugate ) );
 
+    InitHandlerFunc( FuncNBitsPcWord_LeftQuotient,
+		     "NBitsPcWord_LeftQuotient" );
     AssGVar( GVarName( "NBitsPcWord_LeftQuotient" ),
          NewFunctionC( "NBitsPcWord_LeftQuotient", 2L, 
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_LeftQuotient ) );
 
+    InitHandlerFunc( FuncNBitsPcWord_PowerSmallInt,
+		     "NBitsPcWord_PowerSmallInt" );
     AssGVar( GVarName( "NBitsPcWord_PowerSmallInt" ),
          NewFunctionC( "NBitsPcWord_PowerSmallInt", 2L, 
                        "n_bits_pcword, small_integer",
                     FuncNBitsPcWord_PowerSmallInt ) );
 
+    InitHandlerFunc( FuncNBitsPcWord_Product,
+		     "NBitsPcWord_Product" );
     AssGVar( GVarName( "NBitsPcWord_Product" ),
          NewFunctionC( "NBitsPcWord_Product", 2L, 
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Product ) );
 
+    InitHandlerFunc( FuncNBitsPcWord_Quotient,
+		     "NBitsPcWord_Quotient" );
     AssGVar( GVarName( "NBitsPcWord_Quotient" ),
          NewFunctionC( "NBitsPcWord_Quotient", 2L, 
                        "n_bits_pcword, n_bits_pcword",
@@ -476,48 +490,66 @@ void InitPcElements ( void )
 
 
     /* 8 bits word                                                         */
+    InitHandlerFunc( Func8Bits_DepthOfPcElement,
+		     "8Bits_DepthOfPcElement" );
     AssGVar( GVarName( "8Bits_DepthOfPcElement" ),
          NewFunctionC( "8Bits_DepthOfPcElement", 2L, 
                        "8_bits_pcgs, 8_bits_pcword",
                     Func8Bits_DepthOfPcElement ) );
 
+    InitHandlerFunc( Func8Bits_ExponentOfPcElement,
+		     "8Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "8Bits_ExponentOfPcElement" ),
          NewFunctionC( "8Bits_ExponentOfPcElement", 3L, 
                        "8_bits_pcgs, 8_bits_pcword, int",
                     Func8Bits_ExponentOfPcElement ) );
 
+    InitHandlerFunc( Func8Bits_LeadingExponentOfPcElement,
+		     "8Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "8Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "8Bits_LeadingExponentOfPcElement", 2L, 
                        "8_bits_pcgs, 8_bits_word",
                     Func8Bits_LeadingExponentOfPcElement ) );
 
     /* 16 bits word                                                        */
+    InitHandlerFunc( Func16Bits_DepthOfPcElement,
+		     "16Bits_DepthOfPcElement" );
     AssGVar( GVarName( "16Bits_DepthOfPcElement" ),
          NewFunctionC( "16Bits_DepthOfPcElement", 2L, 
                        "16_bits_pcgs, 16_bits_pcword",
                     Func16Bits_DepthOfPcElement ) );
 
+    InitHandlerFunc( Func16Bits_ExponentOfPcElement,
+		     "16Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "16Bits_ExponentOfPcElement" ),
          NewFunctionC( "16Bits_ExponentOfPcElement", 3L, 
                        "16_bits_pcgs, 16_bits_pcword, int",
                     Func16Bits_ExponentOfPcElement ) );
 
+    InitHandlerFunc( Func16Bits_LeadingExponentOfPcElement,
+		     "16Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "16Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "16Bits_LeadingExponentOfPcElement", 2L, 
                        "16_bits_pcgs, 16_bits_word",
                     Func16Bits_LeadingExponentOfPcElement ) );
 
     /* 32 bits word                                                        */
+    InitHandlerFunc( Func32Bits_DepthOfPcElement,
+		     "32Bits_DepthOfPcElement" );
     AssGVar( GVarName( "32Bits_DepthOfPcElement" ),
          NewFunctionC( "32Bits_DepthOfPcElement", 2L, 
                        "32_bits_pcgs, 32_bits_pcword",
                     Func32Bits_DepthOfPcElement ) );
 
+    InitHandlerFunc( Func32Bits_ExponentOfPcElement,
+		     "32Bits_ExponentOfPcElement" );
     AssGVar( GVarName( "32Bits_ExponentOfPcElement" ),
          NewFunctionC( "32Bits_ExponentOfPcElement", 3L, 
                        "32_bits_pcgs, 32_bits_pcword, int",
                     Func32Bits_ExponentOfPcElement ) );
 
+    InitHandlerFunc( Func32Bits_LeadingExponentOfPcElement,
+		     "32Bits_LeadingExponentOfPcElement" );
     AssGVar( GVarName( "32Bits_LeadingExponentOfPcElement" ),
          NewFunctionC( "32Bits_LeadingExponentOfPcElement", 2L, 
                        "32_bits_pcgs, 32_bits_word",

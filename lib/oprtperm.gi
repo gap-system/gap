@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.26  1997/04/15 10:28:06  htheisse
+#H  more detailed checks in `RepresentativeOperation'
+#H
+#H  Revision 4.25  1997/04/14 08:31:35  htheisse
+#H  corrected some requirements
+#H
 #H  Revision 4.24  1997/03/18 09:10:26  htheisse
 #H  corrected `RepresentativeOperation' for perm groups
 #H
@@ -48,18 +54,45 @@ Revision.oprtperm_gi :=
 ##
 InstallOtherMethod( OrbitOp,
         "G, int, gens, perms, opr", true,
-        [ IsGroup, IsInt,
+        [ IsPermGroup, IsInt,
           IsList,
-          IsList and IsPermCollection,
+          IsList,
           IsFunction ], 0,
     function( G, pnt, gens, oprs, opr )
-    if opr <> OnPoints  then
+    if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
     fi;
     if HasStabChain( G )  and  IsInBasicOrbit( StabChainAttr( G ), pnt )  then
         return StabChainImmAttr( G ).orbit;
     else
         return Immutable( OrbitPerms( oprs, pnt ) );
+    fi;
+end );
+
+#############################################################################
+##
+#M  OrbitStabilizer( <G>, <pnt>, <gens>, <oprs>, <OnPoints> ) . . on integers
+##
+InstallOtherMethod( OrbitStabilizerOp,
+        "G, int, gens, perms, opr", true,
+        [ IsPermGroup, IsInt,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, pnt, gens, oprs, opr )
+    local   S;
+    
+    if gens <> oprs  or  opr <> OnPoints  then
+        TryNextMethod();
+    fi;
+    S := StabChain( G, [ pnt ] );
+    if BasePoint( S ) = pnt  then
+        return Immutable( rec( orbit := S.orbit,
+                          stabilizer := GroupStabChain
+                                        ( G, S.stabilizer, true ) ) );
+    else
+        return Immutable( rec( orbit := [ pnt ],
+                          stabilizer := G ) );
     fi;
 end );
 
@@ -515,16 +548,16 @@ end );
 ##
 InstallMethod( EarnsOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsPermGroup, IsList,
           IsList,
-          IsList and IsPermCollection,
+          IsList,
           IsFunction ], 0,
     function( G, Omega, gens, oprs, opr )
     local   pcgs,  n,  fac,  p,  d,  alpha,  beta,  G1,  G2,  orb,
             Gamma,  M,  C,  f,  P,  Q,  Q0,  R,  R0,  pre,  gen,  g,
             ord,  pa,  a,  x,  y,  z;
 
-    if opr <> OnPoints  then
+    if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
     fi;
     
@@ -639,13 +672,12 @@ end );
 ##
 InstallMethod( TransitivityOp,
         "G, ints, gens, perms, opr", true,
-        [ IsGroup, IsList and IsCyclotomicsCollection,
+        [ IsPermGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList,
           IsFunction ], 0,
     function( G, D, gens, oprs, opr )
-    if    opr <> OnPoints
-       or not IsIdentical( gens, oprs )  then
+    if gens <> oprs  or  opr <> OnPoints  then
         TryNextMethod();
     
     elif not IsTransitiveOp( G, D, gens, oprs, opr )  then
@@ -658,23 +690,13 @@ InstallMethod( TransitivityOp,
     fi;
 end );
 
-InstallMethod( TransitivityOp,
-        "G, [  ], gens, perms, opr", true,
-        [ IsGroup, IsList and IsEmpty,
-          IsList,
-          IsList,
-          IsFunction ], SUM_FLAGS,
-    function( G, D, gens, oprs, opr )
-    return 0;
-end );
-
 #############################################################################
 ##
 #M  IsSemiRegular( <G>, <D>, <gens>, <oprs>, <opr> )  . . . . for perm groups
 ##
 InstallMethod( IsSemiRegularOp,
         "G, ints, gens, perms, opr", true,
-        [ IsPermGroup, IsList and IsCyclotomicsCollection,
+        [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], 0,
@@ -813,11 +835,11 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
             i,  f;              # loop variables
 
     # standard operation on points, make a basechange and trace the rep
-    if opr = OnPoints and IsInt( d )  then
+    if opr = OnPoints and IsInt( d ) and IsInt( e )  then
         d := [ d ];  e := [ e ];
         S := true;
     elif     ( opr = OnPairs or opr = OnTuples )
-         and IsList( d ) and ForAll( d, IsInt )  then
+         and IsPositionsList( d ) and IsPositionsList( e )  then
         S := true;
     fi;
     if IsBound( S )  then
@@ -845,16 +867,17 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
         fi;
 
     # operation on (lists of) permutations, use backtrack
-    elif opr = OnPoints  and IsPerm( d )  then
+    elif opr = OnPoints and IsPerm( d ) and IsPerm( e )  then
         rep := RepOpElmTuplesPermGroup( true, G, [ d ], [ e ],
                        TrivialSubgroup( G ), TrivialSubgroup( G ) );
     elif     ( opr = OnPairs or opr = OnTuples )
-         and IsList( d ) and IsPermCollection( d )  then
+         and IsList( d ) and IsPermCollection( d )
+         and IsList( e ) and IsPermCollection( e )  then
         rep := RepOpElmTuplesPermGroup( true, G, d, e,
                        TrivialSubgroup( G ), TrivialSubgroup( G ) );
 
     # operation on permgroups, use backtrack
-    elif opr = OnPoints  and IsPermGroup(d)  then
+    elif opr = OnPoints and IsPermGroup( d ) and IsPermGroup( e )  then
         rep := IsomorphismPermGroups( G, d, e );
 
     # operation on pairs on tuples of other objects, iterate
@@ -863,19 +886,23 @@ InstallOtherMethod( RepresentativeOperationOp, true, [ IsPermGroup,
         S   := G;
         i   := 1;
         while i <= Length(d)  and rep <> fail  do
-            rep2 := RepresentativeOperationOp(
-                                          S, d[i], e[i]^(rep^-1), OnPoints );
-            if rep2 <> fail  then
-                rep := rep2 * rep;
-                S   := StabilizerOp( S, d[i], OnPoints );
-            else
+            if e[i] = fail  then
                 rep := fail;
+            else
+                rep2 := RepresentativeOperationOp( S, d[i], e[i]^(rep^-1),
+                                OnPoints );
+                if rep2 <> fail  then
+                    rep := rep2 * rep;
+                    S   := StabilizerOp( S, d[i], OnPoints );
+                else
+                    rep := fail;
+                fi;
             fi;
             i := i + 1;
         od;
 
     # operation on sets of points, use backtrack
-    elif opr = OnSets  and ForAll( d, IsInt )  then
+    elif opr = OnSets and IsPositionsList( d ) and IsPositionsList( e )  then
         rep := RepOpSetsPermGroup( G, d, e );
 
     # other operation, fall back on default representative
@@ -902,7 +929,7 @@ InstallOtherMethod( StabilizerOp,
     if opr = OnPoints and IsInt( d )  then
         base := [ d ];
     elif     ( opr = OnPairs or opr = OnTuples )
-      and IsList( d ) and ForAll( d, IsInt )  then
+         and IsPositionsList( d )  then
         base := d;
     fi;
     if IsBound( base )  then

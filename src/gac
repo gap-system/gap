@@ -144,31 +144,31 @@ while [ $# -gt 0 ]; do
     -o|--output)          shift; output="$1";;
 
     -ffast-int-arith)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-X FAST_INT_ARITH"
+                              gap_options="-D FAST_INT_ARITH"
                           else
                               gap_options="${gap_options},FAST_INT_ARITH"
                           fi;;
 
     -ffast-plain-lists)   if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-X FAST_PLAIN_LISTS"
+                              gap_options="-D FAST_PLAIN_LISTS"
                           else
                               gap_options="${gap_options},FAST_PLAIN_LISTS"
                           fi;;
 
     -ffast-list-funcs)    if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-X FAST_LIST_FUNCS"
+                              gap_options="-D FAST_LIST_FUNCS"
                           else
                               gap_options="${gap_options},FAST_LIST_FUNCS"
                           fi;;
 
     -fno-check-types)     if [ "X${gap_options}" = "X" ]; then
-                              gap_options="-X NO_CHECK_TYPES"
+                              gap_options="-D NO_CHECK_TYPES"
                           else
                               gap_options="${gap_options},NO_CHECK_TYPES"
                           fi;;
 
     -fno-check-list-elms) if [ "X${gap_options}" = "X" ]; then
-                              gap_options="- NO_CHECK_LIST_ELMS"
+                              gap_options="-D NO_CHECK_LIST_ELMS"
                           else
                               gap_options="${gap_options},NO_CHECK_LIST_ELMS"
                           fi;;
@@ -433,7 +433,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .g`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -441,7 +441,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gap`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -449,7 +449,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gd`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 
@@ -457,7 +457,7 @@ elif [ ${comp_mode} = "comp_to_c" ]; then
             name=`basename ${input} .gi`
             if [ "X${output}" = "X" ]; then output=${name}.c; fi
             temps_c="${temps_c} /tmp/$$_${name}.c"
-            gap_compile /tmp/$$_${name}.c ${input} "Init_Dynamic"
+            gap_compile /tmp/$$_${name}.c ${input} "Init_${name}"
 	    mv /tmp/$$_${name}.c ${output}
             output="";;
 

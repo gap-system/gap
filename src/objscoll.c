@@ -24,10 +24,11 @@ char * Revision_objscoll_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 #include        "gap.h"                 /* Error                           */
 
@@ -2019,36 +2020,50 @@ void InitSingleCollector ( void )
 
 
     /* collector methods                                                   */
+    InitHandlerFunc( FuncFinPowConjCol_CollectWordOrFail,
+		     "FinPowConjCol_CollectWordOrFail" );
     AssGVar( GVarName( "FinPowConjCol_CollectWordOrFail" ),
          NewFunctionC( "FinPowConjCol_CollectWordOrFail", 3L,
 			   "collector, list, word",
                     FuncFinPowConjCol_CollectWordOrFail ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedComm,
+		     "FinPowConjCol_ReducedComm" );
     AssGVar( GVarName( "FinPowConjCol_ReducedComm" ),
          NewFunctionC( "FinPowConjCol_ReducedComm", 3L, 
 			   "collector, word, word",
                     FuncFinPowConjCol_ReducedComm ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedForm,
+		     "FinPowConjCol_ReducedForm" );
     AssGVar( GVarName( "FinPowConjCol_ReducedForm" ),
          NewFunctionC( "FinPowConjCol_ReducedForm", 2L, 
 			   "collector, word",
                     FuncFinPowConjCol_ReducedForm ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedLeftQuotient,
+		     "FinPowConjCol_ReducedLeftQuotient" );
     AssGVar( GVarName( "FinPowConjCol_ReducedLeftQuotient" ),
          NewFunctionC( "FinPowConjCol_ReducedLeftQuotient", 3L,
 			   "collector, word, word",
                     FuncFinPowConjCol_ReducedLeftQuotient ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedPowerSmallInt,
+		     "FinPowConjCol_ReducedPowerSmallInt" );
     AssGVar( GVarName( "FinPowConjCol_ReducedPowerSmallInt" ),
          NewFunctionC( "FinPowConjCol_ReducedPowerSmallInt", 3L, 
 			   "collector, word, small_int",
                     FuncFinPowConjCol_ReducedPowerSmallInt ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedProduct,
+		     "FinPowConjCol_ReducedProduct" );
     AssGVar( GVarName( "FinPowConjCol_ReducedProduct" ),
          NewFunctionC( "FinPowConjCol_ReducedProduct", 3L, 
 			   "collector, word, word",
                     FuncFinPowConjCol_ReducedProduct ) );
 
+    InitHandlerFunc( FuncFinPowConjCol_ReducedQuotient,
+		     "FinPowConjCol_ReducedQuotient" );
     AssGVar( GVarName( "FinPowConjCol_ReducedQuotient" ),
          NewFunctionC( "FinPowConjCol_ReducedQuotient", 3L, 
 			   "collector, word, word",

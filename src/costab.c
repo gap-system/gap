@@ -15,10 +15,11 @@ char * Revision_costab_c =
 
 
 #include        "system.h"              /* Ints, UInts, SyIsIntr           */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* Retype                          */
 
+#include        "gasman.h"              /* Retype                          */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 #include        "gap.h"                 /* Error                           */
 
@@ -2839,60 +2840,70 @@ void InitCosetTable ( void )
 {
 
     /* functions for coset tables                                          */
+    InitHandlerFunc( FuncApplyRel, "costab: apply relator");
     AssGVar( GVarName( "ApplyRel" ),
          NewFunctionC( "ApplyRel", 2L, "app, relator",
                     FuncApplyRel ) );
 
+    InitHandlerFunc( FuncMakeConsequences, "costab: make consequences");
     AssGVar( GVarName( "MakeConsequences" ),
          NewFunctionC( "MakeConsequences", 1L, "list",
                     FuncMakeConsequences ) );
 
+    InitHandlerFunc( FuncStandardizeTable, "costab: standardize table");
     AssGVar( GVarName( "StandardizeTable" ),
          NewFunctionC( "StandardizeTable", 1L, "table",
                     FuncStandardizeTable ) );
 
+    InitHandlerFunc( FuncApplyRel2, "costab: apply rel 2");
     AssGVar( GVarName( "ApplyRel2" ),
          NewFunctionC( "ApplyRel2", 3L, "app, relator, nums",
                     FuncApplyRel2 ) );
 
+    InitHandlerFunc( FuncCopyRel, "costab: copy relator");
     AssGVar( GVarName( "CopyRel" ),
          NewFunctionC( "CopyRel", 1L, "relator",
                     FuncCopyRel ) );
 
+    InitHandlerFunc( FuncMakeCanonical, "costab: make canonical");
     AssGVar( GVarName( "MakeCanonical" ),
          NewFunctionC( "MakeCanonical", 1L, "relator",
                     FuncMakeCanonical ) );
 
+    InitHandlerFunc( FuncTreeEntry, "costab: tree entry");
     AssGVar( GVarName( "TreeEntry" ),
          NewFunctionC( "TreeEntry", 1L, "relator",
                     FuncTreeEntry ) );
 
+    InitHandlerFunc( FuncMakeConsequences2, "costab: make consequences 2");
     AssGVar( GVarName( "MakeConsequences2" ),
          NewFunctionC( "MakeConsequences2", 1L, "list",
                     FuncMakeConsequences2 ) );
 
+    InitHandlerFunc( FuncStandardizeTable2, "costab: standardize table 2");
     AssGVar( GVarName( "StandardizeTable2" ),
          NewFunctionC( "StandardizeTable2", 2L, "table, table",
                     FuncStandardizeTable2 ) );
 
+    InitHandlerFunc( FuncAddAbelianRelator, "costab: add abelian relator");
     AssGVar( GVarName( "AddAbelianRelator" ),
          NewFunctionC( "AddAbelianRelator", 2L, "rels, number",
                     FuncAddAbelianRelator ) );
 
 
     /* static variables                                                    */
-    InitGlobalBag( &objRel       );
-    InitGlobalBag( &objNums      );
-    InitGlobalBag( &objFactor    );
-    InitGlobalBag( &objTable     );
-    InitGlobalBag( &objTable2    );
-    InitGlobalBag( &objNext      );
-    InitGlobalBag( &objPrev      );
-    InitGlobalBag( &objTree      );
-    InitGlobalBag( &objTree1     );
-    InitGlobalBag( &objTree2     );
-    InitGlobalBag( &objWordValue );
-    InitGlobalBag( &objExponent  );
+    InitGlobalBag( &objRel      , "costab: relator" );
+    InitGlobalBag( &objNums     , "costab: parallel numbers list" );
+    InitGlobalBag( &objFactor   , "costab: factor" );
+    InitGlobalBag( &objTable    , "costab: table" );
+    InitGlobalBag( &objTable2   , "costab: factor table" );
+    InitGlobalBag( &objNext     , "costab: next" );
+    InitGlobalBag( &objPrev     , "costab: prev" );
+    InitGlobalBag( &objTree     , "costab: subgroup gens tree" );
+    InitGlobalBag( &objTree1    , "costab: first tree compt" );
+    InitGlobalBag( &objTree2    , "costab: second tree compt" );
+    InitGlobalBag( &objWordValue, "costab: word value" );
+    InitGlobalBag( &objExponent , "costab: subgroup order" );
 }
 
 

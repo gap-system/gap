@@ -1,7 +1,7 @@
 #include       "system.h"
-#include       "scanner.h"
 #include       "gasman.h"
 #include       "objects.h"
+#include       "scanner.h"
 #include       "bool.h"
 #include       "calls.h"
 #include       "gap.h"
@@ -815,24 +815,44 @@ void     InitDTEvaluation(void)
 
     evlist = RNamName("evlist");
     evlistvec = RNamName("evlistvec");
+    
+    InitHandlerFunc( Funccompress, "dteval: compress");
     AssGVar( GVarName("Compress"), NewFunctionC("Compress", 1L,
              "list", Funccompress)  );
+
+    InitHandlerFunc( FuncMultiply, "dteval: multiply");
     AssGVar( GVarName("Multiply"), NewFunctionC("Multiply", 3L, 
              "lword, rword, representatives", FuncMultiply)      );
-    AssGVar( GVarName("Pover"), NewFunctionC("Pover", 3L,
+
+    InitHandlerFunc( FuncPower, "dteval: power");
+    AssGVar( GVarName("Power"), NewFunctionC("Power", 3L,
              "word, exponent, representatives", FuncPower)         );
+
+    InitHandlerFunc( FuncDTmultiplyL, "dteval: DTMultiply");
     AssGVar( GVarName("DTMultiply"), NewFunctionC("DTMultiply", 3L,
              "lword, rword, rewritingsystem", FuncDTmultiplyL)    );
+
+    InitHandlerFunc( FuncDTPowerL, "dteval: DTPowerL");
     AssGVar( GVarName("DTPower"), NewFunctionC("DTPower", 3L,
              "word, exponent, rewritingsytem", FuncDTPowerL)  );
+
+    InitHandlerFunc( FuncDTSolutionL, "dteval: DTSolutionL");
     AssGVar( GVarName("DTSolution"), NewFunctionC("DTSolution", 3L,
              "lword, rword, rewritingsystem", FuncDTSolutionL)   );
+
+    InitHandlerFunc( FuncDTCommutatorL, "dteval: DTCommutatorL");
     AssGVar( GVarName("DTCommutator"), NewFunctionC("DTCommutator", 3L,
              "lword, rword, rewritingsystem", FuncDTCommutatorL)    );
+
+    InitHandlerFunc( FuncDTQuotientL, "dteval: DTQuotientL");
     AssGVar( GVarName("DTQuotient"), NewFunctionC("DTQuotient", 3L,
              "lword, rword, rewritingsystem", FuncDTQuotientL)   );
+
+    InitHandlerFunc( FuncDTConjugateL, "dteval: DTConjugateL");
     AssGVar( GVarName("DTConjugate"), NewFunctionC("DTConjugate", 3L,
              "lword, rword, rewritingsystem", FuncDTConjugateL)   );
+
+    InitHandlerFunc( FuncWernerProduct, "dteval: Werner Product");
     AssGVar( GVarName("WernerProduct"), NewFunctionC("WernerProduct", 3L,
              "lword, rword, rewritingsystem", FuncWernerProduct)   );
 }

@@ -12,10 +12,11 @@ char *          Revision_listfunc_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* Function                        */
@@ -961,23 +962,27 @@ void            InitListFunc ( void )
     DepthVectorFuncs[ T_PLIST_CYC_SSORT ] = DepthListx;
 
     /* install the internal functions                                      */
+    InitHandlerFunc( AddListHandler, "ADD_LIST" );
     AddListOper = NewOperationC(
         "ADD_LIST", 2L, "list, val", AddListHandler );
     AssGVar( GVarName( "ADD_LIST" ),
         AddListOper );
 
+    InitHandlerFunc( AppendListIntrHandler, "APPEND_LIST_INTR");
     AppendListIntrFunc = NewFunctionC(
         "APPEND_LIST_INTR", 2L, "list1, list2", AppendListIntrHandler );
     AssGVar( GVarName( "APPEND_LIST_INTR" ),
         AppendListIntrFunc );
 
     /* make and install the 'POSITION_SORTED_LIST' function                */
+    InitHandlerFunc( PositionSortedListHandler, "POSITION_SORTED_LIST");
     PositionSortedListFunc = NewFunctionC(
         "POSITION_SORTED_LIST", 2L, "list, obj", PositionSortedListHandler );
     AssGVar( GVarName( "POSITION_SORTED_LIST" ),
         PositionSortedListFunc );
 
     /* make and install the 'POSITION_SORTED_LIST_COMP' function           */
+    InitHandlerFunc( PositionSortedListCompHandler, "POSITION_SORTED_LIST_COMP");
     PositionSortedListCompFunc = NewFunctionC(
         "POSITION_SORTED_LIST_COMP", 3L, "list, obj, func",
         PositionSortedListCompHandler );
@@ -985,38 +990,48 @@ void            InitListFunc ( void )
         PositionSortedListCompFunc );
 
     /* make and install the 'SORT_LIST' function                           */
+    InitHandlerFunc( SortListHandler, "SORT_LIST");
     SortListFunc = NewFunctionC(
         "SORT_LIST", 1L, "list", SortListHandler );
     AssGVar( GVarName( "SORT_LIST" ),
         SortListFunc );
 
     /* make and install the 'SORT_LIST_COMP' function                      */
+    InitHandlerFunc( SortListCompHandler, "SORT_LIST_COMP");
     SortListCompFunc = NewFunctionC(
         "SORT_LIST_COMP", 2L, "list, func", SortListCompHandler );
     AssGVar( GVarName( "SORT_LIST_COMP" ),
         SortListCompFunc );
 
+    InitHandlerFunc( FuncOnPoints, "OnPoints");
     AssGVar( GVarName( "OnPoints" ),
               NewFunctionC( "OnPoints", 2L, "pnt, elm",
                                 FuncOnPoints ) );
+    InitHandlerFunc( FuncOnPairs, "OnPairs");
     AssGVar( GVarName( "OnPairs" ),
               NewFunctionC( "OnPairs", 2L, "pair, elm",
                                 FuncOnPairs ) );
+    InitHandlerFunc( FuncOnTuples, "OnTuples");
     AssGVar( GVarName( "OnTuples" ),
               NewFunctionC( "OnTuples", 2L, "tuple, elm",
                                 FuncOnTuples ) );
+    InitHandlerFunc( FuncOnSets, "OnSets");
     AssGVar( GVarName( "OnSets" ),
               NewFunctionC( "OnSets", 2L, "set, elm",
                                 FuncOnSets ) );
+    InitHandlerFunc( FuncOnRight, "OnRight");
     AssGVar( GVarName( "OnRight" ),
               NewFunctionC( "OnRight", 2L, "pnt, elm",
                                 FuncOnRight ) );
+    InitHandlerFunc( FuncOnLeft, "OnLeftAntiOperation");
     AssGVar( GVarName( "OnLeftAntiOperation" ),
-              NewFunctionC( "OnLeft", 2L, "pnt, elm",
+              NewFunctionC( "OnLeftAntiOperation", 2L, "pnt, elm",
                                 FuncOnLeft ) );
+    InitHandlerFunc( FuncOnLeftInverse, "OnLeftInverse");
     AssGVar( GVarName( "OnLeftInverse" ),
-              NewFunctionC( "OnLeft", 2L, "pnt, elm",
+              NewFunctionC( "OnLeftInverse", 2L, "pnt, elm",
                                 FuncOnLeftInverse ) );
+    InitHandlerFunc( DepthVectorHandler, "Depthvector");
     AssGVar( GVarName( "DepthVector" ),
               NewFunctionC( "DepthVector", 1L, "list",
                                 DepthVectorHandler ) );

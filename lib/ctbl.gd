@@ -27,8 +27,6 @@ Revision.ctbl_gd :=
 
 #T 'PermutationCharacter' should return a proper character, not a list!
 
-#T disallow 'Sort', change to 'SortedCharacterTable'!
-
 
 #############################################################################
 ##
@@ -152,15 +150,41 @@ NearlyCharacterTablesFamily := NewFamily( "NearlyCharacterTablesFamily",
 
 #############################################################################
 ##
-#A  CharacterDegrees( <G> )
-#A  CharacterDegrees( <tbl> )
+#F  CharacterDegrees( <G>, <p> )
+#F  CharacterDegrees( <G> )
+#F  CharacterDegrees( <tbl> )
 ##
-##  is a collected list of the degrees of the irreducible characters of
-##  the group <G>.
+##  In the first two forms, 'CharacterDegrees' returns a collected list of
+##  the degrees of the absolutely irreducible characters of the group <G>,
+##  in characteristic <p> resp. zero.
 ##
-CharacterDegrees := NewAttribute( "CharacterDegrees", IsGroup );
-SetCharacterDegrees := Setter( CharacterDegrees );
-HasCharacterDegrees := Tester( CharacterDegrees );
+##  In the third form, 'CharacterDegrees' returns a collected list of the
+##  degrees of the absolutely irreducible characters of the (ordinary or
+##  Brauer) character table <tbl>.
+##
+#A  CharacterDegreesAttr( <G> )
+#A  CharacterDegreesAttr( <tbl> )
+##
+##  is the attribute for storing the character degrees computed by
+##  'CharacterDegrees'.
+##
+#O  CharacterDegreesOp( <G>, <char> )
+##
+##  is the operation called by 'CharacterDegrees' for that methods can be
+##  installed.
+##  (For the tables, one can call the attribute directly.)
+##
+CharacterDegrees := NewOperationArgs( "CharacterDegrees" );
+
+CharacterDegreesAttr := NewAttribute( "CharacterDegreesAttr", IsGroup );
+SetCharacterDegreesAttr := Setter( CharacterDegreesAttr );
+HasCharacterDegreesAttr := Tester( CharacterDegreesAttr );
+
+InstallIsomorphismMaintainedMethod( CharacterDegreesAttr,
+    IsGroup and HasCharacterDegreesAttr, IsGroup );
+
+CharacterDegreesOp := NewOperation( "CharacterDegreesOp",
+    [ IsGroup, IsInt ] );
 
 
 #############################################################################
@@ -323,6 +347,27 @@ HasClassParameters := Tester( ClassParameters );
 
 #############################################################################
 ##
+#A  ClassPermutation( <tbl> )
+##
+##  is a permutation $\pi$ of classes of <tbl>.
+##  Its meaning is that class fusions into <tbl> that are stored on other
+##  tables must be followed by $\pi$ in order to describe the correct
+##  fusion.
+##
+##  This attribute is bound only if <tbl> was obtained from another table
+##  by permuting the classes (commands 'CharacterTableWithSortedClasses' or
+##  'SortedCharacterTable').
+##  It is necessary because the original table and the sorted table have the
+##  same identifier, and hence the same fusions are valid for the two tables.
+##
+ClassPermutation := NewAttribute( "ClassPermutation",
+    IsNearlyCharacterTable );
+SetClassPermutation := Setter( ClassPermutation );
+HasClassPermutation := Tester( ClassPermutation );
+
+
+#############################################################################
+##
 #A  ClassNames( <tbl> )
 ##
 #T allow class names (optional) such as in the ATLAS ?
@@ -382,6 +427,19 @@ HasInfoText := Tester( InfoText );
 InverseClasses := NewAttribute( "InverseClasses", IsNearlyCharacterTable );
 SetInverseClasses := Setter( InverseClasses );
 HasInverseClasses := Tester( InverseClasses );
+
+
+#############################################################################
+##
+#A  Maxes( <tbl> )
+##
+##  is a list of identifiers of the tables of all maximal subgroups of <tbl>.
+##  This is known usually only for library tables.
+#T meaningful also for tables with group?
+##
+Maxes := NewAttribute( "Maxes", IsNearlyCharacterTable );
+SetMaxes := Setter( Maxes );
+HasMaxes := Tester( Maxes );
 
 
 #############################################################################
@@ -753,6 +811,7 @@ PowerMapOp := NewOperation( "PowerMapOp",
 ComputedPowerMaps := NewAttribute( "ComputedPowerMaps",
     IsNearlyCharacterTable, "mutable" );
 SetComputedPowerMaps := Setter( ComputedPowerMaps );
+HasComputedPowerMaps := Tester( ComputedPowerMaps );
 
 
 #############################################################################
@@ -784,12 +843,14 @@ SupportedOrdinaryTableInfo := [
     BlocksInfo,                   "blocksInfo",
     ComputedClassFusions,         "computedClassFusions",
     ClassParameters,              "classParameters",
+    ClassPermutation,             "classPermutation",
     ComputedPowerMaps,            "computedPowerMaps",
     Identifier,                   "identifier",
     InfoText,                     "infoText",
     Irr,                          "irr",
     IrredInfo,                    "irredInfo",
     IsSimpleGroup,                "isSimpleGroup",
+    Maxes,                        "maxes",
     NamesOfFusionSources,         "namesOfFusionSources",
     OrdersClassRepresentatives,   "ordersClassRepresentatives",
     SizesCentralizers,            "sizesCentralizers",
@@ -806,16 +867,16 @@ SupportedBrauerTableInfo := Concatenation( SupportedOrdinaryTableInfo, [
 
 #############################################################################
 ##
-#F  ConvertToCharacterTable( <record> ) . . . . create character table object
-#F  ConvertToCharacterTableNC( <record> ) . . . create character table object
+#F  ConvertToOrdinaryTable( <record> )  . . . . create character table object
+#F  ConvertToOrdinaryTableNC( <record> )  . . . create character table object
 ##
 ##  The components listed in 'SupportedOrdinaryTableInfo' are used to set
 ##  properties and attributes.
 ##  All other components will simply become components of the record object.
 ##  
-ConvertToCharacterTable := NewOperationArgs( "ConvertToCharacterTable" );
+ConvertToOrdinaryTable := NewOperationArgs( "ConvertToOrdinaryTable" );
 
-ConvertToCharacterTableNC := NewOperationArgs( "ConvertToCharacterTableNC" );
+ConvertToOrdinaryTableNC := NewOperationArgs( "ConvertToOrdinaryTableNC" );
 
 
 #############################################################################
@@ -843,17 +904,10 @@ TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
 
 #############################################################################
 ##
-#F  TransformingPermutationsCharTables( <name> )
+#F  TransformingPermutationsCharacterTables( <name> )
 ##
-TransformingPermutationsCharTables := NewOperationArgs(
-    "TransformingPermutationsCharTables" );
-
-
-#############################################################################
-##
-#F  Decomposition( <name> )
-##
-Decomposition := NewOperationArgs( "Decomposition" );
+TransformingPermutationsCharacterTables := NewOperationArgs(
+    "TransformingPermutationsCharacterTables" );
 
 
 #############################################################################
@@ -861,6 +915,144 @@ Decomposition := NewOperationArgs( "Decomposition" );
 #F  LowercaseString( <string> ) . . . string consisting of lower case letters
 ##
 LowercaseString := NewOperationArgs( "LowercaseString" );
+#T move to another file !!
+
+
+#############################################################################
+##
+#O  CharacterTableWithSortedCharacters( <tbl> )
+#O  CharacterTableWithSortedCharacters( <tbl>, <perm> )
+##
+##  is a character table that differs from <tbl> only by the succession of
+##  its irreducible characters.
+##  This affects at most the value of the attributes `Irr' and `IrredInfo',
+##  namely these lists are permuted by the permutation <perm>.
+##
+##  If no second argument is given then a permutation is used that yields
+##  irreducible characters of increasing degree for the result.
+##  For the succession of characters in the result, see "SortedCharacters".
+##
+##  The result has all those attributes and properties of <tbl> that are
+##  stored in 'SupportedOrdinaryTableInfo'.
+##
+##  The result will *not* be a library table, even if <tbl> is,
+##  and it will *not* have an underlying group.
+##
+CharacterTableWithSortedCharacters := NewOperation(
+    "CharacterTableWithSortedCharacters", [ IsNearlyCharacterTable ] );
+
+
+#############################################################################
+##
+#O  SortedCharacters( <tbl>, <chars> )\\
+#O  SortedCharacters( <tbl>, <chars>, \"norm\" )\\
+#O  SortedCharacters( <tbl>, <chars>, \"degree\" )
+##
+##  is a list containing the characters <chars>, in a succession specified
+##  by the other arguments.
+##
+##  There are three possibilities to sort characters\:\ 
+##  They can be sorted according to ascending norms (parameter '\"norm\"'),
+##  to ascending degree (parameter '\"degree\"'),
+##  or both (no third parameter),
+##  i.e., characters with same norm are sorted according to ascending degree,
+##  and characters with smaller norm precede those with bigger norm.
+##
+##  Rational characters always will precede other ones with same norm resp.\ 
+##  same degree afterwards.
+##  The trivial character, if contained in <chars>, will always be sorted to
+##  the first position.
+##
+SortedCharacters := NewOperation(
+    "SortedCharacters", [ IsNearlyCharacterTable, IsHomogeneousList ] );
+
+
+#############################################################################
+##
+#O  CharacterTableWithSortedClasses( <tbl> )
+#O  CharacterTableWithSortedClasses( <tbl>, \"centralizers\" )
+#O  CharacterTableWithSortedClasses( <tbl>, \"representatives\" )
+#O  CharacterTableWithSortedClasses( <tbl>, <permutation> )
+##
+##  is a character table obtained on permutation of the classes of <tbl>.
+##  If the second argument is the string `"centralizers"' then the classes
+##  of the result are sorted according to descending centralizer orders.
+##  If the second argument is the string `"representatives"' then the classes
+##  of the result are sorted according to ascending representative orders.
+##  If no second argument is given, then the classes
+##  of the result are sorted according to ascending representative orders,
+##  and classes with equal representative orders are sorted according to
+##  descending centralizer orders.
+##
+##  If the second argument is a permutation then the classes of the
+##  result are sorted by application of this permutation.
+##
+##  The result has all those attributes and properties of <tbl> that are
+##  stored in 'SupportedOrdinaryTableInfo'.
+##
+##  The result will *not* be a library table, even if <tbl> is,
+##  and it will *not* have an underlying group.
+##
+CharacterTableWithSortedClasses := NewOperation(
+    "CharacterTableWithSortedClasses", [ IsNearlyCharacterTable ] );
+
+
+#############################################################################
+##
+#F  SortedCharacterTable( <tbl>, <kernel> )
+#F  SortedCharacterTable( <tbl>, <normalseries> )
+#F  SortedCharacterTable( <tbl>, <facttbl>, <kernel> )
+##
+##  is a character table obtained on permutation of the classes and the
+##  irreducibles characters of <tbl>.
+##
+##  The first form sorts the classes at positions contained in the list
+##  <kernel> to the beginning, and sorts all characters in
+##  'Irr( <tbl> )' such that the first characters are those that contain
+##  <kernel> in their kernel.
+##
+##  The second form does the same successively for all kernels $k_i$ in
+##  the list $'normalseries' = [ k_1, k_2, \ldots, k_n ]$ where
+##  $k_i$ must be a sublist of $k_{i+1}$ for $1 \leq i \leq n-1$.
+##
+##  The third form computes the table <F> of the factor group of <tbl>
+##  modulo the normal subgroup formed by the classes whose positions are
+##  contained in the list <kernel>;
+##  <F> must be permutation equivalent to the table <facttbl> (in the
+##  sense of "TransformingPermutationsCharacterTables"), otherwise 'fail' is
+##  returned.  The classes of <tbl> are sorted such that the preimages
+##  of a class of <F> are consecutive, and that the succession of
+##  preimages is that of <facttbl>.
+##  'Irr( <tbl> )' is sorted as by 'SortCharTable( <tbl>, <kernel> )'.
+##
+##  (*Note* that the transformation is only unique up to table automorphisms
+##  of <F>, and this need not be unique up to table automorphisms of <tbl>.)
+##
+##  All rearrangements of classes and characters are stable, i.e., the
+##  relative positions of classes and characters that are not distinguished
+##  by any relevant property is not changed.
+##
+##  The result has all those attributes and properties of <tbl> that are
+##  stored in 'SupportedOrdinaryTableInfo'.
+##  If <tbl> is a library table then also the components of <tbl> that are
+##  stored in 'SupportedLibraryTableComponents' are components of <tbl>.
+##
+##  The 'ClassPermutation' value of <tbl> is changed if necessary,
+##  see "Conventions for Character Tables".
+##
+SortedCharacterTable := NewOperationArgs( "SortedCharacterTable" );
+
+
+#############################################################################
+##
+#F  IrrConlon( <G> )
+##
+##  compute the irreducible characters of a supersolvable group using
+##  Conlon's algorithm.
+##  The monomiality information (attribute 'TestMonomial') for each
+##  irreducible character is known.
+##
+IrrConlon := NewOperationArgs( "IrrConlon" );
 
 
 #############################################################################

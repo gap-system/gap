@@ -17,6 +17,17 @@ char * Revision_gap_h =
 /****************************************************************************
 **
 
+*V  Time  . . . . . . . . . . . . . . . . . . . . . . global variable  'time'
+**
+**  'Time' is the global variable 'time', which is automatically assigned the
+**  time the last command took.
+*/
+extern UInt Time;
+
+
+/****************************************************************************
+**
+
 *F * * * * * * * * * * * * * * print and error  * * * * * * * * * * * * * * *
 */
 

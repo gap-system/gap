@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.7  1997/04/16 14:04:31  beick
+#H  Added generic direct products of groups
+#H
 #H  Revision 4.6  1997/03/25 10:14:51  ahulpke
 #H  'DirectProduct' may take a list of groups as agrument
 #H
@@ -41,6 +44,52 @@ local D,grps,i;
     od;
     return D;
 end;
+
+#############################################################################
+##
+#M  DirectProduct2( <G>, <H> )
+##
+InstallMethod( DirectProduct2, true, [IsGroup, IsGroup], 0,
+function( G, H )
+    local fam, gensG, idG, gensH, idH, gens, D;
+    gensG := GeneratorsOfGroup( G );
+    idG   := One( G );
+    gensH := GeneratorsOfGroup( H );
+    idH   := One( H );
+    gens  := Concatenation( 
+             List( gensG, x -> Tuple( [x,idH] ) ),
+             List( gensH, x -> Tuple( [idG,x] ) ) );
+    D     := Group( gens );
+    if HasSize( G ) and HasSize( H ) then 
+        SetSize( D, Size(G)*Size(H) );
+    fi;
+    if HasIsSolvableGroup( G ) and HasIsSolvableGroup( H ) then
+        SetIsSolvableGroup( D, IsSolvableGroup( G ) and IsSolvableGroup( H ) );
+    fi;
+    SetDirectProductInfo( D, rec( groups := [G, H] ) );
+    return D;
+end );        
+
+#############################################################################
+##
+#M \in( <tuple>, <G> )
+##
+InstallMethod( \in, true, [IsTuple, IsGroup and HasDirectProductInfo], 0,
+function( g, G )
+    local n, info;
+    n := Length( g );
+    info := DirectProductInfo( G );
+    return ForAll( [1..n], x -> g[x] in info.groups[x] );
+end );
+    
+#############################################################################
+##
+#M  Size( <D> )
+##
+InstallMethod( Size, true, [IsGroup and HasDirectProductInfo], 0,
+function( D )
+    return Product( List( DirectProductInfo( D ).groups, x -> Size(x) ) );
+end );
 
 #############################################################################
 ##

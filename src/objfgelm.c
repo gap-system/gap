@@ -76,10 +76,11 @@ char * Revision_objfgelm_c =
 #include        <assert.h>              /* assert                          */
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 #include        "gap.h"                 /* Error                           */
 
@@ -2825,173 +2826,215 @@ void InitFreeGroupElements ( void )
              INTOBJ_INT(AWP_FIRST_FREE) );
 
     /* '8Bits' methods                                                     */
+    InitHandlerFunc( Func8Bits_Equal, "8Bits_Equal" );
     AssGVar( GVarName( "8Bits_Equal" ),
          NewFunctionC( "8Bits_Equal", 2L, "8_bits_word, 8_bits_word",
                     Func8Bits_Equal ) );
 
+    InitHandlerFunc( Func8Bits_ExponentSums1, "8Bits_ExponentSums1" );
     AssGVar( GVarName( "8Bits_ExponentSums1" ),
          NewFunctionC( "8Bits_ExponentSums1", 1L, "8_bits_word",
                     Func8Bits_ExponentSums1 ) );
 
+    InitHandlerFunc( Func8Bits_ExponentSums3, "8Bits_ExponentSums3" );
     AssGVar( GVarName( "8Bits_ExponentSums3" ), 
          NewFunctionC( "8Bits_ExponentSums3", 3L, "8_bits_word, start, end",
                     Func8Bits_ExponentSums3 ) );
 
+    InitHandlerFunc( Func8Bits_ExponentSyllable, "8Bits_ExponentSyllable" );
     AssGVar( GVarName( "8Bits_ExponentSyllable" ),
          NewFunctionC( "8Bits_ExponentSyllable", 2L, "8_bits_word, position",
                     Func8Bits_ExponentSyllable ) );
 
+    InitHandlerFunc( Func8Bits_ExtRepOfObj, "8Bits_ExtRepOfObj" );
     AssGVar( GVarName( "8Bits_ExtRepOfObj" ),
          NewFunctionC( "8Bits_ExtRepOfObj", 1L, "8_bits_word",
                     Func8Bits_ExtRepOfObj ) );
 
+    InitHandlerFunc( Func8Bits_GeneratorSyllable, "8Bits_GeneratorSyllable" );
     AssGVar( GVarName( "8Bits_GeneratorSyllable" ),
          NewFunctionC( "8Bits_GeneratorSyllable", 2L, "8_bits_word, position",
                     Func8Bits_GeneratorSyllable ) );
 
+    InitHandlerFunc( Func8Bits_Less, "8Bits_Less" );
     AssGVar( GVarName( "8Bits_Less" ),
          NewFunctionC( "8Bits_Less", 2L, "8_bits_word, 8_bits_word",
                     Func8Bits_Less ) );
 
+    InitHandlerFunc( Func8Bits_AssocWord, "8Bits_AssocWord" );
     AssGVar( GVarName( "8Bits_AssocWord" ),
          NewFunctionC( "8Bits_AssocWord", 2L, "kind, data",
                     Func8Bits_AssocWord ) );
 
+    InitHandlerFunc( FuncNBits_NumberSyllables, "NBits_NumberSyllables" );
     AssGVar( GVarName( "8Bits_NumberSyllables" ),
          NewFunctionC( "NBits_NumberSyllables", 1L, "8_bits_word",
                     FuncNBits_NumberSyllables ) );
 
+    InitHandlerFunc( Func8Bits_ObjByVector, "8Bits_ObjByVector" );
     AssGVar( GVarName( "8Bits_ObjByVector" ),
          NewFunctionC( "8Bits_ObjByVector", 2L, "kind, data",
                     Func8Bits_ObjByVector ) );
 
+    InitHandlerFunc( Func8Bits_HeadByNumber, "8Bits_HeadByNumber" );
     AssGVar( GVarName( "8Bits_HeadByNumber" ),
          NewFunctionC( "8Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
                     Func8Bits_HeadByNumber ) );
 
+    InitHandlerFunc( Func8Bits_Power, "8Bits_Power" );
     AssGVar( GVarName( "8Bits_Power" ),
          NewFunctionC( "8Bits_Power", 2L, "8_bits_word, small_integer",
                     Func8Bits_Power ) );
 
+    InitHandlerFunc( Func8Bits_Product, "8Bits_Product" );
     AssGVar( GVarName( "8Bits_Product" ),
          NewFunctionC( "8Bits_Product", 2L, "8_bits_word, 8_bits_word",
                     Func8Bits_Product ) );
 
+    InitHandlerFunc( Func8Bits_Quotient, "8Bits_Quotient" );
     AssGVar( GVarName( "8Bits_Quotient" ),
          NewFunctionC( "8Bits_Quotient", 2L, "8_bits_word, 8_bits_word",
                     Func8Bits_Quotient ) );
 
     /* '16Bits' methods                                                    */
+    InitHandlerFunc( Func16Bits_Equal, "16Bits_Equal" );
     AssGVar( GVarName( "16Bits_Equal" ),
          NewFunctionC( "16Bits_Equal", 2L, "16_bits_word, 16_bits_word",
                     Func16Bits_Equal ) );
 
+    InitHandlerFunc( Func16Bits_ExponentSums1, "16Bits_ExponentSums1" );
     AssGVar( GVarName( "16Bits_ExponentSums1" ),
          NewFunctionC( "16Bits_ExponentSums1", 1L, "16_bits_word",
                     Func16Bits_ExponentSums1 ) );
 
+    InitHandlerFunc( Func16Bits_ExponentSums3, "16Bits_ExponentSums3" );
     AssGVar( GVarName( "16Bits_ExponentSums3" ), 
          NewFunctionC( "16Bits_ExponentSums3", 3L, "16_bits_word, start, end",
                     Func16Bits_ExponentSums3 ) );
 
+    InitHandlerFunc( Func16Bits_ExponentSyllable, "16Bits_ExponentSyllable" );
     AssGVar( GVarName( "16Bits_ExponentSyllable" ),
          NewFunctionC( "16Bits_ExponentSyllable", 2L, "16_bits_word, position",
                     Func16Bits_ExponentSyllable ) );
 
+    InitHandlerFunc( Func16Bits_ExtRepOfObj, "16Bits_ExtRepOfObj" );
     AssGVar( GVarName( "16Bits_ExtRepOfObj" ),
          NewFunctionC( "16Bits_ExtRepOfObj", 1L, "16_bits_word",
                     Func16Bits_ExtRepOfObj ) );
 
+    InitHandlerFunc( Func16Bits_GeneratorSyllable, "16Bits_GeneratorSyllable" );
     AssGVar( GVarName( "16Bits_GeneratorSyllable" ),
          NewFunctionC( "16Bits_GeneratorSyllable", 2L, "16_bits_word, pos",
                     Func16Bits_GeneratorSyllable ) );
 
+    InitHandlerFunc( Func16Bits_Less, "16Bits_Less" );
     AssGVar( GVarName( "16Bits_Less" ),
          NewFunctionC( "16Bits_Less", 2L, "16_bits_word, 16_bits_word",
                     Func16Bits_Less ) );
 
+    InitHandlerFunc( Func16Bits_AssocWord, "16Bits_AssocWord" );
     AssGVar( GVarName( "16Bits_AssocWord" ),
          NewFunctionC( "16Bits_AssocWord", 2L, "kind, data",
                     Func16Bits_AssocWord ) );
 
+    InitHandlerFunc( FuncNBits_NumberSyllables, "NBits_NumberSyllables" );
     AssGVar( GVarName( "16Bits_NumberSyllables" ),
           NewFunctionC( "NBits_NumberSyllables", 1L, "16_bits_word",
                      FuncNBits_NumberSyllables ) );
 
+    InitHandlerFunc( Func16Bits_ObjByVector, "16Bits_ObjByVector" );
     AssGVar( GVarName( "16Bits_ObjByVector" ),
          NewFunctionC( "16Bits_ObjByVector", 2L, "kind, data",
                     Func16Bits_ObjByVector ) );
 
+    InitHandlerFunc( Func16Bits_HeadByNumber, "16Bits_HeadByNumber" );
     AssGVar( GVarName( "16Bits_HeadByNumber" ),
          NewFunctionC( "16Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
                     Func16Bits_HeadByNumber ) );
 
+    InitHandlerFunc( Func16Bits_Power, "16Bits_Power" );
     AssGVar( GVarName( "16Bits_Power" ),
          NewFunctionC( "16Bits_Power", 2L, "16_bits_word, small_integer",
                     Func16Bits_Power ) );
 
+    InitHandlerFunc( Func16Bits_Product, "16Bits_Product" );
     AssGVar( GVarName( "16Bits_Product" ),
          NewFunctionC( "16Bits_Product", 2L, "16_bits_word, 16_bits_word",
                     Func16Bits_Product ) );
 
+    InitHandlerFunc( Func16Bits_Quotient, "16Bits_Quotient" );
     AssGVar( GVarName( "16Bits_Quotient" ),
          NewFunctionC( "16Bits_Quotient", 2L, "16_bits_word, 16_bits_word",
                     Func16Bits_Quotient ) );
 
 
     /* '32Bits' methods                                                    */
+    InitHandlerFunc( Func32Bits_Equal, "32Bits_Equal" );
     AssGVar( GVarName( "32Bits_Equal" ),
          NewFunctionC( "32Bits_Equal", 2L, "32_bits_word, 32_bits_word",
                     Func32Bits_Equal ) );
 
+    InitHandlerFunc( Func32Bits_ExponentSums1, "32Bits_ExponentSums1" );
     AssGVar( GVarName( "32Bits_ExponentSums1" ),
          NewFunctionC( "32Bits_ExponentSums1", 1L, "32_bits_word",
                     Func32Bits_ExponentSums1 ) );
 
+    InitHandlerFunc( Func32Bits_ExponentSums3, "32Bits_ExponentSums3" );
     AssGVar( GVarName( "32Bits_ExponentSums3" ), 
          NewFunctionC( "32Bits_ExponentSums3", 3L, "32_bits_word, start, end",
                     Func32Bits_ExponentSums3 ) );
 
+    InitHandlerFunc( Func32Bits_ExponentSyllable, "32Bits_ExponentSyllable" );
     AssGVar( GVarName( "32Bits_ExponentSyllable" ),
          NewFunctionC( "32Bits_ExponentSyllable", 2L, "32_bits_word, position",
                     Func32Bits_ExponentSyllable ) );
 
+    InitHandlerFunc( Func32Bits_ExtRepOfObj, "32Bits_ExtRepOfObj" );
     AssGVar( GVarName( "32Bits_ExtRepOfObj" ),
          NewFunctionC( "32Bits_ExtRepOfObj", 1L, "32_bits_word",
                     Func32Bits_ExtRepOfObj ) );
 
+    InitHandlerFunc( Func32Bits_GeneratorSyllable, "32Bits_GeneratorSyllable" );
     AssGVar( GVarName( "32Bits_GeneratorSyllable" ),
          NewFunctionC( "32Bits_GeneratorSyllable", 2L, "32_bits_word, pos",
                     Func32Bits_GeneratorSyllable ) );
 
+    InitHandlerFunc( Func32Bits_Less, "32Bits_Less" );
     AssGVar( GVarName( "32Bits_Less" ),
          NewFunctionC( "32Bits_Less", 2L, "32_bits_word, 32_bits_word",
                     Func32Bits_Less ) );
 
+    InitHandlerFunc( Func32Bits_AssocWord, "32Bits_AssocWord" );
     AssGVar( GVarName( "32Bits_AssocWord" ),
          NewFunctionC( "32Bits_AssocWord", 2L, "kind, data",
                     Func32Bits_AssocWord ) );
 
+    InitHandlerFunc( FuncNBits_NumberSyllables, "NBits_NumberSyllables" );
     AssGVar( GVarName( "32Bits_NumberSyllables" ),
           NewFunctionC( "NBits_NumberSyllables", 1L, "32_bits_word",
                      FuncNBits_NumberSyllables ) );
 
+    InitHandlerFunc( Func32Bits_ObjByVector, "32Bits_ObjByVector" );
     AssGVar( GVarName( "32Bits_ObjByVector" ),
          NewFunctionC( "32Bits_ObjByVector", 2L, "kind, data",
                     Func32Bits_ObjByVector ) );
 
+    InitHandlerFunc( Func32Bits_HeadByNumber, "32Bits_HeadByNumber" );
     AssGVar( GVarName( "32Bits_HeadByNumber" ),
          NewFunctionC( "32Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
                     Func32Bits_HeadByNumber ) );
 
+    InitHandlerFunc( Func32Bits_Power, "32Bits_Power" );
     AssGVar( GVarName( "32Bits_Power" ),
          NewFunctionC( "32Bits_Power", 2L, "32_bits_word, small_integer",
                     Func32Bits_Power ) );
 
+    InitHandlerFunc( Func32Bits_Product, "32Bits_Product" );
     AssGVar( GVarName( "32Bits_Product" ),
          NewFunctionC( "32Bits_Product", 2L, "32_bits_word, 32_bits_word",
                     Func32Bits_Product ) );
 
+    InitHandlerFunc( Func32Bits_Quotient, "32Bits_Quotient" );
     AssGVar( GVarName( "32Bits_Quotient" ),
          NewFunctionC( "32Bits_Quotient", 2L, "32_bits_word, 32_bits_word",
                     Func32Bits_Quotient ) );

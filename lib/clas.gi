@@ -112,13 +112,6 @@ InstallOtherMethod( Centralizer, true, [ IsConjugacyClassGroupRep ], 0,
 
 #############################################################################
 ##
-#M  AsList( <cl> )  . . . . . . . . . . . . . . . . . . .  by orbit algorithm
-##
-InstallMethod( AsList, true, [ IsExternalOrbitByStabilizerRep ], 0,
-    cl -> Orbit( ActingDomain( cl ), Representative( cl ) ) );
-
-#############################################################################
-##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
 

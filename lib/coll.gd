@@ -5,12 +5,16 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for collections.
 ##
 Revision.coll_gd :=
     "@(#)$Id$";
+
+
+#T change the installation of isomorphism and factor maintained methods
+#T in the same way as that of subset maintained methods!
 
 
 #############################################################################
@@ -132,10 +136,25 @@ UseSubsetRelation := NewOperation( "UseSubsetRelation",
 InstallMethod( UseSubsetRelation,
     "default method that returns 'true'",
     IsIdentical,
-    [ IsCollection, IsCollection ], 0,
+    [ IsCollection, IsCollection ],
+    # Make sure that this method is installed with ``real'' rank zero.
+    - 2 * SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( IsCollection ))),
     function( super, sub )
     return true;
     end );
+
+
+#############################################################################
+##
+#V  SUBSET_MAINTAINED_INFO
+##
+##  is a list of triples,
+##  the first entry being the list of filter numbers of an operation that is
+##  inherited to subsets,
+##  the second being the list of filter numbers of requirements,
+##  and the third being the real rank of the method.
+##
+SUBSET_MAINTAINED_INFO := [];
 
 
 #############################################################################
@@ -148,21 +167,131 @@ InstallMethod( UseSubsetRelation,
 ##  and such that the value of <opr> is known for $D$.
 ##  Then the value of <opr> for $S$ shall be the same as the value for $D$.
 ##
+##  We must be careful to choose the right ranks for the methods.
+##  Note that one method may require a property that is acquired using
+##  another method.
+##  For that, we give a method a rank that is lower than that of all methods 
+##  that may yield some of the requirements and that is higher than that of
+##  all methods that require <opr>;
+##  if this is not possible then a warning is printed.
+#T  (Maybe the mechanism has to be changed at some time because of this.
+#T  Another reason would be the direct installation of methods for
+#T  'UseSubsetRelation', i.e., the ranks of these methods are not affected
+#T  by the code in 'InstallSubsetMaintainedMethod'.)
+##
 InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
-    local setter, tester, infostring;
+
+    local setter,
+          tester,
+          infostring,
+          upper,
+          lower,
+          rank,
+          filtssub,       # property and attribute flags of `sub_req'
+          filtsopr,       # property and attribute flags of `operation'
+          triple,
+          req,
+          requsub,
+          testsub,
+          flag,
+          filt1,
+          filt2;
 
     setter:= Setter( operation );
     tester:= Tester( operation );
     infostring:= "method for operation ";
     APPEND_LIST_INTR( infostring, NAME_FUNCTION( operation ) );
 
+    # Are there methods that may give us some of the requirements?
+    upper:= SUM_FLAGS;
+    # We must not call `SUBTR_SET' here because the lists kinds may be
+    # not yet defined.
+    # filtssub:= TRUES_FLAGS( FLAGS_FILTER( sub_req ) );
+    # SUBTR_SET( filtssub, CATS_AND_REPS );
+    filtssub:= [];
+    for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
+      if not flag in CATS_AND_REPS then
+        ADD_LIST_DEFAULT( filtssub, flag );
+      fi;
+    od;
+    for triple in SUBSET_MAINTAINED_INFO do
+      req:= SHALLOW_COPY_OBJ( filtssub );
+      INTER_SET( req, triple[1] );
+      if LEN_LIST( req ) <> 0 and triple[3] < upper then
+        upper:= triple[3];
+      fi;
+    od;
+
+    setter:= Setter( operation );
+    # Are there methods that require 'operation'?
+    lower:= 0;
+    filt1:= FLAGS_FILTER( operation );
+    if filt1 = false then
+      filt1:= FLAGS_FILTER( Tester( operation ) );
+    fi;
+    # We must not call `SUBTR_SET' here because the lists kinds may be
+    # not yet defined.
+    # filtsopr:= SHALLOW_COPY_OBJ( TRUES_FLAGS( filt1 ) );
+    # SUBTR_SET( filtsopr, CATS_AND_REPS );
+    filtsopr:= [];
+    for flag in TRUES_FLAGS( filt1 ) do
+      if not flag in CATS_AND_REPS then
+        ADD_LIST_DEFAULT( filtsopr, flag );
+      fi;
+    od;
+    for triple in SUBSET_MAINTAINED_INFO do
+      req:= SHALLOW_COPY_OBJ( filtsopr );
+      INTER_SET( req, triple[2] );
+      if LEN_LIST( req ) <> 0 and lower < triple[3] then
+        lower:= triple[3];
+      fi;
+    od;
+
+    # Compute the rank of the method.
+    # (Do we have a cycle?)
+    if upper <= lower then
+      Print( "#W  warning: cycle in 'InstallSubsetMaintainedMethod'\n" );
+      rank:= lower;
+    else
+      rank:= ( upper + lower ) / 2;
+    fi;
+
+    # Update the info list.
+    ADD_LIST( SUBSET_MAINTAINED_INFO, [ filtsopr, filtssub, rank ] );
+
+    # Create the requirements for the method.
+    # 'super_req' may be taken as a whole,
+    # but 'sub_req' must be split into the category/representation part
+    # 'requsub' that is required by the method,
+    # and the property/attribute part 'testsub' that can be checked only
+    # after the method has been called.
+    # Note that some of the properties/attributes may be acquired by the
+    # object due to some other subset maintained methods, and the method
+    # selection of the operation 'UseSubsetRelation' would regard methods
+    # that require them as not applicable.
+    testsub:= IsObject;
+    requsub:= IsObject;
+    for flag in TRUES_FLAGS( FLAGS_FILTER( sub_req ) ) do
+      if flag in filtssub then
+        testsub:= testsub and FILTERS[ flag ];
+      else
+        requsub:= requsub and FILTERS[ flag ];
+      fi;
+    od;
+    filt1:= IsCollection and Tester( super_req ) and super_req and tester;
+    filt2:= IsCollection and Tester( requsub ) and requsub;
+
+    # Adjust 'rank' such that 'INSTALL_METHOD' takes our rank.
+    rank:= rank - SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( filt1 )));
+    rank:= rank - SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER( filt2 )));
+
+    # Install the method.
     InstallMethod( UseSubsetRelation,
         infostring,
         IsIdentical,
-        [ IsCollection and Tester( super_req ) and super_req and tester,
-          IsCollection and Tester( sub_req ) and sub_req ], 0,
+        [ filt1, filt2 ], rank,
         function( super, sub )
-        if not tester( sub ) then
+        if ( not tester( sub ) ) and testsub( sub ) then
           setter( sub, operation( super ) );
         fi;
 #T argument for ``antifilters'' ?

@@ -15,10 +15,11 @@ char *          Revision_records_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -543,23 +544,26 @@ void            InitRecords ( void )
 
     /* make the list of names of record names                              */
     CountRNam = 0;
-    InitGlobalBag( &NamesRNam );
+    InitGlobalBag( &NamesRNam, "record: NamesRNam" );
     NamesRNam = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( NamesRNam, 0 );
 
     /* make the hash list of record names                                  */
     SizeRNam = 997;
-    InitGlobalBag( &HashRNam );
+    InitGlobalBag( &HashRNam, "record: HashRNam" );
     HashRNam = NEW_PLIST( T_PLIST, SizeRNam );
     SET_LEN_PLIST( HashRNam, SizeRNam );
 
     /* make and install the 'RNamObj' and 'NameRName' functions            */
+    InitHandlerFunc( RNamObjHandler, "RNamObj" );
     RNamObjFunc = NewFunctionC( "RNamObj", 1L, "obj", RNamObjHandler );
     AssGVar( GVarName( "RNamObj" ), RNamObjFunc );
+    InitHandlerFunc( NameRNamHandler, "NameRNam" );
     NameRNamFunc = NewFunctionC( "NameRNam", 1L, "rnam", NameRNamHandler );
     AssGVar( GVarName( "NameRNam" ), NameRNamFunc );
 
     /* make and install the 'IS_REC' filter                                */
+    InitHandlerFunc( IsRecHandler, "IS_REC" );
     IsRecFilt = NewFilterC( "IS_REC", 1L, "obj", IsRecHandler );
     AssGVar( GVarName( "IS_REC" ), IsRecFilt );
     for ( type = FIRST_REAL_TYPE; type <= LAST_REAL_TYPE; type++ ) {
@@ -573,6 +577,7 @@ void            InitRecords ( void )
     }
 
     /* make and install the 'ELM_REC' operations                           */
+    InitHandlerFunc( ElmRecHandler, "ELM_REC" );
     ElmRecOper = NewOperationC( "ELM_REC", 2L, "obj, rnam",
                                 ElmRecHandler );
     AssGVar( GVarName( "ELM_REC" ), ElmRecOper );
@@ -584,6 +589,7 @@ void            InitRecords ( void )
     }
 
     /* make and install the 'ISB_REC' operation                            */
+    InitHandlerFunc( IsbRecHandler, "ISB_REC" );
     IsbRecOper = NewOperationC( "ISB_REC", 2L, "obj, rnam",
                                 IsbRecHandler );
     AssGVar( GVarName( "ISB_REC" ), IsbRecOper );
@@ -595,6 +601,7 @@ void            InitRecords ( void )
     }
 
     /* make and install the 'ASS_REC' operation                            */
+    InitHandlerFunc( AssRecHandler, "ASS_REC" );
     AssRecOper = NewOperationC( "ASS_REC", 3L, "obj, rnam, val",
                                 AssRecHandler );
     AssGVar( GVarName( "ASS_REC" ), AssRecOper );
@@ -606,6 +613,7 @@ void            InitRecords ( void )
     }
 
     /* make and install the 'UNB_REC' operation                            */
+    InitHandlerFunc( UnbRecHandler, "UNB_REC" );
     UnbRecOper = NewOperationC( "UNB_REC", 2L, "obj, rnam",
                                 UnbRecHandler );
     AssGVar( GVarName( "UNB_REC" ), UnbRecOper );

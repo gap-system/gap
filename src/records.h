@@ -144,7 +144,25 @@ extern  void            (*AssRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam, O
                         ((*UnbRecFuncs[ TYPE_OBJ(rec) ])( rec, rnam ))
 
 extern  void            (*UnbRecFuncs[LAST_REAL_TYPE+1]) ( Obj rec, UInt rnam );
-        
+
+
+/****************************************************************************
+**
+*F  iscomplete_rnam( <name>, <len> )  . . . . . . . . . . . . .  check <name>
+*/
+extern UInt iscomplete_rnam (
+            Char *              name,
+            UInt                len );
+
+
+/****************************************************************************
+**
+*F  completion_rnam( <name>, <len> )  . . . . . . . . . . . . find completion
+*/
+extern UInt completion_rnam (
+            Char *              name,
+            UInt                len );
+
 
 /****************************************************************************
 **

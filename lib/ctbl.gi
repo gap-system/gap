@@ -31,7 +31,7 @@ Revision.ctbl_gi :=
 ##  For the following ``groupy'' operations, there are methods that allow
 ##  an ordinary character table instead of a group.
 ##
-##  'CharacterDegrees',
+##  'CharacterDegreesAttr',
 ##  'CharacterTable',
 ##  'ClassMultiplicationCoefficient',
 ##  'OrdinaryCharacterTable',
@@ -56,29 +56,81 @@ Revision.ctbl_gi :=
 
 #############################################################################
 ##
-#M  CharacterDegrees( <G> ) . . . . . . . . . . . . . . . . . . . for a group
-#M  CharacterDegrees( <tbl> ) . . . . . . . . . . . . . for a character table
+#F  CharacterDegrees( <G> ) . . . . . . . . . . . . . . . . . . . for a group
+#F  CharacterDegrees( <G>, <p> )  . . . . . . . . . . for a group and a prime
+#F  CharacterDegrees( <tbl> ) . . . . . . . . . . . . . for a character table
 ##
-##  We delegate to 'Irr' for the group resp. table.
-##
-InstallMethod( CharacterDegrees,
-    "method for a group",
-    true,
-    [ IsGroup ], 0,
-    G -> Collected( List( Irr( G ), DegreeOfCharacter ) ) );
-
-InstallOtherMethod( CharacterDegrees,
-    "method for a table",
-    true,
-    [ IsCharacterTable ], 0,
-    tbl -> Collected( List( Irr( tbl ), DegreeOfCharacter ) ) );
+CharacterDegrees := function( arg )
+    if     Length( arg ) = 1
+       and ( IsGroup( arg[1] ) or IsCharacterTable( arg[1] ) ) then
+      return CharacterDegreesAttr( arg[1] );
+    elif Length( arg ) = 2 and IsGroup( arg[1] ) and IsInt( arg[2] ) then
+      return CharacterDegreesOp( arg[1], arg[2] );
+    fi;
+    Error( "usage: CharacterDegrees(<G>[,<p>]) or CharacterDegrees(<tbl>)" );
+end;
 
 
 #############################################################################
 ##
-#M  CharacterDegrees( <G> ) . . . . . for group handled via nice monomorphism
+#M  CharacterDegreesAttr( <G> ) . . . . . . . . . . . . . . . . . for a group
+#M  CharacterDegreesOp( <G>, <zero> ) . . . . . . . . .  for a group and zero
 ##
-AttributeMethodByNiceMonomorphism( CharacterDegrees,
+##  The attribute delegates to the operation.
+##  The operation delegates to 'Irr'.
+##
+InstallMethod( CharacterDegreesAttr,
+    "method for a group",
+    true,
+    [ IsGroup ], 0,
+    G -> CharacterDegreesOp( G, 0 ) );
+
+InstallOtherMethod( CharacterDegreesOp,
+    "method for a group, and zero",
+    true,
+    [ IsGroup, IsZeroCyc ], 0,
+    function( G, zero )
+    return Collected( List( Irr( G ), DegreeOfCharacter ) );
+    end );
+
+InstallOtherMethod( CharacterDegreesOp,
+    "method for a group, and positive integer",
+    true,
+    [ IsGroup, IsInt and IsPosRat ], 0,
+    function( G, p )
+    if Size( G ) mod p = 0 then
+      return CharacterDegreesAttr( CharacterTable( G, p ) );
+    else
+      return CharacterDegreesAttr( G );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CharacterDegreesAttr( <tbl> ) . . . . . . . . . . . for a character table
+##
+##  We delegate to 'Irr' for the table.
+##  The ordinary table may ask its group.
+##
+InstallOtherMethod( CharacterDegreesAttr,
+    "method for a character table",
+    true,
+    [ IsCharacterTable ], 0,
+    tbl -> Collected( List( Irr( tbl ), DegreeOfCharacter ) ) );
+
+InstallOtherMethod( CharacterDegreesAttr,
+    "method for an ordinary character table with group",
+    true,
+    [ IsOrdinaryTable and HasUnderlyingGroup ], 0,
+    tbl -> CharacterDegreesAttr( UnderlyingGroup( tbl ) ) );
+
+
+#############################################################################
+##
+#M  CharacterDegreesAttr( <G> ) . . . for group handled via nice monomorphism
+##
+AttributeMethodByNiceMonomorphism( CharacterDegreesAttr,
     [ IsGroup ] );
 
 
@@ -431,12 +483,14 @@ InstallOtherMethod( Size,
     [ IsCharacterTable and HasUnderlyingGroup ], 0,
     tbl -> Size( UnderlyingGroup( tbl ) ) );
    
+
 InstallOtherMethod( Size,
     "method for a character table with known centralizer sizes",
     true,
     [ IsNearlyCharacterTable and HasSizesCentralizers ], 100,
     tbl -> SizesCentralizers( tbl )[1] );
 #T immediate method ?
+
 
 InstallOtherMethod( Size,
     "method for a group with known ordinary character table",
@@ -1162,7 +1216,7 @@ InstallMethod( CharacterTableDirectProduct,
           ncc2_i,        # 
           fus;           # projection/embedding map
 
-    direct:= ConvertToCharacterTableNC( rec() );
+    direct:= ConvertToOrdinaryTableNC( rec() );
     SetSize( direct, Size( tbl1 ) * Size( tbl2 ) );
     SetIdentifier( direct, Concatenation( Identifier( tbl1 ), "x",
                                           Identifier( tbl2 ) ) );
@@ -2055,7 +2109,7 @@ InstallMethod( FusionConjugacyClassesOp,
     elif Size( tbl2 ) = Size( tbl1 ) then
 
       # find a transforming permutation
-      fusion:= TransformingPermutationsCharTables( tbl1, tbl2 );
+      fusion:= TransformingPermutationsCharacterTables( tbl1, tbl2 );
       if   fusion = fail then
         return fail;
       elif 1 < Size( fusion.group ) then
@@ -2593,10 +2647,10 @@ InstallOtherMethod( Display,
 
 #############################################################################
 ##
-#F  ConvertToCharacterTable( <record> ) . . . . create character table object
-#F  ConvertToCharacterTableNC( <record> ) . . . create character table object
+#F  ConvertToOrdinaryTable( <record> )  . . . . create character table object
+#F  ConvertToOrdinaryTableNC( <record> )  . . . create character table object
 ##
-ConvertToCharacterTableNC := function( record )
+ConvertToOrdinaryTableNC := function( record )
 
     local names,    # list of component names
           i;        # loop over 'SupportedOrdinaryTableInfo'
@@ -2632,7 +2686,7 @@ ConvertToCharacterTableNC := function( record )
     return record;
 end;
 
-ConvertToCharacterTable := function( record )
+ConvertToOrdinaryTable := function( record )
     Error( "not yet implemented!" );
 end;
 
@@ -3444,6 +3498,437 @@ LowercaseString := function( str )
     od;
     ConvertToStringRep( result );
     return result;
+end;
+
+
+#############################################################################
+##
+#F  PermutationToSortCharacters( <tbl>, <chars>, <degree>, <norm> )
+##
+PermutationToSortCharacters := function( tbl, chars, degree, norm )
+
+    local rational, listtosort, i, len;
+
+    if IsEmpty( chars ) then
+      return ();
+    fi;
+
+    # Rational characters shall precede irrational ones of same degree,
+    # and the trivial character shall be the first one.
+    rational := function( chi )
+      chi:= ValuesOfClassFunction( chi );
+      if ForAll( chi, IsRat ) then
+        if ForAll( chi, x -> x = 1 ) then
+          return -1;
+        else
+          return 0;
+        fi;
+      else
+        return 1;
+      fi;
+    end;
+
+    # Compute the permutation.
+    listtosort:= [];
+    if degree and norm then
+      for i in [ 1 .. Length( chars ) ] do
+        listtosort[i]:= [ ScalarProduct( chars[i], chars[i] ),
+                          DegreeOfCharacter( chars[i] ),
+                          rational( chars[i] ), i ];
+      od;
+    elif degree then
+      for i in [ 1 .. Length( chars ) ] do
+        listtosort[i]:= [ DegreeOfCharacter( chars[i] ),
+                          rational( chars[i] ), i ];
+      od;
+    elif norm then
+      for i in [ 1 .. Length( chars ) ] do
+        listtosort[i]:= [ ScalarProduct( chars[i], chars[i] ),
+                          rational( chars[i] ), i ];
+      od;
+    else
+      Error( "<degree> or <norm> must be 'true'" );
+    fi;
+    Sort( listtosort );
+    len:= Length( listtosort[1] );
+    for i in [ 1 .. Length( chars ) ] do
+      listtosort[i]:= listtosort[i][ len ];
+    od;
+    return Inverse( PermList( listtosort ) );
+end;
+
+
+#############################################################################
+##
+#M  CharacterTableWithSortedCharacters( <tbl> )
+##
+InstallMethod( CharacterTableWithSortedCharacters,
+    "method for a character table",
+    true,
+    [ IsCharacterTable ], 0,
+    tbl -> CharacterTableWithSortedCharacters( tbl,
+             PermutationToSortCharacters( tbl, Irr( tbl ), true, false ) ) );
+
+
+#############################################################################
+##
+#M  CharacterTableWithSortedCharacters( <tbl>, <perm> )
+##
+InstallOtherMethod( CharacterTableWithSortedCharacters,
+    "method for an ordinary character table, and a permutation",
+    true,
+    [ IsOrdinaryTable, IsPerm ], 0,
+    function( tbl, perm )
+
+    local new, i;
+
+    # Create the new table.
+    new:= rec();
+    ConvertToOrdinaryTable( new );
+
+    # Set the permuted attribute values.
+    SetIrr( new, Permuted( Irr( tbl ), perm ) );
+    SetIrredInfo( new, Permuted( IrredInfo( tbl ), perm ) );
+
+    # Set the other supported values.
+    for i in [ 2, 4 .. Length( SupportedOrdinaryTableInfo ) ] do
+      if Tester( SupportedOrdinaryTableInfo[ i-1 ] )
+         and not SupportedOrdinaryTableInfo[i]
+                     in [ "irr", "irredInfo", "underlyingGroup" ] then
+        Setter( SupportedOrdinaryTableInfo[ i-1 ] )( new,
+            SupportedOrdinaryTableInfo[ i-1 ]( tbl ) );
+      fi;
+    od;
+
+    # Return the table.
+    return new;
+    end );
+
+
+#############################################################################
+##
+#M  SortedCharacters( <tbl>, <chars> )
+##
+InstallMethod( SortedCharacters,
+    "method for a character table, and a homogeneous list",
+    true,
+    [ IsNearlyCharacterTable, IsHomogeneousList ], 0,
+    function( tbl, chars )
+    return Permuted( chars,
+               PermutationToSortCharacters( tbl, chars, true, true ) );
+    end );
+
+
+#############################################################################
+##
+#M  SortedCharacters( <tbl>, <chars>, \"norm\" )
+#M  SortedCharacters( <tbl>, <chars>, \"degree\" )
+##
+InstallOtherMethod( SortedCharacters,
+    "method for a character table, a homogeneous list, and a string",
+    true,
+    [ IsNearlyCharacterTable, IsHomogeneousList, IsString ], 0,
+    function( tbl, chars, string )
+    if string = "norm" then
+      return Permuted( chars,
+                 PermutationToSortCharacters( tbl, chars, false, true ) );
+    elif string = "degree" then
+      return Permuted( chars,
+                 PermutationToSortCharacters( tbl, chars, true, false ) );
+    else
+      Error( "<string> must be \"norm\" or \"degree\"" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#F  PermutationToSortClasses( <tbl>, <classes>, <orders> )
+##
+PermutationToSortClasses := function( tbl, classes, orders )
+
+    local listtosort, i, len;
+
+    # Compute the permutation.
+    listtosort:= [];
+    if classes and orders then
+      classes:= SizesConjugacyClasses( tbl );
+      orders:= OrdersClassRepresentatives( tbl );
+      for i in [ 1 .. NrConjugacyClasses( tbl ) ] do
+        listtosort[i]:= [ orders[i], classes[i], i ];
+      od;
+    elif classes then
+      classes:= SizesConjugacyClasses( tbl );
+      for i in [ 1 .. NrConjugacyClasses( tbl ) ] do
+        listtosort[i]:= [ classes[i], i ];
+      od;
+    elif orders then
+      orders:= OrdersClassRepresentatives( tbl );
+      for i in [ 1 .. NrConjugacyClasses( tbl ) ] do
+        listtosort[i]:= [ orders[i], i ];
+      od;
+    else
+      Error( "<classes> or <orders> must be 'true'" );
+    fi;
+    Sort( listtosort );
+    len:= Length( listtosort[1] );
+    for i in [ 1 .. Length( listtosort ) ] do
+      listtosort[i]:= listtosort[i][ len ];
+    od;
+    return Inverse( PermList( listtosort ) );
+end;
+
+
+#############################################################################
+##
+#M  CharacterTableWithSortedClasses( <tbl> )
+##
+InstallMethod( CharacterTableWithSortedClasses,
+    "method for a character table",
+    true,
+    [ IsCharacterTable ], 0,
+    tbl -> CharacterTableWithSortedClasses( tbl,
+               PermutationToSortClasses( tbl, true, true ) ) );
+
+
+#############################################################################
+##
+#M  CharacterTableWithSortedClasses( <tbl>, \"centralizers\" )
+#M  CharacterTableWithSortedClasses( <tbl>, \"representatives\" )
+##
+InstallOtherMethod( CharacterTableWithSortedClasses,
+    "method for a character table, and string",
+    true,
+    [ IsCharacterTable, IsString ], 0,
+    function( tbl, string )
+    if   string = "centralizers" then
+      return CharacterTableWithSortedClasses( tbl,
+                 PermutationToSortClasses( tbl, true, false ) );
+    elif string = "representatives" then
+      return CharacterTableWithSortedClasses( tbl,
+                 PermutationToSortClasses( tbl, false, true ) );
+    else
+      Error( "<string> must be \"centralizers\" or \"representatives\"" );
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  CharacterTableWithSortedClasses( <tbl>, <permutation> )
+##
+InstallOtherMethod( CharacterTableWithSortedClasses,
+    "method for an ordinary character table, and a permutation",
+    true,
+    [ IsOrdinaryTable, IsPerm ], 0,
+    function( tbl, perm )
+
+    local new, attr, fus, tblmaps, permmap, inverse, k;
+
+    # Create the new table.
+    new:= rec();
+    ConvertToOrdinaryTable( new );
+
+    # Set the permuted attribute values.
+    if 1^perm <> 1 then
+      Error( "<perm> must fix the first class" );
+    elif Order( perm ) = 1 then
+      return tbl;
+    fi;
+
+    # Set supported attributes that do not need adjustion.
+    for attr in [ Identifier, InfoText, IrredInfo, IsSimpleGroup,
+                  Maxes, NamesOfFusionSources, UnderlyingCharacteristic ] do
+      if Tester( attr )( tbl ) then
+        Setter( attr )( new, attr( new ) );
+      fi;
+    od;
+
+    # Set known attributes that must be adjusted.
+    if HasClassParameters( tbl ) then
+      SetClassParameters( new,
+          Permuted( ClassParameters( tbl ), perm ) );
+    fi;
+    if HasIrr( tbl ) then
+      SetIrr( new,
+          List( Irr( tbl ), chi -> CharacterByValues( new,
+                Permuted( ValuesOfClassFunction( chi, perm ) ) ) ) );
+    fi;
+    if HasOrdersClassRepresentatives( tbl ) then
+      SetOrdersClassRepresentatives( new,
+          Permuted( OrdersClassRepresentatives( tbl ), perm ) );
+    fi;
+    if HasSizesCentralizers( tbl ) then
+      SetSizesCentralizers( new,
+          Permuted( SizesCentralizers( tbl ), perm ) );
+    fi;
+    for fus in ComputedClassFusions( tbl ) do
+      Add( ComputedClassFusions( new ),
+           rec( name:= fus.name, map:= Permuted( fus.map, perm ) ) );
+    od;
+
+    if HasComputedPowerMaps( tbl ) then
+
+      tblmaps:= ComputedPowerMaps( tbl );
+      permmap:= List( perm );
+      inverse:= List( perm^(-1) );
+      for k in [ Length( permmap ) + 1 .. NrConjugacyClasses( tbl ) ] do
+        permmap[k]:= k;
+        inverse[k]:= k;
+      od;
+      for k in [ 1 .. Length( tblmaps ) ] do
+        if IsBound( tblmaps[k] ) then
+          ComputedPowerMaps( new )[k]:= CompositionMaps( permmap,
+              CompositionMaps( tblmaps[k], inverse ) );
+        fi;
+      od;
+
+    fi;
+
+    # The automorphisms of the sorted table are obtained on conjugation.
+    if HasAutomorphismsOfTable( tbl ) then
+      SetAutomorphismsOfTable( new, GroupByGenerators(
+          List( GeneratorsOfGroup( AutomorphismsOfTable( tbl ) ),
+                x -> x^perm ), () ) );
+    fi;
+
+    # Set the class permutation (important for fusions).
+    if HasClassPermutation( tbl ) then
+      SetClassPermutation( new, ClassPermutation( tbl ) * perm );
+    else
+      SetClassPermutation( new, perm );
+    fi;
+
+    # Return the new table.
+    return new;
+    end );
+
+
+#############################################################################
+##
+#F  SortedCharacterTable( <tbl>, <kernel> )
+#F  SortedCharacterTable( <tbl>, <normalseries> )
+#F  SortedCharacterTable( <tbl>, <facttbl>, <kernel> )
+##
+SortedCharacterTable := function( arg )
+
+    local i, j, tbl, kernels, list, columns, rows, chi, F, facttbl, kernel,
+          trans, ker, fus, new;
+
+    # Check the arguments.
+    if not ( Length( arg ) in [ 2, 3 ] and IsOrdinaryTable( arg[1] ) and
+             IsList( arg[ Length( arg ) ] ) and
+             ( Length( arg ) = 2 or IsOrdinaryTable( arg[2] ) ) ) then
+      Error( "usage: SortedCharacterTable( <tbl>, <kernel> ) resp.\n",
+             "       SortedCharacterTable( <tbl>, <normalseries> ) resp.\n",
+             "       SortedCharacterTable( <tbl>, <facttbl>, <kernel> )" );
+    fi;
+
+    tbl:= arg[1];
+
+    if Length( arg ) = 2 then
+
+      # sort w.r. to kernel or series of kernels
+      kernels:= arg[2];
+      if IsEmpty( kernels ) then
+        return tbl;
+      fi;
+
+      # regard single kernel as special case of normal series
+      if IsInt( kernels[1] ) then
+        kernels:= [ kernels ];
+      fi;
+
+      # permutation of classes\:
+      # 'list[i] = k' if 'i' is contained in 'kernels[k]' but not
+      # in 'kernels[k-1]'; only the first position contains a zero
+      # to ensure that the identity is not moved.
+      # If class 'i' is not contained in any of the kernels we have
+      # 'list[i] = ""'.
+      list:= [ 0 ];
+      for i in [ 2 .. NrConjugacyClasses( tbl ) ] do
+        list[i]:= "";
+      od;
+      for i in [ 1 .. Length( kernels ) ] do
+        for j in kernels[i] do
+          if not IsInt( list[j] ) then
+            list[j]:= i;
+          fi;
+        od;
+      od;
+      columns:= Sortex( list );
+
+      # permutation of characters
+      # 'list[i] = -(k+1)' if '<tbl>.irreducibles[i]' has 'kernels[k]'
+      # in its kernel but not 'kernels[k+1]'; if the 'i'--th irreducible
+      # contains none of 'kernels' in its kernel we have 'list[i] = -1',
+      # for an irreducible with kernel containing 'kernels[ Length( kernels ) ]
+      # the value is '-(Length( kernels ) + 1)'.
+      list:= [];
+      if HasIrr( tbl ) then
+        for chi in Irr( tbl ) do
+          i:= 1;
+          while     i <= Length( kernels )
+                and ForAll( kernels[i], x -> chi[x] = chi[1] ) do
+            i:= i+1;
+          od;
+          Add( list, -i );
+        od;
+        rows:= Sortex( list );
+      else
+        rows:= ();
+      fi;
+
+    else
+
+      # sort w.r. to table of factor group
+      facttbl:= arg[2];
+      kernel:= arg[3];
+      F:= CharacterTableFactorGroup( tbl, kernel );
+      trans:= TransformingPermutationsCharacterTables( F, facttbl );
+      if trans = fail then
+        Info( InfoCharacterTable, 2,
+              "SortedCharacterTable: tables of factors not compatible" );
+        return fail;
+      fi;
+
+      # permutation of classes\:
+      # 'list[i] = k' if 'i' maps to the 'j'--th class of <F>, and
+      # 'trans.columns[j] = i'
+      list:= OnTuples( GetFusionMap( tbl, F ), trans.columns );
+      columns:= Sortex( list );
+
+      # permutation of characters\:
+      # divide 'Irr( <tbl> )' into two parts, those containing
+      # the kernel of the factor fusion in their kernel (value 0),
+      # and the others (value 1); do not forget to permute characters
+      # of the factor group with 'trans.rows'.
+      if HasIrr( tbl ) then
+        ker:= KernelChar( GetFusionMap( tbl, F ) );
+        list:= [];
+        for chi in Irr( tbl ) do
+          if ForAll( ker, x -> chi[x] = chi[1] ) then
+            Add( list, 0 );
+          else
+            Add( list, 1 );
+          fi;
+        od;
+        rows:= Sortex( list ) * trans.rows;
+      else
+        rows:= ();
+      fi;
+
+      # delete the fusion to 'F' on 'tbl'
+      fus:= ComputedClassFusions( tbl );
+      Unbind( fus[ Length( fus ) ] );
+#T better ?
+
+    fi;
+
+    # Sort and return.
+    new:= CharacterTableWithSortedClasses( tbl, columns );
+    new:= CharacterTableWithSortedCharacters( new, rows );
+    return new;
 end;
 
 

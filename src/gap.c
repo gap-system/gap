@@ -16,11 +16,12 @@ char * Revision_gap_c =
 #include        <stdio.h>
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
+
 extern char * In;
 #include        "gasman.h"              /* NewBag, CHANGED_BAG             */
-
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* InitGVars                       */
 
 #include        "calls.h"               /* InitCalls                       */
@@ -327,7 +328,7 @@ Obj SizeScreenHandler (
 /****************************************************************************
 **
 
-*F * * * * * * * * * * * * * * print and error  * * * * * * * * * * * * * * *
+*F * * * * * * * * * * * * * * error functions * * * * * * * * * * * * * * *
 */
 
 
@@ -335,46 +336,15 @@ Obj SizeScreenHandler (
 /****************************************************************************
 **
 
-*F  FuncPrint( <self>, <args> ) . . . . . . . . . . . . . . . .  print <args>
-*/
-Obj FuncPrint (
-    Obj                 self,
-    Obj                 args )
-{
-    Obj                 arg;
-    UInt                i;
-
-    /* print all the arguments, take care of strings and functions         */
-    for ( i = 1; i <= LEN_PLIST(args); i++ ) {
-        arg = ELM_LIST(args,i);
-        if ( IsStringConv(arg) && MUTABLE_TYPE(TYPE_OBJ(arg))==T_STRING ) {
-            PrintString1(arg);
-        }
-        else if ( TYPE_OBJ( arg ) == T_FUNCTION ) {
-            PrintObjFull = 1;
-            PrintFunction( arg );
-            PrintObjFull = 0;
-        }
-        else {
-            PrintObj( arg );
-        }
-    }
-
-    return 0;
-}
-
-
-/****************************************************************************
-**
 *F  FuncDownEnv( <<self>, level> )  . . . . . . . . .  change the environment
 */
-UInt            ErrorLevel;
+UInt ErrorLevel;
 
-Obj             ErrorLVars0;    
-Obj             ErrorLVars;
-Int             ErrorLLevel;
+Obj  ErrorLVars0;    
+Obj  ErrorLVars;
+Int  ErrorLLevel;
 
-extern  Obj     BottomLVars;
+extern Obj BottomLVars;
 
 
 Obj FuncDownEnv (
@@ -654,7 +624,7 @@ Obj ErrorMode (
 **
 *F  ErrorQuit( <msg>, <arg1>, <arg2> )  . . . . . . . . . . .  print and quit
 */
-void            ErrorQuit (
+void ErrorQuit (
     Char *              msg,
     Int                 arg1,
     Int                 arg2 )
@@ -717,11 +687,11 @@ Obj FuncError (
 
 *F  Complete( <list> )  . . . . . . . . . . . . . . . . . . . complete a file
 */
-Obj             CompNowFuncs;
+Obj  CompNowFuncs;
 
-UInt            CompNowCount;
+UInt CompNowCount;
 
-void            Complete (
+void Complete (
     Obj                 list )
 {
     Obj                 filename;
@@ -779,7 +749,7 @@ void            Complete (
 **
 *F  DoComplete<i>args( ... )  . . . . . . . . . .  handler to complete a file
 */
-Obj             DoComplete0args (
+Obj DoComplete0args (
     Obj                 self )
 {
     Complete( BODY_FUNC( self ) );
@@ -792,7 +762,7 @@ Obj             DoComplete0args (
     return CALL_0ARGS( self );
 }
 
-Obj             DoComplete1args (
+Obj DoComplete1args (
     Obj                 self,
     Obj                 arg1 )
 {
@@ -806,7 +776,7 @@ Obj             DoComplete1args (
     return CALL_1ARGS( self, arg1 );
 }
 
-Obj             DoComplete2args (
+Obj DoComplete2args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2 )
@@ -821,7 +791,7 @@ Obj             DoComplete2args (
     return CALL_2ARGS( self, arg1, arg2 );
 }
 
-Obj             DoComplete3args (
+Obj DoComplete3args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -837,7 +807,7 @@ Obj             DoComplete3args (
     return CALL_3ARGS( self, arg1, arg2, arg3 );
 }
 
-Obj             DoComplete4args (
+Obj DoComplete4args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -854,7 +824,7 @@ Obj             DoComplete4args (
     return CALL_4ARGS( self, arg1, arg2, arg3, arg4 );
 }
 
-Obj             DoComplete5args (
+Obj DoComplete5args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -872,7 +842,7 @@ Obj             DoComplete5args (
     return CALL_5ARGS( self, arg1, arg2, arg3, arg4, arg5 );
 }
 
-Obj             DoComplete6args (
+Obj DoComplete6args (
     Obj                 self,
     Obj                 arg1,
     Obj                 arg2,
@@ -891,7 +861,7 @@ Obj             DoComplete6args (
     return CALL_6ARGS( self, arg1, arg2, arg3, arg4, arg5, arg6 );
 }
 
-Obj             DoCompleteXargs (
+Obj DoCompleteXargs (
     Obj                 self,
     Obj                 args )
 {
@@ -1521,457 +1491,6 @@ Obj FuncSHOW_STAT (
 /****************************************************************************
 **
 
-*F * * * * * * * * * streams and files related functions  * * * * * * * * * *
-*/
-
-
-/****************************************************************************
-**
-
-*F  FuncREAD( <filename> )  . . . . . . . . . . . . . . . . . . . read a file
-*/
-Obj FuncREAD (
-    Obj                 self,
-    Obj                 filename )
-{
-    UInt                type;
-
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-
-    /* try to open the file                                                */
-    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
-        return False;
-    }
-    NrError = 0;
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-        type = ReadEvalCommand();
-
-        /* handle return-value or return-void command                      */
-        if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncREAD_AS_FUNC( <filename> )  . . . . . . . . . . . . . . . read a file
-*/
-Obj READ_AS_FUNC (
-    Char *              filename )
-{
-    Obj                 func;
-    UInt                type;
-
-    /* try to open the file                                                */
-    if ( ! OpenInput( filename ) ) {
-        return Fail;
-    }
-    NrError = 0;
-
-    /* now do the reading                                                  */
-    type = ReadEvalFile();
-
-    /* get the function                                                    */
-    if ( type == 0 ) {
-        func = ReadEvalResult;
-    }
-    else {
-        func = Fail;
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseInput() ) {
-        ErrorQuit(
-            "Panic: READ_AS_FUNC cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-
-    /* return the function                                                 */
-    return func;
-}
-
-Obj             FuncREAD_AS_FUNC (
-    Obj                 self,
-    Obj                 filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ_AS_FUNC: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-
-    /* read the function                                                   */
-    return READ_AS_FUNC( CSTR_STRING(filename) );
-}
-
-
-/****************************************************************************
-**
-*F  READ_GAP_ROOT( <filename> ) . . .  read from gap root, dyn-load or static
-**
-**  'READ_GAP_ROOT' tries to find  a file under  the root directory,  it will
-**  search all   directories given   in 'SyGapRootPaths',  check  dynamically
-**  loadable modules and statically linked modules.
-*/
-Int READ_GAP_ROOT ( Char * filename )
-{
-    Char                result[256];
-    Int                 res;
-    UInt                type;
-    StructCompInitInfo* info;
-    Obj                 func;
-    UInt4               crc;
-    Char *              file;
-
-    /* try to find the file                                                */
-    file = SyFindGapRootFile(filename);
-    if ( file ) {
-	crc = SyGAPCRC(file);
-    }
-    else {
-	crc = 0;
-    }
-    res = SyFindOrLinkGapRootFile( filename, crc, result, 256 );
-
-    /* not found                                                           */
-    if ( res == 0 ) {
-        return 0;
-    }
-
-    /* dynamically linked                                                  */
-    else if ( res == 1 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' dynamically\n",
-                (Int)filename, 0L );
-        }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
-        return 1;
-    }
-
-    /* statically linked                                                   */
-    else if ( res == 2 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' statically\n",
-                (Int)filename, 0L );
-        }
-        info = *(StructCompInitInfo**)result;
-        (info->link)();
-        func = (Obj)(info->function1)();
-        CALL_0ARGS(func);
-        return 1;
-    }
-
-    /* ordinary gap file                                                   */
-    else if ( res == 3 ) {
-        if ( SyDebugLoading ) {
-            Pr( "#I  READ_GAP_ROOT: loading '%s' as GAP file\n",
-                (Int)filename, 0L );
-        }
-        if ( OpenInput(result) ) {
-            NrError = 0;
-            while ( 1 ) {
-                type = ReadEvalCommand();
-                if ( type == 1 || type == 2 ) {
-                    Pr( "'return' must not be used in file", 0L, 0L );
-                }
-                else if ( type == 8 || type == 16 ) {
-                    break;
-                }
-            }
-            CloseInput();
-            NrError = 0;
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
-
-    /* don't know                                                          */
-    else {
-        ErrorQuit( "unknown result code %d from 'SyFindGapRoot'", res, 0L );
-        return 0;
-    }
-}
-
-
-/****************************************************************************
-**
-*F  FuncREAD_GAP_ROOT( <filename> ) . . . . . . . . . . . . . . . read a file
-*/
-Obj FuncREAD_GAP_ROOT (
-    Obj                 self,
-    Obj                 filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "READ: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-
-    /* try to open the file                                                */
-    if ( READ_GAP_ROOT( CSTR_STRING(filename) ) ) {
-        return True;
-    }
-    else {
-        return False;
-    }
-}
-
-
-/****************************************************************************
-**
-*F  FuncReadTest( <filename> )  . . . . . . . . . . . . . .  read a test file
-*/
-Obj FuncReadTest (
-    Obj                 self,
-    Obj                 filename )
-{
-    UInt                type;
-    UInt                time;
-
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "ReadTest: <filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-
-    /* try to open the file                                                */
-    if ( ! OpenTest( CSTR_STRING(filename) ) ) {
-        return False;
-    }
-    NrError = 0;
-
-    /* get the starting time                                               */
-    time = SyTime();
-
-    /* now do the reading                                                  */
-    while ( 1 ) {
-
-        /* read and evaluate the command                                   */
-        type = ReadEvalCommand();
-
-        /* stop the stopwatch                                              */
-        AssGVar( Time, INTOBJ_INT( SyTime() - time ) );
-
-        /* handle ordinary command                                         */
-        if ( type == 0 && ReadEvalResult != 0 ) {
-
-            /* print the result                                            */
-            if ( *In != ';' ) {
-                IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
-                Pr( "\n", 0L, 0L );
-            }
-            else {
-                Match( S_SEMICOLON, ";", 0UL );
-            }
-
-        }
-
-        /* handle return-value or return-void command                      */
-        else if ( type == 1 || type == 2 ) {
-            Pr(
-                "'return' must not be used in file read-eval loop",
-                0L, 0L );
-        }
-
-        /* handle quit command or <end-of-file>                            */
-        else if ( type == 8 || type == 16 ) {
-            break;
-        }
-
-    }
-
-    /* close the input file again, and return 'true'                       */
-    if ( ! CloseTest() ) {
-        ErrorQuit(
-            "Panic: ReadTest cannot close input, this should not happen",
-            0L, 0L );
-    }
-    NrError = 0;
-    return True;
-}
-
-
-/****************************************************************************
-**
-*F  FuncLogTo( <filename> ) . . . . . . . . . . . . internal function 'LogTo'
-**
-**  'FunLogTo' implements the internal function 'LogTo'.
-**
-**  'LogTo( <filename> )' \\
-**  'LogTo()'
-**
-**  'LogTo' instructs GAP to echo all input from the  standard  input  files,
-**  '*stdin*' and '*errin*' and all output  to  the  standard  output  files,
-**  '*stdout*'  and  '*errout*',  to  the  file  with  the  name  <filename>.
-**  The file is created if it does not  exist,  otherwise  it  is  truncated.
-**
-**  'LogTo' called with no argument closes the current logfile again, so that
-**  input   from  '*stdin*'  and  '*errin*'  and  output  to  '*stdout*'  and
-**  '*errout*' will no longer be echoed to a file.
-*/
-Obj FuncLogTo (
-    Obj                 self,
-    Obj                 args )
-{
-    Obj                 filename;
-
-    /* 'LogTo()'                                                           */
-    if ( LEN_LIST(args) == 0 ) {
-        if ( ! CloseLog() ) {
-            ErrorQuit("LogTo: can not close the logfile",0L,0L);
-            return 0;
-        }
-    }
-
-    /* 'LogTo( <filename> )'                                               */
-    else if ( LEN_LIST(args) == 1 ) {
-        filename = ELM_LIST(args,1);
-        while ( ! IsStringConv(filename) ) {
-            filename = ErrorReturnObj(
-                "LogTo: <filename> must be a string (not a %s)",
-                (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-                "you can return a string for <filename>" );
-        }
-        if ( ! OpenLog( CSTR_STRING(filename) ) ) {
-            ErrorReturnVoid(
-                "LogTo: cannot log to %s",
-                (Int)CSTR_STRING(filename), 0L,
-                "you can return" );
-            return 0;
-        }
-    }
-
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*F  FuncIsExistingFile( <self>, <name> )  . . . . . . does file <name> exists
-*/
-Obj FuncIsExistingFile (
-            Obj             self,
-            Obj             filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-    
-    /* call the system dependent function                                  */
-    return SyIsExistingFile( CSTR_STRING(filename) ) ? True : False;
-}
-
-
-/****************************************************************************
-**
-*F  FuncIsReadableFile( <self>, <name> )  . . . . . . is file <name> readable
-*/
-Obj FuncIsReadableFile (
-            Obj             self,
-            Obj             filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-    
-    /* call the system dependent function                                  */
-    return SyIsReadableFile( CSTR_STRING(filename) ) ? True : False;
-}
-
-
-/****************************************************************************
-**
-*F  FuncIsWritableFile( <self>, <name> )  . . . . . . is file <name> writable
-*/
-Obj FuncIsWritableFile (
-            Obj             self,
-            Obj             filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-    
-    /* call the system dependent function                                  */
-    return SyIsWritableFile( CSTR_STRING(filename) ) ? True : False;
-}
-
-
-/****************************************************************************
-**
-*F  FuncIsExecutableFile( <self>, <name> )  . . . . is file <name> executable
-*/
-Obj FuncIsExecutableFile (
-            Obj             self,
-            Obj             filename )
-{
-    /* check the argument                                                  */
-    while ( ! IsStringConv( filename ) ) {
-        filename = ErrorReturnObj(
-            "<filename> must be a string (not a %s)",
-            (Int)(InfoBags[TYPE_OBJ(filename)].name), 0L,
-            "you can return a string for <filename>" );
-    }
-    
-    /* call the system dependent function                                  */
-    return SyIsExecutableFile( CSTR_STRING(filename) ) ? True : False;
-}
-
-
-/****************************************************************************
-**
-
 
 *F * * * * * * * * * * * * * * debug functions  * * * * * * * * * * * * * * *
 */
@@ -1985,12 +1504,13 @@ Obj FuncIsExecutableFile (
 **
 **  'GASMAN( "display" | "clear" | "collect" | "message" | "partial" )'
 */
-Obj             FuncGASMAN (
+Obj FuncGASMAN (
     Obj                 self,
     Obj                 args )
 {
     Obj                 cmd;            /* argument                        */
     UInt                i,  k;          /* loop variables                  */
+    Char                buf[100];
 
     /* check the argument                                                  */
     while ( ! IS_LIST(args) || LEN_LIST(args) == 0 ) {
@@ -2015,16 +1535,18 @@ again:
 
         /* if request display the statistics                               */
         if ( SyStrcmp( CSTR_STRING(cmd), "display" ) == 0 ) {
-            Pr( "\t\t%30s  ", (Int)"type",  0L          );
-            Pr( "%8d %8d  ",  (Int)"alive", (Int)"size" );
-            Pr( "%8d %8d\n",  (Int)"total", (Int)"size" );
+            Pr( "%40s ", (Int)"type",  0L          );
+            Pr( "%8s %8s ",  (Int)"alive", (Int)"kbyte" );
+            Pr( "%8s %8s\n",  (Int)"total", (Int)"kbyte" );
             for ( k = 0; k < 256; k++ ) {
                 if ( InfoBags[k].name != 0 ) {
-                    Pr("%30s  ",   (Int)InfoBags[k].name, 0L );
-                    Pr("%8d %8d  ",(Int)InfoBags[k].nrLive,
-                                   (Int)InfoBags[k].sizeLive);
+		    buf[0] = '\0';
+		    SyStrncat( buf, InfoBags[k].name, 40 );
+                    Pr("%40s ",    (Int)buf, 0L );
+                    Pr("%8d %8d ", (Int)InfoBags[k].nrLive,
+                                   (Int)(InfoBags[k].sizeLive/1024));
                     Pr("%8d %8d\n",(Int)InfoBags[k].nrAll,
-                                   (Int)InfoBags[k].sizeAll);
+                                   (Int)(InfoBags[k].sizeAll/1024));
                 }
             }
         }
@@ -2032,8 +1554,13 @@ again:
         /* if request display the statistics                               */
         else if ( SyStrcmp( CSTR_STRING(cmd), "clear" ) == 0 ) {
             for ( k = 0; k < 256; k++ ) {
-                InfoBags[k].nrAll   = InfoBags[k].nrLive;
-                InfoBags[k].sizeAll = InfoBags[k].sizeLive;
+#ifdef GASMAN_CLEAR_TO_LIVE
+                InfoBags[k].nrAll    = InfoBags[k].nrLive;
+                InfoBags[k].sizeAll  = InfoBags[k].sizeLive;
+#else
+                InfoBags[k].nrAll    = 0;
+                InfoBags[k].sizeAll  = 0;
+#endif
             }
         }
 
@@ -2047,6 +1574,16 @@ again:
             CollectBags(0,0);
         }
 
+        /* or display information about global bags                        */
+        else if ( SyStrcmp( CSTR_STRING(cmd), "global" ) == 0 ) {
+	    for ( i = 0;  i < GlobalBags.nr;  i++ ) {
+		if ( *(GlobalBags.addr[i]) != 0 ) {
+		    Pr( "%50s: %12d bytes\n", (Int)GlobalBags.cookie[i], 
+		        (Int)SIZE_BAG(*(GlobalBags.addr[i])) );
+		}
+	    }
+	}
+
         /* or finally toggle Gasman messages                               */
         else if ( SyStrcmp( CSTR_STRING(cmd), "message" ) == 0 ) {
             SyMsgsFlagBags = (SyMsgsFlagBags + 1) % 3;
@@ -2056,8 +1593,8 @@ again:
         else {
             cmd = ErrorReturnObj(
                 "GASMAN: <cmd> must be %s or %s",
-                (Int)"\"display\" or \"clear\"",
-                (Int)"\"collect\" or \"message\" or \"partial\"",
+                (Int)"\"display\" or \"clear\" or \"global\" or ",
+                (Int)"\"collect\" or \"partial\" or \"message\"",
                 "you can return a new string for <cmd>" );
             goto again;
         }
@@ -2151,7 +1688,7 @@ Obj FuncXTYPE_OBJ (
 **
 *F  FuncOBJ_HANDLE( <self>, <obj> ) . . . . . .  expert function 'OBJ_HANDLE'
 */
-Obj FuncOBJ_HANLDE (
+Obj FuncOBJ_HANDLE (
     Obj                 self,
     Obj                 obj )
 {
@@ -2184,7 +1721,7 @@ Obj FuncOBJ_HANLDE (
 **
 *F  FuncHANDLE_OBJ( <self>, <obj> ) . . . . . .  expert function 'HANDLE_OBJ'
 */
-Obj FuncHANLDE_OBJ (
+Obj FuncHANDLE_OBJ (
     Obj                 self,
     Obj                 obj )
 {
@@ -2228,6 +1765,48 @@ Obj FuncSWAP_MPTR (
         
     SwapMasterPoint( obj1, obj2 );
     return 0;
+}
+
+
+/****************************************************************************
+**
+*F  FuncIDENTS_GVAR( <self> ) . . . . . . . . . .  idents of global variables
+*/
+Obj FuncIDENTS_GVAR (
+    Obj                 self )
+{
+    extern Obj          NameGVars;
+    Obj                 copy;
+    UInt                i;
+
+    copy = NEW_PLIST( T_PLIST+IMMUTABLE, LEN_PLIST(NameGVars) );
+    for ( i = 1;  i <= LEN_PLIST(NameGVars);  i++ ) {
+	SET_ELM_PLIST( copy, i, ELM_PLIST( NameGVars, i ) );
+    }
+    SET_LEN_PLIST( copy, LEN_PLIST(NameGVars) );
+    return copy;
+}
+
+
+/****************************************************************************
+**
+*F  FuncASS_GVAR( <self>, <gvar>, <val> ) . . . . assign to a global variable
+*/
+Obj FuncASS_GVAR (
+    Obj                 self,
+    Obj                 gvar,
+    Obj                 val )
+{
+    /* check the argument                                                  */
+    while ( ! IsStringConv( gvar ) ) {
+        gvar = ErrorReturnObj(
+            "READ: <gvar> must be a string (not a %s)",
+            (Int)(InfoBags[TYPE_OBJ(gvar)].name), 0L,
+            "you can return a string for <gvar>" );
+    }
+
+    AssGVar( GVarName( CSTR_STRING(gvar) ), val );
+    return 0L;
 }
 
 
@@ -2391,6 +1970,10 @@ void InitGap (
     SET_REVISION( "gvars_c",    Revision_gvars_c );
     SET_REVISION( "gvars_h",    Revision_gvars_h );
 
+    InitStreams();
+    SET_REVISION( "gap_c",      Revision_streams_c );
+    SET_REVISION( "gap_h",      Revision_streams_h );
+
     InitObjects();
     SET_REVISION( "objects_c",  Revision_objects_c );
     SET_REVISION( "objects_h",  Revision_objects_h );
@@ -2537,6 +2120,10 @@ void InitGap (
     SET_REVISION( "read_c",     Revision_read_c );
     SET_REVISION( "read_h",     Revision_read_h );
 
+    InitSysFiles();
+    SET_REVISION( "sysfiles_c", Revision_sysfiles_c );
+    SET_REVISION( "sysfiles_h", Revision_sysfiles_h );
+
 
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TYPE+1; i <= LAST_REAL_TYPE; i++ ) {
@@ -2545,9 +2132,9 @@ void InitGap (
 
 
     /* init the completion function                                        */
-    InitGlobalBag( &CompNowFuncs  );
-    InitGlobalBag( &CompThenFuncs );
-    InitGlobalBag( &CompLists     );
+    InitGlobalBag( &CompNowFuncs, "gap: compnowfuncs"  );
+    InitGlobalBag( &CompThenFuncs,"gap: compthenfuncs" );
+    InitGlobalBag( &CompLists,    "gap: complists"  );
     CompLists = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CompLists, 0 );
 
@@ -2596,141 +2183,143 @@ void InitGap (
 
 
     /* install the internal functions                                      */
+    InitHandlerFunc( FuncRuntime, "Runtime");
     AssGVar( GVarName( "Runtime" ),
          NewFunctionC( "Runtime", 0L, "",
                     FuncRuntime ) );
 
+    InitHandlerFunc( SizeScreenHandler, "Size Screen");
     AssGVar( GVarName( "SizeScreen" ),
          NewFunctionC( "SizeScreen", -1L, "args",
                         SizeScreenHandler ) );
 
+    InitHandlerFunc( FuncID_FUNC, "ID_FUNC");
     AssGVar( GVarName( "ID_FUNC" ),
          NewFunctionC( "ID_FUNC", 1L, "object",
                     FuncID_FUNC ) );
-
-
-    /* install the print and error functions                               */
-    AssGVar( GVarName( "Print" ),
-         NewFunctionC( "Print", -1L, "args",
-                    FuncPrint ) );
-
-    AssGVar( GVarName( "DownEnv" ),
-         NewFunctionC( "DownEnv", -1L, "",
-                    FuncDownEnv ) );
-
-    AssGVar( GVarName( "Where" ),
-         NewFunctionC( "Where", -1L, "",
-                    FuncWhere ) );
-
-    AssGVar( GVarName( "Error" ),
-         NewFunctionC( "Error", -1L, "args",
-                    FuncError ) );
-
-
-    /* install the functions for creating the init file                    */
-    AssGVar( GVarName( "COM_FILE" ),
-         NewFunctionC( "COM_FILE", 2L, "filename, crc",
-                    FuncCOM_FILE ) );
-
-    AssGVar( GVarName( "COM_FUN" ),
-         NewFunctionC( "COM_FUN", 1L, "number",
-                    FuncCOM_FUN ) );
-
-    AssGVar( GVarName( "MAKE_INIT" ),
-         NewFunctionC( "MAKE_INIT", -1L, "output, input1, ...",
-                   FuncMAKE_INIT ) );
-
-
-    /* install functions for dynamically/statically loadable modules       */
-    AssGVar( GVarName( "GAP_CRC" ),
-         NewFunctionC( "GAP_CRC", 1L, "filename",
-                    FuncGAP_CRC ) );
-
-    AssGVar( GVarName( "LOAD_DYN" ),
-         NewFunctionC( "LOAD_DYN", 2L, "filename, crc",
-                    FuncLOAD_DYN ) );
-
-    AssGVar( GVarName( "LOAD_STAT" ),
-         NewFunctionC( "LOAD_STAT", 2L, "filename, crc",
-                    FuncLOAD_STAT ) );
-
-    AssGVar( GVarName( "SHOW_STAT" ),
-         NewFunctionC( "SHOW_STAT", 0L, "",
-                    FuncSHOW_STAT ) );
-
-
-    /* streams and files related functions                                 */
-    AssGVar( GVarName( "READ" ),
-         NewFunctionC( "READ", 1L, "filename",
-                    FuncREAD ) );
-
-    AssGVar( GVarName( "READ_AS_FUNC" ),
-         NewFunctionC( "READ_AS_FUNC", 1L, "filename",
-                    FuncREAD_AS_FUNC ) );
-
-    AssGVar( GVarName( "READ_GAP_ROOT" ),
-         NewFunctionC( "READ_GAP_ROOT", 1L, "filename",
-                    FuncREAD_GAP_ROOT ) );
-
-    AssGVar( GVarName( "ReadTest" ),
-         NewFunctionC( "ReadTest", 1L, "filename",
-                    FuncReadTest ) );
-
-    AssGVar( GVarName( "LogTo" ),
-         NewFunctionC( "LogTo", -1L, "args",
-                    FuncLogTo ) );
-
-    AssGVar( GVarName( "IsExistingFile" ),
-         NewFunctionC( "IsExistingFile", 1L, "filename",
-                    FuncIsExistingFile ) );
-
-    AssGVar( GVarName( "IsReadableFile" ),
-         NewFunctionC( "IsReadableFile", 1L, "filename",
-                    FuncIsReadableFile ) );
-
-    AssGVar( GVarName( "IsWritableFile" ),
-         NewFunctionC( "IsWritableFile", 1L, "filename",
-                    FuncIsWritableFile ) );
-
-    AssGVar( GVarName( "IsExecutableFile" ),
-         NewFunctionC( "IsExecutableFile", 1L, "filename",
-                    FuncIsExecutableFile ) );
 
     AssGVar( GVarName( "ExportToKernelFinished" ),
 	 NewFunctionC( "ExportToKernelFinished", 0L, "",
 		    FuncExportToKernelFinished ) );
 
 
+    /* install the print and error functions                               */
+    InitHandlerFunc( FuncPrint, "Print");
+    AssGVar( GVarName( "Print" ),
+         NewFunctionC( "Print", -1L, "args",
+                    FuncPrint ) );
+
+    InitHandlerFunc( FuncDownEnv, "DownEnv");
+    AssGVar( GVarName( "DownEnv" ),
+         NewFunctionC( "DownEnv", -1L, "",
+                    FuncDownEnv ) );
+
+    InitHandlerFunc( FuncWhere, "Where");
+    AssGVar( GVarName( "Where" ),
+         NewFunctionC( "Where", -1L, "",
+                    FuncWhere ) );
+
+    InitHandlerFunc( FuncError, "Error");
+    AssGVar( GVarName( "Error" ),
+         NewFunctionC( "Error", -1L, "args",
+                    FuncError ) );
+
+
+    /* install the functions for creating the init file                    */
+    InitHandlerFunc( FuncCOM_FILE, "COM_FILE");
+    AssGVar( GVarName( "COM_FILE" ),
+         NewFunctionC( "COM_FILE", 2L, "filename, crc",
+                    FuncCOM_FILE ) );
+
+    InitHandlerFunc( FuncCOM_FUN, "COM_FUN");
+    AssGVar( GVarName( "COM_FUN" ),
+         NewFunctionC( "COM_FUN", 1L, "number",
+                    FuncCOM_FUN ) );
+
+    InitHandlerFunc( FuncMAKE_INIT, "MAKE_INIT");
+    AssGVar( GVarName( "MAKE_INIT" ),
+         NewFunctionC( "MAKE_INIT", -1L, "output, input1, ...",
+                   FuncMAKE_INIT ) );
+
+
+    /* install functions for dynamically/statically loadable modules       */
+    InitHandlerFunc( FuncGAP_CRC, "GAP_CRC");
+    AssGVar( GVarName( "GAP_CRC" ),
+         NewFunctionC( "GAP_CRC", 1L, "filename",
+                    FuncGAP_CRC ) );
+
+    InitHandlerFunc( FuncLOAD_DYN, "LOAD_DYN");
+    AssGVar( GVarName( "LOAD_DYN" ),
+         NewFunctionC( "LOAD_DYN", 2L, "filename, crc",
+                    FuncLOAD_DYN ) );
+
+    InitHandlerFunc( FuncLOAD_STAT, "LOAD_STAT");
+    AssGVar( GVarName( "LOAD_STAT" ),
+         NewFunctionC( "LOAD_STAT", 2L, "filename, crc",
+                    FuncLOAD_STAT ) );
+
+    InitHandlerFunc( FuncSHOW_STAT, "SHOW_STAT");
+    AssGVar( GVarName( "SHOW_STAT" ),
+         NewFunctionC( "SHOW_STAT", 0L, "",
+                    FuncSHOW_STAT ) );
+
+
+    InitHandlerFunc( FuncExportToKernelFinished, "ExportToKernelFinished");
+    AssGVar( GVarName( "ExportToKernelFinished" ),
+	 NewFunctionC( "ExportToKernelFinished", 0L, "",
+		    FuncExportToKernelFinished ) );
+
+
     /* debugging functions                                                 */
-    AssGVar( GVarName( "GASMAN" ),
-         NewFunctionC( "GASMAN", -1L, "args",
-                    FuncGASMAN ) );
+    InitHandlerFunc( FuncGASMAN, "GASMAN");
+    AssGVar( GVarName(  "GASMAN" ),
+         NewFunctionC(  "GASMAN", -1L, "args",
+                     FuncGASMAN ) );
 
-    AssGVar( GVarName( "SHALLOW_SIZE" ),
-         NewFunctionC( "SHALLOW_SIZE", 1L, "object",
-                    FuncSHALLOW_SIZE ) );
+    InitHandlerFunc( FuncSHALLOW_SIZE, "SHALLOW_SIZE");
+    AssGVar( GVarName(  "SHALLOW_SIZE" ),
+         NewFunctionC(  "SHALLOW_SIZE", 1L, "object",
+                     FuncSHALLOW_SIZE ) );
 
-    AssGVar( GVarName( "TYPE_OBJ" ),
-         NewFunctionC( "TYPE_OBJ", 1L, "object",
-                    FuncTYPE_OBJ ) );
+    InitHandlerFunc( FuncTYPE_OBJ, "TYPE_OBJ");
+    AssGVar( GVarName(  "TYPE_OBJ" ),
+         NewFunctionC(  "TYPE_OBJ", 1L, "object",
+                     FuncTYPE_OBJ ) );
 
-    AssGVar( GVarName( "XTYPE_OBJ" ),
-         NewFunctionC( "XTYPE_OBJ", 1L, "object",
-                    FuncXTYPE_OBJ ) );
+    InitHandlerFunc( FuncXTYPE_OBJ, "XTYPE_OBJ");
+    AssGVar( GVarName(  "XTYPE_OBJ" ),
+         NewFunctionC(  "XTYPE_OBJ", 1L, "object",
+                     FuncXTYPE_OBJ ) );
 
-    AssGVar( GVarName( "OBJ_HANDLE" ),
-         NewFunctionC( "OBJ_HANDLE", 1L, "object",
-                    FuncOBJ_HANLDE ) );
+    InitHandlerFunc( FuncOBJ_HANDLE, "OBJ_HANDLE");
+    AssGVar( GVarName(  "OBJ_HANDLE" ),
+         NewFunctionC(  "OBJ_HANDLE", 1L, "object",
+                     FuncOBJ_HANDLE ) );
 
-    AssGVar( GVarName( "HANDLE_OBJ" ),
-         NewFunctionC( "HANDLE_OBJ", 1L, "object",
-                    FuncHANLDE_OBJ ) );
+    InitHandlerFunc( FuncHANDLE_OBJ, "HANDLE_OBJ");
+    AssGVar( GVarName(  "HANDLE_OBJ" ),
+         NewFunctionC(  "HANDLE_OBJ", 1L, "object",
+                     FuncHANDLE_OBJ ) );
 
-    AssGVar( GVarName( "SWAP_MPTR" ),
-         NewFunctionC( "SWAP_MPTR", 2L, "obj1, obj2",
-                    FuncSWAP_MPTR ) );
+    InitHandlerFunc( FuncSWAP_MPTR, "SWAP_MPTR");
+    AssGVar( GVarName(  "SWAP_MPTR" ),
+         NewFunctionC(  "SWAP_MPTR", 2L, "obj1, obj2",
+                     FuncSWAP_MPTR ) );
 
+    InitHandlerFunc( FuncIDENTS_GVAR, "IDENTS_GVAR");
+    AssGVar( GVarName(  "IDENTS_GVAR" ),
+         NewFunctionC(  "IDENTS_GVAR", 0L, "",
+                     FuncIDENTS_GVAR ) );
 
+    InitHandlerFunc( FuncASS_GVAR, "ASS_GVAR");
+    AssGVar( GVarName(  "ASS_GVAR" ),
+         NewFunctionC(  "ASS_GVAR", 2L, "gvar, value",
+                     FuncASS_GVAR ) );
+
+#ifdef DEBUG_HANDLER_REGISTRATION
+    CheckAllHandlers();
+#endif
+    
     /* read the init files                                                 */
     if ( SySystemInitFile[0] ) {
         if ( READ_GAP_ROOT(SySystemInitFile) == 0 ) {
@@ -2773,3 +2362,9 @@ void InitGap (
 
 *E  gap.c . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 */
+
+
+
+
+
+

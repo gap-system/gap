@@ -368,23 +368,14 @@ DeterminantChar := NewOperation( "DeterminantChar",
 ##  for a group element in the <class>-th conjugacy class of <tbl>.
 ##
 ##  'EigenvaluesChar( <tbl>, <char>, <class> )' is the list of length
-##  '$n$ = orders[ <class> ]' where at position 'i' the multiplicity
-##  of 'E(n)^i = $e^{\frac{2\pi i}{n}$' as eigenvalue of $M$ is stored.
+##  '$n$ = orders[ <class> ]' where at position 'k' the multiplicity
+##  of 'E(n)^k = $e^{\frac{2\pi i k}{n}$' as eigenvalue of $M$ is stored.
 ##
-##  We have '<char>[ <class> ] = List( [ 1 .. <n> ], i -> E(n)^i )
+##  We have '<char>[ <class> ] = List( [ 1 .. <n> ], k -> E(n)^k )
 ##                               * EigenvaluesChar( <tbl>, <char>, <class> ).
 ##
 EigenvaluesChar := NewOperation( "EigenvaluesChar",
     [ IsNearlyCharacterTable, IsCharacter, IsInt and IsPosRat ] );
-
-
-#############################################################################
-##
-#O  ScalarProduct( <chi>, <psi> )
-#O  ScalarProduct( <tbl>, <chi>, <psi> )
-##
-ScalarProduct := NewOperation( "ScalarProduct",
-    [ IsClassFunction, IsClassFunction ] );
 
 
 #############################################################################

@@ -52,10 +52,11 @@ char *          Revision_finfield_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #include        "calls.h"               /* NewFunctionC                    */
@@ -1935,19 +1936,19 @@ void            InitFinfield ( void )
     /* create the fields and integer conversion bags                       */
     CharFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( CharFF, 0 );
-    InitGlobalBag( &CharFF );
+    InitGlobalBag( &CharFF, "finfield: characteristics" );
     DegrFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( DegrFF, 0 );
-    InitGlobalBag( &DegrFF );
+    InitGlobalBag( &DegrFF, "finfield: degree" );
     SuccFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( SuccFF, 0 );
-    InitGlobalBag( &SuccFF );
+    InitGlobalBag( &SuccFF, "finfield: successor" );
     KindFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( KindFF, 0 );
-    InitGlobalBag( &KindFF );
+    InitGlobalBag( &KindFF, "finfield: element kinds" );
     IntFF = NEW_PLIST( T_PLIST, 0 );
     SET_LEN_PLIST( IntFF, 0 );
-    InitGlobalBag( &IntFF );
+    InitGlobalBag( &IntFF, "finifield: integer conversion" );
 
     /* install the functions that handle overflow                          */
     ImportFuncFromLibrary( "SUM_FFE_LARGE",  &SUM_FFE_LARGE  );
@@ -1957,26 +1958,32 @@ void            InitFinfield ( void )
     ImportFuncFromLibrary( "LOG_FFE_LARGE",  &LOG_FFE_LARGE  );
 
     /* install the internal functions                                      */
+    InitHandlerFunc( IsFFEHandler, "IS_FFE" );
     IsFFEFilt = NewFilterC(
         "IS_FFE", 1L, "obj", IsFFEHandler );
     AssGVar( GVarName( "IS_FFE" ), IsFFEFilt );
 
+    InitHandlerFunc( CharFFEDefaultHandler, "ffe: characteristic of FFE default");
     CharFFEDefaultFunc = NewFunctionC(
         "CHAR_FFE_DEFAULT", 1L, "z", CharFFEDefaultHandler );
     AssGVar( GVarName( "CHAR_FFE_DEFAULT" ), CharFFEDefaultFunc );
 
+    InitHandlerFunc( DegreeFFEDefaultHandler, "ffe: degree of FFE default");
     DegreeFFEDefaultFunc = NewFunctionC(
         "DEGREE_FFE_DEFAULT", 1L, "z", DegreeFFEDefaultHandler );
     AssGVar( GVarName( "DEGREE_FFE_DEFAULT" ), DegreeFFEDefaultFunc );
 
+    InitHandlerFunc( LogFFEDefaultHandler, "ffe: log in FFE default");
     LogFFEDefaultFunc = NewFunctionC(
         "LOG_FFE_DEFAULT", 2L, "z, r", LogFFEDefaultHandler );
     AssGVar( GVarName( "LOG_FFE_DEFAULT" ), LogFFEDefaultFunc );
 
+    InitHandlerFunc( IntFFEDefaultHandler, "ffe: int -> FFE default");
     IntFFEDefaultFunc = NewFunctionC(
         "INT_FFE_DEFAULT", 1L, "z", IntFFEDefaultHandler );
     AssGVar( GVarName( "INT_FFE_DEFAULT" ), IntFFEDefaultFunc );
 
+    InitHandlerFunc( ZHandler, "ffe: Z function");
     ZFunc = NewFunctionC(
         "Z", 1L, "q", ZHandler );
     AssGVar( GVarName( "Z" ), ZFunc );

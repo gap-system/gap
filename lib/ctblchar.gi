@@ -321,17 +321,48 @@ end;
 
 #############################################################################
 ##
-#F  Tensored( <chars1>, <chars2> )
+#M  Tensored( <chars1>, <chars2> )  . . . .  for two lists of class functions
 ##
-##  returns the list of tensor products of <chars1> with <chars2>.
-##
-Tensored := function( chars1, chars2 )
-
+InstallMethod( Tensored,
+    "method for two lists of class functions",
+    IsIdentical,
+    [ IsList and IsClassFunctionCollection,
+      IsList and IsClassFunctionCollection ], 0,
+    function( chars1, chars2 )
     local i, j, k, nccl, tensored, single;
-
-    if IsEmpty( chars1 ) then return []; fi;
     nccl:= Length( chars1[1] );
+    tensored:= [];
+    for i in chars1 do
+      for j in chars2 do
+        Add( tensored, i*j );
+      od;
+    od;
+    return tensored;
+    end );
 
+InstallOtherMethod( Tensored,
+    "method for list and empty list",
+    true,
+    [ IsList, IsList and IsEmpty ], 0,
+    function( chars, empty )
+    return [];
+    end );
+
+InstallOtherMethod( Tensored,
+    "method for empty list and list",
+    true,
+    [ IsList and IsEmpty, IsList ], 0,
+    function( empty, chars )
+    return [];
+    end );
+
+InstallOtherMethod( Tensored,
+    "method for two matrices",
+    IsIdentical,
+    [ IsMatrix, IsMatrix ], 0,
+    function( chars1, chars2 )
+    local i, j, k, nccl, tensored, single;
+    nccl:= Length( chars1[1] );
     tensored:= [];
     for i in chars1 do
       for j in chars2 do
@@ -341,7 +372,7 @@ Tensored := function( chars1, chars2 )
       od;
     od;
     return tensored;
-end;
+    end );
 
 
 #############################################################################

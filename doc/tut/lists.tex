@@ -224,18 +224,20 @@ the functions `Add' and `Append' change their arguments.
 
 {\GAP} knows several special kinds of lists.  A very important one is the
 *set*, which is a  list without holes all of  whose entries belong to the
-same *family*, which says (more or less) that they  can be compared using
-the `\<' operator. The crucial property of a set is then that its entries
-must  be  strictly sorted,  i.e.,   entries in higher   positions must be
-greater  with    respect to~`\<'.   In   particular, a    set cannot have
-duplicates.   {\GAP}   calls   a   set     also  a    *strictly    sorted
-list*\index{list!strictly sorted} and  the function `IsSSortedList' tests
-whether a given list is  a set. It returns  a boolean value. For any list
-contained in one  family there exists  a corresponding set containing the
-same elements   (ignoring  repitions). This   set is  constructed  by the
-function `Set'  which takes the  list as its argument   and returns a set
-obtained from this list by  ignoring holes and  duplicates and by sorting
-the elements.
+same *family*,
+\index{family}%
+which says (more  or less)  that they   can be  compared using  the  `\<'
+operator. The crucial property of a set is then that  its entries must be
+strictly sorted, i.e.,  entries in higher positions  must be greater with
+respect  to~`\<'. In  particular,  a set  cannot have duplicates.  {\GAP}
+calls a set also a *strictly sorted list*
+\index{list!strictly sorted}%
+and the function `IsSSortedList' tests whether a given  list is a set. It
+returns  a boolean value.  For  any list  contained  in one family  there
+exists a  corresponding   set containing  the  same   elements  (ignoring
+repitions). This set is constructed by the function `Set' which takes the
+list as   its argument and   returns a set  obtained  from this   list by
+ignoring holes and duplicates and by sorting the elements.
 
 The  elements  of  the  sets used  in  the  examples of this  section are
 strings.
@@ -329,7 +331,7 @@ as it would have in the long representation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{For and while loops}\null
 
-\index{loops!for}\index{loops!while}%
+\atindex{loops!for}{|indexit}\atindex{loops!while}{|indexit}%
 Given a list `pp' of permutations we can form their product by means of a
 `for' loop instead of writing down the product explicitly.
 \beginexample

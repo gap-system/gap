@@ -25,13 +25,13 @@ Revision.mapping_gi :=
 
 #############################################################################
 ##
-#V  FAMILIES_GENERAL_MAPPINGS
+#M  FamiliesOfGeneralMappingsAndRanges( <Fam> )
 ##
-##  is a list of triples, with first and second components the family of
-##  source resp. range elements, and third component the general mappings
-##  family.
-##
-FAMILIES_GENERAL_MAPPINGS := [];
+InstallMethod( FamiliesOfGeneralMappingsAndRanges,
+    "method for a family (return empty list)",
+    true,
+    [ IsFamily ], 0,
+    Fam -> [] );
 
 
 #############################################################################
@@ -39,12 +39,13 @@ FAMILIES_GENERAL_MAPPINGS := [];
 #F  GeneralMappingsFamily( <famsourceelms>, <famrangeelms> )
 ##
 GeneralMappingsFamily := function( FS, FR )
-    local entry, Fam;
+    local info, i, Fam;
 
     # Check whether this family was already constructed.
-    for entry in FAMILIES_GENERAL_MAPPINGS do
-      if IsIdentical( entry[1], FS ) and IsIdentical( entry[2], FR ) then
-        return entry[3];
+    info:= FamiliesOfGeneralMappingsAndRanges( FS );
+    for i in [ 2, 4 .. Length( info ) ] do
+      if IsIdentical( info[ i-1 ], FR ) then
+        return info[i];
       fi;
     od;
 
@@ -54,7 +55,7 @@ GeneralMappingsFamily := function( FS, FR )
     SetFamilySource( Fam, FS );
 
     # Store the family.
-    Add( FAMILIES_GENERAL_MAPPINGS, [ FS, FR, Fam ] );
+    Append( info, [ FR, Fam ] );
 
     # Return the family.
     return Fam;

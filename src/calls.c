@@ -37,10 +37,11 @@ char * Revision_calls_c =
 
 
 #include        "system.h"              /* Ints, UInts                     */
-#include        "scanner.h"             /* Pr                              */
-#include        "gasman.h"              /* Bag, NewBag                     */
 
+#include        "gasman.h"              /* Bag, NewBag                     */
 #include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "scanner.h"             /* Pr                              */
+
 #include        "gvars.h"               /* AssGVar, GVarName               */
 
 #define INCLUDE_DECLARATION_PART
@@ -1044,6 +1045,79 @@ Obj DoProfXargs (
 
 /****************************************************************************
 **
+*F  InitHandlerFunc( <handler>, <cookie> ) . . . . . . . . register a handler
+**
+**  Every handler should  be registered (once) before  it is installed in any
+**  function bag. This is needed so that it can be  identified when loading a
+**  saved workspace.  <cookie> should be a  unique  C string, identifying the
+**  handler
+*/
+
+#ifndef MAX_HANDLERS
+#define MAX_HANDLERS 4096
+#endif
+
+typedef struct {
+  ObjFunc hdlr;
+  Char *cookie;
+} TypeHandlerInfo;
+
+static TypeHandlerInfo HandlerFuncs[MAX_HANDLERS];
+static UInt NHandlerFuncs = 0;
+ 
+
+void InitHandlerFunc (
+     ObjFunc hdlr,
+     Char *cookie)
+{
+  if (NHandlerFuncs >= MAX_HANDLERS)
+    {
+      Pr("No room left for function handler\n",0L,0L);
+      SyExit(1);
+    }
+   HandlerFuncs[NHandlerFuncs].hdlr = hdlr;
+   HandlerFuncs[NHandlerFuncs].cookie = cookie;
+   NHandlerFuncs++;
+}
+
+
+
+static void CheckHandlersBag(
+      Bag bag )
+{
+#ifdef DEBUG_HANDLER_REGISTRATION
+  UInt i,j;
+  ObjFunc hdlr;
+  if (TYPE_BAG(bag) == T_FUNCTION)
+  {
+    for (j = 0; j < 8; j++)
+      {
+	hdlr = HDLR_FUNC(bag,j);
+	for (i = 0; i < NHandlerFuncs; i++)
+	  {
+	    if (hdlr == HandlerFuncs[i].hdlr)
+	      break;
+	  }
+	if (i == NHandlerFuncs)
+	  {
+	    Pr("Unregistered Handler %d args  ", j, 0L);
+	    PrintObj(NAME_FUNC(bag));
+	    Pr("\n",0L,0L);
+	  }
+      }
+  }
+#endif
+  return;
+}
+
+void CheckAllHandlers(
+       void )
+{
+  CallbackForAllBags( CheckHandlersBag);
+}
+
+/****************************************************************************
+**
 
 *F  NewFunction( <name>, <narg>, <nams>, <hdlr> ) . . . . make a new function
 **
@@ -1098,6 +1172,9 @@ Obj NewFunctionT (
 {
     Obj                 func;           /* function, result                */
     Obj                 prof;           /* profiling bag                   */
+
+
+
 
     /* make the function object                                            */
     func = NewBag( type, size );
@@ -1169,6 +1246,7 @@ Obj NewFunctionCT (
     Obj                 nams_o;         /* nams as an object               */
     Int                 len;            /* length                          */
     Int                 i, k, l;        /* loop variables                  */
+
 
     /* convert the arguments list to an object                             */
     len = 0;
@@ -1760,55 +1838,102 @@ void            InitCalls ()
     PrintObjFuncs[    T_FUNCTION ] = PrintFunction;
 
     /* make and install the 'IS_FUNCTION' filter                           */
+    InitHandlerFunc( IsFunctionHandler, "IS_FUNCTION" );
     IsFunctionFilt = NewFilterC( "IS_FUNCTION", 1L, "obj",
                                   IsFunctionHandler );
     AssGVar( GVarName( "IS_FUNCTION" ), IsFunctionFilt );
 
     /* make and install the 'CALL_FUNCTION' operation                      */
+    InitHandlerFunc( CallFunctionHandler, "CALL_FUNCTION" );
     CallFunctionOper = NewOperationC( "CALL_FUNCTION", -1L, "args",
                                        CallFunctionHandler );
     AssGVar( GVarName( "CALL_FUNCTION" ), CallFunctionOper );
 
     /* make and install the 'CALL_FUNC_LIST' operation                     */
+    InitHandlerFunc( CallFuncListHandler, "CALL_FUNC_LIST" );
     CallFuncListOper = NewOperationC( "CALL_FUNC_LIST", 2L, "func, list",
                                        CallFuncListHandler );
     AssGVar( GVarName( "CALL_FUNC_LIST" ), CallFuncListOper );
 
 
     /* make and install the 'NAME_FUNC' etc. operations                    */
+    InitHandlerFunc( NAME_FUNC_Handler, "NAME_FUNCTION" );
     NAME_FUNC_Oper = NewOperationC( "NAME_FUNCTION", 1L, "func",
                                      NAME_FUNC_Handler );
     AssGVar( GVarName( "NAME_FUNCTION" ), NAME_FUNC_Oper );
 
+    InitHandlerFunc( NARG_FUNC_Handler, "NARG_FUNCTION" );
     NARG_FUNC_Oper = NewOperationC( "NARG_FUNCTION", 1L, "func",
                                      NARG_FUNC_Handler );
     AssGVar( GVarName( "NARG_FUNCTION" ), NARG_FUNC_Oper );
 
+    InitHandlerFunc( NAMS_FUNC_Handler, "NAMS_FUNCTION" );
     NAMS_FUNC_Oper = NewOperationC( "NAMS_FUNCTION", 1L, "func",
                                      NAMS_FUNC_Handler );
     AssGVar( GVarName( "NAMS_FUNCTION" ), NAMS_FUNC_Oper );
 
+    InitHandlerFunc( PROF_FUNC_Handler, "PROF_FUNCTION" );
     PROF_FUNC_Oper = NewOperationC( "PROF_FUNCTION", 1L, "func",
                                      PROF_FUNC_Handler );
     AssGVar( GVarName( "PROF_FUNCTION" ), PROF_FUNC_Oper );
 
 
     /* make and install the profile functions                              */
+    InitHandlerFunc( FuncCLEAR_PROFILE_FUNCTION, "Clear Profile");
     AssGVar( GVarName( "CLEAR_PROFILE_FUNCTION" ),
          NewFunctionC( "CLEAR_PROFILE_FUNCTION", 1L, "function",
                     FuncCLEAR_PROFILE_FUNCTION ) );
 
+    InitHandlerFunc( FuncIS_PROFILED_FUNCTION, "Is Profiled");
     AssGVar( GVarName( "IS_PROFILED_FUNCTION" ),
          NewFunctionC( "IS_PROFILED_FUNCTION", 1L, "function",
                     FuncIS_PROFILED_FUNCTION ) );
 
+    InitHandlerFunc( FuncPROFILE_FUNCTION, "Profile function");
     AssGVar( GVarName( "PROFILE_FUNCTION" ),
          NewFunctionC( "PROFILE_FUNCTION", 1L, "function",
                     FuncPROFILE_FUNCTION ) );
 
+    InitHandlerFunc( FuncUNPROFILE_FUNCTION, "Unprofile function");
     AssGVar( GVarName( "UNPROFILE_FUNCTION" ),
          NewFunctionC( "UNPROFILE_FUNCTION", 1L, "function",
                     FuncUNPROFILE_FUNCTION ) );
+
+
+    InitHandlerFunc( DoFail0args, "0 arg fail");
+    InitHandlerFunc( DoFail1args, "1 arg fail");
+    InitHandlerFunc( DoFail2args, "2 arg fail");
+    InitHandlerFunc( DoFail3args, "3 arg fail");
+    InitHandlerFunc( DoFail4args, "4 arg fail");
+    InitHandlerFunc( DoFail5args, "5 arg fail");
+    InitHandlerFunc( DoFail6args, "6 arg fail");
+    InitHandlerFunc( DoFailXargs, "X arg fail");
+
+    InitHandlerFunc( DoWrap0args, "0 arg wrap");
+    InitHandlerFunc( DoWrap1args, "1 arg wrap");
+    InitHandlerFunc( DoWrap2args, "2 arg wrap");
+    InitHandlerFunc( DoWrap3args, "3 arg wrap");
+    InitHandlerFunc( DoWrap4args, "4 arg wrap");
+    InitHandlerFunc( DoWrap5args, "5 arg wrap");
+    InitHandlerFunc( DoWrap6args, "6 arg wrap");
+
+    InitHandlerFunc( DoProf0args, "0 arg profile");
+    InitHandlerFunc( DoProf1args, "1 arg profile");
+    InitHandlerFunc( DoProf2args, "2 arg profile");
+    InitHandlerFunc( DoProf3args, "3 arg profile");
+    InitHandlerFunc( DoProf4args, "4 arg profile");
+    InitHandlerFunc( DoProf5args, "5 arg profile");
+    InitHandlerFunc( DoProf6args, "6 arg profile");
+    InitHandlerFunc( DoProfXargs, "X arg profile");
+
+    InitHandlerFunc( DoComplete0args, "0 arg complete");
+    InitHandlerFunc( DoComplete1args, "1 arg complete");
+    InitHandlerFunc( DoComplete2args, "2 arg complete");
+    InitHandlerFunc( DoComplete3args, "3 arg complete");
+    InitHandlerFunc( DoComplete4args, "4 arg complete");
+    InitHandlerFunc( DoComplete5args, "5 arg complete");
+    InitHandlerFunc( DoComplete6args, "6 arg complete");
+    InitHandlerFunc( DoCompleteXargs, "X arg complete");
 }
 
 
