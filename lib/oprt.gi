@@ -579,34 +579,47 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     hom := rec( externalSet := xset );
     if IsExternalSetByOperatorsRep( xset )  then
         filter := filter and IsOperationHomomorphismByOperators;
-    elif     IsDomainEnumerator( D )
-         and IsFreeLeftModule( UnderlyingCollection( D ) )
-         and IsFullRowModule( UnderlyingCollection( D ) )
-         and IsLeftActedOnByDivisionRing( UnderlyingCollection( D ) )
+    elif     IsMatrixGroup( G )
+         and IsScalarList( D[ 1 ] )
          and opr in [ OnPoints, OnRight ]  then
-        filter := filter and IsGeneralLinearOperationHomomorphism;
-    else
-        if IsExternalSubset( xset )  then
-            D := Enumerator( xset );
+        if     not IsExternalSubset( xset )
+           and IsDomainEnumerator( D )
+           and IsFreeLeftModule( UnderlyingCollection( D ) )
+           and IsFullRowModule( UnderlyingCollection( D ) )
+           and IsLeftActedOnByDivisionRing( UnderlyingCollection( D ) )  then
+            filter := filter and IsGeneralLinearOperationHomomorphismWithBase;
+        else
+            if IsExternalSubset( xset )  then
+                if HasEnumerator( xset )  then  D := Enumerator( xset );
+                                          else  D := xset!.start;         fi;
+            fi;
+            if IsSubset( D, IdentityMat
+                       ( Length( D[ 1 ] ), One( D[ 1 ][ 1 ] ) ) )  then
+                filter := filter and
+                          IsGeneralLinearOperationHomomorphismWithBase;
+            else
+                filter := filter and IsGeneralLinearOperationHomomorphism;
+            fi;
         fi;
-        if       IsPermGroup( G )
-             and IsList( D ) and IsCyclotomicsCollection( D )
-             and opr = OnPoints  then
-            filter := IsConstituentHomomorphism;
-            hom.conperm := MappingPermListList( D, [ 1 .. Length( D ) ] );
-        elif     IsPermGroup( G )
-             and IsList( D )
-             and ForAll( D, IsList and IsSSortedList )
-             and Sum( D, Length ) = Length( Union( D ) )
-             and opr = OnSets  then
-            filter := IsBlocksHomomorphism;
-            hom.reps := [  ];
-            for i  in [ 1 .. Length( D ) ]  do
-                hom.reps{ D[ i ] } := i + 0 * D[ i ];
-            od;
-        elif not ( IsPermGroup( G )  or  IsPcGroup( G ) )  then
-            filter := filter and IsOperationHomomorphismDirectly;
-        fi;
+    elif not IsExternalSubset( xset )
+         and IsPermGroup( G )
+         and IsList( D ) and IsCyclotomicsCollection( D )
+         and opr = OnPoints  then
+        filter := IsConstituentHomomorphism;
+        hom.conperm := MappingPermListList( D, [ 1 .. Length( D ) ] );
+    elif not IsExternalSubset( xset )
+         and IsPermGroup( G )
+         and IsList( D )
+         and ForAll( D, IsList and IsSSortedList )
+         and Sum( D, Length ) = Length( Union( D ) )
+         and opr = OnSets  then
+        filter := IsBlocksHomomorphism;
+        hom.reps := [  ];
+        for i  in [ 1 .. Length( D ) ]  do
+            hom.reps{ D[ i ] } := i + 0 * D[ i ];
+        od;
+    elif not ( IsPermGroup( G )  or  IsPcGroup( G ) )  then
+        filter := filter and IsOperationHomomorphismDirectly;
     fi;
     if HasBase( xset )  then
         filter := filter and IsOperationHomomorphismByBase;
@@ -947,7 +960,7 @@ InstallMethod( SparseOperationHomomorphismOp,
           IsList,
           IsFunction ], 0,
     function( G, D, start, gens, oprs, opr )
-    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs;
+    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom;
 
     start := List( start, p -> PositionCanonical( D, p ) );
     list := List( gens, gen -> [  ] );
@@ -967,8 +980,10 @@ InstallMethod( SparseOperationHomomorphismOp,
         ps := ps + 1;
     od;
     imgs := List( list, PermList );
-    return GroupHomomorphismByImages
-           ( G, SymmetricGroup( Length( start ) ), gens, imgs );
+    hom := OperationHomomorphism( G, start, gens, oprs, opr );
+    SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImages
+            ( G, SymmetricGroup( Length( start ) ), gens, imgs ) );
+    return hom;
 end );
 
 InstallOtherMethod( SparseOperationHomomorphismOp,
@@ -978,7 +993,7 @@ InstallOtherMethod( SparseOperationHomomorphismOp,
           IsList,
           IsFunction ], 0,
     function( G, start, gens, oprs, opr )
-    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs;
+    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom;
 
     start := ShallowCopy( start );
     list := List( gens, gen -> [  ] );
@@ -998,8 +1013,10 @@ InstallOtherMethod( SparseOperationHomomorphismOp,
         ps := ps + 1;
     od;
     imgs := List( list, PermList );
-    return GroupHomomorphismByImages
-           ( G, SymmetricGroup( Length( start ) ), gens, imgs );
+    hom := OperationHomomorphism( G, start, gens, oprs, opr );
+    SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImages
+            ( G, SymmetricGroup( Length( start ) ), gens, imgs ) );
+    return hom;
 end );
 
 #############################################################################
@@ -1118,6 +1135,9 @@ InstallMethod( PermutationOp, true, [ IsObject, IsList, IsFunction ], 0,
             old := new;
             pnt := opr( pnt, g );
             new := PositionCanonical( D, pnt );
+            if new = fail  then
+                return fail;
+            fi;
             blist[ new ] := true;
             list[ old ] := new;
         until new = fst;
@@ -1182,11 +1202,17 @@ InstallMethod( PermutationCycleOp, true,
     
     list := [  ];
     fst := PositionCanonical( D, pnt );
+    if fst = fail  then
+        return ();
+    fi;
     new := fst;
     repeat
         old := new;
         pnt := opr( pnt, g );
         new := PositionCanonical( D, pnt );
+        if new = fail  then
+            return fail;
+        fi;
         list[ old ] := new;
     until new = fst;
     return PermList( list );
@@ -2061,9 +2087,8 @@ end );
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsGeneralLinearOperationHomomorphism,
-          IsMultiplicativeElementWithInverse ], 0,
+InstallMethod( PreImagesRepresentative, true,
+        [ IsGeneralLinearOperationHomomorphism, IsPerm ], 0,
     function( hom, elm )
     local   V,  base,  mat,  b;
 
@@ -2073,7 +2098,8 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     for b  in base  do
         Add( mat, V[ PositionCanonical( V, b ) ^ elm ] );
     od;
-    if    IsGeneralLinearGroup( Source( hom ) )
+    if    IsGeneralLinearOperationHomomorphismWithBase( hom )
+       or IsGeneralLinearGroup( Source( hom ) )
        or mat in Source( hom )  then  return mat;
                                 else  return fail;  fi;
 end );

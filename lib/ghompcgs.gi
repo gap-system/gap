@@ -47,33 +47,6 @@ function( G, H, gens, imgs )
     return hom;
 end );
 
-InstallMethod( GroupHomomorphismByImages, 
-    "generic method for pc homs",
-    true, 
-    [ IsGroup, IsPcGroup, IsList, IsList ],
-    0,
-
-function( G, H, gens, imgs )
-    local pcgs, U, hom, filter;
-
-    filter := IsToPcGroupHomomorphismByImages;
-
-    hom := Objectify( 
-           NewKind( 
-           GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-                                  ElementsFamily( FamilyObj( H ) ) ),
-           filter ),
-           rec( generators       := gens,
-                genimages        := imgs ) );
-
-    SetSource        ( hom, G );
-    SetPreImagesRange( hom, G );
-
-    SetRange( hom, H );
-    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
-
-    return hom;
-end );
 
 InstallMethod( GroupHomomorphismByImages, 
     "generic method for pc homs",

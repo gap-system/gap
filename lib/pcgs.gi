@@ -161,22 +161,6 @@ end );
 #############################################################################
 ##
 
-#M  ExtendedPcgs( <pcgs>, <empty-list> )
-##
-InstallOtherMethod( ExtendedPcgs,
-    "induced pcgs, empty list", true,
-    [ IsInducedPcgs,
-      IsList and IsEmpty ],
-    0,
-
-function( N, gens )
-    return N;
-end );
-
-
-#############################################################################
-##
-
 #M  IsPrimeOrdersPcgs( <pcgs> )
 ##
 InstallMethod( IsPrimeOrdersPcgs,
@@ -318,6 +302,28 @@ function( pcgs, elm, pos )
     return PcElementByExponents( pcgs, exp );
 end );
 
+#############################################################################
+##
+#M  HomePcgs( <G> )
+##
+InstallMethod( HomePcgs, true, [ IsGroup ], 0, Pcgs );
+
+#############################################################################
+##
+#M  InducedPcgsWrtHomePcgs( <G> )
+##
+InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
+        [ IsGroup ], 0,
+    function( G )
+    local   home;
+    
+    home := HomePcgs( G );
+    if IsIdentical( home, Pcgs( G ) )  then
+        return InducedPcgsByPcSequenceNC( home, home );
+    else
+        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
+    fi;
+end );
 
 #############################################################################
 ##
@@ -505,6 +511,18 @@ end );
 
 #############################################################################
 ##
+#M  Pcgs( <G> )
+##
+InstallMethod( Pcgs, "fail if insolvable", true,
+        [ HasIsSolvableGroup ], SUM_FLAGS,
+    function( G )
+    if not IsSolvableGroup( G )  then  return fail;
+                                 else  TryNextMethod();  fi;
+end );
+
+
+#############################################################################
+##
 #M  ReducedPcElement( <pcgs>, <left>, <right> )
 ##
 InstallMethod( ReducedPcElement,
@@ -608,6 +626,17 @@ InstallMethod( SumOfPcElement,
 function( pcgs, left, right )
     return PcElementByExponents( pcgs,
         ExponentsOfPcElement(pcgs,left)+ExponentsOfPcElement(pcgs,right) );
+end );
+
+
+#############################################################################
+##
+#M  ExtendedPcgs( <N>, <no-gens> )
+##
+InstallMethod( ExtendedPcgs, "pcgs, empty list", true,
+        [ IsPcgs, IsList and IsEmpty ], 0,
+    function( N, gens )
+    return N;
 end );
 
 

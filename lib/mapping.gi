@@ -151,14 +151,13 @@ Image := function ( arg )
       map := arg[1];
       elm := arg[2];
 
-      if not IsMapping( map ) then
-        Error( "<map> must be a mapping" );
-      fi;
+      if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) ) then
 
-      if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) )
-         and elm in Source( map ) then
-
-        return ImageElm( map, elm );
+        if not IsMapping( map ) then
+          Error( "<map> must be a mapping" );
+        elif elm in Source( map ) then
+          return ImageElm( map, elm );
+        fi;
 
       # image of a set or list of elments <elm> under the mapping <map>
       elif     CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) )
@@ -246,16 +245,14 @@ PreImage := function ( arg )
         map := arg[1];
         img := arg[2];
 
-        if not (     IsGeneralMapping( map ) and IsInjective( map )
-                 and IsSurjective( map ) ) then
-          Error( "<map> must be an inj. and surj. mapping" );
-        fi;
-
         # preimage of a single element <img> under <map>
-        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) )
-           and img in Range( map ) then
-
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+          if not (     IsGeneralMapping( map ) and IsInjective( map )
+                   and IsSurjective( map ) ) then
+            Error( "<map> must be an inj. and surj. mapping" );
+          elif img in Range( map ) then
             return PreImageElm( map, img );
+          fi;
 
         # preimage of a set or list of elments <img> under <map>
         elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )

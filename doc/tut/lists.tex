@@ -1,0 +1,500 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Chapter{Lists}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Plain lists}
+
+A *list* is a collection of objects separated by  commas and enclosed  in
+brackets.  Let us for example construct the list `primes' of the first 10
+prime numbers.
+\beginexample
+    gap> primes:= [2, 3, 5, 7, 11, 13, 17, 19, 23, 29];
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+\endexample
+The next two primes are  31 and 37.  They may be appended to the existing
+list by the function `Append' which takes  the existing list as its first
+and another list as a second argument.  The  second argument  is appended
+to the list `primes' and  no  value is returned.  Note that  by appending
+another list the object `primes' is changed.
+\beginexample
+    gap> Append(primes, [31, 37]);
+    gap> primes;
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37 ] 
+\endexample
+You can as well add single new elements to existing lists by the function
+`Add'  which takes  the existing list  as its  first argument  and  a new
+element as  its second argument.  The  new  element  is added to the list
+`primes' and again no value is returned but the list `primes' is changed.
+\beginexample
+    gap> Add(primes, 41);
+    gap> primes;
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41 ] 
+\endexample
+Single elements of a list are referred to by their position in the  list.
+To get the value  of the seventh prime, that is the seventh entry in  our
+list `primes', you simply type
+\beginexample
+    gap> primes[7];
+    17 
+\endexample
+and you  will get the  value  of the  seventh prime.  This  value  can be
+handled like any other value, for example multiplied by 2 or  assigned to
+a variable.  On the other hand this mechanism allows to assign a value to
+a  position in  a list.  So the next prime 43 may be inserted in the list
+directly  after  the  last  occupied  position  of `primes'.   This  last
+occupied position is returned by the function `Length'.
+\beginexample
+    gap> Length(primes);
+    13
+    gap> primes[14]:= 43;
+    43
+    gap> primes;
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43 ] 
+\endexample
+Note that this operation again has changed the object `primes'.  Not only
+the next position of a list is capable  of taking  a  new  value.  If you
+know that 71 is the 20th prime, you can as well enter it right now in the
+20th position of `primes'.   This  will result in a list with holes which
+is however still a list and has length 20 now.
+\beginexample
+    gap> primes[20]:= 71;
+    71
+    gap> primes;
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,,,,,, 71 ]
+    gap> Length(primes);
+    20 
+\endexample
+The list itself however must  exist before a  value can be  assigned to a
+position of the list.  This list may be the empty list `[ ]'.
+\beginexample
+    gap> lll[1]:= 2;
+    Error, Variable: 'lll' must have a value
+    gap> lll:= []; lll[1]:= 2;
+    2 
+\endexample
+Of course  existing entries of a list  can be  changed by this mechanism,
+too. We will not do it here because `primes' then may no longer be a list
+of primes. Try for yourself to change the 17 in the list into a 9.
+
+To get the position    of 17 in  the   list  `primes' use   the  function
+`Position' which takes the list as its  first argument and the element as
+its second argument  and returns the position of  the first occurrence of
+the element 17 in the list `primes'. `Position' will return `fail' if the
+element is not contained in the list.
+\beginexample
+    gap> Position(primes, 17);
+    7
+    gap> Position(primes, 20);
+    fail
+\endexample
+In  all  of the  above changes to  the  list `primes',  the list has been
+automatically resized.  There  is no need  for you to tell {\GAP} how big
+you want a list to be.  This is all done dynamically.
+
+It is not necessary for the objects collected in a list to be of the same
+type.
+\beginexample
+    gap> lll:= [true, "This is a String",,, 3];
+    [ true, "This is a String",,, 3 ] 
+\endexample
+In the same way a list may be part of another  list.  A list  may even be
+part of itself.
+\beginexample
+    gap> lll[3]:= [4,5,6];; lll;
+    [ true, "This is a String", [ 4, 5, 6 ],, 3 ]
+    gap> lll[4]:= lll;
+    [ true, "This is a String", [ 4, 5, 6 ], ~, 3 ] 
+\endexample
+Now the tilde in the fourth position of `lll'  denotes the object that is
+currently  printed. Note that  the result  of the  last operation is  the
+actual value  of  the  object  `lll'   on  the  right  hand side  of  the
+assignment. But in  fact it is  identical to the value  of the whole list
+`lll' on the left hand side of the assignment.
+
+A *string* is   a very  special type  of  list,  which  is printed in   a
+different way. A string is simply a dense list of characters. Strings are
+used mainly in filenames and error messages. A  string literal can either
+be entered simply as the list of  characters or by writing the characters
+between  doublequotes `\"'. GAP will  always output strings in the latter
+format.
+\beginexample
+    gap> s1 := ['H','a','l','l','o',' ','w','o','r','l','d','.'];
+    "Hallo world."
+    gap> s1 = "Hallo world.";
+    true
+    gap> s1[7];
+    'w' 
+\endexample
+Sublists of lists can easily be extracted and assigned using the operator
+`<list>\{ <positions> \}'.
+\beginexample
+    gap> sl := lll{ [ 1, 2, 3 ] };
+    [ true, "This is a String", [ 4, 5, 6 ] ]
+    gap> sl{ [ 2, 3 ] } := [ "New String", false ];
+    [ "New String", false ]
+    gap> sl;
+    [ true, "New String", false ] 
+\endexample
+This way you get  a new list that  contains at position <i> that  element
+whose position is the <i>th entry of the argument in the curly braces.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Identical lists}
+
+This  second section about lists  is  dedicated to  the subtle difference
+between  equality and identity  of   lists. It  is  really important   to
+understand this  difference in   order  to understand how  complex   data
+structures   are realized in {\GAP}.  This  section applies to all {\GAP}
+objects that have    subobjects, i.~e., to lists  and   to records. After
+reading the section  about records you should  return to this section and
+translate it into the record context.
+
+Two  lists are equal if all their entries are equal.  This means that the
+equality operator `=' returns `true' for the  comparison of  two lists if
+and  only if these two lists are of the same length and for each position
+the values in the respective lists are equal.
+\beginexample
+    gap> numbers := primes;; numbers = primes;
+    true 
+\endexample
+We assigned  the  list `primes' to the variable  `numbers' and, of course
+they are equal as they have  both  the same length  and the same entries.
+Now we  will change the  third number to  4 and  compare the result again
+with `primes'.
+\beginexample
+    gap> numbers[3]:= 4;; numbers = primes;
+    true 
+\endexample
+You  see that  `numbers' and  `primes'  are still   equal, check this  by
+printing the value of `primes'. The list `primes' is  no longer a list of
+primes! What has  happened?  The truth is  that  the  lists  `primes' and
+`numbers' are  not  only  equal but  they  are  identical.  `primes'  and
+`numbers' are two variables pointing to the  same list. If you change the
+value of  the subobject `numbers[3]'  of `numbers' this will  also change
+`primes'.  Variables do *not* point to  a certain block of storage memory
+but they do  point  to an object that  occupies  storage memory.   So the
+assignment `numbers := primes' did *not* create a new list in a different
+place of memory but only created the new name `numbers'  for the same old
+list of primes. *The same object can have several names.*
+
+If you want to change a list with the  contents of `primes' independently
+from `primes'  you will have to  make a copy of  `primes' by the function
+`ShallowCopy' which takes an object as its argument and returns a copy of
+the argument. (We will first restore the old value of `primes'.)
+\beginexample
+    gap> primes[3]:= 5;; primes;
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43,,,,,, 71 ]
+    gap> numbers:= ShallowCopy(primes);; numbers = primes;
+    true
+    gap> numbers[3]:= 4;; numbers = primes;
+    false 
+\endexample
+Now `numbers' is no longer equal to `primes' and `primes' still is a list
+of primes.  Check this by printing the values of `numbers' and `primes'.
+
+The  only objects  that can be  changed  this way  are records and lists,
+because only {\GAP} objects of  these  types have subobjects.  To clarify
+this statement consider the following example.
+\beginexample
+    gap> i:= 1;; j:= i;; i:= i+1;; 
+\endexample
+By adding 1 to `i' the value of `i' has  changed.   What  happens to `j'?
+After the second statement `j' points to the same object  as `i',  namely
+to the  integer 1.  The  addition  does *not* change  the object `1'  but
+creates a new object according  to the instruction `i+1'.  It is actually
+the assignment that changes the value of `i'.  Therefore `j' still points
+to  the object `1'.  Integers  (like permutations and  booleans)  have no
+subobjects.  Objects  of these types  cannot  be  changed but can only be
+replaced by other objects.   And a replacement does not change the values
+of other variables.  In the above example an assignment of a new value to
+the variable `numbers' would also not change the value of `primes'.
+
+Finally try the following examples and explain the results.
+\beginexample
+    gap> l:= [];; l:= [l];
+    [ [  ] ]
+    gap> l[1]:= l;
+    [ ~ ]
+\endexample
+Now return to the  preceding section  "About Lists" and  find out whether
+the functions `Add' and `Append' change their arguments.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Sets}
+
+{\GAP} knows several special kinds of lists.  A very important one is the
+*set*, which is a  list without holes all of  whose entries belong to the
+same *family*, which says (more or less) that they  can be compared using
+the `\<' operator. The crucial property of a set is then that its entries
+must  be  strictly sorted,  i.e.,   entries in higher   positions must be
+greater  with    respect to~`\<'.   In   particular, a    set cannot have
+duplicates.   {\GAP}   calls   a   set     also  a    *strictly    sorted
+list*\index{list!strictly sorted} and  the function `IsSSortedList' tests
+whether a given list is  a set. It returns  a boolean value. For any list
+contained in one  family there exists  a corresponding set containing the
+same elements   (ignoring  repitions). This   set is  constructed  by the
+function `Set'  which takes the  list as its argument   and returns a set
+obtained from this list by  ignoring holes and  duplicates and by sorting
+the elements.
+
+The  elements  of  the  sets used  in  the  examples of this  section are
+strings.
+\beginexample
+    gap> fruits:= ["apple", "strawberry", "cherry", "plum"];
+    [ "apple", "strawberry", "cherry", "plum" ]
+    gap> IsSSortedList(fruits);
+    false
+    gap> fruits:= Set(fruits);
+    [ "apple", "cherry", "plum", "strawberry" ] 
+\endexample
+Note  that the  original list `fruits'  is not  changed  by the  function
+`Set'.  It   produces a new  which  we  have to   assign to  the variable
+`fruits'.
+
+The `in' operator is  used  to test whether an  object is an element of a
+set.  It returns a boolean value `true' or `false'.
+\beginexample
+    gap> "apple" in fruits;
+    true
+    gap> "banana" in fruits;
+    false 
+\endexample
+The `in' operator may as well be applied to ordinary lists. It is however
+much faster to perform  a membership test for sets  since sets are always
+sorted and a binary  search can be used instead  of a linear search.  New
+elements may be added to a  set by the function  `AddSet' which takes the
+set `fruits' as its first argument and an  element as its second argument
+and adds the element to the set if it wasn't already there. Note that the
+object `fruits' is changed.
+\beginexample
+    gap> AddSet(fruits, "banana");
+    gap> fruits;        #  The banana is inserted in the right place.
+    [ "apple", "banana", "cherry", "plum", "strawberry" ]
+    gap> AddSet(fruits, "apple");
+    gap> fruits;        #  `fruits' has not changed.
+    [ "apple", "banana", "cherry", "plum", "strawberry" ] 
+\endexample
+Sets can be intersected by the function `Intersection'  and united by the
+function `Union' which both take  two sets as their arguments  and return
+the intersection (union) of the two sets as a new object.
+\beginexample
+    gap> breakfast:= ["tea", "apple", "egg"];
+    [ "tea", "apple", "egg" ]
+    gap> Intersection(breakfast, fruits);
+    [ "apple" ] 
+\endexample
+The arguments of the functions `Intersection' and `Union'  may as well be
+ordinary lists,  while  their result is  always  a set. Note that  in the
+preceding example at least one argument of  `Intersection' was not a set.
+The functions `IntersectSet'  and `UniteSet'  also form the  intersection
+resp.~union  of  two sets. They  will  however not return  the result but
+change their first argument to be the result. Try them carefully.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Ranges}
+
+A *range* is a finite arithmetic progression of integers. This is another
+special kind   of list. A range  is  described by its minimum  (the first
+entry), its second entry and its maximum, separated  by a comma resp. two
+dots and enclosed in brackets. In the usual case  of an ascending list of
+consecutive integers the second entry may be omitted.
+\beginexample
+    gap> [1..999999];     #  a range of almost a million numbers
+    [ 1 .. 999999 ]
+    gap> [1, 2..999999];  #  this is equivalent
+    [ 1 .. 999999 ]
+    gap> [1, 3..999999];  #  here the step is 2
+    [ 1, 3 .. 999999 ]
+    gap> Length( last );
+    500000
+    gap> [ 999999, 999997 .. 1 ];
+    [ 999999, 999997 .. 1 ]
+\endexample
+This compact printed representation of a fairly long  list corresponds to
+a  compact internal representation.  The function `IsRange' tests whether
+an object is a range.  If this is true for a list but the list is not yet
+represented in the compact form of a range this will be done then.
+\beginexample
+    gap> a:= [-2,-1,0,1,2,3,4,5];
+    [ -2, -1, 0, 1, 2, 3, 4, 5 ]
+    gap> IsRange(a);
+    true
+    gap> a;
+    [ -2 .. 5 ]
+\endexample
+Note that this  change of representation does  *not* change the  value of
+the list `a'. The list `a'  still behaves in any context  in the same way
+as it would have in the long representation.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{For and while loops}\null
+
+\index{loops!for}\index{loops!while}%
+Given a list `pp' of permutations we can form their product by means of a
+`for' loop instead of writing down the product explicitly.
+\beginexample
+    gap> pp:= [ (1,3,2,6,8)(4,5,9), (1,6)(2,7,8)(4,9), (1,5,7)(2,3,8,6),
+    >           (1,8,9)(2,3,5,6,4), (1,9,8,6,3,4,7,2) ];;
+    gap> prod:= ();;
+    gap> for p in pp do
+    >       prod:= prod * p;
+    >    od;
+    gap> prod;
+    (1,8,4,2,3,6,5)
+\endexample
+First a  new variable `prod'  is initialized  to the identity permutation
+`()'. Then the loop variable `p' takes as its value one permutation after
+the other from the list `pp' and is multiplied with  the present value of
+`prod'  resulting in a  new value which  is then assigned  to `prod'. The
+`for' loop has the syntax `for <var> in <list> do <statements> od;'
+
+The  effect of the `for'  loop  is to execute the <statements> for  every
+element  of  the <list>.   A `for'  loop  is  a  statement  and therefore
+terminated by a semicolon.  The list of <statements>  is enclosed by  the
+keywords `do' and `od'  (reverse  `do').  A `for'  loop returns no value.
+Therefore we had  to  ask  explicitly for  the  value  of  `prod' in  the
+preceding example.
+
+The `for' loop can loop over any kind of list, even a list with holes. In
+many programming languages (and  in former versions  of {\GAP},  too) the
+`for' loop has the form `for <var> from <first> to <last> do <statements>
+od;' But   this is merely  a special  case of  the general `for'  loop as
+defined above where the <list> in the loop body is a range. `for <var> in
+[<first>..<last>] do <statements>  od;' You can for  instance loop over a
+range to compute the  factorial $15!$ of the  number 15 in the  following
+way.
+\beginexample
+    gap> ff:= 1;;
+    gap> for i in [1..15] do
+    >       ff:= ff * i;
+    >    od;
+    gap> ff;
+    1307674368000 
+\endexample
+The following  example introduces the  `while' loop which  has the syntax
+`while <condition> do <statements>  od;' The `while'  loop loops over the
+<statements>  as long as  the <condition> evaluates  to  `true'. Like the
+`for' loop the `while' loop is terminated by the keyword `od' followed by
+a semicolon.
+
+We can use  our list `primes' to perform a very simple factorization.  We
+begin by  initializing a list `factors' to the empty list.   In this list
+we want to collect the prime factors of the number 1333.  Remember that a
+list has to exist  before any values  can be assigned to positions of the
+list.  Then we  will loop over the list `primes' and  test for each prime
+whether it divides the  number.  If it does we will  divide the number by
+that prime, add it to the list `factors' and continue.
+\beginexample
+    gap> n:= 1333;;
+    gap> factors:= [];;
+    gap> for p in primes do
+    >       while n mod p = 0 do
+    >          n:= n/p;
+    >          Add(factors, p);
+    >       od;
+    >    od;
+    gap> factors; n;
+    [ 31, 43 ]
+    1 
+\endexample
+As `n' now has the value 1 all prime factors  of 1333 have been found and
+`factors' contains a complete factorization of  1333.  This can of course
+be verified by multiplying 31 and 43.
+
+This loop  may  be applied  to arbitrary  numbers in order  to find prime
+factors.  But  as `primes' is not a complete list of all primes this loop
+may fail  to find all prime factors of  a number greater than 2000,  say.
+You  can try to improve it in such a way that new primes are added to the
+list `primes' if needed.
+
+You have already seen that list objects may be  changed.   This holds  of
+course also for the  list in a loop body.  In most  cases  you have to be
+careful not  to change this list, but there are situations  where this is
+quite useful.  The following example  shows a quick way  to determine the
+primes smaller than 1000 by a sieve method.  Here we will make use of the
+function `Unbind' to delete entries from a list.
+\beginexample
+    gap> primes:= [];;
+    gap> numbers:= [2..1000];;
+    gap> for p in numbers do
+    >       Add(primes, p);
+    >       for n in numbers do
+    >          if n mod p = 0 then
+    >             Unbind(numbers[n-1]);
+    >          fi;
+    >       od;
+    >    od;
+\endexample
+The inner loop  removes all entries from `numbers' that are  divisible by
+the last detected prime `p'.  This is done by the function `Unbind' which
+deletes the binding of the list position  `numbers[n-1]' to the value `n'
+so that afterwards `numbers[n-1]' no longer has  an  assigned value.  The
+next  element encountered in `numbers'  by the outer  loop necessarily is
+the next prime.
+
+In a similar way it is possible to enlarge the list which is looped over.
+This yields a nice and short orbit  algorithm for the  action of a group,
+for example.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{List operations}
+
+There is however a more comfortable way to  compute the product of a list
+of numbers or permutations.
+\beginexample
+    gap> Product([1..15]);
+    1307674368000
+    gap> Product(pp);
+    (1,8,4,2,3,6,5) 
+\endexample
+The function  `Product'  takes a  list as  its argument and computes  the
+product  of  the  elements  of the  list.   This  is possible whenever  a
+multiplication of  the elements of the list is defined.  So  `Product' is
+just an implementation of the loop in the example above as a function.
+
+There are other often used loops available as functions.   Guess what the
+function `Sum' does.  The function `List' may  take a list and a function
+as its arguments.  It will then apply the function to each element of the
+list  and return  the corresponding list of results.   A list of cubes is
+produced as follows with the function `cubed' from "About Functions".
+\beginexample
+    gap> List([2..10], cubed);
+    [ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ] 
+\endexample
+To add all these cubes  we might apply the  function  `Sum' to  the  last
+list.  But we may  as well  give the  function  `cubed' to  `Sum'  as  an
+additional argument.
+\beginexample
+    gap> Sum(last) = Sum([2..10], cubed);
+    true 
+\endexample
+The  primes less than 30 can  be retrieved out  of the list `primes' from
+section "About Lists" by the function `Filtered'. This function takes the
+list `primes' and a property as its arguments and will return the list of
+those elements of `primes' which have this property. Such a property will
+be represented  by  a function  that  returns  a boolean  value. In  this
+example the property  of  being less than  30  can be reresented  by  the
+function `x  -> x \<   30' since `x \<   30' will evaluate to `true'  for
+values `x' less than 30 and to `false' otherwise.
+\beginexample
+    gap> Filtered(primes, x-> x < 30);
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
+\endexample
+We have already  mentioned the operator `\{  \}' that  forms sublists. It
+takes a  list of positions  as its argument  and will return  the list of
+elements from the original list corresponding to these positions.
+\beginexample
+    gap> primes{ [1 .. 10] };
+    [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ] 
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:   "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
+% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

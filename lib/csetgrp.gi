@@ -279,6 +279,12 @@ function(a,b)
   return Representative(a)/Representative(b) in ActingDomain(a);
 end);
 
+InstallOtherMethod(\*,"RightCosets",IsCollsElms,
+        [IsRightCoset,IsMultiplicativeElementWithInverse],0,
+function(a,g)
+    return RightCoset( ActingDomain( a ), Representative( a ) * g );
+end);
+
 InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
 function(a,b)
   return CanonicalRepresentativeOfExternalSet(a)

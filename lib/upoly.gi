@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file  contains the  methods for univariate polynomials
 ##
@@ -61,6 +61,31 @@ local val,i,id;
   fi;
   return val;
 end);
+
+
+#############################################################################
+##
+#M  Value( <upol>, <elm>, <one> )
+##
+InstallOtherMethod( Value,
+    "method for univ. Laurent pol., ring element, and mult. neutral element",
+    true,
+    [ IsUnivariateLaurentPolynomial, IsRingElement, IsRingElement ], 0,
+    function( f, x, one )
+    local val, i;
+    val:= Zero( one );
+    f:= CoefficientsOfUnivariateLaurentPolynomial( f );
+    i:= Length( f[1] );
+    while 0 < i do
+      val:= val * x + one * f[1][i];
+      i:= i-1;
+    od;
+    if 0 <> f[2] then
+      val:= val * x^f[2];
+    fi;
+    return val;
+    end );
+
 
 #############################################################################
 ##

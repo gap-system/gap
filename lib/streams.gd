@@ -1,5 +1,29 @@
 #############################################################################
 ##
+#W  streams.gd                  GAP Library                      Frank Celler
+##
+#H  @(#)$Id$
+##
+#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  This file contains the operations for streams.
+##
+Revision.streams_gd :=
+    "@(#)$Id$";
+
+
+#############################################################################
+##
+
+#C  IsClosedStream
+##
+IsClosedStream := NewCategory(
+    "IsClosedStream",
+    IsObject );
+
+
+#############################################################################
+##
 #C  IsStream
 ##
 IsStream := NewCategory(
@@ -27,23 +51,16 @@ IsInputTextStream := NewCategory(
 
 #############################################################################
 ##
-#O  InputTextString( <string> )
+
+#V  StreamsFamily
 ##
-InputTextString := NewOperation(
-    "InputTextString",
-    [ IsString ] );
+StreamsFamily := NewFamily( "StreamsFamily" );
 
 
 #############################################################################
 ##
-#V  StreamFamily
-##
-StreamFamily := NewFamily( "StreamFamily" );
 
-
-#############################################################################
-##
-#O  IsEndOfStream( <stream> )
+#O  IsEndOfStream( <input-text-stream> )
 ##
 IsEndOfStream := NewOperation(
     "IsEndOfStream",
@@ -52,12 +69,12 @@ IsEndOfStream := NewOperation(
 
 #############################################################################
 ##
-#O  ReadChar( <input-text-stream> )
+#O  PositionStream( <input-text-stream> )
 ##
-ReadChar := NewOperation(
-    "ReadChar",
-    [ IsInputTextStream ] );
-                    
+PositionStream := NewOperation(
+    "PositionStream",
+    [ IsInputStream ] );
+
 
 #############################################################################
 ##
@@ -70,8 +87,70 @@ ReadAll := NewOperation(
 
 #############################################################################
 ##
+#O  ReadByte( <input-text-stream> )
+##
+ReadByte := NewOperation(
+    "ReadByte",
+    [ IsInputTextStream ] );
+                    
+
+#############################################################################
+##
 #O  ReadLine( <input-text-stream> )
 ##
 ReadLine := NewOperation(
     "ReadLine",
     [ IsInputTextStream ] );
+
+
+#############################################################################
+##
+#O  RewindStream( <input-text-stream> )
+##
+RewindStream := NewOperation(
+    "RewindStream",
+    [ IsInputStream ] );
+
+
+#############################################################################
+##
+#O  SeekPositionStream( <input-text-stream> )
+##
+SeekPositionStream := NewOperation(
+    "SeekPositionStream",
+    [ IsInputStream, IsInt ] );
+
+
+#############################################################################
+##
+
+#O  CloseInput( <input-stream> )
+##
+CloseInput := NewOperation(
+    "CloseInput",
+    [ IsInputStream ] );
+
+
+#############################################################################
+##
+#O  InputTextString( <string> )
+##
+InputTextString := NewOperation(
+    "InputTextString",
+    [ IsString ] );
+
+
+#############################################################################
+##
+#O  InputTextFile( <string> )
+##
+InputTextFile := NewOperation(
+    "InputTextFile",
+    [ IsString ] );
+
+
+#############################################################################
+##
+
+#E  streams.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##

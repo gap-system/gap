@@ -89,6 +89,7 @@ ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "csetgrp.gd"  );
 ReadLib( "factgrp.gd"  );
+ReadLib( "grpreps.gd" );
 ReadLib( "grppcrep.gd" );
 
 ReadLib( "onecohom.gd" );

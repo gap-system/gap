@@ -2,7 +2,7 @@
 ##
 #W  gprdpc.gi                   GAP library                      Bettina Eick
 ##
-Revision.grppcext_gi :=
+Revision.gprdpc_gi :=
     "@(#)$Id:";
 
 #############################################################################

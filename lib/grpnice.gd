@@ -16,6 +16,14 @@ Revision.grpnice_gd :=
 #############################################################################
 ##
 
+#V  NICE_FLAGS
+##
+NICE_FLAGS := SUM_FLAGS-1;
+
+
+#############################################################################
+##
+
 #A  NiceMonomorphism( <obj> )
 ##
 NiceMonomorphism := NewAttribute(
@@ -25,6 +33,8 @@ NiceMonomorphism := NewAttribute(
 SetNiceMonomorphism := Setter(NiceMonomorphism);
 HasNiceMonomorphism := Tester(NiceMonomorphism);
 
+InstallSubsetMaintainedMethod( NiceMonomorphism,
+        IsGroup and HasNiceMonomorphism, IsGroup );
 
 #############################################################################
 ##
@@ -80,7 +90,7 @@ AttributeMethodByNiceMonomorphism := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj )
             return oper( NiceObject(obj) );
         end );
@@ -106,7 +116,7 @@ AttributeMethodByNiceMonomorphismCollColl := function( oper, par )
         "handled by nice monomorphism",
         IsIdentical,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             if not IsIdentical( NiceMonomorphism(obj1),
                                 NiceMonomorphism(obj2) )
@@ -136,7 +146,7 @@ AttributeMethodByNiceMonomorphismCollElm := function( oper, par )
         "handled by nice monomorphism",
         IsCollsElms,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   img;
             img := ImagesRepresentative( NiceMonomorphism(obj1), obj2 );
@@ -165,7 +175,7 @@ AttributeMethodByNiceMonomorphismElmColl := function( oper, par )
         "handled by nice monomorphism",
         IsElmsColls,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   img;
             img := ImagesRepresentative( NiceMonomorphism(obj2), obj1 );
@@ -196,7 +206,7 @@ GroupMethodByNiceMonomorphism := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj )
             local   nice,  img;
             nice := NiceMonomorphism(obj);
@@ -224,7 +234,7 @@ SubgroupMethodByNiceMonomorphism := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj )
             local   nice,  img,  sub;
             nice := NiceMonomorphism(obj);
@@ -254,7 +264,7 @@ GroupMethodByNiceMonomorphismCollOther := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj, other )
             local   nice,  img;
             nice := NiceMonomorphism(obj);
@@ -283,7 +293,7 @@ GroupMethodByNiceMonomorphismCollColl := function( oper, par )
         "handled by nice monomorphism",
         IsIdentical,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  img;
             nice := NiceMonomorphism(obj1);
@@ -314,7 +324,7 @@ GroupMethodByNiceMonomorphismCollElm := function( oper, par )
         "handled by nice monomorphism",
         IsCollsElms,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  img,  img1;
             nice := NiceMonomorphism(obj1);
@@ -380,13 +390,14 @@ GroupSeriesMethodByNiceMonomorphism := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj )
             local   nice,  list,  i;
             nice := NiceMonomorphism(obj);
             list := ShallowCopy( oper( NiceObject(obj) ) );
             for i  in [ 1 .. Length(list) ]  do
                 list[i] := GroupByNiceMonomorphism( nice, list[i] );
+                SetParent( list[i], obj );
             od;
             return list;
         end );
@@ -411,13 +422,14 @@ GroupSeriesMethodByNiceMonomorphismCollOther := function( oper, par )
         "handled by nice monomorphism",
         true,
         par,
-        0,
+        NICE_FLAGS,
         function( obj, other )
             local   nice,  list,  i;
             nice := NiceMonomorphism(obj);
             list := ShallowCopy( oper( NiceObject(obj), other ) );
             for i  in [ 1 .. Length(list) ]  do
                 list[i] := GroupByNiceMonomorphism( nice, list[i] );
+                SetParent( list[i], obj );
             od;
             return list;
         end );
@@ -443,7 +455,7 @@ GroupSeriesMethodByNiceMonomorphismCollColl := function( oper, par )
         "handled by nice monomorphism",
         IsIdentical,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  list,  i;
             nice := NiceMonomorphism(obj1);
@@ -453,6 +465,7 @@ GroupSeriesMethodByNiceMonomorphismCollColl := function( oper, par )
             list := ShallowCopy(oper(NiceObject(obj1),NiceObject(obj2)));
             for i  in [ 1 .. Length(list) ]  do
                 list[i] := GroupByNiceMonomorphism( nice, list[i] );
+                SetParent( list[i], obj1 );
             od;
             return list;
         end );
@@ -477,7 +490,7 @@ GroupSeriesMethodByNiceMonomorphismCollElm := function( oper, par )
         "handled by nice monomorphism",
         IsCollsElms,
         par,
-        0,
+        NICE_FLAGS,
         function( obj1, obj2 )
             local   nice,  img,  list,  i;
             nice := NiceMonomorphism(obj1);
@@ -488,6 +501,7 @@ GroupSeriesMethodByNiceMonomorphismCollElm := function( oper, par )
             list := ShallowCopy( oper( NiceObject(obj1), img ) );
             for i  in [ 1 .. Length(list) ]  do
                 list[i] := GroupByNiceMonomorphism( nice, list[i] );
+                SetParent( list[i], obj1 );
             od;
             return list;
         end );

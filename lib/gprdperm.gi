@@ -460,15 +460,14 @@ end );
 #M  WreathProduct( <G>, <H>, <alpha> )   wreath product of permutation groups
 ##
 InstallMethod( WreathProduct, true,
-        [ IsPermGroup, IsGroup, IsGroupHomomorphism ], 0,
-    function( G, H, alpha )
+        [ IsPermGroup, IsGroup, IsGroupHomomorphism, IsList ], 0,
+    function( G, H, alpha, domI )
     local   grp,        # wreath product of <G> and <H>, result
             gens,       # generators of the wreath product
             gen,        # one generator
             domG,       # domain of operation of <G>
             degG,       # degree of <G>
             I,          # image of <H> under <alpha>
-            domI,       # domain of operation of <I>
             degI,       # degree of <I>
             shift,      # permutation permuting the blocks
 	    perms,      # component permutating permutations
@@ -488,7 +487,6 @@ InstallMethod( WreathProduct, true,
     if not IsPermGroup( I )  then
         Error( "WreathProduct: image of <alpha> must be perm group" );
     fi;
-    domI := MovedPoints( Parent( I ) );
     degI := Length( domI );
 
     # make the generators of the direct product of <deg> copies of <G>
@@ -556,7 +554,7 @@ end );
 ##
 InstallOtherMethod( WreathProduct, true, [ IsGroup, IsPermGroup ], 0,
 function( G, H )
-  return WreathProduct(G,H,IdentityMapping(H));
+  return WreathProduct(G,H,IdentityMapping(H),MovedPoints(H));
 end);
 
 #############################################################################

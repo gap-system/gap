@@ -95,6 +95,7 @@ ReadLib( "pcgspcg.gi"  );
 ReadLib( "pcgsmodu.gi" );
 ReadLib( "pcgscomp.gi" );
 ReadLib( "pcgsperm.gi" );
+ReadLib( "pcgsnice.gi" );
 ReadLib( "pcgsspec.gi" );
 
 
@@ -129,6 +130,7 @@ ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
 ReadLib( "factgrp.gi"  );
+ReadLib( "grpreps.gi" );
 ReadLib( "grppcrep.gi" );
 ReadLib( "grpprmcs.gi" );
 

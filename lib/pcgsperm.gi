@@ -779,13 +779,6 @@ InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
 ##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
-InstallMethod( Pcgs, "fail if insolvable", true,
-        [ HasIsSolvableGroup ], SUM_FLAGS,
-    function( G )
-    if not IsSolvableGroup( G )  then  return fail;
-                                 else  TryNextMethod();  fi;
-end );
-
 InstallMethod( Pcgs, "take induced pcgs", true,
         [ IsPermGroup and HasInducedPcgsWrtHomePcgs ], 0,
     InducedPcgsWrtHomePcgs );
@@ -802,19 +795,6 @@ end );
 InstallMethod( Pcgs, "tail of perm pcgs", true,
         [ IsMemberPcSeriesPermGroup ], 0,
         PcgsMemberPcSeriesPermGroup );
-
-#############################################################################
-##
-#M  HomePcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . for perm groups
-##
-InstallMethod( HomePcgs, true, [ IsPermGroup ], 0,
-    function( G )
-    local   pcgs;
-    
-    pcgs := Pcgs( G );
-    if IsPcgsPermGroupRep( pcgs )  then  return pcgs;
-                                   else  TryNextMethod();  fi;
-end );
 
 #############################################################################
 ##
@@ -902,64 +882,30 @@ InstallMethod( InducedPcgsWrtHomePcgs, "tail of perm pcgs", true,
     return pcgs;
 end );
 
-InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
-        [ IsPermGroup ], 0,
-    function( G )
-    local   home;
-    
-    home := HomePcgs( G );
-    if IsIdentical( home, Pcgs( G ) )  then
-        return InducedPcgsByPcSequenceNC( home, home );
-    else
-        return InducedPcgsByGenerators( home, GeneratorsOfGroup( G ) );
-    fi;
-end );
-
 #############################################################################
 ##
 #M  ExtendedPcgs( <N>, <gens> ) . . . . . . . . . . . . . . .  in perm groups
 ##
-InstallMethod( ExtendedPcgs, "perm group", true,
+InstallMethod( ExtendedPcgs, "perm pcgs", true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-          IsList and IsPermCollection ], 10,
+          IsList and IsPermCollection ], 0,
     function( N, gens )
-    local   pcgs,  S,  gen;
+    local   S,  gen,  pcs,  pcgs;
 
     S := CopyStabChain( N!.stabChain );
     S.relativeOrders := ShallowCopy( RelativeOrders( N ) );
     for gen  in Reversed( gens )  do
         AddNormalizingElementPcgs( S, gen );
     od;
-    pcgs := PcgsByPcSequenceCons( 
-         IsPcgsDefaultRep,
-         IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-         FamilyObj( OneOfPcgs( N ) ),
-         S.labels{ [ 2 .. Length( S.labels ) -
-                    Length( N!.stabChain.labels ) + Length( N ) + 1 ] } );
-    pcgs!.stabChain := S;
-    SetRelativeOrders( pcgs, S.relativeOrders );
-    Unbind( S.relativeOrders );
-    pcgs!.series := Concatenation( [ GroupStabChain( S ) ], N!.series );
-    pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
-            N!.nrGensSeries );
-    return pcgs;
-end );
-
-InstallMethod( ExtendedPcgs, "perm group", true,
-        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs and
-          IsInducedPcgs,
-          IsList and IsPermCollection ], 10,
-    function( N, gens )
-    local   pcgs,  S,  gen;
-
-    S := CopyStabChain( N!.stabChain );
-    S.relativeOrders := ShallowCopy( RelativeOrders( N ) );
-    for gen  in Reversed( gens )  do
-        AddNormalizingElementPcgs( S, gen );
-    od;
-    pcgs := InducedPcgsByPcSequenceNC( ParentPcgs( N ),
-         S.labels{ [ 2 .. Length( S.labels ) -
-                    Length( N!.stabChain.labels ) + Length( N ) + 1 ] } );
+    pcs := S.labels{ [ 2 .. Length( S.labels ) -
+                   Length( N!.stabChain.labels ) + Length( N ) + 1 ] };
+    if IsInducedPcgs( N )  then
+        pcgs := InducedPcgsByPcSequenceNC( ParentPcgs( N ), pcs );
+    else
+        pcgs := PcgsByPcSequenceCons( IsPcgsDefaultRep,
+                        IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+                        FamilyObj( OneOfPcgs( N ) ), pcs );
+    fi;
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
@@ -981,7 +927,7 @@ end );
 
 InstallOtherMethod( DepthOfPcElement, true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
-          IsInt ], 0,
+          IsPosRat and IsInt ], 0,
     function( pcgs, g, depth )
     return ExponentsOfPcElementPermGroup( pcgs, g, depth, Length( pcgs ),
                    'd' );
@@ -1009,7 +955,7 @@ end );
 
 InstallOtherMethod( ExponentsOfPcElement, "perm group with positions", true,
         [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
-          IsList ], 0,
+          IsList and IsCyclotomicsCollection ], 0,
     function( pcgs, g, poss )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Maximum( poss ), 'e' )
            { poss - Minimum( poss ) + 1 };

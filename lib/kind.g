@@ -196,7 +196,7 @@ FamilyOfFamilies!.NAME          := "FamilyOfFamilies";
 FamilyOfFamilies!.REQ_FLAGS     := FLAGS_FILTER( IsFamily );
 FamilyOfFamilies!.IMP_FLAGS     := EMPTY_FLAGS;
 FamilyOfFamilies!.KINDS         := [];
-FamilyOfFamilies!.KINDS_LIST_FAM:= [,,,,,,,,false]; # make a list with 8 holes
+FamilyOfFamilies!.KINDS_LIST_FAM:= [,,,,,,,,,,,,false]; # list with 12 holes
 
 KindOfFamilyOfFamilies  := [
       FamilyOfFamilies,
@@ -216,7 +216,7 @@ FamilyOfKinds!.NAME             := "FamilyOfKinds";
 FamilyOfKinds!.REQ_FLAGS        := FLAGS_FILTER( IsKind   );
 FamilyOfKinds!.IMP_FLAGS        := EMPTY_FLAGS;
 FamilyOfKinds!.KINDS            := [];
-FamilyOfKinds!.KINDS_LIST_FAM   := [,,,,,,,,false]; # make a list with 8 holes
+FamilyOfKinds!.KINDS_LIST_FAM   := [,,,,,,,,,,,,false]; # list with 12 holes
 
 KindOfFamilyOfKinds     := [
     FamilyOfFamilies,
@@ -292,7 +292,7 @@ NEW_FAMILY := function ( kindOfFamilies, name, req_filter, imp_filter )
     family!.REQ_FLAGS       := req_filter;
     family!.IMP_FLAGS       := imp_filter;
     family!.KINDS           := [];
-    family!.KINDS_LIST_FAM  := [,,,,,,,,false]; # make a list with 8 holes
+    family!.KINDS_LIST_FAM  := [,,,,,,,,,,,,false]; # list with 12 holes
     return family;
 end;
 

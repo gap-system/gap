@@ -1,0 +1,773 @@
+\Chapter{Groups and Homomorphisms}
+
+In this  chapter we will  show  some easy  computations with groups.  The
+example uses permutation groups,  because they are  the most easy ones to
+input.   The   functions  mentioned   here,   like   `Group',  `Size'  or
+`SylowSubgroup', however, are the same for  all kinds of groups, although
+the algorithms which compute the information of  course will be different
+in most cases.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Permutation groups}
+
+Permutation  groups are so  easy  to input  because their elements,  i.e.
+permutations, are  so  easy to type:  they are  entered and displayed  in
+disjoint cycle notation. So let's construct a permutation group:
+\beginexample
+    gap> s8 := Group( (1,2), (1,2,3,4,5,6,7,8) );
+    Group( [ (1,2), (1,2,3,4,5,6,7,8) ], ... )
+\endexample
+We   formed  the  group  generated  by   the  permutations  `(1,2)'   and
+`(1,2,3,4,5,6,7,8)',  which is well known as the symmetric group on eight
+points,  and  assigned  it  to the  identifier `s8'.   `s8' contains  the
+alternating group on eight points which can be described in several ways,
+e.g., as group of  all even permutations in  `s8',  or  as its commutator
+subgroup.
+\beginexample
+    gap> a8 := CommutatorSubgroup( s8, s8 );
+    Group( [ (1,3,2), (2,4,3), (3,5,4), (4,6,5), (5,7,6), (6,8,7) ], ... )
+    gap> Size( a8 ); IsAbelian( a8 ); IsPerfect( a8 );
+    20160
+    false
+    true
+\endexample
+Once information about a group like `a8'  has been computed, it is stored
+in the group so that it can simply be looked  up if it is required again.
+This   holds for the  last three  pieces  of information  in the previous
+example, but  not for the commutator   subgroup of `s8' and  `s8' because
+this was computed as  a function of *two* arguments,  and hence cannot be
+attributed to just of them. (Had we computed `a8' as `DerivedSubgroup( s8
+)', it would have been stored.) The  situation is bit different for Sylow
+<p>-subgroups: The  function `SylowSubgroup' also requires two arguments,
+namely a group and a prime <p>, but the result is stored in the group ---
+namely  in position <p> of   a list called `ComputedSylowSubgroups', from
+where it can be looked up later.
+\beginexample
+    gap> Set( Factors( Size( a8 ) ) );
+    [ 2, 3, 5, 7 ]
+    gap> for p  in last  do
+    >      SylowSubgroup( a8, p );
+    >    od;
+    gap> ComputedSylowSubgroups( a8 );
+    [ , Group( [ (1,4)(5,6), (2,7)(5,6), (3,8)(5,6), (3,5)(6,8), (1,2)(4,7), 
+          (1,3)(2,5)(4,8)(6,7) ], ... ), Group( [ (4,6,7), (3,5,8) ], ... ),, 
+      Group( [ (4,7,5,8,6) ], ... ),, Group( [ (2,7,5,8,6,3,4) ], ... ) ]
+\endexample
+Observe   that the   list `ComputedSylowSubgroups(   a8  )'  has holes in
+positions 1, 4  and 6. A call of  `SylowSubgroup' for the cyclic group of
+order 65521 and for the prime 65521 would cause {\GAP} to store the group
+at the end  of a list  of length 65521,  so there are special  situations
+where it is possible  to bring {\GAP}  and yourself into trouble.  We now
+can investigate the Sylow 2-subgroup of~`a8'.
+\beginexample
+    gap> syl2 := last[2];; Size( syl2 );
+    64
+    gap> Normalizer( a8, syl2 ) = syl2;
+    true
+    gap> cent := Centralizer( a8, Centre( syl2 ) );; Size( cent );
+    192
+    gap> DerivedSeries( cent );; List( last, Size );
+    [ 192, 96, 32, 2, 1 ]
+\endexample
+One  goal  in this  section   is to  construct  a  subgroup of  structure
+$2^3:L_3(2)$ in `a8'. One idea is to look for  an appropriate $2^3$ which
+is specified by the  fact that all  its involutions are fixed point free,
+and  then  compute its normalizer   in  `a8'. We  also  use the  function
+`SetName'  to  assign a name  to  a  group, which will   then  be used in
+printing that group.
+\beginexample
+    gap> elab := Group( (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8),
+    >                   (1,5)(2,6)(3,7)(4,8) );; Size( elab );
+    8
+    gap> IsElementaryAbelian( elab );
+    true
+    gap> SetName( elab, "2^3" );
+    gap> norm := Normalizer( a8, elab );; Size( norm );
+    1344
+\endexample
+Now that we  have the  subgroup  `norm' of  order  1344 and its  subgroup
+`elab', we  want to look  at its factor group.  But since we also want to
+find preimages of factor group elements in `norm', we really want to look
+at the    *natural homomorphism*\index{homomorphism!natural} defined   on
+`norm' with kernel `elab' and whose image is the factor group.
+\beginexample
+    gap> hom := NaturalHomomorphismByNormalSubgroup( norm, elab );
+    <operation homomorphism>
+    gap> f := Image( hom );
+    Group( [ ( 4, 5)( 6, 7), ( 4, 6)( 5, 7), ( 2, 3)( 6, 7), ( 2, 4)( 3, 5), 
+      ( 1, 2)( 5, 6) ], ... )
+    gap> Size( f );
+    168
+\endexample
+The  factor group  is again   represented  as a permutation  group, whose
+operation domain, however,  has nothing to do  with the one of `norm'. It
+only happens that both  are subsets  of the natural  numbers. We  can now
+form  images  and preimages under  the  natural  homomorphism. The set of
+preimages of an element under `hom' is a coset  modulo `elab'. We use the
+function `PreImages' here because `hom' is not a bijection, so an element
+of the range can have several preimages or none at all.
+\beginexample
+    gap> Kernel( hom );
+    2^3
+    gap> x := (1,8,3,5,7,6,2);; Image( hom, x );
+    ( 1, 7, 5, 6, 2, 3, 4)
+    gap> coset := PreImages( hom, last );
+    RightCoset(2^3,( 2, 8, 6, 7, 3, 4, 5))
+    gap> x in coset;
+    true
+\endexample
+We  wanted to construct  `norm' and `elab' in such  a way that the factor
+group `f'  is the simple linear group  $L_3(2)$. We  can now test whether
+this is the case.
+\beginexample
+    gap> IsSimple( f ); IsomorphismTypeFiniteSimpleGroup( f );
+    true
+    "A(1,7) = L(2,7) ~ B(1,7) = O(3,7) ~ C(1,7) = S(2,7) ~ 2A(1,7) = U(2,7) ~ A(2,\
+    2) = L(3,2)"
+    gap> SetName( f, "L_3(2)" );
+\endexample
+(The simple group $L_3(2)$ also has a lot of other names.) `norm' acts on
+the eight elements of its normal subgroup `elab' by conjugation, yielding
+a representation of $L_3(2)$ in `s8' which leaves one point fixed (namely
+point~`1').  The image of this  representation  is even contained in  the
+subgroup `norm'  of `s8' and we  can show that  `norm' is indeed  a split
+extension of   the  elementary abelian group   $2^3$ with  this image  of
+$L_3(2)$.
+\beginexample
+    gap> op := Operation( norm, elab );
+    Group( [ ( 5, 6)( 7, 8), ( 5, 7)( 6, 8), ( 3, 4)( 7, 8), ( 3, 5)( 4, 6), 
+      ( 2, 3)( 6, 7) ], ... )
+    gap> IsSubgroup( a8, op ); IsSubgroup( norm, op );
+    true
+    true
+    gap> IsTrivial( Intersection( elab, op ) );
+    true
+    gap> SetName( norm, "2^3:L_3(2)" );
+\endexample
+By the way, you should not try the operator `\<'  instead of the function
+`IsSubgroup'. Something like
+\beginexample
+    gap> elab < a8;
+    false
+\endexample
+will not cause an error, but the result does not  tell anything about the
+inclusion of one group in another; `\<' tests  which of the two groups is
+less is some total order. On the other hand, the equality operator `=' in
+fact does test the equality of groups.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Operations!of groups}
+
+In  order to get  another  representation  of  `a8', we consider  another
+action, namely  that on  the elements   of a  certain conjugacy  class by
+conjugation.
+\beginexample
+    gap> ccl := ConjugacyClasses( a8 );; Length( ccl );
+    14
+    gap> List( ccl, c -> Order( Representative( c ) ) );
+    [ 1, 7, 7, 5, 15, 15, 3, 3, 6, 6, 2, 4, 2, 4 ]
+    gap> List( ccl, Size );
+    [ 1, 2880, 2880, 1344, 1344, 1344, 112, 1120, 1680, 3360, 105, 1260, 210, 
+      2520 ]
+\endexample
+Note the  difference between  `Order'  (which means  the element  order),
+`Size' (which means the size of the conjugacy  class) and `Length' (which
+means the length of a  list).
+\beginexample
+    gap> class := First( ccl, c -> Size(c) = 112 );;
+    gap> op := Operation( a8, AsList( class ) );;
+\endexample
+We use `AsList' here  to convert the conjugacy class  into a list  of its
+elements whereas we   wrote  `Operation( norm,  elab )'   directly in the
+previous section. The reason is that  the elementary abelian group `elab'
+can  be quickly enumerated by   {\GAP}  whereas the standard  enumeration
+method for conjugacy classes is  slower than just explicit calculation of
+the elements. However, {\GAP} is reluctant  to construct explicit element
+lists, because for really large groups this direct method is infeasible.
+
+We got a permutation representation `op' on 112 points, which we now test
+for primitivity.
+\beginexample
+    gap> IsPrimitive( op, [ 1 .. 112 ] );
+    false
+    gap> blocks := Blocks( op, [ 1 .. 112 ] );;
+    gap> op2 := Operation( op, blocks, OnSets );;
+    gap> IsPrimitive( op2, [ 1 .. 56 ] );
+    true
+\endexample
+The action of `op' on the given block system gave us a new representation
+on 56 points which is primitive, i.e., the  point stabilizer is a maximal
+subgroup.  We compute its preimage in  the representation on eight points
+using homomorphisms (which of course are monomorphisms). We construct the
+composition of   two  homomorphisms  with  the  `\*'   operator,  reading
+left-to-right.
+\beginexample
+    gap> ophom := OperationHomomorphism( a8, op );;
+    gap> ophom2 := OperationHomomorphism( op, op2 );;
+    gap> composition := ophom * ophom2;;
+    gap> stab := Stabilizer( op2, 1 );;
+    gap> preim := PreImages( composition, stab );
+    Group( [ ( 3, 7, 8), ( 1, 2)( 3, 8), ( 1, 2)( 4, 5), ( 1, 2)( 3, 8, 7)( 5, 6),
+      ( 2, 7, 3)( 4, 6, 5) ], ... )
+\endexample
+The normalizer of an element in the conjugacy class `class' is a group of
+order 360, too. In fact, it is a conjugate of the maximal subgroup we had
+found before, and a conjugating element in `a8'  is found by the function
+`RepresentativeOperation'.
+\beginexample
+    gap> sgp := Normalizer( a8, Subgroup(a8,[Representative(class)]) );;
+    gap> Size( sgp );
+    360
+    gap> RepresentativeOperation( a8, sgp, preim );
+    (5,6)(7,8)
+\endexample
+The scalar product  of permutation characters  of two subgroups <U>, <V>,
+say, equals  the number  of $(<U>,<V>)$-double  cosets. For example,  the
+norm of  the natural permutation character of  degree  eight is two since
+the action of `a8' on the cosets of a point stabilizer is at least doubly
+transitive. We   also   compute  the   numbers  of    $(`sgp',`sgp')$ and
+$(`sgp',`stab')$ double cosets.
+\beginexample
+    gap> stab := Stabilizer( a8, 1 );;
+    gap> Length( DoubleCosets( a8, stab, stab ) );
+    2
+    gap> Length( DoubleCosets( a8, sgp, sgp ) );
+    4
+    gap> Length( DoubleCosets( a8, sgp, stab ) );
+    2
+\endexample
+
+So far we have  seen a few  applications of the functions `Operation' and
+`OperationHomomorphism'.  But perhaps even more   interesting is the fact
+that   the  natural homomorphism `hom'    constructed  above is  also  an
+*operation homomorphism*\index{homomorphism!operation};  this is also the
+reason why  its image is represented  as  a permutation group: it  is the
+natural  representation for operations. We  will now look at this natural
+homomorphism again to find out on what objects it operates. These objects
+form  a so-called  *external set* which  is  stored  in the  homomorphism
+similar to a record component.
+\beginexample
+    gap> t := hom!.externalSet;
+    RightTransversal( 2^3:L_3(2), Group( 
+    [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8), 
+      (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )
+\endexample
+The external  set is a *right  transversal* of a  subgroup <U> in `norm',
+such  that  the kernel of the   operation is the desired  normal subgroup
+`elab'.  This right transversal contains  one  element from each coset of
+<U>. But   an external  set   is more than just  a   list of its  points:
+Altogether  three things are  necessary    to  specify an  operation:   a
+group~<G>, a set~<D>, and a  function $<opr>\colon <D>\times <G>\to <D>$.
+We can obtain these ingredients with the following functions:
+\beginexample
+    gap> ActingDomain(t); Enumerator(t); FunctionOperation(t)=OnRight;
+    2^3:L_3(2)
+    RightTransversal( 2^3:L_3(2), Group( 
+    [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8), 
+      (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )
+    true
+\endexample
+The function `OnRight' means multiplication from the  right, which is the
+usual  way to operate on a  right transversal.  Observe that the external
+set `t' and its `Enumerator' are printed the  same way, but be aware that
+an external   set also comprises    the acting domain and  the  operation
+function.  The `Enumerator' itself, i.e., the  right  transversal in turn
+comprises knowledge  about the group `norm' and  the subgroup <U>. Yet it
+behaves as a list and you can ask for the position of an element in it.
+\beginexample
+    gap> elm := (1,4)(2,7)(3,6)(5,8);;
+    gap> Position( Enumerator(t), elm );
+    fail
+    gap> PositionCanonical( Enumerator(t), elm );
+    5
+\endexample
+The result `fail' means  that the element   was not found  at all  in the
+list:   it   is    not    among  the      chosen  representatives.    The
+difference\atindex{Position vs.  PositionCanonical}{@\noexpand `Position'
+vs. \noexpand `PositionCanonical'}{} between the functions `Position' and
+`PositionCanonical' is that the  first   simply looks whether `elm'    is
+contained  among  the   representatives which   together  form the  right
+transversal `t', whereas the second really looks  for the position of the
+coset described by the  representative `elm'. In   other words, it  first
+replaces `elm'  by a  canonical representative of  the  same coset (which
+must be  contained in `t')  and then  looks for  its position, hence  the
+name.
+
+The  image  of the natural  homomorphism   is the permutation  group that
+results from the operation of `norm' on the right  transversal. It can be
+calculcated by either of the following commands. The second of them shows
+that the external set `t' contains all information  that is necessary for
+`Operation' to do its work.
+\beginexample
+    gap> Operation( norm, Enumerator(t), OnRight );
+    L_3(2)
+    gap> Operation( t );
+    L_3(2)
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Subgroups!as stabilizers}
+
+Operation functions can also be used  without constructing external sets.
+We will  try to find  several  subgroups in `a8'   as stabilizers of such
+operations. One subgroup  is immediately available, namely the stabilizer
+of one point. The index of the stabilizer must  of course be equal to the
+length of the orbit, i.e., 8. Here the operation function is omitted, but
+we could also write it down, it is called  `OnPoints' and also denoted by
+the caret operator~`^'. `OnPoints' and its relatives are simply functions
+that  take an  element of  the  domain  and an  element  of the  group as
+arguments  and return the  image of the element   of the domain under the
+group element. In  our example, `OnPoints(  <pnt>, <elm> )' is equivalent
+to `<pnt> ^ <elm>'.
+\beginexample
+    gap> u8 := Stabilizer( a8, 1 );
+    Group( [ (2,4,3), (3,5,4), (4,6,5), (5,7,6), (6,8,7) ], ... )
+    gap> Index( a8, u8 );
+    8
+    gap> Orbit( a8, 1 ); Length( last );
+    [ 2, 3, 1, 4, 5, 6, 7, 8 ]
+    8
+\endexample
+This gives us a hint how to find further  subgroups. Each subgroup is the
+stabilizer of a point of an appropriate  transitive operation (namely the
+operation  on  the cosets of that  subgroup  or another operation that is
+equivalent to  this operation).  So the question   is how  to find  other
+operations. The obvious thing is to operate  on pairs of points. So using
+the function `Tuples'  (see  "Tuples") we first generate  a  list  of all
+pairs.
+\beginexample
+    gap> pairs := Tuples( [1..8], 2 );;
+\endexample
+Now we would like to have `a8' operate on this  domain. But we cannot use
+the  default operation `OnPoints'  because    `<list> ^ <perm>' is    not
+defined. So we  must tell the functions  from the operations package  how
+the group elements operate on the elements of  the domain. In our example
+we can do this by simply passing `OnPairs' as optional last argument. All
+functions  from the operations package  accept  such an optional argument
+that describes the operation. One example is `IsTransitive'.
+\beginexample
+    gap> IsTransitive( a8, pairs, OnPairs );
+    false 
+\endexample
+The operation is not transitive,  so we want to  find out what the orbits
+are. The function `Orbits' does that for us. It returns a list of all the
+orbits.
+\beginexample
+    gap> orbs := Orbits( a8, pairs, OnPairs );; Length( orbs );
+    2
+    gap> List( orbs, o -> o[1] );
+    [ [ 1, 1 ], [ 1, 2 ] ]
+\endexample
+The operation of `a8' on the first orbit  (the one containing `[1,1]') is
+of course equivalent to the original operation,  so we ignore it and work
+with the second orbit.
+\beginexample
+    gap> u56 := Stabilizer( a8, [1,2], OnPairs );; Index( a8, u56 );
+    56 
+\endexample
+So   now   we have  found   a  second subgroup.   To   make the following
+computations a little bit easier and more efficient  we would now like to
+work on the points `[1..56]'  instead of the list  of pairs. The function
+`OperationHomomorphism' does what  we need.   It creates a   homomorphism
+defined on `a8' whose image is a new group  that operates on `[1..56]' in
+the same way that `a8' operates on the second orbit.
+\beginexample
+    gap> h56 := OperationHomomorphism( a8, orbs[2], OnPairs );;
+    gap> a8_56 := Image( h56 );;
+\endexample
+We would now like to know if the subgroup `u56' of index 56 that we found
+is  maximal or  not.   Again  we can make  use  of  a function  from  the
+operations package.  Namely a subgroup is maximal if the operation on the
+cosets of  this subgroup is primitive.
+\beginexample
+    gap> IsPrimitive( a8_56, [1..56] );
+    false 
+\endexample
+Note that we must specify  the domain of the operation.  You  might think
+that in  the last  example `IsPrimitive' could  use  `[1..56]' as default
+domain if  no domain was given.  But  this is not so simple,  for example
+would the default domain of `Group( (2,3,4) )'  be `[1..4]' or  `[2..4]'?
+To avoid  confusion, all  operations  package functions require  that you
+specify the domain of operation.
+
+We see that `a8\_56' is  not  primitive.  This means of course  that  the
+operation of  `a8'  on  `orb[2]'  is  not  primitive,  because  those two
+operations are equivalent.   So the stabilizer `u56' is not maximal.  Let
+us  try to find its supergroups.  We use the  function `Blocks' to find a
+block  system.   The (optional) third argument  in the following  example
+tells `Blocks' that we  want a  block  system where  1 and 10 lie in  one
+block.
+\beginexample
+    gap> blocks := Blocks( a8_56, [1..56], [1,10] );
+    [ [ 1, 10, 17, 20, 25, 33, 38 ], [ 2, 5, 6, 12, 14, 24, 36 ], 
+      [ 3, 7, 15, 32, 37, 44, 48 ], [ 4, 8, 13, 23, 26, 35, 47 ], 
+      [ 9, 16, 27, 28, 40, 52, 54 ], [ 11, 18, 21, 29, 39, 46, 53 ], 
+      [ 19, 30, 41, 42, 49, 50, 55 ], [ 22, 31, 34, 43, 45, 51, 56 ] ]
+\endexample
+The result is a list of sets, such that  `a8\_56' operates on those sets.
+Now we would like the  stabilizer of this  operation on the sets. Because
+we  wanted to operate   on the sets we  have  to pass  `OnSets' as  third
+argument.
+\beginexample
+    gap> u8_56 := Stabilizer( a8_56, blocks[1], OnSets );;
+    gap> Index( a8_56, u8_56 );
+    8
+    gap> u8b := PreImages( h56, u8_56 );; Index( a8, u8b );
+    8
+    gap> u8 = u8b;
+    false
+\endexample
+Here  is a *warning*:   If you specify `OnSets'  as  third argument  to a
+function like  `Stabilizer', you have to  make sure that the  point (i.e.
+the second argument) is  indeed a set. Otherwise you  will get a puzzling
+error message or  even  wrong results! In  the above  example, the second
+argument  `blocks[1]'  came from the  function  `Blocks', which returns a
+list of sets, so everything was OK.
+
+Actually there  is a  third block system of `a8\_56' that gives rise to a
+third subgroup.
+\beginexample
+    gap> blocks := Blocks( a8_56, [1..56], [1,6] );;
+    gap> u28_56 := Stabilizer( a8_56, [1,6], OnSets );;
+    gap> u28 := PreImages( h56, u28_56 );;
+    gap> Index( a8, u28 );
+    28 
+\endexample
+We know that the subgroup `u28' of  index 28 is  maximal, because we know
+that `a8' has  no subgroups of  index 2,  4, or  7.  However  we can also
+quickly verify this by checking that `a8\_56' operates primitively on the
+28 blocks.
+\beginexample
+    gap> IsPrimitive( a8_56, blocks, OnSets );
+    true 
+\endexample
+
+`Stabilizer' is not only applicable to groups like `a8' but also to their
+subgroups like  `u56'. So another  method  to find  a  new subgroup is to
+compute the stabilizer of another point in `u56'. Note that `u56' already
+leaves 1 and 2 fixed.
+\beginexample
+    gap> u336 := Stabilizer( u56, 3 );;
+    gap> Index( a8, u336 );
+    336 
+\endexample
+Other functions  are also  applicable to subgroups.  In  the following we
+show that  `u336' operates regularly on the  60 triples of `[4..8]' which
+contain no  element twice, which  means that this operation is equivalent
+to the operations of `u336' on its 60 elements from the right. `OnTuples'
+is a generalization of `OnPairs'.
+\beginexample
+    gap> IsRegular( u336, Orbit( u336, [4,5,6], OnTuples ), OnTuples );
+    true 
+\endexample
+Just as we did in the  case of the  operation on the  pairs above, we now
+construct a new permutation group that operates on `[1..336]' in the same
+way that `a8' operates on the cosets of `u336'. But this time we let `a8'
+operate  on a right   transversal, just like  `norm'  did in  the natural
+homomorphism above.
+\beginexample
+    gap> t := RightTransversal( a8, u336 );;
+    gap> a8_336 := Operation( a8, t, OnRight );;
+\endexample
+To find  subgroups above  `u336'  we  again  check if  the  operation  is
+primitive.
+\beginexample
+    gap> blocks := Blocks( a8_336, [1..336], [1,43] );;  blocks[1];
+    [ 1, 43, 85 ]
+\endexample
+The subgroup of index  112 in `a8\_336' is the  union of `u336' with  its
+43rd and  its  85th coset. It   is  thus the   closure of  `u336' with  a
+representative of the  43rd coset, which is  obtained as the 43rd element
+of the list~`t'.
+\beginexample
+    gap> u112 := ClosureGroup( u336, t[43] );;
+    gap> Index( a8, u112 );
+    112 
+\endexample
+Above this subgroup of index 112 lies a  subgroup  of index 56, which  is
+not conjugate to `u56'.  In fact, unlike `u56' it is  maximal.  We obtain
+this subgroup in  the same way that we obtained `u112', this time forcing
+two points, namely 39 and 43 into the first block.
+\beginexample
+    gap> blocks := Blocks( a8_336, [1..336], [1,39,43] );;
+    gap> Length( blocks );
+    56
+    gap> u56b := ClosureGroup( u112, t[39] );; Index( a8, u56b );
+    56
+    gap> IsPrimitive( a8_336, blocks, OnSets );
+    true 
+\endexample
+We already   mentioned in the beginning  that  there is  another standard
+operation of permutations,  namely the conjugation.  E.g., since no other
+operation is specified   in the following  example, `OrbitLength'  simply
+operates via `OnPoints', and because `$<perm>_1$ ^ $<perm>_2$' is defined
+as  the  conjugation of $perm_2$  on  $perm_1$ we effectively compute the
+length of  the  conjugacy   class of  `(1,2)(3,4)(5,6)(7,8)'.   (In  fact
+`$<elm>_1$ ^ $<elm>_2$' is always defined as the conjugation if $<elm>_1$
+and $<elm>_2$ are group elements  of the same  type. So  the length of  a
+conjugacy  class of any  element <elm> in an   arbitrary group <G> can be
+computed as `OrbitLength( <G>, <elm> )'.  In general however this may not
+be a good  idea, `Size( ConjugacyClass( <G>,  <elm> ) )' is probably more
+efficient.)
+\beginexample
+    gap> OrbitLength( a8, (1,2)(3,4)(5,6)(7,8) );
+    105
+    gap> orb := Orbit( a8, (1,2)(3,4)(5,6)(7,8) );;
+    gap> u105 := Stabilizer( a8, (1,2)(3,4)(5,6)(7,8) );; Index( a8, u105 );
+    105 
+\endexample
+Of course the  last stabilizer is in  fact the centralizer of the element
+`(1,2)(3,4)(5,6)(7,8)'.  `Stabilizer' notices    that and computes    the
+stabilizer using the centralizer algorithm for permutation groups. In the
+usual way we now look for the subgroups above `u105'.
+\beginexample
+    gap> blocks := Blocks( a8, orb );; Length( blocks );
+    15
+    gap> blocks[1];
+    [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,8)(6,7), (1,4)(2,3)(5,7)(6,8),
+      (1,5)(2,6)(3,8)(4,7), (1,6)(2,5)(3,7)(4,8), (1,7)(2,8)(3,6)(4,5),
+      (1,8)(2,7)(3,5)(4,6) ]
+\endexample
+To find the subgroup of index 15 we  again use closure. Now  we must be a
+little bit  careful to avoid    confusion. `u105' is the  stabilizer   of
+`(1,2)(3,4)(5,6)(7,8)'. We  know  that there is  a correspondence between
+the  points  of  the   orbit and  the   cosets  of  `u105'.   The   point
+`(1,2)(3,4)(5,6)(7,8)' corresponds   to `u105'.  To get  the  subgroup of
+index 15 we  must add to `u105' an  element of the coset that corresponds
+to the   point `(1,3)(2,4)(5,7)(6,8)' (or any other   point  in the first
+block).  That means   that  we must  use  an  element of `a8'  that  maps
+`(1,2)(3,4)(5,6)(7,8)' to  `(1,3)(2,4)(5,7)(6,8)'.        The    function
+`RepresentativeOperation'   does what we need. It   takes a group and two
+points and returns an  element of the group that  maps the first point to
+the   second. In fact it   also allows you  to   specify the operation as
+optional fourth argument as usual,  but we do  not need this here. If  no
+such element exists in the  group, i.e., if the  two points do not lie in
+one orbit under the group, `RepresentativeOperation' returns `fail'.
+\beginexample
+    gap> rep := RepresentativeOperation( a8, (1,2)(3,4)(5,6)(7,8),
+    >                                        (1,3)(2,4)(5,7)(6,8) );
+    (2,3)(6,7)
+    gap> u15 := ClosureGroup( u105, rep );; Index( a8, u15 );
+    15 
+\endexample
+`u15' is of course a maximal  subgroup, because `a8'  has no subgroups of
+index 3 or~5.  There is in fact  another  class of subgroups  of index 15
+above `u105' that we get by adding `(2,3)(6,8)' to `u105'.
+\beginexample
+    gap> u15b := ClosureGroup( u105, (2,3)(6,8) );; Index( a8, u15b );
+    15 
+    gap> RepresentativeOperation( a8, u15, u15b );
+    false 
+\endexample
+`RepresentativeOperation' tells us that  there is no  element <g> in `a8'
+such that `u15 ^ <g> = u15b'. Because `^' also denotes the conjugation of
+subgroups this tells us  that  `u15' and  `u15b' are not  conjugate.
+
+This  concludes  our  example.   In  this  section  we demonstrated  some
+functions  from  the operations  package.   There  is  a  whole class  of
+functions that  we  did  not mention, namely  those that  take  a  single
+element instead  of a  whole  group  as first argument, e.g., `Cycle' and
+`Permutation'.  All functions are described in the chapter "Operations of
+Groups".
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Group homomorphisms!by images}
+
+We  have already    seen examples of  group  homomorphisms   in the  last
+sections, namely  natural homomorphisms and  operation homomorphisms.  In
+this section we will show how to construct  a group homomorphism $G\to H$
+by specifying a generating set for $G$ and the images of these generators
+in~$H$.
+\beginexample
+    gap> f := FreeGroup( 2 ); g := Group( (1,2,3,4), (1,2) );
+    Group( [ f.1, f.2 ], ... )
+    Group( [ (1,2,3,4), (1,2) ], ... )
+    gap> hom := GroupHomomorphismByImages( f, g,
+    >           GeneratorsOfGroup( f ), GeneratorsOfGroup( g ) );
+    [ f.1, f.2 ] -> [ (1,2,3,4), (1,2) ]
+\endexample
+Since `f'  is a  free  group, its free  generators  can be mapped  to any
+generating set of the same length in any group; so `hom' really defines a
+group homomorphism.  On the other  hand, calculation in subgroups of free
+groups is fairly impossible, and  a call of  `Kernel( hom )' would result
+in an infinite calculation. Our goal  in this section is  to find out why
+this is so and how far we can get.
+
+First, the kernel of the homomorphism `hom' is calculated as the cokernel
+of the inverse  of `hom'. What   does that mean?  The inverse  mapping of
+`hom' goes from  `g'  to  `f' and  maps  the  generators  of `g'   to the
+generators of `f'.
+\beginexample
+    gap> inv := Inverse( hom );
+    fail
+    gap> inv := InverseGeneralMapping( hom );
+    [ (1,2,3,4), (1,2) ] -> [ f.1, f.2 ]
+\endexample
+Simply `Inverse' does not work, because `hom' is not a bijection. We have
+to use the more cautious   `InverseGeneralMapping': since `f' is a   free
+group, so are all its subgroups, and since  `g' is not free, `inv' cannot
+define a group homomorphism  $`g' \to `f'$.  What exists is a multivalued
+mapping, or relation, i.e., a subset $R\subset  `g' \times `f'$, with the
+property that  if  two pairs $(g_1,f_1)$  and $(g_2,f_2)$  belong to~$R$,
+then also $(g_1\cdot g_2,\,f_1\cdot f_2)\in R$. Such a relation is called
+a *group general mapping* in  {\GAP} and it  can be constructed with  the
+command    `GroupGeneralMappingByImages'.     For   example,   `inv     =
+GroupGeneralMappingByImages(    g,      f,    GeneratorsOfGroup(   g   ),
+GeneratorsOfGroup( f ) )'.
+
+The  image $I$ of $R$ is  the set of all   elements that occur as images,
+i.e.,  as right hand sides of   pairs from $R$.   The cokernel of a group
+general mapping with  image $I$ is the set  of all images of the identity
+element, they form a normal subgroup of~$I$. The set of  all images of an
+arbitrary  element  is then  a coset  of the cokernel.  For group general
+mappings defined  on a permutation group  (like  `inv') {\GAP} calculates
+the cokernel   as the normal   closure in $I$ of  certain  images  of the
+identity,  which  are obtained as  Schreier  generators (in  a stabilizer
+chain  for  the permutation group).  The  only problem  in our particular
+example is the determination of the normal closure in~$I$, because $I$ is
+a free group. We can,  however, look at  the Schreier generators with the
+following command:
+\beginexample
+    gap> cok := CoKernelGensPermHom( inv );
+    [ f.1*f.2*f.1*f.2*f.1*f.2, f.2^2, f.1^-1*f.2*f.1^2*f.2*f.1*f.2*f.1^2*f.2*f.1^2
+        , f.2^-1*f.1^4*f.2, f.1^-2*f.2*f.1^4*f.2*f.1^2, f.1^2*f.2*f.1^4*f.2*f.1^2,
+      f.2^-1*f.1*f.2*f.1^3*f.2*f.1*f.2*f.1^2*f.2*f.1^2, 
+      f.2^-1*f.1^-1*f.2^-1*f.1*f.2*f.1^3*f.2*f.1^2*f.2*f.1^2 ]
+\endexample
+A  group general mapping like  `inv' is a genuine  mapping if and only if
+this  list of Schreier generators contains  at most the identity element,
+and this what {\GAP}  tests if you ask  `IsMapping(  inv )'. In  general,
+these generators form  a set of defining  relators for a presentation  of
+the factor  $I/\hbox{cokernel}$,    which is isomorphic  to   the  factor
+preimage/kernel.  Since in our   case   `inv' is  injective,  this is   a
+presentation for  `g'. We will  use it  to  build a  *finitely  presented
+group* `p' and set up an isomorphism between `p' and~`g'.
+\beginexample
+    gap> p := f / cok;
+    Group( ... )
+    gap> iso := GroupHomomorphismByImages( g, p,
+    >           GeneratorsOfGroup( g ), GeneratorsOfGroup( p ) );
+    [ (1,2,3,4), (1,2) ] -> [ f.1, f.2 ]
+\endexample
+We       used      `GroupHomomorphismByImages'        here,           not
+`GroupGeneralMappingByImages', because we  wanted to  promise {\GAP} that
+`iso' actually defines a group homomorphism.  (This is so because we have
+factored out  the cokernel to obtain `p'.)  To see that this really gives
+an  isomorphism, we take  the  cruellest approach by  looking  at all the
+pairs   (preimage,image) that `iso' contains  when  viewed as a relation,
+i.e., as a subset  of~$`g'\times `p'$. To get the  kernel, we filter  out
+all pairs whose second entry is `One( p )'.
+\beginexample
+    gap> pairs := AsList( UnderlyingRelation( iso ) );; Length( pairs );
+    24
+    gap> Filtered( pairs, pair -> pair[2] = One( p ) );
+    [ () ]
+\endexample
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Nice monomorphisms}
+
+In this section we will construct an ugly group, namely a matrix group of
+degree~2 over the Gaussian rationals. Because the group of all invertible
+$2\times  2$-matrices over this field is  infinite, {\GAP} cannot be sure
+from the beginning that our group is finite,  even though it turns out to
+be the quaternion  group of  order~8, hence  finite. To  investigate this
+group, we will construct a monomorphism of that  group into a permutation
+group, which  is much  nicer   to work with. This    image of this  *nice
+monomorphism* is then isomorphic to our matrix  group, and we can perform
+calculations in  this nice group  and lift the the  results back with the
+nice monomorphism to the matrix group.
+\beginexample
+    gap> i := E(4);; grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
+    gap> SetName( grp, "Q8" );
+    gap> orb := Union( Orbits( grp, One( grp ) ) );
+    [ [ 1, 0 ], [ E(4), 0 ], [ 0, 1 ], [ -1, 0 ], [ 0, E(4) ], [ 0, -E(4) ], 
+        [ -E(4), 0 ], [ 0, -1 ] ]
+\endexample
+The list `orb' is  the union of orbits under  `grp' which contain a basis
+for the  two-dimensional row vector   space over the rationals (we  which
+conveniently obtain as `One( grp )', i.e., the  identity matrix). We have
+made use here of the possibility to call `Orbits' with a list that is not
+closed under the operation.  It will be  replaced by the closure on which
+the orbits are then determined  (in our case, there  was only one orbit).
+The finiteness of `grp' implies the finiteness  of `orb', and we obtain a
+faithful permutation representation on 8~points.
+\beginexample
+    gap> hom := OperationHomomorphism( grp, orb );;
+    gap> IsInjective( hom );
+    true
+    gap> p := Image( hom );
+    Group( [ (1,7,6,8)(2,5,3,4), (1,2,6,3)(4,8,5,7) ], ... )
+\endexample
+To   demonstrate  the technique of  nice    monomorphisms, we compute the
+conjugacy classes of  the permutation group and  lift them back  into the
+matrix group with the monomorphism `hom'.  Lifting back a conjugacy class
+means finding the preimage of  the representative and of the centralizer;
+the latter is also called `StabilizerOfExternalSet' in {\GAP}.
+\beginexample
+    gap> pcls := ConjugacyClasses( p );; gcls := [  ];;
+    gap> for pc  in pcls  do
+    >      gc := ConjugacyClass( grp, PreImageElm( hom, Representative(pc) ) );
+    >      SetStabilizerOfExternalSet( gc, PreImage( hom, Centralizer(pc) ) );
+    >      Add( gcls, gc );
+    >    od;
+    gap> List( gcls, Size );
+    [ 1, 1, 2, 2, 2 ]
+\endexample
+Since the  mapping `hom' is injective, but  not surjective, we cannot use
+the function `PreImage' for  preimages of elements  (they need not have a
+preimage). Instead,  we have to use `PreImageElm'  to denote the (unique)
+preimage of an element, but can use `PreImage'  for the preimage of a set
+(which always exists, even if it is empty).
+
+All the steps we have made above are automatically performed by {\GAP} if
+you  simply   ask for `ConjugacyClasses(  grp  )',   provided that {\GAP}
+already knows that  `grp' is finite,  e.g., because you asked  `IsFinite(
+grp )'  before. The reason  for this is that a   finite matrix group like
+`grp' is ``handled by a nice monomorphism'',  like `hom' is one. For such
+groups,  {\GAP} uses  the command   `NiceMonomorphism'   to construct   a
+monomorphism like `hom' and then proceeds as we have done above.
+\beginexample
+    gap> grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
+    gap> IsHandledByNiceMonomorphism( grp );
+    false
+    gap> IsFinite( grp );
+    true
+    gap> IsHandledByNiceMonomorphism( grp ); hom := NiceMonomorphism( grp );
+    true
+    <operation homomorphism>
+    gap> hom!.externalSet; p := Image( hom );
+    [ [ 1, 0 ], [ 0, 1 ], [ E(4), 0 ], [ 0, -E(4) ], [ -1, 0 ], [ 0, E(4) ], 
+      [ 0, -1 ], [ -E(4), 0 ] ]
+    Group( [ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ], ... )
+    gap> ConjugacyClasses( grp ) = gcls;
+    true
+\endexample
+
+Nice monomorphisms are   not only used  for matrix  groups, but  also for
+other kinds of  groups  in which  one cannot calculate  easily enough. As
+another   example, let  us    show that the   automorphism  group  of the
+quaternionic  group of  order~8 is isomorphic  to  the symmetric group of
+degree~4   by   examining  the ``nice   object''    associated with  that
+automorphism group.
+\beginexample
+    gap> aut := NiceObject( AutomorphismGroup( p ) );
+    Group( [ (1,5)(3,4), (2,6)(3,4), (1,3,5,4), (1,2)(3,4)(5,6) ], ... )
+    gap> IsomorphismGroups( aut, SymmetricGroup( 4 ) );
+    [ (1,5)(3,4), (2,6)(3,4), (1,3,5,4), (1,2)(3,4)(5,6) ] -> 
+    [ (1,4)(2,3), (1,2)(3,4), (1,3,4,2), (2,4) ]
+\endexample
+
+\exercise The nice monomorphism associated with the automorphism group of
+`p' is an operation homomorphism. What is its underlying external set?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section"
+% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
+% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

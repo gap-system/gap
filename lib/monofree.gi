@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for free monoids.
 ##
@@ -19,7 +19,9 @@ Revision.monofree_gi:=
 ##  <M> contains the whole family of its elements if and only if all
 ##  magma generators of the family are among the monoid generators of <M>.
 ##
-InstallMethod( IsWholeFamily, true,
+InstallMethod( IsWholeFamily,
+    "method for a free monoid",
+    true,
     [ IsAssocWordWithOneCollection and IsMonoid ], 0,
     M -> IsSubset( GeneratorsMagmaFamily( FamilyObj( M ) ),
                    GeneratorsOfMagmaWithOne( M ) ) );
@@ -33,18 +35,29 @@ InstallMethod( IsWholeFamily, true,
 ##  to iterator and enumerator for free semigroups.
 ##  The only difference is the existence of the empty word.
 ##
-InstallMethod( Iterator, true,
-    [ IsAssocWordWithOneCollection and IsMonoid ], 0,
-    S -> Objectify( NewKind( IteratorsFamily, IsFreeSemigroupIterator ),
+InstallMethod( Iterator,
+    "method for a free monoid",
+    true,
+    [ IsAssocWordWithOneCollection and IsWholeFamily ], 0,
+    function( M )
+
+    # A free free group needs another method.
+    # A trivial group needs another method.
+    if IsAssocWordWithInverseCollection( M ) or IsTrivial( M ) then
+      TryNextMethod();
+    fi;
+
+    return Objectify( NewKind( IteratorsFamily, IsFreeSemigroupIterator ),
             rec(
-                 family       := ElementsFamily( FamilyObj( S ) ),
-                 nrgenerators := Length( GeneratorsOfMagmaWithOne( S ) ),
+                 family       := ElementsFamily( FamilyObj( M ) ),
+                 nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ),
                  exp          := 0,
                  word         := [],
                  counter      := [ 0, 0 ],
                  length       := 0
                 )
-           ) );
+           );
+    end );
 
 
 #############################################################################
@@ -55,18 +68,31 @@ IsFreeMonoidEnumerator := NewRepresentation( "IsFreeMonoidEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
-InstallMethod( \[\], true, [ IsFreeMonoidEnumerator, IsPosRat and IsInt ], 0,
+InstallMethod( \[\],
+    "method for enumerator of a free monoid",
+    true,
+    [ IsFreeMonoidEnumerator, IsPosRat and IsInt ], 0,
     FreeMonoid_ElementNumber );
 
 InstallMethod( Position,
+    "method for enumerator of a free monoid",
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
     [ IsFreeMonoidEnumerator, IsObject, IsZeroCyc ], 0,
     FreeMonoid_NumberElement );
 
-InstallMethod( Enumerator, true,
-    [ IsMonoid and IsAssocWordWithOneCollection ], 0,
+InstallMethod( Enumerator,
+    "method for a free monoid",
+    true,
+    [ IsAssocWordWithOneCollection and IsWholeFamily and IsMonoid ], 0,
     function( M )
     local enum;
+
+    # A free group needs another method.
+    # A trivial group needs another method.
+    if IsAssocWordWithInverseCollection( M ) or IsTrivial( M ) then
+      TryNextMethod();
+    fi;
+
     enum:= Objectify( NewKind( FamilyObj( M ), IsFreeMonoidEnumerator ),
            rec( family       := ElementsFamily( FamilyObj( M ) ),
                 nrgenerators := Length( GeneratorsOfMagmaWithOne( M ) ) ) );
@@ -81,7 +107,9 @@ InstallMethod( Enumerator, true,
 ##
 #T use better method for the whole family, and for abelian monoids
 ##
-InstallMethod( Random, true,
+InstallMethod( Random,
+    "method for a free monoid",
+    true,
     [ IsMonoid and IsAssocWordWithOneCollection ], 0,
     function( M )
 
@@ -116,7 +144,10 @@ InstallMethod( Random, true,
 ##
 #M  Size( <M> ) . . . . . . . . . . . . . . . . . . . . size of a free monoid
 ##
-InstallMethod( Size, true, [ IsMonoid and IsAssocWordWithOneCollection ], 0,
+InstallMethod( Size,
+    "method for a free monoid",
+    true,
+    [ IsMonoid and IsAssocWordWithOneCollection ], 0,
     function( M )
     if IsTrivial( M ) then
       return 1;
@@ -130,7 +161,10 @@ InstallMethod( Size, true, [ IsMonoid and IsAssocWordWithOneCollection ], 0,
 ##
 #A  One( <Fam> )
 ##
-InstallOtherMethod( One, true, [ IsAssocWordWithOneFamily ], 0,
+InstallOtherMethod( One,
+    "method for a family of free monoid elements",
+    true,
+    [ IsAssocWordWithOneFamily ], 0,
     F -> ObjByExtRep( F, 1, 1, [] ) );
 
 
@@ -138,7 +172,10 @@ InstallOtherMethod( One, true, [ IsAssocWordWithOneFamily ], 0,
 ##
 #A  GeneratorsMagmaFamily( <F> )
 ##
-InstallMethod( GeneratorsMagmaFamily, true, [ IsAssocWordWithOneFamily ], 0,
+InstallMethod( GeneratorsMagmaFamily,
+    "method for a family of free monoid elements",
+    true,
+    [ IsAssocWordWithOneFamily ], 0,
     function( F )
 
     local gens;

@@ -24,25 +24,64 @@ InstallMethod( DefaultFieldOfMatrixGroup,
     0,
     FieldOfMatrixGroup );
 
+InstallMethod( DefaultFieldOfMatrixGroup, "from generators in char 0", true,
+        [ IsMatrixGroup and HasGeneratorsOfGroup ], 0,
+    function( grp )
+    if not IsEmpty( GeneratorsOfGroup( grp ) )
+       and IsCyc( GeneratorsOfGroup( grp )[ 1 ][ 1 ][ 1 ] )  then
+        return Cyclotomics;
+    else
+        TryNextMethod();
+    fi;
+end );
+
+InstallMethod( DefaultFieldOfMatrixGroup, "from one in char 0", true,
+        [ IsMatrixGroup and HasOne ], 1,
+    function( grp )
+    if IsCyc( One( grp )[ 1 ][ 1 ] )  then  return Cyclotomics;
+                                      else  TryNextMethod();  fi;
+end );
+
 
 #############################################################################
 ##
 #M  DimensionOfMatrixGroup( <mat-grp> )
 ##
-InstallMethod( DimensionOfMatrixGroup,
-    true,
-    [ IsMatrixGroup ],
-    0,
-
-function( grp )
-    local   gens;
-
-    gens := GeneratorsOfGroup(grp);
-    if 0 < Length(gens)  then
-        return Length(gens[1]);
+InstallMethod( DimensionOfMatrixGroup, "from generators", true,
+    [ IsMatrixGroup and HasGeneratorsOfGroup ], 0,
+    function( grp )
+    if not IsEmpty( GeneratorsOfGroup( grp ) )  then
+        return Length( GeneratorsOfGroup( grp )[ 1 ] );
     else
-        return Length(One(grp));
+        TryNextMethod();
     fi;
+end );
+
+InstallMethod( DimensionOfMatrixGroup, "from one", true,
+    [ IsMatrixGroup and HasOne ], 1,
+    grp -> Length( One( grp ) ) );
+
+
+#############################################################################
+##
+#M  One( <mat-grp> )
+##
+InstallOtherMethod( One, true, [ IsMatrixGroup ], 0,
+    grp -> IdentityMat( DimensionOfMatrixGroup( grp ),
+                        DefaultFieldOfMatrixGroup( grp ) ) );
+
+
+#############################################################################
+##
+#M  NiceMonomorphism( <mat-grp> )
+##
+InstallMethod( NiceMonomorphism, true, [ IsMatrixGroup and IsFinite ], 0,
+    function( grp )
+    local   nice;
+    
+    nice := SparseOperationHomomorphism( grp, One( grp ) );
+    SetIsInjective( nice, true );
+    return nice;
 end );
 
 

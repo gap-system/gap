@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains attributes, properties and operations for univariate
 ##  polynomials
@@ -15,6 +15,10 @@ Revision.upoly_gd:=
 #############################################################################
 ##
 #O  Value( <upol>, <elm> )
+#O  Value( <upol>, <elm>, <one> )
+##
+##  The optional third argument <one> is a multiplicative neutral element
+##  that shall be taken instead of the zero-th power of <elm>.
 ##
 Value := NewOperation("Value",[IsRationalFunction,IsRingElement]);
 

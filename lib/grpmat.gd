@@ -19,6 +19,7 @@ Revision.grpmat_gd :=
 ##
 IsMatrixGroup := IsRingElementCollCollColl and IsGroup;
 
+InstallTrueMethod( IsHandledByNiceMonomorphism, IsMatrixGroup and IsFinite );
 
 #############################################################################
 ##
@@ -34,6 +35,9 @@ DefaultFieldOfMatrixGroup := NewAttribute(
 SetDefaultFieldOfMatrixGroup := Setter(DefaultFieldOfMatrixGroup);
 HasDefaultFieldOfMatrixGroup := Tester(DefaultFieldOfMatrixGroup);
 
+InstallSubsetMaintainedMethod( DefaultFieldOfMatrixGroup,
+        IsMatrixGroup and HasDefaultFieldOfMatrixGroup, IsMatrixGroup );
+
 
 #############################################################################
 ##
@@ -47,6 +51,9 @@ DimensionOfMatrixGroup := NewAttribute(
 
 SetDimensionOfMatrixGroup := Setter(DimensionOfMatrixGroup);
 HasDimensionOfMatrixGroup := Tester(DimensionOfMatrixGroup);
+
+InstallSubsetMaintainedMethod( DimensionOfMatrixGroup,
+        IsMatrixGroup and HasDimensionOfMatrixGroup, IsMatrixGroup );
 
 
 #############################################################################

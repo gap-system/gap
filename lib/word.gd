@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright 1996,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
 ##  This file declares the operations for associative words.
 ##
@@ -80,13 +80,15 @@ IsAssocWordWithInverseFamily :=
 
 #############################################################################
 ##
-#C  IsFreeSemigroup( <obj> )
-#C  IsFreeMonoid( <obj> )
+#T  IsFreeSemigroup( <obj> )
+#T  IsFreeMonoid( <obj> )
 #C  IsFreeGroup( <obj> )
 ##
-IsFreeSemigroup := IsAssocWordCollection and IsSemigroup;
-IsFreeMonoid    := IsAssocWordWithOneCollection and IsMonoid;
-IsFreeGroup     := IsAssocWordWithInverseCollection and IsGroup;
+##  Note that we cannot define 'IsFreeMonoid' as
+##  'IsAssocWordWithOneCollection and IsMonoid' because then
+##  every free group would be a free monoid, which is not true!
+##
+IsFreeGroup := IsAssocWordWithInverseCollection and IsGroup;
 
 
 #############################################################################
@@ -250,7 +252,7 @@ ObjByVector := NewOperationArgs( "ObjByVector" );
 ##  length 1 is handled more efficiently by 'EliminatedWord'
 ##  (see "EliminatedWord").
 ##
-MappedWord := NewOperation( "MappedWord", [ IsAssocWord, IsList, IsList ] );
+MappedWord := NewOperation( "MappedWord", [ IsObject, IsList, IsList ] );
 
 
 #############################################################################
@@ -281,4 +283,5 @@ StoreInfoFreeMagma := NewOperationArgs( "StoreInfoFreeMagma" );
 ##
 
 #E  word.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##
 ##

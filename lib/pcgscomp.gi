@@ -61,8 +61,8 @@ function( efam, pcs )
     local   pcgs;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC(
-                IsPcgs and IsPcgsDefaultRep, IsObject, efam, pcs );
+    pcgs := PcgsByPcSequenceCons(
+                IsPcgsDefaultRep, IsPcgs, efam, pcs );
 
     # that it
     return pcgs;

@@ -647,14 +647,17 @@ Obj             UniteSetHandler (
     assert( TYPE_OBJ(set1) == T_PLIST_DENSE \
          || TYPE_OBJ(set1) == T_PLIST_EMPTY \
          || TYPE_OBJ(set1) == T_PLIST_HOM_SSORT \
+         || TYPE_OBJ(set1) == T_PLIST_TAB_SSORT \
          || TYPE_OBJ(set1) == T_PLIST_CYC_SSORT );
     assert( TYPE_OBJ(set2) == T_PLIST_DENSE \
          || TYPE_OBJ(set2) == T_PLIST_EMPTY \
          || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT \
+	 || TYPE_OBJ(set2) == T_PLIST_TAB_SSORT \
          || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT \
          || TYPE_OBJ(set2) == T_PLIST_DENSE + IMMUTABLE \
          || TYPE_OBJ(set2) == T_PLIST_EMPTY + IMMUTABLE \
          || TYPE_OBJ(set2) == T_PLIST_HOM_SSORT + IMMUTABLE \
+	 || TYPE_OBJ(set2) == T_PLIST_TAB_SSORT + IMMUTABLE \
          || TYPE_OBJ(set2) == T_PLIST_CYC_SSORT + IMMUTABLE );
     if ( TYPE_OBJ(set1) == T_PLIST_EMPTY ) {
         RetypeBag( set1, MUTABLE_TYPE(TYPE_OBJ(set2)) );

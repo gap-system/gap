@@ -5,12 +5,13 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for free groups.
 ##
 Revision.grpfree_gi :=
     "@(#)$Id$";
+
 
 #############################################################################
 ##
@@ -53,7 +54,10 @@ IsFreeGroupIterator := NewRepresentation( "IsFreeGroupIterator",
     IsIterator and IsComponentObjectRep,
     [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
 
-InstallMethod( NextIterator, true, [ IsFreeGroupIterator ], 0,
+InstallMethod( NextIterator,
+    "method for iterator of a free group",
+    true,
+    [ IsFreeGroupIterator ], 0,
     function( iter )
 
     local word,
@@ -88,12 +92,16 @@ InstallMethod( NextIterator, true, [ IsFreeGroupIterator ], 0,
     return ObjByExtRep( iter!.family, 1, exp, oldword );
     end );
 
-InstallMethod( IsDoneIterator, true, [ IsFreeGroupIterator ], 0,
+InstallMethod( IsDoneIterator,
+    "method for iterator of a free group",
+    true,
+    [ IsFreeGroupIterator ], 0,
     ReturnFalse );
 
-InstallMethod( Iterator, true,
+InstallMethod( Iterator,
+    "method for a free group",
+    true,
     [ IsAssocWordWithInverseCollection and IsWholeFamily ], 0,
-#T only for the whole family ! (generalize!)
     G -> Objectify( NewKind( IteratorsFamily, IsFreeGroupIterator ),
                     rec(
                          family         := ElementsFamily( FamilyObj( G ) ),
@@ -105,6 +113,7 @@ InstallMethod( Iterator, true,
                         )
                    ) );
 
+
 #############################################################################
 ##
 #M  Enumerator( <G> )
@@ -113,7 +122,10 @@ IsFreeGroupEnumerator := NewRepresentation( "IsFreeGroupEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
-InstallMethod( \[\], true, [ IsFreeGroupEnumerator, IsPosRat and IsInt ], 0,
+InstallMethod( \[\],
+    "method for enumerator of a free group",
+    true,
+    [ IsFreeGroupEnumerator, IsPosRat and IsInt ], 0,
     function( enum, nr )
 
     local n,
@@ -197,6 +209,7 @@ InstallMethod( \[\], true, [ IsFreeGroupEnumerator, IsPosRat and IsInt ], 0,
     end );
 
 InstallMethod( Position,
+    "method for enumerator of a free group",
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
     [ IsFreeGroupEnumerator, IsAssocWordWithInverse, IsZeroCyc ], 0,
     function( enum, elm, zero )
@@ -286,8 +299,10 @@ InstallMethod( Position,
     return nr;
     end );
 
-InstallMethod( Enumerator, true,
-    [ IsAssocWordWithInverseCollection and IsWholeFamily ], 0,
+InstallMethod( Enumerator,
+    "method for enumerator of a free group",
+    true,
+    [ IsAssocWordWithInverseCollection and IsWholeFamily and IsGroup ], 0,
 #T generalize!
     function( G )
     local enum;
@@ -307,7 +322,9 @@ InstallMethod( Enumerator, true,
 ##  If all magma generators of the family are among the group generators
 ##  of <G> then <G> contains the whole family of its elements.
 ##
-InstallMethod( IsWholeFamily, true,
+InstallMethod( IsWholeFamily,
+    "method for a free group",
+    true,
     [ IsAssocWordWithInverseCollection and IsGroup ], 0,
     function( M )
     if IsSubset( GeneratorsMagmaFamily( FamilyObj( M ) ),
@@ -318,13 +335,16 @@ InstallMethod( IsWholeFamily, true,
     fi;
     end );
 
+
 #############################################################################
 ##
 #M  Random( <M> )
 ##
 #T isn't this a generic group method? (without guarantee about distribution)
 ##
-InstallMethod( Random, true,
+InstallMethod( Random,
+    "method for a free group",
+    true,
     [ IsAssocWordWithInverseCollection and IsGroup ], 0,
     function( M )
 
@@ -357,9 +377,11 @@ InstallMethod( Random, true,
 
 #############################################################################
 ##
-#M  Size( <G> )
+#M  Size( <G> ) . . . . . . . . . . . . . . . . . . . . . .  for a free group
 ##
-InstallMethod( Size, true,
+InstallMethod( Size,
+    "method for a free group",
+    true,
     [ IsAssocWordWithInverseCollection and IsGroup ], 0,
     function( G )
     if IsTrivial( G ) then
@@ -374,7 +396,9 @@ InstallMethod( Size, true,
 ##
 #M  GeneratorsMagmaFamily( <F> )
 ##
-InstallMethod( GeneratorsMagmaFamily, true,
+InstallMethod( GeneratorsMagmaFamily,
+    "method for a family of assoc. words",
+    true,
     [ IsAssocWordWithInverseFamily ], 0,
     function( F )
 

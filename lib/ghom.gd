@@ -59,6 +59,20 @@ AsGroupGeneralMappingByImages := NewAttribute( "AsGroupGeneralMappingByImages",
 SetAsGroupGeneralMappingByImages := Setter( AsGroupGeneralMappingByImages );
 HasAsGroupGeneralMappingByImages := Tester( AsGroupGeneralMappingByImages );
 
+InstallAttributeMethodByGroupGeneralMappingByImages :=
+  function( attr, value_filter )
+    InstallMethod( attr, "via `AsGroupGeneralMappingByImages'", true,
+            [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
+            hom -> attr( AsGroupGeneralMappingByImages( hom ) ) );
+    InstallMethod( Setter( attr ),
+            "also for `AsGroupGeneralMappingByImages'", true,
+            [ HasAsGroupGeneralMappingByImages, value_filter ], SUM_FLAGS,
+            function( hom, value )
+                Setter( attr )( AsGroupGeneralMappingByImages( hom ), value );
+                TryNextMethod();
+            end );
+end;
+    
 InnerAutomorphism := NewOperation( "InnerAutomorphism",
     [ IsGroup, IsMultiplicativeElementWithInverse ] );
 

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for elements of algebras given by structure
 ##  constants (s.c.).
@@ -440,7 +440,7 @@ InstallMethod( \in,
 ##  where '$c_{ijk}$ = <sctable>[i][j][1][i_k]'
 ##  and '<sctable>[i][j][2][i_k] = k'.
 ##
-AlgebraByStructureConstantsArg := function( arglist )
+AlgebraByStructureConstantsArg := function( arglist, filter )
 
     local   sctable,    # structure constants table
             n,          # dimensions of structure matrices
@@ -489,7 +489,7 @@ AlgebraByStructureConstantsArg := function( arglist )
     # If the elements family of 'R' has a uniquely determined zero element,
     # then all coefficients in this family are admissible.
     # Otherwise only coefficients from 'R' itself are allowed.
-    Fam:= NewFamily( "SCAlgebraObjFamily", IsSCAlgebraObj );
+    Fam:= NewFamily( "SCAlgebraObjFamily", filter );
     if Zero( ElementsFamily( FamilyObj( R ) ) ) <> fail then
       SetFilterObj( Fam, IsFamilyOverFullCoefficientsFamily );
     else
@@ -528,15 +528,178 @@ AlgebraByStructureConstantsArg := function( arglist )
 end;
 
 AlgebraByStructureConstants := function( arg )
-    return AlgebraByStructureConstantsArg( arg );
+    return AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
 end;
 
 LieAlgebraByStructureConstants := function( arg )
     local A;
-    A:= AlgebraByStructureConstantsArg( arg );
+    A:= AlgebraByStructureConstantsArg( arg, IsSCAlgebraObj );
     SetIsLieAlgebra( A, true );
     return A;
 end;
+
+
+#############################################################################
+##
+#F  QuaternionAlgebra( <F> )
+##
+QuaternionAlgebra := function( F )
+    local A;
+
+    # Construct the algebra.
+    A:= AlgebraByStructureConstantsArg(
+            [ F,
+              [ [[[1],[1]],[[2],[ 1]],[[3],[ 1]],[[4],[ 1]]],
+                [[[2],[1]],[[1],[-1]],[[4],[ 1]],[[3],[-1]]],
+                [[[3],[1]],[[4],[-1]],[[1],[-1]],[[2],[ 1]]],
+                [[[4],[1]],[[3],[ 1]],[[2],[-1]],[[1],[-1]]],
+                0, Zero(F) ],
+              "e", "i", "j", "k" ],
+            IsSCAlgebraObj and IsQuaternion );
+
+    # A quaternion algebra over the rationals is a division ring.
+    if F = Rationals then
+      SetFilterObj( A, IsMagmaWithInversesAndZero );
+    fi;
+
+    # Return the quaternion algebra.
+    return A;
+end;
+
+
+#############################################################################
+##
+#M  One( <quat> ) . . . . . . . . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( One,
+    "method for a quaternion",
+    true,
+    [ IsQuaternion and IsSCAlgebraObj ], 0,
+    quat -> ObjByExtRep( FamilyObj( quat ), [ 1, 0, 0, 0 ] ) );
+
+
+#############################################################################
+##
+#M  Inverse( <quat> ) . . . . . . . . . . . . . . . . . . .  for a quaternion
+##
+##  The inverse of $c_1 e + c_2 i + c_3 j + c_4 k$ is
+##  $c_1/z e - c_2/z i - c_3/z j - c_4/z k$
+##  where $z = c_1^2 + c_2^2 + c_3^2 + c_4^2$.
+##
+InstallMethod( Inverse,
+    "method for a quaternion",
+    true,
+    [ IsQuaternion and IsSCAlgebraObj ], 0,
+    function( quat )
+    local data, z;
+    data:= ShallowCopy( ExtRepOfObj( quat ) );
+    z:= data[1]^2 + data[2]^2 + data[3]^2 + data[4]^2;
+    data[1]:= data[1]/z;
+    data[2]:= AdditiveInverse( data[2]/z );
+    data[3]:= AdditiveInverse( data[3]/z );
+    data[4]:= AdditiveInverse( data[4]/z );
+    return ObjByExtRep( FamilyObj( quat ), data );
+    end );
+
+
+#############################################################################
+##
+#M  ComplexConjugate( <quat> )  . . . . . . . . . . . . . .  for a quaternion
+##
+InstallMethod( ComplexConjugate,
+    "method for a quaternion",
+    true,
+    [ IsQuaternion and IsSCAlgebraObj ], 0,
+    function( quat )
+    local data;
+    data:= ShallowCopy( ExtRepOfObj( quat ) );
+    data[2]:= AdditiveInverse( data[2] );
+    data[3]:= AdditiveInverse( data[3] );
+    data[4]:= AdditiveInverse( data[4] );
+    return ObjByExtRep( FamilyObj( quat ), data );
+    end );
+
+
+#############################################################################
+##
+#F  ComplexificationQuat( <vector> )
+#F  ComplexificationQuat( <matrix> )
+##
+ComplexificationQuat := function( matrixorvector )
+
+    local result,
+          i, e,
+          M,
+          m,
+          n,
+          j, k,
+          v,
+          coeff;
+
+    result:= [];
+    i:= E(4);
+    e:= 1;
+
+    if   IsQuaternionCollColl( matrixorvector ) then
+
+      M:= matrixorvector;
+      m:= Length( M );
+      n:= Length( M[1] );
+      for j in [ 1 .. 2*m ] do
+        result[j]:= [];
+      od;
+      for j in [ 1 .. m ] do
+        for k in [ 1 .. n ] do
+          coeff:= ExtRepOfObj( M[j][k] );
+          result[  j  ][  k  ]:=   e * coeff[1] + i * coeff[2];
+          result[  j  ][ n+k ]:=   e * coeff[3] + i * coeff[4];
+          result[ m+j ][  k  ]:= - e * coeff[3] + i * coeff[4];
+          result[ m+j ][ n+k ]:=   e * coeff[1] - i * coeff[2];
+        od;
+      od;
+
+    elif IsQuaternionCollection( matrixorvector ) then
+
+      v:= matrixorvector;
+      n:= Length( v );
+      for j in [ 1 .. n ] do
+        coeff:= ExtRepOfObj( v[j] );
+        result[  j  ]:= e * coeff[1] + i * coeff[2];
+        result[ n+j ]:= e * coeff[3] + i * coeff[4];
+      od;
+
+    else
+      Error( "<matrixorvector> must be a vector or matrix of quaternions" );
+    fi;
+
+    return result;
+end;
+
+
+#############################################################################
+##
+#F  OctaveAlgebra( <F> )
+##
+OctaveAlgebra := F -> AlgebraByStructureConstants(
+    F,
+    [ [ [[1],[1]],[[],[]],[[3],[1]],[[],[]],[[5],[1]],[[],[]],[[],[]],
+        [[8],[1]] ],
+      [ [[],[]],[[2],[1]],[[],[]],[[4],[1]],[[],[]],[[6],[1]],[[7],[1]],
+        [[],[]] ],
+      [ [[],[]],[[3],[1]],[[],[]],[[1],[1]],[[7],[1]],[[],[]],[[],[]],
+        [[6],[1]] ],
+      [ [[4],[1]],[[],[]],[[2],[1]],[[],[]],[[],[]],[[8],[1]],[[5],[1]],
+        [[],[]] ],
+      [ [[],[]],[[5],[1]],[[7],[-1]],[[],[]],[[],[]],[[1],[1]],[[],[]],
+        [[4],[-1]] ],
+      [ [[6],[1]],[[],[]],[[],[]],[[8],[-1]],[[2],[1]],[[],[]],[[3],[-1]],
+        [[],[]] ],
+      [ [[7],[1]],[[],[]],[[],[]],[[5],[-1]],[[],[]],[[3],[1]],[[],[]],
+        [[2],[-1]] ],
+      [ [[],[]],[[8],[1]],[[6],[-1]],[[],[]],[[4],[1]],[[],[]],[[1],[-1]],
+        [[],[]] ],
+      0, Zero(F) ],
+    "s1", "t1", "s2", "t2", "s3", "t3", "s4", "t4" );
 
 
 #############################################################################

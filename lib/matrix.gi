@@ -8,7 +8,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for matrices.
 ##
@@ -2312,6 +2312,99 @@ PermutationMat := function( arg )
     od;
 
     return mat;
+end;
+
+
+#############################################################################
+##
+#F  DiagonalMat( <vector> )
+##
+DiagonalMat := function( vector )
+    
+    local zerovec,
+          M,
+          i;
+
+    M:= [];
+    zerovec:= Zero( vector[1] );
+    zerovec:= List( vector, x -> zerovec );
+    for i in [ 1 .. Length( vector ) ] do
+      M[i]:= ShallowCopy( zerovec );
+      M[i][i]:= vector[i];
+    od;
+    ConvertToVectorRep( M[i] );
+    return M;
+end;
+
+
+#############################################################################
+##
+#F  ReflectionMat( <coeffs> )
+#F  ReflectionMat( <coeffs>, <root> )
+#F  ReflectionMat( <coeffs>, <conj> )
+#F  ReflectionMat( <coeffs>, <conj>, <root> )
+##
+ReflectionMat := function( arg )
+
+    local coeffs,     # coefficients vector, first argument
+          w,          # root of unity, second argument (optional)
+          conj,       # conjugation function, third argument (optional)
+          M,          # matrix of the reflection, result
+          n,          # length of 'coeffs'
+          one,        # identity of the ring over that 'coeffs' is written
+          c,          # coefficient of 'M'
+          i,          # loop over rows of 'M'
+          j,          # loop over columns of 'M'
+          row;        # one row of 'M'
+
+    # Get and check the arguments.
+    if    Length( arg ) < 1 or 3 < Length( arg )
+       or not IsList( arg[1] ) then
+      Error( "usage: ReflectionMat( <coeffs> [, <conj> ] [, <k> ] )" );
+    fi;
+    coeffs:= arg[1];
+    if   Length( arg ) = 1 then
+      w:= -1;
+      conj:= List( coeffs, ComplexConjugate );
+    elif Length( arg ) = 2 then
+      if not IsFunction( arg[2] ) then
+        w:= arg[2];
+        conj:= List( coeffs, ComplexConjugate );
+      else
+        w:= -1;
+        conj:= arg[2];
+        if not IsFunction( conj ) then
+          Error( "<conj> must be a function" );
+        fi;
+        conj:= List( coeffs, conj );
+      fi;
+    elif Length( arg ) = 3 then
+      conj:= arg[2];
+      if not IsFunction( conj ) then
+        Error( "<conj> must be a function" );
+      fi;
+      conj:= List( coeffs, conj );
+      w:= arg[3];
+    fi;
+
+    # Construct the matrix.
+    M:= [];
+    one:= coeffs[1] ^ 0;
+    w:= w * one;
+    n:= Length( coeffs );
+    c:= ( w - one ) / ( coeffs * conj );
+    for i in [ 1 .. n ] do
+      row:= [];
+      for j in [ 1 .. n ] do
+        row[j]:= conj[i] * c * coeffs[j];
+      od;
+      row[i]:= row[i] + one;
+      ConvertToVectorRep( row );
+      M[i]:= row;
+    od;
+
+    # Return the result.
+    return M;
 end;
 
 

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.10  1997/04/11 09:32:35  htheisse
+#H  wreath product now takes an explicit domain for the top group
+#H
 #H  Revision 4.9  1997/03/18 09:09:06  ahulpke
 #H  ProjectionOp -> Projection
 #H
@@ -45,7 +48,7 @@ SubdirectProduct := NewOperation( "SubdirectProduct",
 SemidirectProduct := NewOperation( "SemidirectProduct",
     [ IsGroup, IsGroupHomomorphism, IsGroup ] );
 WreathProduct := NewOperation( "WreathProduct",
-    [ IsGroup, IsGroup, IsGroupHomomorphism ] );
+    [ IsGroup, IsGroup, IsGroupHomomorphism, IsList ] );
 WreathProductProductAction := NewOperationArgs( "WreathProductProductAction" );
 
 #############################################################################

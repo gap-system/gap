@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for 'FLMLOR's and algebras.
 ##
@@ -694,6 +694,71 @@ AlgebraByStructureConstants := NewOperationArgs(
 ##
 LieAlgebraByStructureConstants := NewOperationArgs(
     "LieAlgebraByStructureConstants" );
+
+
+#############################################################################
+##
+#C  IsQuaternion
+#C  IsQuaternionCollection
+#C  IsQuaternionCollColl
+##
+##  category of elements in a algebra constructed by 'QuaternionAlgebra'
+##
+IsQuaternion := NewCategory( "IsQuaternion", IsScalar and IsAssociative );
+
+IsQuaternionCollection := CategoryCollections( "IsQuaternionCollection",
+    IsQuaternion );
+
+IsQuaternionCollColl := CategoryCollections( "IsQuaternionCollColl",
+    IsQuaternionCollection );
+
+
+#############################################################################
+##
+#F  QuaternionAlgebra( <F> )
+##
+##  The embedding of the field 'GaussianRationals' into a quaternion algebra
+##  $A$ over 'Rationals' is not uniquely determined.
+##  One can specify one as a vector space homomorphism that maps '1' to the
+##  first algebra generator of $A$, and 'E(4)' to one of the others.
+##
+QuaternionAlgebra := NewOperationArgs( "QuaternionAlgebra" );
+
+
+#############################################################################
+##
+#F  ComplexificationQuat( <vector> )
+#F  ComplexificationQuat( <matrix> )
+##
+##  Let $A = e F \oplus i F \oplus j F \oplus k F$ be a quaternion algebra
+##  over the field $F$ of cyclotomics, with basis $(e,i,j,k)$.
+##
+##  If $v = v_1 + v_2 j$ is a row vector over $A$ with $v_1 = e w_1 + i w_2$
+##  and $v_2 = e w_3 + i w_4$ then 'ComplexificationQuat( $v$ )' is the
+##  concatenation of $w_1 + 'E(4)' w_2$ and $w_3 + 'E(4)' w_4$.
+##
+##  If $M = M_1 + M_2 j$ is a matrix over $A$ with $M_1 = e N_1 + i N_2$
+##  and $M_2 = e N_3 + i N_4$ then 'ComplexificationQuat( <M> )' is the
+##  block matrix over $e F \oplus i F$
+##  \[ \left( \begin{array}{rr}
+##                  N_1 + 'E(4)' N_2 & N_3 + 'E(4)' N_4           \\
+##                - N_3 + 'E(4)' N_4 & N_1 - 'E(4)' N_2
+##            \end{array} \right) \]
+##
+##  Then 'ComplexificationQuat( <v> ) * ComplexificationQuat( <M> ) = 
+##        ComplexificationQuat( <v> \*\ <M>', since
+##  \[ v M = v_1 M_1 + v_2 j M_1 + v_1 M_2 j + v_2 j M_2 j
+##         =   ( v_1 M_1 - v_2 \overline{M_2} )
+##           + ( v_1 M_2 + v_2 \overline{M_1} ) j . \]
+##             
+ComplexificationQuat := NewOperationArgs( "ComplexificationQuat" );
+
+
+#############################################################################
+##
+#F  OctaveAlgebra( <F> )
+##
+OctaveAlgebra := NewOperationArgs( "OctaveAlgebra" );
 
 
 #############################################################################

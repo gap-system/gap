@@ -245,8 +245,7 @@ VectorSpace( GF(3^2),
 [ [ Z(3)^0, Z(3)^0, Z(3)^0 ], [ 0*Z(3), Z(3)^0, 0*Z(3) ], 
   [ 0*Z(3), 0*Z(3), Z(3)^0 ] ] )
 gap> Intersection( v, c );
-Subspace( VectorSpace( GF(3^2), 
-[ [ Z(3), Z(3), Z(3) ], [ Z(3), Z(3), 0*Z(3) ] ] ), [  ] )
+VectorSpace( GF(3^2), [  ] )
 gap> Intersection( v, f ) = v;
 true
 
@@ -284,7 +283,7 @@ gap> for i in [ 1 .. 6 ] do
 gap> IsDoneIterator( iter );
 false
 gap> NextIterator( iter );
-Subspace( ( GF(3^2)^3 ), 
+VectorSpace( GF(3^2), 
 [ [ Z(3)^0, 0*Z(3), 0*Z(3) ], [ 0*Z(3), Z(3)^0, Z(3^2)^5 ] ] )
 
 gap> subsp:= SubspacesAll( f );
@@ -298,7 +297,7 @@ gap> for i in [ 1 .. 6 ] do
 gap> IsDoneIterator( iter );
 false
 gap> NextIterator( iter );
-Subspace( ( GF(3^2)^3 ), [ [ Z(3)^0, 0*Z(3), Z(3^2)^3 ] ] )
+VectorSpace( GF(3^2), [ [ Z(3)^0, 0*Z(3), Z(3^2)^3 ] ] )
 
 #############################################################################
 ##

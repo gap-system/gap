@@ -5,6 +5,11 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.21  1997/04/09 09:17:08  htheisse
+#H  gave sparse homomorphisms an external set
+#H  allowed \`Permutation' to return fail instead of error
+#H  added new methods for matrix groups nice monomorphisms
+#H
 #H  Revision 4.20  1997/03/17 14:20:42  htheisse
 #H  added generic method for `OrbitStabilizer'
 #H
@@ -92,6 +97,11 @@ IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
 IsGeneralLinearOperationHomomorphism := NewRepresentation
     ( "IsGeneralLinearOperationHomomorphism",
       IsOperationHomomorphismDirectly,
+      [ "externalSet" ] );
+
+IsGeneralLinearOperationHomomorphismWithBase := NewRepresentation
+    ( "IsGeneralLinearOperationHomomorphismWithBase",
+      IsGeneralLinearOperationHomomorphism,
       [ "externalSet" ] );
 
 ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );

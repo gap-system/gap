@@ -379,6 +379,16 @@ InstallMethod( PrintObj,
 
 #############################################################################
 ##
+#M  IsFinite( <D> ) . . . . . . . . . . . . . . . . .  for a subspaces domain
+##
+##  We allow subspaces domains in 'IsSubspacesVectorSpace' only for finite
+##  vector spaces.
+##
+InstallTrueMethod( IsFinite, IsSubspacesVectorSpace );
+
+
+#############################################################################
+##
 #M  Size( <D> ) . . . . . . . . . . . . . . . . . . .  for a subspaces domain
 ##
 ##  The number of $k$-dimensional subspaces in a $n$-dimensional space over
@@ -558,26 +568,36 @@ InstallMethod( SubspacesDim,
     true,
     [ IsVectorSpace, IsInt ], 0,
     function( V, dim )
-    return Objectify( NewKind( CollectionsFamily( V ),
-                               IsSubspacesVectorSpace ),
-                      rec(
-                           structure  := V,
-                           dimension  := dim
-                          )
-                     );
+    if IsFinite( V ) then
+      return Objectify( NewKind( CollectionsFamily( V ),
+                                 IsSubspacesVectorSpace ),
+                        rec(
+                             structure  := V,
+                             dimension  := dim
+                           )
+                      );
+    else
+      TryNextMethod();
+    fi;
     end );
 
 InstallMethod( SubspacesAll,
     "method for a vector space",
     true,
     [ IsVectorSpace ], 0,
-    V -> Objectify( NewKind( CollectionsFamily( V ),
-                             IsSubspacesVectorSpace ),
-                    rec(
-                         structure  := V,
-                         dimension  := "all"
-                        )
-                   ) );
+    function( V )
+    if IsFinite( V ) then
+      return Objectify( NewKind( CollectionsFamily( V ),
+                               IsSubspacesVectorSpace ),
+                        rec(
+                             structure  := V,
+                             dimension  := "all"
+                           )
+                      );
+    else
+      TryNextMethod();
+    fi;
+    end );
 
 
 #############################################################################

@@ -92,43 +92,16 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
                    elm );
 end );
 
-#############################################################################
-##
-#M  CoKernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . .  via images
-##
-InstallMethod( CoKernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernelOfMultiplicativeGeneralMapping(
-               AsGroupGeneralMappingByImages( hom ) ) );
-
-InstallMethod( SetCoKernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
-          HasAsGroupGeneralMappingByImages,
-          IsGroup ], SUM_FLAGS,
-    function( hom, K )
-    SetCoKernelOfMultiplicativeGeneralMapping(
-        AsGroupGeneralMappingByImages( hom ), K );
-    TryNextMethod();
-end );
-
-#############################################################################
-##
-#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
-##
-InstallMethod( KernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> KernelOfMultiplicativeGeneralMapping(
-               AsGroupGeneralMappingByImages( hom ) ) );
-
-InstallMethod( SetKernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
-          HasAsGroupGeneralMappingByImages,
-          IsGroup ], SUM_FLAGS,
-    function( hom, K )
-    SetKernelOfMultiplicativeGeneralMapping(
-        AsGroupGeneralMappingByImages( hom ), K );
-    TryNextMethod();
-end );
+InstallAttributeMethodByGroupGeneralMappingByImages
+  ( CoKernelOfMultiplicativeGeneralMapping, IsGroup );
+InstallAttributeMethodByGroupGeneralMappingByImages
+  ( KernelOfMultiplicativeGeneralMapping, IsGroup );
+InstallAttributeMethodByGroupGeneralMappingByImages( PreImagesRange, IsGroup );
+InstallAttributeMethodByGroupGeneralMappingByImages( ImagesSource, IsGroup );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsSingleValued, IsBool );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsInjective, IsBool );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsTotal, IsBool );
+InstallAttributeMethodByGroupGeneralMappingByImages( IsSurjective, IsBool );
 
 #############################################################################
 ##
@@ -178,7 +151,9 @@ InstallMethod( GroupHomomorphismByImages, true,
 
     hom := GroupGeneralMappingByImages( G, H, gens, imgs );
     SetFilterObj( hom, IsMapping );
-    SetPreImagesRange( hom, G );
+    if IsPcGroup( H )  then
+        SetFilterObj( hom, IsToPcGroupHomomorphismByImages );
+    fi;
     return hom;
 end );
 
@@ -350,7 +325,7 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
             gen := hom!.images[i] * hom!.genimages[k]
                  / hom!.images[ Position( hom!.elements,
                                          hom!.elements[i]*hom!.generators[k])];
-            C := ClosureGroup( C, gen );
+            C := ClosureSubgroup( C, gen );
 
         od;
     od;

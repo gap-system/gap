@@ -489,8 +489,7 @@ ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  to which <map> maps elements of <coll>.
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
-##  Again <map> must be total and single valued, a multi valued general
-##  mapping is not allowed (see "Images").
+##  Note that in this case <map> may also be multi-valued.
 ##
 ##  'Image' delegates to 'ImagesSource' when called with one argument,
 ##  and to 'ImageElm' resp. 'ImagesSet' when called with two arguments.
@@ -606,7 +605,8 @@ PreImagesSet := NewOperation( "PreImagesSet",
 ##  source which is mapped under <map> to elements of <coll>.
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
-##  Again <map> must be injective and surjective (see "PreImages").
+##  Note that in this case <map> may also be non-injective or
+##  non-surjective.
 ##
 ##  'PreImage' delegates to 'PreImagesRange' when called with one argument,
 ##  and to 'PreImageElm' resp. 'PreImagesSet' when called with two arguments.

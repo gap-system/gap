@@ -1,0 +1,389 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%A  gapmacro.tex                GAP manual                  Heiko Thei{\ss}en
+%%
+%%  @(#)$Id$
+%%
+%%  The following macros are defined in this file.
+%%
+%%  `text'   set text in typewriter style (use `\<' instead of `<`)
+%%  <text>   set text in italics (use $\<$ instead of $<$ for less than)
+%%  *text*   set text in emphasized style (i.e. slanted)
+%%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
+%%  "ref"    refer to a label (like "function!for category")
+%%  \cite{.} make a citation
+%%
+%%  \beginitems         produce itemized texts with 3pc hanging indentation
+%%    item & text
+%%
+%%    item & text ...
+%%  \enditems
+%%
+%%  \begintt            verbatim text in typewriter style (`|' is
+%%    verbatim material   temporary escape character)
+%%  \endtt
+%%  \beginexamplett     verbatim text in typewriter style (`|' is
+%%    verbatim material   temporary escape character)
+%%  \endtt
+%%
+%%  \Chapter{title}
+%%  \Section{title}\null\par
+%%      make  chapter  or section   title. Automatically  generates  table of
+%%      contents. \null after \Section inhibits labels and indexing.
+%%  \>function( arguments )!{ index subentry }
+%%  \>`a binop b'{binary operation}!{ index subentry }
+%%      make a  heading for a subsection   explaining a function  or a binary
+%%      operation. This automatically generates   a label and an  index entry
+%%      (with optional subentry).
+%%  \){\fmark ...}
+%%      the same without label and index entry
+%%
+%%  \FrontMatter, \Chapters, \Appendices  parts of the book
+%%  \Bibliography, \TableOfContents       make these chapters automatically
+%%  \Index                                make index without chapter head
+%%
+
+% Page dimensions and double column output.
+\hsize 39pc
+\vsize 52pc
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%  Generic double column output.
+%
+%    Modified from a routine written by Donald Knuth (The TeXBook, App. E)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  The user may modify the following to his tastes:
+%
+%      \pagewidth     vertical length of page.
+%      \pageheight    horizontal width of page.
+%      \colwidth      column width
+%      \separator     macro to generate column separator. Default is nothing.
+%                     \rulesep sets it to \vrule. \norulesep doesn't.
+%      \makepage      default is what is contained in plain.
+\catcode`@=11 % from plain.tex
+% Create and initialize new dimensions.
+\newdimen\pagewidth  \newdimen\pageheight  \newdimen\colwidth
+\pagewidth=\hsize    \pageheight=\vsize    \colwidth=3.2truein
+
+% This routine is used by \output ; this is different from
+%   the one found in App. E.
+\def\onepageout#1{{\setbox255=\vbox{#1}
+  \hsize=\pagewidth \vsize=\pageheight \plainoutput}}
+     
+\output{\onepageout{\unvbox255}}
+\newbox\partialpage
+\def\begindoublecolumns{\begingroup
+  \output={\global\setbox\partialpage=\vbox{\unvbox255}}\eject
+  \output={\doublecolumnout} \hsize=\colwidth \vsize=2\pageheight}
+\def\enddoublecolumns{\output={\balancecolumns}\eject
+  \endgroup \pagegoal=\vsize}
+\def\doublecolumnout{\splittopskip=\topskip \splitmaxdepth=\maxdepth
+  \dimen@=\pageheight \advance\dimen@ by-\ht\partialpage
+  \setbox0=\vsplit255 to\dimen@ \setbox2=\vsplit255 to\dimen@
+  \onepageout\pagesofar
+  \unvbox255 \penalty\outputpenalty}
+\def\pagesofar{\unvbox\partialpage
+  \wd0=\hsize \wd2=\hsize \hbox to\pagewidth{\box0\hfil\separator\hfil\box2}}
+\def\norulesep{\let\separator=\relax}
+\def\rulesep{\let\separator=\vrule}
+\let\separator=\relax
+\def\balancecolumns{\setbox0=\vbox{\unvbox255} \dimen@=\ht0
+  \advance\dimen@ by\topskip \advance\dimen@ by-\baselineskip
+  \divide\dimen@ by2 \splittopskip=\topskip
+  {\vbadness=10000 \loop \global\setbox3=\copy0
+    \global\setbox1=\vsplit3 to\dimen@
+    \ifdim\ht3>\dimen@ \global\advance\dimen@ by1pt \repeat}
+  \setbox0=\vbox to\dimen@{\unvbox1}
+  \setbox2=\vbox to\dimen@{\dimen2=\dp3 \unvbox3\kern-\dimen2 \vfil}
+  \pagesofar}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\colwidth 19pc
+\newdimen\manindent      \manindent 3pc
+\newdimen\smallmanindent \smallmanindent 1pc
+\parskip 0pt
+\parindent \manindent
+
+% Additional fonts.
+\font\inchhigh=cminch
+\font\titlefont=cmssdc10 at 40pt
+\font\secfont=cmssdc10 at 14pt
+\font\manual=manfnt
+\font\sf=cmss10
+\font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
+\font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
+
+% macros for verbatim scanning (almost copied from `The TeXbook')
+\chardef\other=12
+\def\ttverbatim{\begingroup
+  \catcode`\\=\other
+  \catcode`\{=\other
+  \catcode`\}=\other
+  \catcode`\<=\other
+  \catcode`\$=\other
+  \catcode`\%=\other
+  \catcode`\~=\other
+  \catcode`\^=\other
+  \catcode`\_=\other
+  \catcode`\*=\other
+  \catcode`\`=\other
+  \catcode`\!=\other
+  \catcode`\"=\other
+  \catcode`\&=\other
+  \catcode`\#=\active
+  \obeyspaces \obeylines \tt}
+{\obeyspaces\global\let =\ }
+{\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
+ \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\char35 \hbox{\rm &1}\par}}
+\outer\def\begintt{\medskip\ttverbatim
+  \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
+  \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
+{\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
+  |obeylines % end of line is active
+  |gdef|ttfinish#1^^M#2\endtt{#1{#2}|endgroup %
+  |medskip|noindent|ignorespaces}}
+\outer\def\beginexample{\medskip\ttverbatim
+  \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
+  \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
+{\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
+  |obeylines % end of line is active
+  |gdef|examplefinish#1^^M#2\endexample{#1{#2}|endgroup %
+  |medskip|noindent|ignorespaces}}
+
+% Input/output streams. Chapter and section counters.
+\newwrite\labelout \newwrite\indexout \newwrite\secindout
+\newwrite\tocout   \newwrite\citeout
+\newread \labelin  \newread \indexin  \newread \tocin  \newread \citein
+\newcount\chapno   \newcount\secno
+
+% Additional active characters and their default meanings.
+\mathcode`.="2201 \mathchardef\.="702E
+\def\undoquotes{\catcode`'=12 \catcode``=12 \def\"##1{{\accent127 ##1}}}
+\def\excl{!} \chardef\lqq=`\\ \let\underscore=\_
+\catcode`!=\active \let!=\excl
+\catcode`^=\active \def^{\ifmmode\sp\else{\char`\^}\fi}
+\catcode`_=\active \def_{\ifmmode\sb\else\_\fi}         \let\_=\underscore
+\catcode`*=\active \def*#1*{{\sl #1}}                   \chardef\*=`*
+\catcode`<=\active \def<#1>{{\chardef*=`*\let_=\_\it#1}}\chardef\<=`<
+\catcode`"=\active \def"{\begingroup\undoquotes\doref}  \chardef\"=`"
+                                                        \chardef\\=`\\
+
+% Labels (which are automatically generated by ``\Section'' and ``\>'').
+\newif\iflabundef
+{\catcode`@=11
+\gdef\makelabel#1#2{\expandafter\gdef\csname r@#1\endcsname{#2}}
+\gdef\doref#1"{\expandafter\ifx\csname r@#1\endcsname\relax\lqq#1''%
+  \immediate\write16{Label #1 undefined.}\global\labundeftrue
+  \else \csname r@#1\endcsname \fi\endgroup}
+\gdef\ov#1#2#3#4{\def\tempa{#2}\def\tempb{for #3}\ifx\tempa\tempb\else
+  \expandafter\ifx\csname r@#1!for #3\endcsname \relax
+  \else \ #4$\,\to\,$\csname r@#1!for #3\endcsname.\fi \fi}}
+
+% Macros for generating the table of contents.
+\newif\iffirstsec \firstsectrue
+\def\dotsfill{\leaders\hbox to12pt{\hss.\hss}\hfill}
+\def\chapcontents#1#2#3{\iffirstsec\else \enddoublecolumns\firstsectrue\fi
+  \medskip \line
+  {\bf\hbox to\manindent{\hss #1\kern\smallmanindent}#2\ \dotsfill
+   \hbox to1.5em{\hss #3}}}
+\def\seccontents#1#2#3{\iffirstsec\nobreak\smallskip\firstsecfalse
+  \begindoublecolumns\fi
+   \line{\kern\manindent\vbox{\advance\hsize by-\manindent
+   \advance\hsize by-1.5em
+   \rightskip 0pt plus1fil \emergencystretch 3em
+   \noindent\llap{\hbox to\manindent{\hss #1\kern\smallmanindent}}\strut
+   #2~\dotsfill \strut\rlap{\hbox to1.5em{\hss #3}}}\hfil}}
+\def\appno#1{{\count0=#1\advance\count0 by64 \char\count0}}
+
+% Macros which write labels, citations and index entries on auxiliary files.
+\newif\iflabchanged
+{\catcode`|=0 \catcode`\\=12 |gdef|bs{\}}
+{\catcode`@=11
+ \gdef\label#1{{\ifnum\secno=0 \edef\next{\the\chapno}\else
+  \edef\next{\the\chapno.\the\secno}\fi
+  \expandafter\ifx\csname r@#1\endcsname\next\else\global\labchangedtrue\fi
+  \immediate\write\labelout{\noexpand\makelabel{#1}{\next}}}}
+ \gdef\sigel#1{[\expandafter\ifx\csname c@#1\endcsname\relax
+  \immediate\write16{Reference #1 undefined.}\global\labundeftrue
+  #1\else \csname c@#1\endcsname\fi]}
+ \gdef\bibitem[#1]#2{\expandafter\gdef\csname c@#2\endcsname{#1}%
+  \item{\sigel{#2}}}}
+\def\cite#1{\write\citeout{\bs citation{#1}}\sigel{#1}}
+\def\atindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}{\folio}}%
+  \write\secindout{\thechapter.\the\secno. #1#3}\ifvmode\nobreak\fi}
+\def\index#1{\atindex{#1}{}{}}
+\def\indexit#1{{\it #1}}
+
+% Macros for chapter and section headings.
+\def\tocstrut{{\setbox0=\hbox{1}\vrule width 0pt height\ht0}}
+\def\Chapter#1{\vfill\supereject \headlinefalse
+  \advance\chapno by1 \secno=0 \def\chapname{#1}
+  \label{chapter:#1}
+  \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\folio}}
+  \setbox0=\hbox{\inchhigh\kern-.075em\thechapter}
+  \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
+    \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
+  \line{\box0\hfil\box1}\nobreak \vskip 40pt plus10pt \noindent}
+\long\def\Section#1#2\par{\medskip \advance\secno by1
+  {\let!=\space \mark{Section \the\secno. #1}}
+  \edef\tempa{\thechapter.\the\secno}\expandafter\writesecline\tempa\\{#1}
+  \ifx#2\null\else \label{#1}\edef\tempa{#1}
+    \expandafter\atindex\expandafter{\tempa}{\noexpand|indexit}{}\fi
+  {\baselineskip 18pt\let!=\space \noindent\secfont\thechapter.\the\secno
+   \enspace #1\par}\nobreak\medskip\noindent}
+\def\writesecline#1\\#2{\write\tocout{\noexpand\seccontents{#1}{#2}{\folio}}}
+\def\letter#1{\medskip{\secfont #1}\endgraf\nobreak}
+
+% Macros for generating paragraph headings (e.g., function descriptions).
+\def\danger{\hang\hangafter=-2 \clubpenalty=10000 \noindent \llap
+  {\hbox to\parindent{\hfil\smash{\manual\char127}\hfil}}\ignorespaces}
+\def\fmark{\noindent\llap{\manual\char120\rm\enspace}}
+\def\moveup#1{\leavevmode \raise.16ex\hbox{\rm #1}}
+\def\fpar{\endgraf\endgroup\nobreak\smallskip\noindent\ignorespaces}
+\def\>{\ifx\par\fpar \else
+    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi
+  \endgraf\futurelet\next\oporfunc}
+\def\subfunction#1#2{\overlay{#1}{#2}\label{#1!#2}%
+  \atindex{#1}{@\noexpand`#1'}{!#2}\endgroup}
+\def\suboperation#1#2{\overlay{#1}{#2}\label{#1!#2}\index{#1!#2}\endgroup}
+\def\overlay#1#2{\hfill{\it
+  \ov{#1}{#2}{groups}{groups}%
+  \ov{#1}{#2}{solvable groups}{solv\thinspace gps}%
+  \ov{#1}{#2}{permutation groups}{perm\thinspace gps}%
+  \ov{#1}{#2}{solvable permutation groups}{solv\thinspace perm\thinspace gps}}}
+
+% Macro for item lists.
+{\catcode`&=\active
+\gdef&{\par\nobreak\hangindent\manindent\hangafter 0
+       \noindent\ignorespaces}}
+\def\beginitems{\smallskip\begingroup \parindent 0pt \catcode`&=\active}
+\def\enditems{\par\endgroup\smallskip\noindent\ignorespaces}
+
+% Macros for the active backquote character (`).
+\tracinglostchars=0 \hyphenchar\tentt=128 \lccode`.=`.
+{\catcode`.=\active \gdef.{\char'056 \penalty0}}
+\def\typewriter#1'{\leavevmode{\catcode`.=\active
+  \chardef\{=`{ \chardef\}=`} \chardef*=`* \chardef"=`"
+  \tt #1}}
+\catcode``=\active
+\def\)#1{\ifx\par\fpar \else
+    \ifvmode \vskip -\lastskip \fi \medskip \begingroup\let\par=\fpar\fi
+  \endgraf {\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}\def\|{\vrule\relax}
+  \noindent{`#1'}}}
+\def\oporfunc{\ifx\next`\let\next=\operation \else\let\next=\function
+  \fi\next}
+\long\def\operation`#1'#2#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}}\fmark{`#1'}%
+  \ifx#3!\begingroup\undoquotes\def\next{\suboperation{#2}}
+    \else\overlay{#2}\null \label{#2}\index{#2}\let\next=#3\fi\next}
+\long\def\function#1(#2)#3{{\def\[{\moveup\lbrack}\def\]{\moveup\rbrack}%
+  \def\|{\vrule\relax}\fmark{`#1(#2)'}}%
+  \ifx#3!\begingroup\undoquotes\def\next{\subfunction{#1}}\else
+    \overlay{#1}\null\label{#1}\atindex{#1}{@\noexpand`#1'}{}\let\next=#3\fi
+  \next}
+\def`{\futurelet\next\backquote}
+\def\backquote{\ifx\next`\let\next=\doublebackquote
+                    \else\let\next=\typewriter \fi \next}
+\def\doublebackquote`{\lqq}
+
+% Miscellaneous macros.
+\def\GAP{{\sf GAP}}
+\def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
+
+% Page numbers and running heads.
+\newif\ifheadline
+\nopagenumbers
+\def\makeheadline{\vbox to0pt{\vskip-22.5pt\hbox to\pagewidth{\vbox to8.5pt
+  {}\the\headline}\vss}\nointerlineskip}
+\headline={\ifheadline\ifodd\pageno \righthead\hfil{\rm\folio}\else
+                                    {\rm\folio}\hfil\lefthead \fi
+  \else\global\headlinetrue \hfil\fi}
+
+% Macro for inputting an auxiliary file.
+\def\inputaux#1#2{\immediate\openin#1=\jobname.#2
+  \ifeof#1\immediate\write16{No file \jobname.#2.}\else
+  \immediate\closein#1 \input\jobname.#2 \fi}
+
+% Macros for the parts of the manual.
+\def\FrontMatter{\def\thechapter{\noexpand\tocstrut}
+  \def\lefthead{\it\chapname} \let\righthead=\lefthead
+
+  \begingroup
+  \undoquotes \inputaux\labelin{lab}
+  \setbox0=\vbox{\Bibliography}
+  \endgroup
+  \labchangedfalse
+  
+  % Open the auxiliary files for output.
+  \immediate\openout\tocout   =\jobname.toc
+  \immediate\openout\labelout =\jobname.lab
+  \immediate\openout\indexout =\jobname.idx
+  \immediate\openout\secindout=\jobname.six
+  \immediate\openout\citeout  =\jobname.aux
+  \immediate\write\citeout{\bs bibstyle{alpha}}
+  \immediate\write\citeout{\bs bibdata{}}}
+  
+\def\Chapters{\vfill\eject
+  \chapno=0 \def\thechapter{\the\chapno}
+  \def\lefthead{{\it Chapter \the\chapno. \chapname}}
+  \def\righthead{\ifx\botmark\empty\lefthead\else{\it \botmark}\fi}}
+
+\def\Appendices{\vfill\eject
+  \parskip 1ex plus 0.5ex minus 0.5ex
+  \parindent 0pt
+  \chapno=0 \def\thechapter{\noexpand\appno{\the\chapno}}
+  \def\lefthead{{\it Appendix \appno{\the\chapno}. \chapname}}
+  \let\righthead=\lefthead}
+
+\def\Bibliography{\Chapter{Bibliography}
+  \begingroup\undoquotes\frenchspacing
+  \def\begin##1##2{} \def\end##1{}
+  \let\newblock=\relax \let\em=\sl
+  \parindent\manindent
+  \inputaux\citein{bbl}
+  \endgroup}
+  
+\def\Index{\bigskip
+  \begindoublecolumns
+  \parskip 0pt
+  \rightskip 0pt plus2em
+  \emergencystretch 2em
+  \everypar{\hangindent\smallmanindent}
+  \def\par{\endgraf\leftskip 0pt}
+  \def\sub{\advance\leftskip by\smallmanindent}
+  \def\subsub{\advance\leftskip by2\smallmanindent}
+  \obeylines
+  \inputaux\indexin{ind}
+  \enddoublecolumns
+  
+  \vfill\supereject
+  \immediate\closeout\citeout
+  \immediate\write16{Citations for BibTeX written on \jobname.aux.}
+  \immediate\closeout\indexout
+  \immediate\write16{Index entries written on \jobname.idx.}
+  \immediate\closeout\secindout
+  \immediate\write16{Section index entries written on \jobname.six.}
+  \immediate\closeout\labelout
+  \immediate\write16{Label definitions written on \jobname.lab.}
+  \immediate\closeout\tocout
+  \immediate\write16{Table of contents written on \jobname.toc.}
+
+  \pageno=-1
+  \headlinefalse}
+
+\def\TableOfContents{\def\thechapter{\noexpand\tocstrut}
+  \def\lefthead{\chapname} \let\righthead=\lefthead
+  \def\label##1{}
+  \Chapter{Contents}
+  
+  \begingroup
+  \let!=\space
+  \inputaux\tocin{toc}\vfill\eject
+  \endgroup
+  
+  \iflabundef\immediate\write16{There were undefined labels or references.}\fi
+  \iflabchanged\immediate\write16{Labels have changed, run again. (Or
+  they were multiply defined.)}\fi}

@@ -305,7 +305,7 @@ EnumeratorByPcgs := NewOperation(
 ##
 ExtendedPcgs := NewOperation(
     "ExtendedPcgs",
-    [ IsPcgs, IsList and IsMultiplicativeElementWithInverseCollection ] );
+    [ IsPcgs, IsList ] );
 
 
 #############################################################################

@@ -220,7 +220,7 @@ function( G )
             pcgsN := InducedPcgsByPcSequenceNC( pcgs, pcgs{[next..m]} );
             pcgsL := pcgsS mod pcgsN;
 
-            mats  := LinearOperationLayer( G, pcgsL );
+            mats  := LinearOperationLayer( pcgs, pcgsL );
             modu  := GModuleByMats( mats, GF(p) );
             rad   := MTX.BasesRadical( modu );
             elms  := List( rad, x -> PcElementByExponents( pcgsL, x ) );
@@ -235,6 +235,19 @@ function( G )
     SetPcgs( P, pref );
     return P;
 end);
+
+#############################################################################
+##
+#M  IsFinite( <pcgrp> )
+##
+InstallMethod( IsFinite,
+    "pcgs computable groups",
+    true,
+    [ IsGroup and IsPcgsComputable ],
+    0,
+    grp -> not 0 in RelativeOrders( Pcgs( grp ) ) );
+#T is this method necessary at all?
+
 
 #############################################################################
 ##
@@ -342,7 +355,7 @@ MaximalSubgroupClassesRepsLayer := function( pcgs, l )
     pcgsL := pcgsS mod pcgsN;
     p     := weights[start][3];
 
-    mats  := LinearOperationLayer( G, pcgsL );
+    mats  := LinearOperationLayer( pcgs, pcgsL );
     modu  := GModuleByMats( mats,  GF(p) );
     maxi  := MTX.BasesMaximalSubmodules( modu );
 

@@ -3262,6 +3262,368 @@ InstallOtherMethod( PossibleClassFusions,
 
 #############################################################################
 ##
+#F  StepModGauss( <matrix>, <moduls>, <nonzerocol>, <col> )
+##
+StepModGauss := function( matrix, moduls, nonzerocol, col )
+
+    local i, k, x, y, z, a, b, c, d, val, stepmodgauss;
+
+    if IsEmpty( matrix ) then
+      return fail;
+    fi;
+    matrix[1][col]:= matrix[1][col] mod moduls[col];
+    for i in [ 2 .. Length( matrix ) ] do
+      matrix[i][col]:= matrix[i][col] mod moduls[col];
+      if matrix[i][col] <> 0 then
+        # eliminate
+        z:= Gcdex( matrix[1][ col ], matrix[i][col] );
+        a:= z.coeff1; b:= z.coeff2; c:= z.coeff3; d:= z.coeff4;
+        for k in [ 1 .. Length( nonzerocol ) ] do
+          if nonzerocol[k] then
+            val:= matrix[1][k];
+            matrix[1][k]:= ( a * val + b * matrix[i][k] ) mod moduls[k];
+            matrix[i][k]:= ( c * val + d * matrix[i][k] ) mod moduls[k];
+          fi;
+        od;
+      fi;
+    od;
+    if matrix[1][col] = 0 then
+      # col has only zero entries
+      return fail;
+    fi;
+    z:= Gcdex( matrix[1][col], moduls[col] );
+    a:= z.coeff1; b:= z.coeff2; c:= z.coeff3;
+    stepmodgauss:= [];
+    for i in [ 1 .. Length( nonzerocol ) ] do
+      if nonzerocol[i] then
+        stepmodgauss[i]:= ( a * matrix[1][i] ) mod moduls[i];
+        matrix[1][i]:= ( c * matrix[1][i] ) mod moduls[i];
+      else
+        stepmodgauss[i]:= 0;
+      fi;
+    od;
+    stepmodgauss[col]:= z.gcd;
+    matrix[1][col]:= 0;
+    return stepmodgauss;
+end;
+
+
+#############################################################################
+##
+#F  ModGauss( <matrix>, <moduls> )
+##
+ModGauss := function( matrix, moduls )
+
+    local i, modgauss, nonzerocol, row;
+
+    modgauss:= [];
+    nonzerocol:= List( moduls, i -> true );
+    for i in [ 1 .. Length( matrix[1] ) ] do
+      row:= StepModGauss( matrix, moduls, nonzerocol, i );
+      if row <> fail then
+        Add( modgauss, row );
+      fi;
+      nonzerocol[i]:= false;
+    od;
+    return modgauss;
+end;
+
+
+#############################################################################
+##
+#F  ContainedDecomposables( <constituents>, <moduls>, <parachar>, <func> )
+##
+ContainedDecomposables := function( constituents, moduls, parachar, func )
+
+    local i, x, matrix, fusion, newmoduls, candidate, classes,
+          nonzerocol,
+          possibilities,   # global list of all $\chi$
+                           # that satisfy $'func'( \chi )$
+          images,
+          uniques,
+          nccl, min_anzahl, min_class, erase_uniques, impossible, 
+          evaluate, remain, ncha, pos, fusionperm, newimages, oldrows,
+          newmatrix, step, erster, descendclass, j, row, oldimages;
+    
+    # Step 1: Check and improve the input (identify equal columns).
+    
+    if IsList( parachar[1] ) then
+      # (necessary if no class is unique)
+      min_anzahl:= Length( parachar[1] );
+      min_class:= 1;
+    fi;
+    matrix:= CollapsedMat( constituents, [ ] );
+    fusion:= matrix.fusion;
+    matrix:= matrix.mat;
+    newmoduls:= [];
+    for i in [ 1 .. Length( fusion ) ] do
+      if IsBound( newmoduls[ fusion[i] ] ) then
+        newmoduls[ fusion[i] ]:= Maximum( newmoduls[ fusion[i] ],
+                                          moduls[i] );
+      else
+        newmoduls[ fusion[i] ]:= moduls[i];
+      fi;
+    od;
+    moduls:= newmoduls;
+    nccl:= Length( moduls );
+    candidate:= [];
+    nonzerocol:= [];
+    for i in [ 1 .. nccl ] do
+      candidate[i]:= 0;
+      nonzerocol[i]:= true;
+    od;
+    possibilities:= [];
+    images:= [];
+    uniques:= [];
+    for i in [ 1 .. Length( fusion ) ] do
+      if IsInt( parachar[i] ) then
+        if ( IsBound( images[ fusion[i] ] ) ) then
+          if IsInt( images[ fusion[i] ] ) and
+             parachar[i] <> images[ fusion[i] ] then
+            return [];
+          elif IsList( images[ fusion[i] ] ) then
+            if not parachar[i] in images[ fusion[i] ] then
+              return [];
+            else
+              images[ fusion[i] ]:= parachar[i];
+              AddSet( uniques, fusion[i] );
+            fi;
+          fi;
+        else
+          images[ fusion[i] ]:= parachar[i];
+          AddSet( uniques, fusion[i] );
+        fi;
+      else            # IsList( parachar[i] )
+        if not IsBound( images[ fusion[i] ] ) then
+          images[ fusion[i] ]:= parachar[i];
+        elif IsInt( images[ fusion[i] ] ) then
+          if not images[ fusion[i] ] in parachar[i] then
+            return [];
+          fi;
+        else          # IsList
+          images[ fusion[i] ]:=
+                      Intersection2( parachar[i], images[ fusion[i] ] );
+#T IntersectSet !
+          if IsEmpty( images[ fusion[i] ] ) then
+            return [];
+          elif Length( images[fusion[i]] ) = 1 then
+            images[ fusion[i] ]:= images[ fusion[i] ][1];
+            AddSet( uniques, fusion[i] );
+          fi;
+        fi;
+      fi;
+    od;
+    
+    # Step 2: first elimination before backtrack
+    
+    erase_uniques:= function( uniques, nonzerocol, candidate, images )
+
+      # eliminate all columns in 'uniques', adjust 'nonzerocol',
+      # then look if other columns become unique or if a contradiction
+      # occurs;
+      # also look at which column the least number of values is left
+
+      local i, j, abgespalten, col, row, quot, val, ggt, a, b, k, u,
+            firstallowed, step, gencharacter, newvalues;
+
+      abgespalten:= [];
+      while uniques <> [] do
+        for col in uniques do
+          candidate[col]:= ( candidate[col] + images[col] ) mod moduls[col];
+          row:= StepModGauss( matrix, moduls, nonzerocol, col );
+          if row <> fail then
+            abgespalten[ Length( abgespalten ) + 1 ]:= row;
+            if candidate[ col ] mod row[ col ] <> 0 then
+              impossible:= true;
+              return abgespalten;
+            fi;
+            quot:= candidate[col] / row[col];
+            for j in [ 1 .. nccl ] do
+              if nonzerocol[j] then
+                candidate[j]:= ( candidate[j] - quot * row[j] )
+                               mod moduls[j];
+              fi;
+            od;
+          elif candidate[ col ] <> 0 then
+            impossible:= true;
+            return abgespalten;
+          fi;
+          nonzerocol[ col ]:= false;
+        od;
+
+        min_anzahl:= infinity;
+        uniques:= [];
+        for i in [ 1 .. nccl ] do
+          if nonzerocol[i] then
+            val:= moduls[i];
+            for j in [ 1 .. Length( matrix ) ] do
+              # zero column iff val = moduls[i]
+              val:= GcdInt( val, matrix[j][i] );
+            od;
+      
+      # update lists of image
+      
+            newvalues:= [];
+            for j in images[i] do
+              if ( candidate[i] + j ) mod val = 0 then
+                AddSet( newvalues, j );
+              fi;
+            od;
+            if newvalues = [] then                   # contradiction
+              impossible:= true;
+              return abgespalten;
+            elif Length( newvalues ) = 1 then        # unique
+              images[i]:= newvalues[1];
+              AddSet( uniques, i );
+            else
+              images[i]:= newvalues;
+              if Length( newvalues ) < min_anzahl then
+                min_anzahl:= Length( newvalues );
+                min_class:= i;
+              fi;
+            fi;
+          fi;
+        od;
+      od;
+      if min_anzahl = infinity then
+        gencharacter:= images{ fusion };
+        if func( gencharacter ) then
+          Add( possibilities, gencharacter );
+        fi;
+        impossible:= true;
+      else
+        impossible:= false;
+      fi;
+      return abgespalten;
+      # impossible = true: calling function will return from backtrack
+      # impossible = false: then min_class < infinity, and images[min_class]
+      #                     contains the info for descending at min_class
+    end;
+
+    erase_uniques( uniques, nonzerocol, candidate, images );
+    if impossible then
+      return possibilities;
+    fi;
+    
+    # Step 3: Collapse the matrix.
+    
+    remain:= Filtered( [ 1 .. nccl ], x -> nonzerocol[x] );
+    for i in [ 1 .. Length( matrix ) ] do
+      matrix[i]:= matrix[i]{ remain };
+    od;
+    candidate  := candidate{ remain };
+    nonzerocol := nonzerocol{ remain };
+    moduls     := moduls{ remain };
+    matrix     := ModGauss( matrix, moduls );
+
+    ncha:= Length( matrix );
+    pos:= 1;
+    fusionperm:= [];
+    newimages:= [];
+    for i in remain do
+      fusionperm[ i ]:= pos;
+      if IsBound( images[i] ) then
+        newimages[ pos ]:= images[i];
+      fi;
+      pos:= pos + 1;
+    od;
+    min_class:= fusionperm[ min_class ];
+    for i in Difference( [ 1 .. nccl ], remain ) do
+      fusionperm[i]:= pos;
+      newimages[ pos ]:= images[i];
+      pos:= pos + 1;
+    od;  
+    images:= newimages;
+    fusion:= CompositionMaps( fusionperm, fusion );
+    nccl:= Length( nonzerocol );
+    
+    # Step 4: Backtrack
+    
+    evaluate:= function( candidate, nonzerocol, uniques, images )
+
+      local i, j, col, val, row, quot, abgespalten, step, erster,
+            descendclass, oldimages;
+
+      abgespalten:= erase_uniques( [ uniques ],
+                                   nonzerocol,
+                                   candidate,
+                                   images );
+      if impossible then
+        return abgespalten;
+      fi;
+      descendclass:= min_class;
+      oldimages:= images[ descendclass ];
+      for i in [ 1 .. min_anzahl ] do
+        images[ descendclass ]:= oldimages[i];
+        oldrows:= evaluate( ShallowCopy( candidate ),
+                            ShallowCopy( nonzerocol ),
+                            descendclass,
+                            ShallowCopy( images ) );
+        Append( matrix, oldrows );
+        if Length( matrix ) > ( 3 * ncha ) / 2 then
+          newmatrix:= [];
+          # matrix:= ModGauss( matrix, moduls );
+          for j in [ 1 .. Length( matrix[1] ) ] do
+            if nonzerocol[j] then
+              row:= StepModGauss( matrix, moduls, nonzerocol, j );
+              if row <> fail then
+                Add( newmatrix, row );
+              fi;
+            fi;
+          od;
+          matrix:= newmatrix;
+        fi;
+      od;
+      return abgespalten;
+    end;
+
+    descendclass:= min_class;
+    oldimages:= images[ descendclass ];
+    for i in [ 1 .. min_anzahl ] do
+      images[ descendclass ]:= oldimages[i];
+      oldrows:= evaluate( ShallowCopy( candidate ),
+                          ShallowCopy( nonzerocol ),
+                          descendclass,
+                          ShallowCopy( images ) );
+      Append( matrix, oldrows );
+      if Length( matrix ) > ( 3 * ncha ) / 2 then
+        newmatrix:= [];
+        # matrix:= ModGauss( matrix, moduls );
+        for j in [ 1 .. Length( matrix[1] ) ] do
+          if nonzerocol[j] then
+            row:= StepModGauss( matrix, moduls, nonzerocol, j );
+            if row <> fail then
+              Add( newmatrix, row );
+            fi;
+          fi;
+        od;
+        matrix:= newmatrix;
+      fi;
+    od;
+    return possibilities;
+end;
+
+
+#############################################################################
+##
+#F  ContainedCharacters( <tbl>, <constituents>, <parachar> )
+##
+ContainedCharacters := function( tbl, constituents, parachar )
+    local degree;
+    degree:= parachar[1];
+    if IsInt( degree ) then
+      constituents:= Filtered( constituents, chi -> chi[1] <= degree );
+    fi;
+    return ContainedDecomposables(
+               constituents,
+               SizesCentralizers( tbl ),
+               parachar,
+               chi -> NonnegIntScalarProducts( tbl, constituents, chi ) );
+end;
+
+
+#############################################################################
+##
 #E  ctblmaps.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

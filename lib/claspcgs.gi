@@ -731,6 +731,7 @@ ClassesSolvableGroup := function( arg )
     fi;
     
     # Calculate a (central) elementary abelian series.
+    HomePcgs( G );
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
         eas := PCentralSeries( G, p );

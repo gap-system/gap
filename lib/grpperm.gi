@@ -219,6 +219,7 @@ IndependentGeneratorsAbelianPermGroup := function ( G )
     inds := [];
     for p  in Union( List( GeneratorsOfGroup( G ),
             g -> Factors(Order(g)) ) )  do
+      if p <> 1  then
 
         # compute the generators for the <p>-Sylowsubgroup
         gens := [];
@@ -231,7 +232,8 @@ IndependentGeneratorsAbelianPermGroup := function ( G )
         # append the independent generators for the <p>-Sylowsubgroup
         Append( inds,
                 IndependentGeneratorsAbelianPPermGroup(Group(gens,()),p) );
-        
+
+      fi;
     od;
 
     # return the independent generators
@@ -608,7 +610,7 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
     fi;
     
     # make the base of G compatible with options.base
-    chain := CopyStabChain( StabChainAttr( G ) );
+    chain := DeepCopy( StabChainAttr( G ) );
     if IsBound( options.base )  then
         ChangeStabChain( chain, options.base,
                 IsBound( options.reduced ) and options.reduced );
@@ -1361,7 +1363,7 @@ InstallMethod( Socle, true, [ IsPermGroup ], 0,
         L := ds[ Length( ds ) ];
     fi;
     if IsSemiRegular( L, Omega )  then
-        L := ClosureGroup( L, Centralizer( G, L ) );
+        L := ClosureSubgroup( L, Centralizer( G, L ) );
     fi;
     return L;
 end );

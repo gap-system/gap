@@ -81,12 +81,28 @@ end;
 
 #############################################################################
 ##
-#F  IsomorphismFpGroupPcGroup( G, str )
+#F  IsomorphismFpGroupPcGroupByGens( G, str, gens )
 ##
-IsomorphismFpGroupPcGroup := function( G, str )
-    local pcgs, n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H;
+IsomorphismFpGroupPcGroupByGens := function( G, str, gens )
+    local F, hom, rels, H, gensH, iso;
+    F   := FreeGroup( Length(gens), str );
+    hom := GroupGeneralMappingByImages( G, F, gens, GeneratorsOfGroup(F) );
+    rels := GeneratorsOfGroup( CoKernelOfMultiplicativeGeneralMapping( hom ) );
+    H := F /rels;
+    gensH := GeneratorsOfGroup( H );
+    iso := GroupHomomorphismByImages( G, H, gens, gensH );
+    SetIsBijective( iso, true );
+    SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup(G) );
+    return iso;
+end;
 
-    pcgs := Pcgs( G );
+#############################################################################
+##
+#F  IsomorphismFpGroupPcgs( pcgs, str )
+##
+IsomorphismFpGroupPcgs := function( pcgs, str )
+    local n, F, gens, rels, i, pis, exp, t, h, rel, comm, j, H;
+
     n    := Length( pcgs );
     F    := FreeGroup( n, str );
     gens := GeneratorsOfGroup( F );
@@ -116,7 +132,7 @@ IsomorphismFpGroupPcGroup := function( G, str )
         od;
     od;
     H := F / rels;
-    return GroupHomomorphismByImages( G, H, AsList( pcgs ),
+    return GroupHomomorphismByImages( GroupOfPcgs(pcgs), H, AsList( pcgs ),
                                       GeneratorsOfGroup( H ) );
 end;
 
@@ -130,7 +146,7 @@ InstallMethod( IsomorphismFpGroup,
                [IsPcGroup],
                0,
 function( G )
-    return IsomorphismFpGroupPcGroup( G, "f" );
+    return IsomorphismFpGroupPcgs( Pcgs( G ), "f" );
 end );
                
 InstallOtherMethod( IsomorphismFpGroup, 
@@ -139,7 +155,25 @@ InstallOtherMethod( IsomorphismFpGroup,
                [IsPcGroup, IsString],
                0,
 function( G, str )
-    return IsomorphismFpGroupPcGroup( G, str );
+    return IsomorphismFpGroupPcgs( Pcgs( G ), str );
+end );
+               
+InstallOtherMethod( IsomorphismFpGroup, 
+               "method for pc groups",
+               true,
+               [IsPcGroup, IsList],
+               0,
+function( G, gens )
+    return IsomorphismFpGroupPcGroupByGens( G, "f", gens );
+end );
+               
+InstallOtherMethod( IsomorphismFpGroup, 
+               "method for pc groups",
+               true,
+               [IsPcGroup, IsString, IsList],
+               0,
+function( G, str, gens )
+    return IsomorphismFpGroupPcGroupByGens( G, str, gens );
 end );
                
 #############################################################################

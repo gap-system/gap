@@ -8,7 +8,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains those functions that mainly deal with matrices.
 ##
@@ -40,6 +40,7 @@ DiagonalOfMat := NewOperationArgs( "DiagonalOfMat" );
 AbelianInvariantsOfList := NewAttribute(
     "AbelianInvariantsOfList",
     IsCyclotomicsCollection );
+
 
 #############################################################################
 ##
@@ -443,6 +444,44 @@ NullspaceModQ := NewOperationArgs( "NullspaceModQ" );
 #F  PermutationMat( <perm>, <dim> [, <F> ] ) . . . . . .  permutation matrix
 ##
 PermutationMat := NewOperationArgs( "PermutationMat" );
+
+
+#############################################################################
+##
+#F  DiagonalMat( <vector> ) . . . . . . . . . . . . . . . . . diagonal matrix
+##
+DiagonalMat := NewOperationArgs( "DiagonalMat" );
+
+
+#############################################################################
+##
+#F  ReflectionMat( <coeffs> )
+#F  ReflectionMat( <coeffs>, <root> )
+#F  ReflectionMat( <coeffs>, <conj> )
+#F  ReflectionMat( <coeffs>, <conj>, <root> )
+##
+##  Let <coeffs> be a row vector.
+##  'ReflectionMat' returns the matrix of the reflection in this vector.
+##
+##  More precisely, if <coeffs> is the coefficients of a vector $v$ w.r.t. a
+##  basis $B$, say, then the returned matrix describes the reflection in $v$
+##  w.r.t. $B$ as a map on a row space, with action from the right.
+##
+##  The optional argument <root> is a root of unity that determines the order
+##  of the reflection.  The default is a reflection of order 2.
+##  For triflections one should choose a third root of unity etc.
+##
+##  <conj> is a function of one argument that conjugates a ring element.
+##  The default is 'ComplexConjugate'.
+##
+##  The matrix of the reflection in $v$ is defined as
+##  \[ M = I_n + \overline{v^{tr}} \cdot \frac{w-1}{v \overline{v^{tr}}}
+##                                 \cdot v \]
+##  where '$w$ = root',
+##  $n$ is the length of our coefficients list,
+##  and $\overline{\ }$ denotes the conjugation.
+##
+ReflectionMat := NewOperationArgs( "ReflectionMat" );
 
 
 #############################################################################

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for cyclotomics.
 ##
@@ -143,6 +143,17 @@ InstallMethod( String, true, [ IsCyc ], 0,
     # Return the string.
     return str;
     end );
+
+
+#############################################################################
+##
+#M  ComplexConjugate( <cyc> )
+##
+InstallMethod( ComplexConjugate,
+    "method for a cyclotomic",
+    true,
+    [ IsCyc ], 0,
+    cyc -> GaloisCyc( cyc, -1 ) );
 
 
 #############################################################################

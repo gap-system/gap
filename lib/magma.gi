@@ -797,9 +797,8 @@ InstallOtherMethod( One,
 InstallOtherMethod( One,
     "method for a magma-with-one that has a parent",
     true,
-    [ IsMagmaWithOne and HasParent ], 0,
+    [ IsMagmaWithOne and HasParent ], SUM_FLAGS,
     M -> One( Parent( M ) ) );
-#T really ask the parent for such information?
 
 InstallOtherMethod( One,
     "method for a magma-with-one",

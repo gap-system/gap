@@ -1138,9 +1138,35 @@ end;
 
 #############################################################################
 ##
-#F  IsomorphismFpGroupByGenerators( G, str, gens )
+#M  MappedWord( <x>, <gens1>, <gens2> )
 ##
-IsomorphismFpGroupByGenerators := function( G, str, gens )
+InstallMethod( MappedWord, true,
+    [ IsElementOfFpGroup, IsList, IsList ], 0,
+    function( x, gens1, gens2 )
+    local i, mapped, exp;
+
+    gens1:= List( gens1, x -> ExtRepOfObj( x )[1] );
+    x:= ExtRepOfObj( x );
+    if Length( x ) = 0 then
+      mapped:= gens2[1] ^ 0;
+    else
+      mapped:= gens2[ Position( gens1, x[1] ) ] ^ x[2];
+      for i in [ 2 .. Length( x )/2 ] do
+        exp:= x[ 2*i ];
+        if exp <> 0 then
+          mapped:= mapped * gens2[ Position( gens1, x[ 2*i-1 ] ) ] ^ exp;
+        fi;
+      od;
+    fi;
+
+    return mapped;
+    end );
+
+#############################################################################
+##
+#F  IsomorphismFpGroupPermGroupByGens( G, str, gens )
+##
+IsomorphismFpGroupPermGroupByGens := function( G, str, gens )
     local F, gensF, hom, relators, S, gensS, iso;
 
     # check trivial case
@@ -1162,19 +1188,20 @@ IsomorphismFpGroupByGenerators := function( G, str, gens )
     iso := GroupHomomorphismByImages( G, S, gens, gensS );
     SetIsSurjective( iso, true );
     SetIsInjective( iso, true );
-    SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup( S ));
-
+    SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup( G ));
     return iso;
 end;
 
 #############################################################################
 ##
-#F  IsomorphismFpGroupPermGroup( G, str ) 
+#F  IsomorphismFpGroupPermGroupByCompSeries( G, str ) 
 ##
-IsomorphismFpGroupPermGroup := function( G, str )
-    local gens, iso, A, S, gensS, imgsG, series, l, F, gensF,
-          imgsF, i, N, M, hom, H, gensH, preiH, c, T, gensT, relators,
-          new, E, gensE, imgsE, rel, w, t, j, f, free, gensf, k, n; 
+IsomorphismFpGroupPermGroupByCompSeries := function( G, str )
+    local gens, iso, A, S, gensS, imgsG, 
+          series, l, F, gensF, imgsF, relatorsF, n, c, 
+          E, gensE, imgsE, relatorsE, free, 
+          N, M, H, gensH, preiH, T, gensT, hom, new, rel, w, t,  
+          i, j, k;
 
     # if G is solvable use ag groups
     if IsSolvableGroup( G )  then
@@ -1193,17 +1220,23 @@ IsomorphismFpGroupPermGroup := function( G, str )
     gens   := GeneratorsOfGroup( G );
 
     # set up 
-    iso := IsomorphismFpGroupByGenerators( series[l-1], 
-                   str, GeneratorsOfGroup( series[l-1] ) );
-    F := Image( iso );
+    H := series[l-1];
+    if IsPrime( Size( H ) ) then
+        gensH := Filtered( GeneratorsOfGroup( H ), 
+                           x -> Order(x)=Size(H) ){[1]};
+    else
+        gensH := Set( GeneratorsOfGroup( H ) );
+        gensH := Filtered( gensH, x -> x <> One(H) );
+    fi;
+    iso := IsomorphismFpGroupPermGroupByGens( H, str, gensH );
+    F := FreeGroupOfFpGroup( Image( iso ) );
     gensF := GeneratorsOfGroup( F );
     imgsF := iso!.generators;
-    f := FreeGroupOfFpGroup( F );
-    gensf := GeneratorsOfGroup( f );
-    free := GroupHomomorphismByImages( f, series[l-1], gensf, imgsF );
+    relatorsF := RelatorsOfFpGroup( Image( iso ) );
+    free := GroupHomomorphismByImages( F, series[l-1], gensF, imgsF );
+    n := Length( gensF );
 
     # loop over series upwards
-    n := Length( gensF );
     for k in Reversed( [1..l-2] ) do
 
         # get composition factor
@@ -1211,33 +1244,38 @@ IsomorphismFpGroupPermGroup := function( G, str )
         M := series[k+1];  
         hom := NaturalHomomorphismByNormalSubgroupInParent( M );
         H := Image( hom );
-        gensH := Set( GeneratorsOfGroup( H ) );
-        gensH := Filtered( gensH, x -> x <> One(H) );
+        if IsPrime( Size( H ) ) then
+            gensH := Filtered( GeneratorsOfGroup( H ), 
+                               x -> Order(x)=Size(H) ){[1]};
+        else
+            gensH := Set( GeneratorsOfGroup( H ) );
+            gensH := Filtered( gensH, x -> x <> One(H) );
+        fi;
         preiH := List( gensH, x -> PreImagesRepresentative( hom, x ) );
         c     := Length( gensH );
 
         # compute presentation of H
-        new := IsomorphismFpGroupByGenerators( H, "g", gensH );
+        new := IsomorphismFpGroupPermGroupByGens( H, "g", gensH );
         T   := Image( new );
         gensT := GeneratorsOfGroup( FreeGroupOfFpGroup( T ) );
 
         # create new free group
-        E := FreeGroup( n+c, str );
+        E     := FreeGroup( n+c, str );
         gensE := GeneratorsOfGroup( E );
         imgsE := Concatenation( preiH, imgsF );
-        relators := [];
+        relatorsE := [];
 
-        # modify presentation of for H
+        # modify presentation of H
         for rel in RelatorsOfFpGroup( T ) do
             w := MappedWord( rel, gensT, gensE{[1..c]} );    
             t := MappedWord( rel, gensT, imgsE{[1..c]} );
             if not t = One( G ) then
                 t := PreImagesRepresentative( free, t );
-                t := MappedWord( t, gensf, gensE{[c+1..n+c]} );
+                t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
             else
                 t := One( E );
             fi;
-            Add( relators, w/t );
+            Add( relatorsE, w/t );
         od;
 
         # add operation of T on F
@@ -1247,30 +1285,35 @@ IsomorphismFpGroupPermGroup := function( G, str )
                 t := Comm( imgsE[c+j], imgsE[i] );
                 if not t = One( G ) then
                     t := PreImagesRepresentative( free, t );
-                    t := MappedWord( t, gensf, gensE{[c+1..n+c]} );
+                    t := MappedWord( t, gensF, gensE{[c+1..n+c]} );
                 else
                     t := One( E );
                 fi;
-                Add( relators, w/t );
+                Add( relatorsE, w/t );
             od;
         od;
  
         # append relators of F
-        for rel in RelatorsOfFpGroup( F ) do
-            w := MappedWord( rel, gensf, gensE{[c+1..c+n]} );
-            Add( relators, w );
+        for rel in relatorsF do
+            w := MappedWord( rel, gensF, gensE{[c+1..c+n]} );
+            Add( relatorsE, w );
         od;
 
         # iterate
-        F := E / relators;
-        iso := GroupHomomorphismByImages( N, E, imgsE, gensE );
-        SetIsBijective( iso, true );
+        F := E;
         gensF := gensE;
         imgsF := imgsE;
-        f := E;
-        gensf := gensE;
-        free := GroupHomomorphismByImages( f, N, gensf, imgsF );
+        relatorsF := relatorsE;
+        free :=  GroupHomomorphismByImages( F, N, gensF, imgsF );
+        n := n + c;
     od;
+
+    # set up 
+    F := F / relatorsF;
+    gensF := GeneratorsOfGroup( F );
+    iso := GroupHomomorphismByImages( G, F, imgsF, gensF );
+    SetIsBijective( iso, true );
+    SetKernelOfMultiplicativeGeneralMapping( iso, TrivialSubgroup( G ) );
     return iso;
 end;
 
@@ -1284,7 +1327,7 @@ InstallMethod( IsomorphismFpGroup,
                [IsPermGroup], 
                0, 
 function( G ) 
-    return IsomorphismFpGroupPermGroup( G, "f" );
+    return IsomorphismFpGroupPermGroupByCompSeries( G, "f" );
 end );
 
 InstallOtherMethod( IsomorphismFpGroup, 
@@ -1293,7 +1336,7 @@ InstallOtherMethod( IsomorphismFpGroup,
                [IsPermGroup, IsString], 
                0, 
 function( G, str ) 
-    return IsomorphismFpGroupPermGroup( G, str );
+    return IsomorphismFpGroupPermGroupByCompSeries( G, str );
 end );
 
 InstallOtherMethod( IsomorphismFpGroup, 
@@ -1302,7 +1345,7 @@ InstallOtherMethod( IsomorphismFpGroup,
                [IsPermGroup, IsList], 
                0, 
 function( G, gens ) 
-    return IsomorphismFpGroupByGenerators( G, "f", gens );
+    return IsomorphismFpGroupPermGroupByGens( G, "f", gens );
 end );
 
 InstallOtherMethod( IsomorphismFpGroup, 
@@ -1311,7 +1354,7 @@ InstallOtherMethod( IsomorphismFpGroup,
                [IsPermGroup, IsString, IsList], 
                0, 
 function( G, str, gens ) 
-    return IsomorphismFpGroupByGenerators( G, str, gens );
+    return IsomorphismFpGroupPermGroupByGens( G, str, gens );
 end );
 
 #############################################################################

@@ -6,30 +6,6 @@ Revision.grppcrep_gd :=
     "@(#)$Id$";
 
 #############################################################################
-##
-#O  AbsolutIrreducibleModules( <G>, <F>, <dim> )
-##
-AbsolutIrreducibleModules := NewOperation( 
-     "AbsolutIrreducibleModules",
-     [ IsGroup and IsPcgsComputable, IsField and IsFinite, IsInt ] );
-
-#############################################################################
-##
-#O  IrreducibleModules( <G>, <F>, <dim> )
-##
-IrreducibleModules := NewOperation( 
-     "IrreducibleModules",
-     [ IsGroup and IsPcgsComputable, IsField and IsFinite, IsInt ] );
-
-#############################################################################
-##
-#O  RegularModule( <G>, <F> )
-##
-RegularModule := NewOperation( 
-     "RegularModule",
-     [ IsGroup and IsPcgsComputable, IsField ] );
-
-#############################################################################
 ## some module stuff
 BlownUpModule := NewOperationArgs( "BlownUpModule" );
 ConjugatedModule := NewOperationArgs( "ConjugatedModule" );

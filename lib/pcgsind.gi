@@ -1338,12 +1338,12 @@ InstallMethod( ExtendedPcgs,
     "induced pcgs",
     IsIdentical,
     [ IsInducedPcgs,
-      IsList and IsMultiplicativeElementWithInverseCollection ],
+      IsList ],
     0,
 
 function( kern, img )
     return InducedPcgsByPcSequenceAndGenerators(
-        ParentPcgs(kern), kern, img );
+                   ParentPcgs( kern ), kern, img );
 end );
 
 
@@ -1351,4 +1351,3 @@ end );
 ##
 
 #E  pcgsind.gi 	. . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-##

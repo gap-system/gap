@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for division rings.
 ##
@@ -297,6 +297,18 @@ Norm := NewOperation( "Norm", [ IsField, IsScalar ] );
 #O  Trace( <mat> )  . . . . . . . . . . . . . . . . . . . . trace of a matrix
 ##
 Trace := NewOperation( "Trace", [ IsField, IsScalar ] );
+
+
+#############################################################################
+##
+#A  ComplexConjugate( <z> )
+##
+##  For a cyclotomic number <z>, 'ComplexConjugate' returns
+##  'GaloisCyc( <z>, -1 )'.
+##  For a quaternion $<z> = c_1 e + c_2 i + c_3 j + c_4 k$,
+##  'ComplexConjugate' returns $c_1 e - c_2 i - c_3 j - c_4 k$.
+##
+ComplexConjugate := NewAttribute( "ComplexConjugate", IsScalar );
 
 
 #############################################################################

@@ -238,7 +238,7 @@ gap> map7:= LeftModuleHomomorphismByMatrix( bw,
 >          bv );
 <linear mapping by matrix, ( GF(3)^2 ) -> GF(3^3)>
 gap> ImagesSource( map7 );
-VectorSpace( GF(3), [ Z(3^3)^21 ] )
+VectorSpace( GF(3), [ Z(3^3)^21, Z(3^3)^21 ] )
 gap> PreImagesRange( map7 );
 ( GF(3)^2 )
 gap> CoKernelOfAdditiveGeneralMapping( map7 );
@@ -319,9 +319,11 @@ gap> IdentityMapping( v ) + map8;
 ##
 
 gap> map2 + map6;
-<linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )>
+CanonicalBasis( GF(3^3) ) -> [ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+  [ Z(3), Z(3)^0 ] ]
 gap> map6 + map2;
-<linear mapping by matrix, GF(3^3) -> ( GF(3)^2 )>
+CanonicalBasis( GF(3^3) ) -> [ [ 0*Z(3), Z(3) ], [ Z(3)^0, Z(3)^0 ], 
+  [ Z(3), Z(3)^0 ] ]
 
 gap> # id:= IdentityMapping( v );
 gap> # 2 * id;

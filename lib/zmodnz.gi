@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for the elements of the rings $Z / n Z$
 ##  in their representation via the residue modulo $n$.
@@ -36,7 +36,7 @@ Revision.zmodnz_gi :=
 ##  integer at first position.
 ##
 IsModulusRep := NewRepresentation( "IsModulusRep", IsComponentObjectRep,
-    [] );
+    [ 1 ] );
 
 
 #############################################################################
@@ -49,12 +49,18 @@ IsModulusRep := NewRepresentation( "IsModulusRep", IsComponentObjectRep,
 ##
 #M  ZmodnZObj( <Fam>, <residue> )
 ##
-InstallMethod( ZmodnZObj, true, [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
+InstallMethod( ZmodnZObj,
+    "method for family of elements in Z/nZ (nonprime), and integer",
+    true,
+    [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
     function( Fam, residue )
     return Objectify( Fam!.kindOfZmodnZObj, [ residue mod Fam!.modulus ] );
     end );
 
-InstallOtherMethod( ZmodnZObj, true, [ IsFFEFamily, IsInt ], 0,
+InstallOtherMethod( ZmodnZObj,
+    "method for family of FFE elements, and integer",
+    true,
+    [ IsFFEFamily, IsInt ], 0,
     function( Fam, residue )
     return Objectify( Fam!.kindOfZmodnZObj,
                       [ residue mod Characteristic( Fam ) ] );
@@ -68,6 +74,7 @@ InstallOtherMethod( ZmodnZObj, true, [ IsFFEFamily, IsInt ], 0,
 ##  Note that finite field elements do not have an external representation.
 ##
 InstallMethod( ObjByExtRep,
+    "method for family of elements in Z/nZ (nonprime), and integer",
     true,
     [ IsZmodnZObjNonprimeFamily, IsInt ], 0,
     function( Fam, residue )
@@ -79,21 +86,29 @@ InstallMethod( ObjByExtRep,
 ##
 #M  ExtRepOfObj( <obj> )
 ##
-InstallMethod( ExtRepOfObj, true,
+InstallMethod( ExtRepOfObj,
+    "method for element in Z/nZ (ModulusRep, nonprime)",
+    true,
     [ IsZmodnZObjNonprime and IsModulusRep ], 0,
     obj -> obj![1] );
 
 
 #############################################################################
 ##
-#M  PrintObj( <obj> )
+#M  PrintObj( <obj> ) . . . . . . . . . . .  for element in Z/nZ (ModulusRep)
 ##
-InstallMethod( PrintObj, true, [ IsZmodnZObj and IsModulusRep ], 0,
+InstallMethod( PrintObj,
+    "method for element in Z/nZ (ModulusRep)",
+    true,
+    [ IsZmodnZObj and IsModulusRep ], 0,
     function( x )
     Print( "ZmodnZObj( ", x![1], ", ", DataKind( KindObj( x ) ), " )" );
     end );
 
-InstallMethod( PrintObj, true, [ IsZmodpZObj and IsModulusRep ], 0,
+InstallMethod( PrintObj,
+    "method for element in Z/pZ (ModulusRep)",
+    true,
+    [ IsZmodpZObj and IsModulusRep ], 0,
     function( x )
     Print( "ZmodpZObj( ", x![1], ", ", Characteristic( x ), " )" );
     end );
@@ -105,11 +120,13 @@ InstallMethod( PrintObj, true, [ IsZmodpZObj and IsModulusRep ], 0,
 #M  \<( <x>, <y> )
 ##
 InstallMethod( \=,
+    "method for two elements in Z/nZ (ModulusRep)",
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y ) return x![1] = y![1]; end );
 
 InstallMethod( \=,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObj and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y )
@@ -117,6 +134,7 @@ InstallMethod( \=,
     end );
 
 InstallMethod( \=,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObj and IsModulusRep ], 0,
     function( x, y )
@@ -124,18 +142,21 @@ InstallMethod( \=,
     end );
 
 InstallMethod( \<,
+    "method for two elements in Z/nZ (ModulusRep, nonprime)",
     IsIdentical,
     [ IsZmodnZObjNonprime and IsModulusRep,
       IsZmodnZObjNonprime and IsModulusRep ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \<,
+    "method for two elements in Z/pZ (ModulusRep, large)",
     IsIdentical,
     [ IsZmodpZObjLarge and IsModulusRep,
       IsZmodpZObjLarge and IsModulusRep ], 0,
     function( x, y ) return x![1] < y![1]; end );
 
 InstallMethod( \<,
+    "method for two elements in Z/pZ (ModulusRep, small)",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep,
       IsZmodpZObjSmall and IsModulusRep ], 0,
@@ -153,6 +174,7 @@ InstallMethod( \<,
     end );
 
 InstallMethod( \<,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y )
@@ -160,6 +182,7 @@ InstallMethod( \<,
     end );
 
 InstallMethod( \<,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
     function( x, y )
@@ -183,6 +206,7 @@ InstallMethod( \<,
 ##  internal FFE is an internal FFE.
 ##
 InstallMethod( \+,
+    "method for two elements in Z/nZ (ModulusRep)",
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -191,6 +215,7 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
+    "method for element in Z/nZ (ModulusRep) and integer",
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
@@ -199,6 +224,7 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
+    "method for integer and element in Z/pZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -207,16 +233,19 @@ InstallMethod( \+,
     end );
 
 InstallMethod( \+,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y ) return x![1] + y; end );
 
 InstallMethod( \+,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
     function( x, y ) return x + y![1]; end );
 
 InstallMethod( \-,
+    "method for two elements in Z/nZ (ModulusRep)",
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -225,6 +254,7 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \-,
+    "method for element in Z/nZ (ModulusRep) and integer",
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
@@ -233,6 +263,7 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \-,
+    "method for integer and element in Z/pZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -241,16 +272,19 @@ InstallMethod( \-,
     end );
 
 InstallMethod( \-,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y ) return x![1] - y; end );
 
 InstallMethod( \-,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
     function( x, y ) return x - y![1]; end );
 
 InstallMethod( \*,
+    "method for two elements in Z/nZ (ModulusRep)",
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -259,6 +293,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
+    "method for element in Z/nZ (ModulusRep) and integer",
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
@@ -267,6 +302,7 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
+    "method for integer and element in Z/pZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -275,16 +311,19 @@ InstallMethod( \*,
     end );
 
 InstallMethod( \*,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y ) return x![1] * y; end );
 
 InstallMethod( \*,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
     function( x, y ) return x * y![1]; end );
 
 InstallMethod( \/,
+    "method for two elements in Z/nZ (ModulusRep)",
     IsIdentical,
     [ IsZmodnZObj and IsModulusRep, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -294,6 +333,7 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
+    "method for element in Z/nZ (ModulusRep) and integer",
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, y )
@@ -303,6 +343,7 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
+    "method for integer and element in Z/pZ (ModulusRep)",
     true,
     [ IsInt, IsZmodnZObj and IsModulusRep ], 0,
     function( x, y )
@@ -312,16 +353,19 @@ InstallMethod( \/,
     end );
 
 InstallMethod( \/,
+    "method for element in Z/pZ (ModulusRep) and internal FFE",
     IsIdentical,
     [ IsZmodpZObjSmall and IsModulusRep, IsFFE and IsInternalRep ], 0,
     function( x, y ) return x![1] / y; end );
 
 InstallMethod( \/,
+    "method for internal FFE and element in Z/pZ (ModulusRep)",
     IsIdentical,
     [ IsFFE and IsInternalRep, IsZmodpZObjSmall and IsModulusRep ], 0,
     function( x, y ) return x / y![1]; end );
 
 InstallMethod( \^,
+    "method for element in Z/nZ (ModulusRep), and integer",
     true,
     [ IsZmodnZObj and IsModulusRep, IsInt ], 0,
     function( x, n )
@@ -335,6 +379,7 @@ InstallMethod( \^,
 #M  Zero( <elm> ) . . . . . . . . . . . . . . . . . . . . . for 'IsZmodnZObj'
 ##
 InstallMethod( Zero,
+    "method for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj ], 0,
     elm -> ZmodnZObj( FamilyObj( elm ), 0 ) );
@@ -345,6 +390,7 @@ InstallMethod( Zero,
 #M  AdditiveInverse( <elm> )  . . . . . . . . . . . . . . . for 'IsZmodnZObj'
 ##
 InstallMethod( AdditiveInverse,
+    "method for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj and IsModulusRep ], 0,
     elm -> ZmodnZObj( FamilyObj( elm ), -elm![1] ) );
@@ -355,6 +401,7 @@ InstallMethod( AdditiveInverse,
 #M  One( <elm> )  . . . . . . . . . . . . . . . . . . . . . for 'IsZmodnZObj'
 ##
 InstallMethod( One,
+    "method for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj ], 0,
     elm -> ZmodnZObj( FamilyObj( elm ), 1 ) );
@@ -365,6 +412,7 @@ InstallMethod( One,
 #M  Inverse( <elm> )  . . . . . . . . . . . . . . . . . . . for 'IsZmodnZObj'
 ##
 InstallMethod( Inverse,
+    "method for element in Z/nZ (ModulusRep)",
     true,
     [ IsZmodnZObj and IsModulusRep ], 0,
     function( elm )
@@ -381,7 +429,10 @@ InstallMethod( Inverse,
 ##
 #M  DegreeFFE( <obj> )  . . . . . . . . . . . . . . . . . . for 'IsZmodpZObj'
 ##
-InstallMethod( DegreeFFE, true, [ IsZmodpZObj and IsModulusRep ], 0,
+InstallMethod( DegreeFFE,
+    "method for element in Z/pZ (ModulusRep)",
+    true,
+    [ IsZmodpZObj and IsModulusRep ], 0,
     z -> 1 );
 
 
@@ -389,7 +440,10 @@ InstallMethod( DegreeFFE, true, [ IsZmodpZObj and IsModulusRep ], 0,
 ##
 #M  Int( <obj> )  . . . . . . . . . . . . . . . . . . . . . for 'IsZmodnZObj'
 ##
-InstallMethod( Int, true, [ IsZmodnZObj and IsModulusRep ], 0,
+InstallMethod( Int,
+    "method for element in Z/nZ (ModulusRep)",
+    true,
+    [ IsZmodnZObj and IsModulusRep ], 0,
     z -> z![1] );
 
 
@@ -401,9 +455,11 @@ InstallMethod( Int, true, [ IsZmodnZObj and IsModulusRep ], 0,
 
 #############################################################################
 ##
-#M  PrintObj( <R> )
+#M  PrintObj( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for full ring Z/nZ",
+    true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( obj )
     Print( "(Integers mod ", Size( obj ), ")" );
@@ -416,7 +472,9 @@ InstallMethod( PrintObj, true,
 #M  AsList( <R> ) . . . . . . . . . . . . . . .  set of elements of Z mod n Z
 ##
 InstallMethod( AsList,
-    true, [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    "method for full ring Z/nZ",
+    true,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -426,7 +484,9 @@ InstallMethod( AsList,
     end );
 
 InstallMethod( AsListSorted,
-    true, [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
+    "method for full ring Z/nZ",
+    true,
+    [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
     function( R )
     local F;
     F:= ElementsFamily( FamilyObj( R ) );
@@ -436,9 +496,10 @@ InstallMethod( AsListSorted,
 
 #############################################################################
 ##
-#M  Random( <R> ) . . for coll. of 'IsZmodnZObjNonprime' cont. the whole fam.
+#M  Random( <R> ) . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( Random,
+    "method for full ring Z/nZ",
     true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
     R -> ZmodnZObj( ElementsFamily( FamilyObj( R ) ),
@@ -447,9 +508,20 @@ InstallMethod( Random,
 
 #############################################################################
 ##
-#M  Size( <R> )
+#M  IsFinite( <R> ) . . . . . . . . . . . . . . . . method for full ring Z/nZ
+##
+InstallTrueMethod( IsFinite,
+    IsZmodnZObjNonprimeCollection and IsDomain );
+#T better generalize 'IsDuplicateFreeList' to 'IsDuplicateFree',
+#T and use this here?
+
+
+#############################################################################
+##
+#M  Size( <R> ) . . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( Size,
+    "method for full ring Z/nZ",
     true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], 0,
     R -> ElementsFamily( FamilyObj( R ) )!.modulus );
@@ -457,9 +529,10 @@ InstallMethod( Size,
 
 #############################################################################
 ##
-#M  Units( <R> )
+#M  Units( <R> )  . . . . . . . . . . . . . . . . . method for full ring Z/nZ
 ##
 InstallMethod( Units,
+    "method for full ring Z/nZ",
     true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily and IsRing ], 0,
     function( R )
@@ -483,6 +556,7 @@ IsZmodnZEnumeratorRep := NewRepresentation( "ZmodnZEnumerator",
 #M  Enumerator( <R> )  . . . . . . . . . . . . . . . . enumerator for Z / n Z
 ##
 InstallMethod( \[\],
+    "method for enumerator of full ring Z/nZ, and pos. integer",
     true,
     [ IsList and IsZmodnZEnumeratorRep, IsPosRat and IsInt ], 0,
     function( enum, nr )
@@ -494,6 +568,7 @@ InstallMethod( \[\],
     end );
 
 InstallMethod( Position,
+    "method for enumerator of full ring Z/nZ, and element",
     true,
     [ IsZmodnZEnumeratorRep, IsZmodnZObj and IsModulusRep, IsZeroCyc ], 0,
     function( enum, elm, zero )
@@ -504,7 +579,9 @@ InstallMethod( Position,
     fi;
     end );
 
-InstallMethod( Enumerator, true,
+InstallMethod( Enumerator,
+    "method for full ring Z/nZ",
+    true,
     [ IsZmodnZObjNonprimeCollection and IsWholeFamily ], SUM_FLAGS,
     function( R )
     local enum;
@@ -527,7 +604,9 @@ InstallMethod( Enumerator, true,
 ##
 ##  (is used in the implementation of Dixon's algorithm ...)
 ##
-InstallMethod( SquareRoots, IsCollsElms,
+InstallMethod( SquareRoots,
+    "method for prime field and object in Z/pZ",
+    IsCollsElms,
     [ IsField and IsPrimeField, IsZmodpZObj and IsModulusRep ], 0,
     function( F, obj )
     F:= FamilyObj( obj );
@@ -633,7 +712,10 @@ end;
 ##
 #M  \mod( Integers, <n> )
 ##
-InstallMethod( \mod, true, [ IsIntegers, IsPosRat and IsInt ], 0,
+InstallMethod( \mod,
+    "method for 'Integers', and positive integers",
+    true,
+    [ IsIntegers, IsPosRat and IsInt ], 0,
     function( Integers, n ) return ZmodnZ( n ); end );
 
 

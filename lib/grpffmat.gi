@@ -72,14 +72,6 @@ end );
 
 #############################################################################
 ##
-#M  One( <ffe-mat-grp> )
-##
-InstallOtherMethod( One, true, [ IsFFEMatrixGroup ], 0,
-    grp -> IdentityMat( DimensionOfMatrixGroup( grp ),
-                        DefaultFieldOfMatrixGroup( grp ) ) );
-
-#############################################################################
-##
 #M  IsGeneralLinearGroup( <ffe-mat-grp> )
 ##
 InstallMethod( IsGeneralLinearGroup,

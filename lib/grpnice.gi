@@ -35,7 +35,7 @@ end );
 #M  One( <nice> )
 ##
 InstallOtherMethod( One,"via niceomorphism",true,
-    [ IsGroup and IsHandledByNiceMonomorphism ],0,
+    [ IsGroup and IsHandledByNiceMonomorphism ], 0,
 function( G )
     return PreImagesRepresentative(NiceMonomorphism(G),One(NiceObject(G)));
 end );
@@ -113,8 +113,17 @@ PropertyMethodByNiceMonomorphismCollColl( \=,
 ##
 #M  \in( <elm>, <G> )  . . . . . . . . . . . .  test if elm \in G
 ##
-PropertyMethodByNiceMonomorphismElmColl( \in,
-    [ IsMultiplicativeElementWithInverse, IsGroup ] );
+InstallMethod( \in, "by nice monomorphism", IsElmsColls,
+        [ IsMultiplicativeElementWithInverse,
+          IsGroup and IsHandledByNiceMonomorphism ], 0,
+    function( elm, G )
+    local   nice,  img;
+    
+    nice := NiceMonomorphism( G );
+    img := ImagesRepresentative( nice, elm );
+    return     img in NiceObject( G )
+           and PreImagesRepresentative( nice, img ) = elm;
+end );
 
 
 #############################################################################
@@ -535,27 +544,10 @@ GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
 
 #############################################################################
 ##
-#M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . . . pcgs of a group
-##
-InstallMethod( Pcgs, true, [ IsGroup and IsHandledByNiceMonomorphism ], 0,
-    function( G )
-    local   nice,  pcgs;
-    
-    nice := NiceMonomorphism( G );
-    pcgs := Pcgs( NiceObject( G ) );
-    if pcgs = fail  then
-        return fail;
-    fi;
-    pcgs := List( pcgs, gen -> PreImagesRepresentative( nice, gen ) );
-    return PcgsByPcSequenceNC( ElementsFamily( FamilyObj( G ) ), pcgs );
-end );
-
-#############################################################################
-##
 #M  IsomorphismPcGroup
 ##
 InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
 function(g)
 local mon,iso;
    mon:=NiceMonomorphism(g);
@@ -572,7 +564,7 @@ end);
 #M  ConjugacyClasses
 ##
 InstallMethod(ConjugacyClasses,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism],0,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
 function(g)
 local mon,cl,clg,c,i;
    mon:=NiceMonomorphism(g);
@@ -594,7 +586,7 @@ end);
 #M  RightTransversal
 ##
 InstallMethod(RightTransversal,"via niceomorphism",true,
-  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],0,
+  [IsGroup and IsHandledByNiceMonomorphism,IsGroup],NICE_FLAGS,
 function(g,u)
 local mon,rt;
    mon:=NiceMonomorphism(g);

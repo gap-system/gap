@@ -5,13 +5,13 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for free semigroups.
 ##
 ##  Element objects of free semigroups, free monoids and free groups are
 ##  associative words.
-##  For the external representation see the file 'word.g'.
+##  For the external representation see the file 'wordrep.gi'.
 ##
 Revision.smgrpfre_gi :=
     "@(#)$Id$";
@@ -24,7 +24,9 @@ Revision.smgrpfre_gi :=
 ##  <S> contains the whole family of its elements if and only if all
 ##  magma generators of the family are among the semigroup generators of <S>.
 ##
-InstallMethod( IsWholeFamily, true,
+InstallMethod( IsWholeFamily,
+    "method for a free semigroup",
+    true,
     [ IsSemigroup and IsAssocWordCollection ], 0,
     S -> IsSubset( GeneratorsMagmaFamily( ElementsFamily( FamilyObj( S ) ) ),
                    GeneratorsOfMagma( S ) ) );
@@ -109,7 +111,8 @@ FreeSemigroup_NextWordExp := function( iter )
 
     iter!.word:= word;
     iter!.exp:= maxexp;
-    end;
+end;
+
 
 #############################################################################
 ##
@@ -119,7 +122,11 @@ IsFreeSemigroupIterator := NewRepresentation( "IsFreeSemigroupIterator",
     IsIterator,
     [ "family", "nrgenerators", "exp", "word", "counter", "length" ] );
 
-InstallMethod( NextIterator, true, [ IsFreeSemigroupIterator ], 0,
+
+InstallMethod( NextIterator,
+    "method for iterator of a free semigroup",
+    true,
+    [ IsFreeSemigroupIterator ], 0,
     function( iter )
 
     local word;
@@ -129,13 +136,26 @@ InstallMethod( NextIterator, true, [ IsFreeSemigroupIterator ], 0,
     return word;
     end );
 
-InstallMethod( IsDoneIterator, true, [ IsFreeSemigroupIterator ], 0,
-               ReturnFalse );
 
-InstallMethod( Iterator, true, [ IsSemigroup and IsAssocWordCollection ], 0,
+InstallMethod( IsDoneIterator,
+    "method for iterator of a free semigroup",
+    true,
+    [ IsFreeSemigroupIterator ], 0,
+    ReturnFalse );
+
+
+InstallMethod( Iterator,
+    "method for iterator of a free semigroup",
+    true,
+    [ IsAssocWordCollection and IsWholeFamily ], 0,
     function( S )
-
     local iter;
+
+    # A free monoid or free group needs another method.
+    # A trivial monoid/group needs another method.
+    if IsAssocWordWithOneCollection( S ) or IsTrivial( S ) then
+      TryNextMethod();
+    fi;
 
     iter:= rec(
                 family         := ElementsFamily( FamilyObj( S ) ),
@@ -149,6 +169,7 @@ InstallMethod( Iterator, true, [ IsSemigroup and IsAssocWordCollection ], 0,
     return Objectify( NewKind( IteratorsFamily, IsFreeSemigroupIterator ),
                       iter );
     end );
+
 
 #############################################################################
 ##
@@ -250,7 +271,8 @@ FreeMonoid_NumberElement := function( enum, elm, zero )
     od;
 
     return nr;
-    end;
+end;
+
 
 #############################################################################
 ##
@@ -260,23 +282,35 @@ IsFreeSemigroupEnumerator := NewRepresentation( "FreeSemigroupEnumerator",
     IsDomainEnumerator and IsAttributeStoringRep,
     [ "family", "nrgenerators" ] );
 
-InstallMethod( \[\], true,
+InstallMethod( \[\],
+    "method for enumerator of a free semigroup",
+    true,
     [ IsFreeSemigroupEnumerator, IsInt and IsPosRat ], 0,
     function( enum, nr )
     return FreeMonoid_ElementNumber( enum, nr+1 );
     end );
 
 InstallMethod( Position,
+    "method for enumerator of a free semigroup",
     function(F1,F2,F3) return IsCollsElms(F1,F2); end,
     [ IsFreeSemigroupEnumerator, IsAssocWord, IsZeroCyc ], 0,
     function( enum, elm, zero )
     return FreeMonoid_NumberElement( enum, elm, zero ) - 1;
     end );
 
-InstallMethod( Enumerator, true,
-    [ IsSemigroup and IsAssocWordCollection ], 0,
+InstallMethod( Enumerator,
+    "method for a free semigroup",
+    true,
+    [ IsAssocWordCollection and IsWholeFamily and IsSemigroup ], 0,
     function( S )
     local enum;
+
+    # A free monoid or free group needs another method.
+    # A trivial monoid/group needs another method.
+    if IsAssocWordWithOneCollection( S ) or IsTrivial( S ) then
+      TryNextMethod();
+    fi;
+
     enum:= Objectify( NewKind( FamilyObj( S ), IsFreeSemigroupEnumerator ),
                    rec( family       := ElementsFamily( FamilyObj( S ) ),
                         nrgenerators := Length( GeneratorsOfMagma( S ) ) ) );
@@ -287,9 +321,22 @@ InstallMethod( Enumerator, true,
 
 #############################################################################
 ##
+#M  IsFinite( <S> ) . . . . . . . . . . . . . . . . . .  for a free semigroup
+##
+InstallMethod( IsFinite,
+    "method for a free semigroup",
+    true,
+    [ IsSemigroup and IsAssocWordWithOneCollection ], 0,
+    IsTrivial );
+
+
+#############################################################################
+##
 #M  Size( <S> ) . . . . . . . . . . . . . . . . . .  size of a free semigroup
 ##
-InstallMethod( Size, true,
+InstallMethod( Size,
+    "method for a free semigroup",
+    true,
     [ IsSemigroup and IsAssocWordWithOneCollection ], 0,
     function( S )
     if IsTrivial( S ) then
@@ -306,7 +353,10 @@ InstallMethod( Size, true,
 ##
 #T use better method for the whole family
 ##
-InstallMethod( Random, true, [ IsSemigroup and IsAssocWordCollection ], 0,
+InstallMethod( Random,
+    "method for a free semigroup",
+    true,
+    [ IsSemigroup and IsAssocWordCollection ], 0,
     function( S )
 
     local len,
@@ -338,7 +388,10 @@ InstallMethod( Random, true, [ IsSemigroup and IsAssocWordCollection ], 0,
 ##
 #M  GeneratorsMagmaFamily( <F> )
 ##
-InstallMethod( GeneratorsMagmaFamily, true, [ IsAssocWordFamily ], 0,
+InstallMethod( GeneratorsMagmaFamily,
+    "method for a family of free semigroup elements",
+    true,
+    [ IsAssocWordFamily ], 0,
     F -> List( [ 1 .. Length( F!.names ) ],
                  i -> ObjByExtRep( F, 1, 1, [ i, 1 ] ) ) );
 

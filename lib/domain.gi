@@ -191,6 +191,10 @@ InstallImmediateMethod( Enumerator,
 ##
 #M  \in( <elm>, <D> ) . . . . . . . . . . . . . . membership test for domains
 ##
+##  The default method for domain membership tests computes the set of
+##  elements of the domain with the function 'Enumerator' and tests whether
+##  <elm> lies in this set.
+##
 InstallMethod( \in,
     "method for a domain, and an element",
     IsElmsColls,

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright 1996,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
+#Y  Copyright 1997,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
 ##  This file contains generic methods for rings.
 ##
@@ -12,39 +12,21 @@ Revision.ring_gi :=
     "@(#)$Id$";
 
 
-#T ##########################################################################
-#T ##
-#T #M  \^( <R>, <n> )
-#T ##
-#T ##  returns the free module of rank <n> over the ring <R>.
-#T ##
-#T InstallMethod( \^, true, [ IsRing, IsInt ], 0, FreeModule );
-
-
 #############################################################################
 ##
-#M  Print( <R> )  . . . . . . . . . . . . . . . . . . . . . . .  print a ring
+#M  PrintObj( <R> ) . . . . . . . . . . . . . . . . . . . . . .  print a ring
 ##
-InstallMethod( PrintObj, true,
-    [ IsRing and HasParent and HasGeneratorsOfRing ], 0,
-    function( R )
-    Print( "Subring( ", Parent( R ), ", ",
-           GeneratorsOfRing( R ), " )" );
-    end );
-
-InstallMethod( PrintObj, true,
-    [ IsRing and HasParent ], 0,
-    function( R )
-    Print( "Subring( ", Parent( R ), ", ... )" );
-    end );
-
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a ring with generators",
+    true,
     [ IsRing and HasGeneratorsOfRing ], 0,
     function( R )
     Print( "Ring( ", GeneratorsOfRing( R ), " )" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a ring",
+    true,
     [ IsRing ], 0,
     function( R )
     Print( "Ring( ... )" );
@@ -55,26 +37,17 @@ InstallMethod( PrintObj, true,
 ##
 #M  PrintObj( <R> ) . . . . . . . . . . . . . . . . . . print a ring-with-one
 ##
-InstallMethod( PrintObj, true,
-    [ IsRingWithOne and HasParent and HasGeneratorsOfRingWithOne ], 0,
-    function( R )
-    Print( "Subring( ", Parent( R ), ", ",
-           GeneratorsOfRingWithOne( R ), " )" );
-    end );
-
-InstallMethod( PrintObj, true,
-    [ IsRingWithOne and HasParent ], 0,
-    function( R )
-    Print( "Subring( ", Parent( R ), ", ... )" );
-    end );
-
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a ring-with-one with generators",
+    true,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     function( R )
     Print( "RingWithOne( ", GeneratorsOfRingWithOne( R ), " )" );
     end );
 
-InstallMethod( PrintObj, true,
+InstallMethod( PrintObj,
+    "method for a ring-with-one",
+    true,
     [ IsRingWithOne ], 0,
     function( R )
     Print( "RingWithOne( ... )" );
@@ -217,10 +190,15 @@ InstallImmediateMethod( GeneratorsOfRingWithOne,
     GeneratorsOfRing );
 
 
-InstallMethod( GeneratorsOfRing, true, [ IsRing ], 0,
+InstallMethod( GeneratorsOfRing,
+    "method for a ring",
+    true,
+    [ IsRing ], 0,
     GeneratorsOfMagma );
 
-InstallMethod( GeneratorsOfRing, true,
+InstallMethod( GeneratorsOfRing,
+    "method for a ring-with-one with generators",
+    true,
     [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
     R -> Set( Concatenation( GeneratorsOfRingWithOne( R ), [ One(R) ] ) ) );
 
@@ -562,7 +540,10 @@ InstallMethod( RingByGenerators,
 ##
 #M  DefaultRingByGenerators( <gens> )   . . . .  ring containing a collection
 ##
-InstallMethod( DefaultRingByGenerators, true, [ IsRingElementCollection ], 0,
+InstallMethod( DefaultRingByGenerators,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
     RingByGenerators );
 
 
@@ -632,7 +613,7 @@ Subring := function( R, gens )
     if IsEmpty( gens ) then
       Error( "<gens> must be a nonempty list" );
     elif     IsHomogeneousList( gens )
-         and IsIdentical( ElementsFamily( FamilyObj(R) ), FamilyObj( gens ) )
+         and IsIdentical( FamilyObj(R), FamilyObj( gens ) )
          and ForAll( gens, g -> g in R ) then
       S:= RingByGenerators( gens );
       SetParent( S, R );
@@ -704,44 +685,6 @@ end;
 
 #############################################################################
 ##
-#M  IsRingHomomorphism( <fun> ) . . . . . . . .  is <fun> a ring homomorphism
-##
-InstallOtherMethod( IsRingHomomorphism, true, [ IsGeneralMapping ], 0,
-    function ( fun )
-
-    # check that <fun> is a function
-    if not IsMapping( fun )  then
-        Error("<fun> must be a single valued mapping");
-    fi;
-
-    # test that source and range are rings
-    if not IsRing( Source( fun ) )  then
-        Error( "source of <fun> must be a ring" );
-#T return false;
-    fi;
-    if not IsRing( Range( fun ) )  then
-        Error( "range of <fun> must be a ring" );
-#T return false;
-    fi;
-
-    # test the linearity explicitly if the source is finite
-    if IsFinite( Source( fun ) )  then
-        return ForAll( Source( fun ),
-                       x -> ForAll( Source( fun ),
-                                  y -> Image( fun, x * y )
-                                     = Image( fun, x ) * Image( fun, y )
-                                   and Image( fun, x + y )
-                                     = Image( fun, x ) + Image( fun, y ) ) );
-
-    # otherwise give up
-    else
-        TryNextMethod();
-    fi;
-    end );
-
-
-#############################################################################
-##
 #M  IsAssociated( <R>, <r>, <s> ) .  test if two ring elements are associated
 ##
 InstallMethod( IsAssociated,
@@ -807,8 +750,12 @@ InstallMethod( IsSubset,
 
 #############################################################################
 ##
-#M  Enumerator( <G> ) . . . . . . . . . . . . . set of the elements of a ring 
-#M  EnumeratorSorted( <G> ) . . . . . . . . . . set of the elements of a ring
+#M  Enumerator( <R> ) . . . . . . . . . . . . . set of the elements of a ring 
+#M  EnumeratorSorted( <R> ) . . . . . . . . . . set of the elements of a ring
+##
+##  We must be careful to call 'GeneratorsOfRing' only if ring generators are
+##  known; if we have only ideal generators then a different 'Enumerator'
+##  method is used.
 ##
 EnumeratorOfRing := function( R )
 
@@ -847,14 +794,235 @@ EnumeratorOfRing := function( R )
 end;
 
 InstallMethod( Enumerator,
-    "generic method for a ring",
-    true, [ IsRing and IsAttributeStoringRep ], 0,
+    "generic method for a ring with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfRing ], 0,
     EnumeratorOfRing );
 
 InstallMethod( EnumeratorSorted,
-    "generic method for a ring",
-    true, [ IsRing and IsAttributeStoringRep ], 0,
+    "generic method for a ring with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfRing ], 0,
     EnumeratorOfRing );
+
+InstallMethod( Enumerator,
+    "generic method for a ring-with-one with known generators",
+    true,
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    EnumeratorOfRing );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for a ring with known generators",
+    true,
+    [ IsRingWithOne and HasGeneratorsOfRingWithOne ], 0,
+    EnumeratorOfRing );
+
+
+#############################################################################
+##
+#M  Enumerator( <I> ) . . . . . . . . . . . . . . . . . . . . .  for an ideal
+#M  EnumeratorSorted( <I> ) . . . . . . . . . . . . . . . . . .  for an ideal
+##
+EnumeratorOfIdealInParent := function( I )
+
+    local   left,       # we must multiply with ring elements from the left
+            right,      # we must multiply with ring elements from the right
+            elms,       # elements of <I>, result
+            set,        # set corresponding to <elms>
+            Igens,      # ideal generators of <I>
+            Rgens,      # ring generators of the parent of <I>
+            elm,        # one element of <elms>
+            gen,        # one generator of <I>
+            new;        # product or sum of <elm> and <gen>
+
+    # check that we can handle this ideal
+    if HasIsFinite( I ) and not IsFinite( I ) then
+        TryNextMethod();
+    fi;
+
+    # Check from what sides we must multiply with parent elements.
+    if   HasGeneratorsOfLeftIdeal( I ) then
+      Igens:= GeneratorsOfLeftIdeal( I );
+      left:= true;
+    elif HasGeneratorsOfRightIdeal( I ) then
+      Igens:= GeneratorsOfRightIdeal( I );
+      right:= true;
+    elif HasGeneratorsOfIdeal( I ) then
+      Igens:= GeneratorsOfIdeal( I );
+      left:= true;
+      if not ( HasIsCommutative( I ) and IsCommutative( I ) ) then
+        right:= true;
+      fi;
+    else
+      Error( "no ideal generators of <I> known" );
+    fi;
+
+    # use an orbit like algorithm
+    elms  := [ Zero( I ) ];
+    set   := ShallowCopy( elms );
+    Rgens := GeneratorsOfRing( Parent( I ) );
+
+    # Compute the ring generated by 'Igens'.
+    for elm  in elms  do
+        for gen  in Igens  do
+            new := elm + gen;
+            if not new in set  then
+                Add( elms, new );
+                AddSet( set, new );
+            fi;
+            new := elm * gen;
+            if not new in set  then
+                Add( elms, new );
+                AddSet( set, new );
+            fi;
+        od;
+    od;
+
+    # Compute the closure under the action of the parent
+    # from the left.
+    elms:= set;
+    set:= ShallowCopy( elms );
+    for elm  in elms  do
+        for gen  in Rgens  do
+            if left then
+              new := gen * elm;
+              if not new in set  then
+                  Add( elms, new );
+                  AddSet( set, new );
+              fi;
+            fi;
+            if right then
+              new := elm * gen;
+              if not new in set  then
+                  Add( elms, new );
+                  AddSet( set, new );
+              fi;
+            fi;
+        od;
+    od;
+
+    return set;
+end;
+
+InstallMethod( Enumerator,
+    "generic method for a left ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfLeftIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+InstallMethod( Enumerator,
+    "generic method for a right ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfRightIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+InstallMethod( Enumerator,
+    "generic method for a two-sided ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for a left ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfLeftIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for a right ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfRightIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+InstallMethod( EnumeratorSorted,
+    "generic method for a two-sided ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfIdeal ], 0,
+    EnumeratorOfIdealInParent );
+
+
+#############################################################################
+##
+#M  GeneratorsOfRing( <I> ) . . . . . . . . . . . . . . . . . .  for an ideal
+##
+GeneratorsOfRingForIdealInParent := function( I )
+
+    local   left,       # we must multiply with ring elements from the left
+            right,      # we must multiply with ring elements from the right
+            Igens,      # ideal generators of <I>
+            Rgens,      # ring generators of the parent of <I>
+            gens,       # generators list, result
+            S,          # subring generated by 'gens'
+            s, r,       # loop over lists
+            prod;       # product of 's' and 'r'
+
+    # check that we can handle this ideal
+    if HasIsFinite( I ) and not IsFinite( I ) then
+        TryNextMethod();
+    fi;
+
+    # Check from what sides we must multiply with parent elements.
+    if   HasGeneratorsOfLeftIdeal( I ) then
+      Igens:= GeneratorsOfLeftIdeal( I );
+      left:= true;
+    elif HasGeneratorsOfRightIdeal( I ) then
+      Igens:= GeneratorsOfRightIdeal( I );
+      right:= true;
+    elif HasGeneratorsOfIdeal( I ) then
+      Igens:= GeneratorsOfIdeal( I );
+      left:= true;
+      if not ( HasIsCommutative( I ) and IsCommutative( I ) ) then
+        right:= true;
+      fi;
+    else
+      Error( "no ideal generators of <I> known" );
+    fi;
+
+    # Start with the ring generated by the ideal generators,
+    # and close it until it becomes stable.
+    S     := SubringNC( Parent( I ), Igens );
+    gens  := ShallowCopy( Igens );
+    Rgens := GeneratorsOfRing( Parent( I ) );
+    for s in gens do
+      for r in Rgens do
+        if left then
+          prod:= r * s;
+          if not prod in S then
+            S:= ClosureRing( S, prod );
+            Add( gens, prod );
+          fi;
+        fi;
+        if right then
+          prod:= s * r;
+          if not prod in S then
+            S:= ClosureRing( S, prod );
+            Add( gens, prod );
+          fi;
+        fi;
+      od;
+    od;
+
+    return gens;
+end;
+      
+
+InstallMethod( GeneratorsOfRing,
+    "generic method for a left ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfLeftIdeal ], 0,
+    GeneratorsOfRingForIdealInParent );
+
+InstallMethod( GeneratorsOfRing,
+    "generic method for a right ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfRightIdeal ], 0,
+    GeneratorsOfRingForIdealInParent );
+
+InstallMethod( GeneratorsOfRing,
+    "generic method for a two-sided ideal with known generators",
+    true,
+    [ IsRing and HasGeneratorsOfIdeal ], 0,
+    GeneratorsOfRingForIdealInParent );
 
 
 #############################################################################
@@ -885,6 +1053,110 @@ InstallMethod( IsIntegralRing,
     else
         TryNextMethod();
     fi;
+    end );
+
+
+#############################################################################
+##
+#M  ClosureRing( <R>, <r> ) . . . . . . . . . . . . . closure with an element
+##
+InstallMethod( ClosureRing,
+    "method for a ring and a ring element",
+    IsCollsElms,
+    [ IsRing, IsRingElement ], 0,
+    function( R, r )
+
+    # if possible test if the element lies in the ring already,
+    if     HasGeneratorsOfRing( R )
+       and r in GeneratorsOfRing( R ) then
+      return R;
+
+    # otherwise make a new ring
+    else
+      return Ring( Concatenation( GeneratorsOfRing( R ), [ r ] ) );
+    fi;
+    end );
+
+InstallMethod( ClosureRing,
+    "method for a ring-with-one and a ring element",
+    IsCollsElms,
+    [ IsRingWithOne, IsRingElement ], 0,
+    function( R, r )
+
+    # if possible test if the element lies in the ring already,
+    if     HasGeneratorsOfRingWithOne( R )
+       and r in GeneratorsOfRingWithOne( R ) then
+      return R;
+
+    # otherwise make a new ring-with-one
+    else
+      return RingWithOne( Concatenation( GeneratorsOfRingWithOne( R ),
+                                         [ r ] ) );
+    fi;
+    end );
+
+InstallMethod( ClosureRing,
+    "method for a ring containing the whole family, and a ring element",
+    IsCollsElms,
+    [ IsRing and IsWholeFamily, IsRingElement ], SUM_FLAGS,
+    function( R, r )
+    return R;
+    end );
+
+
+#############################################################################
+##
+#M  ClosureRing( <R>, <S> ) . . . . . . . . . . . . . .  closure of two rings
+##
+InstallMethod( ClosureRing,
+    "method for two rings",
+    IsIdentical,
+    [ IsRing, IsRing ], 0,
+    function( R, S )
+    local   r;          # one generator
+
+    for r in GeneratorsOfRing( S ) do
+      R := ClosureRing( R, r );
+    od;
+    return R;
+    end );
+
+InstallMethod( ClosureRing,
+    "method for two rings-with-one",
+    IsIdentical,
+    [ IsRingWithOne, IsRingWithOne ], 0,
+    function( R, S )
+    local   r;          # one generator
+
+    for r in GeneratorsOfRingWithOne( S ) do
+      R := ClosureRing( R, r );
+    od;
+    return R;
+    end );
+
+InstallMethod( ClosureRing,
+    "method for a ring cont. the whole family, and a collection",
+    IsIdentical,
+    [ IsRing and IsWholeFamily, IsCollection ], SUM_FLAGS,
+    function( R, S )
+    return R;
+    end );
+
+
+#############################################################################
+##
+#M  ClosureRing( <R>, <list> )  . . . . . . . . . . . . . . . closure of ring
+##
+InstallMethod( ClosureRing,
+    "method for ring and list of elements",
+    IsIdentical,
+    [ IsRing, IsCollection ], 0,
+    function( R, list )
+    local   r;          # one generator
+    for r in list do
+      R:= ClosureRing( R, r );
+    od;
+    return R;
     end );
 
 
@@ -1296,7 +1568,8 @@ InstallOtherMethod( GcdRepresentation,
 ##
 InstallOtherMethod( Lcm,
     "method for two ring elements",
-    IsIdentical, [ IsRingElement, IsRingElement ], 0,
+    IsIdentical,
+    [ IsRingElement, IsRingElement ], 0,
     function( r, s )
     return Lcm( DefaultRing( [ r, s ] ), r, s );
     end );

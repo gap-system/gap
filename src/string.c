@@ -76,25 +76,26 @@ char *          Revision_string_c =
 
 /****************************************************************************
 **
+
 *V  ObjsChar[<chr>] . . . . . . . . . . . . . . . . table of character values
 **
 **  'ObjsChar' contains all the character values.  That way we do not need to
 **  allocate new bags for new characters.
 */
-Obj             ObjsChar [256];
+Obj ObjsChar [256];
 
 
 /****************************************************************************
 **
-*F  KindChar(<chr>) . . . . . . . . . . . . . . . . kind of a character value
+*F  KindChar( <chr> ) . . . . . . . . . . . . . . . kind of a character value
 **
 **  'KindChar' returns the kind of the character <chr>.
 **
 **  'KindChar' is the function in 'KindObjFuncs' for character values.
 */
-Obj             KIND_CHAR;
+Obj KIND_CHAR;
 
-Obj             KindChar (
+Obj KindChar (
     Obj                 chr )
 {
     return KIND_CHAR;
@@ -103,12 +104,12 @@ Obj             KindChar (
 
 /****************************************************************************
 **
-*F  EqChar(<charL>,<charR>) . . . . . . . . . . . . .  compare two characters
+*F  EqChar( <charL>, <charR> )  . . . . . . . . . . .  compare two characters
 **
 **  'EqChar'  returns 'true'  if the two  characters <charL>  and <charR> are
 **  equal, and 'false' otherwise.
 */
-Int             EqChar (
+Int EqChar (
     Obj                 charL,
     Obj                 charR )
 {
@@ -118,12 +119,12 @@ Int             EqChar (
 
 /****************************************************************************
 **
-*F  LtChar(<charL>,<charR>) . . . . . . . . . . . . .  compare two characters
+*F  LtChar( <charL>, <charR> )  . . . . . . . . . . .  compare two characters
 **
 **  'LtChar' returns  'true' if the    character <charL>  is less than    the
 **  character <charR>, and 'false' otherwise.
 */
-Int             LtChar (
+Int LtChar (
     Obj                 charL,
     Obj                 charR )
 {
@@ -133,11 +134,11 @@ Int             LtChar (
 
 /****************************************************************************
 **
-*F  PrintChar(<chr>)  . . . . . . . . . . . . . . . . . . . print a character
+*F  PrintChar( <chr> )  . . . . . . . . . . . . . . . . . . print a character
 **
 **  'PrChar' prints the character <chr>.
 */
-void            PrintChar (
+void PrintChar (
     Obj                 val )
 {
     UChar               chr;
@@ -150,12 +151,47 @@ void            PrintChar (
     else if ( chr == '\03' )  Pr("'\\c'",0L,0L);
     else if ( chr == '\''  )  Pr("'\\''",0L,0L);
     else if ( chr == '\\'  )  Pr("'\\\\'",0L,0L);
+    else if ( chr == '\0'  )  Pr("'\\0'",0L,0L);
+    else if ( chr <  8     )  Pr("'\\0%d'",(Int)(chr&7),0L);
+    else if ( chr <  32    )  Pr("'\\0%d%d'",(Int)(chr/8),(Int)(chr&7));
     else                      Pr("'%c'",(Int)chr,0L);
 }
 
 
 /****************************************************************************
 **
+*F  FuncCHAR_INT( <self>, <int> ) . . . . . . . . . . . . . . char by integer
+*/
+Obj FuncCHAR_INT (
+    Obj		    self,
+    Obj             val )
+{
+    Int             chr;
+
+    /* get and check the integer value                                     */
+again:
+    while ( ! IS_INTOBJ(val) ) {
+        val = ErrorReturnObj(
+            "<val> must be an integer (not a %s)",
+            (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+            "you can return a string for <val>" );
+    }
+    chr = INT_INTOBJ(val);
+    if ( 255 < chr || chr < 0 ) {
+        val = ErrorReturnObj(
+            "<val> must be an integer between 0 and 255",
+            0L, 0L, "you can return a new integer for <val>" );
+	goto again;
+    }
+
+    /* return the character                                                */
+    return ObjsChar[chr];
+}
+
+
+/****************************************************************************
+**
+
 *F  NEW_STRING(<len>) . . . . . . . . . . . . . . . . . . . make a new string
 **
 **  'NEW_STRING' makes a new string with room for <len> characters.
@@ -1221,6 +1257,10 @@ void            InitString ( void )
     }
     HDLR_FUNC(IsStringConvFilt,1) = IsStringConvHandler;
     AssGVar( GVarName( "IS_STRING_CONV" ), IsStringConvFilt );
+
+    AssGVar( GVarName( "CHAR_INT" ),
+         NewFunctionC( "CHAR_INT", 1L, "integer",
+                    FuncCHAR_INT ) );
 }
 
 
