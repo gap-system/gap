@@ -377,20 +377,6 @@ SubfieldNC := NewOperationArgs( "SubfieldNC" );
 
 #############################################################################
 ##
-#P  IsFieldHomomorphism( <map> )
-##
-##  A mapping is a field homomorphism if and only if it is
-##  a ring homomorphism with source a field.
-##
-IsFieldHomomorphism :=
-    NewProperty( "IsFieldHomomorphism",
-        IsGeneralMapping );
-
-InstallTrueMethod( IsRingHomomorphism, IsFieldHomomorphism );
-
-
-#############################################################################
-##
 #E  field.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

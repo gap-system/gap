@@ -49,7 +49,112 @@ IsAdditiveMagmaWithInverses := NewCategory( "IsAdditiveMagmaWithInverses",
     IsAdditiveMagmaWithZero );
 
 IsAdditiveGroup := IsAdditiveMagmaWithInverses;
-#T ?
+
+
+#############################################################################
+##
+#F  AdditiveMagma(<generators>)
+#F  AdditiveMagma(<Fam>,<generators>)
+##
+AdditiveMagma := NewOperationArgs( "AdditiveMagma" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagma( <M>, <generators> )
+##
+SubadditiveMagma := NewOperationArgs( "SubadditiveMagma" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagmaNC( <M>, <generators> )
+##
+SubadditiveMagmaNC := NewOperationArgs( "SubadditiveMagmaNC" );
+
+
+#############################################################################
+##
+#F  AdditiveMagmaWithZero(<generators>)
+#F  AdditiveMagmaWithZero(<Fam>,<generators>)
+##
+AdditiveMagmaWithZero := NewOperationArgs( "AdditiveMagmaWithZero" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagmaWithZero( <M>, <generators> )
+##
+SubadditiveMagmaWithZero := NewOperationArgs( "SubadditiveMagmaWithZero" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagmaWithZeroNC( <M>, <generators> )
+##
+SubadditiveMagmaWithZeroNC := NewOperationArgs(
+    "SubadditiveMagmaWithZeroNC" );
+
+
+#############################################################################
+##
+#F  AdditiveMagmaWithInverses(<generators>)
+#F  AdditiveMagmaWithInverses(<Fam>,<generators>)
+##
+AdditiveMagmaWithInverses := NewOperationArgs( "AdditiveMagmaWithInverses" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagmaWithInverses( <M>, <generators> )
+##
+SubadditiveMagmaWithInverses := NewOperationArgs(
+    "SubadditiveMagmaWithInverses" );
+
+
+#############################################################################
+##
+#F  SubadditiveMagmaWithInversesNC( <M>, <generators> )
+##
+SubadditiveMagmaWithInversesNC := NewOperationArgs(
+    "SubadditiveMagmaWithInversesNC" );
+
+
+#############################################################################
+##
+#O  AdditiveMagmaByGenerators(<generators>)
+#O  AdditiveMagmaByGenerators(<Fam>,<generators>)
+##
+AdditiveMagmaByGenerators := NewOperation( "AdditiveMagmaByGenerators",
+    [ IsCollection ] );
+
+
+#############################################################################
+##
+#O  AdditiveMagmaWithZeroByGenerators(<generators>)
+#O  AdditiveMagmaWithZeroByGenerators(<Fam>,<generators>)
+##
+AdditiveMagmaWithZeroByGenerators := NewOperation(
+    "AdditiveMagmaWithZeroByGenerators",
+    [ IsCollection ] );
+
+
+#############################################################################
+##
+#O  AdditiveMagmaWithInversesByGenerators(<generators>)
+#O  AdditiveMagmaWithInversesByGenerators(<Fam>,<generators>)
+##
+AdditiveMagmaWithInversesByGenerators := NewOperation(
+    "AdditiveMagmaWithInversesByGenerators",
+    [ IsCollection ] );
+
+
+#############################################################################
+##
+#O  AdditiveGroupByGenerators(<generators>)
+#O  AdditiveGroupByGenerators(<Fam>,<generators>)
+##
+AdditiveGroupByGenerators := AdditiveMagmaWithInversesByGenerators;
 
 
 #############################################################################
@@ -97,6 +202,19 @@ HasGeneratorsOfAdditiveGroup := HasGeneratorsOfAdditiveMagmaWithInverses;
 
 #############################################################################
 ##
+#A  TrivialSubadditiveMagmaWithZero( <M> )  . . . for an add.-magma-with-zero
+##
+TrivialSubadditiveMagmaWithZero := NewAttribute(
+    "TrivialSubadditiveMagmaWithZero",
+    IsAdditiveMagmaWithZero );
+SetTrivialSubadditiveMagmaWithZero := Setter(
+    TrivialSubadditiveMagmaWithZero );
+HasTrivialSubadditiveMagmaWithZero := Tester(
+    TrivialSubadditiveMagmaWithZero );
+
+
+#############################################################################
+##
 #A  AdditiveNeutralElement( <A> )
 ##
 ##  is an element of the additive magma <A> that behaves as a zero (but need
@@ -106,6 +224,15 @@ AdditiveNeutralElement := NewAttribute( "AdditiveNeutralElement",
     IsAdditiveMagma );
 SetAdditiveNeutralElement := Setter( AdditiveNeutralElement );
 HasAdditiveNeutralElement := Tester( AdditiveNeutralElement );
+
+
+#############################################################################
+##
+#O  ClosureAdditiveGroup( <A>, <a> )  . . . . . .  for add. group and element
+#O  ClosureAdditiveGroup( <A>, <B> )  . . . . . . . . . . for two add. groups
+##
+ClosureAdditiveGroup := NewOperation( "ClosureAdditiveGroup",
+    [ IsAdditiveGroup, IsAdditiveElement ] );
 
 
 #############################################################################

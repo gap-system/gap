@@ -260,7 +260,10 @@ InstallMethod( Position, true, [ IsLieObject and IsMatrix, IsRowVector,
 #R  IsLieEmbedding( <map> )
 ##
 IsLieEmbedding := NewRepresentation( "IsLieEmbedding",
-    IsMapping and IsInjective and IsAttributeStoringRep,
+        IsNonSPGeneralMapping
+    and IsMapping
+    and IsInjective
+    and IsAttributeStoringRep,
     [ "packedKind" ] );
 
 

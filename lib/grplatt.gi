@@ -382,11 +382,13 @@ local   lattice,           # lattice (result)
     # add the whole group to the list of classes
     Info(InfoLattice,1,"doing layer ",Length(factors),",",
                   " previous layer has ",layere-layerb+1," classes");
-    Info(InfoLattice,2,"found whole group, size = ",Size(G),",","length = 1");
-    C:=ConjugacyClassSubgroups(G,G);
-    SetSize(C,1);
-    nrClasses:=nrClasses + 1;
-    classes[nrClasses]:=C;
+    if Size(G)>1 then
+      Info(InfoLattice,2,"found whole group, size = ",Size(G),",","length = 1");
+      C:=ConjugacyClassSubgroups(G,G);
+      SetSize(C,1);
+      nrClasses:=nrClasses + 1;
+      classes[nrClasses]:=C;
+    fi;
 
     # return the list of classes
     Info(InfoLattice,1,"<G> has ",nrClasses," classes,",
@@ -438,7 +440,7 @@ end);
 InstallMethod(RepresentativesPerfectSubgroups,"using Holt/Plesken library",
 true,[IsGroup],0,
 function(G)
-local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,bw,emb,nu,k,j,
+local badsizes,n,un,cl,r,i,l,u,bw,cnt,gens,go,imgs,bg,bi,emb,nu,k,j,
       D,params,might;
   if IsSolvableGroup(G) then
     return [TrivialSubgroup(G)];

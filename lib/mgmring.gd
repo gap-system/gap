@@ -114,7 +114,10 @@ IsCanonicalBasisFreeMagmaRing := NewRepresentation(
 #R  IsEmbeddingRingMagmaRing( <R>, <RM> )
 ##
 IsEmbeddingRingMagmaRing := NewRepresentation( "IsEmbeddingRingMagmaRing",
-    IsMapping and IsInjective and IsAttributeStoringRep,
+        IsNonSPGeneralMapping
+    and IsMapping
+    and IsInjective
+    and IsAttributeStoringRep,
     [] );
 
 
@@ -123,7 +126,10 @@ IsEmbeddingRingMagmaRing := NewRepresentation( "IsEmbeddingRingMagmaRing",
 #R  IsEmbeddingMagmaMagmaRing( <M>, <RM> )
 ##
 IsEmbeddingMagmaMagmaRing := NewRepresentation( "IsEmbeddingMagmaMagmaRing",
-    IsMapping and IsInjective and IsAttributeStoringRep,
+        IsNonSPGeneralMapping
+    and IsMapping
+    and IsInjective
+    and IsAttributeStoringRep,
     [] );
 
 

@@ -105,8 +105,7 @@ extern  Obj *           PtrLVars;
 **
 **  'ASS_LVAR' assigns the value <val> to the local variable <lvar>.
 */
-#define ASS_LVAR(lvar,val) \
-    do { PtrLVars[(lvar)+2] = (val); CHANGED_BAG((CurrLVars)); } while (0)
+#define ASS_LVAR(lvar,val)	(PtrLVars[(lvar)+2] = (val))
 
 
 /****************************************************************************

@@ -4,23 +4,11 @@
 ##
 #H  @(#)$Id$
 ##
+#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
 Revision.ghom_gi :=
     "@(#)$Id$";
 
-InstallMethod( RespectsMultiplication, true, [ IsGeneralMapping ], 0,
-    function( map )
-    Error( "sorry, cannot determine whether <map> respects multiplication" );
-end );
-
-InstallMethod( RespectsOne, true, [ IsGeneralMapping ], 0,
-    function( map )
-    Error( "sorry, cannot determine whether <map> respects one" );
-end );
-
-InstallMethod( RespectsInverses, true, [ IsGeneralMapping ], 0,
-    function( map )
-    Error( "sorry, cannot determine whether <map> respects inverses" );
-end );
 
 #############################################################################
 ##
@@ -43,157 +31,6 @@ InstallMethod( \=, IsIdentical, [ IsGroupHomomorphism, IsGroupHomomorphism ],
     return true;
 end );
 
-InstallMethod( One, true, [ IsGroupHomomorphism and
-        IsMultiplicativeElementWithInverse ], 0,
-    function( hom )
-    local   one;
-    
-    one := IdentityMapping( Source( hom ) );
-    SetRespectsMultiplication( one, true );
-    SetRespectsOne( one, true );
-    SetRespectsInverses( one, true );
-    SetIsBijective( one, true );
-    return one;
-end );
-
-#############################################################################
-##
-
-#M  IsTotal( <hom> )  . . . . . . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( IsTotal, true, [ IsMonoidGeneralMapping ], 0,
-    function( hom )
-    local   pre,  src;
-    
-    pre := PreImagesRange( hom );  src := Source( hom );
-    if IsIdentical( pre, src )  then
-        return true;
-    elif HasSize( src )  then
-        return Size( src ) = Size( pre );
-    else
-        return ForAll( GeneratorsOfGroup( src ), x -> x in pre );
-    fi;
-end );
-    
-#############################################################################
-##
-#M  IsSingleValued( <hom> ) . . . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( IsSingleValued, true, [ IsMonoidGeneralMapping ], 0,
-    hom -> IsTrivial( CoKernelOfMonoidGeneralMapping( hom ) ) );
-InstallMethod( CoKernelOfMonoidGeneralMapping,
-    true, [ IsGroupHomomorphism and IsSingleValued ],
-        SUM_FLAGS, hom -> TrivialSubgroup( Range( hom ) ) );
-
-#############################################################################
-##
-#M  IsInjective( <hom> )  . . . . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( IsInjective, true, [ IsMonoidGeneralMapping ], 0,
-    hom -> IsTrivial( KernelOfMonoidGeneralMapping( hom ) ) );
-InstallMethod( KernelOfMonoidGeneralMapping,
-    true, [ IsMonoidGeneralMapping and IsInjective ],
-        SUM_FLAGS, hom -> TrivialSubgroup( Source( hom ) ) );
-
-#############################################################################
-##
-#M  IsSurjective( <hom> ) . . . . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( IsSurjective, true, [ IsMonoidGeneralMapping ], 0,
-    function( hom )
-    local   img,  ran;
-    
-    img := ImagesSource( hom );  ran := Range( hom );
-    if IsIdentical( img, ran )  then
-        return true;
-    elif HasSize( ran )  then
-        return Size( ran ) = Size( img );
-    else
-        return ForAll( GeneratorsOfGroup( ran ), x -> x in img );
-    fi;
-end );
-
-#############################################################################
-##
-#M  ImageElm( <hom>, <elm> )  . . . . . . . . . . . . for group homomorphisms
-##
-InstallMethod( ImageElm, FamSourceEqFamElm,
-        [ IsMonoidHomomorphism, IsMultiplicativeElementWithOne ], 0,
-    ImagesRepresentative );
-
-#############################################################################
-##
-#M  ImagesElm( <hom>, <elm> ) . . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( ImagesElm, FamSourceEqFamElm,
-        [ IsMonoidGeneralMapping, IsMultiplicativeElementWithOne ], 0,
-    function( hom, elm )
-    local   img;
-    
-    img := ImagesRepresentative( hom, elm );
-    if img = fail  then  return [  ];
-                   else  return CoKernelOfMonoidGeneralMapping( hom ) * img;
-    fi;
-end );
-
-#############################################################################
-##
-#M  ImagesSet( <hom>, <elms> )  . . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( ImagesSet, CollFamSourceEqFamElms,
-        [ IsMonoidGeneralMapping, IsGroup ], 0,
-    function( hom, elms )
-    if not IsTotal( hom )  then
-        elms := Intersection( elms, PreImagesRange( hom ) );
-    fi;
-    return ClosureGroup( CoKernelOfMonoidGeneralMapping( hom ),
-                   SubgroupNC( Range( hom ),
-                   List( GeneratorsOfGroup( elms ),
-                         gen -> ImagesRepresentative( hom, gen ) ) ) );
-end );
-
-#############################################################################
-##
-#M  PreImageElm( <hom>, <elm> ) . . . . for injective group ``homomorphisms''
-##
-InstallMethod( PreImageElm, FamRangeEqFamElm,
-        [ IsMonoidGeneralMapping and IsInjective and IsSurjective,
-          IsMultiplicativeElementWithOne ], 0,
-    function( hom, elm )
-    return PreImagesRepresentative( hom, elm );
-end );
-
-
-#############################################################################
-##
-#M  PreImagesElm( <hom>, <elm> )  . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( PreImagesElm, FamRangeEqFamElm,
-        [ IsMonoidGeneralMapping, IsMultiplicativeElementWithOne ], 0,
-    function( hom, elm )
-    local   pre;
-    
-    pre := ImagesRepresentative( hom, elm );
-    if pre = fail  then  return [  ];
-                   else  return KernelOfMonoidGeneralMapping( hom ) * pre;
-    fi;
-end );
-
-#############################################################################
-##
-#M  PreImagesSet( <hom>, <elms> ) . . . . . . . . for group ``homomorphisms''
-##
-InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
-        [ IsMonoidGeneralMapping, IsGroup ], 0,
-    function( hom, elms )
-    if not IsSurjective( hom )  then
-        elms := Intersection( elms, ImagesSource( hom ) );
-    fi;
-    return ClosureGroup( KernelOfMonoidGeneralMapping( hom ),
-                   SubgroupNC( Source( hom ),
-                   List( GeneratorsOfGroup( elms ),
-                         gen -> PreImagesRepresentative( hom, gen ) ) ) );
-end );
 
 #############################################################################
 ##
@@ -256,37 +93,37 @@ end );
 
 #############################################################################
 ##
-#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . .  via images
+#M  CoKernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . .  via images
 ##
-InstallMethod( CoKernelOfMonoidGeneralMapping, true,
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernelOfMonoidGeneralMapping(
+    hom -> CoKernelOfMultiplicativeGeneralMapping(
                AsGroupGeneralMappingByImages( hom ) ) );
 
-InstallMethod( SetCoKernelOfMonoidGeneralMapping, true,
+InstallMethod( SetCoKernelOfMultiplicativeGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
-    SetCoKernelOfMonoidGeneralMapping( AsGroupGeneralMappingByImages( hom ),
-                                       K );
+    SetCoKernelOfMultiplicativeGeneralMapping(
+        AsGroupGeneralMappingByImages( hom ), K );
     TryNextMethod();
 end );
 
 #############################################################################
 ##
-#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  via images
+#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
 ##
-InstallMethod( KernelOfMonoidGeneralMapping, true,
+InstallMethod( KernelOfMultiplicativeGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages ], 0,
-    hom -> KernelOfMonoidGeneralMapping(
+    hom -> KernelOfMultiplicativeGeneralMapping(
                AsGroupGeneralMappingByImages( hom ) ) );
 
-InstallMethod( SetKernelOfMonoidGeneralMapping, true,
+InstallMethod( SetKernelOfMultiplicativeGeneralMapping, true,
         [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
-    SetKernelOfMonoidGeneralMapping( AsGroupGeneralMappingByImages( hom ),
-                                     K );
+    SetKernelOfMultiplicativeGeneralMapping(
+        AsGroupGeneralMappingByImages( hom ), K );
     TryNextMethod();
 end );
 
@@ -460,9 +297,9 @@ end;
 
 #############################################################################
 ##
-#M  CoKernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  for GHBI
+#M  CoKernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  for GHBI
 ##
-InstallMethod( CoKernelOfMonoidGeneralMapping,
+InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     true, [ IsGroupGeneralMappingByImages ], 0,
     function( hom )
     local   C,          # co kernel of <hom>, result
@@ -496,11 +333,11 @@ end );
 
 #############################################################################
 ##
-#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . . .  for GHBI
+#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . . .  for GHBI
 ##
-InstallMethod( KernelOfMonoidGeneralMapping,
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsGroupGeneralMappingByImages ], 0,
-    hom -> CoKernelOfMonoidGeneralMapping( Inverse( hom ) ) );
+    hom -> CoKernelOfMultiplicativeGeneralMapping( Inverse( hom ) ) );
 
 #############################################################################
 ##
@@ -690,10 +527,10 @@ InstallOtherMethod( \mod, true,
     else
         filter := IsLeftQuotientNaturalHomomorphisms;
     fi;
-    return Objectify( NewKind( GeneralMappingsFamily
-                   ( FamilyRange( FamilyObj( modN ) ),
-                     FamilyRange( FamilyObj( modM ) ) ), filter ),
-                   rec( modM := modM, modN := modN ) );
+    return Objectify( KindOfDefaultGeneralMapping(
+                          Range( modN ), Range( modM ),
+                          filter and IsSPGeneralMapping ),
+                      rec( modM := modM, modN := modN ) );
 end );
 
 InstallMethod( Source, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
@@ -702,10 +539,10 @@ InstallMethod( Source, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
 InstallMethod( Range, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
     quo -> Range( quo!.modM ) );
 
-InstallMethod( KernelOfMonoidGeneralMapping,
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
     quo -> ImagesSet( quo!.modN,
-                      KernelOfMonoidGeneralMapping( quo!.modM ) ) );
+                      KernelOfMultiplicativeGeneralMapping( quo!.modM ) ) );
 
 InstallMethod( PrintObj, true, [ IsLeftQuotientNaturalHomomorphisms ], 0,
     function( hom )
@@ -751,6 +588,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     return WordVector( hom!.genimages, One( Range( hom ) ), exp );
 end );
 
+
 #############################################################################
 ##
 #F  GroupIsomorphismByFunctions( <G>, <H>, <I>, <P> ) . . . . . . . for Frank
@@ -758,32 +596,15 @@ end );
 GroupIsomorphismByFunctions := function( G, H, I, P )
     local   hom;
     
-    hom := BijectiveMappingByFunctions( G, H, I, P );
+    hom := MappingByFunction( G, H, I, P );
     Setter( IsGroupHomomorphism )( hom, true );
     return hom;
 end;
 
-InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsBijectiveMappingByFunctionsRep and IsGroupHomomorphism,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return hom!.there( elm );
-end );
-
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsBijectiveMappingByFunctionsRep and IsGroupHomomorphism,
-          IsMultiplicativeElementWithInverse ], 0,
-    function( hom, elm )
-    return hom!.back( elm );
-end );
 
 #############################################################################
 ##
+#E  ghom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
-#E  Emacs variables . . . . . . . . . . . . . . local variables for this file
-##  Local Variables:
-##  mode:             outline-minor
-##  outline-regexp:   "#[WCROAPMFVE]"
-##  fill-column:      77
-##  End:
-#############################################################################
+
+

@@ -282,6 +282,22 @@ end );
 #############################################################################
 ##
 
+#M  CanonicalPcElement( <igs>, <8bits-word> )
+##
+InstallMethod( CanonicalPcElement,
+    "tail induced pcgs, 8bits word",
+    IsCollsElms,
+    [ IsInducedPcgs and IsTailInducedPcgsRep and IsParentPcgsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep ],
+    100,
+
+function( pcgs, elm )
+    return 8Bits_HeadByNumber( elm, pcgs!.tailStart );
+end );
+
+
+#############################################################################
+##
 #M  DepthOfPcElement( <8bits-pcgs>, <elm> )
 ##
 InstallMethod( DepthOfPcElement,
@@ -309,6 +325,23 @@ InstallMethod( ExponentOfPcElement,
 
 #############################################################################
 ##
+#M  HeadPcElementByNumber( <8bits-pcgs>, <8bits-word>, <num> )
+##
+InstallMethod( HeadPcElementByNumber,
+    "family pcgs (8bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is8BitsPcWordRep,
+      IsInt ],
+    100,
+
+function( pcgs, elm, pos )
+    return 8Bits_HeadByNumber( elm, pos );
+end );
+
+
+#############################################################################
+##
 #M  LeadingExponentOfPcElement( <8bits-pcgs>, <elm> )
 ##
 InstallMethod( LeadingExponentOfPcElement,
@@ -323,6 +356,22 @@ InstallMethod( LeadingExponentOfPcElement,
 #############################################################################
 ##
 
+#M  CanonicalPcElement( <igs>, <16bits-word> )
+##
+InstallMethod( CanonicalPcElement,
+    "tail induced pcgs, 16bits word",
+    IsCollsElms,
+    [ IsInducedPcgs and IsTailInducedPcgsRep and IsParentPcgsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep ],
+    100,
+
+function( pcgs, elm )
+    return 16Bits_HeadByNumber( elm, pcgs!.tailStart );
+end );
+
+
+#############################################################################
+##
 #M  DepthOfPcElement( <16bits-pcgs>, <elm> )
 ##
 InstallMethod( DepthOfPcElement,
@@ -350,6 +399,23 @@ InstallMethod( ExponentOfPcElement,
 
 #############################################################################
 ##
+#M  HeadPcElementByNumber( <16bits-pcgs>, <16bits-word>, <num> )
+##
+InstallMethod( HeadPcElementByNumber,
+    "family pcgs (16bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is16BitsPcWordRep,
+      IsInt ],
+    100,
+
+function( pcgs, elm, pos )
+    return 16Bits_HeadByNumber( elm, pos );
+end );
+
+
+#############################################################################
+##
 #M  LeadingExponentOfPcElement( <16bits-pcgs>, <elm> )
 ##
 InstallMethod( LeadingExponentOfPcElement,
@@ -364,6 +430,22 @@ InstallMethod( LeadingExponentOfPcElement,
 #############################################################################
 ##
 
+#M  CanonicalPcElement( <igs>, <32bits-word> )
+##
+InstallMethod( CanonicalPcElement,
+    "tail induced pcgs, 32bits word",
+    IsCollsElms,
+    [ IsInducedPcgs and IsTailInducedPcgsRep and IsParentPcgsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep ],
+    100,
+
+function( pcgs, elm )
+    return 32Bits_HeadByNumber( elm, pcgs!.tailStart-1 );
+end );
+
+
+#############################################################################
+##
 #M  DepthOfPcElement( <32bits-pcgs>, <elm> )
 ##
 InstallMethod( DepthOfPcElement,
@@ -387,6 +469,23 @@ InstallMethod( ExponentOfPcElement,
       IsInt and IsPosRat ],
     100,
     32Bits_ExponentOfPcElement );
+
+
+#############################################################################
+##
+#M  HeadPcElementByNumber( <32bits-pcgs>, <32bits-word>, <num> )
+##
+InstallMethod( HeadPcElementByNumber,
+    "family pcgs (32bits)",
+    function(a,b,c) return IsCollsElms(a,b); end,
+    [ IsPcgs and IsFamilyPcgs,
+      IsMultiplicativeElementWithInverseByRws and Is32BitsPcWordRep,
+      IsInt ],
+    100,
+
+function( pcgs, elm, pos )
+    return 32Bits_HeadByNumber( elm, pos );
+end );
 
 
 #############################################################################

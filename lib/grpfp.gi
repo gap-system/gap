@@ -469,7 +469,6 @@ CosetTableFromGensAndRels := function ( fgens, grels, sgens )
             j,                      # integer variable
             length, length2,        # length of relator (times 2)
             cols,
-            gen,
             nums,
             l,
             nrdef,                  # number of defined cosets

@@ -63,8 +63,6 @@ Obj CollectPolycyc (
     Obj word )
 {
     Int    ngens   = INT_INTOBJ( ADDR_OBJ(pcp)[ PC_NUMBER_OF_GENERATORS ] );
-    Obj    gens    = ADDR_OBJ(pcp)[ PC_GENERATORS ];
-    Obj    invs    = ADDR_OBJ(pcp)[ PC_INVERSES ];
     Obj    commute = ADDR_OBJ(pcp)[ PC_COMMUTE ];
 
     Obj    pow     = ADDR_OBJ(pcp)[ PC_POWERS ];

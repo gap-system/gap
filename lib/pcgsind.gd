@@ -126,12 +126,27 @@ HasIsCanonicalPcgs := Tester(IsCanonicalPcgs);
 
 #############################################################################
 ##
+#P  IsParentPcgsFamilyPcgs( <pcgs> )
+##
+IsParentPcgsFamilyPcgs := NewProperty(
+    "IsParentPcgsFamilyPcgs",
+    IsInducedPcgs );
+
+SetIsParentPcgsFamilyPcgs := Setter(IsParentPcgsFamilyPcgs);
+HasIsParentPcgsFamilyPcgs := Tester(IsParentPcgsFamilyPcgs);
+
+
+#############################################################################
+##
 
 #A  ElementaryAbelianSubseries( <pcgs> )
 ##
 ElementaryAbelianSubseries := NewAttribute(
     "ElementaryAbelianSubseries",
     IsPcgs );
+
+SetElementaryAbelianSubseries := Setter(ElementaryAbelianSubseries);
+HasElementaryAbelianSubseries := Tester(ElementaryAbelianSubseries);
 
 
 #############################################################################
@@ -141,15 +156,6 @@ ElementaryAbelianSubseries := NewAttribute(
 ##
 CanonicalPcElement := NewOperation(
     "CanonicalPcElement",
-    [ IsInducedPcgs, IsObject ] );
-
-
-#############################################################################
-##
-#O  ClearedPcElement( <pcgs>, <elm> )
-##
-ClearedPcElement := NewOperation(
-    "ClearedPcElement",
     [ IsInducedPcgs, IsObject ] );
 
 

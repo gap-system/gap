@@ -34,7 +34,7 @@ InstallMethod( UpperCentralSeriesOfAlgebra,
       # Replace 'L' by 'L / C', compute its centre, and get the preimage
       # under the natural homomorphism.
       Add( S, C );
-      hom:= NaturalHomomorphism( L, L / C );
+      hom:= NaturalHomomorphismByIdeal( L, C );
       C:= PreImage( hom, LieCentre( Range( hom ) ) );
 
     od;
@@ -970,8 +970,7 @@ InstallMethod( PthPowerImage,
           zero,  # zero of 'F'
           bv,    # basis vectors of 'B'
           adx,   # adjoint matrix of x
-          adL,   # a basis of the matrix space ad L
-          cf;    # coefficients of adx ^p wrt basis of adL
+          adL;   # a basis of the matrix space ad L
 
     L:= UnderlyingLeftModule( B );
     if not IsLieAlgebra( L ) then
@@ -1644,9 +1643,9 @@ InstallMethod( SolvableRadical,
         return n;
       fi;
 
-      quo:= L/n;
+      hom:= NaturalHomomorphismByIdeal( L, n );
+      quo:= ImagesSource( hom );
       r1:= SolvableRadical( quo );
-      hom:= NaturalHomomorphism( L, quo );
       B:= BasisVectors( BasisOfDomain( r1 ) );
       B:= List( B, x -> PreImagesRepresentative( hom, x ) );
       Append( B, BasisVectors( BasisOfDomain( n ) ) );
@@ -1658,136 +1657,6 @@ InstallMethod( SolvableRadical,
     return IdealNC( L, B, "basis");
 
     end );
-
-
-##############################################################################
-##
-#F  LeviAbelianRadical( <L>, <R> )
-##
-##  This function is used only by 'LeviDecomposition'.
-##  <R> must be the solvable radical of <L>, and *must* be abelian.
-##  Under this condition this function calculates a Levi subalgebra of L
-##  (i.e., a semisimple subalgebra of L isomorphic to L/R and complementary
-##  to R in L).
-##
-LeviAbelianRadical := function( L, R )
-
-    local n,              # the dimension of L
-          F,              # coefficients domain of 'L'
-          t,              # the dimension of R
-          bvecs,          # basisvectors of a different basis of L
-          sp,             # a vector space
-          B,              # a new basis of L
-          T,              # the structure constants table of L w.r.t B
-          eqs,            # equation set
-          eqno,           # the number of an equation ([1..Length(eqs)])
-          rside,          # the right hand side of the system of equations
-          i,q,k,s,p,j,    # loop variables
-          hiq,            # a structure constants vector
-          hkq,            # a structure constants vector
-          cik,            # a structure constants vector
-          sol,            # solution vector
-          basi,           # i-th basis element of levibasis
-          levibasis;      # basis of the desired levi subalgebra
-
-    if not IsAbelianLieAlgebra( R ) then
-      Error( "<R> must be abelian" );
-    fi;
-
-    n:= Dimension( L );
-    t:= Dimension( R );
-
-    # Two trivial cases.
-    if t = 0 then
-      return L;
-    elif n = t then
-      return SubalgebraNC( L, [] );
-
-    # If '[L,R]=0' then a Levi subalgebra is '[L,L]'.
-    elif Dimension( ProductSpace( L, R ) ) = 0 then
-      return DerivedSubalgebra( L );
-    fi;
-
-    # First we calculate a basis of 'L' of the form '{r_1..r_t,a_t+1..a_n}'
-    # where '{r_1,...,r_t}' is a basis of 'R'.
-
-    F:= LeftActingDomain( F );
-    bvecs:= ShallowCopy( BasisVectors( BasisOfDomain( R ) ) );
-    sp:= MutableBasisByGenerators( F, bvecs );
-    for k in BasisVectors( BasisOfDomain( L ) ) do
-      if NrBasisVectors( sp ) = n then
-        break;
-      elif not IsContainedInSpan( sp, k ) then
-        Add( bvecs, k );
-        CloseMutableBasis( sp, k );
-      fi;
-    od;
-
-    # 'T' will be the multiplication table of 'L' w.r.t. this basis.
-    B:= BasisByGeneratorsNC( L, bvecs );
-    T:= StructureConstantsTable( B );
-
-    # Now we calculate the equations.
-
-    eqs:= NullMat( t*(n-t), (n-t)*(n-t-1)*t/2, F );
-    rside:= Zero( F );
-    rside:= List( [1..(n-t)*(n-t-1)*t/2], x -> rside );
-
-    for i in [t+1..n] do
-
-      for q in [1..t] do
-
-        hiq:= T[i][q];
-        for k in [i+1..n] do
-          for s in [1..Length(hiq[1])] do
-            eqno:= t*(i-t-1)*(2*n-i-t)/2+t*(k-i-1)+hiq[1][s];
-            eqs[(k-t-1)*t+q][eqno]:= eqs[(k-t-1)*t+q][eqno]-hiq[2][s];
-          od;
-
-          hkq:= T[k][q];
-          for s in [1..Length(hkq[1])] do
-            eqno:= t*(i-t-1)*(2*n-i-t)/2+t*(k-i-1)+hkq[1][s];
-            eqs[(i-t-1)*t+q][eqno]:= eqs[(i-t-1)*t+q][eqno]+hkq[2][s];
-          od;
-
-        od;
-
-      od;
-
-      for k in [i+1..n] do
-
-        cik:= T[i][k];
-        for s in [1..Length(cik[1])] do
-          q:= cik[1][s];
-          if q <= t then
-            rside[t*(i-t-1)*(2*n-i-t)/2+t*(k-i-1)+q]:= cik[2][s];
-          else
-            for p in [1..t] do
-              eqno:=t*(i-t-1)*(2*n-i-t)/2+t*(k-i-1)+p;
-              eqs[(q-t-1)*t+p][eqno]:=eqs[(q-t-1)*t+p][eqno]+cik[2][s];
-            od;
-          fi;
-
-        od;
-
-      od;
-
-    od;
-
-    # Solve the equations.
-    sol:= SolutionMat( eqs, rside );
-
-    levibasis:= [];
-    for i in [t+1..n] do
-      basi:= bvecs[i];
-      for j in [1..t] do
-        basi:= basi+sol[(i-t-1)*t+j]*bvecs[j];
-      od;
-      Add( levibasis, basi );
-    od;
-
-    return SubalgebraNC( L, levibasis, "basis" );
-end;
 
 
 ###############################################################################
@@ -2048,7 +1917,6 @@ InstallMethod( DirectSumDecomposition,
           ei,ni,e,          # Elements from 'centralizer'
           hom,              # A homomorphism.
           id,               # A list of idempotents.
-          c,                # A number.
           vv;               # A list of vectors.
 
     F:= LeftActingDomain( L );
@@ -2265,8 +2133,8 @@ InstallMethod( DirectSumDecomposition,
       # We calculate a complete set of orthogonal idempotents in 'Q'
       # and then lift them to 'centralizer'.
 
-      Q:= centralizer / Rad;
-      hom:= NaturalHomomorphism( centralizer, Q );
+      hom:= NaturalHomomorphismByIdeal( centralizer, Rad );
+      Q:= ImagesSource( hom );
       bQ:= BasisVectors( BasisOfDomain( Q ) );
 
       repeat
@@ -2504,7 +2372,7 @@ end;
 ##  This function works for Lie algebras over a field of characteristic not
 ##  2 or 3, having a nondegenerate Killing form. Such Lie algebras are
 ##  semsimple. They are characterized as direct sums of simple Lie algebras,
-##  and these have been classified: a simple Lie algebra is either an element
+##  and these have been classified: a simple Lie algebra is either an element 
 ##  of the "great" classes of simple Lie algebas (A_n, B_n, C_n, D_n), or
 ##  an exceptional algebra (E_6, E_7, E_8, F_4, G_2). This function finds
 ##  the type of the semisimple Lie algebra 'L'. Since for the calculations
@@ -2521,13 +2389,11 @@ InstallMethod( SemiSimpleType,
     function( L )
 
     local CartanInteger, # Function that computes the Cartan integer.
-          bvl,           # basis vectors of a basis of 'L'
           a,             # Element of 'L'.
-          T,S,           # Structure constants tables.
+          T,S,S1,        # Structure constants tables.
           den,           # Denominator of a structure constant.
-          denoms,        # List of denominators.
+          denom,         # Common denominator.
           i,j,k,         # Loop variables.
-          scal,          # A scalar.
           K,             # A Lie algebra.
           BK,            # basis of 'K'
           d,             # The determinant of the Killing form of 'K'.
@@ -2540,9 +2406,8 @@ InstallMethod( SemiSimpleType,
           simples,       # List of simple subalgebras.
           types,         # List of the types of the elements of simples.
           I,             # An element of simples.
-          BI,            # basis of 'I'
-          bvi,           # basis vectors of 'BI'
           HI,            # Cartan subalgebra of 'I'.
+          BI,            # basis of 'I'
           rk,            # The rank of 'I'.
           adH,           # List of adjoint matrices.
           R,             # Root system.
@@ -2551,18 +2416,17 @@ InstallMethod( SemiSimpleType,
           fundR,         # A fundamental system.
           r,r1,r2,rt,    # Roots.
           Rvecs,         # List of root vectors.
-          basH,          # List of basis vectors of a Cartan subalg. of 'I'
+          basH,          # List of basis vectors of a Cartan subalgebra of 'I'.
           sp,            # Vector space.
           h,             # Element of a Cartan subalgebra of 'I'.
           cf,            # Coefficient.
           issum,         # Boolean.
           CM,            # Cartan Matrix.
-          endpts,        # The endpoints of the Dynkin diagram of 'I'.
-          m1,m2;         # Integers.
+          endpts;        # The endpoints of the Dynkin diagram of 'I'.
 
     # The following function computes the Cartan integer of two roots
     # 'r1' and 'r2'.
-    # If 's' and 't' are the largest integers such that 'r1 - s*r2' and
+    # If 's' and 't' are the largest integers such that 'r1 - s*r2' and 
     # 'r1 + t*r2' are elements of the root system 'R',
     # then the Cartan integer of 'r1' and 'r2' is 's-t'.
 
@@ -2572,7 +2436,8 @@ InstallMethod( SemiSimpleType,
 
         R1:= ShallowCopy( R );
         Add( R1, R[1]-R[1] );
-        s:= 0; t:= 0;
+        s:= 0;
+        t:= 0;
         rt:= r1-r2;
         while rt in R1 do
           rt:= rt-r2;
@@ -2582,100 +2447,122 @@ InstallMethod( SemiSimpleType,
         rt:= r1+r2;
         while rt in R1 do
           rt:= rt+r2;
-          t:=t+1;
+          t:= t+1;
         od;
         return s-t;
     end;
 
     # First we produce a basis of 'L' such that the first basis elements
     # form a basis of a Cartan subalgebra of 'L'.
-    # Then we multiply by an integer in order to ensure that the structure
-    # constants are integers.
+    # Then we multiply by an integer in order to ensure that
+    # the structure constants are integers.
     # Finally we reduce modulo an appropriate prime 'p'.
 
-    H:= CartanSubalgebra( L );
+    F:= LeftActingDomain( L );
+    H:= CartanSubalgebra( L ); 
     rk:= Dimension( H );
-    bas:= BasisVectors( BasisOfDomain( H ) );
-    sp:= MutableBasisByGenerators( LeftActingDomain( L ), bas );
+    bas:= BasisVectors( Basis( H ) );
+    sp:= MutableBasisByGenerators( F, bas );
     k:= 1;
-    bvl:= BasisVectors( BasisOfDomain( L ) );
-    while Length( bas ) < Dimension( L ) do
-      a:= bvl[k];
-      if not IsContainedInSpan( sp, a ) then
+    for a in BasisVectors( BasisOfDomain( L ) ) do
+      if Length( bas ) = Dimension( L ) then
+        break;
+      elif not IsContainedInSpan( sp, a ) then
         Add( bas, a );
         CloseMutableBasis( sp, a );
       fi;
-      k:= k+1;
     od;
 
     T:= StructureConstantsTable( BasisByGeneratorsNC( L, bas ) );
-    denoms:=[];
+    denom:= 1;
     for i in [1..Dimension(L)] do
       for j in [1..Dimension(L)] do
         for k in [1..Length(T[i][j][2])] do
            den:= DenominatorRat( T[i][j][2][k] );
-           if (den <> 1) and (not den in denoms) then
-             Add( denoms, den );
-           fi;
+           if den <> 1 then
+             denom:= LcmInt( denom, den );
+           fi; 
         od;
       od;
     od;
 
-    S:= ShallowCopy( T );
-    if denoms <> [] then
-      scal:= Lcm( denoms );
-      Print(scal,"\n");
-#T ??
-      S:= ShallowCopy( T );
-      for i in [1..Dimension(L)] do
+    if denom <> 1 then
+      S:= List( T, row -> List( row, ShallowCopy ) );
+      for i in [ 1 .. Dimension(L) ] do
         for j in [1..Dimension(L)] do
-          S[i][j][2]:= scal*S[i][j][2];
+          S[i][j][2]:= denom * T[i][j][2];
         od;
       od;
+    else 
+      S:= T;
     fi;
-
-    K:= LieAlgebraByStructureConstants( LeftActingDomain( L ), S );
-
-    BK:= BasisOfDomain( K );
-    d:= DeterminantMat( KillingMatrix( BK ) );
-    F:= LeftActingDomain( L );
-    mp:= List( BasisVectors( BK ){[1..rk]},
-               x -> MinimalPolynomial( F, AdjointMatrix( BK, x ) ) );
-    d:= d * Product( List( mp, p -> p.coefficients[1] ) );
-
-#T is this the coefficient of X^0 (then the min.pol. must have nonzero
-#T constant term) or the first nonzero coefficient ???
-
-    p:= 5;
-    while d mod p = 0 do
-      p:= NextPrimeInt( p );
-    od;
-
-    # We determine an integer 's' such that all minimum polynomials will
-    # split completely over the field of 'p^s' elements.
-
-    s:= Maximum( Flat( List( mp, p -> List( Factors( p ),
-                         DegreeOfUnivariateLaurentPolynomial ) )));
-
-    F:= GF( p^s );
-
-    for i in [1..Dimension(K)] do
-      for j in [1..Dimension(K)] do
-        S[i][j][2]:= List( S[i][j][2], x -> One( F ) * ( x mod p ) );
-      od;
-    od;
-    S[ Length(S) ] := Zero( F );
 
     K:= LieAlgebraByStructureConstants( F, S );
 
-    # We already know a Cartan subalgebra of 'K'.
+    BK:= CanonicalBasis( K );
+    mp:= List( [ 1 .. rk ],
+               x -> MinimalPolynomial( F, AdjointMatrix( BK, BK[x] ) ) );
+    d:= DeterminantMat( KillingMatrix( BK ) );
+    d:= d * Product( List( mp, p -> Value( p, 0 ) ) );
+#T    d:= d * Product( List( mp, p -> p.coefficients[1] ) );
+#T    what does 'p.coefficients[1]' mean?
+#T    coefficient of x^0 or first nonzero coefficient (or both in this case)?
+    p:= 5;
+    s:= 7;
+    
+    # We determine a prime 'p>5' not dividing 'd' and an integer 's'
+    # such that the minimum polynomials of the basis elements of the Cartan
+    # subalgebra will split into linear factors over the field of 'p^s'
+    # elements, and such that 'p^s<=2^16'
+    # (the maximum size of a finite field in GAP).
 
-    H:= SubalgebraNC( K, BasisVectors( BK ){ [ 1 .. rk ] }, "basis" );
+    while p^s > 65536 do
+
+      while d mod p = 0 do
+        p:= NextPrimeInt( p );
+      od;
+
+      F:= GF( p );
+
+      S1:= List( S, row -> List( row, ShallowCopy ) );
+      for i in [1..Dimension(K)] do
+        for j in [1..Dimension(K)] do
+          S1[i][j][2]:= List( S[i][j][2], x -> ( x mod p ) * One( F ) );
+        od;
+      od;
+      S1[ Length(S) ]:= Zero( F );
+
+      K:= LieAlgebraByStructureConstants( F, S1 );
+
+      # We do already know a Cartan subalgebra of 'K'.
+      H:= SubalgebraNC( K, BasisVectors( CanonicalBasis(K) ){ [ 1 .. rk ] },
+                        "basis" );
+      SetCartanSubalgebra( K, H );    
+
+      mp:= List( BasisVectors( CanonicalBasis( H ) ), v -> 
+               MinimalPolynomial( AdjointMatrix( CanonicalBasis(K), v ) ) );
+      s:= Lcm( Flat( List( mp, p -> List( Factors( p ),
+                                DegreeOfUnivariateLaurentPolynomial ) ) ) );
+
+      if p=65521 then p:=1; fi;
+#T ?
+      
+    od;
+
+    if p = 1 then
+      Info( InfoAlgebra, 1,
+            "can't find modular splitting field of order < 2^16 for <L>" );
+      return fail;
+    fi;
+
+    K:= LieAlgebraByStructureConstants( GF( p^s ), S1 );
+    H:= SubalgebraNC( K, BasisVectors( CanonicalBasis( K ) ){ [ 1 .. rk ] },
+                      "basis" );
     SetCartanSubalgebra( K, H );
 
-    simples:= DirectSumDecomposition( K );
+    simples:= DirectSumDecomposition( K ); 
 
-    types:= [ ];
+    types:= "";
 
     # Now for every simple Lie algebra in simples we have to determine
     # its type.
@@ -2685,60 +2572,63 @@ InstallMethod( SemiSimpleType,
 
     for I in simples do
 
-      F:= LeftActingDomain( I );
-#T different from above definition ??
-      HI:= Intersection2( H, I );
-      rk:= Dimension( HI );
+      if IsEmpty( types ) then
+        Add( types, ' ' );
+      fi;
 
-      if Dimension( I ) = 133 and rk = 7 then
-        Add( types, [ "E", 7 ] );
+      F  := LeftActingDomain( I );
+      BI := BasisOfDomain( I );
+      HI := Intersection( H, I );
+      rk := Dimension( HI );
+      
+      if   Dimension( I ) = 133 and rk = 7 then
+        Append( types, "E7" );
       elif Dimension( I ) = 248 and rk = 8 then
-        Add( types, [ "E", 8 ] );
-      elif Dimension( I ) = 52 and rk = 4 then
-        Add( types, [ "F", 4 ] );
+        Append( types, "E8" );
+      elif Dimension( I ) =  52 and rk = 4 then
+        Append( types, "F4" );
       elif Dimension( I ) = 14 and rk = 2 then
-        Add( types, [ "G", 2 ] );
+        Append( types, "G2" );
       else
+
         if Dimension( I ) = rk^2 + 2*rk then
-          Add( types, [ "A", rk ] );
+          Append( types, "A" ); Append( types, String( rk ) );
         elif Dimension( I ) = 2*rk^2-rk then
-          Add( types, [ "D", rk ] );
+          Append( types, "D" ); Append( types, String( rk ) );
         elif Dimension( I ) = 10 then
-          Add( types, [ "B", 2 ] );
-        else
+          Append( types, "B2" );
+        else  
 
           # We now determine the list of roots and the corresponding
           # root vectors.
           # Since the minimum polynomials of the elements of the
           # Cartan subalgebra split completely,
-          # after the call of DirectSumDecomposition, the root vectors
-          # are contained in the basis of 'I'.
+          # after the call of DirectSumDecomposition,
+          # the root vectors are contained in the basis of 'I'.
 
-          BI:= BasisOfDomain( I );
-          bvi:= BasisVectors( BI );
-          adH:= List( BasisVectors(BasisOfDomain(HI)), x->AdjointMatrix(BI,x));
-#T  better!
-          R:=[];
-          Rvecs:=[];
-          for i in [1..Dimension( I )] do
+          adH:= List( BasisVectors( BasisOfDomain( HI ) ),
+                      x -> AdjointMatrix( BI, x ) );
+          R:= [];
+          Rvecs:= [];
+          for i in [ 1 .. Dimension( I ) ] do
             rt:= List( adH, x -> x[i][i] );
-            if not IsZero( rt ) then
-              Add( R, rt );
-              Add( Rvecs, bvi[i] );
+            if not IsZero( rt ) then 
+              Add( R, rt ); 
+              Add( Rvecs, BasisVectors( BI )[i] );
             fi;
           od;
 
-          # A set of roots 'basR' is determined such that the set
+          # A set of roots 'basR' is determined such that the set 
           # { [x_r,x_{-r}] | r\in basR } is a basis of 'HI'.
 
           basH:= [ ];
           basR:= [ ];
           sp:= MutableBasisByGenerators( F, [], Zero(I) );
-          i:=1;
+          i:= 1;
           while Length( basH ) < Dimension( HI ) do
             r:= R[i];
             k:= Position( R, -r );
-            h:= Rvecs[i]*Rvecs[k];
+            h:= Rvecs[i] * Rvecs[k];
             if not IsContainedInSpan( sp, h ) then
               Add( basH, h );
               CloseMutableBasis( sp, h );
@@ -2752,14 +2642,14 @@ InstallMethod( SemiSimpleType,
           # [ < r, basR[i] >, i=1...Length(basR) ] the first nonzero
           # coefficient is positive
           # (< r_1, r_2 > is the Cartan integer of r_1 and r_2).
-
+            
           posR:= [ ];
           for r in R do
             if (not r in posR) and (not -r in posR) then
               cf:= Zero( F );
               i:= 0;
               while cf = Zero( F ) do
-                i:=i+1;
+                i:= i+1;
                 cf:= CartanInteger( R, r, basR[i] );
               od;
               if 0 < cf then
@@ -2772,13 +2662,13 @@ InstallMethod( SemiSimpleType,
 
           # A positive root is a fundamental root if it is not
           # the sum of two other positive roots.
-
+ 
           fundR:= [ ];
           for r in posR do
             issum:= false;
             for r1 in posR do
               for r2 in posR do
-                if r=r1+r2 then
+                if r = r1+r2 then
                   issum:= true;
                 fi;
               od;
@@ -2788,36 +2678,32 @@ InstallMethod( SemiSimpleType,
             fi;
           od;
 
-          # CM will be the matrix of Cartan integers
+          # 'CM' will be the matrix of Cartan integers
           # of the fundamental roots.
 
-          CM:= List( fundR,
-                     ri -> List( fundR, rj -> CartanInteger( R, ri, rj ) ) );
+          CM:= List( fundR, i -> List( fundR,
+                      j -> CartanInteger( R, i, j ) ) );
 
           # Finally the properties of the endpoints determine
           # the type of the root system.
 
           endpts:= [ ];
-          for i in [1..Length(CM)] do
+          for i in [ 1 .. Length(CM) ] do
             if Number( CM[i], x -> x <> 0 ) = 2 then
               Add( endpts, i );
             fi;
           od;
 
-          if Length( endpts ) = 3 then
-            Add( types, [ "E", 6 ] );
+          if Length( endpts ) = 3 then 
+            Append( types, "E6" );
+          elif Sum( CM[ endpts[1] ] ) = 0 or Sum( CM[ endpts[2] ] ) = 0 then
+            Append( types, "C" ); Append( types, String( rk ) );
           else
-            m1:= Sum( CM[ endpts[1] ] );
-            m2:= Sum( CM[ endpts[2] ] );
-            if m1 = 0 or m2 = 0 then
-              Add( types, [ "C", rk ] );
-            else
-              Add( types, [ "B", rk ] );
-            fi;
+            Append( types, "B" ); Append( types, String( rk ) );
           fi;
 
         fi;
-
+      
       fi;
     od;
 

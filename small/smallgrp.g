@@ -59,7 +59,7 @@ end;
 #F  AgGroupCode( code ) . . . . . . . .construct ag-group from numerical code
 ##
 AgGroupCode := function( code )
-    local n1, size, indices, f, l, mi, n, t1, indices, gens, rels, g, i, 
+    local n1, size, f, l, mi, n, t1, indices, gens, rels, g, i, 
           uc, ll, rr, t, j, z, z2, result, F, rws, x;
 
     # get the size

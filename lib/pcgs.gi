@@ -132,6 +132,9 @@ function( filter, imp, efam, pcs )
     if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcgs!.pcSequence  then
         imp := imp and IsFamilyPcgs;
     fi;
+    if 0 = Length(pcs)  then
+        imp := imp and IsEmpty;
+    fi;
 
     # get the pcgs family
     fam := CollectionsFamily(efam);
@@ -280,6 +283,30 @@ InstallOtherMethod( ExponentsOfPcElement,
 
 function( pcgs, elm, pos )
     return ExponentsOfPcElement(pcgs,elm){pos};
+end );
+
+
+#############################################################################
+##
+#M  HeadPcElementByNumber( <pcgs>, <elm>, <num> )
+##
+InstallMethod( HeadPcElementByNumber,
+    "using 'ExponentsOfPcElement', 'PcElementByExponents'",
+    true,
+    [ IsPcgs,
+      IsObject,
+      IsInt ],
+    0,
+
+function( pcgs, elm, pos )
+    local   exp,  i;
+
+    exp := ShallowCopy(ExponentsOfPcElement( pcgs, elm ));
+    if pos < 1  then pos := 1;  fi;
+    for i  in [ pos .. Length(exp) ]  do
+        exp[i] := 0;
+    od;
+    return PcElementByExponents( pcgs, exp );
 end );
 
 
@@ -661,6 +688,23 @@ InstallMethod( IntersectionSumPcgs,
       IsList ],
     0,
     ExtendedIntersectionSumPcgs );
+
+
+#############################################################################
+##
+#M  NormalIntersectionPcgs( <parent-pcgs>, <n>, <u> )
+##
+InstallMethod( NormalIntersectionPcgs,
+    "using 'ExtendedIntersectionSumPcgs'",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList,
+      IsList ],
+    0,
+
+function( p, n, u )
+   return ExtendedIntersectionSumPcgs(p,n,u).intersection;
+end );
 
 
 #############################################################################

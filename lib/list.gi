@@ -15,184 +15,6 @@ Revision.list_gi :=
 #############################################################################
 ##
 
-#V  ListsFamily	. . . . . . . . . . . . . . . . . . . . . . . family of lists
-##
-ListsFamily := NewFamily(  "ListsFamily", IsList );
-
-
-#############################################################################
-##
-#K  KIND_LIST_NDENSE_MUTABLE
-##
-KIND_LIST_NDENSE_MUTABLE := NewKind( ListsFamily,
-    IsMutable and IsList and IsInternalRep );
-
-
-#############################################################################
-##
-#K  KIND_LIST_NDENSE_IMMUTABLE
-##
-KIND_LIST_NDENSE_IMMUTABLE := NewKind( ListsFamily,
-    IsList and IsInternalRep );
-
-
-#############################################################################
-##
-#K  KIND_LIST_DENSE_NHOM_MUTABLE
-##
-KIND_LIST_DENSE_NHOM_MUTABLE := NewKind( ListsFamily,
-    IsMutable and IsList and IsDenseList and IsInternalRep );
-
-
-#############################################################################
-##
-#K  KIND_LIST_DENSE_NHOM_IMMUTABLE
-##
-KIND_LIST_DENSE_NHOM_IMMUTABLE := NewKind( ListsFamily,
-    IsList and IsDenseList and IsInternalRep );
-
-
-#############################################################################
-##
-#K  KIND_LIST_EMPTY_MUTABLE
-##
-KIND_LIST_EMPTY_MUTABLE := NewKind( ListsFamily,
-    IsMutable and IsList and IsDenseList and IsHomogeneousList
-    and IsEmpty and IsInternalRep );
-
-
-#############################################################################
-##
-#K  KIND_LIST_EMPTY_IMMUTABLE
-##
-KIND_LIST_EMPTY_IMMUTABLE := NewKind( ListsFamily,
-    IsList and IsDenseList and IsHomogeneousList
-    and IsEmpty and IsInternalRep );
-
-
-#############################################################################
-##
-#F  KIND_LIST_HOM( <family>, <kernel_number> )
-##
-##  For <kernel_number> see "objects.h" and "plist.c":
-##
-##   1: T_PLIST_HOM
-##   2: T_PLIST_HOM       + IMMUTABLE
-##   3: T_PLIST_HOM_NSORT
-##   4: T_PLIST_HOM_NSORT + IMMUTABLE
-##   5: T_PLIST_HOM_SSORT
-##   6: T_PLIST_HOM_SSORT + IMMUTABLE
-##   7: T_PLIST_TAB
-##   8: T_PLIST_TAB       + IMMUTABLE
-##   9: T_PLIST_TAB_NSORT
-##  10: T_PLIST_TAB_NSORT + IMMUTABLE
-##  11: T_PLIST_TAB_SSORT
-##  12: T_PLIST_TAB_SSORT + IMMUTABLE
-##
-KIND_LIST_HOM := function ( family, knr )
-    local   colls;
-
-    colls := CollectionsFamily( family );
-
-    # T_PLIST_HOM
-    if   knr = 1  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsInternalRep );
-
-    # T_PLIST_HOM + IMMUTABLE
-    elif knr = 2  then
-        return NewKind( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsInternalRep );
-
-    # T_PLIST_HOM_NSORT
-    elif knr = 3  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsInternalRep );
-
-    # T_PLIST_HOM_NSORT + IMMUTABLE
-    elif knr = 4  then
-        return NewKind( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and
-                        IsInternalRep );
-
-    # T_PLIST_HOM_SSORT
-    elif knr = 5  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsSSortedList and
-                        IsInternalRep );
-
-    # T_PLIST_HOM_SSORT + IMMUTABLE
-    elif knr = 6  then
-        return NewKind( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsSSortedList and
-                        IsInternalRep );
-
-    # T_PLIST_TAB
-    elif knr = 7  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and IsInternalRep );
-
-    # T_PLIST_TAB + IMMUTABLE
-    elif knr = 8  then
-        return NewKind( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsTable and IsInternalRep );
-
-    # T_PLIST_TAB_NSORT
-    elif knr = 9  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable
-                        and IsInternalRep );
-
-    # T_PLIST_TAB_NSORT + IMMUTABLE
-    elif knr = 10  then
-        return NewKind( colls,
-                        IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        Tester(IsSSortedList) and IsTable
-                        and IsInternalRep );
-
-    # T_PLIST_TAB_SSORT
-    elif knr = 11  then
-        return NewKind( colls,
-                        IsMutable and IsList and IsDenseList and
-                        IsHomogeneousList and IsCollection and
-                        IsSSortedList and IsTable and IsInternalRep );
-
-    # T_PLIST_TAB_SSORT + IMMUTABLE
-    elif knr = 12  then
-        return NewKind( colls,
-                        IsList and IsDenseList and IsHomogeneousList
-                        and IsCollection and IsSSortedList and IsTable
-                        and IsInternalRep );
-
-    else
-        Error("what?");
-    fi;
-end;
-
-
-#############################################################################
-##
-
 #M  methods for comparisons
 ##
 InstallMethod( EQ,
@@ -221,6 +43,16 @@ InstallMethod( IN,
     [ IsObject, IsList and IsEmpty ], 0,
     ReturnFalse );
 
+#############################################################################
+##
+#M  <elm> \in <whole-family>
+##
+InstallMethod( IN,
+    IsElmsColls,
+    [ IsObject, IsCollection and IsWholeFamily ],
+    SUM_FLAGS,
+    RETURN_TRUE );
+
 InstallMethod( IN,
     IsNotElmsColls,
     [ IsObject, IsCollection ], 0,
@@ -234,7 +66,6 @@ InstallMethod( IN,
 
 #############################################################################
 ##
-
 #M  String(<list>)  . . . . . . . . . . . . . . .  convert list into a string
 ##
 InstallMethod( String,

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.14  1997/01/30 13:26:18  htheisse
+#H  reorganised the representation of operation homomorphisms to fix a bug
+#H
 #H  Revision 4.13  1997/01/09 18:03:00  htheisse
 #H  added `SparseOperationHomomorphism'
 #H
@@ -42,30 +45,32 @@ IsExternalSetByPcgsRep := NewRepresentation( "IsExternalSetByPcgsRep",
     [ "underlyingSet", "generators", "operators" ] );
 
 IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
-    IsGroupHomomorphism and IsAttributeStoringRep, [ "externalSet" ] );
+    IsGroupHomomorphism and
+    IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+    IsAttributeStoringRep, [ "externalSet" ] );
 
-IsOperationHomomorphismDefaultRep := NewRepresentation
-    ( "IsOperationHomomorphismDefaultRep",
+IsOperationHomomorphismDirectly := NewRepresentation
+    ( "IsOperationHomomorphismDirectly",
+      IsOperationHomomorphism,
+      [ "externalSet" ] );
+IsOperationHomomorphismByOperators := NewRepresentation
+    ( "IsOperationHomomorphismByOperators",
+      IsOperationHomomorphism,
+      [ "externalSet" ] );
+IsOperationHomomorphismSubset := NewRepresentation
+    ( "IsOperationHomomorphismSubset",
       IsOperationHomomorphism,
       [ "externalSet" ] );
 IsOperationHomomorphismByBase := NewRepresentation
     ( "IsOperationHomomorphismByBase",
-      IsOperationHomomorphismDefaultRep,
-      [ "externalSet" ] );
-IsOperationHomomorphismByOperators := NewRepresentation
-    ( "IsOperationHomomorphismByOperators",
-      IsOperationHomomorphism and
-      IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
-      [ "externalSet" ] );
-IsOperationHomomorphismSubset := NewRepresentation
-    ( "IsOperationHomomorphismSubset", IsOperationHomomorphism,
+      IsOperationHomomorphism,
       [ "externalSet" ] );
 
 IsConstituentHomomorphism := NewRepresentation( "IsConstituentHomomorphism",
-    IsOperationHomomorphismDefaultRep, [ "externalSet", "conperm" ] );
+    IsOperationHomomorphismDirectly, [ "externalSet", "conperm" ] );
 
 IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
-    IsOperationHomomorphismDefaultRep, [ "externalSet", "reps" ] );
+    IsOperationHomomorphismDirectly, [ "externalSet", "reps" ] );
 
 ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );
 SetActingDomain := Setter( ActingDomain );

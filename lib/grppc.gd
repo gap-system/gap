@@ -141,20 +141,20 @@ InstallTrueMethod(
 #############################################################################
 ##
 
-#O  AffineOperation( <G>, <V>, <linear>, <transl> )
+#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
 AffineOperation := NewOperation(
     "AffineOperation", 
-    [ IsGroup, IsVectorSpace, IsObject, IsObject ] );
+    [ IsList, IsMatrix, IsObject, IsObject ] );
 
 
 #############################################################################
 ##
-#O  LinearOperation( <G>, <V>, <linear> )
+#O  LinearOperation( <G>, <basisvectors>, <linear> )
 ##
 LinearOperation := NewOperation(
     "LinearOperation",
-    [ IsGroup, IsVectorSpace, IsObject ] );
+    [ IsGroup, IsMatrix, IsObject ] );
 
 
 #############################################################################
@@ -171,7 +171,7 @@ InstallTrueMethod(
 #############################################################################
 ##
 
-#F  AffineOperationLayer( <G>, <pcgs>, <transl> )
+#F  AffineOperationLayer( <Gpcgs>, <pcgs>, <transl> )
 ##
 AffineOperationLayer := NewOperationArgs( "AffineOperationLayer" );
 

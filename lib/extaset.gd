@@ -20,7 +20,7 @@ Revision.extaset_gd :=
 ##  Since the operator '\+' in {\GAP} is commutative we do not distinguish
 ##  actions from left and right.
 ##
-IsExtASet := NewCategory( "IsExtASet", IsDomain );
+IsExtASet := NewCategory( "IsExtASet", IsDomain and IsAdditiveElement );
 
 
 #############################################################################

@@ -80,11 +80,35 @@ Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
 
 /****************************************************************************
 **
+*F  FuncNBitsPcWord_Conjugate( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_Conjugate ( Obj self, Obj left, Obj right )
+{
+    left = FuncFinPowConjCol_ReducedLeftQuotient(
+	        self, COLLECTOR_PCWORD(left), right, left );
+    return FuncFinPowConjCol_ReducedProduct(
+                self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
 *F  FuncNBitsPcWord_LeftQuotient( <self>, <left>, <right> )
 */
 Obj FuncNBitsPcWord_LeftQuotient ( Obj self, Obj left, Obj right )
 {
     return FuncFinPowConjCol_ReducedLeftQuotient(
+        self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNBitsPcWord_PowerSmallInt( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_PowerSmallInt ( Obj self, Obj left, Obj right )
+{
+    return FuncFinPowConjCol_ReducedPowerSmallInt(
         self, COLLECTOR_PCWORD(left), left, right );
 }
 
@@ -425,10 +449,20 @@ void InitPcElements ( void )
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_Comm ) );
 
+    AssGVar( GVarName( "NBitsPcWord_Conjugate" ),
+         NewFunctionC( "NBitsPcWord_Conjugate", 2L,
+                       "n_bits_pcword, n_bits_pcword",
+                    FuncNBitsPcWord_Conjugate ) );
+
     AssGVar( GVarName( "NBitsPcWord_LeftQuotient" ),
          NewFunctionC( "NBitsPcWord_LeftQuotient", 2L, 
                        "n_bits_pcword, n_bits_pcword",
                     FuncNBitsPcWord_LeftQuotient ) );
+
+    AssGVar( GVarName( "NBitsPcWord_PowerSmallInt" ),
+         NewFunctionC( "NBitsPcWord_PowerSmallInt", 2L, 
+                       "n_bits_pcword, small_integer",
+                    FuncNBitsPcWord_PowerSmallInt ) );
 
     AssGVar( GVarName( "NBitsPcWord_Product" ),
          NewFunctionC( "NBitsPcWord_Product", 2L, 

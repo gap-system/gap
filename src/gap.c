@@ -771,8 +771,8 @@ Obj             ErrorMode (
     ErrorLevel += 1;
     errorLVars0 = ErrorLVars0;
     ErrorLVars0 = CurrLVars;
-    errorLVars = ErrorLVars;
-    ErrorLVars = CurrLVars;
+    errorLVars  = ErrorLVars;
+    ErrorLVars  = CurrLVars;
     errorLLevel = ErrorLLevel;
     ErrorLLevel = 0;
 

@@ -470,7 +470,7 @@ PcgsSystemWithComplementSystem := function( pcgssys )
           V, M, l,
           pi, pk, field, 
           nil, test, j, g, v, aij, A, B,
-          solution, j, new, subs;
+          solution, new, subs;
 
     m  := Length( pcgssys.pcgs );
     F  := FamilyObj( OneOfPcgs(pcgssys.pcgs) );

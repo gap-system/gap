@@ -157,7 +157,7 @@ end);
 InstallMethod(QuotientRemainder,"QR Pol/Pol",true,[IsPolynomialRing,
                 IsUnivariatePolynomial,IsUnivariatePolynomial],0,
 function (R,f,g)
-local m,n,i,k,c,q,R,val,brci;
+local m,n,i,k,c,q,val,brci;
   brci:=BRCIUnivPols(f,g);
   if brci=fail then TryNextMethod();fi;
   f:=CoefficientsOfUnivariateLaurentPolynomial(f);

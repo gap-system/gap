@@ -103,45 +103,6 @@ HasUnderlyingFamily := Tester( UnderlyingFamily );
 ##
 LieObject := NewAttribute( "LieObject", IsRingElement );
 
-
-#############################################################################
-##
-#F  IsLieFamFam( <LieFam>, <Fam> )  . . . . . . . . . . . .  family predicate
-#F  IsFamLieFam( <Fam>, <LieFam> )  . . . . . . . . . . . .  family predicate
-#F  IsElmsLieColls( <Fam1>, <Fam2> )  . . . . . . . . . . .  family predicate
-#F  IsElmsCollLieColls( <Fam1>, <Fam2> )  . . . . . . . . .  family predicate
-##
-IsLieFamFam := function( LieFam, Fam )
-    return HasLieFamily( Fam ) and IsIdentical( LieFamily( Fam ), LieFam );
-end;
-
-IsFamLieFam := function( Fam, LieFam )
-    return HasLieFamily( Fam ) and IsIdentical( LieFamily( Fam ), LieFam );
-end;
-
-IsElmsLieColls := function( Fam1, Fam2 )
-    return     HasCollectionsFamily( Fam1 )
-           and HasLieFamily( CollectionsFamily( Fam1 ) )
-           and IsIdentical( LieFamily( CollectionsFamily( Fam1 ) ), Fam2 );
-end;
-
-IsElmsCollLieColls := function( Fam1, Fam2 )
-    return     HasCollectionsFamily( Fam1 )
-           and HasLieFamily( CollectionsFamily( Fam1 ) )
-           and HasCollectionsFamily( LieFamily( CollectionsFamily( Fam1 ) ) )
-           and IsIdentical( CollectionsFamily( LieFamily(
-                                CollectionsFamily( Fam1 ) ) ), Fam2 );
-end;
-
-IsCollLieCollsElms := function( Fam1, Fam2 )
-    return     HasCollectionsFamily( Fam2 )
-           and HasLieFamily( CollectionsFamily( Fam2 ) )
-           and HasCollectionsFamily( LieFamily( CollectionsFamily( Fam2 ) ) )
-           and IsIdentical( CollectionsFamily( LieFamily(
-                                CollectionsFamily( Fam2 ) ) ), Fam1 );
-end;
-
-
 #############################################################################
 ##
 #E  liefam.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

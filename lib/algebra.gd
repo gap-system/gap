@@ -712,16 +712,19 @@ MatAlgebra := FullMatrixFLMLOR;
 
 #############################################################################
 ##
-#P  IsAlgebraHomomorphism( <map> )
+#O  NaturalHomomorphismBySubspace( <G>, <N> ) . . . . . map onto factor space
 ##
-##  A mapping $f$ is an algebra homomorphism if source and range are algebras
-##  over the same division ring,
-##  and if $f$ is a ring homomorphism and a vector space homomorphism.
-#T really necessary to test linearity?
+NaturalHomomorphismBySubspace := NewOperation(
+    "NaturalHomomorphismBySubspace",
+    [ IsLeftModule, IsLeftModule ] );
+
+
+#############################################################################
 ##
-IsAlgebraHomomorphism := NewProperty( "IsAlgebraHomomorphism",
-                                      IsMapping );
-#T file 'alghom.g'!
+#O  NaturalHomomorphismByIdeal( <G>, <I> )  . . . . . map onto factor algebra
+##
+NaturalHomomorphismByIdeal := NewOperation( "NaturalHomomorphismByIdeal",
+    [ IsFLMLOR, IsFLMLOR ] );
 
 
 #############################################################################

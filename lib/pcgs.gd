@@ -191,6 +191,15 @@ ExponentsOfPcElement := NewOperation(
 
 #############################################################################
 ##
+#O  HeadPcElementByNumber( <pcgs>, <elm>, <num> )
+##
+HeadPcElementByNumber := NewOperation(
+    "HeadPcElementByNumber",
+    [ IsPcgs, IsObject, IsInt ] );
+
+
+#############################################################################
+##
 #O  LeadingExponentOfPcElement( <pcgs>, <elm> )
 ##
 LeadingExponentOfPcElement := NewOperation(
@@ -250,6 +259,15 @@ ExtendedIntersectionSumPcgs := NewOperation(
 ##
 IntersectionSumPcgs := NewOperation(
     "IntersectionSumPcgs",
+    [ IsPcgs, IsList, IsList ] );
+
+
+#############################################################################
+##
+#O  NormalIntersectionPcgs( <parent-pcgs>, <n>, <u> )
+##
+NormalIntersectionPcgs := NewOperation(
+    "NormalIntersectionPcgs",
     [ IsPcgs, IsList, IsList ] );
 
 

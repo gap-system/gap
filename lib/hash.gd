@@ -27,7 +27,7 @@ Revision.hash_gd :=
 ##
 
 IsExtensibleGeneralMapping := NewCategory("IsExtensibleGeneralMapping", 
-                                      IsGeneralMapping 
+                                      IsNonSPGeneralMapping 
                                       and IsFinite 
                                       and IsCopyable);	
 

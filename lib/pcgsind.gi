@@ -20,7 +20,7 @@ Revision.pcgsind_gi :=
 ##
 IsInducedPcgsRep := NewRepresentation(
     "IsInducedPcgsRep",
-    IsPcgsDefaultRep, [ "depthsFromParent", "depthMapFromParent" ] );
+    IsPcgsDefaultRep, [ "depthsInParent", "depthMapFromParent" ] );
 
 
 #############################################################################
@@ -44,11 +44,8 @@ IsTailInducedPcgsRep := NewRepresentation(
 #############################################################################
 ##
 
-#M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
+#M  InducedPcgsByPcSequenceNC( <pcgs>, <empty-list> )
 ##
-
-
-#############################################################################
 InstallMethod( InducedPcgsByPcSequenceNC,
     true,
     [ IsPcgs,
@@ -59,7 +56,7 @@ function( pcgs, pcs )
     local  efam, filter,  igs;
     
     # check which filter to use
-    filter := IsTrivial;
+    filter := IsEmpty;
 
     # get family
     efam := FamilyObj( OneOfPcgs( pcgs ) );
@@ -79,7 +76,8 @@ function( pcgs, pcs )
     # store the parent
     SetParentPcgs( igs, pcgs );
     igs!.depthMapFromParent := [];
-    igs!.depthsFromParent   := [];
+    igs!.depthMapFromParent[Length(pcgs)+1] := 1;
+    igs!.depthsInParent := [];
 
     # and return
     return igs;
@@ -88,6 +86,9 @@ end );
 
 
 #############################################################################
+##
+#M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
+##
 InstallMethod( InducedPcgsByPcSequenceNC,
     true,
     [ IsPcgs,
@@ -95,17 +96,35 @@ InstallMethod( InducedPcgsByPcSequenceNC,
     0,
 
 function( pcgs, pcs )
-    local efam,  filter,  igs,  tmp,  i;
+    local   efam,  filter,  j,  l,  i,  m,  d,  igs,  tmp;
+
+    # get the elements family
+    efam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # check which filter to use
     filter := IsPcgs and IsInducedPcgsRep;
-    efam   := FamilyObj( OneOfPcgs( pcgs ) );
-    if ForAll( pcs, x -> x in pcgs )  then
-        if 0 < Length(pcgs) and pcgs[Length(pcgs)-Length(pcs)+1]=pcs[1]  then
-            filter := IsTailInducedPcgsRep;
+    j := 1;
+    l := Length(pcgs);
+    i := 1;
+    m := Length(pcs);
+    d := [];
+    while i <= m and j <= l  do
+        if pcgs[j] = pcs[i]  then
+            d[i] := j;
+            j := j + 1;
+            i := i + 1;
         else
-            filter := IsSubsetInducedPcgsRep;
+            j := j + 1;
         fi;
+    od;
+    if m < i  then
+        filter := filter and IsCanonicalPcgs and IsSubsetInducedPcgsRep;
+        if 0 < Length(pcgs) and pcgs[Length(pcgs)-Length(pcs)+1]=pcs[1]  then
+            filter := filter and IsTailInducedPcgsRep;
+        fi;
+    fi;
+    if HasIsFamilyPcgs(pcgs) and IsFamilyPcgs(pcgs)  then
+        filter := filter and IsParentPcgsFamilyPcgs;
     fi;
     filter := filter and IsInducedPcgs;
 
@@ -116,30 +135,44 @@ function( pcgs, pcs )
                efam,
                pcs );
 
-    # store tail start
-    if IsTailInducedPcgsRep(igs)  then
-        igs!.tailStart := DepthOfPcElement( pcgs, pcs[1] );
-    fi;
-
     # store the parent
     SetParentPcgs( igs, pcgs );
 
     # store other useful information
     igs!.depthMapFromParent := [];
-    igs!.depthsFromParent   := [];
-    for i  in [ 1 .. Length(pcs) ]  do
-        tmp := DepthOfPcElement( pcgs, pcs[i] );
-        igs!.depthsFromParent[i]     := tmp;
-        igs!.depthMapFromParent[tmp] := i;
-    od;
+    igs!.depthsInParent := [];
+    if IsSubsetInducedPcgsRep(igs)  then
+        igs!.depthsInParent := d;
+        for i  in [ 1 .. Length(pcs) ]  do
+            igs!.depthMapFromParent[d[i]] := i;
+        od;
+    else
+        for i  in [ 1 .. Length(pcs) ]  do
+            tmp := DepthOfPcElement( pcgs, pcs[i] );
+            igs!.depthsInParent[i] := tmp;
+            igs!.depthMapFromParent[tmp] := i;
+        od;
+    fi;
+    igs!.depthMapFromParent[Length(pcgs)+1] := Length(pcs)+1;
+
+    # store tail start
+    if IsTailInducedPcgsRep(igs)  then
+        igs!.tailStart := d[1];
+    else
+        i := Length(igs!.depthMapFromParent);
+        while 2 <= i and IsBound(igs!.depthMapFromParent[i-1])  do
+            i := i-1;
+        od;
+        igs!.tailStart := i;
+    fi;
 
     # the depth must be compatible with the parent
     tmp := 0;
-    for i  in [ 1 .. Length(igs!.depthsFromParent) ]  do
-        if tmp >= igs!.depthsFromParent[i]  then
+    for i  in [ 1 .. Length(igs!.depthsInParent) ]  do
+        if tmp >= igs!.depthsInParent[i]  then
             Error( "depths are not compatible with parent pcgs" );
         fi;
-        tmp := igs!.depthsFromParent[i];
+        tmp := igs!.depthsInParent[i];
     od;
 
     # we know the relative orders
@@ -152,8 +185,7 @@ function( pcgs, pcs )
     fi;
     if HasRelativeOrders(pcgs)  then
         tmp := RelativeOrders(pcgs);
-        SetRelativeOrders( igs, List( pcs, x -> 
-            tmp[ DepthOfPcElement(pcgs,x) ] ) );
+        SetRelativeOrders( igs, tmp{igs!.depthsInParent} );
     fi;
 
     # and return
@@ -595,19 +627,20 @@ HOMOMORPHIC_IGS := function( arg )
     elif IsFunction(arg[3])  then
         obj := arg[3];
         for g  in Reversed(list)  do
-            dg := DepthOfPcElement( pcgs, obj(g) );
+            g  := obj(g);
+            dg := DepthOfPcElement( pcgs, g );
             while g <> id  and IsBound(pag[dg])  do
                 g  := ReducedPcElement( pcgs, g, pag[dg] );
                 dg := DepthOfPcElement( pcgs, g );
             od;
-            if g <> id  then
-                pag[dg] := g;
+            if g <> id  then                pag[dg] := g;
             fi;
         od;
     else
         obj := arg[3];
         for g  in Reversed(list)  do
-            dg := DepthOfPcElement( pcgs, g^obj );
+            g  := g^obj;
+            dg := DepthOfPcElement( pcgs, g );
             while g <> id  and IsBound(pag[dg])  do
                 g  := ReducedPcElement( pcgs, g, pag[dg] );
                 dg := DepthOfPcElement( pcgs, g );
@@ -624,65 +657,28 @@ end;
 
 #############################################################################
 ##
-#F  HOMOMORPHIC_IGS_MOD( <pcgs>, <list>, <mod> )
+#F  NORMALIZE_IGS( <pcgs>, <list> )
 ##
-HOMOMORPHIC_IGS_MOD := function( arg )
-    local   pcgs,  list,  modulo,  id,  pag,  g,  dg,  obj;
+NORMALIZE_IGS := function( pcgs, list )
+    local   ros,  dep,  i,  j,  exp;
 
-    pcgs := arg[1];
-    list := arg[2];
-    if Length(arg) = 3  then
-        modulo := arg[3];
-        id  := OneOfPcgs(pcgs);
-        pag := [];
-        for g  in Reversed(list)  do
-            g  := CanonicalPcElement( modulo, g );
-            dg := DepthOfPcElement( pcgs, g );
-            while g <> id  and IsBound(pag[dg])  do
-                g  := ReducedPcElement( pcgs, g, pag[dg] );
-                g  := CanonicalPcElement( modulo, g );
-                dg := DepthOfPcElement( pcgs, g );
-            od;
-            if g <> id  then
-                pag[dg] := g;
+    # normalize the leading exponents to one
+    ros := RelativeOrders(pcgs);
+    dep := List( list, x -> DepthOfPcElement( pcgs, x ) );
+    for i  in [ 1 .. Length(list) ]  do
+        list[i] := list[i] ^ ( 1 / LeadingExponentOfPcElement(pcgs,list[i])
+                   mod ros[dep[i]] );
+    od;
+
+    # make zeros above the diagonale
+    for i  in [ 1 .. Length(list) - 1 ]  do
+        for j  in [ i+1 .. Length(list) ]  do
+            exp := ExponentOfPcElement( pcgs, list[i], dep[j] );
+            if exp <> 0  then
+                list[i] := list[i] * list[j] ^ ( ros[j] - exp );
             fi;
         od;
-    elif IsFunction(arg[3])  then
-        modulo := arg[4];
-        obj := arg[3];
-        id  := OneOfPcgs(pcgs);
-        pag := [];
-        for g  in Reversed(list)  do
-            g  := CanonicalPcElement( modulo, obj(g) );
-            dg := DepthOfPcElement( pcgs, g );
-            while g <> id  and IsBound(pag[dg])  do
-                g  := ReducedPcElement( pcgs, g, pag[dg] );
-                g  := CanonicalPcElement( modulo, g );
-                dg := DepthOfPcElement( pcgs, g );
-            od;
-            if g <> id  then
-                pag[dg] := g;
-            fi;
-        od;
-    else
-        modulo := arg[4];
-        obj := arg[3];
-        id  := OneOfPcgs(pcgs);
-        pag := [];
-        for g  in Reversed(list)  do
-            g  := CanonicalPcElement( modulo, g^obj );
-            dg := DepthOfPcElement( pcgs, g );
-            while g <> id  and IsBound(pag[dg])  do
-                g  := ReducedPcElement( pcgs, g, pag[dg] );
-                g  := CanonicalPcElement( modulo, g );
-                dg := DepthOfPcElement( pcgs, g );
-            od;
-            if g <> id  then
-                pag[dg] := g;
-            fi;
-        od;
-    fi;
-    return Compacted(pag);
+    od;
 
 end;
 
@@ -971,7 +967,7 @@ function( pcgs, n, u )
     fi;
 
     # get first depth of <n>
-    first := DepthOfPcElement( pcgs, n[1] );
+    first := n!.tailStart;
 
     # smaller depth elems of <u> yield the sum, the other the intersection
     sum := [];
@@ -988,9 +984,92 @@ function( pcgs, n, u )
     od;
     Append( sum, n );
    
-    sum := InducedPcgsByPcSequence( pcgs, sum );
-    int := InducedPcgsByPcSequence( pcgs, int );
+    sum := InducedPcgsByPcSequenceNC( pcgs, sum );
+    int := InducedPcgsByPcSequenceNC( pcgs, int );
     return rec( sum := sum, intersection := int );
+
+end );
+
+
+#############################################################################
+##
+#M  NormalIntersectionPcgs( <parent-pcgs>, <tail-pcgs>, <u> )
+##
+InstallMethod( NormalIntersectionPcgs,
+    "prime orders pcgs, tail-pcgs, list",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsInducedPcgs and IsTailInducedPcgsRep,
+      IsList ],
+    0,
+
+function( pcgs, n, u )
+    local   first,  len,  pos;
+
+    # the parent must match
+    if pcgs <> ParentPcgs(n)  then
+        TryNextMethod();
+    fi;
+
+    # if <u> is empty return it
+    len := Length(u);
+    if 0 = len  then
+        if IsInducedPcgs(u) and ParentPcgs(u) = pcgs  then
+            return u;
+        else
+            return InducedPcgsByPcSequenceNC( pcgs, ShallowCopy(u) );
+        fi;
+    fi;
+
+    # get first depth of <n> (tail induced is never trivial!)
+    first := n!.tailStart;
+
+    # smaller depth elems of <u> yield the sum, the other the intersection
+    pos := 1;
+    while pos <= len and DepthOfPcElement(pcgs,u[pos]) < first  do
+        pos := pos+1;
+    od;
+    return InducedPcgsByPcSequenceNC( pcgs, u{[pos..len]} );
+
+end );
+
+
+#############################################################################
+##
+#M  NormalIntersectionPcgs( <parent-pcgs>, <tail-pcgs>, <induced-pcgs> )
+##
+InstallMethod( NormalIntersectionPcgs,
+    "prime orders pcgs, tail-pcgs, induced-pcgs",
+    function(a,b,c) return IsIdentical(a,b) and IsIdentical(a,c); end,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsInducedPcgs and IsTailInducedPcgsRep,
+      IsInducedPcgs and IsInducedPcgsRep ],
+    0,
+
+function( pcgs, n, u )
+    local   len,  first,  pos,  dep;
+
+    # the parent must match
+    if pcgs <> ParentPcgs(n) or pcgs <> ParentPcgs(u)  then
+        TryNextMethod();
+    fi;
+
+    # if <u> is empty return it
+    len := Length(u);
+    if 0 = len  then
+        return u;
+    fi;
+
+    # get first depth of <n> (tail induced is never trivial)
+    first := n!.tailStart;
+
+    # smaller depth elems of <u> yield the sum, the other the intersection
+    pos := 1;
+    dep := u!.depthsInParent;
+    while pos <= len and dep[pos] < first  do
+        pos := pos+1;
+    od;
+    return InducedPcgsByPcSequenceNC( pcgs, u{[pos..len]} );
 
 end );
 
@@ -1000,21 +1079,18 @@ end );
 
 #M  CanonicalPcElement( <igs>, <elm> )
 ##
-InstallMethod( CanonicalPcElement,
-    "generic method",
-    IsCollsElms,
-    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
-      IsObject ],
-    0,
-
-function( pcgs, elm )
-    local   pa,  map,  ros,  g,  d,  ll,  lr;
+CANONICAL_PC_ELEMENT := function( pcgs, elm )
+    local   pa,  map,  ros,  tal,  g,  d,  ll,  lr;
 
     pa  := ParentPcgs(pcgs);
     map := pcgs!.depthMapFromParent;
     ros := RelativeOrders(pa);
+    tal := pcgs!.tailStart;
     for g  in pcgs  do
-        d  := DepthOfPcElement( pa, g );
+        d := DepthOfPcElement( pa, g );
+        if tal <= d  then
+            return HeadPcElementByNumber( pa, elm, tal );
+        fi;
         ll := ExponentOfPcElement( pa, elm, d );
         if ll <> 0  then
             lr  := LeadingExponentOfPcElement( pa, g );
@@ -1027,35 +1103,16 @@ function( pcgs, elm )
         d := DepthOfPcElement( pa, elm );
         return elm ^ (1/LeadingExponentOfPcElement(pa,elm) mod ros[d]);
     fi;
-end );
+end;
 
 
-#############################################################################
-##
-#M  ClearedPcElement( <igs>, <elm> )
-##
-InstallMethod( ClearedPcElement,
+InstallMethod( CanonicalPcElement,
+    "generic method",
     IsCollsElms,
     [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
     0,
-
-function( pcgs, elm )
-    local   pa,  map,  ros,  g,  d,  ll,  lr;
-
-    pa  := ParentPcgs(pcgs);
-    map := pcgs!.depthMapFromParent;
-    ros := RelativeOrders(pa);
-    for g  in pcgs  do
-        d  := DepthOfPcElement( pa, g );
-        ll := ExponentOfPcElement( pa, elm, d );
-        if ll <> 0  then
-            lr  := LeadingExponentOfPcElement( pa, g );
-            elm := elm / g^( ll / lr mod ros[d] );
-        fi;
-    od;
-    return elm;
-end );
+    CANONICAL_PC_ELEMENT );
 
 
 #############################################################################
@@ -1070,12 +1127,7 @@ InstallMethod( DepthOfPcElement,
     0,
 
 function( pcgs, elm )
-    if elm = OneOfPcgs(pcgs)  then
-        return Length(pcgs)+1;
-    else
-        return pcgs!.depthMapFromParent[
-            DepthOfPcElement( ParentPcgs(pcgs), elm ) ];
-    fi;
+    return pcgs!.depthMapFromParent[DepthOfPcElement(ParentPcgs(pcgs),elm)];
 end );
 
 
@@ -1190,8 +1242,7 @@ InstallMethod( ExponentsOfPcElement,
     0,
 
 function( pcgs, elm )
-    return ExponentsOfPcElement( ParentPcgs(pcgs), elm ){
-        pcgs!.depthsFromParent};
+    return ExponentsOfPcElement(ParentPcgs(pcgs), elm){pcgs!.depthsInParent};
 end );
 
 

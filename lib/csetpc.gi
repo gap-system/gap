@@ -88,6 +88,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
   r:=[One(G)];
   st:=[B];
   for ind in [2..ll] do
+    Info(InfoCoset,2,"step ",ind);
     kpcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind]..Length(sp)]});
     Npcgs:=InducedPcgsByPcSequenceNC(sp,sp{[lgf[ind-1]..Length(sp)]}) mod kpcgs;
 
@@ -107,12 +108,12 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 
     # compute complement W
     if Length(sff.intersection)=0 then
-      isi:=EmptyMatrix(FamilyObj(one),0,dim);
+      isi:=[];
       wbase:=v;
     else
       isi:=List(sff.intersection,
 			    i->ExponentsOfPcElement(Npcgs,i)*one);
-      wbase:=BaseSteinitzVectors(v,isi);
+      wbase:=BaseSteinitzVectors(v,isi).factorspace;
     fi;
 
     if Length(wbase)>0 then

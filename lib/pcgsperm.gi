@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#W  pcgsperm.gi                 GAP library                              HThe
+#W  pcgsperm.gi                 GAP library                    Heiko Thei"sen
 ##
 #H  @(#)$Id$
 ##
@@ -858,7 +858,8 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     fi;
     igs := PcgsByPcSequenceCons(
         IsPcgsDefaultRep,
-        IsPcgs and IsInducedPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+        IsPcgs and IsInducedPcgs and IsPrimeOrdersPcgs and
+                   IsTailInducedPcgsRep and IsPcgsPermGroupRep,
         FamilyObj( OneOfPcgs( pcgs ) ),
         pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
     igs!.stabChain := StabChainAttr( PcSeries( pcgs )[ i ] );
@@ -867,6 +868,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     SetPcSeries( igs, PcSeries( pcgs ){[i..Length(pcgs!.nrGensSeries)]} );
     igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
     SetParentPcgs( igs, pcgs );
+    igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
     return igs;
 end );
 
@@ -1101,7 +1103,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     A := PcGroupPcgs( pcgs, index, false );
     map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );
-    SetKernelOfMonoidGeneralMapping( map, N );
+    SetKernelOfMultiplicativeGeneralMapping( map, N );
     
     return map;
 end );

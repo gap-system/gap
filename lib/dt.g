@@ -11,31 +11,386 @@
 Revision.dt_g :=
   "@(#)$Id$";
 
-clean := function(reps)
-end;
-
-konvertiere := function(reps)
-end;
-
-konvert2 := function(reps)
-end;
-
-mkavec := function(pr)
-end;
-
-evaluation := function(vec)
-end;
-
-fueghinzu := function()
-end;
-
-dt_add := function()
-end;
 
 dtbound := 1;
 
+
+#############################################################################
+##
+#F  mkavec(<pr>) . . . . . . . . . . . . . . . . . . compute the avec for <pr>
+##
+##  'mkavec' returns the avec for the pc-presentation <pr>.
+##
+mkavec := function(pr)
+    local  i,j,vec;
+
+    vec := [];
+    vec[Length(pr)] := 1;
+    for  i in [Length(pr)-1,Length(pr)-2..1]  do
+	j := Length(pr);
+	while  j >= 1  do
+	    if  j = vec[i+1]  then
+	   	vec[i] := j;
+		j := 0;
+ 	    else
+		j := j-1;
+     		if  j < i  and  IsBound(pr[i][j])  then
+		    vec[i] := j+1;
+		    j := 0;
+		fi;
+		if  j > i  and  IsBound(pr[j][i])  then
+		    vec[i] := j+1;
+		    j := 0;
+		fi;
+	    fi;
+	od;
+    od;
+    for  i in [1..Length(pr)]  do
+	if  vec[i] < i+1  then
+	    vec[i] := i+1;
+	fi;
+    od;
+    return vec;
+end;
+
+
+
+#############################################################################
+##
+#F  evaluation(<vector>) . . . . . . . make an evaluation of a formula vector
+##
+##  'evaluation' returns an integer value for the formula vector <x> which
+##  is used for the presort of the formula vectors done by the function
+##  'sortiere'.
+##
+evaluation := function(vector)
+    local  i,k;
+
+    k := 0;
+    for  i in [5,7..Length(vector)-1]  do
+	k := k + vector[i]*vector[i+1]^2;
+    od;
+    return k;
+end;
+
+
+#############################################################################
+##
+#F  equal(<vec1>, <vec2>) . . .  . . . . . . . . . test if <vec1> and <vec2> 
+##                                                 represent the same monomial
+##
+##  'equal' returns "true" if <vec1> and <vec2> represent the same monomial,
+##   and "false" otherwise.
+equal := function(vec1,vec2)
+    local  i,j;
+  
+    if  Length(vec1) <> Length(vec2)  then
+	return false;
+    fi;
+    #  Since the first four entries of a formula vector doesn't contain
+    #  any information about the monomial it represents,  it suffices to
+    #  compare the remaining entries.
+    for  i in [5..Length(vec1)]  do
+	if  not vec1[i] = vec2[i]  then
+	    return false;
+	fi;
+    od;
+    return true;
+end;
+
+
+
+
+#############################################################################
+##
+#F  ordne2(<vector>) . . . . . . . . . . . . . . . . . sort a formula vector
+##
+##  'ordne2' sorts the pairs of integers in the formula vector <vector>
+##  representing the binomial coefficients such that 
+##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
+##  of <vector>.  This is done for a easier comparison of formula vectors.
+##
+ordne2 := function(vector)
+    local  i,list1,list2;
+    
+    list1 := vector{[5,7..Length(vector)-1]};
+    list2 := vector{[6,8..Length(vector)]};
+    SortParallel(list1,list2);
+    for  i in [1..Length(list1)]  do
+        vector[ 2*i+3 ] := list1[i];
+        vector[ 2*i+4 ] := list2[i];
+    od;
+end;
+
+
+#############################################################################
+##
+#F  fueghinzu(<evlist>,<evlistvec>,<formvec>,<pr>) . . . add a formula vector 
+##                                                       to a list
+##
+##  'fueghinzu' adds the formula vector <formvec> to the list <evlist>,
+##  computes the corresponding coefficient vector and adds the latter to
+##  the list <evlistvec>.
+##
+fueghinzu := function(evlist, evlistvec, formvec, pr)
+    local    i,j,k;
+
+    Add(evlist, formvec);
+    k := [];
+    for  i in [1..Length(pr)]  do
+	k[i] := 0;
+    od;
+    j := pr[ formvec[3] ][ formvec[4] ];
+    #  the coefficient that the monomial represented by <formvec> has
+    #  in each polynomial f_l is obtained by multiplying <formvec>[2]
+    #  with the exponent which the group generator g_l has in the
+    #  in the word representing the commutator of g_(formvec[3]) and
+    #  g_(formvec[4]) in the presentation <pr>.
+    for  i in [3,5..Length(j)-1]  do
+	k[ j[i] ] := formvec[2]*j[i+1];
+    od;
+    Add(evlistvec, k);
+end;
+
+
+#############################################################################
+##
+#F  dt_add( <mon>, <pols>, <rel> )
+##
+##  dt_add adds the deep thought monomial <mon> to the list of polynomials
+##  <pols>,  such that afterwards <pols> represents a simplified polynomial.
+##
+
+dt_add := function(pol, pols, pr)
+    local  i,j,k,rel, pos, flag;
+    
+    ordne2(pol);
+    pos := DT_evaluation(pol);
+    if  not IsBound( pols[pos] )  then
+        pols[pos] := rec( evlist := [], evlistvec := [] );
+        fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
+        return;
+    fi;
+    flag := 0;
+    for  k in [1..Length( pols[pos].evlist ) ]  do
+        if  equal( pol, pols[pos].evlist[k] )  then
+            rel := pr[ pol[3] ][ pol[4] ];
+            for  j in [3,5..Length(rel)-1]  do
+                pols[pos].evlistvec[k][ rel[j] ] := 
+                  pols[pos].evlistvec[k][ rel[j] ] + pol[2]*rel[j+1];
+            od;
+            flag := 1;
+            break;
+        fi;
+    od;
+    if  flag = 0  then
+        fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  konvertiere(<reps>, <pr>) . . . . . . . . convert list of formula vectors
+##
+##  'konvertiere' converts the list of formula vectors into the record
+##  described at the top of the function 'mkevlist'.
+##
+konvertiere := function(sortedpols, n, pr)
+    local  k,res;
+    
+    if  Length(sortedpols) = 0  then
+        return  0;
+    fi;
+    res := rec(evlist := [], 
+               evlistvec :=[]);
+    for  k in sortedpols  do
+        Append(res.evlist, k.evlist);
+        Append(res.evlistvec, k.evlistvec);
+    od;
+    return res;
+end;
+
+
+#############################################################################
+##
+#F  konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
+##
+##  'konvert2' takes the list of coefficient vectors <evlistvec> and returns
+##  a record with the components 'bas' and 'exp'. The component 'bas' 
+##  contains for each element of <evlistvec> the list of positions with
+##  non-zero entries.  The component 'exp' contains for each element of 'bas' 
+##  a list of the corresponding non-zero coefficients.
+##
+konvert2 := function(evlistvec, pr)
+    local i,j,res;
+
+    for  i in [1..Length(evlistvec)]  do
+	res := [];
+        for  j in [1..Length(evlistvec[i])]  do
+            if  evlistvec[i][j] <> 0  then
+                Append(res, [j, evlistvec[i][j] ]);
+            fi;
+        od;
+	evlistvec[i] := res;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  komprimiere( <list> )
+##
+##  komprimiere removes all pairs (i,0) from the list <list>.
+##
+
+komprimiere := function( list )
+    local  skip, i;
+    
+    skip := 0;
+    i := 2;
+    while  i <= Length(list)  do
+        while  i <= Length(list)  and  list[i] = 0  do
+            skip := skip + 2;
+            i := i+2;
+        od;
+        if  i <= Length(list)  then
+            list[i-skip] := list[i];
+            list[i-1-skip] := list[i-1];
+        fi;
+        i := i+2;
+    od;
+    for  i in  [Length(list)-skip+1..Length(list)]  do
+        Unbind(list[i]);
+    od;
+end;
+
+
+#############################################################################
+##
+#F  CalcOrder( <word>, <dtrws> )
+##
+##  CalcOrder computes the order of the word <word> in the group determined
+##  by the rewriting system <dtrws>
+##
+
+CalcOrder := function(word, dtrws)
+    local gcd, m, pcp;
+    
+    if  Length(word) = 0  then
+        return 1;
+    fi;
+    if  not IsBound(dtrws!.Exponent[ word[1] ])  then
+        return 0;
+    fi;
+    gcd := Gcd(dtrws!.Exponent[ word[1] ], word[2]);
+    m := QuoInt( dtrws!.Exponent[ word[1] ], gcd);
+    gcd := DTPower(word, m, dtrws);
+    return  m*CalcOrder(gcd, dtrws);
+end;
+
+
+#############################################################################
+##
+#F  CompleteOrdersOfRws( <dtrws> )
+##
+##  CompleteOrdersOfRws computes the orders of the generators of the
+##  deep thought rewriting system <dtrws>
+##
+
+CompleteOrdersOfRws := function(dtrws)
+    local  i,j;
+    
+    dtrws!.Orders := [];
+    for  i in [Length(dtrws!.Generators),Length(dtrws!.Generators)-1..1]  do
+        # Print("determining order of generator ",i,"\n");
+        if  not IsBound( dtrws!.Exponent[i] )  then
+            j := 0;
+        elif  not IsBound( dtrws!.Power[i] )  then
+            j := dtrws!.Exponent[i];
+        else
+            j := dtrws!.Exponent[i]*CalcOrder(dtrws!.Power[i], dtrws);
+        fi;
+        if  j <> 0  then
+            dtrws!.Orders[i] := j;
+        fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  redkomprimiere( <list> )
+##
+##  redkomprimiere removes all empty entries from <list>
+##
+
+redkomprimiere := function( list )
+    local  skip, i;
+    
+    skip := 0;
+    i := 1;
+    while  i <= Length(list)  do
+        while  not IsBound(list[i])  do
+            skip := skip + 1;
+            i := i+1;
+        od;
+        list[i-skip] := list[i];
+        i := i+1;
+    od;
+    for  i in  [Length(list)-skip+1..Length(list)]  do
+        Unbind(list[i]);
+    od;
+end;
+
+
+#############################################################################
+##
+#F  ReduceCoefficientsOfRws( <dtrws> )
+##
+##  ReduceCoefficientsOfRws reduces all coefficients of each deep thought
+##  polynomial f_l modulo the order of the l-th generator.
+##
+
+ReduceCoefficientsOfRws := function(dtrws)
+    local  i,j,k,l, pseudoreps;
+    
+    pseudoreps := dtrws!.DeepThoughtPols;
+    i := 1;
+    while  IsRecord(pseudoreps[i])  do
+        for  j in [1..Length(pseudoreps[i].evlistvec)]  do
+            for  k in [2,4..Length(pseudoreps[i].evlistvec[j])]  do
+                if  IsBound( dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ] )
+                    and  (pseudoreps[i].evlistvec[j][k] > 0  or
+                          pseudoreps[i].evlistvec[j][k] <
+                          -dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ]/2)
+                    then
+                    pseudoreps[i].evlistvec[j][k] := 
+                      pseudoreps[i].evlistvec[j][k] mod 
+                      dtrws!.Orders[ pseudoreps[i].evlistvec[j][k-1] ];
+                fi;
+            od;
+            komprimiere( pseudoreps[i].evlistvec[j] );
+            if  Length( pseudoreps[i].evlistvec[j] ) = 0  then
+                Unbind( pseudoreps[i].evlistvec[j] );
+                Unbind( pseudoreps[i].evlist[j] );
+            fi;
+        od;
+        redkomprimiere( pseudoreps[i].evlistvec );
+        redkomprimiere( pseudoreps[i].evlist );
+        i := i+1;
+    od;
+end;
+
+
+#############################################################################
+##
+##  GetMax( <tree>, <number>, <pr> )
+##  
+##  GetMax returns the maximal value for pos(tree) if num(tree) = <number>.  
+##
+
 GetMax := function(tree, number, pr)
-#  returns the maximal value for pos(tree),  if num(tree) = number.    
     local rel, max, position;
     
     if  Length(tree) = 5  then
@@ -67,6 +422,13 @@ GetMax := function(tree, number, pr)
     fi;
 end;
 
+
+#############################################################################
+##
+#F  GetNumRight( <tree> )
+##  
+##  GetNumRight  returns num( right( tree ) ).
+##
 
 GetNumRight := function(tree)
     
@@ -334,297 +696,8 @@ end;
 
 
 
-#############################################################################
-##
-#F  mkavec(<pr>) . . . . . . . . . . . . . . . . . . compute the avec for <pr>
-##
-##  'mkavec' returns the avec for the pc-presentation <pr>.
-##
-mkavec := function(pr)
-    local  i,j,vec;
-
-    vec := [];
-    vec[Length(pr)] := 1;
-    for  i in [Length(pr)-1,Length(pr)-2..1]  do
-	j := Length(pr);
-	while  j >= 1  do
-	    if  j = vec[i+1]  then
-	   	vec[i] := j;
-		j := 0;
- 	    else
-		j := j-1;
-     		if  j < i  and  IsBound(pr[i][j])  then
-		    vec[i] := j+1;
-		    j := 0;
-		fi;
-		if  j > i  and  IsBound(pr[j][i])  then
-		    vec[i] := j+1;
-		    j := 0;
-		fi;
-	    fi;
-	od;
-    od;
-    for  i in [1..Length(pr)]  do
-	if  vec[i] < i+1  then
-	    vec[i] := i+1;
-	fi;
-    od;
-    return vec;
-end;
 
 
-
-#############################################################################
-##
-#F  evaluation(<vector>) . . . . . . . make an evaluation of a formula vector
-##
-##  'evaluation' returns an integer value for the formula vector <x> which
-##  is used for the presort of the formula vectors done by the function
-##  'sortiere'.
-##
-evaluation := function(vector)
-    local  i,k;
-
-    k := 0;
-    for  i in [5,7..Length(vector)-1]  do
-	k := k + vector[i]*vector[i+1]^2;
-    od;
-    return k;
-end;
-
-
-#############################################################################
-##
-#F  equal(<vec1>, <vec2>) . . .  . . . . . . . . . test if <vec1> and <vec2> 
-##                                                 represent the same monomial
-##
-##  'equal' returns "true" if <vec1> and <vec2> represent the same monomial,
-##   and "false" otherwise.
-equal := function(vec1,vec2)
-    local  i,j;
-  
-    if  Length(vec1) <> Length(vec2)  then
-	return false;
-    fi;
-    #  Since the first four entries of a formula vector doesn't contain
-    #  any information about the monomial it represents,  it suffices to
-    #  compare the remaining entries.
-    for  i in [5..Length(vec1)]  do
-	if  not vec1[i] = vec2[i]  then
-	    return false;
-	fi;
-    od;
-    return true;
-end;
-
-
-
-
-#############################################################################
-##
-#F  ordne2(<vector>) . . . . . . . . . . . . . . . . . sort a formula vector
-##
-##  'ordne2' sorts the pairs of integers in the formula vector <vector>
-##  representing the binomial coefficients such that 
-##  <vector>[5] < <vector>[7] < .. < vector[m-1],  where m is the length
-##  of <vector>.  This is done for a easier comparison of formula vectors.
-##
-ordne2 := function(vector)
-    local  i,list1,list2;
-    
-    list1 := vector{[5,7..Length(vector)-1]};
-    list2 := vector{[6,8..Length(vector)]};
-    SortParallel(list1,list2);
-    for  i in [1..Length(list1)]  do
-        vector[ 2*i+3 ] := list1[i];
-        vector[ 2*i+4 ] := list2[i];
-    od;
-end;
-
-
-dt_add := function(pol, pols, pr)
-    local  i,j,k,rel, pos, flag;
-    
-#    zaehler := zaehler + 1;
-    ordne2(pol);
-    pos := DT_evaluation(pol);
-    if  not IsBound( pols[pos] )  then
-        pols[pos] := rec( evlist := [], evlistvec := [] );
-        fueghinzu( pols[pos].evlist, pols[pos].evlistvec, pol, pr );
-        return;
-    fi;
-    flag := 0;
-    for  k in [1..Length( pols[pos].evlist ) ]  do
-        if  equal( pol, pols[pos].evlist[k] )  then
-            rel := pr[ pol[3] ][ pol[4] ];
-            for  j in [3,5..Length(rel)-1]  do
-                pols[pos].evlistvec[k][ rel[j] ] := 
-                  pols[pos].evlistvec[k][ rel[j] ] + pol[2]*rel[j+1];
-            od;
-            flag := 1;
-            break;
-        fi;
-    od;
-    if  flag = 0  then
-        fueghinzu(pols[pos].evlist, pols[pos].evlistvec, pol, pr);
-    fi;
-end;
-
-            
-    
-
-
-#############################################################################
-##
-#F  mkevlist(<list>, <pr>) . . . . . . . . . . . . . . . do the final sorting
-##
-##  'mkevlist' takes the presorted list of formula vectors <list> returns a
-##  record with the components 'evlist' and 'evlistvec'.  The component
-##  'evlist' is a list containing formula vectors such that each monomial
-##  that is represented by a formula vector from <list> is also represented
-##  by a formula vector from 'evlist' but only by one. The component
-##  'evlistvec' contains for each formula vector <vec> from the component
-##  'evlist' a vector <evvec> which consists of the coefficients of the 
-##  monomial represented by <vec> in the polynomials f_1, .., f_m.  Here m 
-##  denotes the number of generators in the given presentation.  If the 
-##  monomial represented by <vec> doesn't occur in f_l for some integer 
-##  1 <= l <= m then the l-th entry of <evvec> equals zero.
-##  If <list> doesn't contain any formula vector then 0 is returned.
-##
-mkevlist := function(list, pr, sortedlist)
-    local  evlist,        #  the later record component 'evlist'
-           evlistvec,     #  the later record component 'evlistvec'
-           res,           #  result to return
-           i,j,k,l,m,n, start;
-
-    #  now sort the elements of <list> into <evlist> and compute the 
-    #  corresponding coefficient vector.  Since we now that two formula
-    #  vectors from different components of <list> cannot represent
-    #  the same monomial we only have to compare formula vectors from the
-    #  same component of <list>.
-    for  i in [1..Length(list)]  do
-        if  IsBound(list[i])  then
-            if  not IsBound( sortedlist[i] )  then
-                sortedlist[i] := rec( evlist := [], evlistvec := []);
-                fueghinzu(sortedlist[i].evlist, sortedlist[i].evlistvec,
-                          list[i][1], pr);
-                start := 2;
-            else
-                start := 1;
-            fi;
- 	    for  j in [start..Length(list[i])]  do
-                k := 1;
-                #  check if there exists a formula vector in <evlist>[l]
-                #  representing the same monomial as the j-th component of <i>.
-	        while  k <= Length(sortedlist[i].evlist)  do
-                    if  equal(sortedlist[i].evlist[k], list[i][j])  then
-                        #  if this is the case then change the 
-                        #  coefficient vector corresponding to
-                        #  to this formula vector accordingly
-		        n := pr[ list[i][j][3] ][ list[i][j][4] ];
-		        for  m in [3,5..Length(n)-1]  do
-                            sortedlist[i].evlistvec[k][n[m]] := 
-                                             sortedlist[i].evlistvec[k][n[m]]
-                                                      +  list[i][j][2]*n[m+1];
-		        od;
-		        k := Length(sortedlist[i].evlist)+1;
-		    fi;
-		    k := k+1;
-	        od;
-                if  k = Length(sortedlist[i].evlist)+1  then
-                    #  if we haven't found a formula vector representing the
-                    #  same monomial as the j-th element of <i> then we add
-                    #  to <evlist>[l] and the corresponding coefficient vector
-                    #  to to <evlistvec>[l].
-		    fueghinzu(sortedlist[i].evlist, sortedlist[i].evlistvec, 
-                              list[i][j], pr);
-                fi;
-            od;
-            Unbind(list[i]);
-        fi;
-    od;
-end;
-
-
-#############################################################################
-##
-#F  fueghinzu(<evlist>,<evlistvec>,<formvec>,<pr>) . . . add a formula vector 
-##                                                       to a list
-##
-##  'fueghinzu' adds the formula vector <formvec> to the list <evlist>,
-##  computes the corresponding coefficient vector and adds the latter to
-##  the list <evlistvec>.
-##
-fueghinzu := function(evlist, evlistvec, formvec, pr)
-    local    i,j,k;
-
-    Add(evlist, formvec);
-    k := [];
-    for  i in [1..Length(pr)]  do
-	k[i] := 0;
-    od;
-    j := pr[ formvec[3] ][ formvec[4] ];
-    #  the coefficient that the monomial represented by <formvec> has
-    #  in each polynomial f_l is obtained by multiplying <formvec>[2]
-    #  with the exponent which the group generator g_l has in the
-    #  in the word representing the commutator of g_(formvec[3]) and
-    #  g_(formvec[4]) in the presentation <pr>.
-    for  i in [3,5..Length(j)-1]  do
-	k[ j[i] ] := formvec[2]*j[i+1];
-    od;
-    Add(evlistvec, k);
-end;
-
-
-
-
-
-#############################################################################
-##
-#F  konvertiere(<reps>, <pr>) . . . . . . . . convert list of formula vectors
-##
-##  'konvertiere' converts the list of formula vectors into the record
-##  described at the top of the function 'mkevlist'.
-##
-konvertiere := function(sortedpols, n, pr)
-    local  k,res;
-    
-    if  Length(sortedpols) = 0  then
-        return  0;
-    fi;
-    res := rec(evlist := [], 
-               evlistvec :=[]);
-    for  k in sortedpols  do
-        Append(res.evlist, k.evlist);
-        Append(res.evlistvec, k.evlistvec);
-    od;
-    return res;
-end;
-
-
-#############################################################################
-##
-#F  konvert2(<evlistvec>) . . . . . . . . . . . . convert coefficient vectors
-##
-##  'konvert2' takes the list of coefficient vectors <evlistvec> and returns
-##  a record with the components 'bas' and 'exp'. The component 'bas' 
-##  contains for each element of <evlistvec> the list of positions with
-##  non-zero entries.  The component 'exp' contains for each element of 'bas' 
-##  a list of the corresponding non-zero coefficients.
-##
-konvert2 := function(evlistvec, pr)
-    local i,j,res;
-
-    for  i in [1..Length(evlistvec)]  do
-	res := [];
-        for  j in [1..Length(evlistvec[i])]  do
-            if  evlistvec[i][j] <> 0  then
-                Append(res, [j, evlistvec[i][j] ]);
-            fi;
-        od;
-	evlistvec[i] := res;
-    od;
-end;
 
 #############################################################################
 ##

@@ -286,10 +286,10 @@ end;
 #F  LinearOperationLayer( <G>, <pcgs>  )
 ##
 LinearOperationLayer := function( G, pcgs )
-    local V, field, linear;
+local V, field, linear;
 
-    V := VectorSpaceByPcgsOfElementaryAbelianGroup( pcgs );
-    field := LeftActingDomain( V );
+    field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
+    V:=IdentityMat(Length(pcgs),field);
     linear := function( x, g ) 
               return ExponentsOfPcElement( pcgs,
                      PcElementByExponents( pcgs, x )^g ) * One(field);
@@ -300,50 +300,50 @@ end;
     
 #############################################################################
 ##
-#F  AffineOperationLayer( <G>, <pcgs>, <transl> )
+#F  AffineOperationLayer( <Gpcgs>, <pcgs>, <transl> )
 ##
-AffineOperationLayer := function( G, pcgs, transl )
+AffineOperationLayer := function( Gpcgs, pcgs, transl )
     local V, field, linear;
 
     if Length( pcgs ) = 0 then 
         Error("layer is trivial . . . field is not defined \n");
     fi;
-    V := VectorSpaceByPcgsOfElementaryAbelianGroup( pcgs );
-    field := LeftActingDomain( V );
+    field := GF( RelativeOrderOfPcElement( pcgs, pcgs[1] ) );
+    V:=IdentityMat(Length(pcgs),field);
     linear := function( x, g ) 
               return ExponentsOfPcElement( pcgs, 
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return AffineOperation( G, V, linear, transl );
+    return AffineOperation( Gpcgs, V, linear, transl );
 end;
 
 
 #############################################################################
 ##
-
-#M  AffineOperation( <G>, <V>, <linear>, <transl> )
+#M  AffineOperation( <Ggens>, <V>, <linear>, <transl> )
 ##
 InstallMethod( AffineOperation,
     true, 
-    [ IsGroup,
-      IsVectorSpace,
+    [ IsList,
+      IsMatrix,
       IsFunction,
       IsFunction ],
     0,
 
-function( G, V, linear, transl )
-    local mats, gens, field, g, mat, i, vec;
+function( Ggens, V, linear, transl )
+local mats, gens, zero,one, g, mat, i, vec;
 
     mats := [];
-    gens := BasisVectors( Basis( V ) );
-    field := LeftActingDomain(V);
-    for g  in GeneratorsOfGroup(G)  do
+    gens:=V;
+    zero:=Zero(V[1][1]);
+    one:=One(zero);
+    for g  in Ggens do
         mat := List( gens, x -> linear( x, g ) );
         vec := transl(g);
         for i  in [ 1 .. Length(mat) ]  do
-            Add( mat[i], Zero(field) );
+            Add( mat[i], zero );
         od;
-        Add( vec, One(field) );
+        Add( vec, one );
         Add( mat, vec );
         Add( mats, mat );
     od;
@@ -480,28 +480,28 @@ InstallMethod( ConjugateSubgroup,
     0,
 
 function( U, g )
-    local   pcgs,  id,  a,  pag,  home,  h,  d,  N;
-
-    # shift <a> through <U>
-    pcgs := InducedPcgsWrtHomePcgs( U );
-    id   := Identity( U );
-    a    := SiftedPcElement( pcgs, g );
-
-    # catch trivial case
-    if IsEmpty(pcgs) or a = id then
-        return U;
-    fi;
+    local   home,  pcgs,  id,  pag,  h,  d,  N;
 
     # <g> must lie in the home
-    home := HomePcgs( U );
+    home := HomePcgs(U);
     if not g in GroupOfPcgs(home)  then
         TryNextMethod();
+    fi;
+
+    # shift <g> through <U>
+    pcgs := InducedPcgsWrtHomePcgs( U );
+    id   := Identity( U );
+    g    := SiftedPcElement( pcgs, g );
+
+    # catch trivial case
+    if IsEmpty(pcgs) or g = id then
+        return U;
     fi;
 
     # conjugate generators
     pag := [];
     for h  in Reversed( pcgs ) do
-        h := h ^ a;
+        h := h ^ g;
         d := DepthOfPcElement( home, h );
         while h <> id and IsBound( pag[d] )  do
             h := ReducedPcElement( home, h, pag[d] );
@@ -581,7 +581,7 @@ InstallMethod( Core,
     0,
 
 function( V, U )
-    local pcgsV, C, v, C, N;
+    local pcgsV, C, v, N;
 
     # catch trivial cases
     pcgsV := Pcgs(V);
@@ -710,17 +710,17 @@ end );
 
 #############################################################################
 ##
-#M  LinearOperation( <G>, <V>, <linear>  )
+#M  LinearOperation( <G>, <basisvectors>, <linear>  )
 ##
 InstallMethod( LinearOperation,
     true, 
     [ IsGroup,
-      IsVectorSpace,
+      IsMatrix,
       IsFunction ],
     0,
 
-function( G, V, linear )
-    local  gens, base, mats;
+function( G, base, linear )
+    local  gens, mats;
 
     # catch trivial cases
     if IsTrivial(G)  then
@@ -729,7 +729,6 @@ function( G, V, linear )
     gens := GeneratorsOfGroup( G );
 
     # compute matrices
-    base := BasisVectors( Basis( V ) );
     mats := List( gens, x -> List( base, y -> linear( y, x ) ) );
     return mats;
 
@@ -843,6 +842,56 @@ function( G, d, e, opr )
     fi;
     return ClassesSolvableGroup( G, G, true, 4, [ d, e ] );
 end );
+
+
+#############################################################################
+##
+#F  ElementaryAbelianSeries( <list> )
+##
+InstallOtherMethod(ElementaryAbelianSeries,"lists of pc groups",
+  true,[IsList],10, # there is a generic groups function with value 0
+function( S )
+local   i,  N,  O,  I,  E,  L;
+
+  if Length(S)=0 or not IsPcGroup(S[1]) then 
+    TryNextMethod();
+  fi;
+
+  # typecheck arguments
+  if 1 < Size(S[Length(S)])  then
+      S := ShallowCopy( S );
+      Add( S, TrivialSubgroup(S[1]) );
+  fi;
+
+  # start with the elementay series of the first group of <S>
+  L := ElementaryAbelianSeries( S[ 1 ] );
+  N := [ S[ 1 ] ];
+  for i  in [ 2 .. Length( S ) - 1 ]  do
+    O := L;
+    L := [ S[ i ] ];
+    for E  in O  do
+      I := IntersectionSumPcgs(HomePcgs(S[1]), InducedPcgsWrtHomePcgs(E),
+	InducedPcgsWrtHomePcgs(S[ i ]) );
+      I.sum:=Subgroup(S[1],I.sum);
+      I.intersection:=Subgroup(S[1],I.intersection);
+      if not I.sum in N  then
+	  Add( N, I.sum );
+      fi;
+      if not I.intersection in L  then
+	  Add( L, I.intersection );
+      fi;
+    od;
+  od;
+  for E  in L  do
+      if not E in N  then
+	  Add( N, E );
+      fi;
+  od;
+
+  # return it.
+  return N;
+
+end);
 
 #############################################################################
 ##

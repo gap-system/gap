@@ -1602,19 +1602,33 @@ end;
 #F  BaseSteinitzVectors( <bas>, <mat> )
 ##
 ##  find vectors extending mat to a basis spanning the span of <bas>.
+##  'BaseSteinitz'  returns a
+##  record  describing  a base  for the factorspace   and ways   to decompose
+##  vectors:
+##
+##  zero:           zero of <V> and <U>
+##  factorzero:     zero of complement
+##  subspace:       triangulized basis of <mat>
+##  factorspace:    base of a complement of <U> in <V>
+##  heads:          a list of integers i_j, such that  if i_j>0 then a vector
+##                  with head j is at position i_j  in factorspace.  If i_j<0
+##                  then the vector is in subspace.
+##
 ##
 BaseSteinitzVectors := function(bas,mat)
-local z,d,l,b,i,j,k,stop,v,dim;
+local z,d,l,b,i,j,k,stop,v,dim,h,zv;
 
   z:=Zero(bas[1][1]);
+  zv:=Zero(bas[1]);
   if Length(mat)>0 then
     mat:=List(mat,ShallowCopy);
+    TriangulizeMat(mat);
   fi;
   bas:=List(bas,ShallowCopy);
   dim:=Length(bas[1]);
-  TriangulizeMat(mat);
   l:=Length(bas)-Length(mat); # missing dimension
   b:=[];
+  h:=[];
   i:=1;
   j:=1;
   while Length(b)<l do
@@ -1627,6 +1641,7 @@ local z,d,l,b,i,j,k,stop,v,dim;
 	  # add the vector
 	  v:=bas[v];
 	  Add(b,v);
+	  h[j]:=Length(b);
 	# if fail, then this dimension is only dependent (and not needed)
         fi;
       else
@@ -1635,6 +1650,7 @@ local z,d,l,b,i,j,k,stop,v,dim;
 	if i<=Length(mat) then
 	  # has a step, clean with basis vector
 	  v:=mat[i];
+	  h[j]:=-i;
         else
 	  v:=fail;
 	fi;
@@ -1651,7 +1667,10 @@ local z,d,l,b,i,j,k,stop,v,dim;
     until stop;
     i:=i+1;
   od;
-  return b;
+  return rec(factorspace:=b,
+             factorzero:=zv,
+	     subspace:=mat,
+	     heads:=h);
 end;
 
 #############################################################################

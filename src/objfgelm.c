@@ -359,6 +359,65 @@ Obj Func8Bits_GeneratorSyllable (
 
 /****************************************************************************
 **
+*F  Func8Bits_HeadByNumber( <self>, <l>, <gen> )
+*/
+Obj Func8Bits_HeadByNumber (
+    Obj         self,
+    Obj         l,
+    Obj         r )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        genm;           /* generator mask                          */
+    Int         sl;             /* start position in <obj>                 */
+    Int         nl;             /* number of pairs to consider in <l>      */
+    Int         gr;             /* value of <r>                            */
+    UInt1 *     pl;             /* data area in <l>                        */
+    Obj         obj;            /* the result                              */
+    UInt1 *     po;             /* data area in <obj>                      */
+
+    /* get the generator number to stop                                    */
+    gr = INT_INTOBJ(r) - 1;
+
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+
+    /* get the generator mask                                              */
+    genm = ((1UL << (8-ebits)) - 1) << ebits;
+
+    /* if <l> is the identity return                                       */
+    nl = NPAIRS_WORD(l);
+    if ( 0 == nl )  return l;
+
+    /* look closely at the generators                                      */
+    sl = 0;
+    pl = (UInt1*)DATA_WORD(l);
+    while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
+	sl++;  pl++;
+    }
+    if ( sl == nl )
+	return l;
+
+    /* create a new word                                                   */
+    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+
+    /* copy the <l> part into the word                                     */
+    po = (UInt1*)DATA_WORD(obj);
+    pl = (UInt1*)DATA_WORD(l);
+    while ( 0 < sl-- )
+        *po++ = *pl++;
+
+    return obj;
+}
+
+
+/****************************************************************************
+**
 *F  Func8Bits_Less( <self>, <l>, <r> )
 */
 Obj Func8Bits_Less (
@@ -1188,6 +1247,65 @@ Obj Func16Bits_GeneratorSyllable (
     /* return the <i> th generator                                         */
     p = ((UInt2*)DATA_WORD(w))[i-1];
     return INTOBJ_INT((p >> ebits)+1);
+}
+
+
+/****************************************************************************
+**
+*F  Func16Bits_HeadByNumber( <self>, <l>, <gen> )
+*/
+Obj Func16Bits_HeadByNumber (
+    Obj         self,
+    Obj         l,
+    Obj         r )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        genm;           /* generator mask                          */
+    Int         sl;             /* start position in <obj>                 */
+    Int         nl;             /* number of pairs to consider in <l>      */
+    Int         gr;             /* value of <r>                            */
+    UInt2 *     pl;             /* data area in <l>                        */
+    Obj         obj;            /* the result                              */
+    UInt2 *     po;             /* data area in <obj>                      */
+
+    /* get the generator number to stop                                    */
+    gr = INT_INTOBJ(r) - 1;
+
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+
+    /* get the generator mask                                              */
+    genm = ((1UL << (16-ebits)) - 1) << ebits;
+
+    /* if <l> is the identity return                                       */
+    nl = NPAIRS_WORD(l);
+    if ( 0 == nl )  return l;
+
+    /* look closely at the generators                                      */
+    sl = 0;
+    pl = (UInt2*)DATA_WORD(l);
+    while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
+	sl++;  pl++;
+    }
+    if ( sl == nl )
+	return l;
+
+    /* create a new word                                                   */
+    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+
+    /* copy the <l> part into the word                                     */
+    po = (UInt2*)DATA_WORD(obj);
+    pl = (UInt2*)DATA_WORD(l);
+    while ( 0 < sl-- )
+        *po++ = *pl++;
+
+    return obj;
 }
 
 
@@ -2027,6 +2145,65 @@ Obj Func32Bits_GeneratorSyllable (
 
 /****************************************************************************
 **
+*F  Func32Bits_HeadByNumber( <self>, <l>, <gen> )
+*/
+Obj Func32Bits_HeadByNumber (
+    Obj         self,
+    Obj         l,
+    Obj         r )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt        genm;           /* generator mask                          */
+    Int         sl;             /* start position in <obj>                 */
+    Int         nl;             /* number of pairs to consider in <l>      */
+    Int         gr;             /* value of <r>                            */
+    UInt4 *     pl;             /* data area in <l>                        */
+    Obj         obj;            /* the result                              */
+    UInt4 *     po;             /* data area in <obj>                      */
+
+    /* get the generator number to stop                                    */
+    gr = INT_INTOBJ(r) - 1;
+
+    /* get the number of bits for exponents                                */
+    ebits = EBITS_WORD(l);
+
+    /* get the exponent masks                                              */
+    exps = 1UL << (ebits-1);
+    expm = exps - 1;
+
+    /* get the generator mask                                              */
+    genm = ((1UL << (32-ebits)) - 1) << ebits;
+
+    /* if <l> is the identity return                                       */
+    nl = NPAIRS_WORD(l);
+    if ( 0 == nl )  return l;
+
+    /* look closely at the generators                                      */
+    sl = 0;
+    pl = (UInt4*)DATA_WORD(l);
+    while ( sl < nl && ((*pl & genm) >> ebits) < gr ) {
+	sl++;  pl++;
+    }
+    if ( sl == nl )
+	return l;
+
+    /* create a new word                                                   */
+    NEW_WORD( obj, PUREKIND_WORD(l), sl );
+
+    /* copy the <l> part into the word                                     */
+    po = (UInt4*)DATA_WORD(obj);
+    pl = (UInt4*)DATA_WORD(l);
+    while ( 0 < sl-- )
+        *po++ = *pl++;
+
+    return obj;
+}
+
+
+/****************************************************************************
+**
 *F  Func32Bits_Less( <self>, <l>, <r> )
 */
 Obj Func32Bits_Less (
@@ -2649,201 +2826,175 @@ void InitFreeGroupElements ( void )
 
     /* '8Bits' methods                                                     */
     AssGVar( GVarName( "8Bits_Equal" ),
-             NewFunctionC( "8Bits_Equal", 2L, 
-                           "8_bits_word, 8_bits_word",
-             Func8Bits_Equal ) );
+         NewFunctionC( "8Bits_Equal", 2L, "8_bits_word, 8_bits_word",
+                    Func8Bits_Equal ) );
 
     AssGVar( GVarName( "8Bits_ExponentSums1" ),
-             NewFunctionC( "8Bits_ExponentSums1", 1L, 
-			   "8_bits_word",
-             Func8Bits_ExponentSums1 ) );
+         NewFunctionC( "8Bits_ExponentSums1", 1L, "8_bits_word",
+                    Func8Bits_ExponentSums1 ) );
 
     AssGVar( GVarName( "8Bits_ExponentSums3" ), 
-             NewFunctionC( "8Bits_ExponentSums3", 3L, 
-			   "8_bits_word, start, end",
-             Func8Bits_ExponentSums3 ) );
+         NewFunctionC( "8Bits_ExponentSums3", 3L, "8_bits_word, start, end",
+                    Func8Bits_ExponentSums3 ) );
 
     AssGVar( GVarName( "8Bits_ExponentSyllable" ),
-             NewFunctionC( "8Bits_ExponentSyllable", 2L, 
-			   "8_bits_word, position",
-             Func8Bits_ExponentSyllable ) );
+         NewFunctionC( "8Bits_ExponentSyllable", 2L, "8_bits_word, position",
+                    Func8Bits_ExponentSyllable ) );
 
     AssGVar( GVarName( "8Bits_ExtRepOfObj" ),
-             NewFunctionC( "8Bits_ExtRepOfObj", 1L, 
-			   "8_bits_word",
-             Func8Bits_ExtRepOfObj ) );
+         NewFunctionC( "8Bits_ExtRepOfObj", 1L, "8_bits_word",
+                    Func8Bits_ExtRepOfObj ) );
 
     AssGVar( GVarName( "8Bits_GeneratorSyllable" ),
-             NewFunctionC( "8Bits_GeneratorSyllable", 2L, 
-			   "8_bits_word, position",
-             Func8Bits_GeneratorSyllable ) );
+         NewFunctionC( "8Bits_GeneratorSyllable", 2L, "8_bits_word, position",
+                    Func8Bits_GeneratorSyllable ) );
 
     AssGVar( GVarName( "8Bits_Less" ),
-             NewFunctionC( "8Bits_Less", 2L, 
-			   "8_bits_word, 8_bits_word",
-             Func8Bits_Less ) );
+         NewFunctionC( "8Bits_Less", 2L, "8_bits_word, 8_bits_word",
+                    Func8Bits_Less ) );
 
     AssGVar( GVarName( "8Bits_AssocWord" ),
-             NewFunctionC( "8Bits_AssocWord", 2L, 
-			   "kind, data",
-             Func8Bits_AssocWord ) );
+         NewFunctionC( "8Bits_AssocWord", 2L, "kind, data",
+                    Func8Bits_AssocWord ) );
 
     AssGVar( GVarName( "8Bits_NumberSyllables" ),
-             NewFunctionC( "NBits_NumberSyllables", 1L, 
-			   "8_bits_word",
-             FuncNBits_NumberSyllables ) );
+         NewFunctionC( "NBits_NumberSyllables", 1L, "8_bits_word",
+                    FuncNBits_NumberSyllables ) );
 
     AssGVar( GVarName( "8Bits_ObjByVector" ),
-             NewFunctionC( "8Bits_ObjByVector", 2L, 
-			   "kind, data",
-             Func8Bits_ObjByVector ) );
+         NewFunctionC( "8Bits_ObjByVector", 2L, "kind, data",
+                    Func8Bits_ObjByVector ) );
+
+    AssGVar( GVarName( "8Bits_HeadByNumber" ),
+         NewFunctionC( "8Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
+                    Func8Bits_HeadByNumber ) );
 
     AssGVar( GVarName( "8Bits_Power" ),
-             NewFunctionC( "8Bits_Power", 2L, 
-			   "8_bits_word, small_integer",
-             Func8Bits_Power ) );
+         NewFunctionC( "8Bits_Power", 2L, "8_bits_word, small_integer",
+                    Func8Bits_Power ) );
 
     AssGVar( GVarName( "8Bits_Product" ),
-             NewFunctionC( "8Bits_Product", 2L, 
-			   "8_bits_word, 8_bits_word",
-             Func8Bits_Product ) );
+         NewFunctionC( "8Bits_Product", 2L, "8_bits_word, 8_bits_word",
+                    Func8Bits_Product ) );
 
     AssGVar( GVarName( "8Bits_Quotient" ),
-             NewFunctionC( "8Bits_Quotient", 2L, 
-			   "8_bits_word, 8_bits_word",
-             Func8Bits_Quotient ) );
+         NewFunctionC( "8Bits_Quotient", 2L, "8_bits_word, 8_bits_word",
+                    Func8Bits_Quotient ) );
 
     /* '16Bits' methods                                                    */
     AssGVar( GVarName( "16Bits_Equal" ),
-             NewFunctionC( "16Bits_Equal", 2L, 
-			   "16_bits_word, 16_bits_word",
-             Func16Bits_Equal ) );
+         NewFunctionC( "16Bits_Equal", 2L, "16_bits_word, 16_bits_word",
+                    Func16Bits_Equal ) );
 
     AssGVar( GVarName( "16Bits_ExponentSums1" ),
-             NewFunctionC( "16Bits_ExponentSums1", 1L, 
-			   "16_bits_word",
-             Func16Bits_ExponentSums1 ) );
+         NewFunctionC( "16Bits_ExponentSums1", 1L, "16_bits_word",
+                    Func16Bits_ExponentSums1 ) );
 
     AssGVar( GVarName( "16Bits_ExponentSums3" ), 
-             NewFunctionC( "16Bits_ExponentSums3", 3L, 
-			   "16_bits_word, start, end",
-             Func16Bits_ExponentSums3 ) );
+         NewFunctionC( "16Bits_ExponentSums3", 3L, "16_bits_word, start, end",
+                    Func16Bits_ExponentSums3 ) );
 
     AssGVar( GVarName( "16Bits_ExponentSyllable" ),
-             NewFunctionC( "16Bits_ExponentSyllable", 2L, 
-			   "16_bits_word, position",
-             Func16Bits_ExponentSyllable ) );
+         NewFunctionC( "16Bits_ExponentSyllable", 2L, "16_bits_word, position",
+                    Func16Bits_ExponentSyllable ) );
 
     AssGVar( GVarName( "16Bits_ExtRepOfObj" ),
-             NewFunctionC( "16Bits_ExtRepOfObj", 1L, 
-			   "16_bits_word",
-             Func16Bits_ExtRepOfObj ) );
+         NewFunctionC( "16Bits_ExtRepOfObj", 1L, "16_bits_word",
+                    Func16Bits_ExtRepOfObj ) );
 
     AssGVar( GVarName( "16Bits_GeneratorSyllable" ),
-             NewFunctionC( "16Bits_GeneratorSyllable", 2L, 
-			   "16_bits_word, position",
-             Func16Bits_GeneratorSyllable ) );
+         NewFunctionC( "16Bits_GeneratorSyllable", 2L, "16_bits_word, pos",
+                    Func16Bits_GeneratorSyllable ) );
 
     AssGVar( GVarName( "16Bits_Less" ),
-             NewFunctionC( "16Bits_Less", 2L, 
-			   "16_bits_word, 16_bits_word",
-             Func16Bits_Less ) );
+         NewFunctionC( "16Bits_Less", 2L, "16_bits_word, 16_bits_word",
+                    Func16Bits_Less ) );
 
     AssGVar( GVarName( "16Bits_AssocWord" ),
-             NewFunctionC( "16Bits_AssocWord", 2L, 
-			   "kind, data",
-             Func16Bits_AssocWord ) );
+         NewFunctionC( "16Bits_AssocWord", 2L, "kind, data",
+                    Func16Bits_AssocWord ) );
 
     AssGVar( GVarName( "16Bits_NumberSyllables" ),
-             NewFunctionC( "NBits_NumberSyllables", 1L, 
-			   "16_bits_word",
-             FuncNBits_NumberSyllables ) );
+          NewFunctionC( "NBits_NumberSyllables", 1L, "16_bits_word",
+                     FuncNBits_NumberSyllables ) );
 
     AssGVar( GVarName( "16Bits_ObjByVector" ),
-             NewFunctionC( "16Bits_ObjByVector", 2L, 
-			   "kind, data",
-             Func16Bits_ObjByVector ) );
+         NewFunctionC( "16Bits_ObjByVector", 2L, "kind, data",
+                    Func16Bits_ObjByVector ) );
+
+    AssGVar( GVarName( "16Bits_HeadByNumber" ),
+         NewFunctionC( "16Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
+                    Func16Bits_HeadByNumber ) );
 
     AssGVar( GVarName( "16Bits_Power" ),
-             NewFunctionC( "16Bits_Power", 2L, 
-			   "16_bits_word, small_integer",
-             Func16Bits_Power ) );
+         NewFunctionC( "16Bits_Power", 2L, "16_bits_word, small_integer",
+                    Func16Bits_Power ) );
 
     AssGVar( GVarName( "16Bits_Product" ),
-             NewFunctionC( "16Bits_Product", 2L, 
-			   "16_bits_word, 16_bits_word",
-             Func16Bits_Product ) );
+         NewFunctionC( "16Bits_Product", 2L, "16_bits_word, 16_bits_word",
+                    Func16Bits_Product ) );
 
     AssGVar( GVarName( "16Bits_Quotient" ),
-             NewFunctionC( "16Bits_Quotient", 2L, 
-			   "16_bits_word, 16_bits_word",
-             Func16Bits_Quotient ) );
+         NewFunctionC( "16Bits_Quotient", 2L, "16_bits_word, 16_bits_word",
+                    Func16Bits_Quotient ) );
+
 
     /* '32Bits' methods                                                    */
     AssGVar( GVarName( "32Bits_Equal" ),
-             NewFunctionC( "32Bits_Equal", 2L, 
-			   "32_bits_word, 32_bits_word",
-             Func32Bits_Equal ) );
+         NewFunctionC( "32Bits_Equal", 2L, "32_bits_word, 32_bits_word",
+                    Func32Bits_Equal ) );
 
     AssGVar( GVarName( "32Bits_ExponentSums1" ),
-             NewFunctionC( "32Bits_ExponentSums1", 1L, 
-			   "32_bits_word",
-             Func32Bits_ExponentSums1 ) );
+         NewFunctionC( "32Bits_ExponentSums1", 1L, "32_bits_word",
+                    Func32Bits_ExponentSums1 ) );
 
     AssGVar( GVarName( "32Bits_ExponentSums3" ), 
-             NewFunctionC( "32Bits_ExponentSums3", 3L, 
-			   "32_bits_word, start, end",
-             Func32Bits_ExponentSums3 ) );
+         NewFunctionC( "32Bits_ExponentSums3", 3L, "32_bits_word, start, end",
+                    Func32Bits_ExponentSums3 ) );
 
     AssGVar( GVarName( "32Bits_ExponentSyllable" ),
-             NewFunctionC( "32Bits_ExponentSyllable", 2L, 
-			   "32_bits_word, position",
-             Func32Bits_ExponentSyllable ) );
+         NewFunctionC( "32Bits_ExponentSyllable", 2L, "32_bits_word, position",
+                    Func32Bits_ExponentSyllable ) );
 
     AssGVar( GVarName( "32Bits_ExtRepOfObj" ),
-             NewFunctionC( "32Bits_ExtRepOfObj", 1L, 
-			   "32_bits_word",
-             Func32Bits_ExtRepOfObj ) );
+         NewFunctionC( "32Bits_ExtRepOfObj", 1L, "32_bits_word",
+                    Func32Bits_ExtRepOfObj ) );
 
     AssGVar( GVarName( "32Bits_GeneratorSyllable" ),
-             NewFunctionC( "32Bits_GeneratorSyllable", 2L, 
-			   "32_bits_word, position",
-             Func32Bits_GeneratorSyllable ) );
+         NewFunctionC( "32Bits_GeneratorSyllable", 2L, "32_bits_word, pos",
+                    Func32Bits_GeneratorSyllable ) );
 
     AssGVar( GVarName( "32Bits_Less" ),
-             NewFunctionC( "32Bits_Less", 2L, 
-			   "32_bits_word, 32_bits_word",
-             Func32Bits_Less ) );
+         NewFunctionC( "32Bits_Less", 2L, "32_bits_word, 32_bits_word",
+                    Func32Bits_Less ) );
 
     AssGVar( GVarName( "32Bits_AssocWord" ),
-             NewFunctionC( "32Bits_AssocWord", 2L, 
-			   "kind, data",
-             Func32Bits_AssocWord ) );
+         NewFunctionC( "32Bits_AssocWord", 2L, "kind, data",
+                    Func32Bits_AssocWord ) );
 
     AssGVar( GVarName( "32Bits_NumberSyllables" ),
-             NewFunctionC( "NBits_NumberSyllables", 1L, 
-			   "32_bits_word",
-             FuncNBits_NumberSyllables ) );
+          NewFunctionC( "NBits_NumberSyllables", 1L, "32_bits_word",
+                     FuncNBits_NumberSyllables ) );
 
     AssGVar( GVarName( "32Bits_ObjByVector" ),
-             NewFunctionC( "32Bits_ObjByVector", 2L, 
-			   "kind, data",
-             Func32Bits_ObjByVector ) );
+         NewFunctionC( "32Bits_ObjByVector", 2L, "kind, data",
+                    Func32Bits_ObjByVector ) );
+
+    AssGVar( GVarName( "32Bits_HeadByNumber" ),
+         NewFunctionC( "32Bits_HeadByNumber", 2L, "16_bits_word, gen_num",
+                    Func32Bits_HeadByNumber ) );
 
     AssGVar( GVarName( "32Bits_Power" ),
-             NewFunctionC( "32Bits_Power", 2L, 
-			   "32_bits_word, small_integer",
-             Func32Bits_Power ) );
+         NewFunctionC( "32Bits_Power", 2L, "32_bits_word, small_integer",
+                    Func32Bits_Power ) );
 
     AssGVar( GVarName( "32Bits_Product" ),
-             NewFunctionC( "32Bits_Product", 2L, 
-			   "32_bits_word, 32_bits_word",
-             Func32Bits_Product ) );
+         NewFunctionC( "32Bits_Product", 2L, "32_bits_word, 32_bits_word",
+                    Func32Bits_Product ) );
 
     AssGVar( GVarName( "32Bits_Quotient" ),
-             NewFunctionC( "32Bits_Quotient", 2L, 
-			   "32_bits_word, 32_bits_word",
-             Func32Bits_Quotient ) );
+         NewFunctionC( "32Bits_Quotient", 2L, "32_bits_word, 32_bits_word",
+                    Func32Bits_Quotient ) );
 }
 
 

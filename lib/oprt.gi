@@ -4,120 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.30  1997/01/21 15:07:30  htheisse
-#H  introduced `PositionCanonical'
-#H
-#H  Revision 4.29  1997/01/20 13:55:36  sam
-#H  moved the definition of structure preserving properties of general mappings
-#H      to new file 'mapphomo.gd',
-#H  renamed 'Kernel' and 'CoKernel' to 'KernelOfMonoidGeneralMapping' and
-#H      'CoKernelOfMonoidGeneralMapping', respectively,
-#H  added 'Kernel' and 'CoKernel' to 'overload.g'
-#H
-#H  (addition preserving mappings will follow soon)
-#H
-#H  Revision 4.28  1997/01/13 17:03:15  htheisse
-#H  made use of `IsPcgsComputable'
-#H
-#H  Revision 4.27  1997/01/10 11:54:08  htheisse
-#H  allowed `Orbits' on empty list
-#H
-#H  Revision 4.26  1997/01/09 18:03:03  htheisse
-#H  added `SparseOperationHomomorphism'
-#H
-#H  Revision 4.25  1996/12/19 09:40:54  htheisse
-#H  reduced number of calls of `NewKind'
-#H
-#H  Revision 4.24  1996/12/13 12:31:05  htheisse
-#H  patched `Transitivity' into working
-#H
-#H  Revision 4.23  1996/12/13 12:17:49  htheisse
-#H  patched `Transitivity' into working
-#H
-#H  Revision 4.22  1996/11/27 15:32:53  htheisse
-#H  replaced `Copy' by `DeepCopy'
-#H
-#H  Revision 4.21  1996/11/26 16:08:40  sam
-#H  replaced 'IsEmptyList' by 'IsList and IsEmpty' (in installations)
-#H      resp. 'IsEmpty' (in calls)
-#H
-#H  Revision 4.20  1996/11/21 16:04:54  htheisse
-#H  changed treatment of operation homs and `AsGroupGeneralMappingByImages'
-#H
-#H  Revision 4.19  1996/11/19 13:22:34  htheisse
-#H  changed method for `Stabilizer' in `oprtpcgs.gi'
-#H  cleaned up the code
-#H
-#H  Revision 4.18  1996/11/13 15:24:06  htheisse
-#H  added `OrbitStabilizer'
-#H  encouraged use of pcgs for soluble groups
-#H  cleaned up the code
-#H
-#H  Revision 4.17  1996/11/12 15:32:09  htheisse
-#H  orbits etc. are now always immutable
-#H
-#H  Revision 4.16  1996/11/07 15:14:59  htheisse
-#H  changed method for `IsInjective' and `Kernel' of operation homomorphisms
-#H
-#H  Revision 4.15  1996/11/07 12:31:15  htheisse
-#H  introduced `ExternalSubset'
-#H  added `SetBase' for external sets
-#H  renamed `Parent' to `HomeEnumerator' for external sets
-#H  tidied up a bit
-#H
-#H  Revision 4.14  1996/10/31 12:21:54  htheisse
-#H  replaced `false' by `fail'
-#H
-#H  Revision 4.13  1996/10/21 11:13:36  htheisse
-#H  enlarged `Range' of operation homomorphisms
-#H  extended use of `AsGroupGeneralMappingByImages' and added a new kind of
-#H      general mappings based on this
-#H  modified (simplified) `CompositionMapping2' according to this
-#H
-#H  Revision 4.12  1996/10/14 12:56:40  fceller
-#H  'Position', 'PositionBound', and 'PositionProperty' return 'fail'
-#H  instead of 'false'
-#H
-#H  Revision 4.11  1996/10/11 07:00:08  htheisse
-#H  fixed a problem with blists
-#H
-#H  Revision 4.10  1996/10/10 12:31:15  htheisse
-#H  fixed a bug in `Cycle'
-#H
-#H  Revision 4.9  1996/10/09 13:42:22  htheisse
-#H  forgot to compare operation functions in external orbit comparison
-#H
-#H  Revision 4.8  1996/10/09 13:30:42  htheisse
-#H  added generic membership test for external orbits
-#H
-#H  Revision 4.7  1996/10/09 11:28:26  htheisse
-#H  added generic comparison method for external orbits
-#H
-#H  Revision 4.6  1996/10/09 07:58:36  htheisse
-#H  added {Orbit,Cycle}ByPosOp, removed dangerous use of `D!.blist'
-#H
-#H  Revision 4.5  1996/10/08 11:27:38  htheisse
-#H  changed the operation functions, introduced ``external sets''
-#H
-#H  Revision 4.4  1996/10/01 15:41:37  htheisse
-#H  corrected an error in `OrbitsStabilizers'
-#H
-#H  Revision 4.3  1996/10/01 14:50:07  htheisse
-#H  added methods for operations of soluble groups, which use a pcgs
-#H
-#H  Revision 4.2  1996/09/26 14:02:53  htheisse
-#H  added natural homomorphisms from perm groups onto pc groups
-#H
-#H  Revision 4.1  1996/09/23 16:47:33  htheisse
-#H  added files for permutation groups (incl. backtracking)
-#H                  stabiliser chains
-#H                  group homomorphisms (of permutation groups)
-#H                  operation homomorphisms
-#H                  polycyclic generating systems of soluble permutation groups
-#H                     (general concept tentatively)
-#H
-##
 Revision.oprt_gi :=
     "@(#)$Id$";
 
@@ -275,7 +161,7 @@ ExternalSet := function( arg )
 end;
 
 InstallMethod( ExternalSetOp,
-        "<G>, <D>, <gens>, <oprs>, <opr>", true,
+        "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     return ExternalSetByFilterConstructor( IsExternalSetDefaultRep,
@@ -378,7 +264,7 @@ ExternalSubset := function( arg )
 end;
 
 InstallMethod( ExternalSubsetOp,
-        "<G>, <D>, <start>, <gens>, <oprs>, <opr>", true,
+        "G, D, start, gens, oprs, opr", true,
         [ IsGroup, IsList, IsList,
           IsList,
           IsList,
@@ -393,7 +279,7 @@ InstallMethod( ExternalSubsetOp,
 end );
 
 InstallOtherMethod( ExternalSubsetOp,
-        "<G>, <xset>, <start>, <gens>, <oprs>, <opr>", true,
+        "G, xset, start, gens, oprs, opr", true,
         [ IsGroup, IsExternalSetDefaultRep, IsList,
           IsList,
           IsList,
@@ -415,7 +301,7 @@ InstallOtherMethod( ExternalSubsetOp,
 end );
 
 InstallOtherMethod( ExternalSubsetOp,
-        "<G>, <start>, <gens>, <oprs>, <opr>", true,
+        "G, start, gens, oprs, opr", true,
         [ IsGroup, IsList,
           IsList,
           IsList,
@@ -459,7 +345,7 @@ ExternalOrbit := function( arg )
 end;
     
 InstallMethod( ExternalOrbitOp,
-        "<G>, <D>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
     local   xorb;
@@ -472,7 +358,7 @@ InstallMethod( ExternalOrbitOp,
 end );
 
 InstallOtherMethod( ExternalOrbitOp,
-        "<G>, <xset>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, xset, pnt, gens, oprs, opr", true,
         [ IsGroup, IsExternalSetDefaultRep, IsObject,
           IsList,
           IsList,
@@ -495,7 +381,7 @@ InstallOtherMethod( ExternalOrbitOp,
 end );
 
 InstallOtherMethod( ExternalOrbitOp,
-        "<G>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, pnt, gens, oprs, opr", true,
         [ IsGroup, IsObject,
           IsList,
           IsList,
@@ -619,15 +505,16 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSetDefaultRep ], 0,
                 hom.reps{ D[ i ] } := i + 0 * D[ i ];
             od;
         elif IsPermGroup( G )  or  IsPcGroup( G )  then
-            kind := NewKind( fam, IsOperationHomomorphismDefaultRep and
-                    IsGroupGeneralMappingByAsGroupGeneralMappingByImages );
-        elif HasBase( xset )  then
-            kind := NewKind( fam, IsOperationHomomorphismByBase );
+            kind := NewKind( fam, IsOperationHomomorphism );
         else
-            kind := NewKind( fam, IsOperationHomomorphismDefaultRep );
+            kind := NewKind( fam, IsOperationHomomorphismDirectly );
         fi;
     fi;
-    return Objectify( kind, hom );
+    Objectify( kind, hom );
+    if HasBase( xset )  then
+        SetFilterObj( hom, IsOperationHomomorphismByBase );
+    fi;
+    return hom;
 end );
 
 #############################################################################
@@ -658,7 +545,7 @@ InstallMethod( Range, true, [ IsOperationHomomorphism ], 0,
 #M  AsGroupGeneralMappingByImages( <hom> )  . . .  for operation homomorphism
 ##
 InstallMethod( AsGroupGeneralMappingByImages, true,
-        [ IsOperationHomomorphismDefaultRep ], 0,
+        [ IsOperationHomomorphism ], 0,
     function( hom )
     local   xset,  G,  D,  opr,  gens,  imgs;
     
@@ -698,23 +585,21 @@ end );
 ##
 InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSubset ], 0,
     function( xset )
-    local   G,  fam,  kind,  hom;
+    local   G,  fam,  filter;
     
     G := ActingDomain( xset );
     fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   PermutationsFamily );
-    hom := rec( externalSet := xset );
+    filter := IsOperationHomomorphismSubset;
     if IsExternalSetByOperatorsRep( xset )  then
-        kind := NewKind( fam, IsOperationHomomorphismSubset
-                          and IsOperationHomomorphismByOperators );
-    elif HasBase( xset )  then
-        kind := NewKind( fam, IsOperationHomomorphismSubset
-                          and IsOperationHomomorphismByBase );
-    else
-        kind := NewKind( fam, IsOperationHomomorphismSubset
-                          and IsOperationHomomorphismDefaultRep );
+        filter := filter and IsOperationHomomorphismByOperators;
+    elif not ( IsPermGroup( G )  or  IsPcGroup( G ) )  then
+        filter := filter and IsOperationHomomorphismDirectly;
     fi;
-    return Objectify( kind, hom );
+    if HasBase( xset )  then
+        filter := filter and IsOperationHomomorphismByBase;
+    fi;
+    return Objectify( NewKind( fam, filter ), rec( externalSet := xset ) );
 end );
 
 #############################################################################
@@ -803,7 +688,7 @@ Orbit := function( arg )
 end;
 
 InstallMethod( OrbitOp,
-        "<G>, <D>, <pnt>, [ <1gen> ], [ <1opr> ], <opr>", true,
+        "G, D, pnt, [ 1gen ], [ 1opr ], opr", true,
         OrbitishReq, SUM_FLAGS,
     function( G, D, pnt, gens, oprs, opr )
     if Length( oprs ) <> 1  then  TryNextMethod();
@@ -812,7 +697,7 @@ InstallMethod( OrbitOp,
 end );
 
 InstallMethod( OrbitOp,
-        "<G>, <D>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
     return OrbitByPosOp( G, D, BlistList( [ 1 .. Length( D ) ], [  ] ),
@@ -838,7 +723,7 @@ OrbitByPosOp := function( G, D, blist, pos, pnt, gens, oprs, opr )
 end;
 
 InstallOtherMethod( OrbitOp,
-        "<G>, <pnt>, [ <1gen> ], [ <1opr> ], <opr>", true,
+        "G, pnt, [ 1gen ], [ 1opr ], opr", true,
         [ IsGroup, IsObject,
           IsList,
           IsList,
@@ -849,7 +734,7 @@ InstallOtherMethod( OrbitOp,
 end );
 
 InstallOtherMethod( OrbitOp,
-        "<G>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, pnt, gens, oprs, opr", true,
         [ IsGroup, IsObject,
           IsList,
           IsList,
@@ -878,7 +763,7 @@ OrbitStabilizer := function( arg )
 end;
 
 InstallMethod( OrbitStabilizerOp,
-        "<G>, <D>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, pnt, gens, oprs, opr )
     return rec( orbit := OrbitOp( G, D, pnt, gens, oprs, opr ),
@@ -886,7 +771,7 @@ InstallMethod( OrbitStabilizerOp,
 end );
     
 InstallOtherMethod( OrbitStabilizerOp,
-        "<G>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, pnt, gens, oprs, opr", true,
         [ IsGroup, IsObject,
           IsList,
           IsList,
@@ -906,7 +791,7 @@ Orbits := function( arg )
 end;
 
 InstallMethod( OrbitsOp,
-        "<G>, <D>, <gens>, <oprs>, <opr>", true,
+        "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     local   blist,  orbs,  next,  pnt,  pos,  orb;
@@ -929,7 +814,7 @@ InstallMethod( OrbitsOp,
 end );
 
 InstallMethod( OrbitsOp,
-        "<G>, [  ], <gens>, <oprs>, <opr>", true,
+        "G, [  ], gens, oprs, opr", true,
         [ IsGroup, IsList and IsEmpty,
           IsList,
           IsList,
@@ -948,7 +833,7 @@ SparseOperationHomomorphism := function( arg )
 end;
 
 InstallMethod( SparseOperationHomomorphismOp,
-        "<G>, <D>, <start>, <gens>, <oprs>, <opr>", true,
+        "G, D, start, gens, oprs, opr", true,
         [ IsGroup, IsList, IsList,
           IsList,
           IsList,
@@ -958,7 +843,7 @@ InstallMethod( SparseOperationHomomorphismOp,
 end );
 
 InstallOtherMethod( SparseOperationHomomorphismOp,
-        "<G>, <start>, <gens>, <oprs>, <opr>", true,
+        "G, start, gens, oprs, opr", true,
         [ IsGroup, IsList,
           IsList,
           IsList,
@@ -1000,7 +885,7 @@ ExternalOrbits := function( arg )
 end;
 
 InstallMethod( ExternalOrbitsOp,
-        "<G>, <D>, <gens>, <oprs>, <opr>", true,
+        "G, D, gens, oprs, opr", true,
         OrbitsishReq, 0,
     function( G, D, gens, oprs, opr )
     local   blist,  orbs,  next,  pnt,  orb,  p;
@@ -1011,6 +896,7 @@ InstallMethod( ExternalOrbitsOp,
     while next <> fail  do
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, D, pnt, gens, oprs, opr );
+        SetCanonicalRepresentativeOfExternalSet( orb, pnt );
         Add( orbs, orb );
         for p  in orb  do
             blist[ PositionCanonical( D, p ) ] := true;
@@ -1021,7 +907,7 @@ InstallMethod( ExternalOrbitsOp,
 end );
 
 InstallOtherMethod( ExternalOrbitsOp,
-        "<G>, <xset>, <gens>, <oprs>, <opr>", true,
+        "G, xset, gens, oprs, opr", true,
         [ IsGroup, IsExternalSetDefaultRep,
           IsList,
           IsList,
@@ -1036,6 +922,7 @@ InstallOtherMethod( ExternalOrbitsOp,
     while next <> fail  do
         pnt := D[ next ];
         orb := ExternalOrbitOp( G, xset, pnt, gens, oprs, opr );
+        SetCanonicalRepresentativeOfExternalSet( orb, pnt );
         Add( orbs, orb );
         for p  in orb  do
             blist[ PositionCanonical( D, p ) ] := true;
@@ -1649,7 +1536,7 @@ Transitivity := function( arg )
     return AttributeOperation( TransitivityOp, TransitivityAttr, false, arg );
 end;
 InstallMethod( TransitivityOp,
-        "<G>, [  ], <gens>, <perms>, <opr>", true,
+        "G, [  ], gens, perms, opr", true,
         [ IsGroup, IsList and IsEmpty,
           IsList,
           IsList,
@@ -1902,7 +1789,7 @@ Stabilizer := function( arg )
 end;
 
 InstallOtherMethod( StabilizerOp,
-        "<G>, <D>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, D, pnt, gens, oprs, opr", true,
         OrbitishReq, 0,
     function( G, D, d, gens, oprs, opr )
     local   hom;
@@ -1919,7 +1806,7 @@ InstallOtherMethod( StabilizerOp,
 end );
 
 InstallOtherMethod( StabilizerOp,
-        "<G>, <pnt>, <gens>, <oprs>, <opr>", true,
+        "G, pnt, gens, oprs, opr", true,
         [ IsGroup, IsObject,
           IsList,
           IsList,
@@ -1934,14 +1821,14 @@ InstallOtherMethod( StabilizerOp,
 end );
 
 InstallMethod( StabilizerOp,
-        "<G>, <D>, <pnt>, <opr>", true,
+        "G, D, pnt, opr", true,
         [ IsGroup, IsList, IsObject, IsFunction ], 0,
     function( G, D, d, opr )
     return StabilizerOp( G, d, opr );
 end );
 
 InstallOtherMethod( StabilizerOp,
-        "<G>, <pnt>, <opr>", true,
+        "G, pnt, opr", true,
         [ IsGroup, IsObject, IsFunction ], 0,
     function( G, d, opr )
     local   stb,        # stabilizer, result
@@ -2052,7 +1939,7 @@ InstallMethod( StabilizerOfExternalSet, true,
 #M  ImagesRepresentative( <hom>, <elm> )  . . . . . . . . . for operation hom
 ##
 InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
-        [ IsOperationHomomorphismDefaultRep,
+        [ IsOperationHomomorphismDirectly,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
     local   xset;
@@ -2080,34 +1967,22 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     return RepresentativeOperationOp( ImagesSource( hom ),
                    base, imgs, OnTuples );
 end );
-                    
+
 #############################################################################
 ##
-#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . for operation hom
+#M  ImagesRepresentative( <hom>, <elm> )  . . . . .  restricted `Permutation'
 ##
-InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
-        [ IsOperationHomomorphismDefaultRep,
+InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
+        [ IsOperationHomomorphismSubset and IsOperationHomomorphismDirectly,
           IsMultiplicativeElementWithInverse ], 0,
     function( hom, elm )
-    return PreImagesRepresentative( AsGroupGeneralMappingByImages( hom ),
-                   elm );
+    local   xset;
+    
+    xset := hom!.externalSet;
+    return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
+        FunctionOperation( xset ) ),
+        MovedPoints( ImagesSource( AsGroupGeneralMappingByImages(hom) ) ) );
 end );
-
-#############################################################################
-##
-#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . for operation hom
-##
-InstallMethod( KernelOfMonoidGeneralMapping,
-    true, [ IsOperationHomomorphismDefaultRep ], 0,
-    hom -> KernelOfMonoidGeneralMapping(
-               AsGroupGeneralMappingByImages( hom ) ) );
-
-#############################################################################
-##
-#M  IsInjective( <hom> )  . . . . . . . . . . . . . . . . . for operation hom
-##
-InstallMethod( IsInjective, true, [ IsOperationHomomorphismDefaultRep ], 0,
-    hom -> IsInjective( AsGroupGeneralMappingByImages( hom ) ) );
 
 #############################################################################
 ##

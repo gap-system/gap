@@ -77,7 +77,7 @@ GlasbyStabilizer := function( pcgs, A, B, pcgsS, pcgsR )
     A := InducedPcgsByPcSequence( pcgs, A );
     U := Subgroup( GroupOfPcgs(pcgs), A );
     SetPcgs( U, A ); 
-    matA  := AffineOperationLayer( U, pcgsL, transl );
+    matA  := AffineOperationLayer( A, pcgsL, transl );
 
     pt := List( pcgsL, x -> Zero( f ) );
     Add( pt, One( f ) );

@@ -8,6 +8,15 @@
 ##  classes for permutation groups.
 ##
 #H  $Log$
+#H  Revision 4.7  1997/01/30 09:14:52  htheisse
+#H  changed the syntax of `CompleteGaloisGroupPElement'
+#H
+#H  Revision 4.6  1997/01/29 15:54:10  mschoene
+#H  fixed a few more doubly defined locals
+#H
+#H  Revision 4.5  1997/01/27 11:20:42  htheisse
+#H  cleaned up the code
+#H
 #H  Revision 4.4  1997/01/21 15:07:13  htheisse
 #H  introduced `PositionCanonical'
 #H
@@ -203,7 +212,7 @@ end );
 #############################################################################
 ##
 
-#F  CompleteGaloisGroupPElement( <G>, <cl>, <power>, <p> )  . add the p'-part
+#F  CompleteGaloisGroupPElement( <cl>, <power>, <p> ) . . . . add the p'-part
 ##
 ##  This  function assumes  that  the <p>-part  of the Galois  group  of  the
 ##  rational class <cl>  is already  bound  to  '<cl>.galoisGroup'.  It  then
@@ -212,7 +221,7 @@ end );
 ##  Galois group.  <power> must the <p>-th power of <cl> .  If <p> = 2, there
 ##  is nothing to be done, since the Galois group is a 2-group then.
 ##
-CompleteGaloisGroupPElement := function( G, class, power, p )
+CompleteGaloisGroupPElement := function( class, power, p )
     local  G,  rep,  order,
            phi,             # size of the prime residue class group
            primitiveRoot,   # generator of the cyclic prime residue class group
@@ -367,27 +376,40 @@ end;
 ##
 FusionRationalClassesPSubgroup := function( N, S, rationalClasses )
     local  representatives,  classreps,  classimages,  fusedClasses,
-           genimages,  gen,  prm,  i,  orbs,  orb,  cl,  pos,  porb;
+           gens,  gensS,  gensNmodS,  genimages,  gen,
+           prm,  i,  orbs,  orb,  cl,  pos,  porb;
 
     if Size( N ) > Size( S )  then
 
         # Construct the fusing operation of the group <N>.
         representatives := List( rationalClasses, Representative );
         classreps := [  ];
-        for gen  in GeneratorsOfGroup( N )  do
-            Append( classreps, OnTuples( representatives, gen ) );
+        gens := TryPcgsPermGroup( [ N, S, TrivialSubgroup( N ) ],
+                        false, false, false );
+        if not IsPcgs( gens )  then
+            gens := GeneratorsOfGroup( N );
+        fi;
+        gensS := [  ];  gensNmodS := [  ];
+        for gen  in gens  do
+            if gen in S  then
+                Add( gensS, gen );
+            else
+                Add( gensNmodS, gen );
+                Append( classreps, OnTuples( representatives, gen ) );
+            fi;
         od;
         classimages := List( ClassesSolvableGroup( S, S, true, 1, classreps ),
                              Representative );
         genimages := [  ];
-        for i  in [ 1 .. Length( GeneratorsOfGroup( N ) ) ]  do
+        for i  in [ 1 .. Length( gensNmodS ) ]  do
             prm := List( [ 1 + ( i - 1 ) * Length( rationalClasses )
                            ..        i   * Length( rationalClasses ) ],
                    x -> Position( representatives, classimages[ x ] ) );
             Add( genimages, PermList( prm ) );
         od;
         orbs := ExternalOrbits( N, [ 1 .. Length( rationalClasses ) ],
-                        GeneratorsOfGroup( N ), genimages );
+                        Concatenation( gensNmodS, gensS ),
+                        Concatenation( genimages, List( gensS, g -> () ) ) );
         fusedClasses := [  ];
         for orb  in orbs  do
             cl := rationalClasses[ Representative( orb ) ];
@@ -465,9 +487,9 @@ RationalClassesPElements := function( arg )
                     Representative( cl ), S ) );
             SetGaloisGroup( cl, GroupByPrimeResidues( [  ], p ^ i ) );
             if i = 1  then
-                CompleteGaloisGroupPElement( G, cl, 1, p );
+                CompleteGaloisGroupPElement( cl, 1, p );
             else
-                CompleteGaloisGroupPElement( G, cl, rationalClasses[i-1], p );
+                CompleteGaloisGroupPElement( cl, rationalClasses[i-1], p );
             fi;
             Add( rationalClasses, cl );
         od;
@@ -565,7 +587,7 @@ RationalClassesPElements := function( arg )
                 [ rationalClasses[ j ]!.power ] ];
         fi;
         Unbind( rationalClasses[ j ]!.power );
-        CompleteGaloisGroupPElement( G, rationalClasses[ j ], 
+        CompleteGaloisGroupPElement( rationalClasses[ j ], 
                 rationalClasses[ j ]!.powers[ p ], p );
     od;
 
@@ -598,7 +620,7 @@ RationalClassesPermGroup := function( G, primes )
            ji,               # generator of the cyclic Galois group of <z>
            gi,               # element inducing the conjugation corr. to <ji>
            conj,             # result of conjugacy test $Hom(y^g)$ to $y_^m$
-           a,  m,            # auxiliary variable in calculation of $Gal(y)$
+           m,                # auxiliary variable in calculation of $Gal(y)$
            gens,  gen,       # generators of the Galois group of <y>.
            i, j, k, l, cl;   # loop variables
     
@@ -611,7 +633,8 @@ RationalClassesPermGroup := function( G, primes )
     for k  in [ 1 .. Length( primes ) ]  do
         p := primes[ k ];
         if Size( G ) mod p = 0  then
-            if k = Length( primes )  then
+            if     k = Length( primes )
+               and IsSubset( primes, FactorsInt( Size( G ) ) )  then
                 pRationalClasses := RationalClassesPElements( G, p,
                                         Sum( rationalClasses, Size ) );
             else

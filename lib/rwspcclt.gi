@@ -169,12 +169,144 @@ end;
 
 #############################################################################
 InstallMethod( IsConfluent, 
+    "method for finite polycylic rewriting systems",
     true,
     [ IsPolycyclicCollector and IsFinite ],
     0,
 
 function( col )
     return FinitePolycyclicCollector_IsConfluent( col, false );
+end );
+
+
+#############################################################################
+if not IsBound( InfoConsistency ) then
+    InfoConsistency := function( arg ) end;
+fi;
+InstallMethod( IsConfluent,
+        "generic method for polycyclic rewriting systems",
+        true,
+        [ IsPolycyclicCollector ],
+        0,
+        function( pcp )
+    local   n,  k,  j,  i,  ev1,  ev2, g, orders;
+    
+    n := NumberGeneratorsOfRws(pcp);
+    g := GeneratorsOfRws(pcp);
+    orders := RelativeOrders(pcp);
+
+    # k (j i) = (k j) i
+    for k in [n,n-1..1] do
+        for j in [k-1,k-2..1] do
+            for i in [j-1,j-2..1] do
+                InfoConsistency( "checking ", k, " ", j, " ", i, "\n" );
+                ev1 := ReducedProduct( pcp, g[k],
+	                               ReducedProduct( pcp, g[j], g[i] ) ); 
+                ev2 := ReducedProduct( pcp, ReducedProduct( pcp, g[k], g[j] ),
+                                       g[i]   );
+                if ev1 <> ev2 then
+                    Print( "Inconsistency at ", k, " ", j, " ", i, "\n" );
+                    return false;
+                fi;
+            od;
+        od;
+    od;
+    
+    # j^m i = j^(m-1) (j i)
+    for j in [n,n-1..1] do
+        for i in [j-1,j-2..1] do
+            if  orders[j] <> 0  then
+                InfoConsistency( "checking ", j, "^m ", i, "\n" );
+                ev1 := ReducedProduct( pcp, ReducedPower(pcp, g[j], orders[j]),
+                                       g[i]   );
+                ev2 := ReducedProduct( pcp,
+                                       ReducedPower( pcp, g[j], orders[j]-1 ),
+                                       ReducedProduct( pcp, g[j], g[i] )  );
+                if ev1 <> ev2 then
+                    Print( "Inconsistency at ", j, "^m ", i, "\n" );
+                    return false;
+                fi;
+            fi;
+        od;
+    od;
+    
+    # j * i^m = (j i) * i^(m-1)
+    for j in [n,n-1..1] do
+        for i in [j-1,j-2..1] do
+	    if  orders[i] <> 0  then
+                InfoConsistency( "checking ", j, " ", i, "^m\n" );
+                ev1 := ReducedProduct( pcp, g[j],
+                                       ReducedPower(pcp, g[i], orders[i])  );
+                ev2 := ReducedProduct( pcp,
+                                       ReducedProduct( pcp, g[j], g[i] ),
+                                       ReducedPower(pcp, g[i], orders[i]-1)  );
+                if ev1 <> ev2 then
+                    Print( "Inconsistency at ", j, " ", i, "^m\n" );
+                    return false;
+                fi;
+            fi;
+        od;
+    od;
+    
+    # i^m i = i i^m
+    for i in [n,n-1..1] do
+        if  orders[i] <> 0 then
+            ev1 := ReducedProduct( pcp, g[i],
+                                   ReducedPower( pcp, g[i], orders[i] )  );
+            ev2 := ReducedProduct( pcp,
+                                   ReducedPower( pcp, g[i], orders[i] ),
+                                   g[i]     );
+            if ev1 <> ev2 then
+                Print( "Inconsistency at ", i, "^(m+1)\n" );
+                return false;
+            fi;
+        fi;
+    od;
+        
+    # j = (j -i) i 
+    for i in [n,n-1..1] do
+        if  orders[i] = 0  then
+            for j in [i+1..n] do
+                InfoConsistency( "checking ", j, " ", -i, " ", i, "\n" );
+                ev1 := ReducedProduct( pcp,
+                                       ReducedProduct( pcp, g[j],
+                                                       ReducedInverse( pcp,
+                                                                       g[i] )),
+                                       g[i] );
+                if ev1 <> g[j] then
+                    Print( "Inconsistency at ", j, " ", -i, " ", i, "\n" );
+                    return false;
+                fi;
+            od;
+        fi;
+    od;
+    
+    # i = -j (j i)
+    for j in [n,n-1..1] do
+        if  orders[j] = 0  then
+            for i in [j-1,j-2..1] do
+                InfoConsistency( "checking ", -j, " ", j, " ", i, "\n" );
+                ev1 := ReducedProduct( pcp, ReducedInverse( pcp, g[j] ),
+                                       ReducedProduct( pcp, g[j], g[i] )  );
+                if  ev1 <> g[i]  then
+                    Print( "Inconsistency at ", -j, " ", j, " ", i, "\n" );
+                    return false;
+                fi;
+                
+                if  orders[i] = 0  then
+                    InfoConsistency( "checking ", -j, " ", j, " ", -i, "\n" );
+                    ev1 := ReducedProduct( pcp, ReducedInverse( pcp, g[j] ),
+                                  ReducedProduct( pcp, g[j],
+                                         ReducedInverse( pcp, g[i] ) ) );
+                    if  ev1 <> ReducedInverse( pcp, g[i] )  then
+                        Print( "Inconsistency at ", -j, " ", j, " ", -i, "\n" );
+                        return false;
+                    fi;
+                fi;
+            od;
+        fi;
+    od;
+    return true;
 end );
 
 

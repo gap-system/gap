@@ -294,11 +294,11 @@ FrobeniusAutomorphismI := function ( F, i )
 
     # make the mapping object
     frob:= Objectify( KindOfDefaultGeneralMapping( F, F,
-                          IsFrobeniusAutomorphism ),
+                              IsFrobeniusAutomorphism
+                          and IsSPGeneralMapping
+                          and IsRingWithOneHomomorphism
+                          and IsBijective ),
                       rec() );
-    SetIsRingHomomorphism( frob, true );
-    SetIsInjective( frob, true );
-    SetIsSurjective( frob, true );
 
     frob!.power := i;
 #T make this a list object!!

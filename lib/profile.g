@@ -36,7 +36,7 @@ PREV_PROFILED_FUNCTIONS_NAMES := [];
 ClearProfile := function()
     local   i;
 
-    for i  in PROFILED_FUNCTIONS  do
+    for i  in Concatenation(PROFILED_FUNCTIONS, PREV_PROFILED_FUNCTIONS)  do
         CLEAR_PROFILE_FUNCTION(i);
     od;
 end;
@@ -277,9 +277,7 @@ PROFILED_METHODS := [];
 ProfileMethods := function( arg )
     local   funcs,  names,  op,  i,  meth,  j,  name;
 
-    if IsList(arg)  then
-        arg := arg[1];
-    fi;
+    arg := Flat(arg);
     funcs := [];
     names := [];
     for op  in arg  do
@@ -314,9 +312,7 @@ end;
 UnprofileMethods := function( arg )
     local   funcs,  op,  i,  meth,  j;
 
-    if IsList(arg)  then
-        arg := arg[1];
-    fi;
+    arg := Flat(arg);
     funcs := [];
     for op  in arg  do
         for i  in [ 0 .. 6 ]  do
@@ -494,12 +490,12 @@ end;
 
 #############################################################################
 ##
-#F  DisplayOpersCache()
+#F  DisplayCacheStats()
 ##
-DisplayOpersCache := function()
+DisplayCacheStats := function()
     local   cache,  names,  pos,  i;
 
-    cache := ShallowCopy(OPERS_CACHE());
+    cache := ShallowCopy(OPERS_CACHE_INFO());
     Append( cache, [
         WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT,
         WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS,
@@ -545,6 +541,21 @@ DisplayOpersCache := function()
                FormattedString( String(cache[i]), 12 ), "\n" );
     od;
 
+end;
+
+
+#############################################################################
+##
+#F  ClearCacheStats()
+##
+ClearCacheStats := function()
+    CLEAR_CACHE_INFO();
+    WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT := 0;
+    WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS := 0;
+    WITH_IMPS_FLAGS_CACHE_HIT := 0;
+    WITH_IMPS_FLAGS_CACHE_MISS := 0;
+    NEW_KIND_CACHE_HIT := 0;
+    NEW_KIND_CACHE_MISS := 0;
 end;
 
 

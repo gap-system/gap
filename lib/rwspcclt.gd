@@ -221,6 +221,24 @@ SingleCollectorByGenerators := NewOperation(
 
 #############################################################################
 ##
+#O  DeepThoughtCollector( <fgrp>, <orders> )
+##
+DeepThoughtCollector := NewOperation(
+    "DeepThoughtCollector",
+    [ IsObject, IsObject ] );
+
+
+#############################################################################
+##
+#O  DeepThoughtCollectorByGenerators( <fam>, <gens>, <orders> )
+##
+DeepThoughtCollectorByGenerators := NewOperation(
+    "DeepthoughtCollectorByGenerators",
+    [ IsFamily, IsList, IsList ] );
+
+
+#############################################################################
+##
 
 #E  rwspcclt.gd . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

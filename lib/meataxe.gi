@@ -195,7 +195,7 @@ end;
 ## matrices in the list are used.
 SMTX.SpinnedBasis := function ( arg  )
    local   v, matrices, ngens, zero,  
-           ans, dim, subdim, leadpos, w, i, j, k, l, m, zero;
+           ans, dim, subdim, leadpos, w, i, j, k, l, m;
 
    if Number (arg) < 2 or Number (arg) > 3 then
       Error ("Usage:  SpinnedBasis ( v, matrices, [ngens] )");
@@ -298,7 +298,7 @@ end;
 SMTX.SubQuotActions := function(matrices,sub,dim,subdim,one,typ)
 local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,
            g, newg, newgn, smatrices, qmatrices, nmatrices, 
-           im, newim, newimn, zero;
+           im, newim, newimn;
 
    zero:=Zero(one);
    c:=typ>3; # common indicator
@@ -640,7 +640,7 @@ SMTX.IrreducibilityTest := function ( module )
    local matrices, tmatrices, ngens, ans,  M, mat, g1, g2, maxdeg, 
          newgenlist, coefflist, orig_ngens, zero, 
          N, NT, v, subbasis, sq, fac, sfac, pol, orig_pol, q, dim, ndim, i, k, 
-         l, trying, dim, deg, facno, bestfacno, F, count, R, rt0 ;
+         l, trying, deg, facno, bestfacno, F, count, R, rt0 ;
 
    rt0 := Runtime ();
    Info(InfoMeatAxe,1,"Calling MeatAxe. All times will be in milliseconds");
@@ -969,7 +969,7 @@ SMTX.GoodElementGModule := function ( module )
 
    local matrices, ngens, el, M, mat,  N, newgenlist, coefflist, orig_ngens, 
          g1, g2, fac, sfac, pol, oldpol,  q, deg, i, k, l, 
-         trying, dim, mindim, deg,  F, R, count, rt0;
+         trying, dim, mindim, F, R, count, rt0;
 
    rt0 := Runtime ();
    if not SMTX.IsMTXModule(module) or not SMTX.IsIrreducible(module) then
@@ -1092,7 +1092,7 @@ end;
 SMTX.FrobeniusAction := function ( arg )
 
    local   L, d, p, M, one, zero, R, h, v, w, i, j, nd, ans, 
-           A, v, basis;
+           A, basis;
 
    if Number (arg) = 2  then
       A := arg[1];

@@ -27,6 +27,13 @@ InstallMethod( \=,
 
 #############################################################################
 ##
+#M  \=( <fam1>, <fam2> )  . . . . . . . . . . . . . . . . .  for two families
+##
+InstallMethod( \=, true, [ IsFamily, IsFamily], 0, IS_IDENTICAL_OBJ );
+
+
+#############################################################################
+##
 #M  FormattedString( <obj>, <width> )  . . . . . convert object into a string
 ##
 InstallOtherMethod( FormattedString,

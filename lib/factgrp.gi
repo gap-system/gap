@@ -45,7 +45,7 @@ local G,N,op,i,c,p,pool,mustsort,perm;
     p:=[];
     for i in op do
       if IsMapping(i) then
-        c:=Intersection(G,KernelOfMonoidGeneralMapping(i));
+        c:=Intersection(G,KernelOfMultiplicativeGeneralMapping(i));
       else
         c:=Core(G,i);
       fi;
@@ -100,8 +100,8 @@ local G,N,op,i,c,p,pool,mustsort,perm;
   fi;
 
   Info(InfoFactor,3,"Added price ",c," for size ",Index(G,N));
-  if IsMapping(op) and not HasKernelOfMonoidGeneralMapping(op) then
-    SetKernelOfMonoidGeneralMapping(op,N);
+  if IsMapping(op) and not HasKernelOfMultiplicativeGeneralMapping(op) then
+    SetKernelOfMultiplicativeGeneralMapping(op,N);
   fi;
   pool.ops[p]:=op;
   pool.cost[p]:=c;
@@ -220,7 +220,7 @@ local pool,p,h,ise,emb,i,j;
       ise:=Subgroup(h,emb);
 
       h:=GroupHomomorphismByImages(G,ise,GeneratorsOfGroup(G),emb);
-      SetKernelOfMonoidGeneralMapping(h,N);
+      SetKernelOfMultiplicativeGeneralMapping(h,N);
       pool.ops[p]:=h;
     elif IsGroup(h) then
       h:=FactorCosetOperation(G,h,N); # will implicitely store
@@ -328,7 +328,7 @@ local G,u,op,h,p,N;
   SetSize(op,Index(G,N));
 
   # and note our knowledge
-  SetKernelOfMonoidGeneralMapping(h,N);
+  SetKernelOfMultiplicativeGeneralMapping(h,N);
   AddNaturalHomomorphismsPool(G,N,h);
   return h;
 end;
@@ -379,7 +379,7 @@ local dom,o,bl,i,j,b,op,pool;
 
     for i in bl do
       op:=OperationHomomorphism(G,i,OnSets);
-      b:=KernelOfMonoidGeneralMapping(op);
+      b:=KernelOfMultiplicativeGeneralMapping(op);
 
       #AH kernel is blockstab intersect.
       #b:=g;
@@ -464,11 +464,12 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	      AddSet(bp,bb[1]);
 	      # store action
 	      op:=OperationHomomorphism(img,bb,OnSets);
-	      k:=KernelOfMonoidGeneralMapping(op);
+	      k:=KernelOfMultiplicativeGeneralMapping(op);
 	      op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 		 List(gens,i->Image(op,i)));
-	      SetKernelOfMonoidGeneralMapping(op,PreImage(oh,k));
-	      AddNaturalHomomorphismsPool(G,KernelOfMonoidGeneralMapping(op),
+	      SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	      AddNaturalHomomorphismsPool(G,
+                  KernelOfMultiplicativeGeneralMapping(op),
                                           op,Length(bb));
 	      # and note whether we got better
 	      improve:=improve or (Size(k)=1);
@@ -486,12 +487,13 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	else
 	  Info(InfoFactor,2,"try only one system");
 	  op:=OperationHomomorphism(img,b,OnSets);
-	  k:=KernelOfMonoidGeneralMapping(op);
+	  k:=KernelOfMultiplicativeGeneralMapping(op);
 	  # keep action knowledge
 	  op:=GroupHomomorphismByImages(G,Range(op),GeneratorsOfGroup(G),
 	     List(gens,i->Image(op,i)));
-	  SetKernelOfMonoidGeneralMapping(op,PreImage(oh,k));
-	  AddNaturalHomomorphismsPool(G,KernelOfMonoidGeneralMapping(op),
+	  SetKernelOfMultiplicativeGeneralMapping(op,PreImage(oh,k));
+	  AddNaturalHomomorphismsPool(G,
+              KernelOfMultiplicativeGeneralMapping(op),
                                       op,Length(b));
 	  improve:=improve or (Size(k)=1);
 	fi;
@@ -791,7 +793,7 @@ local h;
     else
       Error("This should not happen");
       # nothing had been found, still rely on 'NatHom'
-      h:=NaturalHomomorphism(G,G/N);
+      h:= NaturalHomomorphismByNormalSubgroup( G, N );
     fi;
   fi;
   # return the map

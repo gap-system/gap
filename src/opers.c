@@ -5051,9 +5051,9 @@ Obj FuncUntraceMethods (
 
 /****************************************************************************
 **
-*F  FuncOpersCache( <self> )
+*F  FuncOPERS_CACHE_INFO( <self> )
 */
-Obj FuncOpersCache (
+Obj FuncOPERS_CACHE_INFO (
     Obj                        self )
 {
     Obj                 list;
@@ -5071,6 +5071,28 @@ Obj FuncOpersCache (
     SET_ELM_PLIST( list, 9, INTOBJ_INT(OperationNext)       );
 
     return list;
+}
+
+
+
+/****************************************************************************
+**
+*F  FuncCLEAR_CACHE_INFO( <self> )
+*/
+Obj FuncCLEAR_CACHE_INFO (
+    Obj                        self )
+{
+    AndFlagsCacheHit = 0;
+    AndFlagsCacheMiss = 0;
+    AndFlagsCacheLost = 0;
+    OperationHit = 0;
+    OperationMiss = 0;
+    IsSubsetFlagsCalls = 0;
+    IsSubsetFlagsCalls1 = 0;
+    IsSubsetFlagsCalls2 = 0;
+    OperationNext = 0;
+
+    return 0;
 }
 
 
@@ -5334,10 +5356,13 @@ void InitOpers ( void )
     }
 #endif
 
-    AssGVar( GVarName( "OPERS_CACHE" ),
-         NewFunctionC( "OPERS_CACHE", 0L, "",
-                    FuncOpersCache ) );
+    AssGVar( GVarName( "OPERS_CACHE_INFO" ),
+         NewFunctionC( "OPERS_CACHE_INFO", 0L, "",
+                    FuncOPERS_CACHE_INFO ) );
 
+    AssGVar( GVarName( "CLEAR_CACHE_INFO" ),
+         NewFunctionC( "CLEAR_CACHE_INFO", 0L, "",
+                    FuncCLEAR_CACHE_INFO ) );
 }
 
 

@@ -4,37 +4,6 @@
 ##
 #H  @(#)$Id$
 ##
-#H  $Log$
-#H  Revision 4.7  1997/01/20 13:55:29  sam
-#H  moved the definition of structure preserving properties of general mappings
-#H      to new file 'mapphomo.gd',
-#H  renamed 'Kernel' and 'CoKernel' to 'KernelOfMonoidGeneralMapping' and
-#H      'CoKernelOfMonoidGeneralMapping', respectively,
-#H  added 'Kernel' and 'CoKernel' to 'overload.g'
-#H
-#H  (addition preserving mappings will follow soon)
-#H
-#H  Revision 4.6  1997/01/13 16:46:40  htheisse
-#H  `IsDirectProductPermGroups' implies `IsPermGroup'
-#H
-#H  Revision 4.5  1997/01/07 10:56:05  ahulpke
-#H  Changed 'WreathProduct' to use the natural representation of permutation
-#H  groups instead of the regular one
-#H
-#H  Revision 4.4  1996/12/19 09:59:03  htheisse
-#H  added revision lines
-#H
-#H  Revision 4.3  1996/11/26 16:08:10  sam
-#H  replaced 'IsEmptyList' by 'IsList and IsEmpty' (in installations)
-#H      resp. 'IsEmpty' (in calls)
-#H
-#H  Revision 4.2  1996/11/19 13:18:20  htheisse
-#H  corrected some filters in `InstallMethod'
-#H
-#H  Revision 4.1  1996/10/30 15:17:03  htheisse
-#H  added products of permutation groups
-#H
-##
 Revision.gprdperm_gi :=
     "@(#)$Id$";
 
@@ -264,9 +233,9 @@ end );
 
 #############################################################################
 ##
-#M  KernelOfMonoidGeneralMapping( <prj> ) . . . . . . . . . . . of projection
+#M  KernelOfMultiplicativeGeneralMapping( <prj> ) . . . . . . . of projection
 ##
-InstallMethod( KernelOfMonoidGeneralMapping,
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsProjectionDirectProductPermGroup ], 0,
     function( prj )
     local   D,  gens,  i,  K;
@@ -329,7 +298,8 @@ InstallMethod( SubdirectProduct, true,
     for gen  in GeneratorsOfGroup( G1 )  do
         Add( gens, gen^emb1 * PreImagesRepresentative(phi2,gen^phi1)^emb2 );
     od;
-    for gen in GeneratorsOfGroup( KernelOfMonoidGeneralMapping( phi2 ) )  do
+    for gen in GeneratorsOfGroup(
+                   KernelOfMultiplicativeGeneralMapping( phi2 ) )  do
         Add( gens, gen ^ emb2 );
     od;
 
@@ -439,16 +409,18 @@ end );
 
 #############################################################################
 ##
-#M  KernelOfMonoidGeneralMapping( <prj> ) . . . . . . . . . . . of projection
+#M  KernelOfMultiplicativeGeneralMapping( <prj> ) . . . . . . . of projection
 ##
-InstallMethod( KernelOfMonoidGeneralMapping, true, [ IsProjectionSubdirectProductPermGroup ], 0,
+InstallMethod( KernelOfMultiplicativeGeneralMapping,
+    true,
+    [ IsProjectionSubdirectProductPermGroup ], 0,
     function( prj )
     local   D,  i;
     
     D := Source( prj );
     i := 3 - prj!.component;
     return SubgroupNC( D, OnTuples
-           ( GeneratorsOfGroup( KernelOfMonoidGeneralMapping(
+           ( GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
                                     D!.homomorphisms[ i ] ) ),
              D!.perms[ i ] ) );
 end );
@@ -482,7 +454,7 @@ InstallMethod( WreathProduct, true,
             i, k, l;    # loop variables
 
     # get the domain of operation of <G>
-    domG := MovedPoints( G );
+    domG := MovedPoints( Parent( G ) );
     degG := Length( domG );
 
     # get the degree of the image of <H>
@@ -490,7 +462,7 @@ InstallMethod( WreathProduct, true,
     if not IsPermGroup( I )  then
         Error( "WreathProduct: image of <alpha> must be perm group" );
     fi;
-    domI := MovedPoints( I );
+    domI := MovedPoints( Parent( I ) );
     degI := Length( domI );
 
     # make the generators of the direct product of <deg> copies of <G>
@@ -567,7 +539,7 @@ WreathProductProductAction := function( arg )
     fi;
     
     deg := NrMovedPoints( Parent( G ) );
-    n   := NrMovedPoints( I );
+    n   := NrMovedPoints( Parent( I ) );
     N := deg ^ n;
     gens := [  ];
     for gen  in GeneratorsOfGroup( G )  do

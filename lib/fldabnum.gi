@@ -1722,11 +1722,10 @@ ANFAutomorphism := function ( F, k )
     fi;
 
     # make the mapping
-    aut:= Objectify( KindOfDefaultGeneralMapping( F, F, IsANFAutomorphism ),
+    aut:= Objectify( KindOfDefaultGeneralMapping( F, F,
+                             IsSPGeneralMapping
+                         and IsANFAutomorphism ),
                      rec() );
-
-#T    SetIsSurjective( aut, true );
-#T    SetIsInjective( aut, true );
 
     aut!.galois:= galois;
 

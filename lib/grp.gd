@@ -642,9 +642,9 @@ HasHallSystem := Tester( HallSystem );
 ##
 #A  TrivialSubgroup( <G> ) . . . . . . . . . .  trivial subgroup of group <G>
 ##
-TrivialSubgroup := NewAttribute( "TrivialSubgroup", IsGroup );
-SetTrivialSubgroup := Setter( TrivialSubgroup );
-HasTrivialSubgroup := Tester( TrivialSubgroup );
+TrivialSubgroup := TrivialSubmagmaWithOne;
+SetTrivialSubgroup := SetTrivialSubmagmaWithOne;
+HasTrivialSubgroup := HasTrivialSubmagmaWithOne;
 
 
 #############################################################################

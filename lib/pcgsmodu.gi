@@ -89,7 +89,7 @@ InstallMethod( PrintObj,
     0,
 
 function( obj )
-    Print( "(", NumeratorOfModuloPcgs(obj), "/",
+    Print( "(", NumeratorOfModuloPcgs(obj), " mod ",
            DenominatorOfModuloPcgs(obj), ")" );
 end );
 
@@ -132,7 +132,7 @@ function( pcgs, modulo )
 
     # check which filter to use
     filter := IsModuloPcgs;
-    if IsEmpty(wd)  or  wd[Length(wd)] = Length(wd)  then
+    if IsEmpty(wd) or wd[Length(wd)] = Length(wd)  then
         filter := filter and IsModuloTailPcgsRep;
     else
         filter := filter and IsModuloPcgsRep;

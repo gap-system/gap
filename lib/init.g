@@ -283,7 +283,7 @@ ReadLib( "listcoef.gd" );
 
 ReadLib( "object.gi"   );
 ReadLib( "coll.gi"     );
-ReadLib( "list.gi"     );
+ReadLib( "listkind.gi" );
 ReadLib( "arith.gi"    );
 ReadLib( "rest.gi"     );
 ReadLib( "listcoef.gi" );
@@ -327,6 +327,7 @@ ReadLib( "monoid.gd"   );
 ReadLib( "grp.gd"      );
 
 ReadLib( "addmagma.gd" );
+ReadLib( "addcoset.gd" );
 ReadLib( "ring.gd"     );
 ReadLib( "module.gd"   );
 ReadLib( "basis.gd"    );
@@ -363,8 +364,8 @@ ReadLib( "rwspcgrp.gd" );
 
 # files dealing with polycyclic generating systems
 ReadLib( "pcgs.gd"     );
-ReadLib( "pcgspcg.gd"  );
 ReadLib( "pcgsind.gd"  );
+ReadLib( "pcgspcg.gd"  );
 ReadLib( "pcgsmodu.gd" );
 ReadLib( "pcgsperm.gd" );
 ReadLib( "pcgsspec.gd" );
@@ -389,16 +390,10 @@ ReadLib( "factgrp.gd"  );
 ReadLib( "grppcrep.gd" );
 
 ReadLib( "onecohom.gd" );
-
-# files dealing with nice monomorphism
-ReadLib( "grpnice.gd"  );
+ReadLib( "grppccom.gd" );
 
 ReadLib( "morpheus.gd" );
 ReadLib( "grplatt.gd"  );
-
-# files dealing with matrix groups
-ReadLib( "grpmat.gd"   );
-ReadLib( "grpffmat.gd" );
 
 # files dealing with fp groups
 ReadLib( "grpfp.gd"    );
@@ -412,6 +407,19 @@ ReadLib( "dt.g" );
 # group library
 ReadGrp( "basic.gd"    );
 ReadGrp( "perf.gd"     );
+
+# family predicates (needed for all 'InstallMethod')
+ReadLib( "fampred.g"   );
+
+ReadLib( "list.gi"     ); # was too early
+
+# files dealing with nice monomorphism
+# grpnice uses some family predicates, so fampred.g must be known
+ReadLib( "grpnice.gd"  );
+
+# files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
+ReadLib( "grpmat.gd"   );
+ReadLib( "grpffmat.gd" );
 
 #############################################################################
 ##
@@ -440,6 +448,8 @@ ReadLib("tuples.gi"    );
 ReadLib( "domain.gi"   );
 ReadLib( "mapping.gi"  );
 ReadLib( "mapprep.gi"  );
+ReadLib( "mapphomo.gi" );
+
 ReadLib( "magma.gi"    );
 ReadLib( "semigrp.gi"  );
 ReadLib( "monoid.gi"   );
@@ -447,6 +457,7 @@ ReadLib( "monoid.gi"   );
 ReadLib( "grp.gi"      );
 
 ReadLib( "addmagma.gi" );
+ReadLib( "addcoset.gi" );
 
 ReadLib( "ring.gi"     );
 
@@ -459,6 +470,7 @@ ReadLib( "basismut.gi" );
 ReadLib( "vspc.gi"     );
 ReadLib( "vspcrow.gi"  );
 ReadLib( "vspcmat.gi"  );
+# ReadLib( "vspchom.gi"  );
 
 ReadLib( "algebra.gi"  );
 ReadLib( "alglie.gi"   );
@@ -507,11 +519,12 @@ ReadLib( "rwspcsng.gi" );
 ReadLib( "rwspcftl.gi" );
 ReadLib( "rwsgrp.gi"   );
 ReadLib( "rwspcgrp.gi" );
+ReadLib( "rwsdt.gi" );
 
 # files dealing with polycyclic generating systems
 ReadLib( "pcgs.gi"     );
-ReadLib( "pcgspcg.gi"  );
 ReadLib( "pcgsind.gi"  );
+ReadLib( "pcgspcg.gi"  );
 ReadLib( "pcgsmodu.gi" );
 ReadLib( "pcgscomp.gi" );
 ReadLib( "pcgsperm.gi" );
@@ -549,6 +562,7 @@ ReadLib( "factgrp.gi"  );
 ReadLib( "grppcrep.gi" );
 
 ReadLib( "onecohom.gi" );
+ReadLib( "grppccom.gi" );
 
 # files dealing with nice monomorphism
 ReadLib( "grpnice.gi"  );

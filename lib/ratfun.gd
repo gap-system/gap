@@ -174,7 +174,6 @@ IsUnivariatePolynomialsFamily := NewCategory(
 
 #############################################################################
 ##
-
 #P  IsConstantRationalFunction( <rat-fun> )
 ##
 ##  A  constant  rational   function is  a    function  whose  numerator  and
@@ -512,27 +511,6 @@ ZippedSum := NewOperation(
 ZippedProduct := NewOperation(
     "ZippedProduct",
     [ IsList, IsList, IsObject, IsList ] );
-
-
-#############################################################################
-##
-
-#F  IsCoeffsElms( <coeff>, <elm> )
-##
-IsCoeffsElms := function( F1, F2 )
-    return HasCoefficientsFamily(F2)
-       and IsIdentical( F1, CoefficientsFamily(F2) );
-end;
-
-
-#############################################################################
-##
-#F  IsElmsCoeffs( <elm>, <coeff> )
-##
-IsElmsCoeffs := function( F1, F2 )
-    return HasCoefficientsFamily(F1)
-       and IsIdentical( CoefficientsFamily(F1), F2 );
-end;
 
 
 # basic polynomial reduction stuff

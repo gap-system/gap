@@ -14,15 +14,20 @@ Revision.field_gi :=
 
 #############################################################################
 ##
-#M  FieldByGenerators( <gens> ) . . . . . . . . . . . . . field by generators
-#M  FieldByGenerators( <F>, <gens> )  . . . . . . . . . . field by generators
+#M  DivisionRingByGenerators( <gens> )  . . . . . . . . . .  for a collection
+#M  DivisionRingByGenerators( <F>, <gens> )   . . for div.ring and collection
 ##
-InstallOtherMethod( FieldByGenerators, true, [ IsCollection ] , 0,
+InstallOtherMethod( DivisionRingByGenerators,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
     coll -> FieldByGenerators(
         FieldOverItselfByGenerators( [ One( Representative( coll ) ) ] ),
         coll ) );
 
-InstallMethod( DivisionRingByGenerators, IsIdentical,
+InstallMethod( DivisionRingByGenerators,
+    "method for a field and a collection",
+    IsIdentical,
     [ IsDivisionRing, IsCollection ] , 0,
     function( F, gens )
     local D;
@@ -39,7 +44,9 @@ InstallMethod( DivisionRingByGenerators, IsIdentical,
 ##
 #M  FieldOverItselfByGenerators( <gens> )
 ##
-InstallMethod( FieldOverItselfByGenerators, true, [ IsCollection ], 0,
+InstallMethod( FieldOverItselfByGenerators,
+    true,
+    [ IsCollection ], 0,
     function( gens )
     local F;
     if IsEmpty( gens ) then
@@ -56,10 +63,13 @@ InstallMethod( FieldOverItselfByGenerators, true, [ IsCollection ], 0,
 
 #############################################################################
 ##
-#M  DefaultFieldByGenerators( <gens> )  . . . . . default field by generators
+#M  DefaultFieldByGenerators( <gens> )  . . . . . . . . . .  for a collection
 ##
-InstallMethod( DefaultFieldByGenerators, true, [ IsCollection ] , 0,
-    FieldByGenerators );
+InstallMethod( DefaultFieldByGenerators,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
+    DivisionRingByGenerators );
 
 
 #############################################################################
@@ -94,6 +104,7 @@ Field := function ( arg )
     return F;
 end;
 
+
 #############################################################################
 ##
 #F  DefaultField( <z>, ... )  . . . . . default field containing a collection
@@ -119,6 +130,7 @@ DefaultField := function ( arg )
     # return the default field
     return F;
 end;
+
 
 #############################################################################
 ##
@@ -154,16 +166,11 @@ SubfieldNC := function( F, gens )
     return S;
 end;
 
+
 #############################################################################
 ##
 #M  PrintObj( <F> ) . . . . . . . . . . . . . . . . . . . . . . print a field
 ##
-InstallMethod( PrintObj, true,
-    [ IsField and HasParent and HasGeneratorsOfField ], 0,
-    function( F )
-    Print( "Subfield( ", Parent( F ), ", ", GeneratorsOfField( F ), " )" );
-    end );
-
 InstallMethod( PrintObj, true, [ IsField and HasGeneratorsOfField ], 0,
     function( F )
     if IsPrimeField( LeftActingDomain( F ) ) then
@@ -175,11 +182,6 @@ InstallMethod( PrintObj, true, [ IsField and HasGeneratorsOfField ], 0,
       Print( "AsField( ", LeftActingDomain( F ),
              ", Field( ", GeneratorsOfField( F ), " ) )" );
     fi;
-    end );
-
-InstallMethod( PrintObj, true, [ IsField and HasParent ], 0,
-    function( F )
-    Print( "Subfield( ", Parent( F ), ", ... )" );
     end );
 
 InstallMethod( PrintObj, true, [ IsField ], 0,
@@ -196,45 +198,58 @@ InstallMethod( PrintObj, true, [ IsField ], 0,
 
 #############################################################################
 ##
-#M  IsPrimeField( <F> )
+#M  IsPrimeField( <F> ) . . . . . . . . . . . . . . . . . for a division ring
 ##
-InstallMethod( IsPrimeField, true, [ IsField ], 0,
+InstallMethod( IsPrimeField,
+    "method for a division ring",
+    true,
+    [ IsDivisionRing ], 0,
     F -> DegreeOverPrimeField( F ) = 1 );
 
 
 #############################################################################
 ##
-#M  IsNumberField( <F> )
+#M  IsNumberField( <F> )  . . . . . . . . . . . . . . . . . . . . for a field
 ##
-InstallMethod( IsNumberField, true, [ IsField ], 0,
+InstallMethod( IsNumberField,
+    "method for a field",
+    true,
+    [ IsField ], 0,
     F -> Characteristic( F ) = 0 and IsInt( DegreeOverPrimeField( F ) ) );
 
 
 #############################################################################
 ##
-#M  IsAbelianNumberField( <F> )
+#M  IsAbelianNumberField( <F> ) . . . . . . . . . . . . . . . . . for a field
 ##
-##  An abelian number field is a number field with abelian Galois group.
-##
-InstallMethod( IsAbelianNumberField, true, [ IsField ], 0,
+InstallMethod( IsAbelianNumberField,
+    "method for a field",
+    true,
+    [ IsField ], 0,
     F -> IsNumberField( F ) and IsCommutative( GaloisGroup(
                                          AsField( PrimeField( F ), F ) ) ) );
 
 
 #############################################################################
 ##
-#M  IsCyclotomicField( <F> )
+#M  IsCyclotomicField( <F> )  . . . . . . . . . . . . . . . . . . for a field
 ##
-InstallMethod( IsCyclotomicField, true, [ IsField ], 0,
+InstallMethod( IsCyclotomicField,
+    "method for a field",
+    true,
+    [ IsField ], 0,
     F ->     IsAbelianNumberField( F )
          and Conductor( F ) = DegreeOverPrimeField( F ) );
 
 
 #############################################################################
 ##
-#M  IsNormalBasis( <B> )
+#M  IsNormalBasis( <B> )  . . . . . . . . . . . . .  for a basis (of a field)
 ##
-InstallMethod( IsNormalBasis, true, [ IsBasis ], 0,
+InstallMethod( IsNormalBasis,
+    "method for a basis of a field",
+    true,
+    [ IsBasis ], 0,
     function( B )
     local vectors;
     if not IsField( UnderlyingLeftModule( B ) ) then
@@ -248,24 +263,25 @@ InstallMethod( IsNormalBasis, true, [ IsBasis ], 0,
 
 #############################################################################
 ##
-#M  GeneratorsOfDivisionRing( <F> )
+#M  GeneratorsOfDivisionRing( <F> ) . . . . . . . . . . . . for a prime field
 ##
 InstallMethod( GeneratorsOfDivisionRing,
     "method for a prime field",
-    true, [ IsField and IsPrimeField ], 0,
+    true,
+    [ IsField and IsPrimeField ], 0,
     F -> [ One( F ) ] );
 
 
 #############################################################################
 ##
-#M  DegreeOverPrimeField( <F> )
+#M  DegreeOverPrimeField( <F> ) . . . . . . . . . . . . . . for a prime field
 ##
 InstallImmediateMethod( DegreeOverPrimeField, IsPrimeField, 20, F -> 1 );
 
 
 #############################################################################
 ##
-#M  NormalBase( <F> )
+#M  NormalBase( <F> ) . . . . . . . . . .  for a field in characteristic zero
 ##
 ##  (uses the algorithm given in E. Artin, Galoissche Theorie, p. 65 f.).
 ##
@@ -310,7 +326,7 @@ InstallMethod( NormalBase,
 
 #############################################################################
 ##
-#M  PrimitiveElement( <D> )
+#M  PrimitiveElement( <D> ) . . . . . . . . . . . . . . . for a division ring
 ##
 InstallMethod( PrimitiveElement,
     "method for a division ring",
@@ -328,7 +344,7 @@ InstallMethod( PrimitiveElement,
 
 #############################################################################
 ##
-#M  Representative( <D> ) . . . . . . . . .  representative of a division ring
+#M  Representative( <D> ) . . . . . for a division ring with known generators
 ##
 InstallMethod( Representative,
     "method for a division ring with known generators",
@@ -341,7 +357,9 @@ InstallMethod( Representative,
 ##
 #M  GeneratorsOfRing( <F> ) . . . . . . .  ring generators of a division ring
 ##
-InstallMethod( GeneratorsOfRing, true,
+InstallMethod( GeneratorsOfRing,
+    "method for a division ring with known generators",
+    true,
     [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
     F -> Concatenation( GeneratorsOfDivisionRing( F ),
                         [ One( F ) ],
@@ -352,7 +370,9 @@ InstallMethod( GeneratorsOfRing, true,
 ##
 #M  GeneratorsOfUnitalRing( <F> ) . unital ring generators of a division ring
 ##
-InstallMethod( GeneratorsOfUnitalRing, true,
+InstallMethod( GeneratorsOfUnitalRing,
+    "method for a division ring with known generators",
+    true,
     [ IsDivisionRing and HasGeneratorsOfDivisionRing ], 0,
     F -> Concatenation( GeneratorsOfDivisionRing( F ),
                         List( GeneratorsOfDivisionRing( F ), Inverse ) ) );
@@ -375,34 +395,34 @@ EnumeratorOfPrimeField := function( F )
     return AsListSortedList( List( [ 0 .. Size( F ) - 1 ], i -> i * one ) );
 end;
 
-InstallMethod( Enumerator, true, [ IsField and IsPrimeField ], 0,
-    function( F )
-    local enum;
-    enum:= EnumeratorOfPrimeField( F );
-    SetEnumeratorSorted( F, enum );
-    return enum;
-    end );
-
-InstallMethod( AsList, true, [ IsField and IsPrimeField ], 0,
-    function( F )
-    local enum;
-    enum:= EnumeratorOfPrimeField( F );
-    SetEnumeratorSorted( F, enum );
-    return enum;
-    end );
-
-InstallMethod( EnumeratorSorted, true, [ IsField and IsPrimeField ], 0,
+InstallMethod( Enumerator,
+    "method for a prime field",
+    true,
+    [ IsField and IsPrimeField ], 0,
     EnumeratorOfPrimeField );
 
-InstallMethod( AsListSorted, true, [ IsField and IsPrimeField ], 0,
+InstallMethod( AsList,
+    "method for a prime field",
+    true,
+    [ IsField and IsPrimeField ], 0,
     EnumeratorOfPrimeField );
+
+
+#T InstallMethod( EnumeratorSorted, true, [ IsField and IsPrimeField ], 0,
+#T     EnumeratorOfPrimeField );
+#T 
+#T InstallMethod( AsListSorted, true, [ IsField and IsPrimeField ], 0,
+#T     EnumeratorOfPrimeField );
 
 
 #############################################################################
 ##
 #M  \=( <F>, <G> ) . . . . . . . . . . . . . . . . . .  comparisons of fields
 ##
-InstallMethod( \=, IsIdentical, [ IsField, IsField ], 0,
+InstallMethod( \=,
+    "method for two fields",
+    IsIdentical,
+    [ IsField, IsField ], 0,
     function ( F, G )
 
     if IsFinite( F ) and IsFinite( G ) then
@@ -419,7 +439,10 @@ InstallMethod( \=, IsIdentical, [ IsField, IsField ], 0,
 ##
 #M  IsSubset( <F>, <G> )
 ##
-InstallMethod( IsSubset, IsIdentical, [ IsField, IsField ], 0,
+InstallMethod( IsSubset,
+    "method for two fields",
+    IsIdentical,
+    [ IsField, IsField ], 0,
     function ( F, G )
 
     if IsFinite( F ) and IsFinite( G ) then
@@ -431,7 +454,10 @@ InstallMethod( IsSubset, IsIdentical, [ IsField, IsField ], 0,
     fi;
     end );
 
-InstallMethod( IsSubset, IsIdentical, [ IsDivisionRing, IsDivisionRing ], 0,
+InstallMethod( IsSubset,
+    "method for two fields",
+    IsIdentical,
+    [ IsDivisionRing, IsDivisionRing ], 0,
     function( D, F )
     return IsSubset( D, GeneratorsOfDivisionRing( F ) );
     end );
@@ -441,7 +467,9 @@ InstallMethod( IsSubset, IsIdentical, [ IsDivisionRing, IsDivisionRing ], 0,
 ##
 #M  AsDivisionRing( <F>, <D> )
 ##
-InstallMethod( AsDivisionRing, IsIdentical,
+InstallMethod( AsDivisionRing,
+    "method for two fields",
+    IsIdentical,
     [ IsDivisionRing, IsDivisionRing ], 0,
     function( F, D )
     local E;
@@ -464,10 +492,16 @@ InstallMethod( AsDivisionRing, IsIdentical,
 #M  Conjugates( <F>, <z> )  . . . . . . . . . . conjugates of a field element
 #M  Conjugates( <z> )
 ##
-InstallOtherMethod( Conjugates, true, [ IsScalar ], 0,
+InstallOtherMethod( Conjugates,
+    "method for a scalar",
+    true,
+    [ IsScalar ], 0,
     z -> Conjugates( DefaultField( z ), z ) );
 
-InstallMethod( Conjugates, IsCollsElms, [ IsField, IsScalar ], 0,
+InstallMethod( Conjugates,
+    "method for a field and a scalar",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
     function ( F, z )
     local   cnjs,       # conjugates of <z> in <F>, result
             aut;        # automorphism of <F>
@@ -491,10 +525,16 @@ InstallMethod( Conjugates, IsCollsElms, [ IsField, IsScalar ], 0,
 #M  Norm( <F>, <z> )  . . . . . . . . . . . . . . . . norm of a field element
 #M  Norm( <z> )
 ##
-InstallOtherMethod( Norm, true, [ IsScalar ], 0,
+InstallOtherMethod( Norm,
+    "method for a scalar",
+    true,
+    [ IsScalar ], 0,
     z -> Norm( DefaultField( z ), z ) );
 
-InstallMethod( Norm, IsCollsElms, [ IsField, IsScalar ], 0,
+InstallMethod( Norm,
+    "method for a field and a scalar",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
     function ( F, z ) return Product( Conjugates( F, z ) ); end );
 
 
@@ -503,10 +543,16 @@ InstallMethod( Norm, IsCollsElms, [ IsField, IsScalar ], 0,
 #M  Trace( <F>, <z> ) . . . . . . . . . . . . . . .  trace of a field element
 #M  Trace( <z> )
 ##
-InstallOtherMethod( Trace, true, [ IsScalar ], 0,
+InstallOtherMethod( Trace,
+    "method for a scalar",
+    true,
+    [ IsScalar ], 0,
     z -> Trace( DefaultField( z ), z ) );
 
-InstallMethod( Trace, IsCollsElms, [ IsField, IsScalar ], 0,
+InstallMethod( Trace,
+    "method for a field and a scalar",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
     function ( F, z ) return Sum( Conjugates( F, z ) ); end );
 
 
@@ -515,10 +561,9 @@ InstallMethod( Trace, IsCollsElms, [ IsField, IsScalar ], 0,
 #M  CharacteristicPolynomial( <F>, <z> )
 ##
 InstallMethod( CharacteristicPolynomial,
+    "method for a field and a scalar",
     IsCollsElms,
-    [ IsField,
-      IsScalar ],
-    0,
+    [ IsField, IsScalar ], 0,
     MinimalPolynomial );
 
 
@@ -582,7 +627,9 @@ IsFieldElementsSpaceRep := NewRepresentation( "IsFieldElementsSpaceRep",
 ##
 #M  PrepareNiceFreeLeftModule( <V> )
 ##
-InstallMethod( PrepareNiceFreeLeftModule, true,
+InstallMethod( PrepareNiceFreeLeftModule,
+    "method for vector space of field elements",
+    true,
     [ IsVectorSpace and IsFieldElementsSpaceRep ], 0,
     function( V )
 
@@ -626,7 +673,9 @@ InstallMethod( PrepareNiceFreeLeftModule, true,
 ##  We do not use the default method since the nice space is known to be a
 ##  full row space.
 ##
-InstallMethod( NiceFreeLeftModule, true,
+InstallMethod( NiceFreeLeftModule,
+    "method for vector space of field elements",
+    true,
     [ IsFreeLeftModule and IsFieldElementsSpaceRep ], 0,
     function( V )
     PrepareNiceFreeLeftModule( V );
@@ -682,11 +731,6 @@ InstallMethod( UglyVector,
 ##
 ##  We choose a mutable basis that stores a mutable basis for a nice module.
 ##
-IsCollsXElms := function( F1, F2, F3 )
-    return     HasElementsFamily( F1 )
-           and IsIdentical( F3, ElementsFamily( F1 ) );
-end;
-
 InstallMethod( MutableBasisByGenerators,
     "method for field and collection of field elements",
     IsIdentical,
@@ -749,7 +793,9 @@ InstallOtherMethod( LeftModuleByGenerators,
 ##
 #M  Quotient( <F>, <r>, <s> ) . . . . . . . . quotient of elements in a field
 ##
-InstallMethod( Quotient, IsCollsElmsElms,
+InstallMethod( Quotient,
+    "method for field, and two ring elements",
+    IsCollsElmsElms,
     [ IsField, IsRingElement, IsRingElement ], 0,
     function ( F, r, s )
     return r/s;
@@ -760,7 +806,10 @@ InstallMethod( Quotient, IsCollsElmsElms,
 ##
 #M  IsUnit( <F>, <r> )  . . . . . . . . . . check for being a unit in a field
 ##
-InstallMethod( IsUnit, IsCollsElms, [ IsField, IsRingElement ], 0,
+InstallMethod( IsUnit,
+    "method for field, and ring element",
+    IsCollsElms,
+    [ IsField, IsRingElement ], 0,
     function ( F, r )
     return not IsZero( r ) and r in F;
     end );
@@ -770,7 +819,10 @@ InstallMethod( IsUnit, IsCollsElms, [ IsField, IsRingElement ], 0,
 ##
 #M  Units( <F> )
 ##
-InstallMethod( Units, true, [ IsDivisionRing ], 0,
+InstallMethod( Units,
+    "method for a division ring",
+    true,
+    [ IsDivisionRing ], 0,
     function( D )
     if IsFinite( D ) then
       return Difference( AsList( D ), [ Zero( D ) ] );
@@ -784,7 +836,9 @@ InstallMethod( Units, true, [ IsDivisionRing ], 0,
 ##
 #M  IsAssociated( <F>, <r>, <s> ) . . . . . . check associatedness in a field
 ##
-InstallMethod( IsAssociated, IsCollsElmsElms,
+InstallMethod( IsAssociated,
+    "method for field, and two ring elements",
+    IsCollsElmsElms,
     [ IsField, IsRingElement, IsRingElement ], 0,
     function ( F, r, s )
     return (r = Zero( F ) ) = (s = Zero( F ) );
@@ -795,7 +849,10 @@ InstallMethod( IsAssociated, IsCollsElmsElms,
 ##
 #M  StandardAssociate( <F>, <x> ) . . . . . . . standard associate in a field
 ##
-InstallMethod( StandardAssociate, IsCollsElms, [ IsField, IsScalar ], 0,
+InstallMethod( StandardAssociate,
+    "method for field and ring element",
+    IsCollsElms,
+    [ IsField, IsScalar ], 0,
     function ( R, r )
     if r = Zero( R ) then
         return Zero( R );
@@ -814,42 +871,49 @@ InstallMethod( StandardAssociate, IsCollsElms, [ IsField, IsScalar ], 0,
 ##
 #M  IsFieldHomomorphism( <map> )
 ##
-InstallMethod( IsFieldHomomorphism, true, [ IsGeneralMapping ], 0,
+InstallMethod( IsFieldHomomorphism,
+    true,
+    [ IsGeneralMapping ], 0,
     map -> IsRingHomomorphism( map ) and IsField( Source( map ) ) );
 
 
 #############################################################################
 ##
-#M  KernelRingHomomorphism( <fldhom> )  . . .  kernel of a field homomorphism
+#M  KernelOfAdditiveGeneralMapping( <fldhom> )  . .  for a field homomorphism
 ##
-InstallMethod( KernelRingHomomorphism, true, [ IsFieldHomomorphism ], 0,
+InstallMethod( KernelOfAdditiveGeneralMapping,
+    "method for a field homomorphism",
+    true,
+    [ IsFieldHomomorphism ], 0,
     function ( hom )
-    if HasGeneratorsOfField( Source( hom ) ) then
-      if ForAll( GeneratorsOfField( hom ),
-                 x -> IsZero( ImageElm( hom, x ) ) ) then
-        return Source( hom );
-      else
-        return [ Zero( Source( hom ) ) ];
-      fi;
+    if ForAll( GeneratorsOfField( Source( hom ) ),
+               x -> IsZero( ImageElm( hom, x ) ) ) then
+      return Source( hom );
     else
-      TryNextMethod();
+      return [ Zero( Source( hom ) ) ];
     fi;
     end );
 
 
 #############################################################################
 ##
-#M  IsInjective( <fldhom> ) . . . . . . . . is a field homomorphism injective
+#M  IsInjective( <fldhom> ) . . . . . . . . . . . .  for a field homomorphism
 ##
-InstallMethod( IsInjective, true, [ IsFieldHomomorphism ], 0,
-    hom -> Size( KernelRingHomomorphism( hom ) ) = 1 );
+InstallMethod( IsInjective,
+    "method for a field homomorphism",
+    true,
+    [ IsFieldHomomorphism ], 0,
+    hom -> Size( KernelOfAdditiveGeneralMapping( hom ) ) = 1 );
 
 
 #############################################################################
 ##
-#M  IsSurjective( <fldhom> )  . . . . . .  is a field homomorphism surjective
+#M  IsSurjective( <fldhom> )  . . . . . . . . . . .  for a field homomorphism
 ##
-InstallMethod( IsSurjective, true, [ IsFieldHomomorphism ], 0,
+InstallMethod( IsSurjective,
+    "method for a field homomorphism",
+    true,
+    [ IsFieldHomomorphism ], 0,
     function ( hom )
     if IsFinite( Range( hom ) ) then
       return Size( Range( hom ) ) = Size( Image( hom ) );
@@ -863,8 +927,10 @@ InstallMethod( IsSurjective, true, [ IsFieldHomomorphism ], 0,
 ##
 #M  \=( <hom1>, <hom2> )  . . . . . . . . . comparison of field homomorphisms
 ##
-InstallMethod( \=, IsIdentical,
-               [ IsFieldHomomorphism, IsFieldHomomorphism ], 0,
+InstallMethod( \=,
+    "method for two field homomorphisms",
+    IsIdentical,
+    [ IsFieldHomomorphism, IsFieldHomomorphism ], 0,
     function ( hom1, hom2 )
 
     # maybe the properties we already know determine the result
@@ -888,7 +954,9 @@ InstallMethod( \=, IsIdentical,
 ##
 #M  ImagesSet( <hom>, <elms> ) . . images of a set under a field homomorphism
 ##
-InstallMethod( ImagesSet, CollFamSourceEqFamElms,
+InstallMethod( ImagesSet,
+    "method for field homomorphism and field",
+    CollFamSourceEqFamElms,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
     if IsSubset( Source( hom ), elms )  then
@@ -904,8 +972,10 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
 ##
 #M  PreImagesElm( <hom>, <elm> )  . . . . . . . . . . . .  preimage of an elm
 ##
-InstallMethod( PreImagesElm, FamRangeEqFamElm,
-               [ IsFieldHomomorphism, IsObject ], 0,
+InstallMethod( PreImagesElm,
+    "method for field homomorphism and element",
+    FamRangeEqFamElm,
+    [ IsFieldHomomorphism, IsObject ], 0,
     function ( hom, elm )
     if IsInjective( hom ) = 1 then
       return [ PreImagesRepresentative( hom, elm ) ];
@@ -921,7 +991,9 @@ InstallMethod( PreImagesElm, FamRangeEqFamElm,
 ##
 #M  PreImagesSet( <hom>, <elm> )  . . . . . . . . . . . . . preimage of a set
 ##
-InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
+InstallMethod( PreImagesSet,
+    "method for field homomorphism and field",
+    CollFamRangeEqFamElms,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
     if IsSubset( Range( hom ), elms )  then

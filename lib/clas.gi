@@ -25,6 +25,13 @@ end );
 
 #############################################################################
 ##
+#M  Size( <xorb> )  . . . . . . . . . . . . . . . . . . . index of stabilizer
+##
+InstallMethod( Size, true, [ IsExternalOrbitByStabilizerRep ], 0,
+    xorb -> Index( ActingDomain( xorb ), StabilizerOfExternalSet( xorb ) ) );
+
+#############################################################################
+##
 #M  <enum>[ <pos> ] . . . . . . . . . . . . . . . . . .  for such enumerators
 ##
 InstallMethod( \[\], true, [ IsExternalOrbitByStabilizerEnumerator,

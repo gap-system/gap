@@ -873,27 +873,6 @@ UnitalSubringNC := NewOperationArgs( "UnitalSubringNC" );
 
 #############################################################################
 ##
-#P  IsRingHomomorphism( <map> )
-##
-##  A mapping $f$ is a ring homomorphism if source and range are rings,
-##  and if $f( a + b ) = f(a) + f(b)$ and $f( a \* b ) = f(a) \* f(b)$ hold
-##  for all elements $a$, $b$ in the source of $f$.
-##
-IsRingHomomorphism := NewProperty( "IsRingHomomorphism", IsMapping );
-SetIsRingHomomorphism := Setter( IsRingHomomorphism );
-HasIsRingHomomorphism := Tester( IsRingHomomorphism );
-
-
-#############################################################################
-##
-#A  KernelRingHomomorphism( <fun> ) . . . . . . kernel of a ring homomorphism
-##
-KernelRingHomomorphism := NewAttribute( "KernelRingHomomorphism",
-    IsGeneralMapping );
-
-
-#############################################################################
-##
 #E  ring.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

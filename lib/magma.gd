@@ -54,6 +54,8 @@ IsMagmaWithInverses :=
 InstallCollectionsTrueMethod( IsMagmaWithInverses,
     IsFiniteOrderElement, IsMagma );
 
+InstallTrueMethod( IsMagmaWithInverses, IsMagmaWithOne and IsTrivial );
+
 
 #############################################################################
 ##
@@ -71,23 +73,65 @@ IsMagmaWithInversesAndZero :=
 
 #############################################################################
 ##
-#O  Magma(<F>,<generators>)
+#F  Magma( <F>, <generators> )
 ##
 Magma := NewOperationArgs( "Magma" );
 
 
 #############################################################################
 ##
-#O  MagmaWithOne(<F>,<generators>)
+#F  Submagma( <M>, <generators> )
+##
+Submagma := NewOperationArgs( "Submagma" );
+
+
+#############################################################################
+##
+#F  SubmagmaNC( <M>, <generators> )
+##
+SubmagmaNC := NewOperationArgs( "SubmagmaNC" );
+
+
+#############################################################################
+##
+#F  MagmaWithOne(<F>,<generators>)
 ##
 MagmaWithOne := NewOperationArgs( "MagmaWithOne" );
 
 
 #############################################################################
 ##
-#O  MagmaWithInverses(<F>,<generators>)
+#F  SubmagmaWithOne( <M>, <generators> )
+##
+SubmagmaWithOne := NewOperationArgs( "SubmagmaWithOne" );
+
+
+#############################################################################
+##
+#F  SubmagmaWithOneNC( <M>, <generators> )
+##
+SubmagmaWithOneNC := NewOperationArgs( "SubmagmaWithOneNC" );
+
+
+#############################################################################
+##
+#F  MagmaWithInverses(<F>,<generators>)
 ##
 MagmaWithInverses := NewOperationArgs( "MagmaWithInverses" );
+
+
+#############################################################################
+##
+#F  SubmagmaWithInverses( <M>, <generators> )
+##
+SubmagmaWithInverses := NewOperationArgs( "SubmagmaWithInverses" );
+
+
+#############################################################################
+##
+#F  SubmagmaWithInversesNC( <M>, <generators> )
+##
+SubmagmaWithInversesNC := NewOperationArgs( "SubmagmaWithInversesNC" );
 
 
 #############################################################################
@@ -96,7 +140,6 @@ MagmaWithInverses := NewOperationArgs( "MagmaWithInverses" );
 #O  MagmaByGenerators(<F>,<generators>)
 ##
 MagmaByGenerators := NewOperation( "MagmaByGenerators", [ IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -106,7 +149,6 @@ MagmaByGenerators := NewOperation( "MagmaByGenerators", [ IsCollection ] );
 ##
 MagmaWithOneByGenerators := NewOperation(
     "MagmaWithOneByGenerators", [ IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -116,7 +158,6 @@ MagmaWithOneByGenerators := NewOperation(
 ##
 MagmaWithInversesByGenerators := NewOperation(
     "MagmaWithInversesByGenerators", [ IsCollection ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -161,6 +202,16 @@ HasGeneratorsOfMagmaWithInverses := Tester( GeneratorsOfMagmaWithInverses );
 
 #############################################################################
 ##
+#A  TrivialSubmagmaWithOne( <M> ) . . . . . . . . . . .  for a magma-with-one
+##
+TrivialSubmagmaWithOne := NewAttribute( "TrivialSubmagmaWithOne",
+    IsMagmaWithOne );
+SetTrivialSubmagmaWithOne := Setter( TrivialSubmagmaWithOne );
+HasTrivialSubmagmaWithOne := Tester( TrivialSubmagmaWithOne );
+
+
+#############################################################################
+##
 #P  IsAssociative(<M>)  . . . . . . . . . test whether a magma is associative
 ##
 ##  A magma  <M> is associative  if  for all elements   $a, b, c  \in M$  the
@@ -178,6 +229,8 @@ InstallSubsetTrueMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma );
 InstallFactorTrueMethod( IsAssociative,
     IsMagma and IsAssociative, IsMagma, IsMagma );
+
+InstallTrueMethod( IsAssociative, IsMagma and IsTrivial );
 
 
 #############################################################################
@@ -203,6 +256,8 @@ InstallSubsetTrueMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma );
 InstallFactorTrueMethod( IsCommutative,
     IsMagma and IsCommutative, IsMagma, IsMagma );
+
+InstallTrueMethod( IsCommutative, IsMagma and IsTrivial );
 
 
 #############################################################################

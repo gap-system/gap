@@ -137,11 +137,6 @@ DoubleCosetsDefaultKind := NewAttribute("DoubleCosetsDefaultKind",IsFamily);
 ##
 IntermediateGroup := NewOperationArgs("IntermediateGroup");
 
-IsCollsElmsColls := function(a,b,c)
-  return IsIdentical(a,c) and HasElementsFamily(a) and
-    IsIdentical(b,ElementsFamily(a));
-end;
-
 #############################################################################
 ##
 #E  csetgrp.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

@@ -444,6 +444,8 @@ InstallMethod( GeneratorsOfLeftOperatorRing, true, [ IsFreeMagmaRing ], 0,
     return List( GeneratorsOfMagma( UnderlyingMagma( RM ) ),
                  x -> ObjByExtRep( F, [ F!.zeroRing, [ x, one ] ] ) );
     end );
+#T only for 'IsFreeMagmaRingElmDefaultRepColl' ? (rubbish)
+#T or different way to create ???
 
 InstallMethod( GeneratorsOfLeftOperatorUnitalRing, true,
     [ IsFreeMagmaUnitalRing ], 0,
@@ -505,9 +507,11 @@ FreeMagmaRing := function( R, M )
                       rec() );
     fi;
 
+    # Set the necessary attributes.
     SetLeftActingDomain( RM, R );
     SetUnderlyingMagma(  RM, M );
 
+    # Deduce useful information.
     if HasIsFinite( M ) then
       SetIsFiniteDimensional( RM, IsFinite( M ) );
     fi;

@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.18  1997/01/29 15:54:30  mschoene
+#H  fixed a few more doubly defined locals
+#H
+#H  Revision 4.17  1997/01/27 11:21:08  htheisse
+#H  removed some of Juergen Mnich's code
+#H
 #H  Revision 4.16  1997/01/09 17:56:21  htheisse
 #H  workaround till `false in [1,2]' works
 #H
@@ -23,7 +29,7 @@ Revision.oprtperm_gi :=
 #M  Orbit( <G>, <pnt>, <gens>, <oprs>, <OnPoints> ) . . . . . . . on integers
 ##
 InstallOtherMethod( OrbitOp,
-        "<G>, <int>, <gens>, <perms>, <opr>", true,
+        "G, int, gens, perms, opr", true,
         [ IsGroup, IsInt,
           IsList,
           IsList and IsPermCollection,
@@ -44,7 +50,7 @@ end );
 #M  Orbits( <G>, <D>, <gens>, <oprs>, <OnPoints> )  . . . . . . . on integers
 ##
 InstallMethod( OrbitsOp,
-        "<G>, <ints>, <gens>, <perms>, <opr>", true,
+        "G, ints, gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
@@ -61,7 +67,7 @@ end );
 #M  Cycle( <g>, <pnt>, <OnPoints> ) . . . . . . . . . . . . . . . on integers
 ##
 InstallOtherMethod( CycleOp,
-        "<perm>, <int>, <opr>", true,
+        "perm, int, opr", true,
         [ IsPerm, IsInt, IsFunction ], 0,
     function( g, pnt, opr )
     if opr <> OnPoints  then
@@ -75,7 +81,7 @@ end );
 #M  CycleLength( <g>, <pnt>, <OnPoints> ) . . . . . . . . . . . . on integers
 ##
 InstallOtherMethod( CycleLengthOp,
-        "<perm>, <int>, <opr>", true,
+        "perm, int, opr", true,
         [ IsPerm, IsInt, IsFunction ], 0,
     function( g, pnt, opr )
     if opr <> OnPoints  then
@@ -89,7 +95,7 @@ end );
 #M  Blocks( <G>, <D>, [  ], <gens>, <oprs>, <OnPoints> )  . find block system
 ##
 InstallOtherMethod( BlocksOp,
-        "<G>, <ints>, [  ], <gens>, <perms>, <opr>", true,
+        "G, ints, [  ], gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection, IsList and IsEmpty,
           IsList,
           IsList and IsPermCollection,
@@ -373,7 +379,7 @@ end );
 #M  Blocks( <G>, <D>, <seed>, <gens>, <oprs>, <OnPoints> )   blocks with seed
 ##
 InstallMethod( BlocksOp,
-        "<G>, <ints>, <seed>, <gens>, <perms>, <opr>", true,
+        "G, ints, seed, gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList and IsCyclotomicsCollection,
           IsList,
@@ -489,7 +495,7 @@ end );
 #M  MaximalBlocks( <G>, <D>, <seed>, <gens>, <oprs>, <OnPoints> ) max. blocks
 ##
 InstallMethod( MaximalBlocksOp,
-        "<G>, <ints>, <seed>, <gens>, <perms>, <opr>", true,
+        "G, ints, seed, gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList and IsCyclotomicsCollection,
           IsList,
@@ -528,14 +534,14 @@ end );
 #M  Earns( <G>, <Omega> ) . . . . . . . . . . earns of affine primitive group
 ##
 InstallMethod( EarnsOp,
-        "<G>, <ints>, <gens>, <perms>, <opr>", true,
+        "G, ints, gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
           IsFunction ], 0,
     function( G, Omega, gens, oprs, opr )
     local   pcgs,  n,  fac,  p,  d,  alpha,  beta,  G1,  G2,  orb,
-            Gamma,  M,  C,  f,  P,  Q,  Q0,  R,  R0,  pre,  gens,  gen,  g,
+            Gamma,  M,  C,  f,  P,  Q,  Q0,  R,  R0,  pre,  gen,  g,
             ord,  pa,  a,  x,  y,  z;
 
     if opr <> OnPoints  then
@@ -650,7 +656,7 @@ end );
 #M  TransitivityOp( <G>, <D>, <gens>, <oprs>, <opr> ) . . . . . . on integers
 ##
 InstallMethod( TransitivityOp,
-        "<G>, <ints>, <gens>, <perms>, <opr>", true,
+        "G, ints, gens, perms, opr", true,
         [ IsGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList,
@@ -675,7 +681,7 @@ end );
 #M  IsSemiRegular( <G>, <D>, <gens>, <oprs>, <opr> )  . . . . for perm groups
 ##
 InstallMethod( IsSemiRegularOp,
-        "<G>, <ints>, <gens>, <perms>, <opr>", true,
+        "G, ints, gens, perms, opr", true,
         [ IsPermGroup, IsList and IsCyclotomicsCollection,
           IsList,
           IsList and IsPermCollection,
@@ -895,7 +901,7 @@ end );
 #M  Stabilizer( <G>, <d>, <opr> ) . . . . . . . . . . . . . . for perm groups
 ##
 InstallOtherMethod( StabilizerOp,
-        "<P>, <pnt>, <opr>", true,
+        "P, pnt, opr", true,
         [ IsPermGroup, IsObject, IsFunction ], 0,
     function( G, d, opr )
     local   K,          # stabilizer <K>, result

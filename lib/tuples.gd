@@ -16,10 +16,27 @@ Revision.tuples_gd :=
 
 #############################################################################
 ##
+#C  IsTuple( <obj> ) . . . . . . . . . . . . . . . . . . . category of tuples
+##
+
+IsTuple := NewCategory( "IsTuple", IsDenseList );
+
+
+#############################################################################
+##
 #C  IsTuplesFamily( <family> ) . . . . . . . . . category of tuples families
 ##
 
-IsTuplesFamily := NewCategory( "IsTuplesFamily", IsFamily  );
+IsTuplesFamily := CategoryFamily( "IsTuplesFamily", IsTuple  );
+
+
+#############################################################################
+##
+#C  IsTuplesCollection( <coll> )  . . . . . .  category of tuples collections
+##
+
+IsTuplesCollection := CategoryCollections( "IsTuplesCollection", IsTuple  );
+
 
 #############################################################################
 ##
@@ -28,14 +45,6 @@ IsTuplesFamily := NewCategory( "IsTuplesFamily", IsFamily  );
 ##
   
 TuplesFamily := NewOperation( "TuplesFamily", [ IsCollection ] );
-
-
-#############################################################################
-##
-#C  IsTuple( <obj> ) . . . . . . . . . . . . . . . . . . . category of tuples
-##
-
-IsTuple := NewCategory( "IsTuple", IsDenseList );
 
 
 #############################################################################

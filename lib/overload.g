@@ -54,13 +54,23 @@ Revision.overload_g :=
 ##
 #O  CoKernel( <obj> )
 ##
-##  is the cokernel of a monoid general mapping, an additive-magma-with-zero
-##  general mapping ...
+##  is the cokernel of a general mapping that respects multiplicative or
+##  additive structure (but not both) ...
 ##
 CoKernel := NewOperation( "CoKernel", [ IsObject ] );
 
-InstallMethod( CoKernel, true, [ IsMonoidGeneralMapping ], 0,
-    CoKernelOfMonoidGeneralMapping );
+InstallMethod( CoKernel, true,
+    [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
+    CoKernelOfMultiplicativeGeneralMapping );
+
+InstallMethod( CoKernel, true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
+    CoKernelOfAdditiveGeneralMapping );
+
+InstallMethod( CoKernel, true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero
+                       and RespectsMultiplication and RespectsOne ], 0,
+    map -> Error( "specify additive or multiplicative cokernel of <map>" ) );
 
 
 #############################################################################
@@ -171,13 +181,24 @@ InstallMethod( IsPerfect, true, [ IsGroup ], 0, IsPerfectGroup );
 ##
 #O  Kernel( <obj> )
 ##
-##  is the kernel of a monoid general mapping, an additive-magma-with-zero
-##  general mapping, a character ...
+##  is the kernel of a general mapping that respects multiplicative or
+##  additive structure (but not both),
+##  or the kernel of a character ...
 ##
 Kernel := NewOperation( "Kernel", [ IsObject ] );
 
-InstallMethod( Kernel, true, [ IsMonoidGeneralMapping ], 0,
-    KernelOfMonoidGeneralMapping );
+InstallMethod( Kernel, true,
+    [ IsGeneralMapping and RespectsMultiplication and RespectsOne ], 0,
+    KernelOfMultiplicativeGeneralMapping );
+
+InstallMethod( Kernel, true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero ], 0,
+    KernelOfAdditiveGeneralMapping );
+
+InstallMethod( Kernel, true,
+    [ IsGeneralMapping and RespectsAddition and RespectsZero
+                       and RespectsMultiplication and RespectsOne ], 0,
+    map -> Error( "specify additive or multiplicative kernel of <map>" ) );
 
 
 #############################################################################

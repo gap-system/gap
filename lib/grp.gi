@@ -954,9 +954,9 @@ InstallMethod( ComputedHallSubgroups, true, [ IsGroup ], 0,
 #M  TrivialSubgroup( <G> ) . . . . . . . . . . .  trivial subgroup of a group
 ##
 InstallMethod( TrivialSubgroup,
-    "generic method for groups",
-    true, [ IsGroup ], 0,
-    G -> SubgroupNC( G, [] ) );
+        "generic method for groups",
+        true, [ IsGroup ], 0,
+        G -> SubgroupNC( G, [] ) );
 
 
 #############################################################################
@@ -2603,7 +2603,7 @@ Group := function( arg )
 
     # list of generators
     elif Length( arg ) = 1 and IsList( arg[1] ) and 0 < Length( arg[1] ) then
-      return GroupByGenerators( arg );
+      return GroupByGenerators( arg[1] );
 
     # list of generators plus identity
     elif Length( arg ) = 2 and IsList( arg[1] ) then
@@ -2665,6 +2665,8 @@ SubgroupNC := function( G, gens )
     SetParent( S, G );
     RunSubgroupMethods( G, S );
 #T to be removed soon !
+#T afterwards replace 'Subgroup' by 'SubmagmaWithInverses',
+#T and 'SubgroupNC' by 'SubmagmaWithInversesNC',
     return S;
 end;
 

@@ -695,7 +695,7 @@ end);
 #F  RPQuotientModPrime(<R>,<f>,<g>,<p>) . . .  quotient
 ##
 RPQuotientModPrime := function(R,f,g,p)
-local   m, n, i, k, c, q, R, val, fc,gc,brci;
+local   m, n, i, k, c, q, val, fc,gc,brci;
 
   # get base ring
   brci:=BRCIUnivPols(f,g);

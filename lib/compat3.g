@@ -739,7 +739,9 @@ STMappingOps := OPS;
 
 OPS.AbelianInvariants := AbelianInvariants;
 # OPS.AbsoluteIrreducibilityTest := AbsoluteIrreducibilityTest;
-# OPS.AffineOperation := AffineOperation;
+OPS.AffineOperation := funcion(G,x,y,z)
+   return AffineOperation(GeneratorsOfGroup(G),x,y,z);
+end;
 # OPS.AgGroup := AgGroup;
 # OPS.AgSubgroup := AgSubgroup;
 OPS.Agemo := Agemo;

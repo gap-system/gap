@@ -1480,17 +1480,6 @@ InstallMethod( Difference,
 
 #############################################################################
 ##
-#M  <elm> \in <whole-family>
-##
-InstallMethod(  \in,
-    IsElmsColls,
-    [ IsObject, IsCollection and IsWholeFamily ],
-    SUM_FLAGS,
-    RETURN_TRUE );
-
-
-#############################################################################
-##
 #E  coll.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.16  1997/01/28 12:50:24  htheisse
+#H  avoided setting of `HomePcgs'
+#H
+#H  Revision 4.15  1997/01/27 11:21:06  htheisse
+#H  removed some of Juergen Mnich's code
+#H
 #H  Revision 4.14  1997/01/21 15:07:33  htheisse
 #H  introduced `PositionCanonical'
 #H
@@ -63,142 +69,123 @@ Revision.oprtpcgs_gi :=
 #M  OrbitStabilizerOp( <G>, <D>, <pnt>, <pcgs>, <oprs>, <opr> ) . . . by pcgs
 ##
 InstallMethod( OrbitStabilizerOp,
-        "<G>, <D>, <pnt>, <pcgs>, <oprs>, <opr>", true,
-        [ IsGroup, IsList, IsObject, IsPcgs,
-          IsList,
-          IsFunction ], 0,
+        "G, D, pnt, pcgs, oprs, opr", true,
+        [ IsGroup, IsList, IsObject, IsPcgs, IsList, IsFunction ], 0,
     function( G, D, pnt, pcgs, oprs, opr )
-    local   orb,        # orbit
-            new,  n,    # transversal information for orbit, one info piece
-            stab,  S,   # stabilizer and induced pcgs
-            fst,        # position of <pnt> in <D>
-            img,  pos,  # image of <pnt> and its position in <D>
-            stb,        # stabilizing element, a word in <pcgs>
-            p,          # exponent occuring in this word
-            len,        # length of orbit before extension
-            i,  j,  k;  # loop variables
-    
     return OrbitStabilizerOp( G, pnt, pcgs, oprs, opr );
-    
-    fst := PositionCanonical( D, pnt );
-    orb := [ pnt ];  new := [  ];  new[ fst ] := 0;
-    S := [  ];
-    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
-        img := opr( pnt, oprs[ i ] );
-        pos := PositionCanonical( D, img );
-        if IsBound( new[ pos ] )  then
-            
-            # The current generator leaves the orbit invariant.
-            stb := pcgs[ i ];
-            while pos <> fst  do
-                j := new[ pos ][ 1 ];
-                p := new[ pos ][ 2 ];
-                stb := stb * pcgs[ j ] ^ -p;
-                img := opr( img, oprs[ j ] ^ -p );
-                pos := PositionCanonical( D, img );
-            od;
-            Add( S, stb );
-            
-        else
-            
-            # The current generator moves the orbit as a block.
-            len := Length( orb );
-            n := [ i, 1 ];
-            Add( orb, img );  new[ pos ] := n;
-            for j  in [ 2 .. len ]  do
-                img := opr( orb[ j ], oprs[ i ] );
-                pos := PositionCanonical( D, img );
-                Add( orb, img );  new[ pos ] := n;
-            od;
-            for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
-                n := [ i, k - 1 ];
-                for j  in [ Length( orb ) - len + 1 .. Length( orb ) ]  do
-                    img := opr( orb[ j ], oprs[ i ] );
-                    pos := PositionCanonical( D, img );
-                    Add( orb, img );  new[ pos ] := n;
-                od;
-            od;
-            
-        fi;
-    od;
-                
-    # <S> is a reversed IGS.
-    stab := SubgroupNC( G, S );
-    SetHomePcgs( stab, pcgs );
-    SetInducedPcgsWrtHomePcgs( stab,
-            InducedPcgsByPcSequenceNC( stab, Reversed( S ) ) );
-    return Immutable( rec( orbit := orb, stabilizer := stab ) );
+#    local   orb,  bit,  # orbit, as list and bit-list
+#            len,        # lengths of orbit before each extension
+#            stab,  S,   # stabilizer and induced pcgs
+#            img,  pos,  # image of <pnt> and its position in <D> (or <orb>)
+#            stb,        # stabilizing element, a word in <pcgs>
+#            i, ii, j, k;# loop variables
+#
+#    orb := [ pnt ];
+#    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
+#    bit := BlistList( [ 1 .. Length( D ) ], [ PositionCanonical( D, pnt ) ] );
+#    S := [  ];
+#    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
+#        img := opr( pnt, oprs[ i ] );
+#        pos := PositionCanonical( D, img );
+#        if not bit[ pos ]  then
+#            
+#            # The current generator moves the orbit as a block.
+#            Add( orb, img );  bit[ pos ] := true;
+#            for j  in [ 2 .. len[ i + 1 ] ]  do
+#                img := opr( orb[ j ], oprs[ i ] );
+#                pos := PositionCanonical( D, img );
+#                Add( orb, img );  bit[ pos ] := true;
+#            od;
+#            for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
+#                for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
+#                    img := opr( orb[ j ], oprs[ i ] );
+#                    pos := PositionCanonical( D, img );
+#                    Add( orb, img );  bit[ pos ] := true;
+#                od;
+#            od;
+#            
+#        else
+#          
+#            # The current generator leaves the orbit invariant.
+#            pos := Position( orb, img );
+#            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
+#            ii := i + 1;
+#            while pos <> 1  do
+#                while len[ ii ] >= pos  do
+#                    ii := ii + 1;
+#                od;
+#                pos := pos - 1;
+#                stb[ ii - 1 ] := -QuoInt( pos, len[ ii ] );
+#                pos := pos mod len[ ii ] + 1;
+#            od;
+#            Add( S, PcElementByExponents( pcgs, stb ) );
+#            
+#        fi;
+#        len[ i ] := Length( orb );
+#    od;
+#
+#    # <S> is a reversed IGS.
+#    stab := SubgroupNC( G, S );
+#    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
+#    
+#    return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
 
 InstallOtherMethod( OrbitStabilizerOp,
-        "<G>, <pnt>, <pcgs>, <oprs>, <opr>", true,
-        [ IsGroup, IsObject, IsPcgs,
-          IsList,
-          IsFunction ], 0,
-    function( G, p, U, V, opr )
-    local   O,          # complete Orbit
-            prod,       # Auxiliary Variable to compute agword rep
-            n,          # Auxiliary Variable to compute agword rep
-            stab,  S,   # Agword stabilizer
-            i, j, k,    # Loop
-            len,
-    	    l1, l2,
-            o,          # relative order of next generators
-            mi,
-            np,         # New point
-            r,          # Temp
-            e;          # Temp
+        "G, pnt, pcgs, oprs, opr", true,
+        [ IsGroup, IsObject, IsPcgs, IsList, IsFunction ], 0,
+    function( G, pnt, pcgs, oprs, opr )
+    local   orb,        # orbit
+            len,        # lengths of orbit before each extension
+            stab,  S,   # stabilizer and induced pcgs
+            img,  pos,  # image of <pnt> and its position in <orb>
+            stb,        # stabilizing element, a word in <pcgs>
+            i, ii, j, k;# loop variables
 
-    # Initialize all.
-    O    := [ p ];
-    prod := [ 1 ];
-    n    := [ ];
-    S    := [ ];
-
-    # Start constructing orbit.
-    for i  in Reversed( [ 1 .. Length( V ) ] )  do
-        mi := V[ i ];
-        np := opr( p, mi );
-
-        # Is <np> really a new point or is it in <O>.
-        j := PositionCanonical( O, np );
-
-        # Let's see if it is new (j = fail).
-        if j = fail  then
-            o := RelativeOrders( U )[ i ];
-            Add( prod, prod[ Length( prod ) ] * o );
-            Add( n, i );
-            len := Length( O );
-            l1 := 0;
-            O[ o * len ] := true;
-            for k  in [ 1 .. o - 1 ]  do
-                l2 := l1 + len;
-                for j  in [ 1 .. len ]  do
-                    O[ j + l2 ] := opr( O[ j + l1 ], mi );
+    orb := [ pnt ];
+    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
+    S := [  ];
+    for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
+        img := opr( pnt, oprs[ i ] );
+        pos := Position( orb, img );
+        if pos = fail  then
+            
+            # The current generator moves the orbit as a block.
+            Add( orb, img );
+            for j  in [ 2 .. len[ i + 1 ] ]  do
+                img := opr( orb[ j ], oprs[ i ] );
+                Add( orb, img );
+            od;
+            for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
+                for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
+                    img := opr( orb[ j ], oprs[ i ] );
+                    Add( orb, img );
                 od;
-                l1 := l2;
             od;
-        elif j = 1 then
-            Add( S, U[i] );
+            
         else
-            r := OneOfPcgs( U );
-            j := j - 1;
-    	    len := Length( prod );
-            for k  in [ 1 .. len - 1 ]  do
-                e := QuoInt( j, prod[ len - k ] );
-                r := U[ n[ len - k ] ] ^ e * r;
-                j := j mod prod[ len - k ];
+          
+            # The current generator leaves the orbit invariant.
+            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
+            ii := i + 2;
+            while pos <> 1  do
+                while len[ ii ] >= pos  do
+                    ii := ii + 1;
+                od;
+                stb[ ii - 1 ] := -QuoInt( pos - 1, len[ ii ] );
+                pos := ( pos - 1 ) mod len[ ii ] + 1;
             od;
-            Add( S, U[i] * r ^ -1 );
+            Add( S, PcElementByExponents( pcgs, stb ) );
+            
         fi;
+        len[ i ] := Length( orb );
     od;
-
+        
     # <S> is a reversed IGS.
     stab := SubgroupNC( G, S );
-    SetHomePcgs( stab, U );
-    SetInducedPcgsWrtHomePcgs( stab,
-            InducedPcgsByPcSequenceNC( U, Reversed( S ) ) );
-    return Immutable( rec( orbit := O, stabilizer := stab ) );
+    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
+
+    return Immutable( rec( orbit := orb, stabilizer := stab ) );
 end );
 
 #############################################################################
@@ -206,84 +193,99 @@ end );
 #F  SetCanonicalRepresentativeOfExternalOrbitByPcgs( <xset> ) . . . . . . . .
 ##
 SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
-    local   group, vs, vec, pcgs, mats, opr,
-            orbit, torbit, stab, gen, orbpos, operator, pv, gn, S,
-            mvec, mnum, num, p, z, i, j, k;
+    local   G,  D,  pnt,  pcgs,  oprs,  opr,
+            orb,  bit,  # orbit, as list and bit-list
+            len,        # lengths of orbit before each extension
+            stab,  S,   # stabilizer and induced pcgs
+            img,  pos,  # image of <pnt> and its position in <D> (or <orb>)
+            min,  mpos, # minimal value of <pos>, position in <orb>
+            stb,        # stabilizing element, a word in <pcgs>
+            oper,       # operating element, a word in <pcgs>
+            i, ii, j, k;# loop variables
 
-    group := ActingDomain( xset );
-    vs    := HomeEnumerator( xset );
-    vec   := Representative( xset );
-    pcgs  := xset!.generators;
-    mats  := xset!.operators;
-    opr   := xset!.funcOperation;
+    G    := ActingDomain( xset );
+    D    := HomeEnumerator( xset );
+    pnt  := Representative( xset );
+    pcgs := xset!.generators;
+    oprs := xset!.operators;
+    opr  := xset!.funcOperation;
     
-    orbit := [ vec ];
-    stab  := [];
-    pv    := [ 1 ];
-    gn    := [];
-
+    orb := [ pnt ];
+    len := 0 * [ 0 .. Length( pcgs ) ];  len[ Length( len ) ] := 1;
+    min := Position( D, pnt );  mpos := 1;
+    bit := BlistList( [ 1 .. Length( D ) ], [ min ] );
+    S := [  ];
     for i  in Reversed( [ 1 .. Length( pcgs ) ] )  do
-        gen    := pcgs[ i ];
-        orbpos := Position( orbit, opr( vec, mats[i] ) );
-        if orbpos = fail  then
-            p := RelativeOrders( pcgs )[ i ];
-            Add( pv, pv[Length( pv )] * p );
-            Add( gn, i );
-            torbit := ShallowCopy( orbit );
-            for j in [1..p-1] do
-                for k in [1..Length( torbit )] do
-                    torbit[k] := opr( torbit[k], mats[i] );
+        img := opr( pnt, oprs[ i ] );
+        pos := PositionCanonical( D, img );
+        if not bit[ pos ]  then
+            
+            # The current generator moves the orbit as a block.
+            Add( orb, img );  bit[ pos ] := true;
+            if pos < min  then
+                min := pos;  mpos := Length( orb );
+            fi;
+            for j  in [ 2 .. len[ i + 1 ] ]  do
+                img := opr( orb[ j ], oprs[ i ] );
+                pos := PositionCanonical( D, img );
+                Add( orb, img );  bit[ pos ] := true;
+                if pos < min  then
+                    min := pos;  mpos := Length( orb );
+                fi;
+            od;
+            for k  in [ 3 .. RelativeOrders( pcgs )[ i ] ]  do
+                for j  in Length( orb ) + [ 1 - len[ i + 1 ] .. 0 ]  do
+                    img := opr( orb[ j ], oprs[ i ] );
+                    pos := PositionCanonical( D, img );
+                    Add( orb, img );  bit[ pos ] := true;
+                    if pos < min  then
+                        min := pos;  mpos := Length( orb );
+                    fi;
                 od;
-                Append( orbit, torbit );
             od;
-        elif orbpos = 1  then
-            Add( stab, gen );
+            
         else
-            operator := One( group );
-            orbpos   := orbpos - 1;
-            j        := Length( pv ) - 1;
-            while orbpos > 0 and j > 0 do
-                operator := pcgs[gn[j]] ^ QuoInt( orbpos, pv[j] ) * operator;
-                orbpos   := orbpos mod pv[j];
-                j        := j - 1;
+          
+            # The current generator leaves the orbit invariant.
+            pos := Position( orb, img );
+            stb := 0 * [ 1 .. Length( pcgs ) ];  stb[ i ] := 1;
+            ii := i + 2;
+            while pos <> 1  do
+                while len[ ii ] >= pos  do
+                    ii := ii + 1;
+                od;
+                stb[ ii - 1 ] := -QuoInt( pos - 1, len[ ii ] );
+                pos := ( pos - 1 ) mod len[ ii ] + 1;
             od;
-            Add( stab, gen / operator );
+            Add( S, PcElementByExponents( pcgs, stb ) );
+            
         fi;
+        len[ i ] := Length( orb );
     od;
-
-    mvec := vec;
-    mnum := PositionCanonical( vs, vec );
-
-    orbpos := 1;
-    j      := Length( orbit );
-    while j > 1 and mnum > 1 do
-        num := PositionCanonical( vs, orbit[j] );
-        if num < mnum then
-            mnum   := num;
-            mvec   := orbit[j];
-            orbpos := j;
-        fi;
-        j := j - 1;
-    od;
-    operator := One( group );
-    orbpos   := orbpos - 1;
-    j        := Length( pv ) - 1;
-    while orbpos > 0 and j > 0 do
-        operator := pcgs[gn[j]] ^ QuoInt( orbpos, pv[j] ) * operator;
-        orbpos   := orbpos mod pv[j];
-        j        := j - 1;
-    od;
-
-    S := SubgroupNC( group, stab );
-    SetHomePcgs( S, pcgs );
-    SetInducedPcgsWrtHomePcgs( S,
-            InducedPcgsByPcSequenceNC( pcgs, Reversed( stab ) ) );
     if not HasEnumerator( xset )  then
-        SetEnumerator( xset, orbit );
+        SetEnumerator( xset, orb );
     fi;
-    SetCanonicalRepresentativeOfExternalSet( xset, vs[ mnum ] );
-    SetOperatorOfExternalSet( xset, operator );
-    SetStabilizerOfExternalSet( xset, S );
+
+    # Construct the operator for the minimal point at <mpos>.
+    oper := 0 * [ 1 .. Length( pcgs ) ];
+    ii := 2;
+    while mpos <> 1  do
+        while len[ ii ] >= mpos  do
+            ii := ii + 1;
+        od;
+        mpos := mpos - 1;
+        oper[ ii - 1 ] := -QuoInt( mpos, len[ ii ] );
+        mpos := mpos mod len[ ii ] + 1;
+    od;
+    SetCanonicalRepresentativeOfExternalSet( xset, D[ min ] );
+    SetOperatorOfExternalSet( xset,
+            PcElementByExponents( pcgs, oper ) ^ -1 );
+            
+    # <S> is a reversed IGS.
+    stab := SubgroupNC( G, S );
+    SetPcgs( stab, InducedPcgsByPcSequenceNC( pcgs, Reversed( S ) ) );
+    SetStabilizerOfExternalSet( xset, stab );
+    
 end;
 
 #############################################################################
@@ -346,14 +348,14 @@ end );
 #M  OrbitOp( <G>, <D>, <pnt>, <pcgs>, <oprs>, <opr> ) . . . . . based on pcgs
 ##
 InstallMethod( OrbitOp,
-        "<G>, <D>, <pnt>, <pcgs>, <oprs>, <opr>", true,
-        OrbitishReq, 0,
+        "G, D, pnt, pcgs, oprs, opr", true,
+        [ IsGroup, IsList, IsObject, IsPcgs, IsList, IsFunction ], 0,
     function( G, D, pnt, pcgs, oprs, opr )
     return OrbitOp( G, pnt, pcgs, oprs, opr );
 end );
 
 InstallOtherMethod( OrbitOp,
-        "<G>, <pnt>, <pcgs>, <oprs>, <opr>", true,
+        "G, pnt, pcgs, oprs, opr", true,
         [ IsGroup, IsObject, IsPcgs, IsList, IsFunction ], 0,
     function( G, pt, U, V, op )
     local   orb,  v,  img,  len,  i,  j,  k;
@@ -398,7 +400,7 @@ end );
 #M  StabilizerOp( <G>, <D>, <pt>, <U>, <V>, <op> )  . . . . . . based on pcgs
 ##
 InstallOtherMethod( StabilizerOp,
-        "<G>, <D>, <pnt>, <pcgs>, <oprs>, <opr>", true,
+        "G, D, pnt, pcgs, oprs, opr", true,
         [ IsGroup, IsList, IsObject, IsPcgs,
           IsList,
           IsFunction ], 0,
@@ -407,7 +409,7 @@ InstallOtherMethod( StabilizerOp,
 end );
 
 InstallOtherMethod( StabilizerOp,
-        "<G>, <pnt>, <pcgs>, <oprs>, <opr>", true,
+        "G, pnt, pcgs, oprs, opr", true,
         [ IsGroup, IsObject, IsPcgs,
           IsList,
           IsFunction ], 0,

@@ -385,7 +385,7 @@ ArrangementsK := function ( mset, m, n, k, comb, i )
 end;
 
 Arrangements := function ( arg )
-    local   combs, mset, m, i;
+    local   combs, mset, m;
     if Length(arg) = 1  then
         mset := ShallowCopy(arg[1]);  Sort( mset );
         m := List( mset, i->true );
@@ -638,7 +638,7 @@ PermutationsListK := function ( mset, m, n, k, perm, i )
 end;
 
 PermutationsList := function ( mset )
-    local   m, i;
+    local   m;
     mset := ShallowCopy(mset);  Sort( mset );
     m := List( mset, i->true );
     return PermutationsListK(mset,m,Length(mset),Length(mset),[],1);
@@ -652,7 +652,7 @@ end;
 ##  'NrPermutationsList' uses the well known multinomial coefficient formula.
 ##
 NrPermutationsList := function ( mset )
-    local   nr, m, i;
+    local   nr, m;
     nr := Factorial( Length(mset) );
     for m  in Set(mset)  do
         nr := nr / Factorial( Number( mset, i->i = m ) );
@@ -697,7 +697,7 @@ DerangementsK := function ( mset, m, n, list, k, perm, i )
 end;
 
 Derangements := function ( list )
-    local   mset, m, i;
+    local   mset, m;
     mset := ShallowCopy(list);  Sort( mset );
     m := List( mset, i->true );
     return DerangementsK(mset,m,Length(mset),list,Length(mset),[],1);
@@ -870,7 +870,7 @@ PartitionsSetK := function ( set, n, m, o, k, part, i, j )
 end;
 
 PartitionsSet := function ( arg )
-    local   parts, set, m, i;
+    local   parts, set, m;
     if Length(arg) = 1  then
         set := arg[1];
         if not IsSSortedList(arg[1])  then
@@ -912,7 +912,7 @@ end;
 #F  NrPartitionsSet( <set> )  . . . . . . . . . number of partitions of a set
 ##
 NrPartitionsSet := function ( arg )
-    local   nr, set, k;
+    local   nr, set;
     if Length(arg) = 1  then
         set := arg[1];
         if not IsSSortedList(arg[1])  then
@@ -1354,7 +1354,7 @@ NrRestrictedPartitionsK := function ( n, set, m, k, part, i )
 end;
 
 NrRestrictedPartitions := function ( arg )
-    local  s, n, set, m, p, k, l;
+    local  s, n, set, m, p, l;
 
     if Length(arg) = 2  then
         n := arg[1];

@@ -43,7 +43,7 @@ function( G, H, gens, imgs )
 
     SetRange           ( hom, H );
     SetImagesSource    ( hom, U );
-    SetCoKernelOfMonoidGeneralMapping ( hom, TrivialSubgroup( H ) );
+    SetCoKernelOfMultiplicativeGeneralMapping ( hom, TrivialSubgroup( H ) );
 
     return hom;
 end );
@@ -91,7 +91,7 @@ function( hom1, hom2 )
 
     SetRange           ( hom, H );
     SetImagesSource    ( hom, U );
-    SetCoKernelOfMonoidGeneralMapping( hom, TrivialSubgroup( H ) );
+    SetCoKernelOfMultiplicativeGeneralMapping( hom, TrivialSubgroup( H ) );
 
     return hom;
 end );
@@ -122,7 +122,7 @@ end );
 ##
 InversePcgs := function( hom )
     local pcgs, new,
-          idR, idD, gensInv, imgsInv, gensKer, gens, imgs, pcgs, i, u, v, 
+          idR, idD, gensInv, imgsInv, gensKer, gens, imgs, i, u, v, 
           uw, tmp, vw, j;
 
     # if it is known then return
@@ -196,7 +196,7 @@ InversePcgs := function( hom )
         hom!.rangePcgsPreimages := imgsInv;
         
         # we have the kernel also
-        SetKernelOfMonoidGeneralMapping( hom, SubgroupNC( Source(hom),
+        SetKernelOfMultiplicativeGeneralMapping( hom, SubgroupNC(Source(hom),
                                                           gensKer ) );
   
         # and return
@@ -213,9 +213,9 @@ end;
 
 #############################################################################
 ##
-#M  KernelOfMonoidGeneralMapping( <hom> ) . . . . . . . . . . . .  via images
+#M  KernelOfMultiplicativeGeneralMapping( <hom> ) . . . . . . . .  via images
 ##
-InstallMethod( KernelOfMonoidGeneralMapping, 
+InstallMethod( KernelOfMultiplicativeGeneralMapping, 
                "method for homs into pc group",
                true,
                [ IsToPcGroupHomomorphismByImages ],
@@ -253,7 +253,7 @@ function( hom )
 
     # add the kernel
     kernel := SubgroupNC( Source( hom ), gensKer );
-    SetKernelOfMonoidGeneralMapping( hom, kernel );
+    SetKernelOfMultiplicativeGeneralMapping( hom, kernel );
 
     # Return.
     return kernel;
@@ -305,7 +305,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
                         pcgsRange  := Pcgs( F ) ) );
     SetSource( hom, G );
     SetRange ( hom, F );
-    SetKernelOfMonoidGeneralMapping( hom, N );
+    SetKernelOfMultiplicativeGeneralMapping( hom, N );
     return hom;
 end );
 

@@ -11,6 +11,15 @@
 ##  representation of the groups.
 ##
 ##  $Log$
+##  Revision 4.8  1997/01/30 09:14:25  htheisse
+##  re-introduced induced pcgs wrt home pcgs in one place
+##
+##  Revision 4.7  1997/01/28 12:50:22  htheisse
+##  avoided setting of `HomePcgs'
+##
+##  Revision 4.6  1997/01/27 11:20:39  htheisse
+##  cleaned up the code
+##
 ##  Revision 4.5  1997/01/20 16:51:49  htheisse
 ##  introduced an awful bad hack
 ##
@@ -230,7 +239,7 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
            k,           # orbit representative in <N>
            gens,  oprs, # generators and operators for new Galois group
            type,        # the type of the Galois group as subgroup of Z_2^r^*
-           i,  l,  c,   # loop variables
+           i, j, l, c,  # loop variables
            C,  cyc,  xset,  opr,  orb;
     
     p   := RelativeOrders( N )[ 1 ];
@@ -375,22 +384,26 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
                     if   preimage!.type = 1  then  type := 2 * i - 1; # <-1>
                     elif preimage!.type = 2  then  type := i + 1;
                                              else  type := 3;          fi;
-                elif Q[ 2 ] = Zero( Q[ 2 ] )  then
-                    gens := [ GeneratorsOfGroup( preimage )[ 1 ] ^ i,
-                              GeneratorsOfGroup( preimage )[ 2 ] ];
-                    oprs := [ preimage!.operators          [ 1 ] ^ i,
-                              preimage!.operators          [ 2 ] ];
-                    type := 1;
-                elif Q[ 1 ] = Q[ 2 ]  then
-                    gens := [ GeneratorsOfGroup( preimage )[ 1 ] *
-                              GeneratorsOfGroup( preimage )[ 2 ] ];
-                    oprs := [ preimage!.operators          [ 1 ] *
-                              preimage!.operators          [ 2 ] ]; 
-                    type := 2;
                 else
-                    gens := [ GeneratorsOfGroup( preimage )[ 1 ] ^ i ];
-                    oprs := [ preimage!.operators          [ 1 ] ^ i ];
-                    type := 3;
+                    if Q[ 2 ] = Zero( Q[ 2 ] )  then  j := 1;
+                                                else  j := 2;  fi;
+                    if i = 1  then
+                        gens := [ GeneratorsOfGroup( preimage )[ 1 ],
+                                  GeneratorsOfGroup( preimage )[ 2 ] ^ j ];
+                        oprs := [ preimage!.operators          [ 1 ],
+                                  preimage!.operators          [ 2 ] ^ j ];
+                        type := 1;
+                    elif j = 2  and  Q[ 1 ] = Q[ 2 ]  then
+                        gens := [ GeneratorsOfGroup( preimage )[ 1 ] *
+                                  GeneratorsOfGroup( preimage )[ 2 ] ];
+                        oprs := [ preimage!.operators          [ 1 ] *
+                                  preimage!.operators          [ 2 ] ]; 
+                        type := 2;
+                    else
+                        gens := [ GeneratorsOfGroup( preimage )[ 2 ] ^ j ];
+                        oprs := [ preimage!.operators          [ 2 ] ^ j ];
+                        type := 3;
+                    fi;
                 fi;
             fi;
             
@@ -408,11 +421,9 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
             v := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                  ExponentsOfPcElement( N, LeftQuotient( h ^ ( 1 ^ preimage ),
                          h ^ operator ) ) * N!.subspace.projection );
-            cyc := GroupByRwsNC( SingleCollector( FreeGroup( 1 ),
-                           [ Order( preimage ) ] ) );
+            cyc := GroupByGenerators( [ preimage ] );  Pcgs( cyc );
             opr := function( k, l )
-                return ( v * k ) ^ ( 1 / 1 ^ ( preimage ^
-                       ExponentsOfPcElement( Pcgs( cyc ), l )[ 1 ] ) mod p );
+                return ( v * k ) ^ ( 1 / 1 ^ l mod p );
             end;
             xset := ExternalSet( cyc, K, opr );
             
@@ -424,8 +435,7 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
                     orb := ExternalOrbit( xset, PcElementByExponents( N,
                                    N{ N!.subspace.baseComplement }, c ) );
                     Add( reps, CanonicalRepresentativeOfExternalSet( orb ) );
-                    i := ExponentsOfPcElement( Pcgs( cyc ),
-                                 OperatorOfExternalSet( orb ) )[ 1 ];
+                    i := Size( cyc ) / Order( OperatorOfExternalSet( orb ) );
                     Add( exps, preimage ^ i );
                     Add( conj, operator ^ i );
                 od;
@@ -668,7 +678,7 @@ GeneralStepClEANS := function( G, K, L, N, cl )
         orbs := ExternalOrbits( xset );
         for orb  in orbs  do
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
-                           Representative( orb ){ ran } );
+                       CanonicalRepresentativeOfExternalSet( orb ){ ran } );
             c := CorrectConjugacyClass( orb, G, h, rep, N, L, cNh );
             Add( classes, c );
         od;

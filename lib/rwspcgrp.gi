@@ -140,6 +140,7 @@ function( rws )
     SetOne( fam, ElementByRws( fam, ReducedOne(rws) ) );
 
     # store the rewriting system
+    UpdatePolycyclicCollector(rws);
     fam!.rewritingSystem := Immutable(rws);
 
     # this family has a defining pcgs
@@ -273,6 +274,35 @@ InstallMethod( \*,
         and IsNBitsPcWordRep ],
     0,
     NBitsPcWord_Product );
+
+
+#############################################################################
+##
+#M  <IsNBitsPcWordRep> ^ <IsNBitsPcWordRep>
+##
+InstallMethod( \^,
+    "generic method for n bits pc word rep",
+    IsIdentical,
+    [ IsMultiplicativeElementWithInverseByPolycyclicCollector
+        and IsNBitsPcWordRep, 
+      IsMultiplicativeElementWithInverseByPolycyclicCollector
+        and IsNBitsPcWordRep ],
+    0,
+    NBitsPcWord_Conjugate );
+
+
+#############################################################################
+##
+#M  <IsNBitsPcWordRep> ^ <small-int>
+##
+InstallMethod( \^,
+    "generic method for n bits pc word rep",
+    true,
+    [ IsMultiplicativeElementWithInverseByPolycyclicCollector
+        and IsNBitsPcWordRep, 
+      IsInt and IsSmallIntRep ],
+    0,
+    NBitsPcWord_PowerSmallInt );
 
 
 #############################################################################

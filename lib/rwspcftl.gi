@@ -916,6 +916,17 @@ UseDeepThought := function( pcp, dtbound, max )
         fi;
         reps[i] := calcrepsn( i, avec, pr, max );
     od;
+    max := 1;
+    for  i in [1..Length(reps)]  do
+        if  IsRecord(reps[i])  then
+            max := i;
+        fi;
+    od;
+    for  i in [1..max]  do
+        if  not IsRecord(reps[i])  then
+            reps[i] := 1;
+        fi;
+    od;
     pcp![ PC_DEEP_THOUGHT_POLS ] := reps;
     pcp![ PC_DEEP_THOUGHT_BOUND ] := dtbound;
 end;

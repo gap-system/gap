@@ -613,6 +613,12 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
     return C;
 end );
 
+InstallOtherMethod( ClosureGroup, true,
+        [ IsPermGroup, IsList and IsEmpty, IsRecord ], 0,
+    function( G, nogens, options )
+    return G;
+end );
+
 InstallMethod( ClosureGroup, true,
         [ IsPermGroup and HasStabChain, IsObject ], 20,
     function( G, gens )
@@ -1207,8 +1213,8 @@ SylowSubgroupPermGroup := function( G, p )
         while q < Size( S )  do
             O := Orbit( S, D[1] );
             f := OperationHomomorphism( S, O );
-            T := SylowSubgroupPermGroup( Image( f ), p );
-            S := PreImage( f, T );
+            T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+            S := PreImagesSet( f, T );
             SubtractSet( D, O );
         od;
         return S;
@@ -1218,9 +1224,9 @@ SylowSubgroupPermGroup := function( G, p )
     B := Blocks( G, D );
     if Length( B ) <> 1  then
         f := OperationHomomorphism( G, B, OnSets );
-        T := SylowSubgroupPermGroup( Image( f ), p );
-        if Size( T ) < Size( Image( f ) )  then
-            S := SylowSubgroupPermGroup( PreImage( f, T ), p );
+        T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+        if Size( T ) < Size( ImagesSource( f ) )  then
+            S := SylowSubgroupPermGroup( PreImagesSet( f, T ), p );
             return S;
         fi;
     fi;
@@ -1241,8 +1247,8 @@ SylowSubgroupPermGroup := function( G, p )
     # the centralizer operates on the cycles of the <p> element
     B := List( Cycles( g, D ), Set );
     f := OperationHomomorphism( C, B, OnSets );
-    T := SylowSubgroupPermGroup( Image( f ), p );
-    S := PreImage( f, T );
+    T := SylowSubgroupPermGroup( ImagesSource( f ), p );
+    S := PreImagesSet( f, T );
     return S;
 
 end;
@@ -1492,7 +1498,7 @@ MAXLEN_TRANSVERSAL := 10000;
 AddCosetInfoStabChain := function( G, U, maxmoved )
     local   orb,  pimg,  img,  vert,  s,  t,  rat,  index,
             block,  B,  blist,  pos,  sliced,  lenflock,  i,  j,
-            ss,  tt,  explicit,  lenflock,  flock;
+            ss,  tt,  explicit,  flock;
     
     if IsEmpty( G.genlabels )  then
         U.index    := 1;
@@ -1761,6 +1767,46 @@ CosetNumber := function( arg )
         od;
         return CosetNumber( G.stabilizer, U.stabilizer, num, tup );
     fi;
+end;
+
+#############################################################################
+##
+
+#F  AutomorphismByConjugation( <Omega>, <d>, <e> )  .  do auto by conjugation
+##
+AutomorphismByConjugation := function( Omega, d, e )
+    local   G,  bpt,  aut,  D1,  E1,  fix,  Imega,  sliced,  pnt;
+    
+    G := SymmetricGroup( Omega[ Length( Omega ) ] );
+    aut := GroupGeneralMappingByImages( G, G, d, e );
+    if not IsTransitive( PreImagesRange( aut ), Omega )  then
+        Error( "<d> and <e> must generate transitive subgroups of <G>" );
+    elif not IsTransitive( ImagesSource( aut ), Omega )  then
+        return fail;
+    fi;
+    
+    bpt := Omega[ 1 ];
+    D1 := Stabilizer( PreImagesRange( aut ), bpt );
+    E1 := ImagesSet( aut, D1 );
+    if NrMovedPoints( E1 ) = Length( Omega )  then
+        return fail;
+    fi;
+    fix := First( Omega, p -> ForAll( GeneratorsOfGroup( E1 ),
+                   gen -> p ^ gen = p ) );
+    
+    # The automorphism <aut> maps <d>_bpt to <e>_fix, so permutes the points.
+    # Find an element in <G> with the same action.
+    Imega := [  ];
+    for pnt  in Omega  do
+        sliced := [  ];
+        while pnt <> bpt  do
+            Add( sliced, StabChainAttr( aut ).transimages[ pnt ] );
+            pnt := pnt ^ StabChainAttr( aut ).transversal[ pnt ];
+        od;
+        Add( Imega, PreImageWord( fix, sliced ) );
+    od;
+    
+    return MappingPermListList( Omega, Imega );
 end;
 
 #############################################################################

@@ -70,13 +70,13 @@ end;
 
 #############################################################################
 ##
-#F  OCAddGenerators( <ocr> <group> )  . . . . . . . . . add generators, local
+#F  OCAddGenerators( <ocr>, <group> )  . . . . . . . . . add generators, local
 ##
 InstallMethod(OCAddGenerators,"pc group",true,[IsRecord,IsPcGroup],0,
 function( ocr,G )
 local   gens;
 
-    ocr.pcgs:=HomePcgs(G);
+    ocr.pcgs:=InducedPcgsWrtHomePcgs(ocr.group);
     ocr.modulePcgs:=InducedPcgsWrtHomePcgs(ocr.module);
     if IsBound( ocr.generators )  then
     	gens := ocr.generators;
@@ -90,8 +90,7 @@ local   gens;
            Info(InfoCoh,3,"OCAddGenerators: small generating set is given ",
                   "for standard generating set" );
         fi;
-        gens := AsList(InducedPcgsWrtHomePcgs(ocr.group) mod
-	               ocr.modulePcgs);
+        gens := ocr.pcgs mod ocr.modulePcgs;
     fi;
 
     Info(InfoCoh,2,"OCAddGenerators: ", Length( gens ), " generators" );
@@ -153,7 +152,7 @@ local i,pcgs;
     # Do the same for the operations of 'normalIn' if present.
     if IsBound( ocr.normalIn )  then
         if not IsBound( ocr.normalMatrices )  then
-            ocr.normalMatrices := LinearOperation(
+            ocr.normalMatrices := LinearOperationLayer(
                 Subgroup( ocr.normalIn,ocr.normalGenerators),
                 ocr.modulePcgs);
     	    List( ocr.normalMatrices, IsMatrix );
@@ -282,7 +281,7 @@ function( ocr, G )
                 local   L,  i;
                 L := ShallowCopy( InducedPcgsWrtHomePcgs( K ) );
                 for i  in [ 1 .. Length( gens ) ]  do
-                    L[ i ] := gens[ i ] mod L[ i ];
+                    L[ i ] := LeftQuotient(gens[ i ], L[ i ]);
                 od;
                 return ocr.listToCocycle( L );
             end;
@@ -293,7 +292,7 @@ function( ocr, G )
                 S := [];
                 for i  in [ 1 .. Length( ocr.smallGeneratingSet ) ]  do
     	    	    j := ocr.smallGeneratingSet[ i ];
-                    S[ i ] := gens[ j ] mod L[ j ];
+                    S[ i ] :=LeftQuotient(gens[ j ],L[ j ]);
                 od;
                 return ocr.listToCocycle( S );
             end;
@@ -390,7 +389,7 @@ OCConjugatingWord := function( ocr, c1, c2 )
     local   B,  w,  v,  j;
 
     B := ocr.triangulizedBase;
-    w := ocr.module.identity;
+    w := One(ocr.module);
     v := c2 - c1;
     for j  in [ 1 .. Length(ocr.heads) ]  do
     	#if IntFFE( v[ ocr.heads[j]] ) <> false  then
@@ -408,7 +407,7 @@ end;
 ##
 InstallMethod(OCAddRelations,"pc group",true,[IsRecord,IsPcGroup],0,
 function( ocr, G  )
-    local   H,  G,  p,  w,  r,  i,  j,  k, mpcgs;
+    local   H,  p,  w,  r,  i,  j,  k, mpcgs;
 
     # If <ocr> has a  record component 'relators', nothing is done.
     if IsBound( ocr.relators )  then
@@ -417,9 +416,12 @@ function( ocr, G  )
     Info(InfoCoh,2,"OCAddRelations: computes pc-presentation" );
 
     # Construct the factor pcgs
-    mpcgs := InducedPcgsByGenerators(ocr.pcgs,
-               Concatenation(ocr.generators,ocr.modulePcgs)) mod
-	       ocr.modulePcgs;
+    if not IsModuloPcgs(ocr.generators) then
+      Error();
+      mpcgs := ocr.pcgs mod ocr.modulePcgs;
+    else 
+      mpcgs :=ocr.generators;
+    fi;
 
     # Start  with the power-relations. If g1 ^ p = g2 ^ 3 * g4 ^ 5 * g5, then
     # the  relator  g1  ^  -p  *  g2  ^  3  * g4 ^ 5 * g5 is used, because it
@@ -477,6 +479,7 @@ function( ocr,G, gens )
 
     Info(InfoCoh,2,"computes rels for normal complements");
 
+    Error("this still has to be fixed!");
     mpcgs := InducedPcgsWrtHomePcgs(
                Concatenation(ocr.generators,ocr.modulePcgs)) mod
 	       ocr.modulePcgs;
@@ -1181,7 +1184,7 @@ local oc,l;
     else
       l:=BaseSteinitzVectors(BasisVectors(Basis(oc.oneCocycles)),
                              BasisVectors(Basis(oc.oneCoboundaries)));
-      l:=List(VectorSpace(LeftActingDomain(oc.oneCocycles),l,
+      l:=List(VectorSpace(LeftActingDomain(oc.oneCocycles),l.factorspace,
                           Zero(oc.oneCocycles)),
               i->oc.cocycleToComplement(i));
       return l;
