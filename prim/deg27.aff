@@ -1,0 +1,9 @@
+AFFINE_NON_SOLVABLE_GROUPS[ 27 ] := [
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( GL( 3, 3 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( SL( 3, 3 ) );
+ end,
+];
+

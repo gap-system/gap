@@ -1,0 +1,168 @@
+x214O42 := Group(
+[[2,1,1,0],
+ [0,1,2,2],
+ [2,2,0,1],
+ [2,0,1,2]]*Z(3)^0,
+[[0,1,0,2],
+ [2,0,1,0],
+ [2,2,2,2],
+ [2,1,2,1]]*Z(3)^0 );
+SetName( x214O42, "2-^{1+4}.O-_4(2)" );
+
+2xS5 := Group(
+[[2,1,1,0],
+ [0,2,0,0],
+ [0,2,1,0],
+ [0,0,0,2]]*Z(3)^0,
+[[2,2,1,1],
+ [2,0,0,0],
+ [1,0,2,0],
+ [1,0,0,2]]*Z(3)^0 );
+SetName( 2xS5, "2 x S_5 max O-_4(3)" );
+
+AFFINE_NON_SOLVABLE_GROUPS[ 81 ] := [
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( GL( 4, 3 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( SL( 4, 3 ) );
+ end,
+  
+ # stabilizers of extension fields
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 1 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 2 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 3 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 4 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 5 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 6 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 7 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 8 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 9 ) );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( AlmostDerivedSubgroup(
+   StabFldExt( GL( 2, 9 ), 2 ), 10 ) );
+ end,
+
+ # normalizers of symplectic-type groups
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( x214O42 );
+ end,
+ function() return
+  PrimitiveAffinePermGroupByMatrixGroup( DerivedSubgroup( x214O42 ) );
+ end,
+ [ "3^4:SL_2(5).2 max 2-^{1+4}.O-_4(2)", Group(
+  (  2, 74,  3, 39)(  4, 70,  7, 49)(  5, 35,  9, 60)(  6, 27,  8, 14)
+    ( 10, 62, 19, 33)( 11, 54, 21, 68)( 12, 16, 20, 22)( 13, 41, 25, 81)
+    ( 15, 76, 26, 43)( 17, 66, 24, 47)( 18, 28, 23, 55)( 29, 69, 57, 53)
+    ( 30, 31, 56, 61)( 32, 48, 63, 65)( 34, 44, 58, 78)( 36, 79, 59, 40)
+    ( 37, 75, 73, 38)( 42, 71, 80, 51)( 45, 50, 77, 72)( 46, 52, 64, 67), 
+  (  2, 42, 79)(  3, 80, 40)(  4, 56, 36)(  5, 13, 24)(  6, 54, 66)
+    (  7, 30, 59)(  8, 68, 47)(  9, 25, 17)( 10, 50, 63)( 11, 61, 51)
+    ( 14, 35, 74)( 15, 64, 44)( 16, 76, 28)( 18, 38, 67)( 19, 72, 32)
+    ( 21, 31, 71)( 22, 43, 55)( 23, 75, 52)( 26, 46, 78)( 27, 60, 39)
+    ( 29, 48, 37)( 34, 45, 53)( 57, 65, 73)( 58, 77, 69), 
+  (  2,  3)(  4,  7)(  5,  9)(  6,  8)( 10, 19)( 11, 21)( 12, 20)( 13, 25)
+    ( 14, 27)( 15, 26)( 16, 22)( 17, 24)( 18, 23)( 28, 55)( 29, 57)( 30, 56)
+    ( 31, 61)( 32, 63)( 33, 62)( 34, 58)( 35, 60)( 36, 59)( 37, 73)( 38, 75)
+    ( 39, 74)( 40, 79)( 41, 81)( 42, 80)( 43, 76)( 44, 78)( 45, 77)( 46, 64)
+    ( 47, 66)( 48, 65)( 49, 70)( 50, 72)( 51, 71)( 52, 67)( 53, 69)( 54, 68), 
+  ( 2,10, 3,19)( 4,73, 7,37)( 5,55, 9,28)( 6,64, 8,46)(11,12,21,20)
+    (13,75,25,38)(14,57,27,29)(15,66,26,47)(16,39,22,74)(17,48,24,65)
+    (18,30,23,56)(31,77,61,45)(32,59,63,36)(33,68,62,54)(34,41,58,81)
+    (35,50,60,72)(40,76,79,43)(42,67,80,52)(44,49,78,70)(51,69,71,53), 
+  ( 1,28,55)( 2,29,56)( 3,30,57)( 4,31,58)( 5,32,59)( 6,33,60)( 7,34,61)
+    ( 8,35,62)( 9,36,63)(10,37,64)(11,38,65)(12,39,66)(13,40,67)(14,41,68)
+    (15,42,69)(16,43,70)(17,44,71)(18,45,72)(19,46,73)(20,47,74)(21,48,75)
+    (22,49,76)(23,50,77)(24,51,78)(25,52,79)(26,53,80)(27,54,81) ) ],
+  [ "3^4:SL_2(5) < 2-^{1+4}.O-_4(2)", Group(
+  (  2, 70, 61, 17, 25,  3, 49, 31, 24, 13)(  4, 39, 81, 66, 30,  7, 74, 41,
+      47, 56)(  5, 27, 51, 79, 54,  9, 14, 71, 40, 68)(  6, 60, 21, 59, 42,
+       8, 35, 11, 36, 80)( 10, 75, 20, 26, 72, 19, 38, 12, 15, 50)
+    ( 16, 37, 33, 45, 43, 22, 73, 62, 77, 76)( 18, 58, 63, 29, 46, 23, 34, 32,
+     57, 64)( 28, 67, 53, 48, 44, 55, 52, 69, 65, 78), 
+  (  2, 21,  3, 11)(  4, 41,  7, 81)(  5, 31,  9, 61)(  6, 51,  8, 71)
+    ( 10, 12, 19, 20)( 13, 49, 25, 70)( 14, 42, 27, 80)( 15, 32, 26, 63)
+    ( 16, 62, 22, 33)( 17, 79, 24, 40)( 18, 72, 23, 50)( 28, 77, 55, 45)
+    ( 29, 67, 57, 52)( 30, 60, 56, 35)( 34, 37, 58, 73)( 36, 47, 59, 66)
+    ( 38, 78, 75, 44)( 39, 68, 74, 54)( 43, 48, 76, 65)( 46, 69, 64, 53), 
+  (  2,  7,  9,  3,  4,  5)(  6,  8)( 10, 55, 73, 19, 28, 37)( 11, 61, 81, 21,
+     31, 41)( 12, 58, 77, 20, 34, 45)( 13, 59, 74, 25, 36, 39)
+    ( 14, 56, 79, 27, 30, 40)( 15, 62, 78, 26, 33, 44)( 16, 63, 75, 22, 32, 38
+     )( 17, 60, 80, 24, 35, 42)( 18, 57, 76, 23, 29, 43)( 46, 64)
+    ( 47, 70, 54, 66, 49, 68)( 48, 67, 50, 65, 52, 72)( 51, 71)( 53, 69), 
+  ( 1,28,55)( 2,29,56)( 3,30,57)( 4,31,58)( 5,32,59)( 6,33,60)( 7,34,61)
+    ( 8,35,62)( 9,36,63)(10,37,64)(11,38,65)(12,39,66)(13,40,67)(14,41,68)
+    (15,42,69)(16,43,70)(17,44,71)(18,45,72)(19,46,73)(20,47,74)(21,48,75)
+    (22,49,76)(23,50,77)(24,51,78)(25,52,79)(26,53,80)(27,54,81) ) ],
+
+ # classical subgroups
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup( Sp( 4, 3 ) );
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(-1,4,3),1));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(-1,4,3),2));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(-1,4,3),3));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(-1,4,3),4));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(O(-1,4,3),5));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,1));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,2));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,3));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,4));
+ end,
+ function() return
+ PrimitiveAffinePermGroupByMatrixGroup(AlmostDerivedSubgroup(2xS5,5));
+ end
+];
+
+#############################################################################
+##
+##  Local Variables:
+##  mode:             text
+##  mode:             outline-minor
+##  outline-regexp:   " *[^ 0-9(),ef]"
+##  fill-column:      79
+##  End:

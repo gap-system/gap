@@ -1138,13 +1138,53 @@ end;
 
 #############################################################################
 ##
-#M  ClosureGroup( <G>, <elm> )  . . . . . . . . closure of group with element
+#M  ClosureGroup( <G>, <elm> )  . . . .  default method for group and element
 ##
 InstallMethod( ClosureGroup,
     "generic method for group and element",
     IsCollsElms, [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
-    ClosureGroupDefault );
+    function( G, elm )
 
+    local   C,          # closure '\< <G>, <obj> \>', result
+            gens;       # generators of <G>
+
+    gens:= GeneratorsOfGroup( G );
+
+    # try to avoid adding an element to a group that already contains it
+    if   elm in gens
+      or elm^-1 in gens
+      or ( HasAsListSorted( G ) and elm in AsListSorted( G ) )
+      or elm = One( G )
+    then
+        return G;
+    fi;
+
+    # make the closure group
+    C:= GroupByGenerators( Concatenation( gens, [ elm ] ) );
+
+    # if <G> is noncommutative then so is <C>
+    if HasIsCommutative( G ) and not IsCommutative( G ) then
+      SetIsCommutative( C, false );
+    elif HasIsCommutative( G ) then
+      SetIsCommutative( C, ForAll( gens,
+                                   gen -> Comm( gen, elm ) = One( G ) ) );
+    fi;
+
+    # if <G> is infinite then so is <C>
+    if HasIsFinite( G ) and not IsFinite( G ) then
+      SetIsFinite( C, false );
+      SetSize( C, infinity );
+    fi;
+
+    # return the closure
+    return C;
+    end );
+
+
+#############################################################################
+##
+#M  ClosureGroup( <G>, <elm> )  . .  for group that contains the whole family
+##
 InstallMethod( ClosureGroup,
     "method for group that contains the whole family",
     IsCollsElms,

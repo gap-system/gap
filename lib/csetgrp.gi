@@ -16,7 +16,38 @@ Revision.csetgrp_gi:=
 #R  IsRightCosetDefaultRep
 ##
 IsRightCosetDefaultRep := NewRepresentation( "IsRightCosetDefaultRep",
-  IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset, [] );
+    IsComponentObjectRep and IsAttributeStoringRep and IsRightCoset, [] );
+
+#############################################################################
+##
+#R  IsRightCosetEnumerator
+##
+IsRightCosetEnumerator := NewRepresentation( "IsRightCosetEnumerator",
+    IsDomainEnumerator and IsAttributeStoringRep,
+    [ "groupEnumerator", "representative" ] );
+
+InstallMethod( HomeEnumerator, true, [ IsRightCoset ], 0,
+    function( C )
+    local   enum;
+    
+    enum := Objectify( NewKind( FamilyObj( C ), IsRightCosetEnumerator ),
+            rec( groupEnumerator := Enumerator( ActingDomain( C ) ),
+                  representative := Representative( C ) ) );
+    SetUnderlyingCollection( enum, C );
+    return enum;
+end );
+
+InstallMethod( \[\], true, [ IsRightCosetEnumerator, IsPosRat and IsInt ], 0,
+    function( enum, pos )
+    return enum!.groupEnumerator[ pos ] * enum!.representative;
+end );
+
+InstallMethod( Position, true, [ IsRightCosetEnumerator,
+        IsMultiplicativeElementWithInverse, IsInt ], 0,
+    function( enum, elm, after )
+    return Position( enum!.groupEnumerator, elm / enum!.representative,
+                   after );
+end );
 
 #############################################################################
 ##
