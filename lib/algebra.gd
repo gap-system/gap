@@ -168,6 +168,8 @@ HasIndicesOfAdjointBasis := Tester( IndicesOfAdjointBasis );
 ##
 #A  RadicalOfAlgebra( <A> )
 ##
+##  is the intersection of maximal ideals of the algebra <A>.
+##
 RadicalOfAlgebra := NewAttribute( "RadicalOfAlgebra", IsAlgebra );
 SetRadicalOfAlgebra := Setter( RadicalOfAlgebra );
 HasRadicalOfAlgebra := Tester( RadicalOfAlgebra );
@@ -503,7 +505,7 @@ SubalgebraNC := SubFLMLORNC;
 #O  UnitalAlgebraByGenerators( <F>, <gens>, <zero> )
 ##
 UnitalFLMLORByGenerators := NewOperation( "UnitalFLMLORByGenerators",
-    [ IsDivisionRing, IsCollection ] );
+    [ IsRing, IsCollection ] );
 
 UnitalAlgebraByGenerators := UnitalFLMLORByGenerators;
 

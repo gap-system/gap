@@ -33,7 +33,7 @@
 **  This package also contains the list  functions for plain lists, i.e., the
 **  functions called from the generic lists package.
 */
-char *          Revision_plist_c =
+char * Revision_plist_c =
    "@(#)$Id$";
 
 #include        "system.h"              /* system dependent functions      */
@@ -301,7 +301,7 @@ Obj             KindPlist (
     ktype  = KTypePlist( list );
 
     /* handle special cases                                                */
-    if      ( ktype == T_PLIST_NDENSE     ) {
+    if      ( ktype == T_PLIST_NDENSE ) {
         return KIND_LIST_NDENSE_MUTABLE;
     }
     else if ( ktype == T_PLIST_NDENSE+IMMUTABLE ) {
@@ -313,7 +313,7 @@ Obj             KindPlist (
     else if ( ktype == T_PLIST_DENSE_NHOM+IMMUTABLE ) {
         return KIND_LIST_DENSE_NHOM_IMMUTABLE;
     }
-    else if ( ktype == T_PLIST_EMPTY      ) {
+    else if ( ktype == T_PLIST_EMPTY ) {
         return KIND_LIST_EMPTY_MUTABLE;
     }
     else if ( ktype == T_PLIST_EMPTY+IMMUTABLE ) {
@@ -321,7 +321,7 @@ Obj             KindPlist (
     }
 
     /* handle homogeneous list                                             */
-    else if ( ktype >= T_PLIST_HOM        ) {
+    else if ( ktype >= T_PLIST_HOM ) {
 
         /* get the family of the elements                                  */
         family = FAMILY_KIND( KIND_OBJ( ELM_PLIST(list,1) ) );
@@ -926,8 +926,8 @@ Obj             ElmsPlist (
         lenPoss = LEN_LIST( poss );
 
         /* make the result list                                            */
-        /* can only assert ``dense'', we don't know anything about <list>  */
-        elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
+        /* do not assert "dense", list might be homogeneous                */
+        elms = NEW_PLIST( T_PLIST, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
         /* loop over the entries of <positions> and select                 */
@@ -991,8 +991,8 @@ Obj             ElmsPlist (
         }
 
         /* make the result list                                            */
-        /* can only assert ``dense'', we don't know anything about <list>  */
-        elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
+        /* do not assert "dense", list might be homogeneous                */
+        elms = NEW_PLIST( T_PLIST, lenPoss );
         SET_LEN_PLIST( elms, lenPoss );
 
         /* loop over the entries of <positions> and select                 */
@@ -1051,17 +1051,33 @@ Obj             ElmsPlistDense (
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
         if      ( (TYPE_OBJ(list) == T_PLIST_HOM_SSORT
+		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT
                 || TYPE_OBJ(list) == T_PLIST_CYC_SSORT)
                && (TYPE_OBJ(poss) == T_PLIST_HOM_SSORT
-                || TYPE_OBJ(poss) == T_PLIST_CYC_SSORT) ) {
+                || TYPE_OBJ(poss) == T_PLIST_CYC_SSORT) )
+	{
             elms = NEW_PLIST( TYPE_OBJ(list), lenPoss );
         }
-        else if ( (T_PLIST_HOM <= TYPE_OBJ(list)
-                && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT) ) {
+        else if (  TYPE_OBJ(list) == T_PLIST_HOM
+		|| TYPE_OBJ(list) == T_PLIST_HOM_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_HOM_SSORT )
+        {
             elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
         }
+        else if (  TYPE_OBJ(list) == T_PLIST_TAB
+		|| TYPE_OBJ(list) == T_PLIST_TAB_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT )
+        {
+            elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
+        }
+        else if (  TYPE_OBJ(list) == T_PLIST_CYC
+		|| TYPE_OBJ(list) == T_PLIST_CYC_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_CYC_SSORT )
+        {
+            elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
+        }
         else {
-            elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
+            elms = NEW_PLIST( T_PLIST, lenPoss );
         }
         SET_LEN_PLIST( elms, lenPoss );
 
@@ -1121,16 +1137,33 @@ Obj             ElmsPlistDense (
         /* make the result list                                            */
         /* try to assert as many properties as possible                    */
         if      ( (TYPE_OBJ(list) == T_PLIST_HOM_SSORT
+		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT
                 || TYPE_OBJ(list) == T_PLIST_CYC_SSORT)
-               && (TYPE_OBJ(poss) == T_RANGE_SSORT) ) {
+               && (TYPE_OBJ(poss) == T_PLIST_HOM_SSORT
+                || TYPE_OBJ(poss) == T_PLIST_CYC_SSORT) )
+	{
             elms = NEW_PLIST( TYPE_OBJ(list), lenPoss );
         }
-        else if ( (T_PLIST_HOM <= TYPE_OBJ(list)
-                && TYPE_OBJ(list) <= T_PLIST_CYC_SSORT) ) {
+        else if (  TYPE_OBJ(list) == T_PLIST_HOM
+		|| TYPE_OBJ(list) == T_PLIST_HOM_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_HOM_SSORT )
+        {
             elms = NEW_PLIST( T_PLIST_HOM, lenPoss );
         }
+        else if (  TYPE_OBJ(list) == T_PLIST_TAB
+		|| TYPE_OBJ(list) == T_PLIST_TAB_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_TAB_SSORT )
+        {
+            elms = NEW_PLIST( T_PLIST_TAB, lenPoss );
+        }
+        else if (  TYPE_OBJ(list) == T_PLIST_CYC
+		|| TYPE_OBJ(list) == T_PLIST_CYC_NSORT
+		|| TYPE_OBJ(list) == T_PLIST_CYC_SSORT )
+        {
+            elms = NEW_PLIST( T_PLIST_CYC, lenPoss );
+        }
         else {
-            elms = NEW_PLIST( T_PLIST_DENSE, lenPoss );
+            elms = NEW_PLIST( T_PLIST, lenPoss );
         }
         SET_LEN_PLIST( elms, lenPoss );
 
@@ -1741,38 +1774,164 @@ void            InitPlist ( void )
     UInt                t1, t2;         /* loop variables                  */
 
     /* install the marking function                                        */
-    for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
-        InfoBags        [ t1                     ].name
-            = "list (plain)";
+    for ( t1 = T_PLIST;  t1 <= T_PLIST_CYC_SSORT;  t1 += 2 ) {
         InitMarkFuncBags( t1                     , MarkAllSubBags );
-        InfoBags        [ t1 +IMMUTABLE          ].name
-            = "list (immutable,plain)";
         InitMarkFuncBags( t1 +IMMUTABLE          , MarkAllSubBags );
-    }
-    for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
-        InfoBags        [ t1            +COPYING ].name
-            = "list (plain,copied)";
         InitMarkFuncBags( t1            +COPYING , MarkAllSubBags );
-        InfoBags        [ t1 +IMMUTABLE +COPYING ].name
-            = "list (immutable,plain,copied)";
         InitMarkFuncBags( t1 +IMMUTABLE +COPYING , MarkAllSubBags );
     }
 
+
+    /* install the names                                                   */
+    InfoBags[ T_PLIST                     ].name
+	= "list (plain)";
+    InfoBags[ T_PLIST +IMMUTABLE          ].name
+	= "list (plain,immutable)";
+    InfoBags[ T_PLIST            +COPYING ].name
+	= "list (plain,copied)";
+    InfoBags[ T_PLIST +IMMUTABLE +COPYING ].name
+	= "list (plain,immutable,copied)";
+
+    InfoBags[ T_PLIST_NDENSE                     ].name
+	= "list (plain,ndense)";
+    InfoBags[ T_PLIST_NDENSE +IMMUTABLE          ].name
+	= "list (plain,ndense,immutable)";
+    InfoBags[ T_PLIST_NDENSE            +COPYING ].name
+	= "list (plain,ndense,copied)";
+    InfoBags[ T_PLIST_NDENSE +IMMUTABLE +COPYING ].name
+	= "list (plain,ndense,immutable,copied)";
+
+    InfoBags[ T_PLIST_DENSE                     ].name
+	= "list (plain,dense)";
+    InfoBags[ T_PLIST_DENSE +IMMUTABLE          ].name
+	= "list (plain,dense,immutable)";
+    InfoBags[ T_PLIST_DENSE            +COPYING ].name
+	= "list (plain,dense,copied)";
+    InfoBags[ T_PLIST_DENSE +IMMUTABLE +COPYING ].name
+	= "list (plain,dense,immutable,copied)";
+
+    InfoBags[ T_PLIST_DENSE_NHOM                     ].name
+	= "list (plain,dense,nhom)";
+    InfoBags[ T_PLIST_DENSE_NHOM +IMMUTABLE          ].name
+	= "list (plain,dense,nhom,immutable)";
+    InfoBags[ T_PLIST_DENSE_NHOM            +COPYING ].name
+	= "list (plain,dense,nhom,copied)";
+    InfoBags[ T_PLIST_DENSE_NHOM +IMMUTABLE +COPYING ].name
+	= "list (plain,dense,nhom,immutable,copied)";
+
+    InfoBags[ T_PLIST_EMPTY                     ].name
+	= "list (plain,empty)";
+    InfoBags[ T_PLIST_EMPTY +IMMUTABLE          ].name
+	= "list (plain,empty,immutable)";
+    InfoBags[ T_PLIST_EMPTY            +COPYING ].name
+	= "list (plain,empty,copied)";
+    InfoBags[ T_PLIST_EMPTY +IMMUTABLE +COPYING ].name
+	= "list (plain,empty,immutable,copied)";
+
+    InfoBags[ T_PLIST_HOM                     ].name
+	= "list (plain,hom)";
+    InfoBags[ T_PLIST_HOM +IMMUTABLE          ].name
+	= "list (plain,hom,immutable)";
+    InfoBags[ T_PLIST_HOM            +COPYING ].name
+	= "list (plain,hom,copied)";
+    InfoBags[ T_PLIST_HOM +IMMUTABLE +COPYING ].name
+	= "list (plain,hom,immutable,copied)";
+
+    InfoBags[ T_PLIST_HOM_NSORT                     ].name
+	= "list (plain,hom,nsort)";
+    InfoBags[ T_PLIST_HOM_NSORT +IMMUTABLE          ].name
+	= "list (plain,hom,nsort,immutable)";
+    InfoBags[ T_PLIST_HOM_NSORT            +COPYING ].name
+	= "list (plain,hom,nsort,copied)";
+    InfoBags[ T_PLIST_HOM_NSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,hom,nsort,immutable,copied)";
+
+    InfoBags[ T_PLIST_HOM_SSORT                     ].name
+	= "list (plain,hom,ssort)";
+    InfoBags[ T_PLIST_HOM_SSORT +IMMUTABLE          ].name
+	= "list (plain,hom,ssort,immutable)";
+    InfoBags[ T_PLIST_HOM_SSORT            +COPYING ].name
+	= "list (plain,hom,ssort,copied)";
+    InfoBags[ T_PLIST_HOM_SSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,hom,ssort,immutable,copied)";
+
+    InfoBags[ T_PLIST_TAB                     ].name
+	= "list (plain,table)";
+    InfoBags[ T_PLIST_TAB +IMMUTABLE          ].name
+	= "list (plain,table,immutable)";
+    InfoBags[ T_PLIST_TAB            +COPYING ].name
+	= "list (plain,table,copied)";
+    InfoBags[ T_PLIST_TAB +IMMUTABLE +COPYING ].name
+	= "list (plain,table,immutable,copied)";
+
+    InfoBags[ T_PLIST_TAB_NSORT                     ].name
+	= "list (plain,table,nsort)";
+    InfoBags[ T_PLIST_TAB_NSORT +IMMUTABLE          ].name
+	= "list (plain,table,nsort,immutable)";
+    InfoBags[ T_PLIST_TAB_NSORT            +COPYING ].name
+	= "list (plain,table,nsort,copied)";
+    InfoBags[ T_PLIST_TAB_NSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,table,nsort,immutable,copied)";
+
+    InfoBags[ T_PLIST_TAB_SSORT                     ].name
+	= "list (plain,table,ssort)";
+    InfoBags[ T_PLIST_TAB_SSORT +IMMUTABLE          ].name
+	= "list (plain,table,ssort,immutable)";
+    InfoBags[ T_PLIST_TAB_SSORT            +COPYING ].name
+	= "list (plain,table,ssort,copied)";
+    InfoBags[ T_PLIST_TAB_SSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,table,ssort,immutable,copied)";
+
+    InfoBags[ T_PLIST_CYC                     ].name
+	= "list (plain,cyc)";
+    InfoBags[ T_PLIST_CYC +IMMUTABLE          ].name
+	= "list (plain,cyc,immutable)";
+    InfoBags[ T_PLIST_CYC            +COPYING ].name
+	= "list (plain,cyc,copied)";
+    InfoBags[ T_PLIST_CYC +IMMUTABLE +COPYING ].name
+	= "list (plain,cyc,immutable,copied)";
+
+    InfoBags[ T_PLIST_CYC_NSORT                     ].name
+	= "list (plain,cyc,nsort)";
+    InfoBags[ T_PLIST_CYC_NSORT +IMMUTABLE          ].name
+	= "list (plain,cyc,nsort,immutable)";
+    InfoBags[ T_PLIST_CYC_NSORT            +COPYING ].name
+	= "list (plain,cyc,nsort,copied)";
+    InfoBags[ T_PLIST_CYC_NSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,cyc,nsort,immutable,copied)";
+
+    InfoBags[ T_PLIST_CYC_SSORT                     ].name
+	= "list (plain,cyc,ssort)";
+    InfoBags[ T_PLIST_CYC_SSORT +IMMUTABLE          ].name
+	= "list (plain,cyc,ssort,immutable)";
+    InfoBags[ T_PLIST_CYC_SSORT            +COPYING ].name
+	= "list (plain,cyc,ssort,copied)";
+    InfoBags[ T_PLIST_CYC_SSORT +IMMUTABLE +COPYING ].name
+	= "list (plain,cyc,ssort,immutable,copied)";
+
+
     /* get the kinds (resp. kind functions)                                */
     InitCopyGVar( GVarName("KIND_LIST_NDENSE_MUTABLE"       ),
-        &KIND_LIST_NDENSE_MUTABLE       );
+                           &KIND_LIST_NDENSE_MUTABLE        );
+
     InitCopyGVar( GVarName("KIND_LIST_NDENSE_IMMUTABLE"     ),
-        &KIND_LIST_NDENSE_IMMUTABLE     );
+                           &KIND_LIST_NDENSE_IMMUTABLE      );
+
     InitCopyGVar( GVarName("KIND_LIST_DENSE_NHOM_MUTABLE"   ),
-        &KIND_LIST_DENSE_NHOM_MUTABLE   );
+                           &KIND_LIST_DENSE_NHOM_MUTABLE    );
+
     InitCopyGVar( GVarName("KIND_LIST_DENSE_NHOM_IMMUTABLE" ),
-        &KIND_LIST_DENSE_NHOM_IMMUTABLE );
+                           &KIND_LIST_DENSE_NHOM_IMMUTABLE  );
+
     InitCopyGVar( GVarName("KIND_LIST_EMPTY_MUTABLE"        ),
-        &KIND_LIST_EMPTY_MUTABLE        );
+                           &KIND_LIST_EMPTY_MUTABLE         );
+
     InitCopyGVar( GVarName("KIND_LIST_EMPTY_IMMUTABLE"      ),
-        &KIND_LIST_EMPTY_IMMUTABLE      );
+                           &KIND_LIST_EMPTY_IMMUTABLE       );
+
     InitFopyGVar( GVarName("KIND_LIST_HOM"                  ),
-        &KIND_LIST_HOM                  );
+                           &KIND_LIST_HOM                   );
+
 
     /* install the kind methods                                            */
     KindObjFuncs[ T_PLIST                       ] = KindPlist;
@@ -1794,11 +1953,13 @@ void            InitPlist ( void )
         KindObjFuncs[ t1 +IMMUTABLE ] = KindPlistCyc;
     }
 
+
     /* install the shallow copy methods                                    */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
         ShallowCopyObjFuncs[ t1            ] = ShallowCopyPlist;
         ShallowCopyObjFuncs[ t1 +IMMUTABLE ] = ShallowCopyPlist;
     }
+
 
     /* install the copy list methods                                       */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
@@ -1812,6 +1973,7 @@ void            InitPlist ( void )
         CleanObjFuncs[ t1 +IMMUTABLE +COPYING ] = CleanPlistCopy;
     }
 
+
     /* install the comparison methods                                      */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT+IMMUTABLE; t1++ ) {
         for ( t2 = T_PLIST; t2 <= T_PLIST_CYC_SSORT+IMMUTABLE; t2++ ) {
@@ -1820,6 +1982,7 @@ void            InitPlist ( void )
         }
     }
 
+
     /* install the list length methods                                     */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
         LenListFuncs[ t1            ] = LenPlist;
@@ -1827,6 +1990,7 @@ void            InitPlist ( void )
     }
     LenListFuncs[ T_PLIST_EMPTY           ] = LenPlistEmpty;
     LenListFuncs[ T_PLIST_EMPTY+IMMUTABLE ] = LenPlistEmpty;
+
 
     /* install the list element test methods                               */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
@@ -1845,6 +2009,7 @@ void            InitPlist ( void )
         IsbvListFuncs [ t1            ] = IsbvPlistDense;
         IsbvListFuncs [ t1 +IMMUTABLE ] = IsbvPlistDense;
     }
+
 
     /* install the list element methods                                    */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
@@ -1880,6 +2045,7 @@ void            InitPlist ( void )
         ElmwListFuncs [ t1 +IMMUTABLE ] = ElmvPlistDense;
     }
 
+
     /* install the list elements methods                                   */
     for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
         ElmsListFuncs   [ t1            ] = ElmsPlist;
@@ -1890,11 +2056,13 @@ void            InitPlist ( void )
         ElmsListFuncs   [ t1 +IMMUTABLE ] = ElmsPlistDense;
     }
 
+
     /* install the list unbind methods                                     */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
         UnbListFuncs    [ t1            ] = UnbPlist;
         UnbListFuncs    [ t1+IMMUTABLE  ] = UnbPlistImm;
     }
+
 
     /* install the list assignment methods                                 */
     AssListFuncs    [ T_PLIST           ] = AssPlist;
@@ -1904,6 +2072,7 @@ void            InitPlist ( void )
         AssListFuncs    [ t1+IMMUTABLE  ] = AssPlistImm;
     }
 
+
     /* install the list assignments methods                                */
     AsssListFuncs   [ T_PLIST            ] = AsssPlist;
     AsssListFuncs   [ T_PLIST +IMMUTABLE ] = AsssPlistImm;
@@ -1911,6 +2080,7 @@ void            InitPlist ( void )
         AsssListFuncs   [ t1             ] = AsssPlistXXX;
         AsssListFuncs   [ t1 +IMMUTABLE  ] = AsssPlistImm;
     }
+
 
     /* install the dense list test methods                                 */
     IsDenseListFuncs[ T_PLIST                   ] = IsDensePlist;
@@ -1921,6 +2091,7 @@ void            InitPlist ( void )
         IsDenseListFuncs[ t1            ] = IsDensePlistYes;
         IsDenseListFuncs[ t1 +IMMUTABLE ] = IsDensePlistYes;
     }
+
 
     /* install the homogeneous list test methods                           */
     IsHomogListFuncs[ T_PLIST                       ] = IsHomogPlist;
@@ -1937,6 +2108,7 @@ void            InitPlist ( void )
         IsHomogListFuncs[ t1            ] = IsHomogPlistYes;
         IsHomogListFuncs[ t1 +IMMUTABLE ] = IsHomogPlistYes;
     }
+
 
     /* install the equal length list test methods                          */
     IsTableListFuncs[ T_PLIST                       ] = IsTablePlist;
@@ -1968,6 +2140,7 @@ void            InitPlist ( void )
     IsTableListFuncs[ T_PLIST_CYC_SSORT             ] = IsTablePlist;
     IsTableListFuncs[ T_PLIST_CYC_SSORT  +IMMUTABLE ] = IsTablePlist;
 
+
     /* install the strictly sorted list test methods                       */
     IsSSortListFuncs[ T_PLIST                      ] = IsSSortPlist;
     IsSSortListFuncs[ T_PLIST           +IMMUTABLE ] = IsSSortPlist;
@@ -1998,11 +2171,13 @@ void            InitPlist ( void )
     IsSSortListFuncs[ T_PLIST_CYC_SSORT            ] = IsSSortPlistYes;
     IsSSortListFuncs[ T_PLIST_CYC_SSORT +IMMUTABLE ] = IsSSortPlistYes;
 
+
     /* install the position list test methods                              */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {
         IsPossListFuncs[ t1            ] = IsPossPlist;
         IsPossListFuncs[ t1 +IMMUTABLE ] = IsPossPlist;
     }
+
 
     /* install the position list methods                                   */
     for ( t1 = T_PLIST; t1 <= T_PLIST_NDENSE; t1 += 2 ) {
@@ -2019,6 +2194,7 @@ void            InitPlist ( void )
     PosListFuncs[ T_PLIST_TAB_SSORT +IMMUTABLE ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_CYC_SSORT            ] = PosPlistHomSort;
     PosListFuncs[ T_PLIST_CYC_SSORT +IMMUTABLE ] = PosPlistHomSort;
+
 
     /* install the plain list methods                                      */
     for ( t1 = T_PLIST; t1 <= T_PLIST_CYC_SSORT; t1 += 2 ) {

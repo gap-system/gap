@@ -58,7 +58,7 @@ end;
 #M  Range( <map> )
 ##
 InstallMethod( Range, true,
-    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], SUM_FLAGS + 1,
+    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], 2*SUM_FLAGS + 1,
     function ( map )
     return DataKind( KindObj( map ) )[2];
     end );
@@ -69,7 +69,7 @@ InstallMethod( Range, true,
 #M  Source( <map> )
 ##
 InstallMethod( Source, true,
-    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], SUM_FLAGS + 1,
+    [ IsGeneralMapping and IsDefaultGeneralMappingRep ], 2*SUM_FLAGS + 1,
     function ( map )
     return DataKind( KindObj( map ) )[1];
     end );

@@ -457,7 +457,8 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         Unbind( series[ i ].relativeOrders );
         series[ i ] := GroupStabChain( G, series[ i ], true );
     od;
-    pcgs!.nrGensSeries := pcgs!.nrGensSeries - oldlen + 1;
+    pcgs!.nrGensSeries := pcgs!.nrGensSeries -
+                          pcgs!.nrGensSeries[ Length( series ) ];
     SetPcSeries( pcgs, series );
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
@@ -659,7 +660,7 @@ InstallMethod( Pcgs, true, [ IsPermGroup ], 0,
                            else  return pcgs;  fi;
 end );
 
-InstallMethod( Pcgs, true, [ HasIsSolvableGroup ], 0,
+InstallMethod( Pcgs, true, [ HasIsSolvableGroup ], SUM_FLAGS,
     function( G )
     if not IsSolvableGroup( G )  then  return fail;
                                  else  TryNextMethod();  fi;
@@ -817,6 +818,13 @@ InstallOtherMethod( ExponentsOfPcElement, "perm group with positions", true,
     function( pcgs, g, poss )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, Maximum( poss ), 'e' )
            { poss - Minimum( poss ) + 1 };
+end );
+
+InstallOtherMethod( ExponentsOfPcElement, "perm group with 0 positions", true,
+        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs, IsPerm,
+          IsList and IsEmpty ], 0,
+    function( pcgs, g, poss )
+    return [  ];
 end );
 
 #############################################################################

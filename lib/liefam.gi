@@ -27,6 +27,11 @@ InstallMethod( LieFamily, true, [ IsFamilyRingElements ], 0,
 
     # Make the family of Lie elements.
     F:= NewFamily( "LieFamily(...)", IsLieObject );
+    SetUnderlyingFamily( F, Fam );
+
+    if HasCharacteristic( Fam ) then
+      SetCharacteristic( F, Characteristic( Fam ) );
+    fi;
 #T maintain other req/imp properties as implied properties of 'F'?
 
     # Enter the kind of objects in the image.
@@ -43,6 +48,12 @@ InstallMethod( LieFamily, true, [ IsFamilyCollections ], 0,
 
     # Make the family of Lie elements.
     F:= NewFamily( "LieFamily(...)", IsLieObject and IsMatrix );
+    SetUnderlyingFamily( F, Fam );
+
+    if HasCharacteristic( Fam ) then
+      SetCharacteristic( F, Characteristic( Fam ) );
+    fi;
+#T maintain other req/imp properties as implied properties of 'F'?
 
     # Enter the kind of objects in the image.
     F!.packedKind:= NewKind( F, IsLieObject and IsMatrix );
@@ -145,7 +156,10 @@ InstallMethod( \-, true, [ IsRingElement, IsLieObject ], 0,
     fi;
     end );
 
-InstallMethod( \*, IsIdentical, [ IsLieObject, IsLieObject ], 1,
+InstallMethod( \*,
+    "method for two Lie objects in the same family",
+    IsIdentical,
+    [ IsLieObject, IsLieObject ], SUM_FLAGS,
     function( x, y ) return LieObject( LieBracket( x![1], y![1] ) ); end );
 
 InstallMethod( \*, true, [ IsLieObject, IsRingElement ], 0,
@@ -163,7 +177,7 @@ InstallMethod( \*, true, [ IsRingElement, IsLieObject ], 0,
     function( x, y )
     local z;
     z:= x * y![1];
-    if IsFamLieFam( FamilyObj( z ), FamilyObj( x ) ) then
+    if IsFamLieFam( FamilyObj( z ), FamilyObj( y ) ) then
       return LieObject( z );
     else
       TryNextMethod();
@@ -179,16 +193,39 @@ InstallMethod( \^, true, [ IsLieObject, IsPosRat and IsInt ], 0,
     fi;
     end );
 
+
+#############################################################################
+##
+#M  Zero( <lie_obj> )
+##
+InstallMethod( Zero, true, [ IsLieObject ], SUM_FLAGS,
+    x -> LieObject( Zero( x![1] ) ) );
+
+
+#############################################################################
+##
+#M  One( <lie_obj> )
+##
 InstallOtherMethod( One, true, [ IsLieObject ], 0,
     function( x )
     Error( "no identity in Lie families" );
     end );
 
+
+#############################################################################
+##
+#M  Inverse( <lie_obj> )
+##
 InstallOtherMethod( Inverse, true, [ IsLieObject ], 0,
     function( x )
     Error( "no inverses in Lie families" );
     end );
 
+
+#############################################################################
+##
+#M  AdditiveInverse( <lie_obj> )
+##
 InstallMethod( AdditiveInverse, true, [ IsLieObject ], 0,
     x -> LieObject( - x![1] ) );
 
@@ -279,6 +316,17 @@ InstallMethod( PreImagesElm, FamRangeEqFamElm,
 #T     function ( emb, elms )
 #T     ...
 #T     end );
+
+
+#############################################################################
+##
+#M  IsUnit( <lie_obj> )
+##
+InstallOtherMethod( IsUnit,
+    "method for a Lie object (return 'false')",
+    true,
+    [ IsLieObject ], 0,
+    ReturnFalse );
 
 
 #############################################################################

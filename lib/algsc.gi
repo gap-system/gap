@@ -731,6 +731,26 @@ InstallMethod( UglyVector,
 
 #############################################################################
 ##
+#M  MutableBasisByGenerators( <R>, <gens> )
+#M  MutableBasisByGenerators( <R>, <gens>, <zero> )
+##
+##  We choose a mutable basis that stores a mutable basis for a nice module.
+##
+InstallMethod( MutableBasisByGenerators,
+    "method for ring and collection of s.c. algebra elements",
+    true,
+    [ IsRing, IsSCAlgebraObjCollection ], 0,
+    MutableBasisViaNiceMutableBasisMethod2 );
+
+InstallOtherMethod( MutableBasisByGenerators,
+    "method for ring, (possibly empty) list, and zero element",
+    true,
+    [ IsRing, IsList, IsSCAlgebraObj ], 0,
+    MutableBasisViaNiceMutableBasisMethod3 );
+
+
+#############################################################################
+##
 #M  Coefficients( <B>, <v> )  . . . . . . coefficients w.r.t. canonical basis
 ##
 InstallMethod( Coefficients,

@@ -27,6 +27,7 @@ HasIsField := Tester( IsField );
 
 InstallTrueMethod( IsCommutative, IsDivisionRing and IsFinite );
 
+
 #############################################################################
 ##
 #P  IsNumberField( <F> )
@@ -42,6 +43,7 @@ InstallSubsetTrueMethod( IsNumberField,
     IsField and IsNumberField, IsField );
 InstallIsomorphismTrueMethod( IsNumberField,
     IsField and IsNumberField, IsField );
+
 
 #############################################################################
 ##
@@ -62,6 +64,7 @@ InstallSubsetTrueMethod( IsAbelianNumberField,
 InstallIsomorphismTrueMethod( IsAbelianNumberField,
     IsField and IsAbelianNumberField, IsField );
 
+
 #############################################################################
 ##
 #P  IsCyclotomicField( <F> )
@@ -78,6 +81,7 @@ InstallTrueMethod( IsAbelianNumberField, IsCyclotomicField );
 InstallIsomorphismTrueMethod( IsCyclotomicField,
     IsField and IsCyclotomicField, IsField );
 
+
 #############################################################################
 ##
 #P  IsPrimeField( <D> )
@@ -88,6 +92,7 @@ HasIsPrimeField := Tester( IsPrimeField );
 
 InstallIsomorphismTrueMethod( IsPrimeField,
     IsField and IsPrimeField, IsField );
+
 
 #############################################################################
 ##
@@ -102,6 +107,7 @@ Conductor := NewAttribute( "Conductor", IsAbelianNumberField );
 SetConductor := Setter( Conductor );
 HasConductor := Tester( Conductor );
 
+
 #############################################################################
 ##
 #A  DefiningPolynomial( <F> )
@@ -113,6 +119,7 @@ DefiningPolynomial := NewAttribute( "DefiningPolynomial", IsField );
 SetDefiningPolynomial := Setter( DefiningPolynomial );
 HasDefiningPolynomial := Tester( DefiningPolynomial );
 
+
 #############################################################################
 ##
 #A  DegreeOverPrimeField( <F> )
@@ -123,6 +130,7 @@ DegreeOverPrimeField := NewAttribute( "DegreeOverPrimeField",
     IsDivisionRing );
 SetDegreeOverPrimeField := Setter( DegreeOverPrimeField );
 HasDegreeOverPrimeField := Tester( DegreeOverPrimeField );
+
 
 #############################################################################
 ##
@@ -155,6 +163,7 @@ GaloisGroup := NewAttribute( "GaloisGroup", IsField );
 SetGaloisGroup := Setter( GaloisGroup );
 HasGaloisGroup := Tester( GaloisGroup );
 
+
 #############################################################################
 ##
 #A  GaloisStabilizer( <F> )
@@ -167,23 +176,17 @@ GaloisStabilizer := NewAttribute( "GaloisStabilizer", IsAbelianNumberField );
 SetGaloisStabilizer := Setter( GaloisStabilizer );
 HasGaloisStabilizer := Tester( GaloisStabilizer );
 
-#############################################################################
-##
-#A  NiceField( <F> )  . . . . . . . . . .  nice field isomorphic to field <F>
-##
-NiceField := NewAttribute( "NiceField", IsField );
-SetNiceField := Setter( NiceField );
-HasNiceField := Tester( NiceField );
 
 #############################################################################
 ##
-#A  NormalBasis( <F> )
+#A  NormalBase( <F> )
 ##
-##  is a basis of <F> that consists of conjugate elements.
+##  is a list of basis vectors of <F> that consists of conjugate elements.
 ##
-NormalBasis := NewAttribute( "NormalBasis", IsField );
-SetNormalBasis := Setter( NormalBasis );
-HasNormalBasis := Tester( NormalBasis );
+NormalBase := NewAttribute( "NormalBase", IsField );
+SetNormalBase := Setter( NormalBase );
+HasNormalBase := Tester( NormalBase );
+
 
 #############################################################################
 ##
@@ -192,6 +195,7 @@ HasNormalBasis := Tester( NormalBasis );
 PrimeField := NewAttribute( "PrimeField", IsDivisionRing );
 SetPrimeField := Setter( PrimeField );
 HasPrimeField := Tester( PrimeField );
+
 
 #############################################################################
 ##
@@ -204,6 +208,7 @@ PrimitiveElement := NewAttribute( "PrimitiveElement", IsDivisionRing );
 SetPrimitiveElement := Setter( PrimitiveElement );
 HasPrimitiveElement := Tester( PrimitiveElement );
 
+
 #############################################################################
 ##
 #A  PrimitiveRoot( <F> )
@@ -214,6 +219,7 @@ HasPrimitiveElement := Tester( PrimitiveElement );
 PrimitiveRoot := NewAttribute( "PrimitiveRoot", IsField and IsFinite );
 SetPrimitiveRoot := Setter( PrimitiveRoot );
 HasPrimitiveRoot := Tester( PrimitiveRoot );
+
 
 #############################################################################
 ##
@@ -227,6 +233,7 @@ RootOfDefiningPolynomial := NewAttribute(
 SetRootOfDefiningPolynomial := Setter( RootOfDefiningPolynomial );
 HasRootOfDefiningPolynomial := Tester( RootOfDefiningPolynomial );
 
+
 #############################################################################
 ##
 #A  Subfields( <F> )
@@ -237,6 +244,7 @@ HasRootOfDefiningPolynomial := Tester( RootOfDefiningPolynomial );
 Subfields := NewAttribute( "Subfields", IsField );
 SetSubfields := Setter( Subfields );
 HasSubfields := Tester( Subfields );
+
 
 #############################################################################
 ##

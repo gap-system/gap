@@ -305,6 +305,193 @@ InstallMethod( RightIdealByGenerators,
 
 #############################################################################
 ##
+#F  Ideal( <R>, <gens> )
+#F  Ideal( <R>, <gens>, "basis" )
+##
+Ideal := function( arg )
+    local I;
+    if    Length( arg ) <= 1
+       or not IsRing( arg[1] )
+       or not IsHomogeneousList( arg[2] ) then
+      Error( "first argument must be a ring,\n",
+             "second argument must be a list of generators" );
+
+    elif IsEmpty( arg[2] ) then
+
+      return IdealNC( arg[1], arg[2] );
+
+    elif     IsIdentical( FamilyObj( arg[1] ),
+                          FamilyObj( arg[2] ) )
+         and ForAll( arg[2], v -> v in arg[1] ) then
+
+      I:= IdealByGenerators( LeftActingDomain( arg[1] ), arg[2] );
+      SetParent( I, arg[1] );
+      if Length( arg ) = 3 and arg[3] = "basis" then
+        UseBasis( I, arg[2] );
+      fi;
+      return I;
+
+    fi;
+    Error( "usage: Ideal( <R>, <gens> [, \"basis\"] )" );
+end;
+
+
+#############################################################################
+##
+#F  IdealNC( <R>, <gens>, "basis" )
+#F  IdealNC( <R>, <gens> )
+##
+IdealNC := function( arg )
+    local I;
+    if IsEmpty( arg[2] ) then
+
+      # If <R> is a FLMLOR then also the ideal is a FLMLOR.
+      if IsFLMLOR( arg[1] ) then
+        I:= Objectify( NewKind( FamilyObj( arg[1] ),
+                                    IsFLMLOR
+                                and IsTrivial
+                                and IsAttributeStoringRep ),
+                       rec() );
+        SetLeftActingDomain( I, LeftActingDomain( arg[1] ) );
+        SetGeneratorsOfLeftModule( I, AsList( arg[2] ) );
+      else
+        I:= Objectify( NewKind( FamilyObj( arg[1] ),
+                                    IsRing
+                                and IsTrivial
+                                and IsAttributeStoringRep ),
+                       rec() );
+      fi;
+      SetGeneratorsOfRing( I, AsList( arg[2] ) );
+
+    else
+
+      I:= IdealByGenerators( arg[1], arg[2] );
+
+    fi;
+    if Length( arg ) = 3 and arg[3] = "basis" then
+      UseBasis( I, arg[2] );
+    fi;
+    SetParent( I, arg[1] );
+    return I;
+end;
+
+
+#############################################################################
+##
+#F  LeftIdeal( <R>, <gens> )
+#F  LeftIdeal( <R>, <gens>, "basis" )
+##
+LeftIdeal := function( arg )
+    local I;
+    if    Length( arg ) <= 1
+       or not IsRing( arg[1] )
+       or not IsHomogeneousList( arg[2] ) then
+      Error( "first argument must be a ring,\n",
+             "second argument must be a list of generators" );
+
+    elif IsEmpty( arg[2] ) then
+
+      return IdealNC( arg[1], arg[2] );
+
+    elif     IsIdentical( FamilyObj( arg[1] ),
+                          FamilyObj( arg[2] ) )
+         and ForAll( arg[2], v -> v in arg[1] ) then
+
+      I:= LeftIdealByGenerators( LeftActingDomain( arg[1] ), arg[2] );
+      SetParent( I, arg[1] );
+      if Length( arg ) = 3 and arg[3] = "basis" then
+        UseBasis( I, arg[2] );
+      fi;
+      return I;
+
+    fi;
+    Error( "usage: LeftIdeal( <R>, <gens> [, \"basis\"] )" );
+end;
+
+
+#############################################################################
+##
+#F  LeftIdealNC( <R>, <gens>, "basis" )
+#F  LeftIdealNC( <R>, <gens> )
+##
+LeftIdealNC := function( arg )
+    local I;
+    if IsEmpty( arg[2] ) then
+
+      return IdealNC( arg[1], arg[2] );
+
+    else
+
+      I:= LeftIdealByGenerators( arg[1], arg[2] );
+      if Length( arg ) = 3 and arg[3] = "basis" then
+        UseBasis( I, arg[2] );
+      fi;
+
+    fi;
+    SetParent( I, arg[1] );
+    return I;
+end;
+
+
+#############################################################################
+##
+#F  RightIdeal( <R>, <gens> )
+#F  RightIdeal( <R>, <gens>, "basis" )
+##
+RightIdeal := function( arg )
+    local I;
+    if    Length( arg ) <= 1
+       or not IsRing( arg[1] )
+       or not IsHomogeneousList( arg[2] ) then
+      Error( "first argument must be a ring,\n",
+             "second argument must be a list of generators" );
+
+    elif IsEmpty( arg[2] ) then
+
+      return IdealNC( arg[1], arg[2] );
+
+    elif     IsIdentical( FamilyObj( arg[1] ),
+                          FamilyObj( arg[2] ) )
+         and ForAll( arg[2], v -> v in arg[1] ) then
+
+      I:= RightIdealByGenerators( RightActingDomain( arg[1] ), arg[2] );
+      SetParent( I, arg[1] );
+      if Length( arg ) = 3 and arg[3] = "basis" then
+        UseBasis( I, arg[2] );
+      fi;
+      return I;
+
+    fi;
+    Error( "usage: RightIdeal( <R>, <gens> [, \"basis\"] )" );
+end;
+
+
+#############################################################################
+##
+#F  RightIdealNC( <R>, <gens>, "basis" )
+#F  RightIdealNC( <R>, <gens> )
+##
+RightIdealNC := function( arg )
+    local I;
+    if IsEmpty( arg[2] ) then
+
+      return IdealNC( arg[1], arg[2] );
+
+    else
+
+      I:= RightIdealByGenerators( arg[1], arg[2] );
+      if Length( arg ) = 3 and arg[3] = "basis" then
+        UseBasis( I, arg[2] );
+      fi;
+
+    fi;
+    SetParent( I, arg[1] );
+    return I;
+end;
+
+
+#############################################################################
+##
 #M  IsIdealInParent( <I> )
 ##
 InstallImmediateMethod( IsIdealInParent,
@@ -361,7 +548,10 @@ InstallOtherMethod( InterpolatedPolynomial, true,
 ##
 #M  RingByGenerators( <gens> )  . . . . . . .  ring generated by a collection
 ##
-InstallMethod( RingByGenerators, true, [ IsRingElementCollection ], 0,
+InstallMethod( RingByGenerators,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
     function( gens )
     local R;
     R:= Objectify( NewKind( FamilyObj( gens ),
@@ -474,7 +664,10 @@ end;
 ##
 #M  UnitalRingByGenerators( <gens> )  . unital ring generated by a collection
 ##
-InstallMethod( UnitalRingByGenerators, true, [ IsRingElementCollection ], 0,
+InstallMethod( UnitalRingByGenerators,
+    "method for a collection",
+    true,
+    [ IsCollection ], 0,
     function( gens )
     local R;
     R:= Objectify( NewKind( FamilyObj( gens ),

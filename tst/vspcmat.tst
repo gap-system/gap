@@ -344,8 +344,7 @@ gap> mb:= MutableBasisByGenerators( Rationals,
 >          [ [ [ 1, 1 ], [ 1, 1 ] ],
 >            [ [ 0, 1 ], [ 1, 1 ] ],
 >            [ [ 1, 1 ], [ 1, 1 ] ] ] );
-MutableBasisByGenerators( Rationals, 
-[ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ] ] )
+<mutable basis over Rationals, 2 vectors>
 gap> IsMutableBasisOfGaussianMatrixSpaceRep( mb );
 true
 gap> CloseMutableBasis( mb, [ [ E(4), 0 ], [ 0, 0 ] ] );
@@ -358,8 +357,7 @@ gap> mb:= MutableBasisByGenerators( Rationals,
 >          [ [ [ 1, 1 ], [ 1, 1 ] ],
 >            [ [ 0, 1 ], [ 1, 1 ] ],
 >            [ [ 1, 1 ], [ 1, 1 ] ] ] );
-MutableBasisByGenerators( Rationals, 
-[ [ [ 1, 1 ], [ 1, 1 ] ], [ [ 0, 1 ], [ 1, 1 ] ] ] )
+<mutable basis over Rationals, 2 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 5 ] ] );
 gap> CloseMutableBasis( mb, [ [ 0, 0 ], [ 0, 7 ] ] );
@@ -376,7 +374,7 @@ SemiEchelonBasis( VectorSpace( Rationals,
   [ [ 0, 0 ], [ 0, 1 ] ] ] )
 
 gap> mb:= MutableBasisByGenerators( Rationals, [], [ [ 0, 0 ], [ 0, 0 ] ] );
-MutableBasisByGenerators( Rationals, [  ] )
+<mutable basis over Rationals, 0 vectors>
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 4 ] ] );
 gap> CloseMutableBasis( mb, [ [ 1, 2 ], [ 3, 5 ] ] );
 gap> CloseMutableBasis( mb, [ [ 0, 0 ], [ 0, 7 ] ] );

@@ -174,126 +174,6 @@ InstallMethod( IsAbelianLieAlgebra,
     end );
 
 
-#T #############################################################################
-#T ##
-#T #F  AsLieAlgebra( <F>, <D> )  view a domain as Lie algebra over the field <F>
-#T #F  AsLieAlgebra( <D> )
-#T ##
-#T AsLieAlgebra := function( arg )
-#T     local   A;
-#T 
-#T     if     Length( arg ) = 1
-#T        and IsDomain( arg[1] )
-#T        and IsBound( arg[1].field ) then
-#T 
-#T       # Convert a domain into an algebra.
-#T       A:= arg[1].operations.AsLieAlgebra( arg[1].field, arg[1] );
-#T 
-#T     elif   Length( arg ) = 2
-#T        and IsField( arg[1] )
-#T        and IsDomain( arg[2] ) then
-#T 
-#T       # Convert a domain into an algebra.
-#T       A:= arg[2].operations.AsLieAlgebra( arg[1], arg[2] );
-#T 
-#T     elif   Length( arg ) = 2
-#T        and IsField( arg[1] )
-#T        and IsList( arg[2] ) then
-#T 
-#T       # Convert a list into an algebra.
-#T       A:= Domain( arg[2] ).operations.AsLieAlgebra( arg[1], arg[2] );
-#T 
-#T     else
-#T       Error( "usage: AsLieAlgebra([<F>,] <D>) for domain or list <D>" );
-#T     fi;
-#T 
-#T     # Return the algebra.
-#T     return A;
-#T     end;
-#T 
-#T #############################################################################
-#T ##
-#T #F  LieAlgebraOps.AsAlgebra( <F>, <D> )
-#T ##
-#T ##  returns a Lie algebra over <F> that is equal (as set) to <D>.
-#T ##  For that, perhaps the field of <D> has to be changed before
-#T ##  getting the correct list of generators.
-#T ##
-#T LieAlgebraOps.AsAlgebra := function( F, D )
-#T 
-#T     local L, A;
-#T 
-#T     if   D.field = F then
-#T 
-#T       D:= ShallowCopy( D );
-#T 
-#T     elif   Length( AlgebraGenerators( D ) ) = 0 then
-#T 
-#T       # We need the zero.
-#T       D:= LieAlgebra( F, D.algebraGenerators, Zero( D ) );
-#T 
-#T     elif IsSubset( D.field, F ) then
-#T 
-#T       # Make sure that the field change does not change the elements.
-#T       L:= BasisVectors( BasisOfDomain( FieldExtension( D.field, F ) ) );
-#T       L:= Concatenation( List( L, x -> List( D.algebraGenerators,
-#T                                              y -> x * y ) ) );
-#T       D:= LieAlgebra( F, L );
-#T 
-#T     elif IsSubset( F, D.field ) then
-#T 
-#T       # Make sure that the field change does not change the elements.
-#T       L:= BasisVectors( BasisOfDomain( FieldExtension( F, D.field ) ) );
-#T       if ForAny( L, x -> ForAny( D.algebraGenerators,
-#T                                  y -> not x * y in D ) ) then
-#T         Error( "field change leads out of the algebra" );
-#T       fi;
-#T       D:= LieAlgebra( F, D.algebraGenerators );
-#T 
-#T     else
-#T       Error( "fields are incompatible" );
-#T     fi;
-#T 
-#T     # Return the algebra.
-#T     return D;
-#T     end;
-#T 
-#T #############################################################################
-#T ##
-#T #F  LieAlgebraOps.AsLieAlgebra( <F>, <D> )
-#T ##
-#T LieAlgebraOps.AsLieAlgebra := LieAlgebraOps.AsAlgebra;
-#T 
-#T #############################################################################
-#T ##
-#T #F  LieAlgebraOps.Algebra( <F>, <D> )  . convert a subalgebra into an algebra
-#T ##
-#T LieAlgebraOps.Algebra := function( F, D )
-#T     local   A,          # algebra for the domain <D>, result
-#T             name;       # component name in the algebra record
-#T 
-#T     # If necessary change the field.
-#T     if F <> D.field then
-#T       D:= AsLieAlgebra( F, D );
-#T     fi;
-#T 
-#T     # Make the algebra.
-#T     if Length( AlgebraGenerators( D ) ) = 0 then
-#T       A:= LieAlgebra( F, D.algebraGenerators, Zero( D ) );
-#T     else
-#T       A:= LieAlgebra( F, D.algebraGenerators );
-#T     fi;
-#T 
-#T     # Copy information.
-#T     for name in Intersection( RecFields( D ), MaintainedAlgebraInfo ) do
-#T       A.(name):= D.(name);
-#T     od;
-#T 
-#T     # Return the algebra.
-#T     return A;
-#T     end;
-
-
 ##############################################################################
 ##
 #M  LieCentre( <L> )  . . . . . . . . . . . . . . . . . . .  for a Lie algebra
@@ -357,7 +237,7 @@ InstallMethod( LieCentre,
       M:= List( M, x -> LinearCombination( B, x ) );
 
       # Construct the Lie centre.
-      C:= IdealByGenerators( A, M, "basis" );
+      C:= IdealNC( A, M, "basis" );
 
     fi;
 
@@ -454,7 +334,7 @@ InstallMethod( LieCentralizer,
     # Return the subalgebra.
     if IsIdeal( A, S ) then
 #T really check this?
-      return IdealByGenerators( A, M, "basis" );
+      return IdealNC( A, M, "basis" );
     else
       return SubalgebraNC( A, M, "basis" );
     fi;
@@ -776,11 +656,12 @@ InstallMethod( Derivations,
 
     # Construct the Lie algebra.
     if IsEmpty( A ) then
-      M:= LieAlgebra( R, [ NullMat( n, n, R ) ] );
+      M:= AlgebraByGenerators( R, [], LieObject( NullMat( n, n, R ) ) );
     else
-      M:= LieAlgebra( R, A );
+      A:= List( A, LieObject );
+      M:= AlgebraByGenerators( R, A );
+      UseBasis( M, A );
     fi;
-#T shall "basis" be allowed in calls to 'Algebra' like functions?
 
     # Return the derivations.
     return M;

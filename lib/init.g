@@ -186,6 +186,13 @@ end;
 
 #############################################################################
 ##
+#V  TRANSNAME
+##
+TRANSNAME := ReplacedString( LIBNAME, "lib", "trans" );
+
+
+#############################################################################
+##
 
 #V  Banner
 ##
@@ -286,6 +293,7 @@ ReadLib( "addmagma.gd" );
 ReadLib( "ring.gd"     );
 ReadLib( "module.gd"   );
 ReadLib( "basis.gd"    );
+ReadLib( "basismut.gd" );
 ReadLib( "vspc.gd"     );
 ReadLib( "algebra.gd"  );
 ReadLib( "alglie.gd"   );
@@ -389,19 +397,25 @@ ReadLib( "monoid.gi"   );
 ReadLib( "grp.gi"      );
 
 ReadLib( "addmagma.gi" );
+
 ReadLib( "ring.gi"     );
+
 ReadLib( "module.gi"   );
 ReadLib( "modfree.gi"  );
 ReadLib( "modulrow.gi" );
 ReadLib( "modulmat.gi" );
 ReadLib( "basis.gi"    );
+ReadLib( "basismut.gi" );
 ReadLib( "vspc.gi"     );
 ReadLib( "vspcrow.gi"  );
 ReadLib( "vspcmat.gi"  );
+
 ReadLib( "algebra.gi"  );
 ReadLib( "alglie.gi"   );
 ReadLib( "algsc.gi"    );
+ReadLib( "algmat.gi"   );
 ReadLib( "liefam.gi"   );
+
 ReadLib( "integer.gi"  );
 ReadLib( "numtheor.gi" );
 
@@ -425,11 +439,12 @@ ReadLib( "cyclotom.gi" );
 ReadLib( "fldabnum.gi" );
 ReadLib( "padics.gi"   );
 
-ReadLib( "meataxe.gi" );
+ReadLib( "meataxe.gi"  );
 
 ReadLib( "word.gi"     );
 ReadLib( "wordrep.gi"  );
 
+# files dealing with free semigroups, monoids, groups
 ReadLib( "smgrpfre.gi" );
 ReadLib( "monofree.gi" );
 ReadLib( "grpfree.gi"  );
@@ -473,6 +488,8 @@ ReadLib( "stbc.gi"     );
 ReadLib( "stbcbckt.gi" );
 ReadLib( "stbcrand.gi" );
 ReadLib( "clas.gi"     );
+ReadLib( "claspcgs.gi" );
+ReadLib( "clasperm.gi" );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
@@ -500,6 +517,12 @@ ReadLib( "overload.g"  );
 #X  Read library of groups of order up to 1000 without 512 and 768
 ##
 ReadSmall( "smallgrp.g" );
+
+# read transitive groups library
+if not ReadPath( TRANSNAME, "trans", ".grp","ReadTrans") then
+  Error(
+  "the transitive group library file trans.grp must exist and be readable" );
+fi;
 
 
 #############################################################################

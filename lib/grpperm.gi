@@ -578,21 +578,21 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
         
     # otherwise decide between random and deterministic methods
     else
-#        P := Parent( G );
-#        inpar := IsSubset( P, gens );
-#        while not inpar  and  not IsIdentical( P, Parent( P ) )  do
-#            P := Parent( P );
-#            inpar := IsSubset( P, gens );
-#        od;
-#        if inpar  then
-#            CopyOptionsDefaults( P, options );
-        if not IsBound( options.random )  then
+        P := Parent( G );
+        inpar := IsSubset( P, gens );
+        while not inpar  and  not IsIdentical( P, Parent( P ) )  do
+            P := Parent( P );
+            inpar := IsSubset( P, gens );
+        od;
+        if inpar  then
+            CopyOptionsDefaults( P, options );
+        elif not IsBound( options.random )  then
             options.random := 1000;
         fi;
         
         # make the base of G compatible with options.base
         chain := DeepCopy( StabChainAttr( G ) );
-        if IsBound( options.base ) then
+        if IsBound( options.base )  then
             ChangeStabChain( chain, options.base );
         fi;
 
@@ -605,16 +605,16 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
         else
             chain := ClosureRandomPermGroup( chain, gens, options );
         fi;
-#        if inpar  then  C := GroupStabChain( P, chain, true );
-#                  else  C := GroupStabChain( chain );           fi;
-        C := GroupStabChain( chain );
+        if inpar  then  C := GroupStabChain( P, chain, true );
+                  else  C := GroupStabChain( chain );           fi;
         SetStabChainOptions( C, rec( random := options.random ) );
         
     fi;
     return C;
 end );
 
-InstallMethod( ClosureGroup, true, [ IsPermGroup, IsObject ], 0,
+InstallMethod( ClosureGroup, true,
+        [ IsPermGroup and HasStabChain, IsObject ], 0,
     function( G, gens )
     return ClosureGroup( G, gens, rec() );
 end );
@@ -643,20 +643,38 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
             genN,       # one generator of the group <N>
             cnj,        # conjugated of a generator of <U>
             random,  k, # values measuring randomness of <chain>
-            param,  missing,  correct,  result;
+            param,  missing,  correct,  result,  i,  list;
 
     # get a set of monoid generators of <G>
     gensG := GeneratorsOfGroup( G );
 
     # make a copy of the group to be closed
     N := AsSubgroup( G, U );
+    gensN := ShallowCopy( GeneratorsOfGroup( N ) );
+    SetStabChain( N, StabChainAttr( U ) );
     options := ShallowCopy( StabChainOptions( U ) );
     random := options.random;
     options.random := 0;
     options.temp   := true;
 
-    # loop over all generators of N
-    gensN := ShallowCopy( GeneratorsOfGroup( N ) );
+    # make list of conjugates to be added to N
+    repeat 
+        list := [  ];
+        for i  in [ 1 .. 10 ]  do 
+            genG := SCRRandomSubproduct( gensG );
+            cnj  := SCRRandomSubproduct( Concatenation( gensN, list ) )
+                    ^ genG;
+            if not cnj in N  then 
+                Add( list, cnj );
+            fi;
+        od;
+        if not IsEmpty( list )  then
+           N := ClosureGroup( N, list, options );
+        fi;
+    until IsEmpty( list );
+    
+    # Guarantee that all conjugates are in the normal  closure: Loop over all
+    # generators of N
     for genN  in gensN  do
 
         # loop over the generators of G
@@ -673,6 +691,7 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
 
     od;
     
+    # Verify the stabilizer chain.
     chain := StabChainAttr( N );
     if not IsBound( chain.orbits )  then
         if IsBound( chain.aux )  then
@@ -902,7 +921,7 @@ InstallMethod( IsSimpleGroup, true, [ IsPermGroup ], 0,
     od;
 
     # compute the degree $d$ and express it as $d = n^m$
-    d := Length( MovedPoints( G ) );
+    d := NrMovedPoints( G );
     n := SmallestRootInt( d );
     m := LogInt( d, n );
     if 10^6 < d  then
@@ -1731,7 +1750,6 @@ end;
 
 #############################################################################
 ##
-
 #F  SymmetricGroup( <D> ) . . . . . . . . . . . . . . . . . . symmetric group
 ##
 SymmetricGroup := function( D )
@@ -1739,39 +1757,229 @@ SymmetricGroup := function( D )
     
     if IsInt( D )  then  D := [ 1 .. D ];
                    else  D := Set( D );    fi;
+    if Length(D)<2 then
+      return Group(());
+    fi;
     gens := [ MappingPermListList( D,
         Concatenation( D{ [ 2 .. Length( D ) ] }, [ D[ 1 ] ] ) ) ];
     if Length( D ) > 2  then
         Add( gens, ( D[ 1 ], D[ 2 ] ) );
     fi;
-    S := Objectify( NewKind( CollectionsFamily( PermutationsFamily ),
-                 IsSymmetricGroup ), rec(  ) );
-    SetGeneratorsOfMagmaWithInverses( S, gens );
-    SetSize( S, Factorial( Length( D ) ) );
-    S!.domain := D;
+    S := GroupByGenerators( gens );
+    SetIsSymmetricGroup( S, true );
+    SetMovedPoints( S, D );
+    SetNrMovedPoints( S, Length( D ) );
     return S;
 end;
 
 InstallMethod( \in, true, [ IsPerm, IsSymmetricGroup ], 0,
     function( g, S )
-    if     IsRange( S!.domain )
-       and (    Length( S!.domain ) = 1
-             or S!.domain[ 2 ] - S!.domain[ 1 ] = 1 )  then
-        return SmallestMovedPointPerm( g ) >= S!.domain[ 1 ]
-           and  LargestMovedPointPerm( g ) <= S!.domain[ Length( S!.domain ) ];
+    if     IsRange( MovedPoints( S ) )
+       and (    NrMovedPoints( S ) = 1
+             or MovedPoints( S )[ 2 ] - MovedPoints( S )[ 1 ] = 1 )  then
+        return SmallestMovedPointPerm( g ) >= MovedPoints( S )[ 1 ]
+           and  LargestMovedPointPerm( g ) <= MovedPoints( S )
+                                              [ NrMovedPoints( S ) ];
     else
-        return IsSubset( S!.domain, MovedPoints( g ) );
+        return IsSubset( MovedPoints( S ), MovedPoints( g ) );
     fi;
 end );
 
+InstallMethod( Size, true, [ IsSymmetricGroup ], 0,
+    S -> Factorial( NrMovedPoints( S ) ) );
+
 InstallMethod( PrintObj, true, [ IsSymmetricGroup ], 0,
     function( S )
-    Print( "Sym( ", S!.domain, " )" );
+    Print( "Sym( ", MovedPoints( S ), " )" );
+end );
+
+#############################################################################
+##
+#M  IsSymmetricGroup( <S> ) . . . . . . . . . is it the full symmetric group?
+##
+InstallMethod( IsSymmetricGroup, "size comparison", true,
+        [ IsPermGroup ], 0,
+    function( S )
+    return Size( S ) = Factorial( NrMovedPoints( S ) );
+end );
+
+#############################################################################
+##
+#F  AlternatingGroup( <D> ) . . . . . . . . . . . . . . . . alternating group
+##
+AlternatingGroup := function( D )
+    local   gens,  S,dl;
+    
+    if IsInt( D )  then  D := [ 1 .. D ];
+                   else  D := Set( D );    fi;
+    if Length(D)<3 then
+      return Group(());
+    fi;
+    if IsInt(Length(D)/2) then
+      dl:=D{[1..Length(D)-1]};
+    else
+      dl:=D;
+    fi;
+    gens := [ MappingPermListList( dl,
+        Concatenation( dl{ [ 2 .. Length( dl ) ] }, [ dl[ 1 ] ] ) ) ];
+    if Length( D ) > 3  then
+	dl:=Length(D);
+        Add( gens, (D[dl-2],D[dl-1],D[dl]) );
+    fi;
+    S := GroupByGenerators( gens );
+    SetIsAlternatingGroup( S, true );
+    SetSize( S, Factorial( Length( D ) )/2 );
+    SetMovedPoints( S, D );
+    SetNrMovedPoints( S, Length( D ) );
+    if Length(D)>4 then
+      SetIsSimpleGroup(S,true);
+      SetIsPerfectGroup(S,true);
+    fi;
+    return S;
+end;
+
+#############################################################################
+##
+#M  IsAlternatingGroup( <S> ) . . . . . . . is it the full alternating group?
+##
+InstallMethod( IsAlternatingGroup, "size comparison", true,
+        [ IsPermGroup ], 0,
+    function( S )
+    return Size( S )*2 = Factorial( NrMovedPoints( S ) );
 end );
 
 #############################################################################
 ##
 
+#M  AllBlocks . . . Representatives of all block systems
+##
+InstallMethod(AllBlocks,"generic",true,[IsPermGroup],0,
+function(g)
+local dom,DoBlocks,pool;
+
+  DoBlocks:=function(b)
+  local bl,bld,i,t,n;
+    bld:=Difference(dom,b);
+    bl:=[];
+    if not IsPrime(Length(dom)/Length(b)) then
+      for i in bld do
+	t:=Union(b,[i]);
+	n:=Blocks(g,dom,t);
+	if Length(n)>1 and #ok durch pool:ForAll(Difference(n[1],t),j->j>i) and
+	   not n[1] in pool then
+	  t:=n[1];
+	  Add(pool,t);
+	  bl:=Concatenation(bl,[t],DoBlocks(t));
+	fi;
+      od;
+    fi;
+    return bl;
+  end;
+
+  dom:=MovedPoints(g);
+  pool:=[];
+  return DoBlocks(dom{[1]});
+end);
+
+#############################################################################
+##
+#F  SignPermGroup
+##
+SignPermGroup := function(g)
+  if ForAll(GeneratorsOfGroup(g),i->SignPerm(i)=1) then
+    return 1;
+  else
+    return -1;
+  fi;
+end;
+
+CreateAllCycleStructures := function(n)
+local i,j,l,m;
+  l:=[];
+  for i in Partitions(n) do
+    m:=[];
+    for j in i do
+      if j>1 then
+        if IsBound(m[j-1]) then
+          m[j-1]:=m[j-1]+1;
+        else 
+          m[j-1]:=1;
+        fi;
+      fi;
+    od;
+    Add(l,m);
+  od;
+  return l;
+end;
+
+#############################################################################
+##
+#F  CycleStructuresGroup(G)  list of all cyclestructures occ. in a perm group
+##
+CycleStructuresGroup := function(g)
+local c,l,m,i;
+  l:=CreateAllCycleStructures(Length(MovedPoints(g)));
+  m:=List([1..Length(l)-1],i->0);
+  for i in ConjugacyClasses(g) do
+    if Representative(i)<>() then
+      m[Position(l,CycleStructurePerm(Representative(i)))-1]:=1;
+    fi;
+  od;
+  return m;
+end;
+
+#############################################################################
+##
+#M  SmallGeneratingSet(<G>) 
+##
+InstallMethod(SmallGeneratingSet,"random and generators subset, randsims",true,
+  [IsPermGroup],0,
+function (G)
+local  i, j, U, gens;
+
+  # try pc methods first
+  if IsSolvableGroup(G) then
+    i:=IsomorphismPcGroup(G);
+    U:=Image(i,G);
+    gens:=MinimalGeneratingSet(U);
+    return List(gens,j->PreImagesRepresentative(i,j));
+  fi;
+
+  gens := Set(GeneratorsOfGroup(G));
+  if Length(gens)>2 then
+    i:=2;
+    while i<=3 and i<Length(gens) do
+      # try to find a small generating system by random search
+      j:=1;
+      while j<=5 and i<Length(gens) do
+	U:=Subgroup(G,List([1..i],j->Random(G)));
+	StabChain(U,rec(random:=1));
+	if Size(U)=Size(G) then
+	  gens:=Set(GeneratorsOfGroup(U));
+	fi;
+        j:=j+1;
+      od;
+      i:=i+1;
+    od;
+  fi;
+  i := 1;
+  if not IsAbelian(G) then
+    i:=i+1;
+  fi;
+  while i < Length(gens)  do
+    # random did not improve much, try subsets
+    U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
+    if Size(U)<Size(G) then
+      i:=i+1;
+    else
+      gens:=Set(GeneratorsOfGroup(U));
+    fi;
+  od;
+  return gens;
+end);
+
+#############################################################################
+##
 #E  Emacs variables . . . . . . . . . . . . . . local variables for this file
 ##  Local Variables:
 ##  mode:             outline-minor

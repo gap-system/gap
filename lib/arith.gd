@@ -373,6 +373,7 @@ IsRowVector := IsVector and IsHomogeneousList;
 #C  IsMatrix(<obj>)
 ##
 IsMatrix           := IsRingElementTable;
+IsMatrixCollection := CategoryCollections( "IsMatrixCollection", IsMatrix );
 
 
 #############################################################################

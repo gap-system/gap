@@ -32,6 +32,8 @@ IsCyclotomicsCollection := CategoryCollections(
     "IsCyclotomicsCollection", IsCyclotomic );
 IsCyclotomicsCollColl   := CategoryCollections(
     "IsCyclotomicsCollColl", IsCyclotomicsCollection );
+IsCyclotomicsCollCollColl   := CategoryCollections(
+    "IsCyclotomicsCollCollColl", IsCyclotomicsCollColl );
 
 IsCyc                   := NewCategoryKernel( "IsCyc", IsCyclotomic,
                             IS_CYC );
@@ -191,10 +193,15 @@ ReturnFalse := RETURN_FALSE;
 ReturnFail  := RETURN_FAIL;
 IdFunc      := ID_FUNC;
 
+#############################################################################
+##
+#F  WordAlp
+## 
+WordAlp := NewOperationArgs( "WordAlp" );
+
 
 #############################################################################
 ##
-
 #E  rest.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

@@ -65,18 +65,20 @@ InstallOtherMethod( LeftModuleByGenerators,
     "method for ring, matrix (over the ring), and row vector",
     true,
 #T explicit 2nd argument above!
-    [ IsRing, IsMatrix, IsRowVector ], 0,
+    [ IsRing, IsHomogeneousList, IsRowVector ], 0,
     function( R, mat, zero )
     local V;
 
     # Check whether this method is the right one.
-    if    not HasCollectionsFamily( FamilyObj( R ) )
-       or not IsIdentical( CollectionsFamily( FamilyObj( R ) ),
-                           FamilyObj( mat ) ) then
+    if not (     HasCollectionsFamily( FamilyObj( R ) )
+             and IsIdentical( FamilyObj( R ), FamilyObj( zero ) )
+             and (    IsEmpty( mat )
+                   or IsIdentical( CollectionsFamily( FamilyObj( R ) ),
+                                   FamilyObj( mat ) ) ) ) then
       TryNextMethod();
     fi;
 
-    V:= Objectify( NewKind( FamilyObj( mat ),
+    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
                                 IsLeftModule
                             and IsRowModuleRep
                             and IsAttributeStoringRep ),

@@ -179,15 +179,18 @@ GaloisField := function ( arg )
           B;         # basis of the extension
 
     # if necessary split the arguments
-    if Length( arg ) = 1 and IsInt( arg[1] ) and 0 < arg[1] then
+    if Length( arg ) = 1 and IsInt( arg[1] ) and IsPosRat( arg[1] ) then
 
         # 'GF( p^d )'
         p := SmallestRootInt( arg[1] );
         d := LogInt( arg[1], p );
 
     elif Length( arg ) = 2 then
+
+        # 'GF( p, d )'
         p := arg[1];
         d := arg[2];
+
     else
         Error( "usage: GF( <subfield>, <extension> )" );
     fi;
@@ -691,7 +694,21 @@ InstallOtherMethod( DefaultFieldByGenerators, IsIdentical,
 ##
 #M  RingByGenerators( <elms> )  . . . . . . . . . . . . .  ring by generators
 ##
-InstallMethod( RingByGenerators, true, [ IsFFECollection ], 0,
+InstallMethod( RingByGenerators,
+    "method for a collection of FFE",
+    true,
+    [ IsFFECollection ], 0,
+    gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
+
+
+#############################################################################
+##
+#M  UnitalRingByGenerators( <elms> )  . . . . . . . . . .  ring by generators
+##
+InstallMethod( UnitalRingByGenerators,
+    "method for a collection of FFE",
+    true,
+    [ IsFFECollection ], 0,
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 
 
@@ -699,7 +716,9 @@ InstallMethod( RingByGenerators, true, [ IsFFECollection ], 0,
 ##
 #M  DefaultRingByGenerators( <z> )  . . . . . .  default ring containing ffes
 ##
-InstallMethod( DefaultRingByGenerators, true,
+InstallMethod( DefaultRingByGenerators,
+    "method for a collection of FFE",
+    true,
     [ IsFFECollection and IsList ], 0,
     gens -> GF( Characteristic( gens ), DegreeFFE( gens ) ) );
 

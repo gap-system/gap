@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.16  1997/01/09 17:56:21  htheisse
+#H  workaround till `false in [1,2]' works
+#H
+#H  Revision 4.15  1997/01/09 16:31:39  ahulpke
+#H  Added StabilizerOfBlockNC
+#H
 #H  Revision 4.14  1996/12/13 12:17:52  htheisse
 #H  patched `Transitivity' into working
 #H
@@ -919,7 +925,8 @@ InstallOtherMethod( StabilizerOp,
     # operation on tuples of points, make a stabchain beginning with <d>
     elif (opr = OnPairs  or opr = OnTuples)  and ForAll( d, IsInt )  then
         S := StabChainOp( G, d );
-        while BasePoint( S ) in d  do
+        while     BasePoint( S ) <> false
+              and BasePoint( S ) in d  do
             S := S.stabilizer;
         od;
         K := GroupStabChain( G, S, true );
@@ -936,6 +943,30 @@ InstallOtherMethod( StabilizerOp,
     # return the stabilizer
     return K;
 end );
+
+
+#############################################################################
+##
+#F  StabilizerOfBlockNC( <G>, <B> )  . . . . block stabilizer for perm groups
+##
+StabilizerOfBlockNC := function(G,B)
+local S,j;
+  S:=StabChainOp(G,rec(base:=[B[1]],reduced:=false));
+  S:=DeepCopy(S);
+
+  # Make <S> the stabilizer of the block <B>.
+  InsertTrivialStabilizer(S.stabilizer,B[1]);
+  j := 1;
+  while                                j < Length( B )
+	and Length( S.stabilizer.orbit ) < Length( B )  do
+      j := j + 1;
+      if IsBound( S.translabels[ B[ j ] ] )  then
+	  AddGeneratorsExtendSchreierTree( S.stabilizer,
+		  [ InverseRepresentative( S, B[ j ] ) ] );
+      fi;
+  od;
+  return GroupStabChain(G,S.stabilizer,true);
+end;
 
 #############################################################################
 ##

@@ -202,6 +202,33 @@ LogInt := function ( n, base )
 end;
 
 
+############################################################################
+##
+#F  WordAlp( <alpha>, <nr> ) . . . . . .  <nr>-th word over alphabet <alpha>
+##
+##  returns a string that is the <nr>-th word over the alphabet <alpha>,
+##  w.r. to word length and lexicographical order.
+##  The empty word is 'WordAlp( <alpha>, 0 )'.
+##
+WordAlp := function( alpha, nr )
+
+    local lalpha,   # length of the alphabet
+          word,     # the result
+          nrmod;    # position of letter
+
+    lalpha:= Length( alpha );
+    word:= "";
+    while nr <> 0 do
+      nrmod:= nr mod lalpha;
+      if nrmod = 0 then nrmod:= lalpha; fi;
+      Add( word, alpha[ nrmod ] );
+      nr:= ( nr - nrmod ) / lalpha;
+    od;
+    return Reversed( word );
+    end;
+
+
+
 #############################################################################
 ##
 #E  rest.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

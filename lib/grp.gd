@@ -597,6 +597,14 @@ HasMinimalGeneratingSet := Tester( MinimalGeneratingSet );
 
 #############################################################################
 ##
+#A  SmallGeneratingSet(<G>) small generating set (hopefully even irredundant)
+##
+SmallGeneratingSet := NewAttribute( "SmallGeneratingSet", IsGroup );
+SetSmallGeneratingSet := Setter( SmallGeneratingSet );
+HasSmallGeneratingSet := Tester( SmallGeneratingSet );
+
+#############################################################################
+##
 #A  SupersolvableResiduum( <G> )
 ##
 SupersolvableResiduum := NewAttribute( "SupersolvableResiduum", IsGroup );

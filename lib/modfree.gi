@@ -402,7 +402,7 @@ end;
 ##
 InstallMethod( UseBasis,
     "method for a free left module and a homog. list",
-    IsIdentical,
+    true,
     [ IsFreeLeftModule, IsHomogeneousList ], 0,
     function( V, gens )
     local B;

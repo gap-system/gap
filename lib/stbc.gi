@@ -79,30 +79,30 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
     # Otherwise construct a new GAP object <S>.
     else
         CopyOptionsDefaults( G, options );
-        if not IsBound( options.base )  then
-            options.base := [  ];
-        fi;
         
         # For solvable groups, use the pcgs algorithm.
         pcgs := [  ];
         if     options.tryPcgs
            and ( not HasIsSolvableGroup( G )  or  IsSolvableGroup( G ) )  then
-            if not options.reduced  then
-                S := EmptyStabChain( [  ], One( G ) );
+            S := EmptyStabChain( [  ], One( G ) );
+            if IsBound( options.base )  then
                 T := S;
                 for pnt  in options.base  do
                     InsertTrivialStabilizer( T, pnt );
                     T := T.stabilizer;
                 od;
-                pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
-                                false, false, false );
-            else
-                pcgs := TryPcgsPermGroup( G, false, false, false );
             fi;
+            pcgs := TryPcgsPermGroup( [ G, GroupStabChain( G, S, true ) ],
+                            false, false, false );
         fi;
         if IsPcgs( pcgs )  then
             options.random := 1000;
             S := pcgs!.stabChain;
+            if options.reduced  and  IsBound( options.base )  then
+                S := DeepCopy( S );
+                ReduceStabChain( S );
+            fi;
+            
         else
             degree := LargestMovedPoint( G );
             if degree > 100  then
@@ -117,6 +117,9 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
                 S := EmptyStabChain( [  ], One( G ) );
                 Unbind( S.generators );
                 if not IsTrivial( G )  then
+                    if not IsBound( options.base )  then
+                        options.base := [  ];
+                    fi;
                     S.cycles := [  ];
                     StabChainStrong( S, GeneratorsOfGroup( G ), options );
                     T := S;
@@ -130,13 +133,13 @@ InstallMethod( StabChainOp, true, [ IsPermGroup, IsRecord ], 0,
                 fi;
                 
             fi; # random / deterministic
-        fi;
+            
+            # Now extend <S>, if desired.
+            if not options.reduced  and  IsBound( options.base )  then
+                ExtendStabChain( S, options.base );
+            fi;
         
-        # Now extend <S>, if desired.
-        if not options.reduced  then
-            ExtendStabChain( S, options.base );
         fi;
-        
     fi;
    
     # if the parent is random, this group should be also
@@ -246,10 +249,7 @@ end;
 StabChainBaseStrongGenerators := function( base, sgs )
     local   S,  T,  pnt;
 
-    if IsEmpty( sgs )  then
-        return EmptyStabChain( [  ], () );
-    fi;
-    S := EmptyStabChain( [  ], One( sgs[ 1 ] ) );
+    S := EmptyStabChain( [  ], () );
     T := S;
     for pnt  in base  do
         InsertTrivialStabilizer( T, pnt );

@@ -954,6 +954,8 @@ Obj             SumFFEFFE (
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
+
+    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -969,8 +971,10 @@ Obj             SumFFEFFE (
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( SUM_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
-        if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
+        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
+        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
     /* compute and return the result                                       */
@@ -1118,6 +1122,8 @@ Obj             DiffFFEFFE (
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
+
+    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -1133,8 +1139,10 @@ Obj             DiffFFEFFE (
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( DIFF_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
-        if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
+        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
+        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
     /* compute and return the result                                       */
@@ -1244,6 +1252,8 @@ Obj             ProdFFEFFE (
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
+
+    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -1259,8 +1269,10 @@ Obj             ProdFFEFFE (
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( PROD_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
-        if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
+        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
+        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
     /* compute and return the result                                       */
@@ -1415,6 +1427,8 @@ Obj             QuoFFEFFE (
     qL = SIZE_FF( fL );
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
+
+    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qL == qR ) {
         fX = fL;
     }
@@ -1430,8 +1444,10 @@ Obj             QuoFFEFFE (
         fX = CommonFF( fL, DegreeFFE(opL), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( QUO_FFE_LARGE, opL, opR );
         qX = SIZE_FF( fX );
-        if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1;
-        if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
+        /* if ( vL != 0 )  vL = (qX-1) / (qL-1) * (vL-1) + 1; */
+        if ( vL != 0 )  vL = ((qX-1) * (vL-1)) / (qL-1) + 1;
+        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
     /* compute and return the result                                       */
@@ -1653,6 +1669,8 @@ Obj             LogFFEDefaultHandler (
     qZ = SIZE_FF( fZ );
     fR = FLD_FFE( opR );
     qR = SIZE_FF( fR  );
+
+    /*N 1997/01/04 mschoene this is likely to explode if 'FFV' is 'UInt4'  */
     if ( qZ == qR ) {
         fX = fZ;
         qX = qZ;
@@ -1671,8 +1689,10 @@ Obj             LogFFEDefaultHandler (
         fX = CommonFF( fZ, DegreeFFE(opZ), fR, DegreeFFE(opR) );
         if ( fX == 0 )  return CALL_2ARGS( LOG_FFE_LARGE, opZ, opR );
         qX = SIZE_FF( fX );
-        if ( vZ != 0 )  vZ = (qX-1) / (qZ-1) * (vZ-1) + 1;
-        if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1;
+        /* if ( vZ != 0 )  vZ = (qX-1) / (qZ-1) * (vZ-1) + 1; */
+        if ( vZ != 0 )  vZ = ((qX-1) * (vZ-1)) / (qZ-1) + 1;
+        /* if ( vR != 0 )  vR = (qX-1) / (qR-1) * (vR-1) + 1; */
+        if ( vR != 0 )  vR = ((qX-1) * (vR-1)) / (qR-1) + 1;
     }
 
     /* now solve <l> * (<vR>-1) = (<vZ>-1) % (<qX>-1)                      */

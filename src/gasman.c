@@ -109,8 +109,9 @@
 **  Therefore  some bags  may  be  kept by  {\Gasman}, even   though they are
 **  already dead.
 */
-char *          Revision_gasman_c =
+char * Revision_gasman_c =
    "@(#)$Id$";
+
 
 #include        "system.h"              /* Ints, UInts                     */
 
@@ -128,7 +129,7 @@ char *          Revision_gasman_c =
 /****************************************************************************
 **
 
-*F  WORDS_BAG(<size>) . . . . . . . . . . . words used by a bag of given size
+*F  WORDS_BAG( <size> ) . . . . . . . . . . words used by a bag of given size
 **
 **  The structure of a bag is a follows{\:}
 **
@@ -290,7 +291,7 @@ Bag *                   EndBags;
 **  collection  its  masterpointer  is  added   to  the  list  of   available
 **  masterpointers again.
 */
-Bag                     FreeMptrBags;
+Bag FreeMptrBags;
 
 
 /****************************************************************************
@@ -520,17 +521,20 @@ void MarkAllSubBagsDefault (
 #define NR_GLOBAL_BAGS  512L
 #endif
 
+
 typedef struct {
     Bag *                   addr [NR_GLOBAL_BAGS];
     UInt                    nr;
-}                       TypeGlobalBags;
+} TypeGlobalBags;
 
-TypeGlobalBags          GlobalBags;
+TypeGlobalBags GlobalBags;
 
-void            InitGlobalBag (
+
+void InitGlobalBag (
     Bag *               addr )
 {
     extern  TypeAbortFuncBags   AbortFuncBags;
+
     if ( GlobalBags.nr == NR_GLOBAL_BAGS ) {
         (*AbortFuncBags)(
             "Panic: Gasman cannot handle so many global variables" );
@@ -638,7 +642,8 @@ void            InitBags (
     FreeMptrBags = (Bag)MptrBags;
     for ( p = MptrBags;
           p + 2*(SIZE_MPTR_BAGS) <= MptrBags+initial_size/8/sizeof(Bag*);
-          p += SIZE_MPTR_BAGS ) {
+          p += SIZE_MPTR_BAGS )
+    {
         *p = (Bag)(p + SIZE_MPTR_BAGS);
     }
 
@@ -671,7 +676,7 @@ void            InitBags (
 
 /****************************************************************************
 **
-*F  NewBag(<type>,<size>) . . . . . . . . . . . . . . . .  allocate a new bag
+*F  NewBag( <type>, <size> )  . . . . . . . . . . . . . .  allocate a new bag
 **
 **  'NewBag' is actually quite simple.
 **
@@ -707,17 +712,23 @@ void            InitBags (
 **  local  variables  of the function.  To  enable  statistics only {\Gasman}
 **  needs to be recompiled.
 */
-Bag             NewBag (
+Bag NewBag (
     UInt                type,
     UInt                size )
 {
     Bag                 bag;            /* identifier of the new bag       */
     Bag *               dst;            /* destination of the new bag      */
 
+    /* check the size                                                      */
+    if ( (1L<<24) <= size ) {
+	(*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
+    }
+
     /* check that a masterpointer and enough storage are available         */
     if ( (FreeMptrBags == 0 || StopBags < AllocBags+2+WORDS_BAG(size))
-      && CollectBags( size, 0 ) == 0 ) {
-            return 0;
+      && CollectBags( size, 0 ) == 0 )
+    {
+	return 0;
     }
 
 #ifdef  COUNT_BAGS
@@ -860,7 +871,7 @@ void            RetypeBag (
 **  If {\Gasman}  was compiled with the  option 'COUNT_BAGS' then 'ResizeBag'
 **  also updates the information in 'InfoBags' (see "InfoBags").
 */
-UInt            ResizeBag (
+UInt ResizeBag (
     Bag                 bag,
     UInt                new_size )
 {
@@ -869,6 +880,11 @@ UInt            ResizeBag (
     Bag *               dst;            /* destination in copying          */
     Bag *               src;            /* source in copying               */
     Bag *               end;            /* end in copying                  */
+
+    /* check the size                                                      */
+    if ( (1L<<24) <= new_size ) {
+	(*AbortFuncBags)("Panic: NewBag called with size >= 2^24\n");
+    }
 
     /* get type and old size of the bag                                    */
     type     = TYPE_BAG(bag);
@@ -975,7 +991,7 @@ UInt            ResizeBag (
 
 /****************************************************************************
 **
-*F  CollectBags(<size>,<full>)  . . . . . . . . . . . . . . collect dead bags
+*F  CollectBags( <size>, <full> ) . . . . . . . . . . . . . collect dead bags
 **
 **  'CollectBags' is the function that does most of the work of {\Gasman}.
 **
@@ -1159,11 +1175,11 @@ UInt            ResizeBag (
 **  case, 'CollectBags'  extends the masterpointer area  by moving the bodies
 **  of all bags and readjusting the masterpointers.
 */
-#include        <setjmp.h>
+#include <setjmp.h>
 
-jmp_buf         RegsBags;
+jmp_buf RegsBags;
 
-#ifdef          SPARC
+#ifdef SPARC
         asm("           .globl  _SparcStackFuncBags             ");
         asm("   _SparcStackFuncBags:                            ");
         asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
@@ -1172,7 +1188,7 @@ jmp_buf         RegsBags;
         asm("           nop                                     ");
 #endif
 
-void            GenStackFuncBags ()
+void GenStackFuncBags ()
 {
     Bag *               top;            /* top of stack                    */
     Bag *               p;              /* loop variable                   */
@@ -1200,13 +1216,13 @@ void            GenStackFuncBags ()
 
 }
 
-UInt            FullBags;
+UInt FullBags;
 
 #ifdef  DEBUG_DEADSONS_BAGS
-Bag             OldMarkedBags;
+Bag OldMarkedBags;
 #endif
 
-UInt            CollectBags (
+UInt CollectBags (
     UInt                size,
     UInt                full )
 {
@@ -1235,7 +1251,7 @@ UInt            CollectBags (
     FullBags = full;
 
     /* do we want to make a full garbage collection?                       */
-  again:
+again:
     if ( FullBags ) {
 
         /* then every bag is considered to be a young bag                  */
@@ -1384,9 +1400,7 @@ UInt            CollectBags (
 
             /* oops                                                        */
             else {
-
                 (*AbortFuncBags)("Panic: Gasman found a bogus header");
-
             }
 
         }
@@ -1620,9 +1634,47 @@ UInt            CollectBags (
 }
 
 
-#ifdef  DEBUG_FUNCTIONS_BAGS
 /****************************************************************************
 **
+*F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
+*/
+void SwapMasterPoint (
+    Bag			bag1,
+    Bag			bag2 )
+{
+    Bag *               ptr1;
+    Bag *               ptr2;
+
+    if ( bag1 == bag2 )
+	return;
+
+    /* get the pointers                                                    */
+    ptr1 = PTR_BAG(bag1);
+    ptr2 = PTR_BAG(bag2);
+
+    /* check and update the link field and changed bags                    */
+    if ( PTR_BAG(bag1)[-1] == bag1 && PTR_BAG(bag2)[-1] == bag2 ) {
+	PTR_BAG(bag1)[-1] = bag2;
+	PTR_BAG(bag2)[-1] = bag1;
+    }
+    else if ( PTR_BAG(bag1)[-1] == bag1 ) {
+	PTR_BAG(bag1)[-1] = ChangedBags;
+	ChangedBags = bag1; 
+    }
+    else if ( PTR_BAG(bag2)[-1] == bag2 ) {
+	PTR_BAG(bag2)[-1] = ChangedBags;
+	ChangedBags = bag2; 
+    }
+
+    /* swap them                                                           */
+    PTR_BAG(bag1) = ptr2;
+    PTR_BAG(bag2) = ptr1;
+}
+
+
+/****************************************************************************
+**
+
 *F  BID(<bag>)  . . . . . . . . . . . .  bag identifier (as unsigned integer)
 *F  IS_BAG(<bid>) . . . . . .  test whether a bag identifier identifies a bag
 *F  BAG(<bid>)  . . . . . . . . . . . . . . . . . . bag (from bag identifier)
@@ -1638,17 +1690,19 @@ UInt            CollectBags (
 **  'TYPE_BAG', 'SIZE_BAG', and 'PTR_BAG' shadow the macros of the same name,
 **  which are usually not available in a debugger.
 */
+#ifdef  DEBUG_FUNCTIONS_BAGS
+
 #undef  TYPE_BAG
 #undef  SIZE_BAG
 #undef  PTR_BAG
 
-UInt            BID (
+UInt BID (
     Bag                 bag )
 {
     return (UInt) bag;
 }
 
-UInt            IS_BAG (
+UInt IS_BAG (
     UInt                bid )
 {
     return (((UInt)MptrBags <= bid)
@@ -1656,7 +1710,7 @@ UInt            IS_BAG (
          && (bid & (sizeof(Bag)-1)) == 0);
 }
 
-Bag             BAG (
+Bag BAG (
     UInt                bid )
 {
     if ( IS_BAG(bid) )
@@ -1665,38 +1719,38 @@ Bag             BAG (
         return (Bag) 0;
 }
 
-UInt            TYPE_BAG (
+UInt TYPE_BAG (
     Bag                 bag )
 {
     return (*(*(bag)-2) & 0xFFL);
 }
 
-Char *          TNAM_BAG (
+Char * TNAM_BAG (
     Bag                 bag )
 {
     return InfoBags[ (*(*(bag)-2) & 0xFFL) ].name;
 }
 
-UInt            SIZE_BAG (
+UInt SIZE_BAG (
     Bag                 bag )
 {
     return (*(*(bag)-2) >> 8);
 }
 
-Bag *           PTR_BAG (
+Bag * PTR_BAG (
     Bag                 bag )
 {
     return (*(Bag**)(bag));
 }
 
-UInt            ELM_BAG (
+UInt ELM_BAG (
     Bag                 bag,
     UInt                i )
 {
     return (UInt) ((*(Bag**)(bag))[i]);
 }
 
-UInt            SET_ELM_BAG (
+UInt SET_ELM_BAG (
     Bag                 bag,
     UInt                i,
     UInt                elm )
@@ -1708,4 +1762,8 @@ UInt            SET_ELM_BAG (
 #endif
 
 
+/****************************************************************************
+**
 
+*E  gasman.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

@@ -46,8 +46,8 @@ SetIsCyclotomicField( GaussianRationals, true );
 SetSize( GaussianRationals, infinity );
 SetConductor( GaussianRationals, 4 );
 SetDimension( GaussianRationals, 2 );
+SetDegreeOverPrimeField( GaussianRationals, 2 );
 SetGaloisStabilizer( GaussianRationals, [ 1 ] );
-SetGeneratorsOfRing( GaussianRationals, [ E(4) ] );
 SetGeneratorsOfLeftModule( GaussianRationals, [ 1, E(4) ] );
 
 

@@ -65,7 +65,7 @@ InstallMethod( IsTotal, true, [ IsMonoidGeneralMapping ], 0,
     function( hom )
     local   pre,  src;
     
-    pre := PreImage( hom );  src := Source( hom );
+    pre := PreImagesRange( hom );  src := Source( hom );
     if IsIdentical( pre, src )  then
         return true;
     elif HasSize( src )  then
@@ -141,7 +141,7 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
         [ IsMonoidGeneralMapping, IsGroup ], 0,
     function( hom, elms )
     if not IsTotal( hom )  then
-        elms := Intersection( elms, PreImage( hom ) );
+        elms := Intersection( elms, PreImagesRange( hom ) );
     fi;
     return ClosureGroup( CoKernel( hom ), SubgroupNC( Range( hom ),
                    List( GeneratorsOfGroup( elms ),
@@ -182,7 +182,7 @@ InstallMethod( PreImagesSet, CollFamRangeEqFamElms,
         [ IsMonoidGeneralMapping, IsGroup ], 0,
     function( hom, elms )
     if not IsSurjective( hom )  then
-        elms := Intersection( elms, Image( hom ) );
+        elms := Intersection( elms, ImagesSource( hom ) );
     fi;
     return ClosureGroup( Kernel( hom ), SubgroupNC( Source( hom ),
                    List( GeneratorsOfGroup( elms ),
@@ -206,7 +206,7 @@ end );
 #M  CompositionMapping2( <hom1>, <hom2> ) . . . . . . . . . . . .  via images
 ##
 InstallMethod( CompositionMapping2, "using `AsGroupGeneralMappingByImages'",
-        FamSource2EqFamRange1,
+        FamSource1EqFamRange2,
         [ IsGroupHomomorphism, IsGroupGeneralMapping ], 0,
     function( hom1, hom2 )
     hom2 := AsGroupGeneralMappingByImages( hom2 );
@@ -216,7 +216,7 @@ InstallMethod( CompositionMapping2, "using `AsGroupGeneralMappingByImages'",
 end );
 
 InstallMethod( CompositionMapping2, "using `AsGroupGeneralMappingByImages'",
-        FamSource2EqFamRange1,
+        FamSource1EqFamRange2,
         [ IsGroupHomomorphism, IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
     hom2 := AsGroupGeneralMappingByImages( hom2 );
@@ -587,9 +587,12 @@ end );
 ##
 #M  CompositionMapping2( <inn1>, <inn2> ) . . . . . . for inner automorphisms
 ##
-InstallMethod( CompositionMapping2, "<inn1>, <inn2>", FamSource2EqFamRange1,
+InstallMethod( CompositionMapping2, "<inn1>, <inn2>", IsIdentical,
         [ IsInnerAutomorphismRep, IsInnerAutomorphismRep ], 0,
     function( inn1, inn2 )
+    if not IsIdentical( Source( inn1 ), Source( inn2 ) )  then
+        TryNextMethod();
+    fi;
     return InnerAutomorphism( Source( inn1 ),
                    inn2!.conjugator * inn1!.conjugator );
 end );

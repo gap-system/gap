@@ -101,6 +101,8 @@ InstallTrueMethod( IsFiniteDimensional, IsFreeLeftModule and IsTrivial );
 ##  for example 'Iterator' and 'Enumerator'.
 ##
 IsFullRowModule := NewProperty( "IsFullRowModule", IsFreeLeftModule );
+SetIsFullRowModule := Setter( IsFullRowModule );
+HasIsFullRowModule := Tester( IsFullRowModule );
 
 
 #############################################################################
@@ -115,6 +117,8 @@ IsFullRowModule := NewProperty( "IsFullRowModule", IsFreeLeftModule );
 ##  matrix.
 ##
 IsFullMatrixModule := NewProperty( "IsFullMatrixModule", IsFreeLeftModule );
+SetIsFullMatrixModule := Setter( IsFullMatrixModule );
+HasIsFullMatrixModule := Tester( IsFullMatrixModule );
 
 
 #############################################################################

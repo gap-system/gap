@@ -54,6 +54,7 @@ extern char *           In;
 #include        "objpcgel.h"            /* InitPcElements                  */
 
 #include        "sctable.h"             /* InitSCTable                     */
+#include        "costab.h"              /* InitCosetTable                  */
 
 #include        "code.h"                /* InitCode                        */
 
@@ -1110,6 +1111,29 @@ Obj SizeScreenHandler (
 
 /****************************************************************************
 **
+*F  FuncSWAP_MPTR( <self>, <obj1>, <obj2> ) . . . . . . . swap master pointer
+*/
+Obj FuncSWAP_MPTR (
+    Obj			self,
+    Obj			obj1,
+    Obj			obj2 )
+{
+    if ( TYPE_OBJ(obj1) == T_INT || TYPE_OBJ(obj1) == T_FFE ) {
+	ErrorQuit("SWAP_MPTR: <obj1> must not be an integer or ffe", 0L, 0L);
+	return 0;
+    }
+    if ( TYPE_OBJ(obj2) == T_INT || TYPE_OBJ(obj2) == T_FFE ) {
+	ErrorQuit("SWAP_MPTR: <obj2> must not be an integer or ffe", 0L, 0L);
+	return 0;
+    }
+	
+    SwapMasterPoint( obj1, obj2 );
+    return 0;
+}
+
+
+/****************************************************************************
+**
 
 *F  FuncGASMAN( <self>, <args> )  . . . . . . . . .  expert function 'GASMAN'
 **
@@ -1209,6 +1233,73 @@ Obj FuncSHALLOW_SIZE (
     Obj                 obj )
 {
     return INTOBJ_INT( SIZE_BAG( obj ) );
+}
+
+
+/****************************************************************************
+**
+*F  FuncTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
+*/
+Obj FuncTYPE_OBJ (
+    Obj			self,
+    Obj			obj )
+{
+    Obj			res;
+    Obj                 str;
+    Char *              cst;
+
+    res = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( res, 2 );
+
+    /* set the type                                                        */
+    SET_ELM_PLIST( res, 1, INTOBJ_INT( TYPE_OBJ(obj) ) );
+    cst = InfoBags[TYPE_OBJ(obj)].name;
+    str = NEW_STRING( SyStrlen(cst) );
+    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    SET_ELM_PLIST( res, 2, str );
+
+    /* and return                                                          */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*F  FuncXTYPE_OBJ( <self>, <obj> ) . . . . . . . .  expert function 'TYPE_OBJ'
+*/
+Obj FuncXTYPE_OBJ (
+    Obj			self,
+    Obj			obj )
+{
+    Obj			res;
+    Obj                 str;
+    UInt                xtype;
+    Char *              cst;
+
+    res = NEW_PLIST( T_PLIST, 2 );
+    SET_LEN_PLIST( res, 2 );
+
+    /* set the type                                                        */
+    xtype = XType(obj);
+    SET_ELM_PLIST( res, 1, INTOBJ_INT(xtype) );
+    if ( xtype == T_OBJECT ) {
+	cst = "virtual object";
+    }
+    else if ( xtype == T_MAT_CYC ) {
+	cst = "virtual mat cyc";
+    }
+    else if ( xtype == T_MAT_FFE ) {
+	cst = "virtual mat ffe";
+    }
+    else {
+	cst = InfoBags[xtype].name;
+    }
+    str = NEW_STRING( SyStrlen(cst) );
+    SyStrncat( CSTR_STRING(str), cst, SyStrlen(cst) );
+    SET_ELM_PLIST( res, 2, str );
+
+    /* and return                                                          */
+    return res;
 }
 
 
@@ -1670,6 +1761,20 @@ void            InitGap (
          NewFunctionC( "SizeScreen", -1L, "args",
                         SizeScreenHandler ) );
 
+    AssGVar( GVarName( "MAKE_INIT" ),
+         NewFunctionC( "MAKE_INIT", 1L, "filename",
+                   FuncMAKE_INIT ) );
+
+    AssGVar( GVarName( "ID_FUNC" ),
+         NewFunctionC( "ID_FUNC", 1L, "object",
+                    FuncID_FUNC ) );
+
+    AssGVar( GVarName( "SWAP_MPTR" ),
+         NewFunctionC( "SWAP_MPTR", 2L, "obj1, obj2",
+                    FuncSWAP_MPTR ) );
+
+
+    /* debugging functions                                                 */
     AssGVar( GVarName( "GASMAN" ),
          NewFunctionC( "GASMAN", -1L, "args",
                     FuncGASMAN ) );
@@ -1686,13 +1791,13 @@ void            InitGap (
          NewFunctionC( "HANDLE_OBJ", 1L, "object",
                     FuncHANLDE_OBJ ) );
 
-    AssGVar( GVarName( "MAKE_INIT" ),
-         NewFunctionC( "MAKE_INIT", 1L, "filename",
-                   FuncMAKE_INIT ) );
+    AssGVar( GVarName( "TYPE_OBJ" ),
+         NewFunctionC( "TYPE_OBJ", 1L, "object",
+                    FuncTYPE_OBJ ) );
 
-    AssGVar( GVarName( "ID_FUNC" ),
-         NewFunctionC( "ID_FUNC", 1L, "object",
-                    FuncID_FUNC ) );
+    AssGVar( GVarName( "XTYPE_OBJ" ),
+         NewFunctionC( "XTYPE_OBJ", 1L, "object",
+                    FuncXTYPE_OBJ ) );
 
     /* and now for a special hack                                          */
     for ( i = LAST_CONSTANT_TYPE+1; i <= LAST_REAL_TYPE; i++ ) {

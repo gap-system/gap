@@ -502,7 +502,7 @@ end );
 ##
 RationalClassesInEANS := function( G, E )
     local  pcgs,  ff,  one,  pro,  opr,  gens,  orbs,  xorb,  rcl,  rcls,
-           rep,  ord,  gals,  hom,  gal,  gen,  pow,  N,  C;
+           rep,  N;
 
     rcls := [ RationalClass( G, One( G ) ) ];
     if IsTrivial( E )  then
@@ -527,22 +527,13 @@ RationalClassesInEANS := function( G, E )
     # centralizers from the stabilizers.
     for xorb  in orbs  do
         rep := PcElementByExponents( pcgs, Representative( xorb ) );
-        ord := Order( rep );
         rcl := RationalClass( G, rep );
         if HasStabilizerOfExternalSet( xorb )  then
             N := StabilizerOfExternalSet( xorb );
-            C := Centralizer( N, rep );
-            hom := NaturalHomomorphismByNormalSubgroup( N, C );
-            gals := [  ];
-            for gen  in GeneratorsOfGroup( ImagesSource( hom ) )  do
-                pow := rep ^ PreImagesRepresentative( hom, gen );
-                Add( gals, First( [ 1 .. ord - 1 ], e -> GcdInt( e, ord ) = 1
-                        and pow = rep ^ e ) );
-            od;
-            SetGaloisGroup( rcl, SubgroupNC( PrimeResidueClassGroup( ord ),
-                    gals ) );
-            SetStabilizerOfExternalSet( rcl, AsSubgroup( G, C ) );
+        else
+            N := G;
         fi;
+        SetStabilizerOfExternalSet( rcl, Centralizer( N, rep, E ) );
         Add( rcls, rcl );
     od;
     return rcls;

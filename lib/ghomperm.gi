@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.17  1997/01/10 14:09:39  htheisse
+#H  corrected family relation for `CompositionMapping2'
+#H
 #H  Revision 4.16  1996/12/19 09:58:58  htheisse
 #H  added revision lines
 #H
@@ -413,7 +416,7 @@ end );
 ##
 #M  CompositionMapping2( <hom1>, <hom2> ) . . . . . . . . for perm group homs
 ##
-InstallMethod( CompositionMapping2, FamSource2EqFamRange1,
+InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
         [ IsGroupHomomorphism,
           IsPermGroupGeneralMappingByImages and IsGroupHomomorphism ], 0,
     function( hom1, hom2 )
@@ -720,7 +723,7 @@ end );
 InstallMethod( ImagesSet, CollFamSourceEqFamElms,
         [ IsConstituentHomomorphism, IsPermGroup ], 0,
     function( hom, H )
-    local   I,  S,  D;
+    local   D,  I;
     
     D := Enumerator( hom!.externalSet );
     I := EmptyStabChain( [  ], One( Range( hom ) ) );

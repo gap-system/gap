@@ -1,6 +1,6 @@
 #############################################################################
 ##
-#A  Makefile                    GAP source                   Martin Schoenert
+#W  Makefile                    GAP source                   Martin Schoenert
 ##
 #H  @(#)$Id$
 ##
@@ -53,7 +53,8 @@ SHELL = /bin/sh
 
 #############################################################################
 ##
-#T  Targets . . . . .  targets of the form <vendor>-<cpu>-<system>-<compiler>
+
+#F  Targets . . . . .  targets of the form <vendor>-<cpu>-<system>-<compiler>
 ##
 ##  Following are the targets that the user can specify.
 ##
@@ -65,16 +66,58 @@ SHELL = /bin/sh
 ##
 unknown:
 	@echo "usage: 'make <target>' where target is one of"
-	@echo "'dec-mips-ultrix-cc'       for DECstation under Ultrix with cc"
-	@echo "'ibm-i386-freebsd2.0-gcc2' for IBM PC under FreeBSD 2.x with GNU cc 2 (GNU 2.6 comes with FreeBSD 2.0)"
-	@echo "'ibm-i386-linux-gcc2' for IBM PC under Linux with GNU cc 2" 
-	@echo "   targets are listed according to preference, i.e.,"
-	@echo "   'sun-sparc-sunos-gcc2' is better than 'sun-sparc-sunos-cc'."
-	@echo "   additional C compiler and linker flags can be passed with"
-	@echo "   'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',"
-	@echo "   i.e., 'make sun-sparc-sunos-gcc2 COPTS=-g LOPTS=-g.'"
+	@echo "'dec-alpha-OSF32-gcc2'      for DECalpha under OSF 3.2 with GNU cc 2"
+	@echo "'dec-mips-ultrix-cc'        for DECstation under Ultrix with cc"
+	@echo "'hp-hppa1.1-hpux-gcc2'      for HP9000 under HP-UX with GNU cc 2"
+	@echo "'ibm-i386-freebsd2.0-gcc2'  for IBM PC under FreeBSD 2.x with GNU cc 2"
+	@echo "                            (GNU cc 2.6 comes with FreeBSD 2.0)"
+	@echo "'ibm-i386-linux-gcc2'       for IBM PC under Linux with GNU cc 2"
+	@echo "'ibm-i386-nextstep-cc'      for IBM PC under NeXTSTEP 3.x with GNU cc 2"
+	@echo "                            (GNU cc 2.5.8 comes with NeXTSTEP 3.3)"
+	@echo "'sun-sparc-sunos-gcc2'      fur Sun Sparc under SunOS with GCC 2"
+	@echo "'sun-sparc-solaris-gcc2'    fur Sun Sparc under Solaris with GCC 2"
+	@echo ""
+	@echo "  targets are listed according to preference, i.e.,"
+	@echo "    'sun-sparc-sunos-gcc2' is better than 'sun-sparc-sunos-cc'."
+	@echo ""
+	@echo "  additional C compiler and linker flags can be passed with"
+	@echo "    'make <target> COPTS=<compiler-opts> LOPTS=<linker-opts>',"
+	@echo "    i.e., 'make sun-sparc-sunos-gcc2 COPTS=-g LOPTS=-g.'"
 
-# Ultrix is a almost ANSI (but does not support 'const')
+
+#############################################################################
+##
+
+#F  dec-alpha-OSF32-gcc2
+##
+##
+##  For the DEC alpha  we have to pass  the SYS_IS_64BIT define to all files,
+##  not just system.c,  as it  effects  the types in  system.h otherwise it's
+##  pretty standard
+##
+dec-alpha-OSF32-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d dec-alpha-OSF32; then \
+     		mkdir dec-alpha-OSF32; \
+          fi; \
+	  cd dec-alpha-OSF32; \
+	  $(MAKE) -f ../../src/Makefile gap \
+	    SRC="../../src" \
+	    CC="cc" \
+	    LFLAGS="$(LOPTS)" \
+	    CFLAGS="$(COPTS) -O2 -DSYS_IS_64BIT" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
+	               -DSYS_HAS_ANSI=1" )
+
+
+#############################################################################
+##
+#F  dec-mips-ultrix-cc
+##
+##  Ultrix 4.2 is a almost ANSI (but does not support 'const')
+##
 dec-mips-ultrix-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
@@ -91,31 +134,20 @@ dec-mips-ultrix-cc:
 	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
 	               -DSYS_HAS_ANSI=1" )
 
-#
-# For the DEC alpha we have to pass the SYS_IS_64BIT define to
-# all files, not just system.c, as it effects the types in system.h
-# otherwise it's pretty standard
-#
-dec-alpha-OSF32-gcc2:
-	@(if test ! -d ../bin; then mkdir ../bin; fi; \
-	  cd ../bin; \
-	  if test ! -d dec-alpha-OSF32; then mkdir dec-alpha-OSF32; fi; \
-	  cd dec-alpha-OSF32; \
-	  $(MAKE) -f ../../src/Makefile gap \
-	    SRC="../../src" \
-	    CC="cc" \
-	    LFLAGS="$(LOPTS)" \
-	    CFLAGS="$(COPTS) -O2 -DSYS_IS_64BIT" \
-	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=4 \
-	               -DSYS_HAS_ANSI=1" )
 
-# HP-UX is almost ANSI
-# 'sys/times.h' claims 'times' returns 'clock_t' (how shall it return -1?)
+#############################################################################
+##
+#F  hp-hppa1.1-hpux-gcc2
+##
+##  HP-UX is almost ANSI
+## 'sys/times.h' claims 'times' returns 'clock_t' (how shall it return -1?)
+##
 hp-hppa1.1-hpux-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d hp-hppa1.1-hpux; then mkdir hp-hppa1.1-hpux; fi; \
+	  if test ! -d hp-hppa1.1-hpux; then \
+     		mkdir hp-hppa1.1-hpux; \
+          fi; \
 	  cd hp-hppa1.1-hpux; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
@@ -129,24 +161,16 @@ hp-hppa1.1-hpux-gcc2:
 	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO \
 	               -DSYS_HAS_TIME_PROTO  -DSYS_HAS_MISC_PROTO" )
 
-sun-sparc-sunos-gcc2:
-	@(if test ! -d ../bin; then mkdir ../bin; fi; \
-	  cd ../bin; \
-	  if test ! -d $@; then mkdir $@; fi; \
-	  cd $@; \
-	  $(MAKE) -f ../../src/Makefile gap \
-            SRC="../../src" \
-	    CC="gcc" \
-	    LFLAGS="$(LOPTS)" \
-	    CFLAGS="$(COPTS) -O2" \
-	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
-                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
 
-# 'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
-# 'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
-# 'sys/ioctl.h' claims 'ioctl' has third argument '...' (UNIX says 'char*')
-# 'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
+#############################################################################
+##
+#F  ibm-i386-freebsd2.0-gcc2
+##
+##  'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
+##  'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
+##  'sys/ioctl.h' claims 'ioctl' has third argument '...' (UNIX says 'char*')
+##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
+##
 ibm-i386-freebsd2.0-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
@@ -164,37 +188,27 @@ ibm-i386-freebsd2.0-gcc2:
 	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
 	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO" )
 
-ibm-i386-freebsd2.0-gcc2-prof:
-	@(if test ! -d ../bin; then mkdir ../bin; fi; \
-	  cd ../bin; \
-	  if test ! -d ibm-i386-freebsd2.0-prof; then \
-	      mkdir ibm-i386-freebsd2.0-prof; \
-	  fi; \
-	  cd ibm-i386-freebsd2.0-prof; \
-	  $(MAKE) -f ../../src/Makefile gap \
-	    SRC="../../src" \
-	    CC="gcc -ansi -Wall -g -p" \
-	    LFLAGS="$(LOPTS)" \
-	    CFLAGS="$(COPTS) -O2" \
-	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
-	    CFLAGS_SYS="$(COPTS) -DSYS_IS_BSD -DSYS_HAS_STACK_ALIGN=2 \
-	               -DSYS_HAS_STDIO_PROTO -DSYS_HAS_READ_PROTO \
-	               -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_SIGNAL_PROTO" )
 
-# Linux with GNU CC version 2.x.y
-#
-# 'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
-# 'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
-# 'unistd.h' has 'sbrk' with argument 'ptrdiff_t'
-# -D_POSIX_SOURCE is needed to prevent -ansi losing 'popen', 'pclose',
-#   and 'fileno'
-# 'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
-# 'sys/times.h' claims 'times' has return value 'clock_t'
-#
+#############################################################################
+##
+#F  ibm-i386-linux-gcc2
+##
+##  Linux with GNU CC version 2.x.y
+##
+##  'stdio.h' claims 'fgets' has second argument 'size_t' (ANSI says 'int')
+##  'unistd.h' claims 'read' has third argument 'size_t' (UNIX says 'int')
+##  'unistd.h' has 'sbrk' with argument 'ptrdiff_t'
+##  -D_POSIX_SOURCE is needed to prevent -ansi losing 'popen', 'pclose',
+##   and 'fileno'
+##  'sys/signal.h' claims 'kill' has first argument 'pid_t' (UNIX says 'int')
+##  'sys/times.h' claims 'times' has return value 'clock_t'
+##
 ibm-i386-linux-gcc2:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d ibm-i386-linux; then mkdir ibm-i386-linux; fi; \
+	  if test ! -d ibm-i386-linux; then \
+		mkdir ibm-i386-linux; \
+    	  fi; \
 	  cd ibm-i386-linux; \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
@@ -208,12 +222,26 @@ ibm-i386-linux-gcc2:
 	               -DSYS_HAS_SIGNAL_PROTO -DSYS_HAS_TIME_PROTO" )
 
 
-# NeXTSTEP 3.3 with NeXT Computer, Inc. version cc-437.2.6, gcc version 2.5.8
+#############################################################################
+##
+#F  ibm-i386-nextstep-cc
+##
+ibm-i386-nextstep-cc: next-i386-nextstep-cc
+
+
+
+#############################################################################
+##
+#F  next-any-nextstep-cc
+##
+##  NeXTSTEP 3.3 with compiler
+##  "NeXT Computer, Inc. version cc-437.2.6, gcc version 2.5.8"
+##
 next-any-nextstep-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
 	  if test ! -d next-$(ADIR)-nextstep$(EXTDIR);  then \
-	    mkdir next-$(ADIR)-nextstep$(EXTDIR); \
+	      mkdir next-$(ADIR)-nextstep$(EXTDIR); \
 	  fi; \
 	  cd next-$(ADIR)-nextstep$(EXTDIR); \
 	  $(MAKE) -f ../../src/Makefile gap \
@@ -244,7 +272,6 @@ next-i386m68k-nextstep-cc:
 		ARCH="-arch i386 -arch m68k"  \
 		ADIR="i386m68k"
 
-# '-pg' seems to work here
 next-i386-nextstep-cc-prof:
 	$(MAKE) -f Makefile next-any-nextstep-cc \
 		COPTS="$(COPTS) -pg" LOPTS="$(LOPTS) -pg" \
@@ -254,7 +281,57 @@ next-i386-nextstep-cc-prof:
 
 #############################################################################
 ##
-#T  Linkage . . . . . . . . . . . . . . . . . . . . . .  commands to link GAP
+#F  sun-sparc-solaris-gcc2
+##
+##  From: Burkhard.Hofling@maths.anu.edu.au (Burkhard Hofling)
+##
+sun-sparc-solaris-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d sun-sparc-solaris-gcc2; then \
+     		mkdir sun-sparc-solaris-gcc2; \
+	  fi; \
+	  cd sun-sparc-solaris-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+	    CC="gcc" \
+	    LFLAGS="$(LOPTS)" \
+	    CFLAGS="$(COPTS) -DSPARC -O2" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
+                       -DSYS_HAS_IOCTL_PROTO -DSYS_HAS_STDIO_PROTO \
+                       -DSYS_HAS_ANSI=1 -DSYS_HAS_CONST=const \
+                       -DSYS_HAS_MISC_PROTO\
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+
+
+#############################################################################
+##
+#F  sun-sparc-sunos-gcc2
+##
+##  From: Burkhard.Hofling@maths.anu.edu.au (Burkhard Hofling)
+##
+sun-sparc-sunos-gcc2:
+	@(if test ! -d ../bin; then mkdir ../bin; fi; \
+	  cd ../bin; \
+	  if test ! -d sun-sparc-sunos-gcc2; then \
+     		mkdir sun-sparc-sunos-gcc2; \
+          fi; \
+	  cd sun-sparc-sunos-gcc2; \
+	  $(MAKE) -f ../../src/Makefile gap \
+            SRC="../../src" \
+	    CC="gcc" \
+	    LFLAGS="$(LOPTS)" \
+	    CFLAGS="$(COPTS) -O2" \
+	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
+	    CFLAGS_SYS="$(COPTS) -DSYS_IS_USG -DSYS_HAS_TIME_PROTO \
+                       -DSYS_HAS_READ_PROTO -DSYS_HAS_SIGNAL_PROTO" )
+
+
+#############################################################################
+##
+
+#F  Linkage . . . . . . . . . . . . . . . . . . . . . .  commands to link GAP
 ##
 ##  Following are the commands to link GAP.  The targets below should not  be
 ##  used directly, they should only be addressed by the  recursive  calls  of
@@ -283,7 +360,7 @@ gap:        $(OBJECTS)
 
 #############################################################################
 ##
-#T  Compilations  . . . . . . . . . . .  compilations of the various packages
+#F  Compilations  . . . . . . . . . . .  compilations of the various packages
 ##
 ##  Following are the dependencies between the various packages of  GAP,  and
 ##  the commands needed to compile them (those must  be  given,  because  the
@@ -668,6 +745,7 @@ gap.o:      $(SRC)/gap.c      $(SRC)/gap.h                              \
 
 #############################################################################
 ##
+
 #E  Makefile  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

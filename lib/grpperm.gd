@@ -5,12 +5,37 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.11  1997/01/07 13:35:07  ahulpke
+#H  Added the transitive groups data library
+#H
+#H  Revision 4.10  1997/01/06 16:44:22  ahulpke
+#H  Added 'AlternatingGroup'
+#H
 #H  Revision 4.9  1996/12/19 09:59:04  htheisse
 #H  added revision lines
 #H
 ##
 Revision.grpperm_gd :=
     "@(#)$Id$";
+
+IsPermGroup := IsGroup and IsPermCollection;
+IsFactorGroup := ReturnFalse;  # temporarily
+
+#############################################################################
+##
+#P  IsSymmetricGroup( <G> ) . . . . . . . . . is it the full symmetric group?
+##
+IsSymmetricGroup := NewProperty( "IsSymmetricGroup", IsPermGroup );
+SetIsSymmetricGroup := Setter( IsSymmetricGroup );
+HasIsSymmetricGroup := Tester( IsSymmetricGroup );
+
+#############################################################################
+##
+#P  IsAlternatingGroup( <G> ) . . . . . . . is it the full alternating group?
+##
+IsAlternatingGroup := NewProperty( "IsAlternatingGroup", IsPermGroup );
+SetIsAlternatingGroup := Setter( IsAlternatingGroup );
+HasIsAlternatingGroup := Tester( IsAlternatingGroup );
 
 #############################################################################
 ##
@@ -45,6 +70,29 @@ NrMovedPointsPerms := NewOperationArgs( "NrMovedPointsPerms" );
 SylowSubgroupPermGroup := NewOperationArgs( "SylowSubgroupPermGroup" );
 OmegaPN := NewOperationArgs( "OmegaPN" );
 SymmetricGroup := NewOperationArgs( "SymmetricGroup" );
+AlternatingGroup := NewOperationArgs( "AlternatingGroup" );
+SignPermGroup := NewOperationArgs( "SignPermGroup" );
+CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
+
+#############################################################################
+##
+#A  AllBlocks . . . . . Representatives of all block systems
+##
+AllBlocks := NewAttribute( "AllBlocks", IsPermGroup );
+SetAllBlocks := Setter( AllBlocks );
+HasAllBlocks := Tester( AllBlocks );
+
+#############################################################################
+##
+#A  TransitiveIdentification . . . . . . . . . . in transitive groups library
+##
+TransitiveIdentification := NewAttribute( "TransitiveIdentification",
+                                          IsPermGroup );
+SetTransitiveIdentification := Setter( TransitiveIdentification );
+HasTransitiveIdentification := Tester( TransitiveIdentification );
+
+# just a function variable for the selection functions
+DegreeOperation := NewOperationArgs( "DegreeOperation" );
 
 #############################################################################
 ##

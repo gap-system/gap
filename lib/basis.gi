@@ -500,6 +500,7 @@ InstallOtherMethod( NewBasis, true,
     [ IsFreeLeftModule and IsHandledByNiceBasis ], 0,
     function( V )
     local B;
+    NiceFreeLeftModule( V );
     B:= Objectify( NewKind( FamilyObj( V ),
                             IsBasisByNiceBasis and IsAttributeStoringRep ),
                    rec() );
@@ -511,6 +512,7 @@ InstallMethod( NewBasis, IsIdentical,
     [ IsFreeLeftModule and IsHandledByNiceBasis, IsCollection ], 0,
     function( V, vectors )
     local B;
+    NiceFreeLeftModule( V );
     B:= Objectify( NewKind( FamilyObj( V ),
                             IsBasisByNiceBasis and IsAttributeStoringRep ),
                    rec() );
@@ -524,47 +526,54 @@ InstallMethod( NewBasis, IsIdentical,
 ##
 #M  NiceBasis( <B> )
 ##
-InstallMethod( NiceBasis, true,
-    [ IsBasisByNiceBasis and HasBasisVectors ], 0,
+InstallMethod( NiceBasis,
+    "method for basis by nice basis",
+    true,
+    [ IsBasisByNiceBasis ], 0,
     function( B )
     local V;
     V:= UnderlyingLeftModule( B );
-    return BasisByGenerators( NiceFreeLeftModule( V ),
+    if HasBasisVectors( B ) then
+      return BasisByGenerators( NiceFreeLeftModule( V ),
                       List( BasisVectors( B ),
                             v -> NiceVector( V, v ) ) );
+    else
+      return BasisOfDomain( NiceFreeLeftModule( V ) );
+    fi;
     end );
-
-InstallMethod( NiceBasis, true, [ IsBasisByNiceBasis ], 0,
-    B -> BasisOfDomain( NiceFreeLeftModule( UnderlyingLeftModule( B ) ) ) );
-#T relies on the fact that no basis vectors are known!
 
 
 #############################################################################
 ##
 #M  NiceBasisNC( <B> )
 ##
-InstallMethod( NiceBasisNC, true,
-    [ IsBasisByNiceBasis and HasBasisVectors ], 0,
+InstallMethod( NiceBasisNC,
+    "method for basis by nice basis",
+    true,
+    [ IsBasisByNiceBasis ], 0,
     function( B )
     local A;
     A:= UnderlyingLeftModule( B );
-    A:= BasisByGeneratorsNC( NiceFreeLeftModule( A ),
+    if HasBasisVectors( B ) then
+      A:= BasisByGeneratorsNC( NiceFreeLeftModule( A ),
                      List( BasisVectors( B ),
                            v -> NiceVector( A, v ) ) );
+    else
+      A:= BasisOfDomain( NiceFreeLeftModule( A ) );
+    fi;
     SetNiceBasis( B, A );
     return A;
     end );
-
-InstallMethod( NiceBasisNC, true, [ IsBasisByNiceBasis ], 0,
-    NiceBasis );
-#T relies on the fact that there are no basis vectors!
 
 
 #############################################################################
 ##
 #M  BasisVectors( <B> )
 ##
-InstallMethod( BasisVectors, true, [ IsBasisByNiceBasis ], 0,
+InstallMethod( BasisVectors,
+    "method for basis by nice basis",
+    true,
+    [ IsBasisByNiceBasis ], 0,
     function( B )
     local V;
     V:= UnderlyingLeftModule( B );
@@ -678,6 +687,8 @@ InstallMethod( BasisByGeneratorsNC,
 ##  it calls 'PrepareNiceFreeLeftModule( <V> )'
 ##  and then computes left module generators of <V> via the process of
 ##  closing a basis under multiplications.
+#T better treatment is needed!!
+#T Compute a (mutable) basis first, and from this get the NiceFLM !!
 ##
 InstallMethod( NiceFreeLeftModule,
     "method for free module that is handled by a nice basis",
@@ -721,7 +732,7 @@ NiceFreeLeftModuleForFLMLOR := function( A, side )
     # Compute a mutable basis for the closure.
     MB:= MutableBasisOfClosureUnderAction( LeftActingDomain( A ),
                                            Agens, Agens, side,
-                                           Agens, infinity );
+                                           Agens, Zero( A ), infinity );
       
     # Return the nice free left module.
     return NiceFreeLeftModule( UnderlyingLeftModule(
@@ -789,8 +800,123 @@ InstallMethod( \in,
 
 #############################################################################
 ##
-##  Methods for empty bases
+##  Methods for empty bases.
 ##
+##  For the construction of empty bases, default methods are sufficient.
+##  Note that we would need extra methods for each representation of bases
+##  otherwise, because of the family predicate.
+##
+##  The methods that access empty bases are there mainly to keep this
+##  special case away from other bases (installation with 'SUM_FLAGS').
+#T is this allowed?
+#T (strictly speaking, may other bases assume that these special methods
+#T will catch the special situation?)
+##
+InstallMethod( BasisOfDomain,
+    "method for trivial free left module",
+    true,
+    [ IsFreeLeftModule and IsTrivial ], 0,
+    function( V )
+    local B;
+    B:= Objectify( NewKind( FamilyObj( V ), 
+                                IsBasis
+                            and IsEmpty
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    return B;
+    end );
+    
+InstallMethod( BasisByGenerators,
+    "method for free left module and empty list",
+    true,
+    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    function( V, empty )
+    local B;
+
+    if not IsTrivial( V ) then
+      Error( "<V> is not trivial" );
+    fi;
+
+    # Construct an empty basis.
+    B:= Objectify( NewKind( FamilyObj( V ),
+                                IsBasis
+                            and IsEmpty
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, empty );
+
+    # Return the basis.
+    return B;
+    end );
+
+InstallMethod( BasisByGeneratorsNC,
+    "method for free left module and empty list",
+    true,
+    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    function( V, empty )
+    local B;
+
+    # Construct an empty basis.
+    B:= Objectify( NewKind( FamilyObj( V ),
+                                IsBasis
+                            and IsEmpty
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, empty );
+
+    # Return the basis.
+    return B;
+    end );
+
+InstallMethod( SemiEchelonBasisByGenerators,
+    "method for free left module and empty list",
+    true,
+    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    function( V, empty )
+    local B;
+
+    if not IsTrivial( V ) then
+      Error( "<V> is not trivial" );
+    fi;
+
+    # Construct an empty basis.
+    B:= Objectify( NewKind( FamilyObj( V ),
+                                IsBasis
+                            and IsEmpty
+                            and IsSemiEchelonized
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, empty );
+
+    # Return the basis.
+    return B;
+    end );
+
+InstallMethod( SemiEchelonBasisByGeneratorsNC,
+    "method for free left module and empty list",
+    true,
+    [ IsFreeLeftModule, IsList and IsEmpty ], 0,
+    function( V, empty )
+    local B;
+
+    # Construct an empty basis.
+    B:= Objectify( NewKind( FamilyObj( V ),
+                                IsBasis
+                            and IsEmpty
+                            and IsSemiEchelonized
+                            and IsAttributeStoringRep ),
+                   rec() );
+    SetUnderlyingLeftModule( B, V );
+    SetBasisVectors( B, empty );
+
+    # Return the basis.
+    return B;
+    end );
+
 InstallMethod( BasisVectors,
     "method for empty basis",
     true,
@@ -816,112 +942,6 @@ InstallMethod( LinearCombination,
     function( B, v )
     return Zero( UnderlyingLeftModule( B ) );
     end );
-
-
-#############################################################################
-##
-#R  IsMutableBasisByImmutableBasisRep( <B> )
-##
-##  The default case of a mutable basis stores an immutable basis,
-##  and constructs a new one whenever the mutable basis is changed.
-##
-IsMutableBasisByImmutableBasisRep := NewRepresentation(
-    "IsMutableBasisByImmutableBasisRep",
-    IsComponentObjectRep and IsMutable,
-    [ "immutableBasis", "leftActingDomain" ] );
-
-
-#############################################################################
-##
-#M  MutableBasisByGenerators( <R>, <vectors> )
-#M  MutableBasisByGenerators( <R>, <vectors>, <zero> )
-##
-InstallMethod( MutableBasisByGenerators,
-    "generic method for ring and collection",
-    true, [ IsRing, IsCollection ], 0,
-    function( R, vectors )
-    local B;
-
-    B:= rec(
-             immutableBasis   := BasisOfDomain(
-                                     LeftModuleByGenerators( R, vectors ) ),
-             leftActingDomain := R
-            );
-
-    return Objectify( NewKind( FamilyObj( vectors ),
-                                   IsMutableBasis
-                               and IsMutableBasisByImmutableBasisRep ),
-                      B );
-    end );
-
-InstallOtherMethod( MutableBasisByGenerators,
-    "generic method for ring, list, and zero vector",
-    true,
-    [ IsRing, IsList, IsVector ], 0,
-    function( R, vectors, zero )
-    local B;
-
-    B:= rec(
-             immutableBasis   := BasisOfDomain(
-                                     LeftModuleByGenerators( R, vectors,
-                                                             zero ) ),
-             leftActingDomain := R
-            );
-
-    return Objectify( NewKind( FamilyObj( vectors ),
-                                   IsMutableBasis
-                               and IsMutableBasisByImmutableBasisRep ),
-                      B );
-    end );
-
-
-#############################################################################
-##
-#M  PrintObj( <MB> )  . . . . . . . . . . . . . . . . . print a mutable basis
-##
-InstallMethod( PrintObj, true,
-    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
-    function( MB )
-    Print( "MutableBasisByGenerators( ",
-           MB!.leftActingDomain, ", ", BasisVectors( MB ), " )" );
-    end );
-
-
-#############################################################################
-##
-#M  BasisVectors( <MB> )
-##
-InstallOtherMethod( BasisVectors, true,
-    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
-    MB -> BasisVectors( MB!.immutableBasis ) );
-
-
-#############################################################################
-##
-#M  CloseMutableBasis( <MB>, <v> )
-##
-InstallMethod( CloseMutableBasis, IsCollsElms,
-    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep, IsVector ], 0,
-    function( MB, v )
-    local V, B, vectors;
-    B:= MB!.immutableBasis;
-    V:= UnderlyingLeftModule( B );
-    if not v in V then
-      vectors:= Concatenation( BasisVectors( B ), [ v ] );
-      V:= LeftModuleByGenerators( LeftActingDomain( V ), vectors );
-      UseBasis( V, vectors );
-      MB!.immutableBasis := BasisOfDomain( V );
-    fi;
-    end );
-
-
-#############################################################################
-##
-#M  ImmutableBasis( <MB> )
-##
-InstallMethod( ImmutableBasis, true,
-    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep ], 0,
-    MB -> MB!.immutableBasis );
 
 
 #############################################################################

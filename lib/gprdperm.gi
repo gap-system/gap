@@ -5,6 +5,10 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.5  1997/01/07 10:56:05  ahulpke
+#H  Changed 'WreathProduct' to use the natural representation of permutation
+#H  groups instead of the regular one
+#H
 #H  Revision 4.4  1996/12/19 09:59:03  htheisse
 #H  added revision lines
 #H
@@ -446,7 +450,6 @@ end );
 
 #############################################################################
 ##
-
 #M  WreathProduct( <G>, <H>, <alpha> )   wreath product of permutation groups
 ##
 InstallMethod( WreathProduct, true,
@@ -515,6 +518,15 @@ InstallMethod( WreathProduct, true,
     # return the group
     return grp;
 end );
+
+#############################################################################
+##
+#M  WreathProduct( <G>, <H> ) . . . . . wreath product with permutation group
+##
+InstallOtherMethod( WreathProduct, true, [ IsGroup, IsPermGroup ], 0,
+function( G, H )
+  return WreathProduct(G,H,IdentityMapping(H));
+end);
         
 #############################################################################
 ##
@@ -529,7 +541,11 @@ WreathProductProductAction := function( arg )
     if Length( arg ) = 3  then
         map := arg[ 3 ];
     else
-        map := OperationHomomorphism( P, P, OnRight );
+	if IsPermGroup(P) then
+	  map := IdentityMapping(P);
+	else
+	  map := OperationHomomorphism( P, P, OnRight );
+        fi;
     fi;
     I := Image( map );
     if not IsPermGroup( I )  then

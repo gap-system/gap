@@ -19,6 +19,40 @@ Revision.matrix_gi :=
 #############################################################################
 ##
 
+#R  IsNullMapMatrix . . . . . . . . . . . . . . . . . . .  null map as matrix
+##
+IsNullMapMatrix := NewRepresentation( "IsNullMapMatrix", IsMatrix, [  ] );
+
+NullMapMatrix := Objectify( NewKind( ListsFamily, IsNullMapMatrix ), [  ] );
+
+InstallMethod( \*, true, [ IsVector, IsNullMapMatrix ], 0,
+    function( v, null )
+    return [  ];
+end );
+
+InstallOtherMethod( \*, true, [ IsList and IsEmpty, IsNullMapMatrix ], 0,
+    function( v, null )
+    return [  ];
+end );
+
+InstallMethod( \*, true, [ IsMatrix, IsNullMapMatrix ], 0,
+    function( A, null )
+    return List( A, row -> [  ] );
+end );
+        
+InstallOtherMethod( \*, true, [ IsList, IsNullMapMatrix ], 0,
+    function( A, null )
+    return List( A, row -> [  ] );
+end );
+        
+InstallMethod( PrintObj, true, [ IsNullMapMatrix ], 0,
+    function( null )
+    Print( "<null map>" );
+end );
+
+#############################################################################
+##
+
 #F  Matrix_CharacteristicPolynomialSameField( <fld>, <mat>, <ind> )
 ##
 Matrix_CharacteristicPolynomialSameField := function( fld, mat, ind )
@@ -2041,7 +2075,7 @@ IdentityMat := function ( arg )
 
     # special treatment for 0-dimensional spaces
     if m=0 then
-      return EmptyMatrix(FamilyObj(one),0,0);
+      return NullMapMatrix;
     fi;
 
     # make an empty row
@@ -2515,339 +2549,6 @@ InstallOtherMethod( Trace,
     true, [ IsMatrix ], 0,
     TraceMat );
 
-
-#############################################################################
-##
-
-#R  IsEmptyMatrixRep()  . . . . . . . . . . . . . . . . . . .  empty matrices
-##
-IsEmptyMatrixRep := NewRepresentation(
-    "IsEmptyMatrixRep",
-    IsMatrix and IsComponentObjectRep and IsAttributeStoringRep, [  ] );
-
-                            
-#############################################################################
-##
-#R  IsMBy0MatrixRep() . . . . . . . . . . . . . . . . . . .  (m x 0)-matrices
-##
-IsMBy0MatrixRep := NewRepresentation(
-    "IsMBy0MatrixRep",
-    IsEmptyMatrixRep, [  ] );
-
-
-#############################################################################
-##
-#R  Is0ByNMatrixRep() . . . . . . . . . . . . . . . . . . .  (0 x n)-matrices
-##
-Is0ByNMatrixRep := NewRepresentation(
-    "Is0ByNMatrixRep",
-    IsEmptyMatrixRep and IsList and IsEmpty, [  ] );
-
-                           
-#############################################################################
-##
-
-#F  EmptyMatrix( <fam>, <m>, <n> )  . . . . . . . . . . . . make empty matrix
-##
-EmptyMatrix := function( fam, m, n )
-    local   filter;
-    
-    if m = 0  then  filter := Is0ByNMatrixRep;
-              else  filter := IsMBy0MatrixRep;  fi;
-    return EmptyMatrixConstructor( NewKind
-                   ( CollectionsFamily( CollectionsFamily( fam ) ), filter ),
-                   m, n );
-end;
-
-EmptyMatrixConstructor := function( kind, m, n )
-    local   mat;
-    
-    mat := Objectify( kind, rec(  ) );
-    Setter( DimensionsMat )( mat, [ m, n ] );
-    return mat;
-end;
-
-
-#############################################################################
-##
-#M  PrintObj( <mat> ) . . . . . . . . . . . . . . . . .  print such an animal
-##
-InstallMethod( PrintObj,
-    true,
-    [ IsMBy0MatrixRep ],
-    0,
-
-function( mat )
-    Print( List( [ 1 .. DimensionsMat( mat )[ 1 ] ], row -> [  ] ) );
-end );
-
-
-InstallMethod( PrintObj,
-    true,
-    [ Is0ByNMatrixRep ],
-    0,
-
-function( mat )
-    Print( [  ] );
-end );
-
-
-#############################################################################
-##
-#F  One( <mat> )  . . . . . . . . . . . . . . . . . .  one of an empty matrix
-##
-InstallOtherMethod( One,
-    true,
-    [ IsEmptyMatrixRep ],
-    0,
-
-function( mat )
-    if DimensionsMat( mat ) = [ 0, 0 ]  then
-        return mat;
-    else
-        Error( "ONE: <mat> must be square (not ",
-               DimensionsMat( mat )[ 1 ], " by ",
-               DimensionsMat( mat )[ 2 ], ")" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  Inverse( <mat> )  . . . . . . . . . . . . . .  inverse of an empty matrix
-##
-InstallOtherMethod( Inverse,
-    true,
-    [ IsEmptyMatrixRep ],
-    0,
-
-function( mat )
-    if DimensionsMat( mat ) = [ 0, 0 ]  then
-        return mat;
-    else
-        Error( "INV: <mat> must be square (not ",
-               DimensionsMat( mat )[ 1 ], " by ",
-               DimensionsMat( mat )[ 2 ], ")" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  DeterminantMat( <mat> ) . . . . . . . . .  determinant of an empty matrix
-##
-InstallMethod( DeterminantMat,
-    true,
-    [ IsEmptyMatrixRep ],
-    0,
-
-function( mat )
-    if DimensionsMat( mat ) = [ 0, 0 ]  then
-        return One( ElementsFamily( ElementsFamily( FamilyObj( mat ) ) ) );
-    else
-        Error( "DeterminantMat: <mat> must be square (not ",
-               DimensionsMat( mat )[ 1 ], " by ",
-               DimensionsMat( mat )[ 2 ], ")" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#F  Trace( <mat> )  . . . . . . . . . . . . . . . .  trace of an empty matrix
-##
-InstallOtherMethod( Trace,
-    true,
-    [ IsEmptyMatrixRep ],
-    0,
-
-function( mat )
-    if DimensionsMat( mat ) = [ 0, 0 ]  then
-        return Zero( ElementsFamily( ElementsFamily( FamilyObj( mat ) ) ) );
-    else
-        Error( "Trace: <mat> must be square (not ",
-               DimensionsMat( mat )[ 1 ], " by ",
-               DimensionsMat( mat )[ 2 ], ")" );
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  TransposedMat( <mat> )  . . . . . . . . . . . . . . .  of an empty matrix
-##
-InstallMethod( TransposedMat,
-    "empty matrix",
-    true,
-    [ IsMatrix and IsEmptyMatrixRep ],
-    0,
-
-function( mat )
-    local   dims,  filter;
-    
-    dims := DimensionsMat( mat );
-    if dims[ 2 ] = 0  then  filter := Is0ByNMatrixRep;
-                      else  filter := IsMBy0MatrixRep;  fi;
-    return EmptyMatrixConstructor( NewKind( FamilyObj( mat ), filter ),
-                   dims[ 2 ], dims[ 1 ] );
-end );
-
-
-#############################################################################
-##
-#M  Length( <mat> ) . . . . . . . . . . . . . . . . . . .  of an empty matrix
-##
-InstallMethod( Length,
-    true,
-    [ IsEmptyMatrixRep ],
-    0,
-    mat -> DimensionsMat( mat )[ 1 ] );
-
-
-#############################################################################
-##
-#M  <mat>[ <row> ]  . . . . . . . . . . . . . . . . . . .  for empty matrices
-##
-InstallMethod( \[\],
-    true,
-    [ IsEmptyMatrixRep,
-      IsPosRat and IsInt ],
-    0,
-
-function( mat, row )
-    local   list;
-    
-    if row <= DimensionsMat( mat )[ 1 ]  then
-        return [  ];
-    else
-        list := [  ];
-        return list[ 1 ];
-    fi;
-end );
-
-
-#############################################################################
-##
-#M  <E1> = <E2> . . . . . . . . . . . . . . . .  comparison of empty matrices
-##
-InstallMethod( \=,
-    IsIdentical,
-    [ IsEmptyMatrixRep,
-      IsEmptyMatrixRep ],
-    0,
-
-function( E1, E2 )
-    return DimensionsMat( E1 ) = DimensionsMat( E2 );
-end );
-
-
-InstallMethod( \=,
-    IsIdentical,
-    [ IsEmptyMatrixRep,
-      IsMatrix ],
-    0,
-    ReturnFalse );
-
-
-InstallMethod( \=,
-    IsIdentical,
-    [ IsMatrix,
-      IsEmptyMatrixRep ],
-    0,
-    ReturnFalse );
-
-
-#############################################################################
-##
-#M  <A> * <B> . . . . . . . .  multiplication of empty matrices in hairy ways
-##
-InstallMethod( \*,
-    "(0 x 0) . (0 x n)",
-    IsIdentical,
-    [ Is0ByNMatrixRep,
-      Is0ByNMatrixRep ],
-    1,
-
-function( E1, E2 )
-    if DimensionsMat( E1 )[ 2 ] <> 0  then
-        TryNextMethod();
-    else
-        return EmptyMatrixConstructor( KindObj( E1 ),
-                       0, DimensionsMat( E2 )[ 2 ] );
-    fi;
-end );
-
-
-InstallMethod( \*,
-    "(l x 0) . (0 x n), l <> 0",
-    IsIdentical,
-    [ IsMBy0MatrixRep,
-      Is0ByNMatrixRep ],
-    0,
-
-function( E1, E2 )
-    local   zero;
-    
-    if DimensionsMat( E2 )[ 2 ] = 0  then
-        return EmptyMatrixConstructor( KindObj( E1 ),
-                       DimensionsMat( E1 )[ 1 ], 0 );
-    else
-        zero := Zero( ElementsFamily( ElementsFamily( FamilyObj( E1 ) ) ) );
-        return List( [ 1 .. DimensionsMat( E1 )[ 1 ] ], row ->
-                     zero * [ 1 .. DimensionsMat( E2 )[ 2 ] ] );
-    fi;
-end );
-
-
-InstallMethod( \*,
-    "(l x m) . (m x 0)",
-    IsIdentical,
-    [ IsMatrix,
-      IsMBy0MatrixRep ],
-    0,
-
-function( A, E )
-    return EmptyMatrixConstructor( KindObj( A ),
-                   DimensionsMat( A )[ 1 ], 0 );
-end );
-
-
-InstallMethod( \*,
-    "m . (m x 0)",
-    true,
-    [ IsRowVector, IsMBy0MatrixRep ],
-    0,
-
-function( v, E )
-    if Length( v ) <> DimensionsMat( E )[ 1 ]  then
-        Error( "matrices incompatible" );
-    else
-        return [  ];
-    fi;
-end );
-
-
-InstallMethod( \*,
-    "(0 x m) . (m x n)",
-    IsIdentical,
-    [ Is0ByNMatrixRep,
-      IsMatrix ],
-    0,
-
-function( E, B )
-    if DimensionsMat( E )[ 2 ] <> DimensionsMat( B )[ 1 ]  then
-        Error( "matrices incompatible" );
-    else
-        return EmptyMatrixConstructor( KindObj( E ),
-                       0, DimensionsMat( B )[ 2 ] );
-    fi;
-end );
-
-InstallOtherMethod( \*, "<list>, <empty>", true,
-        [ IsList, IsEmptyMatrixRep ], 0,
-    function( list, E )
-    return Immutable( List( list, v -> v * E ) );
-end );
 
 #############################################################################
 ##

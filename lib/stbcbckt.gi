@@ -10,6 +10,9 @@
 ##  intersections.
 ##
 ##  $Log$
+##  Revision 4.17  1997/01/06 16:21:06  htheisse
+##  turned `IsSymmetricGroup' from a representation into a property
+##
 ##  Revision 4.16  1996/12/19 09:59:19  htheisse
 ##  added revision lines
 ##
@@ -124,7 +127,7 @@ end;
 YndexSymmetricGroup := function( S, U )
     local   deg,  p,  e,  i,  f,  log;
     
-    deg := Length( S!.domain );
+    deg := NrMovedPoints( S );
     if not IsTrivial( U )  then
         for p  in Collected( FactorsInt( Size( U ) ) )  do
             e := 0;
@@ -741,7 +744,7 @@ EmptyRBase := function( G, Omega, P )
     if IsSymmetricGroup( G )  then
         Info( InfoBckt, 1, "Searching in symmetric group" );
         rbase.fix   := [  ];
-        rbase.level := Length( G!.domain );
+        rbase.level := NrMovedPoints( G );
     else
         rbase.chain := DeepCopy( StabChainAttr( G ) );
         rbase.level := rbase.chain;
@@ -2534,6 +2537,13 @@ InstallMethod( Centralizer, IsIdentical, [ IsPermGroup, IsPermGroup ], 10,
     return RepOpElmTuplesPermGroup( false, G,
                    GeneratorsOfGroup( E ), GeneratorsOfGroup( E ),
                    TrivialSubgroup( G ), TrivialSubgroup( G ) );
+end );
+
+InstallOtherMethod( Centralizer, "with given subgroup", true,
+        [ IsPermGroup, IsPerm, IsPermGroup ], 0,
+    function( G, e, U )
+    e := [ e ];
+    return RepOpElmTuplesPermGroup( false, G, e, e, U, U );
 end );
 
 #############################################################################

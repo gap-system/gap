@@ -347,7 +347,7 @@ MaximalSubgroupClassesRepsLayer := function( pcgs, l )
 
     for i in [1..Length( maxi )] do
         elms := List( maxi[i], x -> PcElementByExponents( pcgsL, x ) );
-        sub  := Concatenation( elms, pcgsN );
+        sub  := Concatenation( pcgs{[1..start-1]}, elms, pcgsN );
         sub  := InducedPcgsByPcSequenceNC( pcgs, sub );
         M    := Subgroup( G, sub );
         SetPcgs( M, sub );
@@ -539,6 +539,17 @@ function( G )
     od;
     return Set(mingens);
 end );
+
+
+#############################################################################
+##
+#M  SmallGeneratingSet(<G>) 
+##
+InstallMethod(SmallGeneratingSet,"using minimal generating set",true,
+  [IsPcGroup],0,
+function (G)
+  return MinimalGeneratingSet(G);
+end);
 
 
 #############################################################################

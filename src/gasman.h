@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  gasman.h                    GAP source                   Martin Schoenert
+*W  gasman.h                    GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -39,6 +39,7 @@ char *          Revision_gasman_h =
 
 /****************************************************************************
 **
+
 *T  Bag . . . . . . . . . . . . . . . . . . . type of the identifier of a bag
 **
 **  'Bag'
@@ -363,6 +364,15 @@ extern  UInt            ResizeBag (
 extern  UInt            CollectBags (
             UInt                size,
             UInt                full );
+
+
+/****************************************************************************
+**
+*F  SwapMasterPoint( <bag1>, <bag2> ) . . . swap pointer of <bag1> and <bag2>
+*/
+extern void SwapMasterPoint (
+    Bag			bag1,
+    Bag			bag2 );
 
 
 /****************************************************************************
@@ -848,3 +858,8 @@ extern  void            InitBags (
 
 
 
+/****************************************************************************
+**
+
+*E  gasman.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

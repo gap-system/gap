@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  read.c                      GAP source                   Martin Schoenert
+*W  read.c                      GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -39,6 +39,7 @@ char *          Revision_read_c =
 
 /****************************************************************************
 **
+
 *F  READ_ERROR()  . . . . . . . . . . . . . . . . . . . reader found an error
 **
 **  'READ_ERROR' returns a non-zero value if the reader found an error, or if
@@ -71,8 +72,8 @@ UInt            CountNams;
 
 /****************************************************************************
 **
-*V  ReadTop . . . . . . . . . . . . . . . . . . . . . . .  top level expression
-*V  ReadTilde . . . . . . . . . . . . . . . . . . . . . . . . . . .  tilde read
+*V  ReadTop . . . . . . . . . . . . . . . . . . . . . .  top level expression
+*V  ReadTilde . . . . . . . . . . . . . . . . . . . . . . . . . .  tilde read
 **
 **  'ReadTop' is 0  if the reader is   currently not reading  a  list or record
 **  expression.  'ReadTop'  is 1 if the  reader is currently reading an outmost
@@ -169,7 +170,9 @@ void            ReadCallVarAss (
                 }
                 else {
                     type = 'h';
-                    var = (nest << 16) + indx;
+
+		    /* Ultrix 4.2 cc get's confused if the UInt is missing */
+                    var = ((UInt)nest << 16) + indx;
                 }
                 break;
             }
@@ -185,7 +188,9 @@ void            ReadCallVarAss (
         for ( indx = LEN_LIST( nams ); 1 <= indx; indx-- ) {
             if ( SyStrcmp( Value, CSTR_STRING(ELM_LIST(nams,indx)) ) == 0 ) {
                 type = 'd';
-                var = (nest << 16) + indx;
+
+		/* Ultrix 4.2 cc get's confused if the UInt is missing     */
+                var = ((UInt)nest << 16) + indx;
                 break;
             }
         }
@@ -1678,4 +1683,8 @@ void            InitRead ( void )
 }
 
 
+/****************************************************************************
+**
 
+*E  read.c  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/

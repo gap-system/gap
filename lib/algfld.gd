@@ -30,13 +30,6 @@ IsAlgebraicElementsFamily := CategoryFamily( "IsAlgebraicElementsFamily",
 ##
 IsAlgebraicExtension := NewCategory( "IsAlgebraicExtension", IsField );
 
-#############################################################################
-##
-#A  PrimitiveElement
-##
-PrimitiveElement := NewAttribute( "PrimitiveElement", IsAlgebraicExtension );
-SetPrimitiveElement := Setter(PrimitiveElement);
-HasPrimitiveElement := Tester(PrimitiveElement);
 
 #############################################################################
 ##

@@ -67,6 +67,16 @@ HasFieldOfMatrixGroup := Tester(FieldOfMatrixGroup);
 
 #############################################################################
 ##
+#P  IsGeneralLinearGroup( <matgrp> )
+##
+IsGeneralLinearGroup := NewProperty( "IsGeneralLinearGroup",
+                                IsMatrixGroup );
+SetIsGeneralLinearGroup := Setter( IsGeneralLinearGroup );
+HasIsGeneralLinearGroup := Tester( IsGeneralLinearGroup );
+
+
+#############################################################################
+##
 
 #E  grpmat.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.11  1997/01/09 17:57:37  htheisse
+#H  used enumerator to make representative canonical
+#H
 #H  Revision 4.10  1996/12/19 09:41:51  htheisse
 #H  changed some names (in connection with oprt.gi change)
 #H
@@ -206,7 +209,7 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     if not HasEnumerator( xset )  then
         SetEnumerator( xset, orbit );
     fi;
-    SetCanonicalRepresentativeOfExternalSet( xset, mvec );
+    SetCanonicalRepresentativeOfExternalSet( xset, vs[ mnum ] );
     SetOperatorOfExternalSet( xset, operator );
     SetStabilizerOfExternalSet( xset, S );
 end;

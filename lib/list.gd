@@ -40,6 +40,8 @@ IsEnumerator := NewRepresentation( "IsEnumerator",
 Length := NewAttributeKernel( "Length",
     IsList,
     LEN_LIST );
+SetLength := Setter( Length );
+HasLength := Tester( Length );
 
 
 #############################################################################

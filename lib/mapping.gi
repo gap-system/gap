@@ -57,6 +57,12 @@ FamSource2EqFamRange1 := function( Fam1, Fam2 )
            and IsIdentical( FamilySource( Fam2 ), FamilyRange( Fam1 ) );
 end;
 
+FamSource1EqFamRange2 := function( Fam1, Fam2 )
+    return     HasFamilySource( Fam1 )
+           and HasFamilyRange(  Fam2 )
+           and IsIdentical( FamilySource( Fam1 ), FamilyRange( Fam2 ) );
+end;
+
 FamRange1EqFamRange2 := function( Fam1, Fam2 )
     return     HasFamilyRange( Fam1 )
            and HasFamilyRange( Fam2 )
@@ -876,7 +882,7 @@ InstallMethod( PrintObj,
 
 InstallMethod( CompositionMapping2,
     "method for general mapping and identity mapping",
-    FamSource2EqFamRange1,
+    FamSource1EqFamRange2,
     [ IsGeneralMapping, IsMapping and IsIdentityMappingRep ], SUM_FLAGS,
     function ( map, id )
     return map;
@@ -884,7 +890,7 @@ InstallMethod( CompositionMapping2,
 
 InstallMethod( CompositionMapping2,
     "method for identity mapping and general mapping",
-    FamSource2EqFamRange1,
+    FamSource1EqFamRange2,
     [ IsMapping and IsIdentityMappingRep, IsGeneralMapping ], SUM_FLAGS,
     function ( id, map )
     return map;

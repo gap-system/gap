@@ -99,6 +99,8 @@ DeterminantMat := NewAttribute(
 DimensionsMat := NewAttribute(
     "DimensionsMat",
     IsMatrix );
+SetDimensionsMat := Setter( DimensionsMat );
+HasDimensionsMat := Tester( DimensionsMat );
 
 
 #############################################################################

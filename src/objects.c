@@ -1366,22 +1366,20 @@ Obj IsIdenticalHandler (
 **
 **  'InitObjects' initializes the objects package.
 */
-void            InitObjects ( void )
+void InitObjects ( void )
 {
     Int                 t;              /* loop variable                   */
 
     /* make and install the 'FAMILY_KIND' function                         */
     FamilyKindFunc = NewFunctionC(
         "FAMILY_KIND", 1L, "kind", FamilyKindHandler );
-    AssGVar( GVarName( "FAMILY_KIND" ),
-        FamilyKindFunc );
+    AssGVar( GVarName( "FAMILY_KIND" ), FamilyKindFunc );
 
 
     /* make and install the 'KIND_OBJ' function                            */
     KindObjFunc = NewFunctionC(
         "KIND_OBJ", 1L, "obj", KindObjHandler );
-    AssGVar( GVarName( "KIND_OBJ" ),
-        KindObjFunc );
+    AssGVar( GVarName( "KIND_OBJ" ), KindObjFunc );
 
     for ( t = FIRST_REAL_TYPE; t <= LAST_REAL_TYPE; t++ )
         KindObjFuncs[ t ] = KindObjError;
@@ -1390,8 +1388,7 @@ void            InitObjects ( void )
     /* make and install the 'FAMILY_OBJ' function                          */
     FamilyObjFunc = NewFunctionC(
         "FAMILY_OBJ", 1L, "obj", FamilyObjHandler );
-    AssGVar( GVarName( "FAMILY_OBJ" ),
-        FamilyObjFunc );
+    AssGVar( GVarName( "FAMILY_OBJ" ), FamilyObjFunc );
 
 
     /* make and install the 'IS_MUTABLE_OBJ' filter                        */
@@ -1476,8 +1473,7 @@ void            InitObjects ( void )
     /* make and install the 'PRINT_OBJ' operation                          */
     PrintObjOper = NewOperationC(
         "PRINT_OBJ", 1L, "obj", PrintObjHandler );
-    AssGVar( GVarName( "PRINT_OBJ" ),
-        PrintObjOper );
+    AssGVar( GVarName( "PRINT_OBJ" ), PrintObjOper );
 
     for ( t = FIRST_REAL_TYPE; t <= LAST_REAL_TYPE+PRINTING; t++ )
         PrintObjFuncs[ t ] = PrintObjObject;
@@ -1491,8 +1487,7 @@ void            InitObjects ( void )
     /* make and install the 'IS_IDENTICAL_OBJ' function                    */
     IsIdenticalFunc = NewFunctionC(
         "IS_IDENTICAL_OBJ", 2, "obj1, obj2", IsIdenticalHandler );
-    AssGVar( GVarName( "IS_IDENTICAL_OBJ" ),
-        IsIdenticalFunc );
+    AssGVar( GVarName( "IS_IDENTICAL_OBJ" ), IsIdenticalFunc );
 
 
     /* install the marking methods                                         */
@@ -1511,9 +1506,9 @@ void            InitObjects ( void )
 
 
     /* install the kind methods                                            */
-    KindObjFuncs[     T_COMOBJ          ] = KindComobj;
-    KindObjFuncs[     T_POSOBJ          ] = KindPosobj;
-    KindObjFuncs[     T_DATOBJ          ] = KindDatobj;
+    KindObjFuncs[ T_COMOBJ ] = KindComobj;
+    KindObjFuncs[ T_POSOBJ ] = KindPosobj;
+    KindObjFuncs[ T_DATOBJ ] = KindDatobj;
 
 
     /* make and install the functions for low level accessing of objects   */

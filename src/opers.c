@@ -182,10 +182,10 @@ Obj KindFlags (
 /****************************************************************************
 **
 
-*F  FuncLenFlags( <self>, <flags> )
+*F  FuncLEN_FLAGS( <self>, <flags> )
 **
 */
-Obj FuncLenFlags (
+Obj FuncLEN_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -203,9 +203,9 @@ Obj FuncLenFlags (
 
 /****************************************************************************
 **
-*F  FuncElmFlags( <self>, <flags>, <pos> ) 
+*F  FuncELM_FLAGS( <self>, <flags>, <pos> ) 
 */
-Obj FuncElmFlags (
+Obj FuncELM_FLAGS (
     Obj                 self,
     Obj                 flags,
     Obj                 pos )
@@ -225,11 +225,11 @@ Obj FuncElmFlags (
 
 /****************************************************************************
 **
-*F  FuncHashFlags( <self>, <flags> )
+*F  FuncHASH_FLAGS( <self>, <flags> )
 */
 #define HASH_FLAGS_SIZE 67108879L
 
-Obj FuncHashFlags (
+Obj FuncHASH_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -268,9 +268,9 @@ Obj FuncHashFlags (
 
 /****************************************************************************
 **
-*F  FuncIsEqualFlags( <self>, <flags1>, <flags2> )
+*F  FuncIS_EQUAL_FLAGS( <self>, <flags1>, <flags2> )
 */
-Obj FuncIsEqualFlags (
+Obj FuncIS_EQUAL_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -310,7 +310,7 @@ Obj FuncIsEqualFlags (
             ptr1++;  ptr2++;
         }
         for ( ; i <= len2; i++ ) {
-            if ( 0UL != *ptr2 )
+            if ( 0 != *ptr2 )
                 return False;
             ptr2++;
         }
@@ -322,7 +322,7 @@ Obj FuncIsEqualFlags (
             ptr1++;  ptr2++;
         }
         for ( ; i <= len1; i++ ) {
-            if ( *ptr1 != 0UL )
+            if ( *ptr1 != 0 )
                 return False;
             ptr1++;
         }
@@ -333,18 +333,18 @@ Obj FuncIsEqualFlags (
 
 /****************************************************************************
 **
-*F  FuncAndFlags( <self>, <flags1>, <flags2> )
+*F  FuncAND_FLAGS( <self>, <flags1>, <flags2> )
 */
 #define AND_FLAGS_HASH_SIZE	39733UL
 
-#if 0 < AND_FLAGS_HASH_SIZE
+#ifdef AND_FLAGS_HASH_SIZE
 static Obj AndFlagsCache;
 #endif
 Int AndFlagsCacheHit;
 Int AndFlagsCacheMiss;
 Int AndFlagsCacheLost;
 
-Obj FuncAndFlags (
+Obj FuncAND_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -359,14 +359,14 @@ Obj FuncAndFlags (
     UInt *              ptr2;
     Int                 i;
 
-#if 0 < AND_FLAGS_HASH_SIZE
+#ifdef AND_FLAGS_HASH_SIZE
     UInt                hash;
     UInt                hash2;
     static UInt         count;
 #endif
 
     /* check the cache                                                     */
-#if 0 < AND_FLAGS_HASH_SIZE
+#ifdef AND_FLAGS_HASH_SIZE
     hash = (31*INT_INTOBJ(flags1)+INT_INTOBJ(flags2)) % AND_FLAGS_HASH_SIZE;
     for ( i = 0;  i < 6;  i++ ) {
 	hash2 = 3 * ( (hash+31*i) % AND_FLAGS_HASH_SIZE ) + 1;
@@ -438,7 +438,7 @@ Obj FuncAndFlags (
         for (      ; i <= size1; i++ )
             *ptr++ = *ptr1++;
     }        
-#if 0 < AND_FLAGS_HASH_SIZE
+#ifdef AND_FLAGS_HASH_SIZE
     SET_ELM_PLIST( AndFlagsCache, hash2,   flags1 );
     SET_ELM_PLIST( AndFlagsCache, hash2+1, flags2 );
     SET_ELM_PLIST( AndFlagsCache, hash2+2, flags  );
@@ -451,9 +451,9 @@ Obj FuncAndFlags (
 
 /****************************************************************************
 **
-*F  FuncSubFlags( <self>, <flags1>, <flags2> )
+*F  FuncSUB_FLAGS( <self>, <flags1>, <flags2> )
 */
-Obj FuncSubFlags (
+Obj FuncSUB_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -514,11 +514,11 @@ Obj FuncSubFlags (
 
 /****************************************************************************
 **
-*F  FuncTruesFlags( <self>, <flags> )
+*F  FuncTRUES_FLAGS( <self>, <flags> )
 **
 **  see 'FuncPositionsTruesBlist'
 */
-Obj FuncTruesFlags (
+Obj FuncTRUES_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -580,13 +580,13 @@ Obj FuncTruesFlags (
 
 /****************************************************************************
 **
-*F  FuncIsSubsetFlags( <self>, <flags1>, <flags2> )
+*F  FuncIS_SUBSET_FLAGS( <self>, <flags1>, <flags2> )
 */
 Int IsSubsetFlagsCalls;
 Int IsSubsetFlagsCalls1;
 Int IsSubsetFlagsCalls2;
 
-Obj FuncIsSubsetFlags (
+Obj FuncIS_SUBSET_FLAGS (
     Obj                 self,
     Obj                 flags1,
     Obj                 flags2 )
@@ -661,7 +661,7 @@ Obj FuncIsSubsetFlags (
             ptr1++;  ptr2++;
         }
         for ( ; i <= len2; i++ ) {
-            if ( 0UL != *ptr2 ) {
+            if ( 0 != *ptr2 ) {
                 return False;
 	    }
             ptr2++;
@@ -681,11 +681,11 @@ Obj FuncIsSubsetFlags (
 
 /****************************************************************************
 **
-*F  FuncSizeFlags( <self>, <flags> )
+*F  FuncSIZE_FLAGS( <self>, <flags> )
 **
-**  see 'FuncSizeFlags'
+**  see 'FuncSIZE_FLAGS'
 */
-Obj FuncSizeFlags (
+Obj FuncSIZE_FLAGS (
     Obj                 self,
     Obj                 flags )
 {
@@ -1087,7 +1087,7 @@ Obj NewAndFilter (
                             DoAndFilter );
     FLAG1_FILT(getter)  = oper1;
     FLAG2_FILT(getter)  = oper2;
-    flags = FuncAndFlags( 0, FLAGS_FILT(oper1), FLAGS_FILT(oper2) );
+    flags = FuncAND_FLAGS( 0, FLAGS_FILT(oper1), FLAGS_FILT(oper2) );
     FLAGS_FILT(getter)  = flags;
     SETTR_FILT(getter)  = INTOBJ_INT(0xBADBABE);
     TESTR_FILT(getter)  = INTOBJ_INT(0xBADBABE);
@@ -4275,39 +4275,39 @@ void InitOpers ( void )
     /* make the property blist functions                                   */
     AssGVar( GVarName( "AND_FLAGS" ),
          NewFunctionC( "AND_FLAGS", 2L, "oper1, oper2",
-                    FuncAndFlags ) );
+                    FuncAND_FLAGS ) );
 
     AssGVar( GVarName( "SUB_FLAGS" ),
          NewFunctionC( "SUB_FLAGS", 2L, "oper1, oper2",
-                    FuncSubFlags ) );
+                    FuncSUB_FLAGS ) );
 
     AssGVar( GVarName( "HASH_FLAGS" ),
          NewFunctionC( "HASH_FLAGS", 1L, "flags",
-                    FuncHashFlags ) );
+                    FuncHASH_FLAGS ) );
 
     AssGVar( GVarName( "IS_EQUAL_FLAGS" ),
          NewFunctionC( "IS_EQUAL_FLAGS", 2L, "flags1, flags2",
-                    FuncIsEqualFlags ) );
+                    FuncIS_EQUAL_FLAGS ) );
 
     AssGVar( GVarName( "IS_SUBSET_FLAGS" ),
          NewFunctionC( "IS_SUBSET_FLAGS", 2L, "flags1, flags2",
-                    FuncIsSubsetFlags ) );
+                    FuncIS_SUBSET_FLAGS ) );
 
     AssGVar( GVarName( "TRUES_FLAGS" ),
          NewFunctionC( "TRUES_FLAGS", 1L, "flags",
-                    FuncTruesFlags ) );
+                    FuncTRUES_FLAGS ) );
 
     AssGVar( GVarName( "SIZE_FLAGS" ),
          NewFunctionC( "SIZE_FLAGS", 1L, "flags",
-                    FuncSizeFlags ) );
+                    FuncSIZE_FLAGS ) );
 
     AssGVar( GVarName( "LEN_FLAGS" ),
          NewFunctionC( "LEN_FLAGS", 1L, "flags",
-                    FuncLenFlags ) );
+                    FuncLEN_FLAGS ) );
 
     AssGVar( GVarName( "ELM_FLAGS" ),
          NewFunctionC( "ELM_FLAGS", 2L, "flags, pos",
-                    FuncElmFlags ) );
+                    FuncELM_FLAGS ) );
 
     /* install the printing function                                       */
     PrintObjFuncs[ T_FLAGS ] = PrintFlags;
@@ -4474,7 +4474,7 @@ void InitOpers ( void )
     InitFopyGVar( GVarName( "RESET_FILTER_OBJ"  ), &RESET_FILTER_OBJ  );
 
     /* create the hash tables                                              */
-#if 0 < AND_FLAGS_HASH_SIZE
+#ifdef AND_FLAGS_HASH_SIZE
     AndFlagsCache = NEW_PLIST( T_PLIST, 3*AND_FLAGS_HASH_SIZE );
     SET_LEN_PLIST( AndFlagsCache, 3*AND_FLAGS_HASH_SIZE );
     AssGVar( GVarName( "AND_FLAGS_CACHE" ), AndFlagsCache );

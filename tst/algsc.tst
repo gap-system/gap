@@ -6,9 +6,14 @@
 ##
 #Y  Copyright 1996,    Lehrstuhl D fuer Mathematik,   RWTH Aachen,    Germany
 ##
+
 gap> START_TEST("$Id$");
 
-# Expl. 1: Quaternion algebra
+
+#############################################################################
+##
+##  Expl. 1: Quaternion algebra
+##
 
 gap> T0 := [
 >            [[[1],[1]],[[2],[ 1]],[[3],[ 1]],[[4],[ 1]]],
@@ -28,7 +33,7 @@ gap> v = QuotientFromSCTable( T0, id, q );
 true
 
 gap> a:= AlgebraByStructureConstants( Rationals, T0 );
-<algebra over Rationals, with 4 generators>
+<algebra of dimension 4 over Rationals>
 gap> Dimension( a );
 4
 
@@ -48,7 +53,7 @@ gap> AdditiveInverse( v ); -v;
 (-1)*v.2+(-1)*v.4
 
 gap> b:= BasisOfDomain( a );
-CanonicalBasis( <algebra over Rationals, with 4 generators> )
+CanonicalBasis( <algebra of dimension 4 over Rationals> )
 gap> Coefficients( b, v );
 [ 0, 1, 0, 1 ]
 gap> w:= LinearCombination( b, [ 1, 2, 3, 4 ] );
@@ -71,13 +76,16 @@ gap> Dimension( s );
 4
 
 gap> v:= Subspace( a, [ v, 0*v, v^0, w ] );
-Subspace( <algebra over Rationals, with 4 generators>, 
+Subspace( <algebra of dimension 4 over Rationals>, 
 [ v.2+v.4, 0*v.1, v.1, v.1+(2)*v.2+(3)*v.3+(4)*v.4 ] )
 gap> Dimension( v );
 3
 
 
-# Expl. 2: Poincare Lie algebra
+#############################################################################
+##
+##  Expl. 2: Poincare Lie algebra
+##
 
 gap> T1:= EmptySCTable( 10, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T1, 1, 3, [2,4] );
@@ -109,7 +117,7 @@ gap> IdentityFromSCTable( T1 );
 fail
 
 gap> l1:= AlgebraByStructureConstants( Rationals, T1 );
-<algebra over Rationals, with 10 generators>
+<algebra of dimension 10 over Rationals>
 gap> IsLieAlgebra( l1 );
 true
 gap> IsCommutative( l1 );
@@ -119,8 +127,197 @@ false
 gap> Dimension( l1 );
 10
 
+# ucs:= UpperCentralSeriesOfAlgebra( l1 );  # needs homomorphisms!
 
-# Expl. 3: Second example of Willem de Graaf
+gap> lcs:= LowerCentralSeriesOfAlgebra( l1 );
+[ <Lie algebra of dimension 10 over Rationals> ]
+gap> IsSolvableAlgebra( l1 );
+false
+gap> IsNilpotentAlgebra( l1 );
+false
+gap> IsAbelianLieAlgebra( l1 );
+false
+gap> c:= LieCentre( l1 );
+<Lie algebra of dimension 0 over Rationals>
+
+gap> gens:= GeneratorsOfAlgebra( l1 );
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10 ]
+
+gap> s1:= Subalgebra( l1, [ gens[1] ] );
+<Lie algebra over Rationals, with 1 generators>
+gap> Dimension( s1 );
+1
+gap> IsSolvableAlgebra( s1 );
+true
+gap> IsNilpotentAlgebra( s1 );
+true
+gap> IsAbelianLieAlgebra( s1 );
+true
+gap> LieCentre( s1 );
+<Lie algebra of dimension 1 over Rationals>
+
+gap> LieCentralizer( l1, s1 );
+<Lie algebra of dimension 4 over Rationals>
+gap> ps:= ProductSpace( l1, s1 );
+VectorSpace( Rationals, [ v.4, v.3, v.6, v.5, v.9, v.8 ] )
+gap> LieCentralizer( l1, ps );
+<Lie algebra of dimension 0 over Rationals>
+gap> LieNormalizer( l1, ps );
+<Lie algebra of dimension 4 over Rationals>
+
+# use AsAlgebra etc.
+
+gap> KappaPerp( l1, ps );
+Subspace( <Lie algebra of dimension 10 over Rationals>, 
+[ v.1, v.2, v.7, v.8, v.9, v.10 ] )
+
+gap> b:= Basis( l1 );
+CanonicalBasis( <Lie algebra of dimension 10 over Rationals> )
+gap> AdjointMatrix( b, gens[1] );
+[ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, -2, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
+
+gap> der:= Derivations( b );
+<Lie algebra over Rationals>
+gap> IsLieAlgebra( der );
+true
+gap> IsMatrixSpace( der );
+true
+gap> Dimension( der );
+0
+
+gap> KillingMatrix( b );
+[ [ -24, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 24, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 12, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -12, 0, 0, 0, 0 ], 
+  [ 0, 0, 12, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, -12, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
+
+gap> IsNilpotentElement( l1, gens[1] );
+false
+gap> IsNilpotentElement( s1, Random( s1 ) );
+true
+gap> IsRestrictedLieAlgebra( l1 );
+false
+
+# PthPowerImages( l1 );
+
+gap> NonNilpotentElement( l1 );
+v.1
+
+gap> AdjointBasis( b );
+Basis( VectorSpace( Rationals, 
+[ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, -2, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 2, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -2, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 2, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, -2 ] ], 
+  [ [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ], 
+      [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -1, 0, 0, 0, 0 ], 
+      [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, -2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, -1 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, -1, 0, 0, 0, 0, 0, 0 ], [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0 ] ], 
+  [ [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -1, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, -1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -2, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, -2, 0, 0, 0, 0, 0, 0, 0 ], [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ] ] 
+ ] ), 
+[ [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 
+          0, 0, -2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 2, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, -2, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 2, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 2, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -2, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 2, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, -2 ] ], 
+  [ [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ], 
+      [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -1, 0, 0, 0, 0 ], 
+      [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, -2, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, -1 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, -1, 0, 0, 0, 0, 0, 0 ], [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0 ] ], 
+  [ [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 2, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, -2, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -1, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, -1, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 2, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ -2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, -2, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, -2, 0, 0, 0, 0, 0, 0, 0 ], [ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, -2, 0, 0, 0, 0, 0 ] ], 
+  [ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 ], 
+      [ 0, 0, -1, 0, 0, 0, 0, 0, 0, 0 ], [ 0, 2, 0, 0, 0, 0, 0, 0, 0, 0 ] ] 
+ ] )
+
+
+#############################################################################
+##
+##  Expl. 3: Second example of Willem de Graaf
+##
 
 gap> T2:= EmptySCTable( 15, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T2, 1, 2, [-1,5] );
@@ -218,7 +415,7 @@ gap> SetEntrySCTable( T2, 13, 15, [8,5,6,6,12,7,-6,8,4,13,-2,14] );
 gap> SetEntrySCTable( T2, 14, 15, [3,5,4,6,18,7,3,8,3,13,-3,14] );
 
 gap> l2:= AlgebraByStructureConstants( Rationals, T2 );
-<algebra over Rationals, with 15 generators>
+<algebra of dimension 15 over Rationals>
 gap> IsLieAlgebra( l2 );
 true
 gap> IsCommutative( l2 );
@@ -228,8 +425,113 @@ false
 gap> Dimension( l2 );
 15
 
+# ucs:= UpperCentralSeriesOfAlgebra( l2 );
 
-# Expl. 4: Third example of Willem de Graaf (solvable Lie algebra)
+gap> lcs:= LowerCentralSeriesOfAlgebra( l2 );
+[ <Lie algebra of dimension 15 over Rationals>, 
+  <Lie algebra of dimension 14 over Rationals> ]
+gap> IsSolvableAlgebra( l2 );
+false
+gap> IsNilpotentAlgebra( l2 );
+false
+gap> IsAbelianLieAlgebra( l2 );
+false
+gap> LieCentre( l2 );
+<Lie algebra of dimension 1 over Rationals>
+
+gap> gens:= GeneratorsOfAlgebra( l2 );
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14, 
+  v.15 ]
+
+gap> s2:= Subalgebra( l2, [ gens[1] ] );
+<Lie algebra over Rationals, with 1 generators>
+gap> Dimension( s2 );
+1
+gap> IsSolvableAlgebra( s2 );
+true
+gap> IsNilpotentAlgebra( s2 );
+true
+gap> IsAbelianLieAlgebra( s2 );
+true
+gap> LieCentre( s2 );
+<Lie algebra of dimension 1 over Rationals>
+
+gap> LieCentralizer( l2, s2 );
+<Lie algebra of dimension 9 over Rationals>
+gap> ps:= ProductSpace( l2, s2 );
+VectorSpace( Rationals, [ v.5, v.6, v.1, v.9, v.10, v.13 ] )
+gap> LieCentralizer( l2, ps );
+<Lie algebra of dimension 1 over Rationals>
+gap> LieNormalizer( l2, ps );
+<Lie algebra of dimension 10 over Rationals>
+
+gap> KappaPerp( l2, ps );
+Subspace( <Lie algebra of dimension 15 over Rationals>, 
+[ v.1, v.2+(1/2)*v.11+(-1/2)*v.12, v.3, v.4+(-1/2)*v.11+(3/2)*v.12, 
+  v.5+(2/3)*v.14+(-1/3)*v.15, v.6+(2)*v.14+(-1)*v.15, 
+  v.7+(-1/9)*v.14+(-1/9)*v.15, v.8+(-1/3)*v.14+(2/3)*v.15, v.9, v.10, 
+  v.13+(-8/3)*v.14+(4/3)*v.15 ] )
+
+gap> b:= Basis( l2 );
+CanonicalBasis( <Lie algebra of dimension 15 over Rationals> )
+gap> AdjointMatrix( b, gens[1] );
+[ [ 0, 0, 0, 0, -2, -6, 0, 0, 0, 0, 0, 0, 8, 4, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, -3 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 1, 1 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
+
+gap> der:= Derivations( b );
+<Lie algebra of dimension 1 over Rationals>
+gap> IsLieAlgebra( der );
+true
+gap> IsMatrixSpace( der );
+true
+gap> Dimension( der );
+1
+
+gap> KillingMatrix( b );
+[ [ 0, -8, 0, -24, 0, 0, 0, 0, 0, 0, 48, 32, 0, 0, 0 ], 
+  [ -8, 0, -8, 0, 0, 0, 0, 0, 16, -32, 0, 0, 0, 0, 0 ], 
+  [ 0, -8, 0, -8, 0, 0, 0, 0, 0, 0, 32, 16, 0, 0, 0 ], 
+  [ -24, 0, -8, 0, 0, 0, 0, 0, 32, -48, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 16, 48, -16, 32, 0, 0, 0, 0, -64, -64, -80 ], 
+  [ 0, 0, 0, 0, 48, 144, -32, 48, 0, 0, 0, 0, -192, -144, -144 ], 
+  [ 0, 0, 0, 0, -16, -32, 16, -16, 0, 0, 0, 0, 48, 64, 64 ], 
+  [ 0, 0, 0, 0, 32, 48, -16, 16, 0, 0, 0, 0, -80, -80, -64 ], 
+  [ 0, 16, 0, 32, 0, 0, 0, 0, 0, 0, -80, -48, 0, 0, 0 ], 
+  [ 0, -32, 0, -48, 0, 0, 0, 0, 0, 0, 144, 80, 0, 0, 0 ], 
+  [ 48, 0, 32, 0, 0, 0, 0, 0, -80, 144, 0, 0, 0, 0, 0 ], 
+  [ 32, 0, 16, 0, 0, 0, 0, 0, -48, 80, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, -64, -192, 48, -80, 0, 0, 0, 0, 256, 208, 224 ], 
+  [ 0, 0, 0, 0, -64, -144, 64, -80, 0, 0, 0, 0, 208, 256, 272 ], 
+  [ 0, 0, 0, 0, -80, -144, 64, -64, 0, 0, 0, 0, 224, 272, 256 ] ]
+
+gap> IsNilpotentElement( l2, gens[1] );
+true
+gap> IsNilpotentElement( s2, Random( s2 ) );
+true
+
+gap> IsRestrictedLieAlgebra( l2 );
+false
+gap> NonNilpotentElement( l2 );
+v.5
+
+
+#############################################################################
+##
+##  Expl. 4: Third example of Willem de Graaf (solvable Lie algebra)
+##
 
 gap> T3:= EmptySCTable( 14, 0, "antisymmetric" );;
 gap> SetEntrySCTable( T3, 1, 5, [1,2] );
@@ -272,7 +574,7 @@ gap> SetEntrySCTable( T3, 10, 13, [1,10] );
 gap> SetEntrySCTable( T3, 10, 14, [-1,10] );
 
 gap> l3:= AlgebraByStructureConstants( Rationals, T3 );
-<algebra over Rationals, with 14 generators>
+<algebra of dimension 14 over Rationals>
 gap> IsLieAlgebra( l3 );
 true
 gap> IsCommutative( l3 );
@@ -281,6 +583,105 @@ gap> IsAssociative( l3 );
 false
 gap> Dimension( l3 );
 14
+
+# ucs:= UpperCentralSeriesOfAlgebra( l3 );
+
+gap> lcs:= LowerCentralSeriesOfAlgebra( l3 );
+[ <Lie algebra of dimension 14 over Rationals>, 
+  <Lie algebra of dimension 10 over Rationals> ]
+gap> IsSolvableAlgebra( l3 );
+true
+gap> IsNilpotentAlgebra( l3 );
+false
+gap> IsAbelianLieAlgebra( l3 );
+false
+gap> LieCentre( l3 );
+<Lie algebra of dimension 0 over Rationals>
+
+gap> gens:= GeneratorsOfAlgebra( l3 );
+[ v.1, v.2, v.3, v.4, v.5, v.6, v.7, v.8, v.9, v.10, v.11, v.12, v.13, v.14 ]
+
+gap> s3:= Subalgebra( l3, [ gens[1] ] );
+<Lie algebra over Rationals, with 1 generators>
+gap> Dimension( s3 );
+1
+gap> IsSolvableAlgebra( s3 );
+true
+gap> IsNilpotentAlgebra( s3 );
+true
+gap> IsAbelianLieAlgebra( s3 );
+true
+gap> LieCentre( s3 );
+<Lie algebra of dimension 1 over Rationals>
+
+gap> LieCentralizer( l3, s3 );
+<Lie algebra of dimension 10 over Rationals>
+gap> ps:= ProductSpace( l3, s3 );
+VectorSpace( Rationals, [ v.2, v.3, v.4, v.1 ] )
+gap> LieCentralizer( l3, ps );
+<Lie algebra of dimension 4 over Rationals>
+gap> LieNormalizer( l3, ps );
+<Lie algebra of dimension 14 over Rationals>
+
+gap> KappaPerp( l3, ps );
+<Lie algebra of dimension 14 over Rationals>
+
+gap> b:= Basis( l3 );
+CanonicalBasis( <Lie algebra of dimension 14 over Rationals> )
+gap> AdjointMatrix( b, gens[1] );
+[ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, -1, -1, -1 ], 
+  [ 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ] ]
+
+gap> der:= Derivations( b );
+<Lie algebra of dimension 1 over Rationals>
+gap> IsLieAlgebra( der );
+true
+gap> IsMatrixSpace( der );
+true
+gap> Dimension( der );
+1
+
+gap> KillingMatrix( b );
+[ [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 5, 5, 5 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 5, 5 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 10, 5 ], 
+  [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 10 ] ]
+
+gap> IsNilpotentElement( l3, gens[1] );
+true
+gap> IsNilpotentElement( s3, Random( s3 ) );
+true
+
+gap> IsRestrictedLieAlgebra( l3 );
+false
+gap> NonNilpotentElement( l3 );
+v.11
+
+
+#############################################################################
+
 
 gap> STOP_TEST( "algsc.tst", 100000 );
 

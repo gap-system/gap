@@ -666,6 +666,11 @@ function (G)
     local   maxs,lat;
 
     #AH special AG treatment
+    if IsSolvableGroup(G) then
+      lat:=IsomorphismPcGroup(G);
+      maxs:=MaximalSubgroupClassReps(Image(lat,G));
+      return List(maxs,i->PreImage(lat,i));
+    fi;
     # simply compute all conjugacy classes and take the maximals
     lat:=LatticeSubgroups(G);
     maxs:=MaximalSubgroupsLattice(lat)[Length(lat!.conjugacyClassesSubgroups)];

@@ -1,10 +1,16 @@
 #############################################################################
 ##
-#W  oprt.gi                     GAP library                              HThe
+#W  oprt.gi                     GAP library                    Heiko Thei"sen
 ##
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.27  1997/01/10 11:54:08  htheisse
+#H  allowed `Orbits' on empty list
+#H
+#H  Revision 4.26  1997/01/09 18:03:03  htheisse
+#H  added `SparseOperationHomomorphism'
+#H
 #H  Revision 4.25  1996/12/19 09:40:54  htheisse
 #H  reduced number of calls of `NewKind'
 #H
@@ -912,6 +918,68 @@ InstallMethod( OrbitsOp,
     return Immutable( orbs );
 end );
 
+InstallMethod( OrbitsOp,
+        "<G>, [  ], <gens>, <oprs>, <opr>", true,
+        [ IsGroup, IsList and IsEmpty,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, D, gens, oprs, opr )
+    return Immutable( [  ] );
+end );
+
+#############################################################################
+##
+#F  SparseOperationHomomorphism( <arg> )   operation homomorphism on `[1..n]'
+##
+SparseOperationHomomorphism := function( arg )
+    return OrbitishOperation( SparseOperationHomomorphismOp, IsIdentical,
+                   false, arg );
+end;
+
+InstallMethod( SparseOperationHomomorphismOp,
+        "<G>, <D>, <start>, <gens>, <oprs>, <opr>", true,
+        [ IsGroup, IsList, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, D, start, gens, oprs, opr )
+    return SparseOperationHomomorphismOp( G, start, gens, oprs, opr );
+end );
+
+InstallOtherMethod( SparseOperationHomomorphismOp,
+        "<G>, <start>, <gens>, <oprs>, <opr>", true,
+        [ IsGroup, IsList,
+          IsList,
+          IsList,
+          IsFunction ], 0,
+    function( G, start, gens, oprs, opr )
+    local   list,  ps,  p,  i,  gen,  img,  pos,  imgs,  hom;
+
+    start := ShallowCopy( start );
+    list := List( gens, gen -> [  ] );
+    ps := 1;
+    while ps <= Length( start )  do
+        p := start[ ps ];
+        for i  in [ 1 .. Length( gens ) ]  do
+            gen := oprs[ i ];
+            img := opr( p, gen );
+            pos := Position( start, img );
+            if pos = fail  then
+                Add( start, img );
+                pos := Length( start );
+            fi;
+            list[ i ][ ps ] := pos;
+        od;
+        ps := ps + 1;
+    od;
+    imgs := List( list, PermList );
+    hom := OperationHomomorphism( G, start, gens, oprs, opr );
+    SetAsGroupGeneralMappingByImages( hom, GroupHomomorphismByImages
+            ( G, SymmetricGroup( Length( start ) ), gens, imgs ) );
+    return hom;
+end );
+
 #############################################################################
 ##
 #F  ExternalOrbits( <arg> ) . . . . . . . . . . . .  list of transitive xsets
@@ -1694,7 +1762,7 @@ RepresentativeOperation := function( arg )
     if IsBound( gens )  and  IsPcgs( gens )  then
         return RepresentativeOperation( G, D, d, e, gens, oprs, opr );
     elif IsBound( hom )  and  IsOperationHomomorphismByOperators( hom )  then
-        d := Position( D[ d ] );  e := Position( D[ e ] );
+        d := Position( D, d );  e := Position( D, e );
         rep := RepresentativeOperationOp( ImagesSource( hom ), d, e,
                        OnPoints );
         if rep <> fail  then
@@ -1940,7 +2008,12 @@ end );
 ##
 InstallMethod( CanonicalRepresentativeOfExternalSet, true,
         [ IsExternalSet ], 0,
-    xset -> First( HomeEnumerator( xset ), p -> p in xset ) );
+    function( xset )
+    local   aslist;
+    
+    aslist := AsList( xset );
+    return First( HomeEnumerator( xset ), p -> p in aslist );
+end );
 
 #############################################################################
 ##

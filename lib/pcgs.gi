@@ -14,6 +14,16 @@ Revision.pcgs_gi :=
 
 #############################################################################
 ##
+#M  SetPcgs( <G>, fail )  . . . . . . . . . . . . . . . . .  never set `fail'
+##
+##  `HasPcgs' implies  `IsPcgsComputable',  which implies `IsSolvable',  so a
+##  pcgs cannot be set for insoluble permutation groups.
+##
+InstallMethod( SetPcgs, true, [ IsGroup, IsBool ], SUM_FLAGS, Ignore );
+
+
+#############################################################################
+##
 
 #M  IsBound[ <pos> ]
 ##

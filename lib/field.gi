@@ -265,11 +265,14 @@ InstallImmediateMethod( DegreeOverPrimeField, IsPrimeField, 20, F -> 1 );
 
 #############################################################################
 ##
-#M  NormalBasis( <F> )
+#M  NormalBase( <F> )
 ##
 ##  (uses the algorithm given in E. Artin, Galoissche Theorie, p. 65 f.).
 ##
-InstallMethod( NormalBasis, true, [ IsField ], 0,
+InstallMethod( NormalBase,
+    "method for a field in characteristic zero",
+    true,
+    [ IsField ], 0,
     function( F )
 
     local alpha, poly, normal, i, val;
@@ -309,8 +312,10 @@ InstallMethod( NormalBasis, true, [ IsField ], 0,
 ##
 #M  PrimitiveElement( <D> )
 ##
-InstallImmediateMethod( PrimitiveElement,
-    IsDivisionRing and HasGeneratorsOfDivisionRing, 10,
+InstallMethod( PrimitiveElement,
+    "method for a division ring",
+    true,
+    [ IsDivisionRing ], 0,
     function( D )
     D:= GeneratorsOfDivisionRing( D );
     if Length( D ) = 1 then
@@ -668,6 +673,31 @@ InstallMethod( UglyVector,
     fi;
     return r * V!.canonicalvectors;
     end );
+
+
+#############################################################################
+##
+#M  MutableBasisByGenerators( <R>, <gens> )
+#M  MutableBasisByGenerators( <R>, <gens>, <zero> )
+##
+##  We choose a mutable basis that stores a mutable basis for a nice module.
+##
+IsCollsXElms := function( F1, F2, F3 )
+    return     HasElementsFamily( F1 )
+           and IsIdentical( F3, ElementsFamily( F1 ) );
+end;
+
+InstallMethod( MutableBasisByGenerators,
+    "method for field and collection of field elements",
+    IsIdentical,
+    [ IsField, IsCollection ], 0,
+    MutableBasisViaNiceMutableBasisMethod2 );
+
+InstallOtherMethod( MutableBasisByGenerators,
+    "method for field, (possibly empty) list, and zero element",
+    IsCollsXElms,
+    [ IsField, IsList, IsScalar ], 0,
+    MutableBasisViaNiceMutableBasisMethod3 );
 
 
 #############################################################################

@@ -580,7 +580,7 @@ InstallMethod( Core,
       IsGroup ],
     0,
 
-function( U, V )
+function( V, U )
     local pcgsV, C, v, C, N;
 
     # catch trivial cases

@@ -945,7 +945,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
     while C <> S[ Length(S) ]  do
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
-        hom := NaturalHomomorphism( G, G / C );
+        hom := NaturalHomomorphismByNormalSubgroup( G, C );
         C := PreImage( hom, Centre( Range( hom ) ) );
     od;
 
@@ -2787,6 +2787,27 @@ function(G)
     # Return the result.
     return maximal;
 
+end);
+
+
+#############################################################################
+##
+#M  SmallGeneratingSet(<G>) 
+##
+InstallMethod(SmallGeneratingSet,"generators subset",true,[IsGroup],0,
+function (G)
+local  i, U, gens;
+  gens := Set(GeneratorsOfGroup(G));
+  i := 1;
+  while i < Length(gens)  do
+    U:=Subgroup(G,gens{Difference([1..Length(gens)],[i])});
+    if Size(U)<Size(G) then
+      i:=i+1;
+    else
+      gens:=GeneratorsOfGroup(U);
+    fi;
+  od;
+  return gens;
 end);
 
 

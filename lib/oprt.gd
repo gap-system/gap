@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.13  1997/01/09 18:03:00  htheisse
+#H  added `SparseOperationHomomorphism'
+#H
+#H  Revision 4.12  1997/01/09 16:31:37  ahulpke
+#H  Added StabilizerOfBlockNC
+#H
 #H  Revision 4.11  1996/12/19 09:40:51  htheisse
 #H  reduced number of calls of `NewKind'
 #H
@@ -36,7 +42,7 @@ IsExternalSetByPcgsRep := NewRepresentation( "IsExternalSetByPcgsRep",
     [ "underlyingSet", "generators", "operators" ] );
 
 IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
-    IsGroupHomomorphism and IsAttributeStoringRep, [  ] );
+    IsGroupHomomorphism and IsAttributeStoringRep, [ "externalSet" ] );
 
 IsOperationHomomorphismDefaultRep := NewRepresentation
     ( "IsOperationHomomorphismDefaultRep",
@@ -125,6 +131,11 @@ OrbitStabilizerOp := NewOperation( "OrbitStabilizer", OrbitishReq );
 Orbits := NewOperationArgs( "Orbits" );
 OrbitsOp := NewOperation( "Orbits", OrbitsishReq );
 OrbitsAttr := NewAttribute( "Orbits", IsExternalSet );
+
+SparseOperationHomomorphism := NewOperationArgs
+                               ( "SparseOperationHomomorphism" );
+SparseOperationHomomorphismOp := NewOperation( "SparseOperationHomomorphismOp",
+    OrbitishReq );
 
 ExternalOrbits := NewOperationArgs( "ExternalOrbits" );
 ExternalOrbitsOp := NewOperation( "ExternalOrbits", OrbitsishReq );
@@ -222,6 +233,12 @@ OperationOrbit := NewOperationArgs( "OperationOrbit" );
 OrbitByPosOp := NewOperationArgs( "OrbitByPosOp" );
 SetCanonicalRepresentativeOfExternalOrbitByPcgs :=
   NewOperationArgs( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
+
+#############################################################################
+##
+#F  StabilizerOfBlockNC( <G>, <B> )  . . . . block stabilizer for perm groups
+##
+StabilizerOfBlockNC := NewOperationArgs( "StabilizerOfBlockNC" );
 
 #############################################################################
 ##

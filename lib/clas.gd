@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.7  1997/01/10 08:45:31  htheisse
+#H  added conjugacy class functions for perm groups and pcgs groups
+#H
 #H  Revision 4.6  1996/12/19 09:58:51  htheisse
 #H  added revision lines
 #H
@@ -26,6 +29,8 @@
 ##
 Revision.clas_gd :=
     "@(#)$Id$";
+
+InfoClasses := NewInfoClass( "InfoClasses" );
 
 #############################################################################
 ##
@@ -87,12 +92,19 @@ RationalClassesInEANS := NewOperationArgs( "RationalClassesInEANS" );
 SubspaceVectorSpaceGroup := NewOperationArgs( "SubspaceVectorSpaceGroup" );
 CentralStepConjugatingElement := NewOperationArgs( "CentralStepConjugatingElement" );
 SubspaceHcommaC := NewOperationArgs( "SubspaceHcommaC" );
+OrderModK := NewOperationArgs( "OrderModK" );
 CentralStepRatClPGroup := NewOperationArgs( "CentralStepRatClPGroup" );
 CentralStepClEANS := NewOperationArgs( "CentralStepClEANS" );
 CorrectConjugacyClass := NewOperationArgs( "CorrectConjugacyClass" );
 GeneralStepClEANS := NewOperationArgs( "GeneralStepClEANS" );
 ClassesSolvableGroup := NewOperationArgs( "ClassesSolvableGroup" );
-RationalClassesPGroup := NewOperationArgs( "RationalClassesPGroup" );
+
+CompleteGaloisGroupPElement := NewOperationArgs( "CompleteGaloisGroupPElement" );
+ConstructList := NewOperationArgs( "ConstructList" );
+SortRationalClasses := NewOperationArgs( "SortRationalClasses" );
+FusionRationalClassesPSubgroup := NewOperationArgs( "FusionRationalClassesPSubgroup" );
+RationalClassesPElements := NewOperationArgs( "RationalClassesPElements" );
+RationalClassesPermGroup := NewOperationArgs( "RationalClassesPermGroup" );
 
 #############################################################################
 ##
@@ -105,4 +117,3 @@ RationalClassesPGroup := NewOperationArgs( "RationalClassesPGroup" );
 #############################################################################
 ##
 #E  clas.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-

@@ -136,7 +136,7 @@ InstallAttributeFunction(
         "system getter",
         true,
         [ IsAttributeStoringRep and tester ],
-        SUM_FLAGS,
+        2 * SUM_FLAGS,
         GETTER_FUNCTION(name) );
     end );
 

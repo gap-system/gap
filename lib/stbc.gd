@@ -5,15 +5,21 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.20  1997/01/07 13:35:14  ahulpke
+#H  Added the transitive groups data library
+#H
+#H  Revision 4.19  1997/01/06 16:44:26  ahulpke
+#H  Added 'AlternatingGroup'
+#H
+#H  Revision 4.18  1997/01/06 16:21:03  htheisse
+#H  turned `IsSymmetricGroup' from a representation into a property
+#H
 #H  Revision 4.17  1996/12/19 09:59:15  htheisse
 #H  added revision lines
 #H
 ##
 Revision.stbc_gd :=
     "@(#)$Id$";
-
-IsPermGroup := IsGroup and IsPermCollection;
-IsFactorGroup := ReturnFalse;  # temporarily
 
 LargestMovedPoint := NewAttribute( "LargestMovedPoint", IsPermGroup );
 SetLargestMovedPoint := Setter( LargestMovedPoint );
@@ -42,10 +48,6 @@ HasBase := Tester( Base );
 Socle := NewAttribute( "Socle", IsGroup );
 SetSocle := Setter( Socle );
 HasSocle := Tester( Socle );
-
-IsSymmetricGroup := NewRepresentation( "IsSymmetricGroup",
-    IsPermGroup and IsComponentObjectRep and IsAttributeStoringRep,
-    [ "domain" ] );
 
 #############################################################################
 ##

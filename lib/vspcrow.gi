@@ -140,8 +140,8 @@ InstallOtherMethod( LeftModuleByGenerators,
                             and IsGaussianRowSpaceRep ),
                    rec() );
     SetLeftActingDomain( V, F );
-    SetGeneratorsOfLeftModule( V, Immutable( empty ) );
-    SetZero( V, Immutable( zero ) );
+    SetGeneratorsOfLeftModule( V, empty );
+    SetZero( V, zero );
     V!.vectordim:= Length( zero );
 
     return V;
@@ -155,9 +155,7 @@ InstallOtherMethod( LeftModuleByGenerators,
     local V;
 
     # Check whether this method is the right one.
-    if    not HasCollectionsFamily( FamilyObj( F ) )
-       or not IsIdentical( CollectionsFamily( FamilyObj( F ) ),
-                           FamilyObj( mat ) ) then
+    if not IsElmsColls( FamilyObj( F ), FamilyObj( mat ) ) then
       TryNextMethod();
     fi;
 #T explicit 2nd argument above!
@@ -176,7 +174,7 @@ InstallOtherMethod( LeftModuleByGenerators,
 
     SetLeftActingDomain( V, F );
     SetGeneratorsOfLeftModule( V, AsList( mat ) );
-    SetZero( V, Immutable( zero ) );
+    SetZero( V, zero );
     V!.vectordim:= Length( mat[1] );
 
     return V;
@@ -220,8 +218,16 @@ InstallMethod( NiceVector,
     IsCollsElms,
     [ IsVectorSpace and IsNonGaussianRowSpaceRep, IsRowVector ], 0,
     function( V, v )
-    return Concatenation( List( v,
-                 x -> Coefficients( V!.basisFieldExtension, x ) ) );
+    local list, entry, new;
+    list:= [];
+    for entry in v do
+      new:= Coefficients( V!.basisFieldExtension, entry );
+      if new = fail then
+        return fail;
+      fi;
+      Append( list, new );
+    od;
+    return list;
     end );
 
 
@@ -1353,63 +1359,77 @@ IsMutableBasisOfGaussianRowSpaceRep := NewRepresentation(
 #M  MutableBasisByGenerators( <R>, <vectors>, <zero> )  . for matrix over <R>
 ##
 InstallMethod( MutableBasisByGenerators,
-    "method to construct mutable bases of Gaussian row spaces",
+    "method to construct mutable bases of row spaces",
     IsElmsColls,
     [ IsRing, IsMatrix ], 0,
     function( R, vectors )
     local B;
 
-    # Check that Gaussian elimination is allowed.
     if ForAny( vectors, v -> not IsSubset( R, v ) ) then
-      TryNextMethod();
+
+      # If Gaussian elimination is not allowed,
+      # we construct a mutable basis that uses a nice mutable basis.
+      B:= MutableBasisViaNiceMutableBasisMethod2( R, vectors );
+
+    else
+
+      # Note that 'vectors' is not empty.
+      vectors:= SemiEchelonMat( vectors );
+
+      B:= Objectify( NewKind( FamilyObj( vectors ),
+                                  IsMutableBasis
+                              and IsMutableBasisOfGaussianRowSpaceRep ),
+                     rec(
+                          basisVectors:= ShallowCopy( vectors.vectors ),
+                          heads:= ShallowCopy( vectors.heads ),
+                          zero:= Zero( vectors.vectors[1] ),
+                          leftActingDomain := R
+                          ) );
+
     fi;
-
-    # Note that 'vectors' is not empty.
-    vectors:= SemiEchelonMat( vectors );
-
-    B:= Objectify( NewKind( FamilyObj( vectors ),
-                                IsMutableBasis
-                            and IsMutableBasisOfGaussianRowSpaceRep ),
-                   rec(
-                        basisVectors:= ShallowCopy( vectors.vectors ),
-                        heads:= ShallowCopy( vectors.heads ),
-                        zero:= Zero( vectors.vectors[1] ),
-                        leftActingDomain := R
-                        ) );
 
     return B;
     end );
 
+IsIdenticalObjXObj := function( F1, F2, F3 )
+    return IsIdentical( F1, F3 );
+end;
+
 InstallOtherMethod( MutableBasisByGenerators,
-    "method to construct mutable bases of Gaussian row spaces",
-    true,
+    "method to construct mutable bases of row spaces",
+    IsIdenticalObjXObj,
     [ IsRing, IsList, IsRowVector ], 0,
     function( R, vectors, zero )
     local B;
 
-    # Check that Gaussian elimination is allowed.
     if ForAny( vectors, v -> not IsSubset( R, v ) ) then
-      TryNextMethod();
-    fi;
 
-    B:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
-                                IsMutableBasis
-                            and IsMutableBasisOfGaussianRowSpaceRep ),
-                   rec(
-                        zero:= zero,
-                        leftActingDomain := R
-                        ) );
-
-    if IsEmpty( vectors ) then
-
-      B!.basisVectors:= [];
-      B!.heads:= List( zero, x -> 0 );
+      # If Gaussian elimination is not allowed,
+      # we construct a mutable basis that uses a nice mutable basis.
+      B:= MutableBasisViaNiceMutableBasisMethod3( R, vectors, zero );
 
     else
 
-      vectors:= SemiEchelonMat( vectors );
-      B!.basisVectors:= ShallowCopy( vectors.vectors );
-      B!.heads:= ShallowCopy( vectors.heads );
+      B:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+                                  IsMutableBasis
+                              and IsMutableBasisOfGaussianRowSpaceRep ),
+                     rec(
+                          zero:= zero,
+                          leftActingDomain := R
+                          ) );
+
+      if IsEmpty( vectors ) then
+
+        B!.basisVectors:= [];
+        B!.heads:= List( zero, x -> 0 );
+
+      else
+
+        vectors:= SemiEchelonMat( vectors );
+        B!.basisVectors:= ShallowCopy( vectors.vectors );
+        B!.heads:= ShallowCopy( vectors.heads );
+
+      fi;
 
     fi;
 
@@ -1426,8 +1446,8 @@ InstallMethod( PrintObj,
     true,
     [ IsMutableBasis and IsMutableBasisOfGaussianRowSpaceRep ], 0,
     function( MB )
-    Print( "MutableBasisByGenerators( ",
-           MB!.leftActingDomain, ", ", MB!.basisVectors, " )" );
+    Print( "<mutable basis over ", MB!.leftActingDomain, ", ",
+           Length( MB!.basisVectors ), " vectors>" );
     end );
 
 
@@ -1617,17 +1637,18 @@ end );
 
 InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
     function( pspace, num )
-    local   F,  sp,  f,  v,  zero,  q,  i,  l,  L;
+    local   F,  sp,  f,  v,  zero,  q,  n,  i,  l,  L;
     
     f := pspace!.enumeratorField;
     pspace := UnderlyingCollection( pspace );
     sp := pspace!.space;
     F := LeftActingDomain( sp );
     q := Size( F );
-    v := Zero( F ) * [ 1 .. Dimension( sp ) ];
+    n := Dimension( sp );
+    v := Zero( F ) * [ 1 .. n ];
     num := num - 1;
     
-    # Find the number of entries before the final 1.
+    # Find the number of entries after the leading 1.
     l := 0;
     L := 1;
     while num >= L  do
@@ -1635,18 +1656,18 @@ InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
         L := L * q + 1;
     od;
     num := num - ( L - 1 ) / q;
-    for i  in [ 1 .. l ]  do
+    v[ n - l ] := One( F );
+    for i  in [ n - l + 1 .. n ]  do
         v[ i ] := f[ num mod q + 1 ];
         num := QuoInt( num, q );
     od;
-    v[ l + 1 ] := One( F );
     return v;
 end );
         
 InstallMethod( Position, true,
         [ IsProjectiveSpaceEnumerator, IsObject, IsZeroCyc ], 0,
     function( pspace, elm, zero )
-    local   F,  sp,  f,  zero,  q,  l,  num,  val,  i;
+    local   F,  sp,  f,  zero,  q,  n,  l,  num,  val,  i;
     
     f := pspace!.enumeratorField;
     pspace := UnderlyingCollection( pspace );
@@ -1654,20 +1675,21 @@ InstallMethod( Position, true,
     F := LeftActingDomain( sp );
     zero := Zero( F );
     q := Size( F );
-    l := Dimension( sp );
+    n := Dimension( sp );
+    l := 1;
     
-    # Find the last entry different from zero.
+    # Find the first entry different from zero.
     while elm[ l ] = zero  do
-        l := l - 1;
+        l := l + 1;
     od;
     elm := elm / elm[ l ];
     
     num := 1;
-    for i  in [ 0 .. l - 2 ]  do
+    for i  in [ 0 .. n - l - 1 ]  do
         num := num + q ^ i;
     od;
     val := 1;
-    for i  in [ 1 .. l - 1 ]  do
+    for i  in [ l + 1 .. n ]  do
         num := num + val * ( Position( f, elm[ i ] ) - 1 );
         val := val * q;
     od;
