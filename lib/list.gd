@@ -263,6 +263,13 @@ PositionSorted :=
 
 #############################################################################
 ##
+#O  PositionSortedWC(<list>,<obj>) . .  returns 'fail' is object is not found
+##
+PositionSortedWC := NewOperationArgs("PositionSortedWC");
+
+
+#############################################################################
+##
 #O  PositionProperty(<list>,<func>) .  position of an element with a property
 ##
 PositionProperty :=

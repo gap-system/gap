@@ -137,6 +137,19 @@ InstallMethod( CloseMutableBasis,
 
 #############################################################################
 ##
+#M  IsContainedInSpan( <MB>, <v> )
+##
+InstallMethod( IsContainedInSpan,
+    "method for mutable basis represented by an immutable basis, and vector",
+    IsCollsElms,
+    [ IsMutableBasis and IsMutableBasisByImmutableBasisRep, IsVector ], 0,
+    function( MB, v )
+    return v in UnderlyingLeftModule( MB!.immutableBasis );
+    end );
+
+
+#############################################################################
+##
 #M  ImmutableBasis( <MB> )
 ##
 InstallMethod( ImmutableBasis,
@@ -153,7 +166,7 @@ InstallMethod( ImmutableBasis,
 IsMutableBasisViaNiceMutableBasisRep := NewRepresentation(
     "IsMutableBasisViaNiceMutableBasisRep",
     IsComponentObjectRep and IsMutable,
-    [ "leftModule", "niceMutableBasis" ] );
+    [ "leftModule", "niceMutableBasis", "zero" ] );
 
 
 #############################################################################
@@ -213,7 +226,11 @@ MutableBasisViaNiceMutableBasisMethod3 := function( R, vectors, zero )
                                              v -> NiceVector( M, v ) ),
                                        NiceVector( M, zero ) );
 
-    elif not IsEmpty( vectors ) then
+    elif IsEmpty( vectors ) then
+
+      B.zero:= zero;
+
+    else
       Error( "<M> is not handled via nice bases" );
     fi;
 
@@ -293,7 +310,7 @@ InstallMethod( CloseMutableBasis,
     if IsBound( MB!.niceMutableBasis ) then
       CloseMutableBasis( MB!.niceMutableBasis,
                          NiceVector( MB!.leftModule, v ) );
-    elif not IsZero( v ) then
+    elif v <> MB!.zero then
 
       # We have to setup the component 'niceMutableBasis'.
       R:= LeftActingDomain( MB!.leftModule );
@@ -305,6 +322,25 @@ InstallMethod( CloseMutableBasis,
       MB!.niceMutableBasis:= MutableBasisByGenerators( R,
                                        [ NiceVector( M, v ) ] );
 
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsContainedInSpan( <MB>, <v> )
+##
+InstallMethod( IsContainedInSpan,
+    "method for mutable basis repres. by a nice mutable basis, and vector",
+    IsCollsElms,
+    [ IsMutableBasis and IsMutableBasisViaNiceMutableBasisRep, IsVector ], 0,
+    function( MB, v )
+    local R, M;
+    if IsBound( MB!.niceMutableBasis ) then
+      return IsContainedInSpan( MB!.niceMutableBasis,
+                                NiceVector( MB!.leftModule, v ) );
+    else
+      return v = MB!.zero;
     fi;
     end );
 
@@ -347,5 +383,6 @@ InstallMethod( ImmutableBasis,
 #############################################################################
 ##
 #E  basismut.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+
 
 

@@ -83,6 +83,7 @@ GroupMethodByNiceMonomorphismCollElm( \^,
 PropertyMethodByNiceMonomorphismCollColl( \=,
     [ IsGroup, IsGroup ] );
 
+
 #############################################################################
 ##
 #M  \in( <elm>, <G> )  . . . . . . . . . . . .  test if elm \in G

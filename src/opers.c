@@ -1476,41 +1476,41 @@ Obj FuncSetMethodsOperation (
 
 *F  NewOperation( <name> ) . . . . . . . . . . . . . . . make a new operation
 */
-UInt            CacheIndex;
+UInt CacheIndex;
 
-Obj             Method0Args;
-Obj             NextMethod0Args;
-Obj             Method1Args;
-Obj             NextMethod1Args;
-Obj             Method2Args;
-Obj             NextMethod2Args;
-Obj             Method3Args;
-Obj             NextMethod3Args;
-Obj             Method4Args;
-Obj             NextMethod4Args;
-Obj             Method5Args;
-Obj             NextMethod5Args;
-Obj             Method6Args;
-Obj             NextMethod6Args;
-Obj             MethodXArgs;
-Obj             NextMethodXArgs;
+Obj Method0Args;
+Obj NextMethod0Args;
+Obj Method1Args;
+Obj NextMethod1Args;
+Obj Method2Args;
+Obj NextMethod2Args;
+Obj Method3Args;
+Obj NextMethod3Args;
+Obj Method4Args;
+Obj NextMethod4Args;
+Obj Method5Args;
+Obj NextMethod5Args;
+Obj Method6Args;
+Obj NextMethod6Args;
+Obj MethodXArgs;
+Obj NextMethodXArgs;
 
-Obj             VMethod0Args;
-Obj             NextVMethod0Args;
-Obj             VMethod1Args;
-Obj             NextVMethod1Args;
-Obj             VMethod2Args;
-Obj             NextVMethod2Args;
-Obj             VMethod3Args;
-Obj             NextVMethod3Args;
-Obj             VMethod4Args;
-Obj             NextVMethod4Args;
-Obj             VMethod5Args;
-Obj             NextVMethod5Args;
-Obj             VMethod6Args;
-Obj             NextVMethod6Args;
-Obj             VMethodXArgs;
-Obj             NextVMethodXArgs;
+Obj VMethod0Args;
+Obj NextVMethod0Args;
+Obj VMethod1Args;
+Obj NextVMethod1Args;
+Obj VMethod2Args;
+Obj NextVMethod2Args;
+Obj VMethod3Args;
+Obj NextVMethod3Args;
+Obj VMethod4Args;
+Obj NextVMethod4Args;
+Obj VMethod5Args;
+Obj NextVMethod5Args;
+Obj VMethod6Args;
+Obj NextVMethod6Args;
+Obj VMethodXArgs;
+Obj NextVMethodXArgs;
 
 
 /****************************************************************************
@@ -1519,6 +1519,7 @@ Obj             NextVMethodXArgs;
 */
 Int OperationHit;
 Int OperationMiss;
+Int OperationNext;
 
 Obj DoOperation0Args (
     Obj                 oper )
@@ -1558,6 +1559,9 @@ Obj DoOperation0Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_2ARGS( NextMethod0Args, oper, INTOBJ_INT(i) );
             i++;
             res = CALL_0ARGS( method );
@@ -1636,6 +1640,9 @@ Obj DoOperation1Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_3ARGS( NextMethod1Args, oper, INTOBJ_INT(i),
                                  kind1 );
             i++;
@@ -1724,6 +1731,9 @@ Obj DoOperation2Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_4ARGS( NextMethod2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
             i++;
@@ -1819,6 +1829,9 @@ Obj DoOperation3Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_5ARGS( NextMethod3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
             i++;
@@ -1922,6 +1935,9 @@ Obj DoOperation4Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_6ARGS( NextMethod4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
             i++;
@@ -2035,6 +2051,9 @@ Obj DoOperation5Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
             SET_ELM_PLIST( margs, 1, oper );
@@ -2171,6 +2190,9 @@ Obj DoOperation6Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
             SET_ELM_PLIST( margs, 1, oper );
@@ -2228,6 +2250,9 @@ Obj DoVerboseOperation0Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_2ARGS( NextVMethod0Args, oper, INTOBJ_INT(i) );
             i++;
             res = CALL_0ARGS( method );
@@ -2268,6 +2293,9 @@ Obj DoVerboseOperation1Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_3ARGS( NextVMethod1Args, oper, INTOBJ_INT(i),
                                  kind1 );
             i++;
@@ -2312,6 +2340,9 @@ Obj DoVerboseOperation2Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_4ARGS( NextVMethod2Args, oper, INTOBJ_INT(i),
                                  kind1, kind2 );
             i++;
@@ -2359,6 +2390,9 @@ Obj DoVerboseOperation3Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_5ARGS( NextVMethod3Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3 );
             i++;
@@ -2409,6 +2443,9 @@ Obj DoVerboseOperation4Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             method = CALL_6ARGS( NextVMethod4Args, oper, INTOBJ_INT(i),
                                  kind1, kind2, kind3, kind4 );
             i++;
@@ -2464,6 +2501,9 @@ Obj DoVerboseOperation5Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             margs = NEW_PLIST( T_PLIST, 7 );
             SET_LEN_PLIST( margs, 7 );
             SET_ELM_PLIST( margs, 1, oper );
@@ -2538,6 +2578,9 @@ Obj DoVerboseOperation6Args (
     if ( res == TRY_NEXT_METHOD ) {
         i = 1;
         while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
             margs = NEW_PLIST( T_PLIST, 8 );
             SET_LEN_PLIST( margs, 8 );
             SET_ELM_PLIST( margs, 1, oper );
@@ -2574,37 +2617,6 @@ Obj DoVerboseOperationXArgs (
 
 /****************************************************************************
 **
-*f  InstallDoOperations( <oper>, <verb> )
-*/
-void InstallDoOperations (
-    Obj                 oper,
-    Int                 verb )
-{
-    if ( verb ) {
-        HDLR_FUNC(oper,0) = DoVerboseOperation0Args;
-        HDLR_FUNC(oper,1) = DoVerboseOperation1Args;
-        HDLR_FUNC(oper,2) = DoVerboseOperation2Args;
-        HDLR_FUNC(oper,3) = DoVerboseOperation3Args;
-        HDLR_FUNC(oper,4) = DoVerboseOperation4Args;
-        HDLR_FUNC(oper,5) = DoVerboseOperation5Args;
-        HDLR_FUNC(oper,6) = DoVerboseOperation6Args;
-        HDLR_FUNC(oper,7) = DoVerboseOperationXArgs;
-    }
-    else {
-        HDLR_FUNC(oper,0) = DoOperation0Args;
-        HDLR_FUNC(oper,1) = DoOperation1Args;
-        HDLR_FUNC(oper,2) = DoOperation2Args;
-        HDLR_FUNC(oper,3) = DoOperation3Args;
-        HDLR_FUNC(oper,4) = DoOperation4Args;
-        HDLR_FUNC(oper,5) = DoOperation5Args;
-        HDLR_FUNC(oper,6) = DoOperation6Args;
-        HDLR_FUNC(oper,7) = DoOperationXArgs;
-    }
-}
-
-
-/****************************************************************************
-**
 *f  NewOperation( <name>, <narg>, <nams>, <hdlr> )
 */
 Obj NewOperation (
@@ -2623,7 +2635,14 @@ Obj NewOperation (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        InstallDoOperations( oper, 0 );
+        HDLR_FUNC(oper,0) = DoOperation0Args;
+        HDLR_FUNC(oper,1) = DoOperation1Args;
+        HDLR_FUNC(oper,2) = DoOperation2Args;
+        HDLR_FUNC(oper,3) = DoOperation3Args;
+        HDLR_FUNC(oper,4) = DoOperation4Args;
+        HDLR_FUNC(oper,5) = DoOperation5Args;
+        HDLR_FUNC(oper,6) = DoOperation6Args;
+        HDLR_FUNC(oper,7) = DoOperationXArgs;
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -2667,7 +2686,14 @@ Obj NewOperationC (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        InstallDoOperations( oper, 0 );
+        HDLR_FUNC(oper,0) = DoOperation0Args;
+        HDLR_FUNC(oper,1) = DoOperation1Args;
+        HDLR_FUNC(oper,2) = DoOperation2Args;
+        HDLR_FUNC(oper,3) = DoOperation3Args;
+        HDLR_FUNC(oper,4) = DoOperation4Args;
+        HDLR_FUNC(oper,5) = DoOperation5Args;
+        HDLR_FUNC(oper,6) = DoOperation6Args;
+        HDLR_FUNC(oper,7) = DoOperationXArgs;
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -2715,111 +2741,245 @@ Obj NewOperationHandler (
 /****************************************************************************
 **
 
-*F  NewOperationKA1( <name> ) . . . . . . . . . . . . .  make a new operation
+*F  NewConstructor( <name> )  . . . . . . . . . . . .  make a new constructor
 */
+UInt CacheIndex;
+
+Obj Constructor0Args;
+Obj NextConstructor0Args;
+Obj Constructor1Args;
+Obj NextConstructor1Args;
+Obj Constructor2Args;
+Obj NextConstructor2Args;
+Obj Constructor3Args;
+Obj NextConstructor3Args;
+Obj Constructor4Args;
+Obj NextConstructor4Args;
+Obj Constructor5Args;
+Obj NextConstructor5Args;
+Obj Constructor6Args;
+Obj NextConstructor6Args;
+Obj ConstructorXArgs;
+Obj NextConstructorXArgs;
+
+Obj VConstructor0Args;
+Obj NextVConstructor0Args;
+Obj VConstructor1Args;
+Obj NextVConstructor1Args;
+Obj VConstructor2Args;
+Obj NextVConstructor2Args;
+Obj VConstructor3Args;
+Obj NextVConstructor3Args;
+Obj VConstructor4Args;
+Obj NextVConstructor4Args;
+Obj VConstructor5Args;
+Obj NextVConstructor5Args;
+Obj VConstructor6Args;
+Obj NextVConstructor6Args;
+Obj VConstructorXArgs;
+Obj NextVConstructorXArgs;
 
 
 /****************************************************************************
 **
-*f  DoOperationKA10Args( <oper> )
+*f  DoConstructor0Args( <oper> )
 */
-Obj DoOperationKA10Args (
+Obj DoConstructor0Args (
     Obj                 oper )
 {
-    ErrorQuit("a KindArg1 operation needs at least 1 argument",0L,0L);
-    return 0;
-}
-
-
-/****************************************************************************
-**
-*f  DoOperationKA11Args( <oper>, <a1> )
-*/
-Obj DoOperationKA11Args (
-    Obj                 oper,
-    Obj                 arg1 )
-{
-    Obj                 kind1;
+    Obj                 res;
     Obj *               cache;
     Obj                 method;
-
-    /* get the kinds of the arguments                                      */
-    kind1 = arg1;
+    Int                 i;
 
     /* try to find an applicable method in the cache                       */
-    cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
-    if      ( cache[2*0+1] == kind1 ) {
-        method = cache[2*0+2];
-    }
-    else if ( cache[2*1+1] == kind1 ) {
-        method = cache[2*1+2];
-    }
-    else if ( cache[2*2+1] == kind1 ) {
-        method = cache[2*2+2];
-    }
-    else if ( cache[2*3+1] == kind1 ) {
-        method = cache[2*3+2];
+    cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+    if ( cache[0] != 0 ) {
+        method = cache[0];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
     else {
-        method = CALL_2ARGS( Method1Args, oper,
-                             kind1 );
-        cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
-        cache[ 2*CacheIndex+1 ] = kind1;
-        cache[ 2*CacheIndex+2 ] = method;
-        CacheIndex = (CacheIndex + 1) % 4;
-	CHANGED_BAG(CACHE_OPER(oper,1));
+        method = CALL_1ARGS( Constructor0Args, oper );
+        cache = ADDR_OBJ( CACHE_OPER( oper, 0 ) );
+        cache[0] = method;
+	CHANGED_BAG(CACHE_OPER(oper,0));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_1ARGS( method, arg1 );
+    res = CALL_0ARGS( method );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_2ARGS( NextConstructor0Args, oper, INTOBJ_INT(i) );
+            i++;
+            res = CALL_0ARGS( method );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
 }
 
 
 /****************************************************************************
 **
-*f  DoOperationKA12Args( <oper>, <a1>, <a2> )
+*f  DoConstructor1Args( <oper>, <a1> )
 */
-Obj DoOperationKA12Args (
+Obj DoConstructor1Args (
+    Obj                 oper,
+    Obj                 arg1 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj *               cache;
+    Obj                 method;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+
+    /* try to find an applicable method in the cache                       */
+    cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+    if      ( cache[2*0+1] == kind1 ) {
+        method = cache[2*0+2];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
+    }
+    else if ( cache[2*1+1] == kind1 ) {
+        method = cache[2*1+2];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
+    }
+    else if ( cache[2*2+1] == kind1 ) {
+        method = cache[2*2+2];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
+    }
+    else if ( cache[2*3+1] == kind1 ) {
+        method = cache[2*3+2];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
+    }
+
+    /* otherwise try to find one in the list of methods                    */
+    else {
+        method = CALL_2ARGS( Constructor1Args, oper, kind1 );
+        cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
+        cache[ 2*CacheIndex+1 ] = kind1;
+        cache[ 2*CacheIndex+2 ] = method;
+        CacheIndex = (CacheIndex + 1) % 4;
+	CHANGED_BAG(CACHE_OPER(oper,1));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
+    }
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_1ARGS( method, arg1 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_3ARGS( NextConstructor1Args, oper, INTOBJ_INT(i),
+                                 kind1 );
+            i++;
+            res = CALL_1ARGS( method, arg1 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoConstructor2Args( <oper>, <a1>, <a2> )
+*/
+Obj DoConstructor2Args (
     Obj                 oper,
     Obj                 arg1,
     Obj                 arg2 )
 {
+    Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
     Obj *               cache;
     Obj                 method;
+    Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = arg1;
-    kind2 = KIND_OBJ( arg2 );
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
     if      ( cache[3*0+1] == kind1
            && cache[3*0+2] == kind2 ) {
         method = cache[3*0+3];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[3*1+1] == kind1
            && cache[3*1+2] == kind2 ) {
         method = cache[3*1+3];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[3*2+1] == kind1
            && cache[3*2+2] == kind2 ) {
         method = cache[3*2+3];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[3*3+1] == kind1
            && cache[3*3+2] == kind2 ) {
         method = cache[3*3+3];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
     else {
-        method = CALL_3ARGS( Method2Args, oper,
+        method = CALL_3ARGS( Constructor2Args, oper,
                              kind1, kind2 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
         cache[ 3*CacheIndex+1 ] = kind1;
@@ -2827,36 +2987,61 @@ Obj DoOperationKA12Args (
         cache[ 3*CacheIndex+3 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
 	CHANGED_BAG(CACHE_OPER(oper,2));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_2ARGS( method, arg1, arg2 );
-}
+    res = CALL_2ARGS( method, arg1, arg2 );
 
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_4ARGS( NextConstructor2Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2 );
+            i++;
+            res = CALL_2ARGS( method, arg1, arg2 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
 
 /****************************************************************************
 **
-*f  DoOperationKA13Args( <oper>, <a1>, <a2>, <a3> )
+*f  DoConstructor3Args( <oper>, <a1>, <a2>, <a3> )
 */
-Obj DoOperationKA13Args (
+Obj DoConstructor3Args (
     Obj                 oper,
     Obj                 arg1,
     Obj                 arg2,
     Obj                 arg3 )
 {
+    Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
     Obj                 kind3;
     Obj *               cache;
     Obj                 method;
+    Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = arg1;
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
@@ -2864,26 +3049,38 @@ Obj DoOperationKA13Args (
            && cache[4*0+2] == kind2
            && cache[4*0+3] == kind3 ) {
         method = cache[4*0+4];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[4*1+1] == kind1
            && cache[4*1+2] == kind2
            && cache[4*1+3] == kind3 ) {
         method = cache[4*1+4];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[4*2+1] == kind1
            && cache[4*2+2] == kind2
            && cache[4*2+3] == kind3 ) {
         method = cache[4*2+4];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[4*3+1] == kind1
            && cache[4*3+2] == kind2
            && cache[4*3+3] == kind3 ) {
         method = cache[4*3+4];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
     else {
-        method = CALL_4ARGS( Method3Args, oper,
+        method = CALL_4ARGS( Constructor3Args, oper,
                              kind1, kind2, kind3 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
         cache[ 4*CacheIndex+1 ] = kind1;
@@ -2892,39 +3089,64 @@ Obj DoOperationKA13Args (
         cache[ 4*CacheIndex+4 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
 	CHANGED_BAG(CACHE_OPER(oper,3));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_3ARGS( method, arg1, arg2, arg3 );
-}
+    res = CALL_3ARGS( method, arg1, arg2, arg3 );
 
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_5ARGS( NextConstructor3Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2, kind3 );
+            i++;
+            res = CALL_3ARGS( method, arg1, arg2, arg3 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
 
 /****************************************************************************
 **
-*f  DoOperationKA14Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+*f  DoConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
 */
-Obj DoOperationKA14Args (
+Obj DoConstructor4Args (
     Obj                 oper,
     Obj                 arg1,
     Obj                 arg2,
     Obj                 arg3,
     Obj                 arg4 )
 {
+    Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
     Obj                 kind3;
     Obj                 kind4;
     Obj *               cache;
     Obj                 method;
+    Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = arg1;
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
@@ -2933,29 +3155,41 @@ Obj DoOperationKA14Args (
            && cache[5*0+3] == kind3
            && cache[5*0+4] == kind4 ) {
         method = cache[5*0+5];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[5*1+1] == kind1
            && cache[5*1+2] == kind2
            && cache[5*1+3] == kind3
            && cache[5*1+4] == kind4 ) {
         method = cache[5*1+5];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[5*2+1] == kind1
            && cache[5*2+2] == kind2
            && cache[5*2+3] == kind3
            && cache[5*2+4] == kind4 ) {
         method = cache[5*2+5];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[5*3+1] == kind1
            && cache[5*3+2] == kind2
            && cache[5*3+3] == kind3
            && cache[5*3+4] == kind4 ) {
         method = cache[5*3+5];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
     else {
-        method = CALL_5ARGS( Method4Args, oper,
+        method = CALL_5ARGS( Constructor4Args, oper,
                              kind1, kind2, kind3, kind4 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
         cache[ 5*CacheIndex+1 ] = kind1;
@@ -2965,21 +3199,41 @@ Obj DoOperationKA14Args (
         cache[ 5*CacheIndex+5 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
 	CHANGED_BAG(CACHE_OPER(oper,4));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_4ARGS( method, arg1, arg2, arg3, arg4 );
+    res = CALL_4ARGS( method, arg1, arg2, arg3, arg4 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_6ARGS( NextConstructor4Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2, kind3, kind4 );
+            i++;
+            res = CALL_4ARGS( method, arg1, arg2, arg3, arg4 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
 }
 
 
 /****************************************************************************
 **
-*f  DoOperationKA15Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+*f  DoConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
 */
-Obj DoOperationKA15Args (
+Obj DoConstructor5Args (
     Obj                 oper,
     Obj                 arg1,
     Obj                 arg2,
@@ -2987,6 +3241,7 @@ Obj DoOperationKA15Args (
     Obj                 arg4,
     Obj                 arg5 )
 {
+    Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
     Obj                 kind3;
@@ -2994,13 +3249,19 @@ Obj DoOperationKA15Args (
     Obj                 kind5;
     Obj *               cache;
     Obj                 method;
+    Obj                 margs;
+    Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = arg1;
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
+    kind5 = KIND_OBJ(   arg5 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
@@ -3010,6 +3271,9 @@ Obj DoOperationKA15Args (
            && cache[6*0+4] == kind4
            && cache[6*0+5] == kind5 ) {
         method = cache[6*0+6];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[6*1+1] == kind1
            && cache[6*1+2] == kind2
@@ -3017,6 +3281,9 @@ Obj DoOperationKA15Args (
            && cache[6*1+4] == kind4
            && cache[6*1+5] == kind5 ) {
         method = cache[6*1+6];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[6*2+1] == kind1
            && cache[6*2+2] == kind2
@@ -3024,6 +3291,9 @@ Obj DoOperationKA15Args (
            && cache[6*2+4] == kind4
            && cache[6*2+5] == kind5 ) {
         method = cache[6*2+6];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[6*3+1] == kind1
            && cache[6*3+2] == kind2
@@ -3031,11 +3301,14 @@ Obj DoOperationKA15Args (
            && cache[6*3+4] == kind4
            && cache[6*3+5] == kind5 ) {
         method = cache[6*3+6];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
     else {
-        method = CALL_6ARGS( Method5Args, oper,
+        method = CALL_6ARGS( Constructor5Args, oper,
                              kind1, kind2, kind3, kind4, kind5 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
         cache[ 6*CacheIndex+1 ] = kind1;
@@ -3046,21 +3319,48 @@ Obj DoOperationKA15Args (
         cache[ 6*CacheIndex+6 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
 	CHANGED_BAG(CACHE_OPER(oper,5));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_5ARGS( method, arg1, arg2, arg3, arg4, arg5 );
-}
+    res = CALL_5ARGS( method, arg1, arg2, arg3, arg4, arg5 );
 
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            margs = NEW_PLIST( T_PLIST, 7 );
+            SET_LEN_PLIST( margs, 7 );
+            SET_ELM_PLIST( margs, 1, oper );
+            SET_ELM_PLIST( margs, 2, INTOBJ_INT(i) );
+            SET_ELM_PLIST( margs, 3, kind1 );
+            SET_ELM_PLIST( margs, 4, kind2 );
+            SET_ELM_PLIST( margs, 5, kind3 );
+            SET_ELM_PLIST( margs, 6, kind4 );
+            SET_ELM_PLIST( margs, 7, kind5 );
+            method = CALL_XARGS( NextConstructor5Args, margs );
+            i++;
+            res = CALL_5ARGS( method, arg1, arg2, arg3, arg4, arg5 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
 
 /****************************************************************************
 **
-*f  DoOperationKA16Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+*f  DoConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
 */
-Obj DoOperationKA16Args (
+Obj DoConstructor6Args (
     Obj                 oper,
     Obj                 arg1,
     Obj                 arg2,
@@ -3069,6 +3369,7 @@ Obj DoOperationKA16Args (
     Obj                 arg5,
     Obj                 arg6 )
 {
+    Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
     Obj                 kind3;
@@ -3078,14 +3379,19 @@ Obj DoOperationKA16Args (
     Obj *               cache;
     Obj                 method;
     Obj                 margs;
+    Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = arg1;
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
-    kind6 = KIND_OBJ( arg6 );
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
+    kind5 = KIND_OBJ(   arg5 );
+    kind6 = KIND_OBJ(   arg6 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
@@ -3096,6 +3402,9 @@ Obj DoOperationKA16Args (
            && cache[7*0+5] == kind5
            && cache[7*0+6] == kind6 ) {
         method = cache[7*0+7];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[7*1+1] == kind1
            && cache[7*1+2] == kind2
@@ -3104,6 +3413,9 @@ Obj DoOperationKA16Args (
            && cache[7*1+5] == kind5
            && cache[7*1+6] == kind6 ) {
         method = cache[7*1+7];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[7*2+1] == kind1
            && cache[7*2+2] == kind2
@@ -3112,6 +3424,9 @@ Obj DoOperationKA16Args (
            && cache[7*2+5] == kind5
            && cache[7*2+6] == kind6 ) {
         method = cache[7*2+7];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
     else if ( cache[7*3+1] == kind1
            && cache[7*3+2] == kind2
@@ -3120,6 +3435,9 @@ Obj DoOperationKA16Args (
            && cache[7*3+5] == kind5
            && cache[7*3+6] == kind6 ) {
         method = cache[7*3+7];
+#ifdef COUNT_OPERS
+	OperationHit++;
+#endif
     }
 
     /* otherwise try to find one in the list of methods                    */
@@ -3133,7 +3451,7 @@ Obj DoOperationKA16Args (
         SET_ELM_PLIST( margs, 5, kind4 );
         SET_ELM_PLIST( margs, 6, kind5 );
         SET_ELM_PLIST( margs, 7, kind6 );
-        method = CALL_XARGS( Method6Args, margs );
+        method = CALL_XARGS( Constructor6Args, margs );
         cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
         cache[ 7*CacheIndex+1 ] = kind1;
         cache[ 7*CacheIndex+2 ] = kind2;
@@ -3144,34 +3462,475 @@ Obj DoOperationKA16Args (
         cache[ 7*CacheIndex+7 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
 	CHANGED_BAG(CACHE_OPER(oper,6));
+#ifdef COUNT_OPERS
+	OperationMiss++;
+#endif
     }
     if ( method == 0 )  {
     	ErrorQuit( "no method returned", 0L, 0L );
     }
 
     /* call this method                                                    */
-    return CALL_6ARGS( method, arg1, arg2, arg3, arg4, arg5, arg6 );
-}
+    res = CALL_6ARGS( method, arg1, arg2, arg3, arg4, arg5, arg6 );
 
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            margs = NEW_PLIST( T_PLIST, 8 );
+            SET_LEN_PLIST( margs, 8 );
+            SET_ELM_PLIST( margs, 1, oper );
+            SET_ELM_PLIST( margs, 2, INTOBJ_INT(i) );
+            SET_ELM_PLIST( margs, 3, kind1 );
+            SET_ELM_PLIST( margs, 4, kind2 );
+            SET_ELM_PLIST( margs, 5, kind3 );
+            SET_ELM_PLIST( margs, 6, kind4 );
+            SET_ELM_PLIST( margs, 7, kind5 );
+            SET_ELM_PLIST( margs, 8, kind6 );
+            method = CALL_XARGS( NextConstructor6Args, margs );
+            i++;
+            res = CALL_6ARGS( method, arg1, arg2, arg3, arg4, arg5, arg6 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
 
 /****************************************************************************
 **
-*f  DoOperationKA1XArgs( <oper>,  . . . . . . . . . . . . . . . . . . .  .. )
+*f  DoConstructorXArgs( <oper>, ... )
 */
-Obj DoOperationKA1XArgs (
+Obj DoConstructorXArgs (
     Obj                 self,
     Obj                 args )
 {
-    ErrorQuit("sorry: cannot yet have X argument operations",0L,0L);
+    ErrorQuit("sorry: cannot yet have X argument constructors",0L,0L);
     return 0;
 }
 
 
 /****************************************************************************
 **
-*f  NewOperationKA1( <name>, <narg>, <nams>, <hdlr> )
+*f  DoVerboseConstructor0Args( <oper> )
 */
-Obj NewOperationKA1 (
+Obj DoVerboseConstructor0Args (
+    Obj                 oper )
+{
+    Obj                 res;
+    Obj                 method;
+    Int                 i;
+
+    /* try to find one in the list of methods                              */
+    method = CALL_1ARGS( VConstructor0Args, oper );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_0ARGS( method );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_2ARGS( NextVConstructor0Args, oper, INTOBJ_INT(i) );
+            i++;
+            res = CALL_0ARGS( method );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor1Args( <oper>, <a1> )
+*/
+Obj DoVerboseConstructor1Args (
+    Obj                 oper,
+    Obj                 arg1 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 method;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+
+    /* try to find one in the list of methods                              */
+    method = CALL_2ARGS( VConstructor1Args, oper, kind1 );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_1ARGS( method, arg1 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_3ARGS( NextVConstructor1Args, oper, INTOBJ_INT(i),
+                                 kind1 );
+            i++;
+            res = CALL_1ARGS( method, arg1 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor2Args( <oper>, <a1>, <a2> )
+*/
+Obj DoVerboseConstructor2Args (
+    Obj                 oper,
+    Obj                 arg1,
+    Obj                 arg2 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 kind2;
+    Obj                 method;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+
+    /* try to find one in the list of methods                              */
+    method = CALL_3ARGS( VConstructor2Args, oper, kind1, kind2 );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_2ARGS( method, arg1, arg2 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_4ARGS( NextVConstructor2Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2 );
+            i++;
+            res = CALL_2ARGS( method, arg1, arg2 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor3Args( <oper>, <a1>, <a2>, <a3> )
+*/
+Obj DoVerboseConstructor3Args (
+    Obj                 oper,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 kind2;
+    Obj                 kind3;
+    Obj                 method;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+
+    /* try to find one in the list of methods                              */
+    method = CALL_4ARGS( VConstructor3Args, oper, kind1, kind2, kind3 );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_3ARGS( method, arg1, arg2, arg3 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_5ARGS( NextVConstructor3Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2, kind3 );
+            i++;
+            res = CALL_3ARGS( method, arg1, arg2, arg3 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor4Args( <oper>, <a1>, <a2>, <a3>, <a4> )
+*/
+Obj DoVerboseConstructor4Args (
+    Obj                 oper,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 kind2;
+    Obj                 kind3;
+    Obj                 kind4;
+    Obj                 method;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
+
+    /* try to find one in the list of methods                              */
+    method = CALL_5ARGS( VConstructor4Args, oper, kind1, kind2, kind3, kind4 );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_4ARGS( method, arg1, arg2, arg3, arg4 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            method = CALL_6ARGS( NextVConstructor4Args, oper, INTOBJ_INT(i),
+                                 kind1, kind2, kind3, kind4 );
+            i++;
+            res = CALL_4ARGS( method, arg1, arg2, arg3, arg4 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor5Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5> )
+*/
+Obj DoVerboseConstructor5Args (
+    Obj                 oper,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4,
+    Obj                 arg5 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 kind2;
+    Obj                 kind3;
+    Obj                 kind4;
+    Obj                 kind5;
+    Obj                 method;
+    Obj                 margs;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
+    kind5 = KIND_OBJ(   arg5 );
+
+    /* try to find one in the list of methods                              */
+    method = CALL_6ARGS( VConstructor5Args, oper, kind1, kind2, kind3, kind4,
+                         kind5 );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_5ARGS( method, arg1, arg2, arg3, arg4, arg5 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            margs = NEW_PLIST( T_PLIST, 7 );
+            SET_LEN_PLIST( margs, 7 );
+            SET_ELM_PLIST( margs, 1, oper );
+            SET_ELM_PLIST( margs, 2, INTOBJ_INT(i) );
+            SET_ELM_PLIST( margs, 3, kind1 );
+            SET_ELM_PLIST( margs, 4, kind2 );
+            SET_ELM_PLIST( margs, 5, kind3 );
+            SET_ELM_PLIST( margs, 6, kind4 );
+            SET_ELM_PLIST( margs, 7, kind5 );
+            method = CALL_XARGS( NextVConstructor5Args, margs );
+            i++;
+            res = CALL_5ARGS( method, arg1, arg2, arg3, arg4, arg5 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructor6Args( <oper>, <a1>, <a2>, <a3>, <a4>, <a5>, <a6> )
+*/
+Obj DoVerboseConstructor6Args (
+    Obj                 oper,
+    Obj                 arg1,
+    Obj                 arg2,
+    Obj                 arg3,
+    Obj                 arg4,
+    Obj                 arg5,
+    Obj                 arg6 )
+{
+    Obj                 res;
+    Obj                 kind1;
+    Obj                 kind2;
+    Obj                 kind3;
+    Obj                 kind4;
+    Obj                 kind5;
+    Obj                 kind6;
+    Obj                 method;
+    Obj                 margs;
+    Int                 i;
+
+    /* get the kinds of the arguments                                      */
+    if ( ! IS_OPERATION(arg1) ) {
+        ErrorQuit("<arg1> must be an operation",0L,0L);
+        return 0;
+    }
+    kind1 = FLAGS_FILT( arg1 );
+    kind2 = KIND_OBJ(   arg2 );
+    kind3 = KIND_OBJ(   arg3 );
+    kind4 = KIND_OBJ(   arg4 );
+    kind5 = KIND_OBJ(   arg5 );
+    kind6 = KIND_OBJ(   arg6 );
+
+    /* try to find one in the list of methods                              */
+    margs = NEW_PLIST( T_PLIST, 7 );
+    SET_LEN_PLIST( margs, 7 );
+    SET_ELM_PLIST( margs, 1, oper );
+    SET_ELM_PLIST( margs, 2, kind1 );
+    SET_ELM_PLIST( margs, 3, kind2 );
+    SET_ELM_PLIST( margs, 4, kind3 );
+    SET_ELM_PLIST( margs, 5, kind4 );
+    SET_ELM_PLIST( margs, 6, kind5 );
+    SET_ELM_PLIST( margs, 7, kind6 );
+    method = CALL_XARGS( VConstructor6Args, margs );
+    if ( method == 0 )  {
+    	ErrorQuit( "no method returned", 0L, 0L );
+    }
+
+    /* call this method                                                    */
+    res = CALL_6ARGS( method, arg1, arg2, arg3, arg4, arg5, arg6 );
+
+    /* try until a method doesn't give up                                  */
+    if ( res == TRY_NEXT_METHOD ) {
+        i = 1;
+        while ( res == TRY_NEXT_METHOD ) {
+#ifdef COUNT_OPERS
+	    OperationNext++;
+#endif
+            margs = NEW_PLIST( T_PLIST, 8 );
+            SET_LEN_PLIST( margs, 8 );
+            SET_ELM_PLIST( margs, 1, oper );
+            SET_ELM_PLIST( margs, 2, INTOBJ_INT(i) );
+            SET_ELM_PLIST( margs, 3, kind1 );
+            SET_ELM_PLIST( margs, 4, kind2 );
+            SET_ELM_PLIST( margs, 5, kind3 );
+            SET_ELM_PLIST( margs, 6, kind4 );
+            SET_ELM_PLIST( margs, 7, kind5 );
+            SET_ELM_PLIST( margs, 8, kind6 );
+            method = CALL_XARGS( NextVConstructor6Args, margs );
+            i++;
+            res = CALL_6ARGS( method, arg1, arg2, arg3, arg4, arg5, arg6 );
+        }
+    }
+
+    /* return the result                                                   */
+    return res;
+}
+
+
+/****************************************************************************
+**
+*f  DoVerboseConstructorXArgs( <oper>, ... )
+*/
+Obj DoVerboseConstructorXArgs (
+    Obj                 self,
+    Obj                 args )
+{
+    ErrorQuit("sorry: cannot yet have X argument constructors",0L,0L);
+    return 0;
+}
+
+
+/****************************************************************************
+**
+*f  NewConstructor( <name>, <narg>, <nams>, <hdlr> )
+*/
+Obj NewConstructor (
     Obj                 name,
     Int                 narg,
     Obj                 nams,
@@ -3187,14 +3946,14 @@ Obj NewOperationKA1 (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoOperationKA10Args;
-        HDLR_FUNC(oper,1) = DoOperationKA11Args;
-        HDLR_FUNC(oper,2) = DoOperationKA12Args;
-        HDLR_FUNC(oper,3) = DoOperationKA13Args;
-        HDLR_FUNC(oper,4) = DoOperationKA14Args;
-        HDLR_FUNC(oper,5) = DoOperationKA15Args;
-        HDLR_FUNC(oper,6) = DoOperationKA16Args;
-        HDLR_FUNC(oper,7) = DoOperationKA1XArgs;
+        HDLR_FUNC(oper,0) = DoConstructor0Args;
+        HDLR_FUNC(oper,1) = DoConstructor1Args;
+        HDLR_FUNC(oper,2) = DoConstructor2Args;
+        HDLR_FUNC(oper,3) = DoConstructor3Args;
+        HDLR_FUNC(oper,4) = DoConstructor4Args;
+        HDLR_FUNC(oper,5) = DoConstructor5Args;
+        HDLR_FUNC(oper,6) = DoConstructor6Args;
+        HDLR_FUNC(oper,7) = DoConstructorXArgs;
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -3204,7 +3963,7 @@ Obj NewOperationKA1 (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
-    /* create caches and methods lists                                     */    /* create caches and methods lists                                     */
+    /* create caches and methods lists                                     */
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
@@ -3213,16 +3972,16 @@ Obj NewOperationKA1 (
 	CHANGED_BAG(oper);
     }
 
-    /* return operation                                                    */
+    /* return constructor                                                  */
     return oper;
 }
 
 
 /****************************************************************************
 **
-*f  NewOperationKA1C( <name>, <narg>, <nams>, <hdlr> )
+*f  NewConstructorC( <name>, <narg>, <nams>, <hdlr> )
 */
-Obj NewOperationKA1C (
+Obj NewConstructorC (
     Char *              name,
     Int                 narg,
     Char *              nams,
@@ -3238,14 +3997,14 @@ Obj NewOperationKA1C (
 
     /* enter the handlers                                                  */
     if ( narg == -1 ) {
-        HDLR_FUNC(oper,0) = DoOperationKA10Args;
-        HDLR_FUNC(oper,1) = DoOperationKA11Args;
-        HDLR_FUNC(oper,2) = DoOperationKA12Args;
-        HDLR_FUNC(oper,3) = DoOperationKA13Args;
-        HDLR_FUNC(oper,4) = DoOperationKA14Args;
-        HDLR_FUNC(oper,5) = DoOperationKA15Args;
-        HDLR_FUNC(oper,6) = DoOperationKA16Args;
-        HDLR_FUNC(oper,7) = DoOperationKA1XArgs;
+        HDLR_FUNC(oper,0) = DoConstructor0Args;
+        HDLR_FUNC(oper,1) = DoConstructor1Args;
+        HDLR_FUNC(oper,2) = DoConstructor2Args;
+        HDLR_FUNC(oper,3) = DoConstructor3Args;
+        HDLR_FUNC(oper,4) = DoConstructor4Args;
+        HDLR_FUNC(oper,5) = DoConstructor5Args;
+        HDLR_FUNC(oper,6) = DoConstructor6Args;
+        HDLR_FUNC(oper,7) = DoConstructorXArgs;
     }
 
     /*N 1996/06/06 mschoene this should not be done here                   */
@@ -3255,7 +4014,7 @@ Obj NewOperationKA1C (
     SETTR_FILT(oper) = False;
     TESTR_FILT(oper) = False;
     
-    /* create caches and methods lists                                     */    /* create caches and methods lists                                     */
+    /* create caches and methods lists                                     */
     for ( i = 0; i <= 7; i++ ) {
         methods = NEW_PLIST( T_PLIST, 0 );
         METHS_OPER( oper, i ) = methods;
@@ -3264,29 +4023,29 @@ Obj NewOperationKA1C (
 	CHANGED_BAG(oper);
     }
 
-    /* return operation                                                    */
+    /* return constructor                                                  */
     return oper;
 }
 
 
 /****************************************************************************
 **
-*f  NewOperationKA1Handler( <name> )
+*f  NewConstructorHandler( <name> )
 */
-Obj NewOperationKA1Func;
+Obj NewConstructorFunc;
 
-Obj NewOperationKA1Handler (
+Obj NewConstructorHandler (
     Obj                 self,
     Obj                 name )
 {
     /* check the argument                                                  */
     if ( ! IsStringConv(name) ) {
-        ErrorQuit("usage: NewOperationKindArg1( <name> )",0L,0L);
+        ErrorQuit("usage: NewConstructor( <name> )",0L,0L);
         return 0;
     }
 
-    /* make the new operation                                              */
-    return NewOperationKA1( name, -1L, (Obj)0, DoOperationKA1XArgs );
+    /* make the new constructor                                            */
+    return NewConstructor( name, -1L, (Obj)0, DoConstructorXArgs );
 }
 
 
@@ -3325,13 +4084,13 @@ Obj DoTestAttribute (
     return False;
 }
 
-#define DoSetAttribute  DoOperation2Args
-
 
 /****************************************************************************
 **
 *f  DoAttribute( <attr>, <obj> )
 */
+#define DoSetAttribute  DoOperation2Args
+
 Obj DoAttribute (
     Obj                 self,
     Obj                 obj )
@@ -4117,6 +4876,14 @@ static void * TabSilentVerboseOperations[] =
     (void*) DoOperation5Args,	(void*) DoVerboseOperation5Args,
     (void*) DoOperation6Args,	(void*) DoVerboseOperation6Args,
     (void*) DoOperationXArgs,	(void*) DoVerboseOperationXArgs,
+    (void*) DoConstructor0Args,	(void*) DoVerboseConstructor0Args,
+    (void*) DoConstructor1Args,	(void*) DoVerboseConstructor1Args,
+    (void*) DoConstructor2Args,	(void*) DoVerboseConstructor2Args,
+    (void*) DoConstructor3Args,	(void*) DoVerboseConstructor3Args,
+    (void*) DoConstructor4Args,	(void*) DoVerboseConstructor4Args,
+    (void*) DoConstructor5Args,	(void*) DoVerboseConstructor5Args,
+    (void*) DoConstructor6Args,	(void*) DoVerboseConstructor6Args,
+    (void*) DoConstructorXArgs,	(void*) DoVerboseConstructorXArgs,
     (void*) DoAttribute,	(void*) DoVerboseAttribute,
     (void*) DoMutableAttribute, (void*) DoVerboseMutableAttribute,
     (void*) DoProperty,		(void*) DoVerboseProperty,
@@ -4388,9 +5155,9 @@ void InitOpers ( void )
         "NewOperation", 1L, "name", NewOperationHandler );
     AssGVar( GVarName( "NEW_OPERATION" ), NewOperationFunc );
 
-    NewOperationKA1Func = NewFunctionC(
-        "NewOperationKA1", 1L, "name", NewOperationKA1Handler );
-    AssGVar( GVarName( "NEW_OPERATION_KIND_ARG1" ), NewOperationKA1Func );
+    NewConstructorFunc = NewFunctionC(
+        "NewConstructor", 1L, "name", NewConstructorHandler );
+    AssGVar( GVarName( "NEW_CONSTRUCTOR" ), NewConstructorFunc );
 
     NewAttributeFunc = NewFunctionC(
         "NewAttribute", 1L, "name", NewAttributeHandler );
@@ -4436,39 +5203,77 @@ void InitOpers ( void )
 
     InitCopyGVar( GVarName( "TRY_NEXT_METHOD"   ), &TRY_NEXT_METHOD );
 
-    InitFopyGVar( GVarName( "METHOD_0ARGS"      ), &Method0Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_0ARGS" ), &NextMethod0Args );
-    InitFopyGVar( GVarName( "METHOD_1ARGS"      ), &Method1Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_1ARGS" ), &NextMethod1Args );
-    InitFopyGVar( GVarName( "METHOD_2ARGS"      ), &Method2Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_2ARGS" ), &NextMethod2Args );
-    InitFopyGVar( GVarName( "METHOD_3ARGS"      ), &Method3Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_3ARGS" ), &NextMethod3Args );
-    InitFopyGVar( GVarName( "METHOD_4ARGS"      ), &Method4Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_4ARGS" ), &NextMethod4Args );
-    InitFopyGVar( GVarName( "METHOD_5ARGS"      ), &Method5Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_5ARGS" ), &NextMethod5Args );
-    InitFopyGVar( GVarName( "METHOD_6ARGS"      ), &Method6Args     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_6ARGS" ), &NextMethod6Args );
-    InitFopyGVar( GVarName( "METHOD_XARGS"      ), &MethodXArgs     );
-    InitFopyGVar( GVarName( "NEXT_METHOD_XARGS" ), &NextMethodXArgs );
+    InitFopyGVar(GVarName("METHOD_0ARGS"         ),&Method0Args            );
+    InitFopyGVar(GVarName("METHOD_1ARGS"         ),&Method1Args            );
+    InitFopyGVar(GVarName("METHOD_2ARGS"         ),&Method2Args            );
+    InitFopyGVar(GVarName("METHOD_3ARGS"         ),&Method3Args            );
+    InitFopyGVar(GVarName("METHOD_4ARGS"         ),&Method4Args            );
+    InitFopyGVar(GVarName("METHOD_5ARGS"         ),&Method5Args            );
+    InitFopyGVar(GVarName("METHOD_6ARGS"         ),&Method6Args            );
+    InitFopyGVar(GVarName("METHOD_XARGS"         ),&MethodXArgs            );
 
-    InitFopyGVar( GVarName( "VMETHOD_0ARGS"      ), &VMethod0Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_0ARGS" ), &NextVMethod0Args );
-    InitFopyGVar( GVarName( "VMETHOD_1ARGS"      ), &VMethod1Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_1ARGS" ), &NextVMethod1Args );
-    InitFopyGVar( GVarName( "VMETHOD_2ARGS"      ), &VMethod2Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_2ARGS" ), &NextVMethod2Args );
-    InitFopyGVar( GVarName( "VMETHOD_3ARGS"      ), &VMethod3Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_3ARGS" ), &NextVMethod3Args );
-    InitFopyGVar( GVarName( "VMETHOD_4ARGS"      ), &VMethod4Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_4ARGS" ), &NextVMethod4Args );
-    InitFopyGVar( GVarName( "VMETHOD_5ARGS"      ), &VMethod5Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_5ARGS" ), &NextVMethod5Args );
-    InitFopyGVar( GVarName( "VMETHOD_6ARGS"      ), &VMethod6Args     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_6ARGS" ), &NextVMethod6Args );
-    InitFopyGVar( GVarName( "VMETHOD_XARGS"      ), &VMethodXArgs     );
-    InitFopyGVar( GVarName( "NEXT_VMETHOD_XARGS" ), &NextVMethodXArgs );
+    InitFopyGVar(GVarName("NEXT_METHOD_0ARGS"     ),&NextMethod0Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_1ARGS"     ),&NextMethod1Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_2ARGS"     ),&NextMethod2Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_3ARGS"     ),&NextMethod3Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_4ARGS"     ),&NextMethod4Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_5ARGS"     ),&NextMethod5Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_6ARGS"     ),&NextMethod6Args       );
+    InitFopyGVar(GVarName("NEXT_METHOD_XARGS"     ),&NextMethodXArgs       );
+
+    InitFopyGVar(GVarName("VMETHOD_0ARGS"          ),&VMethod0Args         );
+    InitFopyGVar(GVarName("VMETHOD_1ARGS"          ),&VMethod1Args         );
+    InitFopyGVar(GVarName("VMETHOD_2ARGS"          ),&VMethod2Args         );
+    InitFopyGVar(GVarName("VMETHOD_3ARGS"          ),&VMethod3Args         );
+    InitFopyGVar(GVarName("VMETHOD_4ARGS"          ),&VMethod4Args         );
+    InitFopyGVar(GVarName("VMETHOD_5ARGS"          ),&VMethod5Args         );
+    InitFopyGVar(GVarName("VMETHOD_6ARGS"          ),&VMethod6Args         );
+    InitFopyGVar(GVarName("VMETHOD_XARGS"          ),&VMethodXArgs         );
+
+    InitFopyGVar(GVarName("NEXT_VMETHOD_0ARGS"     ),&NextVMethod0Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_1ARGS"     ),&NextVMethod1Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_2ARGS"     ),&NextVMethod2Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_3ARGS"     ),&NextVMethod3Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_4ARGS"     ),&NextVMethod4Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_5ARGS"     ),&NextVMethod5Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_6ARGS"     ),&NextVMethod6Args     );
+    InitFopyGVar(GVarName("NEXT_VMETHOD_XARGS"     ),&NextVMethodXArgs     );
+
+    InitFopyGVar(GVarName("CONSTRUCTOR_0ARGS"      ),&Constructor0Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_1ARGS"      ),&Constructor1Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_2ARGS"      ),&Constructor2Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_3ARGS"      ),&Constructor3Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_4ARGS"      ),&Constructor4Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_5ARGS"      ),&Constructor5Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_6ARGS"      ),&Constructor6Args     );
+    InitFopyGVar(GVarName("CONSTRUCTOR_XARGS"      ),&ConstructorXArgs     );
+
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_0ARGS" ),&NextConstructor0Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_1ARGS" ),&NextConstructor1Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_2ARGS" ),&NextConstructor2Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_3ARGS" ),&NextConstructor3Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_4ARGS" ),&NextConstructor4Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_5ARGS" ),&NextConstructor5Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_6ARGS" ),&NextConstructor6Args );
+    InitFopyGVar(GVarName("NEXT_CONSTRUCTOR_XARGS" ),&NextConstructorXArgs );
+
+    InitFopyGVar(GVarName("VCONSTRUCTOR_0ARGS"     ),&VConstructor0Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_1ARGS"     ),&VConstructor1Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_2ARGS"     ),&VConstructor2Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_3ARGS"     ),&VConstructor3Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_4ARGS"     ),&VConstructor4Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_5ARGS"     ),&VConstructor5Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_6ARGS"     ),&VConstructor6Args    );
+    InitFopyGVar(GVarName("VCONSTRUCTOR_XARGS"     ),&VConstructorXArgs    );
+
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_0ARGS"),&NextVConstructor0Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_1ARGS"),&NextVConstructor1Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_2ARGS"),&NextVConstructor2Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_3ARGS"),&NextVConstructor3Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_4ARGS"),&NextVConstructor4Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_5ARGS"),&NextVConstructor5Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_6ARGS"),&NextVConstructor6Args);
+    InitFopyGVar(GVarName("NEXT_VCONSTRUCTOR_XARGS"),&NextVConstructorXArgs);
 
     InitFopyGVar( GVarName( "SET_FILTER_OBJ"    ), &SET_FILTER_OBJ    );
     InitFopyGVar( GVarName( "RESET_FILTER_OBJ"  ), &RESET_FILTER_OBJ  );

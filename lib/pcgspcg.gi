@@ -50,7 +50,7 @@ function( efam, pcs )
     rws := efam!.rewritingSystem;
     pfa := DefiningPcgs(efam);
     if List( pcs, UnderlyingElement ) = GeneratorsOfRws(rws)  then
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
         SetIsFamilyPcgs( pcgs, true );
         SetRelativeOrders( pcgs, RelativeOrders(rws) );
 
@@ -60,7 +60,7 @@ function( efam, pcs )
 
     # make an unsorted pcgs
     else
-        pcgs := PcgsByPcSequenceNC( efam, IsUnsortedPcgsRep, pcs );
+        pcgs := PcgsByPcSequenceNC(efam, IsPcgs and IsUnsortedPcgsRep, pcs);
 
         # sort the elements according to the depth wrt pfa
         pag := [];
@@ -112,13 +112,13 @@ function( efam, pcs )
     # check if it is the defining sequence
     rws := efam!.rewritingSystem;
     if List( pcs, UnderlyingElement ) = GeneratorsOfRws(rws)  then
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
         SetIsFamilyPcgs( pcgs, true );
         SetRelativeOrders( pcgs, RelativeOrders(rws) );
 
     # make an ordinary pcgs
     else
-        pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+        pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
     fi;
 
     # that it
@@ -139,7 +139,7 @@ function( efam, pcs )
     local   pcgs,  rws;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
 
     # check if it is the defining sequence
     rws := efam!.rewritingSystem;

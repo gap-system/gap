@@ -465,18 +465,21 @@ PolynomialCoefficientsOfPolynomial := NewOperation(
 
 #O  UnivariateLaurentPolynomialByCoefficients( <fam>, <cofs>, <val>, <ind> )
 ##
-UnivariateLaurentPolynomialByCoefficients := NewConstructor(
+UnivariateLaurentPolynomialByCoefficients := NewOperation(
     "UnivariateLaurentPolynomialByCoefficients",
     [ IsFamily, IsList, IsInt, IsInt ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 
 #############################################################################
 ##
 #O  UnivariatePolynomialByCoefficients( <fam>, <cofs>, <ind> )
 ##
-UnivariatePolynomialByCoefficients := NewConstructor(
+UnivariatePolynomialByCoefficients := NewOperation(
     "UnivariatePolynomialByCoefficients",
     [ IsFamily, IsList, IsInt ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -255,6 +255,15 @@ Random :=
 
 #############################################################################
 ##
+#F  PseudoRandom( <C> ) . . . . . . . . pseudo random element of a collection
+##
+PseudoRandom := NewOperation(
+    "PseudoRandom",
+    [ IsListOrCollection ] );
+
+
+#############################################################################
+##
 #A  AsList( <coll> )  . . . . . . . . . . .  list of elements of a collection
 ##
 ##  'AsList' returns an immutable list <list>.

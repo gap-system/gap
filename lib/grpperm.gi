@@ -587,20 +587,20 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
         if inpar  then
             CopyOptionsDefaults( P, options );
         elif not IsBound( options.random )  then
-            options.random := 1000;
+            options.random := DefaultStabChainOptions.random;
         fi;
         
         # make the base of G compatible with options.base
         chain := DeepCopy( StabChainAttr( G ) );
         if IsBound( options.base )  then
-            ChangeStabChain( chain, options.base );
+            ChangeStabChain( chain, options.base,
+                    IsBound( options.reduced ) and options.reduced );
         fi;
 
         if LargestMovedPointPerms( Concatenation( GeneratorsOfGroup( G ),
                    gens ) ) <= 100  then
-            if not IsBound( options.base )  then
-                options.base := [  ];
-            fi;
+            options := ShallowCopy( options );
+            options.base := BaseStabChain( chain );
             StabChainStrong( chain, gens, options );
         else
             chain := ClosureRandomPermGroup( chain, gens, options );
@@ -643,14 +643,13 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
             genN,       # one generator of the group <N>
             cnj,        # conjugated of a generator of <U>
             random,  k, # values measuring randomness of <chain>
-            param,  missing,  correct,  result,  i,  list;
+            param,  missing,  correct,  result,  i;
 
     # get a set of monoid generators of <G>
     gensG := GeneratorsOfGroup( G );
 
     # make a copy of the group to be closed
     N := AsSubgroup( G, U );
-    gensN := ShallowCopy( GeneratorsOfGroup( N ) );
     SetStabChain( N, StabChainAttr( U ) );
     options := ShallowCopy( StabChainOptions( U ) );
     random := options.random;
@@ -659,22 +658,23 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
 
     # make list of conjugates to be added to N
     repeat 
-        list := [  ];
+        gensN := [  ];
         for i  in [ 1 .. 10 ]  do 
             genG := SCRRandomSubproduct( gensG );
-            cnj  := SCRRandomSubproduct( Concatenation( gensN, list ) )
-                    ^ genG;
+            cnj  := SCRRandomSubproduct( Concatenation
+                            ( GeneratorsOfGroup( N ), gensN ) ) ^ genG;
             if not cnj in N  then 
-                Add( list, cnj );
+                Add( gensN, cnj );
             fi;
         od;
-        if not IsEmpty( list )  then
-           N := ClosureGroup( N, list, options );
+        if not IsEmpty( gensN )  then
+           N := ClosureGroup( N, gensN, options );
         fi;
-    until IsEmpty( list );
+    until IsEmpty( gensN );
     
     # Guarantee that all conjugates are in the normal  closure: Loop over all
     # generators of N
+    gensN := ShallowCopy( GeneratorsOfGroup( N ) );
     for genN  in gensN  do
 
         # loop over the generators of G
@@ -1156,7 +1156,9 @@ InstallMethod( SylowSubgroupOp, true, [ IsPermGroup, IsPosRat and IsInt ], 0,
     local   S;
     
     S := SylowSubgroupPermGroup( G, p );
-    return GroupStabChain( G, StabChainAttr( S ) );
+    S := GroupStabChain( G, StabChainAttr( S ) );
+    SetIsNilpotentGroup( S, true );
+    return S;
 end );
 
 SylowSubgroupPermGroup := function( G, p )
@@ -1750,106 +1752,6 @@ end;
 
 #############################################################################
 ##
-#F  SymmetricGroup( <D> ) . . . . . . . . . . . . . . . . . . symmetric group
-##
-SymmetricGroup := function( D )
-    local   gens,  S;
-    
-    if IsInt( D )  then  D := [ 1 .. D ];
-                   else  D := Set( D );    fi;
-    if Length(D)<2 then
-      return Group(());
-    fi;
-    gens := [ MappingPermListList( D,
-        Concatenation( D{ [ 2 .. Length( D ) ] }, [ D[ 1 ] ] ) ) ];
-    if Length( D ) > 2  then
-        Add( gens, ( D[ 1 ], D[ 2 ] ) );
-    fi;
-    S := GroupByGenerators( gens );
-    SetIsSymmetricGroup( S, true );
-    SetMovedPoints( S, D );
-    SetNrMovedPoints( S, Length( D ) );
-    return S;
-end;
-
-InstallMethod( \in, true, [ IsPerm, IsSymmetricGroup ], 0,
-    function( g, S )
-    if     IsRange( MovedPoints( S ) )
-       and (    NrMovedPoints( S ) = 1
-             or MovedPoints( S )[ 2 ] - MovedPoints( S )[ 1 ] = 1 )  then
-        return SmallestMovedPointPerm( g ) >= MovedPoints( S )[ 1 ]
-           and  LargestMovedPointPerm( g ) <= MovedPoints( S )
-                                              [ NrMovedPoints( S ) ];
-    else
-        return IsSubset( MovedPoints( S ), MovedPoints( g ) );
-    fi;
-end );
-
-InstallMethod( Size, true, [ IsSymmetricGroup ], 0,
-    S -> Factorial( NrMovedPoints( S ) ) );
-
-InstallMethod( PrintObj, true, [ IsSymmetricGroup ], 0,
-    function( S )
-    Print( "Sym( ", MovedPoints( S ), " )" );
-end );
-
-#############################################################################
-##
-#M  IsSymmetricGroup( <S> ) . . . . . . . . . is it the full symmetric group?
-##
-InstallMethod( IsSymmetricGroup, "size comparison", true,
-        [ IsPermGroup ], 0,
-    function( S )
-    return Size( S ) = Factorial( NrMovedPoints( S ) );
-end );
-
-#############################################################################
-##
-#F  AlternatingGroup( <D> ) . . . . . . . . . . . . . . . . alternating group
-##
-AlternatingGroup := function( D )
-    local   gens,  S,dl;
-    
-    if IsInt( D )  then  D := [ 1 .. D ];
-                   else  D := Set( D );    fi;
-    if Length(D)<3 then
-      return Group(());
-    fi;
-    if IsInt(Length(D)/2) then
-      dl:=D{[1..Length(D)-1]};
-    else
-      dl:=D;
-    fi;
-    gens := [ MappingPermListList( dl,
-        Concatenation( dl{ [ 2 .. Length( dl ) ] }, [ dl[ 1 ] ] ) ) ];
-    if Length( D ) > 3  then
-	dl:=Length(D);
-        Add( gens, (D[dl-2],D[dl-1],D[dl]) );
-    fi;
-    S := GroupByGenerators( gens );
-    SetIsAlternatingGroup( S, true );
-    SetSize( S, Factorial( Length( D ) )/2 );
-    SetMovedPoints( S, D );
-    SetNrMovedPoints( S, Length( D ) );
-    if Length(D)>4 then
-      SetIsSimpleGroup(S,true);
-      SetIsPerfectGroup(S,true);
-    fi;
-    return S;
-end;
-
-#############################################################################
-##
-#M  IsAlternatingGroup( <S> ) . . . . . . . is it the full alternating group?
-##
-InstallMethod( IsAlternatingGroup, "size comparison", true,
-        [ IsPermGroup ], 0,
-    function( S )
-    return Size( S )*2 = Factorial( NrMovedPoints( S ) );
-end );
-
-#############################################################################
-##
 
 #M  AllBlocks . . . Representatives of all block systems
 ##
@@ -1977,6 +1879,68 @@ local  i, j, U, gens;
   od;
   return gens;
 end);
+
+#############################################################################
+##
+#M  GeneratorsSmallest(<G>) . . . . . . . . . . . . . for permutation groups
+##
+GeneratorsSmallestStab := function ( S )
+    local   gens,       # smallest generating system of <S>, result
+            gen,        # one generator in <gens>
+            orb,        # basic orbit of <S>
+            pnt,        # one point in <orb>
+            T;          # stabilizer in <S>
+
+    # handle the anchor case
+    if Length(S.generators) = 0  then
+        return [];
+    fi;
+
+    # now get the smallest generating system of the stabilizer
+    gens := GeneratorsSmallestStab( S.stabilizer );
+
+    # get the sorted orbit (the basepoint will be the first point)
+    orb := Set( S.orbit );
+    SubtractSet( orb, [S.orbit[1]] );
+
+    # handle the other points in the orbit
+    while Length(orb) <> 0  do
+
+        # take the smallest point (coset) and one representative
+        pnt := orb[1];
+        gen := S.identity;
+        while S.orbit[1] ^ gen <> pnt  do
+           gen := LeftQuotient( S.transversal[ pnt / gen ], gen );
+        od;
+
+        # the next generator is the smallest element in this coset
+        T := S.stabilizer;
+        while Length(T.generators) <> 0  do
+            pnt := Minimum( OnTuples( T.orbit, gen ) );
+            while T.orbit[1] ^ gen <> pnt  do
+                gen := LeftQuotient( T.transversal[ pnt / gen ], gen );
+            od;
+            T := T.stabilizer;
+        od;
+
+        # add this generator to the generators list and reduce orbit
+        Add( gens, gen );
+        SubtractSet( orb, Orbit( Group( gens, () ), S.orbit[1] ) );
+
+    od;
+
+    # return the smallest generating system
+    return gens;
+end;
+
+InstallMethod(GeneratorsSmallest,"perm group via minimal stab chain",true,
+  [IsPermGroup],0,
+function(G)
+local gens;
+  # call the recursive function to do the work
+  return GeneratorsSmallestStab(MinimalStabChain(G));
+end);
+
 
 #############################################################################
 ##

@@ -1363,7 +1363,7 @@ InstallMethod( MutableBasisByGenerators,
     IsElmsColls,
     [ IsRing, IsMatrix ], 0,
     function( R, vectors )
-    local B;
+    local B, newvectors;
 
     if ForAny( vectors, v -> not IsSubset( R, v ) ) then
 
@@ -1374,15 +1374,15 @@ InstallMethod( MutableBasisByGenerators,
     else
 
       # Note that 'vectors' is not empty.
-      vectors:= SemiEchelonMat( vectors );
+      newvectors:= SemiEchelonMat( vectors );
 
       B:= Objectify( NewKind( FamilyObj( vectors ),
                                   IsMutableBasis
                               and IsMutableBasisOfGaussianRowSpaceRep ),
                      rec(
-                          basisVectors:= ShallowCopy( vectors.vectors ),
-                          heads:= ShallowCopy( vectors.heads ),
-                          zero:= Zero( vectors.vectors[1] ),
+                          basisVectors:= ShallowCopy( newvectors.vectors ),
+                          heads:= ShallowCopy( newvectors.heads ),
+                          zero:= Zero( newvectors.vectors[1] ),
                           leftActingDomain := R
                           ) );
 
@@ -1468,7 +1468,7 @@ InstallOtherMethod( BasisVectors,
 ##
 InstallMethod( CloseMutableBasis,
     "method for a mut. basis of a Gaussian row space, and a row vector",
-    true,
+    IsCollsElms,
     [ IsMutableBasis and IsMutableBasisOfGaussianRowSpaceRep,
       IsRowVector ], 0,
     function( MB, v )
@@ -1521,6 +1521,54 @@ InstallMethod( CloseMutableBasis,
         Add( basisvectors, v );
         heads[j]:= Length( basisvectors );
       fi;
+
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsContainedInSpan( <MB>, <v> )  . .  for mut. basis of Gaussian row space
+##
+InstallMethod( IsContainedInSpan,
+    "method for a mut. basis of a Gaussian row space, and a row vector",
+    IsCollsElms,
+    [ IsMutableBasis and IsMutableBasisOfGaussianRowSpaceRep,
+      IsRowVector ], 0,
+    function( MB, v )
+    local V,              # corresponding free left module
+          ncols,          # dimension of the row vectors
+          zero,           # zero scalar
+          heads,          # heads info of the basis
+          basisvectors,   # list of basis vectors of 'MB'
+          j;              # loop over 'heads'
+
+    if not IsSubset( MB!.leftActingDomain, v ) then
+
+      return false;
+
+    else
+
+      # Reduce 'v' with the known basis vectors.
+      v:= ShallowCopy( v );
+      ncols:= Length( v );
+      heads:= MB!.heads;
+
+      if ncols <> Length( MB!.heads ) then
+        return false;
+      fi;
+
+      zero:= Zero( v[1] );
+      basisvectors:= MB!.basisVectors;
+
+      for j in [ 1 .. ncols ] do
+        if heads[j] <> 0 then
+          AddRowVector( v, basisvectors[ heads[j] ], - v[j] );
+        fi;
+      od;
+
+      # Check whether the sifted vector is zero.
+      return IsZero( v );
 
     fi;
     end );

@@ -350,6 +350,7 @@ OBJECTS =   system.o   scanner.o  gasman.o         \
 	    blister.o  range.o    string.o         \
             objfgelm.o objscoll.o objpcgel.o       \
             sctable.o  costab.o                    \
+	    dt.o       dteval.o                    \
 	    code.o     vars.o                      \
 	    exprs.o    stats.o    funcs.o          \
 	    intrprtr.o read.o     gap.o
@@ -642,6 +643,24 @@ costab.o:   $(SRC)/costab.c   $(SRC)/costab.h                           \
 	    $(SRC)/lists.h    $(SRC)/plist.h                            \
 	    $(SRC)/gap.h
 	$(CC) $(CFLAGS)  -o costab.o      -c $(SRC)/costab.c
+
+dt.o:       $(SRC)/dt.c       $(SRC)/dt.h                               \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
+	    $(SRC)/integer.h  $(SRC)/gvars.h                            \
+	    $(SRC)/plist.h    $(SRC)/lists.h    $(SRC)/listfunc.h       \
+	    $(SRC)/precord.h  $(SRC)/records.h                          \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o dt.o          -c $(SRC)/dt.c
+
+dteval.o:   $(SRC)/dteval.c   $(SRC)/dteval.h                           \
+	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \
+	    $(SRC)/objects.h  $(SRC)/bool.h     $(SRC)/calls.h          \
+	    $(SRC)/integer.h  $(SRC)/gvars.h    $(SRC)/plist.h          \
+	    $(SRC)/lists.h    $(SRC)/listfunc.h $(SRC)/precord.h        \
+	    $(SRC)/records.h                                            \
+	    $(SRC)/gap.h
+	$(CC) $(CFLAGS)  -o dteval.o      -c $(SRC)/dteval.c
 
 code.o:     $(SRC)/code.c     $(SRC)/code.h                             \
 	    $(SRC)/system.h   $(SRC)/scanner.h  $(SRC)/gasman.h         \

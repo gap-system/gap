@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.4  1997/01/13 16:59:34  htheisse
+#H  uses a quick for `IsSymmetricGroup'
+#H
 #H  Revision 4.3  1996/12/19 09:59:16  htheisse
 #H  added revision lines
 #H
@@ -16,6 +19,7 @@ InfoBckt := NewInfoClass( "InfoBckt" );
 
 IsoTypeParam := NewOperationArgs( "IsoTypeParam" );
 UnionBlist := NewOperationArgs( "UnionBlist" );
+IsSymmetricGroupQuick := NewOperationArgs( "IsSymmetricGroupQuick" );
 YndexSymmetricGroup := NewOperationArgs( "YndexSymmetricGroup" );
 AsPerm := NewOperationArgs( "AsPerm" );
 IsSlicedPerm := NewOperationArgs( "IsSlicedPerm" );

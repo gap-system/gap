@@ -19,7 +19,8 @@ LIBTABLE            := rec();
 LIBTABLE.LOADSTATUS := rec();
 LIBTABLE.clmelab    := [];
 LIBTABLE.clmexsp    := [];
-LIBLIST             := rec();
+
+
 LIBLIST.sporadicSimple := [
   "M11", "M12", "J1", "M22", "J2", "M23", "HS", "J3", "M24", "McL", "He",
   "Ru", "Suz", "ON", "Co3", "Co2", "Fi22", "HN", "Ly", "Th", "Fi23", "Co1",

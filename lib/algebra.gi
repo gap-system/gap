@@ -486,12 +486,6 @@ SetEntrySCTable := function( T, i, j, list )
       Error( "<j> must lie in ", range );
     fi;
 
-    # Check that the entry may be set.
-    if not IsEmpty( T[i][j][1] ) then
-      Error( "entry has already been set, ",
-             "use 'ChangeEntrySCTable' to overwrite" );
-    fi;
-
     # Check the list, and construct the table entry.
     zero:= T[ Length( T ) ];
     Fam:= FamilyObj( zero );

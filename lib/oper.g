@@ -95,22 +95,18 @@ CATS_AND_REPS := [];
 
 #############################################################################
 ##
+#V  CONSTRUCTORS
+##
+CONSTRUCTORS := [];
+
+
+#############################################################################
+##
 #V  FILTERS
 ##
 ##  is a list containing at position <i> the filter with number <i>.
 ##
 FILTERS := [];
-
-
-#############################################################################
-##
-#V  IGNORE_IMMEDIATE_METHODS
-##
-##  is usually 'false'.  Only inside a call of 'RunImmediateMethods' it is
-##  set to 'true', which causes that 'RunImmediateMethods' does not suffer
-##  from recursion.
-##
-IGNORE_IMMEDIATE_METHODS := false;
 
 
 #############################################################################
@@ -166,6 +162,18 @@ OPERATIONS := [];
 #V  SUM_FLAGS
 ##
 SUM_FLAGS := 2000;
+
+
+#############################################################################
+##
+
+#V  IGNORE_IMMEDIATE_METHODS
+##
+##  is usually 'false'.  Only inside a call of 'RunImmediateMethods' it is
+##  set to 'true', which causes that 'RunImmediateMethods' does not suffer
+##  from recursion.
+##
+IGNORE_IMMEDIATE_METHODS := false;
 
 
 #############################################################################
@@ -627,10 +635,17 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     fi;
 
     # add the number of filters required for each argument
-    for i in filters do
-        rank := rank
-             + SIZE_FLAGS( WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER( i ) ) );
-    od;
+    if opr in CONSTRUCTORS  then
+        if 0 < LEN_LIST(filters)  then
+            rank := rank - 
+              SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(filters[1])));
+        fi;
+    else
+        for i  in filters  do
+            rank := rank
+                    + SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(FLAGS_FILTER(i)));
+        od;
+    fi;
 
     # get the methods list
     narg := LEN_LIST( filters );
@@ -846,6 +861,11 @@ NewOperation := function ( name, filters )
     return oper;
 end;
 
+
+#############################################################################
+##
+#F  NewOperationKernel( <name>, <filter>, <kernel-oper> )
+##
 NewOperationKernel := function ( name, filters, oper )
     local   filt,  i;
 
@@ -861,6 +881,43 @@ end;
 
 #############################################################################
 ##
+#F  NewConstructor( <name>, <filters> )
+##
+NewConstructor := function ( name, filters )
+    local   oper,  filt,  i;
+
+    oper := NEW_CONSTRUCTOR( name );
+    filt := [];
+    for i  in filters  do
+        ADD_LIST( filt, FLAGS_FILTER(i) );
+    od;
+    ADD_LIST( CONSTRUCTORS, oper );
+    ADD_LIST( OPERATIONS,   oper );
+    ADD_LIST( OPERATIONS,   filt );
+    return oper;
+end;
+
+
+#############################################################################
+##
+#F  NewConstructorKernel( <name>, <filter>, <kernel-oper> )
+##
+NewConstructorKernel := function ( name, filters, oper )
+    local   filt,  i;
+
+    filt := [];
+    for i  in filters  do
+        ADD_LIST( filt, FLAGS_FILTER(i) );
+    od;
+    ADD_LIST( CONSTRUCTORS, oper );
+    ADD_LIST( OPERATIONS,   oper );
+    ADD_LIST( OPERATIONS,   filt );
+    return oper;
+end;
+
+
+#############################################################################
+##
 #F  NewOperationArgs( <name> )
 ##
 NewOperationArgs := function ( name )
@@ -868,13 +925,6 @@ NewOperationArgs := function ( name )
         Error( "no method found for operation '", name, "'" );
     end;
 end;
-
-
-#############################################################################
-##
-#F  NewConstructor( <name> )
-##
-NewConstructor := NewOperation;
 
 
 #############################################################################

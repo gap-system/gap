@@ -1079,7 +1079,8 @@ NrConjugacyClassesInSupergroup := NewOperation(
 #O  GroupByGenerators( <gens> ) . . . . . . . . . . . . . group by generators
 #O  GroupByGenerators( <gens>, <id> ) . . . . . . . . . . group by generators
 ##
-GroupByGenerators := NewConstructor( "GroupByGenerators", [ IsCollection ] );
+GroupByGenerators := NewOperation( "GroupByGenerators", [ IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -1196,6 +1197,7 @@ PrimePowerComponent := NewOperation(
 
 #############################################################################
 ##
+
 #E  grp.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
 

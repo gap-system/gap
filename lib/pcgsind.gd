@@ -28,18 +28,20 @@ IsInducedPcgs := NewCategory(
 
 #O  InducedPcgsByPcSequence( <pcgs>, <pcs> )
 ##
-InducedPcgsByPcSequence := NewConstructor(
+InducedPcgsByPcSequence := NewOperation(
     "InducedPcgsByPcSequence",
     [ IsPcgs, IsList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
 #O  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
-InducedPcgsByPcSequenceNC := NewConstructor(
+InducedPcgsByPcSequenceNC := NewOperation(
     "InducedPcgsByPcSequenceNC",
     [ IsPcgs, IsList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -78,6 +80,16 @@ InducedPcgsByGeneratorsWithImages := NewOperation(
     "InducedPcgsByGeneratorsWithImages",
     [ IsPcgs, IsCollection, IsCollection ] );
 
+
+#############################################################################
+##
+#O  AsInducedPcgs( <parent>, <pcgs> )
+##
+AsInducedPcgs := NewOperation(
+    "AsInducedPcgs",
+    [ IsPcgs, IsList ] );
+
+
 #############################################################################
 ##
 
@@ -115,11 +127,43 @@ HasIsCanonicalPcgs := Tester(IsCanonicalPcgs);
 #############################################################################
 ##
 
+#O  CanonicalPcElement( <pcgs>, <elm> )
+##
+CanonicalPcElement := NewOperation(
+    "CanonicalPcElement",
+    [ IsInducedPcgs, IsObject ] );
+
+
+#############################################################################
+##
+#O  ClearedPcElement( <pcgs>, <elm> )
+##
+ClearedPcElement := NewOperation(
+    "ClearedPcElement",
+    [ IsInducedPcgs, IsObject ] );
+
+
+#############################################################################
+##
 #O  SiftedPcElement( <pcgs>, <elm> )
 ##
 SiftedPcElement := NewOperation(
     "SiftedPcElement",
-    [ IsPcgs, IsObject ] );
+    [ IsInducedPcgs, IsObject ] );
+
+
+#############################################################################
+##
+#O  HomomorphicCanonicalPcgs( <pcgs>, <imgs> )
+##
+##  It  is important that  <imgs>  are the images of  in  induced  generating
+##  system  in their natural order, ie.  they must not be sorted according to
+##  their  depths in the new group,  they must be  sorted according to  their
+##  depths in the old group.
+##
+HomomorphicCanonicalPcgs := NewOperation(
+    "HomomorphicCanonicalPcgs",
+    [ IsPcgs, IsList ] );
 
 
 #############################################################################
@@ -134,7 +178,6 @@ SiftedPcElement := NewOperation(
 HomomorphicInducedPcgs := NewOperation(
     "HomomorphicInducedPcgs",
     [ IsPcgs, IsList ] );
-
 
 #############################################################################
 ##

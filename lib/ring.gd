@@ -393,8 +393,9 @@ HasIsIdealInParent := Tester( IsIdealInParent );
 ##  is a subring with parent <R> that knows that it is an ideal
 ##  in its parent and that has <gens> as ideal generators.
 ##
-IdealByGenerators := NewConstructor( "IdealByGenerators",
+IdealByGenerators := NewOperation( "IdealByGenerators",
     [ IsRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -404,8 +405,9 @@ IdealByGenerators := NewConstructor( "IdealByGenerators",
 ##  is a subring with parent <R> that knows that it is a left ideal
 ##  in its parent and that has <gens> as left ideal generators.
 ##
-LeftIdealByGenerators := NewConstructor( "LeftIdealByGenerators",
+LeftIdealByGenerators := NewOperation( "LeftIdealByGenerators",
     [ IsRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -415,8 +417,9 @@ LeftIdealByGenerators := NewConstructor( "LeftIdealByGenerators",
 ##  is a subring with parent <R> that knows that it is a right ideal
 ##  in its parent and that has <gens> as right ideal generators.
 ##
-RightIdealByGenerators := NewConstructor( "RightIdealByGenerators",
+RightIdealByGenerators := NewOperation( "RightIdealByGenerators",
     [ IsRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

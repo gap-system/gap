@@ -5,6 +5,13 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.13  1997/01/16 14:14:56  ahulpke
+#H  replaced DegreeOperation by NrMovedPoints
+#H
+#H  Revision 4.12  1997/01/15 15:23:17  fceller
+#H  added 'SymmetricGroup' to basic group library,
+#H  changed 'IsSymmetricGroup' to 'IsNaturalSymmetricGroup'
+#H
 #H  Revision 4.11  1997/01/07 13:35:07  ahulpke
 #H  Added the transitive groups data library
 #H
@@ -20,22 +27,6 @@ Revision.grpperm_gd :=
 
 IsPermGroup := IsGroup and IsPermCollection;
 IsFactorGroup := ReturnFalse;  # temporarily
-
-#############################################################################
-##
-#P  IsSymmetricGroup( <G> ) . . . . . . . . . is it the full symmetric group?
-##
-IsSymmetricGroup := NewProperty( "IsSymmetricGroup", IsPermGroup );
-SetIsSymmetricGroup := Setter( IsSymmetricGroup );
-HasIsSymmetricGroup := Tester( IsSymmetricGroup );
-
-#############################################################################
-##
-#P  IsAlternatingGroup( <G> ) . . . . . . . is it the full alternating group?
-##
-IsAlternatingGroup := NewProperty( "IsAlternatingGroup", IsPermGroup );
-SetIsAlternatingGroup := Setter( IsAlternatingGroup );
-HasIsAlternatingGroup := Tester( IsAlternatingGroup );
 
 #############################################################################
 ##
@@ -69,8 +60,6 @@ MovedPointsPerms := NewOperationArgs( "MovedPointsPerms" );
 NrMovedPointsPerms := NewOperationArgs( "NrMovedPointsPerms" );
 SylowSubgroupPermGroup := NewOperationArgs( "SylowSubgroupPermGroup" );
 OmegaPN := NewOperationArgs( "OmegaPN" );
-SymmetricGroup := NewOperationArgs( "SymmetricGroup" );
-AlternatingGroup := NewOperationArgs( "AlternatingGroup" );
 SignPermGroup := NewOperationArgs( "SignPermGroup" );
 CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
 
@@ -90,9 +79,6 @@ TransitiveIdentification := NewAttribute( "TransitiveIdentification",
                                           IsPermGroup );
 SetTransitiveIdentification := Setter( TransitiveIdentification );
 HasTransitiveIdentification := Tester( TransitiveIdentification );
-
-# just a function variable for the selection functions
-DegreeOperation := NewOperationArgs( "DegreeOperation" );
 
 #############################################################################
 ##

@@ -2,7 +2,7 @@
 ##
 #W  polyrat.gi                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id:
+#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -405,7 +405,10 @@ local d,n;
   else
     # Mignotte's single factor bound
     d:=QuoInt(n,2);
-    return Binomial(d,QuoInt(d,2))*(1+RootInt(Sum(f.coefficients,i->i^2),2));
+    return
+    Binomial(d,QuoInt(d,2))
+      *(1+RootInt(Sum(CoefficientsOfUnivariateLaurentPolynomial(f)[1],
+                      i->i^2),2));
   fi;
 end;
 

@@ -242,6 +242,17 @@ DirectSumOfAlgebras := NewOperation( "DirectSumOfAlgebras",
 
 #############################################################################
 ##
+#F  FullMatrixAlgebraCentralizer( <F>, <lst> )
+##
+##  Compute the centralizer of the list of matrices <lst> in the full
+##  matrix algebra over the ring <F>. 
+##
+FullMatrixAlgebraCentralizer := NewOperationArgs(
+    "FullMatrixAlgebraCentralizer" );
+
+
+#############################################################################
+##
 #O  AsAlgebra( <F>, <A> ) . . . . . . . . . . .  view <A> as algebra over <F>
 ##
 AsFLMLOR := NewOperation( "AsFLMLOR", [ IsRing, IsCollection ] );

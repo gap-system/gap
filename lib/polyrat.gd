@@ -2,7 +2,7 @@
 ##
 #W  polyrat.gd                 GAP Library                   Alexander Hulpke
 ##
-#H  @(#)$Id: 
+#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##

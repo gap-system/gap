@@ -83,8 +83,9 @@ Valuation := NewOperation( "Valuation",  [ IsObject ] );
 
 #O  PadicNumber( <fam>, <obj> )
 ##
-PadicNumber := NewConstructor( "PadicNumber",
+PadicNumber := NewOperation( "PadicNumber",
     [ IsPadicNumbersFamily, IsObject ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -26,6 +26,7 @@ Revision.word_gd :=
 
 #############################################################################
 ##
+
 #C  IsWord( <obj> )
 #C  IsWordWithOne( <obj> )
 #C  IsWordWithInverse( <obj> )
@@ -254,6 +255,16 @@ MappedWord := NewOperation( "MappedWord", [ IsAssocWord, IsList, IsList ] );
 
 #############################################################################
 ##
+#O  CyclicReducedWordList( <word>, <gens> )
+##
+CyclicReducedWordList := NewOperation(
+    "CyclicReducedWordList",
+    [ IsAssocWord, IsList ] );
+
+
+#############################################################################
+##
+
 #F  StoreInfoFreeMagma( <F>, <names>, <req> )
 ##
 ##  does the administrative work in the construction of free semigroups,
@@ -268,7 +279,6 @@ StoreInfoFreeMagma := NewOperationArgs( "StoreInfoFreeMagma" );
 
 #############################################################################
 ##
+
 #E  word.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-
+##

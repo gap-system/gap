@@ -116,6 +116,14 @@ end;
 
 #############################################################################
 ##
+
+#V  LIBNAME
+##
+##  is exported from the kernel
+
+
+#############################################################################
+##
 #F  ReadLib( <name> )
 ##
 ##  'ReadLib'  reads  in a  file  named  <name>,  this  name must include  an
@@ -124,9 +132,33 @@ end;
 ReadLib := function ( name )
     local   ext;
 
-    #Print( "#I  ReadLib(\"", name, "\")\n" );
     if not ReadPath( LIBNAME, name, "", "ReadLib" )  then
         Error("the library file '",name,"' must exist and be readable");
+    fi;
+    ext := ReplacedString( name, ".", "_" );
+    if not IsBound(Revision.(ext))  then
+        Print( "#W  revision entry missing in \"", name, "\"\n" );
+    fi;
+end;
+
+
+#############################################################################
+##
+#V  GRPNAME
+##
+GRPNAME := ReplacedString( LIBNAME, "lib", "grp" );
+if GRPNAME = "./"  then GRPNAME := "../grp/";  fi;
+
+
+#############################################################################
+##
+#F  ReadGrp( <name> )
+##
+ReadGrp := function ( name )
+    local   ext;
+
+    if not ReadPath( GRPNAME, name, "", "ReadGrp" )  then
+        Error("the group file '",name,"' must exist and be readable");
     fi;
     ext := ReplacedString( name, ".", "_" );
     if not IsBound(Revision.(ext))  then
@@ -140,6 +172,7 @@ end;
 #V  TBLNAME
 ##
 TBLNAME := ReplacedString( LIBNAME, "lib", "tbl" );
+if TBLNAME = "./"  then TBLNAME := "../tbl/";  fi;
 
 
 #############################################################################
@@ -165,6 +198,7 @@ end;
 #V  SMALLNAME
 ##
 SMALLNAME := ReplacedString( LIBNAME, "lib", "small" );
+if SMALLNAME = "./"  then SMALLNAME := "../small/";  fi;
 
 
 #############################################################################
@@ -189,6 +223,7 @@ end;
 #V  TRANSNAME
 ##
 TRANSNAME := ReplacedString( LIBNAME, "lib", "trans" );
+if TRANSNAME = "./"  then TRANSNAME := "../trans/";  fi;
 
 
 #############################################################################
@@ -213,7 +248,8 @@ P("Please report bugs and problems to");
 P("");
 P("                  gap4@Math.RWTH-Aachen.DE");
 P("");
-P("quoting the Version and Date below.");
+P("quoting the Version and Date below and the machine, operation system,");
+P("and compiler used.");
 P("");
 P("ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA ALPHA");
 P("");
@@ -328,6 +364,7 @@ ReadLib( "rwspcgrp.gd" );
 ReadLib( "pcgs.gd"     );
 ReadLib( "pcgspcg.gd"  );
 ReadLib( "pcgsind.gd"  );
+ReadLib( "pcgsmodu.gd" );
 ReadLib( "pcgsperm.gd" );
 ReadLib( "pcgsspec.gd" );
 
@@ -347,6 +384,7 @@ ReadLib( "oprt.gd"     );
 ReadLib( "stbc.gd"     );
 ReadLib( "clas.gd"     );
 ReadLib( "csetgrp.gd"  );
+ReadLib( "factgrp.gd"  );
 ReadLib( "grppcrep.gd" );
 
 # files dealing with nice monomorphism
@@ -362,6 +400,11 @@ ReadLib( "grpffmat.gd" );
 # files dealing with trees and hash tables
 ReadLib( "hash.gd"     );
 
+# group library
+ReadGrp( "basic.gd"    );
+
+# files needed for Deep Thought
+ReadLib( "dt.g" );
 
 #############################################################################
 ##
@@ -412,6 +455,7 @@ ReadLib( "vspcmat.gi"  );
 
 ReadLib( "algebra.gi"  );
 ReadLib( "alglie.gi"   );
+ReadLib( "algliess.gi" );
 ReadLib( "algsc.gi"    );
 ReadLib( "algmat.gi"   );
 ReadLib( "liefam.gi"   );
@@ -493,6 +537,7 @@ ReadLib( "clasperm.gi" );
 ReadLib( "csetgrp.gi"  );
 ReadLib( "csetperm.gi" );
 ReadLib( "csetpc.gi"   );
+ReadLib( "factgrp.gi"  );
 ReadLib( "grppcrep.gi" );
 
 # files dealing with nice monomorphism
@@ -514,126 +559,21 @@ ReadLib( "overload.g"  );
 
 #############################################################################
 ##
+#X  group library
+##
+ReadGrp( "basicpcg.gi" );
+ReadGrp( "basicprm.gi" );
+ReadGrp( "basicmat.gi" );
+
+
+#############################################################################
+##
 #X  Read library of groups of order up to 1000 without 512 and 768
 ##
 ReadSmall( "smallgrp.g" );
 
-# read transitive groups library
-if not ReadPath( TRANSNAME, "trans", ".grp","ReadTrans") then
-  Error(
-  "the transitive group library file trans.grp must exist and be readable" );
-fi;
-
 
 #############################################################################
 ##
-
-#F  DisplayRevision()
-##
-DisplayRevision := function()
-    local   names,  source,  library,  unknown,  name,  p,  s,  type,  
-            i,  j;
-
-    names   := RecNames( Revision );
-    source  := [];
-    library := [];
-    unknown := [];
-
-    for name  in names  do
-        p := Position( name, '_' );
-        if p = fail  then
-            Add( unknown, name );
-        else
-            s := name{[p+1..Length(name)]};
-            if s = "c" or s = "h"  then
-                Add( source, name );
-            elif s = "g" or s = "gi" or s = "gd"  then
-                Add( library, name );
-            else
-                Add( unknown, name );
-            fi;
-        fi;
-    od;
-    Sort( source );
-    Sort( library );
-    Sort( unknown );
-
-    for type  in [ source, library, unknown ]  do
-        if 0 < Length(type)  then
-            if IsIdentical(type,source)  then
-                Print( "Source Files\n" );
-            elif IsIdentical(type,library)  then
-                Print( "Library Files\n" );
-            else
-                Print( "Unknown Files\n" );
-            fi;
-            j := 1;
-            for name  in type  do
-                s := Revision.(name);
-                p := Position( s, ',' )+3;
-                i := p;
-                while s[i] <> ' '  do i := i + 1;  od;
-                s := Concatenation( FormattedString( Concatenation(
-                         name, ":" ), -15 ), FormattedString( s{[p..i]},
-                         -5 ) );
-                if j = 3  then
-                    Print( s, "\n" );
-                    j := 1;
-                else
-                    Print( s, "    " );
-                    j := j + 1;
-                fi;
-            od;
-            if j <> 1  then Print( "\n" );  fi;
-            Print( "\n" );
-        fi;
-    od;
-end;
-
-
-#############################################################################
-##
-#F  DisplayOpersCache()
-##
-DisplayOpersCache := function()
-    local   cache,  names,  pos,  i;
-
-    cache := ShallowCopy(OPERS_CACHE());
-    Append( cache, [ WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT,
-                     WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS,
-                     WITH_IMPS_FLAGS_CACHE_HIT,
-                     WITH_IMPS_FLAGS_CACHE_MISS,
-                     NEW_KIND_CACHE_HIT,
-                     NEW_KIND_CACHE_MISS
-                   ] );
-
-    names := [ "AND_FLAGS cache hits",
-               "AND_FLAGS cache miss",
-               "AND_FLAGS cache losses",
-               "Operation L1 cache hits",
-               "Operation L1 cache misses",
-               "IS_SUBSET_FLAGS calls",
-               "IS_SUBSET_FLAGS less trues",
-               "IS_SUBSET_FLAGS few trues",
-               "WITH_HIDDEN_IMPS hits",
-               "WITH_HIDDEN_IMPS misses",
-               "WITH_IMPS hits",
-               "WITH_IMPS misses",
-               "NEW_KIND hits",
-               "NEW_KIND misses" ];
-
-    pos := [ 1 .. 12 ];
-
-    for i  in [ 1 .. Length(pos) ]  do
-        Print( FormattedString( Concatenation(names[i],":"), -30 ),
-               FormattedString( String(cache[i]), 12 ), "\n" );
-    od;
-
-end;
-
-
-#############################################################################
-##
-
 #E  init.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

@@ -738,6 +738,19 @@ InstallOtherMethod( PositionSorted, true,
     [ IsHomogeneousList, IsObject, IsFunction ], 0,
     POSITION_SORTED_LIST_COMP );
 
+#############################################################################
+##
+#F  PositionSortedWC(<list>,<obj>) . .  returns 'fail' is object is not found
+##
+PositionSortedWC := function(l,obj)
+local p;
+  p:=PositionSorted(l,obj);
+  if (not IsBound(l[p])) or l[p]<>obj then
+    p:=fail;
+  fi;
+  return p;
+end;
+
 
 #############################################################################
 ##
@@ -1302,35 +1315,6 @@ end);
 ##
 #M  methods for arithmetic operations
 ##
-InstallMethod( SUM,
-    IsElmsColls, [ IsAdditiveElement, IsExtAElementList ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( SUM,
-    true,        [ IsAdditiveElement, IsList and IsEmpty ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-InstallMethod( SUM,
-    IsCollsElms, [ IsExtAElementList, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( SUM,
-    true,        [ IsList and IsEmpty, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( SUM,
-    IsElmsCollColls, [ IsAdditiveElement, IsExtAElementTable ], 0,
-    SUM_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( SUM,
-    IsCollCollsElms, [ IsExtAElementTable, IsAdditiveElement ], 0,
-    SUM_LIST_SCL_DEFAULT );
-
-InstallMethod( SUM,
-    IsIdentical, [ IsAdditiveElementList, IsAdditiveElementList ], 0,
-    SUM_LIST_LIST_DEFAULT );
-
-
 InstallMethod( ZERO,
     true, [ IsAdditiveElementWithZeroList ], 0,
     ZERO_LIST_DEFAULT );
@@ -1370,66 +1354,6 @@ InstallMethod( DIFF,
     DIFF_LIST_LIST_DEFAULT );
 
 
-InstallMethod( PROD,
-    IsElmsColls, [ IsMultiplicativeElement, IsExtLElementList ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true,        [ IsMultiplicativeElement, IsList and IsEmpty ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-InstallMethod( PROD,
-    IsCollsElms, [ IsExtRElementList, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true,        [ IsList and IsEmpty, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( PROD,
-    IsElmsCollColls, [ IsMultiplicativeElement, IsExtLElementTable ], 0,
-    PROD_SCL_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    IsCollCollsElms, [ IsExtRElementTable, IsMultiplicativeElement ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallMethod( PROD,
-    IsIdentical, [ IsRingElementList, IsRingElementList ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    IsElmsColls, [ IsRingElementList, IsRingElementTable ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true, [ IsRingElementList and IsCyclotomicsCollection,
-            IsRingElementTable and IsFFECollColl ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true, [ IsRingElementList and IsFFECollection,
-            IsRingElementTable and IsCyclotomicsCollColl ], 0,
-    PROD_LIST_LIST_DEFAULT );
-
-InstallOtherMethod( PROD,
-    IsCollsElms, [ IsRingElementTable, IsRingElementList ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( PROD,
-    IsIdentical, [ IsRingElementTable, IsRingElementTable ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true, [ IsRingElementTable and IsCyclotomicsCollColl,
-            IsRingElementTable and IsFFECollColl ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
-InstallOtherMethod( PROD,
-    true, [ IsRingElementTable and IsFFECollColl,
-            IsRingElementTable and IsCyclotomicsCollColl ], 0,
-    PROD_LIST_SCL_DEFAULT );
-
 InstallOtherMethod( ONE,
     true, [ IsMatrix ], 0,
     ONE_MATRIX );
@@ -1444,7 +1368,203 @@ InstallOtherMethod( POW,
 
 #############################################################################
 ##
-#F DifferenceBlist
+#F  <list> + <list>
+##
+InstallMethod( \+,
+    "additive element + ext-a-element list",
+    IsElmsColls,
+    [ IsAdditiveElement,
+      IsExtAElementList ],
+    0,
+    SUM_SCL_LIST_DEFAULT );
+
+
+InstallOtherMethod( \+,
+    "additive element + empty list",
+    true,
+    [ IsAdditiveElement,
+      IsList and IsEmpty ],
+    0,
+    SUM_SCL_LIST_DEFAULT );
+
+
+InstallMethod( \+,
+    "ext-a-element list + additive element",
+    IsCollsElms,
+    [ IsExtAElementList,
+      IsAdditiveElement ],
+    0,
+    SUM_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \+,
+    "empty list + additive element",
+    true,
+    [ IsList and IsEmpty,
+      IsAdditiveElement ],
+    0,
+    SUM_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \+,
+    "additive element + ext-a-element table",
+    IsElmsCollColls,
+    [ IsAdditiveElement,
+      IsExtAElementTable ],
+    0,
+    SUM_SCL_LIST_DEFAULT );
+
+
+InstallOtherMethod( \+,
+    "ext-a-element table + additive element",
+    IsCollCollsElms,
+    [ IsExtAElementTable,
+      IsAdditiveElement ],
+    0,
+    SUM_LIST_SCL_DEFAULT );
+
+InstallMethod( \+,
+    "additive element list + additive element list",
+    IsIdentical,
+    [ IsAdditiveElementList,
+      IsAdditiveElementList ],
+    0,
+    SUM_LIST_LIST_DEFAULT );
+
+
+#############################################################################
+##
+#M  <list> * <list>
+##
+InstallMethod( \*,
+    "multiplicative element * ext-l-element list",
+    IsElmsColls,
+    [ IsMultiplicativeElement,
+      IsExtLElementList ],
+    0,
+    PROD_SCL_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "multiplicative element * empty list",
+    true,
+    [ IsMultiplicativeElement,
+      IsList and IsEmpty ],
+    0,
+    PROD_SCL_LIST_DEFAULT );
+
+
+InstallMethod( \*,
+    "ext-r-element list * multiplicative element",
+    IsCollsElms,
+    [ IsExtRElementList,
+      IsMultiplicativeElement ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "empty list * multiplicative element",
+    true,
+    [ IsList and IsEmpty,
+      IsMultiplicativeElement ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "multiplicative element * ext-l-element table",
+    IsElmsCollColls,
+    [ IsMultiplicativeElement,
+      IsExtLElementTable ],
+    0,
+    PROD_SCL_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ext-r-element * multiplicative element",
+    IsCollCollsElms,
+    [ IsExtRElementTable,
+      IsMultiplicativeElement ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallMethod( \*,
+    "ring element list * ring element list",
+    IsIdentical,
+    [ IsRingElementList,
+      IsRingElementList ],
+    0,
+    PROD_LIST_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ring element list * ring element table",
+    IsElmsColls,
+    [ IsRingElementList,
+      IsRingElementTable ],
+    0,
+    PROD_LIST_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "cyclotomics list * ffe table",
+    true,
+    [ IsRingElementList and IsCyclotomicsCollection,
+      IsRingElementTable and IsFFECollColl ],
+    0,
+    PROD_LIST_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ffe list * cyclotomics table",
+    true,
+    [ IsRingElementList and IsFFECollection,
+      IsRingElementTable and IsCyclotomicsCollColl ],
+    0,
+    PROD_LIST_LIST_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ring element table * ring element list",
+    IsCollsElms,
+    [ IsRingElementTable,
+      IsRingElementList ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ring element table * ring element table",
+    IsIdentical,
+    [ IsRingElementTable,
+      IsRingElementTable ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "cyclotomics table * ffe table",
+    true,
+    [ IsRingElementTable and IsCyclotomicsCollColl,
+      IsRingElementTable and IsFFECollColl ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+InstallOtherMethod( \*,
+    "ffe table * cyclotomics table",
+    true,
+    [ IsRingElementTable and IsFFECollColl,
+      IsRingElementTable and IsCyclotomicsCollColl ],
+    0,
+    PROD_LIST_SCL_DEFAULT );
+
+
+#############################################################################
+##
+#F  DifferenceBlist
 ##
 DifferenceBlist := function(a,b)
   a:=ShallowCopy(a);
@@ -1493,7 +1613,8 @@ end;
 
 #############################################################################
 ##
-#E  list.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
+#E  list.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##
 
 

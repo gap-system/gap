@@ -141,7 +141,8 @@ function( G )
         Add( S, U );
     od;
     return S;
-end);
+end );
+
 
 #############################################################################
 ##
@@ -513,9 +514,9 @@ function( G )
         next  := first[i+1];
         for j in [1..next-start]  do
             if j <= Length(mingens)  then
-                mingens[j] := mingens[j] * spec[ first+j-1 ];
+                mingens[j] := mingens[j] * spec[ start+j-1 ];
             else
-                Add(mingens, spec[ first+j-1 ] );
+                Add(mingens, spec[ start+j-1 ] );
             fi;
         od;
         i := i + 1;
@@ -649,7 +650,6 @@ function( G )
     i := 1;
     gens := [];
     while i <= Length( first ) - 1 and weights[first[i]][1] = 1 do
-Print(i,"th layer\n");
         start := first[i];
         next  := first[i+1];
         p     := weights[start][3];

@@ -419,10 +419,133 @@ end;
 #############################################################################
 ##
 
+
+#F  DisplayRevision()
+##
+DisplayRevision := function()
+    local   names,  source,  library,  unknown,  name,  p,  s,  type,  
+            i,  j;
+
+    names   := RecNames( Revision );
+    source  := [];
+    library := [];
+    unknown := [];
+
+    for name  in names  do
+        p := Position( name, '_' );
+        if p = fail  then
+            Add( unknown, name );
+        else
+            s := name{[p+1..Length(name)]};
+            if s = "c" or s = "h"  then
+                Add( source, name );
+            elif s = "g" or s = "gi" or s = "gd"  then
+                Add( library, name );
+            else
+                Add( unknown, name );
+            fi;
+        fi;
+    od;
+    Sort( source );
+    Sort( library );
+    Sort( unknown );
+
+    for type  in [ source, library, unknown ]  do
+        if 0 < Length(type)  then
+            if IsIdentical(type,source)  then
+                Print( "Source Files\n" );
+            elif IsIdentical(type,library)  then
+                Print( "Library Files\n" );
+            else
+                Print( "Unknown Files\n" );
+            fi;
+            j := 1;
+            for name  in type  do
+                s := Revision.(name);
+                p := Position( s, ',' )+3;
+                i := p;
+                while s[i] <> ' '  do i := i + 1;  od;
+                s := Concatenation( FormattedString( Concatenation(
+                         name, ":" ), -15 ), FormattedString( s{[p..i]},
+                         -5 ) );
+                if j = 3  then
+                    Print( s, "\n" );
+                    j := 1;
+                else
+                    Print( s, "    " );
+                    j := j + 1;
+                fi;
+            od;
+            if j <> 1  then Print( "\n" );  fi;
+            Print( "\n" );
+        fi;
+    od;
+end;
+
+
+#############################################################################
+##
+#F  DisplayOpersCache()
+##
+DisplayOpersCache := function()
+    local   cache,  names,  pos,  i;
+
+    cache := ShallowCopy(OPERS_CACHE());
+    Append( cache, [
+        WITH_HIDDEN_IMPS_FLAGS_CACHE_HIT,
+        WITH_HIDDEN_IMPS_FLAGS_CACHE_MISS,
+        WITH_IMPS_FLAGS_CACHE_HIT,
+        WITH_IMPS_FLAGS_CACHE_MISS,
+        NEW_KIND_CACHE_HIT,
+        NEW_KIND_CACHE_MISS,
+        Length(AND_FLAGS_CACHE)/3,
+        Length(Set(List(Filtered(AND_FLAGS_CACHE,x->x<>0),HANDLE_OBJ))),
+    ] );
+
+    names := [
+        "AND_FLAGS cache hits",
+        "AND_FLAGS cache miss",
+        "AND_FLAGS cache losses",
+        "Operation L1 cache hits",
+        "Operation cache misses",
+        "IS_SUBSET_FLAGS calls",
+        "IS_SUBSET_FLAGS less trues",
+        "IS_SUBSET_FLAGS few trues",
+        "Operation TryNextMethod",
+        "WITH_HIDDEN_IMPS hits",
+        "WITH_HIDDEN_IMPS misses",
+        "WITH_IMPS hits",
+        "WITH_IMPS misses",
+        "NEW_KIND hits",
+        "NEW_KIND misses",
+        "AND_FLAGS cache size",
+        "AND_FLAGS flags",
+    ];
+
+    pos := [ 1, 2, 3, 16, 17, 4, 9, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15 ];
+
+    if Length(pos) <> Length(names)  then
+        Error( "<pos> and <names> have different lengths" );
+    fi;
+    if Length(pos) <> Length(cache)  then
+        Error( "<pos> and <cache> have different lengths" );
+    fi;
+
+    for i  in pos  do
+        Print( FormattedString( Concatenation(names[i],":"), -30 ),
+               FormattedString( String(cache[i]), 12 ), "\n" );
+    od;
+
+end;
+
+
+#############################################################################
+##
+
 #F  START_TEST( <id> )  . . . . . . . . . . . . . . . . . . . start test file
 ##
 START_TIME := 0;
-START_NAME  := "";
+START_NAME := "";
 
 START_TEST := function( name )
     GASMAN("collect");

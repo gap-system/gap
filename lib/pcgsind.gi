@@ -34,6 +34,7 @@ IsSubsetInducedPcgsRep := NewRepresentation(
 
 #############################################################################
 ##
+
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )
 ##
 
@@ -55,7 +56,7 @@ function( pcgs, pcs )
     efam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, filter, pcs );
+    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
 
     # we know the relative orders
     SetIsPrimeOrdersPcgs( igs, true );
@@ -92,7 +93,7 @@ function( pcgs, pcs )
     filter := filter and IsInducedPcgs;
 
     # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, filter, pcs );
+    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
 
     # store the parent
     SetParentPcgs( igs, pcgs );
@@ -170,6 +171,7 @@ end );
 
 #############################################################################
 ##
+
 #M  InducedPcgsByPcSequenceAndGenerators( <pcgs>, <ind>, <gens> )
 ##
 InstallMethod( InducedPcgsByPcSequenceAndGenerators,
@@ -380,8 +382,8 @@ function( pcgs, gens, imgs )
                             u := id;
                         else
                             e := LeadingExponentOfPcElement(pcgs,u[1])
-                                 / LeadingExponentOfPcElement(pcgs,igs[uw][1])
-                                 mod ro[uw];
+                                / LeadingExponentOfPcElement(pcgs,igs[uw][1])
+                                mod ro[uw];
                             u[1] := u[1] / igs[uw][1] ^ e;
                             u[2] := u[2] / igs[uw][2] ^ e;
                         fi;
@@ -517,12 +519,38 @@ end );
 
 #############################################################################
 ##
+#M  AsInducedPcgs( <parent>, <pcgs> )
+##
+InstallMethod( AsInducedPcgs,
+    true,
+    [ IsPcgs,
+      IsEmpty and IsList ],
+    0,
+
+function( parent, pcgs )
+    return InducedPcgsByGeneratorsNC( parent, [] );
+end );
+
+
+InstallMethod( AsInducedPcgs,
+    IsIdentical,
+    [ IsPcgs,
+      IsHomogeneousList ],
+    0,
+
+function( parent, pcgs )
+    return HomomorphicInducedPcgs( parent, pcgs );
+end );
+
+
+#############################################################################
+##
 
 #M  CanonicalPcgs( <igs> )
 ##
 InstallMethod( CanonicalPcgs,
     true,
-    [ IsInducedPcgs ],
+    [ IsInducedPcgs and IsPrimeOrdersPcgs ],
     0,
 
 function( pcgs )
@@ -560,6 +588,37 @@ end );
 
 #############################################################################
 ##
+#M  HomomorphicCanonicalPcgs( <pcgs>, <imgs> )
+##
+InstallMethod( HomomorphicCanonicalPcgs,
+    true,
+    [ IsPcgs,
+      IsList ],
+    0,
+
+function( pcgs, imgs )
+    return CanonicalPcgs( HomomorphicInducedPcgs( pcgs, imgs ) );
+end );
+
+
+#############################################################################
+##
+#M  HomomorphicCanonicalPcgs( <pcgs>, <imgs>, <obj> )
+##
+InstallOtherMethod( HomomorphicCanonicalPcgs,
+    true,
+    [ IsPcgs,
+      IsList,
+      IsObject ],
+    0,
+
+function( pcgs, imgs, obj )
+    return CanonicalPcgs( HomomorphicInducedPcgs( pcgs, imgs, obj ) );
+end );
+
+
+#############################################################################
+##
 #M  HomomorphicInducedPcgs( <pcgs>, <imgs> )
 ##
 ##  It  is important that  <imgs>  are the images of  in  induced  generating
@@ -580,7 +639,7 @@ end );
 
 InstallMethod( HomomorphicInducedPcgs,
     IsIdentical,
-    [ IsPcgs,
+    [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList ],
     0,
 
@@ -621,7 +680,7 @@ end );
 
 InstallOtherMethod( HomomorphicInducedPcgs,
     function(a,b,c) return IsIdentical(a,b); end,
-    [ IsPcgs,
+    [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList,
       IsFunction ],
     0,
@@ -664,7 +723,7 @@ end );
 
 InstallOtherMethod( HomomorphicInducedPcgs,
     function(a,b,c) return IsIdentical(a,b); end,
-    [ IsPcgs,
+    [ IsPcgs and IsPrimeOrdersPcgs,
       IsHomogeneousList,
       IsObject ],
     0,
@@ -692,6 +751,67 @@ end );
 #############################################################################
 ##
 
+#M  CanonicalPcElement( <igs>, <elm> )
+##
+InstallMethod( CanonicalPcElement,
+    IsCollsElms,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
+      IsObject ],
+    0,
+
+function( pcgs, elm )
+    local   pa,  map,  ros,  g,  d,  ll,  lr;
+
+    pa  := ParentPcgs(pcgs);
+    map := pcgs!.depthMapFromParent;
+    ros := RelativeOrders(pa);
+    for g  in pcgs  do
+        d  := DepthOfPcElement( pa, g );
+        ll := ExponentOfPcElement( pa, elm, d );
+        if ll <> 0  then
+            lr  := LeadingExponentOfPcElement( pa, g );
+            elm := elm / g^( ll / lr mod ros[d] );
+        fi;
+    od;
+    if elm = OneOfPcgs(pa)  then
+        return elm;
+    else
+        d := DepthOfPcElement( pa, elm );
+        return elm ^ (1/LeadingExponentOfPcElement(pa,elm) mod ros[d]);
+    fi;
+end );
+
+
+#############################################################################
+##
+#M  ClearedPcElement( <igs>, <elm> )
+##
+InstallMethod( ClearedPcElement,
+    IsCollsElms,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
+      IsObject ],
+    0,
+
+function( pcgs, elm )
+    local   pa,  map,  ros,  g,  d,  ll,  lr;
+
+    pa  := ParentPcgs(pcgs);
+    map := pcgs!.depthMapFromParent;
+    ros := RelativeOrders(pa);
+    for g  in pcgs  do
+        d  := DepthOfPcElement( pa, g );
+        ll := ExponentOfPcElement( pa, elm, d );
+        if ll <> 0  then
+            lr  := LeadingExponentOfPcElement( pa, g );
+            elm := elm / g^( ll / lr mod ros[d] );
+        fi;
+    od;
+    return elm;
+end );
+
+
+#############################################################################
+##
 #M  DepthOfPcElement( <igs>, <elm> )
 ##
 InstallMethod( DepthOfPcElement,
@@ -718,7 +838,7 @@ end );
 InstallMethod( ExponentsOfPcElement,
     "induced pcgs",
     IsCollsElms,
-    [ IsInducedPcgs and IsInducedPcgsRep,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
     0,
 
@@ -750,7 +870,7 @@ end );
 ##
 InstallMethod( SiftedPcElement,
     IsCollsElms,
-    [ IsInducedPcgs and IsInducedPcgsRep,
+    [ IsInducedPcgs and IsInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
     0,
 
@@ -779,7 +899,7 @@ end );
 InstallMethod( ExponentsOfPcElement,
     "subset of induced pcgs",
     IsCollsElms,
-    [ IsPcgs and IsSubsetInducedPcgsRep,
+    [ IsPcgs and IsSubsetInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
     0,
 
@@ -796,7 +916,7 @@ end );
 InstallMethod( LeadingExponentOfPcElement,
     "subset induced pcgs",
     IsCollsElms,
-    [ IsPcgs and IsSubsetInducedPcgsRep,
+    [ IsPcgs and IsSubsetInducedPcgsRep and IsPrimeOrdersPcgs,
       IsObject ],
     0,
 

@@ -2,7 +2,7 @@
 ##
 #W  csetgrp.gd                      GAP library              Alexander Hulpke
 ##
-#H  @(#)$Id:
+#H  @(#)$Id$
 ##
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
@@ -65,7 +65,9 @@ IsDoubleCoset := NewCategory("IsDoubleCoset",
 ##
 #O  DoubleCoset
 ##
-DoubleCoset:=NewConstructor("DoubleCoset",[IsGroup,IsObject,IsGroup]);
+DoubleCoset:=NewOperation("DoubleCoset",[IsGroup,IsObject,IsGroup]);
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 #############################################################################
 ##
@@ -97,7 +99,9 @@ IsRightCoset := NewCategory("IsRightCoset",
 ##
 #O  RightCoset
 ##
-RightCoset:=NewConstructor("RightCoset",[IsGroup,IsObject]);
+RightCoset:=NewOperation("RightCoset",[IsGroup,IsObject]);
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 #############################################################################
 ##

@@ -811,7 +811,52 @@ end );
 
 #############################################################################
 ##
-#F  GapInputPcGroup(<U>,<name>)  . . . . . . . . . . . .  gap input string
+#M  Centralizer( <G>, <g> ) . . . . . . . . . . . . . .  using affine methods
+##
+InstallMethod( Centralizer,
+    "pcgs computable groups",
+    IsCollsElms,
+    [ IsGroup and IsPcgsComputable and IsFinite,
+      IsMultiplicativeElementWithInverse ],
+    0,  # in solvable permutation groups, backtrack seems preferable
+        
+    function( G, g )
+    return ClassesSolvableGroup( G, G, true, 0, g );
+end );
+
+#############################################################################
+##
+#M  RepresentativeOperation( <G>, <d>, <e>, OnPoints )   using affine methods
+##
+InstallOtherMethod( RepresentativeOperationOp,
+    "element conjugacy in pcgs computable groups",
+    true,
+    [ IsGroup and IsPcgsComputable and IsFinite,
+      IsMultiplicativeElementWithInverse,
+      IsMultiplicativeElementWithInverse,
+      IsFunction ],
+    0,
+
+function( G, d, e, opr )
+    if opr <> OnPoints  then
+        TryNextMethod();
+    fi;
+    return ClassesSolvableGroup( G, G, true, 4, [ d, e ] );
+end );
+
+#############################################################################
+##
+#M  \<(G,H) . . . . . . . . . . . . . . . . .  comparison of pc groups by CGS
+##
+InstallMethod(\<,"cgs comparison",IsIdentical,[IsPcGroup,IsPcGroup],0,
+function( G, H )
+  return Reversed( CanonicalPcgsWrtFamilyPcgs(G) ) 
+       < Reversed( CanonicalPcgsWrtFamilyPcgs(H) );
+end);
+
+#############################################################################
+##
+#F  GapInputPcGroup( <U>, <name> )  . . . . . . . . . . . .  gap input string
 ##
 ##  Compute  the  pc-presentation for a finite polycyclic group as gap input.
 ##  Return  this  input  as  string.  The group  will  be  named  <name>,the

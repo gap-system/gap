@@ -36,8 +36,9 @@ HasGeneratorsOfDomain := HasAsListSorted;
 ##
 #O  DomainByGenerators(<F>,<generators>)
 ##
-DomainByGenerators := NewConstructor( "DomainByGenerators",
+DomainByGenerators := NewOperation( "DomainByGenerators",
     [ IsFamily, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

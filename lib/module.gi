@@ -277,9 +277,9 @@ SubmoduleNC := function( arg )
       SetGeneratorsOfLeftModule( S, AsList( arg[2] ) );
     else
       S:= LeftModuleByGenerators( LeftActingDomain( arg[1] ), arg[2] );
-      if Length( arg ) = 3 then
-        UseBasis( S, arg[2] );
-      fi;
+    fi;
+    if Length( arg ) = 3 and arg[3] = "basis" then
+      UseBasis( S, arg[2] );
     fi;
     SetParent( S, arg[1] );
     return S;

@@ -52,9 +52,10 @@ IsMultiplicativeElementWithInverseByRws := NewCategory(
 ##
 #O  ElementByRws( <fam>, <elm> )
 ##
-ElementByRws := NewConstructor(
+ElementByRws := NewOperation(
     "ElementByRws",
     [ IsElementsFamilyByRws, IsObject ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -71,18 +72,20 @@ UnderlyingElement := NewOperation(
 
 #O  GroupByRws( <rws> )
 ##
-GroupByRws := NewConstructor(
+GroupByRws := NewOperation(
     "GroupByRws",
     [ IsRewritingSystem ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
 #O  GroupByRwsNC( <rws> )
 ##
-GroupByRwsNC := NewConstructor(
+GroupByRwsNC := NewOperation(
     "GroupByRwsNC",
     [ IsRewritingSystem ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -10,6 +10,16 @@
 ##  intersections.
 ##
 ##  $Log$
+##  Revision 4.20  1997/01/15 15:23:24  fceller
+##  added 'SymmetricGroup' to basic group library,
+##  changed 'IsSymmetricGroup' to 'IsNaturalSymmetricGroup'
+##
+##  Revision 4.19  1997/01/15 08:44:52  htheisse
+##  fixed a bug concerning `ListStabChain's in `PBEnumerate'
+##
+##  Revision 4.18  1997/01/13 17:00:04  htheisse
+##  uses a quick check for `IsSymmetricGroup'
+##
 ##  Revision 4.17  1997/01/06 16:21:06  htheisse
 ##  turned `IsSymmetricGroup' from a representation into a property
 ##
@@ -121,7 +131,15 @@ end;
 
 #############################################################################
 ##
+#F  IsSymmetricGroupQuick( <G> )  . . . . . . . . . . . . . . . .  quick test
+##
+IsSymmetricGroupQuick := function( G )
+    return ( HasIsNaturalSymmetricGroup( G )  or  NrMovedPoints( G ) <= 100 )
+       and IsNaturalSymmetricGroup( G );
+end;
 
+#############################################################################
+##
 #F  YndexSymmetricGroup( <S>, <U> ) . . . . . . . . . . . yndex of <U> in <S>
 ##
 YndexSymmetricGroup := function( S, U )
@@ -741,7 +759,7 @@ EmptyRBase := function( G, Omega, P )
     else
         rbase.level2 := false;
     fi;
-    if IsSymmetricGroup( G )  then
+    if IsSymmetricGroupQuick( G )  then
         Info( InfoBckt, 1, "Searching in symmetric group" );
         rbase.fix   := [  ];
         rbase.level := NrMovedPoints( G );
@@ -1123,13 +1141,9 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                     # In  the representative  case,  change  the   stabilizer
                     # chains of <L> and <R>.
                     ChangeStabChain( L[ d ], [ rbase.base[ d ] ], false );
-                    if d = Length( L )  then
-                        Add( L, L[ d ].stabilizer );
-                    fi;
+                    L[ d + 1 ] := L[ d ].stabilizer;
                     ChangeStabChain( R[ d ], [ rbase.base[ d ] ], false );
-                    if d = Length( R )  then
-                        Add( R, R[ d ].stabilizer );
-                    fi;
+                    R[ d + 1 ] := R[ d ].stabilizer;
                     
                 fi;
             fi;
@@ -1360,7 +1374,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     # If necessary, convert <Pr> from a list to a function.
     if     IsList( Pr )
        and (    IsTrivial( G )
-             or IsSymmetricGroup( G ) )  then
+             or IsSymmetricGroupQuick( G ) )  then
         obj := rec( lftObj := Pr[ 1 ],
                     rgtObj := Pr[ 2 ],
                        opr := Pr[ 3 ],
@@ -1392,7 +1406,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
     
     # If  <Pr> is  function,   multiply  permutations. Otherwise, keep   them
     # factorized.
-    if IsSymmetricGroup( G )  then
+    if IsSymmetricGroupQuick( G )  then
         image.perm := true;
     else
         if IsList( Pr )  then
@@ -2164,7 +2178,7 @@ RepOpSetsPermGroup := function( arg )
                                        Difference( Omega, Psi ) ] );  fi;
                                        
     # Special treatment for the symmetric group.
-    if IsSymmetricGroup( G )  then
+    if IsSymmetricGroupQuick( G )  then
         if repr  then
             return MappingPermListList( Phi, Psi );
         else
@@ -2432,7 +2446,7 @@ AutomorphismGroupPermGroup := function( arg )
     else                          L := TrivialSubgroup( G );  fi;
     
     if not IsTrivial( G )  then
-        if IsSymmetricGroup( G )  then
+        if IsSymmetricGroupQuick( G )  then
             div := YndexSymmetricGroup( G, E );
         elif IsSubset( G, E )  then
             div := SmallestPrimeDivisor( Index( G, E ) );

@@ -15,6 +15,7 @@ Revision.word_gi :=
 
 #############################################################################
 ##
+
 #M  \=( <w1>, <w2> )
 ##
 ##  The equality operator '=' evaluates to 'true' if the two words <w1> and
@@ -43,8 +44,8 @@ InstallMethod( \=, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
 InstallMethod( \<, IsIdentical, [ IsAssocWord, IsAssocWord ], 0,
     function( x, y )
     local m, n;
-    m:= Length( x );
-    n:= Length( y );
+    m:= LengthWord( x );
+    n:= LengthWord( y );
     if m < n then
       return true;
     elif n < m then
@@ -401,6 +402,7 @@ InstallMethod( Inverse, true, [ IsAssocWordWithInverse ], 0,
 
 #############################################################################
 ##
+
 #M  LengthWord( <w> )
 ##
 InstallMethod( LengthWord, true, [ IsAssocWord ], 0,
@@ -457,7 +459,7 @@ InstallMethod( ExponentSums, true, [ IsAssocWord ], 0,
 
 #############################################################################
 ##
-#O  ExponentSumWord( <w>, <gen> )
+#M  ExponentSumWord( <w>, <gen> )
 ##
 InstallMethod( ExponentSumWord,
     "method for associative word and generator",
@@ -487,7 +489,7 @@ InstallMethod( ExponentSumWord,
 
 #############################################################################
 ##
-#O  Subword( <w>, <from>, <to> )
+#M  Subword( <w>, <from>, <to> )
 ##
 InstallMethod( Subword,
     "method for associative word and two positions",
@@ -543,7 +545,7 @@ InstallMethod( Subword,
 
 #############################################################################
 ##
-#O  PositionWord( <w>, <sub>, <from> )
+#M  PositionWord( <w>, <sub>, <from> )
 ##
 InstallMethod( PositionWord,
     "method for two associative words and a positive integer",
@@ -557,7 +559,7 @@ InstallMethod( PositionWord,
 
 #############################################################################
 ##
-#O  SubstitutedWord( <w>, <from>, <to>, <by> )
+#M  SubstitutedWord( <w>, <from>, <to>, <by> )
 ##
 InstallMethod( SubstitutedWord,
     "method for assoc. word, two positive integers, and assoc. word",
@@ -571,7 +573,7 @@ InstallMethod( SubstitutedWord,
 
 #############################################################################
 ##
-#O  EliminatedWord( <word>, <gen>, <by> )
+#M  EliminatedWord( <word>, <gen>, <by> )
 ##
 InstallMethod( EliminatedWord,
     "method for three associative words",
@@ -622,7 +624,85 @@ InstallMethod( MappedWord, IsElmsCollsX,
 
 #############################################################################
 ##
+#M  CyclicReducedWordList( <word>, <gens> )
+##
+InstallMethod( CyclicReducedWordList,
+    "for word and generators list",
+    IsElmsColls,
+    [ IsAssocWord,
+      IsHomogeneousList ],
+    0,
+
+function( w, gens )
+    local   posg,  invg,  i,  s,  e,  str,  j;
+
+    gens := List( gens, ExtRepOfObj );
+    posg := [];
+    invg := [];
+    for i  in [ 1 .. Length(gens) ]  do
+        if 2 <> Length(gens[i]) or not gens[i][2] in [-1,1]  then
+            Error( gens[i], " is not a generator" );
+        fi;
+        if gens[i][2] = 1  then
+            posg[gens[i][1]] := i;
+            invg[gens[i][1]] := -i;
+        else
+            posg[gens[i][1]] := -i;
+            invg[gens[i][1]] := i;
+        fi;
+    od;
+    w := ExtRepOfObj(w);
+    s := 1;
+    e := Length(w)-1;
+    while s < e and w[s] = w[e] and w[s+1] = -w[e+1]  do
+        if not IsBound(posg[w[s]])  then
+            return fail;
+        fi;
+        s := s + 2;
+        e := e + 2;
+    od;
+    if s < e and w[s] = w[e]  then
+        w[s+1] := w[s+1] + w[e+1];
+        e := e - 2;
+    fi;
+    str := [];
+    for i  in [ s, s+2 .. e ]  do
+        if not IsBound(posg[w[i]])  then
+            return fail;
+        fi;
+        if 0 < w[i+1]  then
+            for j  in [ 1 .. w[i+1] ]  do
+                Add( str, posg[w[i]] );
+            od;
+        else
+            for j  in [ 1 .. -w[i+1] ]  do
+                Add( str, invg[w[i]] );
+            od;
+        fi;
+    od;
+    return str;
+
+end );
+
+
+InstallMethod( CyclicReducedWordList,
+    "for word and empty generators list",
+    true,
+    [ IsAssocWord,
+      IsEmpty and IsList ],
+    0,
+
+function( word, gens )
+    if One(word) <> word  then
+        return fail;
+    else
+        return [];
+    fi;
+end );
+
+
+#############################################################################
+##
+
 #E  word.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
-
-
-
+##

@@ -2468,7 +2468,7 @@ end;
 
 #############################################################################
 ##
-#F FlatBlockMat( <blockmat> ) . . . . . . . . . . . .convert block mat to mat
+#F  FlatBlockMat( <blockmat> ) . . . . . . . . . . . convert block mat to mat
 ##
 FlatBlockMat := function( block )
     local d, l, mat, i, j, h, k, a, b;
@@ -2492,7 +2492,7 @@ end;
 
 #############################################################################
 ##
-#F BlownUpMat( <mat>, <K> ) . . . . . . . . . . . .blow up by field extension
+#F  BlownUpMat( <mat>, <K> ) . . . . . . . . . . . blow up by field extension
 ##
 BlownUpMat := function( mat, K )
     local base, vecs, d, new, l, i, j, k, bl, e, x;

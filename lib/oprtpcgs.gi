@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.12  1997/01/15 15:59:55  htheisse
+#H  gave stabilizers an induced pcgs
+#H
 #H  Revision 4.11  1997/01/09 17:57:37  htheisse
 #H  used enumerator to make representative canonical
 #H
@@ -127,7 +130,9 @@ InstallOtherMethod( OrbitStabilizerOp,
 
     # <S> is a reversed IGS.
     stab := SubgroupNC( G, S );
-    SetPcgs( stab, InducedPcgsByPcSequenceNC( U, Reversed( S ) ) );
+    SetHomePcgs( stab, U );
+    SetInducedPcgsWrtHomePcgs( stab,
+            InducedPcgsByPcSequenceNC( U, Reversed( S ) ) );
     return Immutable( rec( orbit := O, stabilizer := stab ) );
 end );
 
@@ -205,7 +210,9 @@ SetCanonicalRepresentativeOfExternalOrbitByPcgs := function( xset )
     od;
 
     S := SubgroupNC( group, stab );
-    SetPcgs( S, InducedPcgsByPcSequenceNC( pcgs, Reversed( stab ) ) );
+    SetHomePcgs( S, pcgs );
+    SetInducedPcgsWrtHomePcgs( S,
+            InducedPcgsByPcSequenceNC( pcgs, Reversed( stab ) ) );
     if not HasEnumerator( xset )  then
         SetEnumerator( xset, orbit );
     fi;

@@ -16,9 +16,12 @@ Revision.ctprimar_tbl :=
 
 #############################################################################
 ##
-##  Read the functions.
+#V  LIBLIST
 ##
-ReadTbl( "ctadmin" );
+##  We define 'LIBLIST' here in order to avoid an explicit 'Read' statement
+##  in one of the files.
+##
+LIBLIST := rec();
 
 
 #############################################################################
@@ -3430,7 +3433,6 @@ Unbind( LIBLIST.names );
 Unbind( LIBLIST.pos );
 
 SortParallel( LIBLIST.allnames, LIBLIST.position );
-MakeImmutable( LIBLIST );
 
 LIBLIST.projections := [
   ["(2xA6).2_3","A6.2_3",ProjectionMap(

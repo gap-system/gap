@@ -12,6 +12,9 @@
 ##  tests.)
 ##
 
+gap> START_TEST("$Id$");
+
+
 #############################################################################
 ##
 ##  1. Construct Gaussian and non-Gaussian Lie matrix spaces
@@ -443,4 +446,14 @@ SemiEchelonBasis( VectorSpace( Rationals,
 [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) 
  ] ), [ LieObject( [ [ 1, 2 ], [ 3, 4 ] ] ), 
   LieObject( [ [ 0, 0 ], [ 0, 1 ] ] ) ] )
+
+
+gap> STOP_TEST( "vspcmali.tst", 30000000 );
+
+#############################################################################
+##
+#E  vspcmali.tst  . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##
+
+
 

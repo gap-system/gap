@@ -336,7 +336,8 @@ SemiEchelonBasis := NewOperationArgs( "SemiEchelonBasis" );
 ##  (And there is a default method for 'BasisByGenerators',
 ##  using 'BasisOfDomain' and the construction of a relative basis.)
 ##
-NewBasis:= NewConstructor( "NewBasis", [ IsFreeLeftModule, IsCollection ] );
+NewBasis:= NewOperation( "NewBasis", [ IsFreeLeftModule, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -357,10 +358,11 @@ NewBasis:= NewConstructor( "NewBasis", [ IsFreeLeftModule, IsCollection ] );
 ##
 ##  'RelativeBasisNC' does the same, except that it omits the check.
 ##
-RelativeBasis := NewConstructor( "RelativeBasis",
+RelativeBasis := NewOperation( "RelativeBasis",
     [ IsBasis, IsHomogeneousList ] );
-RelativeBasisNC := NewConstructor( "RelativeBasisNC",
+RelativeBasisNC := NewOperation( "RelativeBasisNC",
     [ IsBasis, IsHomogeneousList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

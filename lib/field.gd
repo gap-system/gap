@@ -318,8 +318,9 @@ Trace := NewOperation( "Trace", [ IsField, IsScalar ] );
 ##  'FieldOverItselfByGenerators( <gens> )'.
 ##
 DivisionRingByGenerators :=
-    NewConstructor( "DivisionRingByGenerators",
+    NewOperation( "DivisionRingByGenerators",
         [ IsDivisionRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 FieldByGenerators := DivisionRingByGenerators;
 
@@ -334,8 +335,9 @@ FieldByGenerators := DivisionRingByGenerators;
 ##  domain for such a field.
 ##
 FieldOverItselfByGenerators :=
-    NewConstructor( "FieldOverItselfByGenerators",
+    NewOperation( "FieldOverItselfByGenerators",
         [ IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -417,17 +417,14 @@ end;
 LeftIdealNC := function( arg )
     local I;
     if IsEmpty( arg[2] ) then
-
       return IdealNC( arg[1], arg[2] );
-
-    else
-
-      I:= LeftIdealByGenerators( arg[1], arg[2] );
-      if Length( arg ) = 3 and arg[3] = "basis" then
-        UseBasis( I, arg[2] );
-      fi;
-
     fi;
+
+    I:= LeftIdealByGenerators( arg[1], arg[2] );
+    if Length( arg ) = 3 and arg[3] = "basis" then
+      UseBasis( I, arg[2] );
+    fi;
+
     SetParent( I, arg[1] );
     return I;
 end;
@@ -474,17 +471,14 @@ end;
 RightIdealNC := function( arg )
     local I;
     if IsEmpty( arg[2] ) then
-
       return IdealNC( arg[1], arg[2] );
-
-    else
-
-      I:= RightIdealByGenerators( arg[1], arg[2] );
-      if Length( arg ) = 3 and arg[3] = "basis" then
-        UseBasis( I, arg[2] );
-      fi;
-
     fi;
+
+    I:= RightIdealByGenerators( arg[1], arg[2] );
+    if Length( arg ) = 3 and arg[3] = "basis" then
+      UseBasis( I, arg[2] );
+    fi;
+
     SetParent( I, arg[1] );
     return I;
 end;

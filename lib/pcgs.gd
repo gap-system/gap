@@ -46,18 +46,20 @@ IsPcgsDefaultRep := NewRepresentation(
 
 #O  PcgsByPcSequence( <fam>, <pcs> )
 ##
-PcgsByPcSequence := NewConstructor(
+PcgsByPcSequence := NewOperation(
     "PcgsByPcSequence",
     [ IsFamily, IsList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
 #O  PcgsByPcSequenceNC( <fam>, <pcs> )
 ##
-PcgsByPcSequenceNC := NewConstructor(
+PcgsByPcSequenceNC := NewOperation(
     "PcgsByPcSequenceNC",
     [ IsFamily, IsList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -132,6 +134,13 @@ IsFiniteOrdersPcgs := NewProperty(
 
 SetIsFiniteOrdersPcgs := Setter(IsFiniteOrdersPcgs);
 HasIsFiniteOrdersPcgs := Tester(IsFiniteOrdersPcgs);
+
+
+#############################################################################
+##
+#M  IsFiniteOrdersPcgs( <pcgs> )
+##
+InstallTrueMethod( IsFiniteOrdersPcgs, IsPrimeOrdersPcgs );
 
 
 #############################################################################

@@ -413,11 +413,47 @@ PthPowerImage := NewOperation( "PthPowerImage", [ IsBasis, IsRingElement ] );
 ##
 #O  FindSl2( <L>, <x> )
 ##
-##  If the Lie algebra <L> contains a subalgebra that is isomorphic to $sl_2$
-##  'FindSl2' returns this algebra, otherwise the result is 'fail'.
+##  This function tries to find a subalgebra $S$ of the Lie algebra <L> with
+##  $S$ isomorphic to $sl_2$ and such that the nilpotent element <x> of <L>
+##  is contained in $S$.
+##  If such an algebra exists then it is returned,
+##  otherwise 'fail' is returned.
+##  
+FindSl2 := NewOperationArgs( "FindSl2" );
+
+
+##############################################################################
 ##
-FindSl2 := NewOperation( "FindSl2",
-    [ IsAlgebra and IsLieAlgebra, IsRingElement ] );
+#A  RootSystem( <L> )
+##
+##  'RootSystem' calculates the root system of the semisimple Lie algebra
+##  <L>.
+##  The output is a record with the following components.
+##
+##  'roots' \: \\
+##       the roots as elements of <L>
+##  'rootvecs' \: \\
+##       the roots as vectors
+##  'fundroots' \: \\
+##       set of fundamental roots
+##  'cartanmat' \: \\
+##       the Cartan matrix of the root system
+##
+##  The roots are sorted according to increasing height.
+##
+RootSystem := NewAttribute( "RootSystem", IsAlgebra and IsLieAlgebra );
+
+
+##############################################################################
+##
+#F  SimpleLieAlgebra( <type>, <n> )
+##
+##  This function constructs the simple Lie algebra of type <type> and
+##  of rank <n>.
+##
+##  <type> must be one of "A", "B", "C", "D", "E", "F", "G".
+##
+SimpleLieAlgebra := NewOperationArgs( "SimpleLieAlgebra" );
 
 
 #############################################################################

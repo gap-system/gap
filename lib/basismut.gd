@@ -37,6 +37,8 @@
 ##  - that is constructed by 'MutableBasisByGenerators',
 ##  - that can be asked for the number of basis vectors by
 ##    'NrBasisVectors',
+##  - that can be asked for membership of an element by
+##    'IsContainedInSpan',
 ##  - that can be first argument of 'Coefficients' and 'BasisVectors',
 ##  - that can be modified by 'CloseMutableBasis' 
 ##    (whose methods have to guarantee consistency),
@@ -86,8 +88,9 @@ IsMutableBasis := NewCategory( "IsMutableBasis", IsMutable );
 ##  mutable basis!
 #T provide 'AddBasisVector' to achieve this?
 ##
-MutableBasisByGenerators := NewConstructor( "MutableBasisByGenerators",
+MutableBasisByGenerators := NewOperation( "MutableBasisByGenerators",
     [ IsRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -138,6 +141,17 @@ ImmutableBasis := NewOperation( "ImmutableBasis", [ IsMutableBasis ] );
 ##  basis vectors of <MB> if <v> enlarges the dimension.
 ##
 CloseMutableBasis := NewOperation( "CloseMutableBasis",
+    [ IsMutableBasis, IsVector ] );
+
+
+#############################################################################
+##
+#O  IsContainedInSpan( <MB>, <v> )
+##
+##  is 'true' if the element <v> is contained in the module described by the
+##  mutable basis <MB>, and 'false' otherwise.
+##
+IsContainedInSpan := NewOperation( "IsContainedInSpan",
     [ IsMutableBasis, IsVector ] );
 
 

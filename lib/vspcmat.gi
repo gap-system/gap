@@ -1292,6 +1292,7 @@ InstallMethod( CloseMutableBasis,
 
       # Change the representation to a mutable basis by immutable basis.
 #T better mechanism!
+#T change to m.b. via nice m.b. !!
       basisvectors:= Concatenation( MB!.basisVectors, [ v ] );
 
       if IsLieObjectCollection( MB ) then
@@ -1340,6 +1341,59 @@ InstallMethod( CloseMutableBasis,
           return;
         fi;
       od;
+
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  IsContainedInSpan( <MB>, <v> )  . for mut. basis of Gaussian matrix space
+##
+InstallMethod( IsContainedInSpan,
+    "method for a mut. basis of a Gaussian matrix space, and a matrix",
+    IsCollsElms,
+    [ IsMutableBasis and IsMutableBasisOfGaussianMatrixSpaceRep,
+      IsMatrix ], 0,
+    function( MB, v )
+    local V,              # corresponding free left module
+          m,              # number of rows
+          n,              # number of columns
+          heads,          # heads info of the basis
+          zero,           # zero coefficient
+          basisvectors,   # list of basis vectors of 'MB'
+          i, j, k,        # loop variables
+          scalar,         # one coefficient
+          bv;             # one basis vector
+
+    if not ForAll( v, row -> IsSubset( MB!.leftActingDomain, row ) ) then
+
+      return false;
+
+    else
+
+      v:= List( v, ShallowCopy );
+      m:= Length( v    );
+      n:= Length( v[1] );
+      heads:= MB!.heads;
+      zero:= Zero( v[1][1] );
+      basisvectors:= MB!.basisVectors;
+
+      # Reduce 'v' with the known basis vectors.
+      for i in [ 1 .. m ] do
+        for j in [ 1 .. n ] do
+          if heads[i][j] <> 0 then
+            scalar:= - v[i][j];
+            bv:= basisvectors[ heads[i][j] ];
+            for k in [ 1 .. m ] do
+              AddRowVector( v[k], bv[k], scalar );
+            od;
+          fi;
+        od;
+      od;
+
+      # Check whether the sifted vector is zero.
+      return IsZero( v );
 
     fi;
     end );

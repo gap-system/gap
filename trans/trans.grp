@@ -577,6 +577,16 @@ local dom,p,s,t,a,cand,i,grp,deg,aiso,piso;
   fi;
 end);
 
+STGSelFunc := function(a,b)
+  if IsFunction(b) then
+    return b(a);
+  elif IsList(b) then
+   return a in b;
+ else
+   return a=b;
+ fi;
+end;
+
 #############################################################################
 ##
 #F  SelectTransitiveGroups(arglis,alle)  . . . . . selection function
@@ -588,7 +598,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
     Error("wrong arguments");
   fi;
   deg:=[1..TRANSDEGREES];
-  p:=Position(arglis,DegreeOperation);
+  p:=Position(arglis,NrMovedPoints);
   if p<>fail then
     p:=arglis[p+1];
     if IsInt(p) then
@@ -604,7 +614,6 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   else
     f:=true; #warnung weil kein Degree angegeben ?
   fi;
-  p:=[];
   gut:=[];
   for i in deg do
     if not IsBound(TRANSLENGTHS[i]) then
@@ -628,12 +637,21 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
     od;
   fi;
 
+  # find the properties we have not stored
+  p:=[];
+  for i in [1..l] do
+    if not arglis[2*i-1] in
+      [NrMovedPoints,Size,Transitivity,SignPermGroup,IsPrimitive] then
+      Add(p,arglis{[2*i-1,2*i]}); 
+    fi;
+  od;
+
   for i in [1..l] do
     a:=arglis[2*i-1];
     b:=arglis[2*i];
 
     # get all cheap properties first
-    if a=DegreeOperation then
+    if a=NrMovedPoints then
       f:=false;
       if IsInt(b) then
         b:=[b];
@@ -657,26 +675,14 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
       else
         nr:=4;
       fi;
-      if IsInt(b) then
-        b:=[b];
-      fi;
       for i in deg do
-        if IsList(b) then
-          gut[i]:=Filtered(gut[i],j->TRANSProperties(i,j)[nr] in b);
-        else
-          gut[i]:=Filtered(gut[i],j->b(TRANSProperties(i,j)[nr]));
-        fi;
+	gut[i]:=Filtered(gut[i],j->STGSelFunc(TRANSProperties(i,j)[nr],b));
       od;
     elif a=IsPrimitive then
       b:=NumBol(b);
       for i in deg do
         gut[i]:=Filtered(gut[i],j->TRANSProperties(i,j)[2]=b);
       od;
-    else
-      if not IsList(b) then
-        b:=[b];
-      fi;
-      Add(p,[a,b]); 
     fi;
   od;
 
@@ -690,7 +696,7 @@ local i,j,a,b,l,p,deg,gut,g,grp,nr,f;
   for i in deg do
     for nr in gut[i] do
       g:=TransitiveGroup(i,nr);
-      if ForAll(p,i->i[1](g) in i[2]) then
+      if ForAll(p,i->STGSelFunc(i[1](g),i[2])) then
         if alle then
           Add(grp,g);
         else

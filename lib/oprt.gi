@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.28  1997/01/13 17:03:15  htheisse
+#H  made use of `IsPcgsComputable'
+#H
 #H  Revision 4.27  1997/01/10 11:54:08  htheisse
 #H  allowed `Orbits' on empty list
 #H
@@ -160,11 +163,8 @@ AttributeOperation := function( propop, propat, usekind, args )
     fi;
     
     if not IsBound( gens )  then
-        if HasPcgs( G )  and  Pcgs( G ) <> fail  then
-            gens := Pcgs( G );
-        else
-            gens := GeneratorsOfGroup( G );
-        fi;
+        if IsPcgsComputable( G )  then  gens := Pcgs( G );
+                                  else  gens := GeneratorsOfGroup( G );  fi;
         oprs := gens;
     fi;
     
@@ -238,11 +238,8 @@ OrbitishOperation := function( orbish, famrel, usekind, args )
     fi;
     
     if not IsBound( gens )  then
-        if HasPcgs( G )  and  Pcgs( G ) <> fail  then
-            gens := Pcgs( G );
-        else
-            gens := GeneratorsOfGroup( G );
-        fi;
+        if IsPcgsComputable( G )  then  gens := Pcgs( G );
+                                  else  gens := GeneratorsOfGroup( G );  fi;
         oprs := gens;
     fi;
     if     usekind

@@ -230,8 +230,9 @@ ClosureLeftModule := NewOperation( "ClosureLeftModule",
 #O  LeftModuleByGenerators( <R>, <gens> ) .  left <R>-module gener. by <gens>
 #O  LeftModuleByGenerators( <R>, <gens>, <zero> )
 ##
-LeftModuleByGenerators := NewConstructor( "LeftModuleByGenerators",
+LeftModuleByGenerators := NewOperation( "LeftModuleByGenerators",
     [ IsRing, IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 FreeLeftModuleByGenerators := LeftModuleByGenerators;
 #T really?

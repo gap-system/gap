@@ -85,9 +85,10 @@ HasUnderlyingMagma := Tester( UnderlyingMagma );
 ##
 #O  FreeMagmaRingElement( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
 ##
-FreeMagmaRingElement := NewConstructor( "FreeMagmaRingElement",
+FreeMagmaRingElement := NewOperation( "FreeMagmaRingElement",
     [ IsFreeMagmaRingObjFamily, IsRingElement,
       IsHomogeneousList, IsHomogeneousList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -9,6 +9,9 @@
 ##  (The test file 'vspcrow.tst' should contain the same tests.)
 ##
 
+gap> START_TEST("$Id$");
+
+
 #############################################################################
 ##
 ##  1. Construct Gaussian and non-Gaussian matrix spaces
@@ -386,4 +389,14 @@ gap> ImmutableBasis( mb );
 SemiEchelonBasis( VectorSpace( Rationals, 
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] ), 
 [ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 0, 0 ], [ 0, 1 ] ] ] )
+
+
+gap> STOP_TEST( "vspcmat.tst", 25000000 );
+
+#############################################################################
+##
+#E  vspcmat.tst . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+##
+
+
 

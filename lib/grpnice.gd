@@ -328,6 +328,7 @@ PropertyMethodByNiceMonomorphismCollElm :=
 PropertyMethodByNiceMonomorphismElmColl :=
     AttributeMethodByNiceMonomorphismElmColl;
 
+
 #############################################################################
 ##
 

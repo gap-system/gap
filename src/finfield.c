@@ -1594,6 +1594,28 @@ Obj             PowFFEInt (
 
 /****************************************************************************
 **
+*F  PowFFEFFE( <opL>, <opR> ) . . . . . . conjugate of a finite field element
+*/
+Obj PowFFEFFE (
+    Obj                 opL,
+    Obj                 opR )
+{
+    /* get the field for the result                                        */
+    while ( CHAR_FF( FLD_FFE(opL) ) != CHAR_FF( FLD_FFE(opR) ) ) {
+	opR = ErrorReturnObj(
+          "FFE operations: characteristic of conjugating element must be %d",
+          (Int)CHAR_FF(FLD_FFE(opL)), 0L,
+	  "you can return a conjugating element" );
+	return POW( opL, opR );
+    }
+
+    /* compute and return the result                                       */
+    return opL;
+}
+
+
+/****************************************************************************
+**
 *F  FunIsFFE( <hdCall> )  . . . . . . . . . .  test for finite field elements
 **
 **  'FunIsFFE' implements the internal function 'IsFFE( <obj> )'.
@@ -1908,6 +1930,7 @@ void            InitFinfield ( void )
     QuoFuncs[  T_FFE ][ T_INT ] = QuoFFEInt;
     QuoFuncs[  T_INT ][ T_FFE ] = QuoIntFFE;
     PowFuncs[  T_FFE ][ T_INT ] = PowFFEInt;
+    PowFuncs[  T_FFE ][ T_FFE ] = PowFFEFFE;
 
     /* create the fields and integer conversion bags                       */
     CharFF = NEW_PLIST( T_PLIST, 0 );

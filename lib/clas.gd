@@ -5,6 +5,13 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.9  1997/01/16 10:46:18  fceller
+#H  renamed 'NewConstructor' to 'NewOperation',
+#H  renamed 'NewOperationFlags1' to 'NewConstructor'
+#H
+#H  Revision 4.8  1997/01/11 13:02:40  htheisse
+#H  fixed an error in `CentralStepRatClPGroup'; cleaned up the code
+#H
 #H  Revision 4.7  1997/01/10 08:45:31  htheisse
 #H  added conjugacy class functions for perm groups and pcgs groups
 #H
@@ -62,7 +69,9 @@ IsConjugacyClassPermGroupRep := NewRepresentation
 ##
 #C  ConjugacyClass( <G>, <g> )  . . . . . . . . . conjugacy class constructor
 ##
-ConjugacyClass := NewConstructor( "ConjugacyClass", [ IsGroup, IsObject ] );
+ConjugacyClass := NewOperation( "ConjugacyClass", [ IsGroup, IsObject ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 #############################################################################
 ##
@@ -80,7 +89,8 @@ IsRationalClassPermGroupRep := NewRepresentation
 ##
 #C  RationalClass( <G>, <g> ) . . . . . . . . . .  rational class constructor
 ##
-RationalClass := NewConstructor( "RationalClass", [ IsGroup, IsObject ] );
+RationalClass := NewOperation( "RationalClass", [ IsGroup, IsObject ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 DecomposedRationalClass := NewOperationArgs( "DecomposedRationalClass" );
 PermResidueClass := NewOperationArgs( "PermResidueClass" );
@@ -91,7 +101,7 @@ RationalClassesInEANS := NewOperationArgs( "RationalClassesInEANS" );
 
 SubspaceVectorSpaceGroup := NewOperationArgs( "SubspaceVectorSpaceGroup" );
 CentralStepConjugatingElement := NewOperationArgs( "CentralStepConjugatingElement" );
-SubspaceHcommaC := NewOperationArgs( "SubspaceHcommaC" );
+KernelHcommaC := NewOperationArgs( "KernelHcommaC" );
 OrderModK := NewOperationArgs( "OrderModK" );
 CentralStepRatClPGroup := NewOperationArgs( "CentralStepRatClPGroup" );
 CentralStepClEANS := NewOperationArgs( "CentralStepClEANS" );

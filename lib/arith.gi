@@ -133,14 +133,17 @@ InstallMethod( LieBracket,
 #M  '<int>*<elm>'
 ##
 InstallOtherMethod( \*,
+    "positive integer * additive element",
     true, [ IsInt and IsPosRat, IsAdditiveElement ], 0,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
+    "zero integer * additive element with zero",
     true, [ IsInt and IsZeroCyc, IsAdditiveElementWithZero ], 0,
     PROD_INT_OBJ );
 
 InstallOtherMethod( \*,
+    "negative integer * additive element with inverse",
     true, [ IsInt and IsNegRat, IsAdditiveElementWithInverse ], 0,
     PROD_INT_OBJ );
 

@@ -37,7 +37,7 @@ function( efam, pcs )
     fi;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
 
     # that it
     return pcgs;
@@ -57,7 +57,7 @@ function( efam, pcs )
     local   pcgs,  rws;
 
     # construct a pcgs
-    pcgs := PcgsByPcSequenceNC( efam, IsPcgsDefaultRep, pcs );
+    pcgs := PcgsByPcSequenceNC( efam, IsPcgs and IsPcgsDefaultRep, pcs );
 
     # that it
     return pcgs;
@@ -94,6 +94,43 @@ InstallMethod( PcgsByPcSequence,
 function( efam, pcs )
     #T  96/09/26 fceller  do some checks
     return PcgsByPcSequenceNC( efam, pcs );
+end );
+
+
+#############################################################################
+##
+
+#M  Pcgs( <grp> ) . . . . . . . . . . . . . . . . . . . . . . pcgs for groups
+##
+InstallMethod( Pcgs,
+    "generic method using CompositionSeries",
+    true,
+    [ IsGroup and IsFinite ],
+    0,
+
+function( grp )
+    local   series,  pcgs,  orders,  i,  elm,  o;
+
+    series := CompositionSeries(grp);
+    pcgs   := [];
+    orders := [];
+    for i  in [ 1 .. Length(series)-1 ]  do
+        o := Index(series[i],series[i+1]);
+        if not IsPrime(o)  then
+            Error( "finite group <grp> is not polycyclic" );
+        fi;
+        Add( orders, o );
+        repeat
+            elm := Random(series[i]);
+        until not elm in series[i+1];
+        Add( pcgs, elm );
+    od;
+    pcgs := PcgsByPcSequenceNC( FamilyObj(One(grp)), pcgs );
+    SetPcSeries(       pcgs, series   );
+    SetOneOfPcgs(      pcgs, One(grp) );
+    SetRelativeOrders( pcgs, orders   );
+
+    return pcgs;
 end );
 
 

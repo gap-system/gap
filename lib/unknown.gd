@@ -1,4 +1,4 @@
-#############################################################################
+##############################################################################
 ##
 #W  unknown.gd                 GAP Library                   Martin Schoenert
 ##
@@ -33,7 +33,8 @@ LargestUnknown := 0;
 ##
 ##  In the second form 'Unknown' returns the unknown 'Unknown(<n>)'.
 ##
-Unknown := NewConstructor( "Unknown", [ IsPosRat and IsInt ] );
+Unknown := NewOperation( "Unknown", [ IsPosRat and IsInt ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

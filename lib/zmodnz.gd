@@ -78,8 +78,9 @@ IsZmodnZObjNonprimeCollection := CategoryCollections(
 ##
 #O  ZmodnZObj( <Fam>, <i> )
 ##
-ZmodnZObj := NewConstructor( "ZmodnZObj",
+ZmodnZObj := NewOperation( "ZmodnZObj",
     [ IsZmodnZObjNonprimeFamily, IsInt ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

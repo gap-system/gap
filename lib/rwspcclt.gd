@@ -213,9 +213,10 @@ SingleCollector := NewOperation(
 ##
 #O  SingleCollectorByGenerators( <fam>, <gens>, <orders> )
 ##
-SingleCollectorByGenerators := NewConstructor(
+SingleCollectorByGenerators := NewOperation(
     "SingleCollectorByGenerators",
     [ IsFamily, IsList, IsList ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

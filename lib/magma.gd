@@ -95,7 +95,8 @@ MagmaWithInverses := NewOperationArgs( "MagmaWithInverses" );
 #O  MagmaByGenerators(<generators>)
 #O  MagmaByGenerators(<F>,<generators>)
 ##
-MagmaByGenerators := NewConstructor( "MagmaByGenerators", [ IsCollection ] );
+MagmaByGenerators := NewOperation( "MagmaByGenerators", [ IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -103,8 +104,9 @@ MagmaByGenerators := NewConstructor( "MagmaByGenerators", [ IsCollection ] );
 #O  MagmaWithOneByGenerators(<generators>)
 #O  MagmaWithOneByGenerators(<F>,<generators>)
 ##
-MagmaWithOneByGenerators := NewConstructor(
+MagmaWithOneByGenerators := NewOperation(
     "MagmaWithOneByGenerators", [ IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -112,8 +114,9 @@ MagmaWithOneByGenerators := NewConstructor(
 #O  MagmaWithInversesByGenerators(<generators>)
 #O  MagmaWithInversesByGenerators(<F>,<generators>)
 ##
-MagmaWithInversesByGenerators := NewConstructor(
+MagmaWithInversesByGenerators := NewOperation(
     "MagmaWithInversesByGenerators", [ IsCollection ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################

@@ -114,11 +114,16 @@ function( efam, filter, pcs )
     pcgs := rec();
     pcgs.pcSequence := Immutable(pcs);
 
+    # if the <efam> has a family pcgs check if the are equal
+    if HasDefiningPcgs(efam) and DefiningPcgs(efam) = pcgs!.pcSequence  then
+        filter := filter and IsFamilyPcgs;
+    fi;
+
     # get the pcgs family
     fam := CollectionsFamily(efam);
 
     # convert record into component object
-    Objectify( NewKind( fam, IsPcgs and filter ), pcgs );
+    Objectify( NewKind( fam, filter ), pcgs );
 
     # set a one
     if HasOne(efam)  then
@@ -138,9 +143,6 @@ end );
 
 #M  IsPrimeOrdersPcgs( <pcgs> )
 ##
-
-
-#############################################################################
 InstallMethod( IsPrimeOrdersPcgs,
     true,
     [ IsPcgs ],
@@ -156,9 +158,6 @@ end );
 ##
 #M  IsFiniteOrdersPcgs( <pcgs> )
 ##
-
-
-#############################################################################
 InstallMethod( IsFiniteOrdersPcgs,
     true,
     [ IsPcgs ],
@@ -167,10 +166,6 @@ InstallMethod( IsFiniteOrdersPcgs,
 function( pcgs )
     return ForAll( RelativeOrders(pcgs), x -> x <> 0 and x <> infinity );
 end );
-
-
-#############################################################################
-InstallTrueMethod( IsFiniteOrdersPcgs, IsPrimeOrdersPcgs );
 
 
 #############################################################################
@@ -536,18 +531,8 @@ end );
 
 #M  GroupByPcgs( <pcgs> )
 ##
-InstallMethod( GroupByPcgs,
-    true,
-    [ IsPcgs ],
-    0,
-
-function( pcgs )
+GROUP_BY_PCGS_FINITE_ORDERS := function( pcgs )
     local   f,  e,  m,  i,  kind,  s,  id,  tmp,  j;
-
-    # the following only works finite orders
-    if not IsFiniteOrdersPcgs(pcgs)  then
-        TryNextMethod();
-    fi;
 
     # construct a new free group
     f := FreeGroup( Length(pcgs) );
@@ -594,6 +579,22 @@ function( pcgs )
     # and return the new group
     return GroupByRwsNC(s);
 
+end;
+
+
+InstallMethod( GroupByPcgs,
+    true,
+    [ IsPcgs ],
+    0,
+
+function( pcgs )
+
+    # the following only works for finite orders
+    if not IsFiniteOrdersPcgs(pcgs)  then
+        TryNextMethod();
+    fi;
+    return GROUP_BY_PCGS_FINITE_ORDERS(pcgs);
+
 end );
 
 
@@ -607,7 +608,11 @@ InstallMethod( GroupOfPcgs,
     0,
 
 function( pcgs )
-    return PcSeries(pcgs)[1];
+    local   tmp;
+
+    tmp := Group( List( pcgs, x -> x ), OneOfPcgs(pcgs) );
+    SetIsFinite( tmp, IsFiniteOrdersPcgs(pcgs) );
+    return tmp;
 end );
 
 

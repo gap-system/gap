@@ -19,8 +19,10 @@ InfoLattice := NewInfoClass("InfoLattice");
 IsConjugacyClassSubgroupsRep := NewRepresentation(
   "IsConjugacyClassSubgroupsRep",IsExternalOrbitByStabilizerRep,[]);
 
-ConjugacyClassSubgroups := NewConstructor("ConjugacyClassSubgroups",
+ConjugacyClassSubgroups := NewOperation("ConjugacyClassSubgroups",
                                           [IsGroup,IsGroup]);
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 ConjugacyClassesSubgroups := NewAttribute("ConjugacyClassesSubgroups",IsGroup);
 

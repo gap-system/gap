@@ -10,6 +10,9 @@
 ##  with verification.
 ##
 #H  $Log$
+#H  Revision 4.8  1997/01/14 15:28:16  htheisse
+#H  fixed a bug in `SCRRestoredRecord'
+#H
 #H  Revision 4.7  1996/12/19 09:59:22  htheisse
 #H  added revision lines
 #H
@@ -1205,15 +1208,15 @@ end;
 SCRRestoredRecord := function( G )
     local   sgs,  T,  S,  l,  lab,  pnt;
     
-    sgs := [  ];
     S := G;
+    sgs := [ S.identity ];
     while IsBound( S.stabilizer )  do
         UniteSet( sgs, S.treegen );
         UniteSet( sgs, S.treegeninv );
         S := S.stabilizer;
     od;
-    T := EmptyStabChain( Concatenation( [ G.identity ], sgs ), G.identity );
-    sgs := [ 1 .. Length( sgs ) ];
+    T := EmptyStabChain( sgs, G.identity );
+    sgs := [ 2 .. Length( sgs ) ];
     S := T;
     while IsBound( G.stabilizer )  do
         InsertTrivialStabilizer( S, G.orbit[ 1 ] );
@@ -1221,7 +1224,7 @@ SCRRestoredRecord := function( G )
         S.generators  := G.generators;
         S.orbit       := G.orbit;
         S.transversal := G.transversal;
-        for l  in [ 2 .. Length( S.labels ) ]  do
+        for l  in sgs  do
             lab := S.labels[ l ];
             for pnt  in S.orbit  do
                 if S.transversal[ pnt ] = lab  then

@@ -7,6 +7,9 @@
 #Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 
+gap> START_TEST("$Id$");
+
+
 # small prime field
 
 gap> Fam7:= ElementsFamily( FamilyObj( Integers mod 7 ) );;
@@ -272,6 +275,9 @@ gap> l;
   ZmodnZObj( 8, 9 ) ]
 gap> ForAll( [ 1 .. len ], i -> i = Position( enum, enum[i], 0 ) );
 true
+
+
+gap> STOP_TEST( "zmodnz.tst", 1160000 );
 
 
 #############################################################################

@@ -11,6 +11,12 @@
 ##  representation of the groups.
 ##
 ##  $Log$
+##  Revision 4.3  1997/01/13 17:04:04  htheisse
+##  added class/centralizer functions for soluble groups
+##
+##  Revision 4.2  1997/01/11 13:02:42  htheisse
+##  fixed an error in `CentralStepRatClPGroup'; cleaned up the code
+##
 ##  Revision 4.1  1997/01/10 08:45:35  htheisse
 ##  added conjugacy class functions for perm groups and pcgs groups
 ##
@@ -182,9 +188,14 @@ end;
 
 #############################################################################
 ##
-#F  SubspaceHcommaC( <N>, <gens>, <one>, <map> )  . . . . . . . . . . . local
+#F  KernelHcommaC( <N>, <gens>, <one>, <map> )  . . . . . . . . . . . . local
 ##
-SubspaceHcommaC := function( N, gens, one, map )
+##  Given a homomorphism C -> N, c |-> [h,c],  this function determines (a) a
+##  vector space decomposition N =  [h,C] + K with  projection onto K and (b)
+##  the  ``kernel'' S <  C which plays   the role of  C_G(h)  in lemma 3.1 of
+##  [Mecky, Neub\"user, Bull. Aust. Math. Soc. 40].
+##
+KernelHcommaC := function( N, gens, one, map )
     local   i,  tmp,  v,  g;
     
     N!.subspace := SubspaceVectorSpaceGroup( N, RelativeOrders( N )[ 1 ],
@@ -222,13 +233,15 @@ end;
 #F  OrderModK( <h>, <mK> )  . . . . . . . . . .  order modulo normal subgroup
 ##
 OrderModK := function( h, mK )
-    local   ord,  hh,  exp;
+    local   ord,  d,  o;
     
-    ord := 1;  hh := h;
-    exp := ExponentsOfPcElement( mK, hh );
-    while exp <> Zero( exp ) do
-        ord := ord + 1;  hh := hh * h;
-        exp := ExponentsOfPcElement( mK, hh );
+    ord := 1;
+    d := DepthOfPcElement( mK, h );
+    while d <= Length( mK )  do
+        o := RelativeOrders( mK )[ d ];
+        h := h ^ o;
+        ord := ord * o;
+        d := DepthOfPcElement( mK, h );
     od;
     return ord;
 end;
@@ -256,7 +269,7 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
            gens,  oprs, # generators and operators for new Galois group
            type,        # the type of the Galois group as subgroup of Z_2^r^*
            i,  l,  c,   # loop variables
-           xset,  opr,  orb;
+           cyc,  xset,  opr,  orb;
     
     p   := RelativeOrders( N )[ 1 ];
     h   := Representative( cl );
@@ -310,15 +323,15 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
             N := cl!.kernel;
         else
             N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod L;
-            N!.CmodL := InducedPcgsByPcSequenceNC( Pcgs( G ), Concatenation
-                ( SubspaceHcommaC( N, N!.CmodK, One( G ),
-                                   gen -> Comm( h, gen ) ), L ) );
+            N!.CmodL := InducedPcgsByPcSequenceAndGenerators( Pcgs( G ),
+                        KernelHcommaC( N, N!.CmodK, One( G ),
+                                gen -> Comm( h, gen ) ), L );
         fi;
         if IsBound( cl!.candidates )  then
-            cl!.candidates := List( cl!.candidates,
-                                    c -> LeftQuotient( h, c ) );
-            candexps := List( cl!.candidates, c -> ShallowCopy
-                ( ExponentsOfPcElement( N, c ) * N!.subspace.projection ) );
+            cl!.candidates := List( cl!.candidates, c ->
+                LeftQuotient( h, c ) );
+            candexps := List( cl!.candidates, c ->
+                ExponentsOfPcElement( N, c ) ) * N!.subspace.projection;
         fi;
     
         # If <p> = 2, use a projection operation.
@@ -363,7 +376,7 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
             
             # Project the factors in <N> onto a complement to <Q>.
             if IsBound( cl!.candidates )  then
-                v := DeepCopy( candexps );
+                v := List( candexps, ShallowCopy );
                 reps := v * K!.subspace.projection;
                 exps := [  ];
                 conj := [  ];
@@ -425,37 +438,36 @@ CentralStepRatClPGroup := function( G, L, N, mK, mL, cl )
         # <preimage>.
         else
             K := EnumeratorByPcgs( N, N!.subspace.baseComplement );
+            preimage := PermResidueClass( PrimitiveRootMod( oh ), oh ) ^
+                        IndexInParent( GaloisGroup( cl ) );
             if IsTrivial( GaloisGroup( cl ) )  then
                 operator := One( G );
-                i := Phi( ohN );
             else
                 operator := GaloisGroup( cl )!.operators[ 1 ];
-                i := LogMod( 1 ^ GeneratorsOfGroup( GaloisGroup( cl ) )[ 1 ],
-                             PrimitiveRootMod( ohN ), ohN );
             fi;
-            preimage := PermResidueClass( PrimitiveRootMod( oh ), oh ) ^ i;
             v := PcElementByExponents( N, N{ N!.subspace.baseComplement },
                  ExponentsOfPcElement( N, LeftQuotient( h ^ ( 1 ^ preimage ),
                          h ^ operator ) ) * N!.subspace.projection );
+            cyc := GroupByRwsNC( SingleCollector( FreeGroup( 1 ),
+                           [ Order( preimage ) ] ) );
             opr := function( k, l )
-                return ( v * k ) ^ ( 1 / 1 ^ ( preimage ^ ( 1 ^ l ) ) mod p );
+                return ( v * k ) ^ ( 1 / 1 ^ ( preimage ^
+                       ExponentsOfPcElement( Pcgs( cyc ), l )[ 1 ] ) mod p );
             end;
-            xset := GroupByGenerators( [ PermList( Concatenation
-                            ( [ 2 .. Order( preimage ) ], [ 1 ] ) ) ] );
-            Pcgs( xset );
-            xset := ExternalSet( xset, K, opr );
+            xset := ExternalSet( cyc, K, opr );
             
             reps := [  ];
             exps := [  ];
             if IsBound( cl!.candidates )  then
                 conj := [  ];
-                for c  in cl!.candidates  do
-                    orb := ExternalOrbit( xset, c );
+                for c  in candexps  do
+                    orb := ExternalOrbit( xset, PcElementByExponents( N,
+                                   N{ N!.subspace.baseComplement }, c ) );
                     Add( reps, CanonicalRepresentativeOfExternalSet( orb ) );
-                    Add( exps, preimage ^
-                         ( 1 ^ OperatorOfExternalSet( orb ) ) );
-                    Add( conj, operator ^
-                         ( 1 ^ OperatorOfExternalSet( orb ) ) );
+                    i := ExponentsOfPcElement( Pcgs( cyc ),
+                                 OperatorOfExternalSet( orb ) )[ 1 ];
+                    Add( exps, preimage ^ i );
+                    Add( conj, operator ^ i );
                 od;
             else
                 for orb  in ExternalOrbits( xset )  do
@@ -526,9 +538,9 @@ CentralStepClEANS := function( G, K, L, N, cl )
     field := GF( RelativeOrders( N )[ 1 ] );
     h := Representative( cl );
     N!.CmodK := Pcgs( StabilizerOfExternalSet( cl ) ) mod L;
-    N!.CmodL := InducedPcgsByPcSequenceNC( Pcgs( G ), Concatenation
-                    ( SubspaceHcommaC( N, N!.CmodK, One( G ),
-                      gen -> Comm( h, gen ) ), L ) );
+    N!.CmodL := InducedPcgsByPcSequenceAndGenerators( Pcgs( G ),
+                KernelHcommaC( N, N!.CmodK, One( G ),
+                        gen -> Comm( h, gen ) ), L );
     C := SubgroupNC( G, N!.CmodL );
     SetPcgs( C, N!.CmodL );
     
@@ -553,6 +565,7 @@ CentralStepClEANS := function( G, K, L, N, cl )
         else
             c := ConjugacyClass( G, cl!.candidates );
             SetStabilizerOfExternalSet( c, C );
+            c!.operator := One( G );
             Add( classes, c );
         fi;
         
@@ -611,18 +624,14 @@ GeneralStepClEANS := function( G, K, L, N, cl )
            Rep,        # representative function to use for <orb>
            n,  k,      # cf. Mecky--Neub\"user paper
            cls,rep,pos,# set of classes with canonical representatives
-           c,  i;      # loop variables
+           c,  ca,  i; # loop variables
            
     C := StabilizerOfExternalSet( cl );
-    if IsCentral( C, K )  then
-        return CentralStepClEANS( G, K, L, N, cl );
-    fi;
     field := GF( RelativeOrders( N )[ 1 ] );
     h := Representative( cl );
     
     # Determine the subspace $[h,N]$ and calculate the centralizer of <h>.
-    cNh := SubspaceHcommaC( N, N, OneOfPcgs( N ), gen ->
-           ExponentsOfPcElement( N, Comm( h, gen ) ) * One( field ) );
+    cNh := KernelHcommaC( N, N, OneOfPcgs( N ), gen -> Comm( h, gen ) );
     r := Length( N!.subspace.baseComplement );
     ran := [ 1 .. r ];
     
@@ -660,8 +669,9 @@ GeneralStepClEANS := function( G, K, L, N, cl )
             Rep := Representative;
         fi;
         cls := [  ];
-        for c  in cl!.candidates  do
-            n := ExponentsOfPcElement( N, LeftQuotient( h, c ) );
+        for ca  in cl!.candidates  do
+            n := ExponentsOfPcElement( N, LeftQuotient( h, ca ) ) *
+                 One( field );
             k := n * N!.subspace.projection;
             orb := ExternalOrbit( xset, Concatenation( k, [ One( field ) ] ) );
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
@@ -675,15 +685,22 @@ GeneralStepClEANS := function( G, K, L, N, cl )
                 SetStabilizerOfExternalSet( c,
                         StabilizerOfExternalSet( classes[ pos ] ) );
             fi;
+            n := ShallowCopy( -n );
             n{ N!.subspace.baseComplement } :=
-              k - n{ N!.subspace.baseComplement };
+              k + n{ N!.subspace.baseComplement };
             c!.operator := PcElementByExponents( N, N{ N!.subspace.needed },
                                    n * N!.subspace.inverse );
             if IsIdentical( Rep, CanonicalRepresentativeOfExternalSet )  then
-                c!.operator := c!.operator * OperatorOfExternalSet( c );
+                c!.operator := c!.operator * OperatorOfExternalSet( orb );
+                k := PcElementByExponents( N, N{ N!.subspace.needed },
+                     ExponentsOfPcElement( N, LeftQuotient
+                             ( Representative( c ), ca ^ c!.operator ) ) *
+                             N!.subspace.inverse );
+                c!.operator := c!.operator / k;
+                SetStabilizerOfExternalSet( c, ConjugateSubgroup
+                        ( StabilizerOfExternalSet( c ),
+                          OperatorOfExternalSet( orb ) * k ) );
             fi;
-            SetStabilizerOfExternalSet( c, ConjugateSubgroup
-                    ( StabilizerOfExternalSet( c ), c!.operator ) );
             Add( classes, c );
         od;
         
@@ -713,7 +730,7 @@ ClassesSolvableGroup := function( arg )
            eas, step,   # elementary abelian series in <G> through <U>
            K,    L,     # members of <eas>
            Kp,mK,Lp,mL, # induced and modulo pcgs's
-           N,           # elementary abelian factor, for affine action
+           N,   cent,   # elementary abelian factor, for affine action
            cls, newcls, # classes in range/source of homomorphism
            tra, exp,    # transversal and exponents for candidates
            team,        # team of candidates with same image under homomorphism
@@ -743,7 +760,7 @@ ClassesSolvableGroup := function( arg )
     if IsTrivial( G )  then
         if mode = 4  then  # test conjugacy of two elements
             return One( U );
-        elif mode mod 2 <> 0  then  # rational classes
+        elif mode mod 2 = 1  then  # rational classes
             cl := RationalClass( G, One( G ) );
             SetStabilizerOfExternalSet( cl, G );
             SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
@@ -771,30 +788,33 @@ ClassesSolvableGroup := function( arg )
     if IsPrimePowerInt( Size( G ) )  then
         p := FactorsInt( Size( G ) )[ 1 ];
         eas := PCentralSeries( G, p );
-    elif mode mod 2 <> 0  then  # rational classes
+        cent := true;
+    elif mode mod 2 = 1  then  # rational classes
         Error( "<G> must be a p-group" );
     else
         eas := ElementaryAbelianSeries( G );
         # eas := ElementaryAbelianSeries( [ G, U, TrivialSubgroup( G ) ] );
+        cent := false;
     fi;
 
     # Initialize the algorithm for the trivial group.
     L  := U;
     Lp := InducedPcgsByGenerators( Pcgs( G ), GeneratorsOfGroup( L ) );
+    if    mode mod 2 = 1  # rational classes
+       or candidates <> false  then
+        mL := ModuloParentPcgs( Lp );
+    fi;
     if     candidates <> false  # centralizer calculation
        and not IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
         cl := ConjugacyClass( U, candidates );
         SetStabilizerOfExternalSet( cl, H );
-    elif mode mod 2 <> 0  then  # rational classes
+        tra := One( U );
+    elif mode mod 2 = 1  then  # rational classes
         cl := RationalClass( U, One( U ) );
         SetStabilizerOfExternalSet( cl, H );
         SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
         GaloisGroup( cl )!.type := 3;
         GaloisGroup( cl )!.operators := [  ];
-        if    mode mod 4 = 3  # construct the power tree
-           or candidates <> false  then
-            mL := Pcgs( G ) mod Lp;
-        fi;
         if mode mod 4 = 3  then  # construct the power tree
             cl!.power           := RationalClass( U, One( U ) );
             cl!.power!.operator := One( U );
@@ -821,12 +841,10 @@ ClassesSolvableGroup := function( arg )
         L  := eas[ step ];
         Lp := InducedPcgsByGenerators( Pcgs( G ), GeneratorsOfGroup( L ) );
         N  := Kp mod Lp;
-        if mode mod 2 <> 0  then  # rational classes
-            if    mode mod 4 = 3   # construct the power tree
-               or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
-                mK := mL;
-                mL := Pcgs( G ) mod Lp;
-            fi;
+        if    mode mod 2 = 1   # rational classes; construct the power tree
+           or IsIdentical( FamilyObj( G ), FamilyObj( candidates ) ) then
+            mK := mL;
+            mL := ModuloParentPcgs( Lp );
         fi;
         
         # Identification of classes.
@@ -852,11 +870,9 @@ ClassesSolvableGroup := function( arg )
                     if Representative( cls[ q ] ) /
                        Representative( cl ) in K  then
                         c := candidates[ q ] ^ tra[ q ];
-                        if mode mod 2 <> 0  then  # rational classes
+                        if mode mod 2 = 1  then  # rational classes
                             c := c ^ exp[ q ];
                         fi;
-                        c := PcElementByExponents( mL,
-                                     ExponentsOfPcElement( mL, c ) );
                         i := PositionSorted( cl!.candidates, c );
                         if    i > Length( cl!.candidates )
                            or cl!.candidates[ i ] <> c  then
@@ -870,9 +886,13 @@ ClassesSolvableGroup := function( arg )
                     q := Position( blist, false, q );
                 od;
                 
-                if mode mod 2 <> 0  then  # rational classes
+                if mode mod 2 = 1  then  # rational classes
                     newcls := CentralStepRatClPGroup
                               ( U, Lp, N, mK, mL, cl );
+                elif cent  or  ForAll( GeneratorsOfGroup( K ), k -> ForAll
+                        ( GeneratorsOfGroup( StabilizerOfExternalSet( cl ) ),
+                          c -> Comm( k, c ) in L ) )  then
+                    newcls := CentralStepClEANS( U, K, Lp, N, cl );
                 else
                     newcls := GeneralStepClEANS( U, K, Lp, N, cl );
                 fi;
@@ -882,7 +902,7 @@ ClassesSolvableGroup := function( arg )
                     for q  in team[ i ]  do
                         cls[ q ] := newcls[ i ];
                         tra[ q ] := tra[ q ] * newcls[ i ]!.operator;
-                        if mode mod 2 <> 0  then  # rational classes
+                        if mode mod 2 = 1  then  # rational classes
                             ord := OrderModK( Representative( cls[q] ), mL );
                             if ord <> 1  then
                                 exp[ q ] := exp[ q ] /
@@ -897,14 +917,23 @@ ClassesSolvableGroup := function( arg )
 
         elif candidates <> false  then  # centralizer calculation
             cls[ 1 ]!.candidates := Representative( cls[ 1 ] );
-            cls := GeneralStepClEANS( U, K, Lp, N, cls[ 1 ] );
+            if cent  or  ForAll( GeneratorsOfGroup( K ), k -> ForAll
+                ( GeneratorsOfGroup( StabilizerOfExternalSet( cls[ 1 ] ) ),
+                  c -> Comm( k, c ) in L ) )  then
+                cls := CentralStepClEANS( U, K, Lp, N, cls[ 1 ] );
+            else
+                cls := GeneralStepClEANS( U, K, Lp, N, cls[ 1 ] );
+            fi;
+            tra := tra * cls[ 1 ]!.operator;
             
-        elif mode mod 2 <> 0  then  # rational classes
+        elif mode mod 2 = 1  then  # rational classes
             newcls := [  ];
             for cl  in cls  do
                 if IsBound( cl!.power )  then  # construct the power tree
                     SetRepresentative( cl, PcElementByExponents( mK,
                         ExponentsOfPcElement( mK, Representative( cl ) ) ) );
+                    SetRepresentative( cl!.power, PcElementByExponents( mK,
+                        ExponentsOfPcElement( mK, Representative(cl!.power))));
                 fi;
                 new := CentralStepRatClPGroup( U, Lp, N, mK, mL, cl );
                 ord := OrderModK( Representative( new[ 1 ] ), mL );
@@ -918,9 +947,6 @@ ClassesSolvableGroup := function( arg )
                           [ ( Representative( new[ 1 ] ) ^ g1 ) ^ ( p * l1 ) ];
                         power := CentralStepRatClPGroup( U, Lp, N, mK, mL,
                                          cl!.power )[ 1 ];
-                        SetRepresentative( power, PcElementByExponents
-                                ( mL, ExponentsOfPcElement( mL,
-                                        Representative( power ) ) ) );
                         power!.operator := g1 * power!.operator;
                         if ord <= p  then
                             power!.exponent := l1;
@@ -940,7 +966,13 @@ ClassesSolvableGroup := function( arg )
         else
             newcls := [  ];
             for cl  in cls  do
-                Append( newcls, GeneralStepClEANS( U, K, Lp, N, cl ) );
+                if cent  or  ForAll( GeneratorsOfGroup( K ), k -> ForAll
+                    ( GeneratorsOfGroup( StabilizerOfExternalSet( cl ) ),
+                      c -> Comm( k, c ) in L ) )  then
+                    Append( newcls, CentralStepClEANS( U, K, Lp, N, cl ) );
+                else
+                    Append( newcls, GeneralStepClEANS( U, K, Lp, N, cl ) );
+                fi;
             od;
             cls := newcls;
         fi;
@@ -950,8 +982,12 @@ ClassesSolvableGroup := function( arg )
         if Representative( cls[ 1 ] ) <> Representative( cls[ 2 ] )  then
             return fail;
         else
-            return LeftQuotient( tra[ 1 ], tra[ 2 ] );
+            return tra[ 1 ] / tra[ 2 ];
         fi;
+    elif candidates <> false  # centralizer calculation
+     and not IsIdentical( FamilyObj( G ), FamilyObj( candidates ) )  then
+        return ConjugateSubgroup( StabilizerOfExternalSet( cls[ 1 ] ),
+                       tra ^ -1 );
     elif mode mod 4 = 3  then  # rational classes and power tree
         for i  in [ 1 .. Length( cls ) ]  do
             cl := cls[ i ];

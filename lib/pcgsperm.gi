@@ -12,6 +12,13 @@ Revision.pcgsperm_gi :=
 
 #############################################################################
 ##
+#R  IsMemberPcSeriesPermGroup . . . . . . . . . . . . .  members of pc series
+##
+IsMemberPcSeriesPermGroup := NewRepresentation( "IsMemberPcSeriesPermGroup",
+    IsPermGroup, [ "noInSeries" ] );
+
+#############################################################################
+##
 #F  WordVector( <gens>, <id>, <v> ) . . . . . .  make word from exponent list
 ##
 WordVector := function( gens, id, v )
@@ -442,7 +449,7 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     local   pcgs,  i;
     
     pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( G ) ),
-                    filter and IsPrimeOrdersPcgs,
+                    filter and IsPcgs and IsPrimeOrdersPcgs,
                     series[ 1 ].labels
                     { 1 + [ 1 .. Length(series[ 1 ].labels) - oldlen ] } );
     pcgs!.stabChain := series[ 1 ];
@@ -456,6 +463,9 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         Add( pcgs!.nrGensSeries, Length( series[ i ].genlabels ) );
         Unbind( series[ i ].relativeOrders );
         series[ i ] := GroupStabChain( G, series[ i ], true );
+        SetHomePcgs ( series[ i ], pcgs );
+        SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
+        series[ i ]!.noInSeries := i;
     od;
     pcgs!.nrGensSeries := pcgs!.nrGensSeries -
                           pcgs!.nrGensSeries[ Length( series ) ];
@@ -649,6 +659,12 @@ end;
 #############################################################################
 ##
 
+#M  IsPcgsComputable( <G> ) . . . . . . . . . . . . . . . . . .  return false
+##
+InstallMethod( IsPcgsComputable, true, [ IsPermGroup ], 0, ReturnFalse );
+
+#############################################################################
+##
 #M  Pcgs( <G> ) . . . . . . . . . . . . . . . . . . . .  pcgs for perm groups
 ##
 InstallMethod( Pcgs, true, [ IsPermGroup ], 0,
@@ -668,6 +684,30 @@ end );
 
 #############################################################################
 ##
+#M  Pcgs( <U> ) . . . . . . . . . . . . . . . . . . . . . . . . via home pcgs
+##
+InstallMethod( Pcgs, true, [ IsMemberPcSeriesPermGroup ], 0,
+    function( U )
+    local   pcgs,  home;
+    
+    home := HomePcgs( U );
+    pcgs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( U ) ),
+        IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
+        home{ [ Length( home ) - home!.nrGensSeries[ U!.noInSeries ] + 1 ..
+                Length( home ) ] } );
+    pcgs!.stabChain := StabChainImmAttr( PcSeries( home )[ U!.noInSeries ] );
+    SetGroupOfPcgs( pcgs, U );
+    SetRelativeOrders( pcgs, pcgs!.stabChain.relativeOrders );
+    if not HasStabChain( U )  then
+        SetStabChain( U, pcgs!.stabChain );
+    fi;
+    pcgs!.nrGensSeries := home!.nrGensSeries
+        { [ U!.noInSeries .. Length( home!.nrGensSeries ) ] };
+    return pcgs;
+end );
+
+#############################################################################
+##
 #M  HomePcgs( <G> ) . . . . . . . . . . . . . . . . . . . . . for perm groups
 ##
 InstallMethod( HomePcgs, true, [ IsPermGroup ], 0,
@@ -683,7 +723,7 @@ end );
 ##
 #M  InducedPcgsByPcSequenceNC( <pcgs>, <pcs> )  . . . . . . . .  as perm pcgs
 ##
-InstallMethod( InducedPcgsByPcSequenceNC,
+InstallMethod( InducedPcgsByPcSequenceNC, "perm group",
     true,
     [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
       IsList and IsPermCollection ], 0,
@@ -700,7 +740,7 @@ InstallMethod( InducedPcgsByPcSequenceNC,
     efam := FamilyObj( OneOfPcgs( pcgs ) );
 
     # construct a pcgs from <pcs>
-    igs := PcgsByPcSequenceNC( efam, filter, pcs );
+    igs := PcgsByPcSequenceNC( efam, IsPcgs and filter, pcs );
     i := 1;
     while pcgs!.nrGensSeries[ i ] > Length( pcs )  do
         i := i + 1;
@@ -741,6 +781,38 @@ InstallMethod( InducedPcgsByPcSequence,
     [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
       IsList and IsPermCollection ], 0,
     InducedPcgsByPcSequenceNC );
+
+#############################################################################
+##
+#M  InducedPcgsWrtHomePcgs( <U> ) . . . . . . . . . . . . . . . via home pcgs
+##
+InstallMethod( InducedPcgsWrtHomePcgs, "perm group", true,
+    [ IsMemberPcSeriesPermGroup and HasHomePcgs ], 0,
+    function( U )
+    local   pcgs,  igs;
+    
+    pcgs := HomePcgs( U );
+    igs := PcgsByPcSequenceNC( ElementsFamily( FamilyObj( U ) ),
+        IsPcgsPermGroupRep and IsPrimeOrdersPcgs and IsInducedPcgs,
+        pcgs{ [ Length( pcgs ) - pcgs!.nrGensSeries[ U!.noInSeries ] + 1 ..
+                Length( pcgs ) ] } );
+    igs!.stabChain := StabChainImmAttr( PcSeries( pcgs )[ U!.noInSeries ] );
+    SetParentPcgs( igs, pcgs );
+    return igs;
+end );
+
+InstallMethod( InducedPcgsWrtHomePcgs, "without home pcgs", true,
+        [ IsPermGroup ], 0,
+    function( G )
+    return InducedPcgsByGenerators( HomePcgs( G ), GeneratorsOfGroup( G ) );
+end );
+
+#############################################################################
+##
+#M  GroupOfPcgs( <pcgs> ) . . . . . . . . . . . . . . . . . . for perm groups
+##
+InstallMethod( GroupOfPcgs, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
+    GroupByGenerators );
 
 #############################################################################
 ##
@@ -836,6 +908,30 @@ InstallMethod( ExponentOfPcElement, true,
           IsPosRat and IsInt ], 0,
     function( pcgs, g, pos )
     return ExponentsOfPcElementPermGroup( pcgs, g, 1, pos, 'e' )[ pos ];
+end );
+
+#############################################################################
+##
+#M  RepresentativeOperation( <G>, <d>, <e>, OnPoints )   first compare cycles
+##
+InstallOtherMethod( RepresentativeOperationOp,
+    "cycle structure comparison",
+    true,
+    [ IsPermGroup and IsPcgsComputable,
+      IsPerm,
+      IsPerm,
+      IsFunction ],
+    0,
+
+function( G, d, e, opr )
+    if opr <> OnPoints  then
+        TryNextMethod();
+    elif Collected( CycleLengths( d, MovedPoints( G ) ) ) <>
+         Collected( CycleLengths( e, MovedPoints( G ) ) )  then
+        return fail;
+    else
+        TryNextMethod();
+    fi;
 end );
 
 #############################################################################

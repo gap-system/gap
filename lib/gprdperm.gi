@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.6  1997/01/13 16:46:40  htheisse
+#H  `IsDirectProductPermGroups' implies `IsPermGroup'
+#H
 #H  Revision 4.5  1997/01/07 10:56:05  ahulpke
 #H  Changed 'WreathProduct' to use the natural representation of permutation
 #H  groups instead of the regular one
@@ -32,7 +35,7 @@ Revision.gprdperm_gi :=
 ##
 IsDirectProductPermGroup := NewRepresentation
     ( "IsDirectProductPermGroup",
-      IsProductGroups and IsAttributeStoringRep,
+      IsProductGroups and IsPermGroup and IsAttributeStoringRep,
       [ "groups", "olds", "news", "perms" ] );
 
 #############################################################################

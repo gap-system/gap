@@ -1279,6 +1279,7 @@ UInt          ExecInfo (
   UInt narg;
   UInt i;
   Obj args;
+  Obj arg;
 
   selectors = EVAL_EXPR( ARGI_INFO( stat, 1 ));
   level = EVAL_EXPR( ARGI_INFO( stat, 2));
@@ -1294,8 +1295,15 @@ UInt          ExecInfo (
 
       /* Evaluate the objects to be printed into the list */
       for (i = 1; i <= narg; i++)
-	SET_ELM_PLIST(args, i, EVAL_EXPR(ARGI_INFO( stat, i+2)));
-
+	{
+	  /* These two statements must not be combined into one
+	    because of the risk of a garbage collection during the evaluation
+	    of arg, which may happen after the pointer to args has been
+	    extracted */
+	  arg = EVAL_EXPR(ARGI_INFO( stat, i+2));
+	  SET_ELM_PLIST(args, i, arg);
+	  CHANGED_BAG(args);
+	}
       /* and print them */
       CALL_1ARGS(InfoDoPrint, args);
     }

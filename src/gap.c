@@ -63,6 +63,9 @@ extern char *           In;
 #include        "stats.h"               /* InitStats                       */
 #include        "funcs.h"               /* InitFuncs                       */
 
+#include        "dt.h"                  /* InitDeepThought                 */
+#include        "dteval.h"              /* InitDTEvaluation                */
+
 #include        "intrprtr.h"            /* InitInterpreter                 */
 
 #include        "read.h"                /* ReadEvalCommand, ReadEvalResult */
@@ -1661,6 +1664,9 @@ void            InitGap (
     InitFuncs();
     SET_REVISION( "funcs_c", Revision_funcs_c );
     SET_REVISION( "funcs_h", Revision_funcs_h );
+
+    InitDeepThought();
+    InitDTEvaluation();
 
     InitIntrprtr();
     SET_REVISION( "intrprtr_c", Revision_intrprtr_c );

@@ -5,6 +5,10 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.21  1997/01/16 10:46:51  fceller
+#H  renamed 'NewConstructor' to 'NewOperation',
+#H  renamed 'NewOperationFlags1' to 'NewConstructor'
+#H
 #H  Revision 4.20  1997/01/07 13:35:14  ahulpke
 #H  Added the transitive groups data library
 #H
@@ -85,8 +89,11 @@ MembershipTestKnownBase := NewOperation( "MembershipTestKnownBase",
 IsPermOnEnumerator := NewCategory( "IsPermOnEnumerator",
     IsMultiplicativeElementWithInverse and IsPerm and
     IsGroupHomomorphism and IsBijective );
-PermOnEnumerator := NewConstructor( "PermOnEnumerator",
+
+PermOnEnumerator := NewOperation( "PermOnEnumerator",
                                     [ IsObject, IsObject ] );
+#T 1997/01/16 fceller was old 'NewConstructor'
+
 
 DefaultStabChainOptions := NewOperationArgs( "DefaultStabChainOptions" );
 CopyOptionsDefaults := NewOperationArgs( "CopyOptionsDefaults" );

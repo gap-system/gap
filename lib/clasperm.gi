@@ -8,6 +8,9 @@
 ##  classes for permutation groups.
 ##
 #H  $Log$
+#H  Revision 4.3  1997/01/13 17:04:06  htheisse
+#H  added class/centralizer functions for soluble groups
+#H
 #H  Revision 4.2  1997/01/10 11:39:59  htheisse
 #H  fixed a typo
 #H
@@ -682,6 +685,7 @@ RationalClassesPermGroup := function( G, primes )
                           until pos = i;
                         else
                           cl   := Representative( class_ );
+                          m    := One( GaloisGroup( class_ ) );
                           conj := One( G );
                         fi;
                         
@@ -717,12 +721,16 @@ end;
 InstallMethod( RationalClasses, "perm group", true, [ IsPermGroup ], 0,
     function( G )
     local   cl;
-    
-    cl := RationalClass( G, One( G ) );
-    SetStabilizerOfExternalSet( cl, G );
-    SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
-    return Concatenation( [ cl ], RationalClassesPermGroup
-                   ( G, Reversed( Set( FactorsInt( Size( G ) ) ) ) ) );
+
+    if IsPrimePowerInt( Size( G ) )  then
+        return ClassesSolvableGroup( G, G, true, 1 );
+    else
+        cl := RationalClass( G, One( G ) );
+        SetStabilizerOfExternalSet( cl, G );
+        SetGaloisGroup( cl, GroupByPrimeResidues( [  ], 1 ) );
+        return Concatenation( [ cl ], RationalClassesPermGroup
+                       ( G, Reversed( Set( FactorsInt( Size( G ) ) ) ) ) );
+    fi;
 end );
 
 #############################################################################
