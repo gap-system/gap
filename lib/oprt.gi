@@ -595,7 +595,7 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     else
         filter := IsOperationHomomorphism;
     fi;
-    hom := rec( externalSet := xset );
+    hom := rec(  );
     if IsExternalSetByOperatorsRep( xset )  then
         filter := filter and IsOperationHomomorphismByOperators;
     elif     IsMatrixGroup( G )
@@ -643,7 +643,9 @@ InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     if HasBase( xset )  then
         filter := filter and IsOperationHomomorphismByBase;
     fi;
-    return Objectify( NewType( fam, filter ), hom );
+    Objectify( NewType( fam, filter ), hom );
+    SetUnderlyingExternalSet( hom, xset );
+    return hom;
 end );
 
 #############################################################################
@@ -660,14 +662,14 @@ end );
 #M  Source( <hom> ) . . . . . . . . . . . .  source of operation homomorphism
 ##
 InstallMethod( Source, true, [ IsOperationHomomorphism ], 0,
-        hom -> ActingDomain( hom!.externalSet ) );
+        hom -> ActingDomain( UnderlyingExternalSet( hom ) ) );
 
 #############################################################################
 ##
 #M  Range( <hom> )  . . . . . . . . . . . . . range of operation homomorphism
 ##
 InstallMethod( Range, true, [ IsOperationHomomorphism ], 0,
-    hom -> SymmetricGroup( Length( HomeEnumerator( hom!.externalSet ) ) ) );
+    hom -> SymmetricGroup( Length( HomeEnumerator( UnderlyingExternalSet( hom ) ) ) ) );
 
 #############################################################################
 ##
@@ -678,7 +680,7 @@ InstallMethod( AsGroupGeneralMappingByImages, true,
     function( hom )
     local   xset,  G,  D,  opr,  gens,  imgs;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     G := ActingDomain( xset );
     D := HomeEnumerator( xset );
     opr := FunctionOperation( xset );
@@ -697,7 +699,7 @@ InstallMethod( AsGroupGeneralMappingByImages, true,
     function( hom )
     local   xset,  G,  D,  opr,  gens,  oprs,  imgs;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     G := ActingDomain( xset );
     D := HomeEnumerator( xset );
     gens := xset!.generators;
@@ -751,7 +753,7 @@ InstallMethod( AsGroupGeneralMappingByImages, true,
     function( hom )
     local   xset,  G,  gens;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     G := ActingDomain( xset );
     gens := GeneratorsOfGroup( G );
     return OperationHomomorphismSubsetAsGroupGeneralMappingByImages( G,
@@ -765,7 +767,7 @@ InstallMethod( AsGroupGeneralMappingByImages, true,
     function( hom )
     local   xset;
 
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     return OperationHomomorphismSubsetAsGroupGeneralMappingByImages(
            ActingDomain( xset ), HomeEnumerator( xset ), xset!.start,
            xset!.generators, xset!.operators, xset!.funcOperation );
@@ -2199,7 +2201,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     function( hom, elm )
     local   xset;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     return Permutation( elm, HomeEnumerator( xset ),
                    FunctionOperation( xset ) );
 end );
@@ -2215,7 +2217,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     function( hom, elm )
     local   xset,  D,  opr,  imgs;
 
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     D := HomeEnumerator( xset );
     opr := FunctionOperation( xset );
     if not IsBound( xset!.basePermImage )  then
@@ -2236,7 +2238,7 @@ InstallMethod( ImagesSource, true,
     function( hom )
     local   xset,  img,  D;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     img := ImagesSet( hom, Source( hom ) );
     if not HasStabChain( img )  and  not HasBase( img )  then
         if not IsBound( xset!.basePermImage )  then
@@ -2259,7 +2261,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     function( hom, elm )
     local   xset;
     
-    xset := hom!.externalSet;
+    xset := UnderlyingExternalSet( hom );
     return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
         FunctionOperation( xset ) ),
         MovedPoints( ImagesSource( AsGroupGeneralMappingByImages( hom ) ) ) );
@@ -2274,7 +2276,7 @@ InstallMethod( PreImagesRepresentative, true,
     function( hom, elm )
     local   V,  base,  mat,  b;
 
-    V := HomeEnumerator( hom!.externalSet );
+    V := HomeEnumerator( UnderlyingExternalSet( hom ) );
     base := One( Source( hom ) );
     mat := [  ];
     for b  in base  do

@@ -237,6 +237,7 @@ local i,base;
     ocr.identityMatrix := IdentityMat( Length( ocr.modulePcgs ), ocr.field );
     List( ocr.matrices, IsMatrix );
     IsMatrix( ocr.identityMatrix );
+#T ??
 
     # Do the same for the operations of 'normalIn' if present.
     if IsBound( ocr.normalIn )  then
@@ -1311,7 +1312,7 @@ OneCoboundaries := function(G,M)
     if not IsElementaryAbelian(M) then
       Error("<M> must be elementary abelian");
     fi;
-    M:=Pcgs(M);
+    M:=InducedPcgsWrtHomePcgs(M);
   fi;
 
   ocr := rec( modulePcgs := M );
@@ -1344,7 +1345,7 @@ local   ocr,erg;
     if not IsElementaryAbelian(M) then
       Error("<M> must be elementary abelian");
     fi;
-    M:=Pcgs(M);
+    M:=InducedPcgsWrtHomePcgs(M);
   fi;
 
   ocr := rec( modulePcgs := M );

@@ -218,6 +218,7 @@ IsFamilyOfTypes         := NewCategory( "IsFamilyOfTypes"   , IsFamily );
 
 IsFamilyDefaultRep      := NewRepresentation( "IsFamilyDefaultRep",
                             IsComponentObjectRep,
+#T why not `IsAttributeStoringRep' ?
                             "NAME,REQ_FLAGS,IMP_FLAGS,TYPES,TYPES_LIST_FAM",
                             IsFamily );
 
@@ -251,10 +252,12 @@ TypeOfFamilyOfFamilies  := [
 
 FamilyOfTypes           := rec();
 
+NEW_TYPE_NEXT_ID := NEW_TYPE_NEXT_ID+1;
 TypeOfTypes := [
     FamilyOfTypes,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsType and IsTypeDefaultRep ) ),
-    false ];
+    false,
+    NEW_TYPE_NEXT_ID ];
 
 FamilyOfTypes!.NAME             := "FamilyOfTypes";
 FamilyOfTypes!.REQ_FLAGS        := FLAGS_FILTER( IsType   );
@@ -868,19 +871,19 @@ end;
 
 #############################################################################
 ##
-
-#C  IsFunction( <obj> )
+#F  InstallMethodsFunction2( <list> ) . . . . . . function to install methods
 ##
-IsFunction := NewCategoryKernel(
-    "IsFunction",
-    IS_OBJECT,
-    IS_FUNCTION );
+InstallMethodsFunction2 := function( list )
+    return
+        function( to, from, func )
+            ADD_LIST( list, [ FLAGS_FILTER(to), FLAGS_FILTER(from), func ] );
+        end;
+end;
 
 
 #############################################################################
 ##
-
-#F  RunMethodsFunction2( <list> )
+#F  RunMethodsFunction2( <list> ) . . . . func to run through install methods
 ##
 RunMethodsFunction2 := function( list )
 

@@ -18,6 +18,24 @@ char *          Revision_opers_h =
 /****************************************************************************
 **
 
+*F  IS_OPERATION( <func> )  . . . . . . . . .  check if function is operation
+*/
+#define IS_OPERATION(func) \
+    (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
+
+#define FLAG1_FILT(oper)        (*            (ADDR_OBJ(oper) +16     ) )
+#define FLAG2_FILT(oper)        (*            (ADDR_OBJ(oper) +17     ) )
+#define FLAGS_FILT(oper)        (*            (ADDR_OBJ(oper) +18     ) )
+#define SETTR_FILT(oper)        (*            (ADDR_OBJ(oper) +19     ) )
+#define TESTR_FILT(oper)        (*            (ADDR_OBJ(oper) +20     ) )
+#define METHS_OPER(oper,i)      (*            (ADDR_OBJ(oper) +21+ (i)) )
+#define CACHE_OPER(oper,i)      (*            (ADDR_OBJ(oper) +29+ (i)) )
+#define SIZE_OPER               (37*sizeof(Bag))
+
+
+/****************************************************************************
+**
+
 *V  SET_FILTER_OBJ  . . . . . . . . . . . .  library function to set a filter
 */
 extern Obj SET_FILTER_OBJ;

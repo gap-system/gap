@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for row spaces.
 ##  A row space is a vector space whose elements are row vectors.
@@ -383,7 +383,7 @@ HeadsInfoOfSemiEchelonizedMat := function( mat, dim )
           k;        # loop over lower rows
 
     nrows:= Length( mat );
-    heads:= Zero( [ 1 .. dim ] );
+    heads:= ListWithIdenticalEntries( dim, 0 );
 
     if 0 < nrows then
 
@@ -689,7 +689,7 @@ InstallMethod( BasisVectors,
 
     if IsEmpty( gens ) then
 
-      B!.heads:= List( [ 1 .. V!.vectordim ], x -> 0 );
+      B!.heads:= 0 * [ 1 .. V!.vectordim ];
       SetIsEmpty( B, true );
       vectors:= [];
 
@@ -941,7 +941,6 @@ InstallMethod( CanonicalBasis,
           k;       # loop over columns
 
     base  := [];
-    heads := [];
     zero  := Zero( LeftActingDomain( V ) );
 
     # We use the semi-echelonized basis.
@@ -1006,7 +1005,7 @@ InstallMethod( CanonicalBasis,
           k;       # loop over columns
 
     base  := [];
-    heads := Zero( [ 1 .. V!.vectordim ] );
+    heads := ListWithIdenticalEntries( V!.vectordim, 0 );
     zero  := Zero( LeftActingDomain( V ) );
 
     if not IsEmpty( GeneratorsOfLeftModule( V ) ) then
@@ -1268,7 +1267,7 @@ InstallMethod( NextIterator, true,
     # Construct the canonical basis of the space.
     vector:= NextIterator( iter!.spaceiter );
     pos:= 0;
-    base:= NullMat( k, n, iter!.field );
+    base:= MutableNullMat( k, n, iter!.field );
     for i in [ 1 .. k ] do
       base[i][ iter!.actchoice[i] ]:= One( iter!.field );
       for j in [ i .. k ] do
@@ -1423,7 +1422,7 @@ InstallOtherMethod( MutableBasisByGenerators,
       if IsEmpty( vectors ) then
 
         B!.basisVectors:= [];
-        B!.heads:= List( zero, x -> 0 );
+        B!.heads:= ListWithIdenticalEntries( Length( zero ), 0 );
 
       else
 
@@ -1695,7 +1694,7 @@ InstallMethod( \[\], true, [ IsProjectiveSpaceEnumerator, IsInt ], 0,
     F := LeftActingDomain( sp );
     q := Size( F );
     n := Dimension( sp );
-    v := Zero( F ) * [ 1 .. n ];
+    v := ListWithIdenticalEntries( n, Zero( F ) );
     num := num - 1;
     
     # Find the number of entries after the leading 1.

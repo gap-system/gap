@@ -93,7 +93,9 @@ STRING_INT := function ( n )
     if n < 0  then
         ADD_LIST( str, '-' );
     fi;
-    return IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
+    str:= IMMUTABLE_COPY_OBJ( str{[LEN_LIST(str),LEN_LIST(str)-1 .. 1]} );
+    CONV_STRING( str );
+    return str;
 end;
 
 
@@ -128,6 +130,72 @@ CallFuncList := CALL_FUNC_LIST;
 #############################################################################
 ##
 
+#F  REPLACE_SUBSTRING( <string>, <old>, <new> ) . . .  replace <old> by <new>
+##
+REPLACE_SUBSTRING := function( string, old, new )
+    local   i;
+    
+    for i  in [ 0 .. LEN_LIST( string ) - LEN_LIST( old ) ]  do
+        if string{ i + [ 1 .. LEN_LIST( old ) ] } = old  then
+            string{ i + [ 1 .. LEN_LIST( old ) ] } := new;
+        fi;
+    od;
+end;
+
+#############################################################################
+##
+#F  IS_SUBSTRING( <str>, <sub> )  . . . . . . . . .  check if <sub> is prefix
+##
+IS_SUBSTRING := function( str, sub )
+    local   l,  i;
+
+    l := LEN_LIST(sub);
+    if l = 0  then return true;  fi;
+    for i  in [ 1 .. LEN_LIST(str)-l+1 ]  do
+        if str{[i..i+l-1]} = sub  then
+            return true;
+        fi;
+    od;
+    return false;
+end;
+
+
+#############################################################################
+##
+#F  STRING_LOWER( <str> ) . . . . . . . . . convert to lower, remove specials
+##
+STRING_LOWER1 := "";
+STRING_LOWER2 := "";
+SortParallel := "2b defined";
+PositionSorted := "2b defined";
+
+STRING_LOWER := function( str )
+    local   new,  s,  p;
+
+    if 0 = LEN_LIST(STRING_LOWER1)  then
+        APPEND_LIST_INTR( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz  " );
+        APPEND_LIST_INTR( STRING_LOWER2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ!~" );
+        APPEND_LIST_INTR( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz" );
+        APPEND_LIST_INTR( STRING_LOWER2, "abcdefghijklmnopqrstuvwxyz" );
+        SortParallel( STRING_LOWER2, STRING_LOWER1 );
+    fi;
+
+    new := "";
+    for s  in str  do
+        if s in STRING_LOWER2  then
+            p := PositionSorted( STRING_LOWER2, s );
+            ADD_LIST( new, STRING_LOWER1[p] );
+        else
+            ADD_LIST( new, s );
+        fi;
+    od;
+    CONV_STRING(new);
+    return new;
+end;
+
+
+#############################################################################
+##
 
 #E  kernel.g  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##

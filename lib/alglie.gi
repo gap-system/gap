@@ -399,7 +399,7 @@ InstallMethod( LieNormalizer,
     # The equations.
     # First the normalizer part, \ldots
 
-    A:= NullMat( n + s*s, n*s, R );
+    A:= MutableNullMat( n + s*s, n*s, R );
     for i in [ 1..n ] do
       for j in [ 1..n ] do
         cij:= T[i][j];
@@ -427,7 +427,7 @@ InstallMethod( LieNormalizer,
 
     # Extract the 'normalizer part' of the solution.
     l:= Length(b);
-    bas:= NullMat( l, n, R );
+    bas:= MutableNullMat( l, n, R );
     for i in [ 1..l ] do
       for j in [ 1..n ] do
         bas[i][j]:= b[i][j];
@@ -485,7 +485,7 @@ InstallMethod( KappaPerp,
 
     v:= List( BasisVectors( BasisOfDomain( U ) ),
               x -> Coefficients( B, x ) );
-    A:= NullMat( n, s, R );
+    A:= MutableNullMat( n, s, R );
     kap:= KillingMatrix( B );
 
     # Compute the equations that define the subspace.
@@ -1286,8 +1286,8 @@ InstallMethod( AdjointAssociativeAlgebra,
     degree1:= List( BasisVectors( BasisOfDomain(L) ),
                         x -> AdjointMatrix( BasisOfDomain(L), x ) );
     posits  := [ [ 1, 1 ] ];
-    asbas   := [ IdentityMat( n, F ) ];
-    highdeg := [ asbas[1] ];
+    highdeg := [ MutableIdentityMat( n, F ) ];
+    asbas   := [ Immutable( highdeg[1] ) ];
     lowinds := [ n ];
 
     # If after some steps all words of degree t (say) can be reduced modulo
@@ -1295,7 +1295,7 @@ InstallMethod( AdjointAssociativeAlgebra,
     # combinations of words of lower degree.
     # Hence in that case we are done.
 
-    while highdeg <> [] do
+    while not IsEmpty( highdeg ) do
 
       hdeg:= [];
       linds:= [];
@@ -1475,8 +1475,8 @@ InstallMethod( NilRadical,
       # It follows that the list of positions is '[1,1]]'
       # and the list of highest degree elements is '[1]'.
 
-      elts:= [ IdentityMat(n,F) ];
-      basis:= [ IdentityMat(n,F) ];
+      elts:= [ MutableIdentityMat(n,F) ];
+      basis:= [ MutableIdentityMat(n,F) ];
       posits:= [ [1,1] ];
       hdeg:= [ 1 ];
 
@@ -1578,7 +1578,7 @@ InstallMethod( NilRadical,
 
       # Now we compute the intersection of 'R' and '<ad L>'.
 
-      eqs:= NullMat(n+t,n*n,F);
+      eqs:= MutableNullMat(n+t,n*n,F);
       for i in [1..n] do
         for j in [1..n] do
           for k in [1..n] do
@@ -1820,7 +1820,7 @@ InstallMethod( LeviDecomposition,
       B:= BasisByGeneratorsNC( sp, bb );
 
       cf:= List( comp, x -> Coefficients( B, x ){[1..dim]} );
-      eqs:= NullMat( s*dim, dim*s*(s-1)/2, F );
+      eqs:= MutableNullMat( s*dim, dim*s*(s-1)/2, F );
       rl:= [];
       for i in [1..s] do
         for j in [i+1..s] do
@@ -2554,7 +2554,7 @@ FindSl2 := function( L, x )
     T:= StructureConstantsTable( B );
 
     xc:= Coefficients( B, x );
-    eqs:= NullMat( 2*n, 2*n, F );
+    eqs:= MutableNullMat( 2*n, 2*n, F );
 
     # First we try to find elements 'z' and 'h' such that '[x,z]=h'
     # and '[h,x]=2x' (i.e., such that two of the three defining equations
@@ -2604,6 +2604,7 @@ FindSl2 := function( L, x )
     # isomorphic to sl_2.
 
     H:= H+2*IdentityMat( Dimension( R ), F );
+#T cheaper!
 
     e0:= Coefficients( BR, h * z + 2*z );
     e1:= SolutionMat( H, e0 );
@@ -3585,6 +3586,92 @@ InstallMethod( UniversalEnvelopingAlgebra,
 #T missing: embedding of the Lie algebra (as vector space)
 #T missing: relators (only compute them if they are explicitly wanted)
 #T          (attribute 'Relators'?)
+
+
+#############################################################################
+##
+#F  FreeLieAlgebra( <R>, <rank> )
+#F  FreeLieAlgebra( <R>, <rank>, <name> )
+#F  FreeLieAlgebra( <R>, <name1>, <name2>, ... )
+##
+FreeLieAlgebra := function( arg )
+
+    local R,          # coefficients ring
+          names,      # names of the algebra generators
+          M,          # free magma
+          F,          # family of magma ring elements
+          one,        # identity of 'R'
+          zero,       # zero of 'R'
+          L;          # free Lie algebra, result
+
+
+    # Check the argument list.
+    if Length( arg ) = 0 or not IsRing( arg[1] ) then
+      Error( "first argument must be a ring" );
+    fi;
+
+    R:= arg[1];
+
+    # Construct names of generators.
+    if   Length( arg ) = 2 and IsInt( arg[2] ) then
+      names:= List( [ 1 .. arg[2] ],
+                    i -> Concatenation( "x", String(i) ) );
+    elif     Length( arg ) = 2
+         and IsList( arg[2] )
+         and ForAll( arg[2], IsString ) then
+      names:= arg[2];
+    elif Length( arg ) = 3 and IsInt( arg[2] ) and IsString( arg[3] ) then
+      names:= List( [ 1 .. arg[2] ],
+                    x -> Concatenation( arg[3], String(x) ) );
+    elif ForAll( [ 2 .. Length( arg ) ], IsString ) then
+      names:= arg{ [ 2 .. Length( arg ) ] };
+    else
+      Error( "usage: FreeLieAlgebra( <R>, <rank> )\n",
+                 "or FreeLieAlgebra( <R>, <name1>, ... )" );
+    fi;
+
+    # Construct the algebra as magma algebra modulo relations
+    # over a free magma.
+    M:= FreeMagma( names );
+
+    # Construct the family of elements of our ring.
+    F:= NewFamily( "FreeLieAlgebraObjFamily",
+                   IsElementOfMagmaRingModuloRelations,
+                   IsJacobianElement and IsZeroSquaredElement );
+
+    one:= One( R );
+    zero:= Zero( R );
+
+    F!.defaultType := NewType( F, IsMagmaRingObjDefaultRep );
+    F!.familyRing  := FamilyObj( R );
+    F!.familyMagma := FamilyObj( M );
+    F!.zeroRing    := zero;
+#T no !!
+
+    # Make the magma ring object.
+    L:= Objectify( NewType( CollectionsFamily( F ),
+                                IsMagmaRingModuloRelations
+                            and IsAttributeStoringRep ),
+                   rec() );
+
+    # Set the necessary attributes.
+    SetLeftActingDomain( L, R );
+    SetUnderlyingMagma(  L, M );
+
+    # Deduce useful information.
+    SetIsFiniteDimensional( L, false );
+    if HasIsWholeFamily( R ) and HasIsWholeFamily( M ) then
+      SetIsWholeFamily( L, IsWholeFamily( R ) and IsWholeFamily( M ) );
+    fi;
+
+    # Construct the generators.
+    SetGeneratorsOfLeftOperatorRing( L,
+        List( GeneratorsOfMagma( M ),
+              x -> ElementOfMagmaRing( F, zero, [ one ], [ x ] ) ) );
+
+    # Return the ring.
+    return L;
+end;
 
 
 #############################################################################

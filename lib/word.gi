@@ -1,13 +1,12 @@
 #############################################################################
 ##
 #W  word.gi                     GAP library                     Thomas Breuer
-#W                                                             & Frank Celler
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 #H  @(#)$Id$
 ##
-##  This file contains generic methods for associative words.
+##  This file contains generic methods for nonassociative words.
 ##
 Revision.word_gi :=
     "@(#)$Id$";
@@ -15,16 +14,12 @@ Revision.word_gi :=
 
 #############################################################################
 ##
-
-#M  \=( <w1>, <w2> )
-##
-##  The equality operator '=' evaluates to 'true' if the two words <w1> and
-##  <w2> are equal and to 'false' otherwise.
+#M  \=( <w1>, <w2> )  . . . . . . . . . . . . . . . . . . . . . . . for words
 ##
 InstallMethod( \=,
-    "method for two assoc. words",
+    "method for two words",
     IsIdentical,
-    [ IsAssocWord, IsAssocWord ], 0,
+    [ IsWord, IsWord ], 0,
     function( x, y )
     return ExtRepOfObj( x ) = ExtRepOfObj( y );
     end );
@@ -32,23 +27,25 @@ InstallMethod( \=,
 
 #############################################################################
 ##
-#M  \<( <w1>, <w2> )
+#M  \<( <w1>, <w2> )  . . . . . . . . . . . . . . . . . . . . . . . for words
 ##
 ##  Words  are ordered as  follows: a lexicographical   order in the external
 ##  representation is chosen.
 ##
 InstallMethod( \<,
-    "method for two assoc. words",
+    "method for two words",
     IsIdentical,
-    [ IsAssocWord,
-      IsAssocWord ],
-    0,
-
-function( x, y )
-    local    n;
+    [ IsWord, IsWord ], 0,
+    function( x, y )
+    local n;
 
     x := ExtRepOfObj( x );
     y := ExtRepOfObj( y );
+    if IsInt( x ) then
+      return IsList( y ) or x < y;
+    elif IsInt( y ) then
+      return false;
+    fi;
     for n  in [ 1 .. Minimum(Length(x),Length(y)) ]  do
         if x[n] < y[n]  then
             return true;
@@ -57,22 +54,20 @@ function( x, y )
         fi;
     od;
     return Length(x) < Length(y);
-end );
+    end );
 
 
 #############################################################################
 ##
-#M  \*( <w1>, <w2> )
+#M  \*( <w1>, <w2> )  . . . . . . . . . . . . . . .  for nonassociative words
 ##
-##  The operator '\*' evaluates to the product of the two words <w1> and
-##  <w2>.
-##  Multiplication of words is done by concatenating the words
-##  and removing adjacent pairs of an abstract generator and its inverse.
+##  Multiplication of nonassociative words is done by putting the two factors
+##  into a bracket.
 ##
 InstallMethod( \*,
-    "method for two assoc. words",
+    "method for two nonassoc. words",
     IsIdentical,
-    [ IsAssocWord, IsAssocWord ], 0,
+    [ IsNonassocWord, IsNonassocWord ], 0,
     function( x, y )
 
     local xx,    # external representation of 'x'
@@ -83,83 +78,16 @@ InstallMethod( \*,
 
     # Treat the special cases that one argument is trivial.
     xx:= ExtRepOfObj( x );
-    l:= Length( xx ) - 1;
-    if l < 0 then
+    if xx = 0 then
       return y;
     fi;
     yy:= ExtRepOfObj( y );
-    if IsEmpty( yy ) then
+    if yy = 0 then
       return x;
     fi;
 
-    # Treat the case of cancellation.
-    p:= 1;
-    len:= Length( yy ) - 1;
-    while     0 < l and p <= len
-          and xx[l] = yy[p] and xx[ l+1 ] = - yy[ p+1 ] do
-      l:= l-2;
-      p:= p+2;
-    od;
-
-    if l < 0 then
-
-      # The first argument has been eaten up,
-      # so the product can be formed as object of the same type as 'y'.
-      return AssocWord( TypeObj( y )![ AWP_PURE_TYPE ],
-                        yy{ [ p .. len+1 ] } );
-
-    elif len < p then
-
-      # The second argument has been eaten up,
-      # so the product can be formed as object of the same type as 'x'.
-      return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ],
-                        xx{ [ 1 .. l+1 ] } );
-
-    else
-
-      if 1 < p then
-        yy:= yy{ [ p .. len+1 ] };
-        xx:= xx{ [ 1 .. l+1 ] };
-      fi;
-
-      xx:= ShallowCopy( xx );
-
-      if xx[l] = yy[1] then
-
-        # We have the same generator at the gluing position.
-        yy:= ShallowCopy( yy );
-        yy[2]:= xx[ l+1 ] + yy[2];
-        Unbind( xx[l] );
-        Unbind( xx[ l+1 ] );
-        Append( xx, yy );
-
-        # This is the only case where the subtypes of 'x' and 'y'
-        # may be too small.
-        # So let 'ObjByExtRep' choose the appropriate subtype.
-        if    TypeObj( x )![ AWP_NR_BITS_EXP ]
-              <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
-          return ObjByExtRep( FamilyObj( x ), TypeObj( y )![ AWP_NR_BITS_EXP ],
-                                  yy[2], xx );
-        else
-          return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
-                                  yy[2], xx );
-        fi;
-
-      else
-
-        # The exponents of the result do not exceed the exponents
-        # of 'x' and 'y'.
-        # So the bigger of the two types will be sufficient.
-        Append( xx, yy );
-        if    TypeObj( x )![ AWP_NR_BITS_EXP ] <= TypeObj( y )![ AWP_NR_BITS_EXP ] then
-          return AssocWord( TypeObj( y )![ AWP_PURE_TYPE ], xx );
-        else
-          return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], xx );
-        fi;
-
-      fi;
-
-    fi;
+    # Form the product.
+    return ObjByExtRep( FamilyObj( x ), [ xx, yy ] );
     end );
 
 
@@ -167,444 +95,29 @@ InstallMethod( \*,
 ##
 #M  \^( <w>, <n> )
 ##
-##  The powering operator '\^' returns the <i>-th power of the word <w>,
-##  where <i> must be an integer.
-##
-##  Note that in a family of associative words without inverses no
-##  cancellation can occur, and that the algorithm may use this fact.
-##  So we must guarantee that words with inverses get the method that handles
-##  the case of cancellation.
-##
-InstallMethod( \^,
-    "method for an assoc. word, and a positive integer",
-    true,
-    [ IsAssocWord, IsPosRat and IsInt ], 0,
-    function( x, n )
-
-    local xx,      # external representation of 'x'
-          result,  # external representation of the result
-          l,       # actual length of 'xx'
-          exp,     # store one exponent value
-          tail;    # trailing part in 'xx' (cancels with 'head')
-
-    if 1 < n then
-
-      xx:= ExtRepOfObj( x );
-      if IsEmpty( xx ) then
-        return x;
-      fi;
-
-      l:= Length( xx );
-      if l = 2 then
-        n:= n * xx[2];
-        return ObjByExtRep( FamilyObj( x ), 1, n, [ xx[1], n ] );
-      fi;
-
-      xx:= ShallowCopy( xx );
-      if xx[1] = xx[ l-1 ] then
-
-        # Treat the case of gluing.
-        tail:= [ xx[1], xx[l] ];
-        exp:= xx[2];
-        xx[2]:= xx[2] + xx[l];
-        Unbind( xx[  l  ] );
-        Unbind( xx[ l-1 ] );
-
-      else
-        exp:= 0;
-      fi;
-
-      # Compute the 'n'-th power of 'xx'.
-      result:= ShallowCopy( xx );
-      n:= n - 1;
-      while n <> 0 do
-        if n mod 2 = 1 then
-          Append( result, xx );
-          n:= (n-1)/2;
-        else
-          n:= n/2;
-        fi;
-        Append( xx, xx );
-      od;
-
-      if exp = 0 then
-
-        # The exponents in the power do not exceed the exponents in 'x'.
-        return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], result );
-
-      else
-
-        result[2]:= exp;
-        Append( result, tail );
-        return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
-                                xx[2], result );
-
-      fi;
-
-    elif n = 1 then
-      return x;
-    fi;
-    end );
-
-InstallMethod( \^,
-    "method for an assoc. word with inverse, and an integer",
-    true,
-    [ IsAssocWordWithInverse, IsInt ], 0,
-    function( x, n )
-
-    local xx,      # external representation of 'x'
-          cxx,     # external repres. of the inverse of 'x'
-          i,       # loop over 'xx'
-          result,  # external representation of the result
-          l,       # actual length of 'xx'
-          p,       # actual position in 'xx'
-          len,     # length of 'xx' minus 1
-          head,    # initial part of 'xx'
-          exp,     # store one exponent value
-          tail;    # trailing part in 'xx' (cancels with 'head')
-
-    # Consider special cases.
-    if n = 0 then
-      return One( FamilyObj( x ) );
-    elif n = 1 then
-      return x;
-    fi;
-
-    xx:= ExtRepOfObj( x );
-    if IsEmpty( xx ) then
-      return x;
-    fi;
-
-    l:= Length( xx );
-    if l = 2 then
-      n:= n * xx[2];
-      return ObjByExtRep( FamilyObj( x ), 1, n, [ xx[1], n ] );
-    fi;
-
-    # Invert the internal representation of 'x' if necessary.
-    if n < 0 then
-      i:= 1;
-      cxx:= [];
-      while i < l do
-        cxx[  l-i  ] :=   xx[  i  ];
-        cxx[ l-i+1 ] := - xx[ i+1 ];
-        i:= i+2;
-      od;
-      xx:= cxx;
-      n:= -n;
-    else
-      xx:= ShallowCopy( xx );
-    fi;
-
-    # Treat the case of cancellation.
-    # The word is split into three parts, namely
-    # 'head' (1 to 'p-1'), 'xx' ('p' to 'l+1'), and 'tail' ('l+2' to 'len').
-    p:= 1;
-    len:= l;
-    l:= l - 1;
-    while xx[l] = xx[p] and xx[ l+1 ] = - xx[ p+1 ] do
-      l:= l-2;
-      p:= p+2;
-    od;
-
-    # Again treat a special case.
-    if l = p then
-      exp:= n * xx[ l+1 ];
-      xx[ l+1 ]:= exp;
-      return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ], exp, xx );
-    fi;
-
-    head:= xx{ [ 1 .. p-1 ] };
-    tail:= xx{ [ l+2 .. len ] };
-    xx:= xx{ [ p .. l+1 ] };
-    l:= l - p + 2;
-
-    if xx[1] = xx[ l-1 ] then
-
-      # Treat the case of gluing.
-      tail:= Concatenation( [ xx[1], xx[l] ], tail );
-      exp:= xx[2];
-      xx[2]:= xx[2] + xx[l];
-      Unbind( xx[  l  ] );
-      Unbind( xx[ l-1 ] );
-
-    else
-      exp:= 0;
-    fi;
-
-    # Compute the 'n'-th power of 'xx'.
-    result:= ShallowCopy( xx );
-    n:= n - 1;
-    while n <> 0 do
-      if n mod 2 = 1 then
-        Append( result, xx );
-        n:= (n-1)/2;
-      else
-        n:= n/2;
-      fi;
-      Append( xx, xx );
-    od;
-
-    # Put the three parts together.
-    if exp = 0 then
-
-      # The exponents in the power do not exceed the exponents in 'x'.
-      Append( head, result );
-      Append( head, tail );
-      return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], head );
-
-    else
-
-      result[2]:= exp;
-      Append( head, result );
-      Append( head, tail );
-      return ObjByExtRep( FamilyObj( x ), TypeObj( x )![ AWP_NR_BITS_EXP ],
-                              xx[2], head );
-
-    fi;
-    end );
-
-InstallMethod( Inverse,
-    "method for an assoc. word with inverse",
-    true,
-    [ IsAssocWordWithInverse ], 0,
-    function( x )
-
-    local xx,      # external representation of 'x'
-          cxx,     # external repres. of the inverse of 'x'
-          i,       # loop over 'xx'
-          l;       # actual length of 'xx'
-
-    # Consider special cases.
-    xx:= ExtRepOfObj( x );
-    if IsEmpty( xx ) then
-      return x;
-    fi;
-
-    l:= Length( xx );
-    if l = 2 then
-      l:= - xx[2];
-      return ObjByExtRep( FamilyObj( x ), 1, l, [ xx[1], l ] );
-    fi;
-
-    # Invert the internal representation of 'x'.
-    i:= 1;
-    cxx:= [];
-    while i < l do
-      cxx[  l-i  ] :=   xx[  i  ];
-      cxx[ l-i+1 ] := - xx[ i+1 ];
-      i:= i+2;
-    od;
-
-    # The exponents in the inverse do not exceed the exponents in 'x'.
-#T ??
-    return AssocWord( TypeObj( x )![ AWP_PURE_TYPE ], cxx );
-    end );
+#T  how is this defined?
 
 
 #############################################################################
 ##
-
-#M  LengthWord( <w> )
+#M  LengthWord( <w> ) . . . . . . . . . . . . . . . . .  for a nonassoc. word
 ##
 InstallMethod( LengthWord,
-    "method for an assoc. word",
+    "method for a nonassoc. word",
     true,
-    [ IsAssocWord ], 0,
+    [ IsNonassocWord ], 0,
     function( w )
-    local len, i;
-    w:= ExtRepOfObj( w );
-    len:= 0;
-    for i in [ 2, 4 .. Length( w ) ] do
-      len:= len + AbsInt( w[i] );
-    od;
-    return len;
-    end );
-
-
-#############################################################################
-##
-#M  ExponentSyllable( <w>, <n> )
-##
-InstallMethod( ExponentSyllable,
-    "method for an assoc. word, and a positive integer",
-    true,
-    [ IsAssocWord, IsInt and IsPosRat ],
-    0,
-    function( w, n )
-    return ExtRepOfObj( w )[ 2*n ];
-    end );
-
-
-#############################################################################
-##
-#M  GeneratorSyllable( <w>, <n> )
-##
-InstallMethod( GeneratorSyllable,
-    "method for an assoc. word, and a positive integer",
-    true,
-    [ IsAssocWord, IsInt and IsPosRat ],
-    0,
-    function( w, n )
-    return ExtRepOfObj( w )[ 2*n-1 ];
-    end );
-
-
-#############################################################################
-##
-#M  NumberSyllables( <w> )
-##
-InstallMethod( NumberSyllables,
-    "method for an assoc. word",
-    true,
-    [ IsAssocWord ], 0,
-    w -> Length( ExtRepOfObj( w ) ) / 2 );
-
-
-#############################################################################
-##
-#M  ExponentSums( <w> )
-##
-InstallMethod( ExponentSums,
-    "method for an assoc. word",
-    true,
-    [ IsAssocWord ], 0,
-    function( w )
-    Error( "what is this?" );
-    end );
-
-
-#############################################################################
-##
-#M  ExponentSumWord( <w>, <gen> )
-##
-InstallMethod( ExponentSumWord,
-    "method for associative word and generator",
-    IsIdentical,
-    [ IsAssocWord, IsAssocWord ],
-    0,
-    function( w, gen )
-    local n, g, i;
-    w:= ExtRepOfObj( w );
-    gen:= ExtRepOfObj( gen );
-    if Length( gen ) <> 2 or ( gen[2] <> 1 and gen[2] <> -1 ) then
-      Error( "<gen> must be a generator" );
-    fi;
-    n:= 0;
-    g:= gen[1];
-    for i in [ 1, 3 .. Length( w ) - 1 ] do
-      if w[i] = g then
-        n:= n + w[ i+1 ];
-      fi;
-    od;
-    if gen[2] = -1 then
-      n:= -n;
-    fi;
-    return n;
-    end );
-
-
-#############################################################################
-##
-#M  Subword( <w>, <from>, <to> )
-##
-InstallMethod( Subword,
-    "method for associative word and two positions",
-    true,
-    [ IsAssocWord, IsPosRat and IsInt, IsPosRat and IsInt ],
-    0,
-    function( w, from, to )
-    local extw, pos, nextexp, firstexp, sub;
-   
-    extw:= ExtRepOfObj( w );
-    to:= to - from + 1;
-
-    # The relevant part is 'extw{ [ pos-1 .. Length( extw ) ] }'.
-    pos:= 2;
-    nextexp:= AbsInt( extw[ pos ] );
-    while nextexp < from do
-      pos:= pos + 2;
-      from:= from - nextexp;
-      nextexp:= AbsInt( extw[ pos ] );
-    od;
-
-    # Throw away 'Subword( w, 1, from-1 )'.
-    nextexp:= nextexp - from + 1;
-    if 0 < extw[ pos ] then
-      firstexp:= nextexp;
-    else
-      firstexp:= - nextexp;
-    fi;
-
-    # Fill the subword.
-    sub:= [];
-    while nextexp < to do
-      Add( sub, extw[ pos-1 ] );
-      Add( sub, extw[ pos   ] );
-      pos:= pos+2;
-      to:= to - nextexp;
-      nextexp:= AbsInt( extw[ pos ] );
-    od;
-
-    # Adjust the first exponent.
-    if not IsEmpty( sub ) then
-      sub[2]:= firstexp;
-    fi;
-
-    # Add the trailing pair.
-    if 0 < to then
-      Add( sub, extw[ pos-1 ] );
-      if extw[ pos ] < 0 then
-        Add( sub, -to );
+    local len;
+    len:= function( obj )
+      if obj = 0 then
+        return 0;
+      elif IsInt( obj ) then
+        return 1;
       else
-        Add( sub, to );
+        return len( obj[1] ) + len( obj[2] );
       fi;
-    fi;
-
-    return ObjByExtRep( FamilyObj( w ), sub );
-    end );
-
-
-#############################################################################
-##
-#M  PositionWord( <w>, <sub>, <from> )
-##
-InstallMethod( PositionWord,
-    "method for two associative words and a positive integer",
-    true,
-    [ IsAssocWord, IsAssocWord, IsPosRat and IsInt ],
-    0,
-    function( w, sub, from )
-    Error( "not yet implemented" );
-    end );
-
-
-#############################################################################
-##
-#M  SubstitutedWord( <w>, <from>, <to>, <by> )
-##
-InstallMethod( SubstitutedWord,
-    "method for assoc. word, two positive integers, and assoc. word",
-    true,
-    [ IsAssocWord, IsPosRat and IsInt, IsPosRat and IsInt, IsAssocWord ],
-    0,
-    function( w, from, to, by )
-    Error( "not yet implemented" );
-    end );
-
-
-#############################################################################
-##
-#M  EliminatedWord( <word>, <gen>, <by> )
-##
-InstallMethod( EliminatedWord,
-    "method for three associative words",
-    true,
-#T need three argument 'IsIdentical' !
-    [ IsAssocWord, IsAssocWord, IsAssocWord ],
-    0,
-    function( word, gen, by )
-    Error( "not yet implemented" );
+    end;
+    return len( ExtRepOfObj( w ) );
     end );
 
 
@@ -612,121 +125,146 @@ InstallMethod( EliminatedWord,
 ##
 #M  MappedWord( <x>, <gens1>, <gens2> )
 ##
-IsElmsCollsX := function( F1, F2, F3 )
-    return     HasElementsFamily( F2 )
-           and IsIdentical( F1, ElementsFamily( F2 ) );
-end;
-
 InstallMethod( MappedWord,
-    "method for an assoc. word, a homogeneous list, and a list",
+    "method for a nonassoc. word, a homogeneous list, and a list",
     IsElmsCollsX,
-    [ IsAssocWord, IsHomogeneousList, IsList ], 0,
+    [ IsNonassocWord, IsNonassocWordCollection, IsList ], 0,
     function( x, gens1, gens2 )
 
-    local i, mapped, exp;
+    local mapped;
 
-    gens1:= List( gens1, x -> ExtRepOfObj( x )[1] );
-    x:= ExtRepOfObj( x );
-    if IsEmpty( x ) then
+    gens1:= List( gens1, ExtRepOfObj );
+    mapped:= function( word )
+      if word = 0 then
+        return One( gens2[1] );
+      elif IsInt( word ) then
+        return gens2[ Position( gens1, word ) ];
+      else
+        return mapped( word[1] ) * mapped( word[2] );
+      fi;
+    end;
 
-      # This happens for monoid element objects.
-      mapped:= gens2[1] ^ 0;
-
-    else
-      mapped:= gens2[ Position( gens1, x[1] ) ] ^ x[2];
-      for i in [ 2 .. Length( x )/2 ] do
-        exp:= x[ 2*i ];
-        if exp <> 0 then
-          mapped:= mapped * gens2[ Position( gens1, x[ 2*i-1 ] ) ] ^ exp;
-        fi;
-      od;
-    fi;
-
-    return mapped;
+    return mapped( ExtRepOfObj( x ) );
     end );
 
 
 #############################################################################
 ##
-#M  CyclicReducedWordList( <word>, <gens> )
+#R  IsBracketRep( <obj> )
 ##
-InstallMethod( CyclicReducedWordList,
-    "for word and generators list",
-    IsElmsColls,
-    [ IsAssocWord,
-      IsHomogeneousList ],
-    0,
-
-function( w, gens )
-    local   posg,  invg,  i,  s,  e,  str,  j;
-
-    gens := List( gens, ExtRepOfObj );
-    posg := [];
-    invg := [];
-    for i  in [ 1 .. Length(gens) ]  do
-        if 2 <> Length(gens[i]) or not gens[i][2] in [-1,1]  then
-            Error( gens[i], " is not a generator" );
-        fi;
-        if gens[i][2] = 1  then
-            posg[gens[i][1]] := i;
-            invg[gens[i][1]] := -i;
-        else
-            posg[gens[i][1]] := -i;
-            invg[gens[i][1]] := i;
-        fi;
-    od;
-    w := ExtRepOfObj(w);
-    s := 1;
-    e := Length(w)-1;
-    while s < e and w[s] = w[e] and w[s+1] = -w[e+1]  do
-        if not IsBound(posg[w[s]])  then
-            return fail;
-        fi;
-        s := s + 2;
-        e := e + 2;
-    od;
-    if s < e and w[s] = w[e]  then
-        w[s+1] := w[s+1] + w[e+1];
-        e := e - 2;
-    fi;
-    str := [];
-    for i  in [ s, s+2 .. e ]  do
-        if not IsBound(posg[w[i]])  then
-            return fail;
-        fi;
-        if 0 < w[i+1]  then
-            for j  in [ 1 .. w[i+1] ]  do
-                Add( str, posg[w[i]] );
-            od;
-        else
-            for j  in [ 1 .. -w[i+1] ]  do
-                Add( str, invg[w[i]] );
-            od;
-        fi;
-    od;
-    return str;
-
-end );
-
-
-InstallMethod( CyclicReducedWordList,
-    "for word and empty generators list",
-    true,
-    [ IsAssocWord,
-      IsEmpty and IsList ],
-    0,
-
-function( word, gens )
-    if One(word) <> word  then
-        return fail;
-    else
-        return [];
-    fi;
-end );
+##  This representation is equal to the external representation.
+##
+IsBracketRep := NewRepresentation( "IsBracketRep",
+    IsPositionalObjectRep, [] );
 
 
 #############################################################################
 ##
+#M  Print( <w> )  . . . . . . . . . . . . . . . . . . .  for a nonassoc. word
+##
+InstallMethod( PrintObj,
+    "method for a nonassociative word",
+    true,
+    [ IsNonassocWord ], 0,
+    function( elm )
 
+    local names,
+          print;
+
+    names:= FamilyObj( elm )!.names;
+    print:= function( expr )
+      if expr = 0 then
+        Print( "<identity ...>" );
+      elif IsInt( expr ) then
+        Print( names[ expr ] );
+      else
+        Print( "(" );
+        print( expr[1] );
+        Print( "*" );
+        print( expr[2] );
+        Print( ")" );
+      fi;
+    end;
+    print( ExtRepOfObj( elm ) );
+    end );
+
+
+#############################################################################
+##
+#M  String( <w> ) . . . . . . . . . . . . . . . . . . .  for a nonassoc. word
+##
+InstallMethod( String,
+    "method for a nonassociative word",
+    true,
+    [ IsNonassocWord ], 0,
+    function( elm )
+
+    local names,
+          string;
+
+    names:= FamilyObj( elm )!.names;
+    string:= function( expr )
+      if expr = 0 then
+        return "<identity ...>" ;
+      elif IsInt( expr ) then
+        return names[ expr ];
+      else
+        return Concatenation( "(", string( expr[1] ), "*",
+                              string( expr[2] ), ")" );
+      fi;
+    end;
+    elm:= string( ExtRepOfObj( elm ) );
+    ConvertToStringRep( elm );
+    return elm;
+    end );
+
+
+#############################################################################
+##
+#M  ObjByExtRep( <F>, <descr> ) . . . . . .  for a nonassociative word family
+##
+InstallMethod( ObjByExtRep,
+    "method for a family of nonassociative words, and a homogeneous list",
+    true,
+    [ IsNonassocWordFamily, IsObject ], 0,
+    function( F, descr )
+    return Objectify( F!.defaultType, [ descr ] );
+    end );
+
+
+#############################################################################
+##
+#M  ExtRepOfObj( <w> )  . . . . . . . . . . . . . . for a nonassociative word
+##
+InstallMethod( ExtRepOfObj,
+    "method for a nonassoc. word",
+    true,
+    [ IsNonassocWord and IsBracketRep ], 0,
+    elm -> elm![1] );
+
+
+#############################################################################
+##
+#M  NonassocWord( <Fam>, <descr> )  . . . . . . . . for a nonass. word family
+##
+NonassocWord := ObjByExtRep;
+
+
+#############################################################################
+##
+#M  One( <w> )  . . . . . . . . . . . . . . . . . for a nonass. word-with-one
+##
+InstallMethod( One,
+    "method for a nonassoc. word-with-one",
+    true,
+    [ IsNonassocWordWithOne ], 0,
+    x -> ObjByExtRep( FamilyObj( x )!.defaultType, 0 ) );
+
+
+#############################################################################
+##
 #E  word.gi . . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+
+
+

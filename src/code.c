@@ -802,6 +802,7 @@ void            PushBinaryOp (
 
 /****************************************************************************
 **
+
 *F  CodeBegin() . . . . . . . . . . . . . . . . . . . . . . . start the coder
 *F  CodeEnd(<error>)  . . . . . . . . . . . . . . . . . . . .  stop the coder
 **
@@ -1298,15 +1299,15 @@ void            CodeForEnd ( void )
 **  the reader encounters  the end  of the  statement, i.e., immediate  after
 **  'CodeWhileEndBody'.
 */
-void            CodeWhileBegin ( void )
+void CodeWhileBegin ( void )
 {
 }
 
-void            CodeWhileBeginBody ( void )
+void CodeWhileBeginBody ( void )
 {
 }
 
-void            CodeWhileEndBody (
+void CodeWhileEndBody (
     UInt                nr )
 {
     Stat                stat;           /* while-statement, result         */
@@ -1315,7 +1316,7 @@ void            CodeWhileEndBody (
     UInt                i;              /* loop variable                   */
 
     /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
+    if ( 3 < nr || nr == 0 ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
     }
@@ -1337,7 +1338,7 @@ void            CodeWhileEndBody (
     PushStat( stat );
 }
 
-void            CodeWhileEnd ( void )
+void CodeWhileEnd ( void )
 {
 }
 
@@ -1365,22 +1366,22 @@ void            CodeWhileEnd ( void )
 **  when  the reader encounters the end  of the statement,  i.e., *after* the
 **  condition is read.
 */
-void            CodeRepeatBegin ( void )
+void CodeRepeatBegin ( void )
 {
 }
 
-void            CodeRepeatBeginBody ( void )
+void CodeRepeatBeginBody ( void )
 {
 }
 
-void            CodeRepeatEndBody (
+void CodeRepeatEndBody (
     UInt                nr )
 {
     /* leave the number of statements in the body on the expression stack  */
     PushExpr( INTEXPR_INT(nr) );
 }
 
-void            CodeRepeatEnd ( void )
+void CodeRepeatEnd ( void )
 {
     Stat                stat;           /* repeat-statement, result        */
     UInt                nr;             /* number of statements in body    */
@@ -1398,7 +1399,7 @@ void            CodeRepeatEnd ( void )
     nr = INT_INTEXPR( tmp );
 
     /* collect the statements into a statement sequence if necessary       */
-    if ( 3 < nr ) {
+    if ( 3 < nr || nr == 0 ) {
         PushStat( PopSeqStat( nr ) );
         nr = 1;
     }

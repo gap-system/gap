@@ -406,8 +406,13 @@ DiagonalizeMat := DiagonalizeIntMat;
 #############################################################################
 ##
 #F  IdentityMat( <m> [, <F>] )  . . . . . . . identity matrix of a given size
+#F  MutableIdentityMat( <m> [, <F>] ) . . . . identity matrix of a given size
+##
+##  `IdentityMat' returns an immutable matrix.
 ##
 IdentityMat := NewOperationArgs( "IdentityMat" );
+
+MutableIdentityMat := NewOperationArgs( "MutableIdentityMat" );
 
 
 #############################################################################
@@ -424,8 +429,13 @@ MutableTransposedMat := NewOperationArgs( "MutableTransposedMat" );
 #############################################################################
 ##
 #F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
+#F  MutableNullMat( <m>, <n> [, <F>] )  . . . . . null matrix of a given size
+##
+##  `NullMat' returns an immutable matrix.
 ##
 NullMat := NewOperationArgs( "NullMat" );
+
+MutableNullMat := NewOperationArgs( "MutableNullMat" );
 
 
 #############################################################################

@@ -664,7 +664,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     function( hom, elm )
     local   D;
 
-    D := Enumerator( hom!.externalSet );
+    D := Enumerator( UnderlyingExternalSet( hom ) );
     if Length( D ) = 0  then
         return ();
     else 
@@ -682,7 +682,7 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
     function( hom, H )
     local   D,  I;
     
-    D := Enumerator( hom!.externalSet );
+    D := Enumerator( UnderlyingExternalSet( hom ) );
     I := EmptyStabChain( [  ], One( Range( hom ) ) );
     RemoveStabChain( ConjugateStabChain( StabChainOp( H, D ), I,
             hom, hom!.conperm,
@@ -731,7 +731,7 @@ end );
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsConstituentHomomorphism ], 0,
     function( hom )
-    return Stabilizer( Source( hom ), Enumerator( hom!.externalSet ),
+    return Stabilizer( Source( hom ), Enumerator( UnderlyingExternalSet( hom ) ),
                    OnTuples );
 end );
 
@@ -760,7 +760,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     function( hom, elm )
     local   img,  D,  i;
     
-    D := Enumerator( hom!.externalSet );
+    D := Enumerator( UnderlyingExternalSet( hom ) );
     
     # make the image permutation as a list
     img := [  ];
@@ -785,7 +785,7 @@ ImageKernelBlocksHomomorphism := function( hom, H )
             B,          # current block
             i,  j;      # loop variables
     
-    D := Enumerator( hom!.externalSet );
+    D := Enumerator( UnderlyingExternalSet( hom ) );
     S := CopyStabChain( StabChainAttr( H ) );
     full := IsIdentical( H, Source( hom ) );
     if full  then
@@ -854,7 +854,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
             b,          # number of image block <B>
             pos;        # position of point hit by preimage
     
-    D := Enumerator( hom!.externalSet );
+    D := Enumerator( UnderlyingExternalSet( hom ) );
     S := StabChainAttr( hom );
     pre := One( Source( hom ) );
 
@@ -919,7 +919,7 @@ PreImageSetStabBlocksHomomorphism := function( hom, I )
     # the stabilizer chain below $H_{block[i][1]}$ is already complete, so we
     # only have to care about the top level with the basepoint $block[i][1]$.
     else
-        pnt := Enumerator( hom!.externalSet )[ I.orbit[ 1 ] ][ 1 ];
+        pnt := Enumerator( UnderlyingExternalSet( hom ) )[ I.orbit[ 1 ] ][1];
         H := PreImageSetStabBlocksHomomorphism( hom, I.stabilizer );
         ChangeStabChain( H, [ pnt ], false );
         for gen  in I.generators  do

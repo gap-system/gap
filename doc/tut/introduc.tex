@@ -54,9 +54,9 @@ appendix~A\null.
 \atindex{starting GAP}{@starting {\GAP}}%
 \atindex{leaving GAP}{@leaving {\GAP}}%
 \atindex{quit}{@\noexpand`quit'}%
-If the  program  is correctly installed then  you start {\GAP}  by simply
-typing `gap'  at  the prompt  of your  operating  system  followed by the
-$return$ or the $newline$ key.
+If the  program is correctly  installed then you  start  {\GAP} by simply
+typing  `gap' at  the  prompt of your   operating system followed by  the
+<return> key (sometimes also called the <newline> key).
 \beginexample
     $ gap
 \endexample
@@ -72,30 +72,25 @@ prompt. Do not omit the semicolon!
     gap> quit;
     $ 
 \endexample
-On some systems you may as well type  $ctl$-`D' to yield the same effect.
-In any situation   {\GAP} is ended by  typing  $ctl$-`C' twice  within  a
-second. Here as always, a combination like  $ctl$-`D' means that you have
-to press the `D' key while you hold down the $ctl$ key.
+On some systems you may as well type  <ctl>-`D' to yield the same effect.
+In any situation   {\GAP} is ended by  typing  <ctl>-`C' twice  within  a
+second. Here as always, a combination like  <ctl>-`D' means that you have
+to press the `D' key while you hold down the <ctl> key.
 
-In most places *whitespace*
 \index{whitespace}%
-characters  (i.e. <space>s, <tab>s  and <newline>s) are insignificant for
-the meaning  of {\GAP} input. Identifiers and  keywords must  however not
-contain any whitespace. On   the  other hand,  sometimes there   must  be
-whitespace around  identifiers and keywords   to separate them  from each
-other and from numbers. We will use whitespace to format more complicated
-commands for better readability.
+In  most   places *whitespace*  characters   (i.e.  <space>s, <tab>s  and
+<return>s) are insignificant for the meaning of {\GAP} input. Identifiers
+and keywords must however not contain any whitespace.  On the other hand,
+sometimes there  must be  whitespace  around identifiers and keywords  to
+separate them from each other and from numbers. We will use whitespace to
+format more complicated commands for better readability.
 
-A *comment*
 \index{comments}%
-in {\GAP}  starts with the symbol `\#'  and continues to  the  end of the
-line. Comments are treated like whitespace by {\GAP}.
-
-Besides of such comments which are part of the input of a {\GAP} session,
-we use additional comments  which are part of the manual description, but
-not  of the  respective {\GAP} session.  In the  printed version  of this
-manual  these comments  will  be printed  in  a normal  font  for  better
-readability, hence they start with the symbol~\#.
+A *comment* in  {\GAP} starts with the  symbol `\#' and continues to  the
+end of the line. Comments are  treated like whitespace  by {\GAP}. We use
+comments in   the printed examples  in this  tutorial to  explain certain
+lines of input or output. These comments will be printed in a normal font
+for better readability, hence they start with the symbol~\#.
 
 The examples of  {\GAP} sessions given  in any particular chapter of this
 manual have been  run in one continuous   session, starting with the  two
@@ -137,10 +132,10 @@ it treats input from the keyboard.
 
 A simple calculation with {\GAP} is as easy as one can imagine.  You type
 the problem just after the prompt, terminate it with a semicolon and then
-pass the problem to the  program with the $return$ key.  For  example, to
+pass the problem to the  program with the <return> key.  For  example, to
 multiply the difference between 9 and 7 by the sum of 5 and 6, that is to
 calculate  $(9 - 7) \* (5 + 6)$, you type exactly this  last sequence  of
-symbols followed by `;' and $return$.
+symbols followed by `;' and <return>.
 \beginexample
     gap> (9 - 7) * (5 + 6);
     22
@@ -150,12 +145,21 @@ Then {\GAP} echoes   the result 22 on the   next line and shows with  the
 prompt  that it is ready  for the  next problem.  Henceforth,  we will no
 longer print this additional prompt.
 
-If you did omit the semicolon at the  end of  the  line but have  already
-typed $return$, then {\GAP} has read everything you  typed, but does  not
-know  that the command is  complete.  The  program is waiting for further
-input and indicates this with a partial prompt `>'.   This little problem
-is solved by  simply typing  the missing  semicolon on  the next line  of
-input.  Then the result is printed and the normal prompt returns.
+\index{line editing}%
+If you make a mistake while typing the  line, but before typing the final
+<return>, you can use the <delete> key  (or sometimes <backspace> key) to
+delete the last typed  character. You can  also move the cursor  back and
+forward  in the line  with <ctl>-`B' and  <ctl>-`F' and  insert or delete
+characters  anywhere  in the line.  The  line editing  commands are fully
+described in "Line editing".
+
+If you discover a mistake after typing <return>, e.g., if you omitted the
+semicolon  at the end of the  line, then {\GAP}  has  read everything you
+typed, but does  not know that the command   is complete. The  program is
+waiting for further input and  indicates this with  a partial prompt `>'.
+This little  problem is solved by simply  typing the missing semicolon on
+the next line of input. Then the result is  printed and the normal prompt
+returns.
 \beginexample
     gap> (9 - 7) * (5 + 6)
     > ;
@@ -166,44 +170,41 @@ still  waiting for, then  you have  to type  semicolons  until the normal
 prompt  returns.  In  every situation this  is the  exact meaning of  the
 prompt `gap>': the program is waiting for a new problem.
 
-Even if you mistyped the command you do not have to  type it all again as
-{\GAP}  permits a lot of  command  line editing.   Maybe you mistyped  or
-forgot the last closing parenthesis.  Then  your command is syntactically
-incorrect and  {\GAP} will  notice it, incapable of computing the desired
-result.
+But even if you  mistyped the command more  seriously, you do not have to
+type   it all again. Suppose   you  mistyped or  forgot  the last closing
+parenthesis. Then your command is syntactically incorrect and {\GAP} will
+notice it, incapable of computing the desired result.
 \beginexample
     gap> (9 - 7) * (5 + 6;
     Syntax error: ) expected
     (9 - 7) * (5 + 6;
                     ^
 \endexample
-Instead of the result an error message occurs  indicating the place where
-an unexpected  symbol  occurred with  an arrow sign `^' under  it.  As a
-computer program cannot know  what  your  intentions really were, this is
-only a hint.  But  in this  case {\GAP} is right  by  claiming that there
-should be a closing  parenthesis before the semicolon.  Now  you can type
-$ctl$-`P' to  recover the last line of  input.  It  will be written after
-the prompt with the cursor in the first position.  Type $ctl$-`E' to take
-the cursor  to the end of the line, then $ctl$-`B' to move the cursor one
-character  back.  The  cursor  is  now  on the position of the semicolon.
-Enter  the missing  parenthesis  by simply typing `)'.  Now  the  line is
-correct and may be passed to {\GAP} by  hitting  the $newline$ key.  Note
-that for this action it is not necessary to move the cursor past the last
-character of the input line.
+\index{line editing}%
+Instead of the result an error message  occurs indicating the place where
+an unexpected  symbol occurred with   an arrow sign  `^'  under it.  As a
+computer program  cannot know what your  intentions really were,  this is
+only  a hint. But in this  case {\GAP}  is  right by  claiming that there
+should be a closing  parenthesis before the  semicolon. Now you  can type
+<ctl>-`P' to recover the last line of input. It will be written after the
+prompt with the cursor in the first  position. Type <ctl>-`E' to take the
+cursor  to the end of   the line, then <ctl>-`B'   to move the cursor one
+character back. The cursor is now on the position of the semicolon. Enter
+the missing parenthesis by simply typing `)'. Now the line is correct and
+may be passed to {\GAP}  by hitting the <return>  key. Note that for this
+action it is not necessary to move the cursor  past the last character of
+the input line.
 
-Each  line  of commands you  type  is  sent to  {\GAP} for  evaluation by
-pressing $newline$ regardless of the position of the cursor in that line.
-We will no longer mention the $newline$ key from now on.
+Each line  of commands  you  type is sent to    {\GAP} for evaluation  by
+pressing <return> regardless of the position of  the cursor in that line.
+We will no longer mention the <return> key from now on.
 
+\index{break loops}%
 Sometimes a syntax error will cause {\GAP} to enter a *break loop*.  This
 is indicated by the special prompt `brk>'. If another syntax error occurs
 while  {\GAP} is in  a break loop, the prompt  will  change to `brk_02>',
 `brk_03>' and so on. You can leave the current break loop and exit to the
-next outer one by either typing `quit;' or by hitting $ctl$-`D'.
-
-For the  definition  of the    {\GAP}  syntax see  chapter   "chapter:The
-Programming Language". A complete list of command line editing facilities
-is found in "Line editing". The break loop is described in "Break loops".
+next outer one by either typing `quit;' or by hitting <ctl>-`D'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Constants and operators}\null
@@ -318,29 +319,23 @@ arbitrary size.   Numbers and boolean   values are constants.   There are
 other types of  constants in {\GAP} like permutations.   You are now in a
 position to use {\GAP} as a simple desktop calculator.
 
-Operators are explained in more detail in "Comparisons" and "Operations".
-Moreover there are  sections about operators  and comparisons for special
-types  of  objects in almost every chapter of this manual.  You will find
-more information about boolean values in chapters "Booleans" and "Boolean
-Lists".   Permutations  are   described  in  chapter  "Permutations"  and
-characters are described in chapter "Strings and Characters".
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Variables versus objects}\null
+\Section{Variables vs.\ objects}\null
 
-\index{variables}\index{assignment}\index{identifier}\index{objects}% The
-constants described   in  the  last  section   are  specified by  certain
-combinations   of digits and minus   signs (in the   case of integers) or
-digits,  commas  and parentheses (in  the case  of  permutations).  These
-sequences of characters  always have the same meaning  to  {\GAP}. On the
+\index{variables}\index{assignment}\index{identifier}\index{objects}%
+\atindex{objects!vs.\ variables}{|indexit}%
+The  constants described  in the  last  section are  specified by certain
+combinations   of digits and  minus  signs (in  the case  of integers) or
+digits,  commas  and parentheses  (in   the case  of permutations). These
+sequences of characters always  have the same meaning  to {\GAP}.  On the
 other hand, there are *variables*, specified by a sequence of letters and
 digits (including at least one letter), and their meaning depends on what
-has been assigned to  them.  An *assignment* is  done by a {\GAP} command
-`<sequence_of_letters_and_digits> :=  <meaning>',  where the  sequence on
+has been  assigned to them.  An *assignment* is  done by a {\GAP} command
+`<sequence_of_letters_and_digits> := <meaning>',  where the  sequence  on
 the left hand side is called the *identifier*  of the variable, it serves
 as its name. The meaning on the right hand side can be a constant like an
-integer or a  permutation,  but it can  also  be almost any  other {\GAP}
-object. From now on,  we will use the term  *object* to denote  something
+integer or  a  permutation, but  it can  also be almost  any other {\GAP}
+object. From now on,  we will use the  term *object* to denote  something
 that can be assigned to a variable.
 
 There must be no whitespace between the `:' and the `=' in the assignment
@@ -401,8 +396,8 @@ There are some predefined variables coming with {\GAP}.  Many of them you
 will find in the remaining  chapters of  this manual, since functions are
 also referred to via identifiers.
 
-This seems to be the  right place to state the  following rule.  The name
-of  every function in the {\GAP}  library starts with a *capital letter.*
+This seems to be the  right place to state the  following rule:  The name
+of  every function in the {\GAP}  library starts with a *capital letter*.
 Thus if you choose  only names starting with a  small letter for your own
 variables you will  not overwrite any predefined  function. But there are
 some further interesting variables one of which shall be introduced now.
@@ -422,18 +417,16 @@ can still do it by the following assignment.
 Moreover there are variables `last2' and `last3', guess their values.
 
 %%  Summary  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In this section you have seen how to assign  objects to variables.  These
-objects can  later   be accessed through  the  name  of the  variable, its
-identifier.  You have also  encountered the useful  concept of the `last'
-variables storing the latest returned objects.  And  you have learned that
+In this section you  have seen how to  assign objects to variables. These
+objects  can  later be accessed  through the  name  of the  variable, its
+identifier. You  have also encountered the  useful concept of  the `last'
+variables storing the latest returned  objects. And you have learned that
 a double semicolon prevents the result of a statement from being printed.
 
-Variables and assignments are described in more detail in "Variables" and
-"Assignments".  A complete list of keywords is contained in "Keywords".
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Section{Objects versus elements}
+\Section{Objects vs.\ elements}\null
 
+\atindex{objects!vs.\ elements}{|indexit}\index{elements}%
 In the last section  we mentioned that every object   is given a  certain
 place  in memory by the  {\GAP} storage manager  (although that place may
 change in the course  of  a {\GAP}  session). In  this sense, objects  at
@@ -536,8 +529,8 @@ the list  elements that it has  performed.  You will not understand right
 now what it means  to change an object.   We will return to this  subject
 several times in the next sections.
 
-A comfortable way to define a function is given by the *maps-to* operator
 \index{maps-to operator}%
+A comfortable way to define a function yourself is the *maps-to* operator
 `->' consisting of  a minus sign and a   greater sign with  no whitespace
 between them. The function  `cubed' which maps a  number  to its  cube is
 defined on the following line.
@@ -550,8 +543,10 @@ After the function has been defined, it can now be applied.
     gap> cubed(5);
     125 
 \endexample
-Not every {\GAP} function can be defined in this  way.   You will see how
-to write your own {\GAP} functions in a later section.
+More complicated  functions,  especially functions   with  more than  one
+argument cannot be  defined in this way. You  will see how to  write your
+own   {\GAP}   functions in chapter   "The  Programming  Language" in the
+reference manual.
 
 %%  Summary  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In this section you have seen {\GAP} objects of  type function.  You have
@@ -560,17 +555,13 @@ new object or a side effect.  A side effect may change an argument of the
 function.   Moreover you have seen an easy  way  to define a  function in
 {\GAP} with the maps-to operator.
 
-Function  calls are described   in   "Function Calls" and in   "Procedure
-Calls".  The functions of the {\GAP}  library are  described in detail in
-the reference manual.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
 % outline-regexp:     "\\\\Chapter\\|\\\\Section"
-% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
-% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -255,6 +255,59 @@ InstallMethod( String,
 
 #############################################################################
 ##
+#M  String( <bool> )  . . . . . . . . . . . . . . . . . . . . . for a boolean
+##
+InstallMethod( String,
+    "method for a boolean",
+    true,
+    [ IsBool ], 0,
+    function( bool )
+    if bool  then
+      return "true";
+    else
+      return "false";
+    fi;
+    end );
+
+
+#############################################################################
+##
+#M  String( <perm> )  . . . . . . . . . . . . . . . . . . . for a permutation
+##
+InstallMethod( String,
+    "method for a permutation",
+    true,
+    [ IsPerm ], 0,
+    function( perm )
+    local   str,  i,  j;
+
+    if IsOne( perm ) then
+        str := "()";
+    else
+        str := "";
+        for i  in [ 1 .. LargestMovedPointPerm( perm ) ]  do
+            j := i ^ perm;
+            while j > i  do j := j ^ perm;  od;
+            if j = i and i ^ perm <> i  then
+                Append( str, "(" );
+                Append( str, String( i ) );
+                j := i ^ perm;
+                while j > i do
+                    Append( str, "," );
+                    Append( str, String( j ) );
+                    j := j ^ perm;
+                od;
+                Append( str, ")" );
+            fi;
+        od;
+        ConvertToStringRep( str );
+    fi;
+    return str;
+    end );
+
+
+#############################################################################
+##
 #F  LogInt( <n>, <base> ) . . . . . . . . . . . . . . logarithm of an integer
 ##
 LogInt := function ( n, base )

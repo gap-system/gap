@@ -119,13 +119,26 @@ PcSeries := NewAttribute(
 SetPcSeries := Setter(PcSeries);
 HasPcSeries := Tester(PcSeries);
 
+
 #############################################################################
 ##
-#A  EAFirst( <pcgs> )
+#A  NormalPcSeries( <pcgs> )
 ##
-EAFirst := NewAttribute( "EAFirst", IsPcgs );
-SetEAFirst := Setter( EAFirst );
-HasEAFirst := Tester( EAFirst );
+NormalPcSeries := NewAttribute(
+    "NormalPcSeries",
+    IsPcgs );
+
+SetNormalPcSeries := Setter(NormalPcSeries);
+HasNormalPcSeries := Tester(NormalPcSeries);
+
+
+#############################################################################
+##
+#A  NormalPcFirst( <pcgs> )
+##
+NormalPcFirst := NewAttribute( "NormalPcFirst", IsPcgs );
+SetNormalPcFirst := Setter( NormalPcFirst );
+HasNormalPcFirst := Tester( NormalPcFirst );
 
 
 #############################################################################

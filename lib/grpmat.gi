@@ -98,7 +98,7 @@ InstallMethod( IsomorphismPermGroup, true, [ IsMatrixGroup and IsFinite ], 0,
     nice := SparseOperationHomomorphism( grp, One( grp ) );
     SetRange( nice, Image( nice ) );
     SetIsBijective( nice, true );
-    SetBase( nice!.externalSet, One( grp ) );
+    SetBase( UnderlyingExternalSet( nice ), One( grp ) );
     SetFilterObj( nice, IsOperationHomomorphismByBase );
     return nice;
 end );

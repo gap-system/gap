@@ -23,6 +23,7 @@ ReadLib( "addmagma.gi" );
 ReadLib( "addcoset.gi" );
 
 ReadLib( "ring.gi"     );
+ReadLib( "mgmring.gi"  );
 
 ReadLib( "module.gi"   );
 ReadLib( "modfree.gi"  );
@@ -71,10 +72,12 @@ ReadLib( "padics.gi"   );
 ReadLib( "meataxe.gi"  );
 
 ReadLib( "word.gi"     );
+ReadLib( "wordass.gi"  );
 ReadLib( "wordrep.gi"  );
 
 
-# files dealing with free semigroups, monoids, groups
+# files dealing with free magmas, semigroups, monoids, groups
+ReadLib( "mgmfree.gi"  );
 ReadLib( "smgrpfre.gi" );
 ReadLib( "monofree.gi" );
 ReadLib( "grpfree.gi"  );
@@ -108,7 +111,6 @@ ReadLib( "grppcprp.gi" );
 ReadLib( "grppcatr.gi" );
 ReadLib( "grppcnrm.gi" );
 
-ReadLib( "mgmring.gi"  );
 ReadLib( "grptbl.gi"   );
 
 ReadLib( "ghom.gi"     );

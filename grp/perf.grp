@@ -324,6 +324,7 @@ local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
       G:=Subgroup(G,gens);
     fi;
     SetSize(G,PERFRec.sizes[pos]);
+    SetPerfectIdentification(G,[Size(G),nr]);
     if Length(l)>1 then
       SetName(G,l[2]);
     fi;
@@ -360,12 +361,12 @@ local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
   od;
   G:=Group(pgens,());
 
-  # store the presentation
-  fp:=Group(gens,gens[1]^0)/rels;
-  SetIsomorphismFpGroup(G,GroupHomomorphismByImages(G,fp,pgens,
-                        GeneratorsOfGroup(fp)));
-  SetIsomorphismPermGroup(fp,GroupHomomorphismByImages(fp,G,
-                          GeneratorsOfGroup(fp),pgens));
+#  # store the presentation
+#  fp:=Group(gens,gens[1]^0)/rels;
+#  SetIsomorphismFpGroup(G,GroupHomomorphismByImages(G,fp,pgens,
+#                        GeneratorsOfGroup(fp)));
+#  SetIsomorphismPermGroup(fp,GroupHomomorphismByImages(fp,G,
+#                          GeneratorsOfGroup(fp),pgens));
 
   SetSize(G,PERFRec.sizes[pos]);
   SetPerfectIdentification(G,[Size(G),nr]);
@@ -407,7 +408,10 @@ local func,sz,p;
   if p=fail or sz[2]>PERFRec.number[p] then
     Error("PerfectGroup(",sz[1],",",sz[2],") does not exist !");
   fi;
-  return PerfGrpConst(func,p,sz[2]);
+  p:=PerfGrpConst(func,p,sz[2]);
+  SetIsPerfectGroup(p,true);
+  SetFilterObj(p,IsPerfectLibraryGroup);
+  return p;
 end;
 
 
@@ -640,6 +644,39 @@ local s,l;
     l:=l-1;
   od;
   return [s,1];
+end);
+
+
+#############################################################################
+##
+#M  IsomorphismFpGroup   for perfect library groups
+##
+InstallMethod(IsomorphismFpGroup,"perfect library groups",true,
+  [IsPerfectLibraryGroup],100,
+function(G)
+local H,hom;
+  H:=PerfectGroup(IsSubgroupFpGroup,PerfectIdentification(G));
+  hom:=GroupHomomorphismByImages(G,H,GeneratorsOfGroup(G),
+                                     GeneratorsOfGroup(H));
+  SetIsInjective(hom,true);
+  SetIsSurjective(hom,true);
+  return hom;
+end);
+
+#############################################################################
+##
+#M  IsomorphismPermGroup   for perfect library groups
+##
+InstallMethod(IsomorphismPermGroup,"perfect library groups",true,
+  [IsPerfectLibraryGroup],100,
+function(G)
+local H,hom;
+  H:=PerfectGroup(IsPermGroup,PerfectIdentification(G));
+  hom:=GroupHomomorphismByImages(G,H,GeneratorsOfGroup(G),
+                                     GeneratorsOfGroup(H));
+  SetIsInjective(hom,true);
+  SetIsSurjective(hom,true);
+  return hom;
 end);
 
 #############################################################################

@@ -1,6 +1,8 @@
 #############################################################################
 ##
-#W  init.g                      GAP library                  Martin Schoenert
+#W  init.g                      GAP library                     Thomas Breuer
+#W                                                             & Frank Celler
+#W                                                         & Martin Schoenert
 ##
 #H  @(#)$Id$
 ##
@@ -15,7 +17,7 @@ Revision.init_g :=
 #############################################################################
 ##
 
-#F  Ignore( <arg> )
+#F  Ignore( <arg> ) . . . . . . . . . . . . ignore but evaluate the arguments
 ##
 #T  1996/08/07 M.Schoenert 'Ignore' should be in the kernel
 #T  1996/09/08 S.Linton    Do we need it at all?
@@ -34,6 +36,8 @@ infinity := "2b defined";
 #############################################################################
 ##
 #F  ReplacedString( <string>, <old>, <new> )
+##
+##  This cannot be inside "kernel.g" because it is needed to read "kernel.g".
 ##
 ReplacedString := function ( string, old, new )
     local  res,  i,  k,  l;
@@ -69,7 +73,8 @@ end;
 
 #############################################################################
 ##
-#F  InfoRead? . . . . . . . . . . . . . . . . . . . . print what file is read
+
+#V  InfoRead? . . . . . . . . . . . . . . . . . . . . print what file is read
 ##
 if DEBUG_LOADING           then InfoRead1 := Print;   fi;
 if not IsBound(InfoRead1)  then InfoRead1 := Ignore;  fi;
@@ -81,13 +86,6 @@ if not IsBound(InfoRead2)  then InfoRead2 := Ignore;  fi;
 #V  CHECK_INSTALL_METHOD  . . . . . .  check requirements in `INSTALL_METHOD'
 ##
 CHECK_INSTALL_METHOD := true;
-
-
-#############################################################################
-##
-#V  NAME_FILTER_LIST  . . . . . . . . . . . . . . . . . . . .  for completion
-##
-NAME_FILTER_LIST := [];
 
 
 #############################################################################
@@ -105,6 +103,10 @@ end;
 #############################################################################
 ##
 #F  ReadAndCheckFunc( <path> )  . . . . . .  create a read and check function
+##
+##  'ReadAndCheckFunc' creates a function that  reads in a file named <name>,
+##  this  name  must   include an extension.     The file  must  also  define
+##  'Revision.<name_ext>'.
 ##
 READED_FILES := [];
 
@@ -131,68 +133,16 @@ end;
 
 #############################################################################
 ##
-#F  ReadLib( <name> )
-##
-##  'ReadLib'  reads  in a  file  named  <name>,  this  name must include  an
-##  extension.  The file must also define 'Revision.<name_ext>'.
-##
-ReadLib := ReadAndCheckFunc("lib");
-
-
-#############################################################################
-##
-#F  ReadGrp( <name> )
-##
-ReadGrp := ReadAndCheckFunc("grp");
-
-
-#############################################################################
-##
-#F  ReadTbl( <name> )
-##
-ReadTbl := ReadAndCheckFunc("tbl");
-
-
-#############################################################################
-##
-#F  ReadSmall( <name> )
-##
-ReadSmall := ReadAndCheckFunc("small");
-
-
-#############################################################################
-##
-#F  ReadIdLib( <name> )
-##
-ReadIdLib := ReadAndCheckFunc("small/idlib");
-
-
-#############################################################################
-##
-#F  ReadPrim( <name> )
-##
-ReadPrim := ReadAndCheckFunc("prim");
-
-
-#############################################################################
-##
-#F  ReadTrans( <name> )
-##
-ReadTrans := ReadAndCheckFunc("trans");
-
-
-#############################################################################
-##
 #F  ReadOrComplete( <name> )  . . . . . . . . . . . . read file or completion
 ##
 COMPLETABLE_FILES := [];
 
 RANK_FILTER_LIST       := [];
 RANK_FILTER_COUNT      := 0;
-RANK_FILTER_COMPLETION := Error;	# defined in "oper.g"
-RANK_FILTER_STORE      := Error;	# defined in "oper.g"
-RANK_FILTER            := Error;	# defined in "oper.g"
-RankFilter             := Error;
+RANK_FILTER_COMPLETION := Error;	# defined in "filter.g"
+RANK_FILTER_STORE      := Error;	# defined in "filter.g"
+RANK_FILTER            := Error;	# defined in "filter.g"
+RankFilter             := Error;        # defined in "filter.g"
 
 
 ReadOrComplete := function( name )
@@ -254,10 +204,60 @@ end;
 #############################################################################
 ##
 
-#F  Banner
+#F  ReadLib( <name> ) . . . . . . . . . . . . . . . . . . . . . library files
+##
+ReadLib := ReadAndCheckFunc("lib");
+
+
+#############################################################################
+##
+#F  ReadGrp( <name> ) . . . . . . . . . . . . . . . . . . group library files
+##
+ReadGrp := ReadAndCheckFunc("grp");
+
+
+#############################################################################
+##
+#F  ReadTbl( <name> ) . . . . . . . . . . . . . . . .  character tables files
+##
+ReadTbl := ReadAndCheckFunc("tbl");
+
+
+#############################################################################
+##
+#F  ReadSmall( <name> ) . . . . . . . . . . . . .  small groups library files
+##
+ReadSmall := ReadAndCheckFunc("small");
+
+
+#############################################################################
+##
+#F  ReadIdLib( <name> ) . . . . . . . . . . . . .  small groups library files
+##
+ReadIdLib := ReadAndCheckFunc("small/idlib");
+
+
+#############################################################################
+##
+#F  ReadPrim( <name> )  . . . . . . . . . primitive perm groups library files
+##
+ReadPrim := ReadAndCheckFunc("prim");
+
+
+#############################################################################
+##
+#F  ReadTrans( <name> ) . . . . . . . .  transitive perm groups library files
+##
+ReadTrans := ReadAndCheckFunc("trans");
+
+
+#############################################################################
+##
+
+#F  Banner  . . . . . . . . . . . . . . . . . . . . . . . print a nice banner
 ##
 if not QUIET and BANNER then
-READ_GAP_ROOT( "lib/version.g" );
+ReadGapRoot( "lib/version.g" );
 P := function(a) Print( a, "\n" );  end;
 
 P("");
@@ -292,11 +292,15 @@ fi;
 ##
 #X  read in the files
 ##
-READ_GAP_ROOT( "lib/read1.g" );
+
+# inner functions, needed in the kernel
+ReadGapRoot( "lib/read1.g" );
 ExportToKernelFinished();
 
 ReadOrComplete( "lib/read2.g" );
 ReadOrComplete( "lib/read3.g" );
+
+# help system, profiling
 ReadOrComplete( "lib/read4.g" );
 
 #T  1996/09/01 M.Schoenert this helps performance

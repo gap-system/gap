@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains functions to construct semisimple Lie algebras of type
 ##  $A_n$, $B_n$, $C_n$, $D_n$, $E_6$, $E_7$, $E_8$, $G_2$, $F_4$,
@@ -1487,6 +1487,11 @@ end;
 ##
 
 SimpleLieAlgebra := function( type, n, F )
+
+    # Check the arguments.
+    if not ( IsString( type ) and IsInt( n ) and IsRing( F ) ) then
+      Error( "<type> must be a string, <n> an integer, <F> a ring" );
+    fi;
 
     if type = "A" then
       return SimpleLieAlgebraTypeA( n, F );

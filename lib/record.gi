@@ -62,6 +62,7 @@ InstallMethod( String,
       Append( str, String( record.(nam) ) );
     od;
     Append( str, " )" );
+    ConvertToStringRep( str );
     return str;
     end );
 

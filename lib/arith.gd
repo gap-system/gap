@@ -584,6 +584,7 @@ LeftQuotient :=
     NewOperationKernel( "^",
         [ IsMultiplicativeElement, IsMultiplicativeElement ],
         POW );
+#T  How is powering defined for nonassociative multiplication ??
 
 
 #############################################################################

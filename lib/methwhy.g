@@ -29,7 +29,7 @@ end;
 
 #############################################################################
 ##
-#F  MethodXArgs(<operation>,<arglist>[,<verbosity>[,<skip>]])
+#F  ApplicableMethod( <operation>, <arglist> [,<verbosity> [,<nr>]])
 ##
 ##  verbosity:
 ##    1: Print information about selected method
@@ -38,11 +38,11 @@ end;
 ##    4: Print reasons for discarding in all arguments
 ##  if skip is negative, all methods will be tried. In this case, a list of
 ##  all possible methods is returned.
-MethodXArgs := function(arg)
-local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
+ApplicableMethod := function(arg)
+  local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
       erg,has,need;
-  if Length(arg)<2 or not IS_LIST(arg[2]) or not IS_FUNCTION(arg[1]) then
-    Error("usage: MethodXArgs(<operation>,<arglist>[,<verbosity>[,<skip>]])");
+  if Length(arg)<2 or not IsList(arg[2]) or not IsFunction(arg[1]) then
+    Error("usage: ApplicableMethod(<opr>,<arglist>[,<verbosity>[,<nr>]])");
   fi;
   oper:=arg[1];
   obj:=arg[2];
@@ -52,14 +52,18 @@ local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
     verbos:=0;
   fi;
   if Length(arg)>3 then
-    skip:=arg[4];
+    if IsInt( arg[4] ) then
+      skip:=arg[4] - 1;
+    else
+      skip:= -1;
+    fi;
     erg:=[];
   else
     skip:=0;
   fi;
   l:=Length(obj);
-  if verbos<>0 then
-    Print("Searching Method for ",NAME_FUNCTION(oper)," with ",l,
+  if verbos > 0 then
+    Print("#I  Searching Method for ",NameFunction(oper)," with ",l,
 	  " arguments:\n");
   fi;
   type:=[];
@@ -70,14 +74,14 @@ local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
   od;
   methods:=METHODS_OPERATION(oper,l);
   lent:=4+l; #length of one entry
-  if verbos<>0 then 
-    Print("Total :",LEN_LIST(methods)/lent," entries\n");
+  if verbos > 0 then 
+    Print("#I  Total :", Length(methods)/lent," entries\n");
   fi;
-  for i in [1..LEN_LIST(methods)/lent] do
+  for i in [1..Length(methods)/lent] do
     nam:=methods[lent*(i-1)+l+4];
     val:=methods[lent*(i-1)+l+3];
     if verbos>1 then
-      Print("Method ",i,": ``",nam,"'', value: ");
+      Print("#I  Method ",i,": ``",nam,"'', value: ");
       Print_Value(val);
       Print("\n");
     fi;
@@ -89,7 +93,7 @@ local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
       if flag2=false and verbos>2 then
 	need:=NamesFilter(methods[lent*(i-1)+1+j]);
 	has:=NamesFilter(type[j]![2]);
-        Print(" - ",Ordinal(j)," argument needs ",
+        Print("#I   - ",Ordinal(j)," argument needs ",
 	      Filtered(need,i->not i in has),"\n");
       fi;
       j:=j+1;
@@ -97,13 +101,13 @@ local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
     if flag then
       if CallFuncList(methods[lent*(i-1)+1],fams) then
 	if verbos=1 then
-	  Print("Method ",i,": ``",nam,"'', value: ");
+	  Print("#I  Method ",i,": ``",nam,"'', value: ");
 	  Print_Value(val);
 	  Print("\n");
 	fi;
 	oper:=methods[lent*(i-1)+j+1];
 	if skip=0 then
-	  nam:=NAME_FUNCTION(oper);
+	  nam:=NameFunction(oper);
 	  if Length(nam)>5 and nam{[1..6]}="Getter" then
 	    Print("\n#W  Warning: System getter!\n");
 	  fi;
@@ -112,11 +116,11 @@ local oper,l,obj,skip,verbos,fams,type,i,j,methods,flag,flag2,lent,nam,val,
 	  Add(erg,oper);
 	  skip:=skip-1;
 	  if verbos>0 then
-	    Print("Skipped:\n");
+	    Print("#I  Skipped:\n");
 	  fi;
         fi;
       elif verbos>2 then
-        Print(" - bad family relations\n");
+        Print("#I   - bad family relations\n");
       fi;
     fi;
   od;

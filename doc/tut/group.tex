@@ -87,12 +87,12 @@ printing that group.
     gap> norm := Normalizer( a8, elab );; Size( norm );
     1344
 \endexample
-Now that we  have the  subgroup  `norm' of  order  1344 and its  subgroup
-`elab', we  want to look  at its factor group.  But since we also want to
-find preimages of factor group elements in `norm', we really want to look
-at the    *natural homomorphism*
 \index{homomorphism!natural}%
-defined on `norm' with kernel `elab' and whose image is the factor group.
+Now that  we  have the subgroup `norm'   of order 1344   and its subgroup
+`elab', we want to look  at its factor  group. But since  we also want to
+find preimages of factor group elements in `norm', we really want to look
+at the  *natural homomorphism* defined on  `norm' with  kernel `elab' and
+whose image is the factor group.
 \beginexample
     gap> hom := NaturalHomomorphismByNormalSubgroup( norm, elab );
     <operation homomorphism>
@@ -240,39 +240,36 @@ $(`sgp',`stab')$ double cosets.
     2
 \endexample
 
-So far we have  seen a few  applications of the functions `Operation' and
-`OperationHomomorphism'.  But perhaps even more   interesting is the fact
-that   the  natural homomorphism `hom'    constructed  above is  also  an
-*operation homomorphism*;
-\index{homomorphism!operation}%
-this is also the  reason why its  image  is represented as  a permutation
-group: it is the natural representation for  operations. We will now look
-at   this natural  homomorphism again to   find  out on  what objects  it
-operates. These objects form a so-called *external set*
-\index{external set}%
-which is stored in the homomorphism similar to a record component.
+\index{homomorphism!operation} \index{external set}%
+So far we  have seen a few  applications of the functions `Operation' and
+`OperationHomomorphism'. But perhaps   even more interesting is the  fact
+that  the   natural homomorphism  `hom'   constructed  above is   also an
+*operation homomorphism*;  this  is  also the  reason   why its  image is
+represented as a permutation group: it is  the natural representation for
+operations. We will now look  at this natural  homomorphism again to find
+out on what objects it operates. These objects form a so-called *external
+set* which is obtained by the function `UnderlyingExternalSet'.
 \beginexample
-    gap> t := hom!.externalSet;
+    gap> t := UnderlyingExternalSet( hom );
     RightTransversal( 2^3:L_3(2), Group( 
     [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8), 
       (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )
 \endexample
-The external  set is a *right  transversal*
 \index{right transversal}%
-of a subgroup <U> in `norm', such that the kernel of the operation is the
-desired  normal subgroup  `elab'.  This  right  transversal contains  one
-element from each coset of <U>. But  an external set  is more than just a
-list  of its points: Altogether three  things are necessary to specify an
-operation: a group~<G>, a  set~<D>, and a function $<opr>\colon <D>\times
-<G>\to  <D>$. We   can access   these   ingredients with   the  following
-functions:
+The external  set is a  *right transversal* of a  subgroup <U> in `norm',
+such that  the  kernel of the operation  is  the desired normal  subgroup
+`elab'. This right  transversal contains one  element from each coset  of
+<U>. But  the external set `t' is  more than just a  list  of its points:
+Altogether  three  things are   necessary  to  specify an   operation:  a
+group~<G>, a set~<D>, and a function  $<opr>\colon <D>\times <G>\to <D>$.
+We can access these ingredients with the following functions:
 \beginexample
     gap> ActingDomain(t); Enumerator(t); FunctionOperation(t)=OnRight;
-    2^3:L_3(2)
+    2^3:L_3(2)  # the group
     RightTransversal( 2^3:L_3(2), Group( 
     [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,7)(6,8), (1,5)(2,6)(3,7)(4,8), 
-      (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )
-    true
+      (5,6)(7,8), (5,7)(6,8), (3,4)(7,8), (3,5)(4,6) ], ... ) )  # the set
+    true  # the function
 \endexample
 The function `OnRight' means multiplication from the  right, which is the
 usual way to  operate on a right transversal.  `OnRight(  <d>, <g> )'  is
@@ -292,11 +289,11 @@ $<g>_1 * <g>_2$.  The {\GAP} function which  performs this mapping <left>
 is therefore called  `OnLeftAntiOperation', and, unlike  `OnLeftInverse',
 this cannot be used as last argument to an operation function.
 
-Observe that the  external set `t' and  its `Enumerator' are  printed the
-same way,  but be aware that an  external  set also comprises  the acting
-domain and the  operation function.  The  `Enumerator' itself, i.e.,  the
-right transversal in turn comprises  knowledge about the group `norm' and
-the  subgroup <U>. Yet it   behaves as a  list and  you  can ask for  the
+Observe that  the external set `t'  and its `Enumerator' are  printed the
+same way, but be aware  that an external   set also comprises the  acting
+domain and  the operation  function.  The `Enumerator'  itself, i.e., the
+right transversal, in turn comprises knowledge about the group `norm' and
+the  subgroup <U>. Yet  it  behaves as a   list and you   can ask for the
 position of an element in it.
 \beginexample
     gap> elm := (1,4)(2,7)(3,6)(5,8);;
@@ -305,17 +302,17 @@ position of an element in it.
     gap> PositionCanonical( Enumerator(t), elm );
     5
 \endexample
-The result `fail'  means  that the element was   not found at all  in the
-list: it is not among the chosen representatives. The difference
-\atindex{Position vs. PositionCanonical}{@\noexpand `Position' vs.
+\atindex{Position vs. PositionCanonical}{@\noexpand `Position' vs.\
 \noexpand `PositionCanonical'}%
-between the functions   `Position'  and `PositionCanonical' is   that the
-first  simply looks whether  `elm' is contained among the representatives
-which together form the right  transversal `t', whereas the second really
-looks  for  the position of  the  coset  described  by the representative
-`elm'.  In  other   words,  it  first    replaces `elm'  by  a  canonical
-representative of  the same  coset (which must  be contained  in `t') and
-then looks for its position, hence the name.
+The result `fail'  means that  the element was   not found at  all in the
+list: it is not among the chosen  representatives. The difference between
+the functions `Position' and `PositionCanonical' is that the first simply
+looks whether `elm' is contained among the representatives which together
+form the  right transversal `t', whereas  the second really looks for the
+position  of the coset  described by  the representative  `elm'. In other
+words, it first replaces `elm' by a canonical  representative of the same
+coset (which must be contained in  `t') and then  looks for its position,
+hence the name.
 
 \exercise   What   would     be  the  result    of   the  function   call
 `PositionCanonical( AsList(t), elm )' (where `AsList(t)' is equivalent to
@@ -339,17 +336,17 @@ that the external set `t' contains all information  that is necessary for
     L_3(2)
 \endexample
 
-\exercise What difference does  it make whether something  is stored in a
-record  component   like `hom!.externalSet'   or   as  an attribute  like
-`Enumerator(t)'?
-
-\answer  A record component  like `hom!.externalSet' must be entered when
-the object `hom'  is constructed, which makes  sense because an operation
-homomorphism   like  `hom' is  constructed for     a given external  set.
-Attributes like `Enumerator(t)' need not  be set upon construction of the
-object, they can be computed  and stored when  they are required for  the
-first time and subsequently be looked up. This  mechanism is explained in
-section~"Attributes".
+% \exercise What difference does  it make whether something  is stored in a
+% record  component   like `hom!.externalSet'   or   as  an attribute  like
+% `Enumerator(t)'?
+%  
+% \answer  A record component  like `hom!.externalSet' must be entered when
+% the object `hom'  is constructed, which makes  sense because an operation
+% homomorphism   like  `hom' is  constructed for     a given external  set.
+% Attributes like `Enumerator(t)' need not  be set upon construction of the
+% object, they can be computed  and stored when  they are required for  the
+% first time and subsequently be looked up. This  mechanism is explained in
+% section~"Attributes".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroups!as stabilizers}
@@ -584,7 +581,7 @@ usual way we now look for the subgroups above `u105'.
 \beginexample
     gap> blocks := Blocks( a8, orb );; Length( blocks );
     15
-
+|_
     gap> blocks[1];
     [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,8)(6,7), (1,4)(2,3)(5,7)(6,8),
       (1,5)(2,6)(3,8)(4,7), (1,6)(2,5)(3,7)(4,8), (1,7)(2,8)(3,6)(4,5),
@@ -641,11 +638,11 @@ by specifying a generating set for $G$ and the images of these generators
 in~$H$.
 \beginexample
     gap> f := FreeGroup( 2 ); g := Group( (1,2,3,4), (1,2) );
-    Group( [ f.1, f.2 ], ... )
+    Group( [ f1, f2 ], ... )
     Group( [ (1,2,3,4), (1,2) ], ... )
     gap> hom := GroupHomomorphismByImages( f, g,
     >           GeneratorsOfGroup( f ), GeneratorsOfGroup( g ) );
-    [ f.1, f.2 ] -> [ (1,2,3,4), (1,2) ]
+    [ f1, f2 ] -> [ (1,2,3,4), (1,2) ]
 \endexample
 Since `f'  is a  free  group, its free  generators  can be mapped  to any
 generating set of the same length in any group; so `hom' really defines a
@@ -662,7 +659,7 @@ generators of `f'.
     gap> inv := Inverse( hom );
     fail
     gap> inv := InverseGeneralMapping( hom );
-    [ (1,2,3,4), (1,2) ] -> [ f.1, f.2 ]
+    [ (1,2,3,4), (1,2) ] -> [ f1, f2 ]
 \endexample
 Simply `Inverse' does not work, because `hom' is not a bijection. We have
 to use the more cautious   `InverseGeneralMapping': since `f' is a   free
@@ -690,11 +687,10 @@ a free group. We can,  however, look at  the Schreier generators with the
 following command:
 \beginexample
     gap> cok := CoKernelGensPermHom( inv );
-    [ f.1*f.2*f.1*f.2*f.1*f.2, f.2^2, f.1^-1*f.2*f.1^2*f.2*f.1*f.2*f.1^
-        2*f.2*f.1^2, f.2^-1*f.1^4*f.2, f.1^-2*f.2*f.1^4*f.2*f.1^2, 
-      f.1^2*f.2*f.1^4*f.2*f.1^2, f.2^-1*f.1*f.2*f.1^3*f.2*f.1*f.2*f.1^
-        2*f.2*f.1^2, f.2^-1*f.1^-1*f.2^-1*f.1*f.2*f.1^3*f.2*f.1^2*f.2*f.1^
-        2 ]
+    [ f1*f2*f1*f2*f1*f2, f2^2, f1^-1*f2*f1^2*f2*f1*f2*f1^2*f2*f1^2, 
+      f2^-1*f1^4*f2, f1^-2*f2*f1^4*f2*f1^2, f1^2*f2*f1^4*f2*f1^2, 
+      f2^-1*f1*f2*f1^3*f2*f1*f2*f1^2*f2*f1^2, 
+      f2^-1*f1^-1*f2^-1*f1*f2*f1^3*f2*f1^2*f2*f1^2 ]
 \endexample
 A  group general mapping like  `inv' is a genuine  mapping if and only if
 this  list of Schreier generators contains  at most the identity element,
@@ -709,7 +705,7 @@ group* `p' and set up an isomorphism between `p' and~`g'.
     Group( ... )
     gap> iso := GroupHomomorphismByImages( g, p,
     >           GeneratorsOfGroup( g ), GeneratorsOfGroup( p ) );
-    [ (1,2,3,4), (1,2) ] -> [ f.1, f.2 ]
+    [ (1,2,3,4), (1,2) ] -> [ f1, f2 ]
 \endexample
 We       used      `GroupHomomorphismByImages'        here,           not
 `GroupGeneralMappingByImages', because we  wanted to  promise {\GAP} that
@@ -774,6 +770,18 @@ the latter is also called `StabilizerOfExternalSet' in {\GAP}.
     >    od; List( gcls, Size );
     [ 1, 1, 2, 2, 2 ]
 \endexample
+
+\exercise This example  shows  that you can  say  `Centralizer(<cl>)' for
+`StabilizerOfExternalSet(<cl>)'.   Could      you         also      write
+`SetCentralizer(<cl>,         \dots)'        instead                   of
+`SetStabilizerOfExternalSet(<cl>, \dots)'?
+
+\answer   No, because    unlike `StabilizerOfExternalSet', the   function
+`Centralizer'  is  not an   attribute, but  an  operation  which normally
+requires     two  arguments   (e.g.,     a   group    and an    element).
+`Centralizer(<cl>)' is only an additional  method  for one argument,  but
+`SetCentralizer' would imply that `Centralizer' is an attribute.
+
 Since the  mapping `hom' is injective, but  not surjective, we cannot use
 the function `PreImage' for  preimages of elements  (they need not have a
 preimage). Instead,  we have to use `PreImageElm'  to denote the (unique)
@@ -791,19 +799,19 @@ monomorphism like `hom' and then proceeds as we have done above.
     gap> grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
     gap> IsHandledByNiceMonomorphism( grp );
     false
-
+|_
     gap> IsFinite( grp );
     true
     gap> IsHandledByNiceMonomorphism( grp );
     true
-
+|_
     gap> hom := NiceMonomorphism( grp );
     <operation homomorphism>
-    gap> hom!.externalSet; p := Image( hom );
+    gap> UnderlyingExternalSet( hom ); p := Image( hom );
     [ [ 1, 0 ], [ 0, 1 ], [ E(4), 0 ], [ 0, -E(4) ], [ -1, 0 ],
       [ 0, E(4) ], [ 0, -1 ], [ -E(4), 0 ] ]
     Group( [ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ], ... )
-
+|_
     gap> ConjugacyClasses( grp ) = gcls;
     true
 \endexample
@@ -825,7 +833,7 @@ automorphism group.
 \exercise The nice monomorphism associated with the automorphism group of
 `p' is an operation homomorphism. What is its underlying external set?
 
-\answer `NiceMonomorphism( aut )!.externalSet' gives the list
+\answer `UnderlyingExternalSet( NiceMonomorphism( aut ) )' gives the list
 \begintt|nobreak
     [ (1,2,5,7)(3,6,8,4), (1,3,5,8)(2,4,7,6), (1,4,5,6)(2,8,7,3), 
       (1,6,5,4)(2,3,7,8), (1,7,5,2)(3,4,8,6), (1,8,5,3)(2,6,7,4) ]

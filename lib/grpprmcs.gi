@@ -75,10 +75,12 @@ end );
 #F  GInverses( <G> )  . . . . . . . . . . . . . . . . . . . . . . . . . local
 ##
 GInverses := function( G )
-    local   S,  inverses,  i;
+    local   S,  inverses,  set,  i;
     
     S := StabChainAttr( G );
-    S.generators := Compacted( S.transversal );
+    set := Set( S.translabels );
+    RemoveSet( set, 1 );
+    S.generators := S.labels{ set };
     inverses := [  ];
     for i  in [ 1 .. Length( S.generators ) ]  do
         inverses[ i ] := S.generators[ i ] ^ -1;
@@ -1275,6 +1277,9 @@ InverseAsWord := function(word,list,inverselist)
     local   i,          # loop variable
             inverse;    # the inverse of word
 
+    if word = [ () ]  then
+        return word;
+    fi;
     inverse := [];
     for i in [1..Length(word)] do
         inverse[i] := inverselist[Position(list,word[Length(word)+1-i])];

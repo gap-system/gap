@@ -191,6 +191,24 @@ Obj             AppendListIntrHandler (
     return (Obj)0;
 }
 
+Obj             AppendListOper;
+
+Obj             AppendListHandler (
+    Obj                 self,
+    Obj                 list,
+    Obj                 obj )
+{
+    /* dispatch                                                            */
+    if ( TNUM_OBJ( list ) < FIRST_EXTERNAL_TNUM ) {
+        AppendListIntrHandler( 0, list, obj );
+    }
+    else {
+        DoOperation2Args( self, list, obj );
+    }
+
+    /* return nothing                                                      */
+    return (Obj)0;
+}
 
 /****************************************************************************
 **
@@ -856,7 +874,7 @@ Obj             FuncOnLeft (
 
 /****************************************************************************
 **
-*F  FuncOnLeftInverse(<self>,<point>,<elm>) . . . . operation by mult. from the left
+*F  FuncOnLeftInverse(<self>,<point>,<elm>)  operation by mult. from the left
 **
 **  'FuncOnLeft' implements the internal function 'OnLeft'.
 **
@@ -969,6 +987,11 @@ void            InitListFunc ( void )
         AddListOper );
 
     InitHandlerFunc( AppendListIntrHandler, "APPEND_LIST_INTR");
+    AppendListOper = NewOperationC(
+	"APPEND_LIST", 2L, "list, list", AppendListHandler );
+    AssGVar( GVarName( "APPEND_LIST" ),
+	AppendListOper );
+
     AppendListIntrFunc = NewFunctionC(
         "APPEND_LIST_INTR", 2L, "list1, list2", AppendListIntrHandler );
     AssGVar( GVarName( "APPEND_LIST_INTR" ),

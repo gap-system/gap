@@ -173,7 +173,7 @@ int main (
 
         /* read and evaluate one command                                   */
         Prompt = "gap> ";
-        NrError = 0;
+	ClearError();
         DualSemicolon = 0;
         type = ReadEvalCommand();
 
@@ -396,6 +396,10 @@ Obj FuncDownEnv (
         ErrorQuit( "usage: DownEnv( [ <depth> ] )", 0L, 0L );
         return 0;
     }
+    if ( ErrorLVars == 0 ) {
+	Pr( "not in any function\n", 0L, 0L );
+	return 0;
+    }
 
     /* if we really want to go up                                          */
     if ( depth < 0 && -ErrorLLevel <= -depth ) {
@@ -508,6 +512,7 @@ Obj ErrorMode (
     UInt                errorLLevel;
     UInt                type;
     char                prompt [16];
+    jmp_buf		readJmpError;
 
     /* ignore all errors when testing or quitting                          */
     if ( ( TestInput != 0 && TestOutput == Output ) || ! BreakOnError ) {
@@ -560,7 +565,7 @@ Obj ErrorMode (
         CloseOutput();
         ReadEvalError();
     }
-    NrError = 0;
+    ClearError();
 
     /* print the sencond message                                           */
     Pr( "Entering break read-eval-print loop, ", 0L, 0L );
@@ -588,7 +593,7 @@ Obj ErrorMode (
         }
 
         /* read and evaluate one command                                   */
-        NrError = 0;
+	ClearError();
         type = ReadEvalCommand();
 
         /* handle ordinary command                                         */
@@ -598,10 +603,18 @@ Obj ErrorMode (
             AssGVar( Last,  ReadEvalResult   );
 
             /* print the result                                            */
-            if ( *In != ';' ) {
+	    if ( ! DualSemicolon ) {
                 IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
-                Pr( "\n", 0L, 0L );
+		memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+		if ( ! READ_ERROR() ) {
+		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		    PrintObj( ReadEvalResult );
+		    Pr( "\n", 0L, 0L );
+		}
+		else {
+		    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		    break;
+		}
             }
 
         }
@@ -614,13 +627,12 @@ Obj ErrorMode (
                 ErrorLVars = errorLVars;
                 ErrorLLevel = errorLLevel;
                 CloseInput();
-                NrError = 0;
+		ClearError();
                 CloseOutput();
                 return ReadEvalResult;
             }
             else {
-                Pr(
-                    "'return <value>;' cannot be used in this break-loop",
+                Pr( "'return <value>;' cannot be used in this break-loop",
                     0L, 0L );
             }
         }
@@ -633,13 +645,12 @@ Obj ErrorMode (
                 ErrorLVars = errorLVars;
                 ErrorLLevel = errorLLevel;
                 CloseInput();
-                NrError = 0;
+		ClearError();
                 CloseOutput();
                 return (Obj)0;
             }
             else {
-                Pr(
-                    "'return;' cannot be used in this break-loop",
+                Pr( "'return;' cannot be used in this break-loop",
                     0L, 0L );
             }
         }
@@ -657,7 +668,7 @@ Obj ErrorMode (
     ErrorLVars = errorLVars;
     ErrorLLevel = errorLLevel;
     CloseInput();
-    NrError = 0;
+    ClearError();
     CloseOutput();
     ReadEvalError();
 
@@ -756,7 +767,7 @@ void Complete (
     if ( ! OpenInput( CSTR_STRING(filename) ) ) {
         return;
     }
-    NrError = 0;
+    ClearError();
 
     /* we are now completing                                               */
     if ( SyDebugLoading ) {
@@ -787,7 +798,7 @@ void Complete (
             "Panic: COMPLETE cannot close input, this should not happen",
             0L, 0L );
     }
-    NrError = 0;
+    ClearError();
 }
 
 
@@ -928,7 +939,6 @@ Obj DoCompleteXargs (
 */
 Obj CompLists;
 Obj CompThenFuncs;
-
 
 Obj FuncCOM_FILE (
     Obj                 self,
@@ -1101,203 +1111,187 @@ Obj CompList (
 
 Obj FuncMAKE_INIT (
     Obj                 self,
-    Obj                 args )
+    Obj                 output,
+    Obj                 filename )
 {
-    Int                 i;
-    Obj                 filename;
-    UInt                level;
-    UInt                symbol;
-    Char                value [1024];
-    UInt                funcNum;
-    UInt4               crc;
-    Obj                 crc1;
+    volatile UInt       level;
+    volatile UInt       symbol;
+    Char	        value [1024];
+    volatile UInt       funcNum;
+    jmp_buf		readJmpError;
 
     /* check the argument                                                  */
-    if ( LEN_PLIST(args) < 2 ) {
-        ErrorQuit( "usage: MAKE_INIT( <oot>, <in1>, <in2>, ... )", 0L, 0L );
-    }
-    for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
-        filename = ELM_PLIST( args, i );
-        if ( ! IsStringConv( filename ) ) {
-            ErrorQuit( "%d.th argument must be a string (not a %s)",
-            (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L );
-        }
+    if ( ! IsStringConv( filename ) ) {
+	ErrorQuit( "%d.th argument must be a string (not a %s)",
+		   (Int)(InfoBags[TNUM_OBJ(filename)].name), 0L );
     }
 
     /* try to open the output                                              */
-    if ( ! OpenAppend( CSTR_STRING( ELM_PLIST( args, 1 ) ) ) ) {
+    if ( ! OpenAppend(CSTR_STRING(output)) ) {
         ErrorQuit( "cannot open '%s' for output",
-                   (Int)CSTR_STRING(ELM_PLIST(args,1)), 0L );
+                   (Int)CSTR_STRING(output), 0L );
     }
 
-    /* loop over all remaining arguments                                   */
-    for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
-        filename = ELM_PLIST( args, i );
+    /* try to open the file                                                */
+    if ( ! OpenInput( CSTR_STRING(filename) ) ) {
+	CloseOutput();
+	ErrorQuit( "'%s' must exist and be readable",
+		   (Int)CSTR_STRING(filename), 0L );
+    }
+    ClearError();
 
-        /* try to open the file                                            */
-        if ( ! OpenInput( CSTR_STRING(filename) ) ) {
-            CloseOutput();
-            ErrorQuit( "'%s' must exist and be readable",
-                       (Int)CSTR_STRING(filename), 0L );
-        }
-        NrError = 0;
+    /* where is this stuff                                                 */
+    funcNum = 1;
 
-        /* create a crc value                                              */
-        crc = SyGAPCRC( CSTR_STRING(filename) );
-        crc1 = INTOBJ_INT( crc >> 16 );
-        crc1 = PROD( INTOBJ_INT(1<<16), crc1 );
-        crc1 = SUM( crc1, INTOBJ_INT( crc & 0xFFFFL ) );
+    /* read the file                                                       */
+    GetSymbol();
+    MAKE_INIT_GET_SYMBOL;
+    while ( symbol != S_EOF ) {
 
-        /* where is this stuff                                             */
-        Pr( "COM_RESULT := COM_FILE( \"%S\", ", 
-            (Int)CSTR_STRING(filename), 0L );
-        PrintInt( crc1 );
-        Pr( " );\nif COM_RESULT = 3  then\n", 0L, 0L );
-        funcNum = 1;
+	memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	if ( READ_ERROR() ) {
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+	    CloseInput();
+	    CloseOutput();
+	    ReadEvalError();
+	}
+	memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
 
-        /* read the file                                                   */
-        GetSymbol();
-        MAKE_INIT_GET_SYMBOL;
-        while ( symbol != S_EOF ) {
+	/* handle function beginning and ending                            */
+	if ( symbol == S_FUNCTION ) {
+	    Pr( "COM_FUN(%d)", funcNum++, 0L );
+	    MAKE_INIT_GET_SYMBOL;
+	    level = 0;
+	    while ( level != 0 || symbol != S_END ) {
+		if ( symbol == S_FUNCTION )
+		    level++;
+		if ( symbol == S_END )
+		    level--;
+		MAKE_INIT_GET_SYMBOL;
+	    }
+	    MAKE_INIT_GET_SYMBOL;
+	}
 
-            /* handle function beginning and ending                        */
-            if ( symbol == S_FUNCTION ) {
-                Pr( "COM_FUN(%d)", funcNum++, 0L );
-                MAKE_INIT_GET_SYMBOL;
-                level = 0;
-                while ( level != 0
-                     || symbol != S_END )
-                {
-                    if ( symbol == S_FUNCTION )
-                        level++;
-                    if ( symbol == S_END )
-                        level--;
-                    MAKE_INIT_GET_SYMBOL;
-                }
-                MAKE_INIT_GET_SYMBOL;
-            }
-
-            /* handle -> expressions                                       */
-            else if ( symbol == S_IDENT && Symbol == S_MAPTO ) {
-                Pr( "COM_FUN(%d)", funcNum++, 0L );
-                symbol = Symbol;  if ( Symbol != S_EOF )  GetSymbol();
-                MAKE_INIT_GET_SYMBOL;
-                level = 0;
-                while ( level != 0
-                   || (symbol != S_RBRACK  && symbol != S_RBRACE
-                    && symbol != S_RPAREN  && symbol != S_COMMA
-                    && symbol != S_DOTDOT  && symbol != S_SEMICOLON) )
-                {
-                    if ( symbol == S_LBRACK  || symbol == S_LBRACE
-                      || symbol == S_LPAREN  || symbol == S_FUNCTION 
-                      || symbol == S_BLBRACK || symbol == S_BLBRACE )
-                        level++;
-                    if ( symbol == S_RBRACK  || symbol == S_RBRACE
-                      || symbol == S_RPAREN  || symbol == S_END )
-                        level--;
-                    MAKE_INIT_GET_SYMBOL;
-                }
-            }
+	/* handle -> expressions                                           */
+	else if ( symbol == S_IDENT && Symbol == S_MAPTO ) {
+	    Pr( "COM_FUN(%d)", funcNum++, 0L );
+	    symbol = Symbol;  if ( Symbol != S_EOF )  GetSymbol();
+	    MAKE_INIT_GET_SYMBOL;
+	    level = 0;
+	    while ( level != 0
+		 || (symbol != S_RBRACK  && symbol != S_RBRACE
+                 && symbol != S_RPAREN  && symbol != S_COMMA
+                 && symbol != S_DOTDOT  && symbol != S_SEMICOLON) )
+            {
+                 if ( symbol == S_LBRACK  || symbol == S_LBRACE
+                   || symbol == S_LPAREN  || symbol == S_FUNCTION 
+                   || symbol == S_BLBRACK || symbol == S_BLBRACE )
+                     level++;
+                 if ( symbol == S_RBRACK  || symbol == S_RBRACE
+                   || symbol == S_RPAREN  || symbol == S_END )
+                     level--;
+                 MAKE_INIT_GET_SYMBOL;
+	    }
+	}
         
-            /* handle the other symbols                                    */
-            else {
+	/* handle the other symbols                                        */
+	else {
 
-                switch ( symbol ) {
+	    switch ( symbol ) {
 
-                case S_IDENT:    Pr( "%I",      (Int)value, 0L );  break;
-                case S_UNBIND:   Pr( "Unbind",  0L, 0L );  break;
-                case S_ISBOUND:  Pr( "IsBound", 0L, 0L );  break;
+	    case S_IDENT:    Pr( "%I",      (Int)value, 0L );  break;
+	    case S_UNBIND:   Pr( "Unbind",  0L, 0L );  break;
+	    case S_ISBOUND:  Pr( "IsBound", 0L, 0L );  break;
 
-                case S_LBRACK:   Pr( "[",       0L, 0L );  break;
-                case S_RBRACK:   Pr( "]",       0L, 0L );  break;
-                case S_LBRACE:   Pr( "{",       0L, 0L );  break;
-                case S_RBRACE:   Pr( "}",       0L, 0L );  break;
-                case S_DOT:      Pr( ".",       0L, 0L );  break;
-                case S_LPAREN:   Pr( "(",       0L, 0L );  break;
-                case S_RPAREN:   Pr( ")",       0L, 0L );  break;
-                case S_COMMA:    Pr( ",",       0L, 0L );  break;
-                case S_DOTDOT:   Pr( "..",      0L, 0L );  break;
+	    case S_LBRACK:   Pr( "[",       0L, 0L );  break;
+	    case S_RBRACK:   Pr( "]",       0L, 0L );  break;
+	    case S_LBRACE:   Pr( "{",       0L, 0L );  break;
+	    case S_RBRACE:   Pr( "}",       0L, 0L );  break;
+	    case S_DOT:      Pr( ".",       0L, 0L );  break;
+	    case S_LPAREN:   Pr( "(",       0L, 0L );  break;
+	    case S_RPAREN:   Pr( ")",       0L, 0L );  break;
+	    case S_COMMA:    Pr( ",",       0L, 0L );  break;
+	    case S_DOTDOT:   Pr( "..",      0L, 0L );  break;
 
-                case S_BDOT:     Pr( "!.",      0L, 0L );  break;
-                case S_BLBRACK:  Pr( "![",      0L, 0L );  break;
-                case S_BLBRACE:  Pr( "!{",      0L, 0L );  break;
+	    case S_BDOT:     Pr( "!.",      0L, 0L );  break;
+	    case S_BLBRACK:  Pr( "![",      0L, 0L );  break;
+	    case S_BLBRACE:  Pr( "!{",      0L, 0L );  break;
 
-                case S_INT:      Pr( "%s",      (Int)value, 0L );  break;
-                case S_TRUE:     Pr( "true",    0L, 0L );  break;
-                case S_FALSE:    Pr( "false",   0L, 0L );  break;
-                case S_CHAR:     Pr( "'%c'",    (Int)value[0], 0L );  break;
-                case S_STRING:   Pr( "\"%S\"",  (Int)value, 0L );  break;
+	    case S_INT:      Pr( "%s",      (Int)value, 0L );  break;
+	    case S_TRUE:     Pr( "true",    0L, 0L );  break;
+	    case S_FALSE:    Pr( "false",   0L, 0L );  break;
+	    case S_CHAR:     Pr( "'%c'",    (Int)value[0], 0L );  break;
+	    case S_STRING:   Pr( "\"%S\"",  (Int)value, 0L );  break;
 
-                case S_REC:      Pr( "rec",     0L, 0L );  break;
+	    case S_REC:      Pr( "rec",     0L, 0L );  break;
 
-                case S_FUNCTION: /* handled above */       break;
-                case S_LOCAL:    /* shouldn't happen */    break;
-                case S_END:      /* handled above */       break;
-                case S_MAPTO:    /* handled above */       break;
+	    case S_FUNCTION: /* handled above */       break;
+	    case S_LOCAL:    /* shouldn't happen */    break;
+	    case S_END:      /* handled above */       break;
+	    case S_MAPTO:    /* handled above */       break;
 
-                case S_MULT:     Pr( "*",       0L, 0L );  break;
-                case S_DIV:      Pr( "/",       0L, 0L );  break;
-                case S_MOD:      Pr( " mod ",   0L, 0L );  break;
-                case S_POW:      Pr( "^",       0L, 0L );  break;
+	    case S_MULT:     Pr( "*",       0L, 0L );  break;
+	    case S_DIV:      Pr( "/",       0L, 0L );  break;
+	    case S_MOD:      Pr( " mod ",   0L, 0L );  break;
+	    case S_POW:      Pr( "^",       0L, 0L );  break;
 
-                case S_PLUS:     Pr( "+",       0L, 0L );  break;
-                case S_MINUS:    Pr( "-",       0L, 0L );  break;
+	    case S_PLUS:     Pr( "+",       0L, 0L );  break;
+	    case S_MINUS:    Pr( "-",       0L, 0L );  break;
 
-                case S_EQ:       Pr( "=",       0L, 0L );  break;
-                case S_LT:       Pr( "<",       0L, 0L );  break;
-                case S_GT:       Pr( ">",       0L, 0L );  break;
-                case S_NE:       Pr( "<>",      0L, 0L );  break;
-                case S_LE:       Pr( "<=",      0L, 0L );  break;
-                case S_GE:       Pr( ">=",      0L, 0L );  break;
-                case S_IN:       Pr( " in ",    0L, 0L );  break;
+	    case S_EQ:       Pr( "=",       0L, 0L );  break;
+	    case S_LT:       Pr( "<",       0L, 0L );  break;
+	    case S_GT:       Pr( ">",       0L, 0L );  break;
+	    case S_NE:       Pr( "<>",      0L, 0L );  break;
+	    case S_LE:       Pr( "<=",      0L, 0L );  break;
+	    case S_GE:       Pr( ">=",      0L, 0L );  break;
+	    case S_IN:       Pr( " in ",    0L, 0L );  break;
 
-                case S_NOT:      Pr( "not ",    0L, 0L );  break;
-                case S_AND:      Pr( " and ",   0L, 0L );  break;
-                case S_OR:       Pr( " or ",    0L, 0L );  break;
+	    case S_NOT:      Pr( "not ",    0L, 0L );  break;
+	    case S_AND:      Pr( " and ",   0L, 0L );  break;
+	    case S_OR:       Pr( " or ",    0L, 0L );  break;
 
-                case S_ASSIGN:   Pr( ":=",      0L, 0L );  break;
+	    case S_ASSIGN:   Pr( ":=",      0L, 0L );  break;
 
-                case S_IF:       Pr( "if ",     0L, 0L );  break;
-                case S_FOR:      Pr( "for ",    0L, 0L );  break;
-                case S_WHILE:    Pr( "while ",  0L, 0L );  break;
-                case S_REPEAT:   Pr( "repeat ", 0L, 0L );  break;
+	    case S_IF:       Pr( "if ",     0L, 0L );  break;
+	    case S_FOR:      Pr( "for ",    0L, 0L );  break;
+	    case S_WHILE:    Pr( "while ",  0L, 0L );  break;
+	    case S_REPEAT:   Pr( "repeat ", 0L, 0L );  break;
 
-                case S_THEN:     Pr( " then\n", 0L, 0L );  break;
-                case S_ELIF:     Pr( "elif ",   0L, 0L );  break;
-                case S_ELSE:     Pr( "else\n",  0L, 0L );  break;
-                case S_FI:       Pr( "fi",      0L, 0L );  break;
-                case S_DO:       Pr( " do\n",   0L, 0L );  break;
-                case S_OD:       Pr( "od",      0L, 0L );  break;
-                case S_UNTIL:    Pr( "until ",  0L, 0L );  break;
+	    case S_THEN:     Pr( " then\n", 0L, 0L );  break;
+	    case S_ELIF:     Pr( "elif ",   0L, 0L );  break;
+	    case S_ELSE:     Pr( "else\n",  0L, 0L );  break;
+	    case S_FI:       Pr( "fi",      0L, 0L );  break;
+	    case S_DO:       Pr( " do\n",   0L, 0L );  break;
+	    case S_OD:       Pr( "od",      0L, 0L );  break;
+	    case S_UNTIL:    Pr( "until ",  0L, 0L );  break;
 
-                case S_BREAK:    Pr( "break",   0L, 0L );  break;
-                case S_RETURN:   Pr( "return ", 0L, 0L );  break;
-                case S_QUIT:     Pr( "quit",    0L, 0L );  break;
+	    case S_BREAK:    Pr( "break",   0L, 0L );  break;
+	    case S_RETURN:   Pr( "return ", 0L, 0L );  break;
+	    case S_QUIT:     Pr( "quit",    0L, 0L );  break;
 
-                case S_SEMICOLON: Pr( ";\n",    0L, 0L );  break;
+	    case S_SEMICOLON: Pr( ";\n",    0L, 0L );  break;
 
-                default: CloseInput();
-                         CloseOutput();
-                         NrError = 0;
-                         ErrorQuit( "unknown symbol %d", (Int)symbol, 0L );
+	    default: CloseInput();
+		     CloseOutput();
+		     ClearError();
+		     ErrorQuit( "unknown symbol %d", (Int)symbol, 0L );
 
-                }
+	    }
 
-                /* get the next symbol                                     */
-                MAKE_INIT_GET_SYMBOL;
-            }
-
-        }
-
-        /* close the input file again                                      */
-        Pr( "fi;\n\n", 0L, 0L );
-        if ( ! CloseInput() ) {
-            ErrorQuit(
-              "Panic: MAKE_INIT cannot close input, this should not happen",
-              0L, 0L );
-        }
-        NrError = 0;
+	    /* get the next symbol                                         */
+	    MAKE_INIT_GET_SYMBOL;
+	}
     }
+
+    /* close the input file again                                          */
+    if ( ! CloseInput() ) {
+	ErrorQuit( 
+            "Panic: MAKE_INIT cannot close input, this should not happen",
+            0L, 0L );
+    }
+    ClearError();
+
+    /* close the output file                                               */
     CloseOutput();
 
     return 0;
@@ -2319,7 +2313,7 @@ void InitGap (
                     FuncCOM_FUN,
            "src/gap.c:COM_FUN" );
 
-    C_NEW_GVAR_FUNC( "MAKE_INIT", -1L, "output, input1, ...",
+    C_NEW_GVAR_FUNC( "MAKE_INIT", 2L, "output, input",
                   FuncMAKE_INIT,
            "src/gap.c:MAKE_INIT" );
 
@@ -2396,7 +2390,7 @@ void InitGap (
     for ( i = 0; i < sizeof(SyInitfiles)/sizeof(SyInitfiles[0]); i++ ) {
         if ( SyInitfiles[i][0] != '\0' ) {
             if ( OpenInput( SyInitfiles[i] ) ) {
-                NrError = 0;
+		ClearError();
                 while ( 1 ) {
                     type = ReadEvalCommand();
                     if ( type == 1 || type == 2 ) {
@@ -2407,7 +2401,7 @@ void InitGap (
                     }
                 }
                 CloseInput();
-                NrError = 0;
+		ClearError();
             }
             else {
                 ErrorQuit(

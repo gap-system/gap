@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic methods for algebras and algebras-with-one.
 ##
@@ -1908,34 +1908,6 @@ InstallMethod( IsSubset,
 ##  For associative algebras(-with-one), we need to check only the products
 ##  of algebra(-with-one) generators.
 ##
-IsLeftIdealFromGenerators :=
-    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
-    return function( A, S )
-
-    local inter,   # intersection of left acting domains
-          gensS,   # suitable generators of 'S'
-          a,       # loop over suitable generators of 'A'
-          i;       # loop over 'gensS'
-
-    if not IsSubset( A, S ) then
-      return false;
-    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
-      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
-      return IsLeftIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
-    fi;
-
-    gensS:= GeneratorsS( S );
-    for a in GeneratorsA( A ) do
-      for i in gensS do
-        if not a * i in S then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end;
-end;
-
 InstallOtherMethod( IsLeftIdeal,
     "method for FLMLOR and free left module",
     IsIdentical,
@@ -1980,34 +1952,6 @@ InstallMethod( IsLeftIdeal,
 ##  For associative algebras(-with-one), we need to check only the products
 ##  of algebra(-with-one) generators.
 ##
-IsRightIdealFromGenerators :=
-    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
-    return function( A, S )
-
-    local inter,   # intersection of left acting domains
-          gensS,   # suitable generators of 'S'
-          a,       # loop over suitable generators of 'A'
-          i;       # loop over 'gensS'
-
-    if not IsSubset( A, S ) then
-      return false;
-    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
-      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
-      return IsRightIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
-    fi;
-
-    gensS:= GeneratorsS( S );
-    for a in GeneratorsA( A ) do
-      for i in gensS do
-        if not i * a in S then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end;
-end;
-
 InstallOtherMethod( IsRightIdeal,
     "method for FLMLOR and free left module",
     IsIdentical,

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.12  1997/06/10 14:47:15  stand
+#H  Added declaration of 'GeneratorsPrimeResidueClassGroup'. AH
+#H
 #H  Revision 4.11  1997/05/29 06:51:19  sam
 #H  moved `InstallTrueMethod' calls to the `gd' files
 #H
@@ -110,6 +113,8 @@ RationalClass := NewOperation( "RationalClass", [ IsGroup, IsObject ] );
 
 DecomposedRationalClass := NewOperationArgs( "DecomposedRationalClass" );
 PermResidueClass := NewOperationArgs( "PermResidueClass" );
+GeneratorsPrimeResidueClassGroup :=
+  NewOperationArgs( "GeneratorsPrimeResidueClassGroup" );
 PrimeResidueClassGroup := NewOperationArgs( "PrimeResidueClassGroup" );
 ConjugacyClassesByRandomSearch :=
   NewOperationArgs( "ConjugacyClassesByRandomSearch" );

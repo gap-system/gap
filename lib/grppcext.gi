@@ -310,7 +310,8 @@ LinearOperationOfCompatiblePairs := function( arg )
 
     # compute matrices
     mats  := [];
-    id    := IdentityMat( l, cohom.module.field );
+  # id    := IdentityMat( l, cohom.module.field );
+#T this row was apparently unused ...
     for g in gensC do
         mat := [];
         for c in cohom.factor do
@@ -371,7 +372,7 @@ function( G, M, C )
 
     # compute orbit of mats on cc
     Mgrp := Group( mats );
-    V    := VectorSpace( M.field, IdentityMat( Length(cc), M.field ) );
+    V    := FullRowSpace( M.field, Length(cc) );
     orbs := Orbits( Mgrp, V, OnRight );
     ext  := List( orbs, x -> ExtensionSQ( Cl, G, M, x[1]*cc ) );
     return ext;
@@ -412,7 +413,7 @@ NonSplitExtensionReps := function( G, M )
     # compute orbit of mats on cc
     Info( InfoExtReps, 1, "    compute orbits ");
     Mgrp := Group( mats );
-    V    := VectorSpace( M.field, IdentityMat( Length(cc), M.field ) );
+    V    := FullRowSpace( M.field, Length(cc) );
     orbs := Orbits( Mgrp, V, OnRight );
     orbs := orbs{[2..Length(orbs)]};
     Info( InfoExtReps, 1, "    found ",Length(orbs)," orbits ");

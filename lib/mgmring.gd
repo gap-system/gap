@@ -6,13 +6,17 @@
 ##
 #Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
-##  This file declares operations for free magma rings.
+##  This file declares operations for magma rings.
 ##
 ##  Given a magma $M$ then the free magma ring on $M$ over a ring $R$
 ##  (a ring with 1) is the set of finite sums $\sum_{i\in I} r_i m_i$ with
 ##  $r_i \in R$, and $m_i \in M$.
 ##  $M$ is linearly independent over $R$.
 ##  Addition, subtraction and multiplication are the obvious ones.
+##
+##  A more general construction allows to create magma rings that are not
+##  free on the magma but arise by factoring out certain identities.
+##  Finitely presented algebras arise that way, but also free Lie algebras.
 ##
 ##  *Note* that the arithmetic allows to create elements with coefficients
 ##  in the whole family of $R$, and words in the whole family of $M$.
@@ -53,10 +57,39 @@ Revision.mgmring_gd :=
 
 #############################################################################
 ##
+#C  IsElementOfMagmaRingModuloRelations( <obj> )
+##
+##  This category is used, e. g., for elements of free Lie algebras.
+##
+IsElementOfMagmaRingModuloRelations := NewCategory(
+    "IsElementOfMagmaRingModuloRelations",
+    IsScalar );
+
+
+#############################################################################
+##
+#C  IsElementOfMagmaRingModuloRelationsCollection( <obj> )
+##
+IsElementOfMagmaRingModuloRelationsCollection := CategoryCollections(
+    IsElementOfMagmaRingModuloRelations );
+
+
+#############################################################################
+##
+#C  IsFamilyElementOfMagmaRingModuloRelations( <Fam> )
+##
+IsFamilyElementOfMagmaRingModuloRelations := CategoryFamily(
+    IsElementOfMagmaRingModuloRelations );
+
+
+#############################################################################
+##
 #C  IsElementOfFreeMagmaRing( <obj> )
 ##
+##  Objects in this category have efficient methods for `\=' and `\<'.
+##
 IsElementOfFreeMagmaRing := NewCategory( "IsElementOfFreeMagmaRing",
-    IsScalar );
+    IsElementOfMagmaRingModuloRelations );
 
 
 #############################################################################
@@ -69,27 +102,29 @@ IsElementOfFreeMagmaRingCollection := CategoryCollections(
 
 #############################################################################
 ##
-#C  IsFamilyElementOfFreeMagmaRing( <Fam> )
-##
-IsFamilyElementOfFreeMagmaRing := CategoryFamily( IsElementOfFreeMagmaRing );
-
-
-#############################################################################
-##
-#A  CoefficientsAndMagmaElements( <elm> ) . . . for elm. in a free magma ring
+#A  CoefficientsAndMagmaElements( <elm> ) . . . . .  for elm. in a magma ring
 ##
 ##  is a list that contains at the odd positions the magma elements,
 ##  and at the even positions their coefficients in the element <elm>.
 ##
 CoefficientsAndMagmaElements := NewAttribute( "CoefficientsAndMagmaElements",
-    IsElementOfFreeMagmaRing );
+    IsElementOfMagmaRingModuloRelations );
+
+
+#############################################################################
+##
+#C  IsMagmaRingModuloRelations( <obj> )
+##
+IsMagmaRingModuloRelations := NewCategory( "IsMagmaRingModuloRelations",
+    IsFLMLOR );
 
 
 #############################################################################
 ##
 #C  IsFreeMagmaRing( <obj> )
 ##
-IsFreeMagmaRing := NewCategory( "IsFreeMagmaRing", IsFLMLOR );
+IsFreeMagmaRing := NewCategory( "IsFreeMagmaRing",
+    IsMagmaRingModuloRelations );
 
 
 #############################################################################
@@ -121,9 +156,9 @@ HasUnderlyingMagma := Tester( UnderlyingMagma );
 
 #############################################################################
 ##
-#O  ElementOfFreeMagmaRing( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
+#O  ElementOfMagmaRing( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
 ##
-ElementOfFreeMagmaRing := NewOperation( "ElementOfFreeMagmaRing",
+ElementOfMagmaRing := NewOperation( "ElementOfMagmaRing",
     [ IsFamily, IsRingElement, IsHomogeneousList, IsHomogeneousList ] );
 
 

@@ -289,7 +289,7 @@ object `fruits' is changed.
     gap> AddSet(fruits, "banana");
     gap> fruits;  #  The banana is inserted in the right place.
     [ "apple", "banana", "cherry", "plum", "strawberry" ]
-
+|_
     gap> AddSet(fruits, "apple");
     gap> fruits;  #  `fruits' has not changed.
     [ "apple", "banana", "cherry", "plum", "strawberry" ] 
@@ -407,14 +407,14 @@ that prime, add it to the list `factors' and continue.
 \beginexample
     gap> n:= 1333;;
     gap> factors:= [];;
-
+|_
     gap> for p in primes do
     >       while n mod p = 0 do
     >          n:= n/p;
     >          Add(factors, p);
     >       od;
     >    od;
-
+|_
     gap> factors; n;
     [ 31, 43 ]
     1 
@@ -438,7 +438,7 @@ function `Unbind' to delete entries from a list.
 \beginexample
     gap> primes:= [];;
     gap> numbers:= [2..1000];;
-
+|_
     gap> for p in numbers do
     >       Add(primes, p);
     >       for n in numbers do

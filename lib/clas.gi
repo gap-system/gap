@@ -84,14 +84,15 @@ end );
 ##
 InstallMethod( ConjugacyClass, IsCollsElms, [ IsGroup, IsObject ], 0,
     function( G, g )
-    local   cl;
+    local   filter,  cl;
     
-    cl := Objectify( NewType( FamilyObj( G ) ), rec( start := [ g ] ) );
-    if IsPermGroup( G )  then
-        SetFilterObj( cl, IsConjugacyClassPermGroupRep );
-    else
-        SetFilterObj( cl, IsConjugacyClassGroupRep );
+    if IsPermGroup( G )  then  filter := IsConjugacyClassPermGroupRep;
+                         else  filter := IsConjugacyClassGroupRep;      fi;
+    if IsPcgsComputable( G )  then
+        filter := filter and IsExternalSetByPcgs;
     fi;
+    cl := Objectify( NewType( FamilyObj( G ), filter ),
+                  rec( start := [ g ] ) );
     SetActingDomain( cl, G );
     SetRepresentative( cl, g );
     SetFunctionOperation( cl, OnPoints );
@@ -145,8 +146,10 @@ InstallOtherMethod( Centralizer, true, [ IsConjugacyClassGroupRep ], 0,
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
 ConjugacyClassesByRandomSearch := function ( G )
+# uses random Search with Jerrum's strategy
     local   classes,    # conjugacy classes of <G>, result
             class,      # one class of <G>
+	    cent,	# centralizer from which to take random elements
             elms;       # elements of <G>
 
     # initialize the conjugacy class list
@@ -174,11 +177,12 @@ ConjugacyClassesByRandomSearch := function ( G )
     # otherwise use probabilistic algorithm
     else
 
+	cent:=G;
         # while we have not found all conjugacy classes
         while Sum( List( classes, Size ) ) <> Size( G )  do
 
             # try random elements
-            ConjugacyClassesTry( G, classes, Random(G), 0, 1 );
+            cent:=ConjugacyClassesTry( G, classes, Random(cent), 0, 1 );
 
         od;
 
@@ -199,49 +203,65 @@ ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
             i;          # loop variable
 
     # if the element is not in one of the known classes add a new class
-    if ForAll( classes, D -> length mod Size(D) <> 0 or not elm in D )  then
-        C := ConjugacyClass( G, elm );
-        Add( classes, C );
-	Info(InfoClasses,2,"found new class ",Length(classes),
-	     " of size ",Size(C));
-        new := [ C ];
+    i:=1;
+    while i<=Length(classes) do
+      if length mod Size(classes[i])=0 and elm in classes[i] then
+	# return (modified) centralizer of element for iteration
+        D:=Centralizer(classes[i]);
+	if Size(D)=Order(elm) then
+	  D:=G;
+	fi;
+        return D;
+      fi;
+      i:=i+1;
+    od;
 
-        # try powers that keep the order, compare only with new classes
-        for i  in [2..Order(elm)-1]  do
-            if GcdInt( i, Order(elm) * fixes ) = 1  then
-                if not elm^i in C  then
-                    if ForAll( new, D -> not elm^i in D )  then
-                        D := ConjugacyClass( G, elm^i );
-                        Add( classes, D );
-                        Add( new, D );
-			Info(InfoClasses,2,"found new power");
-                    fi;
-                elif IsPrimeInt(i)  then
-                    fixes := fixes * i;
-                fi;
-            fi;
-        od;
+    C := ConjugacyClass( G, elm );
+    Add( classes, C );
+    Info(InfoClasses,2,"found new class ",Length(classes),
+	 " of size ",Size(C));
+    new := [ C ];
 
-        # try also the powers of this element that reduce the order
-        for i  in Set( FactorsInt( Order( elm ) ) )  do
-            ConjugacyClassesTry(G,classes,elm^i,Size(C),fixes);
-        od;
+    # try powers that keep the order, compare only with new classes
+    for i  in [2..Order(elm)-1]  do
+	if GcdInt( i, Order(elm) * fixes ) = 1  then
+	    if not elm^i in C  then
+		if ForAll( new, D -> not elm^i in D )  then
+		    D := ConjugacyClass( G, elm^i );
+		    Add( classes, D );
+		    Add( new, D );
+		    Info(InfoClasses,2,"found new power");
+		fi;
+	    elif IsPrimeInt(i)  then
+		fixes := fixes * i;
+	    fi;
+	fi;
+    od;
 
-    fi;
+    # try also the powers of this element that reduce the order
+    for i  in Set( FactorsInt( Order( elm ) ) )  do
+	ConjugacyClassesTry(G,classes,elm^i,Size(C),fixes);
+    od;
+
+    return Centralizer(C);
 
 end;
 
-InstallMethod( ConjugacyClasses, true, [ IsSolvableGroup ], 20,
+InstallMethod( ConjugacyClasses, true, [ IsGroup ], 20,
     function( G )
     local   cls,  cl,  c;
     
-    cls := [  ];
-    for cl  in ClassesSolvableGroup( G, G, true, 0 )  do
-        c := ConjugacyClass( G, cl.representative );
-        SetStabilizerOfExternalSet( c, cl.centralizer );
-        Add( cls, c );
-    od;
-    return cls;
+    if IsSolvableGroup( G )  then
+        cls := [  ];
+        for cl  in ClassesSolvableGroup( G, G, true, 0 )  do
+            c := ConjugacyClass( G, cl.representative );
+            SetStabilizerOfExternalSet( c, cl.centralizer );
+            Add( cls, c );
+        od;
+        return cls;
+    else
+        TryNextMethod();
+    fi;
 end );
 
 #############################################################################
@@ -435,19 +455,14 @@ end;
 
 #############################################################################
 ##
-#F  PrimeResidueClassGroup(<m>) . . . . . . .  full prime residue class group
+#F  GeneratorsPrimeResidueClassGroup(<m>) . . . residue class representatives
 ##
-PrimeResidueClassGroups := [ Group( () ) ];
+GeneratorsPrimeResidueClassGroup := function(m)
+local   gens,       # generating residues
+	p, q,       # prime and prime power dividing <m>
+	r,          # primitive root modulo <q>
+	g;          # is = <r> mod <q> and = 1 mod <m> / <q>
 
-PrimeResidueClassGroup := function ( m )
-    local   G,          # group $Z/mZ$, result
-            gens,       # generators of <G>
-            p, q,       # prime and prime power dividing <m>
-            r,          # primitive root modulo <q>
-            g;          # is = <r> mod <q> and = 1 mod <m> / <q>
-
-  if not IsBound( PrimeResidueClassGroups[ m ] )  then
-        
     # add generators for each prime power factor <q> of <m>
     gens := [];
     for p  in Set( FactorsInt( m ) )  do
@@ -458,28 +473,43 @@ PrimeResidueClassGroup := function ( m )
         if   q = 4  then
             r := 3;
             g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, PermResidueClass( g, m ) );
+            Add( gens, g );
 
         # $ Z / 8nZ = < 5, -1 > $ is *not* cyclic
         elif q mod 8 = 0  then
             r := q-1;
             g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, PermResidueClass( g, m ) );
+            Add( gens,  g);
             r := 5;
             g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, PermResidueClass( g, m ) );
+            Add( gens, g );
 
         # for odd <q> $ Z / qZ $ is cyclic
         elif q <> 2  then
             r :=  PrimitiveRootMod( q );
             g := r + q * (((1/q mod (m/q)) * (1 - r)) mod (m/q));
-            Add( gens, PermResidueClass( g, m ) );
+            Add( gens, g );
         fi;
 
     od;
+  return gens;
+end;
+
+#############################################################################
+##
+#F  PrimeResidueClassGroup(<m>) . . . . . . .  full prime residue class group
+##
+PrimeResidueClassGroups := [ Group( () ) ];
+
+PrimeResidueClassGroup := function ( m )
+    local   G;          # group $Z/mZ$, result
+
+  if not IsBound( PrimeResidueClassGroups[ m ] )  then
 
     # return the group generated by <gens>
-    G := Group( gens, PermResidueClass( 1, m ) );
+    G := Group(List(GeneratorsPrimeResidueClassGroup(m),
+                    i->PermResidueClass(i,m)),
+	       PermResidueClass( 1, m ) );
     SetSize( G, Phi( m ) );
     PrimeResidueClassGroups[ m ] := G;
 
@@ -543,29 +573,40 @@ end;
 
 InstallMethod( RationalClasses, true, [ IsSolvableGroup ], 20,
     function( G )
-    local   rcls,  cl,  rcl,  sum;
+    local   rcls,  cls,  cl,  c,  sum;
     
     rcls := [  ];
     if IsPrimePowerInt( Size( G ) )  then
         for cl  in ClassesSolvableGroup( G, G, true, 1 )  do
-            rcl := RationalClass( G, cl.representative );
-            SetStabilizerOfExternalSet( rcl, cl.centralizer );
-            SetGaloisGroup( rcl, cl.galoisGroup );
-            Add( rcls, rcl );
+            c := RationalClass( G, cl.representative );
+            SetStabilizerOfExternalSet( c, cl.centralizer );
+            SetGaloisGroup( c, cl.galoisGroup );
+            Add( rcls, c );
         od;
     else
         sum := 0;
+        if not HasConjugacyClasses( G )  then
+            cls := [  ];
+        fi;
         for cl  in ClassesSolvableGroup( G, G, true, 0 )  do
-            rcl := RationalClass( G, cl.representative );
-            SetStabilizerOfExternalSet( rcl, cl.centralizer );
-            if not rcl in rcls  then
-                Add( rcls, rcl );
-                sum := sum + Size( rcl );
+            if IsBound( cls )  then
+                c := ConjugacyClass( G, cl.representative );
+                SetStabilizerOfExternalSet( c, cl.centralizer );
+                Add( cls, c );
+            fi;
+            c := RationalClass( G, cl.representative );
+            SetStabilizerOfExternalSet( c, cl.centralizer );
+            if not c in rcls  then
+                Add( rcls, c );
+                sum := sum + Size( c );
                 if sum = Size( G )  then
                     break;
                 fi;
             fi;
         od;
+        if IsBound( cls )  then
+            SetConjugacyClasses( G, cls );
+        fi;
     fi;
     return rcls;
 end );

@@ -22,65 +22,6 @@ Revision.help_g :=
 #############################################################################
 ##
 
-#F  REPLACE_SUBSTRING( <string>, <old>, <new> )
-##
-REPLACE_SUBSTRING := function( string, old, new )
-    local   i;
-    
-    for i  in [ 0 .. Length( string ) - Length( old ) ]  do
-        if string{ i + [ 1 .. Length( old ) ] } = old  then
-            string{ i + [ 1 .. Length( old ) ] } := new;
-        fi;
-    od;
-end;
-
-#############################################################################
-##
-#F  IS_SUBSTRING( <str>, <sub> )
-##
-IS_SUBSTRING := function( str, sub )
-    local   l,  i;
-
-    l := Length(sub);
-    if l = 0  then return true;  fi;
-    for i  in [ 1 .. Length(str)-l+1 ]  do
-        if str{[i..i+l-1]} = sub  then
-            return true;
-        fi;
-    od;
-    return false;
-end;
-
-#############################################################################
-##
-#F  MATCH_BEGIN_LOWER( <a>, <b> )
-##
-MATCH_BEGIN_LOWER := function( a, b )
-    local   l,  u,  i,  p,  aa,  bb;
-
-    l := "abcdefghijklmnopqrstuvwxyz";
-    u := "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    if 0 = Length(b) or Length(a) < Length(b)  then
-        return false;
-    fi;
-
-    for i  in [ 1 .. Length(b) ]  do
-        p := Position( u, a[i] );
-        if p = fail  then aa := a[i];  else aa := l[p];  fi;
-        p := Position( u, b[i] );
-        if p = fail  then bb := b[i];  else bb := l[p];  fi;
-        if aa <> bb  then
-            return false;
-        fi;
-    od;
-    return true;
-
-end;
-
-
-#############################################################################
-##
 #F  MATCH_BEGIN( <a>, <b> )
 ##
 MATCH_BEGIN := function( a, b )
@@ -131,38 +72,6 @@ end;
 
 #############################################################################
 ##
-#F  STRING_LOWER( <str> )
-##
-STRING_LOWER1 := "";
-STRING_LOWER2 := "";
-
-STRING_LOWER := function( str )
-    local   new,  s,  p;
-
-    if 0 = Length(STRING_LOWER1)  then
-        Append( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz  " );
-        Append( STRING_LOWER2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ!~" );
-        Append( STRING_LOWER1, "abcdefghijklmnopqrstuvwxyz" );
-        Append( STRING_LOWER2, "abcdefghijklmnopqrstuvwxyz" );
-        SortParallel( STRING_LOWER2, STRING_LOWER1 );
-    fi;
-
-    new := "";
-    for s  in str  do
-        if s in STRING_LOWER2  then
-            p := PositionSorted( STRING_LOWER2, s );
-            Add( new, STRING_LOWER1[p] );
-        else
-            Add( new, s );
-        fi;
-    od;
-    ConvertToStringRep(new);
-    return new;
-end;
-
-
-#############################################################################
-##
 
 #F  # # # # # # # # # # # information about the books # # # # # # # # # # # #
 ##
@@ -171,7 +80,7 @@ end;
 #############################################################################
 ##
 
-#V  HELP_BOOKS_INFO
+#V  HELP_BOOKS_INFO . . . . . . . . . . . . .  collected info about the books
 ##
 ##  The record <HELP_BOOKS_INFO> contains  for each book (already looked  at)
 ##  an entry describing the information found in the "manual.six" file.  This
@@ -219,7 +128,7 @@ HELP_BOOKS_INFO := rec();
 
 #############################################################################
 ##
-#V  HELP_MAIN_BOOKS
+#V  HELP_MAIN_BOOKS . . . . . . . . .  list of main books with share packages
 ##
 ##  A list of main books that are available.  This does not include the share
 ##  libraries.
@@ -232,7 +141,7 @@ HELP_MAIN_BOOKS := Immutable( [
 
 #############################################################################
 ##
-#V  HELP_BOOKS
+#V  HELP_BOOKS	. . . . . . . . . . . . . . . . . . . . . . . . list of books
 ##
 ##  A list of books including the *loaded* share libraries.
 ##
@@ -242,7 +151,7 @@ HELP_BOOKS := ShallowCopy(HELP_MAIN_BOOKS);
 #############################################################################
 ##
 
-#F  HELP_BOOK_INFO( <book> )
+#F  HELP_BOOK_INFO( <book> )  . . . . . . . . . . . . . get info about a book
 ##
 HELP_BOOK_INFO := function( book )
     local   nums,  readNumber,  path,  i,  bnam,  six,  stream,  c,  
@@ -277,8 +186,9 @@ HELP_BOOK_INFO := function( book )
 
     # check if this is a book from the main library
     path := false;
+    book := STRING_LOWER(book);
     for i  in [ 1, 4 .. Length(HELP_MAIN_BOOKS)-2 ]  do
-        if MATCH_BEGIN_LOWER( HELP_MAIN_BOOKS[i], book )  then
+        if MATCH_BEGIN( HELP_MAIN_BOOKS[i], book )  then
             path := HELP_MAIN_BOOKS[i+1];
             book := HELP_MAIN_BOOKS[i];
             break;
@@ -431,7 +341,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_CHAPTER_INFO( <book>, <chapter> )
+#F  HELP_CHAPTER_INFO( <book>, <chapter> )  . . . .  get info about a chapter
 ##
 HELP_CHAPTER_BEGIN := Immutable("\\Chapter");
 HELP_SECTION_BEGIN := Immutable("\\Section");
@@ -485,7 +395,7 @@ end;
 ##
 
 
-#F  HELP_PRINT_LINES( <lines> )
+#F  HELP_PRINT_LINES( <lines> )	. . . . . . . . . . . . . . . .  format lines
 ##
 HELP_PRINT_LINES := function( lines )
     local   size,  stream,  count,  halt,  line,  i,  char;
@@ -522,7 +432,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_PRINT_SECTION( <book>, <chapter>, <section> )
+#F  HELP_PRINT_SECTION( <book>, <chapter>, <section> )	. . . . . print entry
 ##
 HELP_PRINT_SECTION := function( book, chapter, section )
     local   info,  chap,  filename,  stream,  done,  line,  lines,
@@ -613,7 +523,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_TEST_EXAMPLES( <book>, <chapter> )
+#F  HELP_TEST_EXAMPLES( <book>, <chapter> ) . . . . . . . . test the examples
 ##
 HELP_TEST_EXAMPLES := function( book, chapter )
     local   info,  chap,  filename,  stream,  examples,  test,  line;
@@ -674,7 +584,7 @@ end;
 ##
 
 
-#F  HELP_SHOW_BOOKS( <book> )
+#F  HELP_SHOW_BOOKS( <book> ) . . . . . . . . . . . . .  show available books
 ##
 HELP_SHOW_BOOKS := function( book )
     local   books,  i;
@@ -696,7 +606,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_CHAPTERS( <book> )
+#F  HELP_SHOW_CHAPTERS( <book> )  . . . . . . . . . . . . . show all chapters
 ##
 HELP_SHOW_CHAPTERS := function( book )
     local   info,  chap,  i;
@@ -734,7 +644,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_SECTIONS( <book> )
+#F  HELP_SHOW_SECTIONS( <book> )  . . . . . . . . . . . . . show all sections
 ##
 HELP_SHOW_SECTIONS := function( book )
     local   info,  lines,  chap,  sec,  i;
@@ -774,7 +684,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_TOPIC( <book>, <topic> )
+#F  HELP_SHOW_TOPIC( <book>, <topic> )  . . . . . . . . . . . .  find a topic
 ##
 HELP_LAST_BOOK    := "tutorial";
 HELP_LAST_CHAPTER := 1;
@@ -877,7 +787,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_COPYRIGHT( <book> )
+#F  HELP_SHOW_COPYRIGHT( <book> ) . . . . . . . . . . . .  show the copyright
 ##
 HELP_SHOW_COPYRIGHT := function( book )
     if 0 = Length(book)  then
@@ -890,7 +800,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_FIRST( <book> )
+#F  HELP_SHOW_FIRST( <book> ) . . . . . . . . . . . show chapter introduction
 ##
 HELP_SHOW_FIRST := function( book )
     HELP_LAST_SECTION := 0;
@@ -902,7 +812,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_NEXT_CHAPTER( <book> )
+#F  HELP_SHOW_NEXT_CHAPTER( <book> )  . . . . . . . . . . . show next chapter
 ##
 HELP_SHOW_NEXT_CHAPTER := function( book )
     book := HELP_BOOK_INFO(HELP_LAST_BOOK);
@@ -919,7 +829,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_PREV( <book> )
+#F  HELP_SHOW_PREV( <book> )  . . . . . . . . . . . . . show previous section
 ##
 HELP_SHOW_PREV := function( book )
     HELP_LAST_SECTION := HELP_LAST_SECTION - 1;
@@ -942,7 +852,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_NEXT( <book> )
+#F  HELP_SHOW_NEXT( <book> )  . . . . . . . . . . . . . . . show next section
 ##
 HELP_SHOW_NEXT := function( book )
     HELP_LAST_SECTION := HELP_LAST_SECTION + 1;
@@ -964,7 +874,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_WELCOME( <book> )
+#F  HELP_SHOW_WELCOME( <book> ) . . . . . . . . . . . .  show welcome message
 ##
 HELP_SHOW_WELCOME := function( book )
     local   lines;
@@ -980,7 +890,7 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SHOW_INDEX( <book>, <topic> )
+#F  HELP_SHOW_INDEX( <book>, <topic> )  . . . . . . . . . .  search the index
 ##
 HELP_SHOW_INDEX := function( book, topic )
     local   match,  info,  i,  what,  line,  lines;
@@ -1046,13 +956,14 @@ end;
 
 #############################################################################
 ##
-
-#F  HELP( <string> )
+#F  HELP( <string> )  . . . . . . . . . . . . . . .  deal with a help request
 ##
 HELP_RING_IDX   := 0;
 HELP_RING_SIZE  := 16;
-HELP_BOOK_RING  := List( [1..HELP_RING_SIZE], x -> "tutorial" );
-HELP_TOPIC_RING := List( [1..HELP_RING_SIZE], x -> "Welcome to GAP" );
+HELP_BOOK_RING  := ListWithIdenticalEntries( HELP_RING_SIZE, 
+                                             "tutorial" );
+HELP_TOPIC_RING := ListWithIdenticalEntries( HELP_RING_SIZE, 
+                                             "Welcome to GAP" );
 
 HELP := function( str )
     local   p,  book,  move,  add;

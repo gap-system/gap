@@ -54,40 +54,40 @@ IsExternalSetByOperatorsRep := NewRepresentation
 IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
     IsGroupHomomorphism and
     IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
-    IsAttributeStoringRep, [ "externalSet" ] );
+    IsAttributeStoringRep, [  ] );
 
 IsOperationHomomorphismDirectly := NewRepresentation
     ( "IsOperationHomomorphismDirectly",
       IsOperationHomomorphism,
-      [ "externalSet" ] );
+      [  ] );
 IsOperationHomomorphismByOperators := NewRepresentation
     ( "IsOperationHomomorphismByOperators",
       IsOperationHomomorphism,
-      [ "externalSet" ] );
+      [  ] );
 IsOperationHomomorphismSubset := NewRepresentation
     ( "IsOperationHomomorphismSubset",
       IsOperationHomomorphism,
-      [ "externalSet" ] );
+      [  ] );
 IsOperationHomomorphismByBase := NewRepresentation
     ( "IsOperationHomomorphismByBase",
       IsOperationHomomorphism,
-      [ "externalSet" ] );
+      [  ] );
 
 IsConstituentHomomorphism := NewRepresentation( "IsConstituentHomomorphism",
-    IsOperationHomomorphismDirectly, [ "externalSet", "conperm" ] );
+    IsOperationHomomorphismDirectly, [ "conperm" ] );
 
 IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
-    IsOperationHomomorphismDirectly, [ "externalSet", "reps" ] );
+    IsOperationHomomorphismDirectly, [ "reps" ] );
 
 IsGeneralLinearOperationHomomorphism := NewRepresentation
     ( "IsGeneralLinearOperationHomomorphism",
       IsOperationHomomorphismDirectly,
-      [ "externalSet" ] );
+      [  ] );
 
 IsGeneralLinearOperationHomomorphismWithBase := NewRepresentation
     ( "IsGeneralLinearOperationHomomorphismWithBase",
       IsGeneralLinearOperationHomomorphism,
-      [ "externalSet" ] );
+      [  ] );
 
 #############################################################################
 ##
@@ -166,6 +166,15 @@ HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
 ##
 OperationHomomorphismAttr := NewAttribute( "OperationHomomorphism",
                                  IsExternalSet );
+
+#############################################################################
+##
+#A  UnderlyingExternalSet( <ohom> ) . . . . . . . . . underlying external set
+##
+UnderlyingExternalSet := NewAttribute( "UnderlyingExternalSet",
+                                 IsOperationHomomorphism );
+SetUnderlyingExternalSet := Setter( UnderlyingExternalSet );
+HasUnderlyingExternalSet := Tester( UnderlyingExternalSet );
 
 OrbitishReq  := [ IsGroup, IsList, IsObject,
                   IsList,

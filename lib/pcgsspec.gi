@@ -694,10 +694,10 @@ end );
 
 #############################################################################
 ##
-#M  EAFirst( <group> )
+#M  NormalPcFirst( <pcgs> )
 ##
-InstallMethod( EAFirst, "special pcgs: LGFirst", true, [ IsSpecialPcgs ], 0,
-        LGFirst );
+InstallMethod( NormalPcFirst, "special pcgs: LGFirst", true,
+        [ IsSpecialPcgs ], 0, LGFirst );
 
 
 #############################################################################

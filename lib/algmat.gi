@@ -711,15 +711,10 @@ InstallMethod( RadicalOfAlgebra,
 
         # Calculate $I_i$ (see the paper by Ronyai).
 
-        eqs:= NullMat( t, n+1, G );
+        eqs:= MutableNullMat( t, n+1, G );
         for j in [1..t] do
           for k in [1..n+1] do
-            X:= I[j] * B[k];
-            for u in [1..lemat] do
-              for v in [1..lemat] do
-                X[u][v]:= IntFFE( X[u][v] );
-              od;
-            od;
+            X:= List( I[j] * B[k], IntVecFFE );
             eqs[j][k]:= ( TraceMat( X^pexp ) / pexp ) * One( G );
           od;
         od;
@@ -895,7 +890,7 @@ FullMatrixAlgebraCentralizer := function( F, lst )
     # Position '(i,j)' in the matrix corresponds with position '(i-1)*n+j'
     # in the vector.
 
-    eq:= NullMat( n2, n2 * len, F );
+    eq:= MutableNullMat( n2, n2 * len, F );
     for u in [ 1 .. len ] do
       for i in [1..n] do
         for j in [1..n] do
@@ -994,7 +989,7 @@ FullMatrixFLMLOR := function( R, n )
           one,    # the identity of the field
           A;      # algebra, result
 
-    gens:= NullMat( n, n, R );
+    gens:= MutableNullMat( n, n, R );
     gens:= [ gens, List( gens, ShallowCopy ) ];
     one:= One( R );
 
@@ -1037,7 +1032,7 @@ FullMatrixLieFLMLOR := function( F, n )
           A;      # algebra, result
 
     # Construct the generators.
-    null:= NullMat( n, n, F );
+    null:= MutableNullMat( n, n, F );
     one:= One( F );
 
 
@@ -1116,12 +1111,12 @@ InstallOtherMethod( DirectSumOfAlgebras,
 
     B:= [];
     for i in b1 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
+      Q:= MutableNullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
       Q{ [ 1 .. p1 ] }{ [ 1 .. p1 ] }:= i;
       Add( B, Q );
     od;
     for i in b2 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
+      Q:= MutableNullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
       Q{ [ p1+1 .. p1+p2 ] }{ [ p1+1 .. p1+p2 ] }:= i;
       Add( B, Q );
     od;
@@ -1182,12 +1177,12 @@ InstallOtherMethod( DirectSumOfAlgebras,
 #T unauthorized access!
     B:= [];
     for i in b1 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
+      Q:= MutableNullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
       Q{ [ 1 .. p1 ] }{ [ 1 .. p1 ] }:= i;
       Add( B, LieObject( Q ) );
     od;
     for i in b2 do
-      Q:= NullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
+      Q:= MutableNullMat( p1+p2, p1+p2, LeftActingDomain( A1 ) );
       Q{ [ p1+1 .. p1+p2 ] }{ [ p1+1 .. p1+p2 ] }:= i;
       Add( B, LieObject( Q ) );
     od;

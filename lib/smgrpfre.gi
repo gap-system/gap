@@ -321,12 +321,12 @@ InstallMethod( Enumerator,
 
 #############################################################################
 ##
-#M  IsFinite( <S> ) . . . . . . . . . . . . . . . . . .  for a free semigroup
+#M  IsFinite( <S> ) . . . . . . . . . . . . . for a semigroup of assoc. words
 ##
 InstallMethod( IsFinite,
-    "method for a free semigroup",
+    "method for a semigroup of assoc. words",
     true,
-    [ IsSemigroup and IsAssocWordWithOneCollection ], 0,
+    [ IsSemigroup and IsAssocWordCollection ], 0,
     IsTrivial );
 
 
@@ -427,12 +427,6 @@ FreeSemigroup := function( arg )
     else
       Error("usage: FreeSemigroup(<name1>,<name2>..),FreeSemigroup(<rank>)");
     fi;
-
-    # Construct the family of element objects of our group.
-    F:= NewFamily( "FreeGroupElementsFamily", IsAssocWordWithInverse );
-
-    # Install the data (names, no. of bits available for exponents, types).
-    StoreInfoFreeMagma( F, names, IsAssocWordWithInverse );
 
     # Construct the family of element objects of our semigroup.
     F:= NewFamily( "FreeSemigroupElementsFamily", IsAssocWord );

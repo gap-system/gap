@@ -76,13 +76,14 @@ function( G )
     
     nice := NiceMonomorphism( G );
     img := ImagesSet( nice, G );
-    if IsOperationHomomorphism( nice ) and HasBase( nice!.externalSet )  then
-        if not IsBound( nice!.externalSet!.basePermImage )  then
-            D := HomeEnumerator( nice!.externalSet );
-            nice!.externalSet!.basePermImage := List
-                ( Base( nice!.externalSet ), b -> PositionCanonical( D, b ) );
+    if     IsOperationHomomorphism( nice )
+       and HasBase( UnderlyingExternalSet( nice ) )  then
+        if not IsBound( UnderlyingExternalSet( nice )!.basePermImage )  then
+            D := HomeEnumerator( UnderlyingExternalSet( nice ) );
+            UnderlyingExternalSet( nice )!.basePermImage := List
+                ( Base( UnderlyingExternalSet( nice ) ), b -> PositionCanonical( D, b ) );
         fi;
-        SetBase( img, nice!.externalSet!.basePermImage );
+        SetBase( img, UnderlyingExternalSet( nice )!.basePermImage );
     fi;
     return img;
 end );
@@ -160,6 +161,14 @@ GroupMethodByNiceMonomorphismCollColl( Centralizer,
 ##
 GroupMethodByNiceMonomorphismCollElm( Centralizer,
     [ IsGroup, IsObject ] );
+
+
+#############################################################################
+##
+#M  ChiefSeries( <G> )  . . . . . . . . . . . . . . . chief series of a group
+##
+GroupSeriesMethodByNiceMonomorphism( ChiefSeries,
+    [ IsGroup ] );
 
 
 #############################################################################
@@ -563,8 +572,19 @@ GroupSeriesMethodByNiceMonomorphism( UpperCentralSeriesOfGroup,
 InstallMethod(IsomorphismPcGroup,"via niceomorphisms",true,
   [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
 function(g)
-local mon,iso;
+local mon,iso,xset;
    mon:=NiceMonomorphism(g);
+   if not IsOperationHomomorphism( mon )  then
+       TryNextMethod();
+   fi;
+   xset := UnderlyingExternalSet( mon );
+   if IsExternalSetByOperatorsRep( xset )  then
+       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
+                      xset!.generators, xset!.operators, xset!.funcOperation );
+   else
+       mon := OperationHomomorphism( g, HomeEnumerator( xset ),
+                      FunctionOperation( xset ) );
+   fi;
    iso:=IsomorphismPcGroup(NiceObject(g));
    if iso=fail then
      return fail;

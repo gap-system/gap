@@ -122,7 +122,7 @@ NamesFilter := function( flags )
         if not IsBound(FILTERS[ bn[i] ])  then
             bn[i] := STRING_INT( bn[i] );
         else
-            bn[i] := NAME_FUNCTION(FILTERS[ bn[i] ]);
+            bn[i] := NAME_FUNC(FILTERS[ bn[i] ]);
         fi;
     od;
     return bn;
@@ -142,7 +142,11 @@ RANK_FILTER := function( filter )
     local   rank,  flags,  i;
 
     rank  := 0;
-    flags := FLAGS_FILTER(filter);
+    if IS_FUNCTION(filter)  then
+        flags := FLAGS_FILTER(filter);
+    else
+        flags := filter;
+    fi;
     for i  in TRUES_FLAGS(WITH_HIDDEN_IMPS_FLAGS(flags))  do
         if IsBound(RANK_FILTERS[i])  then
             rank := rank + RANK_FILTERS[i];
@@ -156,10 +160,15 @@ end;
 RankFilter := RANK_FILTER;
 
 RANK_FILTER_STORE := function( filter )
-    local   hash,  rank;
+    local   hash,  rank,  flags;
 
-    hash := HASH_FLAGS( FLAGS_FILTER( filter ) );
-    rank := RANK_FILTER( filter );
+    if IS_FUNCTION(filter)  then
+        flags := FLAGS_FILTER(filter);
+    else
+        flags := filter;
+    fi;
+    hash := HASH_FLAGS(flags);
+    rank := RANK_FILTER(flags);
     ADD_LIST( RANK_FILTER_LIST, hash );
     ADD_LIST( RANK_FILTER_LIST, rank );
     return rank;
@@ -167,9 +176,14 @@ RANK_FILTER_STORE := function( filter )
 end;
 
 RANK_FILTER_COMPLETION := function( filter )
-    local   hash;
+    local   hash,  flags;
 
-    hash := HASH_FLAGS( FLAGS_FILTER( filter ) );
+    if IS_FUNCTION(filter)  then
+        flags := FLAGS_FILTER(filter);
+    else
+        flags := filter;
+    fi;
+    hash := HASH_FLAGS(flags);
     if hash <> RANK_FILTER_LIST[RANK_FILTER_COUNT]  then
         Error( "corrupted completion file" );
     fi;

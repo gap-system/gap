@@ -245,7 +245,7 @@ InstallMethod( ExponentsOfPcElement,
 function( pcgs, elm )
     local   exp,  rep,  i;
 
-    exp := [ 1 .. Length(pcgs) ] * 0;
+    exp := ListWithIdenticalEntries( Length( pcgs ), 0 );
     rep := ExtRepOfObj( UnderlyingElement(elm) );
     for i  in [ 1, 3 .. Length(rep)-1 ]  do
         exp[rep[i]] := rep[i+1];

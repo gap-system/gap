@@ -7,8 +7,6 @@
 Revision.primitiv_gi :=
     "@(#)$Id$";
 
-coh := "dummy";
-
 #############################################################################
 ##
 #F  RepOpSuborbits( <G>, <subs>, <a>, <b> ) . . . . . . . . . .  on suborbits
@@ -140,7 +138,7 @@ LinearCohortOnProjectivePoints := function( n, q )
     fld := GF( q );
     pro := ProjectiveSpace( fld ^ n );
     gens := GeneratorsOfGroup( Operation( SL( n, q ), pro ) );
-    M := List( IdentityMat( n, fld ), ShallowCopy );
+    M := MutableIdentityMat( n, fld );
     M[ 1 ][ 1 ] := PrimitiveRoot( fld );
     coh := MakeCohort( Concatenation( [
         Permutation( FrobeniusAutomorphism( fld ), pro, OnTuples ),
@@ -163,7 +161,7 @@ SymplecticCohortOnProjectivePoints := function( n, q )
     if q mod 2 = 0  then
         M := PrimitiveRoot( fld );
     else
-        M := List( IdentityMat( n, fld ), ShallowCopy );
+        M := MutableIdentityMat( n, fld );
         for i  in [ 1 .. n / 2 ]  do
             M[ i ][ i ] := PrimitiveRoot( fld );
         od;
@@ -446,8 +444,6 @@ end;
 
 #A  PerfectResiduum( <G> )  . . . . . . . . . . . . . . . .  perfect residuum
 ##
-PerfectResiduum := NewAttribute( "PerfectResiduum", IsGroup );
-
 InstallMethod( PerfectResiduum, true, [ IsGroup ], 0,
     function( G )
     local   P;
@@ -481,10 +477,6 @@ end;
 ##
 #F  Rank( <arg> ) . . . . . . . . . . . . . . . . . . . . number of suborbits
 ##
-Rank := NewOperationArgs( "Rank" );
-RankOp := NewOperation( "Rank", OrbitsishReq );
-RankAttr := NewAttribute( "Rank", IsObject );
-
 Rank := function( arg )
     return AttributeOperation( RankOp, RankAttr, false, arg );
 end;
@@ -524,26 +516,6 @@ end );
 
 #############################################################################
 ##
-
-#V  SIMS_NUMBERS  . . . . . . . . . . . . . . . . . . . . . . of degree <= 50
-##
-if not IsBound( SIMS_NUMBERS )  then
-    ReadPrim( "simsnums.gi" );
-fi;
-
-SimsNo := NewAttribute( "SimsNo", IsPermGroup );
-SimsName := NewAttribute( "SimsName", IsPermGroup );
-
-#############################################################################
-##
-#V  IrredSolGroupList . . . . . . . . . . . . . . . . . . . . of degree < 256
-##
-if not IsBound( IrredSolGroupList )  then
-    ReadPrim( "irredsol.grp" );
-fi;
-
-#############################################################################
-##
 #V  AFFINE_NON_SOLVABLE_GROUPS  . . . . . . . . . . . . . . . of degree < 256
 ##
 AFFINE_NON_SOLVABLE_GROUPS := [  ];
@@ -570,8 +542,8 @@ BOOT_AFFINE_NON_SOLVABLE_GROUPS := function()
     
     for p  in [ [3,3], [5,2], [5,3], [7,2], [7,3], [11,2], [13,2] ]  do
         AFFINE_NON_SOLVABLE_GROUPS[ p[1] ^ p[2] ] := [  ];
-        hom := NaturalHomomorphismByNormalSubgroupInParent
-               ( DerivedSubgroup( GL( p[2], p[1] ) ) );
+        hom := NaturalHomomorphismByNormalSubgroup( GL( p[2], p[1] ),
+                                                    SL( p[2], p[1] ) );
         for nr  in Reversed
           ( [ 1 .. Length( ConjugacyClassesSubgroups( Range(hom) ) ) ] )  do
             AFFINE_NON_SOLVABLE_GROUPS[p[1]^p[2]][nr] :=
@@ -582,20 +554,14 @@ end;
 
 #############################################################################
 ##
-#V  COHORTS . . . . . . . . . . . . . . . . . . . . . . . .  of degree < 1000
-##
-if not IsBound( COHORTS )  then
-    ReadPrim( "cohorts.grp" );
-    COHORTS_DONE := [  ];
-fi;
-
-#############################################################################
-##
 #F  Cohort( <deg>, <c> )  . . . . . . . . . . . . . . . . . non-affine cohort
 ##
 Cohort := function( deg, c )
     local   bin,  n,  m,  q,  pro;
 
+    if IsEmpty( COHORTS )  then
+        ReadPrim( "cohorts.grp" );
+    fi;
     if not deg in COHORTS_DONE  then
         AddSet( COHORTS_DONE, deg );
         if not IsBound( COHORTS[ deg ] )  then
@@ -687,7 +653,7 @@ MakePrimitiveGroup := function( deg, nr )
         n := LogInt( deg, p );
         
         # First look in Mark Short's table of solvable groups.
-        if not IsBound( IrredSolGroupList )  then
+        if IsEmpty( IrredSolGroupList )  then
             ReadPrim( "irredsol.grp" );
         fi;
 
@@ -808,6 +774,9 @@ PrimitiveGroup := function( deg, nr )
     if IsGroup( G )  then
         Setter( IsPrimitiveProp )( G, true );
         if deg <= 50  then
+            if IsEmpty( SIMS_NUMBERS )  then
+                ReadPrim( "simsnums.gi" );
+            fi;
             Setter( SimsNo )( G, SIMS_NUMBERS[ deg ][ nr ] );
             Setter( SimsName )( G, SIMS_NAMES[ deg ][ SimsNo( G ) ] );
         fi;

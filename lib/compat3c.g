@@ -451,6 +451,35 @@ OpsOps.operations := OpsOps;
 #F  OperationsRecord( <name> )
 #F  OperationsRecord( <name>, <parent>... )
 ##
+FinishSubOperationsRecord := function ( sub )
+    local   sup, name;
+
+    # inherit everything from all finished super operations records
+    while sub.SUPC < Length(sub.SUPS)
+      and IsBound( sub.SUPS[sub.SUPC+1].DONE )
+      and sub.SUPS[sub.SUPC+1].DONE
+    do
+        sup := sub.SUPS[sub.SUPC+1];
+        for  name  in RecNames(sup)  do
+            if not IsBound( sub.(name) )  then
+                sub.(name) := sup.(name);
+            fi;
+        od;
+        sub.SUPC := sub.SUPC + 1;
+    od;
+
+    # inherit everything from the first unfinished super operations record
+    if sub.SUPC < Length(sub.SUPS)  then
+        sup := sub.SUPS[sub.SUPC+1];
+        for  name  in RecNames(sup)  do
+            if not IsBound( sub.(name) )  then
+                sub.(name) := sup.(name);
+            fi;
+        od;
+    fi;
+
+end;
+
 OperationsRecord := function ( arg )
     local   sub, sup;
 
@@ -492,35 +521,6 @@ FinishOperationsRecord := function ( sup )
     if IsBound( sup.SUBS )  then
         for sub  in sup.SUBS  do
             FinishSubOperationsRecord( sub );
-        od;
-    fi;
-
-end;
-
-FinishSubOperationsRecord := function ( sub )
-    local   sup, name;
-
-    # inherit everything from all finished super operations records
-    while sub.SUPC < Length(sub.SUPS)
-      and IsBound( sub.SUPS[sub.SUPC+1].DONE )
-      and sub.SUPS[sub.SUPC+1].DONE
-    do
-        sup := sub.SUPS[sub.SUPC+1];
-        for  name  in RecNames(sup)  do
-            if not IsBound( sub.(name) )  then
-                sub.(name) := sup.(name);
-            fi;
-        od;
-	sub.SUPC := sub.SUPC + 1;
-    od;
-
-    # inherit everything from the first unfinished super operations record
-    if sub.SUPC < Length(sub.SUPS)  then
-        sup := sub.SUPS[sub.SUPC+1];
-        for  name  in RecNames(sup)  do
-            if not IsBound( sub.(name) )  then
-                sub.(name) := sup.(name);
-            fi;
         od;
     fi;
 

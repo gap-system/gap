@@ -235,10 +235,10 @@ SmithNormalFormSQ := function( M )
 	end;
 
     # here starts the main function
-	P := IdentityMat( Length( M ) );
+	P := MutableIdentityMat( Length( M ) );
 	M := ShallowCopy( M );
-	Q := IdentityMat( Length( M[1] ) );
-	I := IdentityMat( Length( M[1] ) );
+	Q := MutableIdentityMat( Length( M[1] ) );
+	I := MutableIdentityMat( Length( M[1] ) );
 
 	for pos in [ 1..Minimum( Length( M ), Length( M[1] ) ) ] do
 	    if minimum() <> 0 then

@@ -12,8 +12,8 @@ Revision.frattfree_gi :=
 DiagonalMat := function( matlist, field )
     local c, n, new, mat, i, j;
     c := 0;
-    n := Sum( List( matlist, x -> Length( x ) ) );
-    new := IdentityMat( n, field );
+    n := Sum( List( matlist, Length ) );
+    new := MutableIdentityMat( n, field );
     for mat in matlist do
         for i in [1..Length(mat)] do
             for j in [1..Length(mat)] do

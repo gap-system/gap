@@ -36,7 +36,7 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
     cg := rec( matrix         := [  ],
                needed         := [  ],
                baseComplement := ShallowCopy( ran ),
-               projection     := StructuralCopy( IdentityMat( r, one ) ),
+               projection     := MutableIdentityMat( r, one ),
                commutator     := 0,
                centralizer    := 0,
                dimensionN     := r,
@@ -103,8 +103,7 @@ SubspaceVectorSpaceGroup := function( N, p, gens )
             Q[ i ] := cg.matrix[ i ]{ ran };
         od;
         for i  in [ cg.commutator + 1 .. r ]  do
-            Q[ i ] := ListWithIdenticalEntries( Length( cg.baseComplement ),
-                              zero );
+            Q[ i ] := ListWithIdenticalEntries( r, zero );
             Q[ i ][ cg.baseComplement[ i-r+Length(cg.baseComplement) ] ]
               := one;
         od;
@@ -209,7 +208,7 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
            exps, lens,  #/ exponents and orbit lengths in orbit algorithm
            pos, here,   # first point in current orbit, which candidates?
            trans,       # transversal for the current orbit
-           Q,  v,       # subspace to be projected onto, projection vectors
+           Q,  v,  r,   # subspace to be projected onto, projection vectors
            k,           # orbit representative in <N>
            gens,  oprs, # generators and operators for new Galois group
            type,        # the type of the Galois group as subgroup of Z_2^r^*
@@ -322,17 +321,18 @@ CentralStepRatClPGroup := function( G, N, mK, mL, cl )
             # Project the factors in <N> onto a complement to <Q>.
             if IsBound( cl.candidates )  then
                 v := List( candexps, ShallowCopy );
-                reps := v * K!.subspace.projection;
+                r := v * K!.subspace.projection;
+                reps := [  ];
                 exps := [  ];
                 conj := [  ];
                 if not IsEmpty( K!.subspace.baseComplement )  then
                     v{[1..Length(v)]}{K!.subspace.baseComplement} :=
-                      v{[1..Length(v)]}{K!.subspace.baseComplement} + reps;
+                      v{[1..Length(v)]}{K!.subspace.baseComplement} + r;
                 fi;
                 v := v * K!.subspace.inverse;
-                for i  in [ 1 .. Length( reps ) ]  do
+                for i  in [ 1 .. Length( r ) ]  do
                     reps[ i ] := PcElementByExponents
-                        ( K, K{ K!.subspace.baseComplement }, reps[ i ] );
+                        ( K, K{ K!.subspace.baseComplement }, r[ i ] );
                     exps[ i ] := WordVector( GeneratorsOfGroup( preimage )
                         { K!.subspace.needed }, One( preimage ), v[ i ] );
                     conj[ i ] := WordVector( preimage!.operators
@@ -496,8 +496,8 @@ CentralStepClEANS := function( H, U, N, cl )
         gens := N!.CmodK{ N!.subspace.needed };
         if IsIdentical( FamilyObj( U ), FamilyObj( cl.candidates ) )  then
             for c  in cl.candidates  do
-                exp := ExponentsOfPcElement( N, LeftQuotient( h, c ) )
-                       * One( field );
+                exp := ExponentsOfPcElement( N, LeftQuotient( h, c ) );
+                MultRowVector( exp, One( field ) );
                 w := exp * N!.subspace.projection;
                 exp{ N!.subspace.baseComplement } :=
                   w - exp{ N!.subspace.baseComplement };
@@ -529,13 +529,12 @@ end;
 
 #############################################################################
 ##
-#F  CorrectConjugacyClass( <orb>, <H>, <U>, <h>, <n>, <N>, <cNh> )   cf. MN89
+#F  CorrectConjugacyClass( <H>, <U>, <h>, <n>, <stab>, <N>, <cNh> )  cf. MN89
 ##
-CorrectConjugacyClass := function( orb, H, U, h, n, N, cNh )
-    local   cl,  stab,  comm,  s,  C;
+CorrectConjugacyClass := function( H, U, h, n, stab, N, cNh )
+    local   cl,  comm,  s,  C;
     
-    stab := ShallowCopy( InducedPcgsWrtHomePcgs
-                    ( StabilizerOfExternalSet( orb ) ) );
+    stab := ShallowCopy( InducedPcgsWrtHomePcgs( stab ) );
     comm := [  ];
     for s  in [ 1 .. Length( stab ) ]  do
         comm[ s ] := ExponentsOfPcElement( N,
@@ -626,7 +625,12 @@ GeneralStepClEANS := function( H, U, N, cl )
             pos := Position( cls, rep );
             if pos = fail  then
                 Add( cls, rep );
-                c := CorrectConjugacyClass( orb, H, U, h, rep, N, cNh );
+                c := StabilizerOfExternalSet( orb );
+                if IsIdentical( Rep, CanonicalRepresentativeOfExternalSet )
+                   then
+                    c := ConjugateSubgroup( c, OperatorOfExternalSet( orb ) );
+                fi;
+                c := CorrectConjugacyClass( H, U, h, rep, c, N, cNh );
             else
                 c := rec( representative := h * rep,
                              centralizer := classes[ pos ].centralizer );
@@ -636,15 +640,16 @@ GeneralStepClEANS := function( H, U, N, cl )
               k + n{ N!.subspace.baseComplement };
             c.operator := PcElementByExponents( N, N{ N!.subspace.needed },
                                    n * N!.subspace.inverse );
+            # Now (h.n)^c.operator = h.k
             if IsIdentical( Rep, CanonicalRepresentativeOfExternalSet )  then
                 c.operator := c.operator * OperatorOfExternalSet( orb );
+                # Now (h.n)^c.operator = h.rep mod [h,N]
                 k := PcElementByExponents( N, N{ N!.subspace.needed },
                      ExponentsOfPcElement( N, LeftQuotient
                              ( c.representative, ca ^ c.operator ) ) *
                              N!.subspace.inverse );
                 c.operator := c.operator / k;
-                c.centralizer := ConjugateSubgroup( c.centralizer,
-                                         OperatorOfExternalSet( orb ) * k );
+                # Now (h.n)^c.operator = h.rep
             fi;
             Add( classes, c );
         od;
@@ -652,8 +657,9 @@ GeneralStepClEANS := function( H, U, N, cl )
     else
         for orb  in ExternalOrbitsStabilizers( xset )  do
             rep := PcElementByExponents( N, N{ N!.subspace.baseComplement },
-                       CanonicalRepresentativeOfExternalSet( orb ){ ran } );
-            c := CorrectConjugacyClass( orb, H, U, h, rep, N, cNh );
+                           Representative( orb ){ ran } );
+            c := CorrectConjugacyClass( H, U, h, rep,
+                         StabilizerOfExternalSet( orb ), N, cNh );
             Add( classes, c );
         od;
     fi;

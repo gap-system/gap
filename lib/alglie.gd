@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the declaration of attributes, properties, and
 ##  operations for Lie algebras.
@@ -491,6 +491,15 @@ UniversalEnvelopingAlgebra := NewAttribute(
     IsLieAlgebra );
 SetUniversalEnvelopingAlgebra := Setter( UniversalEnvelopingAlgebra );
 HasUniversalEnvelopingAlgebra := Tester( UniversalEnvelopingAlgebra );
+
+
+#############################################################################
+##
+#F  FreeLieAlgebra( <R>, <rank> )
+#F  FreeLieAlgebra( <R>, <rank>, <name> )
+#F  FreeLieAlgebra( <R>, <name1>, <name2>, ... )
+##
+FreeLieAlgebra := NewOperationArgs( "FreeLieAlgebra" );
 
 
 #############################################################################

@@ -342,8 +342,9 @@ Add :=
 #O  Append(<list1>,<list2>) . . . . . . . . . . . . . append a list to a list
 ##
 Append :=
-    NewOperation( "Append",
-        [ IsList and IsMutable, IsList ] );
+    NewOperationKernel( "Append",
+        [ IsList and IsMutable, IsList ],
+        APPEND_LIST );
 
 
 #############################################################################

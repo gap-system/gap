@@ -338,40 +338,6 @@ But you main install special methods for these operations that cross
 families.
 
 
-New families are created by 
-
-\>NewFamily(<name>[,<required-fil>[,<implied-fil>]])
-
-returns an object that represents the new family.
-
-\beginitems
-<name>&is a string, giving a name that identifies the family. It is mainly
-used in error messages.
-
-<required-fil>&is a filter that gives required categories for each object in
-this family. Any attempt to create an object in this family that does not
-lie in these categories leads to an error.
-
-<implied-fil>&is a filter that gives implied categories.
-Each object in the
-family is automatically made an object of these categories, regardless of
-whether they were given when generating the object. An example is the
-category `IsPermutationSet' which is given to all sets of permutations
-automatically.
-If no categories are given, no are implied.
-\enditems
-
-\>CollectionsFamily(<family>)
-
-creates a new family whose elements are collections of elements of <family>.
-For example the family of $S_3$ is the collections family of the family of
-permutations.
-
-\>ElementsFamily(<family>)
-
-returns the family of elements for a collections family. It is the reverse
-operation for `CollectionsFamily'.
-
 \danger
 \label{storeinfamily}
 Families themselves are component objects. They are usually the place where
@@ -384,17 +350,6 @@ family to permit access for the equality test.
 As families are objects themselves, they also have a kind and a family.
 These are the `FamilyOfFamilies' and the `KindOfFamilies'.
 
-\Section{Categories}
-
-A category determines what can be done with its elements. More exact: Each
-operation is declared with a tuple of categories that defines to which
-categories the arguments of this operation must belong. (Additionally, some
-operations may demand that the families of its arguments are in certain
-relations, for example equal.)
-
-An object may belong to more than one category. A ring, for example, belongs
-to the categories `IsDomain', `IsAdditiveMagma' (domains that are closed under
-addition) and `IsMagma' (domains closed under multiplication).
 
 \danger
 Whenever an object is created, the categories to which the object belongs
@@ -415,24 +370,6 @@ VectorSpace = \\
 \ \ AdditiveMagmaWithInverses \& \\
 \ \ ExtLSet \& IsExtLDistributive \& IsExtLUnital \& IsExtLAssocicative \& \\
 \ \ IsExtLField
-
-New categories are created by the function
-
-\> NewCategory(<name>[,<super-cat>]) !{category creation}
-
-This function returns an filter that represents the category. As it is a filter
-it can also be used as an function, to test whether an object belongs to this
-category and returns `true' or `false'. Therefore categories ususally are
-called like `IsPiffle'.
-
-\beginitems
-<name>&is a string, giving a name to the category. It is mainly used for
-debugging purposes.
-
-<super-cat>&is a filter representing the intersection of all categories this
-category is to be a subcategory of. All categories are implicitely
-subcategories of `IsObject'.
-\enditems
 
 
 \Section{Representations}
@@ -467,54 +404,6 @@ only useful for mutable objects and should be used with great care.
 Representations are created while the library code is read in. During runtime,
 no further categories will be created.
 
-New representations are created by 
-
-\>NewRepresentation(<name>,<super-fil>,<components>[,<required-cat>])
-
-This function returns a filter that represents the representation and can be
-used to test membership in this representation.
-Therefore representations ususally are called like `IsWoffle'.
-
-\beginitems
-<name>&is a string, giving a name to the representation. It is mainly used for
-debugging purposes.
-
-<super-fil>&is a filter, used to determine all super-representations and all 
-categories implied by this representation. The super-representations
-`IsPositionalObjectRep' or `IsComponentObjectRep' determine, whether it will
-be a representation of positional or components objects, so one of them
-should be given always (might be implicitely).
-
-<components>&is a list of strings, giving the names of the components an
-component objects may have. This field is ignored for positional objects.
-If a field ends in `?' this component is facultative for component objects.
-If a component name ends in `\*', all components starting this way are
-permitted.
-
-<required-cat>&VERLANGTE KATEGORIEN
-\enditems
-
-\danger
-An interesting representation is the representation `WhatsItsName' used for
-representing most domains. It is a subrepresentation of
-`IsComponentObjectRep', having no compulsory components but permitting any.
-
-\danger
-If several representations are used to represent objects in one family, it
-is often desirable to have some unified way to treat elements of all
-representations. The standard way to do this in {\GAP} is via *external
-representations*. These external representations are usually defined for a
-family and are a list or a record that allows to present all information in
-the representation. The operation 
-\>ExtRepOfObj(<obj>)
-
-then should be used to obtain the external representation of
-an object. Vice versa 
-\>ObjByExtRep(<family>,<ext-rep>)
-
-will create an object in the given <family> from the external representation
-<ext-rep>. If you introduce new representations you might have to write
-methods for these two operations.
 
 \danger
 Categories and Representations are both filters and thus cannot be easily
@@ -532,29 +421,6 @@ In {\GAP} 3 something slightly similar was accomplished using dispatcher
 functions and operation records. But these functions only allowed to
 dispatch on one argument and only on information given when the object was
 created.
-
-A new operation is created using
-\>NewOperation(<name>,<argfilters>)
-
-This command creates a new operation, whose name (used for debugging
-purposes) is the string <name>.
-
-<argfilters> is a list of filters that correspond with the operations
-arguments: The operation is defined with as many arguments as <argfilters> has
-entries and the arguments with which the operation is called have to fulfill
-the conditions prescribed by the appropriate filter, otherwise an error is
-raised. Similarly, every method installed for the operation must be at least
-as restrictive as the conditions given by <argfilters>, otherwise an error
-is raised.
-
-If an operation is called with arguments for which no suitable method
-is installed, an error is raised.
-
-\danger
-It is not possible to declare an operation several times for a varying
-number of arguments or different argument filters. You must use
-`InstallOtherMethod' in such cases.
-
 
 Usually all operation declarations will be read first and all methods
 installed afterwards. This permits an method to call other operations, as
@@ -583,13 +449,6 @@ these sets but become a member during runtime.
 Attributes are created while the library code is read in. During runtime, no
 further attributes will be created.
 
-New attributes are created by
-
-\>NewAttribute(<name>[,<filter>])
-
-This function returns an operation that will be used to determine the value
-of this attribute. It implicitely installs one method for this operation,
-namely the operation that just fetches the already known value.
 
 \danger
 This is done by implicitely installing a method, called the *system getter*
@@ -603,25 +462,6 @@ getter complaining about not finding the attributes value. The solution is
 to install your method with the value `SUM_FLAGS+1' to give it priority
 over the system getter.
 
-<name> is again a string, used to identify the attribute.
-
-<filter> determines, for which categories this attribute applies.
-\){\fmark Tester(<attribute>)}
-\){\fmark Setter(<attribute>)}
-
-Additionally, `NewAttribute' installs a filter (the *tester*) and another
-operation (the *setter*) for this attribute. The
-filter determines whether the attribute is known while the operation can be
-used to set the attribute to a given value (if its value is obtained
-implicitely in an algorithm). A standard use is like
-\beginexample
-Biffle:=NewAttribute("Biffle");
-HasBiffle:=Tester(Biffle);
-SetBiffle:=Setter(Biffle);
-\endexample
-
-Then `HasBiffle' will test, whether the biffle of an object is known,
-SetBiffle(<obj>,<value>) will set an objects biffle.
 
 \danger
 The setter in fact is again an operation which has a standard method
@@ -663,8 +503,6 @@ To obtain a mutable attribute for such purposes, simply add the string
 Another aspect of the immutability of attributes is that you usually cannot
 change an attribute. Calling the setter later with a different value just
 will be ignored.
-
-\>NewProperty(<name>[,<filter>])
 
 
 \danger
@@ -839,14 +677,6 @@ If you are not creating your own objects, you will not need to know this
 for installing own methods, but it might be helpful for understanding the
 innards of {\GAP} anyhow.
 
-The type of an object is composed from its family and the filters set for
-it. It can be created by
-
-\>NewKind(<family>,<filter>)
-
-Here <family> is the family for the kind and <filter> determines categories
-and representations. Each object of this kind will belong to <family> and
-all the categories and representations of <filter>.
 
 \danger
 To save memory,
@@ -865,17 +695,6 @@ arguments and fetches the necessary informations from them.
 \danger
 As kind are objects themselves, they also have a kind and a family.
 These are the `FamilyOfKinds' and the `KindOfKinds'.
-
-Usually, kinds are created just as intermediate steps to construct *objects*:
-
-\>Objectify(<kind>,<rlobj>)
-
-makes a new object. This object will have family, categories and
-representations as prescribed by <kind>.
-<rlobj> is either a record or a list (depending whether the representation
-is a subclass of `IsComponentObjectRep' or `IsPositionalObjectRep') that
-will be converted to a positional object or a list object to actually form
-the object.
 
 \danger
 Despite the caching of kinds, if you expect to create a lot of

@@ -342,13 +342,64 @@ SquareRoots := NewOperation( "SquareRoots",
 
 #############################################################################
 ##
+#F  FreeMagma( <rank> )
+#F  FreeMagma( <rank>, <name> )
+#F  FreeMagma( <name1>, <name2>, ... )
+#F  FreeMagma( <names> )
+##
+FreeMagma := NewOperationArgs( "FreeMagma" );
+
+
+#############################################################################
+##
 #F  IsCommutativeFromGenerators( <GeneratorsOfStruct> )
 ##
 ##  is a function that takes one domain argument <D> and checks whether
 ##  '<GeneratorsOfStruct>( <D> )' commute.
 ##
-IsCommutativeFromGenerators := NewOperationArgs(
-    "IsCommutativeFromGenerators" );
+IsCommutativeFromGenerators := function( GeneratorsStruct )
+    return function( D )
+
+    local gens,   # list of generators
+          i, j;   # loop variables
+
+    # Test if every element commutes with all the others.
+    gens:= GeneratorsStruct( D );
+    for i in [ 2 .. Length( gens ) ] do
+      for j in [ 1 .. i-1 ] do
+        if gens[i] * gens[j] <> gens[j] * gens[i] then
+          return false;
+        fi;
+      od;
+    od;
+
+    # All generators commute.
+    return true;
+    end;
+end;
+
+
+#############################################################################
+##
+#F  IsCentralFromGenerators( <GeneratorsStruct1>, <GeneratorsStruct2> )
+##
+##  is a function that takes two domain arguments <D1>, <D2> and checks
+##  whether `<GeneratorsStruct1>( <D1> )' and `<GeneratorsStruct2>( <D2> )'
+##  commute.
+##
+IsCentralFromGenerators := function( GeneratorsStruct1, GeneratorsStruct2 )
+    return function( D1, D2 )
+    local g1, g2;
+    for g1 in GeneratorsStruct1( D1 ) do
+      for g2 in GeneratorsStruct2( D2 ) do
+        if g1 * g2 <> g2 * g1 then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
+    end;
+end;
 
 
 #############################################################################

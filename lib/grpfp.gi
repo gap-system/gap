@@ -1117,7 +1117,6 @@ LowIndexSubgroupsFpGroup := function ( arg )
             grels,      # relators of G
             hgens,      # generators of H
             fhgens,     # their preimages in the free group of G
-            F,          # associated free group
             H,          # subgroup to be included in all resulting subgroups
             index,      # maximal index of subgroups to be determined
             excludeList, # representatives of element classes to be excluded
@@ -1701,7 +1700,7 @@ end;
 ##
 #M  MappedWord( <x>, <gens1>, <gens2> )
 ##
-InstallMethod( MappedWord, true,
+InstallOtherMethod( MappedWord, true,
     [ IsElementOfFpGroup, IsList, IsList ], 0,
     function( x, gens1, gens2 )
     local i, mapped, exp;

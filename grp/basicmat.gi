@@ -30,7 +30,7 @@ function( filter, fld, n )
     local   o,  m,  i;
 
     o := One(fld);
-    m := List( NullMat( n, n, fld ), ShallowCopy );
+    m := MutableNullMat( n, n, fld );
     for i  in [ 1 .. n-1 ]  do
         m[i][i+1] := o;
     od;
@@ -56,7 +56,7 @@ InstallMethod( CyclicGroupCons,
 function( filter, n )
     local   m,  i;
 
-    m := List( NullMat( n, n, Rationals ), ShallowCopy );
+    m := MutableNullMat( n, n, Rationals );
     for i  in [ 1 .. n-1 ]  do
         m[i][i+1] := 1;
     od;
@@ -93,7 +93,7 @@ function( filter, n, q )
     z := PrimitiveRoot( f );
     o := One( f );
 
-    mat1 := List( IdentityMat( n, o ), ShallowCopy );
+    mat1 := MutableIdentityMat( n, o );
     mat1[1][1] := z;
     mat2 := List( Zero(o) * mat1, ShallowCopy );
     mat2[1][1] := -o;
@@ -139,7 +139,7 @@ function( filter, n, q )
          # construct the generators
          o := One(f);
          z := PrimitiveRoot(f);
-         mat1 := List( IdentityMat( n, o ), ShallowCopy );
+         mat1 := MutableIdentityMat( n, o );
          mat2 := List( Zero(o) * mat1, ShallowCopy );
          mat2[1][n] := o;
          for i  in [ 2 .. n ]  do mat2[i][i-1]:= -o;  od;

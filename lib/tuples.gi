@@ -24,8 +24,7 @@ InfoTuples := NewInfoClass("InfoTuples");
 #V  TUPLES_FAMILIES . . . . . . . . . . . . . . . list of all tuples families
 ##
 
-EmptyTuplesFamily := NewFamily( "TuplesFamily([])", IsTuple , IsTuple, 
-                             IsTuplesFamily);
+EmptyTuplesFamily := NewFamily( "TuplesFamily([])", IsTuple , IsTuple );
 
 SetComponentsOfTuplesFamily(EmptyTuplesFamily, []);
 

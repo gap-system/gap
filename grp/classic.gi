@@ -36,7 +36,7 @@ Sp := function( d, q )
 
         # SP(d,q)
         else
-            mat1 := List( IdentityMat( d, o ), ShallowCopy );
+            mat1 := MutableIdentityMat( d, o );
             mat2 := List( 0 * mat1, ShallowCopy );
             for i  in [ 2 .. d/2 ]      do mat2[i][i-1]:= o;  od;
             for i  in [ d/2+1 .. d-1 ]  do mat2[i][i+1]:= o;  od;
@@ -118,7 +118,7 @@ GU := function( n, q )
      # Construct the generators.
      z:= PrimitiveRoot( f );
      o:= One( f );
-     mat1:= List( IdentityMat( n, o ), ShallowCopy );
+     mat1:= MutableIdentityMat( n, o );
      mat2:= List( 0 * mat1, ShallowCopy );
 
      if   n = 2 then
@@ -215,7 +215,7 @@ SU := function( n, q )
 
      else
 
-       mat1:= List( IdentityMat( n, o ), ShallowCopy );
+       mat1:= MutableIdentityMat( n, o );
        mat2:= List( 0 * mat1, ShallowCopy );
 
        if   n = 2 then
@@ -1330,8 +1330,7 @@ WreathProductOfMatrixGroup := function( M, P )
 
     m := DimensionOfMatrixGroup( M );
     d := LargestMovedPoint( P );
-    id := List( IdentityMat( m * d, DefaultFieldOfMatrixGroup( M ) ),
-                ShallowCopy );
+    id := MutableIdentityMat( m * d, DefaultFieldOfMatrixGroup( M ) );
     gens := [  ];
     for b  in [ 1 .. d ]  do
         ran := ( b - 1 ) * m + [ 1 .. m ];

@@ -18,6 +18,13 @@ PERFGRP:=[];
 
 #############################################################################
 ##
+#C  IsPerfectLibraryGroup(<G>)  identifier for groups constructed from the
+##                              library (used for perm->fp isomorphism)
+##
+IsPerfectLibraryGroup := NewCategory("IsPerfectLibraryGroup", IsGroup );
+
+#############################################################################
+##
 #O  PerfGrpConst(<filter>,<pos>,<nr>) 
 ##
 PerfGrpConst := NewConstructor("PerfGrpConst",[IsGroup,IsInt,IsInt]);

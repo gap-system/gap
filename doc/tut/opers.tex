@@ -18,7 +18,7 @@ function call is executed  again later, the size is  simply looked up and
 returned, without further computation.
 
 \index{getter!of an attribute}\index{setter!of an attribute}%
-\index{tester!of an attribute}\index{methods}%
+\index{tester!of an attribute}\index{method}%
 This means  that  the behavior of the   function `Size' has  to depend on
 whether the argument to the function already knows  its size, and if not,
 that the  size   must be  stored  in  the  argument   after it  has  been
@@ -99,15 +99,17 @@ previously unset value?
 
 \answer No. That  an object like a group  is constant does not mean  that
 additional  information  cannot  be  entered. Such additional information
-does not  change the mathematical  identity of  the object.  You can also
-assign values to   record   components like  the `hom!.externalSet'    of
-section~"Operations!of  groups" although `hom'  is  immutable  (you could
-even overwrite the values), but at your own responsibility!
+does not  change the mathematical  identity of  the object.
+% You can also
+% assign values to   record   components like  the `hom!.externalSet'    of
+% section~"Operations!of  groups" although `hom'  is  immutable  (you could
+% even overwrite the values), but at your own responsibility!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and filters}\null
 
 \atindex{properties}{|indexit}\atindex{filters}{|indexit}%
+\index{method!selection}%
 Certain attributes, like `IsAbelian', are boolean-valued. Such attributes
 are known to {\GAP} as *properties*, because their values are stored in a
 slightly different way. A  property  also has a   getter, a setter  and a
@@ -122,6 +124,67 @@ method, e.g., for a getter or  a setter (as we  have seen in the previous
 section),  is mostly based  on the  examiniation  of filters, not  on the
 examiniation   of   other  attribute values.    Details  of this  *method
 selection* are described in the reference manual.
+
+We only   present the following rule  of  the thumb here:  Each installed
+method for an  attribute, say `Size( <obj>   )', has a certain number  of
+``required filters'', i.e., filters that the argument <obj> must have for
+this method  to be applicable.  To execute  a  call  of `Size( <obj>  )',
+{\GAP}  selects the applicable method  that has the most required filters
+because it thinks that the more an algorithm  requires of <obj>, the more
+efficient it will be.  For example, if  <obj> is a permutation group that
+is not (known to be) solvable, a method with required filter `IsPermGroup
+and IsSolvableGroup'  is  not  applicable, hence a  method  with required
+filter `IsPermGroup' will be chosen. On other hand, if <obj> was known to
+be solvable, the  first method would be selected.   It may happen  that a
+method  fails although  the argument  has  all required filters.  In such
+cases, the method will  execute the statement `TryNextMethod();' then the
+next applicable method will be chosen.
+
+\exercise How  can  `TryNextMethod()' be used   to exploit  the potential
+solvability of a permutation group?
+
+\answer Suppose  there is a method for  solvable permutation groups which
+is far superior to the general method and which  is able to return `fail'
+if the  group is not solvable  (rather than end up  in an infinite loop).
+Then one can install a  method with  required filter `IsPermGroup'  which
+looks like
+\begintt
+    function( G )
+    local  result;
+        result := solvable_method( G );
+        if result <> fail  then  return result;
+                           else  TryNextMethod();  fi;
+    end;
+\endtt
+This method would then be tried on every permutation group (whether known
+to be  solvable or  not),  and it would  include a  mandatory solvability
+test.  {\GAP} persues  such  a strategy for   `Size',  using the solvable
+method from \cite{Sims90b}.
+
+If no applicable method  (or no next applicable  method) is found, {\GAP}
+stops with an error message either like
+\begintt
+    Error argument for 'Size' must have categories '
+    [ "IsListOrCollection" ]' at ...
+\endtt
+or like
+\begintt
+    Error no method found for operation 'Size' with 1 argument at ...
+\endtt
+The  first variant occurs  if  the argument  to  `Size' was  of the wrong
+category, e.g.,  if you asked for `Size(  1 )'. The second variant occurs
+if the category was    right,  e.g., if   the  argument  was a list    or
+collection, but there was no applicable method installed.
+
+\index{operations}%
+\danger The method  selection  is not only   used to select  methods  for
+attributes but also for arbitrary  *operations*, which can have more than
+one   argument.  In this case,   the  filters of  all  the  arguments are
+examined, and a  method may also  require a certain  relation between the
+families of the arguments. For example,  the methods for `ConjugateGroup(
+<grp>, <elm> )'  require that <elm> lies  in the  family of <grp>,  i.e.,
+that the family of  <grp> equals the  collections family of the family of
+<elm>.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:

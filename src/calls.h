@@ -299,6 +299,17 @@ extern void PrintFunction (
 
 /****************************************************************************
 **
+*F  C_NEW_GVAR_FILT( <name>, <nams>, <filt>, <hdlr>, <cookie> )
+*/
+#define C_NEW_GVAR_FILT( name, nams, filt, hdlr, cookie ) \
+    InitHandlerFunc( hdlr, cookie ); \
+    filt = NewFilterC( name, 1L, nams, hdlr ); \
+    AssGVar( GVarName( name ), filt )
+
+
+/****************************************************************************
+**
+
 *F  InitCalls() . . . . . . . . . . . . . . . . . initialize the call package
 **
 **  'InitCalls' initializes the call package.

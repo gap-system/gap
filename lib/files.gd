@@ -148,10 +148,10 @@ end;
 #############################################################################
 ##
 
-#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compx.g" files
+#F  CreateCompletionFiles( <path> ) . . . . . . .  create "lib/compX.g" files
 ##
 CreateCompletionFiles := function( arg )
-    local   path,  input,  i,  com,  read,  j;
+    local   path,  input,  i,  com,  read,  j,  crc;
 
     # get the path to the output
     if 0 = Length(arg)  then
@@ -172,8 +172,8 @@ CreateCompletionFiles := function( arg )
         Print( "#I  converting \"", i[1], "\" to \"", com, "\"\n" );
 
         # now find the input file
-        read := List( i[2], x -> Filename( input, x ) );
-        if fail in read  then
+        read := List( i[2], x -> [ x, Filename( input, x ) ] );
+        if ForAny( read, x -> x[2] = fail )  then
             Error( "cannot locate input files" );
         fi;
 
@@ -181,8 +181,21 @@ CreateCompletionFiles := function( arg )
         PRINT_TO( com, "# completion of \"", i[1], "\"\n" );
         APPEND_TO( com, "RANK_FILTER_LIST := ", i[3], ";\n" );
         for j  in read  do
-            Print( "#I    parsing \"", j, "\"\n" );
-            MAKE_INIT( com, j );
+
+            # create a crc value
+            Print( "#I    parsing \"", j[1], "\"\n" );
+            crc := GAP_CRC(j[2]);
+
+            # create header
+            APPEND_TO( com, "COM_RESULT := COM_FILE( \"", j[1], "\", ",
+                crc, " );\n", "if not IsBound(COM_RESULT)  then\nError(\"",
+                "cannot locate file \\\"", j[1], "\\\"\");\nelif ",
+                "COM_RESULT ", " = 3  then\n" );
+
+            # create completion
+            MAKE_INIT( com, j[2] );
+
+            APPEND_TO( com, "fi;\n" );
         od;
     od;
 end;

@@ -12,3 +12,5 @@ item_x1 ", "
 item_2  "\n      \\subsub "
 item_12 "\n      \\subsub "
 item_x2 ", "
+page_compositor "--"
+line_max 1000

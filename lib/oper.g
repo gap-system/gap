@@ -385,7 +385,7 @@ InstallImmediateMethod := function( arg )
     local   name;
 
     if LEN_LIST(arg) = 4  then
-        name := NAME_FUNCTION(arg[1]);
+        name := NAME_FUNC(arg[1]);
         INSTALL_IMMEDIATE_METHOD( arg[1], name, arg[2], arg[3], arg[4] );
     elif LEN_LIST(arg) = 5  then
         INSTALL_IMMEDIATE_METHOD( arg[1], arg[2], arg[3], arg[4], arg[5] );
@@ -501,74 +501,24 @@ end;
 
 #############################################################################
 ##
-#F  INSTALL_METHOD( <oper>, ... ) . . . . . . . . install a method for <oper>
+#F  INSTALL_METHOD_FLAGS( <opr>, <info>, <rel>, <flags>, <rank>, <method> ) .
 ##
-INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
-    local   tmp,  tmp2,  req,  i,  imp,  k,  narg,  methods;
-
-    # check whether this really installs an implication
-    if    FLAGS_FILTER(opr) <> false
-      and (rel = true or rel = RETURN_TRUE)
-      and LEN_LIST(filters) = 1
-      and (method = true or method = RETURN_TRUE)
-    then
-        Error( "use 'InstallTrueMethod' for <opr>" );
-    fi;
-
-    # check <info>
-    if info <> false and not IS_STRING(info)  then
-        Error( "<info> must be a string or 'false'" );
-    fi;
-
-    # test if <check> is true
-    if CHECK_INSTALL_METHOD and check  then
-
-        # find the operation
-        req := false;
-        for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
-            if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
-                req := OPERATIONS[i+1];
-                break;
-            fi;
-        od;
-        if req = false  then
-            Error( "unknown operation ", NAME_FUNCTION(opr) );
-        fi;
-        if LEN_LIST(filters) <> LEN_LIST(req)  then
-            Error( "expecting ", LEN_LIST(req), " arguments for operation ",
-                   NAME_FUNCTION(opr) );
-        fi;
-
-        # do check with implications
-        imp := [];
-        for i  in filters  do
-            ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( FLAGS_FILTER(i) ) );
-        od;
-
-        # check the requirements
-        for i  in [ 1 .. LEN_LIST(req) ]  do
-            if not IS_SUBSET_FLAGS( imp[i], req[i] )  then
-                tmp  := NamesFilter(req[i]);
-                tmp2 := NamesFilter(imp[i]);
-                Error( Ordinal(i), " argument of ", NAME_FUNCTION(opr),
-                       " must have ", tmp, " not ", tmp2 );
-            fi;
-        od;
-    fi;
-
+INSTALL_METHOD_FLAGS := function( opr, info, rel, flags, rank, method )
+    local   methods,  narg,  i,  k,  tmp;
+    
     # add the number of filters required for each argument
     if opr in CONSTRUCTORS  then
-        if 0 < LEN_LIST(filters)  then
-            rank := rank - RankFilter(filters[1]);
+        if 0 < LEN_LIST(flags)  then
+            rank := rank - RankFilter( flags[ 1 ] );
         fi;
     else
-        for i  in filters  do
-            rank := rank + RankFilter(i);
+        for i  in flags  do
+            rank := rank + RankFilter( i );
         od;
     fi;
 
     # get the methods list
-    narg := LEN_LIST( filters );
+    narg := LEN_LIST( flags );
     methods := METHODS_OPERATION( opr, narg );
 
     # find the place to put the new method
@@ -587,18 +537,20 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     elif rel = false  then
         methods[i+1] := RETURN_FALSE;
     elif IS_FUNCTION(rel)  then
-        methods[i+1] := rel;
-        tmp := NARG_FUNCTION(rel);
-        if tmp <> AINV(1) and tmp <> LEN_LIST(filters)  then
-           Error( "<rel> must accept ", LEN_LIST(filters), " arguments" );
+        if CHECK_INSTALL_METHOD  then
+            tmp := NARG_FUNC(rel);
+            if tmp <> AINV(1) and tmp <> narg  then
+                Error("<rel> must accept ", narg, " arguments");
+            fi;
         fi;
+        methods[i+1] := rel;
     else
         Error( "<rel> must be a function, 'true', or 'false'" );
     fi;
 
     # install the filters
     for k  in [ 1 .. narg ]  do
-        methods[i+k+1] := FLAGS_FILTER( filters[k] );
+        methods[i+k+1] := flags[k];
     od;
 
     # install the method
@@ -607,10 +559,18 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
     elif method = false  then
         methods[i+(narg+2)] := RETURN_FALSE;
     elif IS_FUNCTION(method)  then
+        if CHECK_INSTALL_METHOD  then
+            tmp := NARG_FUNC(method);
+            if tmp <> AINV(1) and tmp <> narg  then
+               Error("<method> must accept ", narg, " arguments");
+           fi;
+       fi;
         methods[i+(narg+2)] := method;
-        tmp := NARG_FUNCTION(method);
-        if tmp <> AINV(1) and tmp <> LEN_LIST(filters)  then
-           Error( "<method> must accept ", LEN_LIST(filters), " arguments" );
+	if CHECK_INSTALL_METHOD  then
+            tmp := NARG_FUNC(method);
+            if tmp <> AINV(1) and tmp <> narg  then
+               Error( "<method> must accept ", narg, " arguments" );
+            fi;
         fi;
     else
         Error( "<method> must be a function, 'true', or 'false'" );
@@ -619,9 +579,9 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
 
     # set the name
     if info = false  then
-        info := NAME_FUNCTION(opr);
+        info := NAME_FUNC(opr);
     else
-        k := SHALLOW_COPY_OBJ(NAME_FUNCTION(opr));
+        k := SHALLOW_COPY_OBJ(NAME_FUNC(opr));
         APPEND_LIST_INTR( k, ": " );
         APPEND_LIST_INTR( k, info );
         info := k;
@@ -631,6 +591,73 @@ INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
 
     # flush the cache
     CHANGED_METHODS_OPERATION( opr, narg );
+end;
+
+
+#############################################################################
+##
+#F  INSTALL_METHOD( <oper>, ... ) . . . . . . . . install a method for <oper>
+##
+INSTALL_METHOD := function( opr, info, rel, filters, rank, method, check )
+    local   tmp,  tmp2,  req,  i,  imp,  flags;
+
+    # check whether this really installs an implication
+    if    FLAGS_FILTER(opr) <> false
+      and (rel = true or rel = RETURN_TRUE)
+      and LEN_LIST(filters) = 1
+      and (method = true or method = RETURN_TRUE)
+    then
+        Error( "use 'InstallTrueMethod' for <opr>" );
+    fi;
+
+    # check <info>
+    if info <> false and not IS_STRING(info)  then
+        Error( "<info> must be a string or 'false'" );
+    fi;
+    
+    # compute the flags lists for the filters
+    flags := [  ];
+    for i  in filters  do
+        ADD_LIST( flags, FLAGS_FILTER( i ) );
+    od;
+    
+    # test if <check> is true
+    if CHECK_INSTALL_METHOD and check  then
+
+        # find the operation
+        req := false;
+        for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
+            if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
+                req := OPERATIONS[i+1];
+                break;
+            fi;
+        od;
+        if req = false  then
+            Error( "unknown operation ", NAME_FUNC(opr) );
+        fi;
+        if LEN_LIST(filters) <> LEN_LIST(req)  then
+            Error( "expecting ", LEN_LIST(req), " arguments for operation ",
+                   NAME_FUNC(opr) );
+        fi;
+
+        # do check with implications
+        imp := [];
+        for i  in flags  do
+            ADD_LIST( imp, WITH_HIDDEN_IMPS_FLAGS( i ) );
+        od;
+
+        # check the requirements
+        for i  in [ 1 .. LEN_LIST(req) ]  do
+            if not IS_SUBSET_FLAGS( imp[i], req[i] )  then
+                tmp  := NamesFilter(req[i]);
+                tmp2 := NamesFilter(imp[i]);
+                Error( Ordinal(i), " argument of ", NAME_FUNC(opr),
+                       " must have ", tmp, " not ", tmp2 );
+            fi;
+        od;
+    fi;
+    
+    INSTALL_METHOD_FLAGS( opr, info, rel, flags, rank, method );
 end;
 
 
@@ -919,7 +946,7 @@ InstallAttributeFunction(
                     if not FILTERS[i]( obj ) then
                         hascats:= false;
                     fi;
-                    ADD_LIST( filt, NAME_FUNCTION( FILTERS[i] ) );
+                    ADD_LIST( filt, NAME_FUNC( FILTERS[i] ) );
                 fi;
             od;
             if not hascats then
@@ -1089,8 +1116,10 @@ InstallAtExit := function( func )
     if not IS_FUNCTION(func)  then
         Error( "<func> must be a function" );
     fi;
-    if not NARG_FUNCTION(func) in [ -1, 0 ]  then
-        Error( "<func> must accept zero arguments" );
+    if CHECK_INSTALL_METHOD  then
+        if not NARG_FUNC(func) in [ -1, 0 ]  then
+            Error( "<func> must accept zero arguments" );
+        fi;
     fi;
     ADD_LIST( AT_EXIT_FUNCS, func );
 

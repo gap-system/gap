@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the definitions of properties of mappings preserving
 ##  algebraic structure.
@@ -424,6 +424,49 @@ SetIsFieldHomomorphism := Setter( IsFieldHomomorphism );
 HasIsFieldHomomorphism := Tester( IsFieldHomomorphism );
 
 InstallTrueMethod( IsAlgebraHomomorphism, IsFieldHomomorphism );
+
+
+#############################################################################
+##
+#F  InstallEqMethodForMappingsFromGenerators( <IsStruct>,
+#F                           <GeneratorsOfStruct>, <respects>, <infostring> )
+##
+InstallEqMethodForMappingsFromGenerators := function( IsStruct,
+    GeneratorsOfStruct, respects, infostring )
+
+    InstallMethod( \=,
+        Concatenation( "method for two s.v. gen. mappings", infostring ),
+        IsIdentical,
+        [ IsGeneralMapping and IsSingleValued and respects,
+          IsGeneralMapping and IsSingleValued and respects ],
+        0,
+        function( map1, map2 )
+        local gen;
+        if   not IsStruct( Source( map1 ) ) then
+          TryNextMethod();
+        elif     HasIsInjective( map1 ) and HasIsInjective( map2 )
+             and IsInjective( map1 ) <> IsInjective( map2 ) then
+          return false;
+        elif     HasIsSurjective( map1 ) and HasIsSurjective( map2 )
+             and IsSurjective( map1 ) <> IsSurjective( map2 ) then
+          return false;
+        elif     HasIsTotal( map1 ) and HasIsTotal( map2 )
+             and IsTotal( map1 ) <> IsTotal( map2 ) then
+          return false;
+        elif    Source( map1 ) <> Source( map2 )
+             or Range ( map1 ) <> Range ( map2 ) then
+          return false;
+        fi;
+
+        for gen in GeneratorsOfStruct( PreImagesRange( map1 ) ) do
+          if    ImagesRepresentative( map1, gen )
+             <> ImagesRepresentative( map2, gen ) then
+            return false;
+          fi;
+        od;
+        return true;
+        end );
+end;
 
 
 #############################################################################

@@ -2103,7 +2103,7 @@ StandardGeneratorsOfFullHomModule := function( M )
     one:= One( R );
     m:= Dimension( UnderlyingLeftModule( BS ) );
     n:= Dimension( UnderlyingLeftModule( BR ) );
-    zeromat:= NullMat( m, n, R );
+    zeromat:= MutableNullMat( m, n, R );
     gens:= [];
     for i in [ 1 .. m ] do
       for j in [ 1 .. n ] do
@@ -2336,7 +2336,7 @@ InstallMethod( End,
     fi;
 
     n:= Dimension( V );
-    gens:= NullMat( n, n, F );
+    gens:= MutableNullMat( n, n, F );
     gens:= [ gens, List( gens, ShallowCopy ) ];
     one:= One( F );
 

@@ -6,7 +6,7 @@
 %%
 %%  The following macros are defined in this file.
 %%
-%%  `text'   set text in typewriter style (use `\<' instead of `<`)
+%%  `text'   set text in typewriter style (use `\<' instead of `<')
 %%  <text>   set text in italics (use $\<$ instead of $<$ for less than)
 %%  *text*   set text in emphasized style (i.e. slanted)
 %%  $a.b$    same as $a \cdot b$ (use $\.$ instead of $.$ for full stop)
@@ -20,17 +20,17 @@
 %%  \enditems
 %%
 %%  \begintt            verbatim text in typewriter style (`|' is
-%%    verbatim material   temporary escape character)
-%%  \endtt
+%%    verbatim material   temporary escape character, a line
+%%  \endtt                `|_' allows a page break)
 %%  \beginexamplett     verbatim text in typewriter style (`|' is
-%%    verbatim material   temporary escape character)
-%%  \endtt
+%%    verbatim material   temporary escape character, a line
+%%  \endtt                `|_' allows a page break)
 %%
 %%  \Input{file}  includes file `file.tex' (not recommended for appendices)
 %%  \Chapter title \par
 %%  \Section{title} \par
 %%      make  chapter  or section   title. Automatically  generates  table of
-%%      contents. \null after \Section{...} inhibits labels and indexing.
+%%      contents. \null after \Section{...} inhibits indexing.
 %%  \>function( arguments )!{ index subentry }
 %%  \>`a binop b'{binary operation}!{ index subentry }
 %%      make a  heading for a subsection   explaining a function  or a binary
@@ -117,6 +117,12 @@
 \font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
 \font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
 
+% If you don't have `msb' fonts, replace the next 4 lines by `\let\Bbb=\bf'.
+\newfam\msbfam \def\Bbb{\fam\msbfam}
+\font\tenmsb=msbm10         \textfont\msbfam=\tenmsb
+\font\sevenmsb=msbm7        \scriptfont\msbfam=\sevenmsb
+\font\fivemsb=msbm5         \scriptscriptfont\msbfam=\fivemsb
+
 % Math mode should use text italic.
 {\count0=\itfam \advance\count0 by-1 \multiply\count0 by"100
  \count1=`A
@@ -135,12 +141,13 @@
   \catcode`\_=\other     \catcode`\*=\other     \catcode`\`=\other
   \catcode`\!=\other     \catcode`\"=\other     \catcode`\&=\other
   \catcode`\#=\other     \catcode`\|=\other}
-\def\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active
-  \def\par{\ifvmode\allowbreak\vskip 0pt plus 1pt\else\endgraf\nobreak\fi}
-  \obeyspaces \obeylines \tt}
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
- \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}}
+ \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}%
+ \gdef\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active%
+   \parindent 0pt \def\_^^M{\allowbreak}%
+   \def\par{\ifvmode\allowbreak\vskip 1pc plus 1pt\else\endgraf\nobreak\fi}%
+   \obeyspaces \obeylines \tt}}
 \outer\def\begintt{\par
   \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
@@ -162,7 +169,6 @@
 \def\chapterno{{\edef\tempa{\thechapter}\tempa}}
 \def\folio{\ifnum\pageno<0 \romannumeral-\pageno \else
   \chapterno\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}
-\def\resetpageno{\ifnum\pageno<0 \pageno=-1 \else \pageno=1 \fi}
 \def\doindex#1#2#3{\write\indexout{\noexpand\indexentry{#1#2#3}%
   {\ifnum\pageno<0 \romannumeral-\pageno \else
    \thechapter\ifx\thechapter\emptychapter\else--\fi \number\pageno\fi}}%
@@ -235,8 +241,8 @@
 \def\emptychapter{\noexpand\tocstrut}
 \outer\long\def\Chapter#1 \par{\vfill\supereject \headlinefalse
   \ifodd\pageno\else\null\eject\headlinefalse\fi
-  \advance\chapno by1 \secno=0 \exno=0 \resetpageno \def\chapname{#1}
-  \label{chapter:#1}
+  \advance\chapno by1 \secno=0 \exno=0 \ifnum\pageno>0 \pageno=1 \fi
+  \def\chapname{#1} \label{chapter:#1}
   \write\tocout{\noexpand\chapcontents{\thechapter}{#1}{\the\pageno}}
   \immediate\write\secindout{C \filename\space\thechapter. \chapname}
   \setbox0=\hbox{\inchhigh\kern-.075em \chapterno}
@@ -246,8 +252,8 @@
 \outer\long\def\Section#1#2\par{\medskip \advance\secno by1
   {\let!=\space \mark{Section \the\secno. #1}}
   \edef\tempa{\thechapter.\the\secno}\expandafter\writesecline\tempa\\{#1}
-  \dosecindex S{#1}{}
-  \ifx#2\null\else \label{#1}\edef\tempa{{#1}}
+  \dosecindex S{#1}{}{\let\ =\space\label{#1}}
+  \ifx#2\null\else \edef\tempa{{#1}}
     \expandafter\doindex\tempa{|indexit}{}\fi
   {\baselineskip 18pt\let!=\space \noindent\secfont
    \chapterno.\the\secno \enspace #1\par}\nobreak\medskip\noindent}
@@ -330,8 +336,8 @@
 % Miscellaneous macros.
 \def\GAP{{\sf GAP}}
 \def\stars{\bigskip\centerline{\*\qquad\*\qquad\*}\bigskip}
-\def\N{{\bf N}} \def\Z{{\bf Z}} \def\Q{{\bf Q}} \def\R{{\bf R}}
-\def\C{{\bf C}} \def\F{{\bf F}}
+\def\N{{\Bbb N}} \def\Z{{\Bbb Z}} \def\Q{{\Bbb Q}} \def\R{{\Bbb R}}
+\def\C{{\Bbb C}} \def\F{{\Bbb F}}
 
 % Page numbers and running heads.
 \newif\ifheadline

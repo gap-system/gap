@@ -904,8 +904,8 @@ function ( mat )
     TriangulizeMat( mat );
     m := Length(mat);
     n := Length(mat[1]);
-    zero := 0*mat[1][1];
-    one  := mat[1][1]^0;
+    zero := Zero( mat[1][1] );
+    one  := One( mat[1][1] );
     min := Minimum( m, n );
 
     # insert empty rows to bring the leading term of each row on the diagonal
@@ -1054,7 +1054,7 @@ InstallMethod( SemiEchelonMat,
 
     zero:= Zero( mat[1][1] );
 
-    heads:= Zero( [ 1 .. ncols ] );
+    heads:= ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
     for i in [ 1 .. nrows ] do
@@ -1112,10 +1112,10 @@ function( mat )
 
     zero  := Zero( mat[1][1] );
 
-    heads   := Zero( [ 1 .. ncols ] );
+    heads   := ListWithIdenticalEntries( ncols, 0 );
     vectors := [];
 
-    T         := IdentityMat( nrows, Field( zero ) );
+    T         := MutableIdentityMat( nrows, Field( zero ) );
     coeffs    := [];
     relations := [];
 
@@ -1173,7 +1173,7 @@ SemiEchelonMats := function( mats )
  
     # Compute an echelonized basis.
     vectors := [];
-    heads   := Zero( [ 1 .. n ] );
+    heads   := ListWithIdenticalEntries( n, 0 );
     heads   := List( [ 1 .. m ], x -> ShallowCopy( heads ) );
 
     for mat in mats do
@@ -1295,7 +1295,7 @@ function( mat, m )
     MM := List( mat, x -> List( x, y -> y mod m ) );
 
     # construct the identity matrix
-    inv := IdentityMat( n, Cyclotomics );
+    inv := MutableIdentityMat( n, Cyclotomics );
     perm := [];
 
     # loop over the rows
@@ -1537,12 +1537,19 @@ function ( mat )
 
     Info( InfoMatrix, 1, "TriangulizeMat called" );
 
-    if mat <> [] then
+    if not IsEmpty( mat ) then
 
        # get the size of the matrix
        m := Length(mat);
        n := Length(mat[1]);
-       zero := 0*mat[1][1];
+       zero := Zero( mat[1][1] );
+
+       # make sure that the rows are mutable
+       for i in [ 1 .. m ] do
+         if not IsMutable( mat[i] ) then
+           mat[i]:= ShallowCopy( mat[i] );
+         fi;
+       od;
 
        # run through all columns of the matrix
        i := 0;
@@ -1560,7 +1567,10 @@ function ( mat )
                i := i + 1;
 
                # make its row the current row and normalize it
-               row := mat[j];  mat[j] := mat[i];  mat[i] := row[k]^-1 * row;
+               row    := mat[j];
+               mat[j] := mat[i];
+               MultRowVector( row, row[k]^-1 );
+               mat[i] := row;
 
                # clear all entries in this column
                for j  in [1..m] do
@@ -1658,6 +1668,11 @@ end;
 ##
 BaseSteinitzVectors := function(bas,mat)
 local z,d,l,b,i,j,k,stop,v,dim,h,zv;
+
+  # catch trivial case
+  if Length(bas)=0 then
+    return rec(subspace:=[],factorspace:=[]);
+  fi;
 
   z:=Zero(bas[1][1]);
   zv:=Zero(bas[1]);
@@ -2116,9 +2131,11 @@ DiagonalizeMat := DiagonalizeIntMat;
 #############################################################################
 ##
 #F  IdentityMat( <m>[, <F>] ) . . . . . . . . identity matrix of a given size
+#F  MutableIdentityMat( <m>[, <F>] )  . . . . identity matrix of a given size
 ##
 #T change this to 2nd argument the identity of the field/ring?
-IdentityMat := function ( arg )
+##
+MutableIdentityMat := function ( arg )
     local   id, m, zero, one, row, i, k;
 
     # check the arguments and get dimension, zero and one
@@ -2162,6 +2179,16 @@ IdentityMat := function ( arg )
     return id;
 end;
 
+IdentityMat := function ( arg )
+    if Length(arg) = 1  then
+      return Immutable( MutableIdentityMat( arg[1] ) );
+    elif Length(arg) = 2 then
+      return Immutable( MutableIdentityMat( arg[1], arg[2] ) );
+    else
+      Error("usage: IdentityMat( <m>[, <F>] )");
+    fi;
+end;
+
 
 #############################################################################
 ##
@@ -2184,8 +2211,9 @@ end;
 #############################################################################
 ##
 #F  NullMat( <m>, <n> [, <F>] ) . . . . . . . . . null matrix of a given size
+#F  MutableNullMat( <m>, <n> [, <F>] )  . . . . . null matrix of a given size
 ##
-NullMat := function ( arg )
+MutableNullMat := function ( arg )
     local   null, m, n, zero, row, i, k;
 
     if Length(arg) = 2  then
@@ -2217,6 +2245,16 @@ NullMat := function ( arg )
 
     # return the null matrix
     return null;
+end;
+
+NullMat := function ( arg )
+    if Length(arg) = 2  then
+      return Immutable( MutableNullMat( arg[1], arg[2] ) );
+    elif Length(arg) = 3 then
+      return Immutable( MutableNullMat( arg[1], arg[2], arg[3] ) );
+    else
+      Error("usage: NullMat( <m>, <n> [, <F>] )");
+    fi;
 end;
 
 
@@ -2312,7 +2350,7 @@ PermutationMat := function( arg )
       F:= arg[3];
     fi;
 
-    mat:= NullMat( dim, dim, F );
+    mat:= MutableNullMat( dim, dim, F );
 
     for i in [ 1 .. dim ] do
       mat[i][ i^perm ]:= One( F );
@@ -2501,7 +2539,7 @@ RandomUnimodularMat := function ( m )
     local  mat, c, i, j, k, l, a, b, v, w, gcd;
 
     # start with the identity matrix
-    mat := IdentityMat( m );
+    mat := MutableIdentityMat( m );
 
     for c  in [1..m]  do
 

@@ -35,7 +35,7 @@ METHOD_0ARGS := function ( operation )
             return methods[4*(i-1)+2];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -55,7 +55,7 @@ METHOD_1ARGS := function ( operation, type1 )
             return methods[5*(i-1)+3];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -76,7 +76,7 @@ METHOD_2ARGS := function ( operation, type1, type2 )
             return methods[6*(i-1)+4];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -98,7 +98,7 @@ METHOD_3ARGS := function ( operation, type1, type2, type3 )
             return methods[7*(i-1)+5];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -123,7 +123,7 @@ METHOD_4ARGS := function ( operation, type1, type2, type3,
             return methods[8*(i-1)+6];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -149,7 +149,7 @@ METHOD_5ARGS := function ( operation, type1, type2, type3,
             return methods[9*(i-1)+7];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -176,7 +176,7 @@ METHOD_6ARGS := function ( operation, type1, type2, type3,
             return methods[10*(i-1)+8];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -217,7 +217,7 @@ NEXT_METHOD_0ARGS := function ( operation, k )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -242,7 +242,7 @@ NEXT_METHOD_1ARGS := function ( operation, k, type1 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -268,7 +268,7 @@ NEXT_METHOD_2ARGS := function ( operation, k, type1, type2 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -295,7 +295,7 @@ NEXT_METHOD_3ARGS := function ( operation, k, type1, type2, type3 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -325,7 +325,7 @@ NEXT_METHOD_4ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -356,7 +356,7 @@ NEXT_METHOD_5ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -388,7 +388,7 @@ NEXT_METHOD_6ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -425,7 +425,7 @@ VMETHOD_0ARGS := function ( operation )
             return methods[4*(i-1)+2];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -446,7 +446,7 @@ VMETHOD_1ARGS := function ( operation, type1 )
             return methods[5*(i-1)+3];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -468,7 +468,7 @@ VMETHOD_2ARGS := function ( operation, type1, type2 )
             return methods[6*(i-1)+4];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -491,7 +491,7 @@ VMETHOD_3ARGS := function ( operation, type1, type2, type3 )
             return methods[7*(i-1)+5];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -517,7 +517,7 @@ VMETHOD_4ARGS := function ( operation, type1, type2, type3,
             return methods[8*(i-1)+6];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -544,7 +544,7 @@ VMETHOD_5ARGS := function ( operation, type1, type2, type3,
             return methods[9*(i-1)+7];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -572,7 +572,7 @@ VMETHOD_6ARGS := function ( operation, type1, type2, type3,
             return methods[10*(i-1)+8];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -615,7 +615,7 @@ NEXT_VMETHOD_0ARGS := function ( operation, k )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -641,7 +641,7 @@ NEXT_VMETHOD_1ARGS := function ( operation, k, type1 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -668,7 +668,7 @@ NEXT_VMETHOD_2ARGS := function ( operation, k, type1, type2 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -696,7 +696,7 @@ NEXT_VMETHOD_3ARGS := function ( operation, k, type1, type2, type3 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -727,7 +727,7 @@ NEXT_VMETHOD_4ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -759,7 +759,7 @@ NEXT_VMETHOD_5ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -792,7 +792,7 @@ NEXT_VMETHOD_6ARGS := function ( operation, k, type1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -828,7 +828,7 @@ CONSTRUCTOR_0ARGS := function ( operation )
             return methods[4*(i-1)+2];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -848,7 +848,7 @@ CONSTRUCTOR_1ARGS := function ( operation, flags1 )
             return methods[5*(i-1)+3];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -869,7 +869,7 @@ CONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
             return methods[6*(i-1)+4];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -891,7 +891,7 @@ CONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
             return methods[7*(i-1)+5];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -916,7 +916,7 @@ CONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3,
             return methods[8*(i-1)+6];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -942,7 +942,7 @@ CONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3,
             return methods[9*(i-1)+7];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -969,7 +969,7 @@ CONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3,
             return methods[10*(i-1)+8];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -1010,7 +1010,7 @@ NEXT_CONSTRUCTOR_0ARGS := function ( operation, k )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -1035,7 +1035,7 @@ NEXT_CONSTRUCTOR_1ARGS := function ( operation, k, flags1 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -1061,7 +1061,7 @@ NEXT_CONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -1088,7 +1088,7 @@ NEXT_CONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -1118,7 +1118,7 @@ NEXT_CONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -1149,7 +1149,7 @@ NEXT_CONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -1181,7 +1181,7 @@ NEXT_CONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -1218,7 +1218,7 @@ VCONSTRUCTOR_0ARGS := function ( operation )
             return methods[4*(i-1)+2];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -1239,7 +1239,7 @@ VCONSTRUCTOR_1ARGS := function ( operation, flags1 )
             return methods[5*(i-1)+3];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -1261,7 +1261,7 @@ VCONSTRUCTOR_2ARGS := function ( operation, flags1, type2 )
             return methods[6*(i-1)+4];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -1284,7 +1284,7 @@ VCONSTRUCTOR_3ARGS := function ( operation, flags1, type2, type3 )
             return methods[7*(i-1)+5];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -1310,7 +1310,7 @@ VCONSTRUCTOR_4ARGS := function ( operation, flags1, type2, type3,
             return methods[8*(i-1)+6];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -1337,7 +1337,7 @@ VCONSTRUCTOR_5ARGS := function ( operation, flags1, type2, type3,
             return methods[9*(i-1)+7];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -1365,7 +1365,7 @@ VCONSTRUCTOR_6ARGS := function ( operation, flags1, type2, type3,
             return methods[10*(i-1)+8];
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 
@@ -1408,7 +1408,7 @@ NEXT_VCONSTRUCTOR_0ARGS := function ( operation, k )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 0 arguments" );
 end;
 
@@ -1434,7 +1434,7 @@ NEXT_VCONSTRUCTOR_1ARGS := function ( operation, k, flags1 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 1 argument" );
 end;
 
@@ -1461,7 +1461,7 @@ NEXT_VCONSTRUCTOR_2ARGS := function ( operation, k, flags1, type2 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 2 arguments" );
 end;
 
@@ -1489,7 +1489,7 @@ NEXT_VCONSTRUCTOR_3ARGS := function ( operation, k, flags1, type2, type3 )
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 3 arguments" );
 end;
 
@@ -1520,7 +1520,7 @@ NEXT_VCONSTRUCTOR_4ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 4 arguments" );
 end;
 
@@ -1552,7 +1552,7 @@ NEXT_VCONSTRUCTOR_5ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 5 arguments" );
 end;
 
@@ -1585,7 +1585,7 @@ NEXT_VCONSTRUCTOR_6ARGS := function ( operation, k, flags1, type2, type3,
             fi;
         fi;
     od;
-    Error( "no method found for operation ", NAME_FUNCTION(operation),
+    Error( "no method found for operation ", NAME_FUNC(operation),
            " with 6 arguments" );
 end;
 

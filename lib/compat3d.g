@@ -174,6 +174,27 @@ end;
 
 #############################################################################
 ##
+#F  IsString( <obj> )
+##
+##  In {\GAP} 3, `IsString' did silently convert its argument to the string
+##  representation.
+##
+if not IsBound( OLDISSTRING ) then
+    OLDISSTRING := IsString;
+fi;
+
+IsString := function( obj )
+    local result;
+    result:= OLDISSTRING( obj );
+    if result then
+      ConvertToStringRep( obj );
+    fi;
+    return result;
+end;
+
+
+#############################################################################
+##
 #F  Lcm( [<R>,] <r1>, <r2>,.. ) .  least common multiple of two ring elements
 ##
 ##  Allow calls with arbitrarily many arguments.

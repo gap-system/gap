@@ -7,8 +7,6 @@ ReadLib( "listcoef.gi" );
 ReadLib( "files.gi"    );
 ReadLib( "streams.gi"  );
 
-ReadLib( "help.g"      );
-
 
 #############################################################################
 ##

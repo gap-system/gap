@@ -171,6 +171,8 @@ void            AssGVar (
     Obj                 cops;           /* list of internal copies         */
     Obj *               copy;           /* one copy                        */
     UInt                i;              /* loop variable                   */
+    Char *              name;           /* name of a function              */
+    Obj                 onam;          /* object of <name>                */
 
     /* make certain that the variable is not read only                     */
     while ( ELM_PLIST( WriteGVars, gvar ) == INTOBJ_INT(0) ) {
@@ -219,6 +221,16 @@ void            AssGVar (
             copy  = (Obj*) ELM_PLIST(cops,i);
             *copy = ErrorMustHaveAssObjFunc;
         }
+    }
+
+    /* assign name to a function                                           */
+    if ( val != 0 && TNUM_OBJ(val) == T_FUNCTION && NAME_FUNC(val) == 0 ) {
+	name = NameGVar(gvar);
+	onam = NEW_STRING(SyStrlen(name));
+	SyStrncat( CSTR_STRING(onam), name, SyStrlen(name) );
+	RetypeBag( onam, IMMUTABLE_TNUM(TNUM_OBJ(onam)) );
+	NAME_FUNC(val) = onam;
+	CHANGED_BAG(val);
     }
 }
 

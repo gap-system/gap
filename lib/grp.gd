@@ -1,9 +1,9 @@
 #############################################################################
 ##
 #W  grp.gd                      GAP library                     Thomas Breuer
-#W                                                               Frank Celler
-#W                                                               Bettina Eick
-#W                                                             Heiko Theissen
+#W                                                             & Frank Celler
+#W                                                             & Bettina Eick
+#W                                                           & Heiko Theissen
 ##
 #H  @(#)$Id$
 ##
@@ -11,7 +11,7 @@
 ##
 ##  This file contains the declarations of operations for groups.
 ##
-#W  @(#)$Id$
+#H  @(#)$Id$
 ##
 Revision.grp_gd :=
     "@(#)$Id$";
@@ -23,6 +23,7 @@ GroupString := function(arg) return "Group"; end;
 
 #############################################################################
 ##
+
 #V  InfoGroup
 ##
 InfoGroup := NewInfoClass( "InfoGroup" );
@@ -1088,13 +1089,9 @@ Group := NewOperationArgs( "Group" );
 ##
 #F  InstallGroupMethod( <coll-prop>, <grp-prop>, <func> )
 ##
-GROUP_METHODS := [];
-
-InstallGroupMethod := function( coll, grp, func )
-    Add( GROUP_METHODS, [ FLAGS_FILTER(coll), FLAGS_FILTER(grp), func ] );
-end;
-
-RunGroupMethods := RunMethodsFunction2(GROUP_METHODS);
+GROUP_METHODS      := [];
+InstallGroupMethod := InstallMethodsFunction2(GROUP_METHODS);
+RunGroupMethods    := RunMethodsFunction2(GROUP_METHODS);
 
 
 #############################################################################

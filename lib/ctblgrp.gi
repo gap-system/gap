@@ -697,7 +697,7 @@ SplitStep := function(D,bestMat)
   if ForAny(raeume,i->i.dim>1) then
     bestMatCol:=D.requiredCols[bestMat];
     bestMatSplit:=D.splitBases[bestMat];
-    M:=IdentityMat(k,1)*0;
+    M:= MutableNullMat( k, k, 0 );
     Info(InfoCharacterTable,1,"Matrix ",bestMat,",Representative of Order ",
        Order(D.classreps[bestMat]),
        ",Centralizer: ",D.centralizers[bestMat]);
@@ -708,11 +708,7 @@ SplitStep := function(D,bestMat)
       D.ClassMatrixColumn(D,M,bestMat,col);
     od;
 
-    if IsZmodpZObj(o) then
-      M:=List(M,i->List(i,j->j*o));
-    else
-      M:=M*o;
-    fi;
+    M:=M*o;
 
     # note,that we will have calculated yet one!
     D.maycent:=true;
@@ -725,7 +721,7 @@ SplitStep := function(D,bestMat)
       dim:=raum.dim;
       # cut out the 'active part' for computation of an eigenbase
       activeCols:=DxActiveCols(D,raum);
-      N:=List(0*IdentityMat(dim,o),ShallowCopy);
+      N:= MutableNullMat( dim, dim, o );
       for row in [1..dim] do
         Row:=base[row]*M;
         for col in [1..dim] do
@@ -825,6 +821,7 @@ CharacterMorphismOrbits := function(D,space)
     for gen in GeneratorsOfGroup(s) do
       b:=NullspaceMat(List(b,i->D.asCharacterMorphism(i,gen){a})
                        -IdentityMat(Length(b),o))*b;
+#T cheaper!
       b:=rec(base:=b,dim:=Length(b));
       a:=DxActiveCols(D,b);
       b:=DxNiceBasis(D,b);
@@ -1834,12 +1831,12 @@ end);
 CharacterDegreePool := function(G)
   local d,k,r,s;
   r:=RootInt(Size(G));
-  if Size(G)>10^6 and not IsSolvableGroup(G) then
-    s:=Filtered(NormalSubgroups(G),IsAbelian);
-    s:=Lcm(List(s,i->Index(G,i)));
-  else
-    s:=Size(G);
-  fi;
+  #if Size(G)>10^6 and not IsSolvableGroup(G) then
+  #  s:=Filtered(NormalSubgroups(G),IsAbelian);
+  #  s:=Lcm(List(s,i->Index(G,i)));
+  #else
+  s:=Size(G);
+  #fi;
   k:=Length(ConjugacyClasses(G));
   return List(Filtered(DivisorsInt(s),i->i<=r),i->[i,k]);
 end;
@@ -1938,9 +1935,7 @@ local G,     # group
   D.raeume:=[r];
 
   # Galois group operating on the columns
-  ga:=Group(Set(List(List(GeneratorsOfGroup(PrimeResidueClassGroup(
-                                                   Exponent(G))),
-			   i->1^i),
+  ga:=Group(Set(List(GeneratorsPrimeResidueClassGroup( Exponent(G)),
        i->PermList(List([1..k],j->PowerMap(D.charTable,i,j))))),());
   D.galMorphisms:=ga;
   D.galoisOrbits:=List([1..k],i->Set(Orbit(ga,i)));
@@ -1948,16 +1943,11 @@ local G,     # group
   D.galOp:=[];
   D.irreducibles:=[];
 
-  M:=IdentityMat(k);
+  M:= MutableIdentityMat(k);
   for i in [1..k] do
     M[i][i]:=D.classiz[i] mod prime;
   od;
-  if IsZmodpZObj(D.one) then
-    ga:=D.one/(Size(G) mod prime);
-    D.projectionMat:=List(M,i->List(i,j->j*ga));
-  else
-    D.projectionMat:=M*(D.one/(Size(G) mod prime));
-  fi;
+  D.projectionMat:=M*(D.one/(Size(G) mod prime));
 
   #if (USECTPGROUP or Size(G)<2000 or k*10>=Size(G))
   #   and IsBound(G.isAgGroup) and G.isAgGroup
@@ -2112,6 +2102,20 @@ end;
 ##
 InstallMethod(Irr,"Dixon/Schneider",true,[IsGroup],0,
   IrrDixonSchneider);
+
+
+#############################################################################
+##
+#M  Irr( <G> ) . . via niceomorphism
+##
+InstallMethod(Irr,"via niceomorphism",true,
+  [IsGroup and IsHandledByNiceMonomorphism],NICE_FLAGS,
+function(g)
+local c;
+  ConjugacyClasses(g);
+  c:=CharacterTable(g);
+  return List(Irr(NiceObject(g)),i->CharacterByValues(c,AsList(i)));
+end);
 
 #############################################################################
 ##

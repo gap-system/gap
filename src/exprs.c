@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-*A  exprs.c                     GAP source                   Martin Schoenert
+*W  exprs.c                     GAP source                   Martin Schoenert
 **
 *H  @(#)$Id$
 **
@@ -48,6 +48,7 @@ char *          Revision_exprs_c =
 
 /****************************************************************************
 **
+
 *F  OBJ_REFLVAR(<expr>) . . . . . . . . . . . value of a reference to a local
 **
 **  'OBJ_REFLVAR'  returns  the value of  the reference  to a  local variable
@@ -168,9 +169,8 @@ Obj             (* EvalBoolFuncs [256]) ( Expr expr );
 Obj             EvalUnknownExpr (
     Expr                expr )
 {
-    ErrorQuit(
-      "Panic: tried to evaluate an expression of unknown type '%d'",
-                 (Int)TNUM_EXPR(expr), 0L );
+    Pr( "Panic: tried to evaluate an expression of unknown type '%d'",
+        (Int)TNUM_EXPR(expr), 0L );
     return 0;
 }
 
@@ -1481,9 +1481,8 @@ void            (* PrintExprFuncs[256] ) ( Expr expr );
 void            PrintUnknownExpr (
     Expr                expr )
 {
-    ErrorQuit(
-      "Panic: tried to print an expression of unknown type '%d'",
-          (Int)TNUM_EXPR(expr), 0L );
+    Pr( "Panic: tried to print an expression of unknown type '%d'",
+        (Int)TNUM_EXPR(expr), 0L );
 }
 
 

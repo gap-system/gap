@@ -636,7 +636,7 @@ SingleCollector_MakeAvector := function( sc )
 
     # <com>[i] is the smallest j >= i such that a_i,...,a_n commutes with
     # a_(j+1),...,a_n.
-    com := [1..n] * 0 + n;
+    com := ListWithIdenticalEntries( n, n );
 
     # After the while loop two cases can occur :
     #

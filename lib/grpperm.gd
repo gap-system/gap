@@ -63,6 +63,15 @@ SylowSubgroupPermGroup := NewOperationArgs( "SylowSubgroupPermGroup" );
 OmegaPN := NewOperationArgs( "OmegaPN" );
 SignPermGroup := NewOperationArgs( "SignPermGroup" );
 CycleStructuresGroup := NewOperationArgs( "CycleStructuresGroup" );
+#############################################################################
+##
+#M  ApproximateSuborbitsStabilizerPermGroup(<G>,<pnt>) . . . approximation of
+##  the orbits of Stab_G(pnt) on all points of the orbit pnt^G. (As not
+##  all schreier generators are used, the results may be the orbits of a
+##  subgroup.)
+##
+ApproximateSuborbitsStabilizerPermGroup :=
+  NewOperationArgs("ApproximateSuborbitsStabilizerPermGroup");
 
 #############################################################################
 ##

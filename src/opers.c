@@ -56,19 +56,12 @@ Obj TRY_NEXT_METHOD;
 /****************************************************************************
 **
 
-*F  IS_OPERATIONS( <func> )
-*/
-#define FLAG1_FILT(oper)        (*            (ADDR_OBJ(oper) +16     ) )
-#define FLAG2_FILT(oper)        (*            (ADDR_OBJ(oper) +17     ) )
-#define FLAGS_FILT(oper)        (*            (ADDR_OBJ(oper) +18     ) )
-#define SETTR_FILT(oper)        (*            (ADDR_OBJ(oper) +19     ) )
-#define TESTR_FILT(oper)        (*            (ADDR_OBJ(oper) +20     ) )
-#define METHS_OPER(oper,i)      (*            (ADDR_OBJ(oper) +21+ (i)) )
-#define CACHE_OPER(oper,i)      (*            (ADDR_OBJ(oper) +29+ (i)) )
-#define SIZE_OPER               (37*sizeof(Bag))
-
+*F  IS_OPERATION( <func> )  . . . . . . . . .  check if function is operation
+**
 #define IS_OPERATION(func) \
     (TNUM_OBJ(func) == T_FUNCTION && SIZE_OBJ(func) == SIZE_OPER )
+*/
+
 
 Obj             CacheOper (
     Obj                 oper,
@@ -1220,13 +1213,23 @@ Obj ReturnTrueFilter;
 /****************************************************************************
 **
 
-*F  FuncIsOperation( <self>, <obj> )  . . . . . . . . . is <obj> an operation
+*F  FuncIS_OPERATION( <self>, <obj> ) . . . . . . . . . is <obj> an operation
 */
-Obj FuncIsOperation (
+Obj IsOperationFilt;
+
+Obj FuncIS_OPERATION (
     Obj                 self,
-    Obj                 value )
+    Obj                 obj )
 {
-    return IS_OPERATION(value) ? True : False;
+    if ( TNUM_OBJ(obj) == T_FUNCTION && IS_OPERATION(obj) ) {
+        return True;
+    }
+    else if ( TNUM_OBJ(obj) < FIRST_EXTERNAL_TNUM ) {
+        return False;
+    }
+    else {
+        return DoFilter( self, obj );
+    }
 }
 
 
@@ -4370,7 +4373,8 @@ Obj NewAttribute (
     
     flag2 = ++CountFlags;
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4379,7 +4383,8 @@ Obj NewAttribute (
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4429,7 +4434,8 @@ Obj NewAttributeC (
     
     flag2 = ++CountFlags;
 
-    fname  = NEW_STRING( SyStrlen(name) + 8 );
+    fname = NEW_STRING( SyStrlen(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
     SyStrncat( CSTR_STRING(fname), name, SyStrlen(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4438,7 +4444,8 @@ Obj NewAttributeC (
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname  = NEW_STRING( SyStrlen(name) + 8 );
+    fname = NEW_STRING( SyStrlen(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
     SyStrncat( CSTR_STRING(fname), name, SyStrlen(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4735,7 +4742,8 @@ Obj NewProperty (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4744,7 +4752,8 @@ Obj NewProperty (
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4803,7 +4812,8 @@ Obj NewPropertyC (
     flag1 = ++CountFlags;
     flag2 = ++CountFlags;
 
-    fname  = NEW_STRING( SyStrlen(name) + 8 );
+    fname = NEW_STRING( SyStrlen(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Setter(", 7 );
     SyStrncat( CSTR_STRING(fname), name, SyStrlen(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4812,7 +4822,8 @@ Obj NewPropertyC (
     FLAG2_FILT(setter)  = INTOBJ_INT( flag2 );
     CHANGED_BAG(setter);
 
-    fname  = NEW_STRING( SyStrlen(name) + 8 );
+    fname = NEW_STRING( SyStrlen(name) + 8 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "Tester(", 7 );
     SyStrncat( CSTR_STRING(fname), name, SyStrlen(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4920,7 +4931,8 @@ Obj FuncSetterFunction (
     Obj                 fname;
     Obj                 tmp;
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 12 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "SetterFunc(", 11 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -4960,7 +4972,8 @@ Obj FuncGetterFunction (
     Obj                 func;
     Obj                 fname;
 
-    fname  = NEW_STRING( GET_LEN_STRING(name) + 12 );
+    fname = NEW_STRING( GET_LEN_STRING(name) + 12 );
+    RetypeBag( fname, IMMUTABLE_TNUM(TNUM_OBJ(fname)) );
     SyStrncat( CSTR_STRING(fname), "GetterFunc(", 11 );
     SyStrncat( CSTR_STRING(fname), CSTR_STRING(name), GET_LEN_STRING(name) );
     SyStrncat( CSTR_STRING(fname), ")", 1 );
@@ -5293,10 +5306,9 @@ void InitOpers ( void )
 
 
     /* make the functions that support new operations                      */
-    InitHandlerFunc( FuncIsOperation, "IS_OPERATION" );
-    AssGVar( GVarName( "IS_OPERATION" ),
-         NewFunctionC( "IS_OPERATION", 1L, "value",
-                   FuncIsOperation ) );
+    C_NEW_GVAR_FILT( "IS_OPERATION", "obj", IsOperationFilt,
+		  FuncIS_OPERATION,
+         "src/opers.c:IS_OPERATION" );
 
     InitHandlerFunc( FuncFlag1Filter, "FLAG1_FILTER" );
     AssGVar( GVarName( "FLAG1_FILTER" ),

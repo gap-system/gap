@@ -80,7 +80,7 @@ AttributeMethodByNiceMonomorphism := function( oper, par )
 
     # check the argument length
     if 1 <> Length(par)  then
-        Error( "need only one argument for ", NAME_FUNCTION(oper) );
+        Error( "need only one argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -105,7 +105,7 @@ AttributeMethodByNiceMonomorphismCollColl := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -136,7 +136,7 @@ AttributeMethodByNiceMonomorphismCollElm := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -165,7 +165,7 @@ AttributeMethodByNiceMonomorphismElmColl := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[2] := par[2] and IsHandledByNiceMonomorphism;
@@ -196,7 +196,7 @@ GroupMethodByNiceMonomorphism := function( oper, par )
 
     # check the argument length
     if 1 <> Length(par)  then
-        Error( "need only one argument for ", NAME_FUNCTION(oper) );
+        Error( "need only one argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -224,7 +224,7 @@ SubgroupMethodByNiceMonomorphism := function( oper, par )
 
     # check the argument length
     if 1 <> Length(par)  then
-        Error( "need only one argument for ", NAME_FUNCTION(oper) );
+        Error( "need only one argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -254,7 +254,7 @@ SubgroupMethodByNiceMonomorphismCollColl := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -286,7 +286,7 @@ GroupMethodByNiceMonomorphismCollOther := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two argument for ", NAME_FUNCTION(oper) );
+        Error( "need two argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -314,7 +314,7 @@ GroupMethodByNiceMonomorphismCollColl := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -346,7 +346,7 @@ GroupMethodByNiceMonomorphismCollElm := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -412,7 +412,7 @@ GroupSeriesMethodByNiceMonomorphism := function( oper, par )
 
     # check the argument length
     if 1 <> Length(par)  then
-        Error( "need only one argument for ", NAME_FUNCTION(oper) );
+        Error( "need only one argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -444,7 +444,7 @@ GroupSeriesMethodByNiceMonomorphismCollOther := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two argument for ", NAME_FUNCTION(oper) );
+        Error( "need two argument for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -476,7 +476,7 @@ GroupSeriesMethodByNiceMonomorphismCollColl := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;
@@ -512,7 +512,7 @@ GroupSeriesMethodByNiceMonomorphismCollElm := function( oper, par )
 
     # check the argument length
     if 2 <> Length(par)  then
-        Error( "need two arguments for ", NAME_FUNCTION(oper) );
+        Error( "need two arguments for ", NameFunction(oper) );
     fi;
     par    := ShallowCopy(par);
     par[1] := par[1] and IsHandledByNiceMonomorphism;

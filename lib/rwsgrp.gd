@@ -21,7 +21,7 @@ Revision.rwsgrp_gd :=
 #############################################################################
 ##
 
-#C  IsElementsFamilyByRws
+#C  IsElementsFamilyByRws .  category of elements family constructed with RWS
 ##
 IsElementsFamilyByRws := NewCategory(
     "IsElementsFamilyByRws",
@@ -30,7 +30,7 @@ IsElementsFamilyByRws := NewCategory(
 
 #############################################################################
 ##
-#O  MultiplicativeElementsWithInversesFamilyByRws( <rws> )
+#O  MultiplicativeElementsWithInversesFamilyByRws( <rws> )  . . . this family
 ##
 MultiplicativeElementsWithInversesFamilyByRws := NewOperation(
     "MultiplicativeElementsWithInversesFamilyByRws",
@@ -41,7 +41,7 @@ MultiplicativeElementsWithInversesFamilyByRws := NewOperation(
 ##
 
 
-#C  IsMultiplicativeElementWithInverseByRws
+#C  IsMultiplicativeElementWithInverseByRws . . .  category of these elements
 ##
 IsMultiplicativeElementWithInverseByRws := NewCategory(
     "IsMultiplicativeElementWithInverseByRws",
@@ -50,12 +50,11 @@ IsMultiplicativeElementWithInverseByRws := NewCategory(
 
 #############################################################################
 ##
-#O  ElementByRws( <fam>, <elm> )
+#O  ElementByRws( <fam>, <elm> )  . . . . . . . . . construct such an element
 ##
 ElementByRws := NewOperation(
     "ElementByRws",
     [ IsElementsFamilyByRws, IsObject ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
@@ -70,42 +69,35 @@ UnderlyingElement := NewOperation(
 #############################################################################
 ##
 
-#O  GroupByRws( <rws> )
+#F  InstallGroupByRwsMethod( <rws>, <grp>, <func> ) . . . transfer properties
+##
+GROUPBYRWS_METHODS      := [];
+InstallGroupByRwsMethod := InstallMethodsFunction2(GROUPBYRWS_METHODS);
+RunGroupByRwsMethods    := RunMethodsFunction2(GROUPBYRWS_METHODS);
+
+
+#############################################################################
+##
+
+#O  GroupByRws( <rws> ) . . . . . . . . . . . .  construct a group from a RWS
 ##
 GroupByRws := NewOperation(
     "GroupByRws",
     [ IsRewritingSystem ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
-#O  GroupByRwsNC( <rws> )
+#O  GroupByRwsNC( <rws> ) . . . . . . . . . . .  construct a group from a RWS
 ##
 GroupByRwsNC := NewOperation(
     "GroupByRwsNC",
     [ IsRewritingSystem ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
 
 
 #############################################################################
 ##
-
-#F  InstallGroupByRwsMethod( <rws-prop>, <grp-prop>, <func> )
-##
-GROUPBYRWS_METHODS := [];
-
-InstallGroupByRwsMethod := function( rws, grp, func )
-    Add( GROUPBYRWS_METHODS, [FLAGS_FILTER(rws),FLAGS_FILTER(grp),func] );
-end;
-
-RunGroupByRwsMethods := RunMethodsFunction2(GROUPBYRWS_METHODS);
-
-
-#############################################################################
-##
-
-#M  IsFinite
+#M  IsFinite  . . . . . . . . . . . . . .  a finite RWS yields a finite group
 ##
 InstallGroupByRwsMethod(
     IsFinite,

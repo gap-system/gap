@@ -37,7 +37,7 @@ ClearProfile := function()
     local   i;
 
     for i  in Concatenation(PROFILED_FUNCTIONS, PREV_PROFILED_FUNCTIONS)  do
-        CLEAR_PROFILE_FUNCTION(i);
+        CLEAR_PROFILE_FUNC(i);
     od;
 end;
 
@@ -52,7 +52,7 @@ DisplayProfile := function( arg )
 
     # stop profiling of functions needed below
     for i  in PROFILED_FUNCTIONS  do
-        UNPROFILE_FUNCTION(i);
+        UNPROFILE_FUNC(i);
     od;
 
     # unravel the arguments
@@ -72,7 +72,7 @@ DisplayProfile := function( arg )
     tsto  := 0;
     other := 0;
     for i  in [ 1 .. Length(all) ]  do
-	tmp := PROF_FUNCTION(all[i]);
+	tmp := PROF_FUNC(all[i]);
 	if tmp[1] > 0  then
             if all[i] in funcs  then
                 n := [];
@@ -219,7 +219,7 @@ DisplayProfile := function( arg )
 
     # start profiling of functions needed above
     for i  in PROFILED_FUNCTIONS  do
-        PROFILE_FUNCTION(i);
+        PROFILE_FUNC(i);
     od;
 
 end;
@@ -237,14 +237,14 @@ ProfileFunctions := function( funcs, names )
         if not funcs[i] in PROFILED_FUNCTIONS  then
             Add( PROFILED_FUNCTIONS,       funcs[i] );
             Add( PROFILED_FUNCTIONS_NAMES, names[i] );
-            PROFILE_FUNCTION(funcs[i]);
+            PROFILE_FUNC(funcs[i]);
         fi;
         pos := Position( PREV_PROFILED_FUNCTIONS, funcs[i] );
         if pos <> fail  then
             Unbind( PREV_PROFILED_FUNCTIONS[pos] );
             Unbind( PREV_PROFILED_FUNCTIONS_NAMES[pos] );
         fi;
-        CLEAR_PROFILE_FUNCTION(funcs[i]);
+        CLEAR_PROFILE_FUNC(funcs[i]);
     od;
     PREV_PROFILED_FUNCTIONS      :=Compacted(PREV_PROFILED_FUNCTIONS);
     PREV_PROFILED_FUNCTIONS_NAMES:=Compacted(PREV_PROFILED_FUNCTIONS_NAMES);
@@ -265,7 +265,7 @@ UnprofileFunctions := function( list )
             Add(PREV_PROFILED_FUNCTIONS_NAMES,PROFILED_FUNCTIONS_NAMES[pos]);
             Unbind( PROFILED_FUNCTIONS[pos] );
             Unbind( PROFILED_FUNCTIONS_NAMES[pos] );
-            UNPROFILE_FUNCTION(f);
+            UNPROFILE_FUNC(f);
         fi;
     od;
     PROFILED_FUNCTIONS       := Compacted(PROFILED_FUNCTIONS);
@@ -292,7 +292,7 @@ ProfileMethods := function( arg )
     funcs := [];
     names := [];
     for op  in arg  do
-        name := NAME_FUNCTION(op);
+        name := NameFunction(op);
         for i  in [ 0 .. 6 ]  do
             meth := METHODS_OPERATION( op, i );
             if meth <> fail  then
@@ -355,7 +355,7 @@ ProfileOperationsOn := function()
     local   prof,  nams;
 
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    nams := List( prof, NAME_FUNCTION );
+    nams := List( prof, NameFunction );
     PROFILED_OPERATIONS := prof;
     UnprofileMethods(prof);
     ProfileFunctions( prof, nams );
@@ -370,7 +370,7 @@ ProfileOperationsAndMethodsOn := function()
     local   prof,  nams;
 
     prof := OPERATIONS{[ 1, 3 .. Length(OPERATIONS)-1 ]};
-    nams := List( prof, NAME_FUNCTION );
+    nams := List( prof, NameFunction );
     PROFILED_OPERATIONS := prof;
     ProfileMethods(prof);
     ProfileFunctions( prof, nams );
@@ -427,7 +427,7 @@ ProfileOperationsAndMethods := function( arg )
             ProfileOperationsAndMethodsOff();
         fi;
     else
-        Print( "usage: ProfileOperations( [<true/false>] )" );
+        Print( "usage: ProfileOperationsAndMethods( [<true/false>] )" );
     fi;
 end;
 

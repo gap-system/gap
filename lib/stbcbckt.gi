@@ -2004,7 +2004,7 @@ RepOpElmTuplesPermGroup := function( repr, G, e, f, L, R )
     
     # Find the order in which to process the points in the base choice.
     order := cycles.points{ cycles.firsts };
-    SortParallel( -cycles.lengths, order );
+    SortParallel( ShallowCopy( -cycles.lengths ), order );
 
     # Construct an R-base.
     rbase := EmptyRBase( G, Omega, P );

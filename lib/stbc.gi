@@ -1210,8 +1210,11 @@ end;
 ##
 SiftedPermutation := function( S, g )
     local   bpt,  img;
-
-    while     not IsEmpty( S.genlabels )
+    
+    # The  following     condition   tests     `IsBound(S.stabilizer)',   not
+    # `IsEmpty(S.genlabels)'. This is necessary because  the function may  be
+    # called with an inconsistent chain from `NormalClosure'.
+    while     IsBound( S.stabilizer )
           and g <> S.identity  do
         bpt := S.orbit[ 1 ];
         img := bpt ^ g;
@@ -1329,7 +1332,7 @@ StrongGeneratorsStabChain := function( S )
     local   sgs;
     
     sgs := [  ];
-    while not IsEmpty( S.genlabels )  do
+    while not IsEmpty( S.generators )  do
         UniteSet( sgs, S.generators );
         S := S.stabilizer;
     od;

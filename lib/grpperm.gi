@@ -449,7 +449,10 @@ InstallMethod( Base, true, [ IsPermGroup ], 0,
 ##
 #M  Size( <G> ) . . . . . . . . . . . . . . . . . . size of permutation group
 ##
-InstallMethod( Size, true, [ IsPermGroup ], 0,
+InstallMethod( Size,
+    "method for a permutation group",
+    true,
+    [ IsPermGroup ], 0,
     G -> SizeStabChain( StabChainAttr( G ) ) );
 
 #############################################################################
@@ -1822,16 +1825,126 @@ end;
 
 #############################################################################
 ##
+#M  ApproximateSuborbitsStabilizerPermGroup(<G>,<pnt>) . . . approximation of
+##  the orbits of Stab_G(pnt) on all points of the orbit pnt^G. (As not
+##  all schreier generators are used, the results may be the orbits of a
+##  subgroup.)
+##
+ApproximateSuborbitsStabilizerPermGroup := function(G,punkt)
+local orbit,trans,stab,gen,pnt,img,norb,no,i,j,changed,processStabGen,
+      StabGenAvailable,stgp,orblen;
+  if HasStabChain(G) then
+    orbit:=Difference(StabChain(G).orbit,[punkt]);
+    stab:=ShallowCopy(GeneratorsOfGroup(Stabilizer(G,punkt)));
+    # catch trivial case
+    if Length(stab)=0 then
+      stab:=[()];
+    fi;
+    stgp:=1;
 
+    processStabGen:=function()
+      stgp:=stgp+1;
+      if stgp>Length(stab) then
+	StabGenAvailable:=false;
+      fi;
+      return stab[stgp-1];
+    end;
+
+  else
+    # compute orbit and transversal
+    orbit := [ punkt ];
+    trans := [];
+    trans[ punkt ] := ();
+    stab:=[];
+    for pnt  in orbit  do
+      for gen  in GeneratorsOfGroup(G)  do
+        img:=pnt/gen;
+	if not IsBound( trans[ img ] )  then
+	  Add( orbit, img );
+	  trans[ img ] := gen;
+	fi;
+      od;
+    od;
+    orblen:=Length(orbit);
+    orbit:=orbit{[2..Length(orbit)]};
+
+    processStabGen:=function()
+      i:=orblen; 
+      gen:=();
+      while 1<=i do
+	gen:=gen*Random(GeneratorsOfGroup(G));
+	i:=QuoInt(i,2);
+      od;
+      while punkt^gen<>punkt do
+        gen:=gen*trans[punkt^gen];
+      od;
+      return gen;
+    end;
+
+  fi;
+
+  changed:=0;
+  orbit:=List(orbit,i->[i]);
+
+  #trivial case
+  if Length(orbit)=0 then
+    changed:=infinity;
+  fi;
+
+  # compute suborbits, fusing iteratively under generators
+  StabGenAvailable:=true;
+  while changed<=2 and StabGenAvailable do
+
+    gen:=processStabGen();
+
+    if gen=() then
+      if Random([1..10])>1 then
+        changed:=changed+1;
+      fi;
+    else
+      changed:=changed+1;
+
+      # fuse under gen-action
+      norb:=[];
+      for i in [1..Length(orbit)] do
+	if IsBound(orbit[i]) then
+	  no:=orbit[i];
+	  Unbind(orbit[i]);
+	  i:=i+1;
+	  for pnt in no do
+	    img:=pnt^gen;
+	    if not img in no then
+	      img:=First([i..Length(orbit)],j->IsBound(orbit[j])
+			 and img in orbit[j]);
+	      changed:=0;
+	      for j in orbit[img] do
+		Add(no,j);
+	      od;
+	      Unbind(orbit[img]);
+	    fi;
+	  od;
+	  Add(norb,no);
+	fi;
+      od;
+      orbit:=norb;
+    fi;
+  od;
+
+  return Concatenation([[punkt]],orbit);
+end;
+
+#############################################################################
+##
 #M  AllBlocks . . . Representatives of all block systems
 ##
 InstallMethod(AllBlocks,"generic",true,[IsPermGroup],0,
 function(g)
-local dom,DoBlocks,pool;
+local gens,dom,DoBlocks,pool,subo;
 
   DoBlocks:=function(b)
   local bl,bld,i,t,n;
-    bld:=Difference(dom,b);
+    # find representatives of all potential suborbits
+    bld:=List(Filtered(subo,i->not ForAny(b,j->j in i)),i->i[1]);
     bl:=[];
     if not IsPrime(Length(dom)/Length(b)) then
       for i in bld do
@@ -1848,9 +1961,13 @@ local dom,DoBlocks,pool;
     return bl;
   end;
 
-  dom:=MovedPoints(g);
+  gens:=Filtered(GeneratorsOfGroup(g),i->i<>());
+  if Length(gens)=0 then return []; fi;
+  subo:=ApproximateSuborbitsStabilizerPermGroup(g,
+          Minimum(List(gens,SmallestMovedPointPerm)));
+  dom:=Union(subo);
   pool:=[];
-  return DoBlocks(dom{[1]});
+  return DoBlocks(subo[1]);
 end);
 
 #############################################################################

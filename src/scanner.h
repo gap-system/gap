@@ -379,6 +379,14 @@ extern  void            Pr (
 /****************************************************************************
 **
 
+*F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
+*/
+extern void ClearError ( void );
+
+
+/****************************************************************************
+**
+
 *T  TypInputFile  . . . . . . . . . .  structure of an open input file, local
 **
 **  'TypInputFile' describes the  information stored  for  open input  files:

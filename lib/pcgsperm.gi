@@ -450,7 +450,7 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
     SetStabChain( G, series[ 1 ] );
     first := [  ];
     for i  in [ 1 .. Length( series ) ]  do
-        Add( first, Length( series[ i ].genlabels ) );
+        Add( first, Length( series[ i ].labels ) );
         Unbind( series[ i ].relativeOrders );
         Unbind( series[ i ].base           );
         series[ i ] := GroupStabChain( G, series[ i ], true );
@@ -458,8 +458,8 @@ PcgsStabChainSeries := function( filter, G, seriesAttr, series, oldlen )
         SetFilterObj( series[ i ], IsMemberPcSeriesPermGroup );
         series[ i ]!.noInSeries := i;
     od;
-    SetEAFirst( pcgs, first[ 1 ] - first + 1 );
-    SetElementaryAbelianSeries( pcgs, series );
+    SetNormalPcFirst( pcgs, first[ 1 ] - first + 1 );
+    SetNormalPcSeries( pcgs, series );
     if seriesAttr <> false  then
         Setter( seriesAttr )( pcgs, series );
     fi;
@@ -474,23 +474,24 @@ TailOfPcgsPermGroup := function( pcgs, from )
     local   tail,  i;
     
     i := 1;
-    while EAFirst( pcgs )[ i ] < from  do
+    while NormalPcFirst( pcgs )[ i ] < from  do
         i := i + 1;
     od;
     tail := PcgsByPcSequenceCons(
                     IsPcgsDefaultRep,
                     IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
                     FamilyObj( OneOfPcgs( pcgs ) ),
-                    pcgs{ [ EAFirst( pcgs )[ i ] .. Length( pcgs ) ] } );
-    tail!.stabChain := StabChainAttr( ElementaryAbelianSeries( pcgs )[ i ] );
+                    pcgs{ [ NormalPcFirst( pcgs )[ i ] .. Length( pcgs ) ] } );
+    tail!.stabChain := StabChainAttr( NormalPcSeries( pcgs )[ i ] );
     SetRelativeOrders( tail, RelativeOrders( pcgs )
             { [ from .. Length( pcgs ) ] } );
-    SetEAFirst( tail, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
-    SetElementaryAbelianSeries( tail, ElementaryAbelianSeries( pcgs )
-            { [ i .. Length( EAFirst( pcgs ) ) ] } );
-    if from < EAFirst( pcgs )[ i ]  then
+    SetNormalPcFirst( tail, NormalPcFirst( pcgs )
+            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
+    SetNormalPcSeries( tail, NormalPcSeries( pcgs )
+            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
+    if from < NormalPcFirst( pcgs )[ i ]  then
         tail := ExtendedPcgs( tail,
-                        pcgs{ [ from .. EAFirst( pcgs )[ i ] - 1 ] } );
+                        pcgs{ [ from .. NormalPcFirst( pcgs )[ i ] - 1 ] } );
     fi;
     return tail;
 end;
@@ -503,7 +504,8 @@ PcgsMemberPcSeriesPermGroup := function( U )
     local   home,  pcgs;
 
     home := HomePcgs( U );
-    pcgs := TailOfPcgsPermGroup( home, EAFirst( home )[ U!.noInSeries ] );
+    pcgs := TailOfPcgsPermGroup( home,
+                    NormalPcFirst( home )[ U!.noInSeries ] );
     SetGroupOfPcgs( pcgs, U );
     return pcgs;
 end;
@@ -706,14 +708,13 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
         pcgs!.stabChain := G!.stabChain;
         SetRelativeOrders( pcgs, RelativeOrders( G ){ [ 1..Length(pcgs) ] } );
         i := 1;
-        while Length( G ) - EAFirst( G )[ i ] >= Length( N )  do
+        while Length( G ) - NormalPcFirst( G )[ i ] >= Length( N )  do
             i := i + 1;
         od;
-        SetEAFirst( pcgs, Concatenation( EAFirst( G ){ [ 1 .. i - 1 ] },
-                [ Length( pcgs ) + 1 ] ) );
-        SetElementaryAbelianSeries( pcgs, Concatenation
-                ( ElementaryAbelianSeries( G ){ [ 1 .. i - 1 ] },
-                  [ GroupOfPcgs( N ) ] ) );
+        SetNormalPcFirst( pcgs, Concatenation( NormalPcFirst( G )
+                { [ 1 .. i - 1 ] }, [ Length( pcgs ) + 1 ] ) );
+        SetNormalPcSeries( pcgs, Concatenation( NormalPcSeries( G )
+                { [ 1 .. i - 1 ] }, [ GroupOfPcgs( N ) ] ) );
     else
         pcgs := PcgsByPcSequenceCons(
                 IsPcgsDefaultRep,
@@ -723,8 +724,8 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
         SetRelativeOrders( pcgs, [  ] );
-        SetEAFirst( pcgs, [ 1 ] );
-        SetElementaryAbelianSeries( pcgs, [ GroupOfPcgs( N ) ] );
+        SetNormalPcFirst( pcgs, [ 1 ] );
+        SetNormalPcSeries( pcgs, [ GroupOfPcgs( N ) ] );
         pcgs := ExtendedPcgs( pcgs, G );
     fi;
     SetGroupOfPcgs( pcgs, GroupOfPcgs( G ) );
@@ -835,7 +836,7 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     function( pcgs, pcs )
     local   igs,  i;
 
-    i := Position( EAFirst( pcgs ), Length( pcgs ) - Length( pcs ) + 1 );
+    i := Position( NormalPcFirst( pcgs ), Length( pcgs )-Length( pcs )+1 );
     if i = fail  or
        pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } <>
        pcs  then
@@ -847,12 +848,13 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
                    IsTailInducedPcgsRep and IsPcgsPermGroupRep,
         FamilyObj( OneOfPcgs( pcgs ) ),
         pcgs{ [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    igs!.stabChain := StabChainAttr( ElementaryAbelianSeries( pcgs )[ i ] );
+    igs!.stabChain := StabChainAttr( NormalPcSeries( pcgs )[ i ] );
     SetRelativeOrders( igs, RelativeOrders( pcgs )
             { [ Length( pcgs ) - Length( pcs ) + 1 .. Length( pcgs ) ] } );
-    SetEAFirst( igs, EAFirst( pcgs ){ [ i .. Length( EAFirst( pcgs ) ) ] } );
-    SetElementaryAbelianSeries( igs, ElementaryAbelianSeries( pcgs )
-            { [ i .. Length( EAFirst( pcgs ) ) ] } );
+    SetNormalPcFirst( igs, NormalPcFirst( pcgs )
+            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
+    SetNormalPcSeries( igs, NormalPcSeries( pcgs )
+            { [ i .. Length( NormalPcFirst( pcgs ) ) ] } );
     SetParentPcgs( igs, pcgs );
     igs!.tailStart := Length( pcgs ) - Length( pcs ) + 1;
     return igs;
@@ -900,10 +902,9 @@ InstallMethod( ExtendedPcgs, "perm pcgs", true,
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
-    SetEAFirst( pcgs, Concatenation( [ 1 ], EAFirst( N ) ) );
-    SetElementaryAbelianSeries( pcgs,
-            Concatenation( [ GroupStabChain( S ) ],
-                    ElementaryAbelianSeries( N ) ) );
+    SetNormalPcFirst( pcgs, Concatenation( [ 1 ], NormalPcFirst( N ) ) );
+    SetNormalPcSeries( pcgs, Concatenation( [ GroupStabChain( S ) ],
+            NormalPcSeries( N ) ) );
     return pcgs;
 end );
 
@@ -1017,7 +1018,7 @@ InstallMethod( IsomorphismPcGroup, true, [ IsPermGroup ], 0,
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, EAFirst( pcgs ), false );
+    A := PcGroupPcgs( pcgs, NormalPcFirst( pcgs ), false );
     iso := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsBijective( iso, true );
     
@@ -1041,7 +1042,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
     fi;
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
-    A := PcGroupPcgs( pcgs, EAFirst( pcgs ), false );
+    A := PcGroupPcgs( pcgs, NormalPcFirst( pcgs ), false );
     UseFactorRelation( G, N, A );
     map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );

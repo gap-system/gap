@@ -738,7 +738,7 @@ Decreased := function( arg )
 
     # number of columns
     n := Length( solmat[1] );
-    invmat := IdentityMat( n );
+    invmat := MutableIdentityMat( n );
     for i in [1..m] do  
        delline[i] := false;
     od;

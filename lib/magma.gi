@@ -107,32 +107,6 @@ InstallMethod( IsAssociative,
 
 #############################################################################
 ##
-#F  IsCommutativeFromGenerators( <GeneratorsStruct> )
-##
-IsCommutativeFromGenerators := function( GeneratorsStruct )
-    return function( D )
-
-    local gens,   # list of generators
-          i, j;   # loop variables
-
-    # Test if every element commutes with all the others.
-    gens:= GeneratorsStruct( D );
-    for i in [ 2 .. Length( gens ) ] do
-      for j in [ 1 .. i-1 ] do
-        if gens[i] * gens[j] <> gens[j] * gens[i] then
-          return false;
-        fi;
-      od;
-    od;
-
-    # All generators commute.
-    return true;
-    end;
-end;
-
-
-#############################################################################
-##
 #M  IsCommutative( <M> )  . . . . . . . . test whether a magma is commutative
 ##
 InstallImmediateMethod( IsCommutative,
@@ -825,25 +799,6 @@ InstallMethod( EnumeratorSorted,
     true,
     [ IsMagmaWithOne and IsTrivial ], 0,
     EnumeratorOfTrivialMagmaWithOne );
-
-
-#############################################################################
-##
-#F  IsCentralFromGenerators( <GeneratorsStruct1>, <GeneratorsStruct2> )
-##
-IsCentralFromGenerators := function( GeneratorsStruct1, GeneratorsStruct2 )
-    return function( D1, D2 )
-    local g1, g2;
-    for g1 in GeneratorsStruct1( D1 ) do
-      for g2 in GeneratorsStruct2( D2 ) do
-        if g1 * g2 <> g2 * g1 then
-          return false;
-        fi;
-      od;
-    od;
-    return true;
-    end;
-end;
 
 
 #############################################################################

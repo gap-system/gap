@@ -54,6 +54,7 @@ ReadLib( "algfld.gd"   );
 ReadLib( "unknown.gd"  );
 
 ReadLib( "word.gd"     );
+ReadLib( "wordass.gd"  );
 
 
 # files dealing with rewriting systems
@@ -134,7 +135,6 @@ ReadLib( "grpnice.gd"  );
 # files dealing with matrix groups (grpffmat.gd needs grpnice.gd)
 ReadLib( "grpmat.gd"   );
 ReadLib( "grpffmat.gd" );
-
 
 # group library
 ReadGrp( "basic.gd"    );

@@ -75,6 +75,7 @@ InstallMethod( IsElementaryAbelian,
     true, [ IsGroup ], 0,
     function ( G )
     local   isEla,      # 'true' if <G> is elementary abelian, result
+	    i,		# loop
             p;          # order of one generator of <G>
 
     # if <G> is not commutative it is certainly not elementary abelian
@@ -89,15 +90,20 @@ InstallMethod( IsElementaryAbelian,
     elif HasIsFinite( G ) and not IsFinite( G )  then
         return false;
 
-    # otherwise compute the order of the first generator
+    # otherwise compute the order of the first nontrivial generator
     else
-        p := Order( GeneratorsOfGroup( G )[1] );
+        # p := Order( GeneratorsOfGroup( G )[1] );
+	i:=1;
+	repeat
+	  p:=Order(GeneratorsOfGroup(G)[i]);
+	  i:=i+1;
+	until p>1; # will work, as G is not trivial
 
         # if the order is not a prime <G> is certainly not elementary abelian
         if not IsPrime( p )  then
             return false;
 
-        # otherwise test that all other generators have order <p>
+        # otherwise test that all other nontrivial generators have order <p>
         else
             return ForAll( GeneratorsOfGroup( G ), gen -> gen^p = One( G ) );
         fi;

@@ -50,7 +50,7 @@ local  n,l,o,b,r,p,cl,i,sel;
   o:=[];
   b:=BlistList([1..l],[1..n]);
   while n>0 do
-    p:=PositionProperty(b,false);
+    p:=Position(b,true);
     b[p]:=false;
     n:=n-1;
     r:=rec(representative:=dom[p]);
@@ -62,6 +62,7 @@ local  n,l,o,b,r,p,cl,i,sel;
       for i in cl do
         p:=PositionProperty(sel,j->dom[j]=i);
 	if p<>fail then
+	  p:=sel[p];
 	  b[p]:=false;
 	  n:=n-1;
 	  RemoveSet(sel,p);

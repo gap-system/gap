@@ -9,6 +9,8 @@ ReadLib( "oper.g"      );
 ReadLib( "type.g"      );
 ReadLib( "methsel.g"   );
 
+ReadLib( "function.g"  );
+
 ReadLib( "object.gd"   );
 ReadLib( "coll.gd"     );
 ReadLib( "list.gd"     );
@@ -28,3 +30,4 @@ ReadLib( "arith.gi"    );
 ReadLib( "rest.gi"     );
 ReadLib( "info.gi"     );
 ReadLib( "assert.gi"   );
+

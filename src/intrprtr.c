@@ -108,6 +108,7 @@ UInt IntrCoding;
 
 /****************************************************************************
 **
+
 *F  StackObj  . . . . . . . . . . . . . . . . . . . . . . . . .  values stack
 *F  CountObj  . . . . . . . . . . . . . . . . . number of values on the stack
 *F  PushObj(<val>)  . . . . . . . . . . . . . . . . push value onto the stack
@@ -211,6 +212,7 @@ Obj             PopVoidObj ( void )
 
 /****************************************************************************
 **
+
 *F  IntrBegin() . . . . . . . . . . . . . . . . . . . .  start an interpreter
 *F  IntrEnd( <error> )  . . . . . . . . . . . . . . . . . stop an interpreter
 **
@@ -2397,15 +2399,19 @@ void            IntrRefDVar (
     /* if ( IntrCoding    > 0 ) { CodeRefGVar( gvar ); return; } */
     if ( CompNowFuncs != 0 ) { return; }
 
+    if ( IntrCoding > 0 ) {
+        ErrorQuit( "Variable: <debug-variable-%d-%d> cannot be used here",
+                   dvar >> 16, dvar & 0xFFFF );
+    }
+
     /* get and check the value                                             */
     currLVars = CurrLVars;
     SWITCH_TO_OLD_LVARS( ErrorLVars );
     val = OBJ_HVAR( dvar );
     SWITCH_TO_OLD_LVARS( currLVars  );
     if ( val == 0 ) {
-        ErrorQuit(
-            "Variable: <debug-variable-%d-%d> must have a value",
-            dvar >> 16, dvar & 0xFFFF );
+        ErrorQuit( "Variable: <debug-variable-%d-%d> must have a value",
+                   dvar >> 16, dvar & 0xFFFF );
     }
 
     /* push the value                                                      */

@@ -583,7 +583,11 @@ in general, an object belongs to only few attributes when it is created,
 and will lie in more and more attributes as their values are computed.
 
 To check whether an object belongs to an attribute <attr>,
-the tester `Tester( <attr> )' of the attribute is used;
+the tester
+
+\>Tester( <attr> )
+
+of the attribute is used;
 this is a function that returns `true' or `false',
 depending on whether or not the value of <attr> for the object is known.
 For example, `Tester( Size )( <obj> )' is `true' if the size of the object
@@ -592,7 +596,11 @@ For example, `Tester( Size )( <obj> )' is `true' if the size of the object
 % Shall the `HasAttr' and `SetAttr' names be mentioned?
 
 To store a value of the attribute <attr> in an object,
-the setter `Setter( <attr> )' of the attribute is used.
+the setter
+
+\>Setter( <attr> )
+
+of the attribute is used.
 The setter is called automatically when the attribute value has been
 computed for the first time.
 One can also call the setter explicitly,
@@ -617,8 +625,11 @@ The only difference between attributes and properties is that a property
 defines two sets,
 namely the usual set of all objects for that the value is known,
 and the set of all objects for that the value is known to be `true'.
-If a property value is known for an object then this value is also 
-stored, as part of the type of the object.
+If a property value is known for an immutable object then this value is
+also stored, as part of the type of the object.
+To some extent, also property values of mutable objects can be stored,
+for example a mutable list all of whose entries are immutable can store
+whether it is strictly sorted.
 
 For a property <prop>, the containment of an object <obj> in the first
 set is checked again by applying `Tester( <prop> )' to <obj>,
@@ -666,16 +677,16 @@ A filter that is not the meet of other filters
 is called a *simple filter*.
 For example, each attribute tester is a simple filter.
 
-Every filter has a *rank*.
-For simple filters, the rank is defined when the filter is created,
-usually it will be 1.
-For other filters, the rank is given by the sum of ranks of the involved
-simple filters.
+Every filter <filt> has a *rank*, which can be accessed as
 
-In the computation of the rank of a simple filter <filt>,
-also the ranks of those filters are involved that were
-explicitly notified as *implied filters* of <filt> when <filt> was
+\>RankFilter( <filt> )
+
+For simple filters, an *incremental rank* is defined when the filter is
 created.
+The rank of a filter is given by the sum of incremental ranks of the
+involved simple filters,
+where also those filters are involved that were explicitly notified as
+*implied filters* of <filt> when <filt> was created.
 Note that an object in <filt> does not necessarily lie in all
 implied filters of <filt>.
 
@@ -683,6 +694,10 @@ For example, `Size' is defined as an attribute for domains,
 and `IsDomain' is an implied filter of the filter `Tester( Size )';
 But there are also methods for `Size' to compute the size of lists,
 which are not domains.
+
+\>NamesFilter( <filt> )
+
+returns a list of names of the implied filters of the filter <filt>.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Types}
@@ -700,9 +715,14 @@ It is used, e.g., for residue classes of integers, where the type of each
 residue class modulo <n> contains the modulus <n> as defining data.
 As a consequence, two residue classes mod <n> and <m> can have the same
 type only if `<n> = <m>'.
+The defining data of the type <type> can beaccessed as
+
+\>DataType( <type> )
 
 The type of an object is itself an object,
-it can be accessed as `TypeObj( <obj> )'.
+it can be accessed as
+
+\>TypeObj( <obj> )
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Method Selection}
@@ -722,7 +742,9 @@ and logical implications.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Operations and Methods}
 
-On one hand, *operations* are {\GAP} functions, that is,
+Operations are functions in the category `IsOperation'.
+
+So on one hand, *operations* are {\GAP} functions, that is,
 they can be applied to arguments and return a result or cause a
 side-effect.
 

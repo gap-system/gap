@@ -131,6 +131,9 @@ InstallMethod( String, true, [ IsCyc ], 0,
         fi;
     od;
 
+    # Convert to string representation.
+    ConvertToStringRep( str );
+
     # Return the string.
     return str;
     end );
@@ -223,7 +226,7 @@ CoeffsCyc := function( z, N )
         fi;
         first:= s / second;
         if first > 1 then
-          newcoeffs:= [ 1 .. n / first ] * 0;
+          newcoeffs:= ListWithIdenticalEntries( n / first, 0 );
           for k in [ 1 .. n ] do
             if coeffs[k] <> 0 then
               pos:= ( k - 1 ) / first + 1;
@@ -246,7 +249,7 @@ CoeffsCyc := function( z, N )
         if second > 1 then
           for p in FactorsInt( second ) do
             nn:= n / p;
-            newcoeffs:= [ 1 .. nn ] * 0;
+            newcoeffs:= ListWithIdenticalEntries( nn, 0 );
             for k in [ 1 .. n ] do
               pos:= 0;
               if coeffs[k] <> 0 then
@@ -285,7 +288,7 @@ CoeffsCyc := function( z, N )
         if p <> 2 and n mod p <> 0 then
           nn  := n * p;
           quo := quo / p;
-          newcoeffs:= [ 1 .. nn ] * 0;
+          newcoeffs:= ListWithIdenticalEntries( nn, 0 );
           for k in [ 1 .. n ] do
             if coeffs[k] <> 0 then
               for j in [ 1 .. p-1 ] do
@@ -306,7 +309,7 @@ CoeffsCyc := function( z, N )
     if quo <> 1 then
 
       n:= Length( coeffs );
-      newcoeffs:= [ 1 .. quo*n ] * 0;
+      newcoeffs:= ListWithIdenticalEntries( quo*n, 0 );
       for k in [ 1 .. Length( coeffs ) ] do
         if coeffs[k] <> 0 then
           newcoeffs[ (k-1)*quo + 1 ]:= coeffs[k];
@@ -334,7 +337,7 @@ CycList := function( coeffs )
     local e, n;
     n:= Length( coeffs );
     e:= E(n);
-    return Sum( [ 1 .. n ], i -> coeffs[i] * e^(i-1) );
+    return Sum( [ 1 .. n ], i -> coeffs[i] * e^(i-1), 0 );
 end;
 
 

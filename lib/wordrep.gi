@@ -55,7 +55,7 @@ Is32BitsAssocWord := NewRepresentation(
 
 IsInfBitsAssocWord := NewRepresentation(
     "IsInfBitsAssocWord",
-    IsAssocWord and IsComponentObjectRep, [] );
+    IsAssocWord and IsPositionalObjectRep, [] );
 
 
 #############################################################################

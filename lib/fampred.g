@@ -32,6 +32,11 @@ IsElmsCollColls := function ( F1, F2 )
        and IsIdentical( F1, ElementsFamily( ElementsFamily( F2 ) ) );
 end;
 
+IsElmsCollsX := function( F1, F2, F3 )
+    return     HasElementsFamily( F2 )
+           and IsIdentical( F1, ElementsFamily( F2 ) );
+end;
+
 
 #############################################################################
 ##

@@ -105,7 +105,7 @@ Int READ ( void )
 
     /* now do the reading                                                  */
     while ( 1 ) {
-	NrError = 0;
+	ClearError();
         type = ReadEvalCommand();
 
         /* handle return-value or return-void command                      */
@@ -128,7 +128,7 @@ Int READ ( void )
             "Panic: READ cannot close input, this should not happen",
             0L, 0L );
     }
-    NrError = 0;
+    ClearError();
 
     return 1;
 }
@@ -146,7 +146,7 @@ Obj READ_AS_FUNC ( void )
     UInt                type;
 
     /* now do the reading                                                  */
-    NrError = 0;
+    ClearError();
     type = ReadEvalFile();
 
     /* get the function                                                    */
@@ -163,7 +163,7 @@ Obj READ_AS_FUNC ( void )
             "Panic: READ_AS_FUNC cannot close input, this should not happen",
             0L, 0L );
     }
-    NrError = 0;
+    ClearError();
 
     /* return the function                                                 */
     return func;
@@ -188,7 +188,7 @@ Int READ_TEST ( void )
     while ( 1 ) {
 
         /* read and evaluate the command                                   */
-        NrError = 0;
+	ClearError();
         DualSemicolon = 0;
         type = ReadEvalCommand();
 
@@ -206,7 +206,10 @@ Int READ_TEST ( void )
             /* print the result                                            */
             if ( ! DualSemicolon ) {
                 IsStringConv( ReadEvalResult );
-                PrintObj( ReadEvalResult );
+		if ( ! READ_ERROR() ) {
+		    PrintObj( ReadEvalResult );
+		    Pr( "\n", 0L, 0L );
+		}
                 Pr( "\n", 0L, 0L );
             }
         }
@@ -230,7 +233,7 @@ Int READ_TEST ( void )
             "Panic: ReadTest cannot close input, this should not happen",
             0L, 0L );
     }
-    NrError = 0;
+    ClearError();
 
     return 1;
 }
@@ -294,7 +297,7 @@ Int READ_GAP_ROOT ( Char * filename )
         }
         if ( OpenInput(result) ) {
             while ( 1 ) {
-		NrError = 0;
+		ClearError();
                 type = ReadEvalCommand();
                 if ( type == 1 || type == 2 ) {
                     Pr( "'return' must not be used in file", 0L, 0L );
@@ -304,7 +307,7 @@ Int READ_GAP_ROOT ( Char * filename )
                 }
             }
             CloseInput();
-            NrError = 0;
+	    ClearError();
             return 1;
         }
         else {
@@ -546,8 +549,9 @@ Obj FuncPrint (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 arg;
-    UInt                i;
+    volatile Obj        arg;
+    volatile UInt       i;
+    jmp_buf		readJmpError;
 
     /* print all the arguments, take care of strings and functions         */
     for ( i = 1;  i <= LEN_PLIST(args);  i++ ) {
@@ -561,7 +565,15 @@ Obj FuncPrint (
             PrintObjFull = 0;
         }
         else {
-            PrintObj( arg );
+	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	    if ( ! READ_ERROR() ) {
+		PrintObj( arg );
+	    }
+	    else {
+		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		ReadEvalError();
+	    }
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -577,9 +589,10 @@ Obj FuncPRINT_TO (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 arg;
-    Obj                 filename;
-    UInt                i;
+    volatile Obj        arg;
+    volatile Obj        filename;
+    volatile UInt       i;
+    jmp_buf		readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -598,7 +611,6 @@ Obj FuncPRINT_TO (
     }
 
     /* print all the arguments, take care of strings and functions         */
-
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
         if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
@@ -610,7 +622,15 @@ Obj FuncPRINT_TO (
             PrintObjFull = 0;
         }
         else {
-            PrintObj( arg );
+	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	    if ( ! READ_ERROR() ) {
+		PrintObj( arg );
+	    }
+	    else {
+		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		ReadEvalError();
+	    }
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -632,9 +652,10 @@ Obj FuncPRINT_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 arg;
-    Obj                 stream;
-    UInt                i;
+    volatile Obj        arg;
+    volatile Obj        stream;
+    volatile UInt       i;
+    jmp_buf		readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -646,7 +667,6 @@ Obj FuncPRINT_TO_STREAM (
     }
 
     /* print all the arguments, take care of strings and functions         */
-
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
         if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
@@ -658,7 +678,15 @@ Obj FuncPRINT_TO_STREAM (
             PrintObjFull = 0;
         }
         else {
-            PrintObj( arg );
+	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	    if ( ! READ_ERROR() ) {
+		PrintObj( arg );
+	    }
+	    else {
+		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		ReadEvalError();
+	    }
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -680,9 +708,10 @@ Obj FuncAPPEND_TO (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 arg;
-    Obj                 filename;
-    UInt                i;
+    volatile Obj        arg;
+    volatile Obj        filename;
+    volatile UInt       i;
+    jmp_buf		readJmpError;
 
     /* first entry is the filename                                         */
     filename = ELM_LIST(args,1);
@@ -701,7 +730,6 @@ Obj FuncAPPEND_TO (
     }
 
     /* print all the arguments, take care of strings and functions         */
-
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
         if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
@@ -713,7 +741,15 @@ Obj FuncAPPEND_TO (
             PrintObjFull = 0;
         }
         else {
-            PrintObj( arg );
+	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	    if ( ! READ_ERROR() ) {
+		PrintObj( arg );
+	    }
+	    else {
+		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		ReadEvalError();
+	    }
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -735,9 +771,10 @@ Obj FuncAPPEND_TO_STREAM (
     Obj                 self,
     Obj                 args )
 {
-    Obj                 arg;
-    Obj                 stream;
-    UInt                i;
+    volatile Obj        arg;
+    volatile Obj        stream;
+    volatile UInt       i;
+    jmp_buf		readJmpError;
 
     /* first entry is the stream                                           */
     stream = ELM_LIST(args,1);
@@ -749,7 +786,6 @@ Obj FuncAPPEND_TO_STREAM (
     }
 
     /* print all the arguments, take care of strings and functions         */
-
     for ( i = 2;  i <= LEN_PLIST(args);  i++ ) {
         arg = ELM_LIST(args,i);
         if ( IsStringConv(arg) && MUTABLE_TNUM(TNUM_OBJ(arg))==T_STRING ) {
@@ -761,7 +797,15 @@ Obj FuncAPPEND_TO_STREAM (
             PrintObjFull = 0;
         }
         else {
-            PrintObj( arg );
+	    memcpy( readJmpError, ReadJmpError, sizeof(jmp_buf) );
+	    if ( ! READ_ERROR() ) {
+		PrintObj( arg );
+	    }
+	    else {
+		memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
+		ReadEvalError();
+	    }
+	    memcpy( ReadJmpError, readJmpError, sizeof(jmp_buf) );
         }
     }
 
@@ -853,9 +897,6 @@ Obj FuncREAD_TEST_STREAM (
     Obj                 self,
     Obj                 stream )
 {
-    UInt                type;
-    UInt                time;
-
     /* try to open the file                                                */
     if ( ! OpenTestStream(stream) ) {
         return False;

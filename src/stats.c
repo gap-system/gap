@@ -47,6 +47,7 @@ char *          Revision_stats_c =
 
 /****************************************************************************
 **
+
 *F  EXEC_STAT(<stat>) . . . . . . . . . . . . . . . . . . execute a statement
 **
 **  'EXEC_STAT' executes the statement <stat>.
@@ -104,6 +105,7 @@ Obj             ReturnObjStat;
 
 /****************************************************************************
 **
+
 *F  ExecUnknownStat(<stat>) . . . . . executor for statements of unknown type
 **
 **  'ExecUnknownStat' is the executor that is called if an attempt is made to
@@ -980,7 +982,7 @@ UInt            ExecForRange3 (
 **  the second subbag is the first statement,  the third subbag is the second
 **  statement, and so on.
 */
-UInt            ExecWhile (
+UInt ExecWhile (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1014,7 +1016,7 @@ UInt            ExecWhile (
     return 0;
 }
 
-UInt            ExecWhile2 (
+UInt ExecWhile2 (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1053,7 +1055,7 @@ UInt            ExecWhile2 (
     return 0;
 }
 
-UInt            ExecWhile3 (
+UInt ExecWhile3 (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1117,7 +1119,7 @@ UInt            ExecWhile3 (
 **  the second subbag is the first statement, the  third subbag is the second
 **  statement, and so on.
 */
-UInt            ExecRepeat (
+UInt ExecRepeat (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1151,7 +1153,7 @@ UInt            ExecRepeat (
     return 0;
 }
 
-UInt            ExecRepeat2 (
+UInt ExecRepeat2 (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1190,7 +1192,7 @@ UInt            ExecRepeat2 (
     return 0;
 }
 
-UInt            ExecRepeat3 (
+UInt ExecRepeat3 (
     Stat                stat )
 {
     UInt                leave;          /* a leave-statement was executed  */
@@ -1455,16 +1457,19 @@ UInt            ExecReturnVoid (
 **  'ExecStatFuncs' back   to   their original   value,   calls 'Error',  and
 **  redispatches after a return from the break-loop.
 */
-UInt            (* RealExecStatFuncs[256]) ( Stat stat );
+UInt (* RealExecStatFuncs[256]) ( Stat stat );
+UInt RealExecStatCopied = 0;
 
-UInt            ExecIntrStat (
+UInt ExecIntrStat (
     Stat                stat )
 {
     UInt                i;              /* loop variable                   */
 
     /* change the entries in 'ExecStatFuncs' back to the original          */
-    for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-        ExecStatFuncs[i] = RealExecStatFuncs[i];
+    if ( RealExecStatCopied ) {
+        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+	    ExecStatFuncs[i] = RealExecStatFuncs[i];
+	}
     }
     SyIsIntr();
 
@@ -1479,6 +1484,7 @@ UInt            ExecIntrStat (
 
 /****************************************************************************
 **
+
 *F  InterruptExecStat() . . . . . . . . interrupt the execution of statements
 **
 **  'InterruptExecStat'  interrupts the execution of   statements at the next
@@ -1490,13 +1496,16 @@ UInt            ExecIntrStat (
 **  'ExecStatFuncs'  to point to  'ExecIntrStat',  which changes  the entries
 **  back, calls 'Error', and redispatches after a return from the break-loop.
 */
-void            InterruptExecStat ( void )
+void InterruptExecStat ( void )
 {
     UInt                i;              /* loop variable                   */
 
     /* remember the original entries from the table 'ExecStatFuncs'        */
-    for ( i = 0; i < sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
-        RealExecStatFuncs[i] = ExecStatFuncs[i];
+    if ( ! RealExecStatCopied ) {
+	for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+	    RealExecStatFuncs[i] = ExecStatFuncs[i];
+	}
+	RealExecStatCopied = 1;
     }
 
     /* change the entries in the table 'ExecStatFuncs' to 'ExecIntrStat'   */
@@ -1510,8 +1519,28 @@ void            InterruptExecStat ( void )
           i++ ) {
         ExecStatFuncs[i] = ExecIntrStat;
     }
-
 }
+
+
+/****************************************************************************
+**
+*F  ClearError()  . . . . . . . . . . . . . .  reset execution and error flag
+*/
+void ClearError ( void )
+{
+    UInt	i;
+
+    /* change the entries in 'ExecStatFuncs' back to the original          */
+    if ( RealExecStatCopied ) {
+        for ( i=0; i<sizeof(ExecStatFuncs)/sizeof(ExecStatFuncs[0]); i++ ) {
+	    ExecStatFuncs[i] = RealExecStatFuncs[i];
+	}
+    }
+
+    /* reset <NrError>                                                     */
+    NrError = 0;
+}
+
 
 
 /****************************************************************************
@@ -1833,6 +1862,7 @@ void            PrintReturnVoid (
 
 /****************************************************************************
 **
+
 *F  InitStats() . . . . . . . . . . . . . . . . initialize statements package
 **
 **  'InitStats' initializes the statements package.

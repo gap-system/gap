@@ -360,7 +360,7 @@ local bn,bnf,a,b,c,d,bb,bf,bd,step,x,cnt;
       if a<c then d:=d-step;
       else d:=d+step;
       fi;
-    elif not(a>b and c>b) then
+    elif not(a>b and c>b) and (a+c<>2*b) then
       a:=-(c-a)/2/(a+c-2*b)*step;
       # stets aufrunden (wir wollen weg)
       a:=step*Int(AbsInt(a)/step+1)*SignInt(a);
@@ -490,7 +490,9 @@ local gcd, u, v, w, val, r, s, e;
     v := u;
     u := w;
   od;
-  gcd := u * (a/u[Length(u)]);
+  #gcd := u * (a/u[Length(u)]);
+  gcd:=u;
+  MultRowVector(gcd,a/u[Length(u)]);
   ReduceCoeffsMod(gcd,p);
 
   # and return the polynomial
@@ -814,16 +816,20 @@ RPGcdRepresentationModPrime := function(R,f,g,p)
   
   # convert <s> and <x> back into polynomials
   if 0 = Length(g)  then
-    sx := q * sx;
+    #sx := q * sx;
+    MultRowVector(sx,q);
     ReduceCoeffsMod(sx,p);
     return [ UnivariateLaurentPolynomialByCoefficients(brci[1],sx,0,brci[2]),
          Zero(brci[1]) ];
   else
-    hx := q * sx;
+    #hx := q * sx;
+    hx:=ShallowCopy(sx);
+    MultRowVector(hx,q);
     ReduceCoeffsMod(hx,p);
     hx := UnivariateLaurentPolynomialByCoefficients(brci[1],hx,0,brci[2]);
     AddCoeffs(s,ProductCoeffs(sx,f),-1);
-    s := q * s;
+    #s := q * s;
+    MultRowVector(s,q);
     ReduceCoeffsMod(s,p);
     s := UnivariateLaurentPolynomialByCoefficients(brci[1],s,0,brci[2]);
     g := UnivariateLaurentPolynomialByCoefficients(brci[1],g,0,brci[2]);
@@ -1404,7 +1410,15 @@ RPSquareHensel := function(R,f,t,opt)
 
         # reduce <rep>[i] mod <l>[i]
         for i  in [ 1 .. Length(l) ]  do
-          rep[i]:=rep[i] mod l[i] mod q;
+	  #rep[i]:=rep[i] mod l[i] mod q;
+          rep[i]:=CoefficientsOfUnivariateLaurentPolynomial(rep[i]);
+	  rep[i]:=ShiftedCoeffs(rep[i][1],rep[i][2]);
+	  j:=CoefficientsOfUnivariateLaurentPolynomial(l[i]);
+	  j:=ReduceCoeffsMod(rep[i],ShiftedCoeffs(j[1],j[2]),q);
+	  # shrink the list rep[i], according to the 'j' value
+	  rep[i]:=rep[i]{[1..j]};
+	  rep[i]:=UnivariateLaurentPolynomialByCoefficients(
+	            CyclotomicsFamily,rep[i],t.ind);
         od;
 
       # if there was a factor,we ought to have found it

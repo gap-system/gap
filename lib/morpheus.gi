@@ -50,8 +50,9 @@ local xset,fam,hom;
   SetBase(xset,elmsgens);
   fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( aut ) ),
 				PermutationsFamily );
-  hom := rec( externalSet := xset );
+  hom := rec(  );
   hom:=Objectify(NewType(fam,IsOperationHomomorphismAutomGroup ),hom);
+  SetUnderlyingExternalSet( hom, xset );
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetIsInjective(hom,true);
   SetRange( hom, Image( hom ) );
@@ -69,7 +70,7 @@ InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
   FamRangeEqFamElm,[IsOperationHomomorphismAutomGroup,IsPerm],0,
 function(hom,elm)
 local xset,g,imgs;
-  xset:=hom!.externalSet;
+  xset:= UnderlyingExternalSet( hom );
   g:=Source(One(ActingDomain(xset)));
   imgs:=OnTuples(hom!.basepos,elm);
   imgs:=Enumerator(xset){imgs};
@@ -223,7 +224,7 @@ local id,result,rig,dom,tall,tsur,tinj,thom,gens,free,rels,len,el,ind,cla,m,
 
   len:=Length(clali);
   # backtrack over all classes in clali
-  l:=0*[1..len]+1;
+  l:=ListWithIdenticalEntries(len,1);
   ind:=len;
   while ind>0 do
     ind:=len;

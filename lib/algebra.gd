@@ -808,6 +808,72 @@ InstallTrueMethod( IsFiniteDimensional, IsMatrixFLMLOR );
 
 #############################################################################
 ##
+#F  IsLeftIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
+##
+IsLeftIdealFromGenerators :=
+    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
+    return function( A, S )
+
+    local inter,   # intersection of left acting domains
+          gensS,   # suitable generators of 'S'
+          a,       # loop over suitable generators of 'A'
+          i;       # loop over 'gensS'
+
+    if not IsSubset( A, S ) then
+      return false;
+    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
+      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
+      return IsLeftIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
+    fi;
+
+    gensS:= GeneratorsS( S );
+    for a in GeneratorsA( A ) do
+      for i in gensS do
+        if not a * i in S then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
+    end;
+end;
+
+
+#############################################################################
+##
+#F  IsRightIdealFromGenerators( <AsStructA>, <AsStructS>, <GensA>, <GensS> )
+##
+IsRightIdealFromGenerators :=
+    function( AsStructA, AsStructS, GeneratorsA, GeneratorsS )
+    return function( A, S )
+
+    local inter,   # intersection of left acting domains
+          gensS,   # suitable generators of 'S'
+          a,       # loop over suitable generators of 'A'
+          i;       # loop over 'gensS'
+
+    if not IsSubset( A, S ) then
+      return false;
+    elif LeftActingDomain( A ) <> LeftActingDomain( S ) then
+      inter:= Intersection2( LeftActingDomain( A ), LeftActingDomain( S ) );
+      return IsRightIdeal( AsStructA( inter, A ), AsStructS( inter, S ) );
+    fi;
+
+    gensS:= GeneratorsS( S );
+    for a in GeneratorsA( A ) do
+      for i in gensS do
+        if not i * a in S then
+          return false;
+        fi;
+      od;
+    od;
+    return true;
+    end;
+end;
+
+
+#############################################################################
+##
 #E  algebra.gd  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 
 

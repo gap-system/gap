@@ -232,7 +232,7 @@ NrCombinationsX := function ( mset, k )
 
     # there is one combination of length 0 and no other combination
     # using none of the elements
-    nrs := 0 * [0..k];
+    nrs := ListWithIdenticalEntries( k+1, 0 );
     nrs[0+1] := 1;
 
     # take more and more elements
@@ -425,7 +425,7 @@ NrArrangementsX := function ( mset, k )
 
     # there is one arrangement of length 0 and no other arrangement
     # using none of the elements
-    nrs := 0 * [0..k];
+    nrs := ListWithIdenticalEntries( k+1, 0 );
     nrs[0+1] := 1;
 
     # take more and more elements

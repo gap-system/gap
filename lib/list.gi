@@ -278,7 +278,14 @@ for op  in [ ConstantTimeAccessList, ShallowCopy ]  do
     end );
         
     InstallMethod( op, true, [ IsList and IsDenseList ], 0,
-        list -> list{ [ 1 .. Length( list ) ] } );
+        function( list )
+        if TNUM_OBJ( Length( list ) )[ 1 ] = 0  then
+            return list{ [ 1 .. Length( list ) ] };
+        else
+            Error( "resulting list would be too large (length ",
+                   Length( list ), ")" );
+        fi;
+    end );
     
 od;
 
@@ -1607,15 +1614,23 @@ InstallOtherMethod( \*,
     0,
     PROD_LIST_SCL_DEFAULT );
 
+
+#############################################################################
+##
+#M  \*( <elm>, <list> ) . . . . . . . . . . . . . . . . .  for non-list <elm>
+##
+##  If <elm> is not a list then we return the list of products of <elm> with
+##  the entries of the list <list>.
+##
 InstallOtherMethod( \*,
-    "catch some cases of 'mult. element * list'",
+    "product of mult. element that is not a list, and list",
     true,
     [ IsMultiplicativeElement,
       IsList ],
     0,
     function( elm, list )
     local new, i;
-    if IsList( elm ) or IsTable( list ) then
+    if IsList( elm ) then
       TryNextMethod();
     fi;
     new:= [];
@@ -1627,15 +1642,23 @@ InstallOtherMethod( \*,
     return Immutable( new );
     end );
 
+
+#############################################################################
+##
+#M  \*( <list>, <elm> ) . . . . . . . . . . . . . . . . .  for non-list <elm>
+##
+##  If <elm> is not a list then we return the list of products of the entries
+##  of the list <list> with <elm>.
+##
 InstallOtherMethod( \*,
-    "catch some cases of 'list * mult. element'",
+    "product of list and mult. element that is not a list",
     true,
     [ IsList,
       IsMultiplicativeElement ],
     0,
     function( list, elm )
     local new, i;
-    if IsList( elm ) or IsTable( list ) then
+    if IsList( elm ) then
       TryNextMethod();
     fi;
     new:= [];

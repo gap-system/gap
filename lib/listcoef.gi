@@ -27,7 +27,7 @@ Revision.listcoef_gi :=
 ##
 InstallMethod( AddRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsMultiplicativeElement,
       IsInt and IsPosRat,
@@ -49,7 +49,7 @@ end );
 ##
 InstallOtherMethod( AddRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsMultiplicativeElement ],
     0,
@@ -70,7 +70,7 @@ end );
 ##
 InstallOtherMethod( AddRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList ],
     0,
 
@@ -89,7 +89,7 @@ end );
 ##
 InstallMethod( LeftShiftRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsInt and IsPosRat ],
     0,
 
@@ -126,7 +126,7 @@ end );
 ##
 InstallMethod( MultRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsDenseList,
       IsDenseList,
@@ -144,7 +144,7 @@ end );
 ##
 InstallOtherMethod( MultRowVector,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsMultiplicativeElement ],
     0,
 
@@ -163,7 +163,7 @@ end );
 ##
 InstallMethod( RightShiftRowVector,
     true,
-    [ IsList,
+    [ IsList and IsMutable,
       IsInt and IsPosRat,
       IsObject ],
     0,
@@ -200,7 +200,7 @@ end );
 ##
 InstallMethod( ShrinkRowVector,
     true,
-    [ IsList ],
+    [ IsList and IsMutable ],
     0,
 
 function( l1 )
@@ -225,7 +225,7 @@ end );
 InstallMethod( AddCoeffs,
     "generic methods",
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsDenseList,
       IsDenseList,
@@ -265,7 +265,7 @@ end );
 InstallOtherMethod( AddCoeffs,
     "generic methods",
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsMultiplicativeElement ],
     0,
@@ -285,7 +285,7 @@ end );
 InstallOtherMethod( AddCoeffs,
     "generic methods",
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList ],
     0,
 
@@ -316,7 +316,7 @@ end );
 ##
 InstallMethod( MultCoeffs,
     true,
-    [ IsList,
+    [ IsList and IsMutable,
       IsDenseList,
       IsInt,
       IsDenseList,
@@ -364,7 +364,7 @@ end );
 ##
 InstallMethod( ReduceCoeffs,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsInt,
       IsDenseList,
       IsInt ],
@@ -412,7 +412,7 @@ end );
 ##
 InstallOtherMethod( ReduceCoeffs,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList ],
     0,
 
@@ -427,7 +427,7 @@ end );
 ##
 InstallMethod( ReduceCoeffsMod,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsInt,
       IsDenseList,
       IsInt,
@@ -476,7 +476,7 @@ end );
 ##
 InstallOtherMethod( ReduceCoeffsMod,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsDenseList,
       IsInt ],
     0,
@@ -492,7 +492,7 @@ end );
 ##
 InstallOtherMethod( ReduceCoeffsMod,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsInt,
       IsInt ],
     0,
@@ -525,7 +525,7 @@ end );
 ##
 InstallOtherMethod( ReduceCoeffsMod,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsInt ],
     0,
 
@@ -540,7 +540,7 @@ end );
 ##
 InstallMethod( RemoveOuterCoeffs,
     true,
-    [ IsDenseList,
+    [ IsDenseList and IsMutable,
       IsObject ],
     0,
 
@@ -581,7 +581,7 @@ end );
 ##
 InstallMethod( ShrinkCoeffs,
     true,
-    [ IsList ],
+    [ IsList and IsMutable ],
     0,
 
 function( l1 )

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for matrix spaces.
 ##  A matrix space is a vector space whose elements are matrices.
@@ -565,7 +565,7 @@ HeadsInfoOfSemiEchelonizedMats := function( mats, dims )
     dimrow := dims[1];
     dimcol := dims[2];
 
-    heads:= List( [ 1 .. dimcol ], x -> 0 );
+    heads:= ListWithIdenticalEntries( dimcol, 0 );
     heads:= List( [ 1 .. dimrow ], x -> ShallowCopy( heads ) );
 
     if 0 < nmats then
@@ -1219,7 +1219,7 @@ InstallOtherMethod( MutableBasisByGenerators,
       if IsEmpty( mats ) then
 
         B!.basisVectors:= [];
-        z:= List( [ 1 .. Length( zero[1] ) ], i -> 0 );
+        z:= ListWithIdenticalEntries( Length( zero[1] ), 0 );
         B!.heads:= List( zero, i -> z );
 
       else

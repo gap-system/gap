@@ -107,13 +107,14 @@ end);
 ##
 InstallMethod(IrrFacsPol,true,[IsPolynomial],0,f -> []);
 
-
 #############################################################################
 ##
 #M  EuclideanRemainder( <pring>, <upol>, <upol> )
 ##
-InstallMethod(EuclideanRemainder,"EuclRemUnivPols",true,
-	      [IsEuclideanRing,IsUnivariatePolynomial,
+InstallOtherMethod(EuclideanRemainder,"EuclRemUnivPols",true,
+# we will get the ring from the polynomials. Allowing any object for R
+# permits to call this function for 'mod'
+	      [IsObject,IsUnivariatePolynomial,
 	       IsUnivariatePolynomial],0,
 function(R,f,g)
 local brci;
@@ -126,6 +127,16 @@ local brci;
   ReduceCoeffs(f,g);
   ShrinkCoeffs(f);
   return UnivariateLaurentPolynomialByCoefficients(brci[1],f,0,brci[2]);
+end);
+
+#############################################################################
+##
+#M  \mod( <upol>, <upol> )
+##
+InstallMethod(\mod,"univariate polynomials",IsIdentical,
+  [IsUnivariatePolynomial,IsUnivariatePolynomial],0,
+function(a,b)
+  return EuclideanRemainder(0,a,b);
 end);
 
 #############################################################################

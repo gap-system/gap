@@ -699,6 +699,30 @@ v.11
 
 
 #############################################################################
+##
+##  Expl. 5: Trivial s.c. algebra
+##
+gap> t:= AlgebraByStructureConstants( Rationals, [ 0, 0 ] );
+<algebra over Rationals, with 0 generators>
+gap> z:= Zero( t );
+<zero of zero s.c. algebra>
+gap> Random( t );
+<zero of zero s.c. algebra>
+gap> b:= Basis( t );
+CanonicalBasis( <algebra of dimension 0 over Rationals> )
+gap> coeff:= Coefficients( b, z );
+<empty row vector>
+gap> LinearCombination( b, coeff );
+<zero of zero s.c. algebra>
+gap> LinearCombination( b, [] );
+<zero of zero s.c. algebra>
+gap> c:= Centre( t );
+<algebra of dimension 0 over Rationals>
+gap> c = t;
+true
+
+
+#############################################################################
 
 
 gap> STOP_TEST( "algsc.tst", 514155802 );

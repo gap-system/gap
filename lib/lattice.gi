@@ -84,7 +84,7 @@ InstallMethod( InverseMatMod,
         intmatq[i][j]:= intmat[i][j] mod p;
       od;
     od;
-    intmatqinv := IdentityMat( n );
+    intmatqinv := MutableIdentityMat( n );
 
     for i in [ 1 .. n ] do
       j := i;
@@ -695,7 +695,7 @@ LLLReducedBasis := function( arg )
     mue  := [];
     r    := 0;
     if lc then
-      H:= IdentityMat( n );
+      H:= MutableIdentityMat( n );
     fi;
 
     Info( InfoLattice, 1,
@@ -1005,7 +1005,7 @@ LLLReducedGramMat := function( arg )
     mue  := [];
     r    := 0;
     ak   := [];
-    H    := IdentityMat( n );
+    H    := MutableIdentityMat( n );
 
     Info( InfoLattice, 1,
           "LLLReducedGramMat called with matrix of length ", n,
@@ -1752,7 +1752,7 @@ OrthogonalEmbeddings := function( arg )
     od;
     
     # main program
-    IdMat := IdentityMat( n );
+    IdMat := MutableIdentityMat( n );
     invg  := Symmatinv( g );
     m     := invg.enuminator;
     invg  := invg.inverse;

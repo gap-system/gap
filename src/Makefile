@@ -311,6 +311,7 @@ i386-ibm-linux-gcc2:
 #F  i386-ibm-nextstep-cc
 ##
 i386-ibm-nextstep-cc: i386-next-nextstep-cc
+i386-ibm-nextstep-cc-prof: i386-next-nextstep-cc-prof
 
 
 
@@ -324,12 +325,12 @@ i386-ibm-nextstep-cc: i386-next-nextstep-cc
 any-next-nextstep-cc:
 	@(if test ! -d ../bin; then mkdir ../bin; fi; \
 	  cd ../bin; \
-	  if test ! -d $(ADIR)-next-nextstep$(EXTDIR)-cc;  then \
-	      mkdir $(ADIR)-next-nextstep$(EXTDIR)-cc; \
+	  if test ! -d $(ADIR)-next-nextstep-cc$(EXTDIR);  then \
+	      mkdir $(ADIR)-next-nextstep-cc$(EXTDIR); \
 	  fi; \
-	  cd ../bin/$(ADIR)-next-nextstep$(EXTDIR)-cc; \
+	  cd ../bin/$(ADIR)-next-nextstep-cc$(EXTDIR); \
 	)
-	@(cd $(ADIR)-next-nextstep$(EXTDIR)-cc; \
+	@(cd ../bin/$(ADIR)-next-nextstep-cc$(EXTDIR); \
 	  $(MAKE) -f ../../src/Makefile gap \
 	    SRC="../../src" \
 	    CC="cc -g" \
@@ -341,13 +342,13 @@ any-next-nextstep-cc:
               -DSYS_HAS_BROKEN_TMPNAM \
               -DSYS_HAS_RLD_LIBRARY \
 	      $(ARCH) \
-	      -DSYS_ARCH='\"$(ADIR)-next-nextstep$(EXTDIR)-cc\"'" \
+	      -DSYS_ARCH='\"$(ADIR)-next-nextstep-cc\"'" \
 	)
-	@(cd ../bin/$(ADIR)-next-nextstep$(EXTDIR)-cc; \
+	@(cd ../bin/$(ADIR)-next-nextstep-cc$(EXTDIR); \
           $(MAKE) -f ../../src/Makefile gac \
 	    SRC="../../src" \
 	    CC="cc" \
-            TARGET="next-$(ADIR)-nextstep-cc" \
+            TARGET="$(ADIR)-next-nextstep-cc" \
             COPTIONS="-ansi -Wall -O2 $(ARCH) $(COPTIONS)" \
             CDYNOPTIONS="-ansi -Wall -O2 $(ARCH) $(CDYNOPTIONS)" \
             CDYNLINKER="cc" \
@@ -549,6 +550,8 @@ gac: $(SRC)/gac
 ##  'make' from above.
 ##
 OBJECTS =   \
+ system.o   \
+ sysfiles.o \
  ariths.o   \
  blister.o  \
  bool.o     \
@@ -590,8 +593,6 @@ OBJECTS =   \
  stats.o    \
  streams.o  \
  string.o   \
- sysfiles.o \
- system.o   \
  vars.o     \
  vector.o
 

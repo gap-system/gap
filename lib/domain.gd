@@ -199,7 +199,7 @@ end;
 #F  OperationSubdomain( ... ) makes `ConjugateSubgroup' from `ConjugateGroup'
 ##
 OperationSubdomain := function( name, opr, rel )
-    local   req,  i,  oper,  method,  rank,  narg,  methods,  tmp,  k,  info;
+    local   req,  i,  oper,  method;
 
     req := false;
     for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
@@ -209,7 +209,7 @@ OperationSubdomain := function( name, opr, rel )
         fi;
     od;
     if req = false  then
-        Error( "unknown operation ", NAME_FUNCTION(opr) );
+        Error( "unknown operation ", NameFunction(opr) );
     fi;
     req := ShallowCopy( req );
     req[ 1 ] := WITH_HIDDEN_IMPS_FLAGS( AND_FLAGS
@@ -226,71 +226,28 @@ OperationSubdomain := function( name, opr, rel )
         return E;
     end;
 
-    # find the rank
-    rank := 0;
-    for i  in req  do
-        rank := rank + SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(i));
-    od;
-
-    # get the methods list
-    narg := LEN_LIST( req );
-    methods := METHODS_OPERATION( oper, narg );
-
-    # find the place to put the new method
-    i := 0;
-    while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
-        i := i + (narg+4);
-    od;
-
-    # push the other functions back
-    methods{[i+1..LEN_LIST(methods)]+(narg+4)}
-        := methods{[i+1..LEN_LIST(methods)]};
-
-    # install the new method
-    if   rel = true  then
-        methods[i+1] := RETURN_TRUE;
-    elif rel = false  then
-        methods[i+1] := RETURN_FALSE;
-    elif IS_FUNCTION(rel)  then
-        methods[i+1] := rel;
-        tmp := NARG_FUNCTION(rel);
-        if tmp <> AINV(1) and tmp <> LEN_LIST(req)  then
-           Error( "<rel> must accept ", LEN_LIST(req), " arguments" );
-        fi;
-    else
-        Error( "<rel> must be a function, 'true', or 'false'" );
-    fi;
-
-    # install the filters
-    for k  in [ 1 .. narg ]  do
-        methods[i+k+1] := req[ k ];
-    od;
-
-    # install the method
-    if   method = true  then
-        methods[i+(narg+2)] := RETURN_TRUE;
-    elif method = false  then
-        methods[i+(narg+2)] := RETURN_FALSE;
-    elif IS_FUNCTION(method)  then
-        methods[i+(narg+2)] := method;
-        tmp := NARG_FUNCTION(method);
-        if tmp <> AINV(1) and tmp <> LEN_LIST(req)  then
-           Error( "<method> must accept ", LEN_LIST(req), " arguments" );
-        fi;
-    else
-        Error( "<method> must be a function, 'true', or 'false'" );
-    fi;
-    methods[i+(narg+3)] := rank;
-
-    # set the name
-    info := NAME_FUNCTION(oper);
-    methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
-
-    # flush the cache
-    CHANGED_METHODS_OPERATION( oper, narg );
-
+    INSTALL_METHOD_FLAGS( oper, NameFunction(oper), rel, req, 0, method );
     return oper;
 end;
+
+
+#############################################################################
+##
+#F  RepresentativeFromGenerators( <GeneratorsStruct> )
+##
+##  We can get ia representative of a domain by taking an element of a
+##  suitable generators list, so the problem is to specify the generators.
+##
+RepresentativeFromGenerators := function( StructGenerators )
+    return function( D )
+           D:= StructGenerators( D );
+           if IsEmpty( D ) then
+             TryNextMethod();
+           fi;
+           return Representative( D );
+           end;
+end;
+
 
 #############################################################################
 ##

@@ -171,6 +171,7 @@ InstallMethod( Pcgs, "for direct products", true,
                SUM_FLAGS,
 function( D )
     local info, pcs, i, pcgs, emb, rels, one, new, g;
+    if IsPcGroup( D ) then TryNextMethod(); fi;
     info := DirectProductInfo( D );
     pcs := [];
     rels := [];

@@ -1055,7 +1055,7 @@ Obj DoProfXargs (
 */
 
 #ifndef MAX_HANDLERS
-#define MAX_HANDLERS 4096
+#define MAX_HANDLERS 20000
 #endif
 
 typedef struct {
@@ -1175,8 +1175,6 @@ Obj NewFunctionT (
     Obj                 prof;           /* profiling bag                   */
 
 
-
-
     /* make the function object                                            */
     func = NewBag( type, size );
 
@@ -1293,11 +1291,12 @@ Obj NewFunctionCT (
 **  'TypeFunction' is the function in 'TypeObjFuncs' for functions.
 */
 Obj TYPE_FUNCTION;
+Obj TYPE_OPERATION;
 
 Obj TypeFunction (
     Obj                 func )
 {
-    return TYPE_FUNCTION;
+    return ( IS_OPERATION(func) ? TYPE_OPERATION : TYPE_FUNCTION );
 }
 
 
@@ -1581,11 +1580,11 @@ Obj CallFuncListHandler (
 /****************************************************************************
 **
 
-*F  NAME_FUNC_Handler( <self>, <func> ) . . . . . . . . .  name of a function
+*F  FuncNAME_FUNC( <self>, <func> ) . . . . . . . . . . .  name of a function
 */
 Obj NAME_FUNC_Oper;
 
-Obj NAME_FUNC_Handler (
+Obj FuncNAME_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1597,7 +1596,9 @@ Obj NAME_FUNC_Handler (
         if ( name == 0 ) {
             name = NEW_STRING(SyStrlen(deflt));
             SyStrncat( CSTR_STRING(name), deflt, SyStrlen(deflt) );
+	    RetypeBag( name, IMMUTABLE_TNUM(TNUM_OBJ(name)) );
             NAME_FUNC(func) = name;
+
         }
         return name;
     }
@@ -1609,18 +1610,22 @@ Obj NAME_FUNC_Handler (
 
 /****************************************************************************
 **
-*F  NARG_FUNC_Handler( <self>, <func> ) . . number of arguments of a function
+*F  FuncNARG_FUNC( <self>, <func> ) . . . . number of arguments of a function
 */
 Obj NARG_FUNC_Oper;
 
-Obj NARG_FUNC_Handler (
+Obj FuncNARG_FUNC (
     Obj                 self,
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         if ( IS_UNCOMPLETED_FUNC(func) )  {
-            return INTOBJ_INT(-1);
-        }
+	    COMPLETE_FUNC(func);
+	    if ( IS_UNCOMPLETED_FUNC(func) ) {
+		ErrorQuit( "<func> did not complete", 0L, 0L );
+		return 0;
+	    }
+	}
         return INTOBJ_INT( NARG_FUNC(func) );
     }
     else {
@@ -1631,18 +1636,22 @@ Obj NARG_FUNC_Handler (
 
 /****************************************************************************
 **
-*F  NAMS_FUNC_Handler( <self>, <func> ) . . names of local vars of a function
+*F  FuncNAMS_FUNC( <self>, <func> ) . . . . names of local vars of a function
 */
 Obj NAMS_FUNC_Oper;
 
-Obj NAMS_FUNC_Handler (
+Obj FuncNAMS_FUNC (
     Obj                 self,
     Obj                 func )
 {
     if ( TNUM_OBJ(func) == T_FUNCTION ) {
         if ( IS_UNCOMPLETED_FUNC(func) )  {
-            COMPLETE_FUNC(func);
-        }
+	    COMPLETE_FUNC(func);
+	    if ( IS_UNCOMPLETED_FUNC(func) ) {
+		ErrorQuit( "<func> did not complete", 0L, 0L );
+		return 0;
+	    }
+	}
         return NAMS_FUNC(func);
     }
     else {
@@ -1653,11 +1662,11 @@ Obj NAMS_FUNC_Handler (
 
 /****************************************************************************
 **
-*F  PROF_FUNC_Handler( <self>, <func> ) . . . .  profiling info of a function
+*F  FuncPROF_FUNC( <self>, <func> ) . . . . . .  profiling info of a function
 */
 Obj PROF_FUNC_Oper;
 
-Obj PROF_FUNC_Handler (
+Obj FuncPROF_FUNC (
     Obj                 self,
     Obj                 func )
 {
@@ -1680,9 +1689,9 @@ Obj PROF_FUNC_Handler (
 /****************************************************************************
 **
 
-*F  FuncCLEAR_PROFILE_FUNCTION( <self>, <func> )  . . . . . . . clear profile
+*F  FuncCLEAR_PROFILE_FUNC( <self>, <func> )  . . . . . . . . . clear profile
 */
-Obj FuncCLEAR_PROFILE_FUNCTION(
+Obj FuncCLEAR_PROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1726,9 +1735,9 @@ Obj FuncCLEAR_PROFILE_FUNCTION(
 
 /****************************************************************************
 **
-*F  FuncPROFILE_FUNCTION( <self>, <func> )  . . . . . . . . . . start profile
+*F  FuncPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . . . start profile
 */
-Obj FuncPROFILE_FUNCTION(
+Obj FuncPROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1787,9 +1796,9 @@ Obj FuncPROFILE_FUNCTION(
 
 /****************************************************************************
 **
-*F  FuncIS_PROFILED_FUNCTION( <self>, <func> )  check if function is profiled
+*F  FuncIS_PROFILED_FUNC( <self>, <func> )  . . check if function is profiled
 */
-Obj FuncIS_PROFILED_FUNCTION(
+Obj FuncIS_PROFILED_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1811,9 +1820,9 @@ Obj FuncIS_PROFILED_FUNCTION(
 
 /****************************************************************************
 **
-*F  FuncUNPROFILE_FUNCTION( <self>, <func> )  . . . . . . . . .  stop profile
+*F  FuncUNPROFILE_FUNC( <self>, <func> )  . . . . . . . . . . .  stop profile
 */
-Obj FuncUNPROFILE_FUNCTION(
+Obj FuncUNPROFILE_FUNC(
     Obj                 self,
     Obj                 func )
 {
@@ -1868,8 +1877,9 @@ void            InitCalls ()
     InitMarkFuncBags( T_FUNCTION , MarkAllSubBags );
 
     /* install the kind function                                           */
-    ImportGVarFromLibrary( "TYPE_FUNCTION", &TYPE_FUNCTION );
-    TypeObjFuncs[     T_FUNCTION ] = TypeFunction;
+    ImportGVarFromLibrary( "TYPE_FUNCTION",  &TYPE_FUNCTION  );
+    ImportGVarFromLibrary( "TYPE_OPERATION", &TYPE_OPERATION );
+    TypeObjFuncs[ T_FUNCTION ] = TypeFunction;
 
     /* install the printer                                                 */
     PrintObjFuncs[    T_FUNCTION ] = PrintFunction;
@@ -1880,11 +1890,11 @@ void            InitCalls ()
                                   IsFunctionHandler );
     AssGVar( GVarName( "IS_FUNCTION" ), IsFunctionFilt );
 
-    /* make and install the 'CALL_FUNCTION' operation                      */
-    InitHandlerFunc( CallFunctionHandler, "CALL_FUNCTION" );
-    CallFunctionOper = NewOperationC( "CALL_FUNCTION", -1L, "args",
+    /* make and install the 'CALL_FUNC' operation                          */
+    InitHandlerFunc( CallFunctionHandler, "CALL_FUNC" );
+    CallFunctionOper = NewOperationC( "CALL_FUNC", -1L, "args",
                                        CallFunctionHandler );
-    AssGVar( GVarName( "CALL_FUNCTION" ), CallFunctionOper );
+    AssGVar( GVarName( "CALL_FUNC" ), CallFunctionOper );
 
     /* make and install the 'CALL_FUNC_LIST' operation                     */
     InitHandlerFunc( CallFuncListHandler, "CALL_FUNC_LIST" );
@@ -1894,47 +1904,47 @@ void            InitCalls ()
 
 
     /* make and install the 'NAME_FUNC' etc. operations                    */
-    InitHandlerFunc( NAME_FUNC_Handler, "NAME_FUNCTION" );
-    NAME_FUNC_Oper = NewOperationC( "NAME_FUNCTION", 1L, "func",
-                                     NAME_FUNC_Handler );
-    AssGVar( GVarName( "NAME_FUNCTION" ), NAME_FUNC_Oper );
+    InitHandlerFunc( FuncNAME_FUNC, "NAME_FUNC" );
+    NAME_FUNC_Oper = NewOperationC( "NAME_FUNC", 1L, "func",
+                                     FuncNAME_FUNC );
+    AssGVar( GVarName( "NAME_FUNC" ), NAME_FUNC_Oper );
 
-    InitHandlerFunc( NARG_FUNC_Handler, "NARG_FUNCTION" );
-    NARG_FUNC_Oper = NewOperationC( "NARG_FUNCTION", 1L, "func",
-                                     NARG_FUNC_Handler );
-    AssGVar( GVarName( "NARG_FUNCTION" ), NARG_FUNC_Oper );
+    InitHandlerFunc( FuncNARG_FUNC, "NARG_FUNC" );
+    NARG_FUNC_Oper = NewOperationC( "NARG_FUNC", 1L, "func",
+                                     FuncNARG_FUNC );
+    AssGVar( GVarName( "NARG_FUNC" ), NARG_FUNC_Oper );
 
-    InitHandlerFunc( NAMS_FUNC_Handler, "NAMS_FUNCTION" );
-    NAMS_FUNC_Oper = NewOperationC( "NAMS_FUNCTION", 1L, "func",
-                                     NAMS_FUNC_Handler );
-    AssGVar( GVarName( "NAMS_FUNCTION" ), NAMS_FUNC_Oper );
+    InitHandlerFunc( FuncNAMS_FUNC, "NAMS_FUNC" );
+    NAMS_FUNC_Oper = NewOperationC( "NAMS_FUNC", 1L, "func",
+                                     FuncNAMS_FUNC );
+    AssGVar( GVarName( "NAMS_FUNC" ), NAMS_FUNC_Oper );
 
-    InitHandlerFunc( PROF_FUNC_Handler, "PROF_FUNCTION" );
-    PROF_FUNC_Oper = NewOperationC( "PROF_FUNCTION", 1L, "func",
-                                     PROF_FUNC_Handler );
-    AssGVar( GVarName( "PROF_FUNCTION" ), PROF_FUNC_Oper );
+    InitHandlerFunc( FuncPROF_FUNC, "PROF_FUNC" );
+    PROF_FUNC_Oper = NewOperationC( "PROF_FUNC", 1L, "func",
+                                     FuncPROF_FUNC );
+    AssGVar( GVarName( "PROF_FUNC" ), PROF_FUNC_Oper );
 
 
     /* make and install the profile functions                              */
-    InitHandlerFunc( FuncCLEAR_PROFILE_FUNCTION, "Clear Profile");
-    AssGVar( GVarName( "CLEAR_PROFILE_FUNCTION" ),
-         NewFunctionC( "CLEAR_PROFILE_FUNCTION", 1L, "function",
-                    FuncCLEAR_PROFILE_FUNCTION ) );
+    InitHandlerFunc( FuncCLEAR_PROFILE_FUNC, "Clear Profile");
+    AssGVar( GVarName( "CLEAR_PROFILE_FUNC" ),
+         NewFunctionC( "CLEAR_PROFILE_FUNC", 1L, "function",
+                    FuncCLEAR_PROFILE_FUNC ) );
 
-    InitHandlerFunc( FuncIS_PROFILED_FUNCTION, "Is Profiled");
-    AssGVar( GVarName( "IS_PROFILED_FUNCTION" ),
-         NewFunctionC( "IS_PROFILED_FUNCTION", 1L, "function",
-                    FuncIS_PROFILED_FUNCTION ) );
+    InitHandlerFunc( FuncIS_PROFILED_FUNC, "Is Profiled");
+    AssGVar( GVarName( "IS_PROFILED_FUNC" ),
+         NewFunctionC( "IS_PROFILED_FUNC", 1L, "function",
+                    FuncIS_PROFILED_FUNC ) );
 
-    InitHandlerFunc( FuncPROFILE_FUNCTION, "Profile function");
-    AssGVar( GVarName( "PROFILE_FUNCTION" ),
-         NewFunctionC( "PROFILE_FUNCTION", 1L, "function",
-                    FuncPROFILE_FUNCTION ) );
+    InitHandlerFunc( FuncPROFILE_FUNC, "Profile function");
+    AssGVar( GVarName( "PROFILE_FUNC" ),
+         NewFunctionC( "PROFILE_FUNC", 1L, "function",
+                    FuncPROFILE_FUNC ) );
 
-    InitHandlerFunc( FuncUNPROFILE_FUNCTION, "Unprofile function");
-    AssGVar( GVarName( "UNPROFILE_FUNCTION" ),
-         NewFunctionC( "UNPROFILE_FUNCTION", 1L, "function",
-                    FuncUNPROFILE_FUNCTION ) );
+    InitHandlerFunc( FuncUNPROFILE_FUNC, "Unprofile function");
+    AssGVar( GVarName( "UNPROFILE_FUNC" ),
+         NewFunctionC( "UNPROFILE_FUNC", 1L, "function",
+                    FuncUNPROFILE_FUNC ) );
 
 
     InitHandlerFunc( DoFail0args, "0 arg fail");

@@ -1,8 +1,8 @@
 #############################################################################
 ##
 #W  meataxe.gi                   GAP Library                       Derek Holt
-##                                                                 Sarah Rees
-##                                                           Alexander Hulpke
+#W                                                                 Sarah Rees
+#W                                                           Alexander Hulpke
 ##
 #H  @(#)$Id$ 
 ##
@@ -406,7 +406,7 @@ end;
 SMTX.NormedBasisAndBaseChange := function(sub)
 local l,m;
   l:=Length(sub);
-  m:=IdentityMat(l,One(sub[1][1]));
+  m:=MutableIdentityMat(l,One(sub[1][1]));
   sub:=List([1..l],i->Concatenation(sub[i],m[i]));
   TriangulizeMat(sub);
   m:=Length(sub[1]);
@@ -1449,7 +1449,7 @@ AbsoluteIrreducibilityTest := function ( module )
             newmatrices[i] := P * matrices[i] * Pinv;
          od;
          # Make the sum of copies of C0 as centmat
-         centmat := NullMat (dim, dim, F);
+         centmat := MutableNullMat (dim, dim, F);
          nblocks := dim/e;
          for i in [1..nblocks] do
             for j in [1..e] do
@@ -2028,7 +2028,7 @@ SMTX.MatrixSum := function (matrices1, matrices2)
    matrices := [];
    nmats := Length (matrices1);
    for i in [1..nmats] do
-      matrices[i] := NullMat (dim, dim, zero);
+      matrices[i] := MutableNullMat (dim, dim, zero);
       for j in [1..dim1] do for k in [1..dim1] do
          matrices[i][j][k] := matrices1[i][j][k];
       od; od;

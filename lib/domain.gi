@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This contains the generic methods for domains.
 ##
@@ -202,24 +202,6 @@ InstallMethod( \in,
     function( elm, D )
     return elm in Enumerator( D );
     end );
-
-
-#############################################################################
-##
-#F  RepresentativeFromGenerators( <GeneratorsStruct> )
-##
-##  We can get ia representative of a domain by taking an element of a
-##  suitable generators list, so the problem is to specify the generators.
-##
-RepresentativeFromGenerators := function( StructGenerators )
-    return function( D )
-           D:= StructGenerators( D );
-           if IsEmpty( D ) then
-             TryNextMethod();
-           fi;
-           return Representative( D );
-           end;
-end;
 
 
 #############################################################################

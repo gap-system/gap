@@ -2282,7 +2282,7 @@ MinimalNonmonomialGroup := function( p, factsize )
       facts:= Factors( CyclotomicPolynomial( f, q ) );
       coeff:= CoefficientsOfUnivariateLaurentPolynomial( facts[1] )[1];
 
-      Atr:= NullMat( m, m, f );
+      Atr:= MutableNullMat( m, m, f );
       for i in [ 1 .. m-1 ] do
         Atr[i+1][i]:= One( f );
       od;

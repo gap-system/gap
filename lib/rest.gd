@@ -17,12 +17,6 @@ FlagsFamily := NewFamily( "FlagsFamily", IsObject );
 TYPE_FLAGS  := NewType(    FlagsFamily,  IsInternalRep );
 
 
-# Functions
-
-FunctionsFamily         := NewFamily(  "FunctionsFamily", IsFunction );
-TYPE_FUNCTION           := NewType(     FunctionsFamily,
-                            IsFunction and IsInternalRep );
-
 # Integers, Rationals, and Cyclotomics
 
 IsCyclotomic            := NewCategory( "IsCyclotomic",

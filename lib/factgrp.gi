@@ -401,7 +401,7 @@ end);
 ##  extension of <U> in <G> such that   \bigcap U^g=N remains valid
 ##
 ImproveOperationDegreeByBlocks:=function(arg)
-local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
+local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg,subo;
   G:=arg[1];
   N:=arg[2];
   oh:=arg[3];
@@ -447,7 +447,9 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
       b:=Blocks(img,dom);
       improve:=false;
       if Length(b)>1 then
-	if Length(dom)<=500 or fb then
+	subo:=ApproximateSuborbitsStabilizerPermGroup(img,dom[1]);
+	subo:=Difference(List(subo,i->i[1]),dom{[1]});
+	if Length(subo)<=500 or fb then
 	  Info(InfoFactor,2,"try all seeds");
 	  # if the degree is not too big or if we are desparate then go for
 	  # all blocks
@@ -455,9 +457,9 @@ local G,N,oh,gens,img,dom,b,improve,bp,bb,i,fb,k,bestdeg;
 	  # might be too much work to do)
 	  bestdeg:=Length(dom);
 	  bp:=[]; #Blocks pool
-	  i:=2;
-	  while i<=Length(dom) do
-	    bb:=Blocks(img,dom,dom{[1,i]});
+	  i:=1;
+	  while i<=Length(subo) do
+	    bb:=Blocks(img,dom,[1,subo[i]]);
 	    if Length(bb)>1 and not bb[1] in bp then
 	      Info(InfoFactor,3,"found block system ",bb[1]);
 	      # new nontriv. system found 

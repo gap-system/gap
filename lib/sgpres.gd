@@ -157,6 +157,13 @@ RewriteSubgroupRelators := NewOperationArgs("RewriteSubgroupRelators");
 
 ############################################################################
 ##
+#F  SortRelsSortedByStartGen
+##
+SortRelsSortedByStartGen := NewOperationArgs("SortRelsSortedByStartGen");
+
+
+############################################################################
+##
 #F  SpanningTree
 ##
 SpanningTree := NewOperationArgs("SpanningTree");

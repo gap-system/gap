@@ -78,7 +78,7 @@ HasElementsFamily := Tester( ElementsFamily );
 CATEGORIES_COLLECTIONS  := [];
 
 CategoryCollections  := function ( elms_filter )
-    local    pair, super, flags, coll_filter;
+    local    pair, super, flags, name, coll_filter;
 
     # Check whether the collections category is already defined.
     for pair in CATEGORIES_COLLECTIONS do
@@ -96,8 +96,14 @@ CategoryCollections  := function ( elms_filter )
       fi;
     od;
 
+    # Construct the name of the category.
+    name := "CategoryCollections(";
+    APPEND_LIST_INTR( name, SHALLOW_COPY_OBJ( NameFunction(elms_filter) ) );
+    APPEND_LIST_INTR( name, ")" );
+    CONV_STRING( name );
+
     # Construct the collections category.
-    coll_filter := NewCategory( "<collections category>", super );
+    coll_filter := NewCategory( name, super );
     ADD_LIST( CATEGORIES_COLLECTIONS, [ elms_filter, coll_filter ] );
     return coll_filter;
 end;
@@ -189,7 +195,7 @@ InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
     setter:= Setter( operation );
     tester:= Tester( operation );
     infostring:= "method for operation ";
-    APPEND_LIST_INTR( infostring, NAME_FUNCTION( operation ) );
+    APPEND_LIST_INTR( infostring, NameFunction(operation) );
 
     # Are there methods that may give us some of the requirements?
     upper:= SUM_FLAGS;
@@ -346,7 +352,7 @@ InstallIsomorphismMaintainedMethod := function( opr, old_req, new_req )
     setter:= Setter( opr );
     tester:= Tester( opr );
     infostring:= "method for operation ";
-    APPEND_LIST_INTR( infostring, NAME_FUNCTION( opr ) );
+    APPEND_LIST_INTR( infostring, NameFunction(opr) );
 
     InstallMethod( UseIsomorphismRelation,
         infostring,
@@ -420,7 +426,7 @@ InstallFactorMaintainedMethod := function( opr, numer_req, denom_req,
     setter:= Setter( opr );
     tester:= Tester( opr );
     infostring:= "method for operation ";
-    APPEND_LIST_INTR( infostring, NAME_FUNCTION( opr ) );
+    APPEND_LIST_INTR( infostring, NameFunction(opr) );
 
     InstallMethod( UseFactorRelation,
         infostring,
