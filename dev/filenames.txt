@@ -1,0 +1,342 @@
+Filenames
+=========
+
+Files are identified by filenames, which are represented in {\GAP} as
+strings.  Filenames can be created directly by the user or a program,
+but of course this is system dependent.
+
+Filenames for some files can be constructed in a system independent way
+using the following functions.  This is done by first getting a directory
+object for the directory the file resides in, and then constructing the
+filename.
+
+'DirectoryCurrent()'
+
+'DirectoryCurrent' returns the directory object for the current
+directory.  Under UNIX this would simply represent the empty string.
+
+'DirectoryTemporary( <hint> )'
+
+'DirectoryTemporary' returns the directory object for a temporary
+directory.  This is guaranteed to be newly created and empty immediately
+after the call to 'DirectoryTemporary'.  {\GAP} will make a reasonable
+effort to remove this directory either when a garbage collection collects
+the directory object or upon termination of the {\GAP} job that created
+the directory.  <hint> should be used by 'DirectoryTemporary' to
+construct the name of the directory (but 'DirectoryTemporary' is free to
+use only a part of <hint>), and must be a string of at most 8
+alphanumerical characters.  Under UNIX this would usually represent
+'/usr/tmp/<hint>_<proc_id>_<cnt>/', e.g., '/usr/tmp/guava_17188_1/'.
+
+'DirectoryName( <name> )'
+
+'DirectoryName' returns the directory object for the directory with the
+(system dependent) name <name>, which must be a string.
+
+'DirectoriesLibrary( [<lib>] )'
+
+'DirectoriesLibrary' returns the directories object for the {\GAP}
+library <lib>, which must be one of '"lib"' (the default), '"grp"',
+'"tbl"', and so on.  Under UNIX this would usually represent
+'<gap-dir>/<lib>/', e.g., '/usd/gap/4.0/lib/', or the list of library
+directories specified using {\GAP}'s '-l' command option.
+
+'DirectoriesPackagePrograms( <name-pkg> )'
+
+'DirectoriesPackagePrograms' returns the directories object for the
+directories where the executable programs for the contributed package
+<name-pkg> reside.  Under UNIX this would usually represent
+'<gap-dir>/bin/<hostname>/<name-pkg>/', e.g.,
+'/usd/gap/4.0/bin/beaker/guava/'.
+
+'DirectoriesPackageLibrary( <name-pkg> [, <lib>] )'
+
+'DirectoriesPackageLibrary' returns the directories object for the
+library <lib>, which must be one of '"lib"', '"grp"', and so on, for the
+contributed package <name-pkg>.  Under UNIX this would usually represent
+'<gap-dir>/pkg/<name-pkg>/<lib>/', e.g., '/usd/gap/4.0/pkg/guava/lib/'.
+
+'DirectoriesSystemPrograms()'
+
+'DirectoriesSystemPrograms' returns the directories object for the list
+of directories where the system programs reside.  Under UNIX this would
+usually rerpresent |${PATH}|, e.g., '/bin/;/usr/bin/;/usr/local/bin/'.
+
+'Filename( <dir>, <name> )'
+
+'Filename' returns the (system dependent) filename (as a string) for the
+file with name <name> in the directory <dir>.  If <dir> is a directory
+object, then 'Filename' returns the filename regardless of whether the
+directory contains a file <name> or not.  If <dir> is a directories
+object, i.e., if it represents a list of directories (possibly of length
+1), then 'Filename' will search the directories in order, and will return
+the filename for the file <name> in the first directory which contains a
+file <name> or 'fail' if no directory contains a file <name>.  For
+portability <name> should be a string of at most 8 alphanumerical
+characters optinally followed by a dot '.' and between 1 and 3
+alphanumerical characters.
+
+
+File Operations
+===============
+
+There are certain operations that can be performed on the file.
+
+'IsExistingFile( <name-file> )'
+
+'CouldFindFile' returns 'true' if a file with the filename <name-file>
+exists, and 'false' otherwise.
+
+'IsReadableFile( <name-file> )'
+
+'CouldReadFile' returns 'true' if a file with the filename <name-file>
+exists and the {\GAP} process has read permissions for the file, and
+'false' otherwise.
+
+'IsWriteableFile( <name-file> )'
+
+'CouldWriteFile' returns 'true' if a file with the filename <name-file>
+exists and the {\GAP} process has write permissions for the file, and
+'false' otherwise.
+
+'IsExecuteableFile( <name-file> )'
+
+'CouldExecFile' returns 'true' if a file with the filename <name-file>
+exists and the {\GAP} process has execute permissions for the file, and
+'false' otherwise.  Note that execute permissions do not imply that it is
+possible to execute the file, e.g., it could be an executable for a
+different machine.
+
+'RemoveFile( <name-file> )'
+
+'RemoveFile' removes the file with the name <name-file>, and returns
+'true' if that was sucessful and 'false' if it failed.
+
+'RemoveDirectory( <dir> )'
+
+'RemoveDirectory' removes a temporary directory <dir>.
+
+
+Input/Output Streams
+====================
+
+In {\GAP} files can be accessed as *streams*.  *Input stream* deliver
+characters to {\GAP} which *reads* them from the stream.  When an input
+stream has delivered all characters it is at <end-of-stream>.  *Output
+streams* receive characters from {\GAP} which *writes* them to the
+stream.  Streams differ in their treatment of <end-of-line> and
+non-printable characters.  *Text streams* translate the <end-of-line>
+character ('\n') to the systems representation of <end-of-line> (e.g.,
+<new-line> under UNIX, <carriage-return> under MacOS,
+<carriage-return>-<new-line> under DOS, implicit under VMS), and the
+behaviour for nonprintable characters are undefined.  *Binary streams* do
+not translate the <end-of-line> character and allow nonprintable
+characters.
+
+'InputTextNone'
+
+'InputTextNone' is a dummy input stream, which delivers no characters,
+i.e., it is always at end of stream.  Its main use is for calls to
+'Process' when the started program does not read anything.
+
+'OutputTextNone'
+
+'OutputTextNone' is a dummy output stream, which discards all received
+characters.  Its main use is for calls to 'Process' when the started
+program does not write anything.
+
+'InputTextUser'
+
+'InputTextUser' is the input stream that delivers the characters that the
+user types.  If {\GAP}'s input comes from a file (input redirection),
+then 'InputTextUser' will deliver the characters from that file.
+
+'OutputTextUser'
+
+'OutputTextUser' is the output stream that presents to the user all
+received characters.  If {\GAP}'s output goes to a file (output
+redirection), then 'OutputTextUser' will receive characters to that file.
+
+'InputTextString( <string> )'
+
+'InputTextString' returns an input stream that delivers the characters
+from the string <string>.
+
+'OutputTextString( <list>, <append> )'
+
+'OutputTextString' returns an output stream that puts all received
+characters into the list <list>.  If <append> is 'false', then the list
+is emptied first, otherwise received characters are added at the end of
+the list.
+
+'InputTextFile( <name-file> )'
+
+'InputTextFile' returns an input stream that delivers the characters
+from the file <name-file>.
+
+'OutputTextFile( <name-file>, <append> )'
+
+'OutputTextFile' returns an output stream that writes received characters
+to the file <file-name>.  If <append> is 'false', then the file is
+emptied first, otherwise received characters are added at the end of the
+list.
+
+'InputBinaryFile( <name-file> )'
+
+'InputBinaryFile' returns a binary input stream that delivers the
+characters from the file <name-file>.
+
+'OutputBinaryFile( <name-file>, <append> )'
+
+'OutputBinaryFile' returns a binary output stream that writes received
+characters to the file <file-name>.  If <append> is 'false', then the
+file is emptied first, otherwise received characters are added at the end
+of the list.
+
+'CloseInput( <stream-in>  )'
+
+'CloseInput' closes the input stream <stream-in>.  It is an error to try
+to read characters from a closed input stream.  Closing a stream tells
+the {\GAP} kernel and/or the operating system kernel that the file is no
+longer needed.  This may be necessary because the {\GAP} kernel and/or
+the operating system may impose a limit on how may streams may be open at
+once.  An open stream is closed when the garbage collection collects the
+stream object.
+
+'CloseOutput( <stream-out> )'
+
+'CloseOutput' closes the output stream <stream-out>.  It is an error to
+try to write characters to a closed output stream.  Closing a stream
+tells the {\GAP} kernel and/or the operating system kernel that the file
+is no longer needed.  This may be necessary because the {\GAP} kernel
+and/or the operating system may impose a limit on how may streams may be
+open at once.  An open stream is closed when the garbage collection
+collects the stream object.
+
+
+Processes
+=========
+
+'Process(<dir-exec>,<name-prg>,<stream-in>,<stream-out>,<options-arguments>)'
+
+'Process' runs a new process.  'Process' returns when the process
+terminates.  It returns the return value of the process (if the operating
+system supports such a concept).
+
+<dir-exec> specifies the directory in which the process is run, and
+should be the result of 'DirectoryCurrent', 'DirectoryTemporary', or
+'DirectoryName'.
+
+<name-prg> is the file name of the program to launch, for portability it
+should be the result of 'Filename' and should pass 'CouldExecFile'.  Note
+that 'Process' does no searching through a list of directories, this is
+done by 'Filename'.
+
+<stream-in> is the input stream that delivers the characters to the
+process.  For portability it should either be 'InputTextNone' (if the
+process reads no characters), or 'InputTextUser', or the result of a call
+to 'InputTextFile' from which no characters have been read.
+
+<stream-out> is the output stream which receives the characters from the
+process.  For portability it should either be 'OutputTextNone' (if the
+process writes no characters), or 'OutputTextUser', or the result of a
+call to 'OutputTextFile' to which no characters have been written.
+
+<options-arguments> is a list of strings which are passed to the process
+as command line argument.  Note that no substitutions are performed on
+the strings, i.e., they are passed immediately to the process and are not
+processed by a command interpreter (shell).  Further note that each
+string is passed as one argument, even if it contains <space> characters.
+
+
+'InputTextProcess(<dir-exec>,<name-prg>,<stream-in>,<options-arguments>)'
+
+'InputTextProcess' runs a new process.  'InputTextProcess' returns
+immediately after launching the process.  It returns an input stream that
+delivers the characters that the process writes.  When the process has
+terminated and all characters have been read, the input stream is at
+<end-of-stream>.
+
+<dir-exec>, <name-prg>, <stream-in>, and <options-arguments> are the same
+as for 'Process'.
+
+'OutputTextProcess(<dir-exec>,<name-prg>,<stream-out>,<options-arguments>)'
+
+'OutputTextProcess' runs a new process.  'OutputTextProcess' returns
+immediately after launching the process.  It returns an output stream
+that sends all received characters to the process.  When the output
+stream is closed, then <end-of-file> will be send to the process (which
+may continue to run).
+
+<dir-exec>, <name-prg>, <stream-out>, and <options-arguments> are the same
+as for 'Process'.
+
+'InputTextOutputTextProcess(<dir-exec>,<name-prg>,<options-arguments>)'
+
+'InputTextOutputTextProcess' runs a new process.  It returns immediately
+after launching the process.  It returns a list of length 2.  The first
+element of that list is an input stream that delivers the characters that
+the process writes.  When the process has terminated and all characters
+have been read, the input stream is at <end-of-stream>. The second
+element of that list in an output that sends all received characters to
+the process.  When the output stream is closed then <end-of-file> will be
+send to the process (which may continue to run).
+
+<dir-exec>, <name-prg>, and <options-arguments> are the same as for
+'Process'.
+
+
+Stream Operations
+=================
+
+'ReadChar( <stream-in> )'
+'ReadLine( <stream-in> )'
+'ReadAll( <stream-in> )'
+
+'ReadChar', 'ReadLine', and 'ReadAll' return one character, one line, or
+all characters from the input stream <stream-in>.  If <stream-in> is the
+input stream of a input/output process, they may return 'fail', only a
+part of a line, or only a part of input if the process is also trying to
+read.
+
+'ReadBytes( <stream-in>, <length> )'
+
+returns a byte-stream of length <length> or less.
+
+'WriteChar( <stream-out>, <char> )'
+'WriteLine( <stream-out>, <line> )'
+'WriteAll( <stream-out>, <string> )'
+
+'WriteChar', 'WriteLine', and 'WriteAll' write a character, a line, or a
+string to the output stream <stream-out>.  If <stream-out> is the output
+stream of a input/output process, they may return 'fail' if the process
+terminates before accepting the character, line, or string.
+
+'WriteBytes( <stream-out>, <stream-byte>, <length> )'
+
+writes <length> bytes to <stream-out> using the byte-stream <stream-byte>
+as input.
+
+'IsEndOfStream( <stream-in> )'
+
+'IsEndOfStream' returns 'true' if the input stream is at <end-of-stream>,
+and 'false' otherwise.
+
+'ErrorStream( <stream-in> )'
+
+'ErrorStream' returns a string describing the error condition (if any)
+for the input stream <stream-in>.  If no error happened for <stream-in>
+it returns 'false'.
+
+
+Example
+=======
+
+name_date   := Filename( DirectoriesSystemPrograms(), "date" );
+if not CouldExecFile( name_date )  then Error("cannot execute 'date'");  fi;
+stream_date := OutputTextProcess( DirectoryCurrent(), name_date, InputTextNone, [] );
+output_date := ReadAll( stream_date );
+CloseOutputText( stream_date );
+
+
+

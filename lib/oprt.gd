@@ -1,0 +1,236 @@
+#############################################################################
+##
+#W  oprt.gd                     GAP library                    Heiko Thei"sen
+##
+#H  @(#)$Id$
+##
+#H  $Log$
+#H  Revision 4.11  1996/12/19 09:40:51  htheisse
+#H  reduced number of calls of `NewKind'
+#H
+##
+Revision.oprt_gd :=
+    "@(#)$Id$";
+
+InfoOperation := NewInfoClass( "InfoOperation" );
+
+IsExternalSet := NewCategory( "IsExternalSet", IsDomain );
+IsExternalSubset := NewRepresentation( "IsExternalSubset",
+    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
+    [ "underlyingSet", "start" ] );                            
+IsExternalOrbit := NewRepresentation( "IsExternalOrbit",
+    IsExternalSubset, [ "underlyingSet", "start" ] );
+
+XSET_XSSETKIND := 4;
+XSET_XORBKIND  := 5;
+
+IsExternalSetDefaultRep := NewRepresentation( "IsExternalSetDefaultRep",
+    IsComponentObjectRep and IsAttributeStoringRep and IsExternalSet,
+    [ "underlyingSet" ] );
+IsExternalSetByOperatorsRep := NewRepresentation
+  ( "IsExternalSetByOperatorsRep",
+    IsExternalSetDefaultRep,
+    [ "underlyingSet", "generators", "operators", "funcOperation" ] );
+IsExternalSetByPcgsRep := NewRepresentation( "IsExternalSetByPcgsRep",
+    IsExternalSetByOperatorsRep,
+    [ "underlyingSet", "generators", "operators" ] );
+
+IsOperationHomomorphism := NewRepresentation( "IsOperationHomomorphism",
+    IsGroupHomomorphism and IsAttributeStoringRep, [  ] );
+
+IsOperationHomomorphismDefaultRep := NewRepresentation
+    ( "IsOperationHomomorphismDefaultRep",
+      IsOperationHomomorphism,
+      [ "externalSet" ] );
+IsOperationHomomorphismByBase := NewRepresentation
+    ( "IsOperationHomomorphismByBase",
+      IsOperationHomomorphismDefaultRep,
+      [ "externalSet" ] );
+IsOperationHomomorphismByOperators := NewRepresentation
+    ( "IsOperationHomomorphismByOperators",
+      IsOperationHomomorphism and
+      IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
+      [ "externalSet" ] );
+IsOperationHomomorphismSubset := NewRepresentation
+    ( "IsOperationHomomorphismSubset", IsOperationHomomorphism,
+      [ "externalSet" ] );
+
+IsConstituentHomomorphism := NewRepresentation( "IsConstituentHomomorphism",
+    IsOperationHomomorphismDefaultRep, [ "externalSet", "conperm" ] );
+
+IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
+    IsOperationHomomorphismDefaultRep, [ "externalSet", "reps" ] );
+
+ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );
+SetActingDomain := Setter( ActingDomain );
+HasActingDomain := Tester( ActingDomain );
+
+FunctionOperation := NewAttribute( "FunctionOperation", IsExternalSet );
+SetFunctionOperation := Setter( FunctionOperation );
+HasFunctionOperation := Tester( FunctionOperation );
+
+HomeEnumerator := NewAttribute( "HomeEnumerator", IsExternalSet );
+SetHomeEnumerator := Setter( HomeEnumerator );
+HasHomeEnumerator := Tester( HomeEnumerator );
+
+CanonicalRepresentativeOfExternalSet := NewAttribute
+    ( "CanonicalRepresentativeOfExternalSet", IsExternalSet );
+SetCanonicalRepresentativeOfExternalSet :=
+  Setter( CanonicalRepresentativeOfExternalSet );
+HasCanonicalRepresentativeOfExternalSet :=
+  Tester( CanonicalRepresentativeOfExternalSet );
+
+OperatorOfExternalSet := NewAttribute( "OperatorOfExternalSet",
+                                 IsExternalSet );
+SetOperatorOfExternalSet := Setter( OperatorOfExternalSet );
+HasOperatorOfExternalSet := Tester( OperatorOfExternalSet );
+
+OperationHomomorphismAttr := NewAttribute( "OperationHomomorphism",
+                                 IsExternalSet );
+
+OrbitishReq  := [ IsGroup, IsList, IsObject,
+                  IsList,
+                  IsList,
+                  IsFunction ];
+OrbitsishReq := [ IsGroup, IsList,
+                  IsList,
+                  IsList,
+                  IsFunction ];
+
+ExternalSet := NewOperationArgs( "ExternalSet" );
+ExternalSetOp := NewOperation( "ExternalSet", OrbitsishReq );
+ExternalSetAttr := NewAttribute( "ExternalSet", IsGroup );
+                                    # properly: ^IsExternalSet
+ExternalSetByFilterConstructor := NewOperationArgs
+                                  ( "ExternalSetByFilterConstructor" );
+ExternalSetByKindConstructor := NewOperationArgs
+                                ( "ExternalSetByKindConstructor" );
+
+ExternalSubset := NewOperationArgs( "ExternalSubset" );
+ExternalSubsetOp := NewOperation( "ExternalSubset",
+    [ IsGroup, IsList, IsList,
+      IsList,
+      IsList,
+      IsFunction ] );
+
+ExternalOrbit := NewOperationArgs( "ExternalOrbit" );
+ExternalOrbitOp := NewOperation( "ExternalOrbit", OrbitishReq );
+
+Orbit := NewOperationArgs( "Orbit" );
+OrbitOp := NewOperation( "Orbit", OrbitishReq );
+
+OrbitStabilizer := NewOperationArgs( "OrbitStabilizer" );
+OrbitStabilizerOp := NewOperation( "OrbitStabilizer", OrbitishReq );
+
+Orbits := NewOperationArgs( "Orbits" );
+OrbitsOp := NewOperation( "Orbits", OrbitsishReq );
+OrbitsAttr := NewAttribute( "Orbits", IsExternalSet );
+
+ExternalOrbits := NewOperationArgs( "ExternalOrbits" );
+ExternalOrbitsOp := NewOperation( "ExternalOrbits", OrbitsishReq );
+ExternalOrbitsAttr := NewAttribute( "ExternalOrbits", IsExternalSet );
+
+Permutation := NewOperationArgs( "Permutation" );
+PermutationOp := NewOperation( "Permutation",
+    [ IsObject, IsList, IsFunction ] );
+
+PermutationCycle := NewOperationArgs( "PermutationCycle" );
+PermutationCycleOp := NewOperation( "PermutationCycle",
+    [ IsObject, IsList, IsObject, IsFunction ] );
+
+Cycle := NewOperationArgs( "Cycle" );
+CycleOp := NewOperation( "Cycle",
+    [ IsObject, IsList, IsObject, IsFunction ] );
+
+Cycles := NewOperationArgs( "Cycles" );
+CyclesOp := NewOperation( "Cycles",
+    [ IsObject, IsList, IsFunction ] );
+
+Blocks := NewOperationArgs( "Blocks" );
+BlocksOp := NewOperation( "Blocks",
+    [ IsGroup, IsList, IsList,
+      IsList,
+      IsList,
+      IsFunction ] );
+
+MaximalBlocks := NewOperationArgs( "MaximalBlocks" );
+MaximalBlocksOp := NewOperation( "MaximalBlocks",
+    [ IsGroup, IsList, IsList,
+      IsList,
+      IsList,
+      IsFunction ] );
+
+Earns := NewOperationArgs( "Earns" );
+EarnsOp := NewOperation( "Earns", OrbitsishReq );
+EarnsAttr := NewAttribute( "Earns", IsExternalSet );
+
+OrbitLength := NewOperationArgs( "OrbitLength" );
+OrbitLengthOp := NewOperation( "OrbitLength", OrbitishReq );
+
+OrbitLengths := NewOperationArgs( "OrbitLengths" );
+OrbitLengthsOp := NewOperation( "OrbitLengths", OrbitsishReq );
+OrbitLengthsAttr := NewAttribute( "OrbitLengths", IsExternalSet );
+
+CycleLength := NewOperationArgs( "CycleLength" );
+CycleLengthOp := NewOperation( "CycleLength",
+    [ IsObject, IsList, IsObject, IsFunction ] );
+
+CycleLengths := NewOperationArgs( "CycleLengths" );
+CycleLengthsOp := NewOperation( "CycleLengths",
+    [ IsObject, IsList, IsFunction ] );
+
+IsTransitive := NewOperationArgs( "IsTransitive" );
+IsTransitiveOp := NewOperation( "IsTransitive", OrbitsishReq );
+IsTransitiveProp := NewProperty( "IsTransitive", IsObject );
+
+Transitivity := NewOperationArgs( "Transitivity" );
+TransitivityOp := NewOperation( "Transitivity", OrbitsishReq );
+TransitivityAttr := NewAttribute( "Transitivity", IsObject );
+
+IsPrimitive := NewOperationArgs( "IsPrimitive" );
+IsPrimitiveOp := NewOperation( "IsPrimitive", OrbitsishReq );
+IsPrimitiveProp := NewProperty( "IsPrimitive", IsObject );
+
+IsSemiRegular := NewOperationArgs( "IsSemiRegular" );
+IsSemiRegularOp := NewOperation( "IsSemiRegular", OrbitsishReq );
+IsSemiRegularProp := NewProperty( "IsSemiRegular", IsObject );
+
+IsRegular := NewOperationArgs( "IsRegular" );
+IsRegularOp := NewOperation( "IsRegular", OrbitsishReq );
+IsRegularProp := NewProperty( "IsRegular", IsObject );
+
+RepresentativeOperation := NewOperationArgs( "RepresentativeOperation" );
+RepresentativeOperationOp := NewOperation( "RepresentativeOperation",
+    [ IsGroup, IsList, IsObject, IsObject, IsFunction ] );
+
+Stabilizer := NewOperationArgs( "Stabilizer" );
+StabilizerOp := NewOperation( "Stabilizer",
+    [ IsGroup, IsList, IsObject, IsFunction ] );
+
+StabilizerOfExternalSet := NewAttribute( "StabilizerOfExternalSet",
+                                   IsExternalSet );
+SetStabilizerOfExternalSet := Setter( StabilizerOfExternalSet );
+HasStabilizerOfExternalSet := Tester( StabilizerOfExternalSet );
+
+AttributeOperation := NewOperationArgs( "AttributeOperation" );
+OrbitishOperation := NewOperationArgs( "OrbitishOperation" );
+OperationHomomorphism := NewOperationArgs( "OperationHomomorphism" );
+OperationHomomorphismSubsetAsGroupGeneralMappingByImages := NewOperationArgs
+    ( "OperationHomomorphismSubsetAsGroupGeneralMappingByImages" );
+Operation := NewOperationArgs( "Operation" );
+OperationOrbit := NewOperationArgs( "OperationOrbit" );
+OrbitByPosOp := NewOperationArgs( "OrbitByPosOp" );
+SetCanonicalRepresentativeOfExternalOrbitByPcgs :=
+  NewOperationArgs( "SetCanonicalRepresentativeOfExternalOrbitByPcgs" );
+
+#############################################################################
+##
+##  Local Variables:
+##  mode:             outline-minor
+##  outline-regexp:   "#[WCROAPMFVE]"
+##  fill-column:      77
+##  End:
+
+#############################################################################
+##
+#E  12345678.g  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

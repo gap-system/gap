@@ -1,0 +1,151 @@
+MeatAxe-Interface
+=================
+
+Moduln
+======
+
+Ein Modul M ist ein Record mit folgenden Komponenten:
+
+    rec( field := K,
+         generators := G,
+         basis := B,
+         dimension := d ).
+
+K ist der Koerper, ueber welchen die Matrizen G  zu verstehen sind.  G
+ist eine  Liste von  n x n Matrizen, der  zugrunde liegende Vektorraum
+ist der Vektorraum K^n der Zeilenvektoren ueber K  der Laenge n, B ist
+die Basis eines  d-dimensionalen Teilraums von K^n, welcher  invariant
+unter G ist.  'basis' ist die einzige Komponente, welche optional ist.
+Fehlt sie, so muss d = n und B die Standardbasis von K^n sein.
+
+Zusaetzlich  darf  jede   MeatAxe   noch  eine Komponente   mit  Namen
+"name_der_meataxe"  anlegen.      Diese  Information  darf   weder von
+Benutzern des MeatAxe-Interfaces   verwendet werden  noch duerfen  die
+Eintraege "field",  "generators",  "basis",  "dimension" nachtraeglich
+geaendert werden.
+
+Verfuegbare Funktionen
+======================
+
+MTX.IsIrreducible( M )
+----------------------
+  liefert 'true',  falls  M irreduzibel operiert, bzw.  'false', falls
+  nicht.
+
+MTX.IsAbsolutelyIrreducible( M )
+--------------------------------
+  liefert 'true', falls M absolut  irreduzibel operiert, bzw. 'false',
+  falls nicht.
+
+MTX.DegreeSplittingField( M )
+-----------------------------
+  liefert den Grad des Zerfaellungskoerper (ueber M.field oder ueber
+  dem Grundkoerper ?????)
+
+MTX.ProperSubmodule( M )
+------------------------
+  liefert 'false', falls M irreduzibel operiert, bzw. einen Untermodul
+  {0} < S < M, falls nicht.
+
+MTX.MaximalSubmodule( M )
+-------------------------
+  liefert  einen maximalen Untermodul S mit  {0} < S  < M bzw 'false',
+  falls kein solcher existiert.
+
+MTX.MinimalSubmodule( M )
+-------------------------
+  liefert einen minimalen Untermodul S  mit {0} < S  < M bzw  'false',
+  falls kein solcher existiert.
+
+MTX.CompositionSeries( M )
+--------------------------
+  liefert die  Kompositionreihe von M als Liste von Untermoduln [ M_1,
+  M_2, ..., M_n ], wobei M_1 = M, M_n = {0}, M_i > M_i+1.
+
+MTX.CompositionFactors( M )
+--------------------------
+  liefert   die Kompositionsfaktoren  von M    als   Liste von  Moduln
+  entsprechender Dimension.
+
+MTX.MaximalSubmodules( M )
+--------------------------
+  liefert eine Liste aller maximalen Untermoduln von M.
+
+MTX.MinimalSubmodules( M )
+--------------------------
+  liefert eine Liste aller minimalen Untermoduln von M.
+
+MTX.Lattice( M )
+----------------
+  liefert eine Liste aller Untermoduln von M. BESSER: eine Beschreibung
+  des Verbands, genaues Format ?????
+
+MTX.IsEquivalent( M_1, M_2 )
+----------------------------
+  liefert 'true', falls M_1 aequivalent zu M_2 ist, bzw 'false', falls
+  nicht.
+
+MTX.Isomorphism( M_1, M_2 )
+---------------------------
+  liefert  einen  Isomorphismus von M_1   nach M_2, falls  ein solcher
+  existiert, bzw 'false', falls nicht.  Ein Isomorphismus von M_1 nach
+  M_2   wird   als n_1 x   n_2  Matrix  zurueckgegeben, wobei  n_i die
+  Dimension des M_i zugrundeliegenden Vektorraums ist.
+
+MTX.Homomorphisms( M_1, M_2 )
+-----------------------------
+  liefert  eine Basis aller Homomorphismen von  M_1 nach M_2 als Liste
+  von Matrizen.
+
+MTX.Endomorphisms( M )
+----------------------
+  liefert eine Basis aller Endomorphismen von M als Liste von Matrizen.
+
+MTX.IndecomposableSummands( M )
+-------------------------------
+  liefert eine  Zerlegung in unzerlegbaren  Summanden von M  als Liste
+  von Untermoduln.
+
+MTX.Submodule( M, L )
+---------------------
+  liefert den  von L erzeugten Untermodul  von M.  L ist  hierbei eine
+  Liste von Vektoren.
+
+MTX.InducedActionFactorModule( M, B_1[, B_2] )
+----------------------------------------------
+  liefert die Operation von M auf dem Faktorraum M.basis / B_1.  Falls
+  B_2  gegeben ist, so muss B_2   die Basis B_1  zu  einer Basis von M
+  ergaenzen.
+
+MTX.InducedActionSubmodule( M[, B] )
+------------------------------------
+  liefert die Operation von M auf B als Modul mit Standardbasis.
+
+MTX.IdentifierSmallCorank( M, max rank, number of tries )
+---------------------------------------------------------
+  liefert den Identifier einer Matrix vom Korang hoechstens "max rank"
+  so wie ihren  Korang.  Wird nach "number  of tries" Versuchen  keine
+  solche Matrix gefunden,  so wird 'false' zurueckgegeben.  Der Korang
+  ist  hierbei   als Korang  der  auf  M.basis  induzierten  Matrix zu
+  verstehen.
+
+  Folgende Funktionen verstehen als optionales Argument einen "identifier":
+    MTX.IsIrreducible( M, identifier )
+    MTX.ProperSubmodule( M, identifier )
+    MTX.Isomorphism( M_1, M_2, identifier )
+
+MTX.MatrixIdentifier( M, identifier )
+-------------------------------------
+  liefert die zu "identifier" gehoerende Matrix.
+
+MTX.StandardBasis( M )
+----------------------
+  ????????????
+
+
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+VERSION := "current";
+DATE := "current";

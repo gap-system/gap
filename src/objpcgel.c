@@ -1,0 +1,351 @@
+/****************************************************************************
+**
+*W  objpcgel.c                  GAP source                       Frank Celler
+**
+*H  @(#)$Id$
+**
+*Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+*/
+char * Revision_objpcgel_c =
+   "@(#)$Id$";
+
+#include        "system.h"              /* Ints, UInts                     */
+#include        "scanner.h"             /* Pr                              */
+#include        "gasman.h"              /* NewBag, CHANGED_BAG             */
+
+#include        "objects.h"             /* Obj, TYPE_OBJ, types            */
+#include        "gvars.h"               /* AssGVar, GVarName               */
+#include        "gap.h"                 /* Error                           */
+
+#include        "calls.h"               /* CALL_2ARGS                      */
+
+#include        "lists.h"               /* generic lists package           */
+#include        "plist.h"               /* ELM_PLIST, SET_ELM_PLIST, ...   */
+
+#include        "ariths.h"              /* LT, EQ                          */
+#include        "bool.h"                /* True, False                     */
+
+#include        "objfgelm.h"            /* NPAIRS_WORD, EDBITS_WORD, ...   */
+#include        "objscoll.h"            /* collectors                      */
+
+#define INCLUDE_DECLARATION_PART
+#include        "objpcgel.h"
+#undef  INCLUDE_DECLARATION_PART
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * *  boxed objects * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  FuncLessBoxedObj( <self>, <left>, <right> )
+*/
+Obj FuncLessBoxedObj ( Obj self, Obj left, Obj right )
+{
+    return LT( ADDR_OBJ(left)[1], ADDR_OBJ(right)[1] ) ? False : True;
+}
+
+
+/****************************************************************************
+**
+*F  FuncEqualBoxedObj( <self>, <left>, <right> )
+*/
+Obj FuncEqualBoxedObj ( Obj self, Obj left, Obj right )
+{
+    return EQ( ADDR_OBJ(left)[1], ADDR_OBJ(right)[1] ) ? False : True;
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * * pc word aspect * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  FuncNBitsPcWord_Comm( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_Comm ( Obj self, Obj left, Obj right )
+{
+    return FuncFinPowConjCol_ReducedComm(
+        self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNBitsPcWord_LeftQuotient( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_LeftQuotient ( Obj self, Obj left, Obj right )
+{
+    return FuncFinPowConjCol_ReducedLeftQuotient(
+        self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNBitsPcWord_Product( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_Product ( Obj self, Obj left, Obj right )
+{
+    return FuncFinPowConjCol_ReducedProduct(
+        self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
+*F  FuncNBitsPcWord_Quotient( <self>, <left>, <right> )
+*/
+Obj FuncNBitsPcWord_Quotient ( Obj self, Obj left, Obj right )
+{
+    return FuncFinPowConjCol_ReducedQuotient(
+        self, COLLECTOR_PCWORD(left), left, right );
+}
+
+
+/****************************************************************************
+**
+
+*F * * * * * * * * * * * * * * free word aspect * * * * * * * * * * * * * * *
+*/
+
+/****************************************************************************
+**
+
+*F  Func8Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func8Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+
+    /* if the pc element is the identity we have to ask the pcgs           */
+    if ( NPAIRS_WORD(w) == 0 )
+        return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
+
+    /* otherwise it is the generators number of the first syllable         */
+    else {
+        ebits = EBITS_WORD(w);
+        return INTOBJ_INT(((((UInt1*)DATA_WORD(w))[0]) >> ebits)+1);
+    }
+}
+
+
+/****************************************************************************
+**
+*F  Func8Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func8Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt1       p;              /* first syllable                          */
+
+    /* the leading exponent is zero iff the pc element if the identity     */
+    if ( NPAIRS_WORD(w) == 0 )
+        return Fail;
+
+    /* otherwise it is the exponent of the first syllable                  */
+    else {
+        exps = 1UL << (EBITS_WORD(w)-1);
+        expm = exps - 1;
+        p = ((UInt1*)DATA_WORD(w))[0];
+        if ( p & exps )
+            return INTOBJ_INT((p&expm)-exps);
+        else
+            return INTOBJ_INT(p&expm);
+    }
+}
+
+
+/****************************************************************************
+**
+
+*F  Func16Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func16Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+
+    /* if the pc element is the identity we have to ask the pcgs           */
+    if ( NPAIRS_WORD(w) == 0 )
+        return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
+
+    /* otherwise it is the generators number of the first syllable         */
+    else {
+        ebits = EBITS_WORD(w);
+        return INTOBJ_INT(((((UInt2*)DATA_WORD(w))[0]) >> ebits)+1);
+    }
+}
+
+
+/****************************************************************************
+**
+*F  Func16Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func16Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt2       p;              /* first syllable                          */
+
+    /* the leading exponent is zero iff the pc element if the identity     */
+    if ( NPAIRS_WORD(w) == 0 )
+        return Fail;
+
+    /* otherwise it is the exponent of the first syllable                  */
+    else {
+        exps = 1UL << (EBITS_WORD(w)-1);
+        expm = exps - 1;
+        p = ((UInt2*)DATA_WORD(w))[0];
+        if ( p & exps )
+            return INTOBJ_INT((p&expm)-exps);
+        else
+            return INTOBJ_INT(p&expm);
+    }
+}
+
+
+/****************************************************************************
+**
+
+*F  Func32Bits_DepthOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func32Bits_DepthOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    Int         ebits;          /* number of bits in the exponent          */
+
+    /* if the pc element is the identity we have to ask the pcgs           */
+    if ( NPAIRS_WORD(w) == 0 )
+        return INTOBJ_INT( LEN_LIST(pcgs) + 1 );
+
+    /* otherwise it is the generators number of the first syllable         */
+    else {
+        ebits = EBITS_WORD(w);
+        return INTOBJ_INT(((((UInt4*)DATA_WORD(w))[0]) >> ebits)+1);
+    }
+}
+
+
+/****************************************************************************
+**
+*F  Func32Bits_LeadingExponentOfPcElement( <self>, <pcgs>, <w> )
+*/
+Obj Func32Bits_LeadingExponentOfPcElement ( Obj self, Obj pcgs, Obj w )
+{
+    UInt        expm;           /* signed exponent mask                    */
+    UInt        exps;           /* sign exponent mask                      */
+    UInt4       p;              /* first syllable                          */
+
+    /* the leading exponent is zero iff the pc element if the identity     */
+    if ( NPAIRS_WORD(w) == 0 )
+        return Fail;
+
+    /* otherwise it is the exponent of the first syllable                  */
+    else {
+        exps = 1UL << (EBITS_WORD(w)-1);
+        expm = exps - 1;
+        p = ((UInt4*)DATA_WORD(w))[0];
+        if ( p & exps )
+            return INTOBJ_INT((p&expm)-exps);
+        else
+            return INTOBJ_INT(p&expm);
+    }
+}
+
+
+/****************************************************************************
+**
+
+*F  InitPcElements()  . . . . . . . . initialize the single collector package
+*/
+void InitPcElements ( void )
+{
+
+    /* export position numbers 'PCWP_SOMETHING'                            */
+    AssGVar( GVarName( "PCWP_FIRST_ENTRY" ),
+             INTOBJ_INT(PCWP_FIRST_ENTRY) );
+    AssGVar( GVarName( "PCWP_NAMES" ),
+             INTOBJ_INT(PCWP_NAMES) );
+    AssGVar( GVarName( "PCWP_COLLECTOR" ),
+             INTOBJ_INT(PCWP_COLLECTOR) );
+    AssGVar( GVarName( "PCWP_FIRST_FREE" ),
+             INTOBJ_INT(PCWP_FIRST_FREE) );
+
+    /* methods for boxed objs                                              */
+    AssGVar( GVarName( "LessBoxedObj" ),
+             NewFunctionC( "LessBoxedObj", 2L, "lobj, lobj",
+             FuncLessBoxedObj ) );
+
+    AssGVar( GVarName( "EqualBoxedObj" ),
+             NewFunctionC( "LessFirstElementsLObj", 2L, "lobj, lobj",
+             FuncEqualBoxedObj ) );
+
+    /* finite power conjugate collector words                              */
+    AssGVar( GVarName( "NBitsPcWord_Comm" ),
+             NewFunctionC( "NBitsPcWord_Comm", 2L, 
+                           "16_bits_pcword, 16_bits_pcword",
+             FuncNBitsPcWord_Comm ) );
+
+    AssGVar( GVarName( "NBitsPcWord_LeftQuotient" ),
+             NewFunctionC( "NBitsPcWord_LeftQuotient", 2L, 
+                           "16_bits_pcword, 16_bits_pcword",
+             FuncNBitsPcWord_LeftQuotient ) );
+
+    AssGVar( GVarName( "NBitsPcWord_Product" ),
+             NewFunctionC( "NBitsPcWord_Product", 2L, 
+                           "16_bits_pcword, 16_bits_pcword",
+             FuncNBitsPcWord_Product ) );
+
+    AssGVar( GVarName( "NBitsPcWord_Quotient" ),
+             NewFunctionC( "NBitsPcWord_Quotient", 2L, 
+                           "16_bits_pcword, 16_bits_pcword",
+             FuncNBitsPcWord_Quotient ) );
+
+    /* 8 bits word                                                         */
+    AssGVar( GVarName( "8Bits_DepthOfPcElement" ),
+             NewFunctionC( "8Bits_DepthOfPcElement", 2L, 
+                           "8_bits_pcgs, 8_bits_pcword",
+             Func8Bits_DepthOfPcElement ) );
+
+    AssGVar( GVarName( "8Bits_LeadingExponentOfPcElement" ),
+             NewFunctionC( "8Bits_LeadingExponentOfPcElement", 2L, 
+                           "8_bits_pcgs, 8_bits_word",
+             Func8Bits_LeadingExponentOfPcElement ) );
+
+    /* 16 bits word                                                        */
+    AssGVar( GVarName( "16Bits_DepthOfPcElement" ),
+             NewFunctionC( "16Bits_DepthOfPcElement", 2L, 
+                           "16_bits_pcgs, 16_bits_pcword",
+             Func16Bits_DepthOfPcElement ) );
+
+    AssGVar( GVarName( "16Bits_LeadingExponentOfPcElement" ),
+             NewFunctionC( "16Bits_LeadingExponentOfPcElement", 2L, 
+                           "16_bits_pcgs, 16_bits_word",
+             Func16Bits_LeadingExponentOfPcElement ) );
+
+    /* 32 bits word                                                        */
+    AssGVar( GVarName( "32Bits_DepthOfPcElement" ),
+             NewFunctionC( "32Bits_DepthOfPcElement", 2L, 
+                           "32_bits_pcgs, 32_bits_pcword",
+             Func32Bits_DepthOfPcElement ) );
+
+    AssGVar( GVarName( "32Bits_LeadingExponentOfPcElement" ),
+             NewFunctionC( "32Bits_LeadingExponentOfPcElement", 2L, 
+                           "32_bits_pcgs, 32_bits_word",
+             Func32Bits_LeadingExponentOfPcElement ) );
+}
+
+
+/****************************************************************************
+**
+
+*E  objpcgel.c  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+*/
