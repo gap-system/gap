@@ -30,3 +30,4 @@ ReadTrans( "trans.grp" );
 ##
 ReadPrim( "irredsol.grp" );
 ReadPrim( "primitiv.gi" );
+ReadPrim( "primitiv.grp" );

@@ -282,6 +282,33 @@ end;
 
 #############################################################################
 ##
+#V  EDITOR  . . . . . . . . . . . . . . . . . . . . default editor for `Edit'
+##
+EDITOR := "vi";
+
+
+#############################################################################
+##
+#F  Edit( <filename> )  . . . . . . . . . . . . . . . . .  edit and read file
+##
+Edit := function( name )
+    local   editor,  ret;
+
+    editor := Filename( DirectoriesSystemPrograms(), EDITOR );
+    if editor = fail  then
+        Error( "cannot locate editor `", EDITOR, "'" );
+    fi;
+    ret := Process( DirectoryCurrent(), editor, InputTextUser(), 
+                    OutputTextUser(), [ name ] );
+    if ret <> 0  then
+        Error( "editor returned ", ret );
+    fi;
+    Read(name);
+end;
+
+
+#############################################################################
+##
 
 #F  CreateCompletionFiles( <path> ) . . . . . . . create "lib/readX.co" files
 ##

@@ -1213,9 +1213,20 @@ UInt ResizeBag (
 
 jmp_buf RegsBags;
 
+/* solaris */
 #ifdef SPARC
         asm("           .globl  SparcStackFuncBags              ");
         asm("   SparcStackFuncBags:                             ");
+        asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
+        asm("           mov     %sp,%o0                         ");
+        asm("           retl                                    ");
+        asm("           nop                                     ");
+#endif
+
+/* sunos */
+#ifdef SPARC
+        asm("           .globl  _SparcStackFuncBags             ");
+        asm("   _SparcStackFuncBags:                            ");
         asm("           ta      0x3     ! ST_FLUSH_WINDOWS      ");
         asm("           mov     %sp,%o0                         ");
         asm("           retl                                    ");

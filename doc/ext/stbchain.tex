@@ -1,0 +1,646 @@
+\Chapter{Stabilizer Chains}
+
+\def\labelto#1{\buildrel\lower0.8ex\hbox{$\scriptstyle #1$}\over\to}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{Stabilizer chain records}
+
+If a  permutation group  has a   stabilizer chain, this   is stored  as a
+recursive structure. This  structure  is itself  a record~<S>  and it has
+(1)~components that provide information about  one level~$G^{(i)}$ of the
+stabilizer chain (which  we call  the  ``current stabilizer'')  and (2)~a
+component `stabilizer'  that  holds   another such  record,   namely  the
+stabilizer chain  of    the next stabilizer~$G^{(i+1)}$.  This  gives   a
+recursive  structure  where the  ``outermost''  record  representing  the
+``topmost'' stabilizer is bound to the group record component `stabChain'
+and   has the components explained below.    Note: Since the structure is
+recursive, *never print a stabilizer chain!* (Unless you want to exercise
+the scrolling capabilities of your terminal.)
+\beginitems
+`identity' &
+        the identity element of the current stabilizer.
+
+`labels' &
+        a list of permutations that serve as labels for the Schreier tree
+        of  the current stabilizer,  i.e., as elements for the factorized
+        inverse Schreier transversal.  The  first entry  is this list  is
+        always the  `identity',    for  reasons explained   below   under
+        `translabels'.  {\GAP}  tries  to  arrange   things so  that  the
+        `labels' components are  identical (i.e., the same {\GAP} object)
+        on every stabilizer of the chain;  this implies that the `labels'
+        of   one stabilizer  do  not  necessarily   all lie  in the  next
+        stabilizer (but see `genlabels' below).
+
+`genlabels' &
+        a list of integers that point to some  of the permutations in the
+        `labels' component. The    `labels' addressed in this   way taken
+        together form a generating set for the current stabilizer. If the
+        `genlabels' component is empty,  the rest of the stabilizer chain
+        represents  the trivial subgroup, and  can be ignored, e.g., when
+        calculating the size.
+
+`generators' &
+        a generating set for    the current stabilizer. Usually this   is
+        `labels\{ genlabels \}', but it can be a different set.
+
+`orbit' &
+        the vertices of  the Schreier tree,  which  form the basic  orbit
+        $b_iG^{(i)}$, ordered in such a way that the  base point $b_i$ is
+        first in the list.
+
+`translabels' &
+        the factorized inverse   transversal  that was  found during  the
+        orbit  algorithm  carried out   with the   inverses of  `labels\{
+        genlabels \}', starting from the base point. The directed edge $i
+        \labelto g j  = ig^{-1}$ in  the Schreier tree  is represented by
+        `labels[ translabels[<j>] ]' = <g> in  the stabilizer chain (note
+        that <i> can be reconstructed as <jg> from this information). The
+        entries in the `translabels'   component are thus   just integers
+        giving the  positions of the appropriate   labels in the `labels'
+        component. The base point itself (i.e.,  the root of the Schreier
+        tree) has the entry `1' in  `translabels'. This makes it possible
+        to assign `transversal\{ orbit \} := labels\{ translabels\{ orbit
+        \} \}' (see  "ref:sublist!assignment" in the reference manual and
+        `transversal'  below).   The `translabels'   component   pays off
+        handsomely   in    the   stabilizer    chain   conjugation   (see
+        "ref:ConjugateGroup!for permutation      groups" in the reference
+        manual).
+
+`transversal' &
+        is another  representation of the factorized inverse transversal:
+        as a list   with `transversal[<j>] =  labels[ translabels[<j>] ]'
+        (the base point  itself has entry `()').  To look up  an entry in
+        this list is faster than to evaluate  the expression on the right
+        hand side,  and   since this operation   appears  most  often  in
+        permutation   group     code    (e.g.,    in      the    function
+        `InverseRepresentative' below), the speed-up is really worth this
+        extra record component.
+
+`stabilizer' &
+        If  the  current stabilizer is  not   yet the trivial  group, the
+        stabilizer chain continues with   the stabilizer of  the  current
+        base  point,  which is    again  represented as  a   record  with
+        components `labels',    `identity',    `genlabels', `generators',
+        `orbit',     `translabels',  `transversal'     (and      possibly
+        `stabilizer'). This record is bound to the `stabilizer' component
+        of the current stabilizer. The last member  of a stabilizer chain
+        is recognized  by the fact that  it has no `stabilizer' component
+        bound.
+\enditems
+It is possible that different stabilizer  chains share the same record as
+one of their iterated `stabilizer' components.  Note that the `stabChain'
+record and `stabilizer'  records further down   are not themselves  group
+records. Thus you cannot take such a record and  apply group functions to
+it. Instead, the following functions can be used to access these records.
+Let <S> denote a stabilizer chain.
+\beginitems
+\function IsFixedStabilizer( <S>, <pnt> ) &
+        returns `true'  if <pnt> is fixed by   all generators of  <S> and
+        `false' otherwise.
+
+\function EmptyStabChain( <labels>, <id> \[, <pnt> \] ) &
+        constructs  a   stabilizer  chain  for   the trivial   group with
+        `identity=<id>' and `labels=$\{id\}\cup  labels$'  (but of course
+        with `genlabels=[ ]' and `generators=[ ]'). If the optional third
+        argument <pnt>  is present, the only stabilizer   of the chain is
+        initialized with the  one-point basic orbit  `[ <pnt> ]' and with
+        `translabels' and `transversal' components.
+        
+\function InsertTrivialStabilizer( <S>, <pnt> ) &
+        `InsertTrivialStabilizer' initializes the current stabilizer with
+        <pnt> as `EmptyStabChain' did,   but assigns the original <S>  to
+        the new `<S>.stabilizer'  component, such that  a new  level with
+        trivial basic  orbit (but identical  `labels' and `ShallowCopy'ed
+        `genlabels' and   `generators', see "ShallowCopy")  is  inserted.
+        These functions are  recommended if <pnt> really  is fixed by the
+        generators of  <S>, because then new  generators can be added and
+        the  orbit  and transversal at  the same  time  extended with the
+        following function.
+
+\function AddGeneratorsExtendSchreierTree( <S>, <new> ) &
+        adds the elements  in <new> to the list  of generators of <S> and
+        at the  same time extends the  orbit and transversal. This is the
+        only legal way  to extend  a  Schreier tree (because  it involves
+        careful handling of the tree components).
+
+\function InverseRepresentative( <S>, <pnt> ) &
+        calculates the transversal element which  maps <pnt> back to  the
+        base point of  <S>. It just  runs back through the  Schreier tree
+        from <pnt> to the root and multiplies the labels along the way.
+
+\function SiftedPermutation( <S>, <g> ) &
+        sifts  the element  <g> as  follows: <g>  is replaced by  `<g> \*
+        InverseRepresentative(  <S>, <S>.orbit[1] ^   <g> )', then <S> is
+        replaced by `<S>.stabilizer' and  this process is repeated  until
+        <S> is trivial or `<S>.orbit[1] ^ <g>' is  not in the basic orbit
+        `<S>.orbit'.  The remainder <g>  is returned, it  is the identity
+        permutation if  and  only if the  original <g>  was in  the group
+        described by the original~<S>.
+
+\function GroupStabChain( \[ <G>, \] <S> ) &
+        constructs a permutation group with stabilizer chain <S>, i.e., a
+        group    with  generators `Generators( <S>  )'   to  which <S> is
+        assigned as component  `stabChain'. If the  optional argument <G>
+        is  given, the result  will be  a subgroup (in  the {\GAP} sense)
+        of~<G>.
+\enditems
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Section{The general backtrack algorithm with ordered partitions}
+
+Section "ref:Backtrack searching" in the reference manual describes how a
+backtrack search can be organized with ordered partitions. The purpose of
+this section  is  to document  how  the general   backtrack algorithm  is
+implemented in {\GAP} and which  parts you have to modify  if you want to
+write your own backtrack routines.
+
+\medskip%
+\atindex{ordered partitions!internal representation}{|indexit}%
+{\bsf   Internal   representation  of  ordered  partitions.}\quad  {\GAP}
+represents an   ordered   partition  as a  record    with   the following
+components.
+\beginitems
+`points' &
+        a list  of all points contained in  the  partition, such that the
+        points of each cell from lie consecutively,
+
+`cellno' &
+        a list whose <i>th entry is the number of the cell which contains
+        the point <i>,
+
+`firsts' &
+        a list  such that  `points[firsts[<j>]]'  is  the first point  in
+        `points' which is in cell <j>,
+
+`lengths' &
+        a list of the  cell lengths.
+\enditems
+Some of the information is  redundant, e.g., the  `lengths' could also be
+read off the `firsts' list,  but since this   need not be increasing,  it
+would    require some searching. Similar  for    `cellno', which could be
+replaced by a systematic search  of `points', keeping  track of what cell
+is currently being  traversed. With the above  components, the <m>th cell
+of   a partition <P> is   expressed as `<P>.points{  [ <P>.firsts[<m>] ..
+<P>.firsts[<m>] +  <P>.lengths[<m>]  -  1  ]   }'. The   most   important
+operations, however, to be performed upon <P> are the splitting of a cell
+and the reuniting  of the two parts. Following  the strategy  of J.~Leon,
+this is done as follows:
+
+(1) The points which make up the cell that  is to be  split are sorted so
+that the ones  that remain inside occupy  positions `[ <P>.firsts[<m>] ..
+<last> ]' in the list `<P>.points' (for a suitable value of <last>).
+
+(2) The  points   at positions  `[   <last>  + 1 ..    <P>.firsts[<m>]  +
+<P>.lengths[<m>] - 1 ]' will form the  additional cell. For this new cell
+requires additional entries are  added to the lists `<P>.firsts' (namely,
+`<last>+1')     and    `<P>.lengths'   (namely,      `<P>.firsts[<m>]   +
+<P>.lengths[<m>] - <last> - 1').
+
+(3) The entries of the sublist `<P>.cellno{ [ <last>+1 .. <P>.firsts[<m>]
++ P.lengths[<m>]-1 ] }' must be set to the number of the new cell.
+
+(4) The entry    `<P>.lengths[<m>]'  must   be  reduced  to   `<last>   -
+<P>.firsts[<m>] + 1'.
+
+Then reuniting the  two cells requires  only the reversal of steps~2 to~4
+above. The list `<P>.points' need not be rearranged.
+
+\medskip%
+{\bsf Functions for setting up an  R-base.}\quad This subsection explains
+some   {\GAP}  functions  which  are     local   to the  library     file
+``lib/stbcbckt.gi''   which   contains  the   code  for  backtracking  in
+permutation  groups. They are mentioned here  because you might find them
+helpful when you want to implement you own backtracking function based on
+the partition concept. An important argument to most  of the functions is
+the R-base $\cal R$, which you should regard as a black box. We will tell
+you how   to set it  up, how   to maintain  it  and where  to pass  it as
+argument,    but it is  not  necessary   for you  to   know its  internal
+representation. However, if you insist to learn the whole story: Here are
+the record components from which an R-base is made up:
+\beginitems
+`domain' &
+    the set $\Omega$ on which the group $G$ operates
+
+`base' &
+    the sequence $(a_1,\ldots,a_r)$ of base points
+
+`partition' &
+    an  ordered  partition, initially  $\Pi_0$, this  will be  refined to
+    $\Pi_1,\ldots,\Pi_r$ during the backtrack algorithm
+
+`where' &
+    a list such that $a_i$ lies in cell number `where[ $i$ ]' of $\Pi_i$
+
+`rfm' &
+    a    list whose $i$th entry  is   a  list of   refinements which take
+    $\Sigma_i$  to $\Sigma_{i+1}$;  the    structure of a  refinement  is
+    described below
+
+`chain' &
+    a (copy of a) stabilizer  chain for $G$ (not  if  $G$ is a  symmetric
+    group)
+
+`fix' &
+    only if  $G$ is a  symmetric group:  a list whose  $i$ entry contains
+    `Fixcells( $\Pi_i$ )'
+
+`level' &
+    initially equal to `chain',  this will be changed  to chains  for the
+    stabilizers  $G_{a_1\dots  a_i}$    for  $i=1,\ldots,r$  during   the
+    backtrack algorithm; if $G$ is a  symmetric group, only the number of
+    moved points is stored for each stabilizer
+
+`lev' &
+    a  list   whose  $i$th  entry   remembers   the  `level' entry    for
+    $G_{a_1\ldots a_{i-1}}$
+
+`level2', `lev2' &
+    a similar  construction   for a second  group  (used  in intersection
+    calculations), `false' otherwise.  This second group $H$ activated if
+    the R-base  is constructed as  `EmptyRBase(  [ $G$, $H$  ], $\Omega$,
+    $\Pi_0$ )' (if `$G$ = $H$', {\GAP} sets `level2 = true' instead).
+
+`nextLevel' &
+    this is described below
+\enditems
+
+As  our guiding example, we  present  code for the function `Centralizer'
+which calculates the centralizer of an element $g$ in the group $G$. (The
+real code is more general and has a few more subtleties.)
+
+{\parskip 0pt \newcount\lineno%
+ \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
+        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
+\)$\Pi_0$ := TrivialPartition( $\Omega$ );
+\)$\cal R$ := EmptyRBase( $G$, $\Omega$, $\Pi_0$ );
+\endgraf\medskip%
+\)$\cal R$.nextLevel := function( $\Pi$, <rbase> )
+\)local \ $fix$,  $p$,  $q$,  $where$;
+\)\quad NextRBasePoint( $\Pi$, <rbase> );
+\)\quad $fix$ := Fixcells( $\Pi$ );
+\)\quad for $p$  in $fix$  do
+\)\qquad $q$ := $p$ ^ $g$;
+\)\qquad $where$ := IsolatePoint( $\Pi$, $q$ );
+\)\qquad if $where$ \<> false  then
+\)\quad\qquad Add( $fix$, $q$ );
+\)\quad\qquad ProcessFixpoint( $\cal R$, $q$ );
+\)\quad\qquad AddRefinement( $\cal R$, "Centralizer", %
+              [ $\Pi$.cellno[ $p$ ], $q$, $where$ ] );
+\)\quad\qquad if $\Pi$.lengths[ $where$ ] = 1  then
+\)\qquad\qquad $p$ := FixpointCellNo( $\Pi$, $where$ );
+\)\qquad\qquad ProcessFixpoint( $\cal R$, $p$ );
+\)\qquad\qquad AddRefinement( $\cal R$, "ProcessFixpoint", [ $p$, $where$ ] );
+\)\quad\qquad fi;
+\)\qquad fi;
+\)\quad od;
+\)end;
+\endgraf\medskip%    
+\)return PartitionBacktrack( $G$,
+\)\qquad $c$ -> $g$ ^ $c$ = $g$,
+\)\qquad false,
+\)\qquad $\cal R$,
+\)\qquad [ $\Pi_0$, $g$ ],
+\)\qquad $L$, $R$ );
+  \vadjust{\allowbreak}%
+
+}%
+1.\enspace $\Omega$ is the set on which $G$ acts and $\Pi_0$ is the first
+member   of   the  decreasing   sequence   of  partitions    mentioned in
+"ref:Backtrack  searching"     in    the  reference   manual.    We   set
+$\Pi_0=(\Omega)$,  which is  constructed  as `TrivialPartition(  $\Omega$
+)'), but we could have started with  a finer partition, e.g., into unions
+of $g$-cycles of the same length.
+
+2.\enspace This statement sets up the R-base in the variable $\cal R$.
+
+3--21.\enspace  These lines define  a function `$\cal R$.nextLevel' which
+is called whenever an additional member in the  sequence $\Pi_0 \ge \Pi_1
+\ge\ldots$  of  partitions is  needed.  If  $\Pi_i$ does not  yet contain
+enough  base     points in one-point  cells,     {\GAP} will  call `$\cal
+R$.nextLevel( $\Pi_i$, $\cal R$ )', and this will choose a new base point
+$a_{i+1}$, refine $\Pi_i$ to $\Pi_{i+1}$ (thereby *changing* the argument
+$\Pi$) and store all necessary information in~$\cal R$.
+
+5.\enspace This statement selects the new  base point $a_{i+1}$, which is
+not yet  in a one-point  cell of $\Pi$ and still  moved by the stabilizer
+$G_{a_1\ldots  a_i}$ of  the earlier base  points.  If certain  points of
+$\Omega$ should are preferred as base point (e.g., because they belong to
+long cycles of $g$), a list of points starting with the most wanted ones,
+can be given  as optional third  argument  to `NextRBasePoint' (actually,
+this is done in the real code for `Centralizer').
+
+6.\enspace  `Fixcells( $\Pi$ )' returns the  list of  points in one-point
+cells of $\Pi$ (ordered as the cells are ordered in $\Pi$).
+
+7.\enspace For every point $p\in fix$,  if we know the  image `$p$ ^ $g$'
+under $c\in C_G(e)$, we also know `( $p$ ^ $g$ ) ^ $c$ = (  $p$ ^ $c$ ) ^
+$g$'. We therefore want to isolate these extra points in $\Pi$.
+
+9.\enspace This statement puts point $q$ in a cell  of its own, returning
+in $where$ the number of the cell  of $\Pi$ from  which $q$ was taken. If
+$q$ was already the only point in its cell, `$where$ = false' instead.
+
+12.\enspace This  command does the   necessary bookkeeping for  the extra
+base point $q$:  It prescribes $q$ as next  base in the  stabilizer chain
+for $G$ (needed, e.g., in line~5) and  returns `false' if $q$ was already
+fixed the  stabilizer of the  earlier base points (and  `true' otherwise;
+this is not used here).  Another call to  `ProcessFixpoint' like this was
+impicitly  made by the  function  `NextRBasePoint' to register the chosen
+base  point. By contrast,  the  point $q$  was  not chosen  this  way, so
+`ProcessFixpoint' must be called explicitly for~$q$.
+
+13.\enspace This   statement registers the  function   which will be used
+during the  backtrack search to  perform the corresponding refinements on
+the ``image partition'' $\Sigma_i$ (to yield the refined $\Sigma_{i+1}$).
+After  choosing an image $b_{i+1}$  for the base  point $a_{i+1}$, {\GAP}
+will compute $\Sigma_i \wedge (\{b_{i+1}\},\Omega-\{b_{i+1}\})$ and store
+this partition  in `$\cal I$.partition', where  $\cal  I$ is a  black box
+similar to $\cal R$, but corresponding to the current ``image partition''
+$\Sigma_i$ (hence  it is an ``R-image'' in  analogy to the  R-base). Then
+{\GAP} will call the  function `Refinements.Centralizer( $\cal  R$, $\cal
+I$, $\Pi$.cellno[ $p$ ], $p$, $where$ )', with the then current values of
+$\cal R$  and  $\cal I$, but  where `$\Pi$.cellno[  $p$  ]', $p$, $where$
+still have  the values  they have  at  the  time of this  `AddRefinement'
+command. This function call  will further refine `$\cal  I$.partition' to
+yield    $\Sigma_{i+1}$  as   it     is  programmed  in    the   function
+`Refinements.Centralizer', which is described below. (The global variable
+`Refinements' is a record which contains all refinement functions for all
+backtracking procedures.)
+
+14--18.\enspace If the cell  from which $q$  was  taken out had  only two
+points,  we  now have an additional   one-point  cell. This  condition is
+checked in line~13 and  if it is true,  this extra fixpoint $p$  is taken
+(line~15),  processed like $q$ before   (line~16) and  is then  (line~17)
+passed to another refinement function `Refinements.ProcessFixpoint( $\cal
+R$, $\cal I$, $p$, $where$ )', which is also described below.
+
+22--27.\enspace This command starts the backtrack search. Its result will
+be the centralizer as a subgroup of $G$. Its arguments are
+\beginlist
+  \item{22.} the group we want to run through,
+  \item{23.} the property we want to test, as a {\GAP} function,
+  \item{24.} `false' if we are looking for a subgroup, `true' in the case
+    of   a  representative  search    (when  the result   would    be one
+    representative),
+  \item{25.} the R-base,
+  \item{26.} a list  of data, to be stored  in `$\cal I$.data', which has
+    in position~1 the first member $\Sigma_0$  of the decreasing sequence
+    of ``image partitions'' mentioned in "ref:Backtrack searching" in the
+    reference manual. In the centralizer example, position~2 contains the
+    element that is  to be centralized. In the  case of  a representative
+    search,  i.e.,  a conjugacy test  `$g$  ^ $c \buildrel?\over= h$', we
+    would  have $h$   instead of  $g$   here, and   possibly a $\Sigma_0$
+    different from $\Pi_0$ (e.g., a  partition into unions of  $h$=cycles
+    of same length).
+  \item{27.} two subgroups  $L\le  C_G(g)$  and  $R\le  C_G(h)$ known  in
+    advance (we have $L=R$ in the centralizer case).
+\endlist
+
+\medskip%
+{\bsf Refinement functions    for the backtrack   search.}\quad  The last
+subsection   showed how the refinement  process   leading from $\Pi_i$ to
+$\Pi_{i+1}$ is coded in the function `$\cal R$.nextLevel', this has to be
+executed once the base point   $a_{i+1}$. The analogous refinement   step
+from $\Sigma_i$ to $\Sigma_{i+1}$ must be performed for each choice of an
+image  $b_{i+1}$ for $a_{i+1}$, and it  will depend  on the corresponding
+value of  $\Sigma_i\wedge (\{b_{i+1}\},  \Omega-\{b_{i+1}\})$. But before
+we can  continue  our centralizer example,   we must, for the  interested
+reader, document the  record components of the  other black box $\cal I$,
+as we did above for the R-base black box $\cal R$. Most of the components
+change as {\GAP} walks up and down the levels of the search tree.
+\beginitems
+`data' &
+    this will be mentioned below
+
+`depth' &
+    the level $i$ in the search tree of the current node $\Sigma_i$
+
+`bimg' &
+    a list of images of the points in `$\cal R$.base'
+
+`partition' &
+    the partition $\Sigma_i$ of the current node
+
+`level' &
+    the stabilizer chain `$\cal R$.lev[ $i$ ]' at the current level
+
+`perm' &
+    a permutation mapping `Fixcells(  $\Pi_i$ )' to `Fixcells( $\Sigma_i$
+    )' (this implies mapping $(a_1,\ldots,a_i)$ to $(b_1,\ldots,b_i)$)
+
+`level2', `perm2' &
+    a  similar construction for    the second stabilizer chain,   `false'
+    otherwise (and `true' if `$\cal R$.level2 = true')
+\enditems
+
+As declared  in   the above code  for `Centralizer',   the refinement  is
+performed by  the function `Refinement.Centralizer(  $\cal R$,  $\cal I$,
+$\Pi$.cellno[ $p$ ], $p$,  $where$ )' for a fixpoint  $p$ of $\Pi=  \Pi_i
+\wedge    (\{a_{i+1}\}, \Omega-\{a_{i+1}\})$   such    that   `$where$  =
+$\Pi$.cellno[ $p$  ^  $g$ ]'. This function   must return `false' if  the
+refinement  is  unsuccessful (e.g., because   it  leads to $\Sigma_{i+1}$
+having  different cell sizes from $\Pi_{i+1}$)   and `true' otherwise. It
+looks like this.
+
+{\parskip 0pt \newcount\lineno%
+ \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
+        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
+\)Refinements.Centralizer := function( $\cal R$, $\cal I$, %
+                                       $cellno$, $p$, $where$ )
+\)local \ $\Sigma$,  $q$;
+\)\quad $\Sigma$ := $\cal I$.partition;
+\)\quad $q$ := FixpointCellNo( $\Sigma$, $cellno$ ) ^ $\cal I$.data[ 2 ];
+\)\quad return IsolatePoint( $\Sigma$, $q$ ) = $where$ %
+           and ProcessFixpoint( $\cal I$, $p$, $q$ );
+\)end;
+  \vadjust{\allowbreak}%
+
+}%
+3.\enspace    The  current    value   of   $\Sigma_i\wedge  (\{b_{i+1}\},
+\Omega-\{b_{i+1}\})$ is always found in `$\cal I$.partition'.
+
+4.\enspace  The image of  the  only  point  in  cell number  `$cellno$  =
+$\Pi_i$.cellno[ $p$  ]' in $\Sigma$  under `$g$ = $\cal  I$.data[ 2 ]' is
+calculated.
+
+5.\enspace The function returns `true' only if the image $q$ has the same
+cell  number in $\Sigma$ as  $p$ had in $\Pi$  (i.e., $where$) and if $q$
+can be prescribed as an image  for $p$ under  the coset of the stabilizer
+$G_{a_1\ldots   a_{i+1}}.c$ where $c\in  G$   is an (already constructed)
+element mapping the   earlier base  points $a_1,\ldots,a_{i+1}$  to   the
+already  chosen  images  $b_1,\ldots,b_{i+1}$. This   latter condition is
+tested by `ProcessFixpoint(  $\cal I$, $p$,  $q$ )' which, if successful,
+also does the necessary bookkeeping in $\cal I$. In analogy to the remark
+about  line~12 in the  program above, the  chosen image $b_{i+1}$ for the
+base point   $a_{i+1}$  has  already  been   processed implicitly  by the
+function  `PartitionBacktrack',   and    this   processing   includes the
+construction  of an element $c\in G$  which maps `Fixcells( $\Pi_i$ )' to
+`Fixcells( $\Sigma_i$  )' and $a_{i+1}$   to $b_{i+1}$. By contrast,  the
+extra fixpoints $p$  and $q$ in  $\Pi_{i+1}$ and $\Sigma_{i+1}$  were not
+chosen automatically,     so   they  require   an    explicit   call   of
+`ProcessFixpoint', which  replaces the element  $c$ by some  $c'.c$ (with
+$c'\in G_{a_1\ldots  a_{i+1}}$)  which in  addition  maps $p$  to $q$, or
+returns `false' if this is impossible.
+
+You should now be  able to guess what `Refinements.ProcessFixpoint( $\cal
+R$, $\cal I$,  $p$, $where$ )' does:  it simply returns `ProcessFixpoint(
+$\cal I$, $p$, FixpointCellNo( $\cal I$.partition, $where$ ) )'.
+
+\medskip%
+{\bsf  Summary.}\quad When you write  your  own backtrack functions using
+the  partition technique,  you  have  to  supply  an R-base, including  a
+component `nextLevel', and   the  functions in the   `Refinements' record
+which  you need. Then  you can start  the backtrack by passing the R-base
+and the additional data (for the  `data' component of the ``R-image'') to
+`PartitionBacktrack'.
+
+\medskip%
+{\bsf  Functions  for  meeting    ordered  partitions.}\quad A   kind  of
+refinement that   occurs  in particular  in   the  normalizer calculation
+involves computing  the  meet of $\Pi$  (cf.\ lines~6ff.\  above) with an
+arbitary other partition  $\Lambda$, not just  with one point. To do this
+efficiently, {\GAP} uses the following two functions.
+
+\>StratMeetPartition( $\cal R$, $\Pi$, $\Lambda$ \[, $g$ \] )
+\>MeetPartitionStrat( $\cal R$, $\cal I$, {$\Lambda'$} \[, {$g'$} \], %
+                      $strat$ )
+
+\index{meet strategy}%
+Such a  `StratMeetPartition' command    would typically appear     in the
+function   `$\cal R$.nextLevel'  (where  $\Pi_i$    must  be refined   to
+$\Pi_{i+1}$).  It    replaces  $\Pi$  by $\Pi\wedge     \Lambda$ (thereby
+*changing* the argument  $\Pi$)  and retuns a ``meet  strategy'' $strat$.
+This is (for us) a black box which serves two  purposes: First, it allows
+{\GAP} to   calculate   faster  the   corresponding   meet  $\Sigma\wedge
+\Lambda'$, which must  then appear in a  `Refinements' function called in
+the descent from $\Sigma_i$  to $\Sigma_{i+1}$, because if the refinement
+is successful in the first  place, the intersection of   a cell from  the
+left hand side of the $\wedge$ sign with a  cell from the right hand side
+must  be the same  in both cases (and $strat$  records which  of them are
+nonempty). Second, if    there is a  discrepancy  between  the  behaviour
+prescribed by $strat$ and the  behaviour observed when refining $\Sigma$,
+the refinement can immediately be abandoned.
+
+On  the  other hand, if you  only  want to meet   a  partition $\Pi$ with
+$\Lambda$  for  a one-time  use, without recording   a strategy,  you can
+simply type `StratMeetPartition( $\Pi$, $\Lambda$ )'  as in the following
+example, which also demonstrates some other partition-related commands.
+\beginexample
+    gap> P := Partition( [[1,2],[3,4,5],[6]] );;  Cells( P );
+    [ [ 1, 2 ], [ 3, 4, 5 ], [ 6 ] ]
+    gap> Q := OnPartitions( P, (1,3,6) );;  Cells( Q );
+    [ [ 3, 2 ], [ 6, 4, 5 ], [ 1 ] ]
+    gap> StratMeetPartition( P, Q );
+    [  ]  # the ``meet strategy'' was not recorded, ignore this result
+    gap> Cells( P );
+    [ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]
+\endexample
+
+{\GAP}  makes   use of the  advantages  of  a ``meet   strategy''  if the
+refinement function  in   `Refinements' contains a   `MeetPartitionStrat'
+command   where   $strat$  is  the   ``meet   strategy''  calculated   by
+`StratMeetPartition' before. Such a command replaces `$\cal I$.partition'
+by its  meet with $\Lambda'$, again changing  the  argument $\cal I$. The
+necessary reversal  of these changes when  backtracking from  a node (and
+prescribing the next  possible image for a  base point)  is automatically
+done by the function `PartitionBacktrack'.
+
+In  all cases, an additional  argument $g$ means that the   meet is to be
+taken  not with $\Lambda$,   but  instead with $\Lambda.{g^{-1}}$,  where
+operation  on ordered partitions is  meant cellwise  (and setwise on each
+cell). (Analogously for the primed arguments.)
+\beginexample
+    gap> P := Partition( [[1,2],[3,4,5],[6]] );;
+    gap> StratMeetPartition( P, P, (1,6,3) );;  Cells( P );
+    [ [ 1 ], [ 5, 4 ], [ 6 ], [ 2 ], [ 3 ] ]  # |$P.(1,3,6) = Q|$
+\endexample
+
+\medskip%
+{\bsf Avoiding multiplication  of permutations.}\quad In the  description
+of  the last subsections, the  backtrack  algorithm constructs an element
+$c\in G$ mapping  the base points   to the prescribed images  and finally
+tests the property in question for that element. During the construction,
+$c$ is obtained as a product  of transversal elements from the stabilizer
+chain for $G$,  and so multiplications  of permutations are required  for
+every $c$  submitted to the test,  even if the  test fails (i.e.,  in our
+centralizer example, if `$g$ ^ $c$ \<> $g$'). Even if the construction of
+$c$ stops before images  for all base  points have been chosen, because a
+refinement was unsuccessful,  several  multiplications will  already have
+been performed by (explicit or implicit) calls of `ProcessFixpoint', and,
+actually, the general   backtrack procedure implemented in  {\GAP} avoids
+this.
+
+For this purpose, {\GAP} does  not actually multiply the permutations but
+rather stores  all the factors of the   product in a  list. Specifically,
+instead of carrying out  the multiplication in $c\mapsto c'.c$  mentioned
+in  the   comment  to  line~5 of  the   above  program   --- where $c'\in
+G_{a_1\ldots  a_{i+1}}$ is a  product  of factorized inverse  transversal
+elements, see "Stabilizer  chain records" ---  {\GAP} appends the list of
+these factorized inverse  transversal elements (giving  $c'$) to the list
+of factors already  collected for $c$. Here $c'$  is multiplied from  the
+left and is itself a  product of *inverses*  of strong generators of $G$,
+but {\GAP} simply spares itself   all the work of inverting  permutations
+and stores  only  a    ``list  of  inverses'',  whose product    is  then
+$(c'.c)^{-1}$  (which is  the  new  value of  $c^{-1}$).  The ``list   of
+inverses'' is  extended this way  whenever `ProcessFixpoint' is called to
+improve~$c$.
+
+The  product has to be multiplied  out only when  the property is finally
+tested  for  the  element $c$. But  it  is  often possible  to  delay the
+multiplication  even  futher, namely  until after   the test, so  that no
+multiplication is required in the case of  an unsuccessful test. Then the
+test  itself  must be carried   out with the  factorized   version of the
+element $c$.  For  this purpose,  `PartitionBacktrack' can  be passed its
+second argument (the property  in question) in  a different way, not as a
+single {\GAP} function, but as a list like in lines 2--4 of the following
+alternative excerpt from the code for `Centralizer'.
+
+{\parskip 0pt \newcount\lineno%
+ \def\){\advance\lineno by1 \begingroup\obeylines\cloparen%
+        \hbox to\manindent{\hfil $\scriptstyle\the\lineno$\enspace}}%
+\)return PartitionBacktrack( $G$,
+\)\quad [ $g$, $g$,
+\)\qquad OnPoints,
+\)\qquad $c$ -> $c$!.lftObj = $c$!.rgtObj ],
+\)\quad false, $\cal R$, [ $\Pi_0$, $g$ ], $L$, $R$ );
+  \vadjust{\allowbreak}%
+
+}%
+The test for $c$ to have the property in question  is of the form `$opr$(
+$left$,  $c$  )  =  $right$' where  $opr$   is an  operation  function as
+explained in "ref:External sets" in the reference manual. In other words,
+$c$ passes the test if and only if it maps a ``left object'' to a ``right
+object'' under  a certain operation. In  the centralizer example, we have
+`$opr$ =  OnPoints' and $left = right  = g$, but  in a conjugacy test, we
+would have $right = h$.
+
+2.\enspace  Two first two  entries (here $g$ and  $g$)  are the values of
+$left$ and $right$.
+
+3.\enspace The third entry (here `OnPoints') is the operation $opr$.
+
+4.\enspace The fourth  entry is the test to  be performed upon the mapped
+left object $left$  and preimage  of  the right object `$opr$(   $right$,
+$c$^-1 )'.  Here {\GAP} operates with the  inverse of $c$ because this is
+the product of  the permutations stored  in the ``list of inverses''. The
+preimage of $right$ under $c$ is then calculcated by mapping $right$ with
+the factors  of $c^{-1}$ one by one,  without the need  to multiply these
+factors.    This mapping  of  $right$  is     automatically done by   the
+`ProcessFixpoint' function whenever $c$ is extended, the current value of
+$right$ is always  stored  in `$c$!.rgtObj'.  When the test  given by the
+fourth entry  is finally performed,   the element $c$  has two components
+`$c$!.lftObj =  $left$' and `$c$!.rgtObj  =   $opr$( $right$, $c$^-1  )',
+which must be used to express the desired  relation as a function of $c$.
+In our  centralizer  example, we simply  have  to test   whether they are
+equal.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Local Variables:
+% mode:               text
+% mode:               outline-minor
+% outline-regexp:     "\\\\Chapter\\|\\\\Section\\|\\\\stars"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% fill-column:        73
+% End:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

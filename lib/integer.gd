@@ -359,6 +359,24 @@ Gcdex := NewOperationArgs( "Gcdex" );
 
 #############################################################################
 ##
+#F  IsEvenInt( <n> )  . . . . . . . . . . . . . . . . . . test if <n> is even
+##
+IsEvenInt := function( n )
+    return n mod 2 = 0;
+end;
+
+
+#############################################################################
+##
+#F  IsOddInt( <n> ) . . . . . . . . . . . . . . . . . . .  test if <n> is odd
+##
+IsOddInt := function( n )
+    return n mod 2 = 1;
+end;
+
+
+#############################################################################
+##
 #F  IsPrimeInt( <n> ) . . . . . . . . . . . . . . . . . . .  test for a prime
 ##
 ##  'IsPrimeInt' returns 'false'  if it can  prove that <n>  is composite and

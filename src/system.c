@@ -1597,7 +1597,7 @@ void InitSystem (
     else {
         syBuf[0].echo = stdout;
     }
-    syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
+    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) )
           && ! SyStrcmp( ttyname(fileno(stdin)), ttyname(fileno(stderr)) ) )
@@ -1623,7 +1623,7 @@ void InitSystem (
     else {
         syBuf[0].echo = stdout;
     }
-    syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
+    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
     if ( isatty( fileno(stderr) ) ) {
         if ( isatty( fileno(stdin) ) )
             syBuf[2].fp = stdin;
@@ -1637,7 +1637,7 @@ void InitSystem (
 #endif
 #if SYS_MSDOS_DJGPP || SYS_TOS_GCC2
     syBuf[0].fp = stdin;   setbuf( stdin, syBuf[0].buf );
-    syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
+    syBuf[1].echo = syBuf[1].fp = stdout;  setbuf( stdout, (char*)0 );
     syBuf[3].fp = stderr;  setbuf( stderr, (char*)0 );
     if ( isatty( fileno(stderr) ) )
         syBuf[2].fp = stderr;

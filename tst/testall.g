@@ -79,6 +79,7 @@ infoRead1 := InfoRead1;  InfoRead1 := Ignore;
 infoRead2 := InfoRead2;  InfoRead2 := Ignore;
 
 ReadTest( Filename( TestDir, "unknown.tst"  ) );  SHOW_STONES(64);
+ReadTest( Filename( TestDir, "boolean.tst"  ) );  SHOW_STONES(64);
 ReadTest( Filename( TestDir, "listgen.tst"  ) );  SHOW_STONES(89);
 ReadTest( Filename( TestDir, "gaussian.tst" ) );  SHOW_STONES(218);
 ReadTest( Filename( TestDir, "grpfree.tst"  ) );  SHOW_STONES(481);

@@ -588,7 +588,7 @@ sparc-sun-sunos-gcc2:
             SRC="../../src" \
 	    CC="gcc" \
 	    LFLAGS="$(LOPTS)" \
-	    CFLAGS="$(COPTS) -O2" \
+	    CFLAGS="$(COPTS) -DSPARC -O2" \
 	    CFLAGS_SIG="-DSYS_HAS_SIGNALS" \
 	    CFLAGS_SYS="$(COPTS) \
               -DSYS_IS_USG \

@@ -34,18 +34,19 @@ executed.  Moreover, since in  this  example `<prop> =  IsSolvableGroup',
 i.e., since
 $$ \hbox{`<super_req> = <sub_req> and <prop>',} $$
 the contraposition of the statement is also used:
-$$\vbox{\halign{\hfil#\ &#\hfil\quad i.e.,\ &\hfil#\ &#\hfil\cr%
-if&`<sub_req>( <super> )'&if&`IsGroup( <super> )'\cr
-and&`<sub_req>( <sub> )'&and&`IsGroup( <sub> )'\cr
-and&`Tester( <prop> )( <sub> ) and not <prop>( <sub> )'&and&
+$$
+\vbox{\halign{\hfil#\ &#\hfil\quad&#\ &\hfil#\ &#\hfil\cr%
+if& `<sub_req>( <super> )'& i.e.,& if& `IsGroup( <super> )'\cr
+and& `<sub_req>( <sub> )'& i.e.,& and& `IsGroup( <sub> )'\cr
+and& `Tester( <prop> )( <sub> ) and not <prop>( <sub> )'& i.e.,& and&
   `not IsSolvableGroup( <sub> )'\cr
-then&`Setter( <prop> )( <super>, false )'&then&
+then& `Setter( <prop> )( <super>, false )'& i.e.,& then&
   `SetIsSolvableGroup( <super>, false )'.\cr}}$$
 Both implications
-$$ \eqalignno{\hbox{`IsSolvableGroup( <super> )'}&\Rightarrow
+$$ \eqalignno{\hbox{`IsSolvableGroup( <super> )'}& \Rightarrow
    \hbox{`IsSolvableGroup( <sub> )'}\cr
    \noalign{\line{and}}
-   \hbox{`not IsSolvableGroup( <sub> )'}&\Rightarrow
+   \hbox{`not IsSolvableGroup( <sub> )'}& \Rightarrow
    \hbox{`not IsSolvableGroup( <super> )'}\cr} $$
 are declared by  the one call  of `InstallSubsetMaintainedMethod' and are
 exploited by the one call of `UseSubsetRelation'.
@@ -63,11 +64,12 @@ and `<denom_req>( <denom> )' and `<factor_req>( <factor> )' then `Setter(
 <prop> )( <factor>, true )'. The contraposition is valid if
 $$ \hbox{`<numer_req> = <factor_req> and <prop>'} $$
 and means that
-$$\vbox{\halign{\hfil#\ &#\hfil\cr%
-if&`<factor_req>( <factor> )'\cr
-and&`<factor_req>( <denom> )'\cr
-and&`Tester( <prop> )( <factor> ) and not <prop>( <factor> )'\cr
-then&`Setter( <prop> )( <denom>, false )'.\cr}}$$
+$$
+\vbox{\halign{\hfil#\ & #\hfil\cr%
+if& `<factor_req>( <factor> )'\cr
+and& `<factor_req>( <denom> )'\cr
+and& `Tester( <prop> )( <factor> ) and not <prop>( <factor> )'\cr
+then& `Setter( <prop> )( <denom>, false )'.\cr}}$$
 
 Finally, there is a class of maintained methods for the case of isomophic
 domains.
