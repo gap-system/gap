@@ -17,7 +17,7 @@ char * Revision_objfgelm_h =
 
 *D  AWP_SOMETHING
 */
-#define AWP_FIRST_ENTRY          4
+#define AWP_FIRST_ENTRY          5
 #define AWP_PURE_KIND 		 (AWP_FIRST_ENTRY+0)
 #define AWP_NR_BITS_EXP          (AWP_FIRST_ENTRY+1)
 #define AWP_NR_GENS              (AWP_FIRST_ENTRY+2)

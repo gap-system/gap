@@ -344,7 +344,7 @@ end );
 
 #############################################################################
 ##
-#M  CosetTableFromGensAndRels( <G>, <H> ) . . . . . .  do a coset enumeration
+#M  CosetTableFpGroup( <G>, <H> ) . . . . . . . . . .  do a coset enumeration
 ##
 ##  'CosetTableFpGroup'   applies   a  Felsch  strategy   Todd-Coxeter  coset
 ##  enumeration to construct a coset table of H in G.
@@ -1120,6 +1120,7 @@ function( G )
 
 end );
 
+
 #############################################################################
 ##
 #F FreeGroupOfFpGroup( F )
@@ -1128,6 +1129,7 @@ FreeGroupOfFpGroup := function( F )
     return ElementsFamily( FamilyObj( F ) )!.freeGroup;
 end;
 
+
 #############################################################################
 ##
 #F RelatorsOfFpGroup( F )
@@ -1135,6 +1137,16 @@ end;
 RelatorsOfFpGroup := function( F )
     return ElementsFamily( FamilyObj( F ) )!.relators;
 end;
+
+
+#############################################################################
+##
+#F FreeGeneratorsOfFpGroup( F )
+##
+FreeGeneratorsOfFpGroup := function( F )
+  return GeneratorsOfGroup(ElementsFamily( FamilyObj( F ) )!.freeGroup);
+end;
+
 
 #############################################################################
 ##
@@ -1162,6 +1174,7 @@ InstallMethod( MappedWord, true,
     return mapped;
     end );
 
+
 #############################################################################
 ##
 #M  IsomorphismFpGroupByGenerators( G, gens, str )
@@ -1171,7 +1184,7 @@ InstallMethod( IsomorphismFpGroupByGenerators,
                true,
                [IsPermGroup, IsList, IsString],
                0,
-               
+
 function( G, gens, str )
     local F, gensF, hom, relators, S, gensS, iso;
 
@@ -1206,6 +1219,7 @@ InstallOtherMethod( IsomorphismFpGroupByGenerators,
 function( G, gens )
     return IsomorphismFpGroupByGenerators( G, gens, "F" );
 end );
+
                
 #############################################################################
 ##
@@ -1319,6 +1333,7 @@ function( G, series )
     return IsomorphismFpGroupBySubnormalSeries( G, series, "F" );
 end);
 
+
 #############################################################################
 ##
 #M  IsomorphismFpGroupByCompositionSeries( G, str )
@@ -1351,7 +1366,7 @@ function( G, str )
         gensH := Set( GeneratorsOfGroup( H ) );
         gensH := Filtered( gensH, x -> x <> One(H) );
     fi;
-    iso := IsomorphismFpGroupByGenerators( H, str, gensH );
+    iso := IsomorphismFpGroupByGenerators( H, gensH, str );
     F := FreeGroupOfFpGroup( Image( iso ) );
     gensF := GeneratorsOfGroup( F );
     imgsF := iso!.generators;
@@ -1449,9 +1464,10 @@ function( G )
     return IsomorphismFpGroupByCompositionSeries( G, "F" );
 end );
 
+
 #############################################################################
 ##
-#M IsomorphismFpGroup( G )
+#M  IsomorphismFpGroup( G )
 ##
 InstallMethod( IsomorphismFpGroup, 
                "method for perm groups",
@@ -1462,8 +1478,25 @@ function( G )
     return IsomorphismFpGroupByCompositionSeries( G, "F" );
 end );
 
+
 #############################################################################
 ##
-#E  grpfp.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
+#M  PreImagesRepresentative
+##
+InstallMethod( PreImagesRepresentative,
+  "hom. to standard generators of fp group, using 'MappedWord'",
+  FamRangeEqFamElm,
+  [IsToFpGroupHomomorphismByImages,IsMultiplicativeElementWithInverse],0,
+function(hom,elm)
+  if not IsIdentical(hom!.genimages,GeneratorsOfGroup(Range(hom))) then
+    # check, whether we map to the standard generators
+    TryNextMethod();
+  fi;
+  return MappedWord(elm,hom!.genimages,hom!.generators);
+end);
 
+
+#############################################################################
+##
+#E  grpfp.gi  . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 

@@ -7,68 +7,44 @@ Revision.gprdpc_gi :=
 
 #############################################################################
 ##
-#F  DirectProductPcGroupConstructor( G, H, groups, lenlist )
+#F  DirectProductOfPcGroups( list )
 ##
-DirectProductPcGroupConstructor := function( G, H, groups, lenlist )
-    local lenG, lenH, isoG, FG, relsG, gensFG, isoH, FH, relsH, gensFH, 
-          F, gens, rels, D, info, list, grps;
+DirectProductOfPcGroups := function( list )
+    local len, F, gensF, relsF, s, G, pcgsG, isoG, FG, relsG, gensG, n, D,
+          info, first;
 
-    lenG := Length( Pcgs( G ) );
-    lenH := Length( Pcgs( H ) );
-   
-    isoG := IsomorphismFpGroup( G );
-    FG   := Image( isoG );
-    relsG := RelatorsOfFpGroup( FG );
-    gensFG := GeneratorsOfGroup( FreeGroupOfFpGroup( FG ) );
+    len := Sum( List( list, x -> Length( Pcgs( x ) ) ) );
+    F   := FreeGroup( len );
+    gensF := GeneratorsOfGroup( F );
+    relsF := [];
 
-    isoH := IsomorphismFpGroup( H );
-    FH   := Image( isoH );
-    relsH := RelatorsOfFpGroup( FH );
-    gensFH := GeneratorsOfGroup( FreeGroupOfFpGroup( FH ) );
+    s := 0;
+    first := [1];
+    for G in list do
+        pcgsG := Pcgs( G );
+        isoG  := IsomorphismFpGroupByPcgs( pcgsG, "F" );
+        FG    := Image( isoG );
+        relsG := RelatorsOfFpGroup( FG );
+        gensG := GeneratorsOfGroup( FreeGroupOfFpGroup( FG ) );
+        n     := s + Length( pcgsG );
+        Append( relsF, List( relsG, 
+                       x -> MappedWord( x, gensG, gensF{[s+1..n]} ) ) );
+        s := n;
+        Add( first, n+1 );
+    od;
 
-    F  := FreeGroup( lenG + lenH );
-    gens := GeneratorsOfGroup( F );
- 
-    rels := List( relsG, x -> MappedWord( x, gensFG, 
-                                         gens{[1..lenG]} ) );
-    Append( rels, 
-            List( relsH, x -> MappedWord( x, gensFH,
-                                         gens{[lenG+1..lenG+lenH]} ) ) );
-    
     # create direct product
-    D := PcGroupFpGroup( F / rels );
+    D := PcGroupFpGroup( F / relsF );
 
     # create info
-    grps := Concatenation( groups, [H] );
-    list := Concatenation( lenlist, [lenG+lenH] );
-    info := rec( groups := grps,
-                 lenlist := list,
+    info := rec( groups := list,
+                 first  := first,
                  embeddings := [],
                  projections := [] );
     SetDirectProductInfo( D, info );
     return D;
 end;
  
-#############################################################################
-##
-#M  DirectProduct2( <G>, <H> )  . . . . . . . direct product of two pc groups
-##
-InstallMethod( DirectProduct2,
-        "of pc group and pc groups",
-        true, [ IsPcGroup, IsPcGroup ], 0,
-    function( G, H )
-    return DirectProductPcGroupConstructor(G, H, [G], [0, Length(Pcgs(G))]);
-end );
-
-InstallMethod( DirectProduct2,
-        "of direct product and another pc group",
-        true, [ IsPcGroup and HasDirectProductInfo, IsPcGroup ], 0,
-    function( D, H )
-    local info;
-    info := DirectProductInfo( D );
-    return DirectProductPcGroupConstructor(D, H, info.groups, info.lenlist);
-end );
-
 #############################################################################
 ##
 #A Embedding
@@ -79,7 +55,7 @@ InstallMethod( Embedding,
          [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
          0,
     function( D, i )
-    local info, G, imgs, hom;
+    local info, G, imgs, hom, gens;
 
     # check
     info := DirectProductInfo( D );
@@ -89,13 +65,13 @@ InstallMethod( Embedding,
 
     # compute embedding
     G   := info.groups[i];
-    imgs := Pcgs(D){[info.lenlist[i]+1 .. info.lenlist[i+1]]};
-    hom := GroupHomomorphismByImages( G, D, AsList( Pcgs(G) ), imgs );
+    gens := GeneratorsOfGroup( G );
+    imgs := GeneratorsOfGroup(D){[info.first[i] .. info.first[i+1]-1]};
+    hom := GroupHomomorphismByImages( G, D, gens, imgs );
     SetIsInjective( hom, true );
 
     # store information
     info.embeddings[i] := hom;
-    SetDirectProductInfo( D, info );
     return hom;
 end );
 
@@ -109,7 +85,7 @@ InstallMethod( Projection,
          [ IsPcGroup and HasDirectProductInfo, IsInt and IsPosRat ], 
          0,
     function( D, i )
-    local info, G, imgs, hom, N, list;
+    local info, G, imgs, hom, N, list, gens;
 
     # check
     info := DirectProductInfo( D );
@@ -119,19 +95,18 @@ InstallMethod( Projection,
 
     # compute projection
     G    := info.groups[i];
-    list := info.lenlist;
-    imgs := Concatenation( List( [1..list[i]], x -> One( G ) ),
-                           AsList( Pcgs(G) ),
-                           List( [list[i+1]+1..Length(Pcgs(D))], x -> One(G)));
-    hom := GroupHomomorphismByImages( D, G, AsList( Pcgs(D) ), imgs );
-    N := Subgroup( D, Pcgs(D){Concatenation( [1..list[i]], 
-                                             [list[i+1]+1..Length(Pcgs(D))])});
+    gens := GeneratorsOfGroup( D );
+    imgs := Concatenation( List( [1..info.first[i]-1], x -> One( G ) ),
+                           GeneratorsOfGroup( G ),
+                           List( [info.first[i+1]..Length(gens)], x -> One(G)));
+    hom := GroupHomomorphismByImages( D, G, gens, imgs );
+    N := Subgroup( D, gens{Concatenation( [1..info.first[i]-1], 
+                           [info.first[i+1]..Length(gens)] )} );
     SetIsSurjective( hom, true );
     SetKernelOfMultiplicativeGeneralMapping( hom, N );
 
     # store information
     info.projections[i] := hom;
-    SetDirectProductInfo( D, info );
     return hom;
 end );
 

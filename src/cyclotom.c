@@ -1696,7 +1696,7 @@ Obj             GaloisCycHandler (
 {
     Obj                 gal;            /* galois conjugate, result        */
     Obj                 sum;            /* sum of two coefficients         */
-    UInt                n;              /* order of the field              */
+    Int                 n;              /* order of the field              */
     UInt                sqr;            /* if n < sqr*sqr n is squarefree  */
     Int                 o;              /* galois automorphism             */
     UInt                gcd, s, t;      /* gcd of n and ord, temporaries   */

@@ -343,12 +343,13 @@ that the external set `t' contains all information  that is necessary for
 record  component   like `hom!.externalSet'   or   as  an attribute  like
 `Enumerator(t)'?
 
-\answer  A record component like `hom!.externalSet'  must be entered when
-the object `hom'  is constructed, which  makes sense because an operation
-homomorphism  like `hom'   is constructed   for   a given  external  set.
-Attributes like `Enumerator(t)' need not be  set upon construction of the
-object, they  can be computed and stored  when they  are required for the
-first time and subsequently be looked up.
+\answer  A record component  like `hom!.externalSet' must be entered when
+the object `hom'  is constructed, which makes  sense because an operation
+homomorphism   like  `hom' is  constructed for     a given external  set.
+Attributes like `Enumerator(t)' need not  be set upon construction of the
+object, they can be computed  and stored when  they are required for  the
+first time and subsequently be looked up. This  mechanism is explained in
+section~"Attributes".
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Subgroups!as stabilizers}
@@ -378,8 +379,7 @@ stabilizer of a point of an appropriate  transitive operation (namely the
 operation  on  the cosets of that  subgroup  or another operation that is
 equivalent to  this operation).  So the question   is how  to find  other
 operations. The obvious thing is to operate  on pairs of points. So using
-the function `Tuples'  (see  "Tuples") we first generate  a  list  of all
-pairs.
+the function `Tuples' we first generate a list of all pairs.
 \beginexample
     gap> pairs := Tuples( [1..8], 2 );;
 \endexample
@@ -584,6 +584,7 @@ usual way we now look for the subgroups above `u105'.
 \beginexample
     gap> blocks := Blocks( a8, orb );; Length( blocks );
     15
+
     gap> blocks[1];
     [ (1,2)(3,4)(5,6)(7,8), (1,3)(2,4)(5,8)(6,7), (1,4)(2,3)(5,7)(6,8),
       (1,5)(2,6)(3,8)(4,7), (1,6)(2,5)(3,7)(4,8), (1,7)(2,8)(3,6)(4,5),
@@ -628,8 +629,7 @@ This  concludes  our  example.   In  this  section  we demonstrated  some
 functions  from  the operations  package.   There  is  a  whole class  of
 functions that  we  did  not mention, namely  those that  take  a  single
 element instead  of a  whole  group  as first argument, e.g., `Cycle' and
-`Permutation'.  All functions are described in the chapter "Operations of
-Groups".
+`Permutation'.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Group homomorphisms!by images}
@@ -791,16 +791,19 @@ monomorphism like `hom' and then proceeds as we have done above.
     gap> grp := Group([[i,0],[0,-i]],[[0,1],[-1,0]]);;
     gap> IsHandledByNiceMonomorphism( grp );
     false
+
     gap> IsFinite( grp );
     true
     gap> IsHandledByNiceMonomorphism( grp );
     true
+
     gap> hom := NiceMonomorphism( grp );
     <operation homomorphism>
     gap> hom!.externalSet; p := Image( hom );
     [ [ 1, 0 ], [ 0, 1 ], [ E(4), 0 ], [ 0, -E(4) ], [ -1, 0 ],
       [ 0, E(4) ], [ 0, -1 ], [ -E(4), 0 ] ]
     Group( [ (1,3,5,8)(2,4,7,6), (1,2,5,7)(3,6,8,4) ], ... )
+
     gap> ConjugacyClasses( grp ) = gcls;
     true
 \endexample
@@ -831,43 +834,45 @@ which contains the six elements of order~4 in `p'. The automorphism group
 must permute  these elements,  and the  action  is faithful because  they
 generate~`p'.
 
-The range of  a nice monomorphism is in  most cases  a permutation group,
-because  nice monomorphisms are   mostly operation homomorphisms. In some
-cases, like in  our  last example,  the  group is solvable and  you might
-prefer  a pc   group  as nice  object.  Well,  you  can change  the  nice
-monomorphism by  composing  it with an   isomorphism from the permutation
-group  to a pc group.   Such an isomorphism is   provided by the function
-`IsomorphismPcGroup'. But if you change the  nice monomorphism, *you must
-at the same time  change the nice object!*  So you have to type something
-like:
+The range  of a nice  monomorphism is in most  cases a permutation group,
+because nice  monomorphisms are  mostly operation homomorphisms.  In some
+cases, like  in our  last example,  the group is   solvable and you might
+prefer a pc group as nice object. You cannot change the nice monomorphism
+of the automorphism  group, but  you  can compose it  with an isomorphism
+from the permutation  group to a pc  group to obtain your personal  nicer
+monomorphism. If you  reconstruct the automorphism   group, you can  even
+prescribe it this nicer monomorphism as its `NiceMonomorphism', because a
+newly-constructed group will not yet have a `NiceMonomorphism' set.
 \beginexample
-    gap> SetNiceMonomorphism( aut, NiceMonomorphism( aut ) *
-    >                              IsomorphismPcGroup( niceaut ) );;
-    gap> SetNiceObject( aut, Image( NiceMonomorphism( aut ), aut ) );;
+    gap> nicer := NiceMonomorphism(aut) * IsomorphismPcGroup(niceaut);;
+    gap> aut2 := GroupByGenerators( GeneratorsOfGroup( aut ) );;
+    gap> SetNiceMonomorphism( aut2, nicer );
 \endexample
-The star `*' denotes composition of mappings from the  left to the right,
-as we have seen in "Operations!of groups" above.
+The star `*' denotes composition of mappings  from the left to the right,
+as we  have  seen in  "Operations!of  groups" above.   Reconstructing the
+automorphism group may of course result in the  loss of other information
+{\GAP} had already gathered, besides the (not-so-)nice monomorphism.
 
 \exercise In  analogy to `IsomorphismPcGroup', there  is also the command
 `IsomorphismPermGroup'. Continuing  the example of  this section, what is
 the    difference   between      `IsomorphismPermGroup(   grp  )'     and
 `NiceMonomorphism( grp )'?
 
-\answer  `IsomorphismPermGroup(  grp )' returns  a  bijective mapping, in
-particular its  `Range' (see "Range") is a  permutation  group of size~8,
-whereas a   nice monomorphism which is an   operation homomorphism has as
-`Range' a full symmetric group. Also a nice monomorphism could be defined
-on  a larger group. This  is not the case in  the  example `grp', but the
-nice monomorphism of a $d$-dimensional matrix group over the finite field
-with $q$ elements is defined on the general linear group~$GL(d,q)$.
+\answer `IsomorphismPermGroup( grp  )'  returns a bijective   mapping, in
+particular its  `Range' is a permutation  group of size~8, whereas a nice
+monomorphism  which  is an operation homomorphism   has as `Range' a full
+symmetric group. Also a  nice monomorphism could  be defined on a  larger
+group. This is   not   the case in   the   example `grp', but   the  nice
+monomorphism of a $d$-dimensional matrix group over the finite field with
+$q$ elements is defined on the general linear group~$GL(d,q)$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
 % outline-regexp:     "\\\\Chapter\\|\\\\Section"
-% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
-% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

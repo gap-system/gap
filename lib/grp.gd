@@ -1128,6 +1128,8 @@ IsomorphismPcGroup := NewAttribute( "IsomorphismPcGroup", IsGroup );
 #A  IsomorphismFpGroup( <G> )
 ##
 IsomorphismFpGroup := NewAttribute( "IsomorphismFpGroup", IsGroup );
+HasIsomorphismFpGroup := Tester(IsomorphismFpGroup);
+SetIsomorphismFpGroup := Setter(IsomorphismFpGroup);
 
 IsomorphismFpGroupByGenerators := NewOperation( 
     "IsomorphismFpGroupByGenerators", [IsGroup, IsList, IsString] );
@@ -1181,16 +1183,6 @@ PowerMapOfGroup := NewOperation( "PowerMapOfGroup",
 ##
 PowerMapOfGroupWithInvariants := NewOperationArgs(
     "PowerMapOfGroupWithInvariants" );
-
-
-#############################################################################
-##
-#A  GeneratorsAndRelators( <g> ) . . a list [free group, free gens, relators]
-##                               defining the group (to store a presentation)
-##
-GeneratorsAndRelators := NewAttribute("GeneratorsAndRelators",IsGroup);
-SetGeneratorsAndRelators := Setter(GeneratorsAndRelators);
-HasGeneratorsAndRelators := Tester(GeneratorsAndRelators);
 
 
 #############################################################################

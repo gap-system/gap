@@ -115,12 +115,29 @@ CosetTableFromGensAndRels := NewOperationArgs("CosetTableFromGensAndRels");
 ##
 RelatorsOfFpGroup := NewOperationArgs( "RelatorsOfFpGroup" );
 
+#############################################################################
+##
+#F FreeGeneratorsOfFpGroup( F )
+##
+FreeGeneratorsOfFpGroup := NewOperationArgs( "FreeGeneratorsOfFpGroup" );
+
 ############################################################################
 ##
 #F FreeGroupOfFpGroup 
 ##
 FreeGroupOfFpGroup := NewOperationArgs( "FreeGroupOfFpGroup" );
 
+
+############################################################################
+##
+#F IsToFpGroupGeneralMappingByImages
+##
+IsToFpGroupGeneralMappingByImages := NewRepresentation
+    ( "IsToFpGroupGeneralMappingByImages",
+      IsGroupGeneralMappingByImages,
+      [ "generators", "genimages" ] );
+IsToFpGroupHomomorphismByImages := IsToFpGroupGeneralMappingByImages
+                               and IsMapping;
 
 #############################################################################
 ##

@@ -9,17 +9,18 @@ Revision.gprdperm_gi :=
 
 #############################################################################
 ##
-#F  DirectProductPermGroupConstructor( ... )  . .  construct a direct product
+#F  DirectProductOfPermGroups( <grps> ) . . . . direct product of perm groups
 ##
-DirectProductPermGroupConstructor := function( oldgrps, grps,
-                                             olds, news, perms, gens )
-    local   deg,  grp,  old,  new,  perm,  gen,  D, info;
+DirectProductOfPermGroups := function( grps )
+    local   oldgrps,  olds,  news,  perms,  gens,
+            deg,  grp,  old,  new,  perm,  gen,  D, info;
     
-    if IsEmpty( news )  then
-        deg := 0;
-    else
-        deg := news[ Length( news ) ];  deg := deg[ Length( deg ) ];
-    fi;
+    oldgrps := [  ];
+    olds    := [  ];
+    news    := [  ];
+    perms   := [  ];
+    gens    := [  ];
+    deg     := 0;
     
     # loop over the groups
     for grp  in grps  do
@@ -51,29 +52,6 @@ DirectProductPermGroupConstructor := function( oldgrps, grps,
     SetDirectProductInfo( D, info );
     return D;
 end;
-
-#############################################################################
-##
-#M  DirectProduct2( <G>, <H> )  . . . . . . direct product of two perm groups
-##
-InstallMethod( DirectProduct2,
-        "of perm group and perm groups",
-        IsIdentical, [ IsPermGroup, IsPermGroup ], 0,
-    function( G, H )
-    return DirectProductPermGroupConstructor( [  ], [ G, H ],
-                   [  ], [  ], [  ], [  ] );
-end );
-
-InstallMethod( DirectProduct2,
-        "of direct product and another perm group",
-        IsIdentical, [ IsPermGroup and HasDirectProductInfo, IsPermGroup ], 0,
-    function( D, H )
-    local info;
-    info := DirectProductInfo( D );
-    return DirectProductPermGroupConstructor( info.groups, [ H ],
-           info.olds, info.news, info.perms,
-                   ShallowCopy( GeneratorsOfGroup( D ) ) );
-end );
 
 #############################################################################
 ##
@@ -297,7 +275,7 @@ InstallMethod( SubdirectProduct, true,
             gen;        # one generator of <G1> or kernel of <phi2>
 
     # make the direct product and the embeddings
-    D := DirectProduct2( G1, G2 );
+    D := DirectProduct( G1, G2 );
     emb1 := Embedding( D, 1 );
     emb2 := Embedding( D, 2 );
     

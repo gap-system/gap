@@ -444,6 +444,58 @@ end;
 
 #############################################################################
 ##
+#M  IsInjective( <map> )  . . . . . for gen. mapp. with known inv. gen. mapp.
+#M  IsSingleValued( <map> ) . . . . for gen. mapp. with known inv. gen. mapp.
+#M  IsSurjective( <map> ) . . . . . for gen. mapp. with known inv. gen. mapp.
+#M  IsTotal( <map> )  . . . . . . . for gen. mapp. with known inv. gen. mapp.
+##
+InstallImmediateMethod( IsInjective,
+    IsGeneralMapping and HasInverseGeneralMapping, 0,
+    function( map )
+    map:= InverseGeneralMapping( map );
+    if HasIsSingleValued( map ) then
+      return IsSingleValued( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+InstallImmediateMethod( IsSingleValued,
+    IsGeneralMapping and HasInverseGeneralMapping, 0,
+    function( map )
+    map:= InverseGeneralMapping( map );
+    if HasIsInjective( map ) then
+      return IsInjective( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+InstallImmediateMethod( IsSurjective,
+    IsGeneralMapping and HasInverseGeneralMapping, 0,
+    function( map )
+    map:= InverseGeneralMapping( map );
+    if HasIsTotal( map ) then
+      return IsTotal( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+InstallImmediateMethod( IsTotal,
+    IsGeneralMapping and HasInverseGeneralMapping, 0,
+    function( map )
+    map:= InverseGeneralMapping( map );
+    if HasIsSurjective( map ) then
+      return IsSurjective( map );
+    else
+      TryNextMethod();
+    fi;
+    end );
+
+
+#############################################################################
+##
 #M  IsTotal( <map> )  . . . . . . . . . . . . . . . . . . for general mapping
 ##
 InstallMethod( IsTotal,

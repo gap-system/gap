@@ -14,6 +14,7 @@ Revision.kind_g :=
 
 #############################################################################
 ##
+
 #V  POS_DATA_KIND . . . . . . . . position where the data of a kind is stored
 #V  POS_NUMB_KIND . . . . . . . position where the number of a kind is stored
 #V  POS_FIRST_FREE_KIND . . . . .  first position that has no overall meaning
@@ -24,6 +25,13 @@ Revision.kind_g :=
 POS_DATA_KIND := 3;
 POS_NUMB_KIND := 4;
 POS_FIRST_FREE_KIND := 5;
+
+
+#############################################################################
+##
+#F  NEW_KIND_NEXT_ID  . . . . . . . . . . . . GAP integer numbering the kinds
+##
+NEW_KIND_NEXT_ID := -(2^28);
 
 
 #############################################################################
@@ -201,10 +209,12 @@ IsKindDefaultRep        := NewRepresentation( "IsKindDefaultRep",
 
 FamilyOfFamilies        := rec();
 
+NEW_KIND_NEXT_ID := NEW_KIND_NEXT_ID+1;
 KindOfFamilies          := [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamily and IsFamilyDefaultRep ) ),
-    false ];
+    false,
+    NEW_KIND_NEXT_ID ];
 
 FamilyOfFamilies!.NAME          := "FamilyOfFamilies";
 FamilyOfFamilies!.REQ_FLAGS     := FLAGS_FILTER( IsFamily );
@@ -212,12 +222,14 @@ FamilyOfFamilies!.IMP_FLAGS     := EMPTY_FLAGS;
 FamilyOfFamilies!.KINDS         := [];
 FamilyOfFamilies!.KINDS_LIST_FAM:= [,,,,,,,,,,,,false]; # list with 12 holes
 
+NEW_KIND_NEXT_ID := NEW_KIND_NEXT_ID+1;
 KindOfFamilyOfFamilies  := [
       FamilyOfFamilies,
       WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfFamilies and IsFamilyDefaultRep 
                                    and IsAttributeStoringRep
                                     ) ),
-    false ];
+    false,
+    NEW_KIND_NEXT_ID ];
 
 FamilyOfKinds           := rec();
 
@@ -232,10 +244,12 @@ FamilyOfKinds!.IMP_FLAGS        := EMPTY_FLAGS;
 FamilyOfKinds!.KINDS            := [];
 FamilyOfKinds!.KINDS_LIST_FAM   := [,,,,,,,,,,,,false]; # list with 12 holes
 
+NEW_KIND_NEXT_ID := NEW_KIND_NEXT_ID+1;
 KindOfFamilyOfKinds     := [
     FamilyOfFamilies,
     WITH_IMPS_FLAGS( FLAGS_FILTER( IsFamilyOfKinds and IsKindDefaultRep ) ),
-    false ];
+    false,
+    NEW_KIND_NEXT_ID ];
 
 SET_KIND_COMOBJ( FamilyOfFamilies, KindOfFamilyOfFamilies );
 SET_KIND_POSOBJ( KindOfFamilies,   KindOfKinds            );
@@ -421,9 +435,18 @@ NEW_KIND := function ( kindOfKinds, family, flags, data )
         NEW_KIND_CACHE_MISS := NEW_KIND_CACHE_MISS + 1;
     fi;
 
+    # get next kind id
+    NEW_KIND_NEXT_ID := NEW_KIND_NEXT_ID + 1;
+    if TYPE_OBJ(NEW_KIND_NEXT_ID)[1] <> 0  then
+        Error( "too many kinds" );
+    fi;
+
     # make the new kind
     # cannot use 'Objectify', because 'IsList' may not be defined yet
-    kind := [ family, flags, data ];
+    kind := [ family, flags ];
+    kind[POS_DATA_KIND] := data;
+    kind[POS_NUMB_KIND] := NEW_KIND_NEXT_ID;
+
     SET_KIND_POSOBJ( kind, kindOfKinds );
     cache[hash] := kind;
 

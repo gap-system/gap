@@ -95,6 +95,39 @@ end;
 
 #############################################################################
 ##
+#F  STRING_LOWER_DIGIT( <str> )
+##
+STRING_LOWER_DIGIT1 := "";
+STRING_LOWER_DIGIT2 := "";
+
+STRING_LOWER_DIGIT := function( str )
+    local   new,  s,  p;
+
+    if 0 = Length(STRING_LOWER_DIGIT1)  then
+        Append( STRING_LOWER_DIGIT1, "abcdefghijklmnopqrstuvwxyz" );
+        Append( STRING_LOWER_DIGIT2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ" );
+        Append( STRING_LOWER_DIGIT1, "abcdefghijklmnopqrstuvwxyz" );
+        Append( STRING_LOWER_DIGIT2, "abcdefghijklmnopqrstuvwxyz" );
+        Append( STRING_LOWER_DIGIT1, "0123456789   " );
+        Append( STRING_LOWER_DIGIT2, "0123456789!~ " );
+        SortParallel( STRING_LOWER_DIGIT2, STRING_LOWER_DIGIT1 );
+    fi;
+
+    new := "";
+    for s  in str  do
+        p := PositionSorted( STRING_LOWER_DIGIT2, s );
+        if p <> fail  then
+            Add( new, STRING_LOWER_DIGIT1[p] );
+        fi;
+    od;
+    ConvertToStringRep(new);
+    return new;
+end;
+
+
+#############################################################################
+##
+
 #F  HELP_PRINT_LINES( <lines> )
 ##
 HELP_PRINT_LINES := function( lines )
@@ -155,7 +188,7 @@ HELP_MAIN_BOOKS := Immutable( [
 HELP_BOOK_INFO := function( book )
     local   nums,  readNumber,  path,  i,  bnam,  six,  stream,  c,  
             s,  f,  line,  c1,  c2,  pos,  name,  num,  x,  s1,  sec,
-            dirs; 
+            s2,  dirs,  j; 
 
     if 0 = Length(book)  then
         return fail;
@@ -265,18 +298,30 @@ HELP_BOOK_INFO := function( book )
             s1[num][sec] := i{[pos..Length(i)]};
         od;
 
+        # convert sections and chapters to lower case
+        s2 := [];
+        for i  in [ 1 .. Length(s1) ]  do
+            for j  in [ 1 .. Length(s1[i]) ]  do
+                Add( s2, [ STRING_LOWER_DIGIT(s1[i][j]), i, j ] );
+            od;
+        od;
+        for i  in [ 1 .. Length(c2) ]  do
+            Add( s2, [ STRING_LOWER_DIGIT(c2[i]), i, 0 ] );
+        od;
+        Sort( s2, function(a,b) return a[1]<b[1]; end );
 
 
         HELP_BOOKS_INFO.(bnam) := rec(
-            bookname    := Immutable(bnam),
-            directories := dirs,
-            filenames   := Immutable(c1),
-            chapters    := Immutable(c2),
-            sections    := Immutable(s1),
-            secposs     := [],
-            chappos     := [],
-            index       := x,
-            functions   := f
+          bookname    := Immutable(bnam),
+          directories := dirs,
+          filenames   := Immutable(c1),
+          chapters    := Immutable(c2),
+          sections    := Immutable(s1),
+          secchaps    := Immutable(s2),
+          secposs     := [],
+          chappos     := [],
+          index       := x,
+          functions   := f
         );
     fi;
 
@@ -332,6 +377,58 @@ end;
 
 #############################################################################
 ##
+#F  HELP_TEST_EXAMPLES( <book>, <chapter> )
+##
+HELP_TEST_EXAMPLES := function( book, chapter )
+    local   info,  chap,  filename,  stream,  examples,  test,  line;
+
+    # get the chapter info
+    info := HELP_BOOK_INFO(book);
+    chap := HELP_CHAPTER_INFO( book, chapter );
+    if chap = fail  then
+        return;
+    fi;
+
+    # open the stream and read in the help
+    filename := Filename( info.directories, info.filenames[chapter] );
+    stream := InputTextFile(filename);
+
+    # search for examples
+    examples := false;
+    test := "";
+    repeat
+        line := ReadLine(stream);
+        if line <> fail  then
+
+            # example environment
+            if MATCH_BEGIN(line,"\\beginexample")  then
+                examples := true;
+            elif MATCH_BEGIN(line,"\\endexample")  then
+                examples := false;
+            fi;
+
+            # store the lines
+            if examples and not MATCH_BEGIN(line,"\\beginexample")  then
+                if Length(line) < 5  then
+                    Print( "* ", line );
+                else
+                    line := line{[5..Length(line)]};
+                    Append( test, line );
+                fi;
+            fi;
+        fi;
+    until IsEndOfStream(stream);
+    CloseStream(stream);
+
+    # now do the test
+    stream := InputTextString( test );
+    ReadTest(stream);
+
+end;
+
+
+#############################################################################
+##
 #F  HELP_PRINT_SECTION( <book>, <chapter>, <section> )
 ##
 HELP_PRINT_SECTION := function( book, chapter, section )
@@ -372,8 +469,10 @@ HELP_PRINT_SECTION := function( book, chapter, section )
                 line := line{[1..Length(line)-1]};
 
                 # blanks lines are ok
-                if 0 = Length(line)  and  not verbatim  then
-                    Add( lines, line );
+                if 0 = Length(line)  then
+                    if not verbatim  then
+                        Add( lines, line );
+                    fi;
 
                 # ignore lines starting or ending with '%'
                 elif line[1] = '%'  or  line[Length(line)] = '%'  then
@@ -422,9 +521,9 @@ end;
 #############################################################################
 ##
 
-#F  HELP_BOOKS( <book> )
+#F  HELP_SHOW_BOOKS( <book> )
 ##
-HELP_BOOKS := function( book )
+HELP_SHOW_BOOKS := function( book )
     local   books,  i;
 
     books := [];
@@ -447,9 +546,9 @@ end;
 
 #############################################################################
 ##
-#F  HELP_CHAPTERS( <book> )
+#F  HELP_SHOW_CHAPTERS( <book> )
 ##
-HELP_CHAPTERS := function( book )
+HELP_SHOW_CHAPTERS := function( book )
     local   info,  chap,  i;
 
     # one book
@@ -458,7 +557,7 @@ HELP_CHAPTERS := function( book )
         # read in the information file "manual.six" of this book
         info := HELP_BOOK_INFO(book);
         if info = fail  then
-            Print( "unknown book \"", book, "\"\n" );
+            Print( "Help: unknown book \"", book, "\"\n" );
             return false;
         fi;
 
@@ -474,7 +573,7 @@ HELP_CHAPTERS := function( book )
     # all books
     else
         for i  in [ 1, 4 .. Length(HELP_MAIN_BOOKS)-2 ]  do
-            HELP_CHAPTERS( HELP_MAIN_BOOKS[i] );
+            HELP_SHOW_CHAPTERS( HELP_MAIN_BOOKS[i] );
         od;
     fi;
 
@@ -485,9 +584,9 @@ end;
 
 #############################################################################
 ##
-#F  HELP_SECTIONS( <book> )
+#F  HELP_SHOW_SECTIONS( <book> )
 ##
-HELP_SECTIONS := function( book )
+HELP_SHOW_SECTIONS := function( book )
     local   info,  lines,  chap,  sec,  i;
 
     # one book
@@ -496,7 +595,7 @@ HELP_SECTIONS := function( book )
         # read in the information file "manual.six" of this book
         info := HELP_BOOK_INFO(book);
         if info = fail  then
-            Print( "unknown book \"", book, "\"\n" );
+            Print( "Help: unknown book \"", book, "\"\n" );
             return false;
         fi;
 
@@ -514,7 +613,7 @@ HELP_SECTIONS := function( book )
     # all books
     else
         for i  in [ 1, 4 .. Length(HELP_MAIN_BOOKS)-2 ]  do
-            HELP_SECTIONS( HELP_MAIN_BOOKS[i] );
+            HELP_SHOW_SECTIONS( HELP_MAIN_BOOKS[i] );
         od;
     fi;
 
@@ -525,9 +624,54 @@ end;
 
 #############################################################################
 ##
-#F  HELP_WELCOME_TO_GAP( <book> )
+#F  HELP_SHOW_TOPIC( <book>, <topic> )
 ##
-HELP_WELCOME_TO_GAP := function( book )
+HELP_SHOW_TOPIC := function( book, topic )
+    local   info,  match,  line,  lines,  i;
+
+    # read in the information file "manual.six" of this book
+    info := HELP_BOOK_INFO(book);
+    if info = fail  then
+        Print( "Help: unknown book \"", book, "\"\n" );
+        return false;
+    fi;
+
+    match := [];
+    topic := STRING_LOWER_DIGIT(topic);
+    for line  in info.secchaps  do
+        if MATCH_BEGIN( line[1], topic )  then
+            Add( match, line );
+        fi;
+    od;
+
+    # no topic found
+    if 0 = Length(match)  then
+        Print( "Help: no section with this name was found\n" );
+        return false;
+
+    # one topic found
+    elif 1 = Length(match)  then
+        HELP_PRINT_SECTION( book, match[1][2], match[1][3] );
+        return true;
+
+    # more than one topic found
+    else
+        Print( "Help: several sections match this topic\n" );
+        lines := [];
+        for i  in match  do
+            Add( lines, i[1] );
+        od;
+        HELP_PRINT_LINES(lines);
+        return false;
+    fi;
+end;
+
+
+#############################################################################
+##
+#F  HELP_SHOW_WELCOME( <book> )
+##
+HELP_SHOW_WELCOME := function( book )
     local   lines;
 
     lines := [
@@ -597,7 +741,7 @@ HELP := function( str )
 
     # if the subject is 'Welcome to GAP' display a welcome message
     elif str = "Welcome to GAP"  then
-        if HELP_WELCOME_TO_GAP(book) and not move  then
+        if HELP_SHOW_WELCOME(book) and not move  then
             HELP_RING_IDX := (HELP_RING_IDX+1) mod 16;
             HELP_BOOK_RING[HELP_RING_IDX+1]  := book;
             HELP_TOPIC_RING[HELP_RING_IDX+1] := "Welcome to GAP";
@@ -605,7 +749,7 @@ HELP := function( str )
 
     # if the topic is 'books' display the table of books
     elif MATCH_BEGIN_LOWER( "books", str )  then
-        if HELP_BOOKS(book) and not move  then
+        if HELP_SHOW_BOOKS(book) and not move  then
             HELP_RING_IDX := (HELP_RING_IDX+1) mod 16;
             HELP_BOOK_RING[HELP_RING_IDX+1]  := book;
             HELP_TOPIC_RING[HELP_RING_IDX+1] := "books";
@@ -613,7 +757,7 @@ HELP := function( str )
 
     # if the topic is 'chapter' display the table of chapters
     elif MATCH_BEGIN_LOWER( "chapters", str )  then
-        if HELP_CHAPTERS(book) and not move  then
+        if HELP_SHOW_CHAPTERS(book) and not move  then
             HELP_RING_IDX := (HELP_RING_IDX+1) mod 16;
             HELP_BOOK_RING[HELP_RING_IDX+1]  := book;
             HELP_TOPIC_RING[HELP_RING_IDX+1] := "chapters";
@@ -621,7 +765,7 @@ HELP := function( str )
 
     # if the topic is 'sections' display the table of sections
     elif MATCH_BEGIN_LOWER( "sections", str )  then
-        if HELP_SECTIONS(book) and not move  then
+        if HELP_SHOW_SECTIONS(book) and not move  then
             HELP_RING_IDX := (HELP_RING_IDX+1) mod 16;
             HELP_BOOK_RING[HELP_RING_IDX+1]  := book;
             HELP_TOPIC_RING[HELP_RING_IDX+1] := "sections";
@@ -637,7 +781,11 @@ HELP := function( str )
 
     # search for this topic
     else
-        HELP_TOPIC(str);
+        if HELP_SHOW_TOPIC( book, str ) and not move  then
+            HELP_RING_IDX := (HELP_RING_IDX+1) mod 16;
+            HELP_BOOK_RING[HELP_RING_IDX+1]  := book;
+            HELP_TOPIC_RING[HELP_RING_IDX+1] := str;
+        fi;
     fi;
 end;
 

@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains methods for collections in general.
 ##
@@ -99,7 +99,7 @@ InstallMethod( IsTrivial,
 
 #############################################################################
 ##
-#M  IsFinite(<C>) . . . . . . . . . . . . . . test if a collection ist finite
+#M  IsFinite(<C>) . . . . . . . . . . . . . .  test if a collection is finite
 ##
 InstallImmediateMethod( IsFinite,
     IsCollection and HasSize, 0,
@@ -109,9 +109,10 @@ InstallImmediateMethod( IsFinite,
 
 InstallMethod( IsFinite,
     "method for a collection",
-    true, [ IsCollection ], 0,
+    true,
+    [ IsCollection ], 0,
     function ( C )
-    return not IsIdentical( Size( C ), infinity );
+    return Size( C ) < infinity;
     end );
 
 
@@ -148,7 +149,8 @@ InstallImmediateMethod( Size,
 
 InstallMethod( Size,
     "method for a collection",
-    true, [ IsCollection ], 0,
+    true,
+    [ IsCollection ], 0,
     function ( C )
     return Length( Enumerator( C ) );
     end );
@@ -203,6 +205,10 @@ InstallMethod( RepresentativeSmallest,
 #############################################################################
 ##
 #M  Random(<C>)
+##
+##  The default function for random selection in a finite collection computes
+##  an enumerator of <C> and selects a random element of this list using the
+##  function 'RANDOM_LIST', which is a pseudo random number generator.
 ##
 InstallMethod( Random,
     "method for a collection that is a list",
@@ -470,18 +476,19 @@ InstallMethod( Iterator,
 
 #############################################################################
 ##
-#M  Sum( <C> )
+#M  Sum( <C> )  . . . . . . . . . . . . . . . . . . . . for a list/collection
 ##
 InstallMethod( Sum,
     "method for a list/collection",
-    true, [ IsListOrCollection ], 0,
+    true,
+    [ IsListOrCollection ], 0,
     function ( C )
-    local   sum, i;
-    i := Iterator( C );
-    if not IsDoneIterator( i ) then
-        sum := NextIterator( i );
-        while not IsDoneIterator( i ) do
-            sum := sum + NextIterator( i );
+    local   sum;
+    C := Iterator( C );
+    if not IsDoneIterator( C ) then
+        sum := NextIterator( C );
+        while not IsDoneIterator( C ) do
+            sum := sum + NextIterator( C );
         od;
     else
         sum := 0;
@@ -492,18 +499,19 @@ InstallMethod( Sum,
 
 #############################################################################
 ##
-#M  Sum( <C>, <func> )
+#M  Sum( <C>, <func> )  . . . . . . . . for a list/collection, and a function
 ##
 InstallOtherMethod( Sum,
     "method for a list/collection, and a function",
-    true, [ IsListOrCollection, IsFunction ], 0,
+    true,
+    [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
-    local   sum, i;
-    i := Iterator( C );
-    if not IsDoneIterator( i ) then
-        sum := func( NextIterator( i ) );
-        while not IsDoneIterator( i ) do
-            sum := sum + func( NextIterator( i ) );
+    local   sum;
+    C := Iterator( C );
+    if not IsDoneIterator( C ) then
+        sum := func( NextIterator( C ) );
+        while not IsDoneIterator( C ) do
+            sum := sum + func( NextIterator( C ) );
         od;
     else
         sum := 0;
@@ -514,18 +522,54 @@ InstallOtherMethod( Sum,
 
 #############################################################################
 ##
-#M  Product( <C> )
+#M  Sum( <C>, <init> )  . . . . . . .  for a list/collection, and init. value
+##
+InstallOtherMethod( Sum,
+    "method for a list/collection, and init. value",
+    true,
+    [ IsListOrCollection, IsAdditiveElement ], 0,
+    function ( C, init )
+    C := Iterator( C );
+    while not IsDoneIterator( C ) do
+      init := init + NextIterator( C );
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Sum( <C>, <func>, <init> )  . . for a list/coll., a func., and init. val.
+##
+InstallOtherMethod( Sum,
+    "method for a list/collection, and a function, and an initial value",
+    true,
+    [ IsListOrCollection, IsFunction, IsAdditiveElement ], 0,
+    function ( C, func, init )
+    local   sum, i;
+    C := Iterator( C );
+    while not IsDoneIterator( C ) do
+      init := init + func( NextIterator( C ) );
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Product( <C> )  . . . . . . . . . . . . . . . . . . for a list/collection
 ##
 InstallMethod( Product,
     "method for a list/collection",
-    true, [ IsListOrCollection ], 0,
+    true,
+    [ IsListOrCollection ], 0,
     function ( C )
-    local   prod, i;
-    i := Iterator( C );
-    if not IsDoneIterator( i ) then
-        prod := NextIterator( i );
-        while not IsDoneIterator( i ) do
-            prod := prod * NextIterator( i );
+    local   prod;
+    C := Iterator( C );
+    if not IsDoneIterator( C ) then
+        prod := NextIterator( C );
+        while not IsDoneIterator( C ) do
+            prod := prod * NextIterator( C );
         od;
     else
         prod := 1;
@@ -536,23 +580,58 @@ InstallMethod( Product,
 
 #############################################################################
 ##
-#M  Product( <C>, <func> )
+#M  Product( <C>, <func> )  . . . . . . for a list/collection, and a function
 ##
 InstallOtherMethod( Product,
     "method for a list/collection, and a function",
-    true, [ IsListOrCollection, IsFunction ], 0,
+    true,
+    [ IsListOrCollection, IsFunction ], 0,
     function ( C, func )
     local   prod, i;
-    i := Iterator( C );
-    if not IsDoneIterator( i ) then
-        prod := func( NextIterator( i ) );
-        while not IsDoneIterator( i ) do
-            prod := prod * func( NextIterator( i ) );
+    C := Iterator( C );
+    if not IsDoneIterator( C ) then
+        prod := func( NextIterator( C ) );
+        while not IsDoneIterator( C ) do
+            prod := prod * func( NextIterator( C ) );
         od;
     else
         prod := 1;
     fi;
     return prod;
+    end );
+
+
+#############################################################################
+##
+#M  Product( <C>, <init> )  . . . . .  for a list/collection, and init. value
+##
+InstallOtherMethod( Product,
+    "method for a list/collection, and initial value",
+    true,
+    [ IsListOrCollection, IsMultiplicativeElement ], 0,
+    function ( C, init )
+    C := Iterator( C );
+    while not IsDoneIterator( C ) do
+      init := init * NextIterator( C );
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Product( <C>, <func>, <init> )  . . . . for list/coll., func., init. val.
+##
+InstallOtherMethod( Product,
+    "method for a list/collection, a function, and an initial value",
+    true,
+    [ IsListOrCollection, IsFunction, IsMultiplicativeElement ], 0,
+    function ( C, func, init )
+    C := Iterator( C );
+    while not IsDoneIterator( C ) do
+      init := init * func( NextIterator( C ) );
+    od;
+    return init;
     end );
 
 

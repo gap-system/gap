@@ -311,20 +311,19 @@ end;
 #F  LinearOperationLayer( <G>, <gens>, <pcgs>  )
 ##
 LinearOperationLayer := function( arg )
-local G, gens, pcgs, V, field, linear;
+local gens, pcgs, V, field, linear;
 
     # catch arguments
     if Length( arg ) = 2 then
         if IsGroup( arg[1] ) then
-            G := arg[1];
-            gens := GeneratorsOfGroup( G );
-        else
+            gens := GeneratorsOfGroup( arg[1] );
+        elif IsPcgs( arg[1] ) then
             gens := arg[1];
-            G := GroupOfPcgs( gens );
+        else 
+            gens := arg[1];
         fi;
         pcgs := arg[2];
     elif Length( arg ) = 3 then
-        G := arg[1];
         gens := arg[2];
         pcgs := arg[3];
     fi;
@@ -341,7 +340,7 @@ local G, gens, pcgs, V, field, linear;
               return ExponentsOfPcElement( pcgs,
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return LinearOperation( G, gens, V, linear );
+    return LinearOperation( gens, V, linear );
 end;
     
 #############################################################################
@@ -349,21 +348,20 @@ end;
 #F  AffineOperationLayer( <G>, <pcgs>, <transl> )
 ##
 AffineOperationLayer := function( arg )
-    local G, gens, pcgs, transl, V, field, linear;
+    local gens, pcgs, transl, V, field, linear;
 
     # catch arguments
     if Length( arg ) = 3 then
         if IsPcgs( arg[1] ) then
             gens := arg[1];
-            G    := GroupOfPcgs( gens );
         elif IsGroup( arg[1] ) then
-            G    := arg[1];
-            gens := GeneratorsOfGroup( G );
+            gens := GeneratorsOfGroup( arg[1] );
+        else
+            gens := arg[1];
         fi;
         pcgs := arg[2];
         transl := arg[3];
     elif Length( arg ) = 4 then
-        G := arg[1];
         gens := arg[2];
         pcgs := arg[3];
         transl := arg[4];
@@ -381,23 +379,22 @@ AffineOperationLayer := function( arg )
               return ExponentsOfPcElement( pcgs, 
                      PcElementByExponents( pcgs, x )^g ) * One(field);
               end;
-    return AffineOperation( G, gens, V, linear, transl );
+    return AffineOperation( gens, V, linear, transl );
 end;
 
 #############################################################################
 ##
-#M  AffineOperation( <G>, <gens>, <V>, <linear>, <transl> )
+#M  AffineOperation( <gens>, <V>, <linear>, <transl> )
 ##
 InstallMethod( AffineOperation,
     true, 
-    [ IsGroup, 
-      IsList,
+    [ IsList,
       IsMatrix,
       IsFunction,
       IsFunction ],
     0,
 
-function( G, Ggens, V, linear, transl )
+function( Ggens, V, linear, transl )
 local mats, gens, zero,one, g, mat, i, vec;
 
     mats := [];
@@ -426,7 +423,19 @@ InstallOtherMethod( AffineOperation,
       IsFunction ],
     0,
 function( G, V, linear, transl )
-    return AffineOperation( G, GeneratorsOfGroup(G), V, linear, transl );
+    return AffineOperation( GeneratorsOfGroup(G), V, linear, transl );
+end );
+
+InstallOtherMethod( AffineOperation,
+    true, 
+    [ IsGroup, 
+      IsList,
+      IsMatrix,
+      IsFunction,
+      IsFunction ],
+    0,
+function( G, gens, V, linear, transl )
+    return AffineOperation( gens, V, linear, transl );
 end );
 
 InstallOtherMethod( AffineOperation,
@@ -437,7 +446,7 @@ InstallOtherMethod( AffineOperation,
       IsFunction ],
     0,
 function( pcgsG, V, linear, transl )
-    return AffineOperation( GroupOfPcgs( pcgsG ), pcgsG, V, linear, transl );
+    return AffineOperation( pcgsG, V, linear, transl );
 end );
 
 #############################################################################
@@ -799,17 +808,16 @@ end );
 
 #############################################################################
 ##
-#M  LinearOperation( <G>, <gens>, <basisvectors>, <linear>  )
+#M  LinearOperation( <gens>, <basisvectors>, <linear>  )
 ##
 InstallMethod( LinearOperation,
     true, 
-    [ IsGroup, 
-      IsList,
+    [ IsList,
       IsMatrix,
       IsFunction ],
     0,
 
-function( G, gens, base, linear )
+function( gens, base, linear )
     local  mats;
 
     # catch trivial cases
@@ -831,7 +839,7 @@ InstallOtherMethod( LinearOperation,
     0,
 
 function( G, base, linear )
-    return LinearOperation( G, GeneratorsOfGroup( G ), base, linear );
+    return LinearOperation( GeneratorsOfGroup( G ), base, linear );
 end );
 
 InstallOtherMethod( LinearOperation,
@@ -842,7 +850,19 @@ InstallOtherMethod( LinearOperation,
     0,
 
 function( pcgs, base, linear )
-    return LinearOperation( GroupOfPcgs( pcgs ), pcgs, base, linear );
+    return LinearOperation( pcgs, base, linear );
+end );
+
+InstallOtherMethod( LinearOperation,
+    true, 
+    [ IsGroup, 
+      IsList,
+      IsMatrix,
+      IsFunction ],
+    0,
+
+function( G, gens, base, linear )
+    return LinearOperation( gens, base, linear );
 end );
 
 

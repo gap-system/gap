@@ -377,7 +377,7 @@ typedef struct  {
 } TypeCopyGVar;
 
 #ifndef MAX_COPY_AND_FOPY_GVARS
-#define MAX_COPY_AND_FOPY_GVARS 4096
+#define MAX_COPY_AND_FOPY_GVARS 20000
 #endif
 
 static TypeCopyGVar CopyAndFopyGVars[MAX_COPY_AND_FOPY_GVARS];
@@ -421,7 +421,7 @@ void            InitCopyGVar (
     /* make a record in the kernel also, for saving and loading */
     if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
       {
-	Pr("No room to record CopyGVar\n",0L,0L);
+	Pr("Panic, no room to record CopyGVar\n",0L,0L);
 	SyExit(1);
       }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
@@ -482,7 +482,7 @@ void            InitFopyGVar (
     /* make a record in the kernel also, for saving and loading */
     if (NCopyAndFopyGVars >= MAX_COPY_AND_FOPY_GVARS)
       {
-	Pr("No room to record FopyGVar\n",0L,0L);
+	Pr("Panic, no room to record FopyGVar\n",0L,0L);
 	SyExit(1);
       }
     CopyAndFopyGVars[NCopyAndFopyGVars].copy = copy;
@@ -511,7 +511,7 @@ UInt Tilde;
 */
 Obj MakeReadOnlyGVarFunc;
 
-Obj MakeReadOnlyGVar (
+void MakeReadOnlyGVar (
     UInt                gvar )
 {       
     SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(0) );
@@ -556,7 +556,7 @@ Obj MakeReadOnlyGVarHandler (
 */
 Obj MakeReadWriteGVarFunc;
 
-Obj MakeReadWriteGVar (
+void MakeReadWriteGVar (
     UInt                gvar )
 {
     SET_ELM_PLIST( WriteGVars, gvar, INTOBJ_INT(1) );

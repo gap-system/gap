@@ -70,7 +70,7 @@ OCNormalRelations := NewOperation( "OCNormalRelations",
 ##
 #O  OCAddSumMatrices( <ocr>, <group> )  . . . . . . . . . . . add sums, local
 ##
-OCAddSumMatrices := NewOperation("OCAddSumMatrices",[IsRecord,IsPcGroup]);
+OCAddSumMatrices := NewOperation("OCAddSumMatrices",[IsRecord,IsGroup]);
 
 
 #############################################################################

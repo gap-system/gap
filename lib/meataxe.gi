@@ -397,41 +397,35 @@ local c,q,i,j,k,w,zero,leadpos,cfleadpos, m, ct, erg,
    return erg;
 end;
 
+
 #############################################################################
 ##
-#F  SMTX.SubGModuleAction ( sub, gl )  . . construct matrices for gl relative
-##                       to the basis sub (spanning a space preserved by gl).
+##  SMTX.NormedBasisAndBaseChange(sub)
 ##
-## IT IS ASSUMED THAT THE SUB IS NORMED.
-##
-SMTX.SubGModuleAction := function (sub,matrices)
-   local dim, subdim, one, ans;
-
-   subdim := Length (sub);
-   dim := Length (sub[1]);
-   one := One (sub[1][1]);
-
-   ans:=SMTX.SubQuotActions(matrices,sub,dim,subdim,one,1);
-
-   if ans=fail then
-     return ans;
-   else
-     return ans.smatrices;
-   fi;
-
+##  returns a list [bas,change] where bas is a normed basis for <sub> and
+##  change is the base change from bas to sub (the basis vectors of bas
+##  expressed in coefficients for sub)
+SMTX.NormedBasisAndBaseChange := function(sub)
+local l,m;
+  l:=Length(sub);
+  m:=IdentityMat(l,One(sub[1][1]));
+  sub:=List([1..l],i->Concatenation(sub[i],m[i]));
+  TriangulizeMat(sub);
+  m:=Length(sub[1]);
+  return [sub{[1..l]}{[1..l]},sub{[1..l]}{[l+1..m]}];
 end;
 
 #############################################################################
 ##
-#F  SMTX.InducedActionSubmodule ( module, sub ) . . . . . construct submodule
+#F  SMTX.InducedActionSubmoduleNB ( module, sub ) . . . . . construct submodule
 ##
 ## module is a module record, and sub is a list of generators of a submodule.
 ## IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
 ## (i.e. each has leading coefficient 1 in a unique place).
-## SMTX.InducedActionSubmodule ( module, sub ) computes the submodule of
+## SMTX.InducedActionSubmoduleNB ( module, sub ) computes the submodule of
 ## module for which sub is the basis.
 ## If sub does not generate a submodule then fail is returned.
-SMTX.InducedActionSubmodule := function ( module, sub )
+SMTX.InducedActionSubmoduleNB := function ( module, sub )
    local   ans, dim, subdim, smodule,F;
 
    subdim := Length (sub);
@@ -452,6 +446,32 @@ SMTX.InducedActionSubmodule := function ( module, sub )
    return smodule;
 end;
 
+# Dito, but allowing also unnormed modules
+SMTX.InducedActionSubmodule := function(module,sub)
+local nb,ans,dim,subdim,smodule,F;
+  nb:=SMTX.NormedBasisAndBaseChange(sub);
+  sub:=nb[1];
+  nb:=nb[2];
+
+   subdim := Length (sub);
+   if subdim = 0 then
+      return List(module.generators,i->[[]]);
+   fi;
+   dim := SMTX.Dimension(module);
+   F:=SMTX.Field(module);
+
+   ans:=SMTX.SubQuotActions(SMTX.Generators(module),
+                                sub,dim,subdim,One(F),1);
+
+   if ans=fail then
+     return fail;
+   fi;
+
+   # conjugate the matrices to correspond to given sub
+   smodule := GModuleByMats (List(ans.smatrices,i->i^nb),F);
+   return smodule;
+end;
+
 SMTX.ProperSubmoduleBasis:=function(module)
   if SMTX.IsIrreducible(module) then
     return fail;
@@ -462,16 +482,21 @@ end;
 
 #############################################################################
 ##
-#F  SMTX.InducedActionFactorModule( module, sub ) .  . generators of quotient
+#F  SMTX.InducedActionFactorModule( module, sub [,compl] ) .  . generators of quotient
 ##
 ## module is a module record, and sub is a list of generators of a submodule.
-## IT IS ASSUMED THAT THE GENERATORS OF SUB ARE NORMED.
 ## (i.e. each has leading coefficient 1 in a unique place).
 ## Qmodule is returned, where qmodule
 ## is the quotient module.
 ## 
-SMTX.InducedActionFactorModule := function ( module, sub )
-local   ans, dim, subdim, F,qmodule;
+SMTX.InducedActionFactorModule := function (arg)
+local module,sub,  ans, dim, subdim, F,qmodule;
+
+   module:=arg[1];
+   sub:=arg[2];
+
+   sub:=List(sub,ShallowCopy);
+   TriangulizeMat(sub);
 
    subdim := Length (sub);
    dim := SMTX.Dimension(module);
@@ -486,6 +511,13 @@ local   ans, dim, subdim, F,qmodule;
 
    if ans=fail then
      return fail;
+   fi;
+
+   if Length(arg)=3 then
+     # compute basechange
+     sub:=Concatenation(sub,arg[3]);
+     sub:=sub*Inverse(ans.nbasis);
+     ans.qmatrices:=List(ans.qmatrices,i->i^sub);
    fi;
 
    qmodule := GModuleByMats (ans.qmatrices, F);
@@ -872,7 +904,7 @@ SMTX.RandomIrreducibleSubGModule := function ( module )
    fi;
 
    subbasis := SMTX.Subbasis (module);
-   submodule := SMTX.InducedActionSubmodule (module, subbasis);
+   submodule := SMTX.InducedActionSubmoduleNB (module, subbasis);
    ranSub := SMTX.RandomIrreducibleSubGModule (submodule);
    if ranSub = false then
       # submodule has been proved irreducible in a call to this function, 
@@ -891,7 +923,7 @@ SMTX.RandomIrreducibleSubGModule := function ( module )
       # But now since we've normed the basis subbasis2, 
       # the matrices of the submodule ranSub[2] are given with respect to 
       # the wrong basis.  So we have to recompute the submodule.
-      submodule2 := SMTX.InducedActionSubmodule (module, subbasis2);
+      submodule2 := SMTX.InducedActionSubmoduleNB (module, subbasis2);
       # Unfortunately, although it's clear that this submodule is 
       # irreducible, we'll have to reset the flags that IsIrreducible sets. 
       # AH Why can't we keep irreducibility?

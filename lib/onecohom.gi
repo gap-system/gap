@@ -108,6 +108,64 @@ local   gens;
 
 end);
 
+InstallMethod(OCAddGenerators,"perm group",true,[IsRecord,IsPermGroup],0,
+function( ocr,G )
+local  hom,fg,fpi,fpg;
+
+  if IsBound( ocr.normalIn )  then
+      Error( "normalizing subgroup not allowed for perm grousp" );
+  fi;
+
+  if IsBound( ocr.pPrimeSet )  then
+      Error( "p prime set given for perm group" );
+  fi;
+
+  if IsBound( ocr.generators )  then
+    if not IsBound(ocr.factorpres) then
+      Error("if generators are given, also the factor presentation ",
+	    "must be known");
+    fi;
+    return;
+  fi;
+
+  hom:=NaturalHomomorphismByNormalSubgroup(ocr.group,ocr.module);
+  fg:=Image(hom,ocr.group);
+  ocr.factormap:=hom;
+
+  if IsSolvableGroup(Range(hom))
+     or (IsPermGroup(Range(hom)) and Length(MovedPoints(Range(hom)))*2
+                             < Length(MovedPoints(ocr.group)))
+     or HasIsomorphismFpGroup(fg)
+   then 
+    Info(InfoCoh,1,"using factor representation");
+    fpi:=IsomorphismFpGroup(fg);
+    fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
+    ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi)),
+                     List(fpi!.genimages,i->PreImagesRepresentative(fpi,i))];
+
+    ocr.generators:=List(ocr.factorpres[3],i->PreImagesRepresentative(hom,i));
+
+  else
+    Info(InfoCoh,1,"using group representation");
+    fpi:=IsomorphismFpGroup(ocr.group);
+    fpg:=FreeGeneratorsOfFpGroup(Range(fpi));
+    ocr.factorpres:=[fpg,RelatorsOfFpGroup(Range(fpi))];
+    ocr.generators:=List(fpi!.genimages,i->PreImagesRepresentative(fpi,i));
+
+    # add generating system for ocr.module to obtain a presentation of the
+    # factor group
+
+    fpi:=GroupHomomorphismByImages(ocr.group,FreeGroupOfFpGroup(Range(fpi)),
+                                  ocr.generators,fpg);
+    ocr.factorpres[2]:=Union(ocr.factorpres[2],List(ocr.module.generators,
+		    i->ImagesRepresentative(fpi,i)));
+  fi;
+
+  Info(InfoCoh,1,Length(ocr.generators)," generators, ",
+                 Length(ocr.factorpres[2])," relators");
+
+end);
+
 
 #############################################################################
 ##
@@ -143,8 +201,7 @@ local i,pcgs;
     # 'moduleMap' is constructed using 'Exponents'.
     ocr.moduleMap := x -> ExponentsOfPcElement(ocr.modulePcgs,x)
                           * ocr.one;
-    ocr.matrices := LinearOperationLayer(ocr.group, ocr.generators, 
-                                         ocr.modulePcgs);
+    ocr.matrices := LinearOperationLayer(ocr.generators, ocr.modulePcgs);
     ocr.identityMatrix := IdentityMat( Length( ocr.modulePcgs ), ocr.field );
     List( ocr.matrices, IsMatrix );
     IsMatrix( ocr.identityMatrix );
@@ -152,11 +209,66 @@ local i,pcgs;
     # Do the same for the operations of 'normalIn' if present.
     if IsBound( ocr.normalIn )  then
         if not IsBound( ocr.normalMatrices )  then
-            ocr.normalMatrices := LinearOperationLayer(ocr.group,
-                                  ocr.normalGenerators, ocr.modulePcgs);
+            ocr.normalMatrices := LinearOperationLayer(ocr.normalGenerators,
+                ocr.modulePcgs);
     	    List( ocr.normalMatrices, IsMatrix );
         fi;
     fi;
+
+    # Construct the inverse of 'moduleMap'.
+    ocr.vectorMap := function( v )
+    	local   wrd,  i;
+    	wrd := One(ocr.module);
+        for i  in [ 1 .. Length( v ) ]  do
+    	    if IntFFE(v[i]) <> 0  then
+    	    	wrd := wrd * ocr.modulePcgs[i] ^ IntFFE(v[i]);
+    	    fi;
+    	od;
+    	return wrd;
+    end;
+
+end);
+
+InstallMethod(OCAddMatrices,"perm group",true,[IsRecord,IsPermGroup],0,
+function( ocr,G )
+local   V,  base,  gens,  i, agmod;
+
+    # If <ocr> has a record component 'matrices', nothing is done.
+    if IsBound( ocr.matrices )  then
+        return;
+    fi;
+    Info(InfoCoh,2,"OCAddMatrices: computes linear operations" );
+
+    # Construct field and log table.
+    ocr.modulePcgs:=Pcgs(ocr.module);
+    base:=ocr.modulePcgs;
+
+    if Length(base) = 0  then
+    	Info(InfoCoh,2,"OCAddMatrices: module is trivial" );
+    	return;
+    else
+	ocr.char  := RelativeOrderOfPcElement(base, base[1] );
+    	ocr.field := GF( ocr.char );
+	ocr.one:=One(ocr.field);
+	# logTable is used by 'NextCentralCO'
+	ocr.logTable := [];
+    	for i  in [ 1 .. ocr.char - 1 ]  do
+    	    ocr.logTable[ LogFFE( i * One( ocr.field ),
+				      PrimitiveRoot(ocr.field) ) + 1 ] := i;
+    	od;
+    fi;    
+
+    # 'moduleMap' is constructed using 'Exponents'.
+    ocr.moduleMap := x -> ExponentsOfPcElement(ocr.modulePcgs,x)
+                          * ocr.one;
+    Print(">> still to fix <<\n");
+    ocr.matrices := LinearOperationLayer(Group(ocr.generators,()),
+                                         ocr.generators, ocr.modulePcgs);
+    ocr.identityMatrix := IdentityMat( Length( ocr.modulePcgs ), ocr.field );
+    List( ocr.matrices, IsMatrix );
+    IsMatrix( ocr.identityMatrix );
+
+    # 'normalIn' is not allowed, so we drop this section
 
     # Construct the inverse of 'moduleMap'.
     ocr.vectorMap := function( v )
@@ -221,12 +333,13 @@ function( ocr, G )
         end;
     fi;
 
-    # If 'complement' is unknown, the following  function dos not make sense,
+    # If 'complement' is unknown, the following  function does not make sense,
     # so just return.
     if not IsBound( ocr.complement )  then
     	Info(InfoCoh,2,"OCAddToFunctions: no complement, returning" );
         return;
     fi;
+
     gens := InducedPcgsWrtHomePcgs( ocr.complement );
 
     # If  'smallGeneratingSet'  is  not present, just correct 'complement' by
@@ -300,6 +413,132 @@ function( ocr, G )
 
 end);
 
+InstallMethod(OCAddToFunctions,"perm group",true,[IsRecord,IsPermGroup],0,
+function( ocr ,G)
+    local   base,  dim,  gens;
+
+    # Get the module generators.
+    base:=ocr.modulePcgs;
+    dim  := Length( base );
+
+    # If 'smallGeneratingSet' is given, neither 'cocycle' nor 'list' need the
+    # entries at the nongenerators.
+    if not IsBound( ocr.cocycleToList )  then
+    	Info(InfoCoh,2,"OCAddToFunctions: adding 'cocycleToList'" );
+        ocr.cocycleToList := function( c )
+            local   w,  i,  j,  k,  L;
+            L := [];
+    	    k := 0;
+            for i  in [ 1 .. Length( c ) / dim ]  do
+    	    	w := One(ocr.module);
+            	for j  in [ 1 .. dim ]  do
+    	    	    if IntFFE(c[k+j]) <> 0  then
+    	    	    	w := w * base[j]^IntFFE(c[k+j]);
+    	    	    fi;
+    	    	od;
+                Add( L, w );
+    	    	k := k + dim;
+            od;
+            return L;
+        end;
+    fi;
+
+    # 'listToCocycle' is almost trivial.
+    if not IsBound( ocr.listToCocycle )  then
+    	Info(InfoCoh,2,"OCAddToFunctions: adding 'listToCocycle'" );
+        ocr.listToCocycle := function( L )
+    	    local   c,  n;
+    	    c := [];
+    	    for n  in L  do
+    	    	Append( c, ocr.moduleMap( n ) );
+    	    od;
+    	    IsRowVector( c );
+    	    return c;
+        end;
+    fi;
+
+    # If 'complement' is unknown, the following  function does not make sense,
+    # so just return.
+    if not IsBound( ocr.complement )  then
+    	Info(InfoCoh,2,"OCAddToFunctions: no complement, returning" );
+        return;
+    fi;
+
+    gens := ocr.complementGens;
+
+    # If  'smallGeneratingSet'  is  not present, just correct 'complement' by
+    # the  list  'cocycleToList'. Otherwise we need to compute the correction
+    # with the use of 'bigMatrices' and 'bigVectors'.
+    if not IsBound( ocr.cocycleToComplement )  then
+    	Info(InfoCoh,2,"OCAddToFunctions: adding 'cocycleToComplement'" );
+        if not IsBound( ocr.smallGeneratingSet )  then
+    	    ocr.cocycleToComplement := function( c )
+    	    	local   L,  i;
+    	    	L := ocr.cocycleToList( c );
+    	    	for i  in [ 1 .. Length( L ) ]  do
+    	    	    L[ i ] := gens[ i ] * L[ i ];
+    	    	od;
+    	    	return Group( L,One(ocr.complement) );
+    	    end;
+        else
+
+            # Get  the correcting list. The nongenerator correction are given
+            # by  m_i  +  n_1 * C_ij + ... for i a nongenerator index and j a
+            # generator  index.  m_i  is  stored  in <bigVectors> and C_ij is
+            # stored in <bigMatrices>.
+            ocr.cocycleToComplement := function( c )
+                local   L,  i,  n,  j;
+                L := [];
+                for i  in [ 1 .. Length( c ) / dim ]  do
+    	    	    n := c{[ (i-1)*dim+1 .. i*dim ]};
+                    L[ ocr.smallGeneratingSet[ i ] ] := n;
+                od;
+                for i  in [ 1 .. Length( gens ) ]  do
+                    if not IsBound( L[ i ] )  then
+                        n := ocr.bigVectors[ i ];
+                        for j  in ocr.smallGeneratingSet  do
+                            n := n + L[ j ] * ocr.bigMatrices[ i ][ j ];
+                        od;
+                        L[ i ] := n;
+                    fi;
+                od;
+                for i  in [ 1 .. Length( L ) ]  do
+                    L[ i ] := gens[i] * ocr.vectorMap( L[i] );
+                od;
+    	    	return Subgroup( ocr.complement, L );
+            end;
+        fi;
+    fi;
+
+    # As the IGS might be used especially here, first do not bind
+
+    if false and not IsBound( ocr.complementToCocycle )  then
+	Error("not yet converted!");
+    	Info(InfoCoh,2,"OCAddToFunctions: adding 'complementToCocycle'" );
+        if not IsBound( ocr.smallGeneratingSet )  then
+            ocr.complementToCocycle := function( K )
+                local   L,  i;
+                L := ShallowCopy( K.operations.Igs( K ) );
+                for i  in [ 1 .. Length( gens ) ]  do
+                    L[ i ] := gens[ i ] mod L[ i ];
+                od;
+                return ocr.listToCocycle( L );
+            end;
+        else
+            ocr.complementToCocycle := function( K )
+                local   L,  S,  i,  j;
+                L := ShallowCopy( K.operations.Igs( K ) );
+                S := [];
+                for i  in [ 1 .. Length( ocr.smallGeneratingSet ) ]  do
+    	    	    j := ocr.smallGeneratingSet[ i ];
+                    S[ i ] := gens[ j ] mod L[ j ];
+                od;
+                return ocr.listToCocycle( S );
+            end;
+        fi;
+    fi;
+
+end);
 
 #############################################################################
 ##
@@ -308,7 +547,6 @@ end);
 OCAddCentralizer := function( ocr, B )
     ocr.centralizer := Subgroup(ocr.module, List(B,ocr.vectorMap));
 end;
-
 
 #############################################################################
 ##
@@ -461,6 +699,42 @@ function( ocr, G  )
 
 end);
 
+InstallMethod(OCAddRelations,"perm group",true,[IsRecord,IsPermGroup],0,
+function( ocr, G  )
+local   f,r,fg,rel,i,j,w,g,n;
+
+  # If <ocr> has a  record component 'relators', nothing is done.
+  if IsBound( ocr.relators )  then
+      return;
+  fi;
+  Info(InfoCoh,2,"OCAddRelations: fetch presentation" );
+
+  # it is not the right place to get a presentation here, as we may have
+  # chosen the wrong generators before. So we just fetch it.
+
+  fg:=ocr.factorpres[1];
+  r:=ocr.factorpres[2];
+
+  # now rewrite the relators into the OC form
+
+  ocr.relators := [];
+
+  for i  in r do
+    rel:=rec(generators:=[],powers:=[]);
+
+    w:=ExtRepOfObj(i);
+    j:=1;
+    while j<Length(w) do
+      Add(rel.generators,w[j]);
+      Add(rel.powers,w[j+1]);
+      j:=j+2;
+    od;
+
+    rel.usedGenerators := Set( rel.generators );
+    Add( ocr.relators, rel );
+  od;
+
+end);
 
 #############################################################################
 ##
@@ -554,6 +828,46 @@ function( ocr,G )
 end);
 
 
+InstallMethod(OCAddSumMatrices,"perm group",true,[IsRecord,IsPermGroup],0,
+function( ocr,G )
+local   i, j;
+
+    if not IsBound( ocr.maximalPowers )  then
+    	Info(InfoCoh,2,"AddSumMatrices: maximal power = 1");
+    	ocr.maximalPowers := List( ocr.generators, x -> 1 );
+    fi;
+
+    # At  first  add  all  powers,  such  that  powerMatrices[  i  ][  j ] is
+    # matrices[  i  ]  ^ j for j = 1 ... p, if p is the maximal power for the
+    # i.th generator.
+    if not IsBound( ocr.powerMatrices )  then
+        Info(InfoCoh,2,"AddSumMatrices: adding power matrices" );
+        ocr.powerMatrices := [];
+        for i  in [ 1 .. Length( ocr.matrices ) ]  do
+            ocr.powerMatrices[ i ] := [ ocr.matrices[ i ] ];
+            for j  in [ 2 .. ocr.maximalPowers[ i ] ]  do
+                ocr.powerMatrices[ i ][ j ] :=
+                    ocr.powerMatrices[ i ][ j - 1 ] * ocr.matrices[ i ];
+            od;
+        od;
+    fi;
+
+    # Now  all  sums,  such  that sumMatrices[ i ][ j ] is the sum from k = 0
+    # upto j - 1 over matrices[ i ] ^ k for j = 1 ... p.
+    if not IsBound( ocr.sumMatrices )  then
+    	Info(InfoCoh,2,"AddSumMatrices: adding sum matrices" );
+        ocr.sumMatrices := [];
+        for i  in [ 1 .. Length( ocr.matrices ) ]  do
+            ocr.sumMatrices[ i ] := [ ocr.identityMatrix ];
+            for j  in [ 2 .. ocr.maximalPowers[ i ] ]  do
+                ocr.sumMatrices[ i ][ j ] :=
+                    ocr.sumMatrices[i][ j-1 ] + ocr.powerMatrices[i][ j-1 ];
+            od;
+        od;
+    fi;
+
+end);
+
 #############################################################################
 ##
 #F  OCEquationMatrix( <ocr>, <r>, <n> )  . . . . . . . . . . . . . . .  local
@@ -620,7 +934,7 @@ end;
 ##
 #M  OCAddBigMatrices( <ocr>, <group> )  . . . . . . . . . . . . . . . . local
 ##
-InstallMethod(OCAddBigMatrices,"pc groups",true,[IsRecord,IsPcGroup],0,
+InstallMethod(OCAddBigMatrices,"pc and perm groups",true,[IsRecord,IsGroup],0,
 function( ocr,G )
     local   i,  j,  n,  w,  small,  nonSmall;
 
@@ -679,7 +993,7 @@ OCSmalEquationMatrix := function( ocr, r, n )
 
     # For j := generators[ i ],  v := powers[ i ],  M operations:
     #
-    # If j is a small generator, everthing is as usuall.
+    # If j is a small generator, everthing is as usual.
     #
     #    if j = n and v > 0,  then
     #          mat = mat * M[j] ^ v + sum_{k=0}^{v-1} M[j] ^ k
@@ -863,6 +1177,7 @@ end;
 ##
 OCAddComplement := function( ocr, K )
     ocr.complement := Subgroup( ocr.group, K );
+    ocr.complementGens:=K;
 end;
 
 
@@ -1126,6 +1441,10 @@ end;
 OneCoboundaries := function(G,M)
     local   GG,  MM,  f,  ocr,  em;
 
+  if not IsElementaryAbelian(M) then
+    Error("<M> must be elementary abelian");
+  fi;
+
   ocr := rec( group := G, module := M );
   OCOneCoboundaries( ocr );
   return rec(
@@ -1142,12 +1461,16 @@ end;
 #F  OneCocycles( <G>, <M> ) . . . . . . . . . . . . one cocycles of <G> / <M>
 ##
 OneCocycles := function( G, M )
-local   ocr;
+local   ocr,erg;
+
+  if not IsElementaryAbelian(M) then
+    Error("<M> must be elementary abelian");
+  fi;
 
     ocr := rec( group := G, module := M );
     OCOneCocycles( ocr, false );
     if IsBound( ocr.complement )  then
-	return rec(
+	erg:=rec(
 	    oneCoboundaries     := ocr.oneCoboundaries,
 	    oneCocycles         := ocr.oneCocycles,
 	    generators          := ocr.generators,
@@ -1155,8 +1478,11 @@ local   ocr;
 	    complement          := ocr.complement,
 	    cocycleToList       := ocr.cocycleToList,
 	    listToCocycle       := ocr.listToCocycle,
-	    cocycleToComplement := ocr.cocycleToComplement,
-	    complementToCocycle := ocr.complementToCocycle );
+	    cocycleToComplement := ocr.cocycleToComplement);
+        if IsBound(ocr.complementToCocycle) then
+	  erg.complementToCocycle := ocr.complementToCocycle;
+        fi;
+	return erg;
     else
 	return rec(
 	    oneCoboundaries     := ocr.oneCoboundaries,
@@ -1196,3 +1522,4 @@ end;
 ##
 #E  onecohom.gi . . . . . . . . . . . . . . . . . . . . . . . . . . ends here
 ##
+

@@ -1,6 +1,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Chapter{Lists}
 
+Modern mathematics, especially algebra, is based on set theory. When sets
+are represented in a computer, they inadvertently turn into lists. That's
+why we start our  survey of the various  objects {\GAP} can handle with a
+description of  lists  and their  manipulation. {\GAP}  regards sets as a
+special kind of lists, namely as lists without  holes or duplicates whose
+entries are ordered with respect to the precedence relation~`\<'.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Plain lists}
 
@@ -226,8 +233,8 @@ Finally try the following examples and explain the results.
     gap> l[1]:= l;
     [ ~ ]
 \endexample
-Now return to the  preceding section  "About Lists" and  find out whether
-the functions `Add' and `Append' change their arguments.
+Now return to the  previous section and   find out whether the  functions
+`Add' and `Append' change their arguments.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Sets}
@@ -280,10 +287,11 @@ and adds the element to the set if it wasn't already there. Note that the
 object `fruits' is changed.
 \beginexample
     gap> AddSet(fruits, "banana");
-    gap> fruits;        #  The banana is inserted in the right place.
+    gap> fruits;  #  The banana is inserted in the right place.
     [ "apple", "banana", "cherry", "plum", "strawberry" ]
+
     gap> AddSet(fruits, "apple");
-    gap> fruits;        #  `fruits' has not changed.
+    gap> fruits;  #  `fruits' has not changed.
     [ "apple", "banana", "cherry", "plum", "strawberry" ] 
 \endexample
 Sets can be intersected by the function `Intersection'  and united by the
@@ -399,12 +407,14 @@ that prime, add it to the list `factors' and continue.
 \beginexample
     gap> n:= 1333;;
     gap> factors:= [];;
+
     gap> for p in primes do
     >       while n mod p = 0 do
     >          n:= n/p;
     >          Add(factors, p);
     >       od;
     >    od;
+
     gap> factors; n;
     [ 31, 43 ]
     1 
@@ -428,6 +438,7 @@ function `Unbind' to delete entries from a list.
 \beginexample
     gap> primes:= [];;
     gap> numbers:= [2..1000];;
+
     gap> for p in numbers do
     >       Add(primes, p);
     >       for n in numbers do
@@ -468,7 +479,7 @@ There are other often used loops available as functions.   Guess what the
 function `Sum' does.  The function `List' may  take a list and a function
 as its arguments.  It will then apply the function to each element of the
 list  and return  the corresponding list of results.   A list of cubes is
-produced as follows with the function `cubed' from "About Functions".
+produced as follows with the function `cubed' from section~"Functions".
 \beginexample
     gap> List([2..10], cubed);
     [ 8, 27, 64, 125, 216, 343, 512, 729, 1000 ] 
@@ -481,7 +492,7 @@ additional argument.
     true 
 \endexample
 The  primes less than 30 can  be retrieved out  of the list `primes' from
-section "About Lists" by the function `Filtered'. This function takes the
+section~"Plain lists" by the function `Filtered'. This function takes the
 list `primes' and a property as its arguments and will return the list of
 those elements of `primes' which have this property. Such a property will
 be represented  by  a function  that  returns  a boolean  value. In  this
@@ -533,14 +544,15 @@ be added to the list, removed or exchanged. Such  changes would of course
 lead  to serious inconsistencies with  other  attributes that may already
 have been calculcated for the group.
 
-The  converse function to `Immutable'  is `ShallowCopy', which produces a
-new mutable list whose  $i$th entry is the  $i$th entry of the old  list.
-Since these entries  are subobjects of the immutable  old list  and hence
-immutable themselves, the result of `ShallowCopy'  is mutable only at the
-top level whereas the entries of the list are treated as constants, i.e.,
-are not copied. That's why the result is called a ``shallow copy''.
+The  converse function to  `Immutable' is `ShallowCopy', which produces a
+new  mutable list whose $i$th entry  is the $i$th  entry of the old list.
+The single entries are not copied, they are just  placed in the new list.
+That's  why the result  is called   a ``shallow  copy''.  Since the  list
+entries were subobjects of  the  immutable old  list and  hence immutable
+themselves, the result of `ShallowCopy' is mutable only at the top.
 
-\exercise How can you produce a ``deep copy'' of an immutable list?
+\exercise How can  you produce  a  mutable ``deep copy'' of  an immutable
+list?
 
 \answer `DeepCopy(  list   )' will  copy `list'  only  as deep  as  it is
 mutable, hence it will not copy an immutable list at all.  So you have to

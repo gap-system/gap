@@ -57,6 +57,11 @@ InstallMethod( GroupHomomorphismByImages,
 function( G, H, gens, imgs )
     local pcgs, U, hom, filter;
 
+    # special treatment to allow 'IsomorphismFpGroup's
+    if IsSubgroupFpGroup(H) then
+      TryNextMethod();
+    fi;
+
     pcgs  := CanonicalPcgsByGeneratorsWithImages( Pcgs(G), gens, imgs );
     U     := Subgroup( H, pcgs[2] );
 

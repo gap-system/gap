@@ -120,11 +120,19 @@ InstallMethod( String,
 
 #############################################################################
 ##
-#M  Size(<set>)
+#M  Size(<set>) . . . . . . . . . . . . . . . . . . . . . . . . .  for a list
 ##
 InstallOtherMethod( Size,
+    "method for a list",
     true,
     [ IsList ],
+    0,
+    Length );
+
+InstallOtherMethod( Size,
+    "method for a list that is a collection",
+    true,
+    [ IsList and IsCollection ],
     0,
     Length );
 
@@ -379,34 +387,21 @@ InstallOtherMethod( IteratorSorted, true, [ IsList ], 0,
 
 #############################################################################
 ##
-#M  Sum(<list>)
+#M  Sum( <list> ) . . . . . . . . . . . . . . . . . . . . .  for a dense list
 ##
 InstallOtherMethod( Sum,
-    true, [ IsList ], 1,
+    "method for a dense list",
+    true,
+    [ IsDenseList ], 1,
     function ( list )
     local   sum, i;
-    if Length(list) <> 0 then
+    if IsEmpty(list) then
+        sum := 0;
+    else
         sum := list[1];
         for i in [2..Length(list)] do
             sum := sum + list[i];
         od;
-    else
-        sum := 0;
-    fi;
-    return sum;
-    end );
-
-InstallOtherMethod( Sum,
-    true, [ IsList, IsFunction ], 1,
-    function ( list, func )
-    local   sum, i;
-    if Length(list) <> 0 then
-        sum := func( list[1] );
-        for i in [2..Length(list)] do
-            sum := sum + func( list[i] );
-        od;
-    else
-        sum := 0;
     fi;
     return sum;
     end );
@@ -414,37 +409,136 @@ InstallOtherMethod( Sum,
 
 #############################################################################
 ##
-#M  Product(<list>)
+#M  Sum( <list>, <init> ) . . . . . . . . . . . for a list, and initial value
+##
+InstallOtherMethod( Sum,
+    "method for a list, and initial value",
+    true,
+    [ IsList, IsAdditiveElement ], 1,
+    function ( list, init )
+    local elm;
+    for elm in list do
+      init := init + elm;
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Sum( <list>, <func> ) . . . . . . . . .  for a dense list, and a function
+##
+InstallOtherMethod( Sum,
+    "method for a dense list, and a function",
+    true,
+    [ IsDenseList, IsFunction ], 1,
+    function( list, func )
+    local   sum, i;
+    if IsEmpty(list) then
+        sum := 0;
+    else
+        sum := func( list[1] );
+        for i in [2..Length(list)] do
+            sum := sum + func( list[i] );
+        od;
+    fi;
+    return sum;
+    end );
+
+
+#############################################################################
+##
+#M  Sum( <list>, <func>, <init> ) . . . . for list, function, and init. value
+##
+InstallOtherMethod( Sum,
+    "method for a list, a function, and initial value",
+    true,
+    [ IsList, IsFunction, IsAdditiveElement ], 1,
+    function ( list, func, init )
+    local elm;
+    for elm in list do
+      init := init + func( elm );
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Product( <list> ) . . . . . . . . . . . . . . . . . . .  for a dense list
 ##
 InstallOtherMethod( Product,
-    true, [ IsList ], 1,
+    "method for a dense list",
+    true,
+    [ IsDenseList ], 1,
     function ( list )
     local   prod, i;
-    if Length(list) <> 0 then
+    if IsEmpty(list) then
+        prod := 1;
+    else
         prod := list[1];
         for i in [2..Length(list)] do
             prod := prod * list[i];
         od;
-    else
-        prod := 1;
     fi;
     return prod;
-end );
+    end );
 
+
+#############################################################################
+##
+#M  Product( <list>, <init> ) . . . . . . . . . for a list, and initial value
+##
 InstallOtherMethod( Product,
-    true, [ IsList, IsFunction ], 1,
-    function ( list, func )
+    "method for a list, and initial value",
+    true,
+    [ IsList, IsMultiplicativeElement ], 1,
+    function ( list, init )
+    local elm;
+    for elm in list do
+      init := init * elm;
+    od;
+    return init;
+    end );
+
+
+#############################################################################
+##
+#M  Product( <list>, <func> ) . . . . . . .  for a dense list, and a function
+##
+InstallOtherMethod( Product,
+    "method for a dense list and a function",
+    true,
+    [ IsDenseList, IsFunction ], 1,
+    function( list, func )
     local prod, i;
-    if Length(list) <> 0 then
+    if IsEmpty(list) then
+        prod := 1;
+    else
         prod := func( list[1] );
         for i in [2..Length(list)] do
             prod := prod * func( list[i] );
         od;
-    else
-        prod := 1;
     fi;
     return prod;
-end );
+    end );
+
+
+#############################################################################
+##
+#M  Product( <list>, <func>, <init> ) . . for list, function, and init. value
+##
+InstallOtherMethod( Product,
+    "method for a list, a function, and initial value",
+    true,
+    [ IsList, IsFunction, IsMultiplicativeElement ], 1,
+    function ( list, func, init )
+    local elm;
+    for elm in list do
+      init := init * func( elm );
+    od;
+    return init;
+    end );
 
 
 #############################################################################

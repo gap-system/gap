@@ -117,6 +117,16 @@
 \font\sevenit=cmti10 at 7pt \scriptfont\itfam=\sevenit
 \font\fiveit=cmti10 at 5pt  \scriptscriptfont\itfam=\fiveit
 
+% Math mode should use text italic.
+{\count0=\itfam \advance\count0 by-1 \multiply\count0 by"100
+ \count1=`A
+ \loop \count2=\mathcode\count1 \advance\count2 by\count0
+       \global\mathcode\count1=\count2
+      {\advance\count1 by'040
+       \count2=\mathcode\count1 \advance\count2 by\count0
+       \global\mathcode\count1=\count2}
+ \ifnum\count1<`Z \advance\count1 by1\repeat}
+
 % macros for verbatim scanning (almost copied from `The TeXbook')
 \chardef\other=12
 \def\undocatcodespecials{\catcode`\\=\other     \catcode`\{=\other
@@ -126,19 +136,18 @@
   \catcode`\!=\other     \catcode`\"=\other     \catcode`\&=\other
   \catcode`\#=\other     \catcode`\|=\other}
 \def\ttverbatim{\begingroup\undocatcodespecials \catcode`\#=\active
+  \def\par{\ifvmode\allowbreak\vskip 0pt plus 1pt\else\endgraf\nobreak\fi}
   \obeyspaces \obeylines \tt}
 {\obeyspaces\global\let =\ }
 {\obeylines\gdef\obeylines{\catcode`^^M=\active}\gdef^^M{\par}%
  \catcode`#=\active \catcode`&=6 \gdef#&1^^M{\hbox{\rm\char35 &1}\par}}
 \outer\def\begintt{\par
-  \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
   \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \ttfinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
   |gdef|ttfinish#1^^M#2\endtt{#1|medskip{#2}|endgroup %
   |medskip|noindent|ignorespaces}}
 \outer\def\beginexample{\par
-  \def\par{\ifvmode\allowbreak\smallskip\else\endgraf\nobreak\fi}
   \ttverbatim \parskip=0pt \catcode`\|=0 \rightskip-5pc \examplefinish}
 {\catcode`\|=0 |catcode`|\=\other % | is temporary escape character
   |obeylines % end of line is active
@@ -226,7 +235,7 @@
   \setbox0=\hbox{\inchhigh\kern-.075em\thechapter}
   \setbox1=\vbox{\titlefont \advance\hsize by-\wd0 \advance\hsize by-2em
     \leftskip 0pt plus 1fil \parfillskip 0pt \baselineskip 44pt\relax #1}
-  \line{\box0\hfil\box1}\nobreak \vskip 40pt plus10pt \noindent}
+  \line{\box0\hfil\box1}\nobreak \vskip 40pt \noindent}
 \outer\long\def\Section#1#2\par{\medskip \advance\secno by1
   {\let!=\space \mark{Section \the\secno. #1}}
   \edef\tempa{\thechapter.\the\secno}\expandafter\writesecline\tempa\\{#1}

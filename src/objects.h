@@ -335,6 +335,17 @@ char *          Revision_objects_h =
                         
 /****************************************************************************
 **
+*F  ID_KIND( <kind> ) . . . . . . . . . . . . . . . . . . . . .  id of a kind
+**
+**  'ID_KIND' returns the ID of  a kind.  Warning: if  GAP runs out of ID  it
+**  will renumber all IDs.  Therefore the  corresponding routine must excatly
+**  know where such numbers are stored.
+*/
+#define ID_KIND(kind)		ELM_PLIST( kind, 4 )
+
+
+/****************************************************************************
+**
 *F  KIND_OBJ( <obj> ) . . . . . . . . . . . . . . . . . . . kind of an object
 **
 **  'KIND_OBJ' returns the kind of the object <obj>.

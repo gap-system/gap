@@ -136,6 +136,9 @@ InstallMethod( GroupGeneralMappingByImages, true,
     if IsPermGroup( H )  then
         filter := filter and IsToPermGroupGeneralMappingByImages;
     fi;
+    if IsSubgroupFpGroup(H) then
+        filter := filter and IsToFpGroupGeneralMappingByImages;
+    fi;
     Objectify( NewKind( GeneralMappingsFamily
             ( ElementsFamily( FamilyObj( G ) ),
               ElementsFamily( FamilyObj( H ) ) ), filter ), hom );

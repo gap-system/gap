@@ -5,6 +5,12 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.12  1997/05/08 12:23:50  beick
+#H  Fixed a minor bug.
+#H
+#H  Revision 4.11  1997/05/07 13:36:33  htheisse
+#H  changed syntax of `DirectProduct'
+#H
 #H  Revision 4.10  1997/04/11 09:32:35  htheisse
 #H  wreath product now takes an explicit domain for the top group
 #H
@@ -42,7 +48,9 @@ Revision.gprd_gd :=
     "@(#)$Id$";
 
 DirectProduct := NewOperationArgs( "DirectProduct" );
-DirectProduct2 := NewOperation( "DirectProduct2", [IsGroup, IsGroup] );
+DirectProductOfPermGroups := NewOperationArgs( "DirectProductOfPermGroups" );
+DirectProductOfPcGroups := NewOperationArgs( "DirectProductOfPcGroups" );
+DirectProductOfGroups := NewOperationArgs( "DirectProductOfGroups" );
 SubdirectProduct := NewOperation( "SubdirectProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ] );
 SemidirectProduct := NewOperation( "SemidirectProduct",
@@ -50,6 +58,9 @@ SemidirectProduct := NewOperation( "SemidirectProduct",
 WreathProduct := NewOperation( "WreathProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsList ] );
 WreathProductProductAction := NewOperationArgs( "WreathProductProductAction" );
+InnerSubdirectProducts := NewOperationArgs( "InnerSubdirectProducts" );
+InnerSubdirectProducts2 := NewOperationArgs( "InnerSubdirectProducts2" );
+SubdirectProducts := NewOperationArgs( "SubdirectProducts" );
 
 #############################################################################
 ##

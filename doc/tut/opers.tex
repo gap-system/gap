@@ -17,8 +17,8 @@ itself, and  you should imagine that  {\GAP} puts the size somewhere into
 function call is executed  again later, the size is  simply looked up and
 returned, without further computation.
 
-\index{getter!of an attribute}\index{setter!of an attribute}
-\index{tester!of an attribute}\index{methods}
+\index{getter!of an attribute}\index{setter!of an attribute}%
+\index{tester!of an attribute}\index{methods}%
 This means  that  the behavior of the   function `Size' has  to depend on
 whether the argument to the function already knows  its size, and if not,
 that the  size   must be  stored  in  the  argument   after it  has  been
@@ -58,14 +58,16 @@ tester,  and perhaps execute the setter  in the end. Therefore the getter
 could be implemented as follows:
 \begintt
     getter := function( obj )
-        local   value;
+    local   value;
 
         if tester( obj )  then
             value := system_getter( obj );
+
         else
             value := real_work_getter( obj );
             setter( obj, value );
         fi;
+
         return value;
     end;
 \endtt
@@ -92,32 +94,42 @@ nothing.
     11612160
 \endexample
 
+\exercise Does immutability of an object prevent a  setter from setting a
+previously unset value?
+
+\answer No. That  an object like a group  is constant does not mean  that
+additional  information  cannot  be  entered. Such additional information
+does not  change the mathematical  identity of  the object.  You can also
+assign values to   record   components like  the `hom!.externalSet'    of
+section~"Operations!of  groups" although `hom'  is  immutable  (you could
+even overwrite the values), but at your own responsibility!
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Section{Properties and filters}\null
 
 \atindex{properties}{|indexit}\atindex{filters}{|indexit}%
 Certain attributes, like `IsAbelian', are boolean-valued. Such attributes
 are known to {\GAP} as *properties*, because their values are stored in a
-slightly  different  way. A property  also has  a getter,  a setter and a
-tester, but in this  case,  the getter as  well as  the tester returns  a
-boolean value.  Therefore {\GAP} stores   both  values in  the same  way,
-namely as a bit  in a boolean  list, and treats  property getters and all
+slightly different way. A  property  also has a   getter, a setter  and a
+tester, but  in this case,  the getter as  well  as the  tester returns a
+boolean   value. Therefore {\GAP} stores  both  values  in  the same way,
+namely as  a bit in  a boolean list, and  treats property getters and all
 testers (of attributes or properties) uniformly, namely as *filters*. You
-can imagine that a filter of an object is a bit,  i.e., a switch which is
-set either to `true' or  to `false'.  Since they  allow only two  values,
-filters  can  be compared very  quickly, and  the  scheme by which {\GAP}
-chooses  the method, e.g., for a  getter or a  setter (as we have seen in
-the  previous section), is mostly based  on  the examiniation of filters,
-not on  the examiniation of  other attribute values.  For details on this
-*method selection*, see "Method selection".
+can imagine a filter of an  object as a bit,  i.e., a switch which is set
+either to `true' or to `false'. Since they allow only two values, filters
+can be compared very quickly, and the  scheme by which {\GAP} chooses the
+method, e.g., for a getter or  a setter (as we  have seen in the previous
+section),  is mostly based  on the  examiniation  of filters, not  on the
+examiniation   of   other  attribute values.    Details  of this  *method
+selection* are described in the reference manual.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Local Variables:
 % mode:               text
 % mode:               outline-minor
 % outline-regexp:     "\\\\Chapter\\|\\\\Section"
-% paragraph-start:    "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\$\\$.*\\)?\\s-*$"
-% paragraph-separate: "\\\\\\(begin\\|[Ee]nd\\|Par\\|Thm\\)\\|^\\(.*\\(\\$\\$\\|\\\\\\\\\\).*\\)?\\s-*$"
+% paragraph-start:    "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
+% paragraph-separate: "\\\\begin\\|\\\\end\\|\\$\\$\\|.*%\\|^$"
 % fill-column:        73
 % End:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

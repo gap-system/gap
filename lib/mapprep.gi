@@ -724,20 +724,6 @@ InstallMethod( InverseGeneralMapping,
       SetImagesSource( inv, PreImagesRange( map ) );
     fi;
 
-    # Enter known properties.
-    if HasIsTotal( map ) then
-      SetIsSurjective( inv, IsTotal( map ) );
-    fi;
-    if HasIsSurjective( map ) then
-      SetIsTotal( inv, IsSurjective( map ) );
-    fi;
-    if HasIsInjective( map ) then
-      SetIsSingleValued( inv, IsInjective( map ) );
-    fi;
-    if HasIsSingleValued( map ) then
-      SetIsInjective( inv, IsSingleValued( map ) );
-    fi;
-
     if HasRespectsMultiplication( map ) then
       SetRespectsMultiplication( inv, RespectsMultiplication( map ) );
     fi;

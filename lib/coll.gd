@@ -9,6 +9,8 @@
 ##
 ##  This file declares the operations for collections.
 ##
+##  Basic operation for collections is 'Enumerator'.
+##
 Revision.coll_gd :=
     "@(#)$Id$";
 
@@ -531,8 +533,13 @@ HasIsTrivial := Tester( IsTrivial );
 ##
 #P  IsFinite(<C>) . . . . . . . . . . . . . .  test if a collection is finite
 ##
-##  'IsFinite' returns  'true' if the  collection <C>  is  finite and 'false'
+##  'IsFinite' returns 'true' if the collection <C> is finite, and 'false'
 ##  otherwise.
+##
+##  the default method for 'IsFinite' checks the size of <C>.
+##
+##  Methods for 'IsFinite' may call 'Size',
+##  but methods for 'Size' must not call 'IsFinite'.
 ##
 IsFinite :=
     NewProperty( "IsFinite",
@@ -566,6 +573,15 @@ HasIsWholeFamily := Tester( IsWholeFamily );
 ##
 #A  Size(<C>) . . . . . . . . . . . . . . . . . . . . .  size of a collection
 ##
+##  'Size' returns the size of the collection <C>, which is either an integer
+##  or 'infinity'.
+##  <C> may also be a list, in which case the result is the length of <C>.
+##
+##  The default method for 'Size' checks the length of an enumerator of <C>.
+##
+##  Methods for 'IsFinite' may call 'Size',
+##  but methods for 'Size' must not call 'IsFinite'.
+##
 Size :=
     NewAttribute( "Size",
         IsListOrCollection );
@@ -579,6 +595,20 @@ InstallIsomorphismMaintainedMethod( Size,
 #############################################################################
 ##
 #A  Representative(<C>) . . . . . . . . . . . . . one element of a collection
+##
+##  'Representative' returns a representative of the collection <C>.
+##
+##  Note that 'Representative' is pretty free in choosing a representative if
+##  there are several elements in <C>.
+##  It is not even guaranteed that 'Representative' returns the same
+##  representative if it is called several times for one collection.
+##  Thus the main difference between 'Representative' and 'Random'
+##  (see "Random") is that 'Representative' is free to choose a value that is
+##  cheap to compute, while 'Random' must make an effort to randomly
+##  distribute its answers.
+##
+##  The default method for 'Representative' calls 'Enumerator' and returns an
+##  element of this list.
 ##
 Representative :=
     NewAttribute( "Representative",
@@ -601,6 +631,13 @@ HasRepresentativeSmallest := Tester( RepresentativeSmallest );
 #############################################################################
 ##
 #O  Random(<C>) . . . . . . . . . . . . . . .  random element of a collection
+##
+##  'Random' returns a random element of the collection <C>.
+##  The distribution of elements returned by 'Random' depends on <C>.
+##  For finite collections all elements are usually equally likely.
+##  For infinite collections some reasonable distribution is used.
+##  See the chapters of the various collections to find out which
+##  distribution is being used.
 ##
 Random :=
     NewOperation( "Random",
@@ -685,6 +722,13 @@ HasAsListSorted := Tester( AsListSorted );
 ##
 ##  For lists, the default method is 'Immutable'.
 ##  For collections that are not lists, there is no default method.
+##
+##  In  general functions that  return  a set of   elements are free, in fact
+##  encouraged, to return a  domain instead  of the  proper set of  elements.
+##  For  one  thing this  allows  to  keep the    structure, for  another the
+##  representation   by a  domain record is    usually more space  efficient.
+##  'Elements' must not do this, its only purpose is to create the proper set
+##  of elements.
 ##
 Enumerator :=
     NewAttribute( "Enumerator",
@@ -821,7 +865,24 @@ TrivialIterator := NewOperationArgs( "TrivialIterator" );
 
 #############################################################################
 ##
-#O  Sum(<C>)  . . . . . . . . . . . . . . sum of the elements of a collection
+#O  Sum( <C> )  . . . . . . . . . . . . . sum of the elements of a collection
+#O  Sum( <C>, <func> )  . . . . . . . . . . .  sum of images under a function
+##
+##  When used in the first way 'Sum' returns the sum of the elements
+##  of the collection <C>.
+##  When used in the second way 'Sum' applies the function <func>,
+##  which must be a function taking one argument, and returns the sum
+##  of the  results.
+##  In either case if <C> is empty 'Sum' returns 0.
+##
+#O  Sum( <C>, <init> )  . . . . . . . . . sum of the elements of a collection
+#O  Sum( <C>, <func>, <init> )  . . . . . . .  sum of images under a function
+##
+##  If an additional initial value <init> is given, 'Sum' returns the
+##  sum of <init> and the elements of the collection <C> resp. the
+##  sum of the images of these elements under the function <func>.
+##  This is useful for example if <C> is empty and a different zero than
+##  '0' is desired, in which case <init> is returned.
 ##
 Sum :=
     NewOperation( "Sum",
@@ -830,16 +891,24 @@ Sum :=
 
 #############################################################################
 ##
-#O  Product(<C>)  . . . . . . . . . . product of the elements of a collection
+#O  Product( <C> )  . . . . . . . . . product of the elements of a collection
+#O  Product( <C>, <func> )  . . . . . . .  product of images under a function
 ##
-##  'Product( <C> )' \\
-##  'Product( <C>, <func> )'
+##  When used in the first way 'Product' returns the product of the elements
+##  of the collection <C>.
+##  When used in the second way 'Product' applies the function <func>,
+##  which must be a function taking one argument, and returns the product
+##  of the results.
+##  In either case if <C> is empty 'Product' returns 1.
 ##
-##  When used in the first way 'Product'  returns the product of the elements
-##  of the collection <C>.  When used in the second way 'Product' applies the
-##  function  <func>, which   must be a   function taking  one  argument, and
-##  returns  the  product of the  results.   In either case   if <C> is empty
-##  'Product' returns 1.
+#O  Product( <C>, <init> )  . . . . . product of the elements of a collection
+#O  Product( <C>, <func>, <init> )  . . .  product of images under a function
+##
+##  If an additional initial value <init> is given, 'Product' returns the
+##  product of <init> and the elements of the collection <C> resp. the
+##  product of the images of these elements under the function <func>.
+##  This is useful for example if <C> is empty and a different identity than
+##  '1' is desired, in which case <init> is returned.
 ##
 Product :=
     NewOperation( "Product",
@@ -947,6 +1016,14 @@ ProductX :=
 ##  'IsSubset'  returns 'true'  if  <C2>, which must   be a collection, is  a
 ##  subset of <C1>, which also must be a collection, and 'false' otherwise.
 ##
+##  <C2> is considered a subset of <C1> if and only if the set of elements of
+##  <C2> is as a set a subset of the set of  elements of <C1> (see "AsList").
+##  That is 'IsSubset' behaves as if implemented as
+##  'IsSubsetSet( AsList(<C1>), AsList(<C2>) )', except that it will also
+##  sometimes, but not always, work for infinite collections,
+##  and that it will usually work much faster than the above definition.
+##  Either argument may also be a proper set.
+##
 IsSubset :=
     NewOperation( "IsSubset",
         [ IsListOrCollection, IsListOrCollection ] );
@@ -954,8 +1031,27 @@ IsSubset :=
 
 #############################################################################
 ##
-#O  Intersection(<C1>,<C2>...)  . . . . . . . . . intersection of collections
 ##
+#O  Intersection2(<C1>,<C2>)  . . . . . . . . . . intersection of collections
+##
+#F  Intersection(<C1>,<C2>...)  . . . . . . . . . intersection of collections
+#F  Intersection(<list>)  . . . . . . . . . . . . intersection of collections
+##
+##  In the first form 'Intersection' returns the intersection of the
+##  collections <C1>, <C2>, etc.
+##  In the second form <list> must be a list of collections
+##  and 'Intersection' returns the intersection of those collections.
+##  Each argument or element of <list> respectively may also be an
+##  arbitrary list, in which case 'Intersection' silently applies 'Set'
+##  (see "Set") to it first.
+##  
+##  Methods can be installed for the operation 'Intersection2' that allows
+##  only two arguments.
+##  'Intersection' calls 'Intersection2'.
+##
+##  Methods for 'Intersection2' should try to keep as much structure as
+##  possible.
+##  
 Intersection2 :=
     NewOperation( "Intersection2",
         [ IsListOrCollection, IsListOrCollection ] );
@@ -966,8 +1062,26 @@ Intersection :=
 
 #############################################################################
 ##
-#O  Union(<C1>,<C2>...) . . . . . . . . . . . . . . . .  union of collections
+#O  Union2(<C1>,<C2>) . . . . . . . . . . . . . . . . .  union of collections
 ##
+#F  Union(<C1>,<C2>...) . . . . . . . . . . . . . . . .  union of collections
+#F  Union(<list>) . . . . . . . . . . . . . . . . . . .  union of collections
+##
+##  In the first form 'Union' returns the union of the
+##  collections <C1>, <C2>, etc.
+##  In the second form <list> must be a list of collections
+##  and 'Union' returns the union of those collections.
+##  Each argument or element of <list> respectively may also be an
+##  arbitrary list, in which case 'Union' silently applies 'Set'
+##  (see "Set") to it first.
+##  
+##  The result of 'Union' is the set of elements that lie in any of the
+##  collections <C1>, <C2>, etc.
+##  
+##  Methods can be installed for the operation 'Union2' that allows
+##  only two arguments.
+##  'Union' calls 'Union2'.
+##  
 Union2 :=
     NewOperation( "Union2",
         [ IsListOrCollection, IsListOrCollection ] );
@@ -979,10 +1093,21 @@ Union :=
 #############################################################################
 ##
 #O  Difference(<C1>,<C2>) . . . . . . . . . . . . .  difference of collection
+##  
+##  'Difference' returns the set difference of the collections <C1> and <C2>.
+##  Either argument may also be an arbitrary list, in which case 'Difference'
+##  silently applies 'Set' (see "Set") to it first.
+##  
+##  The result of 'Difference' is the set of elements that lie in <C1> but
+##  not in <C2>.
+##  Note that <C2> need not be a subset of <C1>.
+##  The elements of <C2>, however, that are not element of <C1> play no role
+##  for the result.
 ##
 Difference :=
     NewOperation( "Difference",
         [ IsListOrCollection, IsListOrCollection ] );
+
 
 #############################################################################
 ##

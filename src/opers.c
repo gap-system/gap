@@ -1613,34 +1613,35 @@ Obj DoOperation1Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj *               cache;
     Obj                 method;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 1 ) );
-    if      ( cache[2*0+1] == kind1 ) {
+    if      ( cache[2*0+1] == id1 ) {
         method = cache[2*0+2];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[2*1+1] == kind1 ) {
+    else if ( cache[2*1+1] == id1 ) {
         method = cache[2*1+2];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[2*2+1] == kind1 ) {
+    else if ( cache[2*2+1] == id1 ) {
         method = cache[2*2+2];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[2*3+1] == kind1 ) {
+    else if ( cache[2*3+1] == id1 ) {
         method = cache[2*3+2];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -1651,7 +1652,7 @@ Obj DoOperation1Args (
     else {
         method = CALL_2ARGS( Method1Args, oper, kind1 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 1 ) );
-        cache[ 2*CacheIndex+1 ] = kind1;
+        cache[ 2*CacheIndex+1 ] = id1;
         cache[ 2*CacheIndex+2 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,1));
@@ -1696,40 +1697,42 @@ Obj DoOperation2Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj                 kind2;
+    Obj                 id2;
     Obj *               cache;
     Obj                 method;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 2 ) );
-    if      ( cache[3*0+1] == kind1
-           && cache[3*0+2] == kind2 ) {
+    if      ( cache[3*0+1] == id1
+           && cache[3*0+2] == id2 ) {
         method = cache[3*0+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[3*1+1] == kind1
-           && cache[3*1+2] == kind2 ) {
+    else if ( cache[3*1+1] == id1
+           && cache[3*1+2] == id2 ) {
         method = cache[3*1+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[3*2+1] == kind1
-           && cache[3*2+2] == kind2 ) {
+    else if ( cache[3*2+1] == id1
+           && cache[3*2+2] == id2 ) {
         method = cache[3*2+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[3*3+1] == kind1
-           && cache[3*3+2] == kind2 ) {
+    else if ( cache[3*3+1] == id1
+           && cache[3*3+2] == id2 ) {
         method = cache[3*3+3];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -1741,8 +1744,8 @@ Obj DoOperation2Args (
         method = CALL_3ARGS( Method2Args, oper,
                              kind1, kind2 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
-        cache[ 3*CacheIndex+1 ] = kind1;
-        cache[ 3*CacheIndex+2 ] = kind2;
+        cache[ 3*CacheIndex+1 ] = id1;
+        cache[ 3*CacheIndex+2 ] = id2;
         cache[ 3*CacheIndex+3 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,2));
@@ -1787,46 +1790,49 @@ Obj DoOperation3Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj *               cache;
     Obj                 method;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 3 ) );
-    if      ( cache[4*0+1] == kind1
-           && cache[4*0+2] == kind2
-           && cache[4*0+3] == kind3 ) {
+    if      ( cache[4*0+1] == id1
+           && cache[4*0+2] == id2
+           && cache[4*0+3] == id3 ) {
         method = cache[4*0+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[4*1+1] == kind1
-           && cache[4*1+2] == kind2
-           && cache[4*1+3] == kind3 ) {
+    else if ( cache[4*1+1] == id1
+           && cache[4*1+2] == id2
+           && cache[4*1+3] == id3 ) {
         method = cache[4*1+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[4*2+1] == kind1
-           && cache[4*2+2] == kind2
-           && cache[4*2+3] == kind3 ) {
+    else if ( cache[4*2+1] == id1
+           && cache[4*2+2] == id2
+           && cache[4*2+3] == id3 ) {
         method = cache[4*2+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[4*3+1] == kind1
-           && cache[4*3+2] == kind2
-           && cache[4*3+3] == kind3 ) {
+    else if ( cache[4*3+1] == id1
+           && cache[4*3+2] == id2
+           && cache[4*3+3] == id3 ) {
         method = cache[4*3+4];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -1838,9 +1844,9 @@ Obj DoOperation3Args (
         method = CALL_4ARGS( Method3Args, oper,
                              kind1, kind2, kind3 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
-        cache[ 4*CacheIndex+1 ] = kind1;
-        cache[ 4*CacheIndex+2 ] = kind2;
-        cache[ 4*CacheIndex+3 ] = kind3;
+        cache[ 4*CacheIndex+1 ] = id1;
+        cache[ 4*CacheIndex+2 ] = id2;
+        cache[ 4*CacheIndex+3 ] = id3;
         cache[ 4*CacheIndex+4 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,3));
@@ -1886,52 +1892,56 @@ Obj DoOperation4Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj *               cache;
     Obj                 method;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 4 ) );
-    if      ( cache[5*0+1] == kind1
-           && cache[5*0+2] == kind2
-           && cache[5*0+3] == kind3
-           && cache[5*0+4] == kind4 ) {
+    if      ( cache[5*0+1] == id1
+           && cache[5*0+2] == id2
+           && cache[5*0+3] == id3
+           && cache[5*0+4] == id4 ) {
         method = cache[5*0+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[5*1+1] == kind1
-           && cache[5*1+2] == kind2
-           && cache[5*1+3] == kind3
-           && cache[5*1+4] == kind4 ) {
+    else if ( cache[5*1+1] == id1
+           && cache[5*1+2] == id2
+           && cache[5*1+3] == id3
+           && cache[5*1+4] == id4 ) {
         method = cache[5*1+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[5*2+1] == kind1
-           && cache[5*2+2] == kind2
-           && cache[5*2+3] == kind3
-           && cache[5*2+4] == kind4 ) {
+    else if ( cache[5*2+1] == id1
+           && cache[5*2+2] == id2
+           && cache[5*2+3] == id3
+           && cache[5*2+4] == id4 ) {
         method = cache[5*2+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[5*3+1] == kind1
-           && cache[5*3+2] == kind2
-           && cache[5*3+3] == kind3
-           && cache[5*3+4] == kind4 ) {
+    else if ( cache[5*3+1] == id1
+           && cache[5*3+2] == id2
+           && cache[5*3+3] == id3
+           && cache[5*3+4] == id4 ) {
         method = cache[5*3+5];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -1943,10 +1953,10 @@ Obj DoOperation4Args (
         method = CALL_5ARGS( Method4Args, oper,
                              kind1, kind2, kind3, kind4 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
-        cache[ 5*CacheIndex+1 ] = kind1;
-        cache[ 5*CacheIndex+2 ] = kind2;
-        cache[ 5*CacheIndex+3 ] = kind3;
-        cache[ 5*CacheIndex+4 ] = kind4;
+        cache[ 5*CacheIndex+1 ] = id1;
+        cache[ 5*CacheIndex+2 ] = id2;
+        cache[ 5*CacheIndex+3 ] = id3;
+        cache[ 5*CacheIndex+4 ] = id4;
         cache[ 5*CacheIndex+5 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,4));
@@ -1994,59 +2004,64 @@ Obj DoOperation5Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj                 kind5;
+    Obj                 id5;
     Obj *               cache;
     Obj                 method;
     Obj                 margs;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
+    kind5 = KIND_OBJ( arg5 );  id5 = ID_KIND( kind5 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 5 ) );
-    if      ( cache[6*0+1] == kind1
-           && cache[6*0+2] == kind2
-           && cache[6*0+3] == kind3
-           && cache[6*0+4] == kind4
-           && cache[6*0+5] == kind5 ) {
+    if      ( cache[6*0+1] == id1
+           && cache[6*0+2] == id2
+           && cache[6*0+3] == id3
+           && cache[6*0+4] == id4
+           && cache[6*0+5] == id5 ) {
         method = cache[6*0+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[6*1+1] == kind1
-           && cache[6*1+2] == kind2
-           && cache[6*1+3] == kind3
-           && cache[6*1+4] == kind4
-           && cache[6*1+5] == kind5 ) {
+    else if ( cache[6*1+1] == id1
+           && cache[6*1+2] == id2
+           && cache[6*1+3] == id3
+           && cache[6*1+4] == id4
+           && cache[6*1+5] == id5 ) {
         method = cache[6*1+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[6*2+1] == kind1
-           && cache[6*2+2] == kind2
-           && cache[6*2+3] == kind3
-           && cache[6*2+4] == kind4
-           && cache[6*2+5] == kind5 ) {
+    else if ( cache[6*2+1] == id1
+           && cache[6*2+2] == id2
+           && cache[6*2+3] == id3
+           && cache[6*2+4] == id4
+           && cache[6*2+5] == id5 ) {
         method = cache[6*2+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[6*3+1] == kind1
-           && cache[6*3+2] == kind2
-           && cache[6*3+3] == kind3
-           && cache[6*3+4] == kind4
-           && cache[6*3+5] == kind5 ) {
+    else if ( cache[6*3+1] == id1
+           && cache[6*3+2] == id2
+           && cache[6*3+3] == id3
+           && cache[6*3+4] == id4
+           && cache[6*3+5] == id5 ) {
         method = cache[6*3+6];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -2058,11 +2073,11 @@ Obj DoOperation5Args (
         method = CALL_6ARGS( Method5Args, oper,
                              kind1, kind2, kind3, kind4, kind5 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
-        cache[ 6*CacheIndex+1 ] = kind1;
-        cache[ 6*CacheIndex+2 ] = kind2;
-        cache[ 6*CacheIndex+3 ] = kind3;
-        cache[ 6*CacheIndex+4 ] = kind4;
-        cache[ 6*CacheIndex+5 ] = kind5;
+        cache[ 6*CacheIndex+1 ] = id1;
+        cache[ 6*CacheIndex+2 ] = id2;
+        cache[ 6*CacheIndex+3 ] = id3;
+        cache[ 6*CacheIndex+4 ] = id4;
+        cache[ 6*CacheIndex+5 ] = id5;
         cache[ 6*CacheIndex+6 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,5));
@@ -2118,65 +2133,71 @@ Obj DoOperation6Args (
 {
     Obj                 res;
     Obj                 kind1;
+    Obj                 id1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj                 kind5;
+    Obj                 id5;
     Obj                 kind6;
+    Obj                 id6;
     Obj *               cache;
     Obj                 method;
     Obj                 margs;
     Int                 i;
 
     /* get the kinds of the arguments                                      */
-    kind1 = KIND_OBJ( arg1 );
-    kind2 = KIND_OBJ( arg2 );
-    kind3 = KIND_OBJ( arg3 );
-    kind4 = KIND_OBJ( arg4 );
-    kind5 = KIND_OBJ( arg5 );
-    kind6 = KIND_OBJ( arg6 );
+    kind1 = KIND_OBJ( arg1 );  id1 = ID_KIND( kind1 );
+    kind2 = KIND_OBJ( arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ( arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ( arg4 );  id4 = ID_KIND( kind4 );
+    kind5 = KIND_OBJ( arg5 );  id5 = ID_KIND( kind5 );
+    kind6 = KIND_OBJ( arg6 );  id6 = ID_KIND( kind6 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 6 ) );
-    if      ( cache[7*0+1] == kind1
-           && cache[7*0+2] == kind2
-           && cache[7*0+3] == kind3
-           && cache[7*0+4] == kind4
-           && cache[7*0+5] == kind5
-           && cache[7*0+6] == kind6 ) {
+    if      ( cache[7*0+1] == id1
+           && cache[7*0+2] == id2
+           && cache[7*0+3] == id3
+           && cache[7*0+4] == id4
+           && cache[7*0+5] == id5
+           && cache[7*0+6] == id6 ) {
         method = cache[7*0+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[7*1+1] == kind1
-           && cache[7*1+2] == kind2
-           && cache[7*1+3] == kind3
-           && cache[7*1+4] == kind4
-           && cache[7*1+5] == kind5
-           && cache[7*1+6] == kind6 ) {
+    else if ( cache[7*1+1] == id1
+           && cache[7*1+2] == id2
+           && cache[7*1+3] == id3
+           && cache[7*1+4] == id4
+           && cache[7*1+5] == id5
+           && cache[7*1+6] == id6 ) {
         method = cache[7*1+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[7*2+1] == kind1
-           && cache[7*2+2] == kind2
-           && cache[7*2+3] == kind3
-           && cache[7*2+4] == kind4
-           && cache[7*2+5] == kind5
-           && cache[7*2+6] == kind6 ) {
+    else if ( cache[7*2+1] == id1
+           && cache[7*2+2] == id2
+           && cache[7*2+3] == id3
+           && cache[7*2+4] == id4
+           && cache[7*2+5] == id5
+           && cache[7*2+6] == id6 ) {
         method = cache[7*2+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
-    else if ( cache[7*3+1] == kind1
-           && cache[7*3+2] == kind2
-           && cache[7*3+3] == kind3
-           && cache[7*3+4] == kind4
-           && cache[7*3+5] == kind5
-           && cache[7*3+6] == kind6 ) {
+    else if ( cache[7*3+1] == id1
+           && cache[7*3+2] == id2
+           && cache[7*3+3] == id3
+           && cache[7*3+4] == id4
+           && cache[7*3+5] == id5
+           && cache[7*3+6] == id6 ) {
         method = cache[7*3+7];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -2196,12 +2217,12 @@ Obj DoOperation6Args (
         SET_ELM_PLIST( margs, 7, kind6 );
         method = CALL_XARGS( Method6Args, margs );
         cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
-        cache[ 7*CacheIndex+1 ] = kind1;
-        cache[ 7*CacheIndex+2 ] = kind2;
-        cache[ 7*CacheIndex+3 ] = kind3;
-        cache[ 7*CacheIndex+4 ] = kind4;
-        cache[ 7*CacheIndex+5 ] = kind5;
-        cache[ 7*CacheIndex+6 ] = kind6;
+        cache[ 7*CacheIndex+1 ] = id1;
+        cache[ 7*CacheIndex+2 ] = id2;
+        cache[ 7*CacheIndex+3 ] = id3;
+        cache[ 7*CacheIndex+4 ] = id4;
+        cache[ 7*CacheIndex+5 ] = id5;
+        cache[ 7*CacheIndex+6 ] = id6;
         cache[ 7*CacheIndex+7 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,6));
@@ -2972,6 +2993,7 @@ Obj DoConstructor2Args (
     Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
+    Obj                 id2;
     Obj *               cache;
     Obj                 method;
     Int                 i;
@@ -2982,33 +3004,33 @@ Obj DoConstructor2Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
+    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 2 ) );
     if      ( cache[3*0+1] == kind1
-           && cache[3*0+2] == kind2 ) {
+           && cache[3*0+2] == id2 ) {
         method = cache[3*0+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[3*1+1] == kind1
-           && cache[3*1+2] == kind2 ) {
+           && cache[3*1+2] == id2 ) {
         method = cache[3*1+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[3*2+1] == kind1
-           && cache[3*2+2] == kind2 ) {
+           && cache[3*2+2] == id2 ) {
         method = cache[3*2+3];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[3*3+1] == kind1
-           && cache[3*3+2] == kind2 ) {
+           && cache[3*3+2] == id2 ) {
         method = cache[3*3+3];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -3021,7 +3043,7 @@ Obj DoConstructor2Args (
                              kind1, kind2 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 2 ) );
         cache[ 3*CacheIndex+1 ] = kind1;
-        cache[ 3*CacheIndex+2 ] = kind2;
+        cache[ 3*CacheIndex+2 ] = id2;
         cache[ 3*CacheIndex+3 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,2));
@@ -3067,7 +3089,9 @@ Obj DoConstructor3Args (
     Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj *               cache;
     Obj                 method;
     Int                 i;
@@ -3078,38 +3102,38 @@ Obj DoConstructor3Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
+    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 3 ) );
     if      ( cache[4*0+1] == kind1
-           && cache[4*0+2] == kind2
-           && cache[4*0+3] == kind3 ) {
+           && cache[4*0+2] == id2
+           && cache[4*0+3] == id3 ) {
         method = cache[4*0+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[4*1+1] == kind1
-           && cache[4*1+2] == kind2
-           && cache[4*1+3] == kind3 ) {
+           && cache[4*1+2] == id2
+           && cache[4*1+3] == id3 ) {
         method = cache[4*1+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[4*2+1] == kind1
-           && cache[4*2+2] == kind2
-           && cache[4*2+3] == kind3 ) {
+           && cache[4*2+2] == id2
+           && cache[4*2+3] == id3 ) {
         method = cache[4*2+4];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[4*3+1] == kind1
-           && cache[4*3+2] == kind2
-           && cache[4*3+3] == kind3 ) {
+           && cache[4*3+2] == id2
+           && cache[4*3+3] == id3 ) {
         method = cache[4*3+4];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -3122,8 +3146,8 @@ Obj DoConstructor3Args (
                              kind1, kind2, kind3 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 3 ) );
         cache[ 4*CacheIndex+1 ] = kind1;
-        cache[ 4*CacheIndex+2 ] = kind2;
-        cache[ 4*CacheIndex+3 ] = kind3;
+        cache[ 4*CacheIndex+2 ] = id2;
+        cache[ 4*CacheIndex+3 ] = id3;
         cache[ 4*CacheIndex+4 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,3));
@@ -3170,8 +3194,11 @@ Obj DoConstructor4Args (
     Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj *               cache;
     Obj                 method;
     Int                 i;
@@ -3182,43 +3209,43 @@ Obj DoConstructor4Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
+    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 4 ) );
     if      ( cache[5*0+1] == kind1
-           && cache[5*0+2] == kind2
-           && cache[5*0+3] == kind3
-           && cache[5*0+4] == kind4 ) {
+           && cache[5*0+2] == id2
+           && cache[5*0+3] == id3
+           && cache[5*0+4] == id4 ) {
         method = cache[5*0+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[5*1+1] == kind1
-           && cache[5*1+2] == kind2
-           && cache[5*1+3] == kind3
-           && cache[5*1+4] == kind4 ) {
+           && cache[5*1+2] == id2
+           && cache[5*1+3] == id3
+           && cache[5*1+4] == id4 ) {
         method = cache[5*1+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[5*2+1] == kind1
-           && cache[5*2+2] == kind2
-           && cache[5*2+3] == kind3
-           && cache[5*2+4] == kind4 ) {
+           && cache[5*2+2] == id2
+           && cache[5*2+3] == id3
+           && cache[5*2+4] == id4 ) {
         method = cache[5*2+5];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[5*3+1] == kind1
-           && cache[5*3+2] == kind2
-           && cache[5*3+3] == kind3
-           && cache[5*3+4] == kind4 ) {
+           && cache[5*3+2] == id2
+           && cache[5*3+3] == id3
+           && cache[5*3+4] == id4 ) {
         method = cache[5*3+5];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -3231,9 +3258,9 @@ Obj DoConstructor4Args (
                              kind1, kind2, kind3, kind4 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 4 ) );
         cache[ 5*CacheIndex+1 ] = kind1;
-        cache[ 5*CacheIndex+2 ] = kind2;
-        cache[ 5*CacheIndex+3 ] = kind3;
-        cache[ 5*CacheIndex+4 ] = kind4;
+        cache[ 5*CacheIndex+2 ] = id2;
+        cache[ 5*CacheIndex+3 ] = id3;
+        cache[ 5*CacheIndex+4 ] = id4;
         cache[ 5*CacheIndex+5 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,4));
@@ -3282,9 +3309,13 @@ Obj DoConstructor5Args (
     Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj                 kind5;
+    Obj                 id5;
     Obj *               cache;
     Obj                 method;
     Obj                 margs;
@@ -3296,48 +3327,48 @@ Obj DoConstructor5Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
-    kind5 = KIND_OBJ(   arg5 );
+    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
+    kind5 = KIND_OBJ(   arg5 );  id5 = ID_KIND( kind5 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 5 ) );
     if      ( cache[6*0+1] == kind1
-           && cache[6*0+2] == kind2
-           && cache[6*0+3] == kind3
-           && cache[6*0+4] == kind4
-           && cache[6*0+5] == kind5 ) {
+           && cache[6*0+2] == id2
+           && cache[6*0+3] == id3
+           && cache[6*0+4] == id4
+           && cache[6*0+5] == id5 ) {
         method = cache[6*0+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[6*1+1] == kind1
-           && cache[6*1+2] == kind2
-           && cache[6*1+3] == kind3
-           && cache[6*1+4] == kind4
-           && cache[6*1+5] == kind5 ) {
+           && cache[6*1+2] == id2
+           && cache[6*1+3] == id3
+           && cache[6*1+4] == id4
+           && cache[6*1+5] == id5 ) {
         method = cache[6*1+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[6*2+1] == kind1
-           && cache[6*2+2] == kind2
-           && cache[6*2+3] == kind3
-           && cache[6*2+4] == kind4
-           && cache[6*2+5] == kind5 ) {
+           && cache[6*2+2] == id2
+           && cache[6*2+3] == id3
+           && cache[6*2+4] == id4
+           && cache[6*2+5] == id5 ) {
         method = cache[6*2+6];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[6*3+1] == kind1
-           && cache[6*3+2] == kind2
-           && cache[6*3+3] == kind3
-           && cache[6*3+4] == kind4
-           && cache[6*3+5] == kind5 ) {
+           && cache[6*3+2] == id2
+           && cache[6*3+3] == id3
+           && cache[6*3+4] == id4
+           && cache[6*3+5] == id5 ) {
         method = cache[6*3+6];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -3350,10 +3381,10 @@ Obj DoConstructor5Args (
                              kind1, kind2, kind3, kind4, kind5 );
         cache = ADDR_OBJ( CACHE_OPER( oper, 5 ) );
         cache[ 6*CacheIndex+1 ] = kind1;
-        cache[ 6*CacheIndex+2 ] = kind2;
-        cache[ 6*CacheIndex+3 ] = kind3;
-        cache[ 6*CacheIndex+4 ] = kind4;
-        cache[ 6*CacheIndex+5 ] = kind5;
+        cache[ 6*CacheIndex+2 ] = id2;
+        cache[ 6*CacheIndex+3 ] = id3;
+        cache[ 6*CacheIndex+4 ] = id4;
+        cache[ 6*CacheIndex+5 ] = id5;
         cache[ 6*CacheIndex+6 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,5));
@@ -3410,10 +3441,15 @@ Obj DoConstructor6Args (
     Obj                 res;
     Obj                 kind1;
     Obj                 kind2;
+    Obj                 id2;
     Obj                 kind3;
+    Obj                 id3;
     Obj                 kind4;
+    Obj                 id4;
     Obj                 kind5;
+    Obj                 id5;
     Obj                 kind6;
+    Obj                 id6;
     Obj *               cache;
     Obj                 method;
     Obj                 margs;
@@ -3425,53 +3461,53 @@ Obj DoConstructor6Args (
         return 0;
     }
     kind1 = FLAGS_FILT( arg1 );
-    kind2 = KIND_OBJ(   arg2 );
-    kind3 = KIND_OBJ(   arg3 );
-    kind4 = KIND_OBJ(   arg4 );
-    kind5 = KIND_OBJ(   arg5 );
-    kind6 = KIND_OBJ(   arg6 );
+    kind2 = KIND_OBJ(   arg2 );  id2 = ID_KIND( kind2 );
+    kind3 = KIND_OBJ(   arg3 );  id3 = ID_KIND( kind3 );
+    kind4 = KIND_OBJ(   arg4 );  id4 = ID_KIND( kind4 );
+    kind5 = KIND_OBJ(   arg5 );  id5 = ID_KIND( kind5 );
+    kind6 = KIND_OBJ(   arg6 );  id6 = ID_KIND( kind6 );
 
     /* try to find an applicable method in the cache                       */
     cache = ADDR_OBJ( CacheOper( oper, 6 ) );
     if      ( cache[7*0+1] == kind1
-           && cache[7*0+2] == kind2
-           && cache[7*0+3] == kind3
-           && cache[7*0+4] == kind4
-           && cache[7*0+5] == kind5
-           && cache[7*0+6] == kind6 ) {
+           && cache[7*0+2] == id2
+           && cache[7*0+3] == id3
+           && cache[7*0+4] == id4
+           && cache[7*0+5] == id5
+           && cache[7*0+6] == id6 ) {
         method = cache[7*0+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[7*1+1] == kind1
-           && cache[7*1+2] == kind2
-           && cache[7*1+3] == kind3
-           && cache[7*1+4] == kind4
-           && cache[7*1+5] == kind5
-           && cache[7*1+6] == kind6 ) {
+           && cache[7*1+2] == id2
+           && cache[7*1+3] == id3
+           && cache[7*1+4] == id4
+           && cache[7*1+5] == id5
+           && cache[7*1+6] == id6 ) {
         method = cache[7*1+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[7*2+1] == kind1
-           && cache[7*2+2] == kind2
-           && cache[7*2+3] == kind3
-           && cache[7*2+4] == kind4
-           && cache[7*2+5] == kind5
-           && cache[7*2+6] == kind6 ) {
+           && cache[7*2+2] == id2
+           && cache[7*2+3] == id3
+           && cache[7*2+4] == id4
+           && cache[7*2+5] == id5
+           && cache[7*2+6] == id6 ) {
         method = cache[7*2+7];
 #ifdef COUNT_OPERS
         OperationHit++;
 #endif
     }
     else if ( cache[7*3+1] == kind1
-           && cache[7*3+2] == kind2
-           && cache[7*3+3] == kind3
-           && cache[7*3+4] == kind4
-           && cache[7*3+5] == kind5
-           && cache[7*3+6] == kind6 ) {
+           && cache[7*3+2] == id2
+           && cache[7*3+3] == id3
+           && cache[7*3+4] == id4
+           && cache[7*3+5] == id5
+           && cache[7*3+6] == id6 ) {
         method = cache[7*3+7];
 #ifdef COUNT_OPERS
         OperationHit++;
@@ -3492,11 +3528,11 @@ Obj DoConstructor6Args (
         method = CALL_XARGS( Constructor6Args, margs );
         cache = ADDR_OBJ( CACHE_OPER( oper, 6 ) );
         cache[ 7*CacheIndex+1 ] = kind1;
-        cache[ 7*CacheIndex+2 ] = kind2;
-        cache[ 7*CacheIndex+3 ] = kind3;
-        cache[ 7*CacheIndex+4 ] = kind4;
-        cache[ 7*CacheIndex+5 ] = kind5;
-        cache[ 7*CacheIndex+6 ] = kind6;
+        cache[ 7*CacheIndex+2 ] = id2;
+        cache[ 7*CacheIndex+3 ] = id3;
+        cache[ 7*CacheIndex+4 ] = id4;
+        cache[ 7*CacheIndex+5 ] = id5;
+        cache[ 7*CacheIndex+6 ] = id6;
         cache[ 7*CacheIndex+7 ] = method;
         CacheIndex = (CacheIndex + 1) % 4;
         CHANGED_BAG(CACHE_OPER(oper,6));
@@ -4181,6 +4217,8 @@ Obj DoAttribute (
 **
 *f  DoVerboseAttribute( <attr>, <obj> )
 */
+#define DoVerboseSetAttribute  DoVerboseOperation2Args
+
 Obj DoVerboseAttribute (
     Obj                 self,
     Obj                 obj )
@@ -4207,13 +4245,13 @@ Obj DoVerboseAttribute (
     
     /* set the value (but not for internal objects)                        */
     if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     
     /* return the value                                                    */
@@ -4295,13 +4333,13 @@ Obj DoVerboseMutableAttribute (
     
     /* set the value (but not for internal objects)                        */
     if      ( TYPE_OBJ( obj ) == T_COMOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     else if ( TYPE_OBJ( obj ) == T_POSOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     else if ( TYPE_OBJ( obj ) == T_DATOBJ ) {
-        DoSetAttribute( SETTR_FILT(self), obj, val );
+        DoVerboseSetAttribute( SETTR_FILT(self), obj, val );
     }
     
     /* return the value                                                    */

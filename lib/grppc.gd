@@ -148,20 +148,20 @@ SubgroupByPcgs := NewOperation( "SubgroupByPcgs", [IsGroup, IsPcgs] );
 
 #############################################################################
 ##
-#O  AffineOperation( <G>, <gens>, <basisvectors>, <linear>, <transl> )
+#O  AffineOperation( <gens>, <basisvectors>, <linear>, <transl> )
 ##
 AffineOperation := NewOperation(
     "AffineOperation", 
-    [ IsGroup, IsList, IsMatrix, IsFunction, IsFunction ] );
+    [ IsList, IsMatrix, IsFunction, IsFunction ] );
 
 
 #############################################################################
 ##
-#O  LinearOperation( <G>, <gens>, <basisvectors>, <linear> )
+#O  LinearOperation( <gens>, <basisvectors>, <linear> )
 ##
 LinearOperation := NewOperation(
     "LinearOperation",
-    [ IsGroup, IsList, IsMatrix, IsFunction ] );
+    [ IsList, IsMatrix, IsFunction ] );
 
 
 #############################################################################

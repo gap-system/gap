@@ -291,7 +291,7 @@ end;
 ##
 InstallMethod(PerfGrpConst,"perm grp",true,[IsPermGroup,IsInt,IsInt],0,
 function(filter,pos,nr)
-local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct;
+local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct,fp;
   if pos=1 then
     # special treatment for the trivial group
     G:=Group(());
@@ -361,7 +361,11 @@ local l,G,i,g1,g2,gl,e1,e2,gens,rels,subs,pgens,deg,ind,ct;
   G:=Group(pgens,());
 
   # store the presentation
-  SetGeneratorsAndRelators(G,[Group(gens,gens[1]^0),gens,rels]);
+  fp:=Group(gens,gens[1]^0)/rels;
+  SetIsomorphismFpGroup(G,GroupHomomorphismByImages(G,fp,pgens,
+                        GeneratorsOfGroup(fp)));
+  SetIsomorphismPermGroup(fp,GroupHomomorphismByImages(fp,G,
+                          GeneratorsOfGroup(fp),pgens));
 
   SetSize(G,PERFRec.sizes[pos]);
   SetPerfectIdentification(G,[Size(G),nr]);
