@@ -614,45 +614,6 @@ FactorGroupNormalSubgroupClasses := NewOperationArgs(
 
 #############################################################################
 ##
-#O  Indicator( <tbl>, <n> )
-#O  Indicator( <tbl>, <characters>, <n> )
-#O  Indicator( <modtbl>, 2 )
-##
-##  If <tbl> is an ordinary character table then 'Indicator' returns the
-##  list of <n>-th Frobenius-Schur indicators of <characters>
-##  or 'Irr( <tbl> )'.
-##
-##  If <tbl> is a Brauer table in characteristic $\not= 2$, and $<n> = 2$
-##  then 'Indicator' returns the second indicator.
-##
-Indicator := NewOperation( "Indicator",
-    [ IsNearlyCharacterTable, IsInt and IsPosRat ] );
-
-
-#############################################################################
-##
-#O  InducedCyclic( <tbl> )
-#O  InducedCyclic( <tbl>, \"all\" )
-#O  InducedCyclic( <tbl>, <classes> )
-#O  InducedCyclic( <tbl>, <classes>, \"all\" )
-##
-##  'InducedCyclic' calculates characters induced up from cyclic subgroups
-##  of the character table <tbl> to <tbl>.
-##
-##  If `"all"` is specified, all irreducible characters of those subgroups
-##  are induced, otherwise only the permutation characters are calculated.
-##
-##  If a list <classes> is specified, only those cyclic subgroups generated
-##  by these classes are considered, otherwise all classes of <tbl> are
-##  considered.
-##
-##  'InducedCyclic' returns a set of characters.
-##
-InducedCyclic := NewOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
-
-
-#############################################################################
-##
 #O  MatScalarProducts( <tbl>, <characters1>, <characters2> )
 #O  MatScalarProducts( <tbl>, <characters> )
 ##

@@ -44,6 +44,47 @@ InstallMethod( \=,
 
 #############################################################################
 ##
+#M  \=( <D1>, <D2> ) . . . . . . . . . . . . . . . . . . . .  for two domains
+##
+##  Two domains are equal if their elements lists are equal.
+##
+InstallMethod( \=,
+    "method for two domains",
+    IsIdentical,
+    [ IsDomain, IsDomain ], 0,
+    function( D1, D2 )
+    return AsListSorted( D1 ) = AsListSorted( D2 );
+    end );
+
+
+#############################################################################
+##
+#M  \<( <C>, <D> )  . . . . . . . . . . . . . . . . . . . for list and domain
+##
+InstallMethod( \<,
+    "method for a list and a domain",
+    IsIdentical,
+    [ IsCollection and IsList, IsDomain ], 0,
+    function( C, D )
+    return C < AsListSorted( D );
+    end );
+
+
+#############################################################################
+##
+#M  \<( <D>, <C> )  . . . . . . . . . . . . . . . . . . . for domain and list
+##
+InstallMethod( \<,
+    "method for a domain and a list",
+    IsIdentical,
+    [ IsDomain, IsCollection and IsList ], 0,
+    function( D, C )
+    return AsListSorted( D ) < C;
+    end );
+
+
+#############################################################################
+##
 #M  SetParent( <D>, <P> ) . . . . . . . method to run the subset implications
 ##
 InstallMethod( SetParent,

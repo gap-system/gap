@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 1.3  1997/03/11 17:14:09  htheisse
+#H  added Sims' names and numbers
+#H
 #H  Revision 1.2  1997/02/21 17:15:54  htheisse
 #H  fixed a bug and a typo
 #H
@@ -334,6 +337,7 @@ AffinePermGroupByMatrixGroup := function( M )
                 "^", String( DimensionOfMatrixGroup( M ) ), ":",
                 Name( M ) ) );
     fi;
+    A!.matrixGroup := M;
     return A;
 end;
 
@@ -361,6 +365,7 @@ PrimitiveAffinePermGroupByMatrixGroup := function( M )
                 "^", String( DimensionOfMatrixGroup( M ) ), ":",
                 Name( M ) ) );
     fi;
+    A!.matrixGroup := M;
     return A;
 end;
 
@@ -396,6 +401,9 @@ GLnbylqtolInGLnq := function( M, k )
     if HasName( M )  then
         SetName( G, Concatenation( Name( M ), " < GL(", String( d * k ),
                 ",", String( q ), ")" ) );
+    fi;
+    if HasSize( M )  or  IsGeneralLinearGroup( M )  then
+        SetSize( G, Size( M ) );
     fi;
     return G;
 
@@ -442,6 +450,9 @@ StabFldExt := function( M, k )
                 " < GL(", String( DimensionOfMatrixGroup( M ) * k ), ",",
                 String( RootInt( Size( FieldOfMatrixGroup( M ) ), k ) ),
                 ")" ) );
+    fi;
+    if HasSize( M )  or  IsGeneralLinearGroup( M )  then
+        SetSize( G, Size( M ) * k );
     fi;
     return G;
 end;
@@ -530,6 +541,17 @@ end );
 #############################################################################
 ##
 
+#V  SIMS_NUMBERS  . . . . . . . . . . . . . . . . . . . . . . of degree <= 50
+##
+if not IsBound( SIMS_NUMBERS )  then
+    ReadPrim( "simsnums.gi" );
+fi;
+
+SimsNo := NewAttribute( "SimsNo", IsPermGroup );
+SimsName := NewAttribute( "SimsName", IsPermGroup );
+
+#############################################################################
+##
 #V  IrredSolGroupList . . . . . . . . . . . . . . . . . . . . of degree < 256
 ##
 if not IsBound( IrredSolGroupList )  then
@@ -641,14 +663,14 @@ Cohort := function( deg, c )
     if c > Length( COHORTS[ deg ] )  then
         return Length( COHORTS[ deg ] );
     elif IsString( COHORTS[ deg ][ c ] )  then
-        Read( Concatenation( PRIMNAME, "cohorts/", COHORTS[ deg ][ c ],
+        ReadPrim( Concatenation( "cohorts/", COHORTS[ deg ][ c ],
                 ".", String( deg ) ) );
         SetName( coh, Concatenation( COHORTS[ deg ][ c ],
                 "#", String( deg ) ) );
         COHORTS[ deg ][ c ] := coh;
     elif not IsGeneralMapping( COHORTS[ deg ][ c ] )  then
         if IsString( COHORTS[ deg ][ c ][ 1 ] )  then
-            Read( Concatenation( PRIMNAME, "cohorts/",
+            ReadPrim( Concatenation( "cohorts/",
                     COHORTS[ deg ][ c ][1],
                     ".", String( deg ), COHORTS[ deg ][ c ][ 2 ] ) );
             SetName( coh, Concatenation( COHORTS[ deg ][ c ][ 1 ],
@@ -666,7 +688,7 @@ end;
 ##
 #F  PrimitiveGroup( <deg>, <nr> ) . . . . . . . . .  primitive group selector
 ##
-PrimitiveGroup := function( deg, nr )
+MakePrimitiveGroup := function( deg, nr )
     local   G,  p,  n,  div,  nrcs,  c,  cls,  coh,  num,  tmp;
 
     if   deg = 1  then  num := 1;
@@ -714,8 +736,8 @@ PrimitiveGroup := function( deg, nr )
 
         # Now look at the non-solvable affine groups.
         if     not IsBound( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )
-           and not READ( Concatenation
-                       ( PRIMNAME, "deg", String( deg ), ".aff" ) )  then
+           and not READ_GAP_ROOT( Concatenation
+                       ( "prim/deg", String( deg ), ".aff" ) )  then
             AFFINE_NON_SOLVABLE_GROUPS[ deg ] := [  ];
         fi;
         if nr <= Length( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )  then
@@ -789,6 +811,67 @@ PrimitiveGroup := function( deg, nr )
         return SymmetricGroup( deg );
     fi;
     return fail;
+end;
+
+PrimitiveGroup := function( deg, nr )
+    local   G;
+    
+    G := MakePrimitiveGroup( deg, nr );
+    if IsGroup( G )  then
+        Setter( IsPrimitiveProp )( G, true );
+        if deg <= 50  then
+            Setter( SimsNo )( G, SIMS_NUMBERS[ deg ][ nr ] );
+            Setter( SimsName )( G, SIMS_NAMES[ deg ][ SimsNo( G ) ] );
+        fi;
+    fi;
+    return G;
+end;
+
+#############################################################################
+##
+
+#F  NrPrimitiveGroups( <deg> )  . . . . . . . . . . . . . . counting function
+##
+NrPrimitiveGroups := function( deg )
+    return PrimitiveGroup( deg, infinity );
+end;
+
+#############################################################################
+##
+#F  NrSolvableAffinePrimitiveGroups( <deg> )  . . . . . . . counting function
+##
+NrSolvableAffinePrimitiveGroups := function( deg )
+    local   p,  n;
+    
+    if not IsPrimePowerInt( deg )  then
+        return 0;
+    else
+        p := FactorsInt( deg )[ 1 ];
+        n := LogInt( deg, p );
+        return Length( IrredSolGroupList[ n ][ p ] );
+    fi;
+end;
+
+#############################################################################
+##
+#F  NrAffinePrimitiveGroups( <deg> )  . . . . . . . . . . . counting function
+##
+NrAffinePrimitiveGroups := function( deg )
+    local   p,  n;
+    
+    if not IsPrimePowerInt( deg )  then
+        return 0;
+    else
+        p := FactorsInt( deg )[ 1 ];
+        n := LogInt( deg, p );
+        if     not IsBound( AFFINE_NON_SOLVABLE_GROUPS[ deg ] )
+           and not READ_GAP_ROOT( Concatenation
+                       ( "prim/deg", String( deg ), ".aff" ) )  then
+            AFFINE_NON_SOLVABLE_GROUPS[ deg ] := [  ];
+        fi;
+        return Length( AFFINE_NON_SOLVABLE_GROUPS[ deg ] ) +
+               Length( IrredSolGroupList[ n ][ p ] );
+    fi;
 end;
 
 #############################################################################

@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.10  1997/03/11 12:44:25  ahulpke
+#H  Moved random class serach into a separate function
+#H
 #H  Revision 4.9  1997/01/16 10:46:18  fceller
 #H  renamed 'NewConstructor' to 'NewOperation',
 #H  renamed 'NewOperationFlags1' to 'NewConstructor'
@@ -95,6 +98,8 @@ RationalClass := NewOperation( "RationalClass", [ IsGroup, IsObject ] );
 DecomposedRationalClass := NewOperationArgs( "DecomposedRationalClass" );
 PermResidueClass := NewOperationArgs( "PermResidueClass" );
 PrimeResidueClassGroup := NewOperationArgs( "PrimeResidueClassGroup" );
+ConjugacyClassesByRandomSearch :=
+  NewOperationArgs( "ConjugacyClassesByRandomSearch" );
 ConjugacyClassesTry := NewOperationArgs( "ConjugacyClassesTry" );
 RationalClassesTry := NewOperationArgs( "RationalClassesTry" );
 RationalClassesInEANS := NewOperationArgs( "RationalClassesInEANS" );

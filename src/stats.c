@@ -1318,27 +1318,29 @@ UInt ExecInfo (
 **  A 2 argument assert-statement is  represented  by a bag of   type
 **  'T_ASSERT_2ARGS' with subbags for the 2 arguments
 */
-
-
-UInt          ExecAssert2Args (
-    Stat             stat )
+UInt ExecAssert2Args (
+    Stat            stat )
 {
-  Obj level;
-  Obj decision;
+    Obj             level;
+    Obj		    decision;
 
-  level = EVAL_EXPR( ADDR_STAT( stat )[0] );
-  if (!LT(CurrentAssertionLevel, level))
-    {
-      decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
-      while (decision != True && decision != False)
-	decision = ErrorReturnObj(
-	     "Assertion condition must evaluate to 'true' or 'false', not a %s",
-	     (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
-	     "you may return 'true' or 'false' or you may quit");
-      if (decision == False)
-	ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may return");
-      else			/* decision must be True here */
-	return 0;
+    level = EVAL_EXPR( ADDR_STAT( stat )[0] );
+    if ( ! LT(CurrentAssertionLevel, level) )  {
+	decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+	while ( decision != True && decision != False ) {
+	 decision = ErrorReturnObj(
+          "Assertion condition must evaluate to 'true' or 'false', not a %s",
+	  (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
+	  "you may return 'true' or 'false' or you may quit");
+	}
+	if ( decision == False ) {
+	    ErrorReturnVoid( "Assertion failure", 0L, 0L, "you may return");
+	}
+
+	/* decision must be 'True' here                                    */
+	else {
+	    return 0;
+	}
     }
   return 0;
 }
@@ -1352,37 +1354,31 @@ UInt          ExecAssert2Args (
 **  A 3 argument assert-statement is  represented  by a bag of   type
 **  'T_ASSERT_3ARGS' with subbags for the 3 arguments
 */
-
-
-UInt          ExecAssert3Args (
-    Stat             stat )
+UInt ExecAssert3Args (
+    Stat            stat )
 {
-  Obj level;
-  Obj decision;
-  Obj message;
+    Obj 	    level;
+    Obj		    decision;
+    Obj 	    message;
 
-  level = EVAL_EXPR( ADDR_STAT( stat )[0] );
-  if (!LT(CurrentAssertionLevel, level))
-    {
-      decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
-      while (decision != True && decision != False)
-	decision = ErrorReturnObj(
-	     "Assertion condition must evaluate to 'true' or 'false', not a %s",
-	     (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
-	     "you may return 'true' or 'false' or you may quit");
-      if (decision == False)
-	{
-	  message = EVAL_EXPR(ADDR_STAT( stat )[2]);
-	  if (message != (Obj) 0) 
-	    PrintObj(message);
+    level = EVAL_EXPR( ADDR_STAT( stat )[0] );
+    if ( ! LT(CurrentAssertionLevel, level) ) {
+	decision = EVAL_EXPR( ADDR_STAT( stat )[1]);
+	while ( decision != True && decision != False ) {
+	 decision = ErrorReturnObj(
+	 "Assertion condition must evaluate to 'true' or 'false', not a %s",
+	 (Int)(InfoBags[TYPE_OBJ(decision)].name), 0L,
+         "you may return 'true' or 'false' or you may quit");
 	}
-      return 0;
+	if ( decision == False ) {
+	    message = EVAL_EXPR(ADDR_STAT( stat )[2]);
+	    if ( message != (Obj) 0 ) 
+		PrintObj(message);
+	}
+	return 0;
     }
     return 0;
 }
-
-
-  
 
 
 /****************************************************************************

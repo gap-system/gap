@@ -762,10 +762,18 @@ function( mat )
                 MultRowVector( mat[k], Inverse(mat[k][k]) );
 
                 # clear all entries in this column, adjust only columns > k
+                # (Note that we need not clear the rows from 'k+1' to 'j'.)
                 for l  in [ j+1 .. m ]  do
                     AddRowVector( mat[l], mat[k], -mat[l][k], k+1, m );
                 od;
             else
+                # In order to avoid divisions, blow up the whole remaining
+                # matrix by the factor 'mat[k][k] / det'.
+                # Note that we *must* blow up also rows 'k+1' to 'j'.
+                mult:= mat[k][k] / det;
+                for l  in [ k+1 .. j ]  do
+                    MultRowVector( mat[l], mult );
+                od;
                 for l  in [ j+1 .. m ]  do
                     mult := -mat[l][k];
                     MultRowVector( mat[l], mat[k][k] );

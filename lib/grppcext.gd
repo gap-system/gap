@@ -45,11 +45,9 @@ ExtensionRepresentatives
 
 #############################################################################
 ##
-#O  SemidirectProduct( G, M ) / SplitExtension( G, M )
-#O  SemidirectProduct( G, aut, N ) / SplitExtension( G, aut, N )
+#O  SplitExtension( G, M )
+#O  SplitExtension( G, aut, N )
 ##
-SemidirectProduct := NewOperation( "SemidirectProduct", 
-                                    [IsPcGroup, IsObject] );
 SplitExtension := NewOperation( "SplitExtension", 
                                     [IsPcGroup, IsObject] );
 

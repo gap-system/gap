@@ -148,6 +148,83 @@ end );
 
 #############################################################################
 ##
+#F  CopyStabChain( <C> )  . . . . . . . . . . . . . . . . . . . copy function
+##
+##  This function produces a memory-disjoint copy of a stabilizer chain, with
+##  `labels'  components   possibly   shared by  several  levels,   but  with
+##  superfluous labels  removed. An entry  in  `labels' is superfluous  if it
+##  does not occur among  the  `genlabels' or `translabels'   on any  of  the
+##  levels which share that `labels' component.
+##
+##  This is useful for  stabiliser sub-chains that  have been obtained as the
+##  (iterated) `stabilizer' component of a bigger chain.
+##
+CopyStabChain := function( C )
+    local   Xlabels,  S,  len,  xlab,  need,  poss,  i;
+    
+    # To begin with, make a deep copy.
+    C := DeepCopy( C );
+    
+    # First pass: Collect the necessary genlabels.
+    Xlabels := [  ];
+    S := C;
+    while IsBound( S.stabilizer )  do
+        len := Length( S.labels );
+        if len = 0  or  IsPerm( S.labels[ len ] )  then
+            Add( S.labels, [ 1 ] );  len := len + 1;
+            Add( Xlabels, S.labels );
+        fi;
+        UniteSet( S.labels[ len ], S.genlabels );
+        UniteSet( S.labels[ len ], S.translabels );
+        S := S.stabilizer;
+    od;
+    
+    # Second pass: Find the new positions of the labels.
+    for xlab  in Xlabels  do
+        need := xlab[ Length( xlab ) ];
+        
+        # If all labels are needed, change nothing.
+        if Length( need ) = Length( xlab ) - 1  then
+            Unbind( xlab[ Length( xlab ) ] );
+            
+        else
+            poss := [  ];
+            for i  in [ 1 .. Length( need ) ]  do
+                poss[ need[ i ] ] := i;
+            od;
+            Add( xlab, poss );
+        fi;
+    od;
+    
+    # Third pass: Update the genlabels and translabels.
+    S := C;
+    while IsBound( S.stabilizer )  do
+        len := Length( S.labels );
+        if len <> 0  and  not IsPerm( S.labels[ len ] )  then
+            poss := S.labels[ len ];
+            S.genlabels := poss{ S.genlabels };
+            S.translabels{ S.orbit } := poss{ S.translabels{ S.orbit } };
+        fi;
+        S := S.stabilizer;
+    od;
+    
+    # Fourth pass: Update the labels.
+    for xlab  in Xlabels  do
+        len := Length( xlab );
+        if len <> 0  and  not IsPerm( xlab[ len ] )  then
+            need := xlab[ Length( xlab ) - 1 ];
+            xlab{ [ 1 .. Length( need ) ] } := xlab{ need };
+            for i  in [ Length( need ) + 1 .. Length( xlab ) ]  do
+                Unbind( xlab[ i ] );
+            od;
+        fi;
+    od;
+    
+    return C;
+end;
+
+#############################################################################
+##
 #M  StabChainOptions( <G> ) . . . . . . . . . . . . . for a permutation group
 ##
 InstallMethod( StabChainOptions, true, [ IsPermGroup ], 0,
@@ -314,7 +391,7 @@ end;
 ##
 AddGeneratorsExtendSchreierTree := function( S, new )
     local   gen,  pos,  # new generator and its position in <S>.labels
-            old,        # genlabels before extension
+            old,  ald,  # genlabels before extension
             len,        # initial length of the orbit of <S>
             img,        # image during orbit algorithm
             i,  j;      # loop variable
@@ -322,13 +399,15 @@ AddGeneratorsExtendSchreierTree := function( S, new )
     # Put in the new labels.
     old := BlistList( [ 1 .. Length( S.labels ) ], S.genlabels );
     old[ 1 ] := true;
+    ald := DeepCopy( old );
     for gen  in new  do
         pos := Position( S.labels, gen );
         if pos = fail  then
             Add( S.labels, gen );
             Add( old, false );
+            Add( ald, true );
             Add( S.genlabels, Length( S.labels ) );
-        elif not old[ pos ]  then
+        elif not ald[ pos ]  then
             Add( S.genlabels, pos );
         fi;
         if     pos <> 1
@@ -581,12 +660,12 @@ StabChainSwap := function( S )
 
     # set $T = S$ and compute $b^T$ and a transversal $T/T_b$
     T := EmptyStabChain( S.labels, S.identity, b );
-    AddGeneratorsExtendSchreierTree( T, S.generators );
+    AddGeneratorsExtendSchreierTree( T, S.labels{ S.genlabels } );
 
     # initialize $Tstab$, which will become $T_b$
-    Tstab := EmptyStabChain( S.labels, S.identity, a );
+    Tstab := EmptyStabChain( [  ], S.identity, a );
     AddGeneratorsExtendSchreierTree( Tstab,
-      S.stabilizer.stabilizer.generators );
+            S.stabilizer.stabilizer.generators );
 
     # in the end $|b^T||a^{T_b}| = [T:T_{ab}] = [S:S_{ab}] = |a^S||b^{S_a}|$
     ind := 1;
@@ -1066,7 +1145,7 @@ end;
 #F  IsFixedStabilizer( <S>, <pnt> ) . . . . . . . . .  is <pnt> fixed by <S>?
 ##
 IsFixedStabilizer := function( S, pnt )
-    return ForAll( S.genlabels, l -> pnt ^ S.labels[ l ] = pnt );
+    return ForAll( S.generators, gen -> pnt ^ gen = pnt );
 end;
 
 #############################################################################

@@ -322,7 +322,7 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
     if not IsGroup( G )  then
         U := G[ Length( G ) ];
         if HasPcgs( U )  and  IsPcgsPermGroupRep( Pcgs( U ) )  then
-            U := DeepCopy( Pcgs( U )!.stabChain );
+            U := CopyStabChain( Pcgs( U )!.stabChain );
         fi;
     else
         U := TrivialSubgroup( G );
@@ -339,8 +339,7 @@ TryPcgsPermGroup := function( G, cent, desc, elab )
             U := StabChainAttr( U );
             if IsBound( U.base )  then  i := U.base;
                                   else  i := fail;   fi;
-            U := StabChainBaseStrongGenerators( BaseStabChain( U ),
-                         StrongGeneratorsStabChain( U ) );
+            U := CopyStabChain( U );
             if i <> fail  then
                 U.base := i;
             fi;
@@ -654,7 +653,7 @@ end;
 SolvableNormalClosurePermGroup := function( G, H )
     local   U,  oldlen,  series,  bound,  z,  S;
     
-    U := DeepCopy( StabChainAttr( TrivialSubgroup( G ) ) );
+    U := CopyStabChain( StabChainAttr( TrivialSubgroup( G ) ) );
     oldlen := Length( U.labels );
     
     # The `genlabels' at every level of $U$ must be sets.
@@ -727,6 +726,7 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
                 FamilyObj( OneOfPcgs( G ) ),
                 [  ] );
         pcgs!.stabChain := N!.stabChain;
+        SetRelativeOrders( pcgs, [  ] );
         pcgs!.series := [ GroupOfPcgs( N ) ];
         pcgs!.nrGensSeries := [ Length( N ) ];
         pcgs := ExtendedPcgs( pcgs, G );
@@ -737,6 +737,18 @@ InstallMethod( \mod, "perm group pcgs", IsIdentical,
     pcgs!.denominator := GroupOfPcgs( N );
     pcgs!.nrGensSeries := pcgs!.nrGensSeries - Length( N );
     return pcgs;
+end );
+
+#############################################################################
+##
+#M  ModuloPcgsByPcSequenceNC( <G>, <U>, <L> ) . . . . . . for perm group pcgs
+##
+InstallMethod( ModuloPcgsByPcSequenceNC, "perm group pcgs", true,
+        [ IsPcgs and IsPcgsPermGroupRep,
+          IsPcgs and IsPcgsPermGroupRep,
+          IsPcgs and IsPcgsPermGroupRep ], 20,
+    function( G, U, L )
+    return U mod L;
 end );
 
 #############################################################################
@@ -824,20 +836,16 @@ InstallMethod( PcSeries, true, [ IsPcgs and IsPcgsPermGroupRep ], 0,
     function( pcgs )
     local   series,  N,  i;
     
-    N := DeepCopy( StabChainAttr( TrivialSubgroup
+    N := CopyStabChain( StabChainAttr( TrivialSubgroup
                  ( GroupOfPcgs( pcgs ) ) ) );
-    series := [ DeepCopy( N ) ];
+    series := [ CopyStabChain( N ) ];
     for i  in Reversed( [ 2 .. Length( pcgs ) ] )  do
         AddNormalizingElementPcgs( N, pcgs[ i ] );
-        InsertElmList( series, 1, DeepCopy( N ) );
+        Add( series, GroupStabChain( GroupOfPcgs( pcgs ),
+                CopyStabChain( N ), true ) );
     od;
-    InsertElmList( series, 1, ShallowCopy( GroupOfPcgs( pcgs ) ) );
-    for i  in [ 2 .. Length( series ) ]  do
-        series[ i ] := GroupStabChain( GroupOfPcgs( pcgs ), series[ i ],
-                               true );
-        N := series[ i - 1 ];
-    od;
-    return series;
+    Add( series, GroupOfPcgs( pcgs ) );
+    return Reversed( series );
 end );        
 
 InstallOtherMethod( ElementaryAbelianSeries, true, [ IsPcgs ], 0,
@@ -879,31 +887,6 @@ InstallMethod( InducedPcgsByPcSequenceNC, "tail of perm pcgs", true,
     return igs;
 end );
 
-#InstallMethod( InducedPcgsByPcSequenceNC, "perm group", true,
-#    [ IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-#      IsList and IsPermCollection ], 0,
-#    function( pcgs, pcs )
-#    local   igs,  i,  l;
-#
-#    i := 1;  l := pcgs!.nrGensSeries[ i ];
-#    while pcs { [ Length( pcs  ) - l + 1 .. Length( pcs  ) ] } <>
-#          pcgs{ [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] }  do
-#        i := i + 1;  l := pcgs!.nrGensSeries[ i ];
-#    od;
-#    igs := PcgsByPcSequenceNC( FamilyObj( OneOfPcgs( pcgs ) ),
-#                    IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs,
-#                    pcgs{ [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
-#    igs!.stabChain := StabChainAttr( pcgs!.series[ i ] );
-#    SetRelativeOrders( igs, RelativeOrders( pcgs )
-#            { [ Length( pcgs ) - l + 1 .. Length( pcgs ) ] } );
-#    igs!.series := pcgs!.series{[i..Length(pcgs!.nrGensSeries)]};
-#    igs!.nrGensSeries := pcgs!.nrGensSeries{[i..Length(pcgs!.nrGensSeries)]};
-#    igs := ExtendedPcgs( igs, pcs{ [ 1 .. Length( pcs ) - l ] } );
-#    SetFilterObj( igs, IsInducedPcgs );
-#    SetParentPcgs( igs, pcgs );
-#    return igs;
-#end );
-    
 #############################################################################
 ##
 #M  InducedPcgsWrtHomePcgs( <U> ) . . . . . . . . . . . . . . . via home pcgs
@@ -942,7 +925,7 @@ InstallMethod( ExtendedPcgs, "perm group", true,
     function( N, gens )
     local   pcgs,  S,  gen;
 
-    S := DeepCopy( N!.stabChain );
+    S := CopyStabChain( N!.stabChain );
     S.relativeOrders := ShallowCopy( RelativeOrders( N ) );
     for gen  in Reversed( gens )  do
         AddNormalizingElementPcgs( S, gen );
@@ -956,8 +939,31 @@ InstallMethod( ExtendedPcgs, "perm group", true,
     pcgs!.stabChain := S;
     SetRelativeOrders( pcgs, S.relativeOrders );
     Unbind( S.relativeOrders );
-    SetGroupOfPcgs( pcgs, GroupStabChain( S ) );
-    pcgs!.series := Concatenation( [ GroupOfPcgs( pcgs ) ], N!.series );
+    pcgs!.series := Concatenation( [ GroupStabChain( S ) ], N!.series );
+    pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
+            N!.nrGensSeries );
+    return pcgs;
+end );
+
+InstallMethod( ExtendedPcgs, "perm group", true,
+        [ IsPcgs and IsPcgsPermGroupRep and IsPrimeOrdersPcgs and
+          IsInducedPcgs,
+          IsList and IsPermCollection ], 10,
+    function( N, gens )
+    local   pcgs,  S,  gen;
+
+    S := CopyStabChain( N!.stabChain );
+    S.relativeOrders := ShallowCopy( RelativeOrders( N ) );
+    for gen  in Reversed( gens )  do
+        AddNormalizingElementPcgs( S, gen );
+    od;
+    pcgs := InducedPcgsByPcSequenceNC( ParentPcgs( N ),
+         S.labels{ [ 2 .. Length( S.labels ) -
+                    Length( N!.stabChain.labels ) + Length( N ) + 1 ] } );
+    pcgs!.stabChain := S;
+    SetRelativeOrders( pcgs, S.relativeOrders );
+    Unbind( S.relativeOrders );
+    pcgs!.series := Concatenation( [ GroupStabChain( S ) ], N!.series );
     pcgs!.nrGensSeries := Concatenation( [ Length( pcgs ) ],
             N!.nrGensSeries );
     return pcgs;
@@ -1100,6 +1106,7 @@ InstallMethod( NaturalHomomorphismByNormalSubgroup, IsIdentical,
 
     # Construct the pcp group <A> and the bijection between <A> and <G>.
     A := PcGroupPcgs( pcgs, index, false );
+    UseFactorRelation( G, N, A );
     map := GroupHomomorphismByImages( G, A, pcgs, GeneratorsOfGroup( A ) );
     SetIsSurjective( map, true );
     SetKernelOfMultiplicativeGeneralMapping( map, N );

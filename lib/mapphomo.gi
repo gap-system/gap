@@ -286,10 +286,12 @@ InstallMethod( ImagesSet,
       elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
-    return ClosureGroup( CoKernelOfMultiplicativeGeneralMapping( map ),
+    elms:= ClosureGroup( CoKernelOfMultiplicativeGeneralMapping( map ),
                    SubgroupNC( Range( map ),
                    List( GeneratorsOfMagmaWithInverses( elms ),
                          gen -> ImagesRepresentative( map, gen ) ) ) );
+    UseSubsetRelation( Range( map ), elms );
+    return elms;
     end );
 
 
@@ -305,7 +307,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= ImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentative( map, elm );
     if pre = fail then
       return [];
     else
@@ -329,10 +331,12 @@ InstallMethod( PreImagesSet,
     elif not IsSurjective( map ) then
       elms:= Intersection2( ImagesSource( map ), elms );
     fi;
-    return ClosureGroup( KernelOfMultiplicativeGeneralMapping( map ),
+    elms:= ClosureGroup( KernelOfMultiplicativeGeneralMapping( map ),
                    SubgroupNC( Source( map ),
                    List( GeneratorsOfMagmaWithInverses( elms ),
                          gen -> PreImagesRepresentative( map, gen ) ) ) );
+    UseSubsetRelation( Source( map ), elms );
+    return elms;
     end );
 
 
@@ -594,7 +598,7 @@ InstallMethod( ImagesElm,
 #M  ImagesSet( <map>, <elms> )  . for s.p. gen. mapping resp. add. & add.inv.
 ##
 InstallMethod( ImagesSet,
-    "method for s.p. gen. mapping respecting add. & add.inv., and element",
+    "method for s.p. gen. mapping resp. add. & add.inv., and add. group",
     CollFamSourceEqFamElms,
     [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses,
       IsAdditiveGroup ], 0,
@@ -606,10 +610,12 @@ InstallMethod( ImagesSet,
       elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
-    return ClosureAdditiveGroup( CoKernelOfAdditiveGeneralMapping( map ),
+    elms:= ClosureAdditiveGroup( CoKernelOfAdditiveGeneralMapping( map ),
                    SubadditiveMagmaWithInversesNC( Range( map ),
                    List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
                          gen -> ImagesRepresentative( map, gen ) ) ) );
+    UseSubsetRelation( Range( map ), elms );
+    return elms;
     end );
 
 
@@ -625,7 +631,7 @@ InstallMethod( PreImagesElm,
       function( map, elm )
     local   pre;
 
-    pre:= ImagesRepresentative( map, elm );
+    pre:= PreImagesRepresentative( map, elm );
     if pre = fail then
       return [];
     else
@@ -651,10 +657,12 @@ InstallMethod( PreImagesSet,
       elms:= Intersection2( ImagesSource( map ), elms );
     fi;
 
-    return ClosureAdditiveGroup( KernelOfAdditiveGeneralMapping( map ),
+    elms:= ClosureAdditiveGroup( KernelOfAdditiveGeneralMapping( map ),
                    SubadditiveMagmaWithInversesNC( Source( map ),
                    List( GeneratorsOfAdditiveMagmaWithInverses( elms ),
                          gen -> PreImagesRepresentative( map, gen ) ) ) );
+    UseSubsetRelation( Source( map ), elms );
+    return elms;
     end );
 
 
@@ -812,11 +820,13 @@ InstallMethod( ImagesSet,
       elms:= Intersection2( elms, PreImagesRange( map ) );
     fi;
 
-    return ClosureLeftModule( CoKernelOfAdditiveGeneralMapping( map ),
+    elms:= ClosureLeftModule( CoKernelOfAdditiveGeneralMapping( map ),
                    LeftModuleByGenerators( LeftActingDomain( elms ),
                        List( GeneratorsOfLeftModule( elms ),
                              gen -> ImagesRepresentative( map, gen ) ),
                        Zero( Range( map ) ) ) );
+    UseSubsetRelation( Range( map ), elms );
+    return elms;
     end );
 
 
@@ -838,11 +848,13 @@ InstallMethod( PreImagesSet,
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
 
-    return ClosureLeftModule( KernelOfAdditiveGeneralMapping( map ),
+    elms:= ClosureLeftModule( KernelOfAdditiveGeneralMapping( map ),
                    LeftModuleByGenerators( LeftActingDomain( elms ),
                        List( GeneratorsOfLeftModule( elms ),
                              gen -> PreImagesRepresentative( map, gen ) ),
                        Zero( Source( map ) ) ) );
+    UseSubsetRelation( Source( map ), elms );
+    return elms;
     end );
 
 
@@ -861,6 +873,120 @@ InstallMethod( IsFieldHomomorphism,
     true,
     [ IsGeneralMapping ], 0,
     map -> IsRingHomomorphism( map ) and IsField( Source( map ) ) );
+
+
+#############################################################################
+##
+#M  ImagesSet( <map>, <elms> )  . . . . . . . . . for algebra hom. and FLMLOR
+##
+InstallMethod( ImagesSet,
+    "method for algebra hom. and FLMLOR",
+    CollFamSourceEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication,
+      IsFLMLOR ], 0,
+    function( map, elms )
+
+    if   not IsSubset( Source( map ), elms ) then
+      return fail;
+    elif not IsTotal( map ) then
+      elms:= Intersection2( elms, PreImagesRange( map ) );
+    fi;
+
+    elms:= ClosureLeftOperatorRing( CoKernelOfAdditiveGeneralMapping( map ),
+                   FLMLORByGenerators( LeftActingDomain( elms ),
+                       List( GeneratorsOfLeftOperatorRing( elms ),
+                             gen -> ImagesRepresentative( map, gen ) ),
+                       Zero( Range( map ) ) ) );
+    UseSubsetRelation( Range( map ), elms );
+    return elms;
+    end );
+
+
+#############################################################################
+##
+#M  ImagesSet( <map>, <elms> )  .  for alg.-with-one hom. and FLMLOR-with-one
+##
+InstallMethod( ImagesSet,
+    "method for algebra-with-one hom. and FLMLOR-with-one",
+    CollFamSourceEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication
+          and RespectsOne,
+      IsFLMLORWithOne ], 0,
+    function( map, elms )
+
+    if   not IsSubset( Source( map ), elms ) then
+      return fail;
+    elif not IsTotal( map ) then
+      elms:= Intersection2( elms, PreImagesRange( map ) );
+    fi;
+
+    elms:= ClosureLeftOperatorRing( CoKernelOfAdditiveGeneralMapping( map ),
+                   FLMLORWithOneByGenerators( LeftActingDomain( elms ),
+                       List( GeneratorsOfLeftOperatorRingWithOne( elms ),
+                             gen -> ImagesRepresentative( map, gen ) ),
+                       Zero( Range( map ) ) ) );
+    UseSubsetRelation( Range( map ), elms );
+    return elms;
+    end );
+
+
+#############################################################################
+##
+#M  PreImagesSet( <map>, <elms> ) . . . . . . . . for algebra hom. and FLMLOR
+##
+InstallMethod( PreImagesSet,
+    "method for algebra hom. and FLMLOR",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication,
+      IsFLMLOR ], 0,
+    function( map, elms )
+
+    if   not IsSubset( Range( map ), elms ) then
+      return fail;
+    elif not IsSurjective( map ) then
+      elms:= Intersection( elms, ImagesSource( map ) );
+    fi;
+
+    elms:= ClosureLeftOperatorRing( KernelOfAdditiveGeneralMapping( map ),
+                   FLMLORByGenerators( LeftActingDomain( elms ),
+                       List( GeneratorsOfLeftOperatorRing( elms ),
+                             gen -> PreImagesRepresentative( map, gen ) ),
+                       Zero( Source( map ) ) ) );
+    UseSubsetRelation( Source( map ), elms );
+    return elms;
+    end );
+
+
+#############################################################################
+##
+#M  PreImagesSet( <map>, <elms> )  for alg.-with-one hom. and FLMLOR-with-one
+##
+InstallMethod( PreImagesSet,
+    "method for algebra-with-one hom. and FLMLOR-with-one",
+    CollFamRangeEqFamElms,
+    [ IsSPGeneralMapping and RespectsAddition and RespectsAdditiveInverses
+          and RespectsScalarMultiplication and RespectsMultiplication
+          and RespectsOne,
+      IsFLMLORWithOne ], 0,
+    function( map, elms )
+
+    if   not IsSubset( Range( map ), elms ) then
+      return fail;
+    elif not IsSurjective( map ) then
+      elms:= Intersection( elms, ImagesSource( map ) );
+    fi;
+
+    elms:= ClosureLeftOperatorRing( KernelOfAdditiveGeneralMapping( map ),
+                   FLMLORWithOneByGenerators( LeftActingDomain( elms ),
+                       List( GeneratorsOfLeftOperatorRingWithOne( elms ),
+                             gen -> PreImagesRepresentative( map, gen ) ),
+                       Zero( Source( map ) ) ) );
+    UseSubsetRelation( Source( map ), elms );
+    return elms;
+    end );
 
 
 #############################################################################

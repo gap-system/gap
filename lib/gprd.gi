@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.5  1997/03/10 15:43:14  beick
+#H  removed new catagory for products of groups, added products of pc groups
+#H
 #H  Revision 4.4  1997/02/13 10:38:20  ahulpke
 #H  Added 'Embedding' and 'Projection' for semidirect products
 #H
@@ -30,42 +33,6 @@ DirectProduct := function( arg )
     od;
     return D;
 end;
-
-InstallOtherMethod( Embedding, true,
-        [ IsProductGroups, IsPosRat and IsInt ], 0,
-    function( D, i )
-    local   embs;
-    
-    embs := Embeddings( D );
-    if not IsBound( embs[ i ] )  then
-        embs[ i ] := EmbeddingOp( D, i );
-    fi;
-    return embs[ i ];
-end );
-
-InstallMethod( Embeddings, true, [ IsProductGroups ], 0, P -> [  ] );
-
-InstallOtherMethod( Projection, true,
-        [ IsProductGroups, IsPosRat and IsInt ], 0,
-    function( D, i )
-    local   pros;
-    
-    pros := Projections( D );
-    if not IsBound( pros[ i ] )  then
-        pros[ i ] := ProjectionOp( D, i );
-    fi;
-    return pros[ i ];
-end );
-
-InstallMethod( Projections, true, [ IsProductGroups ], 0, P -> [  ] );
-
-# method for semidirect products
-InstallOtherMethod( Projection, true,
-        [ IsSemidirectProductGroups ], 0,
-    function( D )
-    
-    return Projections( D )[1];
-end );
 
 #############################################################################
 ##

@@ -133,7 +133,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
       nst:=[];
       for i in [1..Length(r)] do
 	x:=r[i];#FactorAgWord(r[i],fgi);
-        U:=ConjugateSubgroup(st[i],x^(-1));
+        U:=ConjugateGroup(st[i],x^(-1));
 
 	# build matrices
 	mats:=[];
@@ -182,7 +182,7 @@ local eas,r,st,nr,nst,ind,H,sff,f,m,i,j,ao,Npcgs,v,isi,img,
 	  # we will finally just need the stabilizers size and not the
 	  # stabilizer
 	  if ind<ll then
-	    Add(nst,ConjugateSubgroup(ao.stabilizers[j],x));
+	    Add(nst,ConjugateGroup(ao.stabilizers[j],x));
 	  else
 	    Add(nst,ao.stabilizers[j]);
 	  fi;

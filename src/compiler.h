@@ -19,7 +19,7 @@ char *          Revision_compiler_h =
 **
 *F  CompileFunc(<output>,<func>,<name>,<magic1>,<magic2>) . . . . . . compile
 */
-extern  Int             CompileFunc (
+extern Int CompileFunc (
             Char *              output,
             Obj                 func,
             Char *              name,
@@ -31,7 +31,7 @@ extern  Int             CompileFunc (
 **
 *F  InitCompiler()  . . . . . . . . . . . . . . . . . initialize the compiler
 */
-extern  void            InitCompiler ( void );
+extern void InitCompiler ( void );
 
 
 /****************************************************************************

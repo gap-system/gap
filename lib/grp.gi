@@ -560,7 +560,7 @@ InstallMethod( ElementaryAbelianSeries,
     f := IsomorphismPcGroup( G );
 
     # convert back into <G>
-    return List( ElementaryAbelianSeries( Range( f ),
+    return List( ElementaryAbelianSeries( Image( f ),
                    x -> PreImage( f, x ) ) );
     end );
 
@@ -944,7 +944,7 @@ InstallMethod( UpperCentralSeriesOfGroup,
         Add( S, C );
         Info( InfoGroup, 2, "UpperCentralSeriesOfGroup: step ", Length(S) );
         hom := NaturalHomomorphismByNormalSubgroup( G, C );
-        C := PreImage( hom, Centre( Range( hom ) ) );
+        C := PreImage( hom, Centre( Image( hom ) ) );
     od;
 
     # return the series when it becomes stable
@@ -1052,21 +1052,8 @@ ClosureGroupDefault := function( G, elm )
 
     # make the closure group
     C:= GroupByGenerators( Concatenation( gens, [ elm ] ) );
-
-    # if <G> is noncommutative then so is <C>
-    if HasIsCommutative( G ) and not IsCommutative( G ) then
-      SetIsCommutative( C, false );
-    elif HasIsCommutative( G ) then
-      SetIsCommutative( C, ForAll( gens,
-                                   gen -> Comm( gen, elm ) = One( G ) ) );
-    fi;
-
-    # if <G> is infinite then so is <C>
-    if HasIsFinite( G ) and not IsFinite( G ) then
-      SetIsFinite( C, false );
-      SetSize( C, infinity );
-    fi;
-
+    UseSubsetRelation( C, G );
+    
     # if the elements of <G> are known then extend this list
     if HasAsListSorted( G ) then
 
@@ -1119,38 +1106,22 @@ InstallMethod( ClosureGroup,
     "generic method for group and element",
     IsCollsElms, [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, elm )
+    local   C,  gens;
 
-    local   C,          # closure '\< <G>, <obj> \>', result
-            gens;       # generators of <G>
-
-    gens:= GeneratorsOfGroup( G );
+    gens := GeneratorsOfGroup( G );
 
     # try to avoid adding an element to a group that already contains it
     if   elm in gens
       or elm^-1 in gens
       or ( HasAsListSorted( G ) and elm in AsListSorted( G ) )
-      or elm = One( G )
-    then
+      or elm = One( G )  then
         return G;
     fi;
 
     # make the closure group
-    C:= GroupByGenerators( Concatenation( gens, [ elm ] ) );
-
-    # if <G> is noncommutative then so is <C>
-    if HasIsCommutative( G ) and not IsCommutative( G ) then
-      SetIsCommutative( C, false );
-    elif HasIsCommutative( G ) then
-      SetIsCommutative( C, ForAll( gens,
-                                   gen -> Comm( gen, elm ) = One( G ) ) );
-    fi;
-
-    # if <G> is infinite then so is <C>
-    if HasIsFinite( G ) and not IsFinite( G ) then
-      SetIsFinite( C, false );
-      SetSize( C, infinity );
-    fi;
-
+    C := GroupByGenerators( Concatenation( gens, [ elm ] ) );
+    UseSubsetRelation( C, G );
+    
     # return the closure
     return C;
     end );
@@ -1252,68 +1223,20 @@ InstallOtherMethod( \^,
     [ IsGroup,
       IsMultiplicativeElementWithInverse ],
     0,
-    ConjugateSubgroup );
-
-
-#############################################################################
-##
-#M  ConjugateSubgroup( <G>, <g> )
-##
-##  In GAP-3, we needed <g> to lie in the parent of <G>
-#T compat3.g ?
-##
-InstallMethod( ConjugateSubgroup,
-    "method for groups with parent, and element",
-    IsCollsElms,
-    [ IsGroup and HasParent,
-      IsMultiplicativeElementWithInverse ],
-    0,
-
-function( G, g )
-    local   H,          # conjugate subgroup of <G>, result
-            name;       # component name in the group record
-
-    # special case if <g> is known to be in <G>
-    if    HasAsListSorted(G) and g in AsListSorted(G)
-       or HasGeneratorsOfGroup(G) and g in GeneratorsOfGroup(G)
-    then
-        return G;
-    fi;
-
-    # if <G> is trivial conjugating is trivial
-    if IsTrivial(G)  then
-        return G;
-    fi;
-
-    # create the domain
-    H := GroupByGenerators( OnTuples( GeneratorsOfGroup(G), g ) );
-
-    # maintain useful information
-    UseIsomorphismRelation( G, H );
-
-    # copy the list of elements if present
-    if HasAsListSorted(G) then
-        SetAsListSorted( H, OnSets( AsListSorted(G), g ) );
-    fi;
-
-    # return the conjugate group
-    return H;
-end );
-
+    ConjugateGroup );
 
 #############################################################################
 ##
-#M  ConjugateSubgroup( <G>, <g> )
+#M  ConjugateGroup( <G>, <g> )
 ##
-##  In GAP-3, we needed <g> to lie in the parent of <G>
 #T compat3.g ?
 ##
-InstallMethod( ConjugateSubgroup, "<G>, <g>", IsCollsElms,
+InstallMethod( ConjugateGroup, "<G>, <g>", IsCollsElms,
     [ IsGroup, IsMultiplicativeElementWithInverse ], 0,
     function( G, g )
     local   H;
 
-    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ) );
+    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One(G) );
     UseIsomorphismRelation( G, H );
     return H;
 end );
@@ -1366,10 +1289,6 @@ InstallMethod( Core,
 #M  FactorGroup( <G>, <N> )
 ##
 
-#############################################################################
-##
-#M  FusionConjugacyClasses( <G>, <N> )
-##
 
 #############################################################################
 ##
@@ -2863,6 +2782,11 @@ local gen;
   return ForAll([1..Length(gen)],
                 i->ForAll([1..i-1],j->Comm(gen[i],gen[j]) in N));
 end;
+
+ClosureSubgroup := OperationSubdomain( "ClosureSubgroup",
+                           ClosureGroup, true );
+ConjugateSubgroup := OperationSubdomain( "ConjugateSubgroup",
+                             ConjugateGroup, IsCollsElms );
 
 #############################################################################
 ##

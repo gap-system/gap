@@ -86,7 +86,7 @@ InstallOtherMethod( FLMLORByGenerators,
 
 #############################################################################
 ##
-#M  FLMLORWithOneByGenerators( <R>, <gens> ) . unit. <R>-FLMLOR gen. by <gens>
+#M  FLMLORWithOneByGenerators( <R>, <gens> )  unit. <R>-FLMLOR gen. by <gens>
 #M  FLMLORWithOneByGenerators( <R>, <gens>, <zero> )
 ##
 InstallMethod( FLMLORWithOneByGenerators,
@@ -212,6 +212,7 @@ SubFLMLORNC := function( arg )
       S:= Objectify( NewKind( FamilyObj( arg[1] ),
                                   IsFLMLOR
                               and IsTrivial
+                              and IsIdealInParent
                               and IsAttributeStoringRep ),
                      rec() );
       SetLeftActingDomain( S, LeftActingDomain( arg[1] ) );
@@ -858,9 +859,9 @@ InstallMethod( IsAssociative,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  IsAnticommutative( <A> )
+#M  IsAnticommutative( <A> )  . . . . . . . . . . . . .for a fin.-dim. FLMLOR
 ##
 ##  is 'true' if the multiplication in <A> is anticommutative,
 ##  and 'false' otherwise.
@@ -1179,7 +1180,8 @@ InstallMethod( Intersection2,
 InstallMethod( Intersection2,
     "generic method for two FLMLORs-with-one",
     IsIdentical, [ IsFLMLORWithOne, IsFLMLORWithOne ], 0,
-    Intersection2Spaces( AsFLMLORWithOne, SubFLMLORWithOneNC, FLMLORWithOne ) );
+    Intersection2Spaces( AsFLMLORWithOne, SubFLMLORWithOneNC,
+                         FLMLORWithOne ) );
 
 
 #############################################################################
@@ -1238,7 +1240,6 @@ InstallMethod( TrivialSubadditiveMagmaWithZero,
     "method for a FLMLOR",
     true, [ IsFLMLOR ], 0,
     A -> SubFLMLORNC( A, [] ) );
-#T should be an ideal
 
 
 #############################################################################
@@ -1307,7 +1308,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( LeftActingDomain( V ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( V ) ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(V) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
                                              y -> x * y ) ) );
       A:= FLMLOR( F, L );
@@ -1318,7 +1319,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( F, LeftActingDomain( V ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( V ), F ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
         Error( "field change leads out of <V>" );
@@ -1369,7 +1370,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= FLMLOR( F, L );
@@ -1377,7 +1378,7 @@ InstallMethod( AsFLMLOR,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( D ), F ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         Error( "field change leads out of <D>" );
@@ -1440,7 +1441,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( LeftActingDomain( V ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( V ) ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(V) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfLeftModule( V ),
                                              y -> x * y ) ) );
       A:= FLMLORWithOne( F, L );
@@ -1451,7 +1452,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( V ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( V ), F ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(V), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfLeftModule( V ),
                                  y -> not x * y in V ) ) then
         Error( "field change leads out of <V>" );
@@ -1497,7 +1498,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= FLMLORWithOne( F, L );
@@ -1505,7 +1506,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( D ), F ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         Error( "field change leads out of <D>" );
@@ -1543,7 +1544,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( LeftActingDomain( D ), F ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain( D ) ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( F, LeftActingDomain(D) ) ) );
       L:= Concatenation( List( L, x -> List( GeneratorsOfAlgebra( D ),
                                              y -> x * y ) ) );
       A:= AlgebraWithOne( F, L );
@@ -1551,7 +1552,7 @@ InstallMethod( AsFLMLORWithOne,
     elif IsSubset( F, LeftActingDomain( D ) ) then
 
       # Make sure that the field change does not change the elements.
-      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain( D ), F ) ) );
+      L:= BasisVectors( BasisOfDomain( AsField( LeftActingDomain(D), F ) ) );
       if ForAny( L, x -> ForAny( GeneratorsOfAlgebra( D ),
                                  y -> not x * y in D ) ) then
         Error( "field change leads out of the algebra" );
@@ -1741,7 +1742,7 @@ InstallMethod( ClosureLeftOperatorRing,
 ##  $\{ Zero( A ) \} = A_0 \< A_1 \< A_2 \< \cdots A_k \< A_{k+1} \< \ldots$
 ##  is an ascending chain that eventually reaches $A$.
 ##  For $i > 0$ we have
-##  $A_{i+1} = \langle A_i \cup \bigcup_{g\in S} ( A_i g \cup g A_i ) \rangle$
+##  $A_{i+1} = \langle A_i\cup \bigcup_{g\in S} ( A_i g \cup g A_i ) \rangle$
 ##  the closure as an $F$-space.
 ##
 ##  (For algebras-with-one we have to initialize $A_0 = \{ F \*\ A.one \}$,
@@ -1852,9 +1853,10 @@ InstallMethod( \=,
     function( A1, A2 )
     local inters;
     if LeftActingDomain( A1 ) = LeftActingDomain( A2 ) then
-      return   GeneratorsOfAlgebraWithOne( A1 ) = GeneratorsOfAlgebraWithOne( A2 )
-        or (     ForAll( GeneratorsOfAlgebraWithOne( A1 ), gen -> gen in A2 )
-             and ForAll( GeneratorsOfAlgebraWithOne( A2 ), gen -> gen in A1 ) );
+      return   GeneratorsOfAlgebraWithOne( A1 )
+             = GeneratorsOfAlgebraWithOne( A2 )
+        or (     ForAll( GeneratorsOfAlgebraWithOne( A1 ), a -> a in A2 )
+             and ForAll( GeneratorsOfAlgebraWithOne( A2 ), a -> a in A1 ) );
     else
       inters:= Intersection2( LeftActingDomain( A1 ),
                               LeftActingDomain( A2 ) );
@@ -1878,7 +1880,8 @@ InstallMethod( IsSubset,
              or ( Dimension( D2 ) <= Dimension( D1 )
                   and IsSubset( D1, GeneratorsOfAlgebra( D2 ) ) );
     else
-      inters:= Intersection2( LeftActingDomain( D1 ), LeftActingDomain( D2 ) );
+      inters:= Intersection2( LeftActingDomain( D1 ),
+                              LeftActingDomain( D2 ) );
       return IsSubset( AsFLMLOR( inters, D1 ), AsFLMLOR( inters, D2 ) );
     fi;
     end );
@@ -2202,7 +2205,7 @@ InstallMethod( AsSubalgebra,
 
 #############################################################################
 ##
-#M  AsSubalgebraWithOne(<A>, <U>) . . .  view algebra as subalgebra of another
+#M  AsSubalgebraWithOne(<A>, <U>) . . . view algebra as subalgebra of another
 ##
 InstallMethod( AsSubalgebraWithOne,
     "method for two algebras",
@@ -2529,9 +2532,15 @@ InstallMethod( Centre,
     end );
 
 
-##############################################################################
+#############################################################################
 ##
-#M  ProductSpace( <U>, <V> )
+#F  MutableBasisOfProductSpace( <U>, <V> )
+##
+##  Once we have the basis vectors for the product space,
+##  we only have to decide whether the result of 'ProductSpace' is an ideal,
+##  an algebra, or just a vector space.
+##  This decision is left to the methods of 'ProductSpace',
+##  the computation of basis vectors is done by 'MutableBasisOfProductSpace'.
 ##
 MutableBasisOfProductSpace := function( U, V )
 
@@ -2559,6 +2568,11 @@ MutableBasisOfProductSpace := function( U, V )
     return [ MB, inter ];
 end;
 
+
+#############################################################################
+##
+#M  ProductSpace( <U>, <V> )  . . . . . . . . . . . for two free left modules
+##
 InstallMethod( ProductSpace,
     "method for two free left modules",
     IsIdentical,
@@ -2589,28 +2603,55 @@ InstallMethod( ProductSpace,
     return C;
     end );
 
+
+#############################################################################
+##
+#M  ProductSpace( <U>, <V> )  . . . . . . . . . . . . . . .  for two algebras
+##
+##  If $<U> = <V>$ is known to be an algebra then the product space is also
+##  an algebra, moreover it is an ideal in <U>.
+##  If <U> and <V> are known to be ideals in an algebra $A$
+##  then the product space is known to be an algebra and an ideal in $A$.
+##
 InstallMethod( ProductSpace,
     "method for two algebras",
     IsIdentical,
     [ IsAlgebra, IsAlgebra ], 0,
     function( U, V )
-    local MB, C;
+    local P, MB, C;
 
-    if not IsIdentical( U, V ) then
+    # Look for the ideal relation that allows to construct an ideal.
+    if IsIdentical( U, V ) then
+      P:= U;
+    elif HasParent( V ) and IsIdentical( Parent( V ), U ) then
+      P:= U;
+    elif HasParent( U ) and IsIdentical( Parent( U ), V ) then
+      P:= V;
+    elif     HasParent( U ) and HasParent( V )
+         and IsIdentical( Parent( V ), Parent( U ) ) then
+      P:= Parent( U );
+    else
       TryNextMethod();
     fi;
 
     # Compute basis vectors for the result.
     MB:= MutableBasisOfProductSpace( U, V )[1];
 
-    # The result is an algebra in 'U'.
-    C:= SubalgebraNC( U, BasisVectors( MB ) );
+    # The result is an ideal in 'U'.
+    C:= SubalgebraNC( P, BasisVectors( MB ) );
+
+    SetIsIdealInParent( C, true );
     SetBasisOfDomain( C, ImmutableBasis( MB ) );
 
     # Return the result.
     return C;
     end );
 
+
+#############################################################################
+##
+#M  ProductSpace( <U>, <V> )  . . . . . . . . for two ideals with same parent
+##
 InstallMethod( ProductSpace,
     "method for two ideals with same parent",
     IsIdentical,
@@ -2623,6 +2664,7 @@ InstallMethod( ProductSpace,
       TryNextMethod();
     fi;
 
+    # The result is an ideal in the parent of 'U'.
     MB:= MutableBasisOfProductSpace( U, V )[1];
     C:= SubalgebraNC( Parent( U ), BasisVectors( MB ) );
 
@@ -3020,7 +3062,7 @@ InstallMethod( GeneratorsOfLeftOperatorRing,
 
 #############################################################################
 ##
-#M  GeneratorsOfLeftOperatorRingWithOne( <A> ) .  for FLMLOR with module gens.
+#M  GeneratorsOfLeftOperatorRingWithOne( <A> ) . for FLMLOR with module gens.
 ##
 InstallMethod( GeneratorsOfLeftOperatorRingWithOne,
     "method for a FLMLOR-with-one with known left module generators",

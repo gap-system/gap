@@ -1033,7 +1033,7 @@ SimpleLieAlgebraTypeW := function( n, F )
           ex[x1[2]]:=ex[x1[2]]-1;
           cf:=One(F);
           for k in [1..Length( n )] do
-            cf:=cf*Binomial( ex[k], x1[1][k] );
+            cf:= Binomial( ex[k], x1[1][k] ) * cf;
           od;
           if cf<>Zero(F) then
             no:=Position(eltlist,[ex,x2[2]]);
@@ -1045,7 +1045,7 @@ SimpleLieAlgebraTypeW := function( n, F )
           ex[x2[2]]:=ex[x2[2]]-1;
           cf:=One(F);
           for k in [1..Length( n )] do
-            cf:=cf*Binomial( ex[k], x2[1][k] );
+            cf:= Binomial( ex[k], x2[1][k] ) * cf;
           od;
           if cf<>Zero(F) then
             no:=Position(eltlist,[ex,x1[2]]);
@@ -1274,7 +1274,7 @@ SimpleLieAlgebraTypeK := function( n, F )
 
       cf:= One( F );
       for i in [1..Length(a)] do
-        cf:= cf * Binomial( a[i], b[i] );
+        cf:= Binomial( a[i], b[i] ) * cf;
       od;
       return cf;
     end;

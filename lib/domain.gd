@@ -128,6 +128,105 @@ InstallInParentMethod := function( attr, filter, op )
         dom -> op( Parent( dom ), dom ) );
 end;
 
+
+#############################################################################
+##
+#F  OperationSubdomain( ... ) makes `ConjugateSubgroup' from `ConjugateGroup'
+##
+OperationSubdomain := function( name, opr, rel )
+    local   req,  i,  oper,  method,  rank,  narg,  methods,  tmp,  k,  info;
+    
+    req := false;
+    for i  in [ 1, 3 .. LEN_LIST(OPERATIONS)-1 ]  do
+        if IS_IDENTICAL_OBJ( OPERATIONS[i], opr )  then
+            req := OPERATIONS[i+1];
+            break;
+        fi;
+    od;
+    if req = false  then
+        Error( "unknown operation ", NAME_FUNCTION(opr) );
+    fi;
+    req := ShallowCopy( req );
+    req[ 1 ] := WITH_HIDDEN_IMPS_FLAGS( AND_FLAGS
+                        ( req[ 1 ], FLAGS_FILTER( HasParent ) ) );
+    oper := NEW_OPERATION( name );
+    ADD_LIST( OPERATIONS, oper );
+    ADD_LIST( OPERATIONS, req );
+    
+    method := function( D, obj )
+        local   E;
+        
+        E := opr( D, obj );
+        SetParent( E, Parent( D ) );
+        return E;
+    end;
+    
+    # find the rank
+    rank := 0;
+    for i  in req  do
+        rank := rank + SIZE_FLAGS(WITH_HIDDEN_IMPS_FLAGS(i));
+    od;
+    
+    # get the methods list
+    narg := LEN_LIST( req );
+    methods := METHODS_OPERATION( oper, narg );
+
+    # find the place to put the new method
+    i := 0;
+    while i < LEN_LIST(methods) and rank < methods[i+(narg+3)]  do
+        i := i + (narg+4);
+    od;
+
+    # push the other functions back
+    methods{[i+1..LEN_LIST(methods)]+(narg+4)}
+        := methods{[i+1..LEN_LIST(methods)]};
+
+    # install the new method
+    if   rel = true  then
+        methods[i+1] := RETURN_TRUE;
+    elif rel = false  then
+        methods[i+1] := RETURN_FALSE;
+    elif IS_FUNCTION(rel)  then
+        methods[i+1] := rel;
+        tmp := NARG_FUNCTION(rel);
+        if tmp <> AINV(1) and tmp <> LEN_LIST(req)  then
+           Error( "<rel> must accept ", LEN_LIST(req), " arguments" );
+        fi;
+    else
+        Error( "<rel> must be a function, 'true', or 'false'" );
+    fi;
+
+    # install the filters
+    for k  in [ 1 .. narg ]  do
+        methods[i+k+1] := req[ k ];
+    od;
+
+    # install the method
+    if   method = true  then
+        methods[i+(narg+2)] := RETURN_TRUE;
+    elif method = false  then
+        methods[i+(narg+2)] := RETURN_FALSE;
+    elif IS_FUNCTION(method)  then
+        methods[i+(narg+2)] := method;
+        tmp := NARG_FUNCTION(method);
+        if tmp <> AINV(1) and tmp <> LEN_LIST(req)  then
+           Error( "<method> must accept ", LEN_LIST(req), " arguments" );
+        fi;
+    else
+        Error( "<method> must be a function, 'true', or 'false'" );
+    fi;
+    methods[i+(narg+3)] := rank;
+
+    # set the name
+    info := NAME_FUNCTION(oper);
+    methods[i+(narg+4)] := IMMUTABLE_COPY_OBJ(info);
+
+    # flush the cache
+    CHANGED_METHODS_OPERATION( oper, narg );
+    
+    return oper;
+end;
+
 #############################################################################
 ##
 #E  domain.gd . . . . . . . . . . . . . . . . . . . . . . . . . . . ends here

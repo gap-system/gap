@@ -5,29 +5,37 @@
 **  This package defines macros and functions that are used by compiled code.
 **  Those macros and functions should go into the appropriate packages.
 */
-
-/* includes, should be compiled right into the C file  * * * * * * * * * * */
-
-#include <system.h>
-#include <gasman.h>
-#include <objects.h>
-#include <gvars.h>
-#include <calls.h>
-#include <ariths.h>
-#include <records.h>
-#include <lists.h>
-#include <bool.h>
-#include <integer.h>
-#include <precord.h>
-#include <plist.h>
-#include <string.h>
-#include <code.h>
-#include <vars.h>
-#include <gap.h>
+#include 	"system.h"
+#include 	"gasman.h"
+#include 	"objects.h"
+#include 	"gvars.h"
+#include 	"calls.h"
+#include 	"ariths.h"
+#include 	"records.h"
+#include 	"lists.h"
+#include 	"bool.h"
+#include 	"integer.h"
+#include 	"precord.h"
+#include 	"plist.h"
+#include 	"string.h"
+#include 	"code.h"
+#include 	"vars.h"
+#include 	"gap.h"
+#include 	"permutat.h"
 
 
 extern Obj InfoDecision;
 extern Obj InfoDoPrint;
+extern Obj CurrentAssertionLevel;
+
+extern Obj NewAndFilter (
+    Obj                 oper1,
+    Obj                 oper2 );
+
+
+extern Obj Array2Perm(
+    Obj			array );
+
 
 /* types, should go into 'gvars.c' and 'records.c' * * * * * * * * * * * * */
 
@@ -117,7 +125,7 @@ extern  void            ErrorQuitNrArgs (
 
 /* #define ASS_LVAR(lvar,obj) do { PtrLVars[(lvar)+2] = (obj); } while ( 0 ) */
 #define ASS_LVAR_0UP(lvar,obj) \
-    ASS_LVAR_0UP(lvar,obj)
+    ASS_LVAR(lvar,obj)
 #define ASS_LVAR_1UP(lvar,obj) \
     do { PTR_BAG(CURR_FRAME_1UP)[(lvar)+2] = (obj); CHANGED_BAG(CURR_FRAME_1UP); } while ( 0 )
 #define ASS_LVAR_2UP(lvar,obj) \
@@ -185,6 +193,45 @@ extern  void            ErrorQuitNrArgs (
  if ( ! PROD_INTOBJS(val,left,right) ) { \
   val = PROD( left, right ); \
  }
+
+
+/* objects, should into 'objects.c'  * * * * * * * * * * * * * * * * * * * */
+
+/* there should be a function for C_ELM_POSOBJ */
+#define C_ELM_POSOBJ( elm, list, pos ) NOT_READY_YET
+
+
+#define C_ELM_POSOBJ_NLE( elm, list, pos ) \
+    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+        elm = ELM_PLIST( list, pos ); \
+    } \
+    else { \
+        elm = ELMW_LIST( list, pos ); \
+    }
+
+#define C_ASS_POSOBJ_INTOBJ( list, pos, elm ) \
+    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
+            ResizeBag( list, (pos+1)*sizeof(Obj) ); \
+        } \
+        SET_ELM_PLIST( list, pos, elm ); \
+    } \
+    else { \
+	ASS_LIST( list, pos, elm ); \
+    }
+
+#define C_ASS_POSOBJ( list, pos, elm ) \
+    if ( TYPE_OBJ(list) == T_POSOBJ ) { \
+        if ( SIZE_OBJ(list)/sizeof(Obj)-1 < pos ) { \
+            ResizeBag( list, (pos+1)*sizeof(Obj) ); \
+        } \
+        SET_ELM_PLIST( list, pos, elm ); \
+        CHANGED_BAG(list); \
+    } \
+    else { \
+	ASS_LIST( list, pos, elm ); \
+    }
+
 
 
 /* lists, should go into 'lists.c' * * * * * * * * * * * * * * * * * * * * */

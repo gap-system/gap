@@ -72,6 +72,7 @@ ReadLib( "pcgsspec.gd" );
 ReadLib( "grppc.gd"    );
 
 ReadLib( "mgmring.gd"  );
+ReadLib( "algfp.gd"    );
 ReadLib( "grptbl.gd"   );
 
 ReadLib( "grpperm.gd"  );

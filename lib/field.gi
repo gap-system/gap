@@ -995,8 +995,10 @@ InstallMethod( ImagesSet,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
     if IsSubset( Source( hom ), elms )  then
-        return FieldByGenerators( List( GeneratorsOfField( elms ),
-                                gen -> Image( hom, gen ) ) );
+        elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
+                   gen -> ImagesRepresentative( hom, gen ) ) );
+        UseSubsetRelation( Range( hom ), elms );
+        return elms;
     else
         Error( "<elms> must be a subset of the source of <hom>" );
     fi;
@@ -1032,8 +1034,10 @@ InstallMethod( PreImagesSet,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
     if IsSubset( Range( hom ), elms )  then
-      return FieldByGenerators( List( GeneratorsOfField( elms ),
-                              gen -> PreImagesRepresentative( hom, gen ) ) );
+      elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
+                 gen -> PreImagesRepresentative( hom, gen ) ) );
+      UseSubsetRelation( Source( hom ), elms );
+      return elms;
     else
       Error( "<elms> must be a subset of the range of <hom>" );
     fi;

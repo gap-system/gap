@@ -378,7 +378,9 @@ Suborbits := function( arg )
         G := G.stabilizer;
     od;
 
-    if len <> 0  then
+    if Omega <> MovedPoints( H )  then
+        suborbits := [  ];
+    elif len <> 0  then
         b := b ^ conj;
         if not IsBound( H!.stabSuborbits )  then
             H!.stabSuborbits       := [  ];
@@ -420,7 +422,7 @@ Suborbits := function( arg )
     else
         
         # Construct the suborbits rooted at <a>.
-        G := DeepCopy( G );
+        G := CopyStabChain( G );
         ChangeStabChain( G, [ a ], false );
         subs := rec( stabChain := G,
                         domain := Omega,
@@ -635,7 +637,7 @@ EmptyRBase := function( G, Omega, P )
         if IsIdentical( G[ 1 ], G[ 2 ] )  then
             rbase.level2 := true;
         else
-            rbase.level2 := DeepCopy( StabChainAttr( G[ 2 ] ) );
+            rbase.level2 := CopyStabChain( StabChainAttr( G[ 2 ] ) );
             rbase.lev2   := [  ];
         fi;
         G := G[ 1 ];
@@ -647,7 +649,7 @@ EmptyRBase := function( G, Omega, P )
         rbase.fix   := [  ];
         rbase.level := NrMovedPoints( G );
     else
-        rbase.chain := DeepCopy( StabChainAttr( G ) );
+        rbase.chain := CopyStabChain( StabChainAttr( G ) );
         rbase.level := rbase.chain;
     fi;
     
@@ -969,7 +971,7 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
 
                     # In the subgroup case, assign to  <L> and <R> stabilizer
                     # chains when the R-base is complete.
-                    L := ListStabChain( DeepCopy( StabChainOp( L,
+                    L := ListStabChain( CopyStabChain( StabChainOp( L,
                                  rec( base := rbase.base,
                                    reduced := false ) ) ) );
                     R := ShallowCopy( L );
@@ -1158,8 +1160,8 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                     #   which until now is identical to  <L>, must be changed
                     #   without affecting <L>, so take a copy.
                     if wasTriv  and  IsIdentical( L[ d ], R[ d ] )  then
-                        R{ [ d .. Length( rbase.base ) ] } :=
-                          DeepCopy( L{ [ d .. Length( rbase.base ) ] } );
+                        R{ [ d .. Length( rbase.base ) ] } := List(
+                        L{ [ d .. Length( rbase.base ) ] }, CopyStabChain );
                         branch := d;
                     fi;
 
@@ -1202,8 +1204,8 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
                         fi;
                         max := PositionNthTrueBlist( orB[ d ],
                                        m - Length( L[ d ].orbit ) + 1 );
-                        R{ [ d .. Length( rbase.base ) ] } :=
-                          DeepCopy( L{ [ d .. Length( rbase.base ) ] } );
+                        R{ [ d .. Length( rbase.base ) ] } := List(
+                        L{ [ d .. Length( rbase.base ) ] }, CopyStabChain );
                     fi;
                     
                 fi;
@@ -1301,8 +1303,8 @@ PartitionBacktrack := function( G, Pr, repr, rbase, data, L, R )
         
         # In   the representative case,   assign  to <L>  and <R>  stabilizer
         # chains.
-        L := ListStabChain( DeepCopy( StabChainAttr( L ) ) );
-        R := ListStabChain( DeepCopy( StabChainAttr( R ) ) );
+        L := ListStabChain( CopyStabChain( StabChainAttr( L ) ) );
+        R := ListStabChain( CopyStabChain( StabChainAttr( R ) ) );
 
     fi;
     
@@ -1702,7 +1704,7 @@ RBaseGroupsBloxPermGroup := function( repr, G, Omega, E, div, B )
                                 orbs[ reg ][ 1 ] );
         AddGeneratorsExtendSchreierTree( rbase.regorb,
                 GeneratorsOfGroup( E ) );
-    else
+    elif IsPrimitive( E, Omega )  then
         reg := Earns( E, Omega );
         if reg <> fail  then
             Info( InfoBckt, 1, "Subgroup is affine" );

@@ -207,7 +207,7 @@ HasNullAlgebra := Tester( NullAlgebra );
 ##  where $U$ and $V$ are vector spaces.
 ##
 ##  If $<U> = <V>$ is known to be an algebra then the product space is also
-##  an algebra.
+##  an algebra, moreover it is an ideal in <U>.
 ##  If <U> and <V> are known to be ideals in an algebra $A$
 ##  then the product space is known to be an algebra and an ideal in $A$.
 ##

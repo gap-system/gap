@@ -152,29 +152,37 @@ end );
 #F  CompatiblePairs( G, M, [A] )
 ##
 CompatiblePairs := function( arg )
-    local G, M, A, d, p, B, pcgs, Mgrp, oper, D, f, n, H, i;
+    local G, M, A, d, p, B, pcgs, Mgrp, oper, D, f, n, H, i, K, N;
 
     # catch the arguments
     G := arg[1];
     M := arg[2];
+    d := M.dimension;
+    pcgs := Pcgs( G );
+    Mgrp := Group( M.generators, IdentityMat( d, M.field ) );
+    oper := GroupHomomorphismByImages( G, Mgrp, pcgs, M.generators );
+
+    # automorphism group of G
     if Length( arg ) = 3 then
         A := arg[3];
     else
         A := AutomorphismGroup( G );
     fi;
 
+    # stabiliser
+    K := KernelOfMultiplicativeGeneralMapping( oper );
+    f := function( pt, a ) return Image( a, pt ); end;
+    A := Stabilizer( A, K, f );
+
     # automorphism group of M
-    d := M.dimension;
     p := Characteristic( M.field );
     B := GL( d, p );
 
-    # action of G on M
-    pcgs := Pcgs( G );
-    Mgrp := Group( M.generators, IdentityMat( d, M.field ) );
-    oper := GroupHomomorphismByImages( G, Mgrp, pcgs, M.generators );
+    # normalizer
+    N := Normalizer( B, Mgrp );
 
     # the direct product
-    D := DirectProduct( A, B );
+    D := DirectProduct( A, N );
 
     # the action
     f := function( pt, tup )
@@ -190,7 +198,7 @@ CompatiblePairs := function( arg )
     n := Length( pcgs );
     H := ShallowCopy( D );
     for i in [1..n] do
-        H := Stabilizer( H, pcgs[i], f );
+        H := Stabilizer( H, M.generators[i], f );
     od;
    
     return H;
@@ -277,18 +285,9 @@ end);
 
 #############################################################################
 ##
-#F  SemidirectProduct( G, M ) / SplitExtension( G, M )
-#F  SemidirectProduct( G, aut, N ) / SplitExtension( G, aut, N )
+#F  SplitExtension( G, M )
+#F  SplitExtension( G, aut, N )
 ##
-InstallMethod( SemidirectProduct,
-    "generic method for pc groups",
-    true, 
-    [ IsPcGroup, IsObject ],
-    0,
-function( G, M )
-    return Extension( G, M, 0 );
-end );
-
 InstallMethod( SplitExtension,
     "generic method for pc groups",
     true, 
@@ -355,29 +354,8 @@ function( G, aut, N )
     od;
 
     H := PcGroupFpGroup( rec( group := F, relators := relators ) );
-    SetFilterObj(H,IsSemidirectProductGroups);
-    gensH:=GeneratorsOfGroup(H);
-    hom1:=GroupHomomorphismByImages(G,H,pcgsG,gensH{[1..Length(pcgsG)]});
-    SetKernelOfMultiplicativeGeneralMapping(hom1,TrivialSubgroup(G));
-    hom2:=GroupHomomorphismByImages(N,H,pcgsN,
-            gensH{[Length(pcgsG)+1..Length(gensH)]});
-    SetKernelOfMultiplicativeGeneralMapping(hom2,TrivialSubgroup(N));
-    SetEmbeddings(H,[hom1,hom2]);
-    hom1:=GroupHomomorphismByImages(H,G,gensH,
-            Concatenation(pcgsG,List(pcgsN,i->One(G))));
-    SetKernelOfMultiplicativeGeneralMapping(hom1,Image(hom2));
-    SetProjections(H,[hom1]);
     return H;
 end);
-
-InstallOtherMethod( SemidirectProduct,
-    "generic method for pc groups",
-    true, 
-    [ IsPcGroup, IsObject, IsPcGroup ],
-    0,
-function( G, aut, N )
-    return SplitExtension( G, aut, N );
-end );
 
 #############################################################################
 ##

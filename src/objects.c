@@ -616,9 +616,9 @@ void CleanObjConstant (
 
 /****************************************************************************
 **
-*F  CopyObjPosobj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
+*F  CopyObjPosObj( <obj>, <mut> ) . . . . . . . . .  copy a positional object
 */
-Obj CopyObjPosobj (
+Obj CopyObjPosObj (
     Obj                 obj,
     Int                 mut )
 {
@@ -675,9 +675,9 @@ Obj CopyObjPosobj (
 
 /****************************************************************************
 **
-*F  CleanObjPosobj( <obj> ) . . . . . . . . . . . . . . . . . .  clean posobj
+*F  CleanObjPosObj( <obj> ) . . . . . . . . . . . . . . . . . .  clean posobj
 */
-void CleanObjPosobj (
+void CleanObjPosObj (
     Obj                 obj )
 {
 }
@@ -685,9 +685,9 @@ void CleanObjPosobj (
 
 /****************************************************************************
 **
-*F  CopyObjPosobjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a posobj copy
+*F  CopyObjPosObjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a posobj copy
 */
-Obj CopyObjPosobjCopy (
+Obj CopyObjPosObjCopy (
     Obj                 obj,
     Int                 mut )
 {
@@ -697,9 +697,9 @@ Obj CopyObjPosobjCopy (
 
 /****************************************************************************
 **
-*F  CleanObjPosobjCopy( <obj> ) . . . . . . . . . . . . . . clean posobj copy
+*F  CleanObjPosObjCopy( <obj> ) . . . . . . . . . . . . . . clean posobj copy
 */
-void CleanObjPosobjCopy (
+void CleanObjPosObjCopy (
     Obj                 obj )
 {
     UInt                i;              /* loop variable                   */
@@ -722,9 +722,9 @@ void CleanObjPosobjCopy (
 
 /****************************************************************************
 **
-*F  CopyObjComobj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a comobj
+*F  CopyObjComObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a comobj
 */
-Obj CopyObjComobj (
+Obj CopyObjComObj (
     Obj                 obj,
     Int                 mut )
 {
@@ -781,9 +781,9 @@ Obj CopyObjComobj (
 
 /****************************************************************************
 **
-*F  CleanObjComobj( <obj> ) . . . . . . . . . . . . . . . . .  clean a comobj
+*F  CleanObjComObj( <obj> ) . . . . . . . . . . . . . . . . .  clean a comobj
 */
-void CleanObjComobj (
+void CleanObjComObj (
     Obj                 obj )
 {
 }
@@ -791,9 +791,9 @@ void CleanObjComobj (
 
 /****************************************************************************
 **
-*F  CopyObjComobjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a comobj copy
+*F  CopyObjComObjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a comobj copy
 */
-Obj CopyObjComobjCopy (
+Obj CopyObjComObjCopy (
     Obj                 obj,
     Int                 mut )
 {
@@ -803,9 +803,9 @@ Obj CopyObjComobjCopy (
 
 /****************************************************************************
 **
-*F  CleanObjComobjCopy( <obj> ) . . . . . . . . . . . . . clean a comobj copy
+*F  CleanObjComObjCopy( <obj> ) . . . . . . . . . . . . . clean a comobj copy
 */
-void CleanObjComobjCopy (
+void CleanObjComObjCopy (
     Obj                 obj )
 {
     UInt                i;              /* loop variable                   */
@@ -827,9 +827,9 @@ void CleanObjComobjCopy (
 
 /****************************************************************************
 **
-*F  CopyObjDatobj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a datobj
+*F  CopyObjDatObj( <obj>, <mut> ) . . . . . . . . . . . . . . . copy a datobj
 */
-Obj CopyObjDatobj (
+Obj CopyObjDatObj (
     Obj                 obj,
     Int                 mut )
 {
@@ -888,9 +888,9 @@ Obj CopyObjDatobj (
 
 /****************************************************************************
 **
-*F  CleanObjDatobj( <obj> ) . . . . . . . . . . . . . . . . .  clean a datobj
+*F  CleanObjDatObj( <obj> ) . . . . . . . . . . . . . . . . .  clean a datobj
 */
-void CleanObjDatobj (
+void CleanObjDatObj (
     Obj                 obj )
 {
 }
@@ -898,9 +898,9 @@ void CleanObjDatobj (
 
 /****************************************************************************
 **
-*F  CopyObjDatobjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a datobj copy
+*F  CopyObjDatObjCopy( <obj>, <mut> ) . . . . . . . . . .  copy a datobj copy
 */
-Obj CopyObjDatobjCopy (
+Obj CopyObjDatObjCopy (
     Obj                 obj,
     Int                 mut )
 {
@@ -910,9 +910,9 @@ Obj CopyObjDatobjCopy (
 
 /****************************************************************************
 **
-*F  CleanObjDatobjCopy( <obj> ) . . . . . . . . . . . . . clean a datobj copy
+*F  CleanObjDatObjCopy( <obj> ) . . . . . . . . . . . . . clean a datobj copy
 */
-void CleanObjDatobjCopy (
+void CleanObjDatObjCopy (
     Obj                 obj )
 {
     /* remove the forwarding pointer                                       */
@@ -1134,9 +1134,9 @@ void PrintPathError (
 
 /****************************************************************************
 **
-*F  KindComobj( <obj> )	. . . . . . . . . . function version of 'KIND_COMOBJ'
+*F  KindComObj( <obj> )	. . . . . . . . . . function version of 'KIND_COMOBJ'
 */
-Obj             KindComobj (
+Obj             KindComObj (
     Obj                 obj )
 {
     return KIND_COMOBJ( obj );
@@ -1210,9 +1210,9 @@ Obj SET_KIND_COMOBJ_Handler (
 
 /****************************************************************************
 **
-*F  KindPosobj( <obj> )	. . . . . . . . . . function version of 'KIND_POSOBJ'
+*F  KindPosObj( <obj> )	. . . . . . . . . . function version of 'KIND_POSOBJ'
 */
-Obj KindPosobj (
+Obj KindPosObj (
     Obj                 obj )
 {
     return KIND_POSOBJ( obj );
@@ -1300,9 +1300,9 @@ Obj LEN_POSOBJ_Handler (
 
 /****************************************************************************
 **
-*F  KindDatobj( <obj> )	. . . . . . . . . . function version of 'KIND_DATOBJ'
+*F  KindDatObj( <obj> )	. . . . . . . . . . function version of 'KIND_DATOBJ'
 */
-Obj             KindDatobj (
+Obj             KindDatObj (
     Obj                 obj )
 {
     return KIND_DATOBJ( obj );
@@ -1456,18 +1456,18 @@ void InitObjects ( void )
         CopyObjFuncs [ t ] = CopyObjConstant;
         CleanObjFuncs[ t ] = CleanObjConstant;
     }
-    CopyObjFuncs[  T_POSOBJ           ] = CopyObjPosobj;
-    CopyObjFuncs[  T_POSOBJ + COPYING ] = CopyObjPosobjCopy;
-    CleanObjFuncs[ T_POSOBJ           ] = CleanObjPosobj;
-    CleanObjFuncs[ T_POSOBJ + COPYING ] = CleanObjPosobjCopy;
-    CopyObjFuncs[  T_COMOBJ           ] = CopyObjComobj;
-    CopyObjFuncs[  T_COMOBJ + COPYING ] = CopyObjComobjCopy;
-    CleanObjFuncs[ T_COMOBJ           ] = CleanObjComobj;
-    CleanObjFuncs[ T_COMOBJ + COPYING ] = CleanObjComobjCopy;
-    CopyObjFuncs[  T_DATOBJ           ] = CopyObjDatobj;
-    CopyObjFuncs[  T_DATOBJ + COPYING ] = CopyObjDatobjCopy;
-    CleanObjFuncs[ T_DATOBJ           ] = CleanObjDatobj;
-    CleanObjFuncs[ T_DATOBJ + COPYING ] = CleanObjDatobjCopy;
+    CopyObjFuncs[  T_POSOBJ           ] = CopyObjPosObj;
+    CopyObjFuncs[  T_POSOBJ + COPYING ] = CopyObjPosObjCopy;
+    CleanObjFuncs[ T_POSOBJ           ] = CleanObjPosObj;
+    CleanObjFuncs[ T_POSOBJ + COPYING ] = CleanObjPosObjCopy;
+    CopyObjFuncs[  T_COMOBJ           ] = CopyObjComObj;
+    CopyObjFuncs[  T_COMOBJ + COPYING ] = CopyObjComObjCopy;
+    CleanObjFuncs[ T_COMOBJ           ] = CleanObjComObj;
+    CleanObjFuncs[ T_COMOBJ + COPYING ] = CleanObjComObjCopy;
+    CopyObjFuncs[  T_DATOBJ           ] = CopyObjDatObj;
+    CopyObjFuncs[  T_DATOBJ + COPYING ] = CopyObjDatObjCopy;
+    CleanObjFuncs[ T_DATOBJ           ] = CleanObjDatObj;
+    CleanObjFuncs[ T_DATOBJ + COPYING ] = CleanObjDatObjCopy;
 
 
     /* make and install the 'PRINT_OBJ' operation                          */
@@ -1506,9 +1506,9 @@ void InitObjects ( void )
 
 
     /* install the kind methods                                            */
-    KindObjFuncs[ T_COMOBJ ] = KindComobj;
-    KindObjFuncs[ T_POSOBJ ] = KindPosobj;
-    KindObjFuncs[ T_DATOBJ ] = KindDatobj;
+    KindObjFuncs[ T_COMOBJ ] = KindComObj;
+    KindObjFuncs[ T_POSOBJ ] = KindPosObj;
+    KindObjFuncs[ T_DATOBJ ] = KindDatObj;
 
 
     /* make and install the functions for low level accessing of objects   */

@@ -691,74 +691,74 @@ extern  void            IntrIsbRecExpr ( void );
 
 /****************************************************************************
 **
-*F  IntrAssPosobj() . . . . . . . . . . . . . .  interpret assignment to a list
-*F  IntrAsssPosobj()  . . . . . . . . . interpret multiple assignment to a list
-*F  IntrAssPosobjLevel(<level>) . . . . . interpret assignment to several lists
-*F  IntrAsssPosobjLevel(<level>)  . . intr multiple assignment to several lists
+*F  IntrAssPosObj() . . . . . . . . . . . . . .  interpret assignment to a list
+*F  IntrAsssPosObj()  . . . . . . . . . interpret multiple assignment to a list
+*F  IntrAssPosObjLevel(<level>) . . . . . interpret assignment to several lists
+*F  IntrAsssPosObjLevel(<level>)  . . intr multiple assignment to several lists
 */
-extern  void            IntrAssPosobj ( void );
+extern  void            IntrAssPosObj ( void );
 
-extern  void            IntrAsssPosobj ( void );
+extern  void            IntrAsssPosObj ( void );
 
-extern  void            IntrAssPosobjLevel (
+extern  void            IntrAssPosObjLevel (
             UInt                level );
 
-extern  void            IntrAsssPosobjLevel (
+extern  void            IntrAsssPosObjLevel (
             UInt                level );
 
-extern  void            IntrUnbPosobj ( void );
+extern  void            IntrUnbPosObj ( void );
 
 
 /****************************************************************************
 **
-*F  IntrElmPosobj() . . . . . . . . . . . . . . . interpret selection of a list
-*F  IntrElmsPosobj()  . . . . . . . . .  interpret multiple selection of a list
-*F  IntrElmPosobjLevel(<level>) . . . . .  interpret selection of several lists
-*F  IntrElmsPosobjLevel(<level>)  . .  intr multiple selection of several lists
+*F  IntrElmPosObj() . . . . . . . . . . . . . . . interpret selection of a list
+*F  IntrElmsPosObj()  . . . . . . . . .  interpret multiple selection of a list
+*F  IntrElmPosObjLevel(<level>) . . . . .  interpret selection of several lists
+*F  IntrElmsPosObjLevel(<level>)  . .  intr multiple selection of several lists
 */
-extern  void            IntrElmPosobj ( void );
+extern  void            IntrElmPosObj ( void );
 
-extern  void            IntrElmsPosobj ( void );
+extern  void            IntrElmsPosObj ( void );
 
-extern  void            IntrElmPosobjLevel (
+extern  void            IntrElmPosObjLevel (
             UInt                level );
 
-extern  void            IntrElmsPosobjLevel (
+extern  void            IntrElmsPosObjLevel (
             UInt                level );
 
-extern  void            IntrIsbPosobj ( void );
+extern  void            IntrIsbPosObj ( void );
 
 
 /****************************************************************************
 **
-*F  IntrAssComobjName(<rnam>) . . . . . . . .  interpret assignment to a record
-*F  IntrAssComobjExpr() . . . . . . . . . . .  interpret assignment to a record
+*F  IntrAssComObjName(<rnam>) . . . . . . . .  interpret assignment to a record
+*F  IntrAssComObjExpr() . . . . . . . . . . .  interpret assignment to a record
 */
-extern  void            IntrAssComobjName (
+extern  void            IntrAssComObjName (
             UInt                rnam );
 
-extern  void            IntrAssComobjExpr ( void );
+extern  void            IntrAssComObjExpr ( void );
 
-extern  void            IntrUnbComobjName (
+extern  void            IntrUnbComObjName (
             UInt                rnam );
 
-extern  void            IntrUnbComobjExpr ( void );
+extern  void            IntrUnbComObjExpr ( void );
 
 
 /****************************************************************************
 **
-*F  IntrElmComobjName(<rnam>) . . . . . . . . . interpret selection of a record
-*F  IntrElmComobjExpr() . . . . . . . . . . . . interpret selection of a record
+*F  IntrElmComObjName(<rnam>) . . . . . . . . . interpret selection of a record
+*F  IntrElmComObjExpr() . . . . . . . . . . . . interpret selection of a record
 */
-extern  void            IntrElmComobjName (
+extern  void            IntrElmComObjName (
             UInt                rnam );
 
-extern  void            IntrElmComobjExpr ( void );
+extern  void            IntrElmComObjExpr ( void );
 
-extern  void            IntrIsbComobjName (
+extern  void            IntrIsbComObjName (
             UInt                rnam );
 
-extern  void            IntrIsbComobjExpr ( void );
+extern  void            IntrIsbComObjExpr ( void );
 
 /****************************************************************************
 **

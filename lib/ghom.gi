@@ -61,7 +61,8 @@ InstallOtherMethod( Inverse, true,
     hom -> Inverse( AsGroupGeneralMappingByImages( hom ) ) );
 
 InstallOtherMethod( SetInverse, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
+        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+          HasAsGroupGeneralMappingByImages,
           IsGeneralMapping ], SUM_FLAGS,
     function( hom, inv )
     SetInverse( AsGroupGeneralMappingByImages( hom ), inv );
@@ -101,7 +102,8 @@ InstallMethod( CoKernelOfMultiplicativeGeneralMapping, true,
                AsGroupGeneralMappingByImages( hom ) ) );
 
 InstallMethod( SetCoKernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
+        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+          HasAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
     SetCoKernelOfMultiplicativeGeneralMapping(
@@ -119,7 +121,8 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping, true,
                AsGroupGeneralMappingByImages( hom ) ) );
 
 InstallMethod( SetKernelOfMultiplicativeGeneralMapping, true,
-        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages,
+        [ IsGroupGeneralMappingByAsGroupGeneralMappingByImages and
+          HasAsGroupGeneralMappingByImages,
           IsGroup ], SUM_FLAGS,
     function( hom, K )
     SetKernelOfMultiplicativeGeneralMapping(

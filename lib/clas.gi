@@ -121,8 +121,8 @@ InstallMethod( AsList, true, [ IsExternalOrbitByStabilizerRep ], 0,
 ##
 #M  ConjugacyClasses( <G> ) . . . . . . . . . . . . . . . . . . .  of a group
 ##
-InstallMethod( ConjugacyClasses, true, [ IsGroup ], 0,
-    function ( G )
+
+ConjugacyClassesByRandomSearch := function ( G )
     local   classes,    # conjugacy classes of <G>, result
             class,      # one class of <G>
             elms;       # elements of <G>
@@ -165,7 +165,10 @@ InstallMethod( ConjugacyClasses, true, [ IsGroup ], 0,
     # return the conjugacy classes
     return classes;
 
-end );
+end ;
+
+InstallMethod( ConjugacyClasses, true, [ IsGroup ], 0,
+  ConjugacyClassesByRandomSearch );
 
 ConjugacyClassesTry := function ( G, classes, elm, length, fixes )
     local   C,          # new class

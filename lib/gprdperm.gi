@@ -9,20 +9,11 @@ Revision.gprdperm_gi :=
 
 #############################################################################
 ##
-#R  IsDirectProductPermGroup( <G> ) . . . . . . direct product of perm groups
-##
-IsDirectProductPermGroup := NewRepresentation
-    ( "IsDirectProductPermGroup",
-      IsProductGroups and IsPermGroup and IsAttributeStoringRep,
-      [ "groups", "olds", "news", "perms" ] );
-
-#############################################################################
-##
 #F  DirectProductPermGroupConstructor( ... )  . .  construct a direct product
 ##
 DirectProductPermGroupConstructor := function( oldgrps, grps,
                                              olds, news, perms, gens )
-    local   deg,  grp,  old,  new,  perm,  gen,  D;
+    local   deg,  grp,  old,  new,  perm,  gen,  D, info;
     
     if IsEmpty( news )  then
         deg := 0;
@@ -49,19 +40,15 @@ DirectProductPermGroupConstructor := function( oldgrps, grps,
         od;
 
     od;
+    D := Group( gens );
+    info := rec( groups := oldgrps,
+                 olds   := olds,
+                 news   := news,
+                 perms  := perms,
+                 embeddings := [],
+                 projections := [] );
 
-    # make the direct product
-    D := Objectify( NewKind( FamilyObj( gens ),
-                 IsDirectProductPermGroup ),
-                 rec() );
-    SetGeneratorsOfMagmaWithInverses( D, AsList( gens ) );
-
-    # enter the information that relates to the construction
-    D!.groups            := oldgrps;
-    D!.olds              := olds;
-    D!.news              := news;
-    D!.perms             := perms;
-
+    SetDirectProductInfo( D, info );
     return D;
 end;
 
@@ -79,18 +66,24 @@ end );
 
 InstallMethod( DirectProduct2,
         "of direct product and another perm group",
-        IsIdentical, [ IsDirectProductPermGroup, IsPermGroup ], 0,
+        IsIdentical, [ IsPermGroup and HasDirectProductInfo, IsPermGroup ], 0,
     function( D, H )
-    return DirectProductPermGroupConstructor( D!.groups, [ H ],
-                   D!.olds, D!.news, D!.perms, GeneratorsOfGroup( D ) );
+    local info;
+    info := DirectProductInfo( D );
+    return DirectProductPermGroupConstructor( info.groups, [ H ],
+           info.olds, info.news, info.perms, GeneratorsOfGroup( D ) );
 end );
 
 #############################################################################
 ##
 #M  Size( <D> ) . . . . . . . . . . . . . . . . . . . . . . of direct product
 ##
-InstallMethod( Size, true, [ IsDirectProductPermGroup ], 0,
-    D -> Size( D!.groups[ 1 ] ) * Size( D!.groups[ 2 ] ) );
+InstallMethod( Size, true, [ IsPermGroup and HasDirectProductInfo ], 0,
+    function( D )
+    local info;
+    info := DirectProductInfo( D );
+    return Product( List( info.groups, x -> Size( x ) ) );
+end );
 
 #############################################################################
 ##
@@ -99,23 +92,30 @@ InstallMethod( Size, true, [ IsDirectProductPermGroup ], 0,
 IsEmbeddingDirectProductPermGroup := NewRepresentation
     ( "IsEmbeddingDirectProductPermGroup",
       IsAttributeStoringRep and
-      IsGroupHomomorphism and IsInjective, [ "component" ] );
+      IsGroupHomomorphism and IsInjective and
+      IsSPGeneralMapping, [ "component" ] );
 
 #############################################################################
 ##
 #M  EmbeddingOp( <D>, <i> ) . . . . . . . . . . . . . . . . .  make embedding
 ##
 InstallMethod( EmbeddingOp, true,
-      [ IsProductGroups and IsDirectProductPermGroup,
+      [ IsPermGroup and HasDirectProductInfo,
         IsPosRat and IsInt ], 0,
     function( D, i )
-    local   emb;
+    local   emb, info;
+    info := DirectProductInfo( D );
+    if IsBound( info.embeddings[i] ) then return info.embeddings[i]; fi;
     
     emb := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsEmbeddingDirectProductPermGroup ),
                    rec( component := i ) );
     SetRange( emb, D );
+
+    info.embeddings[i] := emb;
+    SetDirectProductInfo( D, info );
+    
     return emb;
 end );
 
@@ -124,7 +124,7 @@ end );
 #M  Source( <emb> ) . . . . . . . . . . . . . . . . . . . . . .  of embedding
 ##
 InstallMethod( Source, true, [ IsEmbeddingDirectProductPermGroup ], 0,
-    emb -> Range( emb )!.groups[ emb!.component ] );
+    emb -> DirectProductInfo( Range( emb ) ).groups[ emb!.component ] );
 
 #############################################################################
 ##
@@ -134,7 +134,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
         [ IsEmbeddingDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
-    return g ^ Range( emb )!.perms[ emb!.component ];
+    return g ^ DirectProductInfo( Range( emb ) ).perms[ emb!.component ];
 end );
 
 #############################################################################
@@ -145,8 +145,10 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
         [ IsEmbeddingDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( emb, g )
-    return RestrictedPerm( g, Range( emb )!.news[ emb!.component ] )
-           ^ ( Range( emb )!.perms[ emb!.component ] ^ -1 );
+    local info;
+    info := DirectProductInfo( Range( emb ) );
+    return RestrictedPerm( g, info.news[ emb!.component ] )
+           ^ (info.perms[ emb!.component ] ^ -1);
 end );
 
 #############################################################################
@@ -155,12 +157,13 @@ end );
 ##
 InstallMethod( ImagesSource, true, [ IsEmbeddingDirectProductPermGroup ], 0,
     function( emb )
-    local   D,  I;
+    local   D,  I, info;
     
     D := Range( emb );
+    info := DirectProductInfo( D );
     I := SubgroupNC( D, OnTuples
-                 ( GeneratorsOfGroup( D!.groups[ emb!.component ] ),
-                   D!.perms[ emb!.component ] ) );
+                 ( GeneratorsOfGroup( info.groups[ emb!.component ] ),
+                   info.perms[ emb!.component ] ) );
     SetIsNormalInParent( I, true );
     return I;
 end );
@@ -181,23 +184,28 @@ end );
 IsProjectionDirectProductPermGroup := NewRepresentation
     ( "IsProjectionDirectProductPermGroup",
       IsAttributeStoringRep and
-      IsGroupHomomorphism and IsSurjective, [ "component" ] );
+      IsGroupHomomorphism and IsSurjective and
+      IsSPGeneralMapping, [ "component" ] );
 
 #############################################################################
 ##
 #M  ProjectionOp( <D>, <i> )  . . . . . . . . . . . . . . . . make projection
 ##
 InstallMethod( ProjectionOp, true,
-      [ IsProductGroups and IsDirectProductPermGroup,
+      [ IsPermGroup and HasDirectProductInfo,
         IsPosRat and IsInt ], 0,
     function( D, i )
-    local   prj;
+    local   prj, info;
+    info := DirectProductInfo( D );
+    if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
     prj := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionDirectProductPermGroup ),
                    rec( component := i ) );
     SetSource( prj, D );
+    info.projections[i] := prj;
+    SetDirectProductInfo( D, info );
     return prj;
 end );
 
@@ -206,7 +214,7 @@ end );
 #M  Range( <prj> )  . . . . . . . . . . . . . . . . . . . . . . of projection
 ##
 InstallMethod( Range, true, [ IsProjectionDirectProductPermGroup ], 0,
-    prj -> Source( prj )!.groups[ prj!.component ] );
+    prj -> DirectProductInfo( Source( prj ) ).groups[ prj!.component ] );
 
 #############################################################################
 ##
@@ -216,8 +224,10 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
         [ IsProjectionDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
-    return RestrictedPerm( g, Source( prj )!.news[ prj!.component ] )
-           ^ ( Source( prj )!.perms[ prj!.component ] ^ -1 );
+    local info;
+    info := DirectProductInfo( Source( prj ) );
+    return RestrictedPerm( g, info.news[ prj!.component ] )
+           ^ ( info.perms[ prj!.component ] ^ -1 );
 end );
 
 #############################################################################
@@ -228,7 +238,7 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
         [ IsProjectionDirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
-    return g ^ Source( prj )!.perms[ prj!.component ];
+    return g ^ DirectProductInfo( Source( prj ) ).perms[ prj!.component ];
 end );
 
 #############################################################################
@@ -238,14 +248,15 @@ end );
 InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true, [ IsProjectionDirectProductPermGroup ], 0,
     function( prj )
-    local   D,  gens,  i,  K;
+    local   D,  gens,  i,  K, info;
     
     D := Source( prj );
+    info := DirectProductInfo( D );
     gens := [  ];
-    for i  in [ 1 .. Length( D!.groups ) ]  do
+    for i  in [ 1 .. Length( info.groups ) ]  do
         if i <> prj!.component  then
-            Append( gens, OnTuples( GeneratorsOfGroup( D!.groups[ i ] ),
-                                    D!.perms[ i ] ) );
+            Append( gens, OnTuples( GeneratorsOfGroup( info.groups[ i ] ),
+                                    info.perms[ i ] ) );
         fi;
     od;
     K := SubgroupNC( D, gens );
@@ -264,16 +275,6 @@ end );
 
 #############################################################################
 ##
-
-#R  IsSubdirectProductPermGroup( <S> )  . .  subdirect product of perm groups
-##
-IsSubdirectProductPermGroup := NewRepresentation
-    ( "IsSubdirectProductPermGroup",
-      IsProductGroups and IsAttributeStoringRep,
-      [ "groups", "homomorphisms", "olds", "news", "perms" ] );
-
-#############################################################################
-##
 #M  SubdirectProduct( <G1>, <G2>, <phi1>, <phi2> )  . . . . . . . constructor
 ##
 InstallMethod( SubdirectProduct, true,
@@ -283,12 +284,13 @@ InstallMethod( SubdirectProduct, true,
             gens,       # generators of <S>
             D,          # direct product of <G1> and <G2>
             emb1, emb2, # embeddings of <G1> and <G2> into <D>
+            info, Dinfo,# info records
             gen;        # one generator of <G1> or kernel of <phi2>
 
     # make the direct product and the embeddings
     D := DirectProduct2( G1, G2 );
-    emb1 := EmbeddingOp( G1, D, 1 );
-    emb2 := EmbeddingOp( G2, D, 2 );
+    emb1 := EmbeddingOp( D, 1 );
+    emb2 := EmbeddingOp( D, 2 );
     
     # the subdirect product is generated by $(g_1,x_{g_1})$ where $g_1$ loops
     # over the  generators of $G_1$  and $x_{g_1} \in   G_2$ is abitrary such
@@ -304,21 +306,18 @@ InstallMethod( SubdirectProduct, true,
     od;
 
     # and make the subdirect product
-    S := Objectify( NewKind( FamilyObj( gens ),
-                 IsSubdirectProductPermGroup ),
-                 rec() );
-    SetGeneratorsOfMagmaWithInverses( S, AsList( gens ) );
+    S := Group( gens );
     SetParent( S, D );
 
-    # enter the information that relates to the construction
-    S!.groups                    := [ G1, G2 ];
-    S!.homomorphisms             := [ phi1, phi2 ];
-
-    # transfer info from D needed for Projection
-    S!.olds  := D!.olds;
-    S!.news  := D!.news;
-    S!.perms := D!.perms;
-
+    Dinfo := DirectProductInfo( D );
+    info := rec( groups := [G1, G2],
+                 homomorphisms := [phi1, phi2],
+                 olds  := Dinfo.olds,
+                 news  := Dinfo.news,
+                 perms := Dinfo.perms,
+                 embeddings := [],
+                 projections := [] );
+    SetSubdirectProductInfo( S, info );
     return S;
 end );
 
@@ -326,9 +325,13 @@ end );
 ##
 #M  Size( <S> ) . . . . . . . . . . . . . . . . . . . .  of subdirect product
 ##
-InstallMethod( Size, true, [ IsSubdirectProductPermGroup ], 0,
-    S -> Size( S!.groups[ 1 ] ) * Size( S!.groups[ 2 ] )
-         / Size( ImagesSource( S!.homomorphisms[ 1 ] ) ) );
+InstallMethod( Size, true, [ IsPermGroup and HasSubdirectProductInfo ], 0,
+    function( S )
+    local info;
+    info := SubdirectProductInfo( S );
+    return Size( info.groups[ 1 ] ) * Size( info.groups[ 2 ] )
+           / Size( ImagesSource( info.homomorphisms[ 1 ] ) );
+end );
 
 #############################################################################
 ##
@@ -337,23 +340,28 @@ InstallMethod( Size, true, [ IsSubdirectProductPermGroup ], 0,
 IsProjectionSubdirectProductPermGroup := NewRepresentation
     ( "IsProjectionSubdirectProductPermGroup",
       IsAttributeStoringRep and
-      IsGroupHomomorphism and IsSurjective, [ "component" ] );
+      IsGroupHomomorphism and IsSurjective and
+      IsSPGeneralMapping, [ "component" ] );
 
 #############################################################################
 ##
 #M  ProjectionOp( <S>, <i> )  . . . . . . . . . . . . . . . . make projection
 ##
 InstallMethod( ProjectionOp, true,
-      [ IsProductGroups and IsSubdirectProductPermGroup,
+      [ IsPermGroup and HasSubdirectProductInfo,
         IsPosRat and IsInt ], 0,
     function( S, i )
-    local   prj;
+    local   prj, info;
+    info := SubdirectProductInfo( S );
+    if IsBound( info.projections[i] ) then return info.projections[i]; fi;
     
     prj := Objectify( NewKind( GeneralMappingsFamily( PermutationsFamily,
                                                       PermutationsFamily ),
                    IsProjectionSubdirectProductPermGroup ),
                    rec( component := i ) );
     SetSource( prj, S );
+    info.projections[i] := prj;
+    SetSubdirectProductInfo( S, info );
     return prj;
 end );
 
@@ -362,7 +370,7 @@ end );
 #M  Range( <prj> )  . . . . . . . . . . . . . . . . . . . . . . of projection
 ##
 InstallMethod( Range, true, [ IsProjectionSubdirectProductPermGroup ], 0,
-    prj -> Source( prj )!.groups[ prj!.component ] );
+    prj -> SubdirectProductInfo( Source( prj ) ).groups[ prj!.component ] );
 
 #############################################################################
 ##
@@ -372,8 +380,10 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
         [ IsProjectionSubdirectProductPermGroup,
           IsMultiplicativeElementWithInverse ], 0,
     function( prj, g )
-    return RestrictedPerm( g, Source( prj )!.news[ prj!.component ] )
-           ^ ( Source( prj )!.perms[ prj!.component ] ^ -1 );
+    local info;
+    info := SubdirectProductInfo( Source( prj ) );
+    return RestrictedPerm( g, info.news[ prj!.component ] )
+           ^ ( info.perms[ prj!.component ] ^ -1 );
 end );
 
 #############################################################################
@@ -386,21 +396,23 @@ InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
     function( prj, img )
     local   S,
             elm,        # preimage of <img> under <prj>, result
+            info,       # info record
             phi1, phi2; # homomorphisms of components
 
     S := Source( prj );
+    info := SubdirectProductInfo( S );
     
     # get the homomorphism
-    phi1 := S!.homomorphisms[1];
-    phi2 := S!.homomorphisms[2];
+    phi1 := info.homomorphisms[1];
+    phi2 := info.homomorphisms[2];
 
     # compute the preimage
     if 1 = prj!.component  then
-        elm := img                                    ^ S!.perms[1]
-             * PreImagesRepresentative(phi2,img^phi1) ^ S!.perms[2];
+        elm := img                                    ^ info.perms[1]
+             * PreImagesRepresentative(phi2,img^phi1) ^ info.perms[2];
     else
-        elm := img                                    ^ S!.perms[2]
-             * PreImagesRepresentative(phi1,img^phi2) ^ S!.perms[1];
+        elm := img                                    ^ info.perms[2]
+             * PreImagesRepresentative(phi1,img^phi2) ^ info.perms[1];
     fi;
 
     # return the preimage
@@ -415,14 +427,15 @@ InstallMethod( KernelOfMultiplicativeGeneralMapping,
     true,
     [ IsProjectionSubdirectProductPermGroup ], 0,
     function( prj )
-    local   D,  i;
+    local   D,  i, info;
     
     D := Source( prj );
+    info := SubdirectProductInfo( D );
     i := 3 - prj!.component;
     return SubgroupNC( D, OnTuples
            ( GeneratorsOfGroup( KernelOfMultiplicativeGeneralMapping(
-                                    D!.homomorphisms[ i ] ) ),
-             D!.perms[ i ] ) );
+                                    info.homomorphisms[ i ] ) ),
+             info.perms[ i ] ) );
 end );
 
 #############################################################################

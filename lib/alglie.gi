@@ -36,6 +36,8 @@ InstallMethod( UpperCentralSeriesOfAlgebra,
       Add( S, C );
       hom:= NaturalHomomorphismByIdeal( L, C );
       C:= PreImage( hom, LieCentre( Range( hom ) ) );
+#T we would like to get ideals!
+#T is it possible to teach the hom. that the preimage of an ideal is an ideal?
 
     od;
 
@@ -1450,10 +1452,10 @@ InstallMethod( NilRadical,
 
       eqs:= [ List( adS, x -> TraceMat(x) ) ];
       sol:= NullspaceMat( TransposedMat( eqs ) );
-      I:= List( sol, x -> BasisVectors( BasisOfDomain(S) )*x );
+      I:= List( sol, x -> LinearCombination( BasisOfDomain(S), x ) );
 
       cfs:= List( I, x -> Coefficients( BasisOfDomain(S), x ) );
-      adI:= List( cfs, x -> x*adS );
+      adI:= List( cfs, x -> LinearCombination( adS, x ) );
 
       # We check whether the ideal <I> is nilpotent
       # (this is precisely the case when all matrices ad<x> are nilpotent
@@ -1725,6 +1727,7 @@ InstallMethod( LeviDecomposition,
       fi;
     od;
 
+    sp:= MutableBasisByGenerators( F, bb );
     subalg:= true;    
     for i in [1..Length(bb)] do 
       for j in [i+1..Length(bb)] do
@@ -2347,8 +2350,8 @@ FindSl2 := function( L, x )
       return false;
     fi;
 
-    z:= v{ [   1 ..   n ] } * BasisVectors( B );
-    h:= v{ [ n+1 .. 2*n ] } * BasisVectors( B );
+    z:= LinearCombination( B, v{ [   1 ..   n ] } );
+    h:= LinearCombination( B, v{ [ n+1 .. 2*n ] } );
 
     R:= LieCentralizer( L, SubalgebraNC( L, [ x ] ) );
     BR:= BasisOfDomain( R );
@@ -2374,7 +2377,7 @@ FindSl2 := function( L, x )
       return fail;
     fi;
 
-    y:= z-e1*Rvecs;
+    y:= z-LinearCombination(Rvecs,e1);
 
     return SubalgebraNC( L, [x,h,y], "basis" );
 end;
@@ -2494,7 +2497,7 @@ InstallMethod( SemiSimpleType,
 
     H:= CartanSubalgebra( L );
     rk:= Dimension( H );
-    bas:= BasisVectors( BasisOfDomain( H ) );
+    bas:= ShallowCopy( BasisVectors( BasisOfDomain( H ) ) );
     sp:= MutableBasisByGenerators( LeftActingDomain( L ), bas );
     k:= 1;
     bvl:= BasisVectors( BasisOfDomain( L ) );
@@ -2889,7 +2892,7 @@ InstallMethod( NonNilpotentElement,
 
 ##############################################################################
 ##
-#M  RootSystem( <L> )
+#M  RootSystem( <L> ) . . . . . . . . . . . . . . . . . . .  for a Lie algebra
 ##
 InstallMethod( RootSystem,
     "method for a (semisimple) Lie algebra",
@@ -3032,8 +3035,9 @@ InstallMethod( RootSystem,
       j:= Position( S, -a );
       h:= B[i][1]*B[j][1];
       if not IsContainedInSpan( sp, h ) then
-        CloseMutableBasis( sp, basH );
+        CloseMutableBasis( sp, h );
         Add( basR, a );
+        Add( basH, h );
       fi;
       i:=i+1;
     od;

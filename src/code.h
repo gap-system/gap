@@ -1082,74 +1082,74 @@ extern  void            CodeIsbRecExpr ( void );
 
 /****************************************************************************
 **
-*F  CodeAssPosobj() . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosobj()  . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosobjLevel(<level>) . . . . . .  code assignment to several lists
-*F  CodeAsssPosobjLevel(<level>)  . code multiple assignment to several lists
+*F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAsssPosObj()  . . . . . . . . . .  code multiple assignment to a list
+*F  CodeAssPosObjLevel(<level>) . . . . . .  code assignment to several lists
+*F  CodeAsssPosObjLevel(<level>)  . code multiple assignment to several lists
 */
-extern  void            CodeAssPosobj ( void );
+extern  void            CodeAssPosObj ( void );
 
-extern  void            CodeAsssPosobj ( void );
+extern  void            CodeAsssPosObj ( void );
 
-extern  void            CodeAssPosobjLevel (
+extern  void            CodeAssPosObjLevel (
             UInt                level );
 
-extern  void            CodeAsssPosobjLevel (
+extern  void            CodeAsssPosObjLevel (
             UInt                level );
 
-extern  void            CodeUnbPosobj ( void );
+extern  void            CodeUnbPosObj ( void );
 
 
 /****************************************************************************
 **
-*F  CodeElmPosobj() . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosobj()  . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosobjLevel(<level>) . . . . . . . code selection of several lists
-*F  CodeElmsPosobjLevel(<level>)  .  code multiple selection of several lists
+*F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmsPosObj()  . . . . . . . . . . . code multiple selection of a list
+*F  CodeElmPosObjLevel(<level>) . . . . . . . code selection of several lists
+*F  CodeElmsPosObjLevel(<level>)  .  code multiple selection of several lists
 */
-extern  void            CodeElmPosobj ( void );
+extern  void            CodeElmPosObj ( void );
 
-extern  void            CodeElmsPosobj ( void );
+extern  void            CodeElmsPosObj ( void );
 
-extern  void            CodeElmPosobjLevel (
+extern  void            CodeElmPosObjLevel (
             UInt                level );
 
-extern  void            CodeElmsPosobjLevel (
+extern  void            CodeElmsPosObjLevel (
             UInt                level );
 
-extern  void            CodeIsbPosobj ( void );
+extern  void            CodeIsbPosObj ( void );
 
 
 /****************************************************************************
 **
-*F  CodeAssComobjName(<rnam>) . . . . . . . . . . code assignment to a record
-*F  CodeAssComobjExpr() . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
 */
-extern  void            CodeAssComobjName (
+extern  void            CodeAssComObjName (
             UInt                rnam );
 
-extern  void            CodeAssComobjExpr ( void );
+extern  void            CodeAssComObjExpr ( void );
 
-extern  void            CodeUnbComobjName (
+extern  void            CodeUnbComObjName (
             UInt                rnam );
 
-extern  void            CodeUnbComobjExpr ( void );
+extern  void            CodeUnbComObjExpr ( void );
 
 
 /****************************************************************************
 **
-*F  CodeElmComobjName(<rnam>) . . . . . . . . . .  code selection of a record
-*F  CodeElmComobjExpr() . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
 */
-extern  void            CodeElmComobjName (
+extern  void            CodeElmComObjName (
             UInt                rnam );
 
-extern  void            CodeElmComobjExpr ( void );
+extern  void            CodeElmComObjExpr ( void );
 
-extern  void            CodeIsbComobjName (
+extern  void            CodeIsbComObjName (
             UInt                rnam );
 
-extern  void            CodeIsbComobjExpr ( void );
+extern  void            CodeIsbComObjExpr ( void );
 
 
 

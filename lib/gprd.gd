@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.7  1997/03/10 15:43:12  beick
+#H  removed new catagory for products of groups, added products of pc groups
+#H
 #H  Revision 4.6  1997/02/13 10:38:18  ahulpke
 #H  Added 'Embedding' and 'Projection' for semidirect products
 #H
@@ -28,38 +31,61 @@
 Revision.gprd_gd :=
     "@(#)$Id$";
 
-IsProductGroups := NewCategory( "IsProductGroups", IsGroup );
-Embeddings := NewAttribute( "Embeddings", IsProductGroups, "mutable" );
-SetEmbeddings := Setter(Embeddings);
-
-EmbeddingOp := NewOperation( "Embedding",
-    [ IsProductGroups, IsPosRat and IsInt ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
-
-Projections := NewAttribute( "Projections", IsProductGroups, "mutable" );
-SetProjections := Setter(Projections);
-
-ProjectionOp := NewOperation( "Projection",
-    [ IsProductGroups, IsPosRat and IsInt ] );
-#T 1997/01/16 fceller was old 'NewConstructor'
-
-IsDirectProductGroups := NewCategory( "IsDirectProductGroups",
-                                 IsProductGroups );
 DirectProduct := NewOperationArgs( "DirectProduct" );
-DirectProduct2 := NewOperation( "DirectProduct2", [ IsGroup, IsGroup ] );
-
-IsSubdirectProductGroups := NewCategory( "IsSubdirectProductGroups",
-                                    IsProductGroups );
+DirectProduct2 := NewOperation( "DirectProduct2", [IsGroup, IsGroup] );
 SubdirectProduct := NewOperation( "SubdirectProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism, IsGroupHomomorphism ] );
-
-IsSemidirectProductGroups := NewCategory( "IsSemidirectProductGroups",
-                                 IsProductGroups );
-
+SemidirectProduct := NewOperation( "SemidirectProduct",
+    [ IsGroup, IsGroupHomomorphism, IsGroup ] );
 WreathProduct := NewOperation( "WreathProduct",
     [ IsGroup, IsGroup, IsGroupHomomorphism ] );
-
 WreathProductProductAction := NewOperationArgs( "WreathProductProductAction" );
+
+#############################################################################
+##
+#A  DirectProductInfo( <G> )
+##
+DirectProductInfo := NewAttribute( "DirectProductInfo", IsGroup, "mutable" );
+SetDirectProductInfo := Setter(DirectProductInfo);
+HasDirectProductInfo := Tester(DirectProductInfo);
+
+#############################################################################
+##
+#A  SubdirectProductInfo( <G> )
+##
+SubdirectProductInfo := NewAttribute( "SubdirectProductInfo", IsGroup, 
+                                      "mutable" );
+SetSubdirectProductInfo := Setter(SubdirectProductInfo);
+HasSubdirectProductInfo := Tester(SubdirectProductInfo);
+
+#############################################################################
+##
+#A  SemidirectProductInfo( <G> )
+##
+SemidirectProductInfo := NewAttribute( "SemidirectProductInfo", IsGroup, 
+                                       "mutable" );
+SetSemidirectProductInfo := Setter(SemidirectProductInfo);
+HasSemidirectProductInfo := Tester(SemidirectProductInfo);
+
+#############################################################################
+##
+#A  WreathProductInfo( <G> )
+##
+WreathProductInfo := NewAttribute( "WreathProductInfo", IsGroup, "mutable" );
+SetWreathProductInfo := Setter(WreathProductInfo);
+HasWreathProductInfo := Tester(WreathProductInfo);
+
+#############################################################################
+##
+#O EmbeddingOp( <G>, <i> )
+##
+EmbeddingOp := NewOperation( "EmbeddingOp", [IsGroup, IsInt and IsPosRat] );
+
+#############################################################################
+##
+#O ProjectionOp( <G>, <i> )
+##
+ProjectionOp := NewOperation( "ProjectionOp", [IsGroup, IsInt and IsPosRat] );
 
 #############################################################################
 ##

@@ -168,6 +168,19 @@ InstallSubsetMaintainedMethod := function( operation, super_req, sub_req )
 #T argument for ``antifilters'' ?
         TryNextMethod();
         end );
+
+    if     FLAGS_FILTER( operation ) <> false
+       and IS_EQUAL_FLAGS( FLAGS_FILTER( operation and sub_req ),
+                           FLAGS_FILTER( super_req ) )  then
+        InstallMethod( UseSubsetRelation, infostring, IsIdentical,
+                [ sub_req, sub_req ], 0,
+            function( super, sub )
+            if tester( sub )  and  not operation( sub )  then
+                setter( super, false );
+            fi;
+            TryNextMethod();
+        end );
+    fi;
 end;
 
 
@@ -303,6 +316,19 @@ InstallFactorMaintainedMethod := function( opr, numer_req, denom_req,
         fi;
         TryNextMethod();
         end );
+        
+    if     FLAGS_FILTER( opr ) <> false
+       and IS_EQUAL_FLAGS( FLAGS_FILTER( opr and factor_req ),
+                           FLAGS_FILTER( numer_req ) )  then
+        InstallMethod( UseFactorRelation, infostring, IsIdenticalObjObjX,
+                [ factor_req, denom_req, factor_req ], 0,
+            function( numer, denom, factor )
+            if tester( factor )  and  not opr( factor )  then
+                setter( numer, false );
+            fi;
+            TryNextMethod();
+        end );
+    fi;
 end;
 
 

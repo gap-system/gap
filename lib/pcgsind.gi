@@ -392,18 +392,11 @@ function( pcgs, gens, imgs )
            cw, d, i, j;
 
     # do family check here to avoid problems with the empty list
-    if not IsEmpty(gens)  then
-        if not IsIdentical( FamilyObj(pcgs), FamilyObj(gens) )  then
-            Error( "<pcgs> and <gens> have different families" );
-        fi;
+    if not IsIdentical( FamilyObj(pcgs), FamilyObj(gens) )  then
+        Error( "<pcgs> and <gens> have different families" );
     fi;
     if Length( gens ) <> Length( imgs ) then
         Error( "<gens> and <imgs> must have equal length");
-    fi;
-
-    # catch the trivial case
-    if Length( gens ) = 0 then
-        return [ ];
     fi;
 
     # get relative orders and composition length
@@ -509,6 +502,18 @@ function( pcgs, gens, imgs )
     return igs;
 end );
 
+InstallMethod( InducedPcgsByGeneratorsWithImages,
+    true,
+    [ IsPcgs and IsPrimeOrdersPcgs,
+      IsList and IsEmpty,
+      IsList and IsEmpty ],
+    0,
+
+function( pcgs, gens, imgs )
+    local igs;
+    igs := InducedPcgsByPcSequenceNC( pcgs, gens );
+    return [igs, imgs];
+end );
 
 #############################################################################
 ##

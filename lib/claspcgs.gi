@@ -697,8 +697,6 @@ ClassesSolvableGroup := function( arg )
     fi;
     if H = U  then  G := H;
               else  G := ClosureGroup( H, U );  fi;
-    home := HomePcgs( G );
-    Hp := InducedPcgsByGenerators( home, GeneratorsOfGroup( H ) );
     if Length( arg ) = 5  then  candidates := arg[ 5 ];
                           else  candidates := false;     fi;
     
@@ -747,6 +745,9 @@ ClassesSolvableGroup := function( arg )
                              c -> Comm( k, c ) in L ) );
         end;
     fi;
+    home := HomePcgs( eas[ 1 ] );
+    Hp := InducedPcgsByGenerators( home, GeneratorsOfGroup( H ) );
+    SetPcgs( H, Hp );
 
     # Initialize the algorithm for the trivial group.
     step := 1;

@@ -68,7 +68,7 @@ end;
 
 #############################################################################
 ##
-#R  IsCoKernelGensIterator( <hom> ) . . . . iterator over cokernel generators
+#R  IsCoKernelGensIterator  . . . . . . . . iterator over cokernel generators
 ##
 IsCoKernelGensIterator := NewRepresentation
     ( "IsCoKernelGensIterator", IsIterator and IsComponentObjectRep,
@@ -163,11 +163,11 @@ CoKernelGensPermHom := function( hom )
 
     C := [  ];
     for sch  in CoKernelGensIterator( hom )  do
-        if not sch in C  then
+        if sch <> One( sch )  and  not sch in C  then
             Add( C, sch );
         fi;
     od;
-    return Difference( C, [ StabChainAttr( hom ).idimage ] );
+    return C;
 end;
 
 #############################################################################
@@ -294,7 +294,7 @@ end );
 InstallMethod( CoKernelOfMultiplicativeGeneralMapping,
     true, [ IsPermGroupGeneralMappingByImages ], 0,
     function( hom )
-    return NormalClosure( Image( hom ), SubgroupNC
+    return NormalClosure( ImagesSource( hom ), SubgroupNC
                    ( Range( hom ), CoKernelGensPermHom( hom ) ) );
 end );
 
@@ -360,13 +360,16 @@ InstallMethod( CompositionMapping2, FamSource1EqFamRange2,
     levs := [  ];
     S := stb;
     while IsBound( S.stabilizer )  do
+        S.idimage := One( Range( hom1 ) );
         if not ForAny( levs, lev -> IsIdentical( lev, S.labelimages ) )  then
             Add( levs, S );
             S.labelimages := List( S.labelimages, g ->
                                    ImagesRepresentative( hom1, g ) );
         fi;
-        S.generators := S.labels     { S.genlabels };
-        S.genimages  := S.labelimages{ S.genlabels };
+        S.generators  := S.labels     { S.genlabels };
+        S.genimages   := S.labelimages{ S.genlabels };
+        S.transimages := [  ];
+        S.transimages{ S.orbit } := S.labels{ S.translabels{ S.orbit } };
         S := S.stabilizer;
     od;
     prd := GroupHomomorphismByImages( Source( hom2 ), Range( hom1 ),
@@ -399,7 +402,8 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
             longgens,
             longgroup,
             conperm,
-            conperminv;
+            conperminv,
+            op;
     
     if IsTrivial( PreImagesRange( hom ) )
        then n := 0;
@@ -447,8 +451,10 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
         fi;
         if   IsBound( StabChainOptions( Source( hom ) ).knownBase )  then
             options.knownBase := StabChainOptions( Source( hom ) ).knownBase;
-        elif IsBound( StabChainOptions( PreImagesRange( hom ) ).knownBase )  then
-            options.knownBase := StabChainOptions( PreImagesRange( hom ) ).knownBase;
+        elif IsBound( StabChainOptions( PreImagesRange( hom ) ).knownBase )
+          then
+            options.knownBase := StabChainOptions( PreImagesRange( hom ) ).
+                                 knownBase;
         elif HasBase( Source( hom ) )  then
             options.knownBase := Base( Source( hom ) );
         elif HasBase( PreImagesRange( hom ) )  then
@@ -473,7 +479,8 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
         if   IsBound( StabChainOptions( Source( hom ) ).knownBase )  then
             options.knownBaseSource :=
               StabChainOptions( Source( hom ) ).knownBase;
-        elif IsBound( StabChainOptions( PreImagesRange( hom ) ).knownBase )  then
+        elif IsBound( StabChainOptions( PreImagesRange( hom ) ).knownBase )
+          then
             options.knownBaseSource :=
               StabChainOptions( PreImagesRange( hom ) ).knownBase;
         elif IsBound( StabChainOptions( Parent( Source( hom ) ) ).knownBase )
@@ -499,7 +506,8 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
             if   IsBound( StabChainOptions( Range( hom ) ).knownBase )  then
                 options.knownBaseRange :=
                   StabChainOptions( Range( hom ) ).knownBase;
-            elif IsBound( StabChainOptions( PreImagesRange( hom ) ).knownBase )  then
+            elif IsBound( StabChainOptions( PreImagesRange( hom ) ).
+                    knownBase )  then
                 options.knownBaseRange :=
                   StabChainOptions( PreImagesRange( hom ) ).knownBase;
             elif IsBound( StabChainOptions( Parent( Range( hom ) ) )
@@ -526,6 +534,13 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
         longgens[i] := hom!.generators[i] * (hom!.genimages[i] ^ conperm); 
     od;
     longgroup :=  Group(longgens,());
+    for op  in [ PreImagesRange, ImagesSource ]  do
+        if      HasIsSolvableGroup( op( hom ) )
+           and not IsSolvableGroup( op( hom ) )  then
+            SetIsSolvableGroup( longgroup, false );
+            break;
+        fi;
+    od;
     MakeStabChainLong( hom, StabChainOp( longgroup, options ),
            [ 1 .. n ], (), conperminv, hom,
            CoKernelOfMultiplicativeGeneralMapping );
@@ -538,7 +553,7 @@ StabChainPermGroupToPermGroupGeneralMappingByImages := function( hom )
                 [ n + 1 .. n + k ], conperminv, (), hom,
                 KernelOfMultiplicativeGeneralMapping );
     fi;
-    
+
     return StabChainAttr( hom );
 end;
 
@@ -547,43 +562,39 @@ end;
 #F  MakeStabChainLong( ... )  . . . . . . . . . . . . . . . . . . . . . local
 ##
 MakeStabChainLong := function( hom, stb, ran, c1, c2, cohom, cokername )
-    local   newlevs,  S,  i,  len,  rest,  p;
+    local   newlevs,  S,  i,  len,  rest,  trans;
     
     # Construct the stabilizer chain for <hom>.
-    S := DeepCopy( stb );
+    S := CopyStabChain( stb );
     SetStabChain( hom, S );
     newlevs := [  ];
     repeat
-        len := Length( stb.labels );
-        if len = 0  or  IsPerm( stb.labels[ len ] )  then
-            Add( stb.labels, rec( labels := [  ], labelimages := [  ] ) );
+        len := Length( S.labels );
+        if len = 0  or  IsPerm( S.labels[ len ] )  then
+            Add( S.labels, rec( labels := [  ], labelimages := [  ] ) );
             len := len + 1;
             for i  in [ 1 .. len - 1 ]  do
-                rest := RestrictedPerm( stb.labels[ i ], ran );
-                Add( stb.labels[ len ].labels, rest ^ c1 );
-                Add( stb.labels[ len ].labelimages,
-                     LeftQuotient( rest, stb.labels[ i ] ) ^ c2 );
+                rest := RestrictedPerm( S.labels[ i ], ran );
+                Add( S.labels[ len ].labels, rest ^ c1 );
+                Add( S.labels[ len ].labelimages,
+                     LeftQuotient( rest, S.labels[ i ] ) ^ c2 );
             od;
-            Add( newlevs, stb.labels );
+            Add( newlevs, S.labels );
         fi;
-        S.labels      := stb.labels[ len ].labels;
-        S.labelimages := stb.labels[ len ].labelimages;
+        S.labels{ [ 1 .. len - 1 ] } := S.labels[ len ].labels;
+        S.labelimages := S.labels[ len ].labelimages;
         S.generators  := S.labels{ S.genlabels };
         S.genimages   := S.labelimages{ S.genlabels };
         S.idimage     := ();
-        if BasePoint( stb ) in ran  then
-            S.orbit := stb.orbit - ran[ 1 ] + 1;
+        if BasePoint( S ) in ran  then
+            trans := S.translabels{ S.orbit };
+            S.orbit := S.orbit - ran[ 1 ] + 1;
             S.translabels := [  ];
-            S.translabels{ S.orbit } := stb.translabels{ stb.orbit };
+            S.translabels{ S.orbit } := trans;
             S.transversal := [  ];
+            S.transversal{ S.orbit } := S.labels{ trans };
             S.transimages := [  ];
-            S.transversal[ S.orbit[ 1 ] ] := S.identity;
-            S.transimages[ S.orbit[ 1 ] ] := S.idimage;
-            for i  in [ 2 .. Length( S.orbit ) ]  do
-                p := S.orbit[ i ];
-                S.transversal[ p ] := S.labels     [ S.translabels[ p ] ];
-                S.transimages[ p ] := S.labelimages[ S.translabels[ p ] ];
-            od;
+            S.transimages{ S.orbit } := S.labelimages{ trans };
             S := S.stabilizer;
             stb := stb.stabilizer;
         else
@@ -597,7 +608,7 @@ MakeStabChainLong := function( hom, stb, ran, c1, c2, cohom, cokername )
     od;
     
     # Construct the cokernel.
-    if Length( stb.genlabels ) <> 0  then
+    if not IsEmpty( stb.genlabels )  then
         if not Tester( cokername )( cohom )  then
             S := EmptyStabChain( [  ], () );
             ConjugateStabChain( stb, S, c2, c2 );
@@ -778,7 +789,7 @@ ImageKernelBlocksHomomorphism := function( hom, H )
             i,  j;      # loop variables
     
     D := Enumerator( hom!.externalSet );
-    S := DeepCopy( StabChainAttr( H ) );
+    S := CopyStabChain( StabChainAttr( H ) );
     full := IsIdentical( H, Source( hom ) );
     if full  then
         SetStabChain( hom, S );
@@ -900,12 +911,12 @@ end );
 PreImageSetStabBlocksHomomorphism := function( hom, I )
     local   H,          # preimage of <I> under <hom>, result
             pnt,        # rep. of the block that is the basepoint <I>
-            l,          # one genlabel of <I>
+            gen,        # one generator of <I>
             pre;        # a representative of its preimages
 
     # if <I> is trivial then preimage is the kernel of <hom>
-    if Length( I.genlabels ) = 0  then
-        H := DeepCopy( StabChainAttr(
+    if IsEmpty( I.genlabels )  then
+        H := CopyStabChain( StabChainAttr(
                  KernelOfMultiplicativeGeneralMapping( hom ) ) );
 
     # else begin with the preimage $H_{block[i]}$ of the stabilizer  $I_{i}$,
@@ -917,9 +928,9 @@ PreImageSetStabBlocksHomomorphism := function( hom, I )
         pnt := Enumerator( hom!.externalSet )[ I.orbit[ 1 ] ][ 1 ];
         H := PreImageSetStabBlocksHomomorphism( hom, I.stabilizer );
         ChangeStabChain( H, [ pnt ], false );
-        for l  in I.genlabels  do
-            pre := PreImagesRepresentative( hom, I.labels[ l ] );
-            if not IsBound( H.transversal[ pnt ^ pre ] )  then
+        for gen  in I.generators  do
+            pre := PreImagesRepresentative( hom, gen );
+            if not IsBound( H.translabels[ pnt ^ pre ] )  then
                 AddGeneratorsExtendSchreierTree( H, [ pre ] );
             fi;
         od;

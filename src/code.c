@@ -2600,12 +2600,12 @@ void            CodeIsbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeAssPosobj() . . . . . . . . . . . . . . . . code assignment to a list
-*F  CodeAsssPosobj()  . . . . . . . . . .  code multiple assignment to a list
-*F  CodeAssPosobjLevel(<level>) . . . . . .  code assignment to several lists
-*F  CodeAsssPosobjLevel(<level>)  . code multiple assignment to several lists
+*F  CodeAssPosObj() . . . . . . . . . . . . . . . . code assignment to a list
+*F  CodeAsssPosObj()  . . . . . . . . . .  code multiple assignment to a list
+*F  CodeAssPosObjLevel(<level>) . . . . . .  code assignment to several lists
+*F  CodeAsssPosObjLevel(<level>)  . code multiple assignment to several lists
 */
-void            CodeAssPosobjUniv (
+void            CodeAssPosObjUniv (
     Stat                ass )
 {
     Expr                list;           /* list expression                 */
@@ -2628,29 +2628,29 @@ void            CodeAssPosobjUniv (
     PushStat( ass );
 }
 
-void            CodeAssPosobj ( void )
+void            CodeAssPosObj ( void )
 {
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment                                             */
     ass = NewStat( T_ASS_POSOBJ, 3 * sizeof(Stat) );
 
-    /* let 'CodeAssPosobjUniv' do the rest                                 */
-    CodeAssPosobjUniv( ass );
+    /* let 'CodeAssPosObjUniv' do the rest                                 */
+    CodeAssPosObjUniv( ass );
 }
 
-void            CodeAsssPosobj ( void )
+void            CodeAsssPosObj ( void )
 {
     Stat                ass;            /* assignment, result              */
 
     /* allocate the assignment                                             */
     ass = NewStat( T_ASSS_POSOBJ, 3 * sizeof(Stat) );
 
-    /* let 'CodeAssPosobjUniv' do the rest                                 */
-    CodeAssPosobjUniv( ass );
+    /* let 'CodeAssPosObjUniv' do the rest                                 */
+    CodeAssPosObjUniv( ass );
 }
 
-void            CodeAssPosobjLevel (
+void            CodeAssPosObjLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2659,11 +2659,11 @@ void            CodeAssPosobjLevel (
     ass = NewStat( T_ASS_POSOBJ_LEV, 4 * sizeof(Stat) );
     ADDR_STAT(ass)[3] = (Stat)level;
 
-    /* let 'CodeAssPosobjUniv' do the rest                                 */
-    CodeAssPosobjUniv( ass );
+    /* let 'CodeAssPosObjUniv' do the rest                                 */
+    CodeAssPosObjUniv( ass );
 }
 
-void            CodeAsssPosobjLevel (
+void            CodeAsssPosObjLevel (
     UInt                level )
 {
     Stat                ass;            /* assignment, result              */
@@ -2672,11 +2672,11 @@ void            CodeAsssPosobjLevel (
     ass = NewStat( T_ASSS_POSOBJ_LEV, 4 * sizeof(Stat) );
     ADDR_STAT(ass)[3] = (Stat)level;
 
-    /* let 'CodeAssPosobjUniv' do the rest                                 */
-    CodeAssPosobjUniv( ass );
+    /* let 'CodeAssPosObjUniv' do the rest                                 */
+    CodeAssPosObjUniv( ass );
 }
 
-void            CodeUnbPosobj ( void )
+void            CodeUnbPosObj ( void )
 {
     Expr                list;           /* list expression                 */
     Expr                pos;            /* position expression             */
@@ -2700,12 +2700,12 @@ void            CodeUnbPosobj ( void )
 
 /****************************************************************************
 **
-*F  CodeElmPosobj() . . . . . . . . . . . . . . . .  code selection of a list
-*F  CodeElmsPosobj()  . . . . . . . . . . . code multiple selection of a list
-*F  CodeElmPosobjLevel(<level>) . . . . . . . code selection of several lists
-*F  CodeElmsPosobjLevel(<level>)  .  code multiple selection of several lists
+*F  CodeElmPosObj() . . . . . . . . . . . . . . . .  code selection of a list
+*F  CodeElmsPosObj()  . . . . . . . . . . . code multiple selection of a list
+*F  CodeElmPosObjLevel(<level>) . . . . . . . code selection of several lists
+*F  CodeElmsPosObjLevel(<level>)  .  code multiple selection of several lists
 */
-void            CodeElmPosobjUniv (
+void            CodeElmPosObjUniv (
     Expr                ref )
 {
     Expr                list;           /* list expression                 */
@@ -2723,29 +2723,29 @@ void            CodeElmPosobjUniv (
     PushExpr( ref );
 }
 
-void            CodeElmPosobj ( void )
+void            CodeElmPosObj ( void )
 {
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference                                              */
     ref = NewExpr( T_ELM_POSOBJ, 2 * sizeof(Expr) );
 
-    /* let 'CodeElmPosobjUniv' to the rest                                   */
-    CodeElmPosobjUniv( ref );
+    /* let 'CodeElmPosObjUniv' to the rest                                   */
+    CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmsPosobj ( void )
+void            CodeElmsPosObj ( void )
 {
     Expr                ref;            /* reference, result               */
 
     /* allocate the reference                                              */
     ref = NewExpr( T_ELMS_POSOBJ, 2 * sizeof(Expr) );
 
-    /* let 'CodeElmPosobjUniv' to the rest                                   */
-    CodeElmPosobjUniv( ref );
+    /* let 'CodeElmPosObjUniv' to the rest                                   */
+    CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmPosobjLevel (
+void            CodeElmPosObjLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2754,11 +2754,11 @@ void            CodeElmPosobjLevel (
     ref = NewExpr( T_ELM_POSOBJ_LEV, 3 * sizeof(Expr) );
     ADDR_EXPR(ref)[2] = (Stat)level;
 
-    /* let 'CodeElmPosobjUniv' do the rest                                 */
-    CodeElmPosobjUniv( ref );
+    /* let 'CodeElmPosObjUniv' do the rest                                 */
+    CodeElmPosObjUniv( ref );
 }
 
-void            CodeElmsPosobjLevel (
+void            CodeElmsPosObjLevel (
     UInt                level )
 {
     Expr                ref;            /* reference, result               */
@@ -2767,11 +2767,11 @@ void            CodeElmsPosobjLevel (
     ref = NewExpr( T_ELMS_POSOBJ_LEV, 3 * sizeof(Expr) );
     ADDR_EXPR(ref)[2] = (Stat)level;
 
-    /* let 'CodeElmPosobjUniv' do the rest                                 */
-    CodeElmPosobjUniv( ref );
+    /* let 'CodeElmPosObjUniv' do the rest                                 */
+    CodeElmPosObjUniv( ref );
 }
 
-void            CodeIsbPosobj ( void )
+void            CodeIsbPosObj ( void )
 {
     Expr                ref;            /* isbound, result                 */
     Expr                list;           /* list expression                 */
@@ -2795,10 +2795,10 @@ void            CodeIsbPosobj ( void )
 
 /****************************************************************************
 **
-*F  CodeAssComobjName(<rnam>) . . . . . . . . . . code assignment to a record
-*F  CodeAssComobjExpr() . . . . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjName(<rnam>) . . . . . . . . . . code assignment to a record
+*F  CodeAssComObjExpr() . . . . . . . . . . . . . code assignment to a record
 */
-void            CodeAssComobjName (
+void            CodeAssComObjName (
     UInt                rnam )
 {
     Stat                stat;           /* assignment, result              */
@@ -2823,7 +2823,7 @@ void            CodeAssComobjName (
     PushStat( stat );
 }
 
-void            CodeAssComobjExpr ( void )
+void            CodeAssComObjExpr ( void )
 {
     Stat                stat;           /* assignment, result              */
     Expr                rec;            /* record expression               */
@@ -2849,7 +2849,7 @@ void            CodeAssComobjExpr ( void )
     PushStat( stat );
 }
 
-void            CodeUnbComobjName (
+void            CodeUnbComObjName (
     UInt                rnam )
 {
     Stat                stat;           /* unbind, result                  */
@@ -2869,7 +2869,7 @@ void            CodeUnbComobjName (
     PushStat( stat );
 }
 
-void            CodeUnbComobjExpr ( void )
+void            CodeUnbComObjExpr ( void )
 {
     Stat                stat;           /* unbind, result                  */
     Expr                rec;            /* record expression               */
@@ -2893,10 +2893,10 @@ void            CodeUnbComobjExpr ( void )
 
 /****************************************************************************
 **
-*F  CodeElmComobjName(<rnam>) . . . . . . . . . .  code selection of a record
-*F  CodeElmComobjExpr() . . . . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjName(<rnam>) . . . . . . . . . .  code selection of a record
+*F  CodeElmComObjExpr() . . . . . . . . . . . . .  code selection of a record
 */
-void            CodeElmComobjName (
+void            CodeElmComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* reference, result               */
@@ -2916,7 +2916,7 @@ void            CodeElmComobjName (
     PushExpr( expr );
 }
 
-void            CodeElmComobjExpr ( void )
+void            CodeElmComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */
@@ -2937,7 +2937,7 @@ void            CodeElmComobjExpr ( void )
     PushExpr( expr );
 }
 
-void            CodeIsbComobjName (
+void            CodeIsbComObjName (
     UInt                rnam )
 {
     Expr                expr;           /* isbound, result                 */
@@ -2957,7 +2957,7 @@ void            CodeIsbComobjName (
     PushExpr( expr );
 }
 
-void            CodeIsbComobjExpr ( void )
+void            CodeIsbComObjExpr ( void )
 {
     Expr                expr;           /* reference, result               */
     Expr                rnam;           /* name expression                 */

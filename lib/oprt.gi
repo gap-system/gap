@@ -509,7 +509,11 @@ end );
 InstallMethod( \in, IsElmsColls, [ IsObject,
         IsExternalOrbit and HasEnumerator ], 0,
     function( pnt, xorb )
-    return pnt in Enumerator( xorb );
+    local   enum;
+    
+    enum := Enumerator( xorb );
+    if IsConstantTimeAccessListRep( enum )  then  return pnt in enum;
+                                            else  TryNextMethod();     fi;
 end );
 
 InstallMethod( \in, IsElmsColls, [ IsObject,
@@ -568,43 +572,54 @@ end;
 
 InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSet ], 0,
     function( xset )
-    local   G,  D,  opr,  fam,  kind,  hom,  i;
+    local   G,  D,  opr,  fam,  filter,  hom,  i;
     
     G := ActingDomain( xset );
+    D := HomeEnumerator( xset );
+    opr := FunctionOperation( xset );
     fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
                                   PermutationsFamily );
+    if IsExternalSubset( xset )  then
+        filter := IsOperationHomomorphismSubset;
+    else
+        filter := IsOperationHomomorphism;
+    fi;
     hom := rec( externalSet := xset );
     if IsExternalSetByOperatorsRep( xset )  then
-        kind := NewKind( fam, IsOperationHomomorphismByOperators );
+        filter := filter and IsOperationHomomorphismByOperators;
+    elif     IsDomainEnumerator( D )
+         and IsFreeLeftModule( UnderlyingCollection( D ) )
+         and IsFullRowModule( UnderlyingCollection( D ) )
+         and IsLeftActedOnByDivisionRing( UnderlyingCollection( D ) )
+         and opr in [ OnPoints, OnRight ]  then
+        filter := filter and IsGeneralLinearOperationHomomorphism;
     else
-        D := Enumerator( xset );
-        opr := FunctionOperation( xset );
+        if IsExternalSubset( xset )  then
+            D := Enumerator( xset );
+        fi;
         if       IsPermGroup( G )
              and IsList( D ) and IsCyclotomicsCollection( D )
              and opr = OnPoints  then
-            kind := NewKind( fam, IsConstituentHomomorphism );
+            filter := IsConstituentHomomorphism;
             hom.conperm := MappingPermListList( D, [ 1 .. Length( D ) ] );
         elif     IsPermGroup( G )
              and IsList( D )
              and ForAll( D, IsSSortedList )
              and Sum( D, Length ) = Length( Union( D ) )
              and opr = OnSets  then
-            kind := NewKind( fam, IsBlocksHomomorphism );
+            filter := IsBlocksHomomorphism;
             hom.reps := [  ];
             for i  in [ 1 .. Length( D ) ]  do
                 hom.reps{ D[ i ] } := i + 0 * D[ i ];
             od;
-        elif IsPermGroup( G )  or  IsPcGroup( G )  then
-            kind := NewKind( fam, IsOperationHomomorphism );
-        else
-            kind := NewKind( fam, IsOperationHomomorphismDirectly );
+        elif not ( IsPermGroup( G )  or  IsPcGroup( G ) )  then
+            filter := filter and IsOperationHomomorphismDirectly;
         fi;
     fi;
-    Objectify( kind, hom );
     if HasBase( xset )  then
-        SetFilterObj( hom, IsOperationHomomorphismByBase );
+        filter := filter and IsOperationHomomorphismByBase;
     fi;
-    return hom;
+    return Objectify( NewKind( fam, filter ), hom );
 end );
 
 #############################################################################
@@ -667,29 +682,6 @@ InstallMethod( AsGroupGeneralMappingByImages, true,
     imgs := List( oprs, o -> Permutation( o, D, opr ) );
     return GroupHomomorphismByImages( G,
                    SymmetricGroup( Length( D ) ), gens, imgs );
-end );
-
-#############################################################################
-##
-#M  OperationHomomorphism( <xset> ) . . . .  operation homomorphism on subset
-##
-InstallMethod( OperationHomomorphismAttr, true, [ IsExternalSubset ], 0,
-    function( xset )
-    local   G,  fam,  filter;
-    
-    G := ActingDomain( xset );
-    fam := GeneralMappingsFamily( ElementsFamily( FamilyObj( G ) ),
-                                  PermutationsFamily );
-    filter := IsOperationHomomorphismSubset;
-    if IsExternalSetByOperatorsRep( xset )  then
-        filter := filter and IsOperationHomomorphismByOperators;
-    elif not ( IsPermGroup( G )  or  IsPcGroup( G ) )  then
-        filter := filter and IsOperationHomomorphismDirectly;
-    fi;
-    if HasBase( xset )  then
-        filter := filter and IsOperationHomomorphismByBase;
-    fi;
-    return Objectify( NewKind( fam, filter ), rec( externalSet := xset ) );
 end );
 
 #############################################################################
@@ -2091,6 +2083,26 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     return RestrictedPerm( Permutation( elm, HomeEnumerator( xset ),
         FunctionOperation( xset ) ),
         MovedPoints( ImagesSource( AsGroupGeneralMappingByImages( hom ) ) ) );
+end );
+
+#############################################################################
+##
+#M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . . .  build matrix
+##
+InstallMethod( PreImagesRepresentative, FamRangeEqFamElm,
+        [ IsGeneralLinearOperationHomomorphism,
+          IsMultiplicativeElementWithInverse ], 0,
+    function( hom, elm )
+    local   V,  base,  mat,  b;
+
+    V := HomeEnumerator( hom!.externalSet );
+    base := One( Source( hom ) );
+    mat := [  ];
+    for b  in base  do
+        Add( mat, V[ PositionCanonical( V, b ) ^ elm ] );
+    od;
+    if mat in Source( hom )  then  return mat;
+                             else  return fail;  fi;
 end );
 
 #############################################################################

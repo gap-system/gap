@@ -309,6 +309,13 @@ extern Int SyCheckForCompFiles;
 
 /****************************************************************************
 **
+*V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
+*/
+extern int SyUseModule;
+
+
+/****************************************************************************
+**
 *V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
 */
 extern Int SyCompilePlease;

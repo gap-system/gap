@@ -600,6 +600,13 @@ Int SyCheckForCompFiles = 1;
 
 /****************************************************************************
 **
+*V  SyUseModule . . . . . check for dynamic/static modules in 'READ_GAP_ROOT'
+*/
+int SyUseModule = 1;
+
+
+/****************************************************************************
+**
 *V  SyCompilePlease . . . . . . . . . . . . . . .  tell GAP to compile a file
 */
 Int SyCompilePlease = 0;
@@ -4085,6 +4092,9 @@ Int SyFindOrLinkGapRootFile (
 	    result[0] = '\0';
 	}
     }
+    if ( ! SyUseModule ) {
+	return ( found_gap ? 3 : 0 );
+    }
 
     /* try to find any statically link module                              */
     module[0] = '\0';
@@ -6265,6 +6275,12 @@ void            InitSystem (
 	/* '-D', debug loading of files                                    */
         case 'D':
             SyDebugLoading = ! SyDebugLoading;
+            break;
+
+
+	/* '-M', no dynamic/static modules                                 */
+        case 'M':
+            SyUseModule = ! SyUseModule;
             break;
 
 

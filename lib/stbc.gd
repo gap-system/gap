@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.24  1997/03/12 13:19:34  htheisse
+#H  replaced `DeepCopy' by `CopyStabChain' to save labels
+#H
 #H  Revision 4.23  1997/03/04 12:29:16  htheisse
 #H  introduced `ChooseNextBasePoint', debugged soluble stab chains
 #H
@@ -98,6 +101,7 @@ IsPermOnEnumerator := NewCategory( "IsPermOnEnumerator",
 PermOnEnumerator := NewOperation( "PermOnEnumerator",
     [ IsEnumerator, IsObject ] );
 
+CopyStabChain := NewOperationArgs( "CopyStabChain" );
 DefaultStabChainOptions := NewOperationArgs( "DefaultStabChainOptions" );
 CopyOptionsDefaults := NewOperationArgs( "CopyOptionsDefaults" );
 StabChainBaseStrongGenerators := NewOperationArgs( "StabChainBaseStrongGenerators" );

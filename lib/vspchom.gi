@@ -1158,6 +1158,7 @@ InstallMethod( NaturalHomomorphismBySubspace,
     nathom:= LeftModuleHomomorphismByMatrix( B, Bimgs, canbas );
 #T take a special representation for nat. hom.s,
 #T (just compute coefficients, and then choose a subset ...)
+    SetIsSurjective( nathom, true );
 
     # Enter the preimages info.
     nathom!.basisimage:= canbas;
@@ -1285,6 +1286,7 @@ InstallMethod( NaturalHomomorphismByIdeal,
 #T take a special representation for nat. hom.s,
 #T (just compute coefficients, and then choose a subset ...)
     SetIsAlgebraHomomorphism( nathom, true );
+    SetIsSurjective( nathom, true );
 
     # Enter the preimages info.
     nathom!.basisimage:= canbas;

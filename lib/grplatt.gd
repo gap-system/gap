@@ -34,6 +34,11 @@ Zuppos := NewAttribute("Zuppos",IsGroup);
 SetZuppos := Setter(Zuppos);
 HasZuppos := Tester(Zuppos);
 
+#############################################################################
+##
+#F  LatticeByCyclicExtension
+##
+LatticeByCyclicExtension := NewOperationArgs("LatticeByCyclicExtension");
 
 #############################################################################
 ##
@@ -48,6 +53,13 @@ MaximalSubgroupsLattice :=
 ##
 MinimalSupergroupsLattice :=
   NewAttribute("MinimalSupergroupsLattice",IsLatticeSubgroupsRep);
+
+#############################################################################
+##
+#A  NormalSubgroups
+##
+NormalSubgroups := NewAttribute( "NormalSubgroups", IsGroup );
+NormalSubgroupsAbove := NewOperationArgs( "NormalSubgroupsAbove" );
 
 #############################################################################
 ##

@@ -508,8 +508,14 @@ InstallMethod( IsPositionsList,
 ##
 InstallMethod( Position,
     true, [ IsList, IsObject, IsInt ], 0,
-    POS_LIST_DEFAULT );
-
+    function( list, obj, start )
+    local   pos;
+    
+    pos := POS_LIST_DEFAULT( list, obj, start );
+    if pos = 0  then  return fail;
+                else  return pos;   fi;
+end );
+            
 InstallMethod( Position,
     function( F1, F2, F3 )
         return HasElementsFamily(F1)
@@ -526,12 +532,13 @@ InstallMethod( Position,
 InstallMethod( Position,
     true, [ IsSSortedList, IsObject, IsInt ], 0,
     function ( list, obj, start )
-    if start = 0 then
-        return POSITION_SORTED_LIST( list, obj );
-    else
-        return POS_LIST_DEFAULT( list, obj, start );
-    fi;
-    end );
+    local   pos;
+    
+    if start = 0 then  pos := POSITION_SORTED_LIST( list, obj );
+                 else  pos := POS_LIST_DEFAULT( list, obj, start );  fi;
+    if pos = 0  then  return fail;
+                else  return pos;   fi;
+end );
 
 InstallMethod( Position, true,
     [ IsDuplicateFreeList, IsObject, IsPosRat and IsInt ], 0,

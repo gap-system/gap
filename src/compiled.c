@@ -23,6 +23,7 @@
 #include "code.h"
 #include "vars.h"
 #include "gap.h"
+#include "permutat.h"
 
 
 /* checks, should go into 'gap.c'  * * * * * * * * * * * * * * * * * * * * */
@@ -134,6 +135,34 @@ void            AsssListCheck (
     ASSS_LIST( list, poss, rhss );
 }
 
+void AsssPosObjCheck (
+    Obj                 list,
+    Obj                 poss,
+    Obj                 rhss )
+{
+    if ( ! IS_POSS_LIST(poss) ) {
+        ErrorQuit(
+    "List Assignment: <positions> must be a dense list of positive integers",
+            0L, 0L );
+    }
+    if ( ! IS_DENSE_LIST(rhss) ) {
+        ErrorQuit(
+            "List Assignment: <rhss> must be a dense list",
+            0L, 0L );
+    }
+    if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
+        ErrorQuit(
+     "List Assignment: <rhss> must have the same length as <positions> (%d)",
+            (Int)LEN_LIST(poss), 0L );
+    }
+    if ( TYPE_OBJ(list) == T_POSOBJ ) {
+        ErrorQuit( "sorry: <posobj>!{<poss>} not yet implemented", 0L, 0L );
+    }
+    else {
+        ASSS_LIST( list, poss, rhss );
+    }
+}
+
 void            AsssListLevelCheck (
     Obj                 lists,
     Obj                 poss,
@@ -242,6 +271,109 @@ Obj             Range3Check (
     }
     return range;
 }
+
+
+Obj Array2Perm (
+    Obj			array )
+{
+    Obj                 perm;           /* permutation, result             */
+    UInt4 *             ptr4;           /* pointer into perm               */
+    UInt2 *             ptr2;           /* pointer into perm               */
+    Obj                 val;            /* one entry as value              */
+    UInt                c, p, l;        /* entries in permutation          */
+    UInt                m;              /* maximal entry in permutation    */
+    Obj                 cycle;          /* one cycle of permutation        */
+    UInt                i, j, k;        /* loop variable                   */
+
+    /* special case for identity permutation                               */
+    if ( LEN_LIST(array) == 0 ) {
+        return IdentityPerm;
+    }
+
+    /* allocate the new permutation                                        */
+    m = 0;
+    perm = NEW_PERM4( 0 );
+
+    /* loop over the cycles                                                */
+    for ( i = 1; i <= LEN_LIST(array); i++ ) {
+        cycle = ELM_LIST( array, i );
+	while ( ! IS_LIST(cycle) ) {
+	    cycle = ErrorReturnObj(
+	        "Arra2Perm: <cycle> must be a list (not a %s)",
+		(Int)(InfoBags[TYPE_OBJ(cycle)].name), 0L,
+		"you can return a list" );
+	}
+
+        /* loop over the entries of the cycle                              */
+        c = p = l = 0;
+        for ( j = LEN_LIST(cycle); 1 <= j; j-- ) {
+
+            /* get and check current entry for the cycle                   */
+            val = ELM_LIST( cycle, j );
+            while ( ! IS_INTOBJ(val) || INT_INTOBJ(val) <= 0 ) {
+                val = ErrorReturnObj(
+              "Permutation: <expr> must be a positive integer (not to a %s)",
+                    (Int)(InfoBags[TYPE_OBJ(val)].name), 0L,
+                    "you can return a positive integer" );
+            }
+            c = INT_INTOBJ(val);
+
+            /* if necessary resize the permutation                         */
+            if ( SIZE_OBJ(perm)/sizeof(UInt4) < c ) {
+                ResizeBag( perm, (c + 1023) / 1024 * 1024 * sizeof(UInt4) );
+                ptr4 = ADDR_PERM4( perm );
+                for ( k = m+1; k <= SIZE_OBJ(perm)/sizeof(UInt4); k++ ) {
+                    ptr4[k-1] = k-1;
+                }
+            }
+            if ( m < c ) {
+                m = c;
+            }
+
+            /* check that the cycles are disjoint                          */
+            ptr4 = ADDR_PERM4( perm );
+            if ( (p != 0 && p == c) || (ptr4[c-1] != c-1) ) {
+                return ErrorReturnObj(
+                    "Permutation: cycles must be disjoint",
+                    0L, 0L,
+                    "you can return a permutation" );
+            }
+
+            /* enter the previous entry at current location                */
+            ptr4 = ADDR_PERM4( perm );
+            if ( p != 0 ) { ptr4[c-1] = p-1; }
+            else          { l = c;          }
+
+            /* remember current entry for next round                       */
+            p = c;
+        }
+
+        /* enter first (last popped) entry at last (first popped) location */
+        ptr4 = ADDR_PERM4( perm );
+        ptr4[l-1] = p-1;
+
+    }
+
+    /* if possible represent the permutation with short entries            */
+    if ( m <= 65536UL ) {
+        ptr2 = ADDR_PERM2( perm );
+        ptr4 = ADDR_PERM4( perm );
+        for ( k = 1; k <= m; k++ ) {
+            ptr2[k-1] = ptr4[k-1];
+        };
+        RetypeBag( perm, T_PERM2 );
+        ResizeBag( perm, m * sizeof(UInt2) );
+    }
+
+    /* otherwise just shorten the permutation                              */
+    else {
+        ResizeBag( perm, m * sizeof(UInt4) );
+    }
+
+    /* return the permutation                                              */
+    return perm;
+}
+
 
 
 /****************************************************************************

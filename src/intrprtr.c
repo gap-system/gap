@@ -3078,12 +3078,12 @@ void            IntrIsbRecExpr ( void )
 
 /****************************************************************************
 **
-*F  IntrAssPosobj() . . . . . . . . . . . . .  interpret assignment to a list
-*F  IntrAsssPosobj()  . . . . . . . . interpret multiple assignment to a list
-*F  IntrAssPosobjLevel(<level>) . . . . interpret assignment to several lists
-*F  IntrAsssPosobjLevel(<level>)  . intr multiple assignment to several lists
+*F  IntrAssPosObj() . . . . . . . . . . . . .  interpret assignment to a list
+*F  IntrAsssPosObj()  . . . . . . . . interpret multiple assignment to a list
+*F  IntrAssPosObjLevel(<level>) . . . . interpret assignment to several lists
+*F  IntrAsssPosObjLevel(<level>)  . intr multiple assignment to several lists
 */
-void            IntrAssPosobj ( void )
+void            IntrAssPosObj ( void )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
@@ -3093,7 +3093,7 @@ void            IntrAssPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeAssPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the right hand side                                             */
@@ -3103,7 +3103,7 @@ void            IntrAssPosobj ( void )
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-         "Posobj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
@@ -3127,7 +3127,7 @@ void            IntrAssPosobj ( void )
     PushObj( rhs );
 }
 
-void            IntrAsssPosobj ( void )
+void            IntrAsssPosObj ( void )
 {
     Obj                 list;           /* list                            */
     Obj                 poss;           /* positions                       */
@@ -3136,14 +3136,14 @@ void            IntrAsssPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeAsssPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the right hand sides                                            */
     rhss = PopObj();
     if ( ! IS_DENSE_LIST( rhss ) ) {
         ErrorQuit(
-            "Posobj Assignment: <rhss> must be a dense list",
+            "PosObj Assignment: <rhss> must be a dense list",
             0L, 0L );
     }
 
@@ -3151,12 +3151,12 @@ void            IntrAsssPosobj ( void )
     poss = PopObj();
     if ( ! IS_POSS_LIST( poss ) ) {
         ErrorQuit(
-    "Posobj Assignment: <positions> must be a dense list of positive integers",
+    "PosObj Assignment: <positions> must be a dense list of positive integers",
                0L, 0L );
     }
     if ( LEN_LIST( poss ) != LEN_LIST( rhss ) ) {
         ErrorQuit(
-     "Posobj Assignment: <rhss> must have the same length as <positions> (%d)",
+     "PosObj Assignment: <rhss> must have the same length as <positions> (%d)",
             (Int)LEN_LIST(poss), 0L );
     }
 
@@ -3175,7 +3175,7 @@ void            IntrAsssPosobj ( void )
     PushObj( rhss );
 }
 
-void            IntrAssPosobjLevel (
+void            IntrAssPosObjLevel (
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -3186,23 +3186,23 @@ void            IntrAssPosobjLevel (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssPosobjLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeAssPosObjLevel( level ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
-    /* get right hand sides (checking is done by 'AssPosobjLevel')           */
+    /* get right hand sides (checking is done by 'AssPosObjLevel')           */
     rhss = PopObj();
 
     /* get and check the position                                          */
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-         "Posobj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AssPosobjLevel')     */
+    /* checking it is nested <level>+1 deep is done by 'AssPosObjLevel')     */
     lists = PopObj();
 
     /* assign the right hand sides to the elements of several lists        */
@@ -3214,7 +3214,7 @@ void            IntrAssPosobjLevel (
     PushObj( rhss );
 }
 
-void            IntrAsssPosobjLevel (
+void            IntrAsssPosObjLevel (
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -3224,22 +3224,22 @@ void            IntrAsssPosobjLevel (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAsssPosobjLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeAsssPosObjLevel( level ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
-    /* get right hand sides (checking is done by 'AsssPosobjLevel')          */
+    /* get right hand sides (checking is done by 'AsssPosObjLevel')          */
     rhss = PopObj();
 
     /* get and check the positions                                         */
     poss = PopObj();
     if ( ! IS_POSS_LIST( poss ) ) {
         ErrorQuit(
-    "Posobj Assignment: <positions> must be a dense list of positive integers",
+    "PosObj Assignment: <positions> must be a dense list of positive integers",
             0L, 0L );
     }
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'AsssPosobjLevel')    */
+    /* checking it is nested <level>+1 deep is done by 'AsssPosObjLevel')    */
     lists = PopObj();
 
     /* assign the right hand sides to several elements of several lists    */
@@ -3251,7 +3251,7 @@ void            IntrAsssPosobjLevel (
     PushObj( rhss );
 }
 
-void            IntrUnbPosobj ( void )
+void            IntrUnbPosObj ( void )
 {
     Obj                 list;           /* list                            */
     Obj                 pos;            /* position                        */
@@ -3260,14 +3260,14 @@ void            IntrUnbPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeUnbPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the position                                          */
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-         "Posobj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ(pos);
@@ -3292,12 +3292,12 @@ void            IntrUnbPosobj ( void )
 
 /****************************************************************************
 **
-*F  IntrElmPosobj() . . . . . . . . . . . . . . interpret selection of a list
-*F  IntrElmsPosobj()  . . . . . . . .  interpret multiple selection of a list
-*F  IntrElmPosobjLevel(<level>) . . . .  interpret selection of several lists
-*F  IntrElmsPosobjLevel(<level>)  .  intr multiple selection of several lists
+*F  IntrElmPosObj() . . . . . . . . . . . . . . interpret selection of a list
+*F  IntrElmsPosObj()  . . . . . . . .  interpret multiple selection of a list
+*F  IntrElmPosObjLevel(<level>) . . . .  interpret selection of several lists
+*F  IntrElmsPosObjLevel(<level>)  .  intr multiple selection of several lists
 */
-void            IntrElmPosobj ( void )
+void            IntrElmPosObj ( void )
 {
     Obj                 elm;            /* element, result                 */
     Obj                 list;           /* list, left operand              */
@@ -3307,14 +3307,14 @@ void            IntrElmPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeElmPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the position                                          */
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-            "Posobj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
@@ -3326,13 +3326,13 @@ void            IntrElmPosobj ( void )
     if ( TYPE_OBJ(list) == T_POSOBJ ) {
         if ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ErrorQuit(
-                "Posobj Element: <posobj>![%d] must have an assigned value",
+                "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
         elm = ELM_PLIST( list, p );
         if ( elm == 0 ) {
             ErrorQuit(
-                "Posobj Element: <posobj>![%d] must have an assigned value",
+                "PosObj Element: <posobj>![%d] must have an assigned value",
                 (Int)p, 0L );
         }
     }
@@ -3344,7 +3344,7 @@ void            IntrElmPosobj ( void )
     PushObj( elm );
 }
 
-void            IntrElmsPosobj ( void )
+void            IntrElmsPosObj ( void )
 {
     Obj                 elms;           /* elements, result                */
     Obj                 list;           /* list, left operand              */
@@ -3353,14 +3353,14 @@ void            IntrElmsPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeElmsPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the positions                                         */
     poss = PopObj();
     if ( ! IS_POSS_LIST( poss ) ) {
         ErrorQuit(
-      "Posobj Elements: <positions> must be a dense list of positive integers",
+      "PosObj Elements: <positions> must be a dense list of positive integers",
             0L, 0L );
     }
 
@@ -3380,7 +3380,7 @@ void            IntrElmsPosobj ( void )
     PushObj( elms );
 }
 
-void            IntrElmPosobjLevel (
+void            IntrElmPosObjLevel (
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -3390,20 +3390,20 @@ void            IntrElmPosobjLevel (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmPosobjLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeElmPosObjLevel( level ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the position                                          */
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-            "Posobj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmPosobjLevel')     */
+    /* checking it is nested <level>+1 deep is done by 'ElmPosObjLevel')     */
     lists = PopObj();
 
     /* select the elements from several lists (store them in <lists>)      */
@@ -3415,7 +3415,7 @@ void            IntrElmPosobjLevel (
     PushObj( lists );
 }
 
-void            IntrElmsPosobjLevel (
+void            IntrElmsPosObjLevel (
     UInt                level )
 {
     Obj                 lists;          /* lists, left operand             */
@@ -3424,19 +3424,19 @@ void            IntrElmsPosobjLevel (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmsPosobjLevel( level ); return; }
+    if ( IntrCoding    > 0 ) { CodeElmsPosObjLevel( level ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the positions                                         */
     poss = PopObj();
     if ( ! IS_POSS_LIST( poss ) ) {
         ErrorQuit(
-      "Posobj Elements: <positions> must be a dense list of positive integers",
+      "PosObj Elements: <positions> must be a dense list of positive integers",
             0L, 0L );
     }
 
     /* get lists (if this works, then <lists> is nested <level> deep,      */
-    /* checking it is nested <level>+1 deep is done by 'ElmsPosobjLevel')    */
+    /* checking it is nested <level>+1 deep is done by 'ElmsPosObjLevel')    */
     lists = PopObj();
 
     /* select several elements from several lists (store them in <lists>)  */
@@ -3448,7 +3448,7 @@ void            IntrElmsPosobjLevel (
     PushObj( lists );
 }
 
-void            IntrIsbPosobj ( void )
+void            IntrIsbPosObj ( void )
 {
     Obj                 isb;            /* isbound, result                 */
     Obj                 list;           /* list, left operand              */
@@ -3458,14 +3458,14 @@ void            IntrIsbPosobj ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbPosobj(); return; }
+    if ( IntrCoding    > 0 ) { CodeIsbPosObj(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get and check the position                                          */
     pos = PopObj();
     if ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         ErrorQuit(
-            "Posobj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L );
     }
     p = INT_INTOBJ( pos );
@@ -3489,10 +3489,10 @@ void            IntrIsbPosobj ( void )
 
 /****************************************************************************
 **
-*F  IntrAssComobjName(<rnam>) . . . . . . .  interpret assignment to a record
-*F  IntrAssComobjExpr() . . . . . . . . . .  interpret assignment to a record
+*F  IntrAssComObjName(<rnam>) . . . . . . .  interpret assignment to a record
+*F  IntrAssComObjExpr() . . . . . . . . . .  interpret assignment to a record
 */
-void            IntrAssComobjName (
+void            IntrAssComObjName (
     UInt                rnam )
 {
     Obj                 record;         /* record, left operand            */
@@ -3501,7 +3501,7 @@ void            IntrAssComobjName (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssComobjName( rnam ); return; }
+    if ( IntrCoding    > 0 ) { CodeAssComObjName( rnam ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the right hand side                                             */
@@ -3522,7 +3522,7 @@ void            IntrAssComobjName (
     PushObj( rhs );
 }
 
-void            IntrAssComobjExpr ( void )
+void            IntrAssComObjExpr ( void )
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -3531,7 +3531,7 @@ void            IntrAssComobjExpr ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeAssComobjExpr(); return; }
+    if ( IntrCoding    > 0 ) { CodeAssComObjExpr(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the right hand side                                             */
@@ -3555,7 +3555,7 @@ void            IntrAssComobjExpr ( void )
     PushObj( rhs );
 }
 
-void            IntrUnbComobjName (
+void            IntrUnbComObjName (
     UInt                rnam )
 {
     Obj                 record;         /* record, left operand            */
@@ -3563,7 +3563,7 @@ void            IntrUnbComobjName (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbComobjName( rnam ); return; }
+    if ( IntrCoding    > 0 ) { CodeUnbComObjName( rnam ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the record (checking is done by 'UNB_REC')                      */
@@ -3581,7 +3581,7 @@ void            IntrUnbComobjName (
     PushVoidObj();
 }
 
-void            IntrUnbComobjExpr ( void )
+void            IntrUnbComObjExpr ( void )
 {
     Obj                 record;         /* record, left operand            */
     UInt                rnam;           /* name, left operand              */
@@ -3589,7 +3589,7 @@ void            IntrUnbComobjExpr ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeUnbComobjExpr(); return; }
+    if ( IntrCoding    > 0 ) { CodeUnbComObjExpr(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the name and convert it to a record name                        */
@@ -3613,10 +3613,10 @@ void            IntrUnbComobjExpr ( void )
 
 /****************************************************************************
 **
-*F  IntrElmComobjName(<rnam>) . . . . . . . . interpret selection of a record
-*F  IntrElmComobjExpr() . . . . . . . . . . . interpret selection of a record
+*F  IntrElmComObjName(<rnam>) . . . . . . . . interpret selection of a record
+*F  IntrElmComObjExpr() . . . . . . . . . . . interpret selection of a record
 */
-void            IntrElmComobjName (
+void            IntrElmComObjName (
     UInt                rnam )
 {
     Obj                 elm;            /* element, result                 */
@@ -3625,7 +3625,7 @@ void            IntrElmComobjName (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmComobjName( rnam ); return; }
+    if ( IntrCoding    > 0 ) { CodeElmComObjName( rnam ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the record (checking is done by 'ELM_REC')                      */
@@ -3643,7 +3643,7 @@ void            IntrElmComobjName (
     PushObj( elm );
 }
 
-void            IntrElmComobjExpr ( void )
+void            IntrElmComObjExpr ( void )
 {
     Obj                 elm;            /* element, result                 */
     Obj                 record;         /* the record, left operand        */
@@ -3652,7 +3652,7 @@ void            IntrElmComobjExpr ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeElmComobjExpr(); return; }
+    if ( IntrCoding    > 0 ) { CodeElmComObjExpr(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the name and convert it to a record name                        */
@@ -3673,7 +3673,7 @@ void            IntrElmComobjExpr ( void )
     PushObj( elm );
 }
 
-void            IntrIsbComobjName (
+void            IntrIsbComObjName (
     UInt                rnam )
 {
     Obj                 isb;            /* element, result                 */
@@ -3682,7 +3682,7 @@ void            IntrIsbComobjName (
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbComobjName( rnam ); return; }
+    if ( IntrCoding    > 0 ) { CodeIsbComObjName( rnam ); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the record (checking is done by 'ISB_REC')                      */
@@ -3700,7 +3700,7 @@ void            IntrIsbComobjName (
     PushObj( isb );
 }
 
-void            IntrIsbComobjExpr ( void )
+void            IntrIsbComObjExpr ( void )
 {
     Obj                 isb;            /* element, result                 */
     Obj                 record;         /* the record, left operand        */
@@ -3709,7 +3709,7 @@ void            IntrIsbComobjExpr ( void )
     /* ignore or code                                                      */
     if ( IntrReturning > 0 ) { return; }
     if ( IntrIgnoring  > 0 ) { return; }
-    if ( IntrCoding    > 0 ) { CodeIsbComobjExpr(); return; }
+    if ( IntrCoding    > 0 ) { CodeIsbComObjExpr(); return; }
     if ( CompNowFuncs != 0 ) { return; }
 
     /* get the name and convert it to a record name                        */
@@ -3938,8 +3938,10 @@ void             IntrAssertEnd3Args ( void )
 **
 **  'InitIntrprtr' initializes the interpreter.
 */
-void            InitIntrprtr ( void )
+void InitIntrprtr ( void )
 {
+    UInt	    lev;
+
     InitGlobalBag( &IntrResult );
     InitGlobalBag( &IntrState  );
     InitGlobalBag( &StackObj   );
@@ -3949,7 +3951,9 @@ void            InitIntrprtr ( void )
     ImportFuncFromLibrary( "InfoDoPrint",  &InfoDoPrint  );
 
     /* The Assertion level is also controlled at GAP level */
-    ImportGVarFromLibrary( "CurrentAssertionLevel", &CurrentAssertionLevel );
+    lev = GVarName("CurrentAssertionLevel");
+    InitCopyGVar( lev, &CurrentAssertionLevel );
+    AssGVar( lev, INTOBJ_INT(0) );
 }
 
 

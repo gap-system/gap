@@ -1295,6 +1295,56 @@ InstallMethod( ScalarProduct,
 
 #############################################################################
 ##
+#M  ScalarProduct( <tbl>, <chi>, <psi> ) .  scalar product of class functions
+##
+Is2Identical3 := function( F1, F2, F3 ) return IsIdentical( F2, F3 ); end;
+
+InstallOtherMethod( ScalarProduct,
+    "method for ordinary table and two class functions",
+    Is2Identical3,
+    [ IsOrdinaryTable, IsClassFunction, IsClassFunction ], 0,
+    function( tbl, x1, x2 )
+
+     local i,       # loop variable
+           scpr,    # scalar product, result
+           weight;  # lengths of conjugacy classes
+
+     weight:= SizesConjugacyClasses( tbl );
+     x1:= ValuesOfClassFunction( x1 );
+     x2:= ValuesOfClassFunction( x2 );
+     scpr:= 0;
+     for i in [ 1 .. Length( x1 ) ] do
+       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+     od;
+     return scpr / Size( tbl );
+     end );
+
+
+#############################################################################
+##
+#M  ScalarProduct( <tbl>, <chivals>, <psivals> )
+##
+InstallOtherMethod( ScalarProduct,
+    "method for ordinary table and two values lists",
+    true,
+    [ IsOrdinaryTable, IsHomogeneousList, IsHomogeneousList ], 0,
+    function( tbl, x1, x2 )
+
+     local i,       # loop variable
+           scpr,    # scalar product, result
+           weight;  # lengths of conjugacy classes
+
+     weight:= SizesConjugacyClasses( tbl );
+     scpr:= 0;
+     for i in [ 1 .. Length( x1 ) ] do
+       scpr:= scpr + x1[i] * GaloisCyc( x2[i], -1 ) * weight[i];
+     od;
+     return scpr / Size( tbl );
+     end );
+
+
+#############################################################################
+##
 #M  RestrictedClassFunction( <chi>, <H> )
 #M  RestrictedClassFunction( <chi>, <tbl> )
 ##

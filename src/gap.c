@@ -1603,9 +1603,16 @@ Int READ_GAP_ROOT ( Char * filename )
     StructCompInitInfo* info;
     Obj                 func;
     UInt4               crc;
+    Char *              file;
 
     /* try to find the file                                                */
-    crc = SyGAPCRC(filename);
+    file = SyFindGapRootFile(filename);
+    if ( file ) {
+	crc = SyGAPCRC(file);
+    }
+    else {
+	crc = 0;
+    }
     res = SyFindOrLinkGapRootFile( filename, crc, result, 256 );
 
     /* not found                                                           */

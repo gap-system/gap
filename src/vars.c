@@ -2176,12 +2176,12 @@ void            PrintIsbRecExpr (
 
 /****************************************************************************
 **
-*F  ExecAssPosobj(<ass>)  . . . . . . . . . . .  assign to an element of a list
+*F  ExecAssPosObj(<ass>)  . . . . . . . . . . .  assign to an element of a list
 **
-**  'ExexAssPosobj'  executes the list  assignment statement <stat> of the form
+**  'ExexAssPosObj'  executes the list  assignment statement <stat> of the form
 **  '<list>[<position>] := <rhs>;'.
 */
-UInt            ExecAssPosobj (
+UInt            ExecAssPosObj (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -2197,7 +2197,7 @@ UInt            ExecAssPosobj (
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
-         "Posobj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
@@ -2227,12 +2227,12 @@ UInt            ExecAssPosobj (
 
 /****************************************************************************
 **
-*F  ExecUnbPosobj(<ass>)  . . . . . . . . . . . . . unbind an element of a list
+*F  ExecUnbPosObj(<ass>)  . . . . . . . . . . . . . unbind an element of a list
 **
-**  'ExexUnbPosobj'  executes the list   unbind  statement <stat> of the   form
+**  'ExexUnbPosObj'  executes the list   unbind  statement <stat> of the   form
 **  'Unbind( <list>[<position>] );'.
 */
-UInt            ExecUnbPosobj (
+UInt            ExecUnbPosObj (
     Expr                stat )
 {
     Obj                 list;           /* list, left operand              */
@@ -2247,7 +2247,7 @@ UInt            ExecUnbPosobj (
     pos = EVAL_EXPR( ADDR_STAT(stat)[1] );
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
-         "Posobj Assignment: <position> must be a positive integer (not a %s)",
+         "PosObj Assignment: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
@@ -2270,12 +2270,12 @@ UInt            ExecUnbPosobj (
 
 /****************************************************************************
 **
-*F  EvalElmPosobj(<expr>) . . . . . . . . . . . . . select an element of a list
+*F  EvalElmPosObj(<expr>) . . . . . . . . . . . . . select an element of a list
 **
-**  'EvalElmPosobj' evaluates the list  element expression  <expr> of the  form
+**  'EvalElmPosObj' evaluates the list  element expression  <expr> of the  form
 **  '<list>[<position>]'.
 */
-Obj             EvalElmPosobj (
+Obj             EvalElmPosObj (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -2290,7 +2290,7 @@ Obj             EvalElmPosobj (
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
-            "Posobj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
@@ -2300,14 +2300,14 @@ Obj             EvalElmPosobj (
     if ( TYPE_OBJ(list) == T_POSOBJ ) {
         while ( SIZE_OBJ(list)/sizeof(Obj)-1 < p ) {
             ErrorReturnVoid(
-                "Posobj Element: <Posobj>![%d] must have an assigned value",
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
                 "you can return after assigning a value" );
         }
         elm = ELM_PLIST( list, p );
         while ( elm == 0 ) {
             ErrorReturnVoid(
-                "Posobj Element: <Posobj>![%d] must have an assigned value",
+                "PosObj Element: <PosObj>![%d] must have an assigned value",
                 (Int)p, 0L,
                 "you can return after assigning a value" );
         }
@@ -2325,12 +2325,12 @@ Obj             EvalElmPosobj (
 
 /****************************************************************************
 **
-*F  EvalIsbPosobj(<expr>) . . . . . . . . test if an element of a list is bound
+*F  EvalIsbPosObj(<expr>) . . . . . . . . test if an element of a list is bound
 **
-**  'EvalElmPosobj'  evaluates the list  isbound expression  <expr> of the form
+**  'EvalElmPosObj'  evaluates the list  isbound expression  <expr> of the form
 **  'IsBound( <list>[<position>] )'.
 */
-Obj             EvalIsbPosobj (
+Obj             EvalIsbPosObj (
     Expr                expr )
 {
     Obj                 isb;            /* isbound, result                 */
@@ -2345,7 +2345,7 @@ Obj             EvalIsbPosobj (
     pos = EVAL_EXPR( ADDR_EXPR(expr)[1] );
     while ( ! IS_INTOBJ(pos) || INT_INTOBJ(pos) <= 0 ) {
         pos = ErrorReturnObj(
-            "Posobj Element: <position> must be a positive integer (not a %s)",
+            "PosObj Element: <position> must be a positive integer (not a %s)",
             (Int)(InfoBags[TYPE_OBJ(pos)].name), 0L,
             "you can return a positive integer for <position>" );
     }
@@ -2367,14 +2367,14 @@ Obj             EvalIsbPosobj (
 
 /****************************************************************************
 **
-*F  PrintAssPosobj(<stat>)  . . . . print an assignment to an element of a list
+*F  PrintAssPosObj(<stat>)  . . . . print an assignment to an element of a list
 **
-**  'PrintAssPosobj' prints the list  assignment statement  <stat> of the  form
+**  'PrintAssPosObj' prints the list  assignment statement  <stat> of the  form
 **  '<list>[<position>] := <rhs>;'.
 **
 **  Linebreaks are preferred before the ':='.
 */
-void            PrintAssPosobj (
+void            PrintAssPosObj (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -2387,7 +2387,7 @@ void            PrintAssPosobj (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbPosobj (
+void            PrintUnbPosObj (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -2402,14 +2402,14 @@ void            PrintUnbPosobj (
 
 /****************************************************************************
 **
-*F  PrintElmPosobj(<expr>)  . . . . . print a selection of an element of a list
+*F  PrintElmPosObj(<expr>)  . . . . . print a selection of an element of a list
 **
-**  'PrintElmPosobj'   prints the list element   expression  <expr> of the form
+**  'PrintElmPosObj'   prints the list element   expression  <expr> of the form
 **  '<list>[<position>]'.
 **
 **  Linebreaks are preferred after the '['.
 */
-void            PrintElmPosobj (
+void            PrintElmPosObj (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -2419,7 +2419,7 @@ void            PrintElmPosobj (
     Pr("%<]",0L,0L);
 }
 
-void            PrintIsbPosobj (
+void            PrintIsbPosObj (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -2434,12 +2434,12 @@ void            PrintIsbPosobj (
 
 /****************************************************************************
 **
-*F  ExecAssComobjName(<stat>) . . . . . . . .  assign to an element of a record
+*F  ExecAssComObjName(<stat>) . . . . . . . .  assign to an element of a record
 **
-**  'ExecAssComobjName' executes the  record assignment statement <stat> of the
+**  'ExecAssComObjName' executes the  record assignment statement <stat> of the
 **  form '<record>.<name> := <rhs>;'.
 */
-UInt            ExecAssComobjName (
+UInt            ExecAssComObjName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -2471,12 +2471,12 @@ UInt            ExecAssComobjName (
 
 /****************************************************************************
 **
-*F  ExecAssComobjExpr(<stat>) . . . . . . . .  assign to an element of a record
+*F  ExecAssComObjExpr(<stat>) . . . . . . . .  assign to an element of a record
 **
-**  'ExecAssComobjExpr' executes the record assignment  statement <stat> of the
+**  'ExecAssComObjExpr' executes the record assignment  statement <stat> of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-UInt            ExecAssComobjExpr (
+UInt            ExecAssComObjExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -2508,12 +2508,12 @@ UInt            ExecAssComobjExpr (
 
 /****************************************************************************
 **
-*F  ExecUnbComobjName(<stat>) . . . . . . . . . . unbind an element of a record
+*F  ExecUnbComObjName(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComobjName' executes the record unbind statement <stat> of the form
+**  'ExecAssComObjName' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.<name> );'.
 */
-UInt            ExecUnbComobjName (
+UInt            ExecUnbComObjName (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -2541,12 +2541,12 @@ UInt            ExecUnbComobjName (
 
 /****************************************************************************
 **
-*F  ExecUnbComobjExpr(<stat>) . . . . . . . . . . unbind an element of a record
+*F  ExecUnbComObjExpr(<stat>) . . . . . . . . . . unbind an element of a record
 **
-**  'ExecAssComobjExpr' executes the record unbind statement <stat> of the form
+**  'ExecAssComObjExpr' executes the record unbind statement <stat> of the form
 **  'Unbind( <record>.(<name>) );'.
 */
-UInt            ExecUnbComobjExpr (
+UInt            ExecUnbComObjExpr (
     Stat                stat )
 {
     Obj                 record;         /* record, left operand            */
@@ -2574,12 +2574,12 @@ UInt            ExecUnbComobjExpr (
 
 /****************************************************************************
 **
-*F  EvalElmComobjName(<expr>) . . . . . . . . . . . . . select a record element
+*F  EvalElmComObjName(<expr>) . . . . . . . . . . . . . select a record element
 **
-**  'EvalElmComobjName' evaluates the  record element expression  <expr> of the
+**  'EvalElmComObjName' evaluates the  record element expression  <expr> of the
 **  form '<record>.<name>'.
 */
-Obj             EvalElmComobjName (
+Obj             EvalElmComObjName (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -2607,12 +2607,12 @@ Obj             EvalElmComobjName (
 
 /****************************************************************************
 **
-*F  EvalElmComobjExpr(<expr>) . . . . . . . . . . . . . select a record element
+*F  EvalElmComObjExpr(<expr>) . . . . . . . . . . . . . select a record element
 **
-**  'EvalElmComobjExpr' evaluates the  record element expression  <expr> of the
+**  'EvalElmComObjExpr' evaluates the  record element expression  <expr> of the
 **  form '<record>.(<name>)'.
 */
-Obj             EvalElmComobjExpr (
+Obj             EvalElmComObjExpr (
     Expr                expr )
 {
     Obj                 elm;            /* element, result                 */
@@ -2640,12 +2640,12 @@ Obj             EvalElmComobjExpr (
 
 /****************************************************************************
 **
-*F  EvalIsbComobjName(<expr>) . . . . . . . . test if a record element is bound
+*F  EvalIsbComObjName(<expr>) . . . . . . . . test if a record element is bound
 **
-**  'EvalElmComobjName' evaluates  the record isbound  expression <expr> of the
+**  'EvalElmComObjName' evaluates  the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.<name> )'.
 */
-Obj             EvalIsbComobjName (
+Obj             EvalIsbComObjName (
     Expr                expr )
 {
     Obj                 isb;            /* element, result                 */
@@ -2673,12 +2673,12 @@ Obj             EvalIsbComobjName (
 
 /****************************************************************************
 **
-*F  EvalIsbComobjExpr(<expr>) . . . . . . . . test if a record element is bound
+*F  EvalIsbComObjExpr(<expr>) . . . . . . . . test if a record element is bound
 **
-**  'EvalIsbComobjExpr'  evaluates the record isbound  expression <expr> of the
+**  'EvalIsbComObjExpr'  evaluates the record isbound  expression <expr> of the
 **  form 'IsBound( <record>.(<name>) )'.
 */
-Obj             EvalIsbComobjExpr (
+Obj             EvalIsbComObjExpr (
     Expr                expr )
 {
     Obj                 isb;            /* element, result                 */
@@ -2706,12 +2706,12 @@ Obj             EvalIsbComobjExpr (
 
 /****************************************************************************
 **
-*F  PrintAssComobjName(<stat>)  . print an assignment to an element of a record
+*F  PrintAssComObjName(<stat>)  . print an assignment to an element of a record
 **
-**  'PrintAssComobjName' prints the  record assignment statement <stat>  of the
+**  'PrintAssComObjName' prints the  record assignment statement <stat>  of the
 **  form '<record>.<name> := <rhs>;'.
 */
-void            PrintAssComobjName (
+void            PrintAssComObjName (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -2724,7 +2724,7 @@ void            PrintAssComobjName (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbComobjName (
+void            PrintUnbComObjName (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -2739,12 +2739,12 @@ void            PrintUnbComobjName (
 
 /****************************************************************************
 **
-*F  PrintAssComobjExpr(<stat>)  . print an assignment to an element of a record
+*F  PrintAssComObjExpr(<stat>)  . print an assignment to an element of a record
 **
-**  'PrintAssComobjExpr' prints the  record assignment statement <stat>  of the
+**  'PrintAssComObjExpr' prints the  record assignment statement <stat>  of the
 **  form '<record>.(<name>) := <rhs>;'.
 */
-void            PrintAssComobjExpr (
+void            PrintAssComObjExpr (
     Stat                stat )
 {
     Pr("%4>",0L,0L);
@@ -2757,7 +2757,7 @@ void            PrintAssComobjExpr (
     Pr("%2<;",0L,0L);
 }
 
-void            PrintUnbComobjExpr (
+void            PrintUnbComObjExpr (
     Stat                stat )
 {
     Pr( "Unbind( ", 0L, 0L );
@@ -2772,12 +2772,12 @@ void            PrintUnbComobjExpr (
 
 /****************************************************************************
 **
-*F  PrintElmComobjName(<expr>)  . . print a selection of an element of a record
+*F  PrintElmComObjName(<expr>)  . . print a selection of an element of a record
 **
-**  'PrintElmComobjName' prints the  record  element expression <expr> of   the
+**  'PrintElmComObjName' prints the  record  element expression <expr> of   the
 **  form '<record>.<name>'.
 */
-void            PrintElmComobjName (
+void            PrintElmComObjName (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -2787,7 +2787,7 @@ void            PrintElmComobjName (
     Pr("%<",0L,0L);
 }
 
-void            PrintIsbComobjName (
+void            PrintIsbComObjName (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -2802,12 +2802,12 @@ void            PrintIsbComobjName (
 
 /****************************************************************************
 **
-*F  PrintElmComobjExpr(<expr>)  . . print a selection of an element of a record
+*F  PrintElmComObjExpr(<expr>)  . . print a selection of an element of a record
 **
-**  'PrintElmComobjExpr' prints the record   element expression <expr>  of  the
+**  'PrintElmComObjExpr' prints the record   element expression <expr>  of  the
 **  form '<record>.(<name>)'.
 */
-void            PrintElmComobjExpr (
+void            PrintElmComObjExpr (
     Expr                expr )
 {
     Pr("%2>",0L,0L);
@@ -2817,7 +2817,7 @@ void            PrintElmComobjExpr (
     Pr(")%<",0L,0L);
 }
 
-void            PrintIsbComobjExpr (
+void            PrintIsbComObjExpr (
     Expr                expr )
 {
     Pr( "IsBound( ", 0L, 0L );
@@ -2974,32 +2974,32 @@ void            InitVars ( )
     PrintExprFuncs[ T_ISB_REC_EXPR   ] = PrintIsbRecExpr;
 
     /* install executors, evaluators, and printers for list elements       */
-    ExecStatFuncs [ T_ASS_POSOBJ       ] = ExecAssPosobj;
-    ExecStatFuncs [ T_UNB_POSOBJ       ] = ExecUnbPosobj;
-    EvalExprFuncs [ T_ELM_POSOBJ       ] = EvalElmPosobj;
-    EvalExprFuncs [ T_ISB_POSOBJ       ] = EvalIsbPosobj;
-    PrintStatFuncs[ T_ASS_POSOBJ       ] = PrintAssPosobj;
-    PrintStatFuncs[ T_UNB_POSOBJ       ] = PrintUnbPosobj;
-    PrintExprFuncs[ T_ELM_POSOBJ       ] = PrintElmPosobj;
-    PrintExprFuncs[ T_ISB_POSOBJ       ] = PrintIsbPosobj;
+    ExecStatFuncs [ T_ASS_POSOBJ       ] = ExecAssPosObj;
+    ExecStatFuncs [ T_UNB_POSOBJ       ] = ExecUnbPosObj;
+    EvalExprFuncs [ T_ELM_POSOBJ       ] = EvalElmPosObj;
+    EvalExprFuncs [ T_ISB_POSOBJ       ] = EvalIsbPosObj;
+    PrintStatFuncs[ T_ASS_POSOBJ       ] = PrintAssPosObj;
+    PrintStatFuncs[ T_UNB_POSOBJ       ] = PrintUnbPosObj;
+    PrintExprFuncs[ T_ELM_POSOBJ       ] = PrintElmPosObj;
+    PrintExprFuncs[ T_ISB_POSOBJ       ] = PrintIsbPosObj;
 
     /* install executors, evaluators, and printers for record elements     */
-    ExecStatFuncs [ T_ASS_COMOBJ_NAME  ] = ExecAssComobjName;
-    ExecStatFuncs [ T_ASS_COMOBJ_EXPR  ] = ExecAssComobjExpr;
-    ExecStatFuncs [ T_UNB_COMOBJ_NAME  ] = ExecUnbComobjName;
-    ExecStatFuncs [ T_UNB_COMOBJ_EXPR  ] = ExecUnbComobjExpr;
-    EvalExprFuncs [ T_ELM_COMOBJ_NAME  ] = EvalElmComobjName;
-    EvalExprFuncs [ T_ELM_COMOBJ_EXPR  ] = EvalElmComobjExpr;
-    EvalExprFuncs [ T_ISB_COMOBJ_NAME  ] = EvalIsbComobjName;
-    EvalExprFuncs [ T_ISB_COMOBJ_EXPR  ] = EvalIsbComobjExpr;
-    PrintStatFuncs[ T_ASS_COMOBJ_NAME  ] = PrintAssComobjName;
-    PrintStatFuncs[ T_ASS_COMOBJ_EXPR  ] = PrintAssComobjExpr;
-    PrintStatFuncs[ T_UNB_COMOBJ_NAME  ] = PrintUnbComobjName;
-    PrintStatFuncs[ T_UNB_COMOBJ_EXPR  ] = PrintUnbComobjExpr;
-    PrintExprFuncs[ T_ELM_COMOBJ_NAME  ] = PrintElmComobjName;
-    PrintExprFuncs[ T_ELM_COMOBJ_EXPR  ] = PrintElmComobjExpr;
-    PrintExprFuncs[ T_ISB_COMOBJ_NAME  ] = PrintIsbComobjName;
-    PrintExprFuncs[ T_ISB_COMOBJ_EXPR  ] = PrintIsbComobjExpr;
+    ExecStatFuncs [ T_ASS_COMOBJ_NAME  ] = ExecAssComObjName;
+    ExecStatFuncs [ T_ASS_COMOBJ_EXPR  ] = ExecAssComObjExpr;
+    ExecStatFuncs [ T_UNB_COMOBJ_NAME  ] = ExecUnbComObjName;
+    ExecStatFuncs [ T_UNB_COMOBJ_EXPR  ] = ExecUnbComObjExpr;
+    EvalExprFuncs [ T_ELM_COMOBJ_NAME  ] = EvalElmComObjName;
+    EvalExprFuncs [ T_ELM_COMOBJ_EXPR  ] = EvalElmComObjExpr;
+    EvalExprFuncs [ T_ISB_COMOBJ_NAME  ] = EvalIsbComObjName;
+    EvalExprFuncs [ T_ISB_COMOBJ_EXPR  ] = EvalIsbComObjExpr;
+    PrintStatFuncs[ T_ASS_COMOBJ_NAME  ] = PrintAssComObjName;
+    PrintStatFuncs[ T_ASS_COMOBJ_EXPR  ] = PrintAssComObjExpr;
+    PrintStatFuncs[ T_UNB_COMOBJ_NAME  ] = PrintUnbComObjName;
+    PrintStatFuncs[ T_UNB_COMOBJ_EXPR  ] = PrintUnbComObjExpr;
+    PrintExprFuncs[ T_ELM_COMOBJ_NAME  ] = PrintElmComObjName;
+    PrintExprFuncs[ T_ELM_COMOBJ_EXPR  ] = PrintElmComObjExpr;
+    PrintExprFuncs[ T_ISB_COMOBJ_NAME  ] = PrintIsbComObjName;
+    PrintExprFuncs[ T_ISB_COMOBJ_EXPR  ] = PrintIsbComObjExpr;
 
     /* install before and after actions for garbage collections            */
     InitCollectFuncBags( VarsBeforeCollectBags, VarsAfterCollectBags );

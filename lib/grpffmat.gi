@@ -87,6 +87,9 @@ function( grp )
                    Size( FieldOfMatrixGroup( Parent(grp) ) ) ) );
 end );
 
+InstallMethod( IsomorphismPermGroup, "return Niceomorphism",true,
+  [IsFFEMatrixGroup],0,NiceMonomorphism);
+
 #############################################################################
 ##
 #M  NaturalHomomorphismByNormalSubgroup( <G>, <N> ) . . . .  via nicomorphism
@@ -128,7 +131,15 @@ function( G )
     return q^(n*(n-1)/2) * size;
 end );
 
-
+InstallMethod( \in, "general linear group", IsElmsColls,
+        [ IsMatrix, IsFFEMatrixGroup and IsGeneralLinearGroup ], 0,
+    function( mat, G )
+    return     Length( mat ) = Length( mat[ 1 ] )
+           and Length( mat ) = DimensionOfMatrixGroup( G )
+           and ForAll( mat, row -> IsSubset( FieldOfMatrixGroup( G ), row ) )
+           and Length( mat ) = RankMat( mat );
+end );
+        
 #############################################################################
 ##
 

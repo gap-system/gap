@@ -245,14 +245,14 @@ void            ReadCallVarAss (
         else if ( type == ']' ) { IntrElmListLevel( level );             }
         else if ( type == '{' ) { IntrElmsList();               level++; }
         else if ( type == '}' ) { IntrElmsListLevel( level );   level++; }
-        else if ( type == '<' ) { IntrElmPosobj();                         }
-        else if ( type == '>' ) { IntrElmPosobjLevel( level );             }
-        else if ( type == '(' ) { IntrElmsPosobj();               level++; }
-        else if ( type == ')' ) { IntrElmsPosobjLevel( level );   level++; }
+        else if ( type == '<' ) { IntrElmPosObj();                       }
+        else if ( type == '>' ) { IntrElmPosObjLevel( level );           }
+        else if ( type == '(' ) { IntrElmsPosObj();             level++; }
+        else if ( type == ')' ) { IntrElmsPosObjLevel( level ); level++; }
         else if ( type == '.' ) { IntrElmRecName( rnam );       level=0; }
         else if ( type == ':' ) { IntrElmRecExpr();             level=0; }
-        else if ( type == '!' ) { IntrElmComobjName( rnam );      level=0; }
-        else if ( type == '|' ) { IntrElmComobjExpr();            level=0; }
+        else if ( type == '!' ) { IntrElmComObjName( rnam );    level=0; }
+        else if ( type == '|' ) { IntrElmComObjExpr();          level=0; }
         else if ( type == 'c' ) { IntrFuncCallEnd( 1UL, narg ); level=0; }
 
         /* <Var> '[' <Expr> ']'  list selector                             */
@@ -358,14 +358,14 @@ void            ReadCallVarAss (
         else if ( type == ']' ) { IntrElmListLevel( level );    }
         else if ( type == '{' ) { IntrElmsList();               }
         else if ( type == '}' ) { IntrElmsListLevel( level );   }
-        else if ( type == '<' ) { IntrElmPosobj();                }
-        else if ( type == '>' ) { IntrElmPosobjLevel( level );    }
-        else if ( type == '(' ) { IntrElmsPosobj();               }
-        else if ( type == ')' ) { IntrElmsPosobjLevel( level );   }
+        else if ( type == '<' ) { IntrElmPosObj();                }
+        else if ( type == '>' ) { IntrElmPosObjLevel( level );    }
+        else if ( type == '(' ) { IntrElmsPosObj();               }
+        else if ( type == ')' ) { IntrElmsPosObjLevel( level );   }
         else if ( type == '.' ) { IntrElmRecName( rnam );       }
         else if ( type == ':' ) { IntrElmRecExpr();             }
-        else if ( type == '!' ) { IntrElmComobjName( rnam );      }
-        else if ( type == '|' ) { IntrElmComobjExpr();            }
+        else if ( type == '!' ) { IntrElmComObjName( rnam );      }
+        else if ( type == '|' ) { IntrElmComObjExpr();            }
         else if ( type == 'c' ) {
             if ( mode == 'x' && Symbol == S_SEMICOLON ) {
                 IntrFuncCallEnd( 0UL, narg );
@@ -392,14 +392,14 @@ void            ReadCallVarAss (
         else if ( type == ']' ) { IntrAssListLevel( level );    }
         else if ( type == '{' ) { IntrAsssList();               }
         else if ( type == '}' ) { IntrAsssListLevel( level );   }
-        else if ( type == '<' ) { IntrAssPosobj();                }
-        else if ( type == '>' ) { IntrAssPosobjLevel( level );    }
-        else if ( type == '(' ) { IntrAsssPosobj();               }
-        else if ( type == ')' ) { IntrAsssPosobjLevel( level );   }
+        else if ( type == '<' ) { IntrAssPosObj();                }
+        else if ( type == '>' ) { IntrAssPosObjLevel( level );    }
+        else if ( type == '(' ) { IntrAsssPosObj();               }
+        else if ( type == ')' ) { IntrAsssPosObjLevel( level );   }
         else if ( type == '.' ) { IntrAssRecName( rnam );       }
         else if ( type == ':' ) { IntrAssRecExpr();             }
-        else if ( type == '!' ) { IntrAssComobjName( rnam );      }
-        else if ( type == '|' ) { IntrAssComobjExpr();            }
+        else if ( type == '!' ) { IntrAssComObjName( rnam );      }
+        else if ( type == '|' ) { IntrAssComObjExpr();            }
         else if ( type == 'c' ) { IntrFuncCallEnd( 0UL, narg ); }
     }
 
@@ -411,11 +411,11 @@ void            ReadCallVarAss (
         else if ( type == 'd' ) { IntrUnbDVar( var );           }
         else if ( type == 'g' ) { IntrUnbGVar( var );           }
         else if ( type == '[' ) { IntrUnbList();                }
-        else if ( type == '<' ) { IntrUnbPosobj();                }
+        else if ( type == '<' ) { IntrUnbPosObj();                }
         else if ( type == '.' ) { IntrUnbRecName( rnam );       }
         else if ( type == ':' ) { IntrUnbRecExpr();             }
-        else if ( type == '!' ) { IntrUnbComobjName( rnam );      }
-        else if ( type == '|' ) { IntrUnbComobjExpr();            }
+        else if ( type == '!' ) { IntrUnbComObjName( rnam );      }
+        else if ( type == '|' ) { IntrUnbComObjExpr();            }
         else { SyntaxError("illegal operand for 'Unbind'");     }
     }
 
@@ -428,11 +428,11 @@ void            ReadCallVarAss (
         else if ( type == 'd' ) { IntrIsbDVar( var );           }
         else if ( type == 'g' ) { IntrIsbGVar( var );           }
         else if ( type == '[' ) { IntrIsbList();                }
-        else if ( type == '<' ) { IntrIsbPosobj();                }
+        else if ( type == '<' ) { IntrIsbPosObj();                }
         else if ( type == '.' ) { IntrIsbRecName( rnam );       }
         else if ( type == ':' ) { IntrIsbRecExpr();             }
-        else if ( type == '!' ) { IntrIsbComobjName( rnam );      }
-        else if ( type == '|' ) { IntrIsbComobjExpr();            }
+        else if ( type == '!' ) { IntrIsbComObjName( rnam );      }
+        else if ( type == '|' ) { IntrIsbComObjExpr();            }
         else { SyntaxError("illegal operand for 'IsBound'");    }
     }
 

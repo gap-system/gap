@@ -608,7 +608,7 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
     fi;
     
     # make the base of G compatible with options.base
-    chain := DeepCopy( StabChainAttr( G ) );
+    chain := CopyStabChain( StabChainAttr( G ) );
     if IsBound( options.base )  then
         ChangeStabChain( chain, options.base,
                 IsBound( options.reduced ) and options.reduced );
@@ -625,7 +625,8 @@ InstallOtherMethod( ClosureGroup, true, [ IsPermGroup,
     if inpar  then  C := GroupStabChain( P, chain, true );
               else  C := GroupStabChain( chain );           fi;
     SetStabChainOptions( C, rec( random := options.random ) );
-        
+
+    UseSubsetRelation( C, G );
     return C;
 end );
 
@@ -751,19 +752,20 @@ InstallMethod( NormalClosure, true, [ IsPermGroup, IsPermGroup ], 0,
     fi;
     
     # return the normal closure
+    UseSubsetRelation( N, U );
     return N;
 end );
 
 #############################################################################
 ##
-#M  ConjugateSubgroup( <G>, <g> ) . . . . . . . . . . .  of permutation group
+#M  ConjugateGroup( <G>, <g> )  . . . . . . . . . . . .  of permutation group
 ##
-InstallMethod( ConjugateSubgroup, "<P>, <g>", true,
+InstallMethod( ConjugateGroup, "<P>, <g>", true,
         [ IsPermGroup, IsPerm ], 0,
     function( G, g )
     local   H,  S;
     
-    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ) );
+    H := GroupByGenerators( OnTuples( GeneratorsOfGroup( G ), g ), One( G ) );
     S := EmptyStabChain( [  ], One( H ) );
     ConjugateStabChain( StabChainAttr( G ), S, g, g );
     SetStabChain( H, S );
@@ -1426,8 +1428,8 @@ RightTransversalPermGroupConstructor := function( filter, G, U )
     enum := Objectify( NewKind( FamilyObj( G ), filter ),
           rec( group := G,
             subgroup := U,
-      stabChainGroup := DeepCopy( StabChainAttr( G ) ),
-   stabChainSubgroup := DeepCopy( StabChainAttr( U ) ) ) );
+      stabChainGroup := CopyStabChain( StabChainAttr( G ) ),
+   stabChainSubgroup := CopyStabChain( StabChainAttr( U ) ) ) );
     if not IsTrivial( G )  then
         orbs := ShallowCopy( Orbits( U, MovedPoints( G ) ) );
         Sort( orbs, function( o1, o2 )

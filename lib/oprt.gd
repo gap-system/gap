@@ -5,6 +5,9 @@
 #H  @(#)$Id$
 ##
 #H  $Log$
+#H  Revision 4.19  1997/03/12 13:17:51  htheisse
+#H  added method for preimages under GL -> perm op homom
+#H
 #H  Revision 4.18  1997/03/04 16:04:43  htheisse
 #H  checked the `oprt*' functions against the descriptions of the 3.4 manual
 #H
@@ -82,6 +85,11 @@ IsConstituentHomomorphism := NewRepresentation( "IsConstituentHomomorphism",
 
 IsBlocksHomomorphism := NewRepresentation( "IsBlocksHomomorphism",
     IsOperationHomomorphismDirectly, [ "externalSet", "reps" ] );
+
+IsGeneralLinearOperationHomomorphism := NewRepresentation
+    ( "IsGeneralLinearOperationHomomorphism",
+      IsOperationHomomorphismDirectly,
+      [ "externalSet" ] );
 
 ActingDomain := NewAttribute( "ActingDomain", IsExternalSet );
 SetActingDomain := Setter( ActingDomain );

@@ -683,10 +683,8 @@ CommutatorSubgroup := NewOperation( "CommutatorSubgroup",
 
 #############################################################################
 ##
-#O  ConjugateSubgroup( <G>, <obj> ) . . . . . conjugate of group <G> by <obj>
+#O  ConjugateGroup( <G>, <obj> )  . . . . . . conjugate of group <G> by <obj>
 ##
-##  Note that <obj> must lie in the parent of <G>, otherwise the term
-##  subgroup would not make sense.
 ##  To form a conjugate (group) by any object acting via '\^', one can use
 ##  the operator '\^'.
 #T This should not be restricted to objects in the parent, or?
@@ -696,7 +694,7 @@ CommutatorSubgroup := NewOperation( "CommutatorSubgroup",
 #T Do we need 'ConjugateSubgroupNC', which does not check containment in
 #T the parent?
 ##
-ConjugateSubgroup := NewOperation( "ConjugateSubgroup",
+ConjugateGroup := NewOperation( "ConjugateGroup",
     [ IsGroup, IsObject ] );
 
 
@@ -729,14 +727,6 @@ HasCoreInParent := Tester( CoreInParent );
 #O  FactorGroup( <G>, <N> )
 ##
 FactorGroup := NewOperation( "FactorGroup", [ IsGroup, IsGroup ] );
-
-
-#############################################################################
-##
-#O  FusionConjugacyClasses( <G>, <N> )
-##
-FusionConjugacyClasses := NewOperation( "FusionConjugacyClasses",
-    [ IsGroup, IsGroup ] );
 
 
 #############################################################################
@@ -1142,7 +1132,6 @@ KnowsHowToDecompose := NewOperation("KnowsHowToDecompose",[IsGroup,IsList]);
 #O  HasAbelianFactorGroup(<G>,<N>)   test whether G/N is abelian
 ##
 HasAbelianFactorGroup := NewOperationArgs("HasAbelianFactorGroup");
-
 
 #############################################################################
 ##

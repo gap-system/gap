@@ -150,6 +150,7 @@ ReadLib( "grpffmat.gi" );
 
 
 # files dealing with character tables and class functions
+ReadLib( "chartabl.gi" );
 ReadLib( "classfun.gi" );
 
 

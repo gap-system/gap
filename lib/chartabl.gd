@@ -29,8 +29,6 @@ Revision.chartabl_gd :=
 
 #T disallow 'Sort', change to 'SortedCharacterTable'!
 
-#T remove irredinfo, store in irreds. themselves
-
 
 #############################################################################
 ##
@@ -105,13 +103,6 @@ InfoCharacterTable := NewInfoClass( "InfoCharacterTable" );
 ##
 ##  The same principle holds for the data that refer to each other in the
 ##  group and in the table.
-##  For example, a Brauer table may delegate the task to compute its
-##  irreducible characters (one of its attributes) to the group (for which
-##  the desired characters belong to the attribute 'ComputedIBrs'),
-##  but the group must not ask the Brauer table.
-##  Only if the group knows already the Brauer table (in the attribute
-##  'ComputedBrauerTables') and if this knows already its irreducibles
-##  then the group may fetch them.
 ##
 #T problem:
 #T if the table knows already class lengths etc.,
@@ -175,15 +166,23 @@ HasCharacterDegrees := Tester( CharacterDegrees );
 #############################################################################
 ##
 #O  CharacterTable( <G>, <p> )  . . . . . characteristic <p> table of a group
+#O  CharacterTable( <ordtbl>, <p> )
 #O  CharacterTable( <G> ) . . . . . . . . . . ordinary char. table of a group
 #O  CharacterTable( <name> )  . . . . . . . . . library table with given name
+##
+##  This dispatches to 'OrdinaryCharacterTable', 'BrauerCharacterTable',
+##  or 'CharTableLibrary'.
 ##
 CharacterTable := NewOperation( "CharacterTable", [ IsGroup, IsInt ] );
 
 
 #############################################################################
 ##
-#A  OrdinaryCharacterTable( <G> )
+#A  OrdinaryCharacterTable( <G> ) . . . . . . . . . . . . . . . . for a group
+#A  OrdinaryCharacterTable( <modtbl> )  . . . .  for a Brauer character table
+##
+##  For Brauer character tables without underlying group, the value of this
+##  attribute must be stored.
 ##
 OrdinaryCharacterTable := NewAttribute(
     "OrdinaryCharacterTable", IsGroup );
@@ -193,24 +192,49 @@ HasOrdinaryCharacterTable := Tester( OrdinaryCharacterTable );
 
 #############################################################################
 ##
-#A  ComputedBrauerTables( <G> )
+#F  BrauerCharacterTable( <ordtbl>, <p> )
+#O  BrauerCharacterTableOp( <ordtbl>, <p> )
+#A  ComputedBrauerCharacterTables( <ordtbl> ) . . . . . . known Brauer tables
 ##
-##  is the list of Brauer tables computed already,
-##  at position $p$ for characteristic $p$.
-##  
-ComputedBrauerTables := NewAttribute(
-    "ComputedBrauerTables", IsGroup, "mutable" );
-SetComputedBrauerTables := Setter( ComputedBrauerTables );
-HasComputedBrauerTables := Tester( ComputedBrauerTables );
+#O  BrauerCharacterTable( <G>, <p> )
+##
+##  'BrauerCharacterTable' returns the <p>-modular character table of the
+##  ordinary character table <ordtbl>.
+##  If the first argument is a group <G>, 'BrauerCharacterTable' delegates
+##  to the ordinary character table of <G>.
+##
+##  The Brauer tables that were computed already by 'BrauerCharacterTable'
+##  are stored as value of the attribute 'ComputedBrauerCharacterTables'
+##  (at position $p$ for characteristic $p$).
+##  Methods for the computation of Brauer tables can be installed for
+##  the operation 'BrauerCharacterTableOp'.
+##
+BrauerCharacterTable := NewOperationArgs( "BrauerCharacterTable" );
+
+BrauerCharacterTableOp := NewOperation( "BrauerCharacterTableOp",
+    [ IsOrdinaryTable, IsInt and IsPosRat ] );
+
+ComputedBrauerCharacterTables := NewAttribute(
+    "ComputedBrauerCharacterTables", IsOrdinaryTable, "mutable" );
 
 
 #############################################################################
 ##
 #A  Irr( <G> )
 #A  Irr( <ordtbl> )
+#A  Irr( <modtbl> )
 ##
-##  is the list of all complex ordinary irreducible characters of the finite
-##  group <G> resp. the ordinary character table <tbl>.
+##  In the first two forms, 'Irr' returns the list of all complex ordinary
+##  absolutely irreducible characters of the finite group <G> resp.
+##  of the ordinary character table <ordtbl>.
+##
+##  In the third form, 'Irr' returns the absolutely irreducible Brauer
+##  characters of the Brauer character table <modtbl>.
+##  (Note that 'IBr' is just a function that is defined for two arguments,
+##  a group and a prime;
+##  Called with a Brauer table, 'IBr' calls 'Irr'.)
+##
+##  ('Irr' may delegate back to the group <G>.)
 ##
 Irr := NewAttribute( "Irr", IsGroup );
 SetIrr := Setter( Irr );
@@ -219,59 +243,24 @@ HasIrr := Tester( Irr );
 
 #############################################################################
 ##
-#O  IBr( <G>, <p> )
-#O  IBr( <tbl> )
+#F  IBr( <G>, <p> )
+#F  IBr( <modtbl> )
 ##
-##  is the list of all complex irreducible Brauer characters in
-##  characteristic <p> of the finite group <G>.
+##  'IBr' returns the list of <p>-modular absolutely irreducible Brauer
+##  characters of the group <G>.
+##  (This is done by delegation to 'Irr' for the Brauer table in question.)
 ##
-##  (Computed lists of irreducible Brauer characters are stored in the list
-##  'ComputedIBrs( <G> )'.)
+##  If the only argument is a Brauer character table <modtbl>,
+##  'IBr' calls 'Irr( <modtbl> )'.
+##  ('Irr' may delegate back to <G>.)
 ##
-IBr := NewOperation( "IBr", [ IsGroup, IsPosRat and IsInt ] );
-
-
-#############################################################################
-##
-#A  ComputedIBrs( <G> )
-##
-##  is the list where position <p> is reserved for 'IBr( <G>, <p> )'.
-##
-ComputedIBrs := NewAttribute( "ComputedIBrs", IsGroup, "mutable" );
-SetComputedIBrs := Setter( ComputedIBrs );
-HasComputedIBrs := Tester( ComputedIBrs );
-
-
-#############################################################################
-##
-#A  ComputedBrauerTables( <tbl> )
-##
-ComputedBrauerTables := NewAttribute( "ComputedBrauerTables",
-    IsOrdinaryTable, "mutable" );
-SetComputedBrauerTables := Setter( ComputedBrauerTables );
-HasComputedBrauerTables := Tester( ComputedBrauerTables );
+IBr := NewOperationArgs( "IBr" );
 
 
 #############################################################################
 ##
 ##  3. ...
 ##
-
-#############################################################################
-##
-#A  IBrTable( <tbl> )
-##
-##  is the list of irreducible Brauer characters of the Brauer table <tbl>.
-##  Note that 'IBr' is defined for two arguments, namely a group and a prime,
-##  and the attribute 'ComputedIBrs' for groups is of course not what we want
-##  here.
-##
-##  (There is a method for 'IBr' and Brauer tables that simply calls
-##  'IBrTable' in order to allow the call 'IBr( <tbl> )'.)
-##  
-IBrTable := NewAttribute( "IBrTable", IsBrauerTable );
-SetIBrTable := Setter( IBrTable );
-HasIBrTable := Tester( IBrTable );
 
 
 #############################################################################
@@ -306,13 +295,17 @@ HasBlocksInfo := Tester( BlocksInfo );
 
 #############################################################################
 ##
-#A  ClassFusions( <tbl> )
+#A  IrredInfo( <tbl> )
 ##
-##  is a list of class fusions from <tbl> into other character table objects.
+##  a list of records, the $i$-th entry belonging to the $i$-th irreducible
+##  character.
 ##
-ClassFusions := NewAttribute( "ClassFusions", IsNearlyCharacterTable );
-SetClassFusions := Setter( ClassFusions );
-HasClassFusions := Tester( ClassFusions );
+#T remove this, better store the info in the irred. characters themselves
+#T ('IrredInfo' is used in 'Display' and '\*' methods)
+##
+IrredInfo := NewAttribute( "IrredInfo", IsNearlyCharacterTable, "mutable" );
+SetIrredInfo := Setter( IrredInfo );
+HasIrredInfo := Tester( IrredInfo );
 
 
 #############################################################################
@@ -352,7 +345,15 @@ HasDisplayOptions := Tester( DisplayOptions );
 ##
 ##  is a string that is used to identify the table <tbl> when it is not
 ##  possible to use the object <tbl> itself, for example when a class fusion
-##  to the library table <tbl> shall be described.
+##  to the character table <tbl> shall be described.
+##
+##  For library tables, the identifier is equal to one of the names with
+##  that the table can be fetched.
+##  For tables constructed from groups, an identifier is constructed.
+#T only valid for the current session!
+#T if one would take the group itself as identifier,
+#T one would have to compare identifiers only via 'IsIdentical',
+#T and this is the wrong approach for strings!
 ##
 Identifier := NewAttribute( "Identifier", IsNearlyCharacterTable );
 SetIdentifier := Setter( Identifier );
@@ -383,37 +384,13 @@ HasInverseClasses := Tester( InverseClasses );
 ##
 #A  NamesOfFusionSources( <tbl> )
 ##
-##  is the list of identifiers of all those tables that have fusions into
-##  <tbl> stored.
+##  is the list of identifiers of all those tables that are known to have
+##  fusions into <tbl> stored.
 ##
 NamesOfFusionSources := NewAttribute( "NamesOfFusionSources",
     IsNearlyCharacterTable );
 SetNamesOfFusionSources := Setter( NamesOfFusionSources );
 HasNamesOfFusionSources := Tester( NamesOfFusionSources );
-
-
-#############################################################################
-##
-#A  OrdinaryTable( <tbl> )
-##
-##  is the ordinary character table corresponding to the Brauer table <tbl>.
-##
-OrdinaryTable := NewAttribute( "OrdinaryTable", IsBrauerTable );
-SetOrdinaryTable := Setter( OrdinaryTable );
-HasOrdinaryTable := Tester( OrdinaryTable );
-
-
-#############################################################################
-##
-#A  ComputedPowerMaps( <tbl> )
-##
-##  is a list that stores at position $p$ the $p$-th power map of the table
-##  <tbl>.
-##
-ComputedPowerMaps := NewAttribute( "ComputedPowerMaps",
-    IsNearlyCharacterTable, "mutable" );
-SetComputedPowerMaps := Setter( ComputedPowerMaps );
-HasComputedPowerMaps := Tester( ComputedPowerMaps );
 
 
 #############################################################################
@@ -430,13 +407,52 @@ HasAutomorphismsOfTable := Tester( AutomorphismsOfTable );
 
 #############################################################################
 ##
-#A  UnderlyingGroup( <tbl> )
+#O  Indicator( <tbl>, <n> )
+#O  Indicator( <tbl>, <characters>, <n> )
+#O  Indicator( <modtbl>, 2 )
 ##
-##  Note that only the character table stores the underlying group,
+##  If <tbl> is an ordinary character table then 'Indicator' returns the
+##  list of <n>-th Frobenius-Schur indicators of <characters>
+##  or 'Irr( <tbl> )'.
+##
+##  If <tbl> is a Brauer table in characteristic $\not= 2$, and $<n> = 2$
+##  then 'Indicator' returns the second indicator.
+##
+Indicator := NewOperation( "Indicator",
+    [ IsNearlyCharacterTable, IsInt and IsPosRat ] );
+
+
+#############################################################################
+##
+#O  InducedCyclic( <tbl> )
+#O  InducedCyclic( <tbl>, \"all\" )
+#O  InducedCyclic( <tbl>, <classes> )
+#O  InducedCyclic( <tbl>, <classes>, \"all\" )
+##
+##  'InducedCyclic' calculates characters induced up from cyclic subgroups
+##  of the character table <tbl> to <tbl>.
+##
+##  If `"all"` is specified, all irreducible characters of those subgroups
+##  are induced, otherwise only the permutation characters are calculated.
+##
+##  If a list <classes> is specified, only those cyclic subgroups generated
+##  by these classes are considered, otherwise all classes of <tbl> are
+##  considered.
+##
+##  'InducedCyclic' returns a set of characters.
+##
+InducedCyclic := NewOperation( "InducedCyclic", [ IsNearlyCharacterTable ] );
+
+
+#############################################################################
+##
+#A  UnderlyingGroup( <ordtbl> )
+##
+##  Note that only the ordinary character table stores the underlying group,
 ##  the class functions can notify knowledge of the group via the
 ##  category 'IsClassFunctionWithGroup'.
 ##
-UnderlyingGroup := NewAttribute( "UnderlyingGroup", IsNearlyCharacterTable );
+UnderlyingGroup := NewAttribute( "UnderlyingGroup", IsOrdinaryTable );
 SetUnderlyingGroup := Setter( UnderlyingGroup );
 HasUnderlyingGroup := Tester( UnderlyingGroup );
 
@@ -448,8 +464,11 @@ HasUnderlyingGroup := Tester( UnderlyingGroup );
 ##  is the table of the direct product of the character tables <tbl1>
 ##  and <tbl2>.
 ##
-##  All power maps for primes dividing the size of the result will be
-##  computed for the factors.
+##  We allow products of ordinary and Brauer character tables.
+##
+##  In general, the result will not know an underlying group,
+##  so the power maps and irreducibles of <tbl1> and <tbl2> may be computed
+##  in order to construct the direct product.
 ##
 CharacterTableDirectProduct := NewOperation( "CharacterTableDirectProduct",
     [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
@@ -510,25 +529,238 @@ CharacterTableSpecialized := NewOperation( "CharacterTableSpecialized",
 #O  PossibleClassFusions( <subtbl>, <tbl> )
 #O  PossibleClassFusions( <subtbl>, <tbl>, <options> )
 ##
+##  returns the list of all possible class fusions from <subtbl> into <tbl>.
+##  
+##  The optional record <options> may have the following components\:
+##  
+##  'chars':\\
+##       a list of characters of <tbl> which will be restricted to <subtbl>,
+##       (see "FusionsAllowedByRestrictions");
+##       the default is '<tbl>.irreducibles'
+##  
+##  'subchars':\\
+##       a list of characters of <subtbl> which are constituents of the
+##       retrictions of 'chars', the default is '<subtbl>.irreducibles'
+##  
+##  'fusionmap':\\
+##       a (parametrized) map which is an approximation of the desired map
+##  
+##  'decompose':\\
+##       a boolean; if 'true', the restrictions of 'chars' must have all
+##       constituents in 'subchars', that will be used in the algorithm;
+##       if 'subchars' is not bound and '<subtbl>.irreducibles' is complete,
+##       the default value of 'decompose' is 'true', otherwise 'false'
+##  
+##  'permchar':\\
+##       a permutaion character; only those fusions are computed which
+##       afford that permutation character
+##  
+##  'quick':\\
+##       a boolean; if 'true', the subroutines are called with the option
+##       '\"quick\"'; especially, a unique map will be returned immediately
+##       without checking all symmetrisations; the default value is 'false'
+##  
+##  'parameters':\\
+##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
+##       the subroutine 'FusionsAllowedByRestrictions'\:
+##       It only uses characters with actual indeterminateness up to
+##       'maxamb', tests decomposability only for characters with actual
+##       indeterminateness at least 'minamb' and admits a branch only
+##       according to a character if there is one with at most 'maxlen'
+##       possible restrictions.
+##
 PossibleClassFusions := NewOperationArgs( "PossibleClassFusions" );
+
+SubgroupFusions := PossibleClassFusions;
 
 
 #############################################################################
 ##
-#O  PossiblePowerMaps( <tbl>, <p> )
-#O  PossiblePowerMaps( <tbl>, <p>, <options> )
+#O  PossiblePowerMaps( <tbl>, <prime> )
+#O  PossiblePowerMaps( <tbl>, <prime>, <options> )
+##
+##  returns a list of possibilities for the <prime>-th power map of the
+##  character table <tbl>.
+##  If <tbl> is a Brauer table, the map is computed from the power map
+##  of the ordinary table.
+##  
+##  The optional record <options> may have the following components\:
+##  
+##  'chars':\\
+##       a list of characters which are used for the check of kernels
+##       (see "ConsiderKernels"), the test of congruences (see "Congruences")
+##       and the test of scalar products of symmetrisations
+##       (see "PowerMapsAllowedBySymmetrisations");
+##       the default is '<tbl>.irreducibles'
+##  
+##  'powermap':\\
+##       a (parametrized) map which is an approximation of the desired map
+##  
+##  'decompose':\\
+##       a boolean; if 'true', the symmetrisations of 'chars' must have all
+##       constituents in 'chars', that will be used in the algorithm;
+##       if 'chars' is not bound and 'Irr( <tbl> )' is known,
+##       the default value of 'decompose' is 'true', otherwise 'false'
+##  
+##  'quick':\\
+##       a boolean; if 'true', the subroutines are called with the option
+##       '\"quick\"'; especially, a unique map will be returned immediately
+##       without checking all symmetrisations; the default value is 'false'
+##  
+##  'parameters':\\
+##       a record with fields 'maxamb', 'minamb' and 'maxlen' which control
+##       the subroutine 'PowerMapsAllowedBySymmetrisations'\:
+##       It only uses characters with actual indeterminateness up to
+##       'maxamb', tests decomposability only for characters with actual
+##       indeterminateness at least 'minamb' and admits a branch only
+##       according to a character if there is one with at most 'maxlen'
+##       possible minus-characters.
 ##
 PossiblePowerMaps := NewOperationArgs( "PossiblePowerMaps" );
 
+Powermap := PossiblePowerMaps;
+
 
 #############################################################################
 ##
-#O  PowerMap( <tbl>, <p> )
-#O  PowerMap( <tbl>, <p>, <class> )
+#F  FusionConjugacyClasses( <tbl1>, <tbl2> )
+#F  FusionConjugacyClasses( <H>, <G> )
+#O  FusionConjugacyClassesOp( <H>, <G> )
+#A  ComputedClassFusions( <tbl> )
 ##
-##  is the <p>-th power map of the table <tbl>.
+##  In the first form, 'FusionConjugacyClasses' returns the fusion of
+##  conjugacy classes between the character tables <tbl1> and <tbl2>.
+##  (If one of the tables is a Brauer table, it may delegate to its
+##  ordinary table.)
 ##
-PowerMap := NewOperation( "PowerMap", [ IsNearlyCharacterTable, IsInt ] );
+##  In the second form, 'FusionConjugacyClasses' returns the fusion of
+##  conjugacy classes between the group <h> and its supergroup <G>;
+##  this is done by delegating to the ordinary character tables of <H> and
+##  <G>.
+##  (Note that we store the fusions only on character tables, that's why
+##  the groups delegate to the tables; of course the method for tables
+##  with group will be allowed to use the groups.)
+##
+##  If no class fusion exists, 'fail' is returned.
+##  If the class fusion is not uniquely determined then an error is
+##  signalled.
+##
+##  The class fusions that were computed already by 'FusionConjugacyClasses'
+##  are stored as value of the attribute 'ComputedClassFusions'
+##  (a list of class fusions)
+#T records or fusion objects?
+##
+##  Methods for the computation of class fusions can be installed for
+##  the operation 'FusionConjugacyClassesOp'.
+##
+##  (see also 'GetFusionMap', 'StoreFusion')
+##
+FusionConjugacyClasses := NewOperationArgs( "FusionConjugacyClasses" );
+
+FusionConjugacyClassesOp := NewOperation( "FusionConjugacyClassesOp",
+    [ IsNearlyCharacterTable, IsNearlyCharacterTable ] );
+
+ComputedClassFusions := NewAttribute( "ComputedClassFusions",
+    IsNearlyCharacterTable );
+SetComputedClassFusions := Setter( ComputedClassFusions );
+
+
+#############################################################################
+##
+#F  GetFusionMap( <source>, <destination> )
+#F  GetFusionMap( <source>, <destination>, <specification> )
+##
+##  For ordinary character tables <source> and <destination>,
+##  'GetFusionMap( <source>, <destination> )' returns the 'map' component of
+##  the fusion stored on the table <source> that has the 'name' component
+##  <destination>,
+##  and 'GetFusionMap( <source>, <destination>, <specification> )' fetches
+##  that fusion that additionally has the 'specification' component
+##  <specification>.
+##
+##  If <source> and <destination> are Brauer tables,
+##  'GetFusionMap' looks whether a fusion map between the ordinary tables
+##  is stored; if so then the fusion map between <source> and <destination>
+##  is stored on <source>, and then returned.
+##
+##  If no appropriate fusion is found, 'fail' is returned.
+##
+##  (For the computation of class fusions, see 'FusionConjugacyClasses'.)
+##
+GetFusionMap := NewOperationArgs( "GetFusionMap" );
+
+
+#############################################################################
+##
+#F  StoreFusion( <source>, <fusion>, <destination> )
+#F  StoreFusion( <source>, <fusionmap>, <destination> )
+##
+##  The record <fusion> is stored on <source> if no ambiguity arises.
+##  'Identifier( <source> )' is added to 'NamesFusionSource( <destination> )'.
+##
+##  If a list <fusionmap> is entered, the same holds for
+##  '<fusion> = rec( map:= <fusionmap> )'.
+##
+StoreFusion := NewOperationArgs( "StoreFusion" );
+
+
+#############################################################################
+##
+#F  PowerMapByComposition( <tbl>, <n> ) . .  for char. table and pos. integer
+##
+##  <n> must be a positive integer, and <tbl> a nearly character table.
+##  If the power maps for all prime divisors of <n> are stored in
+##  'ComputedPowerMaps' of <tbl> then 'PowerMapByComposition' returns the
+##  <n>-th power map of <tbl>.
+##  Otherwise 'fail' is returned.
+##  
+PowerMapByComposition := NewOperationArgs( "PowerMapByComposition" );
+
+
+#############################################################################
+##
+#F  PowerMap( <tbl>, <n> )
+#F  PowerMap( <G>, <n> )
+#F  PowerMap( <tbl>, <n>, <class> )
+#F  PowerMap( <G>, <n>, <class> )
+#O  PowerMapOp( <tbl>, <n> )
+#O  PowerMapOp( <tbl>, <n>, <class> )
+#A  ComputedPowerMaps( <tbl> )
+##
+##  In the first form, 'PowerMap' returns the <n>-th power map of the
+##  character table <tbl>.
+##  In the second form, 'PowerMap' returns the <n>-th power map of the
+##  group <G>; this is done by delegating to the ordinary character table
+##  of <G>.
+##
+##  The power maps that were computed already by 'PowerMap'
+##  are stored as value of the attribute 'ComputedPowerMaps'
+##  (the $n$-th power map at position $n$).
+##  Methods for the computation of power maps can be installed for
+##  the operation 'PowerMapOp'.
+##
+PowerMap := NewOperationArgs( "PowerMap" );
+
+PowerMapOp := NewOperation( "PowerMapOp",
+    [ IsNearlyCharacterTable, IsInt ] );
+
+ComputedPowerMaps := NewAttribute( "ComputedPowerMaps",
+    IsNearlyCharacterTable, "mutable" );
+SetComputedPowerMaps := Setter( ComputedPowerMaps );
+
+
+#############################################################################
+##
+#F  InverseMap( <paramap> ) . . . . . . . . . . inverse of a parametrized map
+##
+##  'InverseMap( <paramap> )[i]' is the unique preimage or the set of all
+##  preimages of 'i' under <paramap>, if there are any;
+##  otherwise it is unbound.
+##
+##  We have 'CompositionMaps( <paramap>, InverseMap( <paramap> ) )'
+##  the identity map.
+##
+InverseMap := NewOperationArgs( "InverseMap" );
 
 
 #############################################################################
@@ -544,7 +776,7 @@ PowerMap := NewOperation( "PowerMap", [ IsNearlyCharacterTable, IsInt ] );
 SupportedOrdinaryTableInfo := [
     SetAutomorphismsOfTable,         "automorphismsOfTable",
     SetBlocksInfo,                   "blocksInfo",
-    SetClassFusions,                 "classFusions",
+    SetComputedClassFusions,         "computedClassFusions",
     SetClassParameters,              "classParameters",
     SetComputedPowerMaps,            "computedPowerMaps",
     SetIdentifier,                   "identifier",
@@ -563,12 +795,12 @@ SupportedOrdinaryTableInfo := [
 SupportedBrauerTableInfo := [
     SetAutomorphismsOfTable,         "automorphismsOfTable",
     SetBlocksInfo,                   "blocksInfo",
-    SetClassFusions,                 "classFusions",
+    SetComputedClassFusions,         "computedClassFusions",
     SetClassParameters,              "classParameters",
     SetComputedPowerMaps,            "computedPowerMaps",
     SetIdentifier,                   "identifier",
     SetInfoText,                     "infoText",
-    SetIBrTable,                     "iBrTable",
+    SetIrr,                          "irr",
     SetNamesOfFusionSources,         "namesOfFusionSources",
     SetOrdersClassRepresentatives,   "ordersClassRepresentatives",
     SetOrdinaryCharacterTable,       "ordinaryCharacterTable",
@@ -608,6 +840,35 @@ ConvertToBrauerTableNC := NewOperationArgs( "ConvertToBrauerTableNC" );
 
 
 #T ConvertToTableInProgress ???
+
+#############################################################################
+##
+#F  CharTableLibrary( <name> )
+##
+CharTableLibrary := NewOperationArgs( "CharTableLibrary" );
+
+
+#############################################################################
+##
+#F  TableAutomorphisms( <name> )
+##
+TableAutomorphisms := NewOperationArgs( "TableAutomorphisms" );
+
+
+#############################################################################
+##
+#F  TransformingPermutationsCharTables( <name> )
+##
+TransformingPermutationsCharTables := NewOperationArgs(
+    "TransformingPermutationsCharTables" );
+
+
+#############################################################################
+##
+#F  Decomposition( <name> )
+##
+Decomposition := NewOperationArgs( "Decomposition" );
+
 
 #############################################################################
 ##

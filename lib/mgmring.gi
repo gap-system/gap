@@ -243,17 +243,11 @@ InstallMethod( AdditiveInverse,
     function( x )
     local ext, i;
     ext:= ShallowCopy( x![2] );
-    for i in [ 2, 4 .. Length( ext[2] ) ] do
-      ext[2][i]:= AdditiveInverse( ext[2][i] );
+    for i in [ 2, 4 .. Length( ext ) ] do
+      ext[i]:= AdditiveInverse( ext[i] );
     od;
     return Objectify( FamilyObj( x )!.defaultKind, [ x![1], ext ] );
     end );
-
-
-#############################################################################
-##
-#M  \-( <x>, <y> )  . . . . for two free magma ring elements in default repr.
-##
 
 
 #############################################################################
@@ -330,21 +324,18 @@ InstallMethod( \*,
 #F  IsMagmasMagmaRings( <FamM>, <FamRM> ) . . . . . . . . .  family predicate
 ##
 IsMagmaRingsRings := function( FamRM, FamR )
-    return     HasElementsFamily( FamRM )
-           and IsBound( ElementsFamily( FamRM )!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM )!.familyRing, FamR );
+    return     IsBound( FamRM!.familyRing )
+           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
 end;
 
 IsRingsMagmaRings := function( FamR, FamRM )
-    return     HasElementsFamily( FamRM )
-           and IsBound( ElementsFamily( FamRM )!.familyRing )
-           and IsIdentical( ElementsFamily( FamRM )!.familyRing, FamR );
+    return     IsBound( FamRM!.familyRing )
+           and IsIdentical( ElementsFamily( FamRM!.familyRing ), FamR );
 end;
 
 IsMagmasMagmaRings := function( FamM, FamRM )
-    return     HasElementsFamily( FamRM )
-           and IsBound( ElementsFamily( FamRM )!.familyMagma )
-           and IsIdentical( ElementsFamily( FamRM )!.familyMagma, FamM );
+    return     IsBound( FamRM!.familyMagma )
+           and IsIdentical( ElementsFamily( FamRM!.familyMagma ), FamM );
 end;
 
 #T install multiplication with magma elements from left and right !

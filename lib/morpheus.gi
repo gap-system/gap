@@ -54,6 +54,7 @@ local xset,fam,hom;
   hom!.basepos:=List(elmsgens,i->Position(elms,i));
   SetIsInjective(hom,true);
   Setter(OperationHomomorphismAttr)(xset,hom);
+  Setter(IsomorphismPermGroup)(aut,OperationHomomorphism(xset));
   SetNiceMonomorphism(aut,OperationHomomorphism(xset));
   SetIsHandledByNiceMonomorphism(aut,true);
 end;
@@ -67,7 +68,7 @@ InstallMethod(PreImagesRepresentative,"AutomGroup Niceomorphism",
 function(hom,elm)
 local xset,g,imgs;
   xset:=hom!.externalSet;
-  g:=ActingDomain(xset);
+  g:=Source(One(ActingDomain(xset)));
   imgs:=OnTuples(hom!.basepos,elm);
   imgs:=Enumerator(xset){imgs};
   elm:=GroupHomomorphismByImages(g,g,Base(xset),imgs);
@@ -452,7 +453,7 @@ local
 	# Both groups cannot be isomorphic, since they lead to different 
 	# congruences!
 	Info(InfoMorph,2,"different congruences");
-	return false;
+	return fail;
       else
 	Add(combi,c[1]);
       fi;
@@ -485,7 +486,7 @@ local
 
     if elms<>false then
       result.elms:=elms;
-      result.elmsgens:=gens;
+      result.elmsgens:=Filtered(gens,i->i<>One(G));
       inns:=SubgroupNC(result.aut,GeneratorsOfGroup(inns));
     fi;
     result.inner:=inns;
@@ -503,6 +504,11 @@ end;
 ##
 AutomorphismGroupAbelianGroup := function(G)
 local i,j,k,l,m,o,nl,nj,max,r,e,au,p,gens,offs;
+
+  # trivial case
+  if Size(G)=1 then
+    return Group(IdentityMapping(G));
+  fi;
 
   # get standard generating system
   if not IsPermGroup(G) then
@@ -633,7 +639,7 @@ local o,p,gens,hens;
   SortParallel(p,hens);
 
   if o<>p then
-    return false;
+    return fail;
   fi;
 
   o:=GroupHomomorphismByImages(G,H,gens,hens);
@@ -671,11 +677,15 @@ local m,n;
 
   #AH: Spezielle Methoden ?
   if Size(G)=1 then
-    return GroupHomomorphismByImages(G,H,[],[]);
+    if Size(H)<>1 then
+      return fail;
+    else
+      return GroupHomomorphismByImages(G,H,[],[]);
+    fi;
   fi;
   if IsAbelian(G) then
     if not IsAbelian(H) then
-      return false;
+      return fail;
     else
       return IsomorphismAbelianGroups(G,H);
     fi;
@@ -686,12 +696,12 @@ local m,n;
      Length(ConjugacyClasses(G))<>Length(ConjugacyClasses(H))
      #or (Size(G)<=100 and GroupId(G)<>GroupId(H))
      then
-   return false;
+   return fail;
   fi;
 
   m:=Morphium(G,H,false);
   if IsList(m) and Length(m)=0 then
-    return false;
+    return fail;
   else
     return m;
   fi;

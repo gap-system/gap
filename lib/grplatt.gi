@@ -98,11 +98,15 @@ end;
 
 #############################################################################
 ##
-#M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
+#F  LatticeByCyclicExtension(<G>[,<func>])  Lattice of subgroups
+##    if func is given, the algorithm will discard all subgroups not
+##    fulfilling <func>, returning probably a pseudolattice.
+##         
 ##
-InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup],0,
-function(G)
-local   lattice,           # lattice (result)
+LatticeByCyclicExtension:=function(arg)
+local   G,		   # group
+	func,		   # test function
+        lattice,           # lattice (result)
 	factors,           # factorization of <G>'s size
 	zuppos,            # generators of prime power order
 	zupposPrime,       # corresponding prime
@@ -131,6 +135,14 @@ local   lattice,           # lattice (result)
 	Kzups,             # zuppos of a representative in <classes>
 	reps,              # transversal of <N> in <G>
 	h,i,k,l,r;      # loop variables
+
+    G:=arg[1];
+    if Length(arg)>1 and IsFunction(arg[2]) then
+      func:=arg[2];
+      Info(InfoLattice,1,"lattice discarding function active!");
+    else
+      func:=false;
+    fi;
 
     # compute the factorized size of <G>
     factors:=Factors(Size(G));
@@ -161,6 +173,9 @@ local   lattice,           # lattice (result)
 
     perfect:=RepresentativesPerfectSubgroups(G);
     perfect:=Filtered(perfect,i->Size(i)>1 and Size(i)<Size(G));
+    if func<>false then
+      perfect:=Filtered(perfect,func);
+    fi;
 
     perfectZups:=[];
     perfectNew :=[];
@@ -202,9 +217,11 @@ local   lattice,           # lattice (result)
             for i  in [1..Length(zuppos)]  do
                 if Hexts[i] and Hzups[zupposPower[i]]  then
 
-                    # make the new subgroup <I>
-                    I:=Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(H),
-                                                             [zuppos[i]]));
+		  # make the new subgroup <I>
+		  I:=Subgroup(Parent(G),Concatenation(GeneratorsOfGroup(H),
+							   [zuppos[i]]));
+                  if func=false or func(I) then
+
                     Icopy:=CopiedGroup(I);
                     SetSize(Icopy,Size(H) * zupposPrime[i]);
                     SetSize(I,Size(Icopy));
@@ -277,6 +294,10 @@ local   lattice,           # lattice (result)
                     Unbind(Ielms);
                     Unbind(reps);
                     Info(InfoLattice,2,"tested inclusions");
+
+		  else
+		    Info(InfoLattice,1,"discarded!");
+		  fi; # if condition fulfilled
 
                 fi; # if Hexts[i] and Hzups[zupposPower[i]]  then ...
             od; # for i  in [1..Length(zuppos)]  do ...
@@ -382,7 +403,7 @@ local   lattice,           # lattice (result)
     # add the whole group to the list of classes
     Info(InfoLattice,1,"doing layer ",Length(factors),",",
                   " previous layer has ",layere-layerb+1," classes");
-    if Size(G)>1 then
+    if Size(G)>1 and (func=false or func(G)) then
       Info(InfoLattice,2,"found whole group, size = ",Size(G),",","length = 1");
       C:=ConjugacyClassSubgroups(G,G);
       SetSize(C,1);
@@ -410,7 +431,14 @@ local   lattice,           # lattice (result)
 
     # return the lattice
     return lattice;
-end);
+end;
+
+#############################################################################
+##
+#M  LatticeSubgroups(<G>)  . . . . . . . . . .  lattice of subgroups
+##
+InstallMethod(LatticeSubgroups,"cyclic extension",true,[IsGroup],0,
+  LatticeByCyclicExtension);
 
 #############################################################################
 ##
@@ -783,6 +811,42 @@ function (G)
        Set(maxs{[1..Length(maxs)]}[1])},Representative);
     return maxs;
 end);
+
+#############################################################################
+##
+#F  NormalSubgroups( <G> )
+##
+InstallMethod(NormalSubgroups,"generic method for groups",true,[IsGroup],0,
+function ( G )
+    local   nrm;
+    nrm := NormalSubgroupsAbove(G,TrivialSubgroup(G),[]);
+    Sort( nrm, function( a, b ) return Size( a ) < Size( b ); end );
+    return nrm;
+end );
+
+NormalSubgroupsAbove := function ( G, N, avoid )
+    local   R, C, g, M;
+
+    R     := [ N ];
+    avoid := ShallowCopy( avoid );
+    for C  in ConjugacyClasses( G )  do
+        g := Representative( C );
+        if not g in avoid  and not g in N  then
+
+            # compute the normal closure of <N> and <g> in <G>
+            M := NormalClosure( G, ClosureGroup( N, g ) );
+            if ForAll( avoid, rep -> not rep in M )  then
+                Append( R, NormalSubgroupsAbove(G,M,avoid) );
+            fi;
+
+            # from now on avoid this representative
+            Add( avoid, g );
+        fi;
+    od;
+
+    # return the list of normal subgroups
+    return R;
+end;
 
 #############################################################################
 ##

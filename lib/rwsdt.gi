@@ -490,7 +490,7 @@ function( dtrws )
     # complete dtrws
     for  i in [2..dtrws![PC_NUMBER_OF_GENERATORS]]  do
 	if  not IsBound( dtrws![PC_CONJUGATES][i] )  then
-	    dtrws!.Conjugate[i] := [];
+	    dtrws![PC_CONJUGATES][i] := [];
 	fi;
     od;
 

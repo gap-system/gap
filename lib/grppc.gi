@@ -457,9 +457,9 @@ end );
 
 #############################################################################
 ##
-#M  ConjugateSubgroup( <U>, <g> )
+#M  ConjugateGroup( <U>, <g> )
 ##
-InstallMethod( ConjugateSubgroup, 
+InstallMethod( ConjugateGroup,
     "groups with home pcgs",
     IsCollsElms,
     [ IsGroup and HasHomePcgs,
