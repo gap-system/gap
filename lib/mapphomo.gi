@@ -5,7 +5,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains the methods for properties of mappings preserving
 ##  algebraic structure.
@@ -280,9 +280,7 @@ InstallMethod( ImagesSet,
       IsGroup ], 0,
     function( map, elms )
 
-    if   not IsSubset( Source( map ), elms ) then
-      return fail;
-    elif not IsTotal( map ) then
+    if not IsTotal( map ) then
       elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
@@ -326,9 +324,7 @@ InstallMethod( PreImagesSet,
     [ IsSPGeneralMapping and RespectsMultiplication and RespectsInverses,
       IsGroup ], 0,
     function( map, elms )
-    if   not IsSubset( Range( map ), elms ) then
-      return fail;
-    elif not IsSurjective( map ) then
+    if not IsSurjective( map ) then
       elms:= Intersection2( ImagesSource( map ), elms );
     fi;
     elms:= ClosureGroup( KernelOfMultiplicativeGeneralMapping( map ),
@@ -604,9 +600,7 @@ InstallMethod( ImagesSet,
       IsAdditiveGroup ], 0,
     function( map, elms )
 
-    if   not IsSubset( Source( map ), elms ) then
-      return fail;
-    elif not IsTotal( map ) then
+    if not IsTotal( map ) then
       elms:= Intersection2( PreImagesRange( map ), elms );
     fi;
 
@@ -651,9 +645,7 @@ InstallMethod( PreImagesSet,
       IsAdditiveGroup ], 0,
     function( map, elms )
 
-    if   not IsSubset( Range( map ), elms ) then
-      return fail;
-    elif not IsSurjective( map ) then
+    if not IsSurjective( map ) then
       elms:= Intersection2( ImagesSource( map ), elms );
     fi;
 
@@ -814,9 +806,7 @@ InstallMethod( ImagesSet,
       IsLeftModule ], 0,
     function( map, elms )
 
-    if   not IsSubset( Source( map ), elms ) then
-      return fail;
-    elif not IsTotal( map ) then
+    if not IsTotal( map ) then
       elms:= Intersection2( elms, PreImagesRange( map ) );
     fi;
 
@@ -842,9 +832,7 @@ InstallMethod( PreImagesSet,
       IsLeftModule ], 0,
     function( map, elms )
 
-    if   not IsSubset( Range( map ), elms ) then
-      return fail;
-    elif not IsSurjective( map ) then
+    if not IsSurjective( map ) then
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
 
@@ -887,9 +875,7 @@ InstallMethod( ImagesSet,
       IsFLMLOR ], 0,
     function( map, elms )
 
-    if   not IsSubset( Source( map ), elms ) then
-      return fail;
-    elif not IsTotal( map ) then
+    if not IsTotal( map ) then
       elms:= Intersection2( elms, PreImagesRange( map ) );
     fi;
 
@@ -916,9 +902,7 @@ InstallMethod( ImagesSet,
       IsFLMLORWithOne ], 0,
     function( map, elms )
 
-    if   not IsSubset( Source( map ), elms ) then
-      return fail;
-    elif not IsTotal( map ) then
+    if not IsTotal( map ) then
       elms:= Intersection2( elms, PreImagesRange( map ) );
     fi;
 
@@ -944,9 +928,7 @@ InstallMethod( PreImagesSet,
       IsFLMLOR ], 0,
     function( map, elms )
 
-    if   not IsSubset( Range( map ), elms ) then
-      return fail;
-    elif not IsSurjective( map ) then
+    if not IsSurjective( map ) then
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
 
@@ -973,9 +955,7 @@ InstallMethod( PreImagesSet,
       IsFLMLORWithOne ], 0,
     function( map, elms )
 
-    if   not IsSubset( Range( map ), elms ) then
-      return fail;
-    elif not IsSurjective( map ) then
+    if not IsSurjective( map ) then
       elms:= Intersection( elms, ImagesSource( map ) );
     fi;
 

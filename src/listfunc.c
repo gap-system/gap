@@ -855,6 +855,26 @@ Obj             FuncOnLeft (
 
 /****************************************************************************
 **
+*F  FuncOnLeftInverse(<self>,<point>,<elm>) . . . . operation by mult. from the left
+**
+**  'FuncOnLeft' implements the internal function 'OnLeft'.
+**
+**  'OnLeft( <point>, <elm> )'
+**
+**  specifies that group elements operate by multiplication from the left.
+*/
+Obj             FuncOnLeftInverse (
+    Obj                 self,
+    Obj                 point,
+    Obj                 elm )
+{
+    point = INV(point);
+    return PROD( elm, point );
+}
+
+
+/****************************************************************************
+**
 *F  DepthListx( <vec> ) . . . . . . . . . . . . . . . . . . depth of a vector
 */
 Obj             DepthListx (
@@ -991,9 +1011,12 @@ void            InitListFunc ( void )
     AssGVar( GVarName( "OnRight" ),
               NewFunctionC( "OnRight", 2L, "pnt, elm",
                                 FuncOnRight ) );
-    AssGVar( GVarName( "OnLeft" ),
+    AssGVar( GVarName( "OnLeftAntiOperation" ),
               NewFunctionC( "OnLeft", 2L, "pnt, elm",
                                 FuncOnLeft ) );
+    AssGVar( GVarName( "OnLeftInverse" ),
+              NewFunctionC( "OnLeft", 2L, "pnt, elm",
+                                FuncOnLeftInverse ) );
     AssGVar( GVarName( "DepthVector" ),
               NewFunctionC( "DepthVector", 1L, "list",
                                 DepthVectorHandler ) );

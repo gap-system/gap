@@ -260,6 +260,8 @@ local d;
 
   d:=Objectify(RightCosetsDefaultKind(FamilyObj(U)),rec());
   SetActingDomain(d,U);
+  # AH
+  # SetFunctionOperation(d,OnLeft);
   SetRepresentative(d,g);
   SetSize(d,Size(U));
   SetCanonicalRepresentativeDeterminatorOfExternalSet(d,
@@ -272,18 +274,16 @@ function(d)
   Print("RightCoset(",ActingDomain(d),",",Representative(d),")");
 end);
 
-# AH: obsolete!
-#InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
-#function(a,b)
-#  return CanonicalRepresentativeOfExternalSet(a)
-#         =CanonicalRepresentativeOfExternalSet(b);
-#end);
+InstallMethod(\=,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+function(a,b)
+  return Representative(a)/Representative(b) in ActingDomain(a);
+end);
 
-#InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
-#function(a,b)
-#  return CanonicalRepresentativeOfExternalSet(a)
-#         <CanonicalRepresentativeOfExternalSet(b);
-#end);
+InstallMethod(\<,"RightCosets",IsIdentical,[IsRightCoset,IsRightCoset],0,
+function(a,b)
+  return CanonicalRepresentativeOfExternalSet(a)
+         <CanonicalRepresentativeOfExternalSet(b);
+end);
 
 DoubleCosets := function(G,U,V)
   if not IsSubgroup(G,U) and IsSubgroup(G,V) then
@@ -461,6 +461,28 @@ InstallMethod(RightCosetsNC,"generic",true,
 function(G,U)
   return List(RightTransversal(G,U),i->RightCoset(U,i));
 end);
+
+#############################################################################
+##
+#M  RightTransversal   generic
+##
+InstallMethod(RightTransversal,
+  "generic via operation on canonical coset elements",
+  IsIdentical,[IsGroup,IsGroup],0,
+function(G,U)
+local i,j,t,img;
+  t:=[CanonicalRightCosetElement(U,One(G))];
+  for i in t do
+    for j in GeneratorsOfGroup(G) do
+      img:=CanonicalRightCosetElement(U,i*j);
+      if not img in t then
+        Add(t,img);
+      fi;
+    od;
+  od;
+  return t;
+end);
+
 
 #############################################################################
 ##

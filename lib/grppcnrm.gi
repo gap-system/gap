@@ -626,7 +626,129 @@ end;
 ##
 #F  PCGS_NORMALIZER_COBOUNDS( <home>, <norm>, <nis>, <pcgs>, <modulo> )
 ##
-PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, pnt, modulo )
+PCGS_NORMALIZER_COBOUNDS := function( home, pcgs, nis, u1, u2 )
+    local   ns,  us,  gf,  one,  data,  u,  ui,  mats,  t,  l,  i,  b,  
+            nb,  c,  heads,  k,  ln1,  ln2,  op,  stab,  s;
+
+    # The situtation is as follows:
+    #
+    #	    	S
+    #	    	 \
+    #	    	  \
+    #	    	   Us
+    #	    	  /  \
+    #	    	 /    \
+    #	       U1      Ns       N
+    #	    	 \    /  \     /
+    #	    	  \  /	  \   /
+    #	    	   U2	   NiS
+    #                \	  /
+    #	    	      \	 /
+    #	    	       Un
+    #
+    # and <S> stabilizes <U2>
+
+    # compute the operation of <u1> mod <u2> on <ns> mod <u2>
+    ns   := SumPcgs( home, u2, NumeratorOfModuloPcgs(nis) ) mod u2;
+    us   := SumPcgs( home, u1, NumeratorOfModuloPcgs(nis) );
+    gf   := GF(RelativeOrderOfPcElement(home,ns[1]));
+    one  := One(gf);
+    data := PCGS_NORMALIZER_DATAE( home, u2 );
+    u    := PCGS_NORMALIZER_OPE( data, u1 mod u2, OneOfPcgs(home) );
+    ui   := List( u, Inverse );
+    mats := List( u, x -> List(ns, y -> ExponentsOfPcElement(ns,y^x)*one) );
+
+    # compute the coboundaries
+    Info( InfoPcNormalizer, 4, "using coboundaries and centralizer" );
+
+    t := One(mats[1]);
+    l := [];
+    for i  in [ 1 .. Length(mats[1]) ]  do
+    	l[i] := [];
+    	for j  in [ 1 .. Length(mats) ]  do
+    	    Append( l[i], t[i]-mats[j][i] );
+    	od;
+    od;
+    b  := TriangulizedGeneratorsByMatrix( ns, l, gf );
+    nb := b[1];
+    b  := b[2];
+
+    # trivial coboundaries, use ordinary orbit
+    if IsEmpty(b)  then
+        Info( InfoPcNormalizer, 4, "coboundaries are trivial" );
+        return PCGS_NORMALIZER( home, pcgs, u1, u2 );
+    fi;
+    Info( InfoPcNormalizer, 4, "|coboundaries| = ", 
+          RelativeOrderOfPcElement(home,ns[1]), "^", Length(B), "\n" );
+
+    # compute the stabilizer
+    c := List( NullspaceMat(l), x -> PcElementByExponents(ns,x) );
+
+    # compute the heads of the coboundaries
+    heads := [];
+    k := 1;
+    i := 1;
+    while i <= Length(b) and k <= Length(b[1])  do
+    	if IntFFE(b[i][k]) <> 0  then
+    	    heads[i] := k;
+	    i := i+1;
+    	fi;
+	k := k+1;
+    od;
+
+    # now the function which operates on the coboundaries
+    ln1  := Length(ns);
+    ln2  := Length(u);
+
+    op := function( v, x )
+    	local	w,  k,  i,  j,  z;
+
+        # add the coboundary <v> to <u>
+    	w := ShallowCopy(u);
+    	for i  in [ 1 .. ln2 ]  do
+            w[i] := w[i] * PcElementByExponents(ns, v{[(i-1)*ln1+1..i*ln1]});
+    	od;
+
+        # operate with <x> on <w> and normalize modulo <u2>
+        w := PCGS_NORMALIZER_OPE( data, w, x );
+
+        # convert back into a vector
+    	v := [];
+    	for i  in [ 1 .. ln2 ]  do
+    	    Append( v, ExponentsOfPcElement( ns, ui[i]*w[i] ) );
+    	od;
+    	v := v * One(gf);
+    	for i  in [ 1 .. Length(heads) ]  do
+            v := v - v[heads[i]] * b[i];
+    	od;
+    	return Immutable(v);
+    end;
+
+    # compute the blockstabilizer
+    Info( InfoPcNormalizer, 4, "computing blockstabilizer" );
+    stab := PCGS_STABILIZER( s mod us,
+                             b[1] * Zero(gf),
+                             op );
+
+    # compute and correct the blockstabilizer
+    Info( InfoPcNormalizer, 4, "correcting blockstabilizer" );
+    nb := List( nb, x -> x ^ -1 );
+    for i  in [ 1 .. Length(stab) ]  do
+        s := PCGS_NORMALIZER_OPE( data, u, stab[i] );
+    	v := [];
+    	for j  in [ 1 .. ln2 ]  do
+    	    Append( v, ExponentsOfPcElement( ns, ui[j]*s[j] ) );
+    	od;
+    	for j  in [ 1 .. Length(heads) ]  do
+    	    if v[heads[j] ] <> 0  then
+    	    	stab[i] := stab[i] * ( nb[j]^v[heads[j]] );
+    	    fi;
+    	od;
+    od;
+
+    # return sum of <L>, <C> and <U1>
+    return InducedPcgsByGeneratorsNC( home, Concatenation( stab, c, u1 ) );
+
 end;
 
 

@@ -4,11 +4,22 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+##
+##  1. general methods for Lie elements
+##  2. methods for free left modules of Lie elements
+##     (there are special methods for Lie matrix spaces)
+##  3. methods for FLMLORs of Lie elements
+##     (there are special methods for Lie matrix spaces)
 ##
 Revision.liefam_gi :=
     "@(#)$Id$";
 
+
+#############################################################################
+##
+##  1. general methods for Lie elements
+##
 
 #############################################################################
 ##
@@ -304,21 +315,11 @@ InstallMethod( ImagesElm, FamSourceEqFamElm,
     return [ LieObject( elm ) ];
     end );
 
-#T InstallMethod( ImagesSet, CollFamSourceEqFamElms, [ IsLieEmbedding, IsDomain ], 0,
-#T     function ( emb, elms )
-#T     ...
-#T     end );
-
 InstallMethod( PreImagesElm, FamRangeEqFamElm,
     [ IsLieEmbedding, IsObject ], 0,
     function ( emb, elm )
     return [ elm![1] ];
     end );
-
-#T InstallMethod( PreImagesSet, CollFamRangeEqFamElms, [ IsLieEmbedding, IsDomain ], 0,
-#T     function ( emb, elms )
-#T     ...
-#T     end );
 
 
 #############################################################################
@@ -330,6 +331,231 @@ InstallOtherMethod( IsUnit,
     true,
     [ IsLieObject ], 0,
     ReturnFalse );
+
+
+#############################################################################
+##
+##  2. methods for free left modules of Lie elements
+##
+##  There are special methods for Lie matrix spaces, both Gaussian and
+##  non-Gaussian.
+##  Note that in principle the non-Gaussian Lie matrix spaces could be
+##  handled via the generic methods for spaces of Lie elements,
+##  but the special methods are more efficient; they avoid one indirection
+##  by assigning a row vector to each Lie matrix.
+##
+
+#############################################################################
+##
+#R  IsLieObjectsModuleRep
+##
+IsLieObjectsModuleRep := NewRepresentation(
+    "IsLieObjectsModuleRep",
+    IsAttributeStoringRep and IsHandledByNiceBasis,
+    [] );
+
+
+#############################################################################
+##
+#M  MutableBasisByGenerators( <R>, <lieelms> )
+#M  MutableBasisByGenerators( <R>, <lieelms>, <zero> )
+##
+##  We choose a mutable basis that stores a mutable basis for a nice module.
+##
+InstallMethod( MutableBasisByGenerators,
+    "method for ring and collection of Lie elements",
+    true,
+    [ IsRing, IsLieObjectCollection ], 0,
+    MutableBasisViaNiceMutableBasisMethod2 );
+
+InstallOtherMethod( MutableBasisByGenerators,
+    "method for ring, (possibly empty) list, and Lie zero",
+    true,
+    [ IsRing, IsList, IsLieObject ], 0,
+    MutableBasisViaNiceMutableBasisMethod3 );
+
+
+#############################################################################
+##
+#M  LeftModuleByGenerators( <R>, <lieelms> )  . . . . . . . . for Lie objects 
+##
+InstallMethod( LeftModuleByGenerators,
+    "method for ring and list of Lie objects",
+    true,
+    [ IsRing, IsLieObjectCollection and IsList ], 0,
+    function( R, lieelms )
+    local dims, V;
+
+    V:= Objectify( NewKind( FamilyObj( lieelms ),
+                                IsFreeLeftModule
+                            and IsLieObjectsModuleRep ),
+                   rec() );
+
+    SetLeftActingDomain( V, R );
+    SetGeneratorsOfLeftModule( V, AsList( lieelms ) );
+
+    return V;
+    end );
+
+
+#############################################################################
+##
+#M  LeftModuleByGenerators( <R>, <empty>, <zero> )  . . . . . for Lie objects
+##
+InstallOtherMethod( LeftModuleByGenerators,
+    "method for ring, empty list, and Lie object",
+    true,
+    [ IsRing, IsList and IsEmpty, IsLieObject ], 0,
+    function( R, empty, zero )
+    local V;
+
+    V:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+                                IsFreeLeftModule
+                            and IsLieObjectsModuleRep ),
+                   rec() );
+    SetLeftActingDomain( V, R );
+    SetGeneratorsOfLeftModule( V, empty );
+    SetZero( V, zero );
+
+    return V;
+    end );
+
+
+#############################################################################
+##
+#M  LeftModuleByGenerators( <R>, <lieelms>, <zero> )  . . . . for Lie objects
+##
+InstallOtherMethod( LeftModuleByGenerators,
+    "method for ring, list of Lie objects, and Lie object",
+    true,
+    [ IsRing, IsLieObjectCollection and IsList, IsLieObject ], 0,
+    function( R, lieelms, zero )
+    local V;
+
+    V:= Objectify( NewKind( FamilyObj( lieelms ),
+                                IsFreeLeftModule
+                            and IsLieObjectsModuleRep ),
+                   rec() );
+
+    SetLeftActingDomain( V, R );
+    SetGeneratorsOfLeftModule( V, AsList( lieelms ) );
+    SetZero( V, zero );
+
+    return V;
+    end );
+
+
+#############################################################################
+##
+#M  PrepareNiceFreeLeftModule( <liemodule> )
+##
+##  Nothing is to do \ldots
+##
+InstallMethod( PrepareNiceFreeLeftModule,
+    "method for free module of Lie objects",
+    true,
+    [ IsFreeLeftModule and IsLieObjectsModuleRep ], 0,
+    Ignore );
+
+
+#############################################################################
+##
+#M  NiceVector( <M>, <lieelm> )
+##
+InstallMethod( NiceVector,
+    "method for free module of Lie objects, and Lie object",
+    IsCollsElms,
+    [ IsFreeLeftModule and IsLieObjectsModuleRep, IsLieObject ], 0,
+    function( M, lieelm )
+    return lieelm![1];
+    end );
+
+
+#############################################################################
+##
+#M  UglyVector( <M>, <vector> ) .  for left module of Lie objects, and vector
+##
+InstallMethod( UglyVector,
+    "method for free module of Lie objects, and vector",
+    true,
+    [ IsFreeLeftModule and IsLieObjectsModuleRep, IsVector ], 0,
+    function( M, vector )
+    return LieObject( vector );
+    end );
+
+
+#############################################################################
+##
+##  3. methods for FLMLORs of Lie elements
+##     (there are special methods for Lie matrix spaces)
+##
+
+#############################################################################
+##
+#M  FLMLORByGenerators( <F>, <lie-elms> )
+#M  FLMLORByGenerators( <F>, <empty>, <lie-zero> )
+#M  FLMLORByGenerators( <F>, <lie-elms>, <lie-zero> )
+##
+InstallMethod( FLMLORByGenerators,
+    "method for ring and list of Lie elements",
+    true,
+    [ IsRing, IsLieObjectCollection and IsList ], 0,
+    function( R, elms )
+    local A;
+
+    A:= Objectify( NewKind( FamilyObj( elms ),
+                                IsFLMLOR
+                            and IsLieAlgebra
+                            and IsLieObjectsModuleRep ),
+                     rec() );
+
+    SetLeftActingDomain( A, R );
+    SetGeneratorsOfLeftOperatorRing( A, AsList( elms ) );
+
+    # Return the result.
+    return A;
+    end );
+
+InstallOtherMethod( FLMLORByGenerators,
+    "method for ring, empty list, and Lie object",
+    true,
+    [ IsRing, IsList and IsEmpty, IsLieObject ], 0,
+    function( R, empty, zero )
+    local A;
+
+    A:= Objectify( NewKind( CollectionsFamily( FamilyObj( zero ) ),
+                                IsFLMLOR
+                            and IsLieObjectsModuleRep
+                            and IsTrivial ),
+                   rec() );
+    SetLeftActingDomain( A, R );
+    SetGeneratorsOfLeftModule( A, empty );
+    SetZero( A, zero );
+
+    # Return the result.
+    return A;
+    end );
+
+InstallOtherMethod( FLMLORByGenerators,
+    "method for ring, list of Lie objects, and Lie object",
+    true,
+    [ IsRing, IsLieObjectCollection and IsList, IsLieObject ], 0,
+    function( R, elms, zero )
+    local A;
+
+    A:= Objectify( NewKind( FamilyObj( elms ),
+                                IsFLMLOR
+                            and IsLieAlgebra
+                            and IsLieObjectsModuleRep ),
+                   rec() );
+
+    SetLeftActingDomain( A, R );
+    SetGeneratorsOfLeftOperatorRing( A, AsList( elms ) );
+    SetZero( A, zero );
+
+    # Return the result.
+    return A;
+    end );
 
 
 #############################################################################

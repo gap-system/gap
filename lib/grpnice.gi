@@ -143,14 +143,6 @@ GroupMethodByNiceMonomorphismCollElm( Centralizer,
 
 #############################################################################
 ##
-#M  CharacterDegrees( <G> ) . . . . . . . . . character degress of Irr( <G> )
-##
-AttributeMethodByNiceMonomorphism( CharacterDegrees,
-    [ IsGroup ] );
-
-
-#############################################################################
-##
 #M  ClosureGroup( <G>, <U> )  . . . . . . . . . . closure of group with group
 ##
 GroupMethodByNiceMonomorphismCollColl( ClosureGroup,

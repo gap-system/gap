@@ -691,9 +691,6 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
     return GroupStabChain( Range( hom ), I, true );
 end );
 
-InstallMethod( ImagesSource, true, [ IsConstituentHomomorphism ], 0,
-    hom -> ImagesSet( hom, Source( hom ) ) );
-
 #############################################################################
 ##
 #M  PreImagesSet( <hom>, <I> )  . . . . . . . . . . . . . . . . for const hom
@@ -843,10 +840,6 @@ InstallMethod( ImagesSet, CollFamSourceEqFamElms,
         [ IsBlocksHomomorphism, IsPermGroup ], 0,
     ImageKernelBlocksHomomorphism );
 
-InstallMethod( ImagesSource, true, [ IsBlocksHomomorphism ], 0,
-    hom -> ImagesSet( hom, Source( hom ) ) );
-#T necessary at all?
-
 #############################################################################
 ##
 #M  PreImagesRepresentative( <hom>, <elm> ) . . . . . . . . .  for blocks hom
@@ -960,6 +953,7 @@ end );
 
 #############################################################################
 ##
+
 #F  IsomorphismPermGroup( <G> )
 ##
 InstallMethod(IsomorphismPermGroup,"perm groups",true,[IsPermGroup],0,

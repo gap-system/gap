@@ -326,7 +326,7 @@ InstallMethod( \=,
     "method for two Frobenius automorphisms",
     IsIdentical,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
-    function ( aut1, aut2 )
+    function( aut1, aut2 )
     return Source( aut1 ) = Source( aut2 ) and aut1!.power  = aut2!.power;
     end );
 
@@ -334,7 +334,7 @@ InstallMethod( \=,
     "method for identity mapping and Frobenius automorphism",
     IsIdentical,
     [ IsMapping and IsOne, IsFrobeniusAutomorphism ], 0,
-    function ( id, aut )
+    function( id, aut )
     return Source( id ) = Source( aut ) and aut!.power = 1;
     end );
 
@@ -342,7 +342,7 @@ InstallMethod( \=,
     "method for Frobenius automorphism and identity mapping",
     IsIdentical,
     [ IsFrobeniusAutomorphism, IsMapping and IsOne ], 0,
-    function ( aut, id )
+    function( aut, id )
     return Source( id ) = Source( aut ) and aut!.power = 1;
     end );
 
@@ -350,7 +350,7 @@ InstallMethod( ImageElm,
     "method for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
-    function ( aut, elm )
+    function( aut, elm )
     return elm ^ aut!.power;
     end );
 
@@ -358,7 +358,7 @@ InstallMethod( ImagesElm,
     "method for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
-    function ( aut, elm )
+    function( aut, elm )
     return [ elm ^ aut!.power ];
     end );
 
@@ -366,19 +366,15 @@ InstallMethod( ImagesSet,
     "method for Frobenius automorphism and field contained in the source",
     CollFamSourceEqFamElms,
     [ IsFrobeniusAutomorphism, IsField ], 0,
-    function ( aut, elms )
-    if IsSubset( Source( aut ), elms )  then
-      return elms;
-    else
-      Error( "<elms> must lie in the source of <aut>" );
-    fi;
+    function( aut, elms )
+    return elms;
     end );
 
 InstallMethod( ImagesRepresentative,
     "method for Frobenius automorphism and source element",
     FamSourceEqFamElm,
     [ IsFrobeniusAutomorphism, IsObject ], 0,
-    function ( aut, elm )
+    function( aut, elm )
     return elm ^ aut!.power;
     end );
 
@@ -386,7 +382,7 @@ InstallMethod( CompositionMapping2,
     "method for two Frobenius automorphisms",
     IsIdentical,
     [ IsFrobeniusAutomorphism, IsFrobeniusAutomorphism ], 0,
-    function ( aut1, aut2 )
+    function( aut1, aut2 )
     if Characteristic( Source( aut1 ) )
        = Characteristic( Source( aut2 ) ) then
       return FrobeniusAutomorphismI( Source( aut1 ),

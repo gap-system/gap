@@ -151,16 +151,18 @@ Image := function ( arg )
       map := arg[1];
       elm := arg[2];
 
-      if not IsGeneralMapping( map ) then
+      if not IsMapping( map ) then
         Error( "<map> must be a mapping" );
       fi;
 
-      if FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) ) then
+      if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) )
+         and elm in Source( map ) then
 
         return ImageElm( map, elm );
 
       # image of a set or list of elments <elm> under the mapping <map>
-      elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
+      elif     CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) )
+           and IsSubset( Source( map ), elm ) then
 
         if IsDomain( elm ) or IsSSortedList( elm ) then
           return ImagesSet( map, elm );
@@ -182,6 +184,7 @@ end;
 #F  Images( <map>, <coll> ) . . set of images of a collection under a mapping
 ##
 Images := function ( arg )
+
     local   map,        # mapping <map>, first argument
             elm;        # element <elm>, second argument
 
@@ -200,12 +203,14 @@ Images := function ( arg )
         fi;
 
         # image of a single element <elm> under the mapping <map>
-        if FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) ) then
+        if     FamSourceEqFamElm( FamilyObj( map ), FamilyObj( elm ) )
+           and elm in Source( map ) then
 
           return ImagesElm( map, elm );
 
         # image of a set or list of elments <elm> under the mapping <map>
-        elif CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) ) then
+        elif     CollFamSourceEqFamElms( FamilyObj( map ), FamilyObj(elm) )
+             and IsSubset( Source( map ), elm ) then
 
           if IsDomain( elm ) or IsSSortedList( elm ) then
             return ImagesSet( map, elm );
@@ -226,6 +231,7 @@ end;
 #F  PreImage(<map>,<coll>)   set of preimages of a coll. under a gen. mapping
 ##
 PreImage := function ( arg )
+
     local   map,        # gen. mapping <map>, first argument
             img,        # element <img>, second argument
             pre;        # preimage of <img> under <map>, result
@@ -240,17 +246,20 @@ PreImage := function ( arg )
         map := arg[1];
         img := arg[2];
 
-        if not IsGeneralMapping( map ) then
-          Error( "<map> must be a general mapping" );
+        if not (     IsGeneralMapping( map ) and IsInjective( map )
+                 and IsSurjective( map ) ) then
+          Error( "<map> must be an inj. and surj. mapping" );
         fi;
 
         # preimage of a single element <img> under <map>
-        if FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) )
+           and img in Range( map ) then
 
             return PreImageElm( map, img );
 
         # preimage of a set or list of elments <img> under <map>
-        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+        elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
+             and IsSubset( Range( map ), img ) then
 
           if IsDomain( img ) or IsSSortedList( map ) then
             return PreImagesSet( map, img );
@@ -272,6 +281,7 @@ end;
 #F  PreImages(<map>,<coll>)  set of preimages of a coll. under a gen. mapping
 ##
 PreImages := function ( arg )
+
     local   map,        # mapping <map>, first argument
             img;        # element <img>, second argument
 
@@ -290,12 +300,14 @@ PreImages := function ( arg )
         fi;
 
         # preimage of a single element <img> under <map>
-        if FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) ) then
+        if     FamRangeEqFamElm( FamilyObj( map ), FamilyObj( img ) )
+           and img in Range( map ) then
 
             return PreImagesElm( map, img );
 
         # preimage of a set or list of elements <img> under <map>
-        elif CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) ) then
+        elif     CollFamRangeEqFamElms( FamilyObj( map ), FamilyObj( img ) )
+             and IsSubset( Range( map ), img ) then
 
           if IsDomain( img ) or IsSSortedList( map ) then
             return PreImagesSet( map, img );
@@ -912,13 +924,12 @@ InstallMethod( ImagesRepresentative,
     imgs:= ImagesElm( map, elm );
 
     # check that <elm> has at least one image under <map>
-    if imgs = fail or Size( imgs ) = 0  then
+    if IsEmpty( imgs ) then
       return fail;
-    else
-
-      # pick one image, and return it
-      return Representative( imgs );
     fi;
+
+    # pick one image, and return it
+    return Representative( imgs );
     end );
 
 
@@ -1064,57 +1075,13 @@ InstallMethod( PreImagesRepresentative,
     pres := PreImagesElm( map, elm );
 
     # check that <elm> has at least one preimage under <map>
-    if pres = fail or Size( pres ) = 0  then
-        Error("<elm> must have at least one preimage under <map>");
+    if IsEmpty( pres ) then
+      return fail;
     fi;
 
     # pick one preimage, and return it.
     return Representative( pres );
     end );
-
-
-#############################################################################
-##
-#M  ImagesElm( <map>, <elm> ) . . . . . . . . . . . for wrong family relation
-##
-InstallMethod( ImagesElm,
-    "method for general mapping and element",
-    FamSourceNotEqFamElm,
-    [ IsGeneralMapping, IsObject ], 0,
-    ReturnFail );
-
-
-#############################################################################
-##
-#M  ImagesRepresentative( <map>, <elm> )  . . . . . for wrong family relation
-##
-InstallMethod( ImagesRepresentative,
-    "method for general mapping and element",
-    FamSourceNotEqFamElm,
-    [ IsGeneralMapping, IsObject ], 0,
-    ReturnFail );
-
-
-#############################################################################
-##
-#M  PreImagesElm( <map>, <elm> )  . . . . . . . . . for wrong family relation
-##
-InstallMethod( PreImagesElm,
-    "method for general mapping and element",
-    FamRangeNotEqFamElm,
-    [ IsGeneralMapping, IsObject ], 0,
-    ReturnFail );
-
-
-#############################################################################
-##
-#M  PreImagesRepresentative( <map>, <elm> ) . . . . for wrong family relation
-##
-InstallMethod( PreImagesRepresentative,
-    "method for general mapping and element",
-    FamRangeNotEqFamElm,
-    [ IsGeneralMapping, IsObject ], 0,
-    ReturnFail );
 
 
 #############################################################################

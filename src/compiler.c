@@ -3491,11 +3491,42 @@ CVar CompElmComObjName (
 }
 
 
-CVar            CompElmComObjExpr (
+
+/****************************************************************************
+**
+*F  CompElmComObjExpr( <expr> ) . . . . . . . . . . . . . . T_ELM_COMOBJ_EXPR
+*/
+CVar CompElmComObjExpr (
     Expr                expr )
 {
-    Emit( "CANNOT COMPILE EXPRESSION OF TYPE %d;\n", TYPE_EXPR(expr) );
-    return 0;
+    CVar                elm;            /* element, result                 */
+    CVar                record;         /* the record, left operand        */
+    CVar                rnam;           /* the name, right operand         */
+
+    /* allocate a new temporary for the element                            */
+    elm = CVAR_TEMP( NewTemp( "elm" ) );
+
+    /* compile the record expression (checking is done by 'ELM_REC')       */
+    record = CompExpr( ADDR_EXPR(expr)[0] );
+
+    /* get the name (stored immediately in the expression)                 */
+    rnam = CompExpr( ADDR_EXPR(expr)[1] );
+
+    /* emit the code to select the element of the record                   */
+    Emit( "if ( TYPE_OBJ(%c) == T_COMOBJ ) {\n", record );
+    Emit( "%c = ElmPRec( %c, RNamObj(%c) );\n", elm, record, rnam );
+    Emit( "}\nelse {\n" );
+    Emit( "%c = ELM_REC( %c, RNamObj(%c) );\n", elm, record, rnam );
+    Emit( "}\n" );
+
+    /* we know that we have a value                                        */
+    SetInfoCVar( elm, W_BOUND );
+
+    /* free the temporaries                                                */
+    if ( IS_TEMP_CVAR( record ) )  FreeTemp( TEMP_CVAR( record ) );
+
+    /* return the element                                                  */
+    return elm;
 }
 
 

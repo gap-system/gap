@@ -178,7 +178,7 @@ UInt            RNamObj (
     }
 
     /* convert string object (empty string may have type T_PLIST)          */
-    else if ( IsStringConv(obj) && TYPE_OBJ(obj) == T_STRING ) {
+    else if ( IsStringConv(obj) && MUTABLE_TYPE(TYPE_OBJ(obj))==T_STRING ) {
         return RNamName( CSTR_STRING(obj) );
     }
 

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file contains generic methods for division rings.
 ##
@@ -994,14 +994,10 @@ InstallMethod( ImagesSet,
     CollFamSourceEqFamElms,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
-    if IsSubset( Source( hom ), elms )  then
-        elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
-                   gen -> ImagesRepresentative( hom, gen ) ) );
-        UseSubsetRelation( Range( hom ), elms );
-        return elms;
-    else
-        Error( "<elms> must be a subset of the source of <hom>" );
-    fi;
+    elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
+               gen -> ImagesRepresentative( hom, gen ) ) );
+    UseSubsetRelation( Range( hom ), elms );
+    return elms;
     end );
 
 
@@ -1033,14 +1029,10 @@ InstallMethod( PreImagesSet,
     CollFamRangeEqFamElms,
     [ IsFieldHomomorphism, IsField ], 0,
     function ( hom, elms )
-    if IsSubset( Range( hom ), elms )  then
-      elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
-                 gen -> PreImagesRepresentative( hom, gen ) ) );
-      UseSubsetRelation( Source( hom ), elms );
-      return elms;
-    else
-      Error( "<elms> must be a subset of the range of <hom>" );
-    fi;
+    elms:= FieldByGenerators( List( GeneratorsOfField( elms ),
+               gen -> PreImagesRepresentative( hom, gen ) ) );
+    UseSubsetRelation( Source( hom ), elms );
+    return elms;
     end );
 
 

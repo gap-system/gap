@@ -18,20 +18,72 @@
 ##  in the whole family of $R$, and words in the whole family of $M$.
 ##  Also the multiplication with elements in the family of $R$ is allowed.
 ##
-##  We do not have an external representation of elements.
-##  Note that the group ring of a permutation group is a free magma ring
-##  as well as any (multivariate) polynomial ring.
+##  Examples of free magma rings are (multivariate) polynomial rings and
+##  group rings.
 ##
-#T Eventually we will need two representations of free magma ring elements,
-#T namely one for arbitrary magmas (e.g., permutation groups)
-#T and another one for magmas with external representation
-#T (e.g., free monoids).
-#T The latter with yield an external representation for the elements of the
-#T free magma ring, and thus an external representation for elements in
-#T f.p. algebras.
+##  Polynomials have an external representation independent of the
+##  underlying monomials, whereas the group ring of a permutation group
+##  does not admit such an external representation.
+##  Thus there is *no* generic external representation for elements in an
+##  *arbitrary* free magma ring.
+##
+##  If the elements of the magma do have an external representation then
+##  the external representation of elements in the free magma ring is
+##  defined as a list of length 2, the first entry being the zero
+##  coefficient, the second being a list with external representations of
+##  the magma elements at the odd positions and the coefficients at the
+##  even positions.
+#T what about the ordering of this list???
+#T (cannot be the ordering of magma elements)
+##
+##  In order to treat elements of free magma rings uniformly, the attribute
+##  'CoefficientsAndMagmaElements' is introduced that allows to take an
+##  element into pieces.
+##  The element constructor is 'FreeMagmaRingElement', it constructs an
+##  element from a given lists of coefficients and magma elements.
+##
+##  As the above examples show, there are several possible element
+##  representations, the one used as default representation of polynomials
+##  as well as the default representation that simply stores the coefficients
+##  and magma elements.
 ##
 Revision.mgmring_gd :=
     "@(#)$Id$";
+
+
+#############################################################################
+##
+#C  IsElementOfFreeMagmaRing( <obj> )
+##
+IsElementOfFreeMagmaRing := NewCategory( "IsElementOfFreeMagmaRing",
+    IsScalar );
+
+
+#############################################################################
+##
+#C  IsElementOfFreeMagmaRingCollection( <obj> )
+##
+IsElementOfFreeMagmaRingCollection := CategoryCollections(
+    "IsElementOfFreeMagmaRingCollection", IsElementOfFreeMagmaRing );
+
+
+#############################################################################
+##
+#C  IsFamilyElementOfFreeMagmaRing( <Fam> )
+##
+IsFamilyElementOfFreeMagmaRing := CategoryFamily(
+    "IsFamilyElementOfFreeMagmaRing", IsElementOfFreeMagmaRing );
+
+
+#############################################################################
+##
+#A  CoefficientsAndMagmaElements( <elm> ) . . . for elm. in a free magma ring
+##
+##  is a list that contains at the odd positions the magma elements,
+##  and at the even positions their coefficients in the element <elm>.
+##
+CoefficientsAndMagmaElements := NewAttribute( "CoefficientsAndMagmaElements",
+    IsElementOfFreeMagmaRing );
 
 
 #############################################################################
@@ -70,9 +122,9 @@ HasUnderlyingMagma := Tester( UnderlyingMagma );
 
 #############################################################################
 ##
-#O  FreeMagmaRingElement( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
+#O  ElementOfFreeMagmaRing( <Fam>, <zerocoeff>, <coeffs>, <mgmelms> )
 ##
-FreeMagmaRingElement := NewOperation( "FreeMagmaRingElement",
+ElementOfFreeMagmaRing := NewOperation( "ElementOfFreeMagmaRing",
     [ IsFamily, IsRingElement, IsHomogeneousList, IsHomogeneousList ] );
 
 

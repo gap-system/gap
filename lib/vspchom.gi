@@ -212,14 +212,10 @@ InstallMethod( ImagesSource,
     true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map )
-    local R;
     if IsBound( map!.basisimage ) then
       return UnderlyingLeftModule( map!.basisimage );
     else
-      R:= Range( map );
-      return LeftModuleByGenerators( LeftActingDomain( R ),
-                                     map!.genimages,
-                                     Zero( R ) );
+      return SubmoduleNC( Range( map ), map!.genimages );
     fi;
     end );
 
@@ -233,14 +229,10 @@ InstallMethod( PreImagesRange,
     true,
     [ IsGeneralMapping and IsLinearGeneralMappingByImagesDefaultRep ], 0,
     function( map )
-    local S;
     if IsBound( map!.basispreimage ) then
       return UnderlyingLeftModule( map!.basispreimage );
     else
-      S:= Source( map );
-      return LeftModuleByGenerators( LeftActingDomain( S ),
-                                     map!.generators,
-                                     Zero( S ) );
+      return SubmoduleNC( Source( map ), map!.generators );
     fi;
     end );
 

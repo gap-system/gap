@@ -530,7 +530,7 @@ InstallOtherMethod( PcElementByExponents,
     0,
 
 function( pcgs, basis, list )
-    local   elm,  i;
+    local   elm,  i,  z;
 
     elm := OneOfPcgs(pcgs);
     if Length(list) <> Length(basis)  then
@@ -538,8 +538,9 @@ function( pcgs, basis, list )
     fi;
 
     for i  in [ 1 .. Length(list) ]  do
-        if list[i] <> 0  then
-            elm := elm * basis[i] ^ IntFFE(list[i]);
+        z := IntFFE(list[i]);
+        if z <> 0  then
+            elm := elm * basis[i] ^ z;
         fi;
     od;
 

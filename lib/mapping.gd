@@ -388,7 +388,10 @@ HasInverseGeneralMapping := Tester( InverseGeneralMapping );
 ##
 #A  ImagesSource( <map> )
 ##
-##  'ImagesSource' delegates to 'ImagesSet'.
+##  is the set of images of the source of the general mapping <map>.
+##
+##  'ImagesSource' delegates to 'ImagesSet',
+##  it is introduced only to store the image of <map> as attribute value.
 ##
 ImagesSource := NewAttribute( "ImagesSource", IsGeneralMapping );
 SetImagesSource := Setter( ImagesSource );
@@ -399,7 +402,10 @@ HasImagesSource := Tester( ImagesSource );
 ##
 #A  PreImagesRange( <map> )
 ##
-##  'PreImagesRange' delegates to 'PreImagesSet'.
+##  is the set of preimages of the range of the general mapping <map>.
+##
+##  'PreImagesRange' delegates to 'PreImagesSet',
+##  it is introduced only to store the preimage of <map> as attribute value.
 ##
 PreImagesRange := NewAttribute( "PreImagesRange", IsGeneralMapping );
 SetPreImagesRange := Setter( PreImagesRange );
@@ -410,9 +416,10 @@ HasPreImagesRange := Tester( PreImagesRange );
 ##
 #O  ImagesElm( <map>, <elm> ) . . . all images of an elm under a gen. mapping
 ##
-##  is the collection of all images of the element <elm> under the general
-##  mapping <map> if <elm> is in the source of <map>.
-##  Otherwise 'fail' is returned.
+##  If <elm> is an element of the source of the general mapping <map> then
+##  'ImagesElm' returns the set of all images of <elm> under <map>.
+##
+##  Anything may happen if <elm> is not an element of the source of <map>.
 ##
 ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 
@@ -421,12 +428,10 @@ ImagesElm := NewOperation( "ImagesElm", [ IsGeneralMapping, IsObject ] );
 ##
 #O  ImagesRepresentative(<map>,<elm>) . one image of elm under a gen. mapping
 ##
-##  'ImagesRepresentative' returns a representative of the set of images of
-##  <elm> under the general mapping <map>, i.e., a single element <img>,
-##  such that '<img> in ImagesElm( <map>, <elm> )' (see "ImagesElm").
-##
-##  If <elm> is not in the source of <map>, or if <elm> has no images under
-##  <map>, 'fail' is returned.
+##  If <elm> is an element of the source of the general mapping <map> then
+##  'ImagesRepresentative' returns either a representative of the set of
+##  images of <elm> under <map> or 'fail', the latter if and only if <elm>
+##  has no images under <map>.
 ##
 ImagesRepresentative := NewOperation( "ImagesRepresentative",
     [ IsGeneralMapping, IsObject ] );
@@ -436,10 +441,10 @@ ImagesRepresentative := NewOperation( "ImagesRepresentative",
 ##
 #O  ImagesSet( <map>, <elms> )
 ##
-##  is the set of images of the collection <elms>
-##  under the general mapping <map>.
+##  If <elms> is a subset of the source of the general mapping <map> then
+##  'ImagesSet' returns the set of all images of <elms> under <map>.
 ##
-##  If <elms> is not a subset of the source of <map>, 'fail' is returned.
+##  Anything may happen if <elms> is not a subset of the source of <map>.
 ##
 ImagesSet := NewOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
 
@@ -448,8 +453,11 @@ ImagesSet := NewOperation( "ImagesSet", [ IsGeneralMapping, IsCollection ] );
 ##
 #O  ImageElm( <map>, <elm> )  . . . .  unique image of an elm under a mapping
 ##
-##  is the unique image of the element <elm> under the mapping <map>.
-##  Note that <map> must be total and single-valued.
+##  If <elm> is an element of the source of the total and single-valued
+##  mapping <map> then
+##  'ImageElm' returns the unique image of <elm> under <map>.
+##
+##  Anything may happen if <elm> is not an element of the source of <map>.
 ##
 ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
 
@@ -463,25 +471,28 @@ ImageElm := NewOperation( "ImageElm", [ IsMapping, IsObject ] );
 ##  'Image( <map> )' is the image of the general mapping <map>, i.e.,
 ##  the subset of elements of the range of <map> that are actually values of
 ##  <map>.
-##  Note that in this case the argument may also be multi valued.
+##  Note that in this case the argument may also be multi-valued.
 ##
 ##  'Image( <map>, <elm> )' is the image of the element <elm> of the source
 ##  of the mapping <map> under <map>, i.e., the unique element of the range
 ##  to which <map> maps <elm>.
 ##  This can also be expressed as '<elm> \^\ <map>'.
-##  Note that <map> must be single valued, a multi valued general mapping is
-##  not allowed (see "Images").
+##  Note that <map> must be total and single valued, a multi valued general
+##  mapping is not allowed (see "Images").
 ##
 ##  'Image( <map>, <coll> )' is the image of the subset <coll> of the source
 ##  of the mapping <map> under <map>, i.e., the subset of the range
 ##  to which <map> maps elements of <coll>.
 ##  <coll> may be a proper set or a domain.
 ##  The result will be either a proper set or a domain.
-##  Again <map> must be single valued, a multi valued general mapping is not
-##  allowed (see "Images").
+##  Again <map> must be total and single valued, a multi valued general
+##  mapping is not allowed (see "Images").
 ##
 ##  'Image' delegates to 'ImagesSource' when called with one argument,
 ##  and to 'ImageElm' resp. 'ImagesSet' when called with two arguments.
+##
+##  If the second argument is not an element or a subset of the source of
+##  the first argument, an error is signalled.
 ##
 Image := NewOperationArgs( "Image" );
 
@@ -509,6 +520,9 @@ Image := NewOperationArgs( "Image" );
 ##  'Images' delegates to 'ImagesSource' when called with one argument,
 ##  and to 'ImagesElm' resp. 'ImagesSet' when called with two arguments.
 ##
+##  If the second argument is not an element or a subset of the source of
+##  the first argument, an error is signalled.
+##
 Images := NewOperationArgs( "Images" );
 
 
@@ -516,9 +530,10 @@ Images := NewOperationArgs( "Images" );
 ##
 #O  PreImagesElm( <map>, <elm> )  . all preimages of elm under a gen. mapping
 ##
-##  is the collection of all preimages of the element <elm> under the general
-##  mapping <map> if <elm> is in the range of <map>.
-##  Otherwise 'fail' is returned.
+##  If <elm> is an element of the range of the general mapping <map> then
+##  'PreImagesElm' returns the set of all preimages of <elm> under <map>.
+##
+##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
 PreImagesElm := NewOperation( "PreImagesElm",
     [ IsGeneralMapping, IsObject ] );
@@ -528,9 +543,11 @@ PreImagesElm := NewOperation( "PreImagesElm",
 ##
 #O  PreImageElm( <map>, <elm> )
 ##
-##  is the unique preimage of the element <elm> under the general mapping
-##  <map>.
-##  'PreImageElm' expects <map> to be surjective and injective.
+##  If <elm> is an element of the range of the injective and surjective
+##  general mapping <map> then
+##  'PreImageElm' returns the unique preimage of <elm> under <map>.
+##
+##  Anything may happen if <elm> is not an element of the range of <map>.
 ##
 PreImageElm := NewOperation( "PreImageElm",
     [ IsGeneralMapping and IsInjective and IsSurjective, IsObject ] );
@@ -541,12 +558,10 @@ PreImageElm := NewOperation( "PreImageElm",
 #O  PreImagesRepresentative( <map>, <img> ) . . .  one preimage of an element
 #O                                                       under a gen. mapping
 ##
-##  'PreImagesRepresentative' returns a representative of the set of
-##  preimages of <img> under <map>, i.e., a single element <elm>, such that
-##  '<img> in PreImagesElm( <map>, <elm> )' (see "PreImagesElm").
-##
-##  If <elm> is not in the range of <map>, or if <elm> has no preimages under
-##  <map>, 'fail' is returned.
+##  If <elm> is an element of the range of the general mapping <map> then
+##  'PreImagesRepresentative' returns either a representative of the set of
+##  preimages of <elm> under <map> or 'fail', the latter if and only if <elm>
+##  has no preimages under <map>.
 ##
 PreImagesRepresentative := NewOperation( "PreImagesRepresentative",
     [ IsGeneralMapping, IsObject ] );
@@ -556,10 +571,10 @@ PreImagesRepresentative := NewOperation( "PreImagesRepresentative",
 ##
 #O  PreImagesSet( <map>, <elms> )
 ##
-##  is the set of preimages of the collection <elms>
-##  under the general mapping <map>.
+##  If <elms> is a subset of the range of the general mapping <map> then
+##  'PreImagesSet' returns the set of all preimages of <elms> under <map>.
 ##
-##  If <elms> is not a subset of the range of <map>, 'fail' is returned.
+##  Anything may happen if <elms> is not a subset of the range of <map>.
 ##
 PreImagesSet := NewOperation( "PreImagesSet",
     [ IsGeneralMapping, IsCollection ] );
@@ -592,6 +607,9 @@ PreImagesSet := NewOperation( "PreImagesSet",
 ##  'PreImage' delegates to 'PreImagesRange' when called with one argument,
 ##  and to 'PreImageElm' resp. 'PreImagesSet' when called with two arguments.
 ##
+##  If the second argument is not an element or a subset of the range of
+##  the first argument, an error is signalled.
+##
 PreImage := NewOperationArgs( "PreImage" );
 
 
@@ -618,6 +636,9 @@ PreImage := NewOperationArgs( "PreImage" );
 ##  'PreImages' delegates to 'PreImagesRange' when called with one argument,
 ##  and to 'PreImagesElm' resp. 'PreImagesSet' when called with two
 ##  arguments.
+##
+##  If the second argument is not an element or a subset of the range of
+##  the first argument, an error is signalled.
 ##
 PreImages := NewOperationArgs( "PreImages" );
 

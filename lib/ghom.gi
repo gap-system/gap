@@ -389,7 +389,7 @@ InstallMethod( ImagesRepresentative, FamSourceEqFamElm,
     fi;
     p := Position( hom!.elements, elm );
     if p <> fail  then  return hom!.images[ p ];
-                  else  return false;             fi;
+                  else  return fail;             fi;
 end );
 
 #############################################################################

@@ -4,7 +4,7 @@
 ##
 #H  @(#)$Id$
 ##
-#Y  Copyright (C)  1996,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
+#Y  Copyright (C)  1997,  Lehrstuhl D fuer Mathematik,  RWTH Aachen,  Germany
 ##
 ##  This file declares the operations for left modules, right modules,
 ##  and bimodules.
@@ -194,9 +194,6 @@ HasGeneratorsOfRightModule := HasGeneratorsOfRightOperatorAdditiveGroup;
 TrivialSubmodule := TrivialSubadditiveMagmaWithZero;
 SetTrivialSubmodule := SetTrivialSubadditiveMagmaWithZero;
 HasTrivialSubmodule := HasTrivialSubadditiveMagmaWithZero;
-
-#T Submodule := NewOperation( "Submodule", [ IsLeftModule or IsRightModule ] );
-#T belongs to left or right or bimodules ?
 
 
 #############################################################################
